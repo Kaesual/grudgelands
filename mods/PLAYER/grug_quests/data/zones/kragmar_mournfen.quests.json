@@ -69,8 +69,8 @@
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "[PH] Markers for the Graves",
-      "text": "[PH] Mordec keeps the burials and their names: bring 6 Wooden Signs to mark graves whose old markings rotted. Real text to follow.",
+      "title": "A Name Above the Mud",
+      "text": "The old grave markers are rotting, and the rain has no gift for remembering names. Bring me six Wooden Signs to replace them. I have kept these burials in order for too long to let damp wood have the final word.",
       "objectives": [
         {
           "type": "item",
@@ -103,9 +103,9 @@
       "min_level": 11,
       "level": 12,
       "requires": [],
-      "title": "[PH] The Names That Remain",
-      "text": "[PH] Mordec sends the player to the {name:name_rest} in the {name:blightfields}: the readable names on a damaged grave marking are copied before the next rain takes them. Real text to follow.",
-      "completion": "[PH] Mordec can match the names to people again; nobody is freed by it. Real text to follow.",
+      "title": "Before the Letters Go",
+      "text": "There are still readable names on the damaged marker at the {name:name_rest}, {dir_from_giver:name_rest}, in the {name:blightfields}. Copy them and bring your findings to me before another rain makes strangers of the people buried there. Take care with the letters; someone once took care to put them there.",
+      "completion": "I can match these names to the burials again. The rain may have the wood in time, but it will not have the only record.",
       "objectives": [
         {
           "type": "use",
@@ -130,8 +130,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Word for Sera",
-      "text": "[PH] Mordec sends word to Sera Vane at the outpost, who follows the transports. Real text to follow.",
+      "title": "What Leaves the Fen",
+      "text": "Some graves have lost more than their markings. Speak to Sera Vane at Mournfen Outpost and tell her that remains are missing from the burials I tend. She watches the loads leaving the fen; I should like to know which of my neighbours have been put among them.",
       "objectives": [
         {
           "type": "talk",
@@ -153,8 +153,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Stakes for the Safe Paths",
-      "text": "[PH] Sera marks the safe paths through the fen: bring 12 logs of any tree. Real text to follow.",
+      "title": "A Path That Stays Put",
+      "text": "The fen moves its edges while we sleep, and a trail that held yesterday may swallow a boot today. Bring me twelve whole logs of any tree from outside the settlements, and I will cut stakes for the safe paths. Following a transport is easier when I am not also retrieving my feet.",
       "objectives": [
         {
           "type": "item",
@@ -177,8 +177,8 @@
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "[PH] Lights Over the Mud",
-      "text": "[PH] Edris keeps lights and paths usable: bring 20 Torches. Real text to follow.",
+      "title": "Light for the Late Return",
+      "text": "Some people come back from the graves very late, and I would rather they had light than company from the mud. Bring me twenty Torches for the paths. Grief is quite enough to carry without a broken ankle.",
       "objectives": [
         {
           "type": "item",
@@ -201,8 +201,8 @@
       "min_level": 14,
       "level": 16,
       "requires": [],
-      "title": "[PH] Tuskers in the Barrows",
-      "text": "[PH] Plague Tuskers root up the barrows: hunt 7 of them by day in the {name:barrowfields}. Real text to follow.",
+      "title": "Leave the Buried Be",
+      "text": "The Plague Tuskers are rooting through graves I have already put in order once. Kill seven by day in the {name:barrowfields}, which lie {zone_area:barrowfields}. I am a patient keeper, but I refuse to schedule every burial twice.",
       "objectives": [
         {
           "type": "kill",
@@ -257,8 +257,8 @@
       "min_level": 16,
       "level": 17,
       "requires": [],
-      "title": "[PH] Chests for the Effects",
-      "text": "[PH] Edris keeps recovered personal effects with their names: bring 2 Locked Chests. Real text to follow.",
+      "title": "Keep the Name with It",
+      "text": "A recovered possession tells us very little once someone separates it from its owner's name. Bring me two Locked Chests so I can keep the belongings and their records together. The people who come to claim them deserve more than a guess.",
       "objectives": [
         {
           "type": "item",
@@ -310,8 +310,8 @@
       "min_level": 18,
       "level": 18,
       "requires": [],
-      "title": "[PH] Hollis Saw It",
-      "text": "[PH] Sera sends the player to Hollis Grey, held in the {name:bandit_camp}, who watched remains being carried off. Real text to follow.",
+      "title": "What Hollis Saw",
+      "text": "Hollis Grey is being held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, where he has seen remains carried away in sacks. Go and hear what he can tell you. I can follow a cart's tracks, but Hollis can tell me what was put on it.",
       "objectives": [
         {
           "type": "talk",
@@ -333,9 +333,9 @@
       "min_level": 18,
       "level": 19,
       "requires": [],
-      "title": "[PH] Close {name:reed_counter_silt}'s Count",
-      "text": "[PH] Hollis demands the fight against Mirefolk Reed-Counter Silt at the {name:mire_nests}, who counts bones as wares; the report goes to Sera. Real text to follow.",
-      "completion": "[PH] Sera takes the report; the remains were someone before they were wares. Real text to follow.",
+      "title": "Close {name:reed_counter_silt}'s Account",
+      "text": "I watched them trade sacks of remains for beads, while Mirefolk Reed-Counter Silt counted the bones as neatly as any merchant counts stock. Kill him at the {name:mire_nests}, {dir_from_giver:mire_nests}, and report to Sera Vane at Mournfen Outpost. The sacks made them easy to carry; they did not make them any less people.",
+      "completion": "The Reed-Counter is down; I will put that in the report beside Hollis's account. I will also keep every name we can establish with the remains, however little use the trader had for them.",
       "objectives": [
         {
           "type": "kill",
@@ -401,8 +401,8 @@
       "min_level": 19,
       "level": 19,
       "requires": [],
-      "title": "[PH] The Case Goes to Nhal Veyr",
-      "text": "[PH] Sera sends the player to Ossa Quietregister in Nhal Veyr: remains vanish and the register misses names; nothing claims Hollis is free. Real text to follow.",
+      "title": "The Gaps in the Register",
+      "text": "Remains are leaving Mournfen without their names, and the gaps in the burial records grow with every load. Take that report to Ossa Quietregister in Nhal Veyr. Tell her we need to know who claims the right to take them, before another neighbour becomes an unlabelled sack.",
       "objectives": [
         {
           "type": "talk",

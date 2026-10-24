@@ -68,8 +68,8 @@
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "[PH] Sunleaf for the Snared",
-      "text": "[PH] Ilyra sees the poaching first on the forest: bring 5 Sunleaf for the animals hurt by the snares. Real text to follow.",
+      "title": "For the Snared",
+      "text": "A torn patch of fur tells me more about the poachers than all their talk of tending the wood. Bring me five Sunleaf for the animals hurt by their snares. Some will let me near them; the others have good reason to be wary of hands.",
       "objectives": [
         {
           "type": "item",
@@ -102,9 +102,9 @@
       "min_level": 11,
       "level": 12,
       "requires": [],
-      "title": "[PH] A Knot With Another Purpose",
-      "text": "[PH] Ilyra sends the player to the {name:snare_ground} in the {name:lower_boughs} to make a snare bundle harmless; a knot that could hold up a young tree became a trap. Real text to follow.",
-      "completion": "[PH] The danger at that spot is gone. Real text to follow.",
+      "title": "A Cruel Use for a Knot",
+      "text": "Someone has taken the knot we use to steady young trees and made a snare of it. Cut the snare bundle at the {name:snare_ground}, {dir_from_giver:snare_ground}, in the {name:lower_boughs}, then return to me. The creatures there should be able to put a paw down without a noose waiting for it.",
+      "completion": "That snare will catch nothing more. Thank you for taking the trouble to undo what someone else found profitable.",
       "objectives": [
         {
           "type": "use",
@@ -129,8 +129,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Word for Theren",
-      "text": "[PH] Ilyra sends word to Theren Farstep at the outpost, who follows the traders. Real text to follow.",
+      "title": "Follow the Hands",
+      "text": "The snares tell me where the animals suffer, but little about who pays to have them set. Speak to Theren Farstep at Starbough Outpost and carry him my concern. He follows the traders; I would rather he knew what their business leaves behind.",
       "objectives": [
         {
           "type": "talk",
@@ -152,8 +152,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Lights on the Poachers' Trails",
-      "text": "[PH] Theren keeps a night watch on the poachers' trails: bring 20 Torches. Real text to follow.",
+      "title": "Light Between the Trees",
+      "text": "The poachers know these paths well enough to move a load after dusk. Bring me twenty Torches for our watch along their trails. A little light at the right crossing saves a great deal of searching through undergrowth.",
       "objectives": [
         {
           "type": "item",
@@ -176,8 +176,8 @@
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "[PH] Markers for the Paths",
-      "text": "[PH] Lethri tends the paths and their markings: bring 6 Wooden Signs. Real text to follow.",
+      "title": "Where a Path Belongs",
+      "text": "Our path markings have faded, and strangers have started cutting their own marks into the bark to find their way. Bring me six Wooden Signs for the paths. I should like to give them directions before someone brings an axe into the conversation.",
       "objectives": [
         {
           "type": "item",
@@ -200,8 +200,8 @@
       "min_level": 14,
       "level": 15,
       "requires": [],
-      "title": "[PH] Vixens in the Greenwood",
-      "text": "[PH] Thicket Vixens harry the path wardens: hunt 7 of them by day in the {name:greenwood}. Real text to follow.",
+      "title": "Teeth Along the Path",
+      "text": "The path wardens are being harried by Thicket Vixens when they go out to work. Hunt seven by day in the {name:greenwood}, which lies {zone_area:greenwood}. Watching for snares is difficult enough without watching for teeth at the same time.",
       "objectives": [
         {
           "type": "kill",
@@ -256,8 +256,8 @@
       "min_level": 16,
       "level": 16,
       "requires": [],
-      "title": "[PH] Nima Knows the Hands",
-      "text": "[PH] Theren points the player to Nima Fern, held in the {name:bandit_camp}, who knows the hands behind the snares. Real text to follow.",
+      "title": "Nima Knows the Hands",
+      "text": "Nima Fern is being held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}. Go and listen to her; she has watched the hands that set these snares and knows whose work they are. A trader can change a story more easily than a practised knot.",
       "objectives": [
         {
           "type": "talk",
@@ -279,8 +279,8 @@
       "min_level": 16,
       "level": 17,
       "requires": [],
-      "title": "[PH] Ladders for the Walkways",
-      "text": "[PH] Lethri keeps the walkways up the boughs passable: bring 10 Wooden Ladders. Real text to follow.",
+      "title": "Ten Ways Back Up",
+      "text": "The old ladders have begun shedding rungs, and the walkway crews cannot grow wings to suit them. Bring me ten Wooden Ladders for the climbs between the boughs. I like to see everyone who goes up come down at a pace of their own choosing.",
       "objectives": [
         {
           "type": "item",
@@ -332,9 +332,9 @@
       "min_level": 18,
       "level": 19,
       "requires": [],
-      "title": "[PH] Stand Against {name:snarekeeper_vetch}",
-      "text": "[PH] Nima demands the fight against Poacher Snarekeeper Vetch {dir_from_giver:snarekeeper_vetch} in the {name:high_boughs}, who turns tending knowledge into traps. Real text to follow.",
-      "completion": "[PH] Nima has named Vetch, and Vetch is down. Real text to follow.",
+      "title": "{name:snarekeeper_vetch}'s Handiwork",
+      "text": "I have watched Poacher Snarekeeper Vetch tie the same knots our tenders use, then tighten them into traps for the animals he sells. Kill him {dir_from_giver:snarekeeper_vetch} in the {name:high_boughs}, and bring me word. He knows exactly what those hands could have mended.",
+      "completion": "Vetch is down, and there will be no more snares from his hands. The knots he misused can still hold a young tree upright; I would like to see more of them doing that.",
       "objectives": [
         {
           "type": "kill",
@@ -400,8 +400,8 @@
       "min_level": 19,
       "level": 19,
       "requires": [],
-      "title": "[PH] The Case Goes to Lethariel",
-      "text": "[PH] Nima sends the player to Eriath Boughwarden in Lethariel: the Bough-Seal is passed off as a leave to take. Real text to follow.",
+      "title": "The Limits of a Seal",
+      "text": "I have seen the bough-seal held up as permission to take whatever the poachers can carry. Tell Eriath Boughwarden in Lethariel what I witnessed, and give him my name: Nima Fern. A mark meant to protect careful tending should not leave the tenders explaining why their wood is gone.",
       "objectives": [
         {
           "type": "talk",

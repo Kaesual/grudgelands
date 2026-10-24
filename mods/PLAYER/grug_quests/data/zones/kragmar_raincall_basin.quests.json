@@ -70,8 +70,8 @@
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "[PH] Melons From the Gardens",
-      "text": "[PH] Daro tends the gardens and paths: bring 4 Melons. Real text to follow.",
+      "title": "What the Garden Gives",
+      "text": "Our gardeners coax a harvest through the rain, and then Vek's collectors arrive to claim credit for the weather. Bring me four Melons for the people doing the growing. I have yet to see a collector pull a single weed.",
       "objectives": [
         {
           "type": "item",
@@ -104,8 +104,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Word for Neshi",
-      "text": "[PH] Daro sends word to Neshi Reedstep at the outpost, who follows the collectors. Real text to follow.",
+      "title": "Footprints Between Gardens",
+      "text": "Vek's collectors use the paths our gardeners keep open, then charge those same households for the rain. Speak to Neshi Reedstep at Raincall Outpost and tell her what is happening here. She follows their footsteps; I want her to know what each stop costs us.",
       "objectives": [
         {
           "type": "talk",
@@ -127,8 +127,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Sunleaf for the Watch",
-      "text": "[PH] Neshi's watchers need a remedy for the wet season: bring 5 Sunleaf. Real text to follow.",
+      "title": "Warmth After the Watch",
+      "text": "By the time my watchers come in, the rain has found every gap in their clothes. Bring me five Sunleaf for something hot when they return. I cannot promise a dry watch, but I can give them a reason to hurry home.",
       "objectives": [
         {
           "type": "item",
@@ -151,8 +151,8 @@
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "[PH] Ladders for the Stilt Houses",
-      "text": "[PH] Amari keeps houses and clothes dry: bring 10 Wooden Ladders for the stilt houses. Real text to follow.",
+      "title": "The Dry Way Home",
+      "text": "I hang the clothes above the water, then watch their owners get soaked climbing into the houses. Bring me ten Wooden Ladders for the stilts. Dry laundry should stay dry at least until someone puts it on.",
       "objectives": [
         {
           "type": "item",
@@ -175,8 +175,8 @@
       "min_level": 14,
       "level": 15,
       "requires": [],
-      "title": "[PH] Servals in the Cloudwood",
-      "text": "[PH] Servals stalk the collectors' paths: hunt 8 of them by day in the {name:cloudwood}. Real text to follow.",
+      "title": "More Than One Hunter",
+      "text": "Servals stalk the paths my watchers use to follow the collectors. Hunt eight by day in the {name:cloudwood}, which lies {zone_area:cloudwood}. I would like my people to be the ones doing the following for a change.",
       "objectives": [
         {
           "type": "kill",
@@ -231,8 +231,8 @@
       "min_level": 16,
       "level": 17,
       "requires": [],
-      "title": "[PH] Dry Stores for the Households",
-      "text": "[PH] Amari keeps the households' stores dry and out of the collectors' reach: bring 2 Locked Chests. Real text to follow.",
+      "title": "Keep a Little Back",
+      "text": "Rain gets into a loose bundle, and the collectors get into anything that opens easily. Bring me two Locked Chests for our household stores. I mean to keep something dry and useful ready for the people who come home to it.",
       "objectives": [
         {
           "type": "item",
@@ -284,8 +284,8 @@
       "min_level": 18,
       "level": 18,
       "requires": [],
-      "title": "[PH] Veko Promised Nothing",
-      "text": "[PH] Neshi points the player to Veko Bluefeather, held in the {name:bandit_camp}, who refused a tithe nobody agreed to. Real text to follow.",
+      "title": "Veko Promised Nothing",
+      "text": "Veko Bluefeather refused a rain tithe nobody here had promised, and the collectors put him in the {name:bandit_camp}, {dir_from_giver:bandit_camp}. Go and hear his account. The families who paid had threats at their doors too; Veko's refusal deserves to be heard without making their fear a fault.",
       "objectives": [
         {
           "type": "talk",
@@ -307,9 +307,9 @@
       "min_level": 18,
       "level": 19,
       "requires": [],
-      "title": "[PH] End {name:tithe_keeper_vek}'s Claim",
-      "text": "[PH] Veko demands the fight against Bandit Tithe-Keeper Vek in the {name:bandit_camp}, who claims to sell the rain. Real text to follow.",
-      "completion": "[PH] Vek's claim is over; the neighbours who paid under threat are no cowards. Real text to follow.",
+      "title": "No Rain for {name:tithe_keeper_vek}",
+      "text": "Bandit Tithe-Keeper Vek claims he can sell us the rain, though I have never seen him wring out a cloud. Kill him here in the {name:bandit_camp} and come back to me. He calls what he takes a promised tithe; I know what we promised, and it was nothing.",
+      "completion": "Vek is down, and the rain has somehow managed to keep falling. My neighbours paid because they were threatened; let them hear that the threat is gone, with no shame attached to how they endured it.",
       "objectives": [
         {
           "type": "kill",
@@ -375,8 +375,8 @@
       "min_level": 19,
       "level": 19,
       "requires": [],
-      "title": "[PH] The Case Goes to Kezamba",
-      "text": "[PH] Veko sends the player to Nalo Pathdrum in Kezamba with his refusal and the case; Vek's fall is told only by the fight's own completion. Real text to follow.",
+      "title": "No Promise, No Tithe",
+      "text": "Take my words to Nalo Pathdrum in Kezamba: Veko Bluefeather never promised Vek a rain tithe, and neither did the households he collected from. I refused him; others paid with threats at their doors. Let Nalo hear both parts before anyone calls that payment an agreement.",
       "objectives": [
         {
           "type": "talk",

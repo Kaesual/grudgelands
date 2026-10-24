@@ -68,8 +68,8 @@
       "min_level": 18,
       "level": 19,
       "requires": [],
-      "title": "[PH] The Held Supplies",
-      "text": "[PH] Borak wants the lashing cut on a water load Korr's bandits hold at the edge of the {name:bandit_camp}: water the herders found together, sold back to them. Real text to follow.",
+      "title": "Already Ours",
+      "text": "Our herders found that water together and filled the barrels themselves; Korr's bandits mean to sell it back to them. Untie the held water load at the edge of the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and report back to me. Leave the barrels ready for collection; enough backs have paid for that water already.",
       "objectives": [
         {
           "type": "use",
@@ -85,7 +85,7 @@
           "givers": [
             "r14_orc_steward"
           ],
-          "text": "[PH] Borak wants the lashing cut on a water load Korr's bandits hold at the edge of the {name:bandit_camp}: water the herders found together, sold back to them. Real text to follow."
+          "text": "Our herders found that water together and filled the barrels themselves; Korr's bandits mean to sell it back to them. Untie the held water load at the edge of the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and report back to me. Leave the barrels ready for collection; enough backs have paid for that water already."
         },
         {
           "zone": "kragmar_raincall_basin",
@@ -97,7 +97,7 @@
               "place": "socket:raincall_bandit_camp/held_supplies"
             }
           ],
-          "text": "[PH] Daro wants the stores and tools Vek's bandits took from the households that refused his tithe untied at the edge of the {name:bandit_camp}. Real text to follow."
+          "text": "Vek's collectors took stores and tools from households that refused his rain tithe. Untie those supplies at the edge of the {name:bandit_camp}, {dir_from_giver:bandit_camp}, so they can be collected, then bring me word. The gardens need those hands at work, not empty at another man's door."
         }
       ],
       "rewards": {
@@ -115,8 +115,8 @@
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "[PH] Fodder for the Herds",
-      "text": "[PH] Borak keeps the herds fed: bring 8 Corn. Real text to follow.",
+      "title": "Keep the Herds Fed",
+      "text": "A thirsty herd needs feed as well as water, and bellowing at me supplies neither. Bring me eight Corn for the animals. We have enough trouble with Korr's trade without letting the herds go hungry beside it.",
       "objectives": [
         {
           "type": "item",
@@ -149,8 +149,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Word for Kesh",
-      "text": "[PH] Borak sends word to Kesh Longstride at the outpost, who watches where the water goes. Real text to follow.",
+      "title": "Where the Water Goes",
+      "text": "We know how much water our herders carry; what reaches the herds is another matter. Take word of the missing loads to Kesh Longstride at Redtusk Outpost. He watches the cart tracks, and I want to know where they stop being ours.",
       "objectives": [
         {
           "type": "talk",
@@ -172,8 +172,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Sunleaf for the Watch",
-      "text": "[PH] Kesh's watchers need a remedy for the dry heat: bring 5 Sunleaf. Real text to follow.",
+      "title": "Something Besides Dust",
+      "text": "My watchers come back from the heat with dust in their mouths and precious little to look forward to in the pot. Bring me five Sunleaf for their supper. They can endure a hard watch without having to taste it afterwards.",
       "objectives": [
         {
           "type": "item",
@@ -196,8 +196,8 @@
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "[PH] Fences for the Pens",
-      "text": "[PH] Morga keeps herds, gates and supplies going: bring 8 Acacia Wood Fences. Real text to follow.",
+      "title": "A Pen Worth the Name",
+      "text": "The pens have gaps wide enough for an animal to call an invitation. Bring me eight Acacia Wood Fences to close them. I have water to carry and gates to mend, and I am tired of finding the herd halfway through my next job.",
       "objectives": [
         {
           "type": "item",
@@ -220,8 +220,8 @@
       "min_level": 14,
       "level": 15,
       "requires": [],
-      "title": "[PH] Zebras at the Water",
-      "text": "[PH] Waterhole Zebras crowd the herds off the water: hunt 8 of them by day in the {name:tallgrass}. Real text to follow.",
+      "title": "Room at the Water",
+      "text": "Waterhole Zebras crowd our herds off the best grazing before the animals ever reach the water. Hunt eight by day in the {name:tallgrass}, which lies {zone_area:tallgrass}. Our herders work too hard to watch their animals go hungry from a distance.",
       "objectives": [
         {
           "type": "kill",
@@ -276,8 +276,8 @@
       "min_level": 16,
       "level": 17,
       "requires": [],
-      "title": "[PH] Posts for the Shelters",
-      "text": "[PH] Morga builds shade over the waterholes: bring 12 logs of any tree. Real text to follow.",
+      "title": "Shade for the Waiting",
+      "text": "The animals queue for water under a sun that has never waited for anything. Bring me twelve whole logs of any tree from outside the settlements for shelter posts. We will put shade over the waterholes, with room for a tired herder underneath.",
       "objectives": [
         {
           "type": "item",
@@ -329,8 +329,8 @@
       "min_level": 17,
       "level": 18,
       "requires": [],
-      "title": "[PH] Rokka Counts the Barrels",
-      "text": "[PH] Kesh points the player to Rokka Emberhand, held in the {name:bandit_camp}, who knows the loads and where they came from. Real text to follow.",
+      "title": "Rokka Knows the Load",
+      "text": "Rokka Emberhand knows those water loads because she helped fill them, not because she read a tally. She is being held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}; go and hear what she has seen. Ask her whose barrels changed hands, and she can give you more than a number.",
       "objectives": [
         {
           "type": "talk",
@@ -352,9 +352,9 @@
       "min_level": 18,
       "level": 19,
       "requires": [],
-      "title": "[PH] End {name:water_broker_korr}'s Trade",
-      "text": "[PH] Rokka demands the fight against Bandit Water-Broker Korr in the {name:bandit_camp}, who sells shared water back to the people who found it. Real text to follow.",
-      "completion": "[PH] Korr's trade is over; Rokka can name the buyers. Real text to follow.",
+      "title": "{name:water_broker_korr} Owes Us",
+      "text": "I know the barrels Bandit Water-Broker Korr sells; I helped fill them before his men took them. Kill him here in the {name:bandit_camp} and return to me. He makes our herders pay twice, once with their backs and once with the coin he demands.",
+      "completion": "Korr's trading is finished, and I can still name the people who bought those loads. We will put the barrels beside their rightful owners in the account; he does not get to take that knowledge with him.",
       "objectives": [
         {
           "type": "kill",
@@ -420,8 +420,8 @@
       "min_level": 19,
       "level": 19,
       "requires": [],
-      "title": "[PH] The Case Goes to Gor Drazhak",
-      "text": "[PH] Rokka sends the player to Thorga Roadspeaker in Gor Drazhak with the loads she saw sold, whether Korr still lives or not. Real text to follow.",
+      "title": "Who Paid for the Water?",
+      "text": "I can name the loads Korr sold and the herders made to pay for water they had already carried. Take my account to Thorga Roadspeaker in Gor Drazhak. Tell her Rokka Emberhand remembers whose work filled every barrel; a new price does not make a new owner.",
       "objectives": [
         {
           "type": "talk",
