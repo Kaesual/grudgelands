@@ -226,7 +226,8 @@ local function check_objective(add, where, count, objective, index)
 			add(where, "a use objective counts once: leave count out or write 1 [E-objective]")
 		end
 		if type(objective.place) ~= "string" or objective.place == "" then
-			add(where, "a use objective needs a 'place': a clash site key or a quest place [E-objective]")
+			add(where, "a use objective needs a 'place': a clash site key, a quest place or a town place " ..
+				"(socket:<settlement key>/<socket id>) [E-objective]")
 		end
 		if not text(objective.label) then
 			add(where, "a use objective needs a 'label', the act (\"Light the signal fire\") [E-objective]")
@@ -756,16 +757,18 @@ end
 -- (the rework flag, V.REWORK_FLAG; the files of levels 11-60 keep their
 -- chains until their rework). Only story quests chain; a free quest needs
 -- nothing but a level and has at most one follow-up (a quest that names it
--- in `requires`), rarely:
+-- in `requires`) per faction, rarely:
 --   E-free-requires   a free quest requires at most one quest (it is that
 --                     quest's follow-up);
 --   E-free-follow-ups a free quest is required by at most one quest of a
---                     reworked file;
+--                     reworked file per faction (Round 59, V.free_follow_ups;
+--                     a world check: the givers' factions are resolved once
+--                     every mod loaded);
 --   E-free-chain      a free follow-up has no free follow-up of its own (a
 --                     chain of free quests).
 -- Unreworked quests count as free; their own requires are never checked.
-function V.free_play(errors, rows)
-	local by_id, followers = {}, {}
+local function free_rows(rows)
+	local by_id = {}
 	for _, row in ipairs(rows) do
 		if type(row.quest) == "table" and type(row.quest.id) == "string" then by_id[row.quest.id] = row end
 	end
@@ -773,14 +776,11 @@ function V.free_play(errors, rows)
 		return type(row.quest.requires) == "table" and row.quest.requires or {}
 	end
 	local function free(row) return row and row.quest.story ~= true end
-	for _, row in ipairs(rows) do
-		if by_id[row.quest and row.quest.id] == row and V.reworked(row.file) then
-			for _, id in ipairs(requires(row)) do
-				followers[id] = followers[id] or {}
-				table.insert(followers[id], row.quest.id)
-			end
-		end
-	end
+	return by_id, requires, free
+end
+
+function V.free_play(errors, rows)
+	local by_id, requires, free = free_rows(rows)
 	for _, row in ipairs(rows) do
 		if by_id[row.quest and row.quest.id] == row and V.reworked(row.file) and free(row) then
 			local add = reporter(errors, row.file)
@@ -796,11 +796,56 @@ function V.free_play(errors, rows)
 						"[E-free-chain]"):format(id))
 				end
 			end
-			local after = followers[row.quest.id] or {}
-			if #after > 1 then
-				table.sort(after)
-				add(row.where, ("a free quest has at most one follow-up, not %d (%s); only story quests " ..
-					"chain [E-free-follow-ups]"):format(#after, table.concat(after, ", ")))
+		end
+	end
+end
+
+-- The factions a quest is given to (Round 59, quests.md "Story and free
+-- play"): the factions its givers serve over every variant, an NPC id's
+-- (`npc_faction`, the resolved registry) or a role row's filter. A giver
+-- that serves everyone (no faction) or of unknown faction gives it to both.
+local FACTION_NAMES = {accord = "The Accord", throng = "The Throng"}
+function V.giver_factions(file, quest, npc_faction)
+	local set = {}
+	for _, variant in ipairs(V.variants(file, quest)) do
+		for _, npc in ipairs(variant.givers) do
+			local faction = npc_faction(npc)
+			if V.FACTIONS[faction] then set[faction] = true else set.accord, set.throng = true, true end
+		end
+		for _, role in ipairs(variant.giver_roles) do
+			if V.FACTIONS[role.faction] then set[role.faction] = true end
+		end
+	end
+	if next(set) == nil then set.accord, set.throng = true, true end
+	return set
+end
+
+-- E-free-follow-ups (Round 59, the user's ruling of 2026-10-24): a free
+-- quest's follow-ups are counted per faction, so it may have one follow-up
+-- per faction; a follow-up given to both factions counts in each.
+function V.free_follow_ups(errors, rows, npc_faction)
+	local by_id, requires, free = free_rows(rows)
+	local followers = {}
+	for _, row in ipairs(rows) do
+		if by_id[row.quest and row.quest.id] == row and V.reworked(row.file) then
+			local factions
+			for _, id in ipairs(requires(row)) do
+				factions = factions or V.giver_factions(row.file, row.quest, npc_faction)
+				followers[id] = followers[id] or {accord = {}, throng = {}}
+				for faction in pairs(factions) do table.insert(followers[id][faction], row.quest.id) end
+			end
+		end
+	end
+	for _, row in ipairs(rows) do
+		local after = by_id[row.quest and row.quest.id] == row and V.reworked(row.file) and free(row) and
+			followers[row.quest.id]
+		for _, faction in ipairs(after and {"accord", "throng"} or {}) do
+			local list_of = after[faction]
+			if #list_of > 1 then
+				table.sort(list_of)
+				reporter(errors, row.file)(row.where, ("a free quest has at most one follow-up per faction, not " ..
+					"%d for %s (%s); only story quests chain [E-free-follow-ups]"):format(#list_of,
+					FACTION_NAMES[faction], table.concat(list_of, ", ")))
 			end
 		end
 	end
@@ -1159,6 +1204,8 @@ function V.world(files, world)
 			end
 		end
 	end
+	-- Round 59: a free quest's follow-ups per faction (V.free_follow_ups).
+	V.free_follow_ups(errors, each_quest(files), world.npc_faction)
 	zones = {}
 	for zone in pairs(nights) do zones[#zones + 1] = zone end
 	table.sort(zones)

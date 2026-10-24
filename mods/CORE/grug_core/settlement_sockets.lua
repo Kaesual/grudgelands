@@ -38,7 +38,11 @@ local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	general = true, bodyguard = true, captain = true,
 	-- Round 58: a mining camp's lift point, the lift node's cell (the camp
 	-- socket contract, settlements.md "Mining camps"); nobody stands on it.
-	lift = true}
+	lift = true,
+	-- Round 59: a town place, the standing cell where a "use at a place"
+	-- objective's quest object stands (grug_quests, quests.md "Use at a
+	-- place": `socket:<settlement key>/<socket id>`); nobody stands on it.
+	quest_place = true}
 local TRAINER_PROFESSIONS = {weaponsmith = true, armorsmith = true, alchemist = true,
 	tailor = true, leatherworker = true, woodcarver = true, goldsmith = true,
 	cooking = true}
@@ -278,12 +282,13 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 	by_key[settlement_key] = record
 	-- THE KEY IS THE IDENTITY; THE RACE IS NOT. Every race has a start AND a
 	-- capital (contract section 3: "capitals register under their own key"), so
-	-- a race is registered twice over a world's life and only the key is
-	-- unique. `settlement_sockets(race_id)` is the START accessor, so the
-	-- FIRST registration for a race wins it: grug_mapgen publishes the six
-	-- starts from `r7_loader.lua` while the world authority is being
-	-- installed, before any other consumer exists, and a capital landing later
-	-- reaches its own sockets through `settlement_sockets_at(key)`.
+	-- a race is registered twice and only the key is unique.
+	-- `settlement_sockets(race_id)` is the START accessor, so the FIRST
+	-- registration for a race wins it: `r7_loader.lua` registers every
+	-- settlement at load, while the world authority is being installed and
+	-- before any other consumer exists, the six starts first and every other
+	-- settlement (a capital among them) after them; a capital reaches its own
+	-- sockets through `settlement_sockets_at(key)`.
 	if not by_race[race_id] then
 		by_race[race_id] = record
 	end

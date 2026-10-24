@@ -99,13 +99,78 @@ function Q.target_names(mobs, area_ref, zone)
 	return out
 end
 
+-- A town place (Round 59, quests.md "Use at a place"): a socket of role
+-- `quest_place` in a settlement's template or blueprint, written
+-- "socket:<settlement key>/<socket id>" (a capital plot's socket id carries
+-- its plot id, "socket:highcourt/miners_guild/miners_guild_cellar"). It
+-- must stand where every world builds it: in a capital, in the core or a
+-- plot the planner always places (the inn, the service plots and the
+-- Miner's Guild house, grug_mapgen wp13/capital_services.lua). The
+-- registry exists before any quest file loads (grug_mapgen registers every
+-- settlement at load), so this is static too; a place found is cached.
+Q.TOWN_PLACE_PREFIX = "socket:"
+Q.TOWN_PLACE_ROLE = "quest_place"
+local town_places = {}
+local required_plots
+local function required_plot(key, plot)
+	if not required_plots then
+		local services = dofile(core.get_modpath("grug_mapgen") .. "/wp13/capital_services.lua")
+		required_plots = {}
+		for capital, plots in pairs(services.PLOTS) do
+			local set = {[services.GUILD_HALL.plot] = true, [services.INNS[capital]] = true}
+			for _, id in pairs(plots) do set[id] = true end
+			required_plots[capital] = set
+		end
+	end
+	return (required_plots[key] or {})[plot] == true
+end
+local function town_place(ref)
+	local found = town_places[ref]
+	if found then return found[1], found[2] end
+	local key, id = ref:sub(#Q.TOWN_PLACE_PREFIX + 1):match("^([a-z][a-z0-9_]*)/([a-z][a-z0-9_/]*[a-z0-9_])$")
+	local place, reason
+	local record
+	for _, row in ipairs(key and grug_core.settlement_socket_settlements() or {}) do
+		if row.key == key then record = row end
+	end
+	if not key then
+		reason = ("%s: a town place is socket:<settlement key>/<socket id>"):format(ref)
+	elseif not record then
+		reason = ("%s: no settlement %s"):format(ref, key)
+	else
+		local socket
+		for _, row in ipairs(grug_core.settlement_sockets_at(key)) do
+			if row.id == id then socket = row end
+		end
+		local plot = id:match("^([^/]+)/")
+		if not socket then
+			reason = ("%s: settlement %s has no socket %s"):format(ref, key, id)
+		elseif socket.role ~= Q.TOWN_PLACE_ROLE then
+			reason = ("%s: socket %s of %s is a %s socket, not a %s"):format(ref, id, key,
+				tostring(socket.role), Q.TOWN_PLACE_ROLE)
+		elseif record.slot == "capital" and plot and not required_plot(key, plot) then
+			reason = ("%s: plot %s of %s is not built on every world; a town place stands in the core " ..
+				"or a required plot (the inn, a service plot, the Miner's Guild house)"):format(ref, plot, key)
+		else
+			place = {ref = ref, zone = grug_zones.id_at and grug_zones.id_at(record.anchor.x, record.anchor.z),
+				id = key .. "/" .. id, name = record.display_name or key, town = true,
+				pos = {x = socket.pos.x, y = socket.pos.y, z = socket.pos.z}}
+		end
+	end
+	if place then town_places[ref] = {place} end
+	return place, reason
+end
+
 -- The place of a "use at a place" objective (Round 36): a clash site by its
 -- settlement key ("r20_anchor_076"), else a quest place of a spawn recipe,
--- "zone_id/place_id" (a bare id: `zone`, the quest file's). Returns {ref
--- (the canonical reference: the key, or "zone_id/place_id"), zone, id, name,
--- clash}, or nil and the reason. Static: no region map is built.
+-- "zone_id/place_id" (a bare id: `zone`, the quest file's), or (Round 59) a
+-- town place, "socket:<settlement key>/<socket id>". Returns {ref (the
+-- canonical reference: the key, "zone_id/place_id" or the town place's
+-- ref), zone, id, name, clash, town, pos (a town place's standing cell)},
+-- or nil and the reason. Static: no region map is built.
 function Q.use_place(ref, zone)
 	if type(ref) ~= "string" or ref == "" then return nil, "a place is a clash site key or a quest place" end
+	if ref:sub(1, #Q.TOWN_PLACE_PREFIX) == Q.TOWN_PLACE_PREFIX then return town_place(ref) end
 	local regions = grug_mobs.spawn_regions
 	local qualified, id = ref:match("^([^/]+)/(.+)$")
 	if not qualified then

@@ -33,7 +33,8 @@ repeatable switch by Round 57, 2026-10-23
   of the map, the list box with the active count, the Quest HUD switch, the
   list and one row with "Track on HUD" on the left and Abandon on the right
   (while Confirm abandon and Cancel are shown they take the row alone,
-  Round 32); below it the selected quest's title, its level and zone, one
+  Round 32); below it the selected quest's title, its level and zone (a
+  shared quest's: the zone of the variant the player took, Round 59), one
   scrolling text field with the description, the objective lines and the
   reward line, separated by an empty line each, and where to hand it in.
   Selecting a quest marks its targets on the map (leader, talk NPC and use
@@ -360,7 +361,9 @@ counted name, names the text never says).
     spawn recipe, `zone_id/place_id` (a bare id: the quest file's zone),
     placed per seed like a kind leader ([spawn_regions.md](spawn_regions.md)
     step 8 and `places`); the four contested zones without a clash site have
-    one each. No mapgen writes.
+    one each. Since Round 59 also a **town place** ("Town places" below): a
+    socket of a settlement, `socket:<settlement key>/<socket id>`, a spot in
+    a capital, a village or a POI. No mapgen writes.
   - **Quest object:** an entity at the place, added while a player who still
     needs the objective is within 48 nodes (the active-block reach) and seen
     only by such players (`set_observers`); several players with the quest
@@ -369,7 +372,10 @@ counted name, names the text never says).
     flowers allowed) at the place or the nearest such column within 6 nodes
     (a place without one logs a warning once and is searched again every
     10 s), the n-th act at one place 2 nodes beside
-    the first. Its nametag is the label. The object's look is a kind of
+    the first. At a town place it stands in the socket's own cell instead
+    (no open air asked for, no column searched), the n-th act on its ring
+    cell 2 nodes beside at the socket's height when that cell is free over
+    walkable ground, else in the socket's cell. Its nametag is the label. The object's look is a kind of
     `grug_quests/data/use_objects.json` (one texture and a size per kind,
     the one place the texture names live): the story bible's twelve objects
     (Round 36), `impounded_pay`, `false_requisition`, `brand_rubbing`,
@@ -389,11 +395,47 @@ counted name, names the text never says).
     them. Labels: "Light the signal fire at Saltgate Remnant" in the
     dialogue, the quest log and the HUD; "Light the signal fire 0/1" in the
     feed's compact line.
-  - Checks: an unknown place (`E-use-place`) or object kind
+  - Checks: an unknown place (`E-use-place`; a town place: no such
+    settlement, no such socket, a socket of another role, or a capital plot
+    not every world builds) or object kind
     (`E-use-object`), a hold outside 1–15 s, a count other than 1, a missing
     label, and kill or item fields on it (or its fields on another kind) stop
     the load (`E-objective`). The ledger counts no XP for it: the trip and
     the hold are the quest's time, paid by its reward weight.
+  - **Town places** (Round 59, round59-plan.md §2a point 1): the socket
+    role **`quest_place`** (the settlement socket registry,
+    `grug_core/settlement_sockets.lua`; nobody stands on it) marks a
+    standing cell as a quest place. It goes where the settlement's other
+    sockets go: in a capital a `sockets` point of a building template,
+    `sockets <x> <y> <z> face=<0-3> id={id}_<name> role=quest_place`
+    ([building-template-format.md](../technical/building-template-format.md)
+    §3; a Miner's Guild house through `tools/r58_halls/make_halls.py`) or a
+    plot's `extra_sockets` row; in a village, outpost, camp or POI a socket
+    row of its blueprint (`role = "quest_place"`); in a start town an entry
+    of the town's own socket list (`wp13/<town>.lua`; a start town's
+    template points carry only `id` and `face`, so a role written in its
+    template is not published, §3.4 of the format). The
+    quest data writes **`socket:<settlement key>/<socket id>`**, the id as
+    the registry has it: a capital plot's socket carries its plot id
+    (`socket:highcourt/miners_guild/miners_guild_cellar`), a start town's,
+    village's or POI's its own (`socket:goldmead_village/well_yard`). Next to
+    the other places: a clash site is a bare settlement key, a recipe quest
+    place `zone_id/place_id`, a town place always carries `socket:` and the
+    settlement key (never a bare id; a variant's override writes it whole).
+    A settlement with no NPC socket (a clash site, a rare's or a dragon's
+    POI, an apex mine, a mirefolk or Round 20 bandit camp) may carry one too:
+    the settlement NPCs (`grug_mobs/start_npcs.lua`) treat a settlement
+    none of whose sockets anyone stands on as scenery, silently.
+    It is found on every world, where the settlement is: in a capital only
+    in the core or a plot the planner always places (the inn, the eight
+    service plots and the Miner's Guild house,
+    `grug_mapgen/wp13/capital_services.lua`). Its name is the
+    settlement's ("Search the cellar at Highcourt"), its map marker the
+    socket's cell, and like any socket it is a standing point (the template
+    validator's rule). A town place is no placeholder target: a text names
+    the building in words ("the guild house's cellar"); the map shows the
+    spot. `tools/r59_qsys3/socket_places.lua` lists a settlement's sockets
+    as the mapgen builds them for the offline tools.
 - **Several objectives per quest**: the dialogue and the quest log show one
   line per objective, the HUD one compact line.
 - **Quest-only drops** (`quest_drops`): an item that drops only while the
@@ -599,9 +641,20 @@ camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
   form chains. Their marker and their list category are their own
   ("Confirmed by the user").
 - **Every other quest is free play**: it requires nothing but a level and
-  has at most one follow-up (a quest that names it in `requires`), rarely:
-  the zone's last quest that leads to the next zone's giver, a guild's small
+  has at most one follow-up (a quest that names it in `requires`) **per
+  faction** (Round 59, the user's ruling of 2026-10-24), rarely: the zone's
+  last quest that leads to the next zone's giver, a guild's small
   storyline. A place offers its free quests at once.
+- **The faction of a follow-up** is that of its givers, over every variant:
+  an NPC giver's (the faction it serves) or a role giver's filter
+  (`{"role", "faction"}`). A follow-up whose givers serve both factions (a
+  shared quest with an Accord and a Throng variant) counts as a follow-up
+  in each; a giver that serves everyone counts for both. Example: the guild
+  gather quest `guild_t2_iron` (given to both factions) may be followed by
+  `guild_t2_report_accord` (Accord foremen) and `guild_t2_report_throng`
+  (Throng foremen), one each; a third follow-up of Accord givers, or a
+  report given by the foremen of both factions next to one of them, is
+  refused.
 - These two rules hold only in reworked files ("The rework flag").
 
 ## Completion text (Round 57 ruling 14)
@@ -654,7 +707,10 @@ play by construction, checked by `tools/r58_guildquests`). In reworked files
 - `E-free-requires`: a free quest requires at most one quest, the one it
   follows; only story quests chain;
 - `E-free-follow-ups`: a free quest is required by at most one quest of a
-  reworked file;
+  reworked file per faction (Round 59; "Story and free play"; the game
+  checks it once the givers' factions are resolved, `validate.py` reads
+  them from the item dump's quest NPCs, the fortress and guild NPCs, a new
+  giver's race or the atlas, and an unknown one counts for both);
 - `E-free-chain`: a free follow-up has no free follow-up of its own;
 - `E-reward-budget` (ruling 17): per zone, capitals excepted, at most two
   quests with an equipment reward of one enchant and one with two enchants
@@ -745,7 +801,7 @@ regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
   fortress or Battlegrounds camp by its settlement key, Round 31), or a
   place of a "use at a place" objective (Round 36: a recipe's quest place,
   `{name:brandscar_cairn}` "Brandscar Cairn", or a clash site by its key,
-  `{name:r20_anchor_076}` "Saltgate Remnant"). A bare id
+  `{name:r20_anchor_076}` "Saltgate Remnant"; a town place is none). A bare id
   means the quest file's zone; another zone's kind, camp or quest place is
   written `zone_id/id` (`{zone_area:elandor_whitebridge_shire/oakwood}`); a
   leader role, a PvP POI and a clash site are found in any zone. A PvP POI reads its label

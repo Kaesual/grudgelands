@@ -418,6 +418,11 @@ for _, poi in ipairs(POIS) do
 	poi.race = race
 	grug_core.register_settlement_sockets(poi.key, race, poi.anchor, sockets, poi.key)
 end
+-- Round 59: a settlement of no known kind whose only socket is a town
+-- place (`quest_place`, nobody stands on it) is scenery to start_npcs.lua:
+-- no row, no NPC, no error.
+grug_core.register_settlement_sockets("r59_town_place_only", "human", {x = 300, y = 12, z = 700},
+	{{id = "yard_crate", role = "quest_place", x = 1, y = 1, z = 1, dir = {x = 0, z = 1}}}, "Yard")
 -- Round 58: the camp index grug_quests/npcs.lua registers the foremen from
 -- (grug_mapgen.mining_camps, the real module over a layout with every
 -- anchor placed; only the registered camps get a foreman).
@@ -444,6 +449,7 @@ local function count_logs(pattern)
 end
 eq(count_logs("is not a published start"), 0, "P every PvP POI is a known settlement kind")
 eq(count_logs("resolves to no registered entity"), 0, "P every socket resolves")
+eq(count_logs("r59_town_place_only"), 0, "P a settlement with only a town place logs nothing")
 
 -- The live NPC of each socket of a settlement.
 local function holders(key)
@@ -461,6 +467,7 @@ end
 -- P. Placement.
 ------------------------------------------------------------------------------
 heartbeat(5)
+check(next(holders("r59_town_place_only")) == nil, "P ... and places nothing")
 local placed = {}
 for _, poi in ipairs(POIS) do
 	placed[poi.key] = holders(poi.key)

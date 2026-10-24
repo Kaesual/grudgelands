@@ -106,6 +106,9 @@ QUESTS = [
     quest("q_use_gap", [{"type": "use", "place": "elandor_alpha_fields/dry_well", "object": "pledged_standard",
                          "label": "Plant", "hold": 3}]),
     quest("q_use_unknown", [{"type": "use", "place": "nowhere_well", "object": "pledged_standard", "label": "Plant", "hold": 3}]),
+    # Round 59: a town place (a settlement socket) stands on every seed.
+    quest("q_use_town", [{"type": "use", "place": "socket:alpha/yard_crate", "object": "pledged_standard",
+                          "label": "Plant", "hold": 3}]),
 ]
 
 
@@ -168,6 +171,7 @@ with tempfile.TemporaryDirectory() as tmp:
         (("q_use_clash text {name:r20_anchor_071}",), "a clash site as a placeholder target"),
         (("q_use_place obj 1 (use at old_well)",), "a use at a quest place of the file's zone"),
         (("q_use_place text {dir_from_giver:old_well}",), "a quest place as a placeholder target"),
+        (("q_use_town obj 1 (use at socket:alpha/yard_crate)",), "a use at a town place"),
     ]:
         row = line_with(out, *parts)
         check(row is not None and not row.lstrip().startswith("MISSING"), label + ": ok")

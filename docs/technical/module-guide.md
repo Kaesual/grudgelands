@@ -1833,7 +1833,13 @@ tools](#player-meta-read-by-external-tools).
   `state.lua` keeps the needed points per raw state (`Q.use_needs`) and
   credits a finished hold (`Q.credit_use`); places resolve through
   `labels.lua` `Q.use_place` (a clash site `grug_mobs.spawn_regions
-  .clash_site`, a recipe quest place `zone_place`/`place_spot`).
+  .clash_site`, a recipe quest place `zone_place`/`place_spot`; since Round
+  59 a town place `socket:<settlement key>/<socket id>` through the
+  settlement socket registry, a socket of role `quest_place` whose cell the
+  object stands in, cached once found). `validate.lua` checks
+  `E-free-follow-ups` per faction in its world pass (`V.free_follow_ups`,
+  the givers' factions resolved), the other free-play rules in its
+  structure pass.
   Since Round 57 ([quests.md](../design/quests.md) "Shared quests") a
   definition holds `variants` (per giver zone: givers, turn-ins, giver
   roles, its own resolved objectives and quest drops, text; the counts and

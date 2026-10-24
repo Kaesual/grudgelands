@@ -347,6 +347,10 @@ local function load_quests(quest_root, mobs_root, register, prepare)
 	install_world(mobs_root)
 	register = register or register_named
 	register(quest_root, mobs_root)
+	-- Round 59: the settlements of the town places the files name, built
+	-- from their templates and blueprints (tools/r59_qsys3/socket_places.lua).
+	dofile("tools/r59_qsys3/socket_places.lua").extend(grug_core, ".", quest_root .. "/data/zones",
+		core.get_dir_list)
 	mod_paths.grug_quests = quest_root
 	local base = "mods/PLAYER/grug_quests/"
 	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader", "hud"}) do

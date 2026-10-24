@@ -3,8 +3,9 @@
 -- right-clicking it and holding the button for the objective's hold.
 --
 -- A use point is one act at one place (Q.use_key: place, object kind and
--- label). Its place is a clash site (the anchor) or a recipe quest place
--- (its spot on this world's region map; labels.lua Q.use_place). Once a
+-- label). Its place is a clash site (the anchor), a recipe quest place
+-- (its spot on this world's region map) or a town place (Round 59: a
+-- `quest_place` socket of a settlement; labels.lua Q.use_place). Once a
 -- second, in its slot, each player's needed points (Q.use_needs, cached by
 -- quest state) are measured against their places: within REACH the player
 -- observes the point's object, which is added on the place's ground when the
@@ -80,8 +81,13 @@ local function feed(player, text)
 	grug_core.feed(player, "quest", text, "quest_use")
 end
 
--- {x, z} of a place on this world, or nil (a quest place without a spot).
+-- {x, z} of a place on this world, or nil (a quest place without a spot);
+-- a town place's also carries its standing cell's y and `town`.
 function Q.use_place_xz(ref)
+	if ref:sub(1, #Q.TOWN_PLACE_PREFIX) == Q.TOWN_PLACE_PREFIX then
+		local place = Q.use_place(ref)
+		return place and {x = place.pos.x, y = place.pos.y, z = place.pos.z, town = true} or nil
+	end
 	if regions.clash_site(ref) then return regions.place(ref) end
 	local zone, id = ref:match("^([^/]+)/(.+)$")
 	return zone and regions.place_spot(zone, id) or nil
@@ -125,6 +131,30 @@ local function ground(x, z)
 end
 Q._use_ground = ground -- read by the fixture
 
+-- A town place's stand (Round 59): the socket's own cell, authored as a
+-- standing cell in a yard, a hall or a cellar alike, so no open air is
+-- asked for and no column is searched. The n-th act stands on its ring
+-- offset at the socket's height when that cell is free over walkable
+-- ground, else in the socket's cell. Nil and whether the cell is not loaded.
+local function free_cell(pos)
+	local node = core.get_node_or_nil(pos)
+	local below = core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
+	if not node or not below or node.name == "ignore" or below.name == "ignore" then return nil, "unloaded" end
+	local def, floor = core.registered_nodes[node.name], core.registered_nodes[below.name]
+	if def and not def.walkable and (def.liquidtype or "none") == "none" and floor and floor.walkable then
+		return pos
+	end
+	return nil
+end
+local function town_stand(xz, offset)
+	if offset[1] ~= 0 or offset[2] ~= 0 then
+		local pos = free_cell({x = xz.x + offset[1], y = xz.y, z = xz.z + offset[2]})
+		if pos then return pos end
+	end
+	return free_cell({x = xz.x, y = xz.y, z = xz.z})
+end
+Q._use_town_stand = town_stand -- read by the fixture
+
 -- The first slot no other point at this place holds.
 local function free_slot(place)
 	local used = {}
@@ -145,17 +175,25 @@ local function ensure_object(point)
 	if point.retry_at and now < point.retry_at then return nil end
 	local offset = RING[(point.slot - 1) % #RING + 1]
 	local x, z = math.floor(point.xz.x + offset[1] + 0.5), math.floor(point.xz.z + offset[2] + 0.5)
-	local pos, unloaded = ground(x, z)
+	local pos, unloaded
+	if point.xz.town then
+		pos, unloaded = town_stand(point.xz, offset)
+		unloaded = unloaded == "unloaded"
+	else
+		pos, unloaded = ground(x, z)
+	end
 	if not pos then
 		-- Unloaded ground waits for the next pass; loaded ground without a
-		-- stand (water, a wall, a dense wood) is a data or world problem.
+		-- stand (water, a wall, a dense wood; a town place's cell filled) is
+		-- a data or world problem.
 		if not unloaded then
 			point.retry_at = now + RETRY_US
 			if not warned[point.key] then
 				warned[point.key] = true
-				core.log("warning", ("[grug_quests] use place %s: no open walkable ground within 6 nodes " ..
-					"of (%d, %d) for \"%s\"; the quest object cannot appear"):format(point.place, x, z,
-					point.objective.label))
+				core.log("warning", ("[grug_quests] use place %s: %s for \"%s\"; the quest object cannot " ..
+					"appear"):format(point.place, point.xz.town and ("its socket cell (%d, %d, %d) is not free " ..
+					"over walkable ground"):format(point.xz.x, point.xz.y, point.xz.z) or
+					("no open walkable ground within 6 nodes of (%d, %d)"):format(x, z), point.objective.label))
 			end
 		end
 		return nil
