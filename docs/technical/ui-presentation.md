@@ -12,6 +12,8 @@ out of the prepend and explicitly requests the opaque variant.
 - `styles()` returns control defaults without a background or send.
 - `prepend(opaque)` returns background, defaults and existing click styles.
 - `panel(x, y, w, h)` returns a nine-slice panel in the caller's coordinate mode.
+  Emit it outside scroll containers: the engine parents backgrounds to the
+  form, so a panel inside a scroll container would neither scroll nor clip.
 - `heading(x, y, text)` escapes and colors an existing heading.
 - `button_style(name, role)` styles one existing field (`normal`, `selected`,
   `danger`). Names are single fields, not comma-separated selector lists.
@@ -35,9 +37,14 @@ in sfinv's existing receive/write gates.
 
 The shared inventory body remains 13.5 by 13.673 units, with a fixed 2.2-unit
 header added above it (one common outer frame for all non-map tabs). The
-body is in a real-coordinate container; older fragments explicitly switch
-to legacy coordinates, then back before closing the container. Full/short/
-station views still show seven/two/three rows and the original slot sizes.
+body is in a real-coordinate container. Its pages, including Help's Sound
+controls, keep real coordinates throughout their content. Do not switch an
+inherited container offset to legacy units: the engine multiplies that offset
+by legacy spacing (X: 5/4, Y: 15/13) instead of the real slot size, and also
+adds legacy padding (`guiFormSpecMenu.cpp`, `getElementBasePos` versus
+`getRealCoordinateBasePos`). A standalone legacy form must keep its own
+explicit coordinate contract. Full/short/station views still show
+seven/two/three rows and the original slot sizes.
 The map retains its responsive body and adds the same header above it. Its
 own session keeps a separate tab mapping; switching to an allowed inventory
 tab cancels pending map sends before sfinv displays the target. The deferred
@@ -45,7 +52,9 @@ home reset cannot overwrite that target, and the existing shown-form backstop,
 quiet period, send gap and party-marker budget remain.
 
 Theme assets are original 32-by-32 RGBA geometric images, reproducible with
-`python3 tools/ui_theme/build.py` (`--check`). Their license is in
+`python3 tools/ui_theme/build.py` (`--check`). The check compares PNG bytes;
+reproduction depends on the Pillow and zlib versions used to generate them.
+Their license is in
 `mods/CORE/grug_core/LICENSE-media.md`. Native client fonts are used; the
 browser study's CSS effects are not runtime dependencies.
 

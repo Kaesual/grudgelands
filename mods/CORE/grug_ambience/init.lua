@@ -909,7 +909,7 @@ for _, channel in ipairs({"music", "ambience"}) do
 end
 
 -- The Help page's Sound sub-page (grug_inventory/help.lua): the controls in
--- legacy formspec coordinates from (x, y), and the field handler. Volumes
+-- real formspec coordinates from (x, y), and the field handler. Volumes
 -- are a dropdown in steps of 5 % (the music default is 35 %; a scrollbar
 -- would send a field on every drag step).
 local VOLUME_STEP = 5
@@ -935,10 +935,10 @@ function grug_ambience.settings_formspec(player, x, y)
 		local setting = grug_ambience.get(player, row.channel) or
 			{on = true, volume = R.DEFAULT_VOLUME[row.channel]}
 		local top = y + (index - 1) * 0.9
-		fs[#fs + 1] = ("checkbox[%.2f,%.2f;grug_ambience_%s;%s;%s]"):format(x, top + 0.2,
+		fs[#fs + 1] = ("checkbox[%.2f,%.2f;grug_ambience_%s;%s;%s]"):format(x, top + 0.325,
 			row.channel, core.formspec_escape(row.label), setting.on and "true" or "false")
-		fs[#fs + 1] = ("label[%.2f,%.2f;Volume]"):format(x + 2.6, top + 0.1)
-		fs[#fs + 1] = ("dropdown[%.2f,%.2f;2.0;grug_ambience_%s_volume;%s;%d;true]"):format(
+		fs[#fs + 1] = ("label[%.2f,%.2f;Volume]"):format(x + 2.6, top + 0.325)
+		fs[#fs + 1] = ("dropdown[%.2f,%.2f;2.4,0.65;grug_ambience_%s_volume;%s;%d;true]"):format(
 			x + 3.8, top, row.channel, VOLUME_ITEMS, volume_index(setting.volume))
 	end
 	return table.concat(fs)
