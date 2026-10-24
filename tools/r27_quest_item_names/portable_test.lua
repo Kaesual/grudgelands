@@ -201,6 +201,10 @@ local pages = {}
 sfinv = {register_page = function(name, def) pages[name] = def end,
 	make_formspec = function(_, _, content) return content end,
 	get_page = function() return "" end, pages = pages, pages_unordered = {}}
+-- Round 59: the settlements of the town places the files name (the band's
+-- bandit camps), built from their blueprints (tools/r59_qsys3/socket_places.lua).
+dofile(ROOT .. "/tools/r59_qsys3/socket_places.lua").extend(grug_core, ROOT,
+	ROOT .. "/mods/PLAYER/grug_quests/data/zones", core.get_dir_list)
 grug_quests = {}
 local Q = grug_quests
 for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "use", "validate", "loader",

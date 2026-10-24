@@ -1,5 +1,6 @@
 {
   "zone": "elandor_copperfell_foothills",
+  "reworked": true,
   "identity": "Copperfell digs the copper Dur Brannoc runs on; bandits waylay the ore carts and a goblin foreman has opened an unlicensed dig above the seams.",
   "hubs": [
     {
@@ -9,13 +10,15 @@
         {
           "npc": "r14_dwarf_steward",
           "lines": [
-            "survey"
+            "survey",
+            "supplies"
           ]
         },
         {
           "npc": "r15_dwarf_local",
           "lines": [
-            "workyard"
+            "workyard",
+            "stores"
           ]
         }
       ]
@@ -60,46 +63,13 @@
   ],
   "quests": [
     {
-      "id": "copperfell_survey_01",
-      "line": "survey",
-      "giver": "r14_dwarf_steward",
-      "turnin": "r14_dwarf_steward",
-      "min_level": 9,
-      "level": 11,
-      "requires": [
-        "hearthpine_departure"
-      ],
-      "title": "The Surveyor Has Tusks",
-      "text": "I paid a surveyor to mark our claims, and the Rooters have submitted their own revisions. Kill eight of them by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. We cannot run a mine on measurements taken by snout.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "young_boar"
-          ],
-          "count": 8,
-          "area": "elandor_copperfell_foothills/lower_pines"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Home zone neutrals; levels rise from the Hearthpine border.",
-      "duration_min": 9
-    },
-    {
-      "id": "copperfell_workyard_01",
-      "line": "workyard",
-      "giver": "r15_dwarf_local",
-      "turnin": "r15_dwarf_local",
-      "min_level": 10,
+      "id": "band_repairs",
+      "line": "stores",
+      "min_level": 11,
       "level": 12,
-      "requires": [
-        "hearthpine_departure"
-      ],
-      "title": "Keep the Rails Together",
-      "text": "Hear that clatter from the workyard? That's what a rail sounds like when its clamps have had enough. Bring me four Iron Bars and four Coal Lumps for replacements, and I'll give you an Iron Pickaxe for the harder rock below.",
+      "requires": [],
+      "title": "[PH] Iron for the Repairs",
+      "text": "[PH] Dagna needs 4 Iron Bars and 4 Coal Lumps to mend the worn rail fastenings of the ore carts. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -112,89 +82,146 @@
           "count": 4
         }
       ],
+      "variants": [
+        {
+          "zone": "elandor_copperfell_foothills",
+          "givers": [
+            "r15_dwarf_local"
+          ],
+          "text": "[PH] Dagna needs 4 Iron Bars and 4 Coal Lumps to mend the worn rail fastenings of the ore carts. Real text to follow."
+        },
+        {
+          "zone": "elandor_goldmead_vale",
+          "givers": [
+            "r15_human_local"
+          ],
+          "text": "[PH] Alda needs 4 Iron Bars and 4 Coal Lumps for the fittings of a granary that can be locked again. Real text to follow."
+        },
+        {
+          "zone": "elandor_starbough_vale",
+          "givers": [
+            "r15_elf_local"
+          ],
+          "text": "[PH] Lethri needs 4 Iron Bars and 4 Coal Lumps for the brackets of the walkways between the boughs. Real text to follow."
+        },
+        {
+          "zone": "kragmar_mournfen",
+          "givers": [
+            "r15_undead_local"
+          ],
+          "text": "[PH] Edris needs 4 Iron Bars and 4 Coal Lumps for the rusted lantern holders above the mud. Real text to follow."
+        },
+        {
+          "zone": "kragmar_redtusk_savanna",
+          "givers": [
+            "r15_orc_local"
+          ],
+          "text": "[PH] Morga needs 4 Iron Bars and 4 Coal Lumps for the fittings of the herd gate. Real text to follow."
+        },
+        {
+          "zone": "kragmar_raincall_basin",
+          "givers": [
+            "r15_troll_local"
+          ],
+          "text": "[PH] Amari needs 4 Iron Bars and 4 Coal Lumps for new clamps that keep the houses on their stilts. Real text to follow."
+        }
+      ],
       "rewards": {
-        "weight": 3,
-        "items": [
-          {
-            "item": "grug_materials:pick_iron",
-            "count": 1
-          }
-        ]
+        "weight": 4.5
       },
-      "lesson": "Iron ore to bar; the Iron Pickaxe opens the next rock tier.",
-      "duration_min": 10
+      "lesson": "The repair material: smelt iron, bring coal; the work goes on before the story does.",
+      "duration_min": 12,
+      "notes": "Round 59 BANDQUESTS. Draft §3, the shared repair help (Iron Bars and Coal Lumps for a repair the local needs)."
     },
     {
-      "id": "copperfell_survey_02",
+      "id": "band_load_record",
+      "line": "supplies",
+      "min_level": 14,
+      "level": 15,
+      "requires": [],
+      "title": "[PH] The Original Load Record",
+      "text": "[PH] Orrik wants the original load record secured from the bandits' load board in the {name:bandit_camp}: it still names Tovin as the carter, while the later accounts make his work disappear. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:copperfell_bandit_camp/load_record",
+          "object": "dispatch_record",
+          "label": "Secure the load record",
+          "hold": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_copperfell_foothills",
+          "givers": [
+            "r14_dwarf_steward"
+          ],
+          "text": "[PH] Orrik wants the original load record secured from the bandits' load board in the {name:bandit_camp}: it still names Tovin as the carter, while the later accounts make his work disappear. Real text to follow."
+        },
+        {
+          "zone": "elandor_goldmead_vale",
+          "givers": [
+            "r14_human_steward"
+          ],
+          "objectives": [
+            {
+              "place": "socket:goldmead_bandit_camp/load_record"
+            }
+          ],
+          "text": "[PH] Marta wants the load record secured from the bandits' load board in the {name:bandit_camp}: between the grain and the sacking stands Pella's name. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 5.5
+      },
+      "lesson": "A use at a place inside a hostile camp: clear a path, then hold.",
+      "duration_min": 12,
+      "notes": "Round 59 BANDQUESTS. Draft §3.1/§3.2 and K8 A: the original load record at a new place in the existing bandit camp; the entry names the carter (Tovin) or the person booked as cargo (Pella)."
+    },
+    {
+      "id": "copperfell_copper",
       "line": "survey",
       "giver": "r14_dwarf_steward",
       "turnin": "r14_dwarf_steward",
-      "min_level": 11,
-      "level": 12,
-      "requires": [
-        "copperfell_survey_01"
-      ],
-      "title": "An Appetite for Figures",
-      "text": "A Packrat ate six months of accounts last night and left the cover, which I consider criticism. Kill eight Packrats in the {name:lower_pines} after dark. Those books record what the miners are owed, and teeth are no excuse for missing wages.",
+      "min_level": 10,
+      "level": 11,
+      "requires": [],
+      "title": "[PH] Copper for the Scales",
+      "text": "[PH] Orrik weighs fresh copper against the old ledger to see what the carts lost: bring 8 Copper Lumps from the seams. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "granary_rat"
-          ],
-          "count": 8,
-          "area": "elandor_copperfell_foothills/lower_pines"
+          "type": "item",
+          "item": "default:copper_lump",
+          "count": 8
         }
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "Same ground, other clock.",
-      "duration_min": 9
-    },
-    {
-      "id": "copperfell_workyard_02",
-      "line": "workyard",
-      "giver": "r15_dwarf_local",
-      "turnin": "r15_dwarf_local",
-      "min_level": 12,
-      "level": 13,
-      "requires": [
-        "copperfell_workyard_01"
-      ],
-      "title": "A Handle on the Problem",
-      "text": "Half the workyard is sharing one sound handle, and the other half is waiting to borrow it. Bring me three Ridged Boar Tusks from Rooters in the {name:lower_pines} by day; any you saved will do. I'll see to the fitting, you see to the tusks.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:ridged_boar_tusk",
-          "count": 3,
-          "roles": [
-            "young_boar"
-          ],
-          "area": "elandor_copperfell_foothills/lower_pines"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Save signature loot from earlier hunts.",
-      "duration_min": 6
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "copperfell_survey_03",
       "line": "survey",
       "giver": "r14_dwarf_steward",
       "turnin": "r14_dwarf_scout",
-      "min_level": 13,
-      "level": 14,
-      "requires": [
-        "copperfell_survey_02"
-      ],
-      "title": "Orrik Sends Useful Hands",
-      "text": "Speak to Mara Deepwatch at Copperfell Outpost and tell her Orrik sent you; her latest request for help uses the word 'urgent' hard enough to tear the paper. I'd send a clerk, but she was quite specific about the axe.",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] The Tally to the Outpost",
+      "text": "[PH] Orrik sends his cart tally to Mara Deepwatch at the outpost, who turns a loss report back into a search for people. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -202,40 +229,59 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Handoff inside the zone.",
-      "duration_min": 5
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 5,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "copperfell_watch_01",
+      "id": "copperfell_firewood",
       "line": "watch",
       "giver": "r14_dwarf_scout",
       "turnin": "r14_dwarf_scout",
-      "min_level": 14,
-      "level": 15,
-      "requires": [
-        "copperfell_survey_03"
-      ],
-      "title": "The Road Has Gone Hollow",
-      "text": "A cart wheel went through the ground, and I've no wish to see a carter follow it. Hunt eight Burrow Gnawers after dark on the {name:pine_slopes}, which lie {zone_area:pine_slopes}. They tunnel while we sleep; tonight we interrupt the shift.",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Wood for the Watch Fire",
+      "text": "[PH] Mara keeps a fire burning for the night watch over the cart road: bring 12 logs of any tree. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 8,
-          "area": "elandor_copperfell_foothills/pine_slopes"
+          "type": "item",
+          "group": "tree",
+          "count": 12
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 4
       },
-      "lesson": "Night hunt beside a day hunt in the same belt.",
-      "duration_min": 10
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 7,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
+    },
+    {
+      "id": "copperfell_torches",
+      "line": "workyard",
+      "giver": "r15_dwarf_local",
+      "turnin": "r15_dwarf_local",
+      "min_level": 13,
+      "level": 14,
+      "requires": [],
+      "title": "[PH] Light for the Shafts",
+      "text": "[PH] Dagna keeps the work going: 20 Torches for the shafts and the cart road. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:torch",
+          "count": 20
+        }
+      ],
+      "rewards": {
+        "weight": 4.5
+      },
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "copperfell_watch_02",
@@ -244,11 +290,9 @@
       "turnin": "r14_dwarf_scout",
       "min_level": 14,
       "level": 15,
-      "requires": [
-        "copperfell_survey_03"
-      ],
-      "title": "Sure Feet, Falling Slate",
-      "text": "Surefoot Ibex never seem to fall, but everything they stand on does. Cull eight on the {name:pine_slopes} by day before another load of slate comes down on the carters.",
+      "requires": [],
+      "title": "[PH] Stones on the Cart Road",
+      "text": "[PH] Surefoot Ibex knock stones onto the cart road: hunt 8 of them by day in the {name:pine_slopes}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -260,41 +304,40 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_woven",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_cured",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Daytime work while the gnawers sleep.",
-      "duration_min": 9
-    },
-    {
-      "id": "copperfell_watch_03",
-      "line": "watch",
-      "giver": "r14_dwarf_scout",
-      "turnin": "r14_dwarf_scout",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "copperfell_watch_02"
-      ],
-      "title": "A Toll Paid in Bruises",
-      "text": "The last carter to refuse their 'road toll' came back without his cart. Go to the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat eight outlaws in all, counting Footpads and Bandit Lookouts. Use cover to close on the lookouts; an arrow doesn't care how stout your argument is.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "quarrelsome_bandit",
-            "vigilant_bandit_archer"
-          ],
-          "count": 8,
-          "area": "elandor_copperfell_foothills/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 4.5,
-        "items": []
-      },
-      "lesson": "Melee and ranged outlaws in one camp.",
-      "duration_min": 11
+      "lesson": "A day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 9,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "copperfell_watch_04",
@@ -303,11 +346,9 @@
       "turnin": "r14_dwarf_captive",
       "min_level": 16,
       "level": 17,
-      "requires": [
-        "copperfell_watch_03"
-      ],
-      "title": "One Carter Still Missing",
-      "text": "Tovin Ashthumb hasn't come home, and I won't write his name under lost cargo. He's still a captive at the bandit camp you just raided; go speak with him while their watch is thin. He may know where the ore went, but first let him know we remembered him.",
+      "requires": [],
+      "title": "[PH] A Carter Among the Cargo",
+      "text": "[PH] Mara sends the player to hear Tovin Ashthumb himself, held in the {name:bandit_camp}; no fight is asked first. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -315,81 +356,76 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1.5
       },
-      "lesson": "Handoff to the camp's captive.",
-      "duration_min": 5
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 6,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "copperfell_workyard_03",
+      "id": "copperfell_wage_chests",
       "line": "workyard",
       "giver": "r15_dwarf_local",
       "turnin": "r15_dwarf_local",
-      "min_level": 15,
+      "min_level": 16,
       "level": 17,
-      "requires": [
-        "copperfell_workyard_02"
-      ],
-      "title": "The Guild's Good Name",
-      "text": "Every load we approve bears the guild seal, and I won't carve our name into rubbish. Bring me two pieces of Rough Jade from deep beneath the foothills, below the copper. Take your Iron Pickaxe, mind your light, and leave yourself a way back. I'd rather wait for the seal than replace the miner.",
+      "requires": [],
+      "title": "[PH] Chests for the Wages",
+      "text": "[PH] Dagna wants the crews' wages kept where no stamp can reach them: bring 2 Locked Chests. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_materials:rough_jade",
+          "item": "default:chest_locked",
           "count": 2
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Gems by depth; the iron pick reaches tier two rock.",
-      "duration_min": 15,
-      "climax": true
-    },
-    {
-      "id": "copperfell_dig_01",
-      "line": "dig",
-      "giver": "r14_dwarf_captive",
-      "turnin": "r14_dwarf_captive",
-      "min_level": 17,
-      "level": 19,
-      "requires": [
-        "copperfell_watch_04"
-      ],
-      "title": "I Know Where They Sold It",
-      "text": "They tied my hands, not my ears; I heard the bandits selling our ore to the goblins at the {name:goblin_dig} {dir_from_giver:goblin_dig}. Defeat eight of the dig's guards in all, counting Rubble Slingers and Ore-Guard Hounds. The slingers throw rocks and the hounds rush in, so don't let one distract you from the other.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "rubble_goblin_slinger",
-            "ore_guard_hound"
-          ],
-          "count": 8,
-          "area": "elandor_copperfell_foothills/goblin_dig"
-        }
-      ],
-      "rewards": {
         "weight": 5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_woven",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_cured",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_iron",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A goblin camp: ranged slingers with a melee hound.",
-      "duration_min": 12
+      "lesson": "A craft from Basic recipes; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "copperfell_dig_02",
+      "id": "copperfell_nog",
       "line": "dig",
       "giver": "r14_dwarf_captive",
       "turnin": "r14_dwarf_captive",
       "min_level": 18,
       "level": 19,
-      "requires": [
-        "copperfell_dig_01"
-      ],
-      "title": "Our Wages, Nog's Problem",
-      "text": "Goblin Foreman Nog pays his crew out of Stolen Purses, which makes every carter here an unwilling investor. Bring back three of those purses from the Rubble Slingers at the {name:goblin_dig} and kill Nog himself there; draw him away from his crew if you can, because I'd like our wages back without owing you a funeral. And look at the purses before you hand them over: goblins don't stamp their money, but somebody stamped these.",
+      "requires": [],
+      "title": "[PH] Take the Dig from {name:foreman_nog}",
+      "text": "[PH] Tovin wants Goblin Foreman Nog's business spoiled: defeat {name:foreman_nog} at the {name:goblin_dig}, who pays his crew from stamped, stolen purses. Real text to follow.",
+      "completion": "[PH] Tovin hears that Nog is down; his own wages are still owed. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -397,24 +433,55 @@
             "foreman_nog"
           ],
           "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:stolen_purse",
-          "count": 3,
-          "roles": [
-            "rubble_goblin_slinger"
-          ],
-          "area": "elandor_copperfell_foothills/goblin_dig"
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Normal named leader at a camp; pull him alone.",
+      "lesson": "The named perpetrator at his place; the weapon choice (prefix and suffix).",
       "duration_min": 12,
-      "climax": true
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "copperfell_departure",
@@ -423,11 +490,9 @@
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 19,
       "level": 19,
-      "requires": [
-        "copperfell_dig_02"
-      ],
-      "title": "A Familiar Stamp",
-      "text": "That stamp on Nog's purses belongs to a Dur Brannoc counting-house; someone in the capital has been putting a respectable seal on rotten business. Follow the main road there and tell Dorrin Gateledger what we found. He keeps the gate's ledger, and nothing will offend him more than our own seal on stolen ore.",
+      "requires": [],
+      "title": "[PH] The Case Goes to Dur Brannoc",
+      "text": "[PH] Tovin sends the player to Dorrin Gateledger in Dur Brannoc: a counting-house stamp turns up on stolen purses. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -435,11 +500,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
       "lesson": "Home zone to capital handoff.",
-      "duration_min": 8
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: the departure id stays; free from 19, it requires nothing and claims no earlier deed (draft §1, §2)."
     },
     {
       "id": "guild_t2_report_accord",

@@ -1,5 +1,6 @@
 {
   "zone": "elandor_goldmead_vale",
+  "reworked": true,
   "identity": "Goldmead grows the grain, and Requisitioner Hobb books it as his own: grain, cloth and even a witness entered as cargo.",
   "hubs": [
     {
@@ -61,75 +62,120 @@
   ],
   "quests": [
     {
-      "id": "goldmead_harvest_01",
+      "id": "goldmead_corn",
       "line": "harvest",
       "giver": "r14_human_steward",
       "turnin": "r14_human_steward",
-      "min_level": 9,
+      "min_level": 10,
       "level": 11,
-      "requires": [
-        "dawnmere_departure"
-      ],
-      "title": "A Harvest Worth Stealing",
-      "text": "Crumb's accounts name Requisitioner Hobb as the man he answered to, but Hobb can wait and the harvest cannot. Hunt eight Bracken Foxes by day in the {name:orchards}, which lie {zone_area:orchards}, so the pickers have room to work. We will untangle Hobb's business once ours is back on its feet.",
+      "requires": [],
+      "title": "[PH] What the Vale Delivers",
+      "text": "[PH] Marta counts what the vale can really deliver: bring 8 Corn from the fields. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "young_fox"
-          ],
-          "count": 8,
-          "area": "elandor_goldmead_vale/orchards"
+          "type": "item",
+          "item": "grug_gathering:corn",
+          "count": 8
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "Same neutral rule, new names: read the level range, not the name.",
-      "duration_min": 9
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 7,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "goldmead_harvest_02",
+      "id": "goldmead_harvest_04",
       "line": "harvest",
       "giver": "r14_human_steward",
-      "turnin": "r14_human_steward",
-      "min_level": 11,
-      "level": 12,
-      "requires": [
-        "goldmead_harvest_01"
-      ],
-      "title": "The Granary Has Teeth",
-      "text": "I can account for every sack that leaves Goldmead, except the ones leaving a mouthful at a time. Kill eight Granary Rats after dark in the same {name:orchards}. Work the edges and keep your distance between fights; a squealing rat is an invitation to all its neighbours.",
+      "turnin": "r14_human_scout",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Word for the Outpost",
+      "text": "[PH] Marta sends word to Jon Vale at the outpost, who watches Hobb and his people. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "granary_rat"
-          ],
-          "count": 8,
-          "area": "elandor_goldmead_vale/orchards"
+          "type": "talk",
+          "npc": "r14_human_scout"
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 1
       },
-      "lesson": "One area, two clocks; a night hunt waits while day work goes on.",
-      "duration_min": 9
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 5,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
+    },
+    {
+      "id": "goldmead_sunleaf",
+      "line": "watch",
+      "giver": "r14_human_scout",
+      "turnin": "r14_human_scout",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Sunleaf for the Watch",
+      "text": "[PH] Jon's watchers need a remedy for the long watches: bring 5 Sunleaf. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_gathering:sunleaf",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
+    },
+    {
+      "id": "goldmead_potatoes",
+      "line": "stores",
+      "giver": "r15_human_local",
+      "turnin": "r15_human_local",
+      "min_level": 13,
+      "level": 14,
+      "requires": [],
+      "title": "[PH] Food for the Packers",
+      "text": "[PH] Alda keeps the people who pack the harvest fed: bring 8 Potatoes. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_gathering:potato",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "weight": 4.5
+      },
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "goldmead_harvest_03",
       "line": "harvest",
       "giver": "r14_human_steward",
       "turnin": "r14_human_steward",
-      "min_level": 13,
+      "min_level": 14,
       "level": 15,
-      "requires": [
-        "goldmead_harvest_02"
-      ],
-      "title": "Tusks in the Wheat",
-      "text": "Bristlebacks are flattening the {name:wheatfields}, which lie {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
+      "requires": [],
+      "title": "[PH] Boars in the Wheat",
+      "text": "[PH] Bristlebacks trample the wheat: hunt 8 of them by day in the {name:wheatfields}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -141,215 +187,40 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_woven",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_cured",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Aggressive animals in open fields: one at a time.",
-      "duration_min": 10
-    },
-    {
-      "id": "goldmead_harvest_04",
-      "line": "harvest",
-      "giver": "r14_human_steward",
-      "turnin": "r14_human_scout",
-      "min_level": 13,
-      "level": 14,
-      "requires": [
-        "goldmead_harvest_02"
-      ],
-      "title": "Jon Has the Other Half",
-      "text": "You have seen what threatens our harvest; Jon Vale has been watching the people who take it. Follow the road to Goldmead Outpost and speak with him about Hobb's collectors. He counts wagons more patiently than anyone I know, though I doubt he would welcome that on his gravestone.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r14_human_scout"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Hub to hub inside the home zone.",
-      "duration_min": 5
-    },
-    {
-      "id": "goldmead_supplies_01",
-      "line": "supplies",
-      "giver": "r14_human_steward",
-      "turnin": "r14_human_steward",
-      "min_level": 12,
-      "level": 14,
-      "requires": [
-        "goldmead_harvest_01"
-      ],
-      "title": "Iron Before Promises",
-      "text": "Hobb has sent enough paper promises to patch every roof in Goldmead; our granary doors need something sturdier. Bring me six Iron Bars and four Coal Lumps from the valley's ore. Check what pick the rock needs before digging, then smelt the iron in a furnace. The grain we still have deserves a sound door.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:iron_bar",
-          "count": 6
-        },
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "The Bronze Pickaxe opens iron; smelting is anyone's work.",
-      "duration_min": 12
-    },
-    {
-      "id": "goldmead_supplies_02",
-      "line": "supplies",
-      "giver": "r14_human_steward",
-      "turnin": "r14_human_steward",
-      "min_level": 15,
-      "level": 17,
-      "requires": [
-        "goldmead_supplies_01"
-      ],
-      "title": "Counted and Sealed",
-      "text": "The granary has its iron; now we must see the shipment safely packed. Bring me four more Iron Bars and six planks of any wood here in Goldmead Village. I will count and seal the load myself, and the next collector who calls it his wages can explain that to my face.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:iron_bar",
-          "count": 4
-        },
-        {
-          "type": "item",
-          "group": "wood",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Finite repair orders; prepare them between hunts.",
+      "lesson": "A day hunt; the first armor choice (one enchant, a prefix).",
       "duration_min": 10,
-      "climax": true
-    },
-    {
-      "id": "goldmead_stores_01",
-      "line": "stores",
-      "giver": "r15_human_local",
-      "turnin": "r15_human_local",
-      "min_level": 10,
-      "level": 11,
-      "requires": [
-        "dawnmere_departure"
-      ],
-      "title": "Feed the Counters",
-      "text": "Our grain counters have worked through dinner again, which improves neither their sums nor their company. Bring me eight cuts of Raw Meat here in Goldmead Village; whatever you saved from the road will do. They deserve a meal they cannot accidentally enter as grain.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Saved loot pays off on arrival.",
-      "duration_min": 3
-    },
-    {
-      "id": "goldmead_stores_02",
-      "line": "stores",
-      "giver": "r15_human_local",
-      "turnin": "r15_human_local",
-      "min_level": 16,
-      "level": 17,
-      "requires": [
-        "goldmead_stores_01",
-        "goldmead_watch_01"
-      ],
-      "title": "Cloth Around the Truth",
-      "text": "The False Bailiffs at the {name:bandit_camp} {dir_from_giver:bandit_camp} are carrying our packing cloth as though they bought it. Bring me two lengths of Linen Cloth from them; cloth you saved from an earlier fight will do. Their camp is occupied day and night, so fit the errand around your other work. I would like one shipment to reach its buyer with both its wrapping and its contents intact.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:linen_cloth",
-          "count": 2,
-          "roles": [
-            "quarrelsome_bandit"
-          ],
-          "area": "elandor_goldmead_vale/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Camp loot doubles as a delivery.",
-      "duration_min": 4,
-      "climax": true
-    },
-    {
-      "id": "goldmead_watch_01",
-      "line": "watch",
-      "giver": "r14_human_scout",
-      "turnin": "r14_human_scout",
-      "min_level": 14,
-      "level": 16,
-      "requires": [
-        "goldmead_harvest_04"
-      ],
-      "title": "Collectors Without a Collection",
-      "text": "Hobb's False Bailiffs hold the {name:bandit_camp} {dir_from_giver:bandit_camp} day and night, demanding payment from people who have already paid. Defeat eight of them. Watch for their Bandit Lookouts and approach from the edge; a collector with a bow is much less persuasive once you are beside him.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "quarrelsome_bandit"
-          ],
-          "count": 8,
-          "area": "elandor_goldmead_vale/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "A camp with a ranged minor role.",
-      "duration_min": 10
-    },
-    {
-      "id": "goldmead_watch_02",
-      "line": "watch",
-      "giver": "r14_human_scout",
-      "turnin": "r14_human_scout",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "goldmead_watch_01"
-      ],
-      "title": "Teeth Along the Cart Track",
-      "text": "A cart that gets past Hobb's men still has to pass the Thicket Vixens in the {name:thickets} {dir_of:goldmead_outpost:thickets}. Hunt six by day. Their red names mean they attack on sight, so keep a clear way out of the brush. I want the drivers home with their boots still occupied.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "rabid_fox"
-          ],
-          "count": 6,
-          "area": "elandor_goldmead_vale/thickets"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Aggressive forest animals; a daytime job while the camp respawns.",
-      "duration_min": 9
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "goldmead_watch_03",
@@ -358,11 +229,9 @@
       "turnin": "r14_human_captive",
       "min_level": 17,
       "level": 17,
-      "requires": [
-        "goldmead_watch_02"
-      ],
-      "title": "A Witness, Not Cargo",
-      "text": "Pella Thatch is being held in the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Hobb's men have entered her in their accounts as cargo. Clear your approach and speak with her about what she has seen. She knows Hobb's ledgers and remembers every stolen sack. Best not to mention the cargo entry unless you have time to hear her opinion of it.",
+      "requires": [],
+      "title": "[PH] Pella Speaks for Herself",
+      "text": "[PH] Jon sends the player straight to Pella Thatch, held in the {name:bandit_camp}, who insists on making her own statement. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -370,40 +239,64 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1.5
       },
-      "lesson": "A quest giver inside a hostile camp.",
-      "duration_min": 5
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 6,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "goldmead_testimony_01",
-      "line": "testimony",
-      "giver": "r14_human_captive",
-      "turnin": "r14_human_captive",
-      "min_level": 17,
-      "level": 18,
-      "requires": [
-        "goldmead_watch_03"
-      ],
-      "title": "Nobody Requisitions Pella",
-      "text": "Hobb listed me between grain and packing cloth, then had the nerve to ask whether I could write. His Bandit Lookouts guard the {name:requisition_camp} {dir_from_giver:requisition_camp} day and night; defeat eight of them. Approach from the edge and break their line of fire when you need to. I would lend a hand, but they requisitioned my good boots too.",
+      "id": "goldmead_fences",
+      "line": "stores",
+      "giver": "r15_human_local",
+      "turnin": "r15_human_local",
+      "min_level": 16,
+      "level": 17,
+      "requires": [],
+      "title": "[PH] Fences for the Stores",
+      "text": "[PH] Alda fences the store yard against the next requisition: bring 8 Apple Wood Fences. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "vigilant_bandit_archer"
-          ],
-          "count": 8,
-          "area": "elandor_goldmead_vale/requisition_camp"
+          "type": "item",
+          "item": "default:fence_wood",
+          "count": 8
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_woven",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_cured",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_iron",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "An archer camp: break line of sight, pull the edge.",
-      "duration_min": 10
+      "lesson": "A craft from Basic recipes; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "goldmead_testimony_02",
@@ -412,11 +305,10 @@
       "turnin": "r14_human_captive",
       "min_level": 18,
       "level": 19,
-      "requires": [
-        "goldmead_testimony_01"
-      ],
-      "title": "Hobb's Last Requisition",
-      "text": "{name:requisitioner_hobb} keeps his books in the {name:requisition_camp} {dir_from_giver:requisitioner_hobb}, and every line makes our grain his property. Defeat him, by day or night, and come back to me. I know what those books say; what I need now is someone to stop him enforcing them. Nobody requisitions Pella Thatch.",
+      "requires": [],
+      "title": "[PH] End {name:requisitioner_hobb}'s Claim",
+      "text": "[PH] Pella demands the fight against Bandit Requisitioner Hobb at the {name:requisition_camp}, who booked her between the grain and the sacking. Real text to follow.",
+      "completion": "[PH] Pella's statement stands as a statement again. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -427,12 +319,52 @@
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Named normal leader at the camp centre.",
-      "duration_min": 8,
-      "climax": true
+      "lesson": "The named perpetrator at his place; the weapon choice (prefix and suffix).",
+      "duration_min": 10,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "goldmead_departure",
@@ -441,11 +373,9 @@
       "turnin": "r20_human_capital_envoy",
       "min_level": 19,
       "level": 19,
-      "requires": [
-        "goldmead_testimony_02"
-      ],
-      "title": "Highcourt Must Hear This",
-      "text": "Every false requisition Hobb wrote carried a capital toll mark, and I can tell you exactly whose grain he stole. Go to Highcourt and give Mariel Waybook our account. If anyone asks what you are carrying, say testimony. I have had quite enough of being counted as freight.",
+      "requires": [],
+      "title": "[PH] The Case Goes to Highcourt",
+      "text": "[PH] Pella sends the player to Mariel Waybook in Highcourt with her own statement about Hobb and the capital mark he uses. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -453,11 +383,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
       "lesson": "Home zone to capital handoff.",
-      "duration_min": 8
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: the departure id stays; free from 19, it requires nothing and claims no earlier deed (draft §1, §2)."
     }
   ]
 }

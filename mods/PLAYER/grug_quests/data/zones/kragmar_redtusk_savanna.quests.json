@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_redtusk_savanna",
+  "reworked": true,
   "identity": "Redtusk herds and hunts the open savanna; scorpions, rats and a bandit water-broker skim the herds and the wells.",
   "hubs": [
     {
@@ -9,7 +10,8 @@
         {
           "npc": "r14_orc_steward",
           "lines": [
-            "herd"
+            "herd",
+            "supplies"
           ]
         },
         {
@@ -61,101 +63,94 @@
   ],
   "quests": [
     {
-      "id": "redtusk_herd_01",
+      "id": "band_held_supplies",
+      "line": "supplies",
+      "min_level": 18,
+      "level": 19,
+      "requires": [],
+      "title": "[PH] The Held Supplies",
+      "text": "[PH] Borak wants the lashing cut on a water load Korr's bandits hold at the edge of the {name:bandit_camp}: water the herders found together, sold back to them. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:redtusk_bandit_camp/held_supplies",
+          "object": "held_supplies",
+          "label": "Untie the held supplies",
+          "hold": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_redtusk_savanna",
+          "givers": [
+            "r14_orc_steward"
+          ],
+          "text": "[PH] Borak wants the lashing cut on a water load Korr's bandits hold at the edge of the {name:bandit_camp}: water the herders found together, sold back to them. Real text to follow."
+        },
+        {
+          "zone": "kragmar_raincall_basin",
+          "givers": [
+            "r14_troll_steward"
+          ],
+          "objectives": [
+            {
+              "place": "socket:raincall_bandit_camp/held_supplies"
+            }
+          ],
+          "text": "[PH] Daro wants the stores and tools Vek's bandits took from the households that refused his tithe untied at the edge of the {name:bandit_camp}. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 5.5
+      },
+      "lesson": "A use at a place at a camp's edge, out of its leader's sight.",
+      "duration_min": 12,
+      "notes": "Round 59 BANDQUESTS. Draft §3.5/§3.6 and K11 A: supplies the bandits hold at the edge of the existing camp, untied so they can go back; no water filling, no escort."
+    },
+    {
+      "id": "redtusk_corn",
       "line": "herd",
       "giver": "r14_orc_steward",
       "turnin": "r14_orc_steward",
-      "min_level": 9,
+      "min_level": 10,
       "level": 11,
-      "requires": [
-        "sunscar_departure"
-      ],
-      "title": "Every Stripe Has a Use",
-      "text": "Gara Stonevoice says your hands are good and your boasts are louder; the zebras can judge both. Bring down eight Waterhole Zebras by day in the {name:grasslands}, {zone_area:grasslands}. Redtusk fills bellies and hide racks from the same hunt; waste any of it and the tanners will tan you instead.",
+      "requires": [],
+      "title": "[PH] Fodder for the Herds",
+      "text": "[PH] Borak keeps the herds fed: bring 8 Corn. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "watchful_zebra"
-          ],
-          "count": 8,
-          "area": "kragmar_redtusk_savanna/grasslands"
+          "type": "item",
+          "item": "grug_gathering:corn",
+          "count": 8
         }
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
       },
-      "duration_min": 10
-    },
-    {
-      "id": "redtusk_herd_02",
-      "line": "herd",
-      "giver": "r14_orc_steward",
-      "turnin": "r14_orc_steward",
-      "min_level": 11,
-      "level": 12,
-      "requires": [
-        "redtusk_herd_01"
-      ],
-      "title": "Bring the Herders Home",
-      "text": "A herder watching the herd should not have to watch both boots as well. Kill eight Bark Scorpions in the {name:grasslands} after dark. I want our people coming home on their own feet.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "dust_stinger"
-          ],
-          "count": 8,
-          "area": "kragmar_redtusk_savanna/grasslands"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "redtusk_herd_03",
-      "line": "herd",
-      "giver": "r14_orc_steward",
-      "turnin": "r14_orc_steward",
-      "min_level": 13,
-      "level": 15,
-      "requires": [
-        "redtusk_herd_02"
-      ],
-      "title": "All Knot, No Rope",
-      "text": "I tied a pen shut last night and found the knot this morning, with precious little rope attached. Hunt the Rope Gnawers in the {name:tallgrass}, {zone_area:tallgrass}, and kill eight after dark. Give them something worse than rope to bite.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 8,
-          "area": "kragmar_redtusk_savanna/tallgrass"
-        }
-      ],
-      "rewards": {
-        "weight": 4.5,
-        "items": []
-      },
-      "duration_min": 12
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 7,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "redtusk_herd_04",
       "line": "herd",
       "giver": "r14_orc_steward",
       "turnin": "r14_orc_scout",
-      "min_level": 14,
-      "level": 15,
-      "requires": [
-        "redtusk_herd_03"
-      ],
-      "title": "Trust the Worn Boots",
-      "text": "Kesh Longstride has worn enough trail into those boots to know when trouble is moving. Go to Redtusk Outpost and speak to Kesh about what lies beyond the tallgrass. Listen closely; a scout should never have to tell you twice.",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Word for Kesh",
+      "text": "[PH] Borak sends word to Kesh Longstride at the outpost, who watches where the water goes. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -163,185 +158,168 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 6
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 5,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "redtusk_hides_01",
-      "line": "hides",
-      "giver": "r15_orc_local",
-      "turnin": "r15_orc_local",
-      "min_level": 10,
-      "level": 12,
-      "requires": [],
-      "title": "Give the Bows Their Voices",
-      "text": "The bowyers have a rack of unstrung bows and a fine collection of excuses. Bring me three Tough Sinew from the Waterhole Zebras that graze the {name:grasslands} by day. Then we can all listen to something besides complaining.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:tough_sinew",
-          "count": 3,
-          "roles": [
-            "watchful_zebra"
-          ],
-          "area": "kragmar_redtusk_savanna/grasslands"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "redtusk_hides_02",
-      "line": "hides",
-      "giver": "r15_orc_local",
-      "turnin": "r15_orc_local",
+      "id": "redtusk_sunleaf",
+      "line": "watch",
+      "giver": "r14_orc_scout",
+      "turnin": "r14_orc_scout",
       "min_level": 12,
       "level": 13,
-      "requires": [
-        "redtusk_hides_01",
-        "redtusk_herd_02"
-      ],
-      "title": "Keep It Out of the Stew",
-      "text": "The hunters want three Bitter Venom for their spears, and I have promised to keep the cooks well away from it. Gather it from Bark Scorpions in the {name:grasslands} at night and bring it straight to me. Straight to me, even if somebody offers you a clean bowl.",
+      "requires": [],
+      "title": "[PH] Sunleaf for the Watch",
+      "text": "[PH] Kesh's watchers need a remedy for the dry heat: bring 5 Sunleaf. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:bitter_venom",
-          "count": 3,
-          "roles": [
-            "dust_stinger"
-          ],
-          "area": "kragmar_redtusk_savanna/grasslands"
+          "item": "grug_gathering:sunleaf",
+          "count": 5
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 4
       },
-      "duration_min": 8
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "redtusk_stores_01",
-      "line": "stores",
+      "id": "redtusk_fences",
+      "line": "hides",
       "giver": "r15_orc_local",
       "turnin": "r15_orc_local",
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "A Gate Worth Shutting",
-      "text": "Our pen gate groans louder than the beasts behind it, and I know which one will give way first. Bring me six Iron Bars and four Coal Lumps so the smith can mend the hinges. I have spent enough mornings chasing our supper through the dust.",
+      "title": "[PH] Fences for the Pens",
+      "text": "[PH] Morga keeps herds, gates and supplies going: bring 8 Acacia Wood Fences. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_materials:iron_bar",
-          "count": 6
-        },
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 4
+          "item": "default:fence_acacia_wood",
+          "count": 8
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 4.5
       },
-      "duration_min": 15
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "redtusk_stores_02",
-      "line": "stores",
-      "giver": "r15_orc_local",
-      "turnin": "r15_orc_local",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "redtusk_stores_01"
-      ],
-      "title": "Feed the Hands That Tan",
-      "text": "The dry season is coming, and the tanners cannot work on empty bellies or empty racks. Bring eight pieces of Raw Meat and three Leather; hunt Waterhole Zebras in the {name:tallgrass} by day for the leather. Our hunters will thank us when their boots hold together.",
+      "id": "redtusk_zebras",
+      "line": "watch",
+      "giver": "r14_orc_scout",
+      "turnin": "r14_orc_scout",
+      "min_level": 14,
+      "level": 15,
+      "requires": [],
+      "title": "[PH] Zebras at the Water",
+      "text": "[PH] Waterhole Zebras crowd the herds off the water: hunt 8 of them by day in the {name:tallgrass}. Real text to follow.",
       "objectives": [
         {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 8
-        },
-        {
-          "type": "item",
-          "item": "mobs:leather",
-          "count": 3,
+          "type": "kill",
           "roles": [
             "watchful_zebra"
           ],
+          "count": 8,
           "area": "kragmar_redtusk_savanna/tallgrass"
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_woven",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_cured",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 10,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "redtusk_watch_01",
-      "line": "watch",
-      "giver": "r14_orc_scout",
-      "turnin": "r14_orc_scout",
+      "id": "redtusk_posts",
+      "line": "hides",
+      "giver": "r15_orc_local",
+      "turnin": "r15_orc_local",
       "min_level": 16,
       "level": 17,
-      "requires": [
-        "redtusk_herd_04"
-      ],
-      "title": "Tusks Across the Trail",
-      "text": "I can read a trail, but these Gully Tuskers keep ploughing tusk marks through it. Kill eight by daylight in the {name:borderveld}, {zone_area:borderveld}. Get them before a caravan finds out how little a loaded cart helps against a charge.",
+      "requires": [],
+      "title": "[PH] Posts for the Shelters",
+      "text": "[PH] Morga builds shade over the waterholes: bring 12 logs of any tree. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "bristling_boar"
-          ],
-          "count": 8,
-          "area": "kragmar_redtusk_savanna/borderveld"
+          "type": "item",
+          "group": "tree",
+          "count": 12
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_woven",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_cured",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_iron",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 12
-    },
-    {
-      "id": "redtusk_watch_02",
-      "line": "watch",
-      "giver": "r14_orc_scout",
-      "turnin": "r14_orc_scout",
-      "min_level": 17,
-      "level": 18,
-      "requires": [
-        "redtusk_watch_01"
-      ],
-      "title": "Footprints That Never Rest",
-      "text": "Those Parched Mummies tramp through the {name:borderveld}, {dir_of:redtusk_outpost:borderveld}, every night without resting. Kill six before they wander onto our supply trails; I would like one watch where every footprint belongs to something breathing.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "parched_husk"
-          ],
-          "count": 6,
-          "area": "kragmar_redtusk_savanna/borderveld"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 12
+      "lesson": "A craft from Basic recipes; the second armor choice (one enchant, a suffix).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "redtusk_watch_03",
@@ -350,11 +328,9 @@
       "turnin": "r14_orc_captive",
       "min_level": 17,
       "level": 18,
-      "requires": [
-        "redtusk_watch_02"
-      ],
-      "title": "Rokka Is Still Counting",
-      "text": "The bandits have Rokka Emberhand captive, and Rokka has been counting every stolen barrel that rolls past. Find Rokka in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and hear what those thieves would rather keep quiet. Bandits who roll their loot past a prisoner deserve every word that prisoner remembers.",
+      "requires": [],
+      "title": "[PH] Rokka Counts the Barrels",
+      "text": "[PH] Kesh points the player to Rokka Emberhand, held in the {name:bandit_camp}, who knows the loads and where they came from. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -362,51 +338,23 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 6
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 6,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "redtusk_ransom_01",
+      "id": "redtusk_korr",
       "line": "ransom",
       "giver": "r14_orc_captive",
       "turnin": "r14_orc_captive",
       "min_level": 18,
       "level": 19,
-      "requires": [
-        "redtusk_watch_03"
-      ],
-      "title": "Eight Fewer Witnesses",
-      "text": "Keep your voice down. The Bandit Lookouts in the {name:bandit_camp} think I have nothing left to say. Kill eight of them, then come back. I have plenty to say about their master.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "vigilant_bandit_archer"
-          ],
-          "count": 8,
-          "area": "kragmar_redtusk_savanna/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 5,
-        "items": []
-      },
-      "duration_min": 12
-    },
-    {
-      "id": "redtusk_ransom_02",
-      "line": "ransom",
-      "giver": "r14_orc_captive",
-      "turnin": "r14_orc_captive",
-      "min_level": 19,
-      "level": 19,
-      "requires": [
-        "redtusk_ransom_01"
-      ],
-      "title": "No Coin for Our Own Water",
-      "text": "Bandit Water-Broker Korr stands {dir_from_giver:water_broker_korr}, putting a price on water he stole from our wells. Kill him, and bring me two Knotted Talismans from the Bandit Lookouts in the {name:bandit_camp} as proof for the clan. I have listened to him count his profits long enough.",
+      "requires": [],
+      "title": "[PH] End {name:water_broker_korr}'s Trade",
+      "text": "[PH] Rokka demands the fight against Bandit Water-Broker Korr in the {name:bandit_camp}, who sells shared water back to the people who found it. Real text to follow.",
+      "completion": "[PH] Korr's trade is over; Rokka can name the buyers. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -414,23 +362,55 @@
             "water_broker_korr"
           ],
           "count": 1
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:knotted_talisman",
-          "count": 2,
-          "roles": [
-            "vigilant_bandit_archer"
-          ],
-          "area": "kragmar_redtusk_savanna/bandit_camp"
         }
       ],
       "rewards": {
-        "weight": 6,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 15,
-      "climax": true
+      "lesson": "The named perpetrator at his place; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "redtusk_departure",
@@ -439,11 +419,9 @@
       "turnin": "r20_orc_capital_envoy",
       "min_level": 19,
       "level": 19,
-      "requires": [
-        "redtusk_ransom_02"
-      ],
-      "title": "Follow the Stolen Water",
-      "text": "Korr's tallies name buyers in Gor Drazhak; the rot reaches all the way to our capital's tables. Go to the Skull Hall there and tell Thorga Roadspeaker what we found. I counted barrels from captivity; those buyers can start counting their excuses.",
+      "requires": [],
+      "title": "[PH] The Case Goes to Gor Drazhak",
+      "text": "[PH] Rokka sends the player to Thorga Roadspeaker in Gor Drazhak with the loads she saw sold, whether Korr still lives or not. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -451,10 +429,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 8
+      "lesson": "Home zone to capital handoff.",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: the departure id stays; free from 19, it requires nothing and claims no earlier deed (draft §1, §2)."
     }
   ]
 }

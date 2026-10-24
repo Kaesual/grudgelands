@@ -44,7 +44,7 @@
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "wispfen", "name": "Mournfen Wispfen",
             "day": "open",
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse", "quest_target": true},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "highland": {"id": "barrows", "name": "Mournfen Barrows",
             "day": "open",
             "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"},
@@ -67,7 +67,7 @@
         "kinds": {
           "open": {"id": "gravemoor", "name": "Mournfen Gravemoor",
             "day": [{"role": "bristling_boar", "weight": 3}, {"role": "parched_husk", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "muttering_zombie", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "muttering_zombie", "weight": 1}], "density": "normal"},
           "bank": {"id": "drowned_banks", "name": "Mournfen Drowned Banks",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
@@ -105,6 +105,9 @@
     ],
     "leaders": [
       {"role": "reed_counter_silt", "at": {"camp": "mire_nests"}, "respawn": 300}
+    ],
+    "places": [
+      {"id": "name_rest", "name": "Mournfen Name Rest", "at": {"kind": "blightfields", "pick": "farthest_from_roads"}}
     ],
     "critters": ["bog_fowl", "hare"]
   }

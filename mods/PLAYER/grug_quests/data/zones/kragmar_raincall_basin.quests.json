@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_raincall_basin",
+  "reworked": true,
   "identity": "Raincall Basin lives by the rains, and Vek's bandits have started selling them back as a tithe.",
   "hubs": [
     {
@@ -9,13 +10,15 @@
         {
           "npc": "r14_troll_steward",
           "lines": [
-            "rains"
+            "rains",
+            "supplies"
           ]
         },
         {
           "npc": "r15_troll_local",
           "lines": [
-            "weave"
+            "weave",
+            "stores"
           ]
         }
       ]
@@ -60,101 +63,49 @@
   ],
   "quests": [
     {
-      "id": "raincall_rains_01",
+      "id": "raincall_melons",
       "line": "rains",
       "giver": "r14_troll_steward",
       "turnin": "r14_troll_steward",
       "min_level": 10,
       "level": 11,
-      "requires": [
-        "kapok_departure"
-      ],
-      "title": "A Garden Is No Wallow",
-      "text": "Welcome to Raincall, where we catch the rain and the Mudsnouts sit on what it grows. Kill eight tapirs by day in the {name:rainwood}, which grows {zone_area:rainwood}, so our gardens can stand up again. Strangers have started demanding a rain tithe from the farms, too. I have tended this basin for years, and the clouds have never once sent a collector.",
+      "requires": [],
+      "title": "[PH] Melons From the Gardens",
+      "text": "[PH] Daro tends the gardens and paths: bring 4 Melons. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "reed_tapir"
-          ],
-          "count": 8,
-          "area": "kragmar_raincall_basin/rainwood"
+          "type": "item",
+          "item": "grug_gathering:melon",
+          "count": 4
         }
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
       },
-      "duration_min": 10
-    },
-    {
-      "id": "raincall_rains_02",
-      "line": "rains",
-      "giver": "r14_troll_steward",
-      "turnin": "r14_troll_steward",
-      "min_level": 11,
-      "level": 12,
-      "requires": [
-        "raincall_rains_01"
-      ],
-      "title": "Mind Where the Path Hisses",
-      "text": "A wet root trips you; a Lancehead takes offence at your whole foot. Kill eight vipers after dark on the paths through the {name:rainwood}. Their venom is quick, so mind where you step and keep something to drink close at hand.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_fang_viper"
-          ],
-          "count": 8,
-          "area": "kragmar_raincall_basin/rainwood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "raincall_rains_03",
-      "line": "rains",
-      "giver": "r14_troll_steward",
-      "turnin": "r14_troll_steward",
-      "min_level": 12,
-      "level": 13,
-      "requires": [
-        "raincall_rains_02"
-      ],
-      "title": "The Rain Owes You Nothing",
-      "text": "Those rain-tithe men are Rain Grifters, prowling the {name:rainwood} after dark among the vipers. Kill six of them. They claim to collect for Vek, but Vek has yet to send us so much as a drizzle.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "quarrelsome_bandit"
-          ],
-          "count": 6,
-          "area": "kragmar_raincall_basin/rainwood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "raincall_rains_04",
       "line": "rains",
       "giver": "r14_troll_steward",
       "turnin": "r14_troll_scout",
-      "min_level": 13,
-      "level": 14,
-      "requires": [
-        "raincall_rains_03"
-      ],
-      "title": "Let the Scouts Hear It",
-      "text": "Those collectors have to carry our coin somewhere, and I cannot follow them while keeping this village above water. Go to Raincall Outpost and tell Neshi Reedstep what you found on the paths. She can follow a trail through rain that would wash the spots off a cat.",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Word for Neshi",
+      "text": "[PH] Daro sends word to Neshi Reedstep at the outpost, who follows the collectors. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -162,10 +113,59 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 6
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 5,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
+    },
+    {
+      "id": "raincall_sunleaf",
+      "line": "watch",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_scout",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Sunleaf for the Watch",
+      "text": "[PH] Neshi's watchers need a remedy for the wet season: bring 5 Sunleaf. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_gathering:sunleaf",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
+    },
+    {
+      "id": "raincall_ladders",
+      "line": "weave",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 13,
+      "level": 14,
+      "requires": [],
+      "title": "[PH] Ladders for the Stilt Houses",
+      "text": "[PH] Amari keeps houses and clothes dry: bring 10 Wooden Ladders for the stilt houses. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:ladder_wood",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "weight": 4.5
+      },
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 7,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "raincall_watch_01",
@@ -174,11 +174,9 @@
       "turnin": "r14_troll_scout",
       "min_level": 14,
       "level": 15,
-      "requires": [
-        "raincall_rains_04"
-      ],
-      "title": "A Trail with Claws",
-      "text": "I can follow a tithe collector through the {name:cloudwood}, {zone_area:cloudwood}; doing it with Servals following me is another matter. Kill eight of those cats there by day and give my scouts room to work. The collectors leave clumsy tracks, but I would prefer to read them without teeth in my shoulder.",
+      "requires": [],
+      "title": "[PH] Servals in the Cloudwood",
+      "text": "[PH] Servals stalk the collectors' paths: hunt 8 of them by day in the {name:cloudwood}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -190,67 +188,93 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_woven",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_cured",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 11
+      "lesson": "A day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 10,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "raincall_watch_02",
-      "line": "watch",
-      "giver": "r14_troll_scout",
-      "turnin": "r14_troll_scout",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "raincall_watch_01"
-      ],
-      "title": "Someone Ate the Trail",
-      "text": "We marked the trail with rope, and the Stilt Gnawers took that as an invitation to supper. Kill eight after dark in the {name:cloudwood}. I can teach a scout to find a trail in the rain; I cannot teach one to find it inside a rat.",
+      "id": "raincall_dry_chests",
+      "line": "weave",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 16,
+      "level": 17,
+      "requires": [],
+      "title": "[PH] Dry Stores for the Households",
+      "text": "[PH] Amari keeps the households' stores dry and out of the collectors' reach: bring 2 Locked Chests. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 8,
-          "area": "kragmar_raincall_basin/cloudwood"
+          "type": "item",
+          "item": "default:chest_locked",
+          "count": 2
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_woven",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_cured",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_iron",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 11
-    },
-    {
-      "id": "raincall_watch_03",
-      "line": "watch",
-      "giver": "r14_troll_scout",
-      "turnin": "r14_troll_scout",
-      "min_level": 17,
-      "level": 18,
-      "requires": [
-        "raincall_watch_02"
-      ],
-      "title": "Eyes on the Bowstrings",
-      "text": "Found them: Bandit Lookouts guard the {name:bandit_camp} {dir_from_giver:bandit_camp}. Kill eight, closing the distance or using cover when they keep you at bow range. A tree between you and an arrow is worth more than any brave speech.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "vigilant_bandit_archer"
-          ],
-          "count": 8,
-          "area": "kragmar_raincall_basin/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 4.5,
-        "items": []
-      },
-      "lesson": "Archers keep their distance; close in or use cover.",
-      "duration_min": 12
+      "lesson": "A craft from Basic recipes; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "raincall_watch_04",
@@ -259,11 +283,9 @@
       "turnin": "r14_troll_captive",
       "min_level": 18,
       "level": 18,
-      "requires": [
-        "raincall_watch_03"
-      ],
-      "title": "A Voice Behind the Bows",
-      "text": "There is someone in the {name:bandit_camp} {dir_from_giver:bandit_camp} who did not volunteer: Veko Bluefeather. Veko refused the rain tithe, and the collectors found room for a prisoner. Go and speak with Veko while your work among the lookouts gives you an opening.",
+      "requires": [],
+      "title": "[PH] Veko Promised Nothing",
+      "text": "[PH] Neshi points the player to Veko Bluefeather, held in the {name:bandit_camp}, who refused a tithe nobody agreed to. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -271,10 +293,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 5
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 6,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "raincall_tithe_01",
@@ -283,11 +306,10 @@
       "turnin": "r14_troll_captive",
       "min_level": 18,
       "level": 19,
-      "requires": [
-        "raincall_watch_04"
-      ],
-      "title": "Vek Can Keep the Bill",
-      "text": "Bandit Tithe-Keeper Vek is {dir_from_giver:tithe_keeper_vek}, counting coin in the middle of this camp as though he wrung every drop from the sky himself. Kill him and break his hold on the basin. I refused to pay before they locked me up, and I am certainly not paying a leaving fee.",
+      "requires": [],
+      "title": "[PH] End {name:tithe_keeper_vek}'s Claim",
+      "text": "[PH] Veko demands the fight against Bandit Tithe-Keeper Vek in the {name:bandit_camp}, who claims to sell the rain. Real text to follow.",
+      "completion": "[PH] Vek's claim is over; the neighbours who paid under threat are no cowards. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -298,11 +320,52 @@
         }
       ],
       "rewards": {
-        "weight": 6,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "climax": true,
-      "duration_min": 10
+      "lesson": "The named perpetrator at his place; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "raincall_departure",
@@ -311,11 +374,9 @@
       "turnin": "r20_troll_capital_envoy",
       "min_level": 19,
       "level": 19,
-      "requires": [
-        "raincall_tithe_01"
-      ],
-      "title": "News Too Good to Whisper",
-      "text": "Take word of Vek's fall to Nalo Pathdrum at the shrine in Kezamba. The capital ought to hear that Raincall has no need of a man to sell it rain. I will spread the news here; I spent long enough tied up and quiet, and now I intend to be heard.",
+      "requires": [],
+      "title": "[PH] The Case Goes to Kezamba",
+      "text": "[PH] Veko sends the player to Nalo Pathdrum in Kezamba with his refusal and the case; Vek's fall is told only by the fight's own completion. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -323,128 +384,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 8
-    },
-    {
-      "id": "raincall_weave_01",
-      "line": "weave",
-      "giver": "r15_troll_local",
-      "turnin": "r15_troll_local",
-      "min_level": 11,
-      "level": 12,
-      "requires": [
-        "kapok_departure"
-      ],
-      "title": "Capes Before the Downpour",
-      "text": "A rain cape with a hole is just a very personal waterfall. Bring me three Leather from the Mudsnouts that roam the {name:rainwood} by day, {zone_area:rainwood}. If Daro already has you clearing the gardens, let one muddy walk earn its keep twice.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:leather",
-          "count": 3,
-          "roles": [
-            "reed_tapir"
-          ],
-          "area": "kragmar_raincall_basin/rainwood"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "raincall_weave_02",
-      "line": "weave",
-      "giver": "r15_troll_local",
-      "turnin": "r15_troll_local",
-      "min_level": 13,
-      "level": 14,
-      "requires": [
-        "raincall_weave_01"
-      ],
-      "title": "Houses Should Not Bow",
-      "text": "Our stilt houses nod when the water rises, and I do not care for that sort of greeting. Bring me four Iron Bars and four Coal Lumps for the smith to make new brackets. I can mend the curtains, but someone else must persuade the walls to stay under them.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:iron_bar",
-          "count": 4
-        },
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Iron is the second tier of ore.",
-      "duration_min": 12
-    },
-    {
-      "id": "raincall_weave_03",
-      "line": "weave",
-      "giver": "r15_troll_local",
-      "turnin": "r15_troll_local",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "raincall_weave_02"
-      ],
-      "title": "Claws at the Loom",
-      "text": "Palm fibre knots itself tighter than gossip in a rainbound house. Bring me two Hooked Cat Claws from the Servals hunting by day in the {name:cloudwood}; my weavers need them to comb it out. The claws may come inside, but the rest of the cat stays where you found it.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:hooked_cat_claw",
-          "count": 2,
-          "roles": [
-            "reed_jungle_lynx"
-          ],
-          "area": "kragmar_raincall_basin/cloudwood"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "raincall_weave_04",
-      "line": "weave",
-      "giver": "r15_troll_local",
-      "turnin": "r15_troll_local",
-      "min_level": 17,
-      "level": 18,
-      "requires": [
-        "raincall_weave_03"
-      ],
-      "title": "Our Tithe, Their Shirts",
-      "text": "I patch our capes while the tithe collectors strut about in fresh linen. Bring me three Linen Cloth from the Bandit Lookouts at the {name:bandit_camp} {dir_from_giver:bandit_camp}. Neshi wants their bows quiet; I want something for all the stitching their thieving has cost us.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:linen_cloth",
-          "count": 3,
-          "roles": [
-            "vigilant_bandit_archer"
-          ],
-          "area": "kragmar_raincall_basin/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 6
+      "lesson": "Home zone to capital handoff.",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: the departure id stays; free from 19, it requires nothing and claims no earlier deed (draft §1, §2)."
     }
   ]
 }

@@ -19,7 +19,10 @@
 -- gatehouses' idle posts, bounds and airspace unchanged; and by Round 58
 -- lane HALLS2, which moved the guild houses onto district plots: the six
 -- cores' sockets back to the replaced buildings', and the six new plots
--- `<capital>/miners_guild`. As a module:
+-- `<capital>/miners_guild`; and by Round 59 lane BANDQUESTS (a declared map
+-- reset) for one new socket each in four bandit camps, a `quest_place`
+-- (Copperfell's and Goldmead's load record, Redtusk's and Raincall's held
+-- supplies), bounds and airspace unchanged. As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}

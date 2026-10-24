@@ -55,6 +55,22 @@ local VILLAGE_FACING = {
 	orc = {quest_local = {x = 0, z = 1}},
 }
 
+-- Round 59 (round59-plan.md, lane BANDQUESTS): a town place (socket role
+-- `quest_place`, quests.md "Town places") in four of the six bandit camps,
+-- where a shared "use at a place" quest of the band stands its object: the
+-- load record by the stores in Copperfell's (dwarf) and Goldmead's (human)
+-- camp, the held supplies in Redtusk's (orc) and Raincall's (troll), whose
+-- leaders stand at the camp's centre: there it takes the corner across from
+-- the captive enclosure, 15.6 nodes from the leader's spot and so outside
+-- his 14-node sight, as the enclosure stands at the camp's edge. The elf
+-- and undead camps have none.
+local CAMP_PLACES = {
+	dwarf = {id = "load_record", x = 8, z = -7},
+	human = {id = "load_record", x = -3, z = -8},
+	orc = {id = "held_supplies", x = 11, z = -11},
+	troll = {id = "held_supplies", x = 11, z = -11},
+}
+
 return function(spec)
 	local palettes = {
 		dwarf={ground="default:dirt_with_coniferous_litter",foundation="default:stonebrick",wall="default:pine_wood",post="default:pine_tree",roof="stairs:slab_pine_wood",accent="default:copperblock"},
@@ -370,6 +386,10 @@ return function(spec)
 		fill(8,1,11,11,2,11,p.post); fill(11,1,8,11,2,11,p.post)
 		record("open captive enclosure",9,9,2,2,2)
 		sockets={{id="quest_captive",role="quest",x=10,y=1,z=10,dir={x=0,z=-1}}}
+		local place=CAMP_PLACES[race]
+		if place then
+			sockets[#sockets+1]={id=place.id,role="quest_place",x=place.x,y=1,z=place.z,dir={x=0,z=1}}
+		end
 	else error("POI kind differs",0) end
 
 	-- The decor rows, then the houses' touches, on the open ground the
