@@ -24,7 +24,7 @@ are proposals to discuss with the user, not approved game design.
 ## 1. Lanes and waves
 
 These are proposed delivery/review units, **not permission to launch them**.
-The next milestone is feedback on Atlas 02 and agreement on the browser layouts.
+The next milestone is feedback on Atlas 03 and agreement on the browser layouts.
 Implementation follows the user's go and the [round workflow](../process/round-workflow.md).
 
 | Wave | Lane | Outcome | Dependency |
@@ -77,6 +77,25 @@ present the earlier estimate as a commitment for all game forms.
    tab bar remaining visible. No intermediate page requiring an Open click.
    This is the requested presentation direction; exact geometry and the
    navigation adapter still need implementation design and GUI validation.
+
+9. The presentation may rearrange, regroup and reorder existing controls to
+   improve appearance or usability. Preserve the underlying functions and
+   mechanisms; this is not a requirement to copy today's coordinates. The
+   user will inspect the finished browser revision before implementation.
+10. Character creation stays on one page. Put the achievement pager at the
+    bottom, give Active Hotbar the same heading hierarchy as the other
+    quickbar sections, and place Gold/Silver/Copper in one row.
+11. Do not add live processing percentages. Preparing your arrival is the
+    explicit exception because it already shows percentages; it needs no
+    animated progress strip. Preserve existing non-processing figures and
+    timing rules rather than interpreting this as removing all numeric data.
+12. Use the actual talent trees, backgrounds and available appearance choices;
+    keep the skills strip clear of the tree and inventory. Include profession
+    area switching, privileged tabs and existing service controls.
+13. Remove invented item descriptions, per-letter category icons and the
+    redundant mining-effect-slot explanation. Ordinary sample play-state
+    data is acceptable when identified as illustrative; it must not imply
+    new item lore or mechanics. Native Server Admin identification remains.
 
 ### Proposals for the next visual discussion
 
@@ -206,6 +225,17 @@ in [VENDOR.md](../../VENDOR.md). Prefer existing extension seams.
   event. Hover/pressed styles are client-side. Avoid expensive full-catalog
   scans or replicated large textures when a window opens.
 
+### Hover feasibility
+
+The pinned Luanti API (`reference_projects/luanti/doc/lua_api.md`, style
+properties/states) supports hovered/pressed button colors and images,
+including nine-slice images. These states render client-side and need no
+formspec send. The custom tab buttons proposed here can use the same states;
+the native `tabheader[]` exposes much less styling. Preserve the navigation
+adapter's lifecycle/permission checks. Do not promise CSS transitions, layout
+movement, arbitrary web fonts or per-slot border styling. Native lists keep
+their own hover/tooltip/input behavior.
+
 ### Progress animation and update contract
 
 Source-checked after the user's feedback on 2026-10-24:
@@ -222,6 +252,11 @@ Source-checked after the user's feedback on 2026-10-24:
   state changes, a new fuel/item and large catch-up jumps. Both the plain
   furnace and [workspaces](../../mods/PLAYER/grug_jobs/workspaces.lua) use it.
   Their process ticks must not become per-tick formspec sends during restyling.
+- [Character Effects](../../mods/PLAYER/grug_inventory/pages.lua) retains
+  the deliberately coarse remaining-time text from
+  [status icons](../../mods/CORE/grug_core/status_icons.lua): whole minutes,
+  hours or “under 1 min left”. Its changed-text key and the Return home
+  cooldown text trigger the existing updates, not a new seconds countdown.
 - [Map window](../../mods/PLAYER/grug_map/window.lua) retains its send gap,
   pending-event coalescing, scrollbar quiet period, changed-party-marker
   detection and per-pass budgets. Shared tabs must not introduce idle refresh.
@@ -230,8 +265,9 @@ Keep these timing and dirty-state rules, including stable animation field
 names and comparison behavior, when changing visuals. Do not replace them
 with server-stepped fills, elapsed-time text or live percentages. Static job
 duration information and existing counters elsewhere are a separate matter;
-this is not a blanket removal of time information. Atlas percentages and
-time examples are not requirements to add live values to the game.
+this is not a blanket removal of time information. Arrival preparation retains its existing percentage display, without an
+animated progress strip. Browser examples never authorize additional live
+values or resends elsewhere.
 
 Before converting each surface, its lane records the current update triggers,
 what animates in the client, and which list changes need no form resend.
@@ -425,3 +461,64 @@ Minor visible follow-ups were checked separately in Firefox. Review inputs,
 outputs, CLI receipts and correction notes are archived in
 `~/projects/grudgelands-orchestration/ui-modernization/browser-review-2026-10-24/`.
 These reviews assess the browser artifact, not a future Luanti implementation.
+
+### Browser Atlas 03 — 2026-10-24
+
+The user's functional-fidelity feedback is incorporated in
+`~/projects/grudgelands-orchestration/ui-mockup-2026-10-24-v3/Grudgelands-UI-Atlas-03.html`.
+The previous two studies remain preserved. Atlas 03 covers 38 families and
+123 sample states, including a crafting output-overflow case and an operation
+refusal away from the forge. The user explicitly permits rearrangement for
+appearance/usability; basic functions and mechanisms must survive.
+
+This revision uses all eight real talent graphs (109 nodes), their original
+backgrounds, the six races' actual appearance options/textures and the real
+achievement catalogue. Creation is one page; achievements page at the bottom;
+Active Hotbar has a section heading; currency fields share a row. Invented
+item-description prose and per-letter category icons are removed. Genuine
+Server Admin identification, attachment counts and the mailbox balance stay.
+
+The source audit also restores profession switches, ingredient alternatives,
+the Search focus target, recipe/operation details, output overflow, the job
+strip and separate waiting queue; Scout ranged/melee slots and equipment
+labels; Claim Stone status; copyable About URLs; party/PvP state wording,
+real guild stock, waystone availability and claim travel, and the map's
+separate Quest HUD control. Primary crafting actions remain outside the
+scrolling details. Map opens directly with shared tabs. Non-map inventory
+pages share the same proposed frame height; the extra per-tab talent height
+from an intermediate revision was removed.
+
+Crafting and furnaces use the original progress sprite strips without live
+processing percentages. Arrival retains its existing percentage and ETA
+presentation, with a static proportional bar. Browser animation loops are
+illustrative; they do not replace the production start-frame/buffer/dirty
+rules above. The source-audit record beside the artifact names the owners.
+
+As before, play-state values, prices, letter/quest contents and the fixed map
+capture are examples. The atlas does not simulate inventory transfers, world
+state or every server-side action. Review controls, including switching the
+class shown by the talent examples, are outside the proposed game UI. The
+proposed geometry and final visual acceptance still await user feedback.
+No game changes or upgrade declaration; eventual UI-only work is expected
+compatible. Desktop/web Luanti acceptance follows implementation, not this
+browser review.
+
+Validation: Firefox checked all 123 states for script errors, missing images
+and unintended panel overflow. Fourteen interaction groups, 22 targeted
+review-closure checks and nine final crafting checks passed; all eight trees
+and all six races/five appearance categories were exercised. Captures cover
+1440 × 1050, 1280 × 800, 1920 × 1080 and the browser-only 390 × 844 viewport.
+A separate Effects check confirms the original coarse time presentation.
+JavaScript syntax, original-media hashes, document links and whitespace were
+checked. These results validate the browser study, not Luanti itself.
+
+Independent read-only Opus review first returned **MERGE AFTER FIXES**. The
+focused review of a frozen JS/CSS/doc snapshot returned **MERGE**, with a small
+remaining craftable-count/filter correction explicitly allowed before the
+receipt. That correction, the related quantity/source-detail presentation
+fixes and two source-backed coarse Effects time labels were applied and
+checked locally. The frozen reviewed snapshot and exact follow-up notes,
+CLI result receipts and outputs are archived in
+`~/projects/grudgelands-orchestration/ui-modernization/atlas03-review-2026-10-24/`.
+The artifact's `manifest.json` identifies the final package; source, media
+provenance, screenshots and browser reports are preserved beside it.

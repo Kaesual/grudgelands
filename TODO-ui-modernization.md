@@ -2,15 +2,15 @@
 
 Open design questions for the [proposed UI round](docs/planning/ui-modernization-plan.md).
 Status: planning, 2026-10-24. The first browser study's overall appearance is
-well received; the full game's window layouts are not approved yet. The second
-study covers all census families; its artifact and validation receipt are in
-the [round plan](docs/planning/ui-modernization-plan.md#browser-atlas-02--2026-10-24).
+well received; the full game's window layouts are not approved yet. Atlas 03 revises the full census study after the user’s functional-fidelity
+feedback; its artifact and validation receipt are in the
+[round plan](docs/planning/ui-modernization-plan.md#browser-atlas-03--2026-10-24).
 The item
 inspector is **omitted**, not an open question.
 
 ## 1. Navigation with all entitlements
 
-There can be 13 main tabs. Atlas 02 compares two layouts with selectable
+There can be 13 main tabs. Atlas 03 compares two layouts with selectable
 permissions, long labels and enlarged scale. Review these before code.
 Existing ruling 10 in the
 [crafting/UI plan](docs/planning/ui-crafting-rework-plan.md#2-rulings-the-user-2026-10-08)
@@ -45,12 +45,11 @@ User feedback on Atlas 02: Map & Quests should directly expand into its larger
 view and keep the tab bar, without an intermediate Open button. This direction
 is recorded in the plan; the map's precise dimensions and tab handoff remain
 to be worked out. It does not approve larger dimensions for every other tab.
-The current atlas still shows the earlier entry-page study; that flow is
-superseded by this feedback.
+Atlas 03 shows this direct expanded view with shared tabs.
 
 ## 2. Window families and transparency
 
-Atlas 02 covers all census families, including a chest and running furnace,
+Atlas 03 covers all census families, including a chest and running furnace,
 a quest dialog with long text and choice rewards, a Riding Trainer, and
 Admin Mail with all main tabs visible. It includes compact confirmations,
 text input states and the game's long Help texts. Review these against the
@@ -72,6 +71,12 @@ slots. The [documented fallback](docs/technical/upstream-workarounds.md#4-the-qu
 is to remove the cover/count image and keep the total in the existing adjacent
 label. Confirm this simpler presentation in Character's Scout sample; no new input
 mode or inventory mechanics. The final label must remain clear at small scale.
+
+The user explicitly permits rearranging existing controls for better looks
+or usability, provided their basic functions and mechanisms survive. The
+current [confirmed rulings](docs/planning/ui-modernization-plan.md#confirmed)
+record the one-page creation, progress, source-content and control-placement
+corrections. These are settled constraints, not new approval questions.
 
 ## Closing this TODO
 
