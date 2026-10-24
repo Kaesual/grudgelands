@@ -1344,7 +1344,10 @@ class Validator:
                 cmd = ["luajit", str(TOWN_SOCKETS), str(C.REPO)]
                 if self.town_templates:
                     cmd += ["--templates", str(self.town_templates)]
-                run = subprocess.run(cmd + sorted(keys), capture_output=True, text=True)
+                try:
+                    run = subprocess.run(cmd + sorted(keys), capture_output=True, text=True)
+                except FileNotFoundError:
+                    raise C.LoadError("town places need luajit (tools/r59_qsys3/socket_places.lua)")
                 if run.returncode != 0:
                     raise C.LoadError("socket_places.lua failed: " + run.stderr.strip())
                 for line in run.stdout.splitlines():

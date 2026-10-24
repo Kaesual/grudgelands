@@ -422,6 +422,10 @@ counted name, names the text never says).
     the other places: a clash site is a bare settlement key, a recipe quest
     place `zone_id/place_id`, a town place always carries `socket:` and the
     settlement key (never a bare id; a variant's override writes it whole).
+    A settlement with no NPC socket (a clash site, a rare's or a dragon's
+    POI, an apex mine, a mirefolk or Round 20 bandit camp) may carry one too:
+    the settlement NPCs (`grug_mobs/start_npcs.lua`) treat a settlement
+    none of whose sockets anyone stands on as scenery, silently.
     It is found on every world, where the settlement is: in a capital only
     in the core or a plot the planner always places (the inn, the eight
     service plots and the Miner's Guild house,

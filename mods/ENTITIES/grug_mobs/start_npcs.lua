@@ -755,7 +755,15 @@ local function build_rows()
 		-- settlement that matches neither published anchor is a defect rather
 		-- than a settlement placed against a guess.
 		local kind = faction_id and settlement_kind(record, faction_id, sockets) or nil
-		if #sockets==0 then
+		-- Something stands here only on a socket with a resolver or on a PvP
+		-- POI's garrison post; a settlement without one (no socket, or only
+		-- sockets nobody stands on: a Round 59 town place, `quest_place`) is
+		-- authored scenery for this file, whatever its kind.
+		local actors = garrison.poi(record.key) ~= nil
+		for socket_index = 1, #sockets do
+			actors = actors or resolvers[sockets[socket_index].role] ~= nil
+		end
+		if not actors then
 			-- Authored encounter scenery has no peaceful actor roster.
 		elseif not faction_id then
 			core.log("error", "[grug_mobs] settlement npcs: no faction for race " ..
