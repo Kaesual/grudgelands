@@ -269,8 +269,10 @@ do
 	-- 11-20's 83 (the guild's 3 aside) as 59 (3 shared, 56 local) and adds
 	-- chapter 1's four story quests in the capitals (STORYQUESTS); Round 60
 	-- rebuilds the band 21-30's 84 (the guild's 4 among them) as 71 (6
-	-- shared, chapter 2's 3 story quests in the band among them).
-	eq(quests, 420, "C 420 quests ship (485 less the start zones' and both bands' rework, plus the guild's 30 and chapter 1's 4)")
+	-- shared, chapter 2's 3 story quests in the band among them); Round 60
+	-- CAPITALS rebuilds the six capitals' 64 as 47 (4 shared, T3 added).
+	eq(quests, 403, "C 403 quests ship (485 less the start zones', both bands' and the capitals' rework, plus " ..
+		"the guild's 30 and chapter 1's 4)")
 	eq(table.concat(repeatables, ", "), "", "C no repeatable quest ships")
 	local empty = {}
 	for _, key in ipairs(hub_lines) do

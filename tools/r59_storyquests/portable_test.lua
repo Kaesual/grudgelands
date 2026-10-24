@@ -142,7 +142,8 @@ end
 for capital, c in pairs(CAPITAL) do
 	local data = file_data[c.zone]
 	if check(data ~= nil, "S the file of " .. capital) then
-		eq(data.reworked, nil, "S " .. c.zone .. " stays unflagged")
+		-- Round 60 CAPITALS flagged the six files reworked (chapter 1 kept).
+		eq(data.reworked, true, "S " .. c.zone .. " is reworked (Round 60)")
 		local lines_of, hub_of = {}, {}
 		for _, hub in ipairs(data.hubs) do
 			for _, giver in ipairs(hub.givers) do

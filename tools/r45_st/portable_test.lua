@@ -1039,19 +1039,24 @@ do
 end
 
 ------------------------------------------------------------------------------
--- Q. The 104 item objectives (spec §4.7; 163 before Round 46 removed the
+-- Q. The 97 item objectives (spec §4.7; 163 before Round 46 removed the
 --    repeatable quests, 158 before Round 57 rebuilt the start zones, 93
 --    before Round 58's gather quests, 103 before Round 59 rebuilt the band
 --    11-20: 26 there instead of 31; 98 before Round 60 rebuilt the band
---    21-30: 20 there instead of 14): none names an item that disappears
---    (a mixture) or that only a profession makes (an Alchemy product, gear).
+--    21-30: 20 there instead of 14, and the six capitals: 5 there instead
+--    of 12): none names an item that disappears (a mixture) or that only a
+--    profession makes (an Alchemy product, gear), but the one Alchemy
+--    lesson the user asked for (round60-plan.md §2 point 6).
 ------------------------------------------------------------------------------
 do
 	local json = dofile(ROOT .. "/tools/r28_b1/json.lua")
 	-- The zone files, listed by the shell (a LuaJIT tool outside the engine
 	-- sandbox: check_lua's sweep 5 names the io.popen).
 	local handle = assert(io.popen('ls "' .. ROOT .. '/mods/PLAYER/grug_quests/data/zones"'))
-	local objectives, flagged = 0, {}
+	local objectives, flagged, lessons = 0, {}, 0
+	-- Round 60 (round60-plan.md §2 point 6): the capital envoys' Alchemy
+	-- lesson asks for an Elixir of Precision I on purpose; nothing else may.
+	local ALCHEMY_LESSON = {capital_precision = "grug_alchemy:elixir_precision_t1"}
 	for file in handle:lines() do
 		if file:find("%.json$") then
 			local data = json.parse(read_file("mods/PLAYER/grug_quests/data/zones/" .. file))
@@ -1066,7 +1071,9 @@ do
 								profession_made = true
 							end
 						end
-						if item:find("^grug_alchemy:") or item:find("^grug_gear:") or profession_made then
+						if ALCHEMY_LESSON[quest.id] == item then
+							lessons = lessons + 1
+						elseif item:find("^grug_alchemy:") or item:find("^grug_gear:") or profession_made then
 							flagged[#flagged + 1] = quest.id .. " " .. item
 						end
 					end
@@ -1075,9 +1082,10 @@ do
 		end
 	end
 	handle:close()
-	eq(objectives, 104, "Q the quests hold 104 item objectives (Round 57: the start zones shared theirs; " ..
+	eq(objectives, 97, "Q the quests hold 97 item objectives (Round 57: the start zones shared theirs; " ..
 		"Round 58: the guild's 10 gather quests; Round 59: the band 11-20's 26; Round 60: the band 21-30's " ..
-		"14 became 20, shared ones counted once)")
+		"14 became 20, shared ones counted once, and the capitals' 12 became 5)")
+	eq(lessons, 1, "Q the Alchemy lesson capital_precision asks for its elixir (the one exception)")
 	eq(#flagged, 0, "Q none names a mixture, potion, elixir or grug_gear item (" ..
 		table.concat(flagged, ", ") .. ")")
 end
