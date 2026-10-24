@@ -385,7 +385,7 @@ for the new ids (no format change); nothing new in player meta or mod storage, s
 
 **Superseded (Round 60):** the test was not run before Round 60, so one checklist for 0.57, 0.58, 0.59 and 0.60
 replaces this one: [GUI checklist (Rounds 57, 58, 59 and 60)](round60-plan.md#gui-checklist-rounds-57-58-59-and-60) (the items below keep their numbers there; Round 60
-changes items 4, 12, 14, 20, 30, 31, 40, 42, 43 and 46 and adds 5–7 and 49–66).
+changes items 12, 14, 20, 30, 31, 40, 42, 43 and 46 and adds (A) 5–7 and 49–66).
 
 One test for all three rounds (nothing since 0.57.0 has been tested in the GUI), desktop and the web build (the
 lanes' web shots were taken at 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on the synced game. It replaces

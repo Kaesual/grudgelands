@@ -419,7 +419,7 @@ Measured unless marked "report" (taken from the lane's report).
 
 - **Quests:** the eight band files 84 → 71 quests, the six capitals' own 64 → 47 (measured over the files at
   `e6efbfb5` and `b63318dd`); **403 shipped** in 48 quest files (433 − 84 + 71 − 64 + 47), 28 of them flagged
-  `reworked`; 78 ids dropped (50 band, 28 capital), 48 added, 93 kept (two with changed objectives:
+  `reworked`; 78 ids dropped (50 band, 28 capital), 48 added, 70 kept (two with changed objectives:
   `frostbarrow_cutting_04` gained the Folio, `nhal_veyr_vigil_03` asks only for Hush). Offered per band zone (report,
   shared and guild variants included): Frostbarrow 14 → 14, Whitebridge 15 → 14, Lorindor 15 → 15, Moonfall 13 → 11,
   Ossuary 13 → 12, Speargrass 11 → 12, Reedlands 12 → 13, Totemwater 11 → 11.
@@ -492,7 +492,7 @@ tests, the item says so.
 
 1. Quit the world (stop the server), then make a copy of the world folder.
 2. Optional, to test the claims' containers: from the repository checkout,
-   `python3 tools/migrate.py --world <world folder> --map-reset` (Python 3.13 or newer; it packs the containers in
+   `python3 tools/migrate.py --world <world folder> --map-reset` (Python 3.14, or 3.13 with python3-zstandard; it packs the containers in
    every housing claim and must end with exit 0).
 3. Delete `map.sqlite` in the world folder; keep `map_meta.txt` (the seed), `world.mt`, `players.sqlite`,
    `auth.sqlite` and `mod_storage.sqlite`.
@@ -527,7 +527,7 @@ claim if you have one):
 2. **Round 57 item 3, last sentence:** a job of the old version that was running finishes as before (its output in the
    inventory or the Overflow).
 3. **Round 57 item 5, last sentence:** the existing character has its Basic recipes after this login.
-4. **Round 57 item 15, changed by Rounds 59 and 60:** the new start quests are offered (one whose old finale was done
+4. **Round 57 item 15, changed by Round 59:** the new start quests are offered (one whose old finale was done
    keeps it done); its old start quests are gone from the log without an error. Its level-11 zone offers the
    **reworked** band quests (not the old chain); an old band quest that was active and no longer exists is gone from
    the log without an error, while a kept id (the departure, the witness travel, the handoff, five day hunts, three
