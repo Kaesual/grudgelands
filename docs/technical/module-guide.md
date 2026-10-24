@@ -3160,8 +3160,10 @@ tools](#player-meta-read-by-external-tools).
 
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
-  coordinate mode deliberately. Map retains the shared legacy outer window and
-  uses real coordinates only inside its content. 3D preview: `model[]` element.
+  coordinate mode deliberately. The isolated UI modernization uses the
+  [presentation toolkit](ui-presentation.md) for shared frames and navigation;
+  map and new layouts use real coordinates, with explicit legacy wrappers for
+  retained fragments. 3D preview: `model[]` element.
   Skill tree = formspec with an `image_button` grid.
   Gains (XP, loot, quest progress, catches), combat notices and personal
   notices (item-use refusals, mount notices, talent points) go to the message

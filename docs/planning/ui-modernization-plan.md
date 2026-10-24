@@ -190,18 +190,15 @@ in [VENDOR.md](../../VENDOR.md). Prefer existing extension seams.
   and contextual state unless a different design is approved.
 - Map & Quests uses a larger layout with the same visible navigation; another
   tab returns to that tab's normal layout. Both the map tab and Z enter the
-  map directly. Today [map/page.lua](../../mods/PLAYER/grug_map/page.lua)
-  already opens a separate form immediately; its Open button is a fallback,
-  not the normal interaction. The browser atlas over-emphasized that fallback.
-  A shared visual frame does not require merging the map's session into sfinv:
-  prefer retaining [window.lua](../../mods/PLAYER/grug_map/window.lua)'s
-  state/update owner and adapting navigation at that boundary. The adapter
-  must stop map sends on tab exit, apply real tab visibility checks and avoid
-  stale map updates reopening a page. Exact close/reopen semantics are still
-  to be specified, including `page.lua`'s deferred `back_home` reset and
-  `window.lua`'s `core.show_formspec` wrapper / `shown_form` backstop. Do not
-  silently remove those lifecycle mechanisms when adding the shared frame;
-  define and test their adapted behavior. All non-map tabs use one common frame size under the new ruling.
+  map directly. The implementation removes the Open-button fallback and
+  retains [window.lua](../../mods/PLAYER/grug_map/window.lua)'s session and
+  update ownership. The navigation adapter stops map sends on tab exit and
+  validates current tab visibility. The deferred `back_home` reset leaves a
+  subsequently selected tab intact; the existing `shown_form` backstop still
+  prevents stale map updates from reopening another window. These boundaries
+  have fixture coverage and are documented in the
+  [presentation contract](../technical/ui-presentation.md).
+  All non-map tabs use one common frame size under the new ruling.
 - Preserve four bag slots, actual belt/equipment slots, continuous eight-column
   bag flow, native list indices, full/short/station views and hotbars A/B.
   The prototype's simplified capacities are not authoritative. Establish
@@ -209,8 +206,8 @@ in [VENDOR.md](../../VENDOR.md). Prefer existing extension seams.
   short-view rows unless the user explicitly approves another trade-off.
 - Preserve detached-list ownership, listring order, trash semantics and
   server inventory guards. Do not replace item lists with clickable images.
-  Adapt the Scout quiver's old opaque count-cover assumption explicitly; the
-  TODO proposes the documented adjacent-label fallback for visual approval.
+  The approved adjacent total label replaces the Scout quiver's old opaque
+  count cover while retaining its native inventory slot.
 
 ### Dialogs, editing and live updates
 
@@ -292,11 +289,10 @@ Each implementation brief expands its assigned rows in the
 states and meaningful tests. No row can disappear merely because it is
 privileged, infrequent or a nested fragment.
 
-THEME establishes a small demonstrator in real Luanti after visual approval:
-one inventory page, one chest and one dialog. The user's desktop/web check
-then verifies whether the browser direction translates well before every
-page is migrated. Do not sync or interrupt the user's current round. Continue independently
-with other authorized surfaces; final desktop/web visual acceptance remains the user's.
+The approved Atlas03 direction authorizes implementation of all surfaces in
+the isolated worktrees. Shared theme primitives establish the frame used by
+inventory pages, containers and dialogs. Do not sync or interrupt the user's
+current round. Final desktop/web visual acceptance remains the user's.
 
 INVENTORY and CRAFT fit actual data and capacities rather than copy example
 values from the HTML. PRIVILEGED tests all entitlement combinations and
