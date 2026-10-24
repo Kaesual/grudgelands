@@ -7,16 +7,14 @@
 -- the old legacy size[10.4,11.1] frame: a legacy size of W x H is
 -- 3/8 + 5/4 (W - 1) + 1 + 3/8 slot units wide and 3/8 + 15/13 (H - 1) + 1 +
 -- 3/8 plus two thirds of a button half-height (15/13 * 0.35) high
--- (guiFormSpecMenu.cpp regenerateGui), 13.5 x 13.673 real units. Every tab
--- keeps that size (spec ui-crafting-rework-plan.md §7); the Inventory tab's
--- boxed layout (LAYOUT below) fits it with seven rows and the money row
--- (the user, 2026-10-09). Page content follows a real_coordinates[false], so
--- pages still written in legacy coordinates keep their place; a page in real
--- coordinates starts its content with real_coordinates[true]. Legacy content
--- ends before y = 7.0 (content_bottom), which is real y 8.45; the inventory
--- views sit below it. The map has its own window since Round 44 (grug_map
--- window.lua); the legacy width and height below remain the old Map tab's
--- reference size.
+-- (guiFormSpecMenu.cpp regenerateGui), 13.5 x 13.673 real body units. The
+-- modernization adds the shared navigation header above this body. LAYOUT
+-- retains seven full-view rows and the money row (the user, 2026-10-09).
+-- Every live page starts its content with real_coordinates[true]. The old
+-- default switch before content is not a safe legacy-layout contract: in
+-- legacy mode the engine rescales the inherited header-container offset.
+-- New fragments must use real coordinates throughout. The legacy constants
+-- below only derive the retained body size; Map has its own larger window.
 grug_inventory.UI = {width = 10.4, height = 11.1, inventory_y = 7.2,
 	content_bottom = 7.0}
 local UI = grug_inventory.UI

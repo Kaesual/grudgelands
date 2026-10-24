@@ -632,8 +632,8 @@ function grug_mail.admin_fields(player, context, fields)
 		return true
 	end
 	keep_drafts(state, fields)
-	-- Closing the window only keeps the typed text; an Enter in a field asks
-	-- for nothing.
+	-- Only submitted draft fields can be kept above. Escape and the shared X
+	-- send quit alone; Enter in a field asks for no action.
 	if fields.quit or idle(fields) then return true end
 	state.status = nil
 	local handler = state.view == "compose" and compose_event or inbox_event

@@ -1,6 +1,6 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (last revised 2026-10-08; established 2026-08-06).
+Decided spec (last revised 2026-10-24; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
 hand count), WP38 (native swing capability/pointability bridge), WP39
@@ -30,7 +30,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   are accepted"), and the hotbar (`main[1..8]`) below it, outside the
   scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
   `grug_inventory.LAYOUT`): an **Inventory** box with the grid and its
-  scrollbar and the gold **Hotbar** box, each labelled inside, top left
+  scrollbar and the **Hotbar** panel, each labelled inside, top left
   above the slots. **Full** shows seven rows (the Inventory tab, layout
   below); **short** shows two (every other tab with an inventory), its
   Inventory box right above the Hotbar box; **station** shows three (0.49.1
@@ -65,10 +65,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   stay, and the cooldown overlay follows the skill to its slot on the new
   layout); one switch per 0.25 s at most, an anti-spam limit, not a
   cooldown. The control is two small buttons, **A** and **B**, the shown
-  layout marked bright gold, the other one dark, both framed, right of the
+  layout using the selected theme role and the other the normal role, right of the
   hotbar's slots in every inventory view (so on every inventory page, every
   station form and the mail's Write tab) and in a **Hotbar** row of the
-  quickbar (E). A switch re-shows the form it was made in, at its scroll
+  quickbar (E), headed **Active Hotbar**. A switch re-shows the form it was made in, at its scroll
   position. The cursor's picked-up stack is the client's selection of a
   slot, not a server move: a switch moves nothing in flight; the picked
   stack goes with its layout and the cursor then holds what that slot holds
@@ -84,8 +84,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   belt** (`grug_potion_belt`, potions and elixirs only), sharing the full
   width; below them the **Inventory** box (the full view's grid and
   scrollbar, at most 24 + 4 × 32 = 152 slots in 19 rows), the **money
-  row** and the **Hotbar** box (gold, the other boxes the Character tab's
-  dark tint). All boxes share one left edge and one right edge; the group
+  row** and the **Hotbar** panel (the same translucent theme as the other
+  inventory areas). All boxes share one left edge and one right edge; the group
   is centred in the window. The money row has no box and lies on the slot
   columns: "Money" over the balance (e.g. "123456g 99s 99c"), **Withdraw**
   (opens the Bag of Coins dialog, [economy.md](economy.md) §1), the Bag of
@@ -128,10 +128,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   armor's reduction against an enemy of the character's own level; its tooltip
   says so and that it is higher against lower-level and lower against
   higher-level enemies; Round 28 ruling 21) and maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
-- Talents keeps the shared legacy inventory geometry but uses real coordinates
-  for its page content. Class, tree selection, rank rows and description occupy
-  separate bands; combat statistics belong to Character. Both chains use equally
-  sized available/locked controls and wrapped tooltips. Clicking an available
+- Talents uses the shared frame and real coordinates for its page content.
+  The existing class talent graphs and their backgrounds, details and skill
+  catalogue retain separate areas; combat statistics belong to Character.
+  Available/locked controls retain their sizes and wrapped tooltips. Clicking an available
   talent buys one rank immediately. Respec retains confirmation and its price.
 - Help is a short player guide in six sub-pages chosen by buttons at its top
   (the selection lives in the sfinv context; Start is the default): **Start**

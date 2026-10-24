@@ -1,17 +1,21 @@
 # UI modernization — implementation plan
 
-Drafted 2026-10-24. **Implementation authorized on 2026-10-24; isolated worktree, no main merge or installation.**
+Drafted 2026-10-24. **Implemented and independently reviewed in the isolated worktree; desktop/web GUI acceptance pending. No main merge or installation.**
 The user expanded the brief from inventory pages to the game's other forms,
 including privileged pages, containers and NPC services, and asked to plan
 these together before building. The earlier inspector proposal is withdrawn.
 
-Base: `8f41fb533bf4b00c62149dac16953ba79631bb8c`. Branch:
+Planning base: `8f41fb533bf4b00c62149dac16953ba79631bb8c`; implementation
+baseline: main `0ab3aea0`. Branch:
 `ui-modernization`, worktree `.claude/worktrees/ui-modernization/`.
-The release number remains unassigned: the quest coordinator owns Round 59
-and its following quest rounds. This branch does not update main's status,
+The release number remains unassigned: the quest coordinator owns the
+numbered quest rounds. This branch does not update main's status,
 release metadata or installed game. Only the user pushes.
 
-The user's positively received visual study is
+The approved browser reference is Atlas 03:
+`~/projects/grudgelands-orchestration/ui-mockup-2026-10-24-v3/Grudgelands-UI-Atlas-03.html`
+(SHA256 `6e67dece7960a739a163c23d70829a413ceea86ca7d239903ae3236985bb3912`).
+The retained original visual study is
 `~/projects/grudgelands-orchestration/ui-mockup-2026-10-24/Grudgelands-UI-Entwurf-01.html`
 (SHA256 `34585e00a0c58e45642f90f5c1299c0db8977479ab5109b0641ad0e8fcff1868`).
 It establishes appearance, not inventory capacity, example stats, gameplay
@@ -544,7 +548,7 @@ The [surface census](ui-modernization-surfaces.md) has these dispositions:
 
 | Census families | Implementation |
 |---|---|
-| Inventory, Character, Effects/Achievements, Talents/Skills, Party/PvP, Help/Sound/About | Shared frame/navigation, rounded areas; Character equipment/model and details rearranged; actual trees/skills retained; real-coordinate Help with explicit legacy Sound island |
+| Inventory, Character, Effects/Achievements, Talents/Skills, Party/PvP, Help/Sound/About | Shared frame/navigation, rounded areas; Character equipment/model and details rearranged; actual trees/skills retained; real-coordinate Help including the Sound controls |
 | Crafting, recipe/source details, enchants/upgrades, queue/overflow | Common controls/panels, balanced profession row, bounded queue notes; original algorithms and animation strips |
 | Admin Mail; all five Creative categories | Common frame; owner refusal/audit paths retained; native catalog lists/search/pager/trash |
 | Ordinary/locked chest, default furnace, bookshelf, vessels shelf | Existing per-viewer station builders inherit the new shared area/view theme; ownership, delayed opening/lids and live update owners unchanged |
@@ -575,9 +579,10 @@ The integrated branch remains based on main `0ab3aea0`; its UI changes are
   the remaining 28 passed after loading the real shared helpers in standalone
   fixtures and updating obsolete presentation assertions. The integrated
   targeted rerun passed all 28. Transaction, permission, session, focus,
-  inventory and animation checks remain in place.
-- All 44 changed production Lua files passed the plain-5.1 parser and every
-  applicable sweep. All 100 changed Lua files, fixtures included, passed the
+  inventory and animation checks remain in place. After the code-review
+  corrections, 19 affected fixture packages passed again on `3fff1faf`.
+- All 45 changed production Lua files passed the plain-5.1 parser and every
+  applicable sweep. All 102 changed Lua files, fixtures included, passed the
   parser and sweeps 1–4. The game-sandbox sweep reports 18 host-only
   `io.popen`/`os.exit` calls in existing fixtures; all 18 source lines were
   verified unchanged against `0ab3aea0`. No gate was weakened or bypassed.
@@ -590,7 +595,44 @@ The integrated branch remains based on main `0ab3aea0`; its UI changes are
   and party update counts. Payload growth is reported separately. No client
   rendering or production-server timing claim is made.
 
-Independent reviews and their follow-up findings are recorded below when
-complete. Desktop/web visual and input acceptance remains open under the
+Independent reviews and their follow-up findings are recorded below. Desktop/web visual and input acceptance remains open under the
 checklist above; no numbered release, installation, main merge or push is
 claimed by this receipt.
+
+### Code review corrections — 2026-10-24
+
+Both independent production reviews returned **MERGE AFTER FIXES**. Their
+shared finding was the mixed-coordinate Sound island, now replaced with real
+controls and an integration check against the actual Help and ambience
+builders. The foundation review also found that the shared X button submitted
+editable values. It now forwards a quit-only event through the existing owners
+so cleanup survives without a dropdown action. A real Party-page test also
+exposed its existing unconditional rebuild on Escape; the page now treats
+both close routes as a quiet exit.
+
+Smaller corrections cover the book header, creation-panel bounds, suspended
+map exit, duplicate map close control, mail tab recognition, relative equipment
+font, profession label widths, unavailable craft-button pointer states and
+wrapped queue-note color. Obsolete API parameters/comments and documentation
+were reconciled. The separate fixture-adaptation review returned **MERGE**;
+its non-zero offset and refusal-hook coverage suggestions were included.
+
+The chosen shared frame and larger map body stay as approved. Actual text
+readability at small window sizes, selected-row contrast and desktop/web
+rendering remain GUI checklist items. The focused state works with the pinned
+engine independently of the form's version-6 declaration; no client change is
+required. Theme-byte reproducibility depends on Pillow/zlib as documented.
+Behavioral geometry, roles and native input are covered by the existing and
+added fixtures.
+
+The corrected production snapshot `3fff1faf` received **MERGE** in the focused
+independent re-review. Both Medium findings are closed; no blocker remains.
+The remaining legacy-default warning and close/draft comments were clarified
+without behavior changes. The unavailable craft button retains its keyboard
+focus indication; its pointer states stay muted.
+
+Review prompts, frozen diffs/source hashes, complete CLI results and exit
+receipts, corrections and validation logs are archived at
+`~/projects/grudgelands-orchestration/ui-modernization/implementation-review-2026-10-24/`.
+The code is ready for the user's desktop/web GUI acceptance in the isolated
+worktree. Numbered release integration, installation and pushing remain open.
