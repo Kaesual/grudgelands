@@ -38,7 +38,11 @@ local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	general = true, bodyguard = true, captain = true,
 	-- Round 58: a mining camp's lift point, the lift node's cell (the camp
 	-- socket contract, settlements.md "Mining camps"); nobody stands on it.
-	lift = true}
+	lift = true,
+	-- Round 59: a town place, the standing cell where a "use at a place"
+	-- objective's quest object stands (grug_quests, quests.md "Use at a
+	-- place": `socket:<settlement key>/<socket id>`); nobody stands on it.
+	quest_place = true}
 local TRAINER_PROFESSIONS = {weaponsmith = true, armorsmith = true, alchemist = true,
 	tailor = true, leatherworker = true, woodcarver = true, goldsmith = true,
 	cooking = true}

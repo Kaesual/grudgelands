@@ -28,6 +28,7 @@ import copy
 import json
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -87,6 +88,12 @@ DROP_OVERRIDE_KEYS = {"roles", "area"}
 # budget, the requested item and the night count apply only in files that
 # carry it.
 REWORK_FLAG = "reworked"
+# Round 59: a town place, a quest_place socket of a settlement
+# (grug_quests/labels.lua), and the tool that lists a settlement's sockets.
+TOWN_PLACE_PREFIX = "socket:"
+TOWN_PLACE_ROLE = "quest_place"
+TOWN_PLACE = re.compile(r"^socket:([a-z][a-z0-9_]*)/([a-z][a-z0-9_/]*[a-z0-9_])$")
+TOWN_SOCKETS = C.REPO / "tools" / "r59_qsys3" / "socket_places.lua"
 # Round 59: a free quest's follow-ups are counted per faction.
 FACTIONS = ("accord", "throng")
 FACTION_NAMES = {"accord": "The Accord", "throng": "The Throng"}
@@ -224,6 +231,8 @@ class Validator:
         self.guild_zones = C.guild_zones()
         self.npcs |= set(self.fortress_npcs)
         self.registered_npcs = set(self.npcs)
+        # Round 59: the town places' settlements (town_sockets), built once.
+        self._town, self.town_templates = None, None
 
     # -- small helpers ---------------------------------------------------
     def E(self, code, where, path, msg):
@@ -1310,13 +1319,68 @@ class Validator:
         ref = obj.get("place")
         if not isinstance(ref, str) or not ref:
             self.E("E-objective", file, path, "a use objective needs a 'place': a clash site key or a quest place")
+        elif ref.startswith(TOWN_PLACE_PREFIX):
+            if self.town_place(ref)[0] is None:
+                self.E("E-use-place", file, path, self.town_place(ref)[1])
         elif self.use_place(zone, ref) is None:
-            self.E("E-use-place", file, path, "%s is no clash site and no quest place of %s" % (
-                ref, ref.split("/")[0] if "/" in ref else zone))
+            self.E("E-use-place", file, path, "%s is no clash site, no quest place of %s and no town place "
+                   "(socket:<settlement key>/<socket id>)" % (ref, ref.split("/")[0] if "/" in ref else zone))
+
+    def town_sockets(self, key):
+        """Round 59: the authored sockets of settlement `key` as the mapgen
+        builds them, {socket id: (role, required)}, or None for no such
+        settlement (tools/r59_qsys3/socket_places.lua, one LuaJIT run over
+        every settlement a town place of the files names, on first use)."""
+        if self._town is None:
+            keys = set()
+            for files in (self.d.quests, self.d.front):
+                for data in files.values():
+                    for text in re.findall(r'"socket:([a-z][a-z0-9_]*)/', json.dumps(data)):
+                        keys.add(text)
+            self._town = {}
+            if keys:
+                cmd = ["luajit", str(TOWN_SOCKETS), str(C.REPO)]
+                if self.town_templates:
+                    cmd += ["--templates", str(self.town_templates)]
+                run = subprocess.run(cmd + sorted(keys), capture_output=True, text=True)
+                if run.returncode != 0:
+                    raise C.LoadError("socket_places.lua failed: " + run.stderr.strip())
+                for line in run.stdout.splitlines():
+                    words = line.split()
+                    if words[:1] == ["settlement"]:
+                        self._town[words[1]] = {}
+                    elif words[:1] == ["socket"]:
+                        self._town[words[1]][words[2]] = (words[3], words[4] == "1")
+        return self._town.get(key)
+
+    def town_place(self, ref):
+        """Round 59: a town place, `socket:<settlement key>/<socket id>`: a
+        socket of role quest_place that every world builds (a capital's
+        core or required plot, any other settlement's blueprint). (place,
+        None) or (None, the reason), as grug_quests/labels.lua."""
+        m = TOWN_PLACE.match(ref)
+        if not m:
+            return None, "%s: a town place is socket:<settlement key>/<socket id>" % ref
+        key, sid = m.groups()
+        sockets = self.town_sockets(key)
+        if sockets is None:
+            return None, "%s: no settlement %s" % (ref, key)
+        if sid not in sockets:
+            return None, "%s: settlement %s has no socket %s" % (ref, key, sid)
+        role, required = sockets[sid]
+        if role != TOWN_PLACE_ROLE:
+            return None, "%s: socket %s of %s is a %s socket, not a %s" % (ref, sid, key, role, TOWN_PLACE_ROLE)
+        if not required:
+            return None, ("%s: plot %s of %s is not built on every world; a town place stands in the core or "
+                          "a required plot (the inn, a service plot, the Miner's Guild house)"
+                          % (ref, sid.split("/")[0], key))
+        return {"zone": None, "name": key, "town": True}, None
 
     def use_place(self, zone, ref):
-        """A use objective's place: {"zone", "name"} of a clash site or a
-        recipe quest place, or None."""
+        """A use objective's place: {"zone", "name"} of a clash site, a
+        recipe quest place or (Round 59) a town place, or None."""
+        if ref.startswith(TOWN_PLACE_PREFIX):
+            return self.town_place(ref)[0]
         qualified, _, rest = ref.partition("/")
         if not rest and ref in self.clash_sites:
             return {"zone": self.clash_sites[ref]["zone"], "name": self.clash_sites[ref]["label"]}
@@ -1810,11 +1874,15 @@ def load_mob_facts(path):
 
 
 def validate(design_dir, existing_path, atlas_path=None, zones=None, mobs_path=C.DEFAULT_MOBS,
-             zone_dirs=None):
+             zone_dirs=None, town_templates=None):
+    """`town_templates`: a building_templates directory the town places'
+    settlements are built from instead of the game's (a test's copy)."""
     design = C.Design(design_dir, zone_dirs)
     existing = C.load_existing(existing_path)
     atlas = C.Atlas(atlas_path) if atlas_path else None
-    return Validator(design, existing, atlas, zones, load_mob_facts(mobs_path)).run()
+    validator = Validator(design, existing, atlas, zones, load_mob_facts(mobs_path))
+    validator.town_templates = town_templates
+    return validator.run()
 
 
 def main(argv):
@@ -2847,6 +2915,43 @@ def self_test():
         if "E-turnin-faction" in got.codes():
             failures.append("without an atlas an unknown turn-in faction gives no E-turnin-faction")
         cases.append(("no-atlas faction pairing", None, None, None))
+    finally:
+        shutil.rmtree(tmp)
+    # Round 59: town places, built from a building_templates copy with a
+    # quest_place socket in Highcourt's Miner's Guild house (a required plot)
+    # and one in its lore shrine (a plot not every world builds).
+    tmp = Path(tempfile.mkdtemp(prefix="r28_validate_"))
+    try:
+        templates = tmp / "building_templates"
+        shutil.copytree(C.REPO / "mods" / "MAPGEN" / "grug_mapgen" / "building_templates", templates)
+        for name, line in (("highcourt_miners_guild", "sockets 3 1 12 face=1 id={id}_cellar role=quest_place"),
+                           ("highcourt_lore_shrine", "sockets 6 1 10 face=2 id={id}_vault role=quest_place")):
+            path = templates / "templates" / (name + ".tpl")
+            text = path.read_text(encoding="utf-8")
+            head, _, tail = text.rpartition("\nend\n")  # the points block ends the file
+            path.write_text(head + "\n" + line + "\nend\n" + tail, encoding="utf-8")
+        for name, place, code in (
+                ("a town place in a required plot", "socket:highcourt/miners_guild/miners_guild_cellar", None),
+                ("a town place in a plot not every world builds", "socket:highcourt/lore_shrine/lore_shrine_vault",
+                 "E-use-place"),
+                ("a town place on a quest giver's socket", "socket:highcourt/miners_guild/miners_guild_leader",
+                 "E-use-place"),
+                ("a town place of no settlement", "socket:no_such_town/cellar", "E-use-place"),
+                ("a town place without its socket", "socket:highcourt/miners_guild/miners_guild_attic",
+                 "E-use-place"),
+                ("a town place without a settlement", "socket:cellar", "E-use-place")):
+            target = tmp / "design"
+            shutil.rmtree(target, ignore_errors=True)
+            shutil.copytree(valid, target)
+            data = _load(target / Q_FILE)
+            for q in data["quests"]:
+                if q["id"] == "sample_hunt_01":
+                    q["objectives"].append({"type": "use", "place": place, "object": "pledged_standard",
+                                            "label": "Plant the banner", "hold": 3})
+            _save(target / Q_FILE, data)
+            _expect(name, validate(target, existing, atlas, mobs_path=mobs, town_templates=templates), code,
+                    failures)
+            cases.append((name, None, None, code))
     finally:
         shutil.rmtree(tmp)
     if failures:

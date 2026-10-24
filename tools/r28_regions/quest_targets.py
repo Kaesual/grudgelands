@@ -21,7 +21,8 @@ the Round 28 quest format on every seed:
     text reads "in <zone>" without a direction on that seed;
   * the rift boss (Round 36) stands at the rift, a clash site, on every
     seed;
-  * every "use at a place" objective (Round 36): its place is a clash site
+  * every "use at a place" objective (Round 36): its place is a town place
+    (Round 59, a settlement socket: on every seed), a clash site
     (a fixed anchor on every seed, r28common.clash_sites) or a quest place of
     a recipe (`zone/id`, a bare id is the file's zone) that is placed on
     every seed.
@@ -181,8 +182,10 @@ class World:
 
     def use_place(self, zone, ref):
         """(gaps, problems) for a "use at a place" objective's place: a clash
-        site (fixed on every seed) or a recipe quest place."""
-        if "/" not in ref and ref in self.clash_sites:
+        site (fixed on every seed), a recipe quest place or (Round 59) a town
+        place, `socket:<settlement key>/<socket id>` (a socket every world
+        builds; that it exists is validate.py's E-use-place)."""
+        if ref.startswith("socket:") or ("/" not in ref and ref in self.clash_sites):
             return [], []
         qualified, _, rest = ref.rpartition("/")
         return self.place_target(qualified or zone, rest)
