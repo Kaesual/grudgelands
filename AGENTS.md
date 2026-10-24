@@ -231,6 +231,9 @@ tour; it never carries design or WP detail that does not already live in
   where gameplay would otherwise break; in doubt, ask the user.
 - **Escalate** a fix that makes the design clearly more complex or world
   generation noticeably slower; do not solve or accept it alone.
+- **Optional features and complexity (user, 2026-10-24):** ask before adding
+  a complex interaction or workaround for an optional feature; offer omission
+  or simplification as an alternative. Do not build the mechanism first.
 - **Runtime tests are the user's** (Flatpak Luanti GUI, desktop and web build);
   every round ends with a GUI checklist.
 
