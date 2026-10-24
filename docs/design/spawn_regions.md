@@ -314,7 +314,11 @@ since then). Every load error names the zone and the path.
   "Courier's Stump", Blackwind Rise `ashen_grave` "Ashen Grave" and
   Thunderroot Wilds `coinpit_hollow` "Coinpit Hollow" (the last two fall
   back to the belt's woods on some seeds, so their names suit either
-  ground). `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
+  ground); since Round 59 also two in the band 11–20, each in its zone's
+  11–13 open kind: Starbough Vale `snare_ground` "Starbough Snare Ground"
+  (the Lower Boughs) and Mournfen `name_rest` "Mournfen Name Rest" (the
+  Blightfields, dry ground rather than the fen's mud pools;
+  [quests.md](quests.md) "The band 11–20"). `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
   from the recipe, `place_spot(zone, id)` its spot on the world.
 - `critters`: ambient critters that keep their ABM rows in the zone.
 

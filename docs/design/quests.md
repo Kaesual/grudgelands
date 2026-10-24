@@ -170,7 +170,8 @@ bounties. Round 31 adds 24 PvP fortress quests (below) and Round 36 the main
 line's 25 (below); Round 46 removed Round 29's 55 repeatable quests (485 in
 total); Round 57 rebuilt the six start zones' 92 quests as 30 (423 in total,
 "The start zones" below); Round 58 adds the Miner's Guild's 30 (453 in
-total, [miners_guild.md](miners_guild.md) §11). This is an editorial budget,
+total, [miners_guild.md](miners_guild.md) §11); Round 59 rebuilt the band
+11–20's 83 zone quests as 59 (429 in total, "The band 11–20" below). This is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near
 an oven ("The start zones"). Compatible tasks share an outing; avoid
@@ -382,7 +383,10 @@ counted name, names the text never says).
     `ash_slab`, `toll_box`, `courier_ledger`, `branded_pay_pit`,
     `pledged_standard`, `tally_stone`, `rootmark`, `survey_cairn` and
     `wreck_pay_chest`, each drawn by `grug_quests_obj_<kind>.png` 1–1.4
-    nodes wide. Every aiming ray of a player who
+    nodes wide, and the four of the band 11–20 and the story arc's first
+    chapter (Round 59), `dispatch_record`, `witness_record`, `snare_bundle`
+    and `held_supplies`, whose looks are placeholders (a texture modifier
+    over a shipped object's texture) until the art lane's pick. Every aiming ray of a player who
     does not see it (combat, hand clicks and the crosshair's interact colour,
     a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
@@ -697,8 +701,9 @@ text. A system quest has no dialog: its mod posts its own completion line.
 ## The rework flag (Round 57)
 
 A quest file with `"reworked": true` follows the rules the quest rework
-introduces; the files of levels 11–60 keep their chains until their own
-rework (Round 59 and later), and nothing of this section ever reports an
+introduces; the files of levels 21–60 keep their chains until their own
+rework (Round 60 and later; the band 11–20's six are reworked since Round
+59, "The band 11–20"), and nothing of this section ever reports an
 unflagged file (Round 58: the guild files are flagged; the camp zones and
 the Battlegrounds files are not, so the guild quests homed there are free
 play by construction, checked by `tools/r58_guildquests`). In reworked files
@@ -753,8 +758,8 @@ each gated only by its level.
   same beast (Hearthpine's ibex, Sunscar's runners and scorpions, Kapok's
   tapirs, Stillgrave's fawns); the finale at the town's thieves' camp with its named leader
   (reward level 9); and the `*_departure` travel quest to the next zone's
-  giver, the zone's one follow-up (it requires the finale; ten level-11
-  quests require the departures). Dawnmere's strand crabs and zombies live
+  giver, the zone's one follow-up (it requires the finale; since Round 59
+  no quest requires a departure: the band 11–20's first quests are free). Dawnmere's strand crabs and zombies live
   in kinds that are no quest target (no region on every seed), so it gives
   neither `start_dead` nor `start_crabs` and keeps its cook's
   shore-and-pasture errand.
@@ -775,6 +780,60 @@ each gated only by its level.
   and the old ids are dropped (upgrade contract §4). The structure was
   written by `tools/r57_startquests/build_structure.py`;
   `tools/r57_startquests/portable_test.lua` checks it.
+
+## The band 11–20 (Round 59)
+
+The six zones of levels 11–20 (Copperfell Foothills, Goldmead Vale and
+Starbough Vale of The Accord; Mournfen, Redtusk Savanna and Raincall Basin
+of The Throng) are reworked on the same rules (round59-plan.md §2, §2a),
+from the story chapter the user picked (every recommendation of the
+chapter draft): every quest is free play, nothing chains, a level-11
+character finds the zone's first quests (minimum level 10) at once,
+without a departure. The zone's own people give them: the village's
+steward and local, the outpost's scout, the bandit camp's captive (Round
+14 and 15) and the mining camp's foreman (Round 58). Each zone offers 13
+quests.
+
+- **Shared quests** (the tasks that are the same): `band_repairs` (4 Iron
+  Bars and 4 Coal Lumps for the local's repair, all six zones, level 12),
+  `band_load_record` (the original load record at the load board of the
+  zone's bandit camp, Copperfell and Goldmead, level 15) and
+  `band_held_supplies` (supplies the bandits hold at the edge of the
+  zone's bandit camp, Redtusk and Raincall, level 19). The two use quests
+  stand their object on a town place of the camp (`socket:<zone>_bandit_camp/
+  load_record`, `.../held_supplies`; the camp blueprint
+  `wp40/r14_poi_blueprint.lua`): the load record by the camp's stores, the
+  held supplies in the corner across from the captive enclosure, out of
+  the camp leader's sight at the centre. The camp hunt `camp_hunt_t2` and
+  the guild report `guild_t2_report_*` (story) stay as Round 58 shipped
+  them.
+- **Local quests**: the witness (the scout's travel quest to the captive)
+  and the named perpetrator (the captive's kill quest; Mournfen's report
+  goes to the scout) are each zone's own story; so are the departure (ids
+  kept, level 19, requiring nothing, to the capital's envoy), the
+  steward's handoff to the scout, Starbough's snares (`snare_bundle` at the
+  recipe place `snare_ground` in the Lower Boughs) and Mournfen's names
+  (`witness_record` at `name_rest` in the Blightfields), and the zone's
+  errands: the steward's first gathering, the scout's gathering or craft,
+  two crafts or gatherings of the local (Basic recipes: torches, signs,
+  ladders, fences, locked chests; logs, herbs, crops, copper ore) and one
+  day hunt in the middle belt.
+- **Objectives**: 3 kill objectives per zone (the camp hunt, the day hunt,
+  the perpetrator), so 3 mob names, against 8–10 before; no kill-for-drop.
+- **Rewards** (ruling 18) at item levels 11–20 (tier-2 pieces, enchant
+  tier 2): the steward's first quest a choice of 2 Healing Potion II or 2
+  Mana Potion II; the day hunt (level 15–16) an armor piece per armor
+  class with the class's main stat as its prefix, the local's last craft
+  (level 17) another slot with a suffix (mana, crit, maximum HP); the
+  perpetrator (level 19) one weapon per weapon line with a prefix and a
+  suffix. Each faction's three zones give all four slots: Copperfell
+  chest and feet, Goldmead head and feet, Starbough head and legs,
+  Mournfen head and chest, Redtusk head and feet, Raincall chest and legs.
+- **Ids**: a quest whose objectives stayed keeps its id (the departures,
+  the six witness travels and the six handoffs, five day hunts, three perpetrators);
+  every other quest is new. The structure was written by
+  `tools/r59_bandquests/build_structure.py`;
+  `tools/r59_bandquests/portable_test.lua` checks it.
 
 The Miner's Guild's quests (Round 58): [miners_guild.md](miners_guild.md) §11.
 
