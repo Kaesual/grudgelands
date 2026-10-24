@@ -8,17 +8,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 ## 1. The inventory window (the "i" key)
 
-- Built on sfinv pages in one frame (Round 44, `grug_inventory/ui.lua`):
-  `formspec_version[6]` with a real-coordinate `size[13.500,13.673]`, the
-  same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size
-  (the Inventory tab's boxed layout fits it with seven rows and the money
-  row; the user, 2026-10-09);
-  the Map & Quests tab ("Map" until 0.45.1) opens the map window, a form
-  of its own sized to the screen (Round 44,
-  [world_map.md](world_map.md#map-window)). Page content follows a
-  `real_coordinates[false]`, so pages still in legacy coordinates keep their
-  place and end before legacy y=7.0; pages in real coordinates start their
-  content with `real_coordinates[true]`.
+- Built on sfinv pages in one shared frame. The approved UI modernization
+  (2026-10-24, implemented in its isolated branch) retains the 13.5 × 13.673
+  body and adds a fixed 2.2-unit header with themed navigation. All non-map
+  tabs share that frame; Map & Quests keeps its larger responsive window
+  and uses the same navigation. See the [presentation contract](../technical/ui-presentation.md).
+  Real and retained legacy body fragments explicitly select their coordinate
+  mode inside the header's container. Inventory capacity is unchanged.
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
   Character · Talents & Skills · Crafting · Party & PvP · Map & Quests ·
@@ -102,23 +98,16 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
   for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
   time, a 32-slot bag cut to 24) is gone.
-- **The Character tab** (Round 44, [UI rework spec](../planning/ui-crafting-rework-plan.md)
-  ruling 6 and §3.3; real coordinates): top left the **mode box**, top right
-  the **gear box**, both ending a gap above the short inventory view's box.
-  The mode buttons switch the box only, the choice is runtime context (never
-  stored): **Stats** (the default: the model on the left, wearing the
-  character's armor and cloak and holding the main hand's weapon on the
-  model's weapon card, the off-hand not drawn, turned with the mouse
-  (Round 54); right of it the
-  stats and the Claim Stone status, and at the foot the cloak picker,
-  bottom-aligned with the model, "Cloaks unlock through achievements." as
-  its tooltip; 3D and Stats are one mode since the Round
-  45 playtest), **Effects** and **Achievements**; the professions overview
-  moved to the Crafting tab in Round 45.
-  The gear box shows the eight equipment slots with each slot's name beside
-  it (the hands' names per class, §1 below), the Scout's quiver under them
-  and, at its foot in every mode, the travel home's name and the **Return
-  home** button with its state ([home_travel.md](home_travel.md)).
+- **The Character tab:** model and eight labelled native equipment slots
+  on the left, the selected Stats/Effects/Achievements panel on the right,
+  both above the short inventory view. The mode lives only in runtime
+  context; Stats is the default. The original model preview remains
+  mouse-rotatable. Stats includes the actual class/race/combat values, Claim
+  Stone status and cloak picker; the professions overview stays in Crafting.
+  Effects retain their coarse remaining-time labels. Achievements retain
+  their real catalog and bottom pager, with full tooltip descriptions.
+  The Scout quiver and the Return home control remain in the equipment
+  area, including travel state ([home_travel.md](home_travel.md)).
   **Shift-click** moves between the inventory and the equipment: every list
   the page draws rings to `grug_shift`, a one-slot list no page draws and
   that never holds anything (whatever another writer leaves there goes back
@@ -639,10 +628,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   slot. It holds up to **500 arrows**; arrows stack to **100** in any
   inventory. Internally the list `grug_quiver_content` carries five stacks of
   100, but only its first cell is drawn and it always holds min(total, 100):
-  **clicking the slot takes up to 100 arrows as one stack**. Above 100 arrows
-  the cell shows the true total (e.g. 181) over the engine's count (Round 41
-  ruling 6); its count corner matches the slot background only approximately
-  and shows no hover highlight (accepted). Arrows enter by
+  **clicking the slot takes up to 100 arrows as one stack**. The native cell
+  shows the first stack's count; the adjacent label shows the true total
+  (e.g. 181). The UI modernization removes the old opaque count-cover/image
+  workaround so native hover and transparency remain intact. Arrows enter by
   **drag** (onto the slot), **shift-click** (from the inventory) and **pickup**
   while the quiver has room; anything else is refused. A shift-click on the
   slot moves its up to 100 arrows into the inventory in the give order,

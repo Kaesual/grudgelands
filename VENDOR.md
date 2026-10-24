@@ -1041,3 +1041,29 @@ damage continue, while custom/native attacks and jumping are blocked.
 
 Round 16 review correction: mobs `scale_mob` preserves the selectionbox `rotate`
 flag through temporary/permanent scaling for the oriented Ibex targeting box.
+
+## UI modernization — isolated implementation, 2026-10-24
+
+These patches change presentation only; their owning sessions and inventory
+rules remain. Integration is tracked by the [UI plan](docs/planning/ui-modernization-plan.md).
+
+- `mods/BASE/creative/inventory.lua`: real-coordinate catalog/search/pager/trash
+  layout in the shared frame; remove its local old list colors. All five
+  registered categories retain the same 32-item pages, native lists and inbox
+  rings. Mechanical `minetest` to `core` spelling cleanup.
+- `mods/BASE/default/nodes.lua`: runtime theme lookup for the sign editor,
+  real-coordinate field and explicit Save (`button_exit`); protection, session,
+  quit gating and 512-byte limit unchanged. Mechanical `minetest` to `core`
+  spelling cleanup in the file. Shelves use the existing station seam.
+- `mods/BASE/default/craftitems.lua`: runtime theme lookup for book frames,
+  real-coordinate read/write layouts; read text is the readonly textarea's
+  content, not its label. Existing fields, tab/paging/save handlers and focus
+  retained. Mechanical `minetest` to `core` spelling cleanup.
+- `mods/ENTITIES/mobs/spawner.lua` and `crafts.lua`: runtime theme lookup for
+  the reachable native spawner/texture editors and real-coordinate layouts;
+  escape the existing texture value in its field. Existing field callbacks
+  and protection remain.
+
+Each change has a `GRUG PATCH` marker. No reverse dependency on grug_core is
+added to a vendored mod; these builders resolve the theme at runtime. Existing
+sfinv hooks support the new navigation without another vendored API patch.

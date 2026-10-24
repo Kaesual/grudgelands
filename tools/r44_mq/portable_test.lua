@@ -1678,6 +1678,30 @@ do
 		"I base.lua: the world images get the names only, the minimap the whole layer")
 end
 
+-- Shared navigation must cancel an owed map send and survive its deferred
+-- back-home callback; the real native scrollbar pipeline is still exercised above.
+do
+	sfinv.register_page("grug_inventory:character", {title = "Character"})
+	sfinv.set_page(accord, "grug_map:atlas")
+	local session = W.sessions.ann
+	session.pending = true
+	local index
+	for n, id in ipairs(session.grug_ui_nav) do
+		if id == "grug_inventory:character" then index = n end
+	end
+	check(index ~= nil, "NAV Character is visible in the map's shared bar")
+	fields(accord, {["grug_ui_tab_" .. index] = "true"})
+	eq(sfinv.get_page(accord), "grug_inventory:character", "NAV tab selects the real page")
+	check(not session.open and not session.pending, "NAV pending map send cancelled on tab exit")
+	local before = sends_to("ann")
+	for _, entry in ipairs(after_calls) do entry.fn(unpack(entry.args)) end
+	eq(sfinv.get_page(accord), "grug_inventory:character", "NAV deferred home reset cannot overwrite chosen page")
+	shown.ann = nil
+	advance(2)
+	for _, fn in ipairs(markers_changed) do fn(accord) end
+	eq(sends_to("ann"), before, "NAV pending/quest updates cannot reopen the map")
+end
+
 if failures > 0 then
 	error(("R44 MQ PORTABLE FAIL %d/%d"):format(failures, checks), 0)
 end

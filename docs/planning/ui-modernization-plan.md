@@ -541,3 +541,31 @@ services in bounded ownership packages; map, mail, creation and remaining
 forms; integrated independent review and checks. No numbered release is
 claimed. All UI-only packages are **compatible**: no saved-state or worldgen
 change. Pending GUI acceptance does not block isolated implementation.
+
+### Implementation scope receipt — 2026-10-24
+
+The [surface census](ui-modernization-surfaces.md) has these dispositions:
+
+| Census families | Implementation |
+|---|---|
+| Inventory, Character, Effects/Achievements, Talents/Skills, Party/PvP, Help/Sound/About | Shared frame/navigation, rounded areas; Character equipment/model and details rearranged; actual trees/skills retained; real-coordinate Help with explicit legacy Sound island |
+| Crafting, recipe/source details, enchants/upgrades, queue/overflow | Common controls/panels, balanced profession row, bounded queue notes; original algorithms and animation strips |
+| Admin Mail; all five Creative categories | Common frame; owner refusal/audit paths retained; native catalog lists/search/pager/trash |
+| Ordinary/locked chest, default furnace, bookshelf, vessels shelf | Existing per-viewer station builders inherit the new shared area/view theme; ownership, delayed opening/lids and live update owners unchanged |
+| Profession furnace and dual workspace | Explicit input/fuel/output layout with original animated fire/arrow; shared station view |
+| Claim Stone draft/active/access/waypoints/belongings/confirmation | Themed native tab buttons dispatch existing tab IDs; native lists and guards retained |
+| Quest giver; Map & Quests | Shared panels and direct map navigation; native scrollbars, source text/rewards and pending-send cancellation |
+| Trader/guild trade-in and stock, repairs, crown, profession/riding/ship trainers | Shared frames/headings and service rows; existing prices/conditions/transactions |
+| Innkeeper, waystone, guild lift, housing manager | Shared service/destination presentation and existing travel/ownership paths |
+| Player mail/read/write/report/To admin | Internal themed tab buttons; existing drafts, attachments, confirmation and stale-submit behavior |
+| Character creation and arrival; welcome | One-page creation with original preview/choices; opaque background, unchanged commit gating; static percentage bar at existing progress cadence |
+| Quickbar and withdrawal | Active Hotbar heading; one denomination row; existing input/actions |
+| Sign, book, mob spawner, texture editor | Native themed real-coordinate editors; field names, protection/focus/save owners retained |
+
+The prototype's fabricated play-state data is not shipped. No quest content,
+item descriptions, inventory inspector, new update timer or client dependency
+is added. The separate [toolkit contract](../technical/ui-presentation.md)
+records the shared seams. [Traffic measurements](../../tools/ui_theme/measurements.md)
+compare the same scenarios at main `0ab3aea0` and the isolated UI branch.
+Final code review, full fixture results, smoke boot and GUI acceptance are
+recorded separately below; no release number or main merge is implied.

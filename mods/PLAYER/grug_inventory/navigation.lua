@@ -63,11 +63,7 @@ end
 local handle_scroll = sfinv.handle_scroll
 function sfinv.handle_scroll(player, context, fields)
 	local id, clicked = grug_inventory.navigation_target(player, context, fields)
-	if clicked then
-		grug_inventory.keep_scroll(context, fields)
-		if id and id ~= context.page then sfinv.set_page(player, id) end
-		return true
-	end
+
 	if not visible(player, context, context.page) then
 		local page = sfinv.pages[context.page]
 		-- Explicit refusal-only hook preserves the owner's audit behavior;
@@ -76,6 +72,11 @@ function sfinv.handle_scroll(player, context, fields)
 			if page:on_navigation_denied(player, context, fields) then return true end
 		end
 		sfinv.set_page(player, sfinv.get_homepage_name(player))
+		return true
+	end
+	if clicked then
+		grug_inventory.keep_scroll(context, fields)
+		if id and id ~= context.page then sfinv.set_page(player, id) end
 		return true
 	end
 	return handle_scroll(player, context, fields)

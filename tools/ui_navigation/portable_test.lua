@@ -66,6 +66,14 @@ suspended = true
 before = builds
 fields({grug_ui_tab_3 = "true"})
 assert(builds == before and ctx.page == ids[1])
+-- A stale click on the revoked page itself also leaves that page safely.
+suspended, creative = false, true
+sfinv.set_page(player, "creative:9")
+local own
+for index, value in ipairs(ctx.grug_ui_nav) do if value == "creative:9" then own = index end end
+creative = false
+fields({["grug_ui_tab_" .. own] = "true"})
+assert(ctx.page == ids[1])
 -- The map's separate mapping uses the same visibility predicate.
 suspended = false
 local map = {}

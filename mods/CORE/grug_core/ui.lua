@@ -51,4 +51,3 @@ function UI.frame(w, h, title, opaque)
 	if title then fs = fs .. UI.heading(0.4, 0.45, title) end
 	return fs
 end
-

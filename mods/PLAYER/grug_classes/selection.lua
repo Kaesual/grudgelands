@@ -259,7 +259,6 @@ local LOOK_Y = 4.7
 local CREATE_X, CREATE_Y, CREATE_W, CREATE_H = 11.0, 9.4, 3.6, 0.8
 -- A chosen race or class; a chosen faction keeps its own colour and the other
 -- one is dimmed.
-local CHOSEN = "#8a6a1e"
 local HINT_COLOUR = "#b8b0a0"
 
 local function dimmed(colour)
@@ -277,10 +276,10 @@ end
 
 local function button(fs, x, y, w, h, field, label, tooltip, bgcolor, chosen)
 	fs[#fs + 1] = grug_core.ui.button_style(field, chosen and "selected" or "normal")
-	if bgcolor or chosen then
-		fs[#fs + 1] = ("style[%s;bgcolor=%s%s]"):format(field, bgcolor or CHOSEN,
-			chosen and ";font=bold" or "")
+	if bgcolor then
+		fs[#fs + 1] = ("style[%s;bgcolor=%s]"):format(field, bgcolor)
 	end
+	if chosen then fs[#fs + 1] = ("style[%s;font=bold]"):format(field) end
 	fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(x, y, w, h, field,
 		esc(label))
 	fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(tooltip))
