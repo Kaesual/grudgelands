@@ -64,8 +64,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] Something for the Carriers",
-      "text": "[PH] Taleko Drycord keeps the carriers at Whisperreed Landing fed: bring 4 Melons. Real text to follow.",
+      "title": "Something for the Carriers",
+      "text": "Every load at Whisperreed Landing seems to be urgent until I ask when its carriers last ate. Bring me four Melons for the people doing the lifting. The trade can wait while they have a slice.",
       "objectives": [
         {
           "type": "item",
@@ -98,8 +98,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "[PH] Who Disputes the Claim",
-      "text": "[PH] Taleko sends the player to Enashi Reedvoice at Reedvoice Station, who contradicts those who make the water their own. Real text to follow.",
+      "title": "Who Disputes the Claim",
+      "text": "The toll-takers claim the water as if they dug the whole course themselves. Speak to Enashi Reedvoice at Reedvoice Station; she knows the crossings and the people being charged to use them. She has been asking who gave those collectors permission, and they dislike the question.",
       "objectives": [
         {
           "type": "talk",
@@ -121,8 +121,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] An Invitation to Speargrass",
-      "text": "[PH] Taleko sends the player to Brakka Jarward in Speargrass Reach, an ally of the exchange. Real text to follow.",
+      "title": "An Invitation to Speargrass",
+      "text": "Brakka Jarward at Speargrass Wellhold keeps the working crews fed, and our exchange depends on the work they do. Go and speak to her in Speargrass Reach. Tell her Taleko sent willing hands, which are more useful than another promise about the next load.",
       "objectives": [
         {
           "type": "talk",
@@ -144,8 +144,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] An Invitation to Ossuary",
-      "text": "[PH] Taleko sends the player to Sovel Namekeeper in Ossuary Reach, an ally of the exchange. Real text to follow.",
+      "title": "An Invitation to Ossuary",
+      "text": "Sovel Namekeeper at Ossuary Ledgerstead takes care that old belongings and old names reach the right people. Go and offer help in Ossuary Reach. We send loads through many hands here; Sovel reminds me why the name at the end matters.",
       "objectives": [
         {
           "type": "talk",
@@ -167,8 +167,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] That Is No Floating Log",
-      "text": "[PH] Zali Runoff's stone carriers keep meeting Logbacks: hunt 6 of them in the {name:mudbanks}. Real text to follow.",
+      "title": "That Is No Floating Log",
+      "text": "My stone carriers keep finding Logbacks where they hoped to find a place to set down their load. Kill six in the {name:mudbanks}. If a log turns to watch you approach, do not give it the benefit of the doubt.",
       "objectives": [
         {
           "type": "kill",
@@ -223,8 +223,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "[PH] Signs for the Crossings",
-      "text": "[PH] Taleko keeps the exchange routes open and marked: bring 6 Wooden Signs for the crossings. Real text to follow.",
+      "title": "Signs for the Crossings",
+      "text": "A carrier with both hands full should not have to wave down a stranger to learn which crossing they have reached. Bring me six Wooden Signs for the exchange routes. I will make the lettering large enough to read over a sack.",
       "objectives": [
         {
           "type": "item",
@@ -247,9 +247,9 @@
       "min_level": 26,
       "level": 27,
       "requires": [],
-      "title": "[PH] Loosen the Held Bundles",
-      "text": "[PH] Enashi wants the stores seized by the toll-takers made ready for return at the {name:seized_stores} in the {name:reedbanks}. Real text to follow.",
-      "completion": "[PH] The bundles can go back to the people they were taken from. Real text to follow.",
+      "title": "Loosen the Held Bundles",
+      "text": "The toll-takers have tied up other people's provisions and left them at the {name:seized_stores} in the {name:reedbanks}. Free the bundles there and report to me so their owners can collect them. A knot around a load does not make its contents belong to whoever tied it.",
+      "completion": "The stores are ready to go back to their owners. I will see that the people waiting for them hear where to collect.",
       "objectives": [
         {
           "type": "use",
@@ -303,9 +303,9 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] The River Has No Purse",
-      "text": "[PH] Enashi sends the player against Mirefolk Tollkeeper Ush at the {name:mire_nests}, who charges for every crossing. Real text to follow.",
-      "completion": "[PH] The river charges nobody now. Real text to follow.",
+      "title": "The River Has No Purse",
+      "text": "Mirefolk Tollkeeper Ush charges for every crossing he can hold, though the boat crews do the work and mend the landings. Kill him at the {name:mire_nests}, {dir_from_giver:mire_nests}, and return to me. He says the water demands payment; I have heard only his voice asking.",
+      "completion": "Ush will make no more demands at our crossings. The people who keep them usable can get back to their work without paying him for the privilege.",
       "objectives": [
         {
           "type": "kill",
@@ -371,8 +371,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] Standards at Bannerbreak",
-      "text": "[PH] Enashi sends the player to Yarra Standardmender at Tornstandard Hold; Ush's fall is not assumed. Real text to follow.",
+      "title": "Standards at Bannerbreak",
+      "text": "Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa keeps the colours fit to carry while the fighting wears everything down. Go and offer her help. She knows how much work stands behind a banner that still holds together.",
       "objectives": [
         {
           "type": "talk",

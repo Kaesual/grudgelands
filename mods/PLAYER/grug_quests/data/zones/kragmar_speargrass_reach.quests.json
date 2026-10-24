@@ -64,8 +64,8 @@
       "min_level": 26,
       "level": 27,
       "requires": [],
-      "title": "[PH] Morga Knows the Missing Colours",
-      "text": "[PH] Brakka Jarward sends the player to Morga Cutgrass at Cutgrass Watch, who gathers the reports of vanished banners. Real text to follow.",
+      "title": "Morga Knows the Missing Colours",
+      "text": "Crews come home asking whether I have seen the banners they left with, as if I might have packed them away with the supper pots. Speak to Morga Cutgrass at Cutgrass Watch about the missing colours. She is collecting the reports, and she remembers who stood beneath each one.",
       "objectives": [
         {
           "type": "talk",
@@ -87,8 +87,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Promises Outlast Breath",
-      "text": "[PH] Brakka sends the player to Ossa Quietregister in Nhal Veyr with the names of the crews she counts. Real text to follow.",
+      "title": "Promises Outlast Breath",
+      "text": "I keep the names of everyone who goes out with our crews, including those who do not come back to answer. Take word of that work to Ossa Quietregister in Nhal Veyr. Our promises to those people should not depend on whether they can still remind us.",
       "objectives": [
         {
           "type": "talk",
@@ -110,8 +110,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Put the Claws to Work",
-      "text": "[PH] Gorren Redpick tries Shearing Cat Claws as tool tips: bring 3, from the Tallgrass Tigers of the {name:tallgrass}. Real text to follow.",
+      "title": "Put the Claws to Work",
+      "text": "The Tallgrass Tigers of the {name:tallgrass} cut through tough grass with equipment they never have to order. Bring me three Shearing Cat Claws so I can try them as tool tips. If the trial works, the next shift can borrow the idea without borrowing the whole cat.",
       "objectives": [
         {
           "type": "item",
@@ -167,8 +167,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "[PH] Gates for the Crew Yard",
-      "text": "[PH] Brakka counts the people who go out to work and wants them counted back in: bring 4 Acacia Wood Gates for the crew yard. Real text to follow.",
+      "title": "Gates for the Crew Yard",
+      "text": "People keep cutting through the crew yard wherever they please, which makes counting a returning shift a lively exercise. Bring me four Acacia Wood Gates so I can give them proper ways in and out. I want to know who is home before the bowls go round.",
       "objectives": [
         {
           "type": "item",
@@ -191,9 +191,9 @@
       "min_level": 27,
       "level": 28,
       "requires": [],
-      "title": "[PH] Secure the Abandoned Loot",
-      "text": "[PH] Morga wants a bundle of the stolen banners secured at the {name:banner_cache} in the {name:hunting_grounds}, a load left behind away from the goblins' camp. Real text to follow.",
-      "completion": "[PH] The colours belong to the people who served under them again. Real text to follow.",
+      "title": "Bring the Colours Home",
+      "text": "A bundle of stolen banners has been left at the {name:banner_cache} in the {name:hunting_grounds}. Secure it and report to me so we can return the colours to the people who carried them. They should not have to buy back the cloth their friends stood under.",
+      "completion": "Those colours can go home. I know people who will recognise every patched tear in them.",
       "objectives": [
         {
           "type": "use",
@@ -247,9 +247,9 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] Our Colours Are Not for Sale",
-      "text": "[PH] Morga sends the player against Goblin Banner-Broker Rakk at the {name:goblin_camp}, who sells stolen banners back to their bearers. Real text to follow.",
-      "completion": "[PH] Rakk's trade in other people's colours is over. Real text to follow.",
+      "title": "Our Colours Are Not for Sale",
+      "text": "Goblin Banner-Broker Rakk steals banners and offers to sell them back to their own bearers. Kill him at the {name:goblin_camp}, {dir_from_giver:goblin_camp}, and bring me word. He prices each one by how much its people want it back; I know exactly what sort of merchant that makes him.",
+      "completion": "Rakk's trade is finished. I will tell the crews they owe him nothing for wanting their colours back.",
       "objectives": [
         {
           "type": "kill",
@@ -315,8 +315,8 @@
       "min_level": 29,
       "level": 29,
       "requires": [],
-      "title": "[PH] Stand Where the Ash Falls",
-      "text": "[PH] Morga sends the player to Vaska Ashlistener in Blackwind Rise; no earlier deed is claimed. Real text to follow.",
+      "title": "Stand Where the Ash Falls",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise needs people willing to stand with the watch when the ash falls. Go and speak to her about the work. She will have more use for your hands than for a grand account of why you came.",
       "objectives": [
         {
           "type": "talk",

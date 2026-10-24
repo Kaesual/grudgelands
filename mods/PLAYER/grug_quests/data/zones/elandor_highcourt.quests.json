@@ -203,8 +203,8 @@
       "min_level": 20,
       "level": 20,
       "requires": [],
-      "title": "[PH] Light for the City's Work",
-      "text": "[PH] Mariel Waybook needs 20 Torches for the night roads to the chapel and the petitioners' late queue. Real text to follow.",
+      "title": "Light for the City's Work",
+      "text": "Petitioners still wait outside the chapel after dark, and a person carrying a complaint should at least be able to see the steps. Bring me twenty Torches for the queue and the paths leading here. I have enough reports of injustice without adding a badly lit stair.",
       "objectives": [
         {
           "type": "item",
@@ -218,42 +218,42 @@
           "givers": [
             "r20_human_capital_envoy"
           ],
-          "text": "[PH] Mariel Waybook needs 20 Torches for the night roads to the chapel and the petitioners' late queue. Real text to follow."
+          "text": "Petitioners still wait outside the chapel after dark, and a person carrying a complaint should at least be able to see the steps. Bring me twenty Torches for the queue and the paths leading here. I have enough reports of injustice without adding a badly lit stair."
         },
         {
           "zone": "elandor_dur_brannoc",
           "givers": [
             "r20_dwarf_capital_envoy"
           ],
-          "text": "[PH] Dorrin Gateledger needs 20 Torches for the gate watch and the late carts at the ancestor hall. Real text to follow."
+          "text": "Late carts arrive while the gate watch is changing, usually just as someone puts out the useful light. Bring me twenty Torches for the watch and the approaches to the ancestor hall. The ancestors can wait patiently; a driver with a wheel in a rut seldom does."
         },
         {
           "zone": "elandor_lethariel",
           "givers": [
             "r20_elf_capital_envoy"
           ],
-          "text": "[PH] Eriath Boughwarden needs 20 Torches for the tenders' paths under the old trees, kept low and careful. Real text to follow."
+          "text": "The tenders use the paths beneath the old trees long after the light has left them. Bring me twenty Torches for their rounds. We will keep the flames low and clear of the boughs; the trees have entrusted us with enough already."
         },
         {
           "zone": "kragmar_gor_drazhak",
           "givers": [
             "r20_orc_capital_envoy"
           ],
-          "text": "[PH] Thorga Roadspeaker needs 20 Torches for the muster yard and the roads the recruits march out on. Real text to follow."
+          "text": "A recruit ought to leave the muster yard watching the road, instead of feeling for it with a boot. Bring me twenty Torches for the yard and the marching routes. I want the first lesson of the evening to involve something better than falling over."
         },
         {
           "zone": "kragmar_kezamba",
           "givers": [
             "r20_troll_capital_envoy"
           ],
-          "text": "[PH] Nalo Pathdrum needs 20 Torches for the pilgrims' boardwalks to the cenote after dark. Real text to follow."
+          "text": "The pilgrims' boardwalks to the cenote need light after dark. Bring me twenty Torches so a thoughtful walk does not end with a startled splash. People come here to speak to the water; most would prefer to do it standing above it."
         },
         {
           "zone": "kragmar_nhal_veyr",
           "givers": [
             "r20_undead_capital_envoy"
           ],
-          "text": "[PH] Ossa Quietregister needs 20 Torches for the graveside visits of the living, who still need to see. Real text to follow."
+          "text": "The living come to visit the graves after their day's work, and they still need light to find the right names. Bring me twenty Torches for the paths. We have time to wait for them; there is no need to make their walk harder."
         }
       ],
       "rewards": {
@@ -269,8 +269,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Debts That Walk at Night",
-      "text": "[PH] Mariel: Debtbound Zombies wander the commons after dark with somebody's unpaid tolls; lay two to rest. Real text to follow.",
+      "title": "Debts That Walk at Night",
+      "text": "Debtbound Zombies wander the {name:commons} after dark, reaching for travellers as though another toll were due. Lay two to rest and report to me. No account I keep entitles a collector to do that.",
       "objectives": [
         {
           "type": "kill",
@@ -287,7 +287,7 @@
           "givers": [
             "r20_human_capital_envoy"
           ],
-          "text": "[PH] Mariel: Debtbound Zombies wander the commons after dark with somebody's unpaid tolls; lay two to rest. Real text to follow."
+          "text": "Debtbound Zombies wander the {name:commons} after dark, reaching for travellers as though another toll were due. Lay two to rest and report to me. No account I keep entitles a collector to do that."
         },
         {
           "zone": "elandor_dur_brannoc",
@@ -299,7 +299,7 @@
               "area": "elandor_dur_brannoc/pastures"
             }
           ],
-          "text": "[PH] Dorrin: Debtbound Zombies knock at the pasture gates at night to collect debts long settled; lay two to rest. Real text to follow."
+          "text": "Debtbound Zombies come through the {name:pastures} at night to collect debts that were settled long ago. Lay two to rest and bring me word. I keep the receipts, but they have shown very little interest in reading them."
         },
         {
           "zone": "elandor_lethariel",
@@ -311,7 +311,7 @@
               "area": "elandor_lethariel/glades"
             }
           ],
-          "text": "[PH] Eriath: Debtbound Zombies trample the saplings in the glades at night; grant two of them peace before dawn does it harder. Real text to follow."
+          "text": "Debtbound Zombies trample the young growth in the {name:glades} after dark and turn on anyone tending it. Lay two to rest and return to me. The tenders need a safe path, and those dead have walked it long enough."
         },
         {
           "zone": "kragmar_nhal_veyr",
@@ -323,7 +323,7 @@
               "area": "kragmar_nhal_veyr/blightfields"
             }
           ],
-          "text": "[PH] Ossa: Debtbound Zombies walk the blightfields at night with debts that stand in no register of hers; lay two to rest. Real text to follow."
+          "text": "Debtbound Zombies walk the {name:blightfields} at night, grasping at people over debts that stand in none of our records. Lay two to rest and bring me word. An empty claim should not keep making victims."
         }
       ],
       "rewards": {
@@ -349,9 +349,9 @@
       "min_level": 19,
       "level": 20,
       "requires": [],
-      "title": "[PH] A Steady Hand for a Rash Promise",
-      "text": "[PH] Mariel claimed at the little shooting match that a calm record-keeper aims as well as any guard, and now has to prove it. Learn the brew from the Alchemy trainer at the herb garden in the lore quarter; Sunleaf grows and young boars roam back where you started, and your first village's waystone takes you there. Real text to follow.",
-      "completion": "[PH] Mariel: whatever the match brings, the elixir promises no hit; she thanks the player with dry humour. Real text to follow.",
+      "title": "A Steady Hand for a Rash Promise",
+      "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth volunteers the other hand as well. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
+      "completion": "Thank you; that should help with the hand, if not the claim I made with it. I have left room on the score sheet for an honest result.",
       "objectives": [
         {
           "type": "item",
@@ -365,48 +365,48 @@
           "givers": [
             "r20_human_capital_envoy"
           ],
-          "text": "[PH] Mariel claimed at the little shooting match that a calm record-keeper aims as well as any guard, and now has to prove it. Learn the brew from the Alchemy trainer at the herb garden in the lore quarter; Sunleaf grows and young boars roam back where you started, and your first village's waystone takes you there. Real text to follow.",
-          "completion": "[PH] Mariel: whatever the match brings, the elixir promises no hit; she thanks the player with dry humour. Real text to follow."
+          "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth volunteers the other hand as well. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
+          "completion": "Thank you; that should help with the hand, if not the claim I made with it. I have left room on the score sheet for an honest result."
         },
         {
           "zone": "elandor_dur_brannoc",
           "givers": [
             "r20_dwarf_capital_envoy"
           ],
-          "text": "[PH] Dorrin means to win the throw at an old pan plate, while Varda only asks that the good pan survives. Learn the brew from the Alchemy trainer at the brewhouse on the terraces; Sunleaf and boars wait back where you started, by your first village's waystone. Real text to follow.",
-          "completion": "[PH] Dorrin: the pan plate may ring, the good pan stays whole; no guarantee of a win. Real text to follow."
+          "text": "I mean to win a throwing match against an old pan plate, while Varda has made me promise the good pan will survive. Bring me an Elixir of Precision I to help my aim catch up with my confidence. Dur Brannoc's Alchemy trainer at the brewhouse on the terraces teaches the recipe. For Sunleaf and a Boar Tusk from the daytime boars, take the city's waystone to your first village's waystone; it is a quick trip back where you started.",
+          "completion": "Good, now the old plate has reason to worry. The useful pan is staying in Varda's kitchen, where it can witness none of this."
         },
         {
           "zone": "elandor_lethariel",
           "givers": [
             "r20_elf_capital_envoy"
           ],
-          "text": "[PH] Eriath wants to answer at the butts the remark that envoys only ever hit decisions. Learn the brew from the Alchemy trainer at the brewhouse among the homes; the ingredients grow and roam back where you started, by your first village's waystone. Real text to follow.",
-          "completion": "[PH] Eriath: a steady hand, not a promised hit; the remark will be answered either way. Real text to follow."
+          "text": "Someone remarked that envoys only ever hit upon decisions, and I have agreed to answer with a bow. Bring me an Elixir of Precision I; I should like the reply to land where I intend. Lethariel's Alchemy trainer at the brewhouse among the homes teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars are found back where you started, a quick journey from the city's waystone to your first village's waystone.",
+          "completion": "Thank you; I still have to draw the bow and aim it. Should I miss, I expect the next remark to be considerably better prepared."
         },
         {
           "zone": "kragmar_gor_drazhak",
           "givers": [
             "r20_orc_capital_envoy"
           ],
-          "text": "[PH] Thorga mocked a recruit's aim and now has to step up to the target herself. Learn the brew from the Alchemy trainer at the herb house in the bone quarter; Sunleaf and boars wait back where you started, by your first village's waystone. Real text to follow.",
-          "completion": "[PH] Thorga: she takes her turn at the target; the elixir guarantees nothing. Real text to follow."
+          "text": "I told a recruit that the target was the large round thing in front of him, and now he wants to watch my turn. Bring me an Elixir of Precision I before the rest of the yard gathers. Gor Drazhak's Alchemy trainer at the herb house in the bone quarter teaches the recipe. Take the city's waystone to your first village's waystone for a quick trip back where you started; you can find Sunleaf there and get a Boar Tusk from the daytime boars.",
+          "completion": "Right, my turn. If I miss, the recruit has earned one comment, and I suspect he already knows which one."
         },
         {
           "zone": "kragmar_kezamba",
           "givers": [
             "r20_troll_capital_envoy"
           ],
-          "text": "[PH] Nalo wants to hit a hanging fruit target before Teshani takes it back for the kitchen. Learn the brew from the Alchemy trainer at the herbalist's under the vines; the ingredients wait back where you started, by your first village's waystone. Real text to follow.",
-          "completion": "[PH] Nalo: the fruit may yet reach the kitchen; the elixir guarantees no hit. Real text to follow."
+          "text": "I promised to shoot a fruit hanging on a cord before Teshani calls it back to the kitchen. Bring me an Elixir of Precision I; supper is approaching faster than my confidence. Kezamba's Alchemy trainer at the herbalist's under the vines teaches the recipe. For Sunleaf and a Boar Tusk from the daytime boars, travel from the city's waystone to your first village's waystone for a quick return to where you started.",
+          "completion": "Thank you; I will take my shot before Teshani takes her fruit. She says a miss counts as returning it undamaged."
         },
         {
           "zone": "kragmar_nhal_veyr",
           "givers": [
             "r20_undead_capital_envoy"
           ],
-          "text": "[PH] Ossa keeps an old list of hits and wants her own entry improved before another century passes over it. Learn the brew from the Alchemy trainer at the physic house in the market; Sunleaf and boars wait back where you started, by your first village's waystone. Real text to follow.",
-          "completion": "[PH] Ossa: she will enter the result honestly, whatever it is. Real text to follow."
+          "text": "My score on the old shooting list has remained unremarkable for nearly a century, which seems long enough to be modest. Bring me an Elixir of Precision I for another attempt. Nhal Veyr's Alchemy trainer at the physic house in the market teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; the journey from the city's waystone to your first village's waystone is reassuringly quick.",
+          "completion": "I will record the score exactly as it falls. If it is worse, at least the list will finally contain something new."
         }
       ],
       "rewards": {
@@ -424,9 +424,9 @@
       "min_level": 27,
       "level": 29,
       "requires": [],
-      "title": "[PH] The Last Unauthorised Stamp",
-      "text": "[PH] Mariel: Bandit Tollmaster Penn dresses private collections as royal tolls at his camp; end his business. Penn alone is the task. Real text to follow.",
-      "completion": "[PH] Mariel: the complaints stop with Penn; the crown's mark is the crown's again. Real text to follow.",
+      "title": "The Last Unauthorised Stamp",
+      "text": "Bandit Tollmaster Penn presents his private collections as royal tolls, complete with a stamp intended to end the conversation. Kill him at the {name:toll_camp}, {dir_from_giver:toll_camp}, and report to me. I have heard enough complaints from people who paid because they thought our city had ordered it.",
+      "completion": "Penn's collections end here. I will put his misuse of the royal mark on record so the people he threatened can have their complaints heard.",
       "objectives": [
         {
           "type": "kill",
@@ -466,8 +466,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] A Peg for the Bread Board",
-      "text": "[PH] Ansel Ovenward: his bread board rocks and the royal kitchen lends pegs with conditions; one Gnarled Boar Tusk from the commons' boars by day. Real text to follow.",
+      "title": "A Peg for the Bread Board",
+      "text": "My bread board rocks, and the royal kitchen offers replacement pegs on terms longer than the board. Bring me one Gnarled Boar Tusk; Furrow Boars in the {name:commons} can provide one by day. I can fit it myself without obtaining permission to cut a loaf.",
       "objectives": [
         {
           "type": "item",
@@ -494,8 +494,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] The Long Table",
-      "text": "[PH] Ansel: the palace ordered venison for the long table and left the hunting to whoever stands by his oven; six of the commons' bucks by day. Real text to follow.",
+      "title": "The Long Table",
+      "text": "The palace has ordered venison for the long table and left the hunting arrangements with the man standing beside an oven. Hunt six Fallow Bucks by day in the {name:commons}. I will see to the meal; it seems somebody ought to see to the deer.",
       "objectives": [
         {
           "type": "kill",
@@ -521,8 +521,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] The Empty River Baskets",
-      "text": "[PH] Ansel: he paid for river baskets and got a confident promise; ask Merren Oakstamp at Whitebridge Market Close what became of the order. Real text to follow.",
+      "title": "The Empty River Baskets",
+      "text": "I paid for river baskets and received a very confident promise, which has proved difficult to bake. Ask Merren Oakstamp at Whitebridge Market Close what became of the order. She knows the trade, and I would like to hear her account of it.",
       "objectives": [
         {
           "type": "talk",
@@ -544,8 +544,8 @@
       "min_level": 29,
       "level": 29,
       "requires": [],
-      "title": "[PH] Bread for the March",
-      "text": "[PH] Ansel: the watch at Cinderline eats his bread and stands between the Accord's homes and the fighting; offer Toren Waterbarrel help in Ashenward March, at 30 or later. Real text to follow.",
+      "title": "Bread for the March",
+      "text": "The watch at Cinderline stands between our homes and the fighting, and they are fond of receiving their bread before it goes hard. Go and offer Toren Waterbarrel help at Cinderline Watch in Ashenward March. Whatever else he needs, I expect it matters just as much to the people waiting for it.",
       "objectives": [
         {
           "type": "talk",

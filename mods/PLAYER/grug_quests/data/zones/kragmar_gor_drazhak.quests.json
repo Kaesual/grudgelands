@@ -205,8 +205,8 @@
       "min_level": 19,
       "level": 21,
       "requires": [],
-      "title": "[PH] A Sentry Needs Both Feet",
-      "text": "[PH] Thorga Roadspeaker: a sentry needs both feet; three of the steppe's scorpions at night. Real text to follow.",
+      "title": "A Sentry Needs Both Feet",
+      "text": "Dust Stingers come out on the {name:steppe} at night, and a sentry with a swollen foot is no use chasing trouble. Kill three and report to me. I have told the recruits to check their boots; now I need someone to check the ground beyond them.",
       "objectives": [
         {
           "type": "kill",
@@ -232,8 +232,8 @@
       "min_level": 23,
       "level": 25,
       "requires": [],
-      "title": "[PH] Lunch Is Not Included",
-      "text": "[PH] Thorga: the hyenas take the recruits' lunch; eight of the badlands' hyenas by day. Real text to follow.",
+      "title": "Lunch Is Not Included",
+      "text": "Dustpack Hyenas have learnt that a marching recruit carries lunch and may be persuaded to drop it. Kill eight by day in the {name:badlands}. The recruits are here to learn soldiering, and I would prefer the hyenas stopped taking part in the lessons.",
       "objectives": [
         {
           "type": "kill",
@@ -259,9 +259,9 @@
       "min_level": 27,
       "level": 28,
       "requires": [],
-      "title": "[PH] His Profit, Our Empty Bowls",
-      "text": "[PH] Thorga: Bandit Ration-Broker Garr sells Korr's stolen rations again at the toll camp; stop his profit. Garr alone is the task, and no finished Redtusk case is assumed. Real text to follow.",
-      "completion": "[PH] Thorga: the bowls are filled from honest stores again. Real text to follow.",
+      "title": "His Profit, Our Empty Bowls",
+      "text": "Bandit Ration-Broker Garr buys the supplies Korr steals from Redtusk and sells our own rations back to hungry people. Kill Garr at the {name:tollcamp}, {dir_from_giver:tollcamp}, and bring me word. He calls himself a broker because it sounds better than admitting whose bowls he empties.",
+      "completion": "Garr's profit ends there. I will make sure the crews hear that his demands carried no promise of ours.",
       "objectives": [
         {
           "type": "kill",
@@ -301,8 +301,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Spears Out, Word Back",
-      "text": "[PH] Gorla Longladle: spears out, word back; Brakka Jarward at Speargrass Wellhold needs hands. Real text to follow.",
+      "title": "Spears Out, Word Back",
+      "text": "Brakka Jarward at Speargrass Wellhold feeds the crews and notices every empty place when they come home. Go and offer her a hand in Speargrass Reach. She needs people who pay attention before the meal is served.",
       "objectives": [
         {
           "type": "talk",
@@ -324,8 +324,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Salt Keeps a Friendship",
-      "text": "[PH] Gorla: salt keeps a friendship; take her regards to Taleko Drycord at Whisperreed Landing. Real text to follow.",
+      "title": "Salt Keeps a Friendship",
+      "text": "Taleko Drycord at Whisperreed Landing keeps goods moving between our people, including the salt that makes my cooking worth boasting about. Take my regards to him in the Whispering Reedlands and ask what help he needs. A friendship should carry something useful in both directions.",
       "objectives": [
         {
           "type": "talk",
@@ -347,8 +347,8 @@
       "min_level": 29,
       "level": 29,
       "requires": [],
-      "title": "[PH] Your Place in the Line",
-      "text": "[PH] Thorga: your place in the line; Drek Rampbinder on Bannerbreak Mesa needs help, at 30 or later. Real text to follow.",
+      "title": "Your Place in the Line",
+      "text": "Drek Rampbinder on Bannerbreak Mesa needs help keeping The Throng's line supplied and standing. Go and report to him. Tell him you came ready to work; he can decide where your hands are needed.",
       "objectives": [
         {
           "type": "talk",

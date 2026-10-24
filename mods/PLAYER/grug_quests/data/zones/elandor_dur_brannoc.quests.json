@@ -45,9 +45,9 @@
       "min_level": 27,
       "level": 29,
       "requires": [],
-      "title": "[PH] Close Brakk's Account",
-      "text": "[PH] Dorrin: Goblin Ore-Factor Brakk buys stolen ore and pays in stamped purses at the goblin camp; close his account. Brakk alone is the task. Real text to follow.",
-      "completion": "[PH] Dorrin: Brakk's account is closed; the stamped purses lose their buyer. Real text to follow.",
+      "title": "Close Brakk's Account",
+      "text": "Goblin Ore-Factor Brakk buys stolen ore and pays for it in stamped purses, dressing theft in counting-house respectability. Kill him at the {name:goblin_camp}, {dir_from_giver:goblin_camp}, and bring me word. The miners did the work; Brakk merely found a stamp willing to take the credit.",
+      "completion": "Brakk's account is closed. I will record what his stamped payments bought, so nobody mistakes a tidy purse for an honest trade.",
       "objectives": [
         {
           "type": "kill",
@@ -87,8 +87,8 @@
       "min_level": 24,
       "level": 26,
       "requires": [],
-      "title": "[PH] A Ram for the Roast",
-      "text": "[PH] Varda Copperpan: a ram for the roast; six of the uplands' rams by day. Real text to follow.",
+      "title": "A Ram for the Roast",
+      "text": "The next roast needs meat, and the Curlhorn Rams in the {name:uplands} have been eating very well. Hunt six by day for the kitchen. I will handle the part where everyone tells me how hungry they are.",
       "objectives": [
         {
           "type": "kill",
@@ -114,8 +114,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] The Other Half of Edda's Order",
-      "text": "[PH] Varda: Edda Tarnmantle in Frostbarrow Shelf waits for the other half of her order; go and ask what she needs. Real text to follow.",
+      "title": "The Other Half of Edda's Order",
+      "text": "Edda Tarnmantle is waiting on the other half of an order in Frostbarrow Shelf, and I dislike feeding only half the people intended. Go and ask what she needs at Tarnwatch Fold. If she says she can manage, give her time to mention what she is managing without.",
       "objectives": [
         {
           "type": "talk",
@@ -137,8 +137,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] A Neighbour's Table",
-      "text": "[PH] Varda: a neighbour's table; Merren Oakstamp in Whitebridge Shire could use a helper. Real text to follow.",
+      "title": "A Neighbour's Table",
+      "text": "Merren Oakstamp at Whitebridge Market Close has hungry customers and more promises than baskets. Go and offer her help in Whitebridge Shire. A neighbour's empty table is worth noticing before they have to ask.",
       "objectives": [
         {
           "type": "talk",
@@ -160,8 +160,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Varda's Recommendation",
-      "text": "[PH] Varda: her recommendation to Mariel Waybook in Highcourt, who always has work. Real text to follow.",
+      "title": "Varda's Recommendation",
+      "text": "Mariel Waybook in Highcourt always has work, though she sometimes dresses it up as a matter requiring attention. Go and speak to her. You may say Varda sent you; that ought to get you an explanation you can use.",
       "objectives": [
         {
           "type": "talk",
@@ -183,8 +183,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Room at Another Hearth",
-      "text": "[PH] Varda: room at another hearth; Ilwen Petalmeasure in Lorindor could use a helper. Real text to follow.",
+      "title": "Room at Another Hearth",
+      "text": "Ilwen Petalmeasure at Lorindor Berrycourt keeps a good many tables supplied while trying to feed the people carrying the food. Go and offer her help in Lorindor. There should be room at a hearth for someone willing to make another person's supper possible.",
       "objectives": [
         {
           "type": "talk",
@@ -206,8 +206,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] Stone Enough to Stand On",
-      "text": "[PH] Dorrin: Borin Splitbolt in Stormvault Heights needs stone-steady help at the front; go at 30 or later. Real text to follow.",
+      "title": "Stone Enough to Stand On",
+      "text": "Borin Splitbolt at Splitbolt Station needs dependable help in Stormvault Heights. Go and hear what the watch is facing. Our walls rest on good stone, but keeping The Accord secure takes work beyond them too.",
       "objectives": [
         {
           "type": "talk",
@@ -229,8 +229,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] Beyond Our Own Gate",
-      "text": "[PH] Dorrin: beyond our own gate, Toren Waterbarrel in Ashenward March needs help; go at 30 or later. Real text to follow.",
+      "title": "Beyond Our Own Gate",
+      "text": "Toren Waterbarrel is keeping Cinderline Watch supplied in Ashenward March. Go and speak to him about helping. A gate can be shut in an instant; feeding the people who hold the ground beyond it takes rather more thought.",
       "objectives": [
         {
           "type": "talk",
@@ -252,8 +252,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] The Weight of Our Word",
-      "text": "[PH] Dorrin: the weight of our word; Faeris Rootbinder in Glassroot Wilds needs help; go at 30 or later. Real text to follow.",
+      "title": "The Weight of Our Word",
+      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds needs help keeping our promises useful under pressure. Go and speak to her. I can put The Accord's word on a page here, but someone has to make it hold there.",
       "objectives": [
         {
           "type": "talk",

@@ -37,8 +37,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Sound Wood",
-      "text": "[PH] Lethen Moonledger replaces split sighting posts: bring 15 Wooden Planks of any wood. Real text to follow.",
+      "title": "Sound Wood",
+      "text": "My sighting posts have split, which makes a fixed observation surprisingly adventurous. Bring me fifteen Wooden Planks of any wood for replacements. I can account for the movement of the stars once the posts stop contributing their own.",
       "objectives": [
         {
           "type": "item",
@@ -52,14 +52,14 @@
           "givers": [
             "r20_anchor_035_host"
           ],
-          "text": "[PH] Lethen Moonledger replaces split sighting posts: bring 15 Wooden Planks of any wood. Real text to follow."
+          "text": "My sighting posts have split, which makes a fixed observation surprisingly adventurous. Bring me fifteen Wooden Planks of any wood for replacements. I can account for the movement of the stars once the posts stop contributing their own."
         },
         {
           "zone": "kragmar_totemwater_reach",
           "givers": [
             "r20_anchor_047_host"
           ],
-          "text": "[PH] Tokai Knotreader needs lids for the fish traps instead of crab shells: bring 15 Wooden Planks of any wood. Real text to follow."
+          "text": "The fish traps need lids that close properly; a fish should have to make some effort to escape. Bring me fifteen Wooden Planks of any wood. I will leave the fishers to fit them, since my last lid impressed everyone except the fish."
         }
       ],
       "rewards": {
@@ -77,8 +77,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] A Pane Without a Crack",
-      "text": "[PH] Lethen Moonledger needs Glass for the shield pane of an instrument; the player brings the material, Lethen does the work: bring 6 Glass. Real text to follow.",
+      "title": "A Pane Without a Crack",
+      "text": "The protective pane on my observing instrument has cracked across an otherwise promising view. Bring me six Glass, and I will do the fitting. I should like to discover something that is not a defect in my own equipment.",
       "objectives": [
         {
           "type": "item",
@@ -111,9 +111,9 @@
       "min_level": 23,
       "level": 24,
       "requires": [],
-      "title": "[PH] A Fixed Point of Reference",
-      "text": "[PH] Lethen wants the prepared sighting frame set up at the {name:sighting_post} in the {name:deepwood}, a reference the false forest signs cannot move. Real text to follow.",
-      "completion": "[PH] Lethen has a point to measure from again. Real text to follow.",
+      "title": "A Fixed Point of Reference",
+      "text": "Forest signs keep acquiring new owners and new meanings; my observations need a point that stays put. Set up the prepared sighting frame at the {name:sighting_post} in the {name:deepwood}, then report to me. Its measurements are already marked, so you need not bring an opinion about the stars.",
+      "completion": "A firm frame gives me a reference I can use. Now I can check the observations without wondering which way the timber leaned.",
       "objectives": [
         {
           "type": "use",
@@ -167,8 +167,8 @@
       "min_level": 26,
       "level": 27,
       "requires": [],
-      "title": "[PH] Ladders for the Platforms",
-      "text": "[PH] Lethen's observers climb to their platforms on rungs older than his patience: bring 10 Wooden Ladders. Real text to follow.",
+      "title": "A Sound Way Up",
+      "text": "The observers' platform ladders have begun interrupting their ascent with ominous noises. Bring me ten Wooden Ladders to replace them. A discovery should bring an observer down to tell me about it, preferably by choice.",
       "objectives": [
         {
           "type": "item",
@@ -220,9 +220,9 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] A Warden in Name Alone",
-      "text": "[PH] Lethen sends the player against Poacher Snarewarden Bracken in the {name:elderwood}, who deals with Vetch and Rusk; their fall is not assumed. Real text to follow.",
-      "completion": "[PH] Bracken's false signs come down with him. Real text to follow.",
+      "title": "A Warden in Name Alone",
+      "text": "Poacher Snarewarden Bracken puts false forest signs over his trapping business and trades with Vetch and Rusk. Kill him in the {name:elderwood}, {dir_from_giver:snarewarden_bracken}, and bring me word. Calling himself a warden does not make the animals his to sell or our observing ground his to close.",
+      "completion": "Bracken's title has outlived its holder, and I shall retire it. We can take down his false signs and make the observing places useful again.",
       "objectives": [
         {
           "type": "kill",
@@ -288,8 +288,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] The Trade Beyond the Wood",
-      "text": "[PH] Lethen sends the player to Faeris Rootbinder at Glassroot Gate, where Bracken's trade reaches; his case is not claimed. Real text to follow.",
+      "title": "The Trade Beyond the Wood",
+      "text": "Bracken's dealings reach beyond Moonfall, and Faeris Rootbinder at Glassroot Gate needs to know what is being sold under a warden's name. Go and speak to her in Glassroot Wilds. A false sign can cause trouble well beyond the tree it is nailed to.",
       "objectives": [
         {
           "type": "talk",

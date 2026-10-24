@@ -62,8 +62,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] The Waiting Still Eat",
-      "text": "[PH] Merren Oakstamp feeds the people whose paid delivery never came: bring 8 Corn. Real text to follow.",
+      "title": "The Waiting Still Eat",
+      "text": "People have paid for baskets that never reached their tables, and a refund will not cook itself tonight. Bring me eight Corn for the waiting households. Whitebridge Market Close should be remembered for feeding its customers.",
       "objectives": [
         {
           "type": "item",
@@ -77,14 +77,14 @@
           "givers": [
             "r20_anchor_016_host"
           ],
-          "text": "[PH] Merren Oakstamp feeds the people whose paid delivery never came: bring 8 Corn. Real text to follow."
+          "text": "People have paid for baskets that never reached their tables, and a refund will not cook itself tonight. Bring me eight Corn for the waiting households. Whitebridge Market Close should be remembered for feeding its customers."
         },
         {
           "zone": "kragmar_speargrass_reach",
           "givers": [
             "r20_anchor_022_host"
           ],
-          "text": "[PH] Brakka Jarward feeds the cutting crews before the next shift: bring 8 Corn. Real text to follow."
+          "text": "I count the cutting crews out and count them home, and between those two counts they need to eat. Bring me eight Corn for the next shift. A full crew is a fine thing; a crew that is full is better."
         }
       ],
       "rewards": {
@@ -112,8 +112,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Have the Ramp Measured",
-      "text": "[PH] Jessa Axlewright sends the player to Halen Chalkthumb at Bridgechalk Dig, who should fix the ferry ramp's repair to a measure that holds. Real text to follow.",
+      "title": "Have the Ramp Measured",
+      "text": "That ferry ramp takes loaded carts, so 'looks about right' is not a measurement I will accept. Speak to Halen Chalkthumb at Bridgechalk Dig about the repair it needs. Tell him Jessa wants a ramp that carries the load all the way to the other end.",
       "objectives": [
         {
           "type": "talk",
@@ -135,9 +135,9 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Two Pickups for One Basket",
-      "text": "[PH] Merren Oakstamp wants the stored baskets at Market Close checked against the pickup records; two buyers hold slips for the same basket. Real text to follow.",
-      "completion": "[PH] Merren sees which slip is real; her market keeps its good name. Real text to follow.",
+      "title": "Two Pickups for One Basket",
+      "text": "Two customers are waving pickup slips for the same basket, and each thinks the other is the thief. Check the pickup records by the stored baskets here at Whitebridge Market Close and bring your findings to me. I would like to know which order is genuine before the argument damages the goods.",
+      "completion": "This is the original order; the other slip promises a basket its seller had no right to offer. I can put the rightful buyer beside the goods and help the other customer pursue their payment. Neither should have had to fight their neighbour over lunch.",
       "objectives": [
         {
           "type": "use",
@@ -191,9 +191,9 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Thorn's Double Sale",
-      "text": "[PH] Merren sends the player against Basket-Poacher Thorn in the {name:willowbanks}, who sells the same goods twice. Real text to follow.",
-      "completion": "[PH] Thorn sells nothing more; Merren's customers get their baskets. Real text to follow.",
+      "title": "Thorn Sells It Twice",
+      "text": "Basket-Poacher Thorn sells the same basket to two buyers and leaves my market to settle the shouting. Kill Thorn in the {name:willowbanks}, {dir_from_giver:basket_poacher_thorn}, and bring me word. The customers paid for food, and his only contribution was a second receipt.",
+      "completion": "Thorn will make no more promises over our baskets. I will help the customers sort out their purchases; they have lost enough without losing trust in one another.",
       "objectives": [
         {
           "type": "kill",
@@ -247,8 +247,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "[PH] Stone for the Ferry Ramp",
-      "text": "[PH] Halen measures the ferry ramp's repair to what it must carry: bring 20 Stone Bricks. Real text to follow.",
+      "title": "Stone for the Ferry Ramp",
+      "text": "The ferry ramp has to carry a cart's weight while its wheels are moving, a detail the old repair rather overlooked. Bring me twenty Stone Bricks for the supports. I have allowed for a full load and a driver who insists on bringing one more sack.",
       "objectives": [
         {
           "type": "item",
@@ -271,8 +271,8 @@
       "min_level": 24,
       "level": 24,
       "requires": [],
-      "title": "[PH] The Other End of the River Trade",
-      "text": "[PH] Merren sends the player to Ilwen Petalmeasure in Lorindor, the other end of the river trade. Real text to follow.",
+      "title": "The Other End of the River Trade",
+      "text": "Ilwen Petalmeasure sends harvest loads from Lorindor, and I need to know what leaves her hands as well as what reaches mine. Speak to her at Lorindor Berrycourt about the river trade. Two people keeping honest accounts ought to be able to find where a basket goes missing.",
       "objectives": [
         {
           "type": "talk",
@@ -294,8 +294,8 @@
       "min_level": 24,
       "level": 24,
       "requires": [],
-      "title": "[PH] Word for Dur Brannoc",
-      "text": "[PH] Merren sends word of the double sales to Dorrin Gateledger in Dur Brannoc. Real text to follow.",
+      "title": "One Basket on Two Accounts",
+      "text": "The double sales here have buyers wondering which promises they can trust. Take word of them to Dorrin Gateledger in Dur Brannoc. He should hear what those slips cost people before another one arrives looking respectable.",
       "objectives": [
         {
           "type": "talk",
@@ -317,8 +317,8 @@
       "min_level": 24,
       "level": 24,
       "requires": [],
-      "title": "[PH] Baskets for the Cold",
-      "text": "[PH] Merren sends the player to Edda Tarnmantle in Frostbarrow Shelf, who waits on the same deliveries. Real text to follow.",
+      "title": "Baskets for the Cold",
+      "text": "Edda Tarnmantle at Tarnwatch Fold in Frostbarrow Shelf depends on these deliveries, and cold weather is a poor time to discover a basket is only a promise. Go and ask what her people are waiting for. I would rather hear about an empty shelf while we can still fill it.",
       "objectives": [
         {
           "type": "talk",
@@ -340,9 +340,9 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] Murk's Final Fare",
-      "text": "[PH] Jessa sends the player against Mirefolk Ferryman Murk at the {name:ferry_camp}, who extorts the needed passage from the carters. Real text to follow.",
-      "completion": "[PH] The passage is free again; the carters pay for the river, not for Murk. Real text to follow.",
+      "title": "Murk's Final Fare",
+      "text": "Mirefolk Ferryman Murk charges carters for the passage they need, then finds a fresh fee once the load cannot turn back. Kill him at the {name:ferry_camp}, {dir_from_giver:ferry_camp}, and report to me. A ferryman earns a fare by carrying people across; Murk earns his by keeping them there.",
+      "completion": "Murk is down, and the carters can get their loads through without his next demand. I will see that word reaches them before someone pays him in advance.",
       "objectives": [
         {
           "type": "kill",
@@ -408,8 +408,8 @@
       "min_level": 29,
       "level": 29,
       "requires": [],
-      "title": "[PH] Measures for Splitbolt",
-      "text": "[PH] Halen sends the player to Borin Splitbolt in Stormvault Heights, where sound measures are needed; no earlier deed is claimed. Real text to follow.",
+      "title": "Measures for Splitbolt",
+      "text": "Borin Splitbolt needs sound judgement at Splitbolt Station in Stormvault Heights, where a bad measurement can land heavily. Go and speak to him about the work. A careful pair of eyes is worth more there than a confident estimate.",
       "objectives": [
         {
           "type": "talk",

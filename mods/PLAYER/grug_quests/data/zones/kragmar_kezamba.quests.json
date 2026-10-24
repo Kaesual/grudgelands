@@ -45,8 +45,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] The Spirits Left Footprints",
-      "text": "[PH] Nalo Pathdrum: someone with boots receives the shrine's offerings; three of the canopy's robbers at night. Real text to follow.",
+      "title": "The Spirits Left Footprints",
+      "text": "Offerings disappear from the pilgrim paths after dark, and the footprints are remarkably well shod for visiting spirits. Kill three Shrine Robbers in the {name:canopy} at night. I would like the gifts to reach the purpose their givers chose.",
       "objectives": [
         {
           "type": "kill",
@@ -72,9 +72,9 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] The Price of a Prayer",
-      "text": "[PH] Nalo: Bandit Offering-Broker Takka sells stolen offerings back to the pilgrims at the toll camp, and made the pilgrim paths dangerous on purpose; end his trade. Real text to follow.",
-      "completion": "[PH] Nalo: people kneel at the water because they choose to pray again. Real text to follow.",
+      "title": "The Price of a Prayer",
+      "text": "Bandit Offering-Broker Takka has made the pilgrim paths dangerous so his people can steal the offerings and sell them back to their givers. Kill him at the {name:tollcamp}, {dir_from_giver:tollcamp}, and report to me. He has found a way to charge for both the fear and the comfort that follows it.",
+      "completion": "Takka's trade is over. When people kneel at the water, they can bring what they choose to give without his price hanging over it.",
       "objectives": [
         {
           "type": "kill",
@@ -114,8 +114,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Keep Supper Hanging",
-      "text": "[PH] Teshani Smokereed: the smokehouse racks need new hooks; two Gnarled Boar Tusks from the vinewood's Vine Razorbacks. Real text to follow.",
+      "title": "Keep Supper Hanging",
+      "text": "The smokehouse racks need new hooks before supper lands in the ashes. Bring me two Gnarled Boar Tusks; Vine Razorbacks in the {name:vinewood} can provide them by day. I can make hooks, but even I have limits on what can be rescued with seasoning.",
       "objectives": [
         {
           "type": "item",
@@ -142,8 +142,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Regards from the Smokehouse",
-      "text": "[PH] Teshani: reeds for smoked fish; give Taleko Drycord at Whisperreed Landing her regards. Real text to follow.",
+      "title": "Regards from the Smokehouse",
+      "text": "Taleko Drycord sends good reeds from Whisperreed Landing, and I send smoked fish when the racks are full. Go and give him my regards in the Whispering Reedlands. Ask what would help keep the exchange moving; the fish never improve by waiting.",
       "objectives": [
         {
           "type": "talk",
@@ -165,8 +165,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Even Seers Need Supper",
-      "text": "[PH] Teshani: Tokai Knotreader foresees everything but the last fish; ask him at Totemwater Post what the river says. Real text to follow.",
+      "title": "Even Seers Need Supper",
+      "text": "Tokai Knotreader can foresee trouble in a length of cord and still fail to notice he has eaten his last fish. Go and speak to him at Totemwater Post about what the water is telling him. If the answer sounds hungry, take it seriously.",
       "objectives": [
         {
           "type": "talk",
@@ -188,8 +188,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] Carry the Drumbeat",
-      "text": "[PH] Nalo: carry the drumbeat to Rumela Stormstep at Thunderstep Watch, at 30 or later. Real text to follow.",
+      "title": "Carry the Drumbeat",
+      "text": "Rumela Stormstep at Thunderstep Watch in Thunderroot Wilds needs help keeping our people moving through dangerous country. Go and speak to her. A drumbeat is useful only if someone hears it and takes the next step.",
       "objectives": [
         {
           "type": "talk",
@@ -211,8 +211,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] A Voice for Ashveil",
-      "text": "[PH] Nalo: a voice for Ashveil; Vaska Ashlistener on Blackwind Rise needs help, at 30 or later. Real text to follow.",
+      "title": "A Voice for Ashveil",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise listens for the people the fighting leaves unheard. Go and offer her help. A willing visitor gives her one more voice that can answer back.",
       "objectives": [
         {
           "type": "talk",

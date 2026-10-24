@@ -63,8 +63,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Loosen the Snares",
-      "text": "[PH] Orya Petalward has an answer to the silent birds: make the snares at the {name:snare_ground} in the {name:berrywoods} useless. Real text to follow.",
+      "title": "Cut the Snares",
+      "text": "The birds have gone quiet because somebody has been busy with cord beneath them. Cut the snare bundle at the {name:snare_ground} in the {name:berrywoods}. I want the carriers to hear birds again when they walk these paths.",
       "objectives": [
         {
           "type": "use",
@@ -80,7 +80,7 @@
           "givers": [
             "r20_anchor_034_host"
           ],
-          "text": "[PH] Orya Petalward has an answer to the silent birds: make the snares at the {name:snare_ground} in the {name:berrywoods} useless. Real text to follow."
+          "text": "The birds have gone quiet because somebody has been busy with cord beneath them. Cut the snare bundle at the {name:snare_ground} in the {name:berrywoods}. I want the carriers to hear birds again when they walk these paths."
         },
         {
           "zone": "elandor_moonfall_wood",
@@ -92,7 +92,7 @@
               "place": "elandor_moonfall_wood/snare_ground"
             }
           ],
-          "text": "[PH] Lethen Moonledger wants the marked snares at the {name:snare_ground} in the {name:eaves} cut; false forest signs are poor company for an observer. Real text to follow."
+          "text": "Someone has marked a snare ground as if it were under a warden's care, which is an inventive use of the word. Cut the snare bundle at the {name:snare_ground} in the {name:eaves}. My observers should be able to follow a forest sign without stepping into somebody's business."
         }
       ],
       "rewards": {
@@ -110,8 +110,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] A Taste After a Long Road",
-      "text": "[PH] Ilwen Petalmeasure feeds the harvesters and carriers: bring 6 Marshbloom. Real text to follow.",
+      "title": "A Taste After a Long Road",
+      "text": "The harvesters and carriers bring good food to other people's tables, then sit down to whatever survived in their packs. Bring me six Marshbloom for their meal here. I would like the people who carried the harvest to taste something worth carrying.",
       "objectives": [
         {
           "type": "item",
@@ -144,8 +144,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Why the Wood Goes Quiet",
-      "text": "[PH] Ilwen sends the player to Orya Petalward at Petalbank Wardenry: the missing birdsong is an observation Orya takes seriously. Real text to follow.",
+      "title": "Why the Wood Goes Quiet",
+      "text": "The carriers say the birds fall silent on stretches of their usual paths. Speak to Orya Petalward at Petalbank Wardenry about it. She knows when a quiet wood is resting and when something has given it reason to be quiet.",
       "objectives": [
         {
           "type": "talk",
@@ -167,8 +167,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Chests That Arrive",
-      "text": "[PH] Ilwen knows a neat crate list from a harvest that arrives: bring 3 Chests for the loads that leave Berrycourt. Real text to follow.",
+      "title": "A Harvest Worth Packing",
+      "text": "I can name the household waiting for each harvest load, but that knowledge does little for berries crushed in a split crate. Bring me three Chests for the goods leaving Berrycourt. I will pack them properly and keep the recipient's name with the load.",
       "objectives": [
         {
           "type": "item",
@@ -220,8 +220,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] A Word With Kelda",
-      "text": "[PH] Saevin Rootscribe recommends Kelda Screesort at Tarncut Mine; the visit opens no story on its own. Real text to follow.",
+      "title": "A Word With Kelda",
+      "text": "Kelda Screesort at Tarncut Mine in Frostbarrow Shelf judges a day's work by how safely her people come out of it. Go and speak to her if you can lend a hand. We work very different ground, but I would trust her beneath any roof I had braced.",
       "objectives": [
         {
           "type": "talk",
@@ -243,8 +243,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Word for Highcourt",
-      "text": "[PH] Ilwen sends word of the missing deliveries to Mariel Waybook in Highcourt. Real text to follow.",
+      "title": "What Never Reaches Highcourt",
+      "text": "Our delivery accounts say the harvest left Lorindor, while the people waiting for it tell another story. Take word to Mariel Waybook in Highcourt. I want someone at that end asking about the missing food as carefully as they ask about the paperwork.",
       "objectives": [
         {
           "type": "talk",
@@ -266,8 +266,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] The Other End of the Basket Trade",
-      "text": "[PH] Ilwen sends the player to Merren Oakstamp in Whitebridge Shire, who waits on the same loads. Real text to follow.",
+      "title": "The Other End of the Basket Trade",
+      "text": "Merren Oakstamp at Whitebridge Market Close knows whose table each of our baskets is meant to reach. Go and speak to her about the loads coming from Lorindor. A delivery is unfinished while its intended supper is still somebody else's stock.",
       "objectives": [
         {
           "type": "talk",
@@ -289,8 +289,8 @@
       "min_level": 26,
       "level": 27,
       "requires": [],
-      "title": "[PH] Lights for the Wardens' Rounds",
-      "text": "[PH] Orya's wardens walk the paths at night where the birds went quiet: bring 20 Torches. Real text to follow.",
+      "title": "Lights for the Wardens' Rounds",
+      "text": "My wardens walk the carriers' paths after dark, when a cord across the way is easy to miss. Bring me twenty Torches for their rounds. We will keep the flames clear of the undergrowth; I would like to protect the wood without first setting it alight.",
       "objectives": [
         {
           "type": "item",
@@ -342,9 +342,9 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] Close the Pearl Account",
-      "text": "[PH] Ilwen sends the player against Mirefolk Pearl-Counter Iss at the {name:pearl_camp}, who claims the result of everyone's work. Real text to follow.",
-      "completion": "[PH] Iss's account is closed; the harvest reaches its people. Real text to follow.",
+      "title": "Close the Pearl Account",
+      "text": "Mirefolk Pearl-Counter Iss takes a share of every load he can stop and calls it the price of letting our harvest pass. Kill him at the {name:pearl_camp}, {dir_from_giver:pearl_camp}, and return to me. He has found a profitable way to harvest a field he never planted.",
+      "completion": "Iss's share ends here. I can account for a full load again and put the names of its waiting recipients beside it.",
       "objectives": [
         {
           "type": "kill",
@@ -410,8 +410,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] The Road to Ashenward",
-      "text": "[PH] Ilwen sends the player to Toren Waterbarrel at Cinderline Watch in Ashenward March; no earlier deed is claimed. Real text to follow.",
+      "title": "The Road to Ashenward",
+      "text": "Toren Waterbarrel keeps the people at Cinderline Watch supplied in Ashenward March. Go and speak to him if you can help. A harvest matters just as much to someone standing watch as it does to someone setting a table.",
       "objectives": [
         {
           "type": "talk",

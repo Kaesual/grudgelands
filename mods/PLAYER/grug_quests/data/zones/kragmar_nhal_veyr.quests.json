@@ -45,9 +45,9 @@
       "min_level": 26,
       "level": 28,
       "requires": [],
-      "title": "[PH] The Account Is Closed",
-      "text": "[PH] Ossa Quietregister: Hush once worked at the shared register and kept working copies from that post (K11 A); he now enters our dead as debtors in the tombfields. End his collection. Real text to follow.",
-      "completion": "[PH] Ossa: the collection ends; the names stay, and his copies stay a question. Real text to follow.",
+      "title": "The Account Is Closed",
+      "text": "Zombie Mortuary-Clerk Hush once worked at our shared register and kept working copies when he left that post. He now uses those names to enter our dead as debtors and demand payment from their people. Kill Hush in the {name:tombfields}, {dir_from_giver:mortuary_clerk_hush}, and bring me word. Knowing where a name belongs never gave him the right to put a price beside it.",
+      "completion": "Hush's collection has ended. The names in his retained copies still belong with the original records, while the demands he added must be answered plainly. I will keep both parts distinct as we examine the case.",
       "objectives": [
         {
           "type": "kill",
@@ -92,9 +92,9 @@
         "ossuary_rubbings_03",
         "nhal_veyr_vigil_03"
       ],
-      "title": "[PH] Strike the False Claim",
-      "text": "[PH] Chapter 2 (T3, Strike the False Claim): Ossa has brought the findings together with Iven and the supply; the player posts the confirmed correction at the public register in front of the Miner's Guild house and reports to Iven Lastshift. No verdict of the player's own. Real text to follow.",
-      "completion": "[PH] Iven Lastshift: which claims are struck and why the original names stay; he keeps the true records for whoever comes with an old sheet later. Real text to follow.",
+      "title": "Strike the False Claim",
+      "text": "Mereth traced the claim to an old register copy, and Neris identified the separate damage done with her stolen chisel; neither finding should be lost among Hush's demands. Iven, the army's suppliers and I have compared the evidence and confirmed that Hush's retained working copies gave him no right to collect. Post our correction at the public register on the forecourt of Nhal Veyr's Miner's Guild house, then report to Iven Lastshift inside. The names stay on record, and everyone named in those false claims should be able to read why we have struck them out.",
+      "completion": "The public notice rejects Hush's debts: his copies preserve names and their original connections, but establish no obligation to him. I will keep the true records and this correction together for anyone who comes to us with an old sheet. Our suppliers face further work on Bannerbreak Mesa; they will carry these corrected records into their next commitments.",
       "objectives": [
         {
           "type": "use",
@@ -129,8 +129,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] My Regards Keep Better",
-      "text": "[PH] Velis Mourningbowl: Sovel Namekeeper at Ossuary Ledgerstead needs help with the waking gravewood; pass on Velis's regards. Real text to follow.",
+      "title": "My Regards Keep Better",
+      "text": "Sovel Namekeeper at Ossuary Ledgerstead has work enough among the stirring gravewood without losing touch with old friends. Go and offer help in Ossuary Reach, and pass on my regards. They travel rather better than anything I could send from the kitchen.",
       "objectives": [
         {
           "type": "talk",
@@ -152,8 +152,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Sister Errand: Hands Attached",
-      "text": "[PH] Velis: Brakka Jarward at Speargrass Wellhold could use another pair of hands. Real text to follow.",
+      "title": "Another Pair of Hands",
+      "text": "Brakka Jarward at Speargrass Wellhold could use another pair of hands with the crews she feeds. Go and speak to her in Speargrass Reach. She is very particular about getting everyone home for supper; I admire that in a person.",
       "objectives": [
         {
           "type": "talk",
@@ -175,8 +175,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Sister Errand: Someone Turns Up",
-      "text": "[PH] Velis: Thorga Roadspeaker in Gor Drazhak wants help with the roads. Real text to follow.",
+      "title": "Someone Turns Up",
+      "text": "Thorga Roadspeaker in Gor Drazhak wants help keeping the roads fit for the people using them. Go and speak to her. Reports tend to arrive more readily than helpers, and she would welcome a change in that proportion.",
       "objectives": [
         {
           "type": "talk",
@@ -198,8 +198,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Sister Errand: Try to Stay Dry",
-      "text": "[PH] Velis: Taleko Drycord at Whisperreed Landing has work; mind the damp. Real text to follow.",
+      "title": "Try to Stay Dry",
+      "text": "Taleko Drycord has work for willing hands at Whisperreed Landing in the Whispering Reedlands. Go and offer him yours. Keep an eye on the damp; being accustomed to discomfort is no reason to collect more of it.",
       "objectives": [
         {
           "type": "talk",
@@ -221,8 +221,8 @@
       "min_level": 29,
       "level": 30,
       "requires": [],
-      "title": "[PH] A Debt Freely Owed",
-      "text": "[PH] Ossa: Vaska Ashlistener at Ashveil Watch on Blackwind Rise needs help, at 30 or later; no finished Hush case is assumed. Real text to follow.",
+      "title": "Help Freely Given",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise needs help tending to the watch and keeping its people accounted for. Go and speak to her if you are ready for that work. Tell her you came of your own will; she will understand why I mention it.",
       "objectives": [
         {
           "type": "talk",

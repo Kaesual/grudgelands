@@ -64,8 +64,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "[PH] A Second Readable Copy",
-      "text": "[PH] Sovel Namekeeper copies damaged labels onto new name boards: bring 10 Gravewood Planks from the bone forest. Real text to follow.",
+      "title": "A Second Readable Copy",
+      "text": "I copy the old labels before damp and time finish their work, but I am running short of sound boards. Bring me ten Gravewood Planks from the {name:bonewood} for new name boards. A name is easier to preserve while there is still somebody who can read it.",
       "objectives": [
         {
           "type": "item",
@@ -98,8 +98,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "[PH] Paper Remembers",
-      "text": "[PH] Sovel sends the player to Mereth Rubbinghand at Boneledger Post, who copies and compares. Real text to follow.",
+      "title": "Paper Remembers",
+      "text": "Mereth Rubbinghand at Boneledger Post keeps copies of the inscriptions we stand to lose. Go and speak to her about the work. Stone lasts a long time, but a second record has the advantage of surviving somewhere else.",
       "objectives": [
         {
           "type": "talk",
@@ -121,8 +121,8 @@
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "[PH] Misfiled in a Wolf",
-      "text": "[PH] Ash Howlers drag off labelled remains: hunt 8 of them by day in the {name:bonewood}. Real text to follow.",
+      "title": "Misfiled in a Wolf",
+      "text": "The Ash Howlers have been dragging labelled remains through the {name:bonewood}. Kill eight by day before more of my neighbours are scattered among their feeding places. I spent a long time putting those names beside the right people.",
       "objectives": [
         {
           "type": "kill",
@@ -177,8 +177,8 @@
       "min_level": 26,
       "level": 27,
       "requires": [],
-      "title": "[PH] Dry Keeping for the Copies",
-      "text": "[PH] Mereth keeps every copy beside the stone it came from: bring 3 Chests to keep them dry. Real text to follow.",
+      "title": "Dry Keeping for the Copies",
+      "text": "Every copy I make records which stone it came from; I would like that information to survive the next rain. Bring me three Chests for the records. There is a limit to what careful handwriting can do while floating.",
       "objectives": [
         {
           "type": "item",
@@ -230,9 +230,9 @@
       "min_level": 27,
       "level": 28,
       "requires": [],
-      "title": "[PH] Filed Under Theft",
-      "text": "[PH] Neris Fossilhand sends the player against Skeleton Marrow Archivist in the {name:deepwood}, who stole her chisel. Real text to follow.",
-      "completion": "[PH] The chisel's thief is down; Neris makes no claim about whom he served. Real text to follow.",
+      "title": "Filed Under Theft",
+      "text": "Skeleton Marrow Archivist stole my chisel and is using it to cut new claims over old names in the {name:deepwood}. I know the uneven bite that tool leaves; I sharpened it for honest work. Kill him, {dir_from_giver:marrow_archivist}, and bring me word. He does not get to call theft an addition to the archive.",
+      "completion": "The Archivist can cut no more claims with my stolen tool. I will preserve the names we can still read and mark the damage plainly; I will not fill the gaps with guesses.",
       "objectives": [
         {
           "type": "kill",
@@ -298,8 +298,8 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "[PH] Ashveil Keeps Its Own Records",
-      "text": "[PH] Neris sends the player to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; no earlier deed is claimed. Real text to follow.",
+      "title": "Ashveil Keeps Its Own Records",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise keeps track of people whose names are easily lost in the fighting. Go and offer her help. She listens carefully, even when the news would be easier to put aside.",
       "objectives": [
         {
           "type": "talk",
@@ -324,9 +324,9 @@
         "story_throng_02"
       ],
       "story": true,
-      "title": "[PH] The Copy Between Them",
-      "text": "[PH] Rellis Shalemark wants an original name record and the new claim built on it secured at the {name:claim_rest} in the {name:barrowlands} before weather or another hand ruins them; Mereth is the one to read them. He claims no certainty about who did it. Real text to follow.",
-      "completion": "[PH] Mereth sees the new claim repeat a correction found only in an official register copy, not on the stone: someone worked from an existing copy. Real text to follow.",
+      "title": "The Copy Between Them",
+      "text": "An old name record and a fresh claim against those names lie together at the {name:claim_rest} in the {name:barrowlands}. Secure the copied claim with its original evidence before weather or another hand spoils the comparison. Take your findings to Mereth Rubbinghand at Boneledger Post; she knows how these records were copied. I can see that someone has made use of them, but I will not guess whose hand it was.",
+      "completion": "This new claim repeats a correction made only in an official register copy; the original stone has no such correction. Whoever wrote it worked from that older copy, rather than reading the names afresh. The names record who these people were, and the new demand borrows that authority to pretend they owed something.",
       "objectives": [
         {
           "type": "use",
@@ -359,8 +359,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "[PH] A Chisel Leaves Its Signature",
-      "text": "[PH] Mereth Rubbinghand, or Rellis Shalemark at the guild camp, sends the player to Neris Fossilhand, who explains the fresh cuts on overwritten names and the stolen chisel. Real text to follow.",
+      "title": "A Chisel Leaves Its Signature",
+      "text": "There are fresh cuts across old names, and Neris Fossilhand recognises the uneven bite of the chisel stolen from her dig. Speak to her at Memoryvein Dig about the damage and the missing tool. She knows how a working edge changes; an overwritten name deserves that much care before we decide what happened to it.",
       "objectives": [
         {
           "type": "talk",
@@ -377,7 +377,7 @@
           "turnins": [
             "r20_anchor_064_host"
           ],
-          "text": "[PH] Mereth Rubbinghand, or Rellis Shalemark at the guild camp, sends the player to Neris Fossilhand, who explains the fresh cuts on overwritten names and the stolen chisel. Real text to follow."
+          "text": "There are fresh cuts across old names, and Neris Fossilhand recognises the uneven bite of the chisel stolen from her dig. Speak to her at Memoryvein Dig about the damage and the missing tool. She knows how a working edge changes; an overwritten name deserves that much care before we decide what happened to it."
         }
       ],
       "rewards": {
