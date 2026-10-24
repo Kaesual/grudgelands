@@ -1,6 +1,7 @@
 grug_core = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/ui.lua")
 -- World migrations (Round 43): the step registry, then the world version's
 -- start guard, before anything in this game reads or writes saved state (the
 -- map-reset clears included). The mods that can load before grug_core write

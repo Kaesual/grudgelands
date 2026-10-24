@@ -982,3 +982,32 @@ equipping or hotbar-weapon combat fallback. The top inventory row is explicitly
 highlighted as Hotbar. Selected page controls use a visible border/tint rather
 than a `>` prefix. The skill catalog explains placing and removing skills
 (§6).
+
+## UI modernization approved direction
+
+User ruling, 2026-10-24; implementation tracked in the
+[UI plan](../planning/ui-modernization-plan.md). Atlas 03 is the accepted
+visual direction: dark translucent panels, small rounded corners, restrained
+brass accents, original game art and readable text. Window dimensions may
+change for appearance/usability. Non-map inventory tabs share one frame size;
+Map & Quests is larger and retains the shared navigation. This supersedes the
+fixed dimensions in the earlier Round 44/45 description above and ruling 10
+of the earlier crafting/UI plan. All allowed tabs stay visible, using two
+rows when necessary. Slot sizes/capacities, native inventory input, page
+lifecycle and permission checks remain.
+
+Existing controls may be rearranged; underlying functionality and mechanisms
+remain. No item inspector or inspection mode. Character creation stays on one
+page. Achievement pagination is at the bottom; Active Hotbar has a heading;
+coin denomination fields share one row. Use real talent trees, backgrounds,
+professions and item data. Do not add item lore, ordinary-letter category
+icons or the redundant mining-effect-slot note. The Scout quiver total uses
+its existing adjacent label without the opaque count-cover overlay.
+
+Crafting/furnaces preserve client-side animation strips and existing timing,
+buffering and change detection. No new processing percentages or second
+counters; arrival preparation keeps its existing percentage/ETA and a static
+bar. Keep coarse Effects duration labels. Map scrolling remains native and
+client-side. Reversible implementation details may be decided independently;
+fundamental changes wait for the user. Desktop and web visual acceptance are
+still required after implementation.

@@ -1,6 +1,6 @@
-# UI modernization — proposed round
+# UI modernization — implementation plan
 
-Drafted 2026-10-24. **Planning only; no game implementation has started.**
+Drafted 2026-10-24. **Implementation authorized on 2026-10-24; isolated worktree, no main merge or installation.**
 The user expanded the brief from inventory pages to the game's other forms,
 including privileged pages, containers and NPC services, and asked to plan
 these together before building. The earlier inspector proposal is withdrawn.
@@ -18,14 +18,14 @@ It establishes appearance, not inventory capacity, example stats, gameplay
 or a requirement to reproduce its inspector. Keep that original artifact.
 
 The [surface census](ui-modernization-surfaces.md) owns the source inventory
-and reachability notes. [Open visual decisions](../../TODO-ui-modernization.md)
-are proposals to discuss with the user, not approved game design.
+and reachability notes. [Approved presentation rules](../design/inventory_equipment.md#ui-modernization-approved-direction)
+record the visual decisions; detailed implementation choices are reversible defaults.
 
 ## 1. Lanes and waves
 
-These are proposed delivery/review units, **not permission to launch them**.
-The next milestone is feedback on Atlas 03 and agreement on the browser layouts.
-Implementation follows the user's go and the [round workflow](../process/round-workflow.md).
+These are authorized delivery/review units following the user's go on
+2026-10-24 and the [round workflow](../process/round-workflow.md).
+Keep all implementation and review in isolated UI worktrees.
 
 | Wave | Lane | Outcome | Dependency |
 |---|---|---|---|
@@ -97,7 +97,17 @@ present the earlier estimate as a commitment for all game forms.
     data is acceptable when identified as illustrative; it must not imply
     new item lore or mechanics. Native Server Admin identification remains.
 
-### Proposals for the next visual discussion
+14. Atlas 03 is accepted as the implementation direction (user, 2026-10-24).
+    Start implementation in the UI worktree. Window sizes may be chosen for
+    appearance and usability; keep the non-map inventory tabs the same size
+    and Map & Quests larger. This supersedes the former fixed-size ruling.
+15. Use two rows of tabs when needed, with all allowed pages visible.
+    Reversible details may be decided by the coordinator. Fundamental
+    changes wait for the user while independent work continues.
+16. Keep the map's real native scrollbars and client-side scroll containers;
+    the browser range inputs are only placeholders, not a replacement.
+
+### Approved visual direction
 
 - One visual family: dark translucent window surfaces, small rounded corners,
   restrained brass accents, clear text hierarchy and consistent controls.
@@ -139,7 +149,7 @@ post-load adapter can use helpers when forms are built. THEME checks the
 callers and load order before freezing this contract. No event bus, generic
 widget hierarchy or parallel session framework is warranted.
 
-This is a proposed presentation toolkit: shared frame, panels, typography,
+This is a presentation toolkit: shared frame, panels, typography,
 button roles, spacing and navigation rendering. Existing mods continue to own
 their forms' data, field handlers, sessions, validation, update triggers and
 animation timing. Helpers build deterministic formspec fragments from their
@@ -171,9 +181,8 @@ in [VENDOR.md](../../VENDOR.md). Prefer existing extension seams.
 
 - The baseline has seven ordinary tabs, optional Admin Mail and five Creative
   tabs: up to **13** visible main pages. Resolve overflow in the visual phase,
-  including long labels and enlarged GUI scale. The TODO records the existing
-  fixed-window ruling and header/dispatch constraints; any size change needs
-  an explicit decision. Do not silently hide pages.
+  including long labels and enlarged GUI scale. The 2026-10-24 ruling supersedes the old fixed-window size: choose one
+  appropriate non-map frame and a larger map frame. Do not hide pages.
 - Continue using registered sfinv pages, allowed navigation and lifecycle
   hooks. Keep inventory suspension during creation and safe map-window handoff.
   Validate navigation against current privileges/visibility; losing a
@@ -192,8 +201,7 @@ in [VENDOR.md](../../VENDOR.md). Prefer existing extension seams.
   to be specified, including `page.lua`'s deferred `back_home` reset and
   `window.lua`'s `core.show_formspec` wrapper / `shown_form` backstop. Do not
   silently remove those lifecycle mechanisms when adding the shared frame;
-  define and test their adapted behavior. The existing frame-size ruling for
-  non-map tabs stays open.
+  define and test their adapted behavior. All non-map tabs use one common frame size under the new ruling.
 - Preserve four bag slots, actual belt/equipment slots, continuous eight-column
   bag flow, native list indices, full/short/station views and hotbars A/B.
   The prototype's simplified capacities are not authoritative. Establish
@@ -287,8 +295,8 @@ privileged, infrequent or a nested fragment.
 THEME establishes a small demonstrator in real Luanti after visual approval:
 one inventory page, one chest and one dialog. The user's desktop/web check
 then verifies whether the browser direction translates well before every
-page is migrated. This is a proposed early milestone, not permission to sync
-or interrupt the user's current round.
+page is migrated. Do not sync or interrupt the user's current round. Continue independently
+with other authorized surfaces; final desktop/web visual acceptance remains the user's.
 
 INVENTORY and CRAFT fit actual data and capacities rather than copy example
 values from the HTML. PRIVILEGED tests all entitlement combinations and
@@ -308,9 +316,9 @@ it must not overwrite the concurrent quest coordinator's work.
 
 ## 5. Rules and boundaries
 
-- **Planning now.** No Lua, textures, live game, quest data or installed-game
-  edits as part of this planning pass. Browser follow-ups are the next proposed
-  review artifact; the original mockup stays intact.
+- **Implementation authorized.** Lua, generated theme textures and tests may
+  change in the isolated UI worktrees. Do not modify quest content, main or
+  the installed game. Preserve the browser artifacts.
 - Treat the census as evidence at its base commit, not a permanent assumption
   about the still-evolving game. Repeat the delta census before integration.
 - If a visual flourish requires new input mechanics, stop that feature path
@@ -522,3 +530,14 @@ CLI result receipts and outputs are archived in
 `~/projects/grudgelands-orchestration/ui-modernization/atlas03-review-2026-10-24/`.
 The artifact's `manifest.json` identifies the final package; source, media
 provenance, screenshots and browser reports are preserved beside it.
+
+### Implementation start — 2026-10-24
+
+The user approved Atlas 03 and the implementation start. The UI worktree has
+merged main `0ab3aea0` before code changes (including Round 59 and the current
+Round 60 changes). No main checkout files were changed. Initial order: shared
+presentation helpers and navigation; then inventory, crafting/containers and
+services in bounded ownership packages; map, mail, creation and remaining
+forms; integrated independent review and checks. No numbered release is
+claimed. All UI-only packages are **compatible**: no saved-state or worldgen
+change. Pending GUI acceptance does not block isolated implementation.
