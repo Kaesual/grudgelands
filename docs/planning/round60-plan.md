@@ -103,8 +103,14 @@ New for this round:
    zones anyway (kept unless a tier lacks one); the current places may stay; `grug_gathering/catalog.lua` (zones,
    hosts, density); mob-loot ingredients already drop in their own band (catalogue tier). Mapgen content, so the map
    reset covers it.
-
-## 2a. Decided (the user, 2026-10-24)
+10. **Quest-only items never leave the carried inventory** (the user, 2026-10-24): no chest, station, mail, trade or
+   trash. The game has that rule already: the group `grug_soulbound` (`grug_housing/soulbound.lua` ~1-15: only `main`,
+   the bags' content lists and the hotbar store accept it; trades and mail never carry it). Today's two quest-only
+   items (`grug_mobs:accord_captains_orders`, `throng_captains_orders`, `items.json` kind `quest`) lack it and can be
+   put in a chest; every quest-only item (those two and any this round adds, e.g. the Dispatch Folio) gets it. A lost
+   item drops again on the next kill while the quest is active (`grug_quests/state.lua` ~714-743). The quest drop's
+   `give` puts an item that does not fit at the player's feet (~705-707): the lane makes that safe for a soulbound item
+   (for example no roll while the inventory is full) and checks what dropping one does. Owner: BANDQUESTS. (the user, 2026-10-24)
 
 1. **Scope: all 14 files this round** (the eight band files and the six capital files, flagged `reworked`).
 2. **Questing share 21–30: the Round 59 pattern's ~55–60 % is fine** (no XP bump on non-kill quests).
