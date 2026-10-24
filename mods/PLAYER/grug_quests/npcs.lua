@@ -138,11 +138,22 @@ end
 -- foreman is in one variant only (quests.md "The Miner's Guild givers").
 -- The fixture harnesses that load this file without grug_mapgen register
 -- no camp.
+--
+-- Round 60 (round60-plan.md §2a point 3): the story's foremen carry their
+-- names instead of "Foreman", per camp; their ids stay. (One row per camp:
+-- tools/r28_design/r28common.py reads these rows for the design tools.)
+local FOREMAN_TITLES = {}
+for _, row in ipairs({
+	{camp = "mining_camp_frostbarrow_shelf", title = "Brodd Deeppeg"},
+	{camp = "mining_camp_ossuary_reach", title = "Rellis Shalemark"},
+}) do
+	FOREMAN_TITLES[row.camp] = row.title
+end
 local mapgen = rawget(_G, "grug_mapgen")
 local camps = mapgen and mapgen.mining_camps and mapgen.mining_camps.camps
 for _, camp in ipairs(type(camps) == "table" and camps or {}) do
 	if grug_core.settlement_socket_anchor(camp.id) then
 		Q.register_npc("r58_foreman_" .. camp.id, {settlement = camp.id, socket = "quest_foreman",
-			title = "Foreman", role = "foreman_t" .. camp.tier})
+			title = FOREMAN_TITLES[camp.id] or "Foreman", role = "foreman_t" .. camp.tier})
 	end
 end
