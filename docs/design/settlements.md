@@ -664,7 +664,7 @@ the same ids in all six capitals:
 
 | Socket | Role | Who stands there |
 |---|---|---|
-| `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it. |
+| `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it; since Round 59 the one giver of its capital's hub `<capital key>_guild` (chapter 1's second story quest, [quests.md](quests.md) "Chapter 1 in the capitals"). |
 | `miners_guild/miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the Miner's Guild Exchange (`grug_traders:guild_exchange`): the socket is taken over as the service role `guild_exchange` (`grug_traders/vendors.lua`, the socket id read from `GUILD_HALL.exchange`), as the Crownbinder takes his; a guild vendor of the capital's faction that opens on Trade-in and buys like every vendor, without the camp vendor's reputation page or repair. |
 | `miners_guild/miners_guild_clerk`, `miners_guild/miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
 | `miners_guild/miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
@@ -674,6 +674,31 @@ a resident at its gate. The house's `inside` point is the destination
 `miners_guild` and its door the doorway `miners_guild`. Every hall socket
 and the door are reachable from the plot's arrival, and no NPC of the house
 faces a wall (`tools/r58_halls/portable_test.lua`, `tools/r47_nz`).
+
+### Chapter 1's town places (Round 59)
+
+Round 59 lane STORYQUESTS ([plan](../planning/round59-plan.md) §4): each
+capital holds one **town place** of chapter 1 ([quests.md](quests.md) "Town
+places", "Chapter 1 in the capitals"), a socket of role `quest_place` that
+nobody stands on, where the second story quest's quest object stands. Each
+sits in a service plot every world builds (`wp13/capital_services.lua`),
+written into that plot's own roster row (`extra_sockets`, not the template:
+two of the templates are built by more plots), on free ground over the
+plot's turf, two nodes or more from its door, its doorstep path and every
+other socket of the plot:
+
+| Capital | Socket (the quest data's `socket:<capital>/<id>`) | Where |
+|---|---|---|
+| Highcourt | `market_store/market_store_dispatch_yard` | the dispatch yard beside the butcher's blind wall (`highcourt_district.lua`) |
+| Dur Brannoc | `forge_ore_yard/forge_ore_yard_loading_apron` | the ore yard's loading apron, the granary's blind side (`dur_brannoc_district.lua`) |
+| Lethariel | `market_bowyer/market_bowyer_timber_check` | the timber check beside the bowyer's side wall (`lethariel_districts.lua`) |
+| Gor Drazhak | `warren_cook_court/warren_cook_court_water_depot` | the water depot on the cook court's outer rim, off the plaza (`gor_drazhak_district_homes.lua`) |
+| Kezamba | `shore_store/shore_store_witness_landing` | the witness landing beside the shore store's blind wall (`kezamba_districts.lua`) |
+| Nhal Veyr | `homes_mourners_hall/homes_mourners_hall_receiving_court` | the receiving court outside the mourners' hall, on the side away from the bench (`nhal_veyr_district_homes.lua`) |
+
+`tools/r59_storyquests/portable_test.lua` checks each in its plot as the
+mapgen builds it and on seed 42's own chunks (air and headroom over walkable
+ground).
 
 ### Settlement walkers
 

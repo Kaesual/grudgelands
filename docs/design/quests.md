@@ -171,7 +171,9 @@ line's 25 (below); Round 46 removed Round 29's 55 repeatable quests (485 in
 total); Round 57 rebuilt the six start zones' 92 quests as 30 (423 in total,
 "The start zones" below); Round 58 adds the Miner's Guild's 30 (453 in
 total, [miners_guild.md](miners_guild.md) §11); Round 59 rebuilt the band
-11–20's 83 zone quests as 59 (429 in total, "The band 11–20" below). This is an editorial budget,
+11–20's 83 zone quests as 59 and added chapter 1's four story quests in the
+capitals (433 in total, "The band 11–20" and "Chapter 1 in the capitals"
+below). This is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near
 an oven ("The start zones"). Compatible tasks share an outing; avoid
@@ -636,7 +638,9 @@ camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
   them: Alis Cartwright (Highcourt), Hadrin Beamset (Dur Brannoc), Caelir
   Veinward (Lethariel), Iven Lastshift (Nhal Veyr), Drava Flintshoulder (Gor
   Drazhak), Ombali Ropekeeper (Kezamba). No role: a follow-up's talk
-  objective names its race region's leader by id.
+  objective names its race region's leader by id. Since Round 59 each is
+  the one giver of a hub of its capital's file ("Chapter 1 in the
+  capitals").
 - Like every quest giver, both serve only their own faction.
 
 ## Story and free play (Round 57 rulings 10 and 13)
@@ -834,6 +838,46 @@ quests.
   every other quest is new. The structure was written by
   `tools/r59_bandquests/build_structure.py`;
   `tools/r59_bandquests/portable_test.lua` checks it.
+
+## Chapter 1 in the capitals (Round 59)
+
+The story arc's first chapter opens at the level-19 handovers in the six
+capitals ([round59-plan.md](../planning/round59-plan.md) §2 and §4
+STORYQUESTS; the user's chapter picks K1–K16, all "A", 2026-10-24). Four
+story quests, one shared quest per faction and step, a variant per capital;
+the capital files stay unflagged (their band's rework is Round 60), and the
+capitals' other quests stay as they were.
+
+- **`story_accord_01` "A Hearing for the Absent" and `story_throng_01` "Our
+  Word, Our Witness"** (level 19, no prerequisite): given by the faction's
+  three envoys (Mariel Waybook, Dorrin Gateledger, Eriath Boughwarden;
+  Thorga Roadspeaker, Nalo Pathdrum, Ossa Quietregister), a travel quest to
+  the Miner's Guild leader of the giver's own capital, who takes the turn-in
+  (Alis Cartwright, Hadrin Beamset, Caelir Veinward; Drava Flintshoulder,
+  Ombali Ropekeeper, Iven Lastshift). The envoy speaks of a reported case and
+  never claims the player helped the band's witness; the departures still
+  travel to the envoys and are no prerequisite.
+- **`story_accord_02` "What a Seal Allows" and `story_throng_02` "Whose Word
+  Is This?"** (level 20, requiring the first): given and turned in by each
+  capital's leader, one use objective at the capital's **town place** (the
+  same object and label in every variant, only the place differs: "Secure
+  the dispatch record" or "Secure the witness record", a 3 s hold;
+  [settlements.md](settlements.md) "Chapter 1's town places"). At the
+  turn-in the leader decides the capital's case (the right issue, a limited
+  release, the foreign claim refused); where the abused papers come from
+  stays open, pointing on to Frostbarrow Shelf and Ossuary Reach. No traitor
+  and no wrong decision of one's own in this chapter.
+- **Givers and lines.** Each faction's two quests live in the file of their
+  first variant's capital (Highcourt, Gor Drazhak). The three envoys of a
+  faction share the line `envoy` (each envoy's own line was renamed; with
+  `front` they keep two lines), and each guild leader is the one giver of a
+  hub `<capital key>_guild` of its capital (line `guild`); the guild reports
+  (`guild_t<k>_report_*`) still turn in there.
+- **Rewards** (capitals are excepted from the zone budget): the first pays a
+  travel quest's weight 1, the second weight 3 with a choice of 2 Healing
+  Potion II or 2 Mana Potion II.
+- The structure is written by `tools/r59_storyquests/build_structure.py`
+  (placeholder texts); `tools/r59_storyquests/portable_test.lua` checks it.
 
 The Miner's Guild's quests (Round 58): [miners_guild.md](miners_guild.md) §11.
 
