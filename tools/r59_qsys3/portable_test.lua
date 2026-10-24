@@ -153,11 +153,13 @@ do
 	check(shrine and not shrine.required, "B the lore shrine's socket: a plot not every world builds")
 	check(socket_of(found, "goldmead_village", "quest_steward") ~= nil, "B a village's blueprint sockets")
 	eq(found.goldmead_village.label, "Goldmead Village", "B ... and its name")
-	local shipped = 0
+	local shipped = {}
 	for _, socket in ipairs(found.highcourt.sockets) do
-		if socket.role == "quest_place" then shipped = shipped + 1 end
+		if socket.role == "quest_place" then shipped[#shipped + 1] = socket.id end
 	end
-	eq(shipped, 0, "B no shipped Highcourt socket is a town place yet (the content lanes add them)")
+	-- Round 59 STORYQUESTS ships Highcourt's chapter 1 town place.
+	eq(table.concat(shipped, ","), "market_store/market_store_dispatch_yard",
+		"B Highcourt's one shipped town place (chapter 1's dispatch yard)")
 end
 -- A template copy with two fixture sockets: read through io.open, as the
 -- game's template loader reads (wp13/templates.lua).
@@ -202,8 +204,9 @@ do
 		roles[#roles + 1] = row.id .. "=" .. row.role
 	end
 	eq(table.concat(listed, ","), "highcourt=Highcourt", "B a harness's stand-in gains the named settlement")
-	eq(table.concat(roles, ","), "hall_quest=quest,miners_guild/miners_guild_cellar=quest_place," ..
-		"lore_shrine/lore_shrine_vault=quest_place",
+	-- (Round 59 STORYQUESTS: Highcourt's shipped dispatch yard is one of them too.)
+	eq(table.concat(roles, ","), "hall_quest=quest,market_store/market_store_dispatch_yard=quest_place," ..
+		"miners_guild/miners_guild_cellar=quest_place,lore_shrine/lore_shrine_vault=quest_place",
 		"B ... and its town places beside its own sockets")
 	local empty = {}
 	PLACES.extend(empty, ROOT, ROOT .. "/r59_fixture_zones", function() return {} end)
