@@ -387,8 +387,9 @@ counted name, names the text never says).
     `wreck_pay_chest`, each drawn by `grug_quests_obj_<kind>.png` 1–1.4
     nodes wide, and the four of the band 11–20 and the story arc's first
     chapter (Round 59), `dispatch_record`, `witness_record`, `snare_bundle`
-    and `held_supplies`, whose looks are placeholders (a texture modifier
-    over a shipped object's texture) until the art lane's pick. Every aiming ray of a player who
+    and `held_supplies`, with the art the user picked (lane STORYART: a
+    dispatch board on a trestle 1.1, two bound tablets 1.2, a rope snare
+    on a peg 1.2, two packs behind a rope cross 1.3). Every aiming ray of a player who
     does not see it (combat, hand clicks and the crosshair's interact colour,
     a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
