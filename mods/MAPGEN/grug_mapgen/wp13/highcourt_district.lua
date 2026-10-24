@@ -141,6 +141,12 @@ local function loader(directory)
 					plots.spare("store", area.x1 - 1, area.z1 - 1, 2),
 					plots.work("block", "chop", area.x0 + 3, area.z0, 0),
 					shop_vendor("butcher", "butcher", area, 2), -- Round 47: a post at 0
+					-- Round 59: the dispatch yard, the chapter's town place
+					-- (quests.md "Town places"; nobody stands on it): the open
+					-- ground beside the shop's blind wall, off the path and
+					-- the counter.
+					{id = "dispatch_yard", role = "quest_place",
+						x = area.x0 + 1, z = 0, face = 1},
 				}
 			end},
 		-- THE MINER'S GUILD HOUSE of The Charter of Stone (Round 58 lane HALLS2;

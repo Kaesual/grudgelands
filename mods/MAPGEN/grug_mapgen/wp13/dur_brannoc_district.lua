@@ -160,6 +160,12 @@ local function loader(directory)
 				return {
 					plots.work("ore_sort", "mine", area.x0 + 3, area.z0, 0),
 					plots.spare("ore_yard", area.x1 - 1, area.z0, 2), -- Round 47: 0 faced a post
+					-- Round 59: the loading apron, the chapter's town place
+					-- (quests.md "Town places"; nobody stands on it): the
+					-- granary's blind side, behind the rock face and off the
+					-- path.
+					{id = "loading_apron", role = "quest_place",
+						x = area.x0 + 1, z = 0, face = 1},
 				}
 			end},
 		-- 9. The store. Door index 4, single leaf: the `store` kit stands its

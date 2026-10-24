@@ -97,6 +97,13 @@ local function loader(directory)
 				return {
 					plots.work("stave", "carve", area.x0 + 3, area.z0, 0),
 					shop_vendor("bowyer", "bowyer", area),
+					-- Round 59: the timber check, the chapter's town place
+					-- (quests.md "Town places"; nobody stands on it): beside
+					-- the workshop's side wall, off the path and the counter.
+					-- In this row and not the template, which two more plots
+					-- build.
+					{id = "timber_check", role = "quest_place",
+						x = area.x1 - 1, z = 0, face = 3},
 				}
 			end},
 		-- 4. THE WEAVER'S. A scriptorium is a long room with shelving down

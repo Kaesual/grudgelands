@@ -9,7 +9,7 @@
         {
           "npc": "r20_orc_capital_envoy",
           "lines": [
-            "muster",
+            "envoy",
             "front"
           ]
         },
@@ -21,12 +21,184 @@
           ]
         }
       ]
+    },
+    {
+      "id": "gor_drazhak_guild",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_guild_leader_gor_drazhak",
+          "lines": [
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
     {
+      "id": "story_throng_01",
+      "line": "envoy",
+      "story": true,
+      "min_level": 19,
+      "level": 19,
+      "requires": [],
+      "title": "Our Word, Our Witness",
+      "text": "[PH] Chapter 1 (The Throng): the capital's envoy has a reported case of true records turned to a false claim and sends the player to The Oathdelvers' leader at the Miner's Guild house of this capital. Real text to follow.",
+      "completion": "[PH] Drava Flintshoulder: she stands by a pledge kept and will not let it become the receivers' debt, and takes up the case. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_gor_drazhak"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_gor_drazhak",
+          "givers": [
+            "r20_orc_capital_envoy"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_gor_drazhak"
+            }
+          ],
+          "text": "[PH] Thorga Roadspeaker: stolen supplies are billed again to the very people they were meant for; Drava Flintshoulder at the Miner's Guild house knows the pledges behind them. A reported case: Thorga does not claim the player helped Rokka. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder: she stands by a pledge kept and will not let it become the receivers' debt, and takes up the case. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kezamba",
+          "givers": [
+            "r20_troll_capital_envoy"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_kezamba"
+            }
+          ],
+          "text": "[PH] Nalo Pathdrum: an extorted levy is treated as if the community had pledged it; Ombali Ropekeeper at the Miner's Guild house tests the claimed witness. A reported case: Nalo does not claim the player helped Veko. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper: she keeps what someone witnessed apart from what is slipped under their name later, and takes up the case. Real text to follow."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r20_undead_capital_envoy"
+          ],
+          "turnins": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_nhal_veyr"
+            }
+          ],
+          "text": "[PH] Ossa Quietregister: remains and names are parted and used for strangers' claims; Iven Lastshift at the Miner's Guild house checks the register entries. A reported case: Ossa does not claim the player freed Hollis. Real text to follow.",
+          "completion": "[PH] Iven Lastshift: he keeps a name on the register apart from any claim about the person who bears it, and takes up the case. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Chapter 1 opens at the envoy at 19 with no prerequisite; a walk to the capital's Miner's Guild house.",
+      "duration_min": 4
+    },
+    {
+      "id": "story_throng_02",
+      "line": "guild",
+      "story": true,
+      "min_level": 20,
+      "level": 20,
+      "requires": [
+        "story_throng_01"
+      ],
+      "title": "Whose Word Is This?",
+      "text": "[PH] Chapter 1 (The Throng): a handover in the capital is disputed; the player secures its original record at the spot and brings it back, and the leader refuses the false claim. Real text to follow.",
+      "completion": "[PH] Drava Flintshoulder: she refuses the new claim and has the water issued as pledged. The Oathdelvers stand by the delivery; the receivers owe nothing for it. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:gor_drazhak/warren_cook_court/warren_cook_court_water_depot",
+          "object": "witness_record",
+          "label": "Secure the witness record",
+          "hold": 3
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_gor_drazhak",
+          "givers": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "turnins": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "objectives": [
+            {
+              "place": "socket:gor_drazhak/warren_cook_court/warren_cook_court_water_depot"
+            }
+          ],
+          "text": "[PH] Drava Flintshoulder: a confirmed water delivery is to be issued at the depot on the rim of the cook court. The receivers' names and the handover's witnesses were moved onto a new claim, so those supplied would owe more service or pay. Secure the original handover record there and bring it back. Real text to follow.",
+          "completion": "[PH] Drava Flintshoulder: she refuses the new claim and has the water issued as pledged. The Oathdelvers stand by the delivery; the receivers owe nothing for it. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow."
+        },
+        {
+          "zone": "kragmar_kezamba",
+          "givers": [
+            "r58_guild_leader_kezamba"
+          ],
+          "turnins": [
+            "r58_guild_leader_kezamba"
+          ],
+          "objectives": [
+            {
+              "place": "socket:kezamba/shore_store/shore_store_witness_landing"
+            }
+          ],
+          "text": "[PH] Ombali Ropekeeper: supplies for porters are held at the landing beside the shore store. A witnessed help with the unloading is made to prove a standing pledge of the same helpers. Secure the original witnessed record there and bring it back. Real text to follow.",
+          "completion": "[PH] Ombali Ropekeeper: she names which act was witnessed and which claim goes beyond it. A name under a handover witnesses that handover, nothing later. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "turnins": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "objectives": [
+            {
+              "place": "socket:nhal_veyr/homes_mourners_hall/homes_mourners_hall_receiving_court"
+            }
+          ],
+          "text": "[PH] Iven Lastshift: personal belongings wait in the receiving court outside the mourners' hall for their rightful receivers. True register entries were used to claim a debt on them, or a right to hold them back. Secure the original record there and bring it back. Real text to follow.",
+          "completion": "[PH] Iven Lastshift: he keeps the names and their right order and strikes the attached claim. A kept name gives no stranger's clerk a say over the person or their belongings. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "A spot in the capital town (a town place) and back; the leader decides the capital's case, the papers' source stays open.",
+      "duration_min": 6
+    },
+    {
       "id": "gor_drazhak_muster_01",
-      "line": "muster",
+      "line": "envoy",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_orc_capital_envoy",
       "min_level": 19,
@@ -52,7 +224,7 @@
     },
     {
       "id": "gor_drazhak_muster_02",
-      "line": "muster",
+      "line": "envoy",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_orc_capital_envoy",
       "min_level": 23,
@@ -81,7 +253,7 @@
     },
     {
       "id": "gor_drazhak_muster_03",
-      "line": "muster",
+      "line": "envoy",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_orc_capital_envoy",
       "min_level": 27,
@@ -117,7 +289,7 @@
     },
     {
       "id": "gor_drazhak_muster_04",
-      "line": "muster",
+      "line": "envoy",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_anchor_043_host",
       "min_level": 29,

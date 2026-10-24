@@ -9,7 +9,7 @@
         {
           "npc": "r20_troll_capital_envoy",
           "lines": [
-            "offerings",
+            "envoy",
             "front"
           ]
         },
@@ -21,12 +21,24 @@
           ]
         }
       ]
+    },
+    {
+      "id": "kezamba_guild",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_guild_leader_kezamba",
+          "lines": [
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
     {
       "id": "kezamba_offerings_01",
-      "line": "offerings",
+      "line": "envoy",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_troll_capital_envoy",
       "min_level": 20,
@@ -53,7 +65,7 @@
     },
     {
       "id": "kezamba_offerings_02",
-      "line": "offerings",
+      "line": "envoy",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_troll_capital_envoy",
       "min_level": 23,
@@ -81,7 +93,7 @@
     },
     {
       "id": "kezamba_offerings_03",
-      "line": "offerings",
+      "line": "envoy",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_troll_capital_envoy",
       "min_level": 27,
@@ -110,7 +122,7 @@
     },
     {
       "id": "kezamba_offerings_04",
-      "line": "offerings",
+      "line": "envoy",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_troll_capital_envoy",
       "min_level": 28,
@@ -138,7 +150,7 @@
     },
     {
       "id": "kezamba_front_thunderroot",
-      "line": "offerings",
+      "line": "envoy",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_anchor_048_host",
       "min_level": 29,
@@ -162,7 +174,7 @@
     },
     {
       "id": "kezamba_front_blackwind",
-      "line": "offerings",
+      "line": "envoy",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_anchor_039_host",
       "min_level": 29,

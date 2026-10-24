@@ -100,6 +100,12 @@ local function loader(directory)
 					plots.work("cook_counter", "stall", -2, -4, 0),
 					plots.idle("cook_bench", -2, 7, 2, {"bench"}, 2),
 					plots.spare("cook_court", 10, -6, 0),
+					-- Round 59: the water depot, the chapter's town place
+					-- (quests.md "Town places"; nobody stands on it): the
+					-- court's outer rim off the plaza, clear of the ovens,
+					-- the counter and the gate.
+					{id = "water_depot", role = "quest_place", x = 9, z = 0,
+						face = 3},
 				}
 			end},
 

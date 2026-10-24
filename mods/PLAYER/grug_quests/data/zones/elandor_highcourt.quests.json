@@ -9,7 +9,7 @@
         {
           "npc": "r20_human_capital_envoy",
           "lines": [
-            "accounts",
+            "envoy",
             "front"
           ]
         },
@@ -21,12 +21,184 @@
           ]
         }
       ]
+    },
+    {
+      "id": "highcourt_guild",
+      "anchor": "zone",
+      "givers": [
+        {
+          "npc": "r58_guild_leader_highcourt",
+          "lines": [
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
     {
+      "id": "story_accord_01",
+      "line": "envoy",
+      "story": true,
+      "min_level": 19,
+      "level": 19,
+      "requires": [],
+      "title": "A Hearing for the Absent",
+      "text": "[PH] Chapter 1 (The Accord): the capital's envoy has a reported case of people and loads entered in the wrong ledger and sends the player to The Charter of Stone's leader at the Miner's Guild house of this capital. Real text to follow.",
+      "completion": "[PH] Alis Cartwright: she asks who really needs a load and who drives it, and takes up the case. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_highcourt"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_highcourt",
+          "givers": [
+            "r20_human_capital_envoy"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_highcourt"
+            }
+          ],
+          "text": "[PH] Mariel Waybook: word from Goldmead says people and supplies are being claimed under a capital toll mark; Alis Cartwright at the Miner's Guild house can check the transport pledges. A reported case: Mariel does not claim the player helped Pella. Real text to follow.",
+          "completion": "[PH] Alis Cartwright: she asks who really needs a load and who drives it, and takes up the case. Real text to follow."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r20_dwarf_capital_envoy"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_dur_brannoc"
+            }
+          ],
+          "text": "[PH] Dorrin Gateledger: a Counting House stamp turns up on stolen ore bags; Hadrin Beamset at the Miner's Guild house checks how it ties to the workings and the supply. A reported case: Dorrin does not claim the player helped Tovin. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset: he asks which work stands still without the material and whether everybody came back, and takes up the case. Real text to follow."
+        },
+        {
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r20_elf_capital_envoy"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "npc": "r58_guild_leader_lethariel"
+            }
+          ],
+          "text": "[PH] Eriath Boughwarden: the Bough Seal is passed off as leave to take; Caelir Veinward at the Miner's Guild house knows the limits of the releases it covers. A reported case: Eriath does not claim the player helped Nima. Real text to follow.",
+          "completion": "[PH] Caelir Veinward: she asks exactly what a release allows, and takes up the case. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Chapter 1 opens at the envoy at 19 with no prerequisite; a walk to the capital's Miner's Guild house.",
+      "duration_min": 4
+    },
+    {
+      "id": "story_accord_02",
+      "line": "guild",
+      "story": true,
+      "min_level": 20,
+      "level": 20,
+      "requires": [
+        "story_accord_01"
+      ],
+      "title": "What a Seal Allows",
+      "text": "[PH] Chapter 1 (The Accord): the guild has halted a suspect delivery in the capital; the player secures its record at the spot and brings it back, and the leader decides the case. Real text to follow.",
+      "completion": "[PH] Alis Cartwright: she compares the record with the agreed delivery, rejects the extension and releases the load to its right recipient. A confirmed load gives nobody a say over the people beside it. Where the papers came from stays open; a like case waits at Frostbarrow Shelf. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:highcourt/market_store/market_store_dispatch_yard",
+          "object": "dispatch_record",
+          "label": "Secure the dispatch record",
+          "hold": 3
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_highcourt",
+          "givers": [
+            "r58_guild_leader_highcourt"
+          ],
+          "turnins": [
+            "r58_guild_leader_highcourt"
+          ],
+          "objectives": [
+            {
+              "place": "socket:highcourt/market_store/market_store_dispatch_yard"
+            }
+          ],
+          "text": "[PH] Alis Cartwright: a delivery for the joint supply waits in the yard beside the butcher's shop. Its covering record stretches the drivers' duty as if the workers could be put under another order along with the load. Alis has halted it; secure the record there and bring it back. Real text to follow.",
+          "completion": "[PH] Alis Cartwright: she compares the record with the agreed delivery, rejects the extension and releases the load to its right recipient. A confirmed load gives nobody a say over the people beside it. Where the papers came from stays open; a like case waits at Frostbarrow Shelf. Real text to follow."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "turnins": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "objectives": [
+            {
+              "place": "socket:dur_brannoc/forge_ore_yard/forge_ore_yard_loading_apron"
+            }
+          ],
+          "text": "[PH] Hadrin Beamset: tool material stands on the loading apron of the ore yard. Its acceptance was tied to a claimed transfer of the crew it was meant for, so their own supply would count as delivered. Hadrin never approved it; secure the load record there and bring it back. Real text to follow.",
+          "completion": "[PH] Hadrin Beamset: with the supply he sets out which crew the material was meant for and has it issued to them. A clean stamp replaces neither a sound order nor safe working. Where the papers came from stays open; a like case waits at Frostbarrow Shelf. Real text to follow."
+        },
+        {
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r58_guild_leader_lethariel"
+          ],
+          "turnins": [
+            "r58_guild_leader_lethariel"
+          ],
+          "objectives": [
+            {
+              "place": "socket:lethariel/market_bowyer/market_bowyer_timber_check"
+            }
+          ],
+          "text": "[PH] Caelir Veinward: material for a limited tending and repair job waits at the timber check beside the bowyer's workshop. A covering sheet turns the release into a wider claim on timber and on the tenders' labour. Secure the sheet there and bring it back. Real text to follow.",
+          "completion": "[PH] Caelir Veinward: she confirms the true purpose and strikes the extension. Leave to tend is no leave to clear-cut, nor a say over the tenders. Where the papers came from stays open; a like case waits at Frostbarrow Shelf. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "A spot in the capital town (a town place) and back; the leader decides the capital's case, the papers' source stays open.",
+      "duration_min": 6
+    },
+    {
       "id": "highcourt_accounts_01",
-      "line": "accounts",
+      "line": "envoy",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
       "min_level": 19,
@@ -53,7 +225,7 @@
     },
     {
       "id": "highcourt_accounts_02",
-      "line": "accounts",
+      "line": "envoy",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
       "min_level": 24,
@@ -82,7 +254,7 @@
     },
     {
       "id": "highcourt_accounts_tithes",
-      "line": "accounts",
+      "line": "envoy",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
       "min_level": 24,
@@ -112,7 +284,7 @@
     },
     {
       "id": "highcourt_accounts_03",
-      "line": "accounts",
+      "line": "envoy",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
       "min_level": 27,
