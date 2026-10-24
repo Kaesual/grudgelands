@@ -38,6 +38,8 @@ function grug_jobs.profession_overview(player)
 	return rows
 end
 
+local UI = grug_core.ui
+
 local NOTE_COLOR = "#f0c75e"
 -- Real-coordinate labels are centred on their y; one printed line each.
 local LINE_STEP, ROW_GAP = 0.42, 0.26
@@ -100,7 +102,7 @@ function grug_jobs.professions_formspec(rows, area)
 			lines(y, "More on the area tabs above.")
 			return table.concat(fs)
 		end
-		line(y, ("%s — Tier %d"):format(row.name, row.tier))
+		fs[#fs + 1] = UI.heading(area.x, y, ("%s — Tier %d"):format(row.name, row.tier))
 		y = lines(y + LINE_STEP, progress)
 		if note then y = lines(y, note, NOTE_COLOR) end
 		y = y + ROW_GAP

@@ -128,12 +128,12 @@ local function ring(location, list)
 		"]listring[current_player;grug_inbox]listring[current_player;main]"
 end
 
--- The fire and the arrow between the fuel slot and the output, at (x, y)
--- (0.49.1 ANIM: animated, grug_inventory.furnace_progress).
+-- The original client animations: fire below fuel, arrow toward output.
+-- Only geometry changes; furnace_progress still owns frames and timing.
 local function progress_images(x, y, view)
 	local progress = grug_inventory.furnace_progress
-	return progress.fire(x, y, 0.6, 0.6, view.left, view.total, view.burning) ..
-		progress.arrow(x + 0.7, y, 0.6, 0.6, view.done, view.time, view.cooking)
+	return progress.fire(x, y + 1.15, 0.65, 0.65, view.left, view.total, view.burning) ..
+		progress.arrow(x + 1.35, y + 0.3, 0.8, 0.8, view.done, view.time, view.cooking)
 end
 
 -- Built per viewer (0.49.1 ruling 6): the station in a box at the top, the
@@ -161,20 +161,20 @@ local function formspec(ctx, player)
 	local station = grug_inventory.STATION
 	local pitch, top = station.pitch, station.y
 	local function column(index) return station.x + index * pitch end
-	local lists_y = top + 1.45
-	local box, bottom = grug_inventory.station_box(title,
-		lists_y + rows * pitch - 0.25 - top)
-	local content = box ..
-		("label[%.3f,%.3f;%s]label[%.3f,%.3f;%s]"):format(column(0), top + 0.2, mode,
-			column(0), top + 0.6, core.formspec_escape(explanation)) ..
-		("label[%.3f,%.3f;Input]list[%s;%s;%.3f,%.3f;%d,1;]"):format(column(1),
-			lists_y - 0.25, location, source, column(1), lists_y, width) ..
-		("label[%.3f,%.3f;Fuel]list[%s;fuel;%.3f,%.3f;1,1;]"):format(column(3),
-			lists_y - 0.25, location, column(3), lists_y) ..
-		("label[%.3f,%.3f;Finished output]list[%s;%s;%.3f,%.3f;2,%d;]"):format(column(5),
-			lists_y - 0.25, location, output, column(5), lists_y, rows) ..
+	local lists_y = top + 1.55
+	local box, bottom = grug_inventory.station_box(title, 4.3)
+	local UI = grug_core.ui
+	local content = box .. UI.heading(column(0), top + 0.2, mode) ..
+		("textarea[%.3f,%.3f;%.3f,0.8;;;%s]"):format(column(0), top + 0.45,
+			station.box_w - 0.25, core.formspec_escape(explanation)) ..
+		UI.heading(column(0), lists_y - 0.25, "Input") ..
+		UI.heading(column(3), lists_y - 0.25, "Fuel") ..
+		UI.heading(column(5), lists_y - 0.25, "Finished output") ..
+		("list[%s;%s;%.3f,%.3f;%d,1;]"):format(location, source, column(0), lists_y, width) ..
+		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(location, column(3), lists_y) ..
+		("list[%s;%s;%.3f,%.3f;2,%d;]"):format(location, output, column(5), lists_y, rows) ..
 		ring(location, output) .. ring(location, source) .. ring(location, "fuel") ..
-		progress_images(column(4) - 0.15, lists_y + 0.2, view)
+		progress_images(column(3) + 0.15, lists_y, view)
 	local result = grug_inventory.station_formspec(player, content, bottom, ctx)
 	return result, not grug_inventory.furnace_progress.changed(ctx, result,
 		view.left, view.done)

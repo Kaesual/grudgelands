@@ -35,6 +35,8 @@
 -- click, so a click for an item and level count the page has not yet shown
 -- with the warning shows it, and the next click starts.
 
+local UI = grug_core.ui
+
 local UIF = grug_jobs.CRAFT_FIELDS
 local BOX = grug_jobs.CRAFT_BOX
 local n = grug_jobs._fs_number
@@ -60,11 +62,10 @@ local LIST_X = X + 3.45
 local LIST_W, LIST_H = W - 3.45, 1.75
 local NOTE_STEP = 0.38
 local LEVEL_CHARS = 8
-local BOX_COLOR = "#00000040"
 local SLOT_COLOR = "#00000080"
 local WARN = "#ff9f5a"
 local NOTE = "#f0c75e"
-local DIM = "#9a9a9a"
+local DIM = UI.colors.muted
 local ARROW = "gui_furnace_arrow_bg.png^[transformR270"
 -- (the button's name carries the build's serial, ui.lua's action_button)
 local ANYWAY_STYLE = "style[" .. F.upgrade .. "_%d" ..
@@ -213,8 +214,7 @@ end
 
 local function enchant_build(player, view)
 	local st = view.st
-	local fs = {("box[%s,%s;%s,%s;%s]"):format(n(BOX.x), n(BOX.y), n(BOX.w), n(BOX.h),
-		BOX_COLOR)}
+	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
 	local profession = area_profession(player, view.tab, "enchant")
 	if not profession then return no_area(fs) end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(TITLE_Y),
@@ -363,8 +363,7 @@ end
 
 local function upgrade_build(player, view)
 	local st = view.st
-	local fs = {("box[%s,%s;%s,%s;%s]"):format(n(BOX.x), n(BOX.y), n(BOX.w), n(BOX.h),
-		BOX_COLOR)}
+	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
 	local profession = area_profession(player, view.tab, "upgrade")
 	if not profession then return no_area(fs) end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(TITLE_Y),
