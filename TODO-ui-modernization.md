@@ -2,14 +2,17 @@
 
 Open design questions for the [proposed UI round](docs/planning/ui-modernization-plan.md).
 Status: planning, 2026-10-24. The first browser study's overall appearance is
-well received; the full game's window layouts are not approved yet. The item
+well received; the full game's window layouts are not approved yet. The second
+study covers all census families; its artifact and validation receipt are in
+the [round plan](docs/planning/ui-modernization-plan.md#browser-atlas-02--2026-10-24).
+The item
 inspector is **omitted**, not an open question.
 
 ## 1. Navigation with all entitlements
 
-There can be 13 main tabs. The existing browser study only illustrates the
-ordinary inventory context. Before code, compare two readable layouts in a
-browser study with long labels and enlarged scale. Existing ruling 10 in the
+There can be 13 main tabs. Atlas 02 compares two layouts with selectable
+permissions, long labels and enlarged scale. Review these before code.
+Existing ruling 10 in the
 [crafting/UI plan](docs/planning/ui-crafting-rework-plan.md#2-rulings-the-user-2026-10-08)
 keeps the non-map tabs at today's window size. The current frame is about
 13.5 × 13.673 real units; [inventory/ui.lua](mods/PLAYER/grug_inventory/ui.lua)
@@ -40,11 +43,11 @@ sidebar, new tab grouping or new hidden submenu is implied.
 
 ## 2. Window families and transparency
 
-The next proposed browser study covers a chest and running furnace, a quest
-dialog with long text and choice rewards, a Riding Trainer, and Admin Mail
-with all main tabs visible. Reuse the approved visual direction, real slot
-counts and realistic text lengths. Include a compact confirmation and a text
-input state within these samples.
+Atlas 02 covers all census families, including a chest and running furnace,
+a quest dialog with long text and choice rewards, a Riding Trainer, and
+Admin Mail with all main tabs visible. It includes compact confirmations,
+text input states and the game's long Help texts. Review these against the
+approved visual direction, real slot counts and realistic text lengths.
 
 Discuss window proportions, action placement, reading-panel opacity and how
 much world remains visible. The working proposal is one palette and control
@@ -52,15 +55,15 @@ style with task-appropriate dimensions; creation keeps its opaque world cover.
 Show rarity/quest/talent states and admin status colors over the proposed
 backgrounds too: existing translucent overlays change appearance when their
 base changes. Do not silently retune semantic colors during implementation.
-No independent full mockup of every page is necessary if these representative
-families settle the common rules.
+The user's expanded request for every UI is fulfilled by the atlas; the shared
+rules can still be decided through representative families.
 
 ## 3. Quiver count presentation
 
 The existing opaque cover for counts above 100 does not suit translucent
 slots. The [documented fallback](docs/technical/upstream-workarounds.md#4-the-quiver-count-relies-on-an-undocumented-item_image-count)
 is to remove the cover/count image and keep the total in the existing adjacent
-label. Confirm this simpler presentation in the Inventory study; no new input
+label. Confirm this simpler presentation in Character's Scout sample; no new input
 mode or inventory mechanics. The final label must remain clear at small scale.
 
 ## Closing this TODO

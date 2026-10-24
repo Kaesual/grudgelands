@@ -24,7 +24,7 @@ are proposals to discuss with the user, not approved game design.
 ## 1. Lanes and waves
 
 These are proposed delivery/review units, **not permission to launch them**.
-The next milestone is agreement on scope and representative browser layouts.
+The next milestone is feedback on Atlas 02 and agreement on the browser layouts.
 Implementation follows the user's go and the [round workflow](../process/round-workflow.md).
 
 | Wave | Lane | Outcome | Dependency |
@@ -66,6 +66,9 @@ present the earlier estimate as a commitment for all game forms.
 5. Ask before introducing a complex interaction to support an optional
    feature: omitting the feature may be the better choice. The lasting
    working rule is in [AGENTS.md](../../AGENTS.md).
+6. Prepare browser views for every reachable UI family before game changes
+   (2026-10-24). This authorizes the visual study, not implementation or
+   acceptance of its proposed navigation and window dimensions.
 
 ### Proposals for the next visual discussion
 
@@ -306,3 +309,42 @@ Input/output hashes, full review, CLI metadata and correction notes are in
 Touched document links and whitespace were checked. This receipt covers the
 planning artifact only; visual decisions, implementation and GUI acceptance
 remain open. No game files or release declarations changed.
+
+### Browser Atlas 02 — 2026-10-24
+
+The user requested browser views for every UI family. The local, standalone
+artifact is
+`~/projects/grudgelands-orchestration/ui-mockup-2026-10-24-v2/Grudgelands-UI-Atlas-02.html`.
+It contains **38 views and 116 sample states** covering the census, including
+privileged tabs, containers, services, map entry/window, mail, creation,
+arrival preparation and maintenance forms. The original study is unchanged.
+Editable HTML/CSS/JS, media provenance, previews and validation records sit
+beside the standalone file; its `manifest.json` records the package hashes.
+
+Review aids select permissions, two-row/paged navigation, world background,
+window opacity and zoom. They are not proposed player settings. Long Help
+texts come from the frozen game source; other text and values are illustrative.
+No item inspector, inventory simulation, server connection or game changes.
+
+The proposed header and navigation enlarge the frame. At the study's mapping
+of 60 pixels per real form unit, the existing frame is approximately 810 × 820;
+Firefox measures 810 × 926 with paged tabs and 810 × 969 with two rows and all
+13 tabs. These are alternatives for discussion, **not approved geometry**.
+The full/short/station lists retain seven/two/three rows, with independent
+storage samples and an adjacent quiver-total label in Character → Scout.
+
+Firefox checked every sample state for script errors, missing images and
+unintended panel overflow, plus navigation, draft isolation, reward selection,
+queue actions and other local interactions. All passed. Captures include
+1440 × 1050, 1280 × 800, 1920 × 1080 and a narrow 390 × 844 review viewport;
+the latter tests the browser atlas, not Luanti mobile support.
+This is a presentation artifact only: no upgrade declaration is needed.
+The expected future game classification remains compatible. Visual approval,
+implementation and Luanti desktop/web acceptance remain open.
+
+Independent read-only review initially requested fixes; the focused re-review
+returned **MERGE** after the navigation, geometry and sample-state corrections.
+Minor visible follow-ups were checked separately in Firefox. Review inputs,
+outputs, CLI receipts and correction notes are archived in
+`~/projects/grudgelands-orchestration/ui-modernization/browser-review-2026-10-24/`.
+These reviews assess the browser artifact, not a future Luanti implementation.
