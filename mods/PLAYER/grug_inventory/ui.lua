@@ -441,19 +441,17 @@ function grug_inventory.station_formspec(player, content, content_h, context)
 end
 
 --
--- The frame. A page passes show_inv = "full" or "short" for that view, true
--- for the short view (pages not yet reworked) and false or nil for none. A
--- page with its own header (`size`; none since the map got its own window)
--- gets the tabs and its content only. context.grug_inv_view records the
--- view the page shows, so a bag change re-renders it (pages.lua
--- grug_inventory.refresh).
+-- One common frame for inventory pages; Map & Quests builds its larger frame
+-- separately with the same navigation. A page passes show_inv = "full" or
+-- "short" for that view, true for the short view and false or nil for none.
+-- context.grug_inv_view records the view the page shows, so a bag change
+-- re-renders it (pages.lua grug_inventory.refresh).
 --
-function sfinv.make_formspec(player, context, content, show_inv, size)
+function sfinv.make_formspec(player, context, content, show_inv)
 	local nav = grug_inventory.navigation(player, context, context.page, UI.frame_w)
 	local mode = show_inv == true and "short" or show_inv or nil
 	context.grug_inv_view = mode
-	-- All existing body coordinates remain local to this container, including
-	-- legacy pages. The native tabheader formerly sat outside the window.
+	-- Body coordinates remain local to this container below the navigation.
 	return table.concat({
 		grug_core.ui.frame(UI.frame_w, UI.window_h),
 		nav,

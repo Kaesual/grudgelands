@@ -498,8 +498,11 @@ end
 -- action_clicked accepts only the newest build's, so a double click (the
 -- second on the page the first replaced) never starts or queues twice
 -- (Round 57 review).
-local DISABLED_STYLE = "style[" .. F.recheck ..
-	";bgcolor=#2a2a2a;bgcolor_hovered=#2a2a2a;textcolor=#808080;border=false]"
+-- Per-name states override the theme's hover/pressed images as well as its
+-- tint. The control still takes a click to recheck availability, never craft.
+local DISABLED_STYLE = "style[" .. F.recheck .. "," .. F.recheck .. ":hovered," ..
+	F.recheck .. ":pressed;bgimg=grug_ui_button.png;bgcolor=#2a2a2a;" ..
+	"textcolor=#808080;border=false]"
 grug_jobs.CRAFT_DISABLED_STYLE = DISABLED_STYLE
 function grug_jobs.action_button(view, field, label, enabled, style)
 	local geometry = ("%s,%s;%s,%s"):format(n(BOX.x + BOX.w - 0.2 - ACTION.w),
@@ -610,8 +613,13 @@ function grug_jobs.crafting_page_content(player, context)
 	local fs = {"real_coordinates[true]"}
 	-- Five balanced profession buttons stay in one row. The tier text and
 	-- its static progress occupy their own space, never the last button.
-	local x, tab_w = LIST_X, 2.0
+	-- Give longer names (especially Leatherworker) their share of the same
+	-- ten-unit button budget. Gaps and the tier area's position stay fixed.
+	local total_weight = 0
+	for _, entry in ipairs(tabs) do total_weight = total_weight + 0.5 + 0.135 * #entry.label end
+	local x = LIST_X
 	for index, entry in ipairs(tabs) do
+		local tab_w = 10 * (0.5 + 0.135 * #entry.label) / total_weight
 		local field = F.area .. index
 		fs[#fs + 1] = UI.button_style(field, index == st.slot and "selected" or "normal")
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(x), n(TAB_Y), n(tab_w),

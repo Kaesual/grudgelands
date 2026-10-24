@@ -1074,7 +1074,9 @@ fs = smith.formspec
 eq(st_of(smith).selected, sword.id, "S the sword chosen")
 says(fs, "Requires: Forge nearby", "S the station hint")
 has(fs, "(c@#ff9f5a)Requires: Forge nearby", "S ... as a warning")
-has(fs, "style[grug_craft_recheck;", "S the button greyed")
+has(fs, "style[grug_craft_recheck,grug_craft_recheck:hovered,grug_craft_recheck:pressed;" ..
+	"bgimg=grug_ui_button.png;bgcolor=#2a2a2a;textcolor=#808080;border=false]",
+	"S unavailable button keeps the same image and tint in every pointer state")
 has(fs, "grug_craft_recheck;Craft ×1]", "S ... and disabled (it cannot start)")
 lacks(fs, "grug_craft_go_", "S no live Craft now")
 lacks(fs, "field[7.6,", "S no quantity field for a non-stackable output")
