@@ -23,9 +23,8 @@ local UI = grug_inventory.UI
 UI.frame_w = 3 / 4 + 5 / 4 * (UI.width - 1) + 1
 UI.frame_h = 3 / 4 + 15 / 13 * (UI.height - 1) + 1 + 15 / 13 * 0.35 * 2 / 3
 
--- Shared selection treatment for page-local buttons. The selected state has
--- both a gold tint and a border; the unselected state has neither, so the
--- distinction remains visible without relying on colour alone.
+-- Shared selection treatment for page-local buttons: the selected role
+-- uses the toolkit's brass-accent texture; other buttons use its normal role.
 function grug_inventory.selected_button_style(fieldname, selected)
 	return grug_core.ui.button_style(fieldname, selected and "selected" or "normal")
 end
@@ -124,10 +123,6 @@ local ROW_STEPS = PITCH / SCROLL_FACTOR
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
 grug_inventory.VIEW_ROWS = {full = 7, short = 2, station = 3}
--- The background of the window's boxed areas (the Character tab's boxes, the
--- views' Inventory boxes, the Inventory tab's areas).
-grug_inventory.BOX_COLOR = "#00000040"
-local HOTBAR_COLOR = "#8a682f44"
 
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 	short = "grug_inv_scroll_short", station = "grug_inv_scroll_station"}
@@ -194,7 +189,7 @@ grug_inventory.VIEW_GEOMETRY = {x = LAYOUT.x, width = VIEW_W,
 	hotbar_y = LAYOUT.hotbar_y, top = LAYOUT.short_y}
 
 -- A boxed area's background and its label, top left above the slots.
-function grug_inventory.area_box(x, y, w, h, label, color)
+function grug_inventory.area_box(x, y, w, h, label)
 	return grug_core.ui.panel(x, y, w, h) ..
 		grug_core.ui.heading(x + LAYOUT.pad, y + LAYOUT.label_h / 2, label)
 end
@@ -236,7 +231,7 @@ end
 
 --
 -- The hotbar switch (Round 50 ruling 2): two small buttons, "A" and "B", the
--- shown layout marked (bright gold against dark, switch_style below). It
+-- shown layout marked with the shared selected role (switch_style below). It
 -- is the one element every form showing the hotbar draws: the views below
 -- (the inventory pages, the station forms, the mail's Write tab) right of
 -- the hotbar's slots, and the quickbar (E). Whoever receives the form's
@@ -247,9 +242,8 @@ grug_inventory.HOTBAR_FIELDS = {A = "grug_hotbar_a", B = "grug_hotbar_b"}
 -- In a view: between the last slot and the box's right edge (0.57).
 local SWITCH_GAP, SWITCH_W, SWITCH_H = 0.08, 0.45, 0.47
 
--- The shown layout in bright gold, the other one dark, both framed: the
--- shared selection style's tint disappears on the gold Hotbar box, and its
--- unselected state draws no button at all.
+-- Match page-local buttons: selected for the shown layout, normal for the
+-- other layout. Both sit on the same shared panel as the native slots.
 local function switch_style(field, shown)
 	return grug_core.ui.button_style(field, shown and "selected" or "normal")
 end
@@ -297,7 +291,7 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	local fs = {"real_coordinates[true]",
 		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory"),
 		grug_inventory.area_box(box_x, hotbar_box_y, LAYOUT.box_w,
-			LAYOUT.slot_box_h, "Hotbar", HOTBAR_COLOR),
+			LAYOUT.slot_box_h, "Hotbar"),
 	}
 
 	local max = grug_inventory.view_scroll_max(rows, visible)
@@ -330,7 +324,7 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	end
 	fs[#fs + 1] = "scroll_container_end[]"
 
-	-- The hotbar in its gold box: the engine's hotbar cell art under each
+	-- The hotbar in its shared panel: the engine's hotbar cell art under each
 	-- slot and the first eight cells of main.
 	for index = 0, 7 do
 		fs[#fs + 1] = ("image[%.3f,%.3f;1,1;grug_ui_panel.png]"):format(
