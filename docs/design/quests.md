@@ -393,9 +393,10 @@ counted name, names the text never says).
     dispatch board on a trestle 1.1, two bound tablets 1.2, a rope snare
     on a peg 1.2, two packs behind a rope cross 1.3), and the four of the
     band 21–30 and the second chapter (Round 60), `signal_lantern`,
-    `sighting_frame`, `reading_knots` and `claim_notice`, whose looks are
-    placeholders until the art lane's pick (a texture modifier over a
-    shipped object's texture). Every aiming ray of a player who
+    `sighting_frame`, `reading_knots` and `claim_notice`, with the art the
+    user picked (Round 60 STORYART: a shuttered lantern on a timber cradle
+    1.2, an A-frame sight with an open ring 1.4, an inclined reading cord
+    on forked pegs 1.3, a hinged two-wing register 1.3). Every aiming ray of a player who
     does not see it (combat, hand clicks and the crosshair's interact colour,
     a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
