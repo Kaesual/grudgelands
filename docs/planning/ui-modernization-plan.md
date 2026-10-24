@@ -1,6 +1,6 @@
 # UI modernization — implementation plan
 
-Drafted 2026-10-24. **Implemented and independently reviewed in the isolated worktree; desktop/web GUI acceptance pending. No main merge or installation.**
+Drafted 2026-10-24. **Implemented and independently reviewed in the isolated worktree; main 0.60.0 integrated on 2026-10-25 for the coordinator's new review. Desktop/web GUI acceptance pending. No merge into main or installation.**
 The user expanded the brief from inventory pages to the game's other forms,
 including privileged pages, containers and NPC services, and asked to plan
 these together before building. The earlier inspector proposal is withdrawn.
@@ -8,6 +8,8 @@ these together before building. The earlier inspector proposal is withdrawn.
 Planning base: `8f41fb533bf4b00c62149dac16953ba79631bb8c`; implementation
 baseline: main `0ab3aea0`. Branch:
 `ui-modernization`, worktree `.claude/worktrees/ui-modernization/`.
+Current integration base: main `a78518b7` (0.60.0), merged into this branch
+with merge commit `f61b8c76`; the integration receipt is below.
 The release number remains unassigned: the quest coordinator owns the
 numbered quest rounds. This branch does not update main's status,
 release metadata or installed game. Only the user pushes.
@@ -636,3 +638,121 @@ receipts, corrections and validation logs are archived at
 `~/projects/grudgelands-orchestration/ui-modernization/implementation-review-2026-10-24/`.
 The code is ready for the user's desktop/web GUI acceptance in the isolated
 worktree. Numbered release integration, installation and pushing remain open.
+
+### Main 0.60.0 integration handoff — 2026-10-25
+
+The user approved the quest coordinator's request to prepare this branch
+before the next quest round. Merge `f61b8c76` has parents `07ce189e` (UI) and
+`a78518b7` (main, 0.60.0); no rebase. The coordinator owns the new independent
+review and any later merge into main. This receipt does not claim that review
+or GUI acceptance. No release number was assigned to the UI change.
+
+**Scope relative to main:**
+
+- `grug_core/ui.lua`, its join prepend and seven generated textures supply
+  translucent surfaces, rounded nine-slice panels and native button states.
+  `grug_inventory/{ui,navigation,pages,help}.lua` supplies the stable normal
+  frame and permission-aware navigation; `grug_classes`, `grug_skills`,
+  `grug_achievements`, `grug_parties`, `grug_pvp` and `grug_ambience` adapt
+  their existing contents. Actual talent graphs and skills remain.
+- `grug_jobs` retains professions, recipe details, operations and queues;
+  its workspaces and the shared inventory views theme containers, with
+  `default/nodes.lua` for sign editing and the existing furnace/shelf paths.
+  `grug_housing/stone_form.lua` themes Claim Stone tabs and confirmations.
+- `grug_map/{page,window}.lua` opens the larger map directly with shared tabs;
+  `grug_quests/npc.lua` themes the existing quest conversation. Mail/admin,
+  all five Creative categories, traders, repair, trainers, home/waystones,
+  guild lift, housing manager, creation/arrival, quickbar, withdrawal,
+  books/signs and reachable mob maintenance editors share the theme.
+- Desktop and web use the same server formspecs, native fonts, slots,
+  scrollbars and input. No client fork, browser dependency or item inspector.
+  The HUD and engine menus are outside this change.
+
+**Persistence and interfaces:** UI-only classification is **compatible**;
+no saved-state schema, player-meta key, item/quest ID, inventory list or
+capacity changes. Main's 0.60.0 map-reset declaration remains unchanged and
+belongs to the quest round. `grug_quests` logic/data APIs, `grug_map/quest_box.lua`,
+HUD APIs and mail transactions/persistence are unchanged relative to main.
+Top-level form names and sfinv page IDs remain; internal event fields change:
+`grug_ui_tab_N`/`grug_ui_close`, `grug_mail_tab_N`, `stone_tab_N` replace the
+rendered tabheaders, with existing legacy tab input routes still handled.
+The obsolete `grug_map_open` control/handler and rendered `grug_map_close`
+button are removed; the shared close button owns that presentation.
+
+Presentation API changes are intentional: new `grug_core.ui` helpers and
+`grug_inventory.navigation`/`navigation_target`, the refusal-only
+`on_navigation_denied` page hook, `UI.header_h`/`window_h`; wrappers around
+sfinv navigation/build hooks; `sfinv.make_formspec` no longer accepts its
+unused custom-size argument; `grug_inventory.area_box` no longer takes a
+color override and `BOX_COLOR` is removed. `grug_ambience.settings_formspec`
+now emits real coordinates. In-repo consumers were adapted. New page content
+must explicitly use real coordinates; panels must stay outside scroll
+containers (see the presentation contract).
+
+**Performance:** no new globalstep, timer, periodic pass or per-tick work.
+There is one added join hook for the common prepend, and bounded navigation
+work on form construction/input. Craft/furnace progress retains the original
+client-animated strips and resend triggers; arrival alone retains its existing
+percentage/ETA with a static bar. Prior same-scenario measurements (not new
+0.60.0 benchmarks) are unchanged: Basic crafting 4499 to 5446 raw form bytes;
+furnace 17432 to 18086 bytes/minute with six sends in both versions; Basic
+form construction median 64.222 to 74.616 microseconds in the LuaJIT stand-in
+probe. Client rendering remains unmeasured.
+
+**Merge resolution:** all six overlapping files merged automatically; no
+manual conflict resolution or production-code correction was needed.
+`AGENTS.md` and `README.md` retain main's release/status/content changes,
+including 0.60.0, alongside the UI rules/design-tour text. The four fixtures
+retain main's quest rework, drop-capacity stand-in and the one Alchemy lesson
+exception alongside the UI helper setup and geometry assertions. Stable
+patch ID `cc369689c8267645e392f205f47c599ebe8d4328` is identical for
+`0ab3aea0..07ce189e` and `a78518b7..f61b8c76`: the UI patch survived intact.
+
+The five clean helper worktrees `ui-inventory`, `ui-services`,
+`ui-craft-containers`, `ui-review`, `ui-review-final` were removed after each
+HEAD was verified as an ancestor of the merged UI branch. Their implementation
+branches remain. Only main and ui-modernization worktrees remain registered.
+
+**Integration checks on `f61b8c76`:**
+
+- `python3 tools/check_fresh_server.py`: PASS.
+- `python3 tools/r28_design/validate.py --game`: 0 errors, 6 warnings
+  (catalogue/quest warnings; no UI data edits).
+- Targeted fixtures: **12 passed, 0 failed** — `r28_b4_quests`, `r28_q0`,
+  `r30_p1`, `r45_st`, `ui_navigation`, `r44_mq`, `r48_admin`, `r48_mail`,
+  `r491_anim`, `r57_craft`, `r60_bandquests`, `r60_capitals`. These cover the
+  four overlaps, shared navigation/map/mail, unchanged progress and queues,
+  and the newly integrated quest content.
+- Full `tools/run_fixtures.sh`, run once after integration: **276 passed,
+  0 failed**. No follow-up code or fixture fix was necessary.
+- The four overlapping Lua fixtures pass the plain-5.1 parser and sweeps
+  1–4. Sweep 5 flags three existing host-only `io.popen` source lines in
+  `r28_b4_quests`, `r28_q0`, `r45_st`, verified unchanged against main.
+  No sandbox rule was relaxed. Production Lua is unchanged from the prior
+  reviewed UI implementation plus main.
+- One `LC_ALL=C tools/luanti_headless.sh 90` boot: PASS, port 35800, seed
+  `5099651730322752340`; no ERROR/ModError. The launcher staged everything
+  in a disposable `/tmp/grudgelands-headless.*` tree and did not use the
+  user's Luanti folder.
+- The targeted fixtures, full suite and boot use
+  `~/projects/grudgelands-orchestration/r45/lua_run.sh`, with four, five
+  and one slots respectively. The full suite uses `JOBS=4`; its fifth slot
+  covers `r30_p3` spawning two Lua processes. The workstation cap stays eight.
+- Whitespace and this plan's local link targets: PASS.
+
+Receipts, overlap diff, patch-ID comparison and final branch identity are
+archived at
+`~/projects/grudgelands-orchestration/ui-modernization/main-integration-2026-10-25/`.
+The handoff commit after `f61b8c76` changes only this plan; the archive's
+`completion.json` records its exact hash. Main stays at `a78518b7`, with no
+merge into main, sync/install or push performed by this task.
+
+**Remaining acceptance:** the coordinator's integrated review, then the
+desktop/web checklist in section 6. Pay particular attention to readability
+at small resolutions/high GUI scale, all 13 permission-dependent tabs,
+native inventory/shift-click/scrolling, focus and Escape/X behavior, draft and
+attachment handling, long Round 59/60 story text/choice rewards, map zoom and
+tab switching without a delayed reopen, and craft/furnace progress. Existing
+fixtures and the boot cannot establish visual quality. No known implementation
+blocker is being deferred; release bookkeeping and installation stay with the
+coordinator.
