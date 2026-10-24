@@ -34,6 +34,11 @@ placeholders.
     python3 tools/r58_guildquests/build_structure.py [--check]
 
 --check exits 1 when the files differ from what the script would write.
+Since the texts landed the files differ by their texts, and since Round 59
+reworked the band 11-20 the T2 camp hunt's target would be picked anew from
+the band's new quests (the hunt is kept as shipped, round59-plan.md §2a
+point 4): `--check --ids` compares what still holds, the guild and camp
+quest ids each file carries and its hub ids.
 Python 3 standard library only.
 """
 import argparse
@@ -539,17 +544,26 @@ def build():
             for zone, data in files.items()}
 
 
+def ids(text):
+    """A file's guild and camp quest ids and its hub ids."""
+    data = json.loads(text)
+    return (sorted(q["id"] for q in data.get("quests") or [] if ours_quest(q)),
+            sorted(h["id"] for h in data.get("hubs") or []))
+
+
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true", help="exit 1 when the files differ")
+    ap.add_argument("--ids", action="store_true", help="with --check: compare only the quest and hub ids")
     args = ap.parse_args(argv)
     files = build()
+    same = (lambda a, b: ids(a) == ids(b)) if args.ids else (lambda a, b: a == b)
     differ = [p for p, text in sorted(files.items())
-              if not p.exists() or p.read_text(encoding="utf-8") != text]
+              if not p.exists() or not same(p.read_text(encoding="utf-8"), text)]
     if args.check:
         for p in differ:
             print("differs: %s" % p.relative_to(REPO))
-        print("build_structure: %d files, %d differ" % (len(files), len(differ)))
+        print("build_structure: %d files, %d differ%s" % (len(files), len(differ), " (ids)" if args.ids else ""))
         return 1 if differ else 0
     for p in differ:
         p.write_text(files[p], encoding="utf-8")

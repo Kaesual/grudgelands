@@ -10,12 +10,12 @@ starbough_outpost	-8	0	-8	7	8	7	8	quest_scout,quest,3,1,-3,0,-1
 mournfen_outpost	-8	0	-8	7	8	7	8	quest_scout,quest,3,1,-3,0,-1
 redtusk_outpost	-8	0	-8	7	8	7	8	quest_scout,quest,3,1,-3,0,-1
 raincall_outpost	-8	0	-8	7	8	7	8	quest_scout,quest,3,1,-3,0,-1
-copperfell_bandit_camp	-12	0	-12	11	8	11	8	quest_captive,quest,10,1,10,0,-1
-goldmead_bandit_camp	-12	0	-12	11	8	11	8	quest_captive,quest,10,1,10,0,-1
+copperfell_bandit_camp	-12	0	-12	11	8	11	8	load_record,quest_place,8,1,-7,0,1;quest_captive,quest,10,1,10,0,-1
+goldmead_bandit_camp	-12	0	-12	11	8	11	8	load_record,quest_place,-3,1,-8,0,1;quest_captive,quest,10,1,10,0,-1
 starbough_bandit_camp	-12	0	-12	11	8	11	8	quest_captive,quest,10,1,10,0,-1
 mournfen_bandit_camp	-12	0	-12	11	8	11	8	quest_captive,quest,10,1,10,0,-1
-redtusk_bandit_camp	-12	0	-12	11	8	11	8	quest_captive,quest,10,1,10,0,-1
-raincall_bandit_camp	-12	0	-12	11	8	11	8	quest_captive,quest,10,1,10,0,-1
+redtusk_bandit_camp	-12	0	-12	11	8	11	8	held_supplies,quest_place,11,1,-11,0,1;quest_captive,quest,10,1,10,0,-1
+raincall_bandit_camp	-12	0	-12	11	8	11	8	held_supplies,quest_place,11,1,-11,0,1;quest_captive,quest,10,1,10,0,-1
 r20_anchor_014	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
 r20_anchor_016	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
 r20_anchor_018	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0

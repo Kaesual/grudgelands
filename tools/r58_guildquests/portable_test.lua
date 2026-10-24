@@ -108,9 +108,15 @@ for _, name in ipairs(list_dir(ZONES)) do
 		end
 	end
 end
+-- The script's quests ship, each in its home file, with the camps' hubs.
+-- (Since the texts landed the files differ from its output by their texts,
+-- and since Round 59 by the T2 camp hunt's target, which it would pick anew
+-- from the band 11-20's new quests; before Round 59 this check passed "10
+-- differ" by containing "0 differ".) The S rows below check the rest.
 do
-	local out = run("python3 " .. repo .. "/tools/r58_guildquests/build_structure.py --check")
-	check(out:find("0 differ", 1, true) ~= nil, "S build_structure.py wrote what ships: " .. out)
+	local out = run("python3 " .. repo .. "/tools/r58_guildquests/build_structure.py --check --ids")
+	check(out:match("build_structure: %d+ files, 0 differ %(ids%)") ~= nil,
+		"S build_structure.py's quest and hub ids ship: " .. out)
 end
 local count = 0
 for _ in pairs(quests) do count = count + 1 end
@@ -365,10 +371,13 @@ for id, q in pairs(quests) do
 		end
 	end
 end
--- The camp zones' files keep their rework state (unflagged: their chains
--- stay until their rework).
+-- The camp zones' files keep their rework state: unflagged until their
+-- rework (their chains stay), but the band 11-20's six, reworked in Round 59.
+local BAND = {elandor_copperfell_foothills = true, elandor_goldmead_vale = true, elandor_starbough_vale = true,
+	kragmar_mournfen = true, kragmar_redtusk_savanna = true, kragmar_raincall_basin = true}
 for _, row in ipairs(catalog.mining) do
-	eq(file_data[row.zone_id] and file_data[row.zone_id].reworked, nil, "S " .. row.zone_id .. " keeps no rework flag")
+	eq(file_data[row.zone_id] and file_data[row.zone_id].reworked, BAND[row.zone_id] or nil,
+		"S " .. row.zone_id .. (BAND[row.zone_id] and " is reworked (Round 59)" or " keeps no rework flag"))
 end
 
 ------------------------------------------------------------------------------

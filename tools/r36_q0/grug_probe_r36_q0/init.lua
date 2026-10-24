@@ -25,7 +25,8 @@ end
 core.register_on_mods_loaded(function()
 	local kinds = 0
 	for _ in pairs(grug_quests.use_objects) do kinds = kinds + 1 end
-	expect(kinds == 12, "twelve quest-object kinds (" .. kinds .. ")")
+	-- Round 59: the band's and the first chapter's four kinds.
+	expect(kinds == 16, "sixteen quest-object kinds (" .. kinds .. ")")
 	for _, id in ipairs({"grug_mobs:throng_captains_orders", "grug_mobs:accord_captains_orders"}) do
 		expect(core.registered_items[id] ~= nil, id .. " is registered")
 	end

@@ -18,7 +18,8 @@
 --      enchant), the finale's weapon choice (one per weapon line, prefix and
 --      suffix); every enchant in its pool, every stack at the quest's reward
 --      level with its enchants;
---   F. the six departure ids and the level-11 quests that require them.
+--   F. the six departure ids, which no quest requires since Round 59 (the
+--      band 11-20's first quests require nothing).
 -- Offering and taking the shipped quests through the real grug_quests (a
 -- shared quest taken or done in one town is not offered in another) is
 -- tools/r28_q0's section 5, which loads every shipped file.
@@ -432,7 +433,9 @@ for _, row in ipairs(ZONES) do
 		end
 	end
 end
-eq(dependants, 10, "the ten level-11 quests that require a departure")
+-- Round 59 (lane BANDQUESTS): the band's first quests are free play, so no
+-- level-11 quest requires a departure any more.
+eq(dependants, 0, "no quest requires a departure (the band 11-20 is free play)")
 
 if failures > 0 then
 	error(("R57 STARTQUESTS PORTABLE FAIL %d of %d"):format(failures, checks), 0)
