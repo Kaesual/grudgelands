@@ -169,7 +169,16 @@ dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
 	-- Round 44: quest drops go through grug_inventory.give (main-only here).
-	give = function(player, stack) return player:get_inventory():add_item("main", stack) end}
+	give = function(player, stack) return player:get_inventory():add_item("main", stack) end,
+	-- Round 60: a quest drop rolls only when it fits (main-only here).
+	fits = function(player, stack)
+		stack = ItemStack(stack)
+		for _, slot in ipairs(player:get_inventory():get_list("main")) do
+			if slot:is_empty() or (slot:get_name() == stack:get_name() and
+					slot:get_count() + stack:get_count() <= 99) then return true end
+		end
+		return false
+	end}
 local zone_at = {}
 grug_zones = {id_at = function(x, z) return zone_at[x .. "," .. z] or "elandor_dawnmere_fields" end,
 	-- Level bands (Lane Q0's base-mob ranges) of the fixture's recipe zones.
@@ -514,11 +523,14 @@ eq(ann:count("grug_mobs:ledger_page"), 2, "second page")
 rolls = {}
 drop_hooks[1](mob("confused_bandit", "elandor_dawnmere_fields/border_bandits"), {"ann"}, AT)
 eq(#rolls, 0, "no roll once the player holds what the quest needs")
--- A full inventory: the page drops at the player's feet.
+-- A full inventory (Round 60: quest items are soulbound, so nothing drops
+-- at the feet): no roll while the page would not fit, a feed notice instead.
 for i = 1, 8 do bob:get_inventory():set_stack("main", i, ItemStack("default:cobble 99")) end
-dropped = {}
+dropped, rolls, fed_lines = {}, {}, {}
 drop_hooks[1](mob("confused_bandit", "elandor_dawnmere_fields/border_bandits"), {"bob"}, AT)
-eq(dropped[1], "grug_mobs:ledger_page 1", "full inventory: dropped at the feet")
+eq(#dropped .. "/" .. #rolls .. "/" .. bob:count("grug_mobs:ledger_page"), "0/0/0",
+	"full inventory: no roll, nothing dropped at the feet")
+check(fed_lines[1] and fed_lines[1]:find("^notice: No room for ") ~= nil, "full inventory: a feed notice")
 math.random = random
 check(Q.turn_in(ann, "fx_pantry_01"), "ann turns in the pages")
 

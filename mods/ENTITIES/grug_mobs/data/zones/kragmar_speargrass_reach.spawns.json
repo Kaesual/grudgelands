@@ -97,6 +97,9 @@
     "leaders": [
       {"role": "banner_broker_rakk", "at": {"camp": "goblin_camp"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "banner_cache", "name": "Speargrass Banner Cache", "at": {"kind": "hunting_grounds", "pick": "farthest_from_roads"}}
+    ],
     "critters": []
   }
 }

@@ -242,6 +242,11 @@ end
 -- grug_professions registers with grug_jobs (grug_mobs loads before it), and
 -- with its kind sets its vendor payout (grug_traders/prices.lua). A quest item
 -- has neither: traders do not buy quest props.
+-- A quest item is soulbound (Round 60, round60-plan.md §2 point 10: group
+-- `grug_soulbound`, grug_housing/soulbound.lua): it stays in the carried
+-- inventory, never in a chest, station, mail, trade or the trash, and
+-- dropping it destroys it (it drops again on a later kill while its quest
+-- still needs it, grug_quests/state.lua).
 --
 
 local PLACEHOLDER_IMAGE = {
@@ -250,8 +255,15 @@ local PLACEHOLDER_IMAGE = {
 }
 local ITEM_GROUPS = {
 	signature = {grug_material = 1},
-	quest = {},
+	quest = {grug_soulbound = 1},
 }
+local function drop_quest_item(itemstack, dropper)
+	if dropper and dropper.is_player and dropper:is_player() then
+		grug_core.feed(dropper, "notice", (itemstack:get_short_description() or "The item") ..
+			" is lost; it drops again while your quest needs it.")
+	end
+	return ItemStack("")
+end
 -- Texture file names shipped in this mod, read once.
 local TEXTURES = {}
 for _, entry in ipairs(core.get_dir_list(core.get_modpath(core.get_current_modname())
@@ -298,6 +310,7 @@ for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) d
 				short_description = row.name,
 				inventory_image = item_image(row.id, row.kind),
 				groups = table.copy(ITEM_GROUPS[row.kind]),
+				on_drop = row.kind == "quest" and drop_quest_item or nil,
 				_grug_icon_brief = row.icon,
 			})
 			if row.kind == "signature" then

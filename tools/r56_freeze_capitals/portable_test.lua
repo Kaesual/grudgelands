@@ -101,7 +101,10 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- district plot of its own by lane HALLS2 (the core's replaced building
 -- back), the capitals' new values; since Round 59 (STORYQUESTS, chapter 1's
 -- six town places: one quest_place socket in a service plot of each capital,
--- the identities unchanged) the new point and build digests.
+-- the identities unchanged) the new point and build digests; since Round 60
+-- (CAPITALS, chapter 2's public register: one quest_place socket in Nhal
+-- Veyr's Miner's Guild plot, its cells and identity unchanged) Nhal Veyr's
+-- new point and build digests.
 local FROZEN = {
 	highcourt = {"1a8e47431522d9772031f7fd380a0413d71a63f72ec61b6ddde522dac13e150e",
 		"9fa04dee8ea0448cd5a0fe1f80025ce5a1f83399ab0cb054703b58d442d0acd1",
@@ -113,8 +116,8 @@ local FROZEN = {
 		"b1f29ca4c47ac47413b26038200ddd4fccc81b219f8fa6c17ebc94ae34d604ed",
 		"36dbde6e1e0b2e9554423b5927c15a50e5343365c5aec85346762acb90ba76b4"},
 	nhal_veyr = {"55fce09f1fdef53ede607ae33f276be57e00d7fc5b85d0c394612880db240b21",
-		"80c057b2ff61977827f43add10f7f7f92eba53583852ae4a2d34c72f2862f3a6",
-		"6f680d4cb46dc72e73f2b13e9b741c248a85cbd71d1c9e8bc30f16626d739cb7"},
+		"d89dd8e4f3d886dfda4ae241bca702378783e206a622da642ba229ea5357c2d8",
+		"821349a1c3ea6bd7ed4200868c067b1d44a6a11c583367b525044c1c7ea3d5c2"},
 	gor_drazhak = {"2ad9738730febee444c8ab4606423a5d339181b75a99d43083f2b6df1e25962b",
 		"e53f3d4ac3f80315bf6edd5f9aba85fd4d4cf372d0c660b730a249fa718c2806",
 		"885ad9a5731edbfc9c3829da7efdb8c0744f8985cfabc39f85c6b7eac5e9f2bf"},

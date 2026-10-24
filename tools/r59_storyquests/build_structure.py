@@ -21,7 +21,9 @@ Each faction's quests live in the file of their first variant's capital
 its guild leader (line `guild`), and its envoy's own line is renamed to the
 shared `envoy`, so the three envoys of a faction have the line their shared
 quest needs (a line is only a label, loader.lua); the envoys keep their two
-lines (`envoy`, `front`). The capital files stay unflagged (Round 60).
+lines (`envoy`, `front`). The capital files were unflagged until Round 60
+reworked them (tools/r60_capitals/build_structure.py writes the rest of
+each file and copies these four quests).
 
 The structure was written once with placeholder texts; the texts are lane
 BANDTEXT's (Round 59), and the JSON files are their source. Rerunning the
@@ -280,7 +282,8 @@ def build():
     for capital, (zone, envoy, old_line, _socket) in CAPITALS.items():
         path = QUESTS / ("%s.quests.json" % zone)
         data = json.loads(path.read_text(encoding="utf-8"))
-        assert not data.get("reworked"), "%s: the capital files stay unflagged" % zone
+        # Round 60 CAPITALS flagged the six files reworked; chapter 1 stays as
+        # this script wrote it (their own generator, tools/r60_capitals).
         hub_id = capital + "_guild"
         hubs = [h for h in data["hubs"] if h.get("id") != hub_id]
         for hub in hubs:

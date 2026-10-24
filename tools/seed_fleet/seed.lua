@@ -23,8 +23,12 @@
 -- chunk that once failed in a real world, Round 41); they are planned and
 -- written after the sample.
 --
+-- Every recipe quest place is placed on the seed (Round 60, quest_places
+-- below).
+--
 -- Prints one line, "OK <seed> <seconds> <roster sha256> chunks=<n>
--- chunk_seconds=<s> trees=<the generated tree templates' roll-up, 16 hex>" or
+-- chunk_seconds=<s> trees=<the generated tree templates' roll-up, 16 hex>
+-- places=<recipe quest places checked> place_seconds=<s>" or
 -- "FAIL <seed> <seconds> <error>" and then raises (a non-zero exit). A failure
 -- in the per-chunk path names the chunk.
 local repo, seed = arg[1], arg[2]
@@ -135,6 +139,65 @@ local function build()
 	end
 end
 
+-- Every recipe quest place stands on this seed (Round 60, the user's
+-- ruling: round60-plan.md §2a point 7): the spawn regions of each zone whose
+-- recipe has `places`, built offline as the game builds them
+-- (spawn_regions_core.lua through its own query adapter on this runtime's
+-- zones, planner and roads, as tools/r28_regions/regions.lua does), each
+-- place placed (spawn_regions.md step 8). quest_targets.py checks the same
+-- on the six rendered seeds; this covers every fleet seed. Returns the
+-- count of places checked.
+local function quest_places()
+	local core = dofile(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
+	local json = dofile(repo .. "/tools/r28_b1/json.lua")
+	local function read(path)
+		local f = assert(io.open(path, "rb"))
+		local text = f:read("*a")
+		f:close()
+		return text
+	end
+	local catalogue = {}
+	do
+		local data = json.parse(read(repo .. "/mods/ENTITIES/grug_mobs/data/subtypes.json"))
+		for _, row in ipairs(data[1] and data or data.subtypes) do catalogue[row.role] = row end
+	end
+	local labels = {}
+	for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
+		if row.anchor_id then labels[row.anchor_id] = row.label end
+	end
+	local zones = R.built.zones_session
+	assert(R.planner_source and R.planner_source.column_values_at, "the runtime published no planner source")
+	local q = core.queries({zones = zones, column_values_at = R.planner_source.column_values_at,
+		road_polylines = R.main.road_polylines(), source = SOURCE})
+	local checked = 0
+	local dir = repo .. "/mods/ENTITIES/grug_mobs/data/zones"
+	for _, row in ipairs(SOURCE.zones) do
+		local zone = row.id
+		local f = io.open(dir .. "/" .. zone .. ".spawns.json", "rb")
+		local data = f and json.parse(f:read("*a"))
+		if f then f:close() end
+		if data and data.recipe and type(data.recipe.places) == "table" and #data.recipe.places > 0 then
+			local record = zones.get(zone)
+			local recipe = core.parse_recipe(zone, data.recipe, {
+				band = {record.level_min, record.level_max},
+				role_levels = function(role) return catalogue[role] and catalogue[role].levels end,
+				leader = function(role) return catalogue[role] ~= nil and catalogue[role].leader == true end,
+				pois = function(id) return core.zone_pois(SOURCE, id, labels) end,
+			})
+			local map = core.build(zone, q, recipe)
+			local placed = {}
+			for _, place in ipairs(map.places or {}) do placed[place.id] = true end
+			for _, place in ipairs(recipe.places) do
+				if not placed[place.id] then
+					error(("quest place %s/%s is not placed"):format(zone, place.id), 0)
+				end
+				checked = checked + 1
+			end
+		end
+	end
+	return checked
+end
+
 -- The sample: {label, x, z} columns, chosen by bytes of a digest of the seed.
 local function sample()
 	local bytes = {R.sha("seed_fleet_chunks:" .. seed):byte(1, 8)}
@@ -209,6 +272,13 @@ end
 
 local ok, err = pcall(build)
 local roster = ok and R.built.anchor_roster.sha256
+local places, place_seconds = 0, 0
+if ok then
+	local started = os.clock()
+	ok, err = pcall(quest_places)
+	if ok then places = err end
+	place_seconds = os.clock() - started
+end
 -- The seed's generated tree templates (Round 47): the expander checked every
 -- variant while the runtime was built (bounds, vocabulary, decoration role);
 -- the manifest publishes their roll-up, printed so two runs can be compared.
@@ -251,7 +321,8 @@ end
 local seconds = ("%.1f"):format(os.clock() - t0)
 if ok then
 	print("OK", seed, seconds, roster, "chunks=" .. chunks,
-		("chunk_seconds=%.1f"):format(chunk_seconds), "trees=" .. trees:sub(1, 16))
+		("chunk_seconds=%.1f"):format(chunk_seconds), "trees=" .. trees:sub(1, 16),
+		"places=" .. places, ("place_seconds=%.1f"):format(place_seconds))
 else
 	print("FAIL", seed, seconds, (tostring(err):gsub("[\t\n]", " ")))
 	error("seed " .. seed .. " failed", 0)

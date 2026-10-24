@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_whispering_reedlands",
+  "reworked": true,
   "identity": "The Whispering Reedlands charge a toll for every crossing, and the mirefolk collect it.",
   "hubs": [
     {
@@ -34,7 +35,8 @@
         {
           "npc": "r20_anchor_066_host",
           "lines": [
-            "cut"
+            "cut",
+            "steel"
           ]
         }
       ]
@@ -55,58 +57,61 @@
   ],
   "quests": [
     {
-      "id": "whispering_reeds_01",
+      "id": "whispering_melons",
       "line": "reeds",
       "giver": "r20_anchor_024_host",
       "turnin": "r20_anchor_024_host",
       "min_level": 20,
-      "level": 22,
+      "level": 21,
       "requires": [],
-      "title": "Do Not Follow Every Light",
-      "text": "Out here, a welcoming light can leave you waist-deep in water with someone demanding a toll. Kill six Marshlights after dark in the {name:canopy}, {zone_area:canopy}. I cannot prove they work for the toll collectors, but the collectors certainly appreciate the business.",
+      "title": "Something for the Carriers",
+      "text": "Every load at Whisperreed Landing seems to be urgent until I ask when its carriers last ate. Bring me four Melons for the people doing the lifting. The trade can wait while they have a slice.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "wandering_wisp"
-          ],
-          "count": 6,
-          "area": "kragmar_whispering_reedlands/canopy"
+          "type": "item",
+          "item": "grug_gathering:melon",
+          "count": 4
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
-      "id": "whispering_reeds_02",
+      "id": "whispering_reeds_enashi",
       "line": "reeds",
       "giver": "r20_anchor_024_host",
-      "turnin": "r20_anchor_024_host",
-      "min_level": 21,
-      "level": 22,
-      "requires": [
-        "whispering_reeds_01"
-      ],
-      "title": "The Water Signed Nothing",
-      "text": "Gillbacks have settled in the {name:hushwater_nests} {dir_from_giver:hushwater_nests} and decided every crossing belongs to them. Kill six before another traveller pays for the same stretch of water twice. I asked who gave them the river; they were strangely unwilling to introduce us.",
+      "turnin": "r20_anchor_046_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [],
+      "title": "Who Disputes the Claim",
+      "text": "The toll-takers claim the water as if they dug the whole course themselves. Speak to Enashi Reedvoice at Reedvoice Station; she knows the crossings and the people being charged to use them. She has been asking who gave those collectors permission, and they dislike the question.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "toll_mirefolk"
-          ],
-          "count": 6,
-          "area": "kragmar_whispering_reedlands/hushwater_nests"
+          "type": "talk",
+          "npc": "r20_anchor_046_host"
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 11
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 6,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "whispering_journey_speargrass",
@@ -115,11 +120,9 @@
       "turnin": "r20_anchor_022_host",
       "min_level": 22,
       "level": 23,
-      "requires": [
-        "whispering_reeds_01"
-      ],
-      "title": "Where the Reeds Give Way",
-      "text": "A troll who knows only reeds will try to weave every problem into a basket. Visit Brakka Jarward at Speargrass Wellhold in Speargrass Reach, carry my greetings, and ask what work needs doing. Our orc kin may show you another use for those hands.",
+      "requires": [],
+      "title": "An Invitation to Speargrass",
+      "text": "Brakka Jarward at Speargrass Wellhold keeps the working crews fed, and our exchange depends on the work they do. Go and speak to her in Speargrass Reach. Tell her Taleko sent willing hands, which are more useful than another promise about the next load.",
       "objectives": [
         {
           "type": "talk",
@@ -127,10 +130,11 @@
         }
       ],
       "rewards": {
-        "weight": 0.5,
-        "items": []
+        "weight": 0.5
       },
-      "duration_min": 12
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "whispering_journey_ossuary",
@@ -139,11 +143,9 @@
       "turnin": "r20_anchor_020_host",
       "min_level": 22,
       "level": 23,
-      "requires": [
-        "whispering_reeds_01"
-      ],
-      "title": "Names That Outlast the Rain",
-      "text": "Rain takes the ink from my tallies, but our undead kin seem determined to remember everything. Travel to Ossuary Ledgerstead in Ossuary Reach and speak with Sovel Namekeeper about work. Give my greetings before giving your name, or you may end up filed among the supplies.",
+      "requires": [],
+      "title": "An Invitation to Ossuary",
+      "text": "Sovel Namekeeper at Ossuary Ledgerstead takes care that old belongings and old names reach the right people. Go and offer help in Ossuary Reach. We send loads through many hands here; Sovel reminds me why the name at the end matters.",
       "objectives": [
         {
           "type": "talk",
@@ -151,21 +153,22 @@
         }
       ],
       "rewards": {
-        "weight": 0.5,
-        "items": []
+        "weight": 0.5
       },
-      "duration_min": 16
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "whispering_cut_01",
       "line": "cut",
       "giver": "r20_anchor_066_host",
       "turnin": "r20_anchor_066_host",
-      "min_level": 23,
+      "min_level": 24,
       "level": 25,
       "requires": [],
       "title": "That Is No Floating Log",
-      "text": "Two carts and a mule lost, and still somebody insists the Logbacks are just logs. Kill six in the {name:mudbanks} {dir_from_giver:mudbanks}, where we haul our stone. They wait there day and night; at least one thing around this quarry never misses a shift.",
+      "text": "My stone carriers keep finding Logbacks where they hoped to find a place to set down their load. Kill six in the {name:mudbanks}. If a log turns to watch you approach, do not give it the benefit of the doubt.",
       "objectives": [
         {
           "type": "kill",
@@ -177,65 +180,120 @@
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 11
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
-      "id": "whispering_cut_02",
-      "line": "cut",
-      "giver": "r20_anchor_066_host",
-      "turnin": "r20_anchor_066_host",
-      "min_level": 24,
+      "id": "whispering_route_signs",
+      "line": "reeds",
+      "giver": "r20_anchor_024_host",
+      "turnin": "r20_anchor_024_host",
+      "min_level": 25,
       "level": 26,
-      "requires": [
-        "whispering_cut_01"
-      ],
-      "title": "Quiet the Pumps",
-      "text": "The quarry pumps squeal loud enough to drown out the frogs, and the frogs have put years into that chorus. Bring me two Slime Gel to grease them, taken from the Sedge Oozes in the {name:thicket}, {zone_area:thicket}. The oozes come out there after dark, making considerably less fuss than my machinery.",
+      "requires": [],
+      "title": "Signs for the Crossings",
+      "text": "A carrier with both hands full should not have to wave down a stranger to learn which crossing they have reached. Bring me six Wooden Signs for the exchange routes. I will make the lettering large enough to read over a sack.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:slime_gel",
-          "count": 2,
-          "roles": [
-            "sullen_bog_ooze"
-          ],
-          "area": "kragmar_whispering_reedlands/thicket"
+          "item": "default:sign_wall_wood",
+          "count": 6
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": []
+        "weight": 5
       },
-      "duration_min": 9
+      "lesson": "A local task of the zone's own people.",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
-      "id": "whispering_voice_01",
+      "id": "whispering_seized_stores",
       "line": "voice",
       "giver": "r20_anchor_046_host",
       "turnin": "r20_anchor_046_host",
-      "min_level": 27,
-      "level": 28,
+      "min_level": 26,
+      "level": 27,
       "requires": [],
-      "title": "Who Speaks for the Mire",
-      "text": "Listen to the {name:mire_nests} {dir_from_giver:mire_nests}: the reeds whisper, and the Mire Tollers shout over them. Kill six mirefolk there to weaken their tollkeeper's hold on these waters. We have heard quite enough about what we owe for crossing our own home.",
+      "title": "Loosen the Held Bundles",
+      "text": "The toll-takers have tied up other people's provisions and left them at the {name:seized_stores} in the {name:reedbanks}. Free the bundles there and report to me so their owners can collect them. A knot around a load does not make its contents belong to whoever tied it.",
+      "completion": "The stores are ready to go back to their owners. I will see that the people waiting for them hear where to collect.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "toll_mirefolk"
-          ],
-          "count": 6,
-          "area": "kragmar_whispering_reedlands/mire_nests"
+          "type": "use",
+          "place": "seized_stores",
+          "object": "held_supplies",
+          "label": "Free the seized stores",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 11
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. The check's fix: the place stands in the open (the Reedbanks), not in Hushwater Nests, whose members stand up to 24 nodes from its centre."
     },
     {
       "id": "whispering_voice_02",
@@ -244,11 +302,10 @@
       "turnin": "r20_anchor_046_host",
       "min_level": 28,
       "level": 29,
-      "requires": [
-        "whispering_voice_01"
-      ],
+      "requires": [],
       "title": "The River Has No Purse",
-      "text": "Mirefolk Tollkeeper Ush waits in the {name:mire_nests} {dir_from_giver:tollkeeper_ush}, demanding coin from everything that floats. Kill Ush and end that claim upon our waters. When the reeds whisper the tale, I want them to remember who stood up for the folk with empty hands.",
+      "text": "Mirefolk Tollkeeper Ush charges for every crossing he can hold, though the boat crews do the work and mend the landings. Kill him at the {name:mire_nests}, {dir_from_giver:mire_nests}, and return to me. He says the water demands payment; I have heard only his voice asking.",
+      "completion": "Ush will make no more demands at our crossings. The people who keep them usable can get back to their work without paying him for the privilege.",
       "objectives": [
         {
           "type": "kill",
@@ -259,11 +316,52 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "climax": true,
-      "duration_min": 9
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "whispering_front_bannerbreak",
@@ -272,11 +370,9 @@
       "turnin": "r20_anchor_044_host",
       "min_level": 29,
       "level": 30,
-      "requires": [
-        "whispering_voice_02"
-      ],
-      "title": "Let the Reeds Tell It",
-      "text": "You have given these waters a tale worth carrying, and I will see that it travels. Go to Tornstandard Hold on Bannerbreak Mesa and speak with Yarra Standardmender. The Throng needs hands like yours where the banners tear, as surely as we needed them among the reeds.",
+      "requires": [],
+      "title": "Standards at Bannerbreak",
+      "text": "Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa keeps the colours fit to carry while the fighting wears everything down. Go and offer her help. She knows how much work stands behind a banner that still holds together.",
       "objectives": [
         {
           "type": "talk",
@@ -284,10 +380,11 @@
         }
       ],
       "rewards": {
-        "weight": 0.5,
-        "items": []
+        "weight": 0.5
       },
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 29, it requires nothing."
     }
   ]
 }

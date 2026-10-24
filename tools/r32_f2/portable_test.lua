@@ -776,8 +776,10 @@ for _, name in ipairs(list_dir(QUESTS)) do
 end
 -- Round 57: the start zones' shared quests count their kills once (296 left);
 -- Round 59: the band 11-20 keeps two kill quests per zone, its day hunt and
--- its perpetrator (274 left).
-check(kills >= 270, "L the shipped kill objectives were read (" .. kills .. ", " .. garrison_kills ..
+-- its perpetrator (274 left); Round 60: the band 21-30 keeps three kill
+-- objectives per zone (237 left); Round 60 CAPITALS: the six capitals keep
+-- a night hunt, a day hunt and their named leader each (219 left).
+check(kills >= 215, "L the shipped kill objectives were read (" .. kills .. ", " .. garrison_kills ..
 	" garrison kills not checked)")
 local kill_quests = 0
 for id in pairs(changed_quests) do

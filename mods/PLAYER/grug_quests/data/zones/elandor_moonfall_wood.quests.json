@@ -1,5 +1,6 @@
 {
   "zone": "elandor_moonfall_wood",
+  "reworked": true,
   "identity": "The Moonfall Observatory charts the stars over a wood that someone is quietly emptying with marked snares.",
   "hubs": [
     {
@@ -10,7 +11,7 @@
           "npc": "r20_anchor_035_host",
           "lines": [
             "stars",
-            "snares"
+            "shore"
           ]
         }
       ]
@@ -31,151 +32,197 @@
   ],
   "quests": [
     {
-      "id": "moonfall_stars_01",
-      "line": "stars",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 21,
-      "level": 22,
-      "requires": [],
-      "title": "The Stars Have No Need to Howl",
-      "text": "I have watched the heavens for years without hearing a star demand an answer; the Dusk Howlers beneath my window are less considerate. Kill five in the {name:eaves}, which lie {zone_area:eaves}; they roam there by day and are more plentiful after dark. A wounded wolf calls its pack, so leave yourself room to retreat.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "briarpack_wolf"
-          ],
-          "count": 5,
-          "area": "elandor_moonfall_wood/eaves"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "moonfall_snares_01",
-      "line": "snares",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
+      "id": "band_planks",
+      "line": "shore",
       "min_level": 22,
       "level": 23,
       "requires": [],
-      "title": "The Wrong Kind of Binding",
-      "text": "Someone has strung snares between my sighting posts, all stamped with a warden's mark that no honest warden granted. Defeat four Unlicensed Poachers at night in the {name:eaves}, which lie {zone_area:eaves}. I use those posts to study where things belong; I can state with some certainty that poachers do not.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "unlicensed_poacher"
-          ],
-          "count": 4,
-          "area": "elandor_moonfall_wood/eaves"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 9
-    },
-    {
-      "id": "moonfall_stars_02",
-      "line": "stars",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "moonfall_stars_01"
-      ],
-      "title": "A Bear in the Calculation",
-      "text": "My apprentices can account for the motion of the heavens, but their field notes become rather brief whenever a bear arrives. Kill five Bramble Bears by day in the {name:deepwood}, which lies {zone_area:deepwood}, so we can resume our measurements. We have already established that the bears object; no further evidence is needed on that point.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_bear"
-          ],
-          "count": 5,
-          "area": "elandor_moonfall_wood/deepwood"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 9
-    },
-    {
-      "id": "moonfall_stars_03",
-      "line": "stars",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "moonfall_stars_02"
-      ],
-      "title": "One Light, Properly Accounted For",
-      "text": "The Mistlights of the {name:deepwood} keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:bound_wisp_mote",
-          "count": 1,
-          "roles": [
-            "wandering_wisp"
-          ],
-          "area": "elandor_moonfall_wood/deepwood"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 6
-    },
-    {
-      "id": "moonfall_snares_02",
-      "line": "snares",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "moonfall_snares_01"
-      ],
-      "title": "A Clear View Needs Sound Wood",
-      "text": "The poachers have pulled down my sighting posts; without them, a hundred nights of careful work become a collection of guesses. Bring me ten planks of any wood here at the Observatory so I can rebuild them. Craft the planks wherever convenient, and let us have something steady beneath the moving sky again.",
+      "title": "Sound Wood",
+      "text": "My sighting posts have split, which makes a fixed observation surprisingly adventurous. Bring me fifteen Wooden Planks of any wood for replacements. I can account for the movement of the stars once the posts stop contributing their own.",
       "objectives": [
         {
           "type": "item",
           "group": "wood",
+          "count": 15
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_moonfall_wood",
+          "givers": [
+            "r20_anchor_035_host"
+          ],
+          "text": "My sighting posts have split, which makes a fixed observation surprisingly adventurous. Bring me fifteen Wooden Planks of any wood for replacements. I can account for the movement of the stars once the posts stop contributing their own."
+        },
+        {
+          "zone": "kragmar_totemwater_reach",
+          "givers": [
+            "r20_anchor_047_host"
+          ],
+          "text": "The fish traps need lids that close properly; a fish should have to make some effort to escape. Bring me fifteen Wooden Planks of any wood. I will leave the fishers to fit them, since my last lid impressed everyone except the fish."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "lesson": "A shared material errand: planks of any wood.",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Draft §3 'Brauchbares Holz' (Lethen's sighting posts, Tokai's trap lids)."
+    },
+    {
+      "id": "moonfall_glass",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 20,
+      "level": 21,
+      "requires": [],
+      "title": "A Pane Without a Crack",
+      "text": "The protective pane on my observing instrument has cracked across an otherwise promising view. Bring me six Glass, and I will do the fitting. I should like to discover something that is not a defect in my own equipment.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:glass",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "moonfall_sighting",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 23,
+      "level": 24,
+      "requires": [],
+      "title": "A Fixed Point of Reference",
+      "text": "Forest signs keep acquiring new owners and new meanings; my observations need a point that stays put. Set up the prepared sighting frame at the {name:sighting_post} in the {name:deepwood}, then report to me. Its measurements are already marked, so you need not bring an opinion about the stars.",
+      "completion": "A firm frame gives me a reference I can use. Now I can check the observations without wondering which way the timber leaned.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "elandor_moonfall_wood/sighting_post",
+          "object": "sighting_frame",
+          "label": "Set up the sighting frame",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "moonfall_ladders",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 26,
+      "level": 27,
+      "requires": [],
+      "title": "A Sound Way Up",
+      "text": "The observers' platform ladders have begun interrupting their ascent with ominous noises. Bring me ten Wooden Ladders to replace them. A discovery should bring an observer down to tell me about it, preferably by choice.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:ladder_wood",
           "count": 10
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 5
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "moonfall_snares_03",
-      "line": "snares",
+      "line": "stars",
       "giver": "r20_anchor_035_host",
       "turnin": "r20_anchor_035_host",
       "min_level": 28,
       "level": 29,
-      "requires": [
-        "moonfall_snares_02"
-      ],
+      "requires": [],
       "title": "A Warden in Name Alone",
-      "text": "Follow enough false marks and you find the hand that makes them: {name:snarewarden_bracken}. Vetch and Rusk answered to him, and he waits in the {name:elderwood} {dir_from_giver:snarewarden_bracken}, by day and night. Find him and defeat him; a warden should leave the wood alive behind him, not measured out in snares.",
+      "text": "Poacher Snarewarden Bracken puts false forest signs over his trapping business and trades with Vetch and Rusk. Kill him in the {name:elderwood}, {dir_from_giver:snarewarden_bracken}, and bring me word. Calling himself a warden does not make the animals his to sell or our observing ground his to close.",
+      "completion": "Bracken's title has outlived its holder, and I shall retire it. We can take down his false signs and make the observing places useful again.",
       "objectives": [
         {
           "type": "kill",
@@ -186,25 +233,63 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "The track's last normal-tier leader.",
-      "duration_min": 10,
-      "climax": true
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "moonfall_snares_04",
-      "line": "snares",
+      "line": "stars",
       "giver": "r20_anchor_035_host",
       "turnin": "r20_anchor_036_host",
       "min_level": 29,
       "level": 30,
-      "requires": [
-        "moonfall_snares_03"
-      ],
-      "title": "Beyond the Last Snare",
-      "text": "With Bracken gone, the marks in this wood mean nothing again, and my instruments can finally hear themselves think. His trade ran on into the Glassroot Wilds; take what you found to Faeris Rootbinder at Glassroot Gate. The wilds are contested ground, so finish your training before you leave the shelter of the trees.",
+      "requires": [],
+      "title": "The Trade Beyond the Wood",
+      "text": "Bracken's dealings reach beyond Moonfall, and Faeris Rootbinder at Glassroot Gate needs to know what is being sold under a warden's name. Go and speak to her in Glassroot Wilds. A false sign can cause trouble well beyond the tree it is nailed to.",
       "objectives": [
         {
           "type": "talk",
@@ -212,98 +297,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Heartland to contested handoff at 30.",
-      "duration_min": 10
-    },
-    {
-      "id": "moonfall_stars_opt_01",
-      "line": "stars",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "moonfall_stars_02"
-      ],
-      "title": "Optional: An Astronomer's Ankles",
-      "text": "A steady stance is essential to observation, and the Barnacle Pinchers on the {name:moonstrand} {dir_from_giver:moonstrand} make it impossible to maintain one. Kill five by day, before I set up for my night's work. Spare the Bank Crabs; they have never tried to dismantle the observer.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "armored_crab"
-          ],
-          "count": 5,
-          "area": "elandor_moonfall_wood/moonstrand"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 9,
-      "optional": true
-    },
-    {
-      "id": "moonfall_snares_opt_01",
-      "line": "snares",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 27,
-      "level": 28,
-      "requires": [
-        "moonfall_snares_02"
-      ],
-      "title": "Optional: Bears Along the Trail",
-      "text": "The marks continue into the {name:elderwood}, which lies {zone_area:elderwood}, where Bramble Bears make daylight travel a costly undertaking. Kill six by day to ease the search for whoever lays those snares. I doubt the bears care whose business they protect; that does little to comfort the searchers.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_bear"
-          ],
-          "count": 6,
-          "area": "elandor_moonfall_wood/elderwood"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
+      "lesson": "A travel quest, free (a level only).",
       "duration_min": 10,
-      "optional": true
-    },
-    {
-      "id": "moonfall_snares_opt_02",
-      "line": "snares",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "moonfall_snares_02"
-      ],
-      "title": "Optional: Thread Across the Stars",
-      "text": "At night, Gloam Weavers stretch their webs through the {name:elderwood}, which lies {zone_area:elderwood}, giving the snare-setters convenient markers and everyone else a faceful of silk. Kill six after dark. I prefer to admire fine weaving when it is not attached to my eyebrows.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "briar_web_spider"
-          ],
-          "count": 6,
-          "area": "elandor_moonfall_wood/elderwood"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 10,
-      "optional": true
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 29, it requires nothing."
     }
   ]
 }

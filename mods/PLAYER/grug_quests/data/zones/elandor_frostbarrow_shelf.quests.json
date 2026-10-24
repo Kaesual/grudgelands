@@ -1,5 +1,6 @@
 {
   "zone": "elandor_frostbarrow_shelf",
+  "reworked": true,
   "identity": "The Frostbarrow mines dig where it is coldest and most dangerous; leopards stalk the sled tracks, pinchers hold the icy shore, and a goblin counts stolen blasting powder in the rimewood.",
   "hubs": [
     {
@@ -21,7 +22,8 @@
         {
           "npc": "r20_anchor_026_host",
           "lines": [
-            "watch"
+            "watch",
+            "shore"
           ]
         }
       ]
@@ -33,7 +35,8 @@
         {
           "npc": "r20_anchor_061_host",
           "lines": [
-            "cutting"
+            "cutting",
+            "steel"
           ]
         }
       ]
@@ -54,151 +57,13 @@
   ],
   "quests": [
     {
-      "id": "frostbarrow_sleds_01",
-      "line": "sleds",
-      "giver": "r20_anchor_014_host",
-      "turnin": "r20_anchor_014_host",
-      "min_level": 21,
-      "level": 22,
-      "requires": [],
-      "title": "No Bell on Those Cats",
-      "text": "I can hear a loaded sled through a gale, but a Tarn Cat gives no warning before it pounces. Kill eight Tarn Cats at night along the sled track in the {name:pinewood}, which lies {zone_area:pinewood}. Folk hauling our supplies deserve to arrive with nothing worse to complain of than cold toes.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "prowling_snow_leopard"
-          ],
-          "count": 8,
-          "area": "elandor_frostbarrow_shelf/pinewood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Silent pouncers at night.",
-      "duration_min": 10
-    },
-    {
-      "id": "frostbarrow_sleds_optional",
-      "line": "sleds",
-      "giver": "r20_anchor_014_host",
-      "turnin": "r20_anchor_014_host",
-      "min_level": 21,
-      "level": 22,
-      "requires": [
-        "frostbarrow_sleds_01"
-      ],
-      "title": "Optional: Pinched Runners",
-      "text": "Bank Crabs have taken a liking to the sled landing on the {name:shingle} {dir_from_giver:shingle}, and to the runners of anything parked there. Clear six of them by day if you can spare the time. They only pinch back, but they mean it.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "bank_crab"
-          ],
-          "count": 6,
-          "area": "elandor_frostbarrow_shelf/shingle"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Optional daytime shore strip beside the night hunt.",
-      "duration_min": 9,
-      "optional": true
-    },
-    {
-      "id": "frostbarrow_sleds_02",
-      "line": "sleds",
-      "giver": "r20_anchor_014_host",
-      "turnin": "r20_anchor_061_host",
-      "min_level": 22,
-      "level": 23,
-      "requires": [
-        "frostbarrow_sleds_01"
-      ],
-      "title": "An Extra Pair for Kelda",
-      "text": "Kelda Screesort says Tarncut Mine is managing, which means she's doing three dwarves' work and resenting the other two. Go speak with her there and say Edda sent you. She'll grumble, but she'll find a use for willing hands.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_061_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Handoff inside the zone.",
-      "duration_min": 6
-    },
-    {
-      "id": "frostbarrow_sleds_hedra",
-      "line": "sleds",
-      "giver": "r20_anchor_014_host",
-      "turnin": "r20_anchor_026_host",
+      "id": "band_steel",
+      "line": "steel",
       "min_level": 23,
       "level": 24,
-      "requires": [
-        "frostbarrow_sleds_01"
-      ],
-      "title": "A Lantern at Rimebell",
-      "text": "Hedra Rimebell keeps the signal lantern at Rimebell Watch, and she sees trouble on the shore long before it reaches the sleds. Walk up and tell her Edda sent you; a watch with one pair of eyes needs a second pair of hands.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_026_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Handoff to the zone's third hub.",
-      "duration_min": 8
-    },
-    {
-      "id": "frostbarrow_cutting_01",
-      "line": "cutting",
-      "giver": "r20_anchor_061_host",
-      "turnin": "r20_anchor_061_host",
-      "min_level": 23,
-      "level": 25,
       "requires": [],
-      "title": "Horns Have Right of Way",
-      "text": "I spent half the morning hauling a sled back onto the track while a Curlhorn Ram watched me chew my beard. Cull six Curlhorn Rams by day along the haul lane in the {name:snowpines}, which lie {zone_area:snowpines}. They graze quietly until challenged, so take your time choosing the fight; I've already supplied the temper.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "hill_ram"
-          ],
-          "count": 6,
-          "area": "elandor_frostbarrow_shelf/snowpines"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Neutral grazers in the middle belt.",
-      "duration_min": 10
-    },
-    {
-      "id": "frostbarrow_cutting_02",
-      "line": "cutting",
-      "giver": "r20_anchor_061_host",
-      "turnin": "r20_anchor_061_host",
-      "min_level": 24,
-      "level": 26,
-      "requires": [
-        "frostbarrow_cutting_01"
-      ],
-      "title": "What Holds the Roof",
-      "text": "Every dwarf looks at the ore; a good miner looks at what's holding the roof above it. Bring me four Steel Bars for the deep shaft's brackets. I'll give you a Steel Pickaxe for the rock down there, and we'll both have done something useful before lunch.",
+      "title": "Steel for the Work",
+      "text": "I run Tarncut Mine for The Charter of Stone, and nobody goes under a roof I would not stand beneath myself. Bring me four Steel Bars for the prop fittings. Until those fittings hold, my crew stays out; the stone can wait its turn.",
       "objectives": [
         {
           "type": "item",
@@ -206,108 +71,65 @@
           "count": 4
         }
       ],
-      "rewards": {
-        "weight": 3,
-        "items": [
-          {
-            "item": "grug_materials:pick_steel",
-            "count": 1
-          }
-        ]
-      },
-      "lesson": "Steel from the dual furnace; the steel pick opens tier three rock.",
-      "duration_min": 12
-    },
-    {
-      "id": "frostbarrow_cutting_03",
-      "line": "cutting",
-      "giver": "r20_anchor_061_host",
-      "turnin": "r20_anchor_061_host",
-      "min_level": 26,
-      "level": 27,
-      "requires": [
-        "frostbarrow_cutting_02"
-      ],
-      "title": "Bring Yourself Back Too",
-      "text": "Take your Steel Pickaxe deep beneath these mines, below the copper and jade, and bring me two pieces of Rough Garnet. Pack food, carry light and keep a route back to the surface. I count a trip successful when the stone and the miner both come back up; one without the other is just paperwork.",
-      "objectives": [
+      "variants": [
         {
-          "type": "item",
-          "item": "grug_materials:rough_garnet",
-          "count": 2
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Gems by depth; dangerous extraction.",
-      "duration_min": 15
-    },
-    {
-      "id": "frostbarrow_cutting_04",
-      "line": "cutting",
-      "giver": "r20_anchor_061_host",
-      "turnin": "r20_anchor_061_host",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "frostbarrow_cutting_03"
-      ],
-      "title": "An Explosive Miscalculation",
-      "text": "Goblin Powder-Counter Nib stole our blasting powder and is counting the barrels in the {name:rimewood} {dir_from_giver:powder_counter_nib}. Go by daylight, when the leopards there have bedded down and only rams and the odd eagle are about. Clear your approach first, then pull Nib away from his barrels and fight him alone; he hits like a goblin who knows exactly how much powder he has left. Kill him before he finishes his sums.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "powder_counter_nib"
+          "zone": "elandor_frostbarrow_shelf",
+          "givers": [
+            "r20_anchor_061_host"
           ],
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 5,
-        "items": []
-      },
-      "lesson": "Normal named leader at the top of the zone.",
-      "duration_min": 14,
-      "climax": true
-    },
-    {
-      "id": "frostbarrow_departure",
-      "line": "cutting",
-      "giver": "r20_anchor_061_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 29,
-      "level": 30,
-      "requires": [
-        "frostbarrow_cutting_04"
-      ],
-      "title": "A Miner for Splitbolt",
-      "text": "With Nib's sums settled, Tarncut can dig again without flinching at every echo. Borin Splitbolt holds Splitbolt Station in Stormvault Heights, where the Accord needs dwarves who keep their heads under falling stone. Go and report to him; tell him Kelda says you came back up every time.",
-      "objectives": [
+          "text": "I run Tarncut Mine for The Charter of Stone, and nobody goes under a roof I would not stand beneath myself. Bring me four Steel Bars for the prop fittings. Until those fittings hold, my crew stays out; the stone can wait its turn."
+        },
         {
-          "type": "talk",
-          "npc": "r20_anchor_027_host"
+          "zone": "elandor_whitebridge_shire",
+          "givers": [
+            "r20_anchor_062_host"
+          ],
+          "text": "The Charter of Stone gives builders my measurements, so a slipped survey mount can become somebody else's crooked bridge. Bring me four Steel Bars to put the mount right. I prefer to discover a mistake while it still fits on a page."
+        },
+        {
+          "zone": "elandor_lorindor",
+          "givers": [
+            "r20_anchor_063_host"
+          ],
+          "text": "The Charter of Stone's work at Paleroot Cutting rests on roots older than our promises. Bring me four Steel Bars to brace the cutting beside them. We owe the next crew ground that will carry their weight, too."
+        },
+        {
+          "zone": "kragmar_ossuary_reach",
+          "givers": [
+            "r20_anchor_064_host"
+          ],
+          "text": "The Oathdelvers ask me to bring the finds out of Memoryvein Dig with their names still attached. That is difficult when the roof joins the collection. Bring me four Steel Bars for the shoring, and I can keep the stone where it belongs."
+        },
+        {
+          "zone": "kragmar_speargrass_reach",
+          "givers": [
+            "r20_anchor_065_host"
+          ],
+          "text": "The Oathdelvers promised working tools for the next shift, and I intend to put some in their hands. Bring me four Steel Bars for the tools and sorting tables at Redpick Yard. A table that sheds its legs does the sorting badly."
+        },
+        {
+          "zone": "kragmar_whispering_reedlands",
+          "givers": [
+            "r20_anchor_066_host"
+          ],
+          "text": "Keeping Reedstone Cut working for The Oathdelvers means persuading water to leave a hole it likes. Bring me four Steel Bars for the worn pump mounts and rods. I have tried a stern word; the water was unmoved."
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 4.5
       },
-      "lesson": "Heartland to contested zone handoff at 30.",
-      "duration_min": 10
+      "lesson": "The shared steel help of the six mines; each mine leader names the guild in this first offer.",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. Draft §3 'Stahl für die Arbeit' (K5 A: Zali's pumps too) and §7: the mine leader's first quest carries the guild membership."
     },
     {
-      "id": "frostbarrow_watch_01",
-      "line": "watch",
-      "giver": "r20_anchor_026_host",
-      "turnin": "r20_anchor_026_host",
+      "id": "band_shore_pinchers",
+      "line": "shore",
       "min_level": 24,
-      "level": 26,
+      "level": 25,
       "requires": [],
-      "title": "The Landing Bites Back",
-      "text": "A landing should let you get out of a boat, not persuade you to climb back in. Kill six Barnacle Pinchers on the {name:icy_shore} {dir_from_giver:icy_shore} by day. They'll attack without waiting for an invitation, so get your footing before you get their attention.",
+      "title": "Room for Our Feet",
+      "text": "A driver reaching the landing ought to find somewhere safe to put a foot. Kill six Barnacle Pinchers by day on the {name:icy_shore}. I can guide a sled through bad weather; I cannot signal every crab to mind its manners.",
       "objectives": [
         {
           "type": "kill",
@@ -318,42 +140,435 @@
           "area": "elandor_frostbarrow_shelf/icy_shore"
         }
       ],
+      "variants": [
+        {
+          "zone": "elandor_frostbarrow_shelf",
+          "givers": [
+            "r20_anchor_026_host"
+          ],
+          "text": "A driver reaching the landing ought to find somewhere safe to put a foot. Kill six Barnacle Pinchers by day on the {name:icy_shore}. I can guide a sled through bad weather; I cannot signal every crab to mind its manners."
+        },
+        {
+          "zone": "elandor_lorindor",
+          "givers": [
+            "r20_anchor_034_host"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "armored_crab"
+              ],
+              "area": "elandor_lorindor/shell_strand"
+            }
+          ],
+          "text": "The shore watch needs a place to stand while the carriers bring their loads through. Kill six Barnacle Pinchers by day on the {name:shell_strand}. My wardens are spending far too much time guarding their ankles."
+        },
+        {
+          "zone": "elandor_moonfall_wood",
+          "givers": [
+            "r20_anchor_035_host"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "armored_crab"
+              ],
+              "area": "elandor_moonfall_wood/moonstrand"
+            }
+          ],
+          "text": "An observer who looks at the sky cannot also watch every claw at ground level. Kill six Barnacle Pinchers by day on the {name:moonstrand}. I should like the next cry from that post to concern an actual discovery."
+        },
+        {
+          "zone": "kragmar_totemwater_reach",
+          "givers": [
+            "r20_anchor_047_host"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "armored_crab"
+              ],
+              "area": "kragmar_totemwater_reach/shallows"
+            }
+          ],
+          "text": "The fishers set down their gear and the shore tries to bite it. Kill six Barnacle Pinchers by day in the {name:shallows}, so there is room to work. I have read many signs, but a crab hanging from a fish trap seldom means good fortune."
+        }
+      ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 5
       },
-      "lesson": "Aggressive shore hunters by day.",
-      "duration_min": 10
+      "lesson": "The shared shore hunt, by day, at the zone's own shore.",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. Draft §3 'Freier Stand am Ufer': Barnacle Pinchers at each zone's shore kind."
     },
     {
-      "id": "frostbarrow_watch_optional",
+      "id": "frostbarrow_melons",
+      "line": "sleds",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 20,
+      "level": 21,
+      "requires": [],
+      "title": "Something Fresh for the Sled Drivers",
+      "text": "The sled drivers come back to Tarnwatch Fold with frozen beards and the same hard rations they left with. Bring me five Frost Melons so I can give them something fresh. A meal should occasionally require fewer blows than the journey.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_cooking:frost_melon",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "frostbarrow_sleds_hedra",
+      "line": "sleds",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_026_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "Hedra Knows the Way Back",
+      "text": "A driver can know a track for twenty years and lose it in one bad snowfall. Speak to Hedra Rimebell at Rimebell Watch about the trouble our returning sleds are having. She asks which people are missing before she asks what was on the sled.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_026_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 6,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
+    },
+    {
+      "id": "frostbarrow_sleds_02",
+      "line": "sleds",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 22,
+      "level": 23,
+      "requires": [],
+      "title": "Word for Tarncut",
+      "text": "Kelda Screesort's crew at Tarncut Mine waits on the same sleds that bring our supplies. Go and speak to her about what the mine needs. I can keep a driver warm here, but Kelda knows what must be on the next load.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_061_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 6,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
+    },
+    {
+      "id": "frostbarrow_signal",
       "line": "watch",
       "giver": "r20_anchor_026_host",
       "turnin": "r20_anchor_026_host",
-      "min_level": 27,
-      "level": 29,
-      "requires": [
-        "frostbarrow_watch_01"
+      "min_level": 22,
+      "level": 23,
+      "requires": [],
+      "title": "The Reliable Light",
+      "text": "In bad weather, a driver has enough to do keeping hold of the sled. Trim the signal lantern at Rimebell Watch's signal stand and tell me when it is ready. That light is my way of saying we are still here, waiting for them.",
+      "completion": "Good, a steady light for the next return. I will keep watch; you have given the drivers something to find.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:r20_anchor_026/signal_stand",
+          "object": "signal_lantern",
+          "label": "Trim the signal lantern",
+          "hold": 4
+        }
       ],
-      "title": "Optional: Eyes in the Rimewood",
-      "text": "From the watch I count fresh tracks every night in the {name:rimewood}, which lies {zone_area:rimewood}, and every one of them belongs to a Tarn Cat. Kill six there after dark if you've the nerve and the hours. Nobody will order you to, which is why I'm asking nicely.",
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "frostbarrow_stove_coal",
+      "line": "sleds",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 26,
+      "level": 27,
+      "requires": [],
+      "title": "Coal for the Warming Hut",
+      "text": "The warming hut at Tarnwatch Fold is for whoever comes back cold, even the ones who insisted they would be fine. Bring me twelve Coal Lumps for its stove. They can explain how fine they are once they can feel their fingers.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 12
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "frostbarrow_cutting_04",
+      "line": "cutting",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [],
+      "title": "An Explosive Miscalculation",
+      "text": "Goblin Powder-Counter Nib stole our blasting powder and the Dispatch Folio that travelled with it, blank delivery forms and all. He is counting his takings in the {name:rimewood}, {dir_from_giver:powder_counter_nib}. Kill Nib and bring me the Dispatch Folio. I want the powder theft stopped and those blanks back in our hands before they turn up under somebody's claim on our work.",
+      "completion": "That is our missing Dispatch Folio: unused delivery forms beside accounts someone has already altered. The blanks went with the stolen powder, so genuine sheets were loose for anyone willing to write a false demand on them. This tells us how they got out; it does not account for every misused paper elsewhere.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "prowling_snow_leopard"
+            "powder_counter_nib"
           ],
-          "count": 6,
-          "area": "elandor_frostbarrow_shelf/rimewood"
+          "count": 1
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:dispatch_folio",
+          "count": 1
+        }
+      ],
+      "quest_drops": [
+        {
+          "item": "grug_mobs:dispatch_folio",
+          "chance": 1,
+          "roles": [
+            "powder_counter_nib"
+          ]
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Optional night hunt of the top belt.",
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 14,
+      "notes": "Round 60 BANDQUESTS. The id stays (round60-plan.md §3: A4's prerequisite); its one Accord follow-up is A4. K3 A: the Dispatch Folio, a soulbound quest-only item, drops from Nib every time."
+    },
+    {
+      "id": "frostbarrow_departure",
+      "line": "cutting",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [],
+      "title": "Keep Your Head at Splitbolt",
+      "text": "Borin Splitbolt at Splitbolt Station in Stormvault Heights needs help keeping The Accord's work going under dangerous stone. Speak to him if you are ready for that country. He values someone who notices a loose rock before making a speech beneath it.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
       "duration_min": 10,
-      "optional": true
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 29, it requires nothing (round60-plan.md §2 point 1)."
+    },
+    {
+      "id": "story_accord_03",
+      "line": "guild",
+      "giver": "r58_foreman_mining_camp_frostbarrow_shelf",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "story_accord_02"
+      ],
+      "story": true,
+      "title": "Held in Our Name",
+      "text": "The supports for Tarncut Mine are sitting on this camp's loading ground because a later order claims them as security for somebody else's debt. I raised it with the guild and the army's supply office; both have confirmed the original delivery should go ahead. Secure the dispatch record and release the held load there, then report to Kelda Screesort at Tarncut Mine. Her crew needs those supports, and I want the order that stopped them kept for examination.",
+      "completion": "The supports are ready for Tarncut again; my crew can have a properly braced roof before work resumes. I recognise that delivery form, but nothing in its proper use authorises this added claim. I will keep the record with the case, so we can examine the demand alongside any evidence of where the forms went.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:mining_camp_frostbarrow_shelf/held_load",
+          "object": "dispatch_record",
+          "label": "Secure the dispatch record",
+          "hold": 4
+        },
+        {
+          "type": "use",
+          "place": "socket:mining_camp_frostbarrow_shelf/held_load",
+          "object": "held_supplies",
+          "label": "Release the held load",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "Chapter 2 of the story arc (story, may chain).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. A3 (K2 A): the held load at a quest_place socket of the mining camp blueprint."
+    },
+    {
+      "id": "story_accord_04",
+      "line": "cutting",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r58_guild_leader_dur_brannoc",
+      "min_level": 29,
+      "level": 29,
+      "requires": [
+        "story_accord_03",
+        "frostbarrow_cutting_04"
+      ],
+      "story": true,
+      "title": "Under a Joint Seal",
+      "text": "Brodd's held-load record and Nib's Dispatch Folio belong in the same examination. Take our findings to Hadrin Beamset at the Miner's Guild house in Dur Brannoc, so he can compare them with the army's supply records. The right crew must receive its supports, and nobody should be able to attach that invented debt again.",
+      "completion": "The supply office and I have matched the held-load record to the forms stolen with the powder: Tarncut's order is genuine, but the added claim was never authorised. We have sealed that finding together and will send the correction to the affected crews. The supply routes continue through Toren Waterbarrel at Cinderline Watch in Ashenward March; his work is the next place to follow them.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r58_guild_leader_dur_brannoc"
+        }
+      ],
+      "rewards": {
+        "weight": 2
+      },
+      "lesson": "Chapter 2 of the story arc (story, may chain).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. A4: wholly band-file data; requires A3 and Nib's free quest (their one Accord follow-up)."
     },
     {
       "id": "guild_t3_report_accord",

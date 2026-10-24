@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_ossuary_reach",
+  "reworked": true,
   "identity": "Ossuary Reach shelves and labels the Throng's bones; the Gravewood is waking around the archive and a skeleton calling itself the Marrow Archivist is re-filing the dead under its own name.",
   "hubs": [
     {
@@ -21,7 +22,8 @@
         {
           "npc": "r20_anchor_038_host",
           "lines": [
-            "rubbings"
+            "rubbings",
+            "camp"
           ]
         }
       ]
@@ -33,7 +35,8 @@
         {
           "npc": "r20_anchor_064_host",
           "lines": [
-            "dig"
+            "dig",
+            "steel"
           ]
         }
       ]
@@ -54,15 +57,72 @@
   ],
   "quests": [
     {
+      "id": "ossuary_gravewood",
+      "line": "names",
+      "giver": "r20_anchor_020_host",
+      "turnin": "r20_anchor_020_host",
+      "min_level": 20,
+      "level": 21,
+      "requires": [],
+      "title": "A Second Readable Copy",
+      "text": "I copy the old labels before damp and time finish their work, but I am running short of sound boards. Bring me ten Gravewood Planks from the {name:bonewood} for new name boards. A name is easier to preserve while there is still somebody who can read it.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_trees:gravewood_wood",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Draft §3.5's Paper replaced (check: papyrus grows only on warm shores): a local wood."
+    },
+    {
+      "id": "ossuary_names_02",
+      "line": "names",
+      "giver": "r20_anchor_020_host",
+      "turnin": "r20_anchor_038_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [],
+      "title": "Paper Remembers",
+      "text": "Mereth Rubbinghand at Boneledger Post keeps copies of the inscriptions we stand to lose. Go and speak to her about the work. Stone lasts a long time, but a second record has the advantage of surviving somewhere else.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_038_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
+    },
+    {
       "id": "ossuary_names_01",
       "line": "names",
       "giver": "r20_anchor_020_host",
       "turnin": "r20_anchor_020_host",
-      "min_level": 21,
-      "level": 22,
+      "min_level": 22,
+      "level": 23,
       "requires": [],
       "title": "Misfiled in a Wolf",
-      "text": "Ash Howlers prowl the {name:bonewood} {dir_of:r20_anchor_020:bonewood} by day, carrying off bones that ought to be on my shelves. Kill eight before more of our ancestors disappear into their dens. I have seen unfamiliar labels dangling from their mouths; apparently I now have a rival archivist as well as a wolf problem.",
+      "text": "The Ash Howlers have been dragging labelled remains through the {name:bonewood}. Kill eight by day before more of my neighbours are scattered among their feeding places. I spent a long time putting those names beside the right people.",
       "objectives": [
         {
           "type": "kill",
@@ -75,202 +135,95 @@
       ],
       "rewards": {
         "weight": 5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A daytime pack hunt in the bone forest.",
-      "duration_min": 10
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
-      "id": "ossuary_names_02",
-      "line": "names",
-      "giver": "r20_anchor_020_host",
-      "turnin": "r20_anchor_038_host",
-      "min_level": 22,
-      "level": 23,
-      "requires": [
-        "ossuary_names_01"
-      ],
-      "title": "Paper Remembers",
-      "text": "Mereth Rubbinghand at Boneledger Post copies the names on our barrow stones before weather can take another letter. Go and speak with Mereth; those rubbings may tell us why the names on my shelves no longer agree with the graves. Stone was supposed to be the durable option, but I have learned to keep a second copy.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_038_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Travel to the zone's second hub.",
-      "duration_min": 10
-    },
-    {
-      "id": "ossuary_names_03",
-      "line": "names",
-      "giver": "r20_anchor_020_host",
-      "turnin": "r20_anchor_020_host",
-      "min_level": 22,
-      "level": 23,
-      "requires": [
-        "ossuary_names_01"
-      ],
-      "title": "Optional: The Trees Went Walking",
-      "text": "The Lichen Snags in the {name:bonewood} spend their nights walking through the burial rows, dragging roots across generations of careful work. Fell eight after dark, and watch for the Pale Recluses among them. I planted trees to shade the dead; I never expected to have to explain that they should stay beside the graves.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mourning_treant"
-          ],
-          "count": 8,
-          "area": "kragmar_ossuary_reach/bonewood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "optional": true,
-      "lesson": "The same area's night roster: treants with a spider minor role.",
-      "duration_min": 12
-    },
-    {
-      "id": "ossuary_rubbings_01",
+      "id": "ossuary_record_chests",
       "line": "rubbings",
       "giver": "r20_anchor_038_host",
       "turnin": "r20_anchor_038_host",
-      "min_level": 24,
-      "level": 25,
+      "min_level": 26,
+      "level": 27,
       "requires": [],
-      "title": "Under the New Names",
-      "text": "The stones of the {name:barrowlands}, which lies {dir_of:r20_anchor_038:barrowlands}, carry fresh names cut over older letters. Barrow Archers guard them at night; destroy eight so I can get close enough to make rubbings. I can work around weather, but arrows make a dreadful mess of the paper.",
+      "title": "Dry Keeping for the Copies",
+      "text": "Every copy I make records which stone it came from; I would like that information to survive the next rain. Bring me three Chests for the records. There is a limit to what careful handwriting can do while floating.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "barrow_skeleton_archer"
-          ],
-          "count": 8,
-          "area": "kragmar_ossuary_reach/barrowlands"
+          "type": "item",
+          "item": "default:chest",
+          "count": 3
         }
       ],
       "rewards": {
         "weight": 5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A night hunt against ranged undead.",
-      "duration_min": 12
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
-      "id": "ossuary_rubbings_02",
-      "line": "rubbings",
-      "giver": "r20_anchor_038_host",
-      "turnin": "r20_anchor_038_host",
-      "min_level": 24,
-      "level": 25,
-      "requires": [],
-      "title": "Optional: A Hand I Might Recognise",
-      "text": "Bring me three Etched Bone from the Barrow Archers on the {name:barrowlands} after dark. I need to compare the lettering with my rubbings to learn who has been changing the names. A thief may borrow someone else's name, but usually keeps their own bad handwriting.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:etched_bone",
-          "count": 3,
-          "roles": [
-            "barrow_skeleton_archer"
-          ],
-          "area": "kragmar_ossuary_reach/barrowlands"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "optional": true,
-      "lesson": "A drop request that shares the archer outing.",
-      "duration_min": 6
-    },
-    {
-      "id": "ossuary_rubbings_03",
-      "line": "rubbings",
-      "giver": "r20_anchor_038_host",
-      "turnin": "r20_anchor_064_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "ossuary_rubbings_01"
-      ],
-      "title": "A Chisel Leaves Its Signature",
-      "text": "Those new letters were cut with a miner's chisel, and the scratches may tell us more than the words. Go to Memoryvein Dig and speak with Neris Fossilhand, who knows the tools used in the Reach. I trust Neris to recognise the workmanship, even if the owner would prefer to remain uncredited.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_064_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Travel to the zone's third hub.",
-      "duration_min": 10
-    },
-    {
-      "id": "ossuary_dig_01",
-      "line": "dig",
-      "giver": "r20_anchor_064_host",
-      "turnin": "r20_anchor_064_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [],
-      "title": "Optional: Disturbing the Workings",
-      "text": "Chalk Bears dig into the old shafts in the {name:webwood}, which lies {zone_area:webwood}, by day, helping themselves to the marrow. Kill eight before they bring more of the workings down. I have watched the Marrow Archivist gather what they leave behind; the bears do the digging and it takes the credit, which is a familiar arrangement.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_bear"
-          ],
-          "count": 8,
-          "area": "kragmar_ossuary_reach/webwood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "optional": true,
-      "lesson": "Heavy daytime animals beside the climax's story.",
-      "duration_min": 12
-    },
-    {
-      "id": "ossuary_dig_02",
-      "line": "dig",
-      "giver": "r20_anchor_064_host",
-      "turnin": "r20_anchor_064_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [],
-      "title": "Optional: Hold Up the Past",
-      "text": "Smelt six Steel Bars and bring them here to Memoryvein Dig for the shaft supports. There are still names down there we have not read, and the timbers have begun making persuasive arguments for leaving. I have been buried once already; next time, I would prefer to make an appointment.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:steel_bar",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "optional": true,
-      "lesson": "Tier-three metal from the Reach's own rock.",
-      "duration_min": 15
-    },
-    {
-      "id": "ossuary_dig_03",
+      "id": "ossuary_archivist",
       "line": "dig",
       "giver": "r20_anchor_064_host",
       "turnin": "r20_anchor_064_host",
@@ -278,16 +231,9 @@
       "level": 28,
       "requires": [],
       "title": "Filed Under Theft",
-      "text": "The chisel that cut those new names over the old ones was stolen from this dig. You will find the {name:marrow_archivist} in the {name:deepwood} {dir_from_giver:marrow_archivist}, giving every bone it collects the same name: its own. Kill it, and destroy four Pale Recluses in that wood at night. Those people had names long before it found a use for them.",
+      "text": "Skeleton Marrow Archivist stole my chisel and is using it to cut his own entries over old names in the {name:deepwood}. I know the uneven bite that tool leaves; I sharpened it for honest work. Kill him, {dir_from_giver:marrow_archivist}, and bring me word. He does not get to call theft an addition to the archive.",
+      "completion": "The Archivist can cut no more entries with my stolen tool. I will preserve the names we can still read and mark the damage plainly; I will not fill the gaps with guesses.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "grave_web_spider"
-          ],
-          "count": 4,
-          "area": "kragmar_ossuary_reach/deepwood"
-        },
         {
           "type": "kill",
           "roles": [
@@ -297,12 +243,52 @@
         }
       ],
       "rewards": {
-        "weight": 6.5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "climax": true,
-      "lesson": "The heartland's climax: a named normal leader at the top of the zone.",
-      "duration_min": 15
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "ossuary_dig_04",
@@ -311,11 +297,9 @@
       "turnin": "r20_anchor_039_host",
       "min_level": 28,
       "level": 29,
-      "requires": [
-        "ossuary_dig_03"
-      ],
+      "requires": [],
       "title": "Ashveil Keeps Its Own Records",
-      "text": "The Reach can file its own dead again; the living are needed elsewhere. Go to Ashveil Watch in Blackwind Rise and report to Vaska Ashlistener, who holds that ground for the Throng against the Accord. Tell Vaska the Archivist is closed, and that I would like the stones there left as they were carved.",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise keeps track of people whose names are easily lost in the fighting. Go and offer her help. She listens carefully, even when the news would be easier to put aside.",
       "objectives": [
         {
           "type": "talk",
@@ -323,11 +307,85 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Travel handoff from the heartland to the faction's contested zones.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 28, it requires nothing."
+    },
+    {
+      "id": "story_throng_03",
+      "line": "guild",
+      "giver": "r58_foreman_mining_camp_ossuary_reach",
+      "turnin": "r20_anchor_038_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "story_throng_02"
+      ],
+      "story": true,
+      "title": "The Copy Between Them",
+      "text": "An old name record and a fresh claim against those names lie together at the {name:claim_rest} in the {name:barrowlands}. Secure the copied claim with its original evidence before weather or another hand spoils the comparison. Take your findings to Mereth Rubbinghand at Boneledger Post; she knows how these records were copied. I can see that someone has made use of them, but I will not guess whose hand it was.",
+      "completion": "This new claim repeats a correction made only in an official register copy; the original stone has no such correction. Whoever wrote it worked from that older copy, rather than reading the names afresh. The names record who these people were, and the new demand borrows that authority to pretend they owed something.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "claim_rest",
+          "object": "witness_record",
+          "label": "Secure the copied claim",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "Chapter 2 of the story arc (story, may chain).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. T2a (K1 A): requires T2; lane CAPITALS' T3 requires it and ossuary_rubbings_03."
+    },
+    {
+      "id": "ossuary_rubbings_03",
+      "line": "camp",
+      "min_level": 25,
+      "level": 26,
+      "requires": [],
+      "title": "A Chisel Leaves Its Signature",
+      "text": "There are fresh cuts across old names, and Neris Fossilhand recognises the uneven bite of the chisel stolen from her dig. Speak to her at Memoryvein Dig about the damage and the missing tool. She knows how a working edge changes; an overwritten name deserves that much care before we decide what happened to it.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_064_host"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_ossuary_reach",
+          "givers": [
+            "r20_anchor_038_host",
+            "r58_foreman_mining_camp_ossuary_reach"
+          ],
+          "turnins": [
+            "r20_anchor_064_host"
+          ],
+          "text": "There are fresh cuts across old names, and Neris Fossilhand recognises the uneven bite of the chisel stolen from her dig. Speak to her at Memoryvein Dig about the damage and the missing tool. She knows how a working edge changes; an overwritten name deserves that much care before we decide what happened to it."
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "lesson": "A travel quest with two givers in one zone.",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS: the id stays (round60-plan.md §3: lane CAPITALS' T3 requires it, its one Throng follow-up); free, it requires nothing."
     },
     {
       "id": "guild_t3_report_throng",

@@ -12,6 +12,55 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.60.0 — the quests of levels 21–30, the capitals and the story's second chapter (2026-10-24)
+
+**Map reset** needed: herbs and crops in new places, new quest places in
+two band villages, every mining camp, Nhal Veyr and the wilds of levels
+21–30 change what world generation builds, so an existing world's map is
+generated anew from its seed. Characters keep their level, gear,
+inventory, money, quests, professions, mounts and waypoints, as in every
+map reset; a quest of levels 19–30 that no longer exists simply leaves
+the quest log. No migration step.
+
+- **Levels 21–30 reworked:** Frostbarrow Shelf, Whitebridge Shire,
+  Lorindor and Moonfall Wood (The Accord), Ossuary Reach, Speargrass
+  Reach, Whispering Reedlands and Totemwater Reach (The Throng) offer
+  their quests at once, each from its level, with no chain to follow
+  outside the story. Far fewer of them are hunts, and each zone's hunts
+  ask for about three kinds of creature: trim a signal lantern at Rimebell
+  Watch, check pickup records at Whitebridge's Market Close, cut snares,
+  set up a sighting frame in Moonfall Wood, bring stolen banners home in
+  Speargrass, free seized stores in the Reedlands, secure a reading cord
+  in Totemwater, and bring Steel Bars to the six mines, whose leaders now
+  work for their Miner's Guild. Each zone ends at its named troublemaker.
+  Rewards: a choice of Healing or Mana Potion III early, two armor choices
+  with an enchant and a weapon choice with two.
+- **The six capitals reworked:** fewer, freer quests (47 instead of 64):
+  torches for every envoy, the debtbound dead after dark and meat for the
+  cooks in four of them, each capital's named culprit, and the cooks' and
+  envoys' errands into the zones around, all open from their level.
+- **An Alchemy lesson at your first capital visit:** at level 19 every
+  envoy asks for an Elixir of Precision I. The capital's Alchemy trainer
+  teaches the craft for free; Sunleaf and a Boar Tusk are found where you
+  started (your start town's waystone takes you there), and the capital
+  has a Brewing Stand.
+- **The story's second chapter:** at level 24 the foreman of the
+  Frostbarrow mining camp, Brodd Deeppeg, or of the Ossuary camp, Rellis
+  Shalemark, sends you after the false papers; at 29 The Accord seals its
+  finding at the Miner's Guild in Dur Brannoc, and The Throng posts a
+  notice at the public register before Nhal Veyr's guild house.
+- **Herbs for every level band:** Gravemoss and Sunleaf grow in every
+  start zone, Dragonweed in every level-11 to 20 zone, Crimson Lotus at
+  levels 21–40 on each faction's own half; Pumpkin grows in all six home
+  zones and Frost Melon on The Throng's half too.
+- **Quest items stay in your bags:** the Dispatch Folio and the Captain's
+  Orders never go into a chest, the mail, a trade or the trash; dropping
+  one destroys it, and it drops again while your quest needs it. With full
+  bags nothing drops and a notice says so.
+- **New quest objects and icons:** a signal lantern, a sighting frame,
+  reading knots and a claim notice; the Dispatch Folio and both Captain's
+  Orders show their own icons.
+
 ## 0.59.0 — the quests of levels 11–20 and the story's first chapter (2026-10-24)
 
 **Map reset** needed: new quest places in the six capitals and in four

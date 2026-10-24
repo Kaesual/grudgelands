@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_speargrass_reach",
+  "reworked": true,
   "identity": "Speargrass Reach cuts the Throng's spears from its grass; vultures, tigers and a goblin banner-broker cut into the harvest.",
   "hubs": [
     {
@@ -22,7 +23,8 @@
         {
           "npc": "r20_anchor_065_host",
           "lines": [
-            "yard"
+            "yard",
+            "steel"
           ]
         }
       ]
@@ -55,59 +57,27 @@
   ],
   "quests": [
     {
-      "id": "speargrass_grass_01",
+      "id": "speargrass_grass_morga",
       "line": "grass",
       "giver": "r20_anchor_022_host",
-      "turnin": "r20_anchor_022_host",
-      "min_level": 21,
-      "level": 22,
+      "turnin": "r20_anchor_042_host",
+      "min_level": 26,
+      "level": 27,
       "requires": [],
-      "title": "Nothing Under the Sheaves",
-      "text": "Sheaf Stingers crawl under the cut sheaves on the {name:plains}, {zone_area:plains}, and every cutter who lifts one after dark lifts a scorpion with it. Kill eight there at night. A spear shaft should leave the Wellhold with no sting attached.",
+      "title": "Morga Knows the Missing Colours",
+      "text": "Crews come home asking whether I have seen the banners they left with, as if I might have packed them away with the supper pots. Speak to Morga Cutgrass at Cutgrass Watch about the missing colours. She is collecting the reports, and she remembers who stood beneath each one.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "dust_stinger"
-          ],
-          "count": 8,
-          "area": "kragmar_speargrass_reach/plains"
+          "type": "talk",
+          "npc": "r20_anchor_042_host"
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 12
-    },
-    {
-      "id": "speargrass_grass_02",
-      "line": "grass",
-      "giver": "r20_anchor_022_host",
-      "turnin": "r20_anchor_022_host",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "speargrass_grass_01"
-      ],
-      "title": "Optional: Count the Cutters Home",
-      "text": "I count every cutter who leaves the Wellhold, and lately the returning count has been short. Kill eight Tallgrass Tigers by day in the {name:tallgrass}, {zone_area:tallgrass}. A cutter should be watching the blade, not the grass behind them.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_stalking_tiger"
-          ],
-          "count": 8,
-          "area": "kragmar_speargrass_reach/tallgrass"
-        }
-      ],
-      "rewards": {
-        "weight": 4.5,
-        "items": []
-      },
-      "duration_min": 12,
-      "optional": true
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 6,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "speargrass_journeys_01",
@@ -116,11 +86,9 @@
       "turnin": "r20_undead_capital_envoy",
       "min_level": 22,
       "level": 23,
-      "requires": [
-        "speargrass_grass_01"
-      ],
+      "requires": [],
       "title": "Promises Outlast Breath",
-      "text": "The undead of Nhal Veyr buy our spears, and I have never had to ask twice for a favour they owed. Travel to their city and speak to Ossa Quietregister on our behalf. Mind your manners; a bare jaw can still take offence.",
+      "text": "I keep the names of everyone who goes out with our crews, including those who do not come back to answer. Take word of that work to Ossa Quietregister in Nhal Veyr. Our promises to those people should not depend on whether they can still remind us.",
       "objectives": [
         {
           "type": "talk",
@@ -128,46 +96,22 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 12
-    },
-    {
-      "id": "speargrass_yard_01",
-      "line": "yard",
-      "giver": "r20_anchor_065_host",
-      "turnin": "r20_anchor_065_host",
-      "min_level": 23,
-      "level": 24,
-      "requires": [],
-      "title": "The Yard Eats Steel",
-      "text": "Redpick Yard has worn out another pick, and the sorting trays are trying to follow it into the scrap heap. Bring me four Steel Bars so we can keep working. The rock will still be here tomorrow, but I would prefer less of it.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:steel_bar",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "weight": 4.5,
-        "items": []
-      },
-      "duration_min": 15
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "speargrass_yard_02",
       "line": "yard",
       "giver": "r20_anchor_065_host",
       "turnin": "r20_anchor_065_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "speargrass_yard_01"
-      ],
-      "title": "Optional: Put the Claws to Work",
-      "text": "The smith has an idea for our pick tips, and for once I like the sound of it. Bring me three Shearing Cat Claws from Tallgrass Tigers in the {name:tallgrass}; hunt them by day. Getting the claws is your part, and convincing the smith to stop talking and start fitting them is mine.",
+      "min_level": 24,
+      "level": 25,
+      "requires": [],
+      "title": "Put the Claws to Work",
+      "text": "The Tallgrass Tigers of the {name:tallgrass} cut through tough grass with equipment they never have to order. Bring me three Shearing Cat Claws so I can try them as tool tips. If the trial works, the next shift can borrow the idea without borrowing the whole cat.",
       "objectives": [
         {
           "type": "item",
@@ -180,41 +124,123 @@
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
       "duration_min": 10,
-      "optional": true
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
-      "id": "speargrass_watch_01",
-      "line": "watch",
-      "giver": "r20_anchor_042_host",
-      "turnin": "r20_anchor_042_host",
-      "min_level": 26,
-      "level": 28,
+      "id": "speargrass_crew_gates",
+      "line": "grass",
+      "giver": "r20_anchor_022_host",
+      "turnin": "r20_anchor_022_host",
+      "min_level": 25,
+      "level": 26,
       "requires": [],
-      "title": "Optional: Teeth Beyond the Watch",
-      "text": "When dark falls, Dustpack Hyenas gather in the {name:hunting_grounds}, {zone_area:hunting_grounds}, and our patrols hear every hungry mouth. Kill eight at night for Cutgrass Watch. I would sleep better knowing fewer teeth were waiting for the next patrol.",
+      "title": "Gates for the Crew Yard",
+      "text": "People keep cutting through the crew yard wherever they please, which makes counting a returning shift a lively exercise. Bring me four Acacia Wood Fence Gates so I can give them proper ways in and out. I want to know who is home before the bowls go round.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "dustpack_hyena"
-          ],
-          "count": 8,
-          "area": "kragmar_speargrass_reach/hunting_grounds"
+          "type": "item",
+          "item": "doors:gate_acacia_wood_closed",
+          "count": 4
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 5
       },
-      "duration_min": 12,
-      "optional": true
+      "lesson": "A local task of the zone's own people.",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
-      "id": "speargrass_watch_02",
+      "id": "speargrass_banners",
+      "line": "watch",
+      "giver": "r20_anchor_042_host",
+      "turnin": "r20_anchor_042_host",
+      "min_level": 27,
+      "level": 28,
+      "requires": [],
+      "title": "Bring the Colours Home",
+      "text": "A bundle of stolen banners has been left at the {name:banner_cache} in the {name:hunting_grounds}. Secure it and report to me so we can return the colours to the people who carried them. They should not have to buy back the cloth their friends stood under.",
+      "completion": "Those colours can go home. I know people who will recognise every patched tear in them.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "banner_cache",
+          "object": "held_supplies",
+          "label": "Secure the stolen banners",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "speargrass_rakk",
       "line": "watch",
       "giver": "r20_anchor_042_host",
       "turnin": "r20_anchor_042_host",
@@ -222,17 +248,9 @@
       "level": 29,
       "requires": [],
       "title": "Our Colours Are Not for Sale",
-      "text": "Goblin Banner-Broker Rakk is selling our stolen war banners back to us from the {name:goblin_camp}, {dir_from_giver:goblin_camp}. Kill eight of his Banner Looters or Stone Pelters in any mix, and kill Rakk himself. Orcs bled beneath those colours; he will not haggle over them.",
+      "text": "Goblin Banner-Broker Rakk steals banners and offers to sell them back to their own bearers. Kill him at the {name:goblin_camp}, {dir_from_giver:goblin_camp}, and bring me word. He prices each one by how much its people want it back; I know exactly what sort of merchant that makes him.",
+      "completion": "Rakk's trade is finished. I will tell the crews they owe him nothing for wanting their colours back.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "ore_thieving_goblin",
-            "rubble_goblin_slinger"
-          ],
-          "count": 8,
-          "area": "kragmar_speargrass_reach/goblin_camp"
-        },
         {
           "type": "kill",
           "roles": [
@@ -242,11 +260,52 @@
         }
       ],
       "rewards": {
-        "weight": 6.5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 15,
-      "climax": true
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "speargrass_watch_03",
@@ -255,11 +314,9 @@
       "turnin": "r20_anchor_039_host",
       "min_level": 29,
       "level": 29,
-      "requires": [
-        "speargrass_watch_02"
-      ],
+      "requires": [],
       "title": "Stand Where the Ash Falls",
-      "text": "Vaska Ashlistener needs fighters at Ashveil Watch on Blackwind Rise, where the Throng holds its ground against the Accord. Go and report to Vaska. Rakk tried to sell us our own colours; out there, make the Accord pay full price for every step it takes.",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise needs people willing to stand with the watch when the ash falls. Go and speak to her about the work. She will have more use for your hands than for a grand account of why you came.",
       "objectives": [
         {
           "type": "talk",
@@ -267,10 +324,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 12
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 29, it requires nothing."
     }
   ]
 }

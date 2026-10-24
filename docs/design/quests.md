@@ -173,12 +173,18 @@ total); Round 57 rebuilt the six start zones' 92 quests as 30 (423 in total,
 total, [miners_guild.md](miners_guild.md) §11); Round 59 rebuilt the band
 11–20's 83 zone quests as 59 and added chapter 1's four story quests in the
 capitals (433 in total, "The band 11–20" and "Chapter 1 in the capitals"
-below). This is an editorial budget,
+below); Round 60 rebuilt the band 21–30's 84 as 71 and the six capitals'
+64 as 47 (403 in total, "The band 21–30" and "The capitals" below). This
+is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near
 an oven ("The start zones"). Compatible tasks share an outing; avoid
 repeated returns for increasing counts of the same mob. Optional item/cooking
-lessons do not block the combat story or implicitly require a profession.
+lessons do not block the combat story or implicitly require a profession
+(`tools/r45_st` refuses an item objective naming a profession's product);
+the one exception is the capitals' Alchemy lesson `capital_precision`
+(Round 60, "The capitals"), which asks for a tier-1 elixir and names the
+trainer who teaches it for free.
 
 Each race has a level-10 capital/service introduction, followed by capital and
 regional bundles and explicit destination-only travel handoffs. Keep existing
@@ -389,7 +395,12 @@ counted name, names the text never says).
     chapter (Round 59), `dispatch_record`, `witness_record`, `snare_bundle`
     and `held_supplies`, with the art the user picked (lane STORYART: a
     dispatch board on a trestle 1.1, two bound tablets 1.2, a rope snare
-    on a peg 1.2, two packs behind a rope cross 1.3). Every aiming ray of a player who
+    on a peg 1.2, two packs behind a rope cross 1.3), and the four of the
+    band 21–30 and the second chapter (Round 60), `signal_lantern`,
+    `sighting_frame`, `reading_knots` and `claim_notice`, with the art the
+    user picked (Round 60 STORYART: a shuttered lantern on a timber cradle
+    1.2, an A-frame sight with an open ring 1.4, an inclined reading cord
+    on forked pegs 1.3, a hinged two-wing register 1.3). Every aiming ray of a player who
     does not see it (combat, hand clicks and the crosshair's interact colour,
     a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
@@ -450,9 +461,14 @@ counted name, names the text never says).
   (optionally one area; like a kill, they select the names it drops from),
   with a 1-in-N chance. It is rolled **per eligible
   participant** who has the quest (the participants of kill credit), goes
-  straight into that player's inventory or bags (dropped at the feet when
-  full) and posts a loot line to the message feed, so a party never competes
-  for it. Each quest drop pairs with an item objective of its quest.
+  straight into that player's inventory or bags and posts a loot line to the
+  message feed, so a party never competes for it. Each quest drop pairs with
+  an item objective of its quest. A quest-only item is soulbound (Round 60,
+  round60-plan.md §2 point 10: `items.json` kind `quest`, group
+  `grug_soulbound`): never in a chest, station, mail, trade or the trash;
+  dropping it destroys it. So it is never dropped at the feet: while it would
+  not fit nothing is rolled and the feed says "No room for …; it can drop on
+  a later kill."
 
 ## Every quest once (Round 57 ruling 11)
 
@@ -623,7 +639,10 @@ camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
 
 - **The foremen:** one per mining camp and war camp (36), id
   `r58_foreman_<camp id>` (the camp ids of `grug_mapgen.mining_camps`), on
-  the camp's `quest_foreman` socket, titled "Foreman", of the camp's race and
+  the camp's `quest_foreman` socket, titled "Foreman" (Round 60: the two
+  foremen the story names carry their names, a per-camp title in
+  `npcs.lua`: Brodd Deeppeg of Frostbarrow Shelf's camp and Rellis
+  Shalemark of Ossuary Reach's, their ids kept), of the camp's race and
   faction, with the giver role **`foreman_t<tier>`**: the camp's zone tier,
   which its deepest lift reaches (`foreman_t2` … `foreman_t6`; 3/4/3/4/4
   camps per faction for T2…T6). A guild quest of tier k lists the role rows
@@ -706,9 +725,10 @@ text. A system quest has no dialog: its mod posts its own completion line.
 ## The rework flag (Round 57)
 
 A quest file with `"reworked": true` follows the rules the quest rework
-introduces; the files of levels 21–60 keep their chains until their own
-rework (Round 60 and later; the band 11–20's six are reworked since Round
-59, "The band 11–20"), and nothing of this section ever reports an
+introduces; the files of levels 31–60 keep their chains until their own
+rework (the band 11–20's six are reworked since Round 59, "The band
+11–20", the band 21–30's eight and the six capitals since Round 60, "The
+band 21–30" and "The capitals"; levels 31–60 later), and nothing of this section ever reports an
 unflagged file (Round 58: the guild files are flagged; the camp zones and
 the Battlegrounds files are not, so the guild quests homed there are free
 play by construction, checked by `tools/r58_guildquests`). In reworked files
@@ -841,14 +861,95 @@ quests.
   the texts landed the JSON files are the source; its `--check` compares
   their structure only); `tools/r59_bandquests/portable_test.lua` checks it.
 
+## The band 21–30 (Round 60)
+
+The eight zones of levels 21–30 (Frostbarrow Shelf, Whitebridge Shire,
+Lorindor and Moonfall Wood of The Accord; Ossuary Reach, Speargrass
+Reach, Whispering Reedlands and Totemwater Reach of The Throng) are
+reworked on the same rules (round60-plan.md §2, §2a), from the story
+chapter the user picked (chapter 2, every recommendation K1–K13 "A",
+with the feasibility check's fixes). A level-21 character finds each
+zone's first quests (minimum level 20) at once; free quests require only a
+level, and only chapter 2's story quests chain. The zone's own people give
+them: the Round 20 hosts (village, outpost, mine) and the mining camp's
+foreman; no new giver.
+
+- **Shared quests** (one id, one level, one title; the zone's voice in the
+  variant text): `band_steel` (4 Steel Bars at the six mines, level 23:
+  Kelda, Halen, Saevin, Neris, Gorren, Zali, each naming its guild in this
+  first offer), `band_shore_pinchers` (6 Barnacle Pinchers by day on the
+  zone's shore, level 24: Hedra, Orya, Lethen, Tokai), `band_snares` (the
+  snare bundle at the recipe place `snare_ground` of Lorindor's Berrywoods
+  and Moonfall's Eaves, level 21), `band_corn` (8 Corn, Merren and Brakka,
+  level 20, their zone's potion choice), `band_planks` (15 planks of any
+  wood, Lethen and Tokai, level 22) and `band_mire_carp` (4 Mire Carp,
+  level 20: Tokai and Varda Copperpan in Dur Brannoc, a capital variant of
+  a band quest). The givers' lines: `shore` for Hedra, Orya, Lethen and
+  Tokai (the shore hunt, the snares, the planks), Tokai's second line
+  `provisions` with Varda's (the fish), `steel` for the six mine leaders,
+  Merren's and Brakka's `journeys` (the corn).
+- **Local quests**: the first errand (Frost Melons, Marshbloom, Glass,
+  Gravewood Planks, Melons; the potion choice), a use at a new place or a
+  day hunt, a later errand (Basic recipes or gatherings: coal, stone
+  bricks, chests, torches, ladders, gates, signs, jungle wood fences), the
+  zone's named leader (Nib, Thorn and Murk, Iss, Bracken, the Marrow
+  Archivist, Rakk, Ush, the Reed-Maw), the travels between the zone's
+  people and to the neighbours, and the departures at 29 to the 31–40
+  hosts (ids kept, requiring nothing).
+- **Places**: town places (`quest_place` sockets) at Rimebell Watch
+  (`socket:r20_anchor_026/signal_stand`, Hedra's `signal_lantern`), at
+  Whitebridge Market Close (`socket:r20_anchor_016/basket_check`,
+  Merren's `dispatch_record`; the R20 POI blueprint's `QUEST_PLACES`) and
+  in every mining camp (`held_load`, only Frostbarrow's named: A3); recipe
+  places Lorindor and Moonfall `snare_ground`, Moonfall `sighting_post`
+  (the Deepwood, `sighting_frame`), Ossuary `claim_rest` (the Barrowlands,
+  T2a), Speargrass `banner_cache` (the Hunting Grounds, `held_supplies`),
+  Reedlands `seized_stores` (the Reedbanks; in the open, not in Hushwater
+  Nests, whose members stand up to 24 nodes from its centre) and
+  Totemwater `reading_bank` (the Reedbanks, `reading_knots`).
+- **Chapter 2's band steps** (story): `story_accord_03` "Held in Our Name"
+  (level 24, requires `story_accord_02`): Brodd Deeppeg, the Frostbarrow
+  mining camp's foreman, has the player secure the dispatch record and
+  release the held load at the camp's `held_load` (two uses, any order),
+  turned in at Kelda Screesort; `story_accord_04` "Under a Joint Seal"
+  (level 29, requires A3 and `frostbarrow_cutting_04`): Kelda to Hadrin
+  Beamset in Dur Brannoc; `story_throng_03` "The Copy Between Them"
+  (level 24, requires `story_throng_02`): Rellis Shalemark, the Ossuary
+  camp's foreman, has the witness record secured at the `claim_rest`,
+  turned in at Mereth Rubbinghand. Lane CAPITALS' T3 requires it.
+- **The kept cross-lane ids**: `frostbarrow_cutting_04` (Nib; its one
+  Accord follow-up is A4; the Dispatch Folio, a soulbound quest-only item,
+  drops from Nib every kill while needed) and `ossuary_rubbings_03` (the
+  travel to Neris, given by Mereth and by Rellis; its one Throng follow-up
+  is T3). `frostbarrow_departure` requires nothing.
+- **Objectives**: at most 3 kill objectives per zone (the camp hunt, the
+  shore hunt or a day hunt, the named leader; Speargrass a kill-near item
+  instead of a hunt), 17–27 % of the objectives, against 50–62 % before.
+- **Rewards** at item levels 21–30 (tier-3 pieces, enchant tier 3): the
+  first quest a choice of 2 Healing Potion III or 2 Mana Potion III (reward
+  level 21), two armor choices on local quests (a prefix, then a suffix),
+  the named leader one weapon per weapon line with a prefix and a suffix;
+  no shared quest rewards equipment. Each faction's four zones give every
+  slot twice: Frostbarrow head and chest, Whitebridge legs and feet,
+  Lorindor head and legs, Moonfall chest and feet; Ossuary chest and legs,
+  Speargrass head and feet, Reedlands chest and feet, Totemwater head and
+  legs. A3 and T2a pay a potion choice.
+- **Ids**: a quest whose objectives stayed keeps its id (the departures
+  and travels, six leader or day hunts, the claws), and so do the two
+  cross-lane ids (Nib's quest gains the Folio objective); every other
+  quest is new. The structure was written by
+  `tools/r60_bandquests/build_structure.py` with placeholder texts (its
+  `--check` compares the structure only); `tools/r60_bandquests/
+  portable_test.lua` checks it.
+
 ## Chapter 1 in the capitals (Round 59)
 
 The story arc's first chapter opens at the level-19 handovers in the six
 capitals ([round59-plan.md](../planning/round59-plan.md) §2 and §4
 STORYQUESTS; the user's chapter picks K1–K16, all "A", 2026-10-24). Four
 story quests, one shared quest per faction and step, a variant per capital;
-the capital files stay unflagged (their band's rework is Round 60), and the
-capitals' other quests stay as they were.
+the capital files stayed unflagged until Round 60 reworked them around
+chapter 1, which stays as shipped ("The capitals" below).
 
 - **`story_accord_01` "A Hearing for the Absent" and `story_throng_01` "Our
   Word, Our Witness"** (level 19, no prerequisite): given by the faction's
@@ -882,6 +983,72 @@ capitals' other quests stay as they were.
   with placeholder texts; since the texts landed (Round 59 BANDTEXT) the
   JSON files are the source, its `--check` compares their structure only,
   and `tools/r59_storyquests/portable_test.lua` checks it.
+
+## The capitals (Round 60)
+
+The six capital files (Highcourt, Dur Brannoc and Lethariel of The Accord;
+Gor Drazhak, Kezamba and Nhal Veyr of The Throng; levels 19–30) are
+reworked on the Round 57 rules ([round60-plan.md](../planning/round60-plan.md)
+§2 point 2, §2a; the chapter-2 picks K1–K13, all "A"): every quest but the
+story quests is free play, gated only by its level; nothing else chains.
+Chapter 1 ("Chapter 1 in the capitals") stays as shipped, and so do the
+envoys' ids and their `front` lines. Each capital keeps its two hubs: the
+envoy (lines `envoy` and `front`) with the cook (`provisions` and
+`dispatch`; Kezamba's cook's `smokehouse` became `provisions`), and the
+guild leader alone (`guild`). 64 quests became 47.
+
+- **Shared quests** (each in its first variant's file, Highcourt's or
+  Lethariel's): `capital_torches` (20 Torches, all six envoys, level 20),
+  `capital_night_dead` (2 Debtbound Zombies after dark, about a third of
+  the capitals' day hunts; the envoys of Highcourt, Dur Brannoc,
+  Lethariel and Nhal Veyr, level 21–22), `capital_precision` (the Alchemy
+  quest, below) and `capital_raw_meat` (8 Raw Meat from the capital's day
+  game, the cooks of Lethariel, Gor Drazhak, Kezamba and Nhal Veyr, level
+  20–21). Varda's Mire Carp in Dur Brannoc is a variant of the band's fish
+  quest `band_mire_carp`, homed in Totemwater Reach.
+- **Local quests**: each capital's climax, its named leader alone and free
+  (Penn, Brakk, Rusk, Garr, Takka's `kezamba_offerings_04` and Hush's
+  `nhal_veyr_vigil_03`, ids kept for the two whose objectives stayed or
+  that the story requires), one day or night hunt and the cook's own errand
+  where it is the capital's own (Highcourt's and Kezamba's Gnarled Boar
+  Tusks, Highcourt's bucks, Dur Brannoc's rams, Lethariel's vixens, Gor
+  Drazhak's scorpions after dark and hyenas, Kezamba's robbers after
+  dark), and the handovers: the cooks' dispatch travels into the band and
+  the envoys' departures at 29 to the 31–40 hosts, all free, their ids
+  kept. Three kill objectives per capital at most (two in Kezamba and Nhal
+  Veyr), two or three mob names.
+- **The Alchemy quest** `capital_precision` (round60-plan.md §2 point 6,
+  §2a points 4–5): at the first capital visit (level 19, reward level 20)
+  each envoy asks, on its `envoy` line and with no prerequisite, for one
+  **Elixir of Precision I** (Sunleaf, a Boar Tusk and a Glass Bottle), which
+  no quest rewards; each envoy has its own playful occasion. The text names
+  the capital's Alchemy trainer by its plot in words (Highcourt's herb
+  garden, Dur Brannoc's and Lethariel's brewhouses, Nhal Veyr's physic
+  house, Gor Drazhak's herb house, Kezamba's herbalist) and sends the
+  player back to where they started, by their start settlement's waystone:
+  Sunleaf grows in every start zone (Round 60 HERBS) and the start zones'
+  boars by day drop the tusk; it never names the start zone (a text
+  follows the giver's race, not the player's). A crafting lesson requests
+  the item, so a friend's elixir counts. It is the one quest that may ask
+  for a profession's product (`tools/r45_st`).
+- **Chapter 2's T3** `story_throng_04` "Strike the False Claim" (story,
+  level 29): Ossa Quietregister sends the player to post the claim notice
+  (`claim_notice`, a 3 s hold) at the public register in front of Nhal
+  Veyr's Miner's Guild house, a town place
+  (`socket:nhal_veyr/miners_guild/miners_guild_public_register`,
+  [settlements.md](settlements.md) "Chapter 2's town place"), and to report
+  to Iven Lastshift, who takes the turn-in. It requires T2a
+  (`story_throng_03`, Ossuary Reach), the free travel quest
+  `ossuary_rubbings_03` and the free Hush quest `nhal_veyr_vigil_03`; it is
+  the one Throng follow-up of each of the two free quests.
+  `nhal_veyr_vigil_04`, the departure to Vaska, requires nothing.
+- **Rewards** (capitals are excepted from the zone budget): the climaxes a
+  choice of 3 Heavy Leather, 3 Heavy Cloth or 2 Steel Bars (the T3 camp
+  hunts' choice), the night task and T3 a choice of 2 Healing Potion III or
+  2 Mana Potion III; the others XP and copper.
+- The structure was written by `tools/r60_capitals/build_structure.py`
+  with placeholder texts (its `--check` compares the structure only);
+  `tools/r60_capitals/portable_test.lua` checks it.
 
 The Miner's Guild's quests (Round 58): [miners_guild.md](miners_guild.md) §11.
 

@@ -35,6 +35,17 @@ if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40"
 local wp13 = dofile(here .. "/r7_wp13_library.lua").path()
 local decor = dofile(wp13 .. "/decor_kit.lua")(wp13)
 
+-- Round 60 (round60-plan.md, lane BANDQUESTS): a town place (socket role
+-- `quest_place`, quests.md "Town places") at two hosted POIs of the band
+-- 21-30, where a "use at a place" quest stands its object: Rimebell Watch's
+-- signal stand by its banner and Market Close's basket check beside its
+-- stores, each on open ground off the paths, the central actor clearance
+-- and the doors. The decor pieces keep off the cell and the one before it.
+local QUEST_PLACES = {
+	r20_anchor_026 = {id = "signal_stand", x = -4, z = -5, dir = {x = 1, z = 0}},
+	r20_anchor_016 = {id = "basket_check", x = 3, z = -11, dir = {x = -1, z = 0}},
+}
+
 return function(options, profile)
 	local spec = assert(profile and profile.art, "Round 20 art profile missing")
 	local palettes = {
@@ -219,6 +230,11 @@ return function(options, profile)
 	brush.display="grug_mapgen:poi_display_"..spec.race
 	local reserved={}
 	for z=-2,2 do for x=-2,2 do reserved[x..":"..z]=true end end
+	local place=QUEST_PLACES[spec.key]
+	if place then
+		reserved[place.x..":"..place.z]=true
+		reserved[(place.x+place.dir.x)..":"..(place.z+place.dir.z)]=true
+	end
 	for _,s in ipairs(structures) do
 		local e,turn=s.entry,s.entry_turn
 		local ox,oz=({0,1,0,-1})[turn+1],({-1,0,1,0})[turn+1]
@@ -238,6 +254,13 @@ return function(options, profile)
 	end end end
 	if spec.host then
 		sockets[1]={id="quest_host",role="quest",x=2,y=1,z=0,dir={x=-1,z=0}}
+	end
+	if place then
+		-- A standing cell: open air with headroom over the composition's ground.
+		assert(by_pos[key(place.x,0,place.z)].name==p.ground and by_pos[key(place.x,1,place.z)].name=="air" and
+			by_pos[key(place.x,2,place.z)].name=="air",spec.key..": quest place "..place.id.." blocked")
+		sockets[#sockets+1]={id=place.id,role="quest_place",x=place.x,y=1,z=place.z,
+			dir={x=place.dir.x,z=place.dir.z}}
 	end
 	local cells,names={},{}
 	for _,cell in pairs(by_pos) do cells[#cells+1]=cell;names[cell.name]=true end

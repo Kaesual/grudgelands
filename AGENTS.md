@@ -12,7 +12,22 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.59.0, Round 59 "The story arc's first chapter and
+**Current state:** 0.60.0, Round 60 "The story arc's second chapter and
+the quest rework of levels 21–30" (**map reset**, no step;
+[completion](docs/planning/round60-plan.md#completion-2026-10-24)): the
+eight band zones of levels 21–30 and the six capitals rebuilt on the
+Round 57 quest system and flagged reworked (84 → 71 and 64 → 47 quests,
+403 shipped; kill objectives 50–62 % → 17–27 % per band zone, about three
+mob names per zone, the reward pattern at item levels 21–30), chapter 2
+of the story arc (A3 and T2a at 24 from the Frostbarrow and Ossuary
+mining camps' foremen Brodd Deeppeg and Rellis Shalemark, A4 at 29 to
+Dur Brannoc's guild leader, T3 at 29 at a town place on Nhal Veyr's guild
+house), the mine leaders as guild members, an Alchemy quest at the first
+capital visit, the Alchemy herbs by level band, soulbound quest-only
+items and the seed fleet's quest-place check; four picked quest objects
+and three quest item icons. **Not pushed**; it waits for the user's joint
+GUI test of 0.57.0, 0.58.0, 0.59.0 and 0.60.0. Before it
+0.59.0, Round 59 "The story arc's first chapter and
 the quest rework of levels 11–20" (**map reset**, no step;
 [completion](docs/planning/round59-plan.md#completion-2026-10-24)): the six
 band zones of levels 11–20 rebuilt on the Round 57 quest system and flagged
@@ -21,8 +36,8 @@ kill objectives 60 % → 21 %, three mob names per zone, the reward pattern),
 chapter 1 of the story arc in the six capitals (the envoys at 19, the
 Miner's Guild leaders' hubs, a town place per capital at 20), the town
 place kind on settlement sockets, `E-free-follow-ups` per faction and the
-quest log's variant zone; four picked quest objects. **Not pushed**; it
-waits for the user's joint GUI test of 0.57.0, 0.58.0 and 0.59.0. Before it
+quest log's variant zone; four picked quest objects. **Not pushed**; its
+GUI test runs with Round 60's. Before it
 0.58.0, Round 58 "The Miner's Guild and the town
 fixes" (**map reset**, no step;
 [completion](docs/planning/round58-plan.md#completion-2026-10-24)): one
@@ -34,7 +49,7 @@ reputation with ranks 0–10 from a trade-in of raw mined goods, the camp
 vendor's rank-locked page, Ore Sense and Treasure Hunt in their own effect
 slot, the Miner's Remains, three cloaks, a guild house on a district plot in
 each capital and 30 guild quests; the Round 56 town fixes. **Not pushed**;
-its GUI test runs with Round 59's. Before it
+its GUI test runs with Rounds 59 and 60. Before it
 0.57.0, Round 57 "The crafting window, the quest
 foundation and the new start zones" (**compatible**, no step;
 [completion](docs/planning/round57-plan.md#completion-2026-10-23)): the
@@ -47,7 +62,7 @@ no repeatable quests); the six start zones rebuilt on it (92 → 30 quests);
 flat alloys and wood grades, every dye craftable, no vendor selling
 leather, cloth, ores or bars; bay shore water flying under its zone's rule
 and the chin strip open underneath. **Pushed** 2026-10-23 (origin/main
-`69481ed1`); its GUI test runs together with Round 58's and Round 59's. Before it 0.56.1 and 0.56.0, Round 56 "Playtest fixes,
+`69481ed1`); its GUI test runs together with Rounds 58–60. Before it 0.56.1 and 0.56.0, Round 56 "Playtest fixes,
 clear enchants, the hood and the quest survey" (**compatible**, no step;
 [completion](docs/planning/round56-plan.md#completion-2026-10-22)): the
 fixes from the playtest of 2026-10-21 (level-scaled aggro, the hit alert on
@@ -98,11 +113,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the joint GUI test of 0.57.0, 0.58.0 and
-0.59.0 ([checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and-59)),
-then Round 60 (the band 21–30 with chapter 2) and the bands 31–60 one per
-round, the production deploy with one map reset, the armor redesign and
-unique items ([ROADMAP](ROADMAP.md)).
+are not recorded as passed. Next: the joint GUI test of 0.57.0, 0.58.0,
+0.59.0 and 0.60.0 ([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60)),
+then Round 61 (the band 31–40 with the arc's next chapter) and the bands
+41–60 one per round, the production deploy with one map reset, the armor
+redesign and unique items ([ROADMAP](ROADMAP.md)).
 Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
@@ -408,9 +423,9 @@ The topic rules below name the one path to use; the
   Quests pay copper from their weight unless `rewards.copper` is set. Quest
   checks: `quest_targets.py` (region stats of three seeds, refreshed by
   `tools/r28_regions/run.sh` in Round 59), `validate.py --game`,
-  `ledger.py --track <race>`, `quest_kinds.py --check`, and for the band
-  11–20 and chapter 1 the two Round 59 `build_structure.py --check`
-  ("Quests, main line, rift and decor"); `luajit
+  `ledger.py --track <race>`, `quest_kinds.py --check`, and for the
+  reworked bands and the capitals the Round 59 and Round 60
+  `build_structure.py --check` ("Quests, main line, rift and decor"); `luajit
   tools/r56_questmap/questmap.lua --out FILE` writes the quest overview
   page for the user (`--data DIR` reads a draft's `DIR/data/zones`).
 - **All travel** (home return, respawn, waystones) goes through
@@ -565,6 +580,16 @@ The topic rules below name the one path to use; the
   change.
 - **Profession progress** comes only from recipes with the `progress` flag,
   through `grug_jobs.award_progress`.
+- **The Alchemy herbs follow the level bands** (Round 60,
+  `grug_gathering/catalog.lua`; [world_zones.md
+  §11](docs/design/world_zones.md#11-resource-loot-and-poi-budgets)): each
+  tier's herbs grow in its own band, for levels 1–20 in every race's zones
+  (Gravemoss and Sunleaf in the start zones, Dragonweed in the 11–20
+  zones), for 21–40 on each faction's own half, for 41–60 in the fronts;
+  gated herbs stay gated. `tools/r60_herbs` checks every recipe's herb and
+  cooking inputs per race and tier (`--table` prints the reach and the
+  mob-loot gaps); a catalogue change moves its digest pin in
+  `wp40/r7_manifest.lua` and is mapgen content (a map reset).
 - **Achievements** are catalog data on existing counters fed by hooks
   (`grug_mobs.register_on_boss_kill`, `grug_pvp.register_on_stat`,
   `grug_jobs.register_on_award_progress`), never a second kill, craft or boss
@@ -609,29 +634,46 @@ The topic rules below name the one path to use; the
   `choices` list (equipment with author-fixed enchants at the reward
   level); every quest is done once (`repeatable` is gone). The new rules
   apply to files marked `"reworked": true` (the six start zones, the band
-  11–20's six zones and the two guild files), so the unreworked files stay
-  valid until their rework; a free quest's one follow-up counts per
-  faction (Round 59).
-- **The quest rework** (Round 59 on, one level band per round): the band
-  11–20 is reworked on the Round 57 system and carries chapter 1 of the
-  story arc in the six capitals ([quests.md](docs/design/quests.md) "The
-  band 11–20", "Chapter 1 in the capitals"). A quest place can be a **town
-  place**, a settlement socket of role `quest_place` written
+  11–20's six and the band 21–30's eight zones, the six capitals and the
+  two guild files; 28 files), so the unreworked files stay valid until
+  their rework; a free quest's one follow-up counts per faction (Round
+  59).
+- **The quest rework** (Round 59 on, one level band per round): the bands
+  11–20 (Round 59) and 21–30 and the six capitals (Round 60) are reworked
+  on the Round 57 system; chapter 1 of the story arc runs in the capitals
+  at 19–20, chapter 2 at 24–29 in Frostbarrow Shelf, Ossuary Reach, Dur
+  Brannoc and Nhal Veyr, and the mine leaders speak for their Miner's
+  Guild ([quests.md](docs/design/quests.md) "The band 11–20", "The band
+  21–30", "Chapter 1 in the capitals", "The capitals"). A quest place can
+  be a **town place**, a settlement socket of role `quest_place` written
   `socket:<settlement key>/<socket id>` ([quests.md](docs/design/quests.md)
   "Town places"; fixtures `tools/r59_qsys3`, `tools/r59_bandquests`,
-  `tools/r59_storyquests`). The quest JSON files are the source;
-  `tools/r59_bandquests/build_structure.py --check` and
-  `tools/r59_storyquests/build_structure.py --check` compare their
-  structure (everything but the texts), and a rerun without `--check` would
-  write the placeholder texts back. After the shipped quest-object art
-  changes: `python3 tools/r59_storyart/paint_art.py --check` (the four
-  Round 59 objects, byte for byte).
+  `tools/r59_storyquests`, `tools/r60_bandquests`, `tools/r60_capitals`).
+  A **quest-only item** (`items.json` kind `quest`) is soulbound
+  (`grug_soulbound`: only the carried inventory, never a chest, station,
+  mail, trade or the trash; dropping destroys it) and is not rolled while
+  it would not fit ([quests.md](docs/design/quests.md) "Quest-only
+  drops"). Only `capital_precision` may ask for a profession's product
+  (the `tools/r45_st` exception). The quest JSON files are the source;
+  `tools/r59_bandquests/build_structure.py --check`,
+  `tools/r59_storyquests/build_structure.py --check`,
+  `tools/r60_bandquests/build_structure.py --check` and
+  `tools/r60_capitals/build_structure.py --check` compare their structure
+  (everything but the texts), and a rerun without `--check` would write
+  the placeholder texts back. After the shipped quest art changes:
+  `python3 tools/r59_storyart/paint_art.py --check` (the four Round 59
+  objects) and `python3 tools/r60_storyart/paint_art.py --check` (the four
+  Round 60 objects and three quest item icons), byte for byte.
 - **The guild quests** (Round 58, [miners_guild.md](docs/design/miners_guild.md)
   §11): the gather quests live in the guild files
   (`charter_of_stone.quests.json`, `oathdelvers.quests.json`, zones named
   by the guilds' ids) and are given through the foremen's tier roles
   (`foreman_t<k>`, [quests.md](docs/design/quests.md#the-miners-guild-givers-round-58));
-  the camp files carry the foreman hubs. Since the texts landed the JSON
+  the camp files carry the foreman hubs. A foreman the story names carries
+  that name instead of "Foreman" (Round 60: Brodd Deeppeg in Frostbarrow
+  Shelf, Rellis Shalemark in Ossuary Reach; `grug_quests/npcs.lua`
+  `FOREMAN_TITLES`, read by `tools/r28_design/r28common.py`; the ids stay).
+  Since the texts landed the JSON
   files are the source: `tools/r58_guildquests/build_structure.py` would
   write the placeholders back and is not a gate; its `--check --ids`
   (Round 59) compares only the guild and camp quest ids and hubs each file
@@ -707,7 +749,10 @@ The topic rules below name the one path to use; the
   instead of scanning; more goes to the user first.
 - The **seed fleet** gates world-generation changes
   ([round workflow](docs/process/round-workflow.md#3-gates)); a change that only
-  places, swaps or turns nodes needs no run.
+  places, swaps or turns nodes needs no run. Since Round 60 it also builds
+  every zone's spawn regions offline and fails a seed on which a recipe
+  quest place is not placed (`tools/seed_fleet/seed.lua` `quest_places`;
+  about +11 % per seed, kept in `quick` by the user).
 - **One layout assembly** (Round 37): `wp40/world_assembly.lua` is the world's
   layout wiring; `r7_runtime.lua`, every portable tool and the seed fleet build
   on it, never on a copy. The seed fleet (`tools/seed_fleet/runtime.lua`)

@@ -101,8 +101,11 @@ layouts, resource tables or buff values.
   sell-only drops and built the placement
   ([Round 46 plan](docs/planning/round46-plan.md)); Round 59 took the band
   11–20 to 21 % kill objectives (no kill-for-drop) and three mob names per
-  zone ([quests.md](docs/design/quests.md#the-band-1120-round-59)); the
-  bands 21–60 follow.
+  zone ([quests.md](docs/design/quests.md#the-band-1120-round-59)); Round
+  60 took the band 21–30 to 17–27 % per zone and about three mob names per
+  zone, and the capitals to 2–3 names of their own
+  ([quests.md](docs/design/quests.md#the-band-2130-round-60)); the bands
+  31–60 follow.
 - Current owners: [quests](docs/design/quests.md) and
   [story](docs/design/story.md). Coordinate teaching steps with the class
   and crafting revisions above.
@@ -3102,6 +3105,8 @@ The items the user decides in the GUI test are in the
 - **Story arc** (STORYARC check): draft 2's T3 story step needs two free
   boss quests, the only step with two free detours (no rule broken; Round
   59 left it to the T3 band's round, [Round 59 plan §9](docs/planning/round59-plan.md#9-later)).
+  **Done in Round 60** (corrected: one boss, Hush, and one travel quest;
+  T3 requires T2a, `ossuary_rubbings_03` and `nhal_veyr_vigil_03`).
 - **Vendors** (VENDORMAT): the armourer's and tanner's General tab holds
   only the three supplies; ruling 28 could join the `grug_traders` load
   audit (today the fixture enforces it); `economy-vendor-plan.md` §2.3 still
@@ -3127,8 +3132,8 @@ The items the user decides in the GUI test are in the
 
 **Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
-The items the user decides in the joint GUI test of 0.57, 0.58 and 0.59 are in
-the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and-59).
+The items the user decides in the joint GUI test of 0.57 to 0.60 are in
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60).
 
 - **Open GUI judgements:** the camps' places and bands; the headframe
   partly hiding the lift from the side and the lift's light level 3 (LIFT,
@@ -3158,8 +3163,9 @@ the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and
 - **People** (CAMPNPC): no map marker for the Exchange (`grug_map`); no
   guild touch on the leaders (an NPC cloak seam in `grug_visuals`, with
   the emblems later); the story arc names one foreman, Brodd Deeppeg in
-  Frostbarrow, who needs a per-camp title override (moved to Round 60 with
-  Frostbarrow's band, [Round 59 plan §9](docs/planning/round59-plan.md#9-later)).
+  Frostbarrow, who needs a per-camp title override (**done in Round 60**:
+  Brodd Deeppeg and Rellis Shalemark, `grug_quests/npcs.lua`
+  `FOREMAN_TITLES`).
 - **Lift** (LIFT): the minimap keeps the mine and war-camp 6 px icons (the
   picks have no 6 × 6 version; a later art pass); `lift.lua` reads
   `grug_home` at run time (no dependency).
@@ -3188,8 +3194,8 @@ the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and
 
 **Noted 2026-10-24** ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
-The items the user decides in the joint GUI test of 0.57, 0.58 and 0.59 are
-in the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-and-59).
+The items the user decides in the joint GUI test of 0.57 to 0.60 are
+in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60).
 
 - **Open GUI judgements:** the held supplies' hold in the Redtusk and
   Raincall bandit camps with the camp's members around (the socket is
@@ -3245,6 +3251,72 @@ in the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-
   0.59.0 `map_reset` entry, because the unpushed 0.58.0 entry already
   covers every change against pushed 0.57.0; the entry is declared for the
   record (the production world moves 0.57.0 → 0.59.0 across one reset).
+
+### Round 60 carry-overs
+
+**Noted 2026-10-24** ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the joint GUI test of 0.57 to 0.60 are in
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60).
+
+- **Open GUI judgements:** the four new objects' look and size (STORYART);
+  the holds at the Frostbarrow camp's loading ground and at the seven open
+  places with the area's mobs around (damage stops a hold); the public
+  register reading as part of Nhal Veyr's guild house; the band's errands
+  as a first version (the user accepted the QUESTMAP); two kept ids with
+  new objectives on an old character (Nib's quest now asks for the
+  Folio, Hush's asks only for Hush); the recipe card's "Grows in …" line,
+  clipped on the card (`grug_jobs/details.lua` ~463-465) while the
+  tooltip is full (HERBS' review).
+- **Questing share** (BANDQUESTS, CAPITALS): the solo questing share of
+  levels 20→30 is 54–81 % (human 60, dwarf 65, elf 78, orc 61, troll 81,
+  undead 54; before 78–103 %), within the user's 55–60 % yardstick except
+  undead, one point under, and elf and troll, who walk two band zones. A
+  2 KE raise of a Nhal Veyr quest (for example `nhal_veyr_vigil_03` 5 → 7)
+  would add about one point for undead (estimated, not applied).
+- **Mob loot for Alchemy T2** (HERBS, the user: a later loot lane):
+  `venom_gland` (Antivenom) drops only in bands 3–6 (spiders), so no race
+  reaches it at 11–20 (drop it at band 2, or move Antivenom to T3);
+  `tough_sinew` (Vigor II) is out of reach for humans, elves and undead,
+  `fang` (Swiftness Draught) for undead and trolls. T3 and T4 have no loot
+  gaps on the faction halves.
+- **Herb supply** (HERBS, its review; rough targets): Dragonweed in 11–20
+  is uneven between the factions (estimated 988/479, the review 1974/950;
+  **the user: not equalised**, there is plenty); other balances (review,
+  estimated): Lotus T4 986/840, Gravemoss T3 554/700, Lotus T3 381/375;
+  the 21–40 herbs grow in one zone per faction and band; the new hosts
+  also raise the yield where the herbs already grew (Lotus in Skyglass and
+  Stormscale, Dragonweed in Frostbarrow and Ossuary); Ossuary adds almost
+  no Frost Melon on seed 42 (the Reedlands have some); the `item_tiers.md`
+  economy tables are stale (`tools/r33_ds/build_doc.py --check` STALE
+  before and after the round, from economy numbers).
+- **Cooking gaps left** (the cooking survey, `r60/reports/cooking-survey.md`;
+  farming closes them after one trip to a neighbouring zone of the same
+  faction): Corn in four start zones, and berries for humans and elves at
+  11–20. The two real gaps were fixed in HERBS (Frost Melon on The
+  Throng's half, Pumpkin in all six home zones).
+- **Quest items** (BANDQUESTS, its review): `grug_quests/state.lua`'s
+  `give` now drops a leftover silently, which cannot happen after the
+  `fits` check (no warning logged); a Captain's Orders an old world kept in
+  a chest can still be taken out, and once carried it stays carried.
+- **Places and flags** (BANDQUESTS, its review): a place kind stays
+  flagged `quest_target` only while a text names it (`{name:berrywoods}`
+  and the like), so a text edit that drops such a placeholder needs
+  `quest_kinds.py` again (the flag fix of this round); the seed fleet's
+  place check tests that each place is placed, not whether it fell back to
+  another kind; `held_load` stands unused in 19 of the 20 mining camps.
+- **Capitals** (CAPITALS): Kezamba and Nhal Veyr have no day hunt, so the
+  night task's count has no day count to compare against there
+  (`W-night-count`).
+- **Tools** (STORYART-SHIP): the engine probe `tools/r28_e1` is stale on
+  zone variant names from later rounds (61 unrelated failures; not part of
+  `run_fixtures.sh`); the quest item icons show through `item_image()`'s
+  per-item file, and the tinted placeholder stays for a future quest item
+  without art.
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.60.0 `map_reset` entry, because the unpushed 0.58.0 entry already
+  covers every change against pushed 0.57.0; the entry is declared for the
+  record (the production world moves 0.57.0 → 0.60.0 across one reset).
 
 ### Decided for later rounds (Round 56 §8)
 
@@ -3307,8 +3379,10 @@ above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-deci
 - **Round 59 and later:** the story arc and the quest rework of levels
   11–60, zone by zone with the rework flag (Round 59 delivered the band
   11–20 and chapter 1, 0.59.0,
-  [completion](docs/planning/round59-plan.md#completion-2026-10-24); the
-  bands 21–30 to 51–60 follow one per round); the arc follows the user's picks
+  [completion](docs/planning/round59-plan.md#completion-2026-10-24);
+  Round 60 the band 21–30, the six capitals and chapter 2, 0.60.0,
+  [completion](docs/planning/round60-plan.md#completion-2026-10-24); the
+  bands 31–40 to 51–60 follow one per round); the arc follows the user's picks
   on the Round 57 draft ([completion](docs/planning/round57-plan.md#decisions-during-the-round):
   the guilds and their faction's military closely interwoven with little
   conflict inside a faction, a traitor or a wrong decision as the author

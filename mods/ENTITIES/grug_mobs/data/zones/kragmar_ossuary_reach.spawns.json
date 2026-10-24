@@ -50,7 +50,7 @@
             "night": [{"role": "grave_web_spider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "webwood", "name": "Ossuary Webwood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
-            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
           "highland": {"id": "barrow_ridge", "name": "Ossuary Barrow Ridge",
             "day": [{"role": "marrow_weevil", "weight": 1}],
             "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
@@ -105,6 +105,9 @@
     ],
     "leaders": [
       {"role": "marrow_archivist", "at": {"kind": "deepwood", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "places": [
+      {"id": "claim_rest", "name": "Ossuary Claim Rest", "at": {"kind": "barrowlands", "pick": "farthest_from_roads"}}
     ],
     "critters": ["bone_weevil"]
   }

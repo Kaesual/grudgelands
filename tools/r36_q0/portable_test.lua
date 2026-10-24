@@ -234,25 +234,30 @@ end
 ------------------------------------------------------------------------------
 -- O, P: the quest objects and places.
 ------------------------------------------------------------------------------
--- The story bible's twelve (Round 36) and, since Round 59, the four of the
--- band 11-20 and the story arc's first chapter (lane STORYART's picks,
--- tools/r59_storyart/paint_art.py): each its own shipped file.
+-- The story bible's twelve (Round 36), since Round 59 the four of the band
+-- 11-20 and the story arc's first chapter (lane STORYART's picks,
+-- tools/r59_storyart/paint_art.py) and since Round 60 the four of the band
+-- 21-30 and the second chapter (tools/r60_storyart/paint_art.py; no longer
+-- placeholders): each its own shipped file.
 local KINDS = {"impounded_pay", "false_requisition", "brand_rubbing", "ash_slab", "toll_box",
 	"courier_ledger", "branded_pay_pit", "pledged_standard", "tally_stone", "rootmark",
 	"survey_cairn", "wreck_pay_chest",
-	"dispatch_record", "witness_record", "snare_bundle", "held_supplies"}
+	"dispatch_record", "witness_record", "snare_bundle", "held_supplies",
+	"signal_lantern", "sighting_frame", "reading_knots", "claim_notice"}
 local objects = load_json("mods/PLAYER/grug_quests/data/use_objects.json")
 local seen = 0
 for kind, row in pairs(objects) do
 	if kind ~= "notes" then
 		seen = seen + 1
 		eq(row.texture, "grug_quests_obj_" .. kind .. ".png", "O " .. kind .. " texture name")
-		check(exists(repo .. "/mods/PLAYER/grug_quests/textures/" .. tostring(row.texture)), "O " .. kind .. " texture file")
+		check(exists(repo .. "/mods/PLAYER/grug_quests/textures/" .. tostring(row.texture)),
+			"O " .. kind .. " texture file")
 		check(type(row.size) == "number" and row.size >= 1 and row.size <= 1.5, "O " .. kind .. " size")
 	end
 end
 for _, kind in ipairs(KINDS) do check(objects[kind] ~= nil, "O kind " .. kind) end
-eq(seen, 16, "O exactly the sixteen kinds (Round 59: the band's and the first chapter's four)")
+eq(seen, 20, "O exactly the twenty kinds (Round 59: the band's and the first chapter's four; Round 60: the " ..
+	"band 21-30's and the second chapter's four)")
 
 local PLACES = {elandor_stormvault_heights = {"brandscar_cairn", "Brandscar Cairn"},
 	elandor_glassroot_wilds = {"couriers_stump", "Courier's Stump"},
@@ -291,6 +296,13 @@ local items = {}
 for _, row in ipairs(load_json("mods/ENTITIES/grug_mobs/data/items.json")) do items[row.id] = row end
 for _, id in ipairs({"grug_mobs:throng_captains_orders", "grug_mobs:accord_captains_orders"}) do
 	eq(items[id] and items[id].kind, "quest", "I " .. id .. " is a quest item")
+end
+-- Round 60 (lane STORYART): the quest items ship their own icon
+-- <mod>_<name>.png (tools/r60_storyart/paint_art.py), which subtypes.lua
+-- shows instead of the quest kind's placeholder image.
+for _, id in ipairs({"grug_mobs:throng_captains_orders", "grug_mobs:accord_captains_orders",
+		"grug_mobs:dispatch_folio"}) do
+	check(exists(MOBS .. "/textures/" .. id:gsub(":", "_") .. ".png"), "I " .. id .. " ships its own icon")
 end
 
 local rift = read(MOBS .. "/rift.lua") or ""

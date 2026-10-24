@@ -751,3 +751,25 @@ contact-sheet comparison; none of its pixels enter these overlays.
 | `textures/grug_mobs_isquarre.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Isquarre the Tithe-Eater, original painting on the unchanged Dungeon Master UV layout; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_mobs_commander_accord_overlay.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Greyvow's steel/blue tabard, closed gate and upright bar; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_mobs_commander_throng_overlay.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Stonegrudge's oxblood/ochre tabard, split stone and three cords; `tools/r36_a/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## Quest item icons — Round 60
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-24 (story art drops 02 and 02b, two proposals each and the user's
+pick: P2 in both). Hand-placed pixel shapes written with Python/Pillow; no
+image-generation service, downloaded art or third-party source pixels. The
+project dedicates any rights it holds in these originals to CC0-1.0. The
+reproducible generator is kept as provenance at
+`tools/r60_storyart/paint_art.py` (`--check` verifies the files byte for
+byte).
+
+All three files are 16×16 RGBA inventory icons with transparent
+backgrounds (alpha 0 or 255 only) and no lettering. `subtypes.lua` shows
+each as its quest item's inventory image (`<mod>_<name>.png`) instead of
+the quest kind's tinted placeholder.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `textures/grug_mobs_dispatch_folio.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Dispatch Folio, a leather folder with a lowered front flap and staggered pale sheets; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_mobs_accord_captains_orders.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Accord Captain's Orders, a rolled steel-blue despatch with a brass clamp, a pale wax seal tag and a scorched rim; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_mobs_throng_captains_orders.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Throng Captain's Orders, a rolled warm-paper despatch with ochre cord wraps, an oxblood seal tag and a scorched rim; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |

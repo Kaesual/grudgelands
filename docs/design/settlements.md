@@ -700,6 +700,31 @@ other socket of the plot:
 mapgen builds it and on seed 42's own chunks (air and headroom over walkable
 ground).
 
+### The band 21–30's town places (Round 60)
+
+Round 60 lane BANDQUESTS ([plan](../planning/round60-plan.md) §4): two
+Round 20 POIs carry a `quest_place` socket of their blueprint
+(`wp40/r20_poi_blueprint.lua` `QUEST_PLACES`, by POI key; the decor keeps
+off the cell and the one before it, and the blueprint asserts the cell is
+open air with headroom over the POI's ground): Rimebell Watch
+(`r20_anchor_026/signal_stand`, by the banner) and Whitebridge Market Close
+(`r20_anchor_016/basket_check`, beside the stores, off the paths). Every
+mining camp has `held_load` (the camp socket contract below). No cell of a
+composition changed.
+
+### Chapter 2's town place (Round 60)
+
+Round 60 lane CAPITALS ([plan](../planning/round60-plan.md) §4, the chapter-2
+pick K4 A): Nhal Veyr's **public register**, where T3's claim notice is
+posted ([quests.md](quests.md) "The capitals"), a `quest_place` socket in the
+`extra_sockets` of the Miner's Guild plot (`nhal_veyr_district.lua`; a plot
+every world builds), `socket:nhal_veyr/miners_guild/miners_guild_public_register`:
+on the cobbled forecourt in front of the hall, west of its door, facing the
+street, more than two nodes from the door, the gate path's columns and every
+other socket of the plot; the plot's cells are unchanged.
+`tools/r60_capitals/portable_test.lua` checks it as the mapgen builds it and
+on seed 42's own chunks.
+
 ### Settlement walkers
 
 Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,
@@ -1123,6 +1148,7 @@ CAMPNPC, LIFT and GUILDQUESTS):
 | `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`, of the camp's faction): buys like every vendor, opens on the Trade-in, repairs, and its Buy mode is the reputation page ([miners_guild.md](miners_guild.md) §5.2) |
 | `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |
 | `yard_west`, `yard_east` | `guard_post` | tag `camp` | a contested mining camp's two further guards |
+| `held_load` | `quest_place` | – | a mining camp's (not a war camp's) town place on the loading ground between the stall and the ore heap (Round 60; nobody stands on it; only Frostbarrow's is named by a quest, chapter 2's A3, [quests.md](quests.md) "The band 21–30") |
 
 A camp under construction has `gate_west`, `gate_east` (tag `gate`),
 `yard_west`, `yard_east` (tag `camp`) and `captain` (role `captain`): the PvP

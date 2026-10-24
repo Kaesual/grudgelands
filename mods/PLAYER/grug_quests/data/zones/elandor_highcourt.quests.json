@@ -1,5 +1,6 @@
 {
   "zone": "elandor_highcourt",
+  "reworked": true,
   "identity": "Highcourt is safe inside its walls; outside them, private collectors dress their charges as royal tolls.",
   "hubs": [
     {
@@ -197,112 +198,236 @@
       "duration_min": 6
     },
     {
-      "id": "highcourt_accounts_01",
+      "id": "capital_torches",
       "line": "envoy",
-      "giver": "r20_human_capital_envoy",
-      "turnin": "r20_human_capital_envoy",
-      "min_level": 19,
-      "level": 21,
+      "min_level": 20,
+      "level": 20,
       "requires": [],
-      "title": "The Dead Cannot Owe Toll",
-      "text": "Debtbound Zombies wander the {name:commons}, which lies {zone_area:commons}, still burdened with somebody's unpaid tolls. Put five to rest after dark. Penn's name keeps appearing in the complaints, and I intend to learn why; in the meantime, the dead have paid quite enough.",
+      "title": "Light for the City's Work",
+      "text": "Petitioners still wait outside the chapel after dark, and a person carrying a complaint should at least be able to see the steps. Bring me twenty Torches for the queue and the paths leading here. I have enough reports of injustice without adding a badly lit stair.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:torch",
+          "count": 20
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_highcourt",
+          "givers": [
+            "r20_human_capital_envoy"
+          ],
+          "text": "Petitioners still wait outside the chapel after dark, and a person carrying a complaint should at least be able to see the steps. Bring me twenty Torches for the queue and the paths leading here. I have enough reports of injustice without adding a badly lit stair."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r20_dwarf_capital_envoy"
+          ],
+          "text": "Late carts arrive while the gate watch is changing, usually just as someone puts out the useful light. Bring me twenty Torches for the watch and the approaches to the ancestor hall. The ancestors can wait patiently; a driver with a wheel in a rut seldom does."
+        },
+        {
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r20_elf_capital_envoy"
+          ],
+          "text": "The tenders use the paths beneath the old trees long after the light has left them. Bring me twenty Torches for their rounds. We will keep the flames low and clear of the boughs; the trees have entrusted us with enough already."
+        },
+        {
+          "zone": "kragmar_gor_drazhak",
+          "givers": [
+            "r20_orc_capital_envoy"
+          ],
+          "text": "A recruit ought to leave the muster yard watching the road, instead of feeling for it with a boot. Bring me twenty Torches for the yard and the marching routes. I want the first lesson of the evening to involve something better than falling over."
+        },
+        {
+          "zone": "kragmar_kezamba",
+          "givers": [
+            "r20_troll_capital_envoy"
+          ],
+          "text": "The pilgrims' boardwalks to the cenote need light after dark. Bring me twenty Torches so a thoughtful walk does not end with a startled splash. People come here to speak to the water; most would prefer to do it standing above it."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r20_undead_capital_envoy"
+          ],
+          "text": "The living come to visit the graves after their day's work, and they still need light to find the right names. Bring me twenty Torches for the paths. We have time to wait for them; there is no need to make their walk harder."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "lesson": "A Basic craft at the first capital visit: coal and sticks, no profession.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS. Draft §4 and K12 A: every envoy asks for Torches for the capital's own services; one title, the occasion in each capital's voice."
+    },
+    {
+      "id": "capital_night_dead",
+      "line": "envoy",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "Debts That Walk at Night",
+      "text": "Debtbound Zombies wander the {name:commons} after dark, reaching for travellers as though another toll were due. Lay two to rest and report to me. No account I keep entitles a collector to do that.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
             "debtbound_zombie"
           ],
-          "count": 5,
+          "count": 2,
           "area": "elandor_highcourt/commons"
         }
       ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Night work near the capital; zombies burn at dawn.",
-      "duration_min": 8
-    },
-    {
-      "id": "highcourt_accounts_02",
-      "line": "envoy",
-      "giver": "r20_human_capital_envoy",
-      "turnin": "r20_human_capital_envoy",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "highcourt_accounts_01"
-      ],
-      "title": "An Arrow Is Not a Receipt",
-      "text": "The complaints lead to Toll Archers in the {name:deer_park} {dir_of:highcourt:deer_park}, collecting after dark from anyone unfortunate enough to pass. Defeat five there at night. Their badges claim royal authority; the crown's instructions do not include shooting customers.",
-      "objectives": [
+      "variants": [
         {
-          "type": "kill",
-          "roles": [
-            "toll_bandit_archer"
+          "zone": "elandor_highcourt",
+          "givers": [
+            "r20_human_capital_envoy"
           ],
-          "count": 5,
-          "area": "elandor_highcourt/deer_park"
+          "text": "Debtbound Zombies wander the {name:commons} after dark, reaching for travellers as though another toll were due. Lay two to rest and report to me. No account I keep entitles a collector to do that."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r20_dwarf_capital_envoy"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_dur_brannoc/pastures"
+            }
+          ],
+          "text": "Debtbound Zombies come through the {name:pastures} at night to collect debts that were settled long ago. Lay two to rest and bring me word. I keep the receipts, but they have shown very little interest in reading them."
+        },
+        {
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r20_elf_capital_envoy"
+          ],
+          "objectives": [
+            {
+              "area": "elandor_lethariel/glades"
+            }
+          ],
+          "text": "Debtbound Zombies trample the young growth in the {name:glades} after dark and turn on anyone tending it. Lay two to rest and return to me. The tenders need a safe path, and those dead have walked it long enough."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r20_undead_capital_envoy"
+          ],
+          "objectives": [
+            {
+              "area": "kragmar_nhal_veyr/blightfields"
+            }
+          ],
+          "text": "Debtbound Zombies walk the {name:blightfields} at night, grasping at people over debts that stand in none of our records. Lay two to rest and bring me word. An empty claim should not keep making victims."
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 2.5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "Ranged night roster in a forest; daytime there is quiet.",
-      "duration_min": 9
+      "lesson": "A short night hunt on the capital's outskirts; a third of a day hunt's count.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS. Draft §4 and K12 A: one shared night task against the Debtbound Zombies in four capitals; the night count about a third of the day hunts' (ruling 12)."
     },
     {
-      "id": "highcourt_accounts_tithes",
+      "id": "capital_precision",
       "line": "envoy",
-      "giver": "r20_human_capital_envoy",
-      "turnin": "r20_human_capital_envoy",
-      "min_level": 24,
-      "level": 26,
-      "requires": [
-        "highcourt_accounts_02"
-      ],
-      "title": "Optional: Tithes After Dark",
-      "text": "The petitions now include Tithe Revenants in the {name:orchards}, which lie {zone_area:orchards}. They rise at night to demand payments nobody remembers owing. Lay five of them to rest after dark. I would prefer the dead stop collecting before the living start believing them.",
+      "min_level": 19,
+      "level": 20,
+      "requires": [],
+      "title": "A Steady Hand for a Rash Promise",
+      "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth makes any more promises on my hands' behalf. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
+      "completion": "Thank you; that should steady my hand, if not the judgement that made the claim. I have left room on the score sheet for an honest result.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "stubborn_zombie"
+          "type": "item",
+          "item": "grug_alchemy:elixir_precision_t1",
+          "count": 1
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_highcourt",
+          "givers": [
+            "r20_human_capital_envoy"
           ],
-          "count": 5,
-          "area": "elandor_highcourt/orchards"
+          "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth makes any more promises on my hands' behalf. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
+          "completion": "Thank you; that should steady my hand, if not the judgement that made the claim. I have left room on the score sheet for an honest result."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r20_dwarf_capital_envoy"
+          ],
+          "text": "I mean to win a throwing match against an old pan plate, while Varda has made me promise the good pan will survive. Bring me an Elixir of Precision I to help my aim catch up with my confidence. Dur Brannoc's Alchemy trainer at the brewhouse on the terraces teaches the recipe. For Sunleaf and a Boar Tusk from the daytime boars, take the city's waystone to your first village's waystone; it is a quick trip back where you started.",
+          "completion": "Good, now the old plate has reason to worry. The useful pan is staying in Varda's kitchen, where it can witness none of this."
+        },
+        {
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r20_elf_capital_envoy"
+          ],
+          "text": "Someone remarked that envoys only ever hit upon decisions, and I have agreed to answer with a bow. Bring me an Elixir of Precision I; I should like the reply to land where I intend. Lethariel's Alchemy trainer at the brewhouse among the homes teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars are found back where you started, a quick journey from the city's waystone to your first village's waystone.",
+          "completion": "Thank you; I still have to draw the bow and aim it. Should I miss, I expect the next remark to be considerably better prepared."
+        },
+        {
+          "zone": "kragmar_gor_drazhak",
+          "givers": [
+            "r20_orc_capital_envoy"
+          ],
+          "text": "I told a recruit that the target was the large round thing in front of him, and now he wants to watch my turn. Bring me an Elixir of Precision I before the rest of the yard gathers. Gor Drazhak's Alchemy trainer at the herb house in the bone quarter teaches the recipe. Take the city's waystone to your first village's waystone for a quick trip back where you started; you can find Sunleaf there and get a Boar Tusk from the daytime boars.",
+          "completion": "Right, my turn. If I miss, the recruit has earned one comment, and I suspect he already knows which one."
+        },
+        {
+          "zone": "kragmar_kezamba",
+          "givers": [
+            "r20_troll_capital_envoy"
+          ],
+          "text": "I promised to shoot a fruit hanging on a cord before Teshani calls it back to the kitchen. Bring me an Elixir of Precision I; supper is approaching faster than my confidence. Kezamba's Alchemy trainer at the herbalist's under the vines teaches the recipe. For Sunleaf and a Boar Tusk from the daytime boars, travel from the city's waystone to your first village's waystone for a quick return to where you started.",
+          "completion": "Thank you; I will take my shot before Teshani takes her fruit. She says a miss counts as returning it undamaged."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r20_undead_capital_envoy"
+          ],
+          "text": "My score on the old shooting list has stayed unremarkable for nearly a century, so I rashly announced that this year's attempt would be worth recording. Bring me an Elixir of Precision I for the attempt. Nhal Veyr's Alchemy trainer at the physic house in the market teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; the journey from the city's waystone to your first village's waystone is reassuringly quick.",
+          "completion": "I will record the score exactly as it falls. If it is worse, at least the list will finally contain something new."
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 4.5
       },
-      "lesson": "Optional: a night hunt beside the day orchard work.",
-      "duration_min": 9,
-      "optional": true
+      "lesson": "Learn Alchemy at the capital's trainer, gather where you started, brew at the capital's Brewing Stand; a friend's elixir counts too.",
+      "duration_min": 15,
+      "notes": "Round 60 CAPITALS. Plan §2 point 6, §2a points 4-5, draft §4 'Die Alchemy-Aufgabe' and K13 A: one shared quest, one elixir everywhere (Precision I: Sunleaf, Boar Tusk, Glass Bottle), each envoy's own playful occasion; the text names the trainer's plot in words and sends the player back where they started by their start settlement's waystone, never naming the start zone. The one quest the r45_st check lets ask for a grug_alchemy item."
     },
     {
-      "id": "highcourt_accounts_03",
+      "id": "highcourt_penn",
       "line": "envoy",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
       "min_level": 27,
       "level": 29,
-      "requires": [
-        "highcourt_accounts_02"
-      ],
+      "requires": [],
       "title": "The Last Unauthorised Stamp",
-      "text": "{name:tollmaster_penn} conducts his business at the {name:toll_camp} {dir_from_giver:toll_camp}, with enough borrowed ceremony to embarrass a coronation. Defeat five Toll Archers there and then Penn himself; his camp operates day and night. Keep clear of the other archers while you close on each one. I want him to discover that stamping a demand does not make it lawful.",
+      "text": "Bandit Tollmaster Penn presents his private collections as royal tolls, complete with a stamp intended to end the conversation. Kill him at the {name:toll_camp}, {dir_from_giver:toll_camp}, and report to me. I have heard enough complaints from people who paid because they thought our city had ordered it.",
+      "completion": "Penn's collections end here. I will put his misuse of the royal mark on record so the people he threatened can have their complaints heard.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "toll_bandit_archer"
-          ],
-          "count": 5,
-          "area": "elandor_highcourt/toll_camp"
-        },
         {
           "type": "kill",
           "roles": [
@@ -312,12 +437,26 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_mobs:heavy_leather",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:heavy_cloth",
+            "count": 3
+          },
+          {
+            "item": "grug_materials:steel_bar",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "Archer camp plus its named normal leader.",
+      "lesson": "The capital's named leader at his camp, alone: the capital's local finale.",
       "duration_min": 12,
-      "climax": true
+      "climax": true,
+      "notes": "Round 60 CAPITALS: a new id (its objectives changed); free play, a level only."
     },
     {
       "id": "highcourt_provisions_01",
@@ -328,7 +467,7 @@
       "level": 22,
       "requires": [],
       "title": "A Peg for the Bread Board",
-      "text": "My bread board rocks, and the royal kitchen has offered to lend me a peg with more conditions than a peace treaty. Bring me one Gnarled Boar Tusk from a Furrow Boar by day on the {name:commons}, which lies {zone_area:commons}. Their yellow names mean they only fight back when struck. I would rather settle the matter with the boar.",
+      "text": "My bread board rocks, and the royal kitchen offers replacement pegs on terms longer than the board. Bring me one Gnarled Boar Tusk; Furrow Boars in the {name:commons} can provide one by day. I can fit it myself without obtaining permission to cut a loaf.",
       "objectives": [
         {
           "type": "item",
@@ -341,11 +480,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
       "lesson": "A daytime errand that leaves your enchant stock alone.",
-      "duration_min": 8
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS: the id stays (objectives unchanged); free play, a level only."
     },
     {
       "id": "highcourt_provisions_venison",
@@ -354,11 +493,9 @@
       "turnin": "r20_human_capital_cook",
       "min_level": 21,
       "level": 22,
-      "requires": [
-        "highcourt_provisions_01"
-      ],
-      "title": "Optional: The Long Table",
-      "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Fallow Bucks by day on the {name:commons}. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
+      "requires": [],
+      "title": "The Long Table",
+      "text": "The palace has ordered venison for the long table and left the hunting arrangements with the man standing beside an oven. Hunt six Fallow Bucks by day in the {name:commons}. I will see to the meal; it seems somebody ought to see to the deer.",
       "objectives": [
         {
           "type": "kill",
@@ -370,42 +507,11 @@
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 3
       },
-      "lesson": "Optional: neutral daytime game, the minor role on the capital commons.",
+      "lesson": "Neutral daytime game on the capital commons.",
       "duration_min": 9,
-      "optional": true
-    },
-    {
-      "id": "highcourt_provisions_02",
-      "line": "provisions",
-      "giver": "r20_human_capital_cook",
-      "turnin": "r20_human_capital_cook",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "highcourt_provisions_01"
-      ],
-      "title": "Pies Have Consequences",
-      "text": "The palace expects fruit pies, while the pickers expect to keep their fingers; I find the second request entirely reasonable. Hunt five Dog-Foxes by day in the {name:orchards}, which lie {zone_area:orchards}. Mind their red names: they start fights, unlike the Orchard Foxes sharing that ground.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "redfang_fox"
-          ],
-          "count": 5,
-          "area": "elandor_highcourt/orchards"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Aggressive and neutral foxes share one orchard.",
-      "duration_min": 9,
-      "climax": true
+      "notes": "Round 60 CAPITALS: the id stays (objectives unchanged); free play, a level only."
     },
     {
       "id": "highcourt_dispatch_01",
@@ -414,11 +520,9 @@
       "turnin": "r20_anchor_016_host",
       "min_level": 21,
       "level": 22,
-      "requires": [
-        "highcourt_accounts_01"
-      ],
+      "requires": [],
       "title": "The Empty River Baskets",
-      "text": "I paid for river baskets and received a very confident promise, which has proved difficult to put bread in. Find Merren Oakstamp at Whitebridge Market Close in Whitebridge Shire and ask what became of my order. Follow the road, or visit the stables about a mount if your feet have already lodged a complaint.",
+      "text": "I paid for river baskets and received a very confident promise, which has proved difficult to bake. Ask Merren Oakstamp at Whitebridge Market Close what became of the order. She knows the trade, and I would like to hear her account of it.",
       "objectives": [
         {
           "type": "talk",
@@ -426,11 +530,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Capital to heartland handoff.",
-      "duration_min": 8
+      "lesson": "Capital to band handoff.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     },
     {
       "id": "highcourt_dispatch_02",
@@ -439,11 +543,9 @@
       "turnin": "r20_anchor_031_host",
       "min_level": 29,
       "level": 29,
-      "requires": [
-        "highcourt_accounts_03"
-      ],
+      "requires": [],
       "title": "Bread for the March",
-      "text": "The watch at Cinderline eats my bread and stands between the Accord's homes and the fighting. Go to Cinderline Watch in Ashenward March and speak with Toren Waterbarrel; tell him the person who dealt with Penn is ready to help. Get yourself to level 30 before making the journey into contested country. Eat before you leave, too; courage is no breakfast.",
+      "text": "The watch at Cinderline stands between our homes and the fighting, and they are fond of receiving their bread before it goes hard. Go and offer Toren Waterbarrel help at Cinderline Watch in Ashenward March. Whatever else he needs, I expect it matters just as much to the people waiting for it.",
       "objectives": [
         {
           "type": "talk",
@@ -451,11 +553,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Capital to contested handoff.",
-      "duration_min": 10
+      "lesson": "Capital to band handoff.",
+      "duration_min": 10,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     }
   ]
 }

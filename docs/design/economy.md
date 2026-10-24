@@ -192,9 +192,10 @@ items without one:
   and never unpacked) stays a crafted good.
 - **Vendor goods and gear** keep the first pass: the 5 % buy-back, and a
   1–2c supply (thread, torch, stick) stays unsellable.
-- **Never sellable:** the Bag of Coins, the Fallen Crown, both Captain's
-  Orders, soulbound and bound items (`grug_soulbound`, `grug_bound_skill`:
-  the Claim Stone, ability items, the retired mount and boat items); and,
+- **Never sellable:** the Bag of Coins, the Fallen Crown, soulbound and
+  bound items (`grug_soulbound`, `grug_bound_skill`: the Claim Stone, every
+  quest-only item since Round 60 (both Captain's Orders, the Dispatch
+  Folio), ability items, the retired mount and boat items); and,
   having no value, dirt and the soils, clay, snow, ice, ground cover,
   flowers and dyes, obsidian, and anything no player can hold (growth
   stages, door halves, liquids, mapgen nodes).
