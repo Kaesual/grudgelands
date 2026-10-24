@@ -44,8 +44,8 @@
       "level": 19,
       "requires": [],
       "title": "Our Word, Our Witness",
-      "text": "[PH] Chapter 1 (The Throng): the capital's envoy has a reported case of true records turned to a false claim and sends the player to The Oathdelvers' leader at the Miner's Guild house of this capital. Real text to follow.",
-      "completion": "[PH] Drava Flintshoulder: she stands by a pledge kept and will not let it become the receivers' debt, and takes up the case. Real text to follow.",
+      "text": "Rokka Emberhand's report from Redtusk tells of herders charged for water they had already carried before it was stolen. Take the case to Drava Flintshoulder of The Oathdelvers at the Miner's Guild house here in Gor Drazhak. She keeps the guild's delivery pledges with the army's suppliers. The people waiting for water deserve to hear whose promise is being sold back to them.",
+      "completion": "I'll take this up with our suppliers and put Rokka's account beside the delivery pledges. When The Oathdelvers promise a load, we stand by it. No one gets to turn our kept word into a debt for the people we supplied.",
       "objectives": [
         {
           "type": "talk",
@@ -66,8 +66,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Thorga Roadspeaker: stolen supplies are billed again to the very people they were meant for; Drava Flintshoulder at the Miner's Guild house knows the pledges behind them. A reported case: Thorga does not claim the player helped Rokka. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder: she stands by a pledge kept and will not let it become the receivers' debt, and takes up the case. Real text to follow."
+          "text": "Rokka Emberhand's report from Redtusk tells of herders charged for water they had already carried before it was stolen. Take the case to Drava Flintshoulder of The Oathdelvers at the Miner's Guild house here in Gor Drazhak. She keeps the guild's delivery pledges with the army's suppliers. The people waiting for water deserve to hear whose promise is being sold back to them.",
+          "completion": "I'll take this up with our suppliers and put Rokka's account beside the delivery pledges. When The Oathdelvers promise a load, we stand by it. No one gets to turn our kept word into a debt for the people we supplied."
         },
         {
           "zone": "kragmar_kezamba",
@@ -82,8 +82,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Nalo Pathdrum: an extorted levy is treated as if the community had pledged it; Ombali Ropekeeper at the Miner's Guild house tests the claimed witness. A reported case: Nalo does not claim the player helped Veko. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper: she keeps what someone witnessed apart from what is slipped under their name later, and takes up the case. Real text to follow."
+          "text": "Word from Raincall says a rain tithe taken under threat is being called the community's own promise. Tell Ombali Ropekeeper of The Oathdelvers at the Miner's Guild house here in Kezamba. She checks the witnesses' accounts with the army's suppliers, and knows to ask what those witnesses actually saw. A frightened payment should not be allowed to speak for a whole village.",
+          "completion": "I will check that claimed promise with our suppliers and keep Veko's refusal in the account. A witness can tell us what happened; someone writing beneath their name afterwards cannot add to what they saw. We will start there."
         },
         {
           "zone": "kragmar_nhal_veyr",
@@ -98,8 +98,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Ossa Quietregister: remains and names are parted and used for strangers' claims; Iven Lastshift at the Miner's Guild house checks the register entries. A reported case: Ossa does not claim the player freed Hollis. Real text to follow.",
-          "completion": "[PH] Iven Lastshift: he keeps a name on the register apart from any claim about the person who bears it, and takes up the case. Real text to follow."
+          "text": "The report from Mournfen describes remains carried away from their names, with strangers claiming the right to take them. Speak to Iven Lastshift of The Oathdelvers at the Miner's Guild house here in Nhal Veyr. He checks the guild's records with the army's suppliers and will examine those claims. Someone should still be able to say who the missing were.",
+          "completion": "I will keep the names with this case and check the claims against our supply records. A register preserves a person for us to remember; it does not put them at the disposal of whoever next opens the book. Sera's report will be heard."
         }
       ],
       "rewards": {
@@ -119,8 +119,8 @@
         "story_throng_01"
       ],
       "title": "Whose Word Is This?",
-      "text": "[PH] Chapter 1 (The Throng): a handover in the capital is disputed; the player secures its original record at the spot and brings it back, and the leader refuses the false claim. Real text to follow.",
-      "completion": "[PH] Drava Flintshoulder: she refuses the new claim and has the water issued as pledged. The Oathdelvers stand by the delivery; the receivers owe nothing for it. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow.",
+      "text": "The army's suppliers and I have stopped a disputed handover at Gor Drazhak's water depot. Someone has copied the recipients and witnesses onto a new demand for payment or service, as though receiving water meant agreeing to work it off. Secure the original witness record at the depot on the edge of the cook court and bring your findings back to me. I know what The Oathdelvers promised, and I intend to see it delivered.",
+      "completion": "These witnesses confirmed a delivery, and I refuse the added demand for payment or service. Our suppliers will issue the water as The Oathdelvers pledged it, with no new debt to its recipients. We still need to learn how the records reached those making the claim; similar misuse of old names is reported in Ossuary Reach.",
       "objectives": [
         {
           "type": "use",
@@ -144,8 +144,8 @@
               "place": "socket:gor_drazhak/warren_cook_court/warren_cook_court_water_depot"
             }
           ],
-          "text": "[PH] Drava Flintshoulder: a confirmed water delivery is to be issued at the depot on the rim of the cook court. The receivers' names and the handover's witnesses were moved onto a new claim, so those supplied would owe more service or pay. Secure the original handover record there and bring it back. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder: she refuses the new claim and has the water issued as pledged. The Oathdelvers stand by the delivery; the receivers owe nothing for it. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow."
+          "text": "The army's suppliers and I have stopped a disputed handover at Gor Drazhak's water depot. Someone has copied the recipients and witnesses onto a new demand for payment or service, as though receiving water meant agreeing to work it off. Secure the original witness record at the depot on the edge of the cook court and bring your findings back to me. I know what The Oathdelvers promised, and I intend to see it delivered.",
+          "completion": "These witnesses confirmed a delivery, and I refuse the added demand for payment or service. Our suppliers will issue the water as The Oathdelvers pledged it, with no new debt to its recipients. We still need to learn how the records reached those making the claim; similar misuse of old names is reported in Ossuary Reach."
         },
         {
           "zone": "kragmar_kezamba",
@@ -160,8 +160,8 @@
               "place": "socket:kezamba/shore_store/shore_store_witness_landing"
             }
           ],
-          "text": "[PH] Ombali Ropekeeper: supplies for porters are held at the landing beside the shore store. A witnessed help with the unloading is made to prove a standing pledge of the same helpers. Secure the original witnessed record there and bring it back. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper: she names which act was witnessed and which claim goes beyond it. A name under a handover witnesses that handover, nothing later. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow."
+          "text": "Here in Kezamba, someone has taken a witnessed act of unloading and claimed the helpers promised their labour whenever called. Our suppliers and I have paused the disputed handover so we can settle that claim before the porters' stores are issued. Secure the original witness record at the landing beside the shore store, then return to me. Helping with one load should not mean carrying every load that follows.",
+          "completion": "The witnesses saw one unloading, and I reject the claim that those helpers pledged any further work. The suppliers will release the porters' stores under the original agreement. Who obtained the records for this misuse is still unknown; reports from Ossuary Reach describe old names being made to answer for new claims."
         },
         {
           "zone": "kragmar_nhal_veyr",
@@ -176,8 +176,8 @@
               "place": "socket:nhal_veyr/homes_mourners_hall/homes_mourners_hall_receiving_court"
             }
           ],
-          "text": "[PH] Iven Lastshift: personal belongings wait in the receiving court outside the mourners' hall for their rightful receivers. True register entries were used to claim a debt on them, or a right to hold them back. Secure the original record there and bring it back. Real text to follow.",
-          "completion": "[PH] Iven Lastshift: he keeps the names and their right order and strikes the attached claim. A kept name gives no stranger's clerk a say over the person or their belongings. Where the papers came from stays open; a like case waits at Ossuary Reach. Real text to follow."
+          "text": "Personal belongings await their recipients in the receiving court outside Nhal Veyr's mourners' hall. Someone has used genuine register entries to claim a debt against them, and our suppliers and I have stopped the disputed handover for examination. Secure the original witness record there and return to me. I want the names preserved and the claimed debt accounted for separately.",
+          "completion": "The names establish whom these belongings should reach; the added debt has no basis, and I strike it out. Our suppliers will release the belongings to the recorded recipients with those names intact. We have yet to learn how the claimant obtained the records, and reports from Ossuary Reach suggest older names are suffering the same treatment."
         }
       ],
       "rewards": {

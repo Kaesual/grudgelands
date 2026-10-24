@@ -69,8 +69,8 @@
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "[PH] What the Vale Delivers",
-      "text": "[PH] Marta counts what the vale can really deliver: bring 8 Corn from the fields. Real text to follow.",
+      "title": "An Honest Harvest",
+      "text": "Every requisition tells me what Goldmead owes; very few ask what we can spare. Bring me eight Corn from the fields so I can put an honest harvest beside those demands. The mouths here must count for something before the carts leave.",
       "objectives": [
         {
           "type": "item",
@@ -103,8 +103,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Word for the Outpost",
-      "text": "[PH] Marta sends word to Jon Vale at the outpost, who watches Hobb and his people. Real text to follow.",
+      "title": "Word Beyond the Fields",
+      "text": "Hobb's demands reach the village with seals on them and hungry men behind them. Speak to Jon Vale at Goldmead Outpost and tell him what we are facing. He watches the people carrying those demands; I spend enough of my day staring at the paper.",
       "objectives": [
         {
           "type": "talk",
@@ -126,8 +126,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Sunleaf for the Watch",
-      "text": "[PH] Jon's watchers need a remedy for the long watches: bring 5 Sunleaf. Real text to follow.",
+      "title": "A Watch Worth Waking For",
+      "text": "My watchers spend hours keeping still, then come back to a pot that tastes of hot grass. Bring me five Sunleaf to improve it. Watching Hobb's people is weary work without supper joining their side.",
       "objectives": [
         {
           "type": "item",
@@ -150,8 +150,8 @@
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "[PH] Food for the Packers",
-      "text": "[PH] Alda keeps the people who pack the harvest fed: bring 8 Potatoes. Real text to follow.",
+      "title": "Feed the Hands",
+      "text": "The packers fill everyone else's sacks and forget to stop for their own dinner. Bring me eight Potatoes, and I'll have something ready when they put the loads down. If another clerk asks whether feeding them counts as transport costs, I shall put a spoon in his hand.",
       "objectives": [
         {
           "type": "item",
@@ -174,8 +174,8 @@
       "min_level": 14,
       "level": 15,
       "requires": [],
-      "title": "[PH] Boars in the Wheat",
-      "text": "[PH] Bristlebacks trample the wheat: hunt 8 of them by day in the {name:wheatfields}. Real text to follow.",
+      "title": "Eight at the Wrong Table",
+      "text": "The Bristlebacks are trampling more wheat than they eat, which is a remarkable effort. Hunt eight by day in the {name:wheatfields}, which lie {zone_area:wheatfields}. I can argue with a requisition, but these ones insist on signing with their tusks.",
       "objectives": [
         {
           "type": "kill",
@@ -230,8 +230,8 @@
       "min_level": 17,
       "level": 17,
       "requires": [],
-      "title": "[PH] Pella Speaks for Herself",
-      "text": "[PH] Jon sends the player straight to Pella Thatch, held in the {name:bandit_camp}, who insists on making her own statement. Real text to follow.",
+      "title": "Pella Speaks for Herself",
+      "text": "Pella Thatch is being held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and Hobb has put her name on a load record. Go and hear her account of it. I could send another report about Pella, but I suspect she has had quite enough of other people speaking for her.",
       "objectives": [
         {
           "type": "talk",
@@ -253,8 +253,8 @@
       "min_level": 16,
       "level": 17,
       "requires": [],
-      "title": "[PH] Fences for the Stores",
-      "text": "[PH] Alda fences the store yard against the next requisition: bring 8 Apple Wood Fences. Real text to follow.",
+      "title": "A Yard with an Edge",
+      "text": "Every loose sack in the store yard seems to invite someone to load it onto the wrong cart. Bring me eight Apple Wood Fences so I can close the gaps. Anyone collecting supplies can come through the entrance and explain themselves to me.",
       "objectives": [
         {
           "type": "item",
@@ -306,9 +306,9 @@
       "min_level": 18,
       "level": 19,
       "requires": [],
-      "title": "[PH] End {name:requisitioner_hobb}'s Claim",
-      "text": "[PH] Pella demands the fight against Bandit Requisitioner Hobb at the {name:requisition_camp}, who booked her between the grain and the sacking. Real text to follow.",
-      "completion": "[PH] Pella's statement stands as a statement again. Real text to follow.",
+      "title": "Cross Out {name:requisitioner_hobb}",
+      "text": "Hobb put me between the grain and the sacking, as though I were another bundle he could send away. Kill Bandit Requisitioner Hobb at the {name:requisition_camp}, {dir_from_giver:requisition_camp}, and come back to me. I know who grew that grain and stitched those sacks; none of us sold him the people who carried them.",
+      "completion": "Hobb will give no more orders over me. Write Pella Thatch under 'witness', and leave the next line for what I have to say.",
       "objectives": [
         {
           "type": "kill",
@@ -374,8 +374,8 @@
       "min_level": 19,
       "level": 19,
       "requires": [],
-      "title": "[PH] The Case Goes to Highcourt",
-      "text": "[PH] Pella sends the player to Mariel Waybook in Highcourt with her own statement about Hobb and the capital mark he uses. Real text to follow.",
+      "title": "A Witness for Highcourt",
+      "text": "Hobb used a capital toll mark to claim our grain, our work and apparently me. Take my statement to Mariel Waybook in Highcourt: Pella Thatch agreed to none of it. If a mark from that city can travel this far, my objection can travel back.",
       "objectives": [
         {
           "type": "talk",

@@ -68,8 +68,8 @@
       "min_level": 11,
       "level": 12,
       "requires": [],
-      "title": "[PH] Iron for the Repairs",
-      "text": "[PH] Dagna needs 4 Iron Bars and 4 Coal Lumps to mend the worn rail fastenings of the ore carts. Real text to follow.",
+      "title": "Something Worth Mending",
+      "text": "The rail fastenings are worn, and a full ore cart has strong opinions about loose iron. Bring me four Iron Bars and four Coal Lumps so I can put them right. The Charter of Stone's mark ought to mean the work will hold, even when nobody is watching.",
       "objectives": [
         {
           "type": "item",
@@ -88,42 +88,42 @@
           "givers": [
             "r15_dwarf_local"
           ],
-          "text": "[PH] Dagna needs 4 Iron Bars and 4 Coal Lumps to mend the worn rail fastenings of the ore carts. Real text to follow."
+          "text": "The rail fastenings are worn, and a full ore cart has strong opinions about loose iron. Bring me four Iron Bars and four Coal Lumps so I can put them right. The Charter of Stone's mark ought to mean the work will hold, even when nobody is watching."
         },
         {
           "zone": "elandor_goldmead_vale",
           "givers": [
             "r15_human_local"
           ],
-          "text": "[PH] Alda needs 4 Iron Bars and 4 Coal Lumps for the fittings of a granary that can be locked again. Real text to follow."
+          "text": "A granary door ought to open when I lift the latch, not whenever someone leans on it. Bring me four Iron Bars and four Coal Lumps for new fittings. We have put a year's work into those stores, and I intend to decide who gets a key."
         },
         {
           "zone": "elandor_starbough_vale",
           "givers": [
             "r15_elf_local"
           ],
-          "text": "[PH] Lethri needs 4 Iron Bars and 4 Coal Lumps for the brackets of the walkways between the boughs. Real text to follow."
+          "text": "The branches sway as they should; our walkway brackets have begun joining in. Bring me four Iron Bars and four Coal Lumps to mend them. I prefer to leave the graceful leaps to creatures born with tails."
         },
         {
           "zone": "kragmar_mournfen",
           "givers": [
             "r15_undead_local"
           ],
-          "text": "[PH] Edris needs 4 Iron Bars and 4 Coal Lumps for the rusted lantern holders above the mud. Real text to follow."
+          "text": "The lantern holders are rusting through, which brings the light rather closer to the mud than I intended. Bring me four Iron Bars and four Coal Lumps for repairs. Those walking home should be able to see which way their feet went."
         },
         {
           "zone": "kragmar_redtusk_savanna",
           "givers": [
             "r15_orc_local"
           ],
-          "text": "[PH] Morga needs 4 Iron Bars and 4 Coal Lumps for the fittings of the herd gate. Real text to follow."
+          "text": "That herd gate has been arguing with its hinges all morning. Bring me four Iron Bars and four Coal Lumps for fresh fittings. I can hold it shut myself, but then who does the other twenty jobs?"
         },
         {
           "zone": "kragmar_raincall_basin",
           "givers": [
             "r15_troll_local"
           ],
-          "text": "[PH] Amari needs 4 Iron Bars and 4 Coal Lumps for new clamps that keep the houses on their stilts. Real text to follow."
+          "text": "The houses are meant to stand above the rainwater, and I would like to keep that arrangement. Bring me four Iron Bars and four Coal Lumps for new clamps around their stilts. A roof is little comfort when the floor goes visiting."
         }
       ],
       "rewards": {
@@ -139,8 +139,8 @@
       "min_level": 14,
       "level": 15,
       "requires": [],
-      "title": "[PH] The Original Load Record",
-      "text": "[PH] Orrik wants the original load record secured from the bandits' load board in the {name:bandit_camp}: it still names Tovin as the carter, while the later accounts make his work disappear. Real text to follow.",
+      "title": "Who Counts as Cargo?",
+      "text": "Tovin Ashthumb drove the ore cart, yet the accounts leave no driver to pay. Secure the original load record from the board by the stores in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and bring your findings to me. His name is still on that record; I want it beside the work he did.",
       "objectives": [
         {
           "type": "use",
@@ -156,7 +156,7 @@
           "givers": [
             "r14_dwarf_steward"
           ],
-          "text": "[PH] Orrik wants the original load record secured from the bandits' load board in the {name:bandit_camp}: it still names Tovin as the carter, while the later accounts make his work disappear. Real text to follow."
+          "text": "Tovin Ashthumb drove the ore cart, yet the accounts leave no driver to pay. Secure the original load record from the board by the stores in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and bring your findings to me. His name is still on that record; I want it beside the work he did."
         },
         {
           "zone": "elandor_goldmead_vale",
@@ -168,7 +168,7 @@
               "place": "socket:goldmead_bandit_camp/load_record"
             }
           ],
-          "text": "[PH] Marta wants the load record secured from the bandits' load board in the {name:bandit_camp}: between the grain and the sacking stands Pella's name. Real text to follow."
+          "text": "Hobb has entered Pella Thatch between the grain and the sacking on his load record. Secure that record from the board by the stores in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and report back to me. I know what this vale produces, and people are not part of the shipment."
         }
       ],
       "rewards": {
@@ -186,8 +186,8 @@
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "[PH] Copper for the Scales",
-      "text": "[PH] Orrik weighs fresh copper against the old ledger to see what the carts lost: bring 8 Copper Lumps from the seams. Real text to follow.",
+      "title": "A Weight I Can Trust",
+      "text": "The ore accounts grow lighter every time they reach my desk. Bring me eight Copper Lumps from the seams so I can check the weights against the cart tally. Before I accuse a driver of losing a load, I mean to give the scales a chance to confess.",
       "objectives": [
         {
           "type": "item",
@@ -220,8 +220,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] The Tally to the Outpost",
-      "text": "[PH] Orrik sends his cart tally to Mara Deepwatch at the outpost, who turns a loss report back into a search for people. Real text to follow.",
+      "title": "More Than a Missing Load",
+      "text": "I can tell Mara Deepwatch how much ore is missing; she asks who was driving it. Take word of the cart losses to her at Copperfell Outpost. Tell her Tovin Ashthumb's name belongs in the report, however neatly someone has left it out.",
       "objectives": [
         {
           "type": "talk",
@@ -243,8 +243,8 @@
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Wood for the Watch Fire",
-      "text": "[PH] Mara keeps a fire burning for the night watch over the cart road: bring 12 logs of any tree. Real text to follow.",
+      "title": "A Fire to Come Back To",
+      "text": "I keep the watch fire burning so a late carter has something to steer towards. Bring me twelve whole logs of any tree from outside the settlements. No one should have to wonder whether we stopped looking for them when it got dark.",
       "objectives": [
         {
           "type": "item",
@@ -267,8 +267,8 @@
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "[PH] Light for the Shafts",
-      "text": "[PH] Dagna keeps the work going: 20 Torches for the shafts and the cart road. Real text to follow.",
+      "title": "Mind the Next Footstep",
+      "text": "A miner ought to see a loose stone before stepping on it, not describe it afterwards from a stretcher. Bring me twenty Torches for the shafts and the cart road. I'll see they reach the hands doing the work.",
       "objectives": [
         {
           "type": "item",
@@ -291,8 +291,8 @@
       "min_level": 14,
       "level": 15,
       "requires": [],
-      "title": "[PH] Stones on the Cart Road",
-      "text": "[PH] Surefoot Ibex knock stones onto the cart road: hunt 8 of them by day in the {name:pine_slopes}. Real text to follow.",
+      "title": "Sure Feet, Loose Stones",
+      "text": "The Surefoot Ibex never seem to fall, but they send plenty of stones down onto the cart road. Hunt eight by day on the {name:pine_slopes}, which lie {zone_area:pine_slopes}. My watch can warn a driver about bandits; a rock gives us considerably less notice.",
       "objectives": [
         {
           "type": "kill",
@@ -347,8 +347,8 @@
       "min_level": 16,
       "level": 17,
       "requires": [],
-      "title": "[PH] A Carter Among the Cargo",
-      "text": "[PH] Mara sends the player to hear Tovin Ashthumb himself, held in the {name:bandit_camp}; no fight is asked first. Real text to follow.",
+      "title": "Ask the Carter",
+      "text": "Tovin Ashthumb is being held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}. Go and hear him; a missing load has acquired more attention than its missing driver. He knows that trade from the cart seat, which is a better view than anyone has from my reports.",
       "objectives": [
         {
           "type": "talk",
@@ -370,8 +370,8 @@
       "min_level": 16,
       "level": 17,
       "requires": [],
-      "title": "[PH] Chests for the Wages",
-      "text": "[PH] Dagna wants the crews' wages kept where no stamp can reach them: bring 2 Locked Chests. Real text to follow.",
+      "title": "Wages Under Lock",
+      "text": "I've had enough of purses wandering off while their owners are down a shaft. Bring me two Locked Chests for the crews' wages. Anyone wanting their pay will get it from me; anyone waving a stamp can wait while I find my spectacles.",
       "objectives": [
         {
           "type": "item",
@@ -423,9 +423,9 @@
       "min_level": 18,
       "level": 19,
       "requires": [],
-      "title": "[PH] Take the Dig from {name:foreman_nog}",
-      "text": "[PH] Tovin wants Goblin Foreman Nog's business spoiled: defeat {name:foreman_nog} at the {name:goblin_dig}, who pays his crew from stamped, stolen purses. Real text to follow.",
-      "completion": "[PH] Tovin hears that Nog is down; his own wages are still owed. Real text to follow.",
+      "title": "Collecting from {name:foreman_nog}",
+      "text": "I heard the bandits arranging to sell our ore, and I saw the stamped, stolen purses Nog uses to pay his crew. Kill {name:foreman_nog} at the {name:goblin_dig}, {dir_from_giver:goblin_dig}, and bring me word. He runs a tidy little business, provided nobody counts what he owes the people he took it from.",
+      "completion": "Nog is down, then, and his tidy business has a hole in it. My wages are still owed; put Tovin Ashthumb beside that sum, and leave room for me to collect.",
       "objectives": [
         {
           "type": "kill",
@@ -491,8 +491,8 @@
       "min_level": 19,
       "level": 19,
       "requires": [],
-      "title": "[PH] The Case Goes to Dur Brannoc",
-      "text": "[PH] Tovin sends the player to Dorrin Gateledger in Dur Brannoc: a counting-house stamp turns up on stolen purses. Real text to follow.",
+      "title": "A Stamp from Dur Brannoc",
+      "text": "I saw a counting-house stamp on the stolen purses Nog used to pay his crew, clear enough to recognise it again. Tell Dorrin Gateledger in Dur Brannoc what I've seen, and ask how our own mark came to serve that trade. Give him my name too; I've had enough of being left off accounts.",
       "objectives": [
         {
           "type": "talk",
