@@ -61,6 +61,9 @@ _G.core = {
 	register_on_player_receive_fields = function() end,
 	register_on_leaveplayer = function() end,
 }
+grug_core = {}
+core.colorize = function(color, text) return "\27(c@" .. color .. ")" .. text .. "\27(c@#ffffff)" end
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 local character_level = 5
 _G.grug_xp = {get_level = function() return character_level end}
 _G.grug_inventory = {refresh = function() end, refresh_character_tab = function() end,
