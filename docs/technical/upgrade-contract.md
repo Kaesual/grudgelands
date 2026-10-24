@@ -152,6 +152,16 @@ list of the platform's migration contract):
   effect) holds no position and starts empty. `map_reset_pass` stays
   0.50.0, so the pass packs the claims' containers; the production world
   moves to 0.58.0 across this one reset.
+- 0.59.0 (Round 59, the quest rework of levels 11–20 and chapter 1 of the
+  story) needs the eighth map reset: new `quest_place` sockets in a service
+  plot of each of the six capitals and in four of the band's bandit camps,
+  and new quest places in the Starbough Vale and Mournfen spawn files,
+  change what world generation and the towns build. It declares no step:
+  the reworked quests have new ids (an active quest whose id vanished is
+  dropped, §4), and nothing new holds a position. `map_reset_pass` stays
+  0.50.0. Unpushed 0.58.0's entry already covers these changes against
+  pushed 0.57.0; the production world moves from 0.57.0 to 0.59.0 across
+  one reset.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the
