@@ -257,7 +257,7 @@
         }
       ],
       "rewards": {
-        "weight": 3
+        "weight": 4
       },
       "lesson": "A Basic craft at the first capital visit: coal and sticks, no profession.",
       "duration_min": 8,
@@ -410,7 +410,7 @@
         }
       ],
       "rewards": {
-        "weight": 3
+        "weight": 4.5
       },
       "lesson": "Learn Alchemy at the capital's trainer, gather where you started, brew at the capital's Brewing Stand; a friend's elixir counts too.",
       "duration_min": 15,
@@ -437,7 +437,7 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
+        "weight": 5,
         "choices": [
           {
             "item": "grug_mobs:heavy_leather",

@@ -85,7 +85,7 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
+        "weight": 5,
         "choices": [
           {
             "item": "grug_mobs:heavy_leather",

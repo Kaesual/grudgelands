@@ -161,7 +161,7 @@ SHARED = [
         "id": "capital_torches", "giver": "envoy", "line": "envoy", "min_level": 20, "level": 20,
         "title": "Light for the City's Work",
         "objectives": [item("default:torch", 20)],
-        "rewards": {"weight": 3},
+        "rewards": {"weight": 4},
         "lesson": "A Basic craft at the first capital visit: coal and sticks, no profession.",
         "duration_min": 8,
         "notes": "Draft §4 and K12 A: every envoy asks for Torches for the capital's own services; one "
@@ -209,7 +209,7 @@ SHARED = [
         "id": "capital_precision", "giver": "envoy", "line": "envoy", "min_level": 19, "level": 20,
         "title": "A Steady Hand for a Rash Promise",
         "objectives": [item(PRECISION, 1)],
-        "rewards": {"weight": 3},
+        "rewards": {"weight": 4.5},
         "lesson": "Learn Alchemy at the capital's trainer, gather where you started, brew at the capital's "
                   "Brewing Stand; a friend's elixir counts too.",
         "duration_min": 15,
@@ -256,7 +256,7 @@ SHARED = [
         "id": "capital_raw_meat", "giver": "cook", "line": "provisions", "min_level": 20, "level": 21,
         "title": "Meat for the Capital's Kitchen",
         "objectives": [item("mobs:meat_raw", 8, ["moss_antler_stag"], "elandor_lethariel/glades")],
-        "rewards": {"weight": 2},
+        "rewards": {"weight": 3},
         "lesson": "A daytime errand on the capital's outskirts.",
         "duration_min": 8,
         "notes": "Draft §4 and the check's fix: the cooks' simple Raw Meat deliveries as one shared task "
@@ -292,7 +292,7 @@ HANDOVER = ("Round 60 CAPITALS: the handover id stays; free play, it requires no
 
 def climax(qid, role, minimum, level, text, completion, notes=NEW):
     return {"id": qid, "giver": "envoy", "line": "envoy", "min_level": minimum, "level": level,
-            "objectives": [kill([role], 1)], "weight": 4.5, "choices": MATERIALS_T3,
+            "objectives": [kill([role], 1)], "weight": 5, "choices": MATERIALS_T3,
             "text": text, "completion": completion, "climax": True,
             "lesson": "The capital's named leader at his camp, alone: the capital's local finale.",
             "duration": 12, "notes": notes}
@@ -415,7 +415,7 @@ LOCAL = {
                  "robbers at night.",
          "lesson": "A short night hunt; a third of a day hunt's count.", "duration": 8, "notes": NEW},
         {"id": "kezamba_offerings_04", "giver": "envoy", "line": "envoy", "min_level": 28, "level": 29,
-         "objectives": [kill(["offering_broker_takka"], 1)], "weight": 4.5, "choices": MATERIALS_T3,
+         "objectives": [kill(["offering_broker_takka"], 1)], "weight": 5, "choices": MATERIALS_T3,
          "text": "Nalo: Bandit Offering-Broker Takka sells stolen offerings back to the pilgrims at the toll "
                  "camp, and made the pilgrim paths dangerous on purpose; end his trade.",
          "completion": "Nalo: people kneel at the water because they choose to pray again.",
@@ -440,7 +440,7 @@ LOCAL = {
     ],
     "nhal_veyr": [
         {"id": "nhal_veyr_vigil_03", "giver": "envoy", "line": "envoy", "min_level": 26, "level": 28,
-         "objectives": [kill(["mortuary_clerk_hush"], 1)], "weight": 4.5, "choices": MATERIALS_T3,
+         "objectives": [kill(["mortuary_clerk_hush"], 1)], "weight": 5, "choices": MATERIALS_T3,
          "text": "Ossa Quietregister: Hush once worked at the shared register and kept working copies from "
                  "that post (K11 A); he now enters our dead as debtors in the tombfields. End his collection.",
          "completion": "Ossa: the collection ends; the names stay, and his copies stay a question.",
