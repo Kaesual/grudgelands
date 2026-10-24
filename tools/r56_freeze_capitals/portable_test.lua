@@ -99,26 +99,28 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- Lethariel's bough platforms, the throne guards' posts, the gate watch) with
 -- the Miner's Guild house of lane HALLS, moved out of the core onto a
 -- district plot of its own by lane HALLS2 (the core's replaced building
--- back), the capitals' new values.
+-- back), the capitals' new values; since Round 59 (STORYQUESTS, chapter 1's
+-- six town places: one quest_place socket in a service plot of each capital,
+-- the identities unchanged) the new point and build digests.
 local FROZEN = {
 	highcourt = {"1a8e47431522d9772031f7fd380a0413d71a63f72ec61b6ddde522dac13e150e",
-		"73ab6c639c21c0192b7cad806bd627d728ecbbe5dcd14a69bae71146ee359f89",
-		"d389859f4af3a1ad46824177f372db0942ab36930c96daf354836a3907191798"},
+		"9fa04dee8ea0448cd5a0fe1f80025ce5a1f83399ab0cb054703b58d442d0acd1",
+		"562578f3bf59db4b0d219d13e8748bece8d03c461b5fc3eca6589d60c5db503f"},
 	dur_brannoc = {"507425e6b096feb5b8a20e50197efcfdacf2d1073e0fa08e59dec245d5a824f7",
-		"376c862d4d9cc0f16d5963b13fe98f56d5a0dbb115347f3b2dfddf1b2110f289",
-		"9c76509f98cfb9cb9629ac25b745ed6fecd20821def71380a99c10393b6f2145"},
+		"120271ea5fb8146855dc8a41d10e10212d3f681ad13ae6d13c56b4f9e82172a5",
+		"41a7b568310143ca27bd9d5a801b09f07a51ee901a6f30b6a8f11ee0c11c91f9"},
 	lethariel = {"cb9e93140373282d5aa51075f18ad32e3a5e11c4ab65e806227968349e8f147a",
-		"349f923ec04a3cfd10af537843482e769bd9e4c910b8e6d4c0019185b50b0a0d",
-		"9b40dedc2747d514c13465c9710ddcd11edcdc1e5d4324c356ee2f7199b87f0b"},
+		"b1f29ca4c47ac47413b26038200ddd4fccc81b219f8fa6c17ebc94ae34d604ed",
+		"36dbde6e1e0b2e9554423b5927c15a50e5343365c5aec85346762acb90ba76b4"},
 	nhal_veyr = {"55fce09f1fdef53ede607ae33f276be57e00d7fc5b85d0c394612880db240b21",
-		"5daaf6b7295007890af88cd27f584b97d97900b1da8a518fcfdb17260b1abc55",
-		"6e32d1459d93a606333f884648454bbeb29a89c3f58cab50343aad17f646903b"},
+		"80c057b2ff61977827f43add10f7f7f92eba53583852ae4a2d34c72f2862f3a6",
+		"6f680d4cb46dc72e73f2b13e9b741c248a85cbd71d1c9e8bc30f16626d739cb7"},
 	gor_drazhak = {"2ad9738730febee444c8ab4606423a5d339181b75a99d43083f2b6df1e25962b",
-		"e20224659959aeecc3dcde71faf742c6afca6d18ee8fe7fc4ef7188e3c3b105c",
-		"ecea49afbf5ae63f3ad51bb3a55e492c200b29ffa3665f15e32d26460237ea30"},
+		"e53f3d4ac3f80315bf6edd5f9aba85fd4d4cf372d0c660b730a249fa718c2806",
+		"885ad9a5731edbfc9c3829da7efdb8c0744f8985cfabc39f85c6b7eac5e9f2bf"},
 	kezamba = {"88c1dc1917216b02ea8ec15a1b28894b8d60616414b3bbed923123f7fd28bd31",
-		"df6b259db2aa4aa7200b2bd54ff9fcced49b2c1b95f886eb759851720f5340f2",
-		"35e94b6d38b2697c5191559997df5e24b5a9a4cdc7bdbcf61c752de3bdeb68c5"},
+		"5846e721abf75b65ed16a673b0c64d1dc33bc7e311b8603d8edbd91fdd3f86ca",
+		"bdb7c70e4a5d265b865afb482f4c232c97f4a97a2a9b8983f8fa632c3743ff7b"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
