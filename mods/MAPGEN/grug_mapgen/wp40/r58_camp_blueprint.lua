@@ -158,6 +158,14 @@ return function(options, profile)
 			socket("yard_west","guard_post",-4,-2,0,-1,{tags={"camp"}})
 			socket("yard_east","guard_post",4,2,0,-1,{tags={"camp"}})
 		end
+		-- Round 60 (lane BANDQUESTS): the held load, a town place (role
+		-- `quest_place`, quests.md "Town places") on the open loading ground
+		-- between the stall and the ore heap, away from the lift, the vendor
+		-- and the guard posts, with room for a second object two nodes
+		-- beside it. Every mining camp has it; only Frostbarrow's is named by
+		-- a quest (A3, story_accord_03). Nobody stands on a quest_place
+		-- socket and it writes no cell, so an unused one is nothing.
+		socket("held_load","quest_place",8,4,-1,0)
 	else
 		-- Trampled ground from the gate to the command tent.
 		fill(-1,0,-r,1,0,3,p.node("rubble"))
@@ -253,3 +261,5 @@ end
 --               and `yard_east` (tag "camp"): faction guards; in a camp
 --               under construction the PvP garrison's (pvp_garrison.lua)
 --   captain     `captain`: the named captain of a camp under construction
+--   quest_place `held_load` (a mining camp): a town place of a "use at a
+--               place" quest (Round 60), nobody stands on it
