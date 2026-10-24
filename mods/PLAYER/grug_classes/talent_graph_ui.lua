@@ -201,6 +201,7 @@ function graph.page_content(viewer, view)
 	local tree = view.trees[view.tab]
 	local fs = {
 		"real_coordinates[true]",
+		grug_core.ui.panel(0.2, 0.1, 13.1, 7.1),
 		-- An invisible button takes the focus at every send, so the read-only
 		-- strip never does (it would eat the inventory key; talents_ui.lua).
 		"set_focus[grug_graph_focus;true]button[0,0;0,0;grug_graph_focus;]",
@@ -256,6 +257,7 @@ function graph.page_content(viewer, view)
 		end
 	end
 	fs[#fs + 1] = table.concat(parts)
+	fs[#fs + 1] = grug_core.ui.panel(page.x, page.strip_y, page.w, page.strip_h)
 	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(page.x, page.strip_y,
 		page.w, page.strip_h, esc(strip_text(viewer, view)))
 	return table.concat(fs)

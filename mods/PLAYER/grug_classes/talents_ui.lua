@@ -49,11 +49,11 @@ end
 -- Node looks: buyable (green, as before), maxed, ranked but not buyable,
 -- locked; the selected node gets the shared gold selection.
 local NODE_STYLES = {
-	buyable = "bgcolor=#526f3f;bgcolor_hovered=#688d50;bgcolor_pressed=#3e552f;border=true",
-	maxed = "bgcolor=#5c4a2a;bgcolor_hovered=#6f5a33;bgcolor_pressed=#4a3b22;border=true",
-	ranked = "bgcolor=#4a4a4a;bgcolor_hovered=#575757;bgcolor_pressed=#3a3a3a;border=true",
+	buyable = "bgcolor=#526f3f;bgcolor_hovered=#688d50;bgcolor_pressed=#3e552f;border=false;bgimg=grug_ui_button.png;bgimg_middle=6",
+	maxed = "bgcolor=#5c4a2a;bgcolor_hovered=#6f5a33;bgcolor_pressed=#4a3b22;border=false;bgimg=grug_ui_button.png;bgimg_middle=6",
+	ranked = "bgcolor=#4a4a4a;bgcolor_hovered=#575757;bgcolor_pressed=#3a3a3a;border=false;bgimg=grug_ui_button.png;bgimg_middle=6",
 	locked = "bgcolor=#2e2e2e;bgcolor_hovered=#3a3a3a;bgcolor_pressed=#262626;" ..
-		"border=false;textcolor=#9a9a9a",
+		"border=false;bgimg=grug_ui_button.png;bgimg_middle=6;textcolor=#9a9a9a",
 }
 local CONNECTOR_MET, CONNECTOR_OPEN = "#c9a65a", "#5a5a5a"
 -- The new graph page (talent_graph_ui.lua) draws its nodes and lines alike.

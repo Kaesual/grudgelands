@@ -486,8 +486,8 @@ local page = sfinv.pages["grug_classes:talents"]
 local fs = H.render(mage, "grug_classes:talents")
 has(fs, "button[0.25,0.15;2.60,0.60;grug_graph_tab_1;Ember (30)]", "E the Ember tab")
 has(fs, "button[2.95,0.15;2.60,0.60;grug_graph_tab_2;Rime (0)]", "E the Rime tab")
-has(fs, "style[grug_graph_tab_1;bgcolor=#8a682f", "E the first tab selected")
-has(fs, "style[grug_graph_tab_2;bgcolor=#3d3d3d", "E the second not")
+has(fs, grug_core.ui.button_style("grug_graph_tab_1", "selected"), "E the first tab selected")
+has(fs, grug_core.ui.button_style("grug_graph_tab_2", "normal"), "E the second not")
 has(fs, "label[5.75,0.45;Talent points available: 0 of 30]", "E the points in the header row")
 has(fs, "button[9.90,0.15;3.35,0.60;grug_talent_respec;Respec: Free]", "E the respec control")
 has(fs, "image[0.25,0.95;13.00,5.50;grug_classes_tree_ember.png]",
@@ -518,7 +518,7 @@ eq(table.concat(gate_labels, ","), "0,2,6,12,16,20", "E the gate of each used ro
 page:on_player_receive_fields(mage, ctx, {grug_graph_tab_2 = "Rime (0)"})
 eq(ctx.grug_talent_tab, 2, "E a tab click is kept in the context")
 fs = mage.formspec
-has(fs, "style[grug_graph_tab_2;bgcolor=#8a682f", "E and selects Rime")
+has(fs, grug_core.ui.button_style("grug_graph_tab_2", "selected"), "E and selects Rime")
 has(fs, "box[0.25,0.95;13.00,5.50;#101318c8]", "E without its background (hidden): the plain one")
 local locked = fs:match("style%[([^%]]-);bgcolor=#2e2e2e")
 check(locked and locked:find(field_of("R12"), 1, true), "E Far Frost is locked (no points left)")
@@ -527,7 +527,7 @@ has(fs, "tooltip[" .. field_of("R12") .. ";Far Frost (0/3)", "E its tooltip")
 page:on_player_receive_fields(mage, ctx, {[field_of("R10")] = "x"})
 eq(grug_classes.talent_rank(mage, "rime_cold_shock"), 0, "E a refused click buys nothing")
 fs = mage.formspec
-has(fs, "style[" .. field_of("R10") .. ";bgcolor=#8a682f", "E the selected node is gold")
+has(fs, grug_core.ui.button_style(field_of("R10"), "selected"), "E the selected node is gold")
 has(fs, "textarea[0.25,6.50;13.00,0.65;;;Cold Shock — rank 0/3: When Ice Nova hits an enemy",
 	"E the strip shows its text")
 has(fs, "No talent points left.]", "E and its refusal")
@@ -675,7 +675,7 @@ has(form, "scrollbaroptions[min=0;max=40;smallstep=10;largestep=80;thumbsize=27;
 local bar_x, bar_y = form:match("scrollbar%[([%d.]+),([%d.]+);9%.750,0%.240;horizontal;" ..
 	"grug_skills_scroll;0%]")
 check(bar_x ~= nil, "F a horizontal scrollbar as wide as eight slots")
-local box_y = tonumber(form:match("box%[[%d.]+,([%d.]+);[%d.]+,1%.800;[^%]]+%]label%[[%d.]+,[%d.]+;Skills%]"))
+local box_y = tonumber(form:match("background9%[[%d.]+,([%d.]+);[%d.]+,1%.800;[^%]]+%]label%[[%d.]+,[%d.]+;Skills%]"))
 check(box_y and bar_y and tonumber(bar_y) > box_y + 1.38 and tonumber(bar_y) + 0.24 < box_y + 1.8,
 	"F the bar under the slots, inside the box")
 has(form, "scroll_container[1.650,", "F the slots in a scroll container on the hotbar's columns")

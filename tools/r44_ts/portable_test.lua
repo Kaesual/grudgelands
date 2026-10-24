@@ -104,12 +104,12 @@ local lctx = sfinv.get_or_create_context(learner)
 H.render(learner, "grug_classes:talents")
 local page = sfinv.pages["grug_classes:talents"]
 page:on_player_receive_fields(learner, lctx, {grug_graph_tab_2 = "x"})
-has(learner.formspec, "style[grug_graph_tab_2;bgcolor=#8a682f", "a tab click shows Veil")
+has(learner.formspec, grug_core.ui.button_style("grug_graph_tab_2", "selected"), "a tab click shows Veil")
 local field = graph.node_field("veil_fine_edge")
 page:on_player_receive_fields(learner, lctx, {[field] = "x"})
 eq(grug_classes.talent_rank(learner, "veil_fine_edge"), 1, "the click bought a rank")
 eq(lctx.grug_talent_selected, "veil_fine_edge", "and selected the node")
-has(learner.formspec, "style[" .. field .. ";bgcolor=#8a682f", "the selected node is gold")
+has(learner.formspec, grug_core.ui.button_style(field, "selected"), "the selected node is gold")
 -- A refused click selects the node and shows its text and the reason.
 local locked_field = graph.node_field("veil_close_dance")
 page:on_player_receive_fields(learner, lctx, {[locked_field] = "x"})
@@ -158,7 +158,7 @@ hint_x, hint_y = tonumber(hint_x), tonumber(hint_y)
 -- a gap above the short view's Inventory box.
 local L = grug_inventory.LAYOUT
 local bx, by, bw, bh, color, lx, ly = form:match(
-	"box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^%]]+)%]label%[([%d.]+),([%d.]+);Skills%]")
+	"background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^;]+);false;6%]label%[([%d.]+),([%d.]+);Skills%]")
 bx, by, bw, bh, lx, ly = tonumber(bx), tonumber(by), tonumber(bw), tonumber(bh),
 	tonumber(lx), tonumber(ly)
 if check(bx ~= nil, "the catalog in a Skills box, labelled inside") then
@@ -166,7 +166,7 @@ if check(bx ~= nil, "the catalog in a Skills box, labelled inside") then
 	check(math.abs(bx - L.box_x) < 0.001 and math.abs(bw - L.box_w) < 0.001 and
 		math.abs(bh - L.slot_box_h - 0.3) < 0.001,
 		"the Skills box as wide as the Hotbar box, with room for the bar")
-	eq(color, grug_inventory.BOX_COLOR, "the Skills box colour")
+	eq(color, "grug_ui_panel.png", "the Skills panel texture")
 	check(math.abs(lx - tonumber(list_x)) < 0.001 and ly > by and ly < tonumber(list_y),
 		"its label top left above the slots")
 	check(tonumber(list_y) > by and tonumber(list_y) + 1 < by + bh, "the slots inside the box")

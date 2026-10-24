@@ -485,7 +485,7 @@ function grug_achievements.character_achievements_formspec(player, context, area
 		local title, status, text, image, tip = grug_achievements.row(player, ach)
 		-- The rect covers the row's picture and both lines.
 		fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,0.85;%s]"):format(x, y, area.w,
-			core.formspec_escape(tip))
+			core.formspec_escape(title .. " — " .. status .. "\n" .. tip))
 		if image then
 			fs[#fs + 1] = ("image[%.2f,%.2f;0.42,0.84;%s]"):format(x, y,
 				core.formspec_escape(image))
@@ -494,7 +494,7 @@ function grug_achievements.character_achievements_formspec(player, context, area
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.2,
 			core.formspec_escape(title .. "  " .. status))
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.62,
-			core.formspec_escape(clip(text, TEXT_CHARS)))
+			core.formspec_escape(clip(text, math.min(TEXT_CHARS, math.floor((area.w - 0.6) / 0.15)))))
 	end
 	if pages > 1 then
 		local right, y = area.x + area.w, area.y + area.h - PAGER_H
