@@ -3,7 +3,9 @@
 --
 --   luajit tools/r59_storyquests/portable_test.lua [REPO]
 --
--- S. The files: build_structure.py writes what ships; the four story quests
+-- S. The files: build_structure.py wrote the structure that ships (its
+--    --check compares everything but the texts, which are BANDTEXT's, each a
+--    real text with no "[PH]" left); the four story quests
 --    (A1 story_accord_01, A2 story_accord_02, T1 story_throng_01, T2
 --    story_throng_02) live in their first variant's capital file (Highcourt,
 --    Gor Drazhak); A1/T1 at 19 with no prerequisite, a travel quest from
@@ -108,6 +110,11 @@ local DEPARTURES = {copperfell_departure = "dur_brannoc", goldmead_departure = "
 	redtusk_departure = "gor_drazhak", raincall_departure = "kezamba"}
 local function envoy(capital) return "r20_" .. CAPITAL[capital].race .. "_capital_envoy" end
 local function leader(capital) return "r58_guild_leader_" .. capital end
+-- A real text (Round 59 BANDTEXT's): a non-empty string with no placeholder
+-- mark left.
+local function real_text(value)
+	return type(value) == "string" and value:find("%S") ~= nil and value:find("[PH]", 1, true) == nil
+end
 local function ref(capital)
 	local c = CAPITAL[capital]
 	return ("socket:%s/%s/%s"):format(capital, c.plot, c.socket)
@@ -166,7 +173,8 @@ for _, faction in ipairs(FACTIONS) do
 			eq(q.story, true, "S " .. q.id .. " is a story quest")
 			eq(#q.variants, 3, "S " .. q.id .. " has a variant per capital")
 			eq(#q.objectives, 1, "S " .. q.id .. " has one objective")
-			check(q.text:find("^%[PH%] ") ~= nil, "S " .. q.id .. " has a placeholder text")
+			check(real_text(q.title) and real_text(q.text), "S " .. q.id .. " has a real title and text")
+			check(q.completion == nil or real_text(q.completion), "S " .. q.id .. " a real completion text or none")
 			check(q.rewards.choices == nil or #q.rewards.choices >= 2, "S " .. q.id .. " a real choice or none")
 		end
 		eq(one.min_level, 19, "S " .. one.id .. " opens at 19")
@@ -193,8 +201,8 @@ for _, faction in ipairs(FACTIONS) do
 			eq(o.place, ref(capital), "S " .. two.id .. " " .. capital .. " place")
 			check(o.object == nil and o.label == nil, "S " .. two.id .. " " .. capital .. " changes only the place")
 			for _, v in ipairs({v1, v2}) do
-				check(type(v.text) == "string" and v.text:find("^%[PH%] ") ~= nil and
-					type(v.completion) == "string", "S " .. capital .. " variant texts")
+				-- The structure gives every variant a text and a completion.
+				check(real_text(v.text) and real_text(v.completion), "S " .. capital .. " variant texts are real")
 			end
 		end
 	end

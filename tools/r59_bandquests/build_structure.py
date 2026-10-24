@@ -25,14 +25,16 @@ Every file is marked `"reworked": true`: every quest is free play (only a
 level), nothing chains; the guild report (`guild_t2_report_*`, story) and
 the camp hunt stay as Round 58 shipped them, so do the mining camp's hub.
 
-This script writes the structure with placeholder texts ("[PH] ..."; each
-names the draft's intent for the text lane). Once lane BANDTEXT has
-written the real texts the JSON files are the source: rerunning it writes
-the placeholders back. Run from the repository root:
+This script wrote the structure once with placeholder texts ("[PH] ...";
+each names the draft's intent for the text lane); the texts are lane
+BANDTEXT's (Round 59), and the JSON files are their source: rerunning it
+without --check writes the placeholders back. Run from the repository root:
 
     python3 tools/r59_bandquests/build_structure.py [--check]
 
---check exits 1 when the files differ from what the script would write.
+--check exits 1 when the files' structure differs from what the script
+would write: everything but the texts (titles, texts, completions, a
+variant's text and completion), so it holds once the real texts are in.
 Python 3 standard library only.
 """
 import argparse
@@ -628,6 +630,27 @@ def hubs(town, shipped):
     return out
 
 
+# The text fields (lane BANDTEXT's since Round 59): --check compares the rest,
+# the structure.
+TEXT_FIELDS = ("title", "text", "texts", "completion")
+VARIANT_TEXT_FIELDS = ("text", "completion")
+
+
+def structure(text):
+    """A quest file's JSON without its texts (titles, texts, a giver's or
+    race's texts, completions, a variant's text and completion): ids, hubs,
+    givers and turn-ins, lines, levels, requirements, story, objectives,
+    places, rewards and the design notes."""
+    data = json.loads(text)
+    for quest in data.get("quests") or []:
+        for key in TEXT_FIELDS:
+            quest.pop(key, None)
+        for variant in quest.get("variants") or []:
+            for key in VARIANT_TEXT_FIELDS:
+                variant.pop(key, None)
+    return data
+
+
 def build():
     shared = shared_quests()
     files = {}
@@ -648,12 +671,13 @@ def main():
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     files = build()
-    differ = [p for p, text in files.items() if p.read_text(encoding="utf-8") != text]
     if args.check:
+        differ = [p for p, text in files.items() if structure(p.read_text(encoding="utf-8")) != structure(text)]
         for p in differ:
             print("differs: %s" % p.relative_to(REPO))
         print("build_structure: %d files, %d differ" % (len(files), len(differ)))
         return 1 if differ else 0
+    differ = [p for p, text in files.items() if p.read_text(encoding="utf-8") != text]
     for p, text in files.items():
         p.write_text(text, encoding="utf-8")
     print("build_structure: wrote %d files (%d changed)" % (len(files), len(differ)))

@@ -23,14 +23,17 @@ shared `envoy`, so the three envoys of a faction have the line their shared
 quest needs (a line is only a label, loader.lua); the envoys keep their two
 lines (`envoy`, `front`). The capital files stay unflagged (Round 60).
 
-Rerunning the script replaces the four quests and the six hubs it wrote and
-leaves the rest of each file as it is. After the text lane has written the
-real texts the JSON files are the source of the texts: rerunning overwrites
-them with the placeholders.
+The structure was written once with placeholder texts; the texts are lane
+BANDTEXT's (Round 59), and the JSON files are their source. Rerunning the
+script without --check replaces the four quests and the six hubs it wrote
+(leaving the rest of each file as it is) and so writes the placeholders
+back over the real texts.
 
     python3 tools/r59_storyquests/build_structure.py [--check]
 
---check exits 1 when the files differ from what the script would write.
+--check exits 1 when the files' structure differs from what the script
+would write: everything but the texts (titles, texts, completions, a
+variant's text and completion), so it holds once the real texts are in.
 Python 3 standard library only.
 """
 import argparse
@@ -245,6 +248,27 @@ def quest_two(faction):
     }
 
 
+# The text fields (lane BANDTEXT's since Round 59): --check compares the rest,
+# the structure.
+TEXT_FIELDS = ("title", "text", "texts", "completion")
+VARIANT_TEXT_FIELDS = ("text", "completion")
+
+
+def structure(text):
+    """A quest file's JSON without its texts (titles, texts, a giver's or
+    race's texts, completions, a variant's text and completion): ids, hubs,
+    givers and turn-ins, lines, levels, requirements, story, objectives,
+    places, rewards and the design notes."""
+    data = json.loads(text)
+    for quest in data.get("quests") or []:
+        for key in TEXT_FIELDS:
+            quest.pop(key, None)
+        for variant in quest.get("variants") or []:
+            for key in VARIANT_TEXT_FIELDS:
+                variant.pop(key, None)
+    return data
+
+
 OURS = {"story_accord_01", "story_accord_02", "story_throng_01", "story_throng_02"}
 
 
@@ -285,10 +309,12 @@ def main():
     args = parser.parse_args()
     differ = 0
     for path, text in build().items():
-        if path.read_text(encoding="utf-8") != text:
+        shipped = path.read_text(encoding="utf-8")
+        if args.check:
+            differ += structure(shipped) != structure(text)
+        elif shipped != text:
             differ += 1
-            if not args.check:
-                path.write_text(text, encoding="utf-8")
+            path.write_text(text, encoding="utf-8")
     print("%d of %d capital files %s" % (differ, len(CAPITALS), "differ" if args.check else "written"))
     return 1 if args.check and differ else 0
 
