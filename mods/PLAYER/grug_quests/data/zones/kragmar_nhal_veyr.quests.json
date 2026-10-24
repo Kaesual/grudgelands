@@ -9,7 +9,7 @@
         {
           "npc": "r20_undead_capital_envoy",
           "lines": [
-            "vigil",
+            "envoy",
             "front"
           ]
         },
@@ -21,12 +21,24 @@
           ]
         }
       ]
+    },
+    {
+      "id": "nhal_veyr_guild",
+      "anchor": "nhal_veyr",
+      "givers": [
+        {
+          "npc": "r58_guild_leader_nhal_veyr",
+          "lines": [
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
     {
       "id": "nhal_veyr_vigil_01",
-      "line": "vigil",
+      "line": "envoy",
       "giver": "r20_undead_capital_envoy",
       "turnin": "r20_undead_capital_envoy",
       "min_level": 19,
@@ -107,7 +119,7 @@
     },
     {
       "id": "nhal_veyr_vigil_02",
-      "line": "vigil",
+      "line": "envoy",
       "giver": "r20_undead_capital_envoy",
       "turnin": "r20_undead_capital_envoy",
       "min_level": 23,
@@ -242,7 +254,7 @@
     },
     {
       "id": "nhal_veyr_vigil_03",
-      "line": "vigil",
+      "line": "envoy",
       "giver": "r20_undead_capital_envoy",
       "turnin": "r20_undead_capital_envoy",
       "min_level": 26,
@@ -279,7 +291,7 @@
     },
     {
       "id": "nhal_veyr_vigil_04",
-      "line": "vigil",
+      "line": "envoy",
       "giver": "r20_undead_capital_envoy",
       "turnin": "r20_anchor_039_host",
       "min_level": 29,

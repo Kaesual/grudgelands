@@ -9,7 +9,7 @@
         {
           "npc": "r20_dwarf_capital_envoy",
           "lines": [
-            "gate",
+            "envoy",
             "front"
           ]
         },
@@ -21,12 +21,24 @@
           ]
         }
       ]
+    },
+    {
+      "id": "dur_brannoc_guild",
+      "anchor": "dur_brannoc",
+      "givers": [
+        {
+          "npc": "r58_guild_leader_dur_brannoc",
+          "lines": [
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
     {
       "id": "durbrannoc_gate_01",
-      "line": "gate",
+      "line": "envoy",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 20,
@@ -207,7 +219,7 @@
     },
     {
       "id": "durbrannoc_gate_02",
-      "line": "gate",
+      "line": "envoy",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 23,
@@ -237,7 +249,7 @@
     },
     {
       "id": "durbrannoc_gate_optional",
-      "line": "gate",
+      "line": "envoy",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 27,
@@ -267,7 +279,7 @@
     },
     {
       "id": "durbrannoc_gate_03",
-      "line": "gate",
+      "line": "envoy",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 27,
@@ -306,7 +318,7 @@
     },
     {
       "id": "durbrannoc_gate_stormvault",
-      "line": "gate",
+      "line": "envoy",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_anchor_027_host",
       "min_level": 29,
@@ -331,7 +343,7 @@
     },
     {
       "id": "durbrannoc_gate_ashenward",
-      "line": "gate",
+      "line": "envoy",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_anchor_031_host",
       "min_level": 29,
@@ -356,7 +368,7 @@
     },
     {
       "id": "durbrannoc_gate_glassroot",
-      "line": "gate",
+      "line": "envoy",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_anchor_036_host",
       "min_level": 29,

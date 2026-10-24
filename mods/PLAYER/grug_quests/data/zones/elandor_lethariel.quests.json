@@ -9,7 +9,7 @@
         {
           "npc": "r20_elf_capital_envoy",
           "lines": [
-            "wardens",
+            "envoy",
             "front"
           ]
         },
@@ -21,12 +21,24 @@
           ]
         }
       ]
+    },
+    {
+      "id": "lethariel_guild",
+      "anchor": "lethariel",
+      "givers": [
+        {
+          "npc": "r58_guild_leader_lethariel",
+          "lines": [
+            "guild"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
     {
       "id": "lethariel_wardens_01",
-      "line": "wardens",
+      "line": "envoy",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
       "min_level": 20,
@@ -84,7 +96,7 @@
     },
     {
       "id": "lethariel_wardens_02",
-      "line": "wardens",
+      "line": "envoy",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
       "min_level": 21,
@@ -162,7 +174,7 @@
     },
     {
       "id": "lethariel_wardens_03",
-      "line": "wardens",
+      "line": "envoy",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
       "min_level": 27,
@@ -199,7 +211,7 @@
     },
     {
       "id": "lethariel_wardens_04",
-      "line": "wardens",
+      "line": "envoy",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_anchor_036_host",
       "min_level": 29,
@@ -224,7 +236,7 @@
     },
     {
       "id": "lethariel_wardens_opt_01",
-      "line": "wardens",
+      "line": "envoy",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
       "min_level": 24,
@@ -253,7 +265,7 @@
     },
     {
       "id": "lethariel_wardens_opt_02",
-      "line": "wardens",
+      "line": "envoy",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
       "min_level": 25,
