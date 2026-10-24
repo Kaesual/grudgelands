@@ -85,6 +85,9 @@
     "leaders": [
       {"role": "snarekeeper_vetch", "at": {"kind": "high_boughs", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "snare_ground", "name": "Starbough Snare Ground", "at": {"kind": "lower_boughs", "pick": "farthest_from_roads"}}
+    ],
     "critters": ["rabbit"]
   }
 }

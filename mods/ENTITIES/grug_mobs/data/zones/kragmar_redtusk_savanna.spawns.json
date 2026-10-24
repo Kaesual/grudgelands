@@ -67,7 +67,7 @@
         "kinds": {
           "open": {"id": "borderveld", "name": "Redtusk Borderveld",
             "day": [{"role": "bristling_boar", "weight": 3}, {"role": "watchful_zebra", "weight": 1}],
-            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "parched_husk", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "parched_husk", "weight": 1}], "density": "normal"},
           "bank": {"id": "mudholes", "name": "Redtusk Mudholes",
             "day": [{"role": "watchful_zebra", "weight": 1}],
             "night": [{"role": "parched_husk", "weight": 1}], "density": "sparse"},

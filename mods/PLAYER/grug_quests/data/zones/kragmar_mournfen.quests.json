@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_mournfen",
+  "reworked": true,
   "identity": "Mournfen's barrows hold the oldest remembered dead of the Throng; the fen keeps rising, bandits loot the barrows and the mirefolk count stolen bones as wages.",
   "hubs": [
     {
@@ -61,70 +62,76 @@
   ],
   "quests": [
     {
-      "id": "mournfen_fen_01",
+      "id": "mournfen_gravemoss",
       "line": "fen",
       "giver": "r14_undead_steward",
       "turnin": "r14_undead_steward",
-      "min_level": 9,
+      "min_level": 10,
       "level": 11,
-      "requires": [
-        "stillgrave_departure"
-      ],
-      "title": "The Fen Gives Them Back",
-      "text": "Every morning the Fen Rooters dig up another burial in the {name:blightfields}, which lies {zone_area:blightfields}, and I find myself burying old acquaintances again. Kill eight during the day. Some of the disturbed graves have tally marks beside them; even in Mournfen, I do not suspect the boars of bookkeeping.",
+      "requires": [],
+      "title": "[PH] Gravemoss for the Rites",
+      "text": "[PH] Mordec keeps the burials: bring 5 Gravemoss for the rites. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "young_boar"
-          ],
-          "count": 8,
-          "area": "kragmar_mournfen/blightfields"
+          "type": "item",
+          "item": "grug_gathering:gravemoss",
+          "count": 5
         }
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "New band, familiar neutral boars; the fen's local problem is seeded.",
-      "duration_min": 10
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "mournfen_stores_01",
-      "line": "stores",
-      "giver": "r15_undead_local",
-      "turnin": "r15_undead_local",
-      "min_level": 10,
-      "level": 11,
+      "id": "mournfen_names",
+      "line": "fen",
+      "giver": "r14_undead_steward",
+      "turnin": "r14_undead_steward",
+      "min_level": 11,
+      "level": 12,
       "requires": [],
-      "title": "By the Light of Supper",
-      "text": "Eight Raw Meat, please; I need to render tallow for the vigil candles. Some mourners complain that remembering the departed should not smell quite so much like supper. They still cup their hands around the flame when the draught comes.",
+      "title": "[PH] The Names That Remain",
+      "text": "[PH] Mordec sends the player to the {name:name_rest} in the {name:blightfields}: the readable names on a damaged grave marking are copied before the next rain takes them. Real text to follow.",
+      "completion": "[PH] Mordec can match the names to people again; nobody is freed by it. Real text to follow.",
       "objectives": [
         {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 8
+          "type": "use",
+          "place": "name_rest",
+          "object": "witness_record",
+          "label": "Copy the names from the marker",
+          "hold": 5
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 4.5
       },
-      "lesson": "Ordinary loot can be saved before the request is accepted.",
-      "duration_min": 4
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "mournfen_fen_02",
       "line": "fen",
       "giver": "r14_undead_steward",
       "turnin": "r14_undead_scout",
-      "min_level": 11,
-      "level": 12,
-      "requires": [
-        "mournfen_fen_01"
-      ],
-      "title": "The Marks in the Reeds",
-      "text": "Sera Vane has found the same tally marks among the reeds she watches from Mournfen Outpost. Go there and tell her what you saw in the burial rows. I would like to be mistaken about this, but I have had a very long time to recognise a theft.",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Word for Sera",
+      "text": "[PH] Mordec sends word to Sera Vane at the outpost, who follows the transports. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -132,69 +139,59 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Travel to the zone's second hub.",
-      "duration_min": 5
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 5,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "mournfen_watch_01",
+      "id": "mournfen_stakes",
       "line": "watch",
       "giver": "r14_undead_scout",
       "turnin": "r14_undead_scout",
-      "min_level": 11,
+      "min_level": 12,
       "level": 13,
-      "requires": [
-        "mournfen_fen_02"
-      ],
-      "title": "Somebody's Grandfather as Wages",
-      "text": "I watched the Reed Mirefolk in {name:blackreed_enclosure}, {dir_from_giver:blackreed_enclosure}, settle a day's wages with bones from our barrows. Kill eight of them to disrupt the trade, and watch for Reed Crocodiles around the enclosure. They scratch each payment on a reed for {name:reed_counter_silt}; apparently robbing the dead requires excellent records.",
+      "requires": [],
+      "title": "[PH] Stakes for the Safe Paths",
+      "text": "[PH] Sera marks the safe paths through the fen: bring 12 logs of any tree. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "reed_mirefolk"
-          ],
-          "count": 8,
-          "area": "kragmar_mournfen/blackreed_enclosure"
+          "type": "item",
+          "group": "tree",
+          "count": 12
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 4
       },
-      "lesson": "A mirefolk camp with a crocodile minor role; the line's climax is seeded.",
-      "duration_min": 12
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 7,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "mournfen_watch_02",
-      "line": "watch",
-      "giver": "r14_undead_scout",
-      "turnin": "r14_undead_scout",
+      "id": "mournfen_torches",
+      "line": "wax",
+      "giver": "r15_undead_local",
+      "turnin": "r15_undead_local",
       "min_level": 13,
-      "level": 15,
-      "requires": [
-        "mournfen_watch_01"
-      ],
-      "title": "A Light Can Lie",
-      "text": "Mourners see the Corpse Candles over the {name:wispfen}, which lies {zone_area:wispfen}, after dark and think someone has come to guide them home. Put out seven before more people follow them into the water. Go by night; by day you will find Plague Tuskers, whose intentions are at least easy to read.",
+      "level": 14,
+      "requires": [],
+      "title": "[PH] Lights Over the Mud",
+      "text": "[PH] Edris keeps lights and paths usable: bring 20 Torches. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "wandering_wisp"
-          ],
-          "count": 7,
-          "area": "kragmar_mournfen/wispfen"
+          "type": "item",
+          "item": "default:torch",
+          "count": 20
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 4.5
       },
-      "lesson": "A night-only target over swamp ground.",
-      "duration_min": 10
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 7,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "mournfen_fen_03",
@@ -203,11 +200,9 @@
       "turnin": "r14_undead_steward",
       "min_level": 14,
       "level": 16,
-      "requires": [
-        "mournfen_fen_02"
-      ],
-      "title": "Visiting Hours Are Cancelled",
-      "text": "The Plague Tuskers in the {name:barrowfields}, which lies {zone_area:barrowfields}, now greet daytime mourners with a charge. Kill seven so we can tend the graves without adding hurriedly to them. Watch for Peat Husks among the barrows; I have enough names awaiting entry without yours.",
+      "requires": [],
+      "title": "[PH] Tuskers in the Barrows",
+      "text": "[PH] Plague Tuskers root up the barrows: hunt 7 of them by day in the {name:barrowfields}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -219,130 +214,93 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_woven",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_cured",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Aggressive boars with a slow undead minor role.",
-      "duration_min": 12
+      "lesson": "A day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 10,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "mournfen_stores_02",
+      "id": "mournfen_effects_chests",
       "line": "stores",
       "giver": "r15_undead_local",
       "turnin": "r15_undead_local",
-      "min_level": 14,
-      "level": 15,
-      "requires": [
-        "mournfen_stores_01"
-      ],
-      "title": "Lanterns Belong Above the Mud",
-      "text": "One by one, the lantern hooks along the barrow paths have rusted through. Mine and smelt six Iron Bars for replacements, and bring me four Coal Lumps for the work. I would like the next funeral procession to arrive with the same number of people it set out with.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:iron_bar",
-          "count": 6
-        },
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Mining and smelting stay independent of professions.",
-      "duration_min": 15
-    },
-    {
-      "id": "mournfen_wax_01",
-      "line": "wax",
-      "giver": "r15_undead_local",
-      "turnin": "r15_undead_local",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "mournfen_watch_02"
-      ],
-      "title": "A Flame Worth Keeping",
-      "text": "Bring me three Wisp Motes from the Corpse Candles that appear in the {name:wispfen} after dark. I need them for the vigil candles. When the last visitor leaves, I like there to be a little light left behind.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:wisp_mote",
-          "count": 3,
-          "roles": [
-            "wandering_wisp"
-          ],
-          "area": "kragmar_mournfen/wispfen"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "A night drop request that shares the wisp outing.",
-      "duration_min": 8
-    },
-    {
-      "id": "mournfen_fen_04",
-      "line": "fen",
-      "giver": "r14_undead_steward",
-      "turnin": "r14_undead_steward",
       "min_level": 16,
-      "level": 18,
-      "requires": [
-        "mournfen_fen_03"
-      ],
-      "title": "A Place in the Book",
-      "text": "The Pauper Shamblers rise at night across the {name:gravemoor} {dir_of:mournfen_village:gravemoor}, with no one left to claim them. Lay six to rest. I shall enter each in the burial book, though I have only numbers to give them. A number is a poor memorial, but a blank page is worse.",
+      "level": 17,
+      "requires": [],
+      "title": "[PH] Chests for the Effects",
+      "text": "[PH] Edris keeps recovered personal effects with their names: bring 2 Locked Chests. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "muttering_zombie"
-          ],
-          "count": 6,
-          "area": "kragmar_mournfen/gravemoor"
+          "type": "item",
+          "item": "default:chest_locked",
+          "count": 2
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_woven",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_cured",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_iron",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A night hunt near the top of the band; the Shamblers walk among the Grave Gnawers.",
-      "duration_min": 12
-    },
-    {
-      "id": "mournfen_watch_03",
-      "line": "watch",
-      "giver": "r14_undead_scout",
-      "turnin": "r14_undead_scout",
-      "min_level": 17,
-      "level": 18,
-      "requires": [
-        "mournfen_watch_02"
-      ],
-      "title": "Arrows Over the Evidence",
-      "text": "The trail of stolen barrow goods ends at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where the Bandit Lookouts discourage inquiries with arrows. Close the distance and kill six. They are holding Hollis Grey there; I need his account of things, preferably before it requires a medium.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "vigilant_bandit_archer"
-          ],
-          "count": 6,
-          "area": "kragmar_mournfen/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Ranged humanoids: close the distance or use cover.",
-      "duration_min": 12
+      "lesson": "A craft from Basic recipes; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "mournfen_watch_04",
@@ -351,11 +309,9 @@
       "turnin": "r14_undead_captive",
       "min_level": 18,
       "level": 18,
-      "requires": [
-        "mournfen_watch_03"
-      ],
-      "title": "The Witness Is Still Talking",
-      "text": "With fewer lookouts, you have a chance to reach Hollis Grey in the {name:bandit_camp}. Go and speak with him; he has spent weeks watching the bandits carry sacks away. Captivity gives a man time to notice things, particularly when he no longer needs to sleep.",
+      "requires": [],
+      "title": "[PH] Hollis Saw It",
+      "text": "[PH] Sera sends the player to Hollis Grey, held in the {name:bandit_camp}, who watched remains being carried off. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -363,33 +319,24 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1.5
       },
-      "lesson": "Travel to a captive inside a hostile camp.",
-      "duration_min": 5
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 6,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "mournfen_testimony_01",
+      "id": "mournfen_silt",
       "line": "testimony",
       "giver": "r14_undead_captive",
       "turnin": "r14_undead_scout",
       "min_level": 18,
       "level": 19,
-      "requires": [
-        "mournfen_watch_04"
-      ],
-      "title": "Strike Out the Counter",
-      "text": "I counted every sack they carried to the {name:mire_nests} {dir_from_giver:mire_nests}; there was precious little else to do from a cage. {name:reed_counter_silt} counts the bones there and pays the bandits in pearls. Kill five Mire Hagglers at the nests and the Reed-Counter as well, then take word to Sera Vane at the outpost. I would dearly like my last memory of this place to be of their accounts failing to add up.",
+      "requires": [],
+      "title": "[PH] Close {name:reed_counter_silt}'s Count",
+      "text": "[PH] Hollis demands the fight against Mirefolk Reed-Counter Silt at the {name:mire_nests}, who counts bones as wares; the report goes to Sera. Real text to follow.",
+      "completion": "[PH] Sera takes the report; the remains were someone before they were wares. Real text to follow.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_mirefolk"
-          ],
-          "count": 5,
-          "area": "kragmar_mournfen/mire_nests"
-        },
         {
           "type": "kill",
           "roles": [
@@ -399,12 +346,52 @@
         }
       ],
       "rewards": {
-        "weight": 6,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "climax": true,
-      "lesson": "The line's climax: a named normal leader at its camp.",
-      "duration_min": 15
+      "lesson": "The named perpetrator at his place; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "mournfen_departure",
@@ -413,11 +400,9 @@
       "turnin": "r20_undead_capital_envoy",
       "min_level": 19,
       "level": 19,
-      "requires": [
-        "mournfen_testimony_01"
-      ],
-      "title": "Names Missing From the Register",
-      "text": "Hollis is out of that cage, and the Reed-Counter's tally is closed for good. Go to Nhal Veyr and tell Ossa Quietregister in the Vigil Hall what the mirefolk were buying; the capital's register has gaps where our dead should be, and someone must account for them.",
+      "requires": [],
+      "title": "[PH] The Case Goes to Nhal Veyr",
+      "text": "[PH] Sera sends the player to Ossa Quietregister in Nhal Veyr: remains vanish and the register misses names; nothing claims Hollis is free. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -425,11 +410,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
       "lesson": "Travel handoff to the capital.",
-      "duration_min": 8
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: the departure id stays; free from 19, it requires nothing and claims no earlier deed (draft §1, §2)."
     },
     {
       "id": "guild_t2_report_throng",

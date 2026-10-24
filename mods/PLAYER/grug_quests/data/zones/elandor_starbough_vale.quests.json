@@ -1,5 +1,6 @@
 {
   "zone": "elandor_starbough_vale",
+  "reworked": true,
   "identity": "Starbough's boughs are being emptied by snares: poachers trap what the vale raises and sell it to the bandits at the old camp.",
   "hubs": [
     {
@@ -60,161 +61,76 @@
   ],
   "quests": [
     {
-      "id": "starbough_boughs_01",
+      "id": "starbough_sunleaf",
       "line": "boughs",
       "giver": "r14_elf_steward",
       "turnin": "r14_elf_steward",
       "min_level": 10,
       "level": 11,
-      "requires": [
-        "silverleaf_departure"
-      ],
-      "title": "Hunger Beneath the Boughs",
-      "text": "When foxes come to the door, the forest has run out of something to give them. Poachers have emptied the hunting grounds, and the hungry Bracken Foxes now trouble our homes; cull eight by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}. That will quiet the hunger here, but someone set those snares, and I mean to find them.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "young_fox"
-          ],
-          "count": 8,
-          "area": "elandor_starbough_vale/lower_boughs"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 9
-    },
-    {
-      "id": "starbough_stores_01",
-      "line": "stores",
-      "giver": "r15_elf_local",
-      "turnin": "r15_elf_local",
-      "min_level": 10,
-      "level": 11,
-      "requires": [
-        "silverleaf_departure"
-      ],
-      "title": "Marks Worth Renewing",
-      "text": "Our oldest trees still bear their tending marks, though mine have begun to look like sneezes. By day, Bracken Foxes roam the {name:lower_boughs}, which lie {zone_area:lower_boughs}; bring me two Brush Fox Tails from them so I can replace my brushes. If Ilyra sends you hunting there, attend to both tasks together; no tree grows faster because we walk past it twice.",
+      "requires": [],
+      "title": "[PH] Sunleaf for the Snared",
+      "text": "[PH] Ilyra sees the poaching first on the forest: bring 5 Sunleaf for the animals hurt by the snares. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:brush_fox_tail",
-          "count": 2,
-          "roles": [
-            "young_fox"
-          ],
-          "area": "elandor_starbough_vale/lower_boughs"
+          "item": "grug_gathering:sunleaf",
+          "count": 5
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": []
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t2",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t2",
+            "count": 2
+          }
+        ]
       },
-      "duration_min": 4
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "starbough_boughs_02",
+      "id": "starbough_snares",
       "line": "boughs",
       "giver": "r14_elf_steward",
       "turnin": "r14_elf_steward",
       "min_level": 11,
       "level": 12,
-      "requires": [
-        "starbough_boughs_01"
-      ],
-      "title": "Winter Has Enough Mouths",
-      "text": "The seed we set aside must last until the thaw, and Larder Rats have no respect for that agreement. Kill eight after dark in the {name:lower_boughs}, before their burrows reach our stores. Choose your fights carefully: their squeals invite company.",
+      "requires": [],
+      "title": "[PH] A Knot With Another Purpose",
+      "text": "[PH] Ilyra sends the player to the {name:snare_ground} in the {name:lower_boughs} to make a snare bundle harmless; a knot that could hold up a young tree became a trap. Real text to follow.",
+      "completion": "[PH] The danger at that spot is gone. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "granary_rat"
-          ],
-          "count": 8,
-          "area": "elandor_starbough_vale/lower_boughs"
+          "type": "use",
+          "place": "snare_ground",
+          "object": "snare_bundle",
+          "label": "Cut the snare bundle",
+          "hold": 3
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 4.5
       },
-      "duration_min": 9
-    },
-    {
-      "id": "starbough_boughs_03",
-      "line": "boughs",
-      "giver": "r14_elf_steward",
-      "turnin": "r14_elf_steward",
-      "min_level": 12,
-      "level": 13,
-      "requires": [
-        "starbough_boughs_02"
-      ],
-      "title": "One Knot, Many Hands",
-      "text": "Every wire beside the drinking places bears the same knot, tied as neatly as a gardener's binding. Defeat five Knot Snarers at night in the {name:lower_boughs}; they are scattered, so give the search time. Someone taught those hands, and I intend to learn the teacher's name.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "snaring_poacher"
-          ],
-          "count": 5,
-          "area": "elandor_starbough_vale/lower_boughs"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "starbough_stores_02",
-      "line": "stores",
-      "giver": "r15_elf_local",
-      "turnin": "r15_elf_local",
-      "min_level": 12,
-      "level": 13,
-      "requires": [
-        "starbough_stores_01"
-      ],
-      "title": "Trust the Branch, Check the Brace",
-      "text": "I trust a living branch to bend; a neglected brace is another matter. Bring me six Iron Bars and four Coal Lumps for the walkway repairs, using the vale's rock for ore if you need it. Check your pick before mining: admiring a seam has yet to put metal on my workbench.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:iron_bar",
-          "count": 6
-        },
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Tier-2 ore and smelting.",
-      "duration_min": 12
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "starbough_boughs_04",
       "line": "boughs",
       "giver": "r14_elf_steward",
       "turnin": "r14_elf_scout",
-      "min_level": 13,
-      "level": 14,
-      "requires": [
-        "starbough_boughs_03"
-      ],
-      "title": "A Scout's Eye for Knots",
-      "text": "Theren Farstep at Starbough Outpost can read a bent fern as readily as I read a letter. Follow the vale road to him and describe the poachers' knot; his watch may have seen where the wires lead. Tell him I read his last report in full, including the remarks about my handwriting.",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Word for Theren",
+      "text": "[PH] Ilyra sends word to Theren Farstep at the outpost, who follows the traders. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -222,10 +138,59 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 5
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 5,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
+    },
+    {
+      "id": "starbough_torches",
+      "line": "watch",
+      "giver": "r14_elf_scout",
+      "turnin": "r14_elf_scout",
+      "min_level": 12,
+      "level": 13,
+      "requires": [],
+      "title": "[PH] Lights on the Poachers' Trails",
+      "text": "[PH] Theren keeps a night watch on the poachers' trails: bring 20 Torches. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:torch",
+          "count": 20
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 7,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
+    },
+    {
+      "id": "starbough_signs",
+      "line": "stores",
+      "giver": "r15_elf_local",
+      "turnin": "r15_elf_local",
+      "min_level": 13,
+      "level": 14,
+      "requires": [],
+      "title": "[PH] Markers for the Paths",
+      "text": "[PH] Lethri tends the paths and their markings: bring 6 Wooden Signs. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:sign_wall_wood",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "weight": 4.5
+      },
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "starbough_watch_01",
@@ -234,11 +199,9 @@
       "turnin": "r14_elf_scout",
       "min_level": 14,
       "level": 15,
-      "requires": [
-        "starbough_boughs_04"
-      ],
-      "title": "When the Underbrush Answers",
-      "text": "My scouts can pass without stirring a leaf; that helps little when the underbrush bites back. Kill seven Thicket Vixens by day in the {name:greenwood}, which lies {zone_area:greenwood}. They attack on sight, so choose your ground before they choose you.",
+      "requires": [],
+      "title": "[PH] Vixens in the Greenwood",
+      "text": "[PH] Thicket Vixens harry the path wardens: hunt 7 of them by day in the {name:greenwood}. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -250,96 +213,40 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_woven",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_cured",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
-    },
-    {
-      "id": "starbough_watch_02",
-      "line": "watch",
-      "giver": "r14_elf_scout",
-      "turnin": "r14_elf_scout",
-      "min_level": 14,
-      "level": 15,
-      "requires": [
-        "starbough_boughs_04"
-      ],
-      "title": "Unhelpful Allies",
-      "text": "Root Gnawers chew through the poachers' wires, then our bootlaces, without the slightest sense of allegiance. Kill seven after nightfall in the {name:greenwood}, which lies {zone_area:greenwood}. Watch for Moss Zombies on the same ground; I would like this patrol to return breathing.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mangy_rat"
-          ],
-          "count": 7,
-          "area": "elandor_starbough_vale/greenwood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "starbough_watch_03",
-      "line": "watch",
-      "giver": "r14_elf_scout",
-      "turnin": "r14_elf_scout",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "starbough_watch_01",
-        "starbough_watch_02"
-      ],
-      "title": "Where the Wires Lead",
-      "text": "The trail ends at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Cutpurses buy the poachers' catch. Defeat eight of them; they conduct their trade by day and night alike. Nima Fern is held there, so keep your head: we need her alive to tell us what she has seen.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "quarrelsome_bandit"
-          ],
-          "count": 8,
-          "area": "elandor_starbough_vale/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 11
-    },
-    {
-      "id": "starbough_stores_03",
-      "line": "stores",
-      "giver": "r15_elf_local",
-      "turnin": "r15_elf_local",
-      "min_level": 15,
-      "level": 16,
-      "requires": [
-        "starbough_stores_02"
-      ],
-      "title": "A Ribbon Means We Remember",
-      "text": "A ribbon round a trunk tells our wardens which trees need watching. Bring me three pieces of Linen Cloth from the Cutpurses at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where you can find them day or night. Their stolen cloth can serve the wood for once.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:linen_cloth",
-          "count": 3,
-          "roles": [
-            "quarrelsome_bandit"
-          ],
-          "area": "elandor_starbough_vale/bandit_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 4
+      "lesson": "A day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 9,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "starbough_watch_04",
@@ -348,11 +255,9 @@
       "turnin": "r14_elf_captive",
       "min_level": 16,
       "level": 16,
-      "requires": [
-        "starbough_watch_03"
-      ],
-      "title": "What Nima Remembered",
-      "text": "Nima Fern has endured weeks among those traders, watching while they mistook silence for surrender. Speak with her at the {name:bandit_camp} {dir_from_giver:bandit_camp} and learn who supplies the snares. Give her time to answer; she has earned a listener.",
+      "requires": [],
+      "title": "[PH] Nima Knows the Hands",
+      "text": "[PH] Theren points the player to Nima Fern, held in the {name:bandit_camp}, who knows the hands behind the snares. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -360,67 +265,64 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 4
+      "lesson": "A local task of the zone's own people (draft K15).",
+      "duration_min": 6,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "starbough_testimony_01",
-      "line": "testimony",
-      "giver": "r14_elf_captive",
-      "turnin": "r14_elf_captive",
+      "id": "starbough_ladders",
+      "line": "stores",
+      "giver": "r15_elf_local",
+      "turnin": "r15_elf_local",
       "min_level": 16,
       "level": 17,
-      "requires": [
-        "starbough_watch_04"
-      ],
-      "title": "An Audience We Can Spare",
-      "text": "I have learned quite enough here to make these people nervous, and I would rather not recite it within bowshot. Defeat four Bough Lookouts at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night. Close the distance before their arrows settle the conversation, then return to me.",
+      "requires": [],
+      "title": "[PH] Ladders for the Walkways",
+      "text": "[PH] Lethri keeps the walkways up the boughs passable: bring 10 Wooden Ladders. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "vigilant_bandit_archer"
-          ],
-          "count": 4,
-          "area": "elandor_starbough_vale/bandit_camp"
+          "type": "item",
+          "item": "default:ladder_wood",
+          "count": 10
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_woven",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_cured",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_iron",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Archers at a camp's edge; close the distance.",
-      "duration_min": 8
-    },
-    {
-      "id": "starbough_testimony_02",
-      "line": "testimony",
-      "giver": "r14_elf_captive",
-      "turnin": "r14_elf_captive",
-      "min_level": 17,
-      "level": 18,
-      "requires": [
-        "starbough_testimony_01"
-      ],
-      "title": "Bristles Before Vetch",
-      "text": "Vetch sells the snares, and he works the {name:high_boughs}, which lie {zone_area:high_boughs}, on ground that discourages questions. Cull eight Bristlebacks there by day. You will have fewer tusks to contend with when you go looking for him.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "bristling_boar"
-          ],
-          "count": 8,
-          "area": "elandor_starbough_vale/high_boughs"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
+      "lesson": "A craft from Basic recipes; the second armor choice (one enchant, a suffix).",
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "starbough_testimony_03",
@@ -429,11 +331,10 @@
       "turnin": "r14_elf_captive",
       "min_level": 18,
       "level": 19,
-      "requires": [
-        "starbough_testimony_02"
-      ],
-      "title": "The Hand Behind the Knot",
-      "text": "I watched {name:snarekeeper_vetch} tie that knot so often I could do it with my eyes shut. Find him in the {name:high_boughs} {dir_from_giver:snarekeeper_vetch}, by day or night, and defeat him. Let the next hands that learn the pattern use it to support a sapling.",
+      "requires": [],
+      "title": "[PH] Stand Against {name:snarekeeper_vetch}",
+      "text": "[PH] Nima demands the fight against Poacher Snarekeeper Vetch {dir_from_giver:snarekeeper_vetch} in the {name:high_boughs}, who turns tending knowledge into traps. Real text to follow.",
+      "completion": "[PH] Nima has named Vetch, and Vetch is down. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -444,12 +345,52 @@
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_iron",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A normal-tier named leader at a fixed spot.",
-      "duration_min": 10,
-      "climax": true
+      "lesson": "The named perpetrator at his place; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
       "id": "starbough_departure",
@@ -458,11 +399,9 @@
       "turnin": "r20_elf_capital_envoy",
       "min_level": 19,
       "level": 19,
-      "requires": [
-        "starbough_testimony_03"
-      ],
-      "title": "A Seal Among the Snares",
-      "text": "There is one thing I have not told you: Vetch's tallies bore Lethariel's bough-seal. Follow the vale road to the capital and report that to Eriath Boughwarden. Our seal is meant to protect what grows beneath it; someone has turned it into permission to take.",
+      "requires": [],
+      "title": "[PH] The Case Goes to Lethariel",
+      "text": "[PH] Nima sends the player to Eriath Boughwarden in Lethariel: the Bough-Seal is passed off as a leave to take. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -470,11 +409,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
       "lesson": "Home to capital handoff.",
-      "duration_min": 8
+      "duration_min": 8,
+      "notes": "Round 59 BANDQUESTS: the departure id stays; free from 19, it requires nothing and claims no earlier deed (draft §1, §2)."
     }
   ]
 }
