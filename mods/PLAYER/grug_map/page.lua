@@ -1,6 +1,6 @@
 -- The Map tab (Round 44, the UI rework spec ruling 10): it opens the map
--- window (window.lua), which Z opens too. The tab's own page is only a
--- note with a button, shown if the window cannot open; the inventory goes
+-- window (window.lua), which Z opens too. The tab's stored page is only a
+-- heading while the separate window owns input; the inventory goes
 -- back to its homepage (Inventory) on the next step, so the next "i" opens
 -- Inventory as after closing the old Map tab.
 local PAGE = "grug_map:atlas"

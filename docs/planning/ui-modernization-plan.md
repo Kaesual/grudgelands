@@ -565,3 +565,32 @@ records the shared seams. [Traffic measurements](../../tools/ui_theme/measuremen
 compare the same scenarios at main `0ab3aea0` and the isolated UI branch.
 Final code review, full fixture results, smoke boot and GUI acceptance are
 recorded separately below; no release number or main merge is implied.
+
+### Implementation verification — 2026-10-24
+
+The integrated branch remains based on main `0ab3aea0`; its UI changes are
+**compatible**. Main, installed game files and release metadata are untouched.
+
+- All **274 portable fixture packages** are covered: the full run passed 246;
+  the remaining 28 passed after loading the real shared helpers in standalone
+  fixtures and updating obsolete presentation assertions. The integrated
+  targeted rerun passed all 28. Transaction, permission, session, focus,
+  inventory and animation checks remain in place.
+- All 44 changed production Lua files passed the plain-5.1 parser and every
+  applicable sweep. All 100 changed Lua files, fixtures included, passed the
+  parser and sweeps 1–4. The game-sandbox sweep reports 18 host-only
+  `io.popen`/`os.exit` calls in existing fixtures; all 18 source lines were
+  verified unchanged against `0ab3aea0`. No gate was weakened or bypassed.
+- The fresh-server check, generated theme `--check`, web-data export
+  `--check`, changed Markdown link targets/anchors and whitespace checks passed.
+- One disposable headless engine boot passed (90 seconds, seed
+  `5099651730322752340`, private port 39473). This is not a GUI test.
+- The [traffic comparison](../../tools/ui_theme/measurements.md) retains
+  furnace and crafting send counts; the existing map fixture retains idle
+  and party update counts. Payload growth is reported separately. No client
+  rendering or production-server timing claim is made.
+
+Independent reviews and their follow-up findings are recorded below when
+complete. Desktop/web visual and input acceptance remains open under the
+checklist above; no numbered release, installation, main merge or push is
+claimed by this receipt.

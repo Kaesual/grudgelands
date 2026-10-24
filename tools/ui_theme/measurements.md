@@ -43,6 +43,29 @@ one at completion, one at cancellation, none for a pure inventory-scroll
 event, and none for a search suppressed by the existing cooldown. Progress
 still uses the original client animation rather than periodic UI updates.
 
+### Form construction cost
+
+A bounded CPU probe uses the fixture's initial Basic page, no selected recipe,
+and the real `sfinv.get_formspec` in each tree (baseline `0ab3aea0`, UI
+`a9fafc34`). After 500 warm-up builds, five samples each build the same form
+10,000 times, using `os.clock` process CPU time. The two LuaJIT processes run
+sequentially under idle CPU/I/O scheduling. Temporary probe copies stop after
+this measurement; they do not alter the shipped fixture or production code.
+
+| CPU microseconds per form | Baseline | UI |
+|---|---:|---:|
+| Sample 1 | 65.305 | 72.735 |
+| Sample 2 | 65.646 | 72.158 |
+| Sample 3 | 64.171 | 72.773 |
+| Sample 4 | 64.394 | 72.947 |
+| Sample 5 | 64.872 | 72.576 |
+| Median | 64.872 | 72.735 |
+
+The median increase is 7.863 microseconds (12.1%) for this small scripted
+page. This measures Lua construction with stand-in inventories, not live
+server latency, client rendering or a performance budget. The probe sources,
+method and logs accompany the private implementation review archive.
+
 ## Furnace workspace
 
 Same player with four bags (16, 8, 16, 8 slots), five coal lumps, thirty ore
