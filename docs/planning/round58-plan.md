@@ -687,3 +687,14 @@ of them (B, guild quests) instead of the capture probe. 15. An existing characte
 
 ### Round-end gates
 
+Lane D on its branch from `c85f6624` (measured): `check_upgrade.py` PASS (against origin/main `69481ed1`, 0.57.0, with
+the `map_reset` entry 0.58.0; before it the towns' builds failed it by design), `check_fresh_server.py` PASS,
+`validate.py --game` 0 errors (6 warnings, as before), `r37_dc` PASS (765 checks), `write_doc.lua . --check` current,
+`make_halls.py --check` PASS (6 templates), both `ship.py --check` (15 and 9 textures, 0 differ), a link and anchor
+check of every touched file, the full `run_fixtures.sh` (**269 passed, 0 failed**), the **full seed fleet on main**
+`c85f6624` (`seed_fleet/run.sh full` through the queue at 8 parallel: **304 of 304 seeds build, 0 failed, 19 min 0
+s**, with the camp and room checks) and one headless boot (PASS, no ERROR line). Each code lane ran the full
+`run_fixtures.sh` once (GUILDSPEC 260/0, CAMPS 258 with two pins fixed then 260/0, ROOMS 260/0 and 262/0 after phase
+2, 266/0 before its last node fix, HALLS 259 with one fixed, TOWNFIX 260/0 and 265/0 after merging main, CONSUME and
+REP 261/0, CAMPNPC 264 with one pin fixed, HALLS2 265/0, LIFT 267/0 and 268/0 after its merge rounds, GUILDQUESTS
+268/0 and 269/0); the coordinator ran the full set on main `63210975` (265/0).
