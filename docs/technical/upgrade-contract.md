@@ -162,6 +162,21 @@ list of the platform's migration contract):
   0.50.0. Unpushed 0.58.0's entry already covers these changes against
   pushed 0.57.0; the production world moves from 0.57.0 to 0.59.0 across
   one reset.
+- 0.60.0 (Round 60, the quest rework of levels 21–30, the six capitals and
+  chapter 2 of the story) needs the ninth map reset: the Alchemy herbs
+  (Sunleaf, Gravemoss, Dragonweed, Crimson Lotus) and two cooking crops
+  (Pumpkin, Frost Melon) grow by level band in new zones and on new hosts;
+  new `quest_place` sockets in two of the band's R20 POIs (Rimebell Watch,
+  Market Close), in every mining camp (`held_load`) and on Nhal Veyr's
+  guild plot (`miners_guild_public_register`); seven new quest places in
+  the band's spawn files and changed `quest_target` flags in the band's
+  and four capitals' spawn files change what world generation and the
+  towns build. It declares no step: the reworked quests have new ids
+  (an active quest whose id vanished is dropped, §4), the soulbound group
+  on quest items needs no stored change, and nothing new holds a
+  position. `map_reset_pass` stays 0.50.0. Unpushed 0.58.0's entry already
+  covers these changes against pushed 0.57.0; the production world moves
+  from 0.57.0 to 0.60.0 across one reset.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the
