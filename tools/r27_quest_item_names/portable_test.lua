@@ -103,6 +103,7 @@ grug_core = {register_tag_visibility = function() end,
 	end,
 	hud_layout = {side_text_width = function() return 38 end},
 	settlement_sockets_at = function() return {} end}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile("mods/CORE/grug_core/item_names.lua")
 local name_of = grug_core.item_name
 

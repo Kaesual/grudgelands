@@ -243,6 +243,7 @@ load("mods/PLAYER/grug_mounts/catalog.lua")
 load("mods/PLAYER/grug_mounts/state.lua")
 load("mods/PLAYER/grug_mounts/entity.lua")
 load("mods/PLAYER/grug_mounts/items.lua")
+load("mods/CORE/grug_core/ui.lua")
 load("mods/PLAYER/grug_mounts/trainer.lua")
 load("mods/PLAYER/grug_mounts/shipwright.lua")
 
@@ -550,7 +551,7 @@ cy.pos = {x = 11, y = 5, z = 10}
 level = 30
 check(grug_mounts.open_trainer(cy, shipwright), "own-faction Shipwright opens")
 local fs = shown[#shown].fs
-check(fs:find("label[0.4,0.4;Shipwright]", 1, true) ~= nil, "Shipwright title")
+check(fs:find(grug_core.ui.heading(0.4, 0.45, "Shipwright"), 1, true) ~= nil, "Shipwright title")
 check(fs:find("Boat (L15)", 1, true) and fs:find("Improved Boat (L30)", 1, true), "two rows")
 check(fs:find("buy_5;Buy " .. grug_mounts.PRICES[5] .. " copper", 1, true) ~= nil, "Buy button with the price")
 check(fs:find("Learn Boat first", 1, true) ~= nil, "Learn Boat first")

@@ -86,6 +86,7 @@ do
 		grug_quests.registered_quests[id] = {id = id, npc = "giver", turnin_npc = "giver",
 			giver_variant = {giver = "main"}, objectives = {}, rewards = {copper = 5, items = {}, choices = {}}}
 	end
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 	assert(loadfile(ROOT .. "/mods/PLAYER/grug_quests/npc.lua"))()
 	local Q = grug_quests
 	local player = {get_player_name = function() return "alice" end, is_player = function() return true end,

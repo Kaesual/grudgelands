@@ -472,6 +472,7 @@ current_mod = "grug_mail"
 -- The Admin Mail tab (admin.lua) registers an sfinv page; tools/r48_admin
 -- tests it.
 sfinv = {register_page = function() end}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_mail/init.lua")
 for _, f in ipairs(callbacks.mods_loaded) do f() end
 
