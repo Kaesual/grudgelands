@@ -166,8 +166,11 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   objective's named source must drop that item in a band of the levels it is
   met at (`E-item-source-drop`).
 - "Use at a place" objectives (Round 36, as `grug_quests/validate.lua`):
-  `E-use-place` (the place is no clash site key `r20_anchor_071`…`086` and
-  no recipe quest place `zone/id`, a bare id the file's zone),
+  `E-use-place` (the place is no clash site key `r20_anchor_071`…`086`,
+  no recipe quest place `zone/id`, a bare id the file's zone, and no town
+  place `socket:<settlement key>/<socket id>` of Round 59: a `quest_place`
+  socket every world builds, read from the settlement's templates and
+  blueprints by `tools/r59_qsys3/socket_places.lua`, one LuaJIT run),
   `E-use-object` (not a kind of `grug_quests/data/use_objects.json`),
   `E-objective` (a hold outside 1–15 whole seconds, a count other than 1,
   no label, kill or item fields on it, or its fields on another kind).

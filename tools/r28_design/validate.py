@@ -1299,8 +1299,9 @@ class Validator:
 
     def use_objective(self, zone, obj, file, path):
         """Round 36: a "use at a place" objective, as the game's validate.lua:
-        counted once, a place (a clash site's settlement key, or a recipe's
-        quest place `zone/id`, a bare id the file's zone), the act's label,
+        counted once, a place (a clash site's settlement key, a recipe's
+        quest place `zone/id`, a bare id the file's zone, or since Round 59 a
+        town place `socket:<settlement key>/<socket id>`), the act's label,
         its hold in whole seconds and a kind of grug_quests/data/
         use_objects.json."""
         if "count" in obj and obj["count"] != 1:
