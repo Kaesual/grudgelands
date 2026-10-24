@@ -300,6 +300,7 @@ dofile(repo .. "/mods/BASE/sfinv/api.lua")
 sfinv.register_page("sfinv:crafting", {title = "Home",
 	get = function() return "SFINV_HOME" end})
 current_mod = "grug_core"
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 current_mod = "grug_factions"
 dofile(repo .. "/mods/PLAYER/grug_factions/init.lua")
@@ -359,7 +360,7 @@ local PAUSED = "Character creation paused \226\128\147 press I to continue"
 local READY = "World ready \226\128\147 press I to continue"
 local FAILED = "The area could not be loaded \226\128\147 press I to try again"
 local WAITING = "Preparing the world \226\128\147 press I to see progress"
-local BACKDROP = "bgcolor[#080808FF;both;#000000FF]"
+local BACKDROP = "bgcolor[#0b1118;both;#0b1118]"
 
 -- The look a window shows, from the preview's texture.
 local function preview_look(form)
@@ -392,6 +393,16 @@ notify_progress()
 run_after()
 eq(#shown_since(mark, "alice"), 0, "A progress does not re-open a dismissed waiting screen")
 check(has(a.inventory_formspec, "50%"), "A progress updates the inventory formspec")
+check(has(a.inventory_formspec, "box[0.6,3.1;4.600,0.25;#c4a66c]"),
+	"A half progress has a static half-width fill")
+check(not has(a.inventory_formspec, "animated_image["), "A preparation has no animation strip")
+local writes_before = a.inventory_writes
+mark = #shown
+notify_progress()
+run_after()
+eq(a.inventory_writes, writes_before, "A unchanged progress sends no inventory form")
+eq(#shown_since(mark, "alice"), 0, "A unchanged progress sends no dialog")
+
 
 -- Forged window fields before preparation is ready: nothing at all.
 submit(a, "", {faction_accord = "x"})
@@ -449,8 +460,8 @@ check(not has(form, "model["), "B no model before a race")
 check(has(form, "Choose your race to see your character"), "B hint before a race")
 check(not has(form, "class_mage"), "B no class row before a race")
 check(not has(form, "create_character"), "B Create inactive before a race")
-check(has(form, "style[faction_accord;bgcolor=#3f6fce;font=bold]"), "B the chosen faction is highlighted")
-check(has(form, "style[faction_throng;bgcolor=#4e0c17]"), "B the other faction is dimmed")
+check(has(form, grug_core.ui.button_style("faction_accord", "selected")), "B the chosen faction is highlighted")
+check(has(form, grug_core.ui.button_style("faction_throng", "normal")), "B the other faction is dimmed")
 
 -- A race of the other faction is refused.
 submit(a, "", {race_orc = "Orc"})
@@ -462,7 +473,7 @@ eq(rolls, rolls_before + 1, "B choosing a race rolls a look")
 form = a.inventory_formspec
 eq(preview_race(form), "human", "B the preview shows the human")
 check(has(form, "0,160;false;true;0,79;30]"), "B mouse rotation on, auto-rotation off")
-check(has(form, "style[race_human;bgcolor=#8a6a1e;font=bold]"), "B the chosen race is highlighted")
+check(has(form, grug_core.ui.button_style("race_human", "selected")), "B the chosen race is highlighted")
 check(has(form, "class_warrior") and has(form, "class_scout"), "B the class row appears")
 check(not has(form, "create_character"), "B Create inactive without a class")
 local look_human = preview_look(form)
@@ -485,7 +496,7 @@ submit(a, "", {class_bogus = "x"})
 check(has(a.inventory_formspec, "Choose your class."), "B an unknown class is refused")
 submit(a, "", {class_mage = "Mage"})
 form = a.inventory_formspec
-check(has(form, "style[class_mage;bgcolor=#8a6a1e;font=bold]"), "B the chosen class is highlighted")
+check(has(form, grug_core.ui.button_style("class_mage", "selected")), "B the chosen class is highlighted")
 check(has(form, "Ranged spell damage."), "B the class description under the row")
 check(has(form, "create_character"), "B Create active with faction, race and class")
 
@@ -500,13 +511,16 @@ submit(a, "", {faction_throng = "The Throng"})
 form = a.inventory_formspec
 check(not has(form, "model["), "B a faction change clears the look")
 check(has(form, "race_orc") and not has(form, "race_dwarf"), "B the Throng's races")
-check(not has(form, "style[race_"), "B a faction change clears the race")
+for _, race in ipairs({"orc", "undead", "troll"}) do
+	check(not has(form, grug_core.ui.button_style("race_" .. race, "selected")),
+		"B a faction change leaves " .. race .. " unselected")
+end
 check(not has(form, "create_character"), "B Create inactive after a faction change")
 submit(a, "", {create_character = "Create character"})
 eq(stored("alice"), 0, "B Create refused after the race was cleared")
 submit(a, "", {race_troll = "Troll"})
 form = a.inventory_formspec
-check(has(form, "style[class_mage;bgcolor=#8a6a1e;font=bold]"), "B the class stayed through the faction change")
+check(has(form, grug_core.ui.button_style("class_mage", "selected")), "B the class stayed through the faction change")
 eq(preview_race(form), "troll", "B the troll preview")
 check(has(form, "create_character"), "B Create active again")
 
@@ -516,7 +530,7 @@ submit(a, CREATE_FORM, {quit = "true"})
 eq(#after_queue, 0, "B Esc on the window schedules nothing")
 eq(#shown_since(mark, "alice"), 0, "B the window is not re-shown after Esc")
 eq(hint(a), PAUSED, "B paused hint on the window")
-check(has(a.inventory_formspec, "style[race_troll;bgcolor=#8a6a1e;font=bold]"),
+check(has(a.inventory_formspec, grug_core.ui.button_style("race_troll", "selected")),
 	"B the draft survives Esc in the inventory")
 -- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): reopened with
 -- the inventory key (form name "", never a new form) or re-sent after a
@@ -677,6 +691,9 @@ submit(d, "", {faction_accord = "The Accord"})
 submit(d, "", {race_dwarf = "Dwarf"})
 submit(d, "", {class_scout = "Scout"})
 form = d.inventory_formspec
+check(has(form, "faction_accord") and has(form, "race_dwarf") and
+	has(form, "class_scout") and has(form, "model[") and has(form, "look_") and
+	has(form, "create_character"), "F choices, appearance and Create share one page")
 local W, H = form:match("size%[([%d.]+),([%d.]+)%]")
 W, H = tonumber(W), tonumber(H)
 check(W and H and W <= 15 and H <= 11.1, "F the window fits the inventory's height: " ..

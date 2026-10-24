@@ -474,6 +474,7 @@ current_mod = "sfinv"
 dofile(repo .. "/mods/BASE/sfinv/api.lua")
 sfinv.register_page("sfinv:crafting", {title = "Home", get = function() return "SFINV_HOME" end})
 current_mod = "grug_core"
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/map_reset.lua")
 current_mod = "grug_factions"
