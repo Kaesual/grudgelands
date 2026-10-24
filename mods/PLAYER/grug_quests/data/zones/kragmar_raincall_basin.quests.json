@@ -308,7 +308,7 @@
       "level": 19,
       "requires": [],
       "title": "No Rain for {name:tithe_keeper_vek}",
-      "text": "Bandit Tithe-Keeper Vek claims he can sell us the rain, though I have never seen him wring out a cloud. Kill him in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and come back to me. He calls what he takes a promised tithe; I know what we promised, and it was nothing.",
+      "text": "Bandit Tithe-Keeper Vek claims he can sell us the rain, though I have never seen him wring out a cloud. Kill him here in the {name:bandit_camp} and come back to me. He calls what he takes a promised tithe; I know what we promised, and it was nothing.",
       "completion": "Vek is down, and the rain has somehow managed to keep falling. My neighbours paid because they were threatened; let them hear that the threat is gone, with no shame attached to how they endured it.",
       "objectives": [
         {

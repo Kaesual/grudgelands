@@ -103,7 +103,7 @@
       "level": 12,
       "requires": [],
       "title": "A Cruel Use for a Knot",
-      "text": "Someone has taken the knot we use to steady young trees and made a snare of it. Cut the snare bundle at the {name:snare_ground}, {dir_from_giver:snare_ground}, in the {name:lower_boughs}, then return to me. Leave that small patch of forest with one less reason to fear a footstep.",
+      "text": "Someone has taken the knot we use to steady young trees and made a snare of it. Cut the snare bundle at the {name:snare_ground}, {dir_from_giver:snare_ground}, in the {name:lower_boughs}, then return to me. The creatures there should be able to put a paw down without a noose waiting for it.",
       "completion": "That snare will catch nothing more. Thank you for taking the trouble to undo what someone else found profitable.",
       "objectives": [
         {
@@ -177,7 +177,7 @@
       "level": 14,
       "requires": [],
       "title": "Where a Path Belongs",
-      "text": "Our path markings have faded, and strangers keep asking which trees they may cut to find their way. Bring me six Wooden Signs for the paths. I should like to answer before someone brings an axe into the conversation.",
+      "text": "Our path markings have faded, and strangers have started cutting their own marks into the bark to find their way. Bring me six Wooden Signs for the paths. I should like to give them directions before someone brings an axe into the conversation.",
       "objectives": [
         {
           "type": "item",
@@ -401,7 +401,7 @@
       "level": 19,
       "requires": [],
       "title": "The Limits of a Seal",
-      "text": "I have seen the Bough-Seal held up as permission to take whatever the poachers can carry. Tell Eriath Boughwarden in Lethariel what Nima Fern witnessed. A mark meant to protect careful tending should not leave the tenders explaining why their wood is gone.",
+      "text": "I have seen the bough-seal held up as permission to take whatever the poachers can carry. Tell Eriath Boughwarden in Lethariel what I witnessed, and give him my name: Nima Fern. A mark meant to protect careful tending should not leave the tenders explaining why their wood is gone.",
       "objectives": [
         {
           "type": "talk",

@@ -82,7 +82,7 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "Word from Raincall says a rain tithe taken under threat is being called the community's own promise. Tell Ombali Ropekeeper of The Oathdelvers at the Miner's Guild house here in Kezamba. She checks the witnesses' accounts with the army's suppliers, and knows to ask what those witnesses actually saw. A frightened payment should not be allowed to speak for a whole village.",
+          "text": "Word from Raincall says a rain tithe taken under threat is being called the community's own promise. Take it to Ombali Ropekeeper of The Oathdelvers at the Miner's Guild house here in Kezamba. She checks the witnesses' accounts with the army's suppliers, and knows to ask what those witnesses actually saw. A frightened payment should not be allowed to speak for a whole village.",
           "completion": "I will check that claimed promise with our suppliers and keep Veko's refusal in the account. A witness can tell us what happened; someone writing beneath their name afterwards cannot add to what they saw. We will start there."
         },
         {
@@ -120,7 +120,7 @@
       ],
       "title": "Whose Word Is This?",
       "text": "The army's suppliers and I have stopped a disputed handover at Gor Drazhak's water depot. Someone has copied the recipients and witnesses onto a new demand for payment or service, as though receiving water meant agreeing to work it off. Secure the original witness record at the depot on the edge of the cook court and bring your findings back to me. I know what The Oathdelvers promised, and I intend to see it delivered.",
-      "completion": "These witnesses confirmed a delivery, and I refuse the added demand for payment or service. Our suppliers will issue the water as The Oathdelvers pledged it, with no new debt to its recipients. We still need to learn how the records reached those making the claim; similar misuse of old names is reported in Ossuary Reach.",
+      "completion": "These witnesses confirmed a delivery, and I have struck the added demand out in front of everyone waiting at the depot. Our suppliers will issue the water as The Oathdelvers pledged it, with no new debt to its recipients. We still need to learn how the records reached those making the claim; similar misuse of old names is reported in Ossuary Reach.",
       "objectives": [
         {
           "type": "use",
@@ -145,7 +145,7 @@
             }
           ],
           "text": "The army's suppliers and I have stopped a disputed handover at Gor Drazhak's water depot. Someone has copied the recipients and witnesses onto a new demand for payment or service, as though receiving water meant agreeing to work it off. Secure the original witness record at the depot on the edge of the cook court and bring your findings back to me. I know what The Oathdelvers promised, and I intend to see it delivered.",
-          "completion": "These witnesses confirmed a delivery, and I refuse the added demand for payment or service. Our suppliers will issue the water as The Oathdelvers pledged it, with no new debt to its recipients. We still need to learn how the records reached those making the claim; similar misuse of old names is reported in Ossuary Reach."
+          "completion": "These witnesses confirmed a delivery, and I have struck the added demand out in front of everyone waiting at the depot. Our suppliers will issue the water as The Oathdelvers pledged it, with no new debt to its recipients. We still need to learn how the records reached those making the claim; similar misuse of old names is reported in Ossuary Reach."
         },
         {
           "zone": "kragmar_kezamba",
@@ -161,7 +161,7 @@
             }
           ],
           "text": "Here in Kezamba, someone has taken a witnessed act of unloading and claimed the helpers promised their labour whenever called. Our suppliers and I have paused the disputed handover so we can settle that claim before the porters' stores are issued. Secure the original witness record at the landing beside the shore store, then return to me. Helping with one load should not mean carrying every load that follows.",
-          "completion": "The witnesses saw one unloading, and I reject the claim that those helpers pledged any further work. The suppliers will release the porters' stores under the original agreement. Who obtained the records for this misuse is still unknown; reports from Ossuary Reach describe old names being made to answer for new claims."
+          "completion": "The witnesses saw one unloading, and I have struck out the claim of further work where the porters could hear it. The suppliers will release the porters' stores under the original agreement. Who obtained the records for this misuse is still unknown; reports from Ossuary Reach describe old names being made to answer for new claims."
         },
         {
           "zone": "kragmar_nhal_veyr",
@@ -177,7 +177,7 @@
             }
           ],
           "text": "Personal belongings await their recipients in the receiving court outside Nhal Veyr's mourners' hall. Someone has used genuine register entries to claim a debt against them, and our suppliers and I have stopped the disputed handover for examination. Secure the original witness record there and return to me. I want the names preserved and the claimed debt accounted for separately.",
-          "completion": "The names establish whom these belongings should reach; the added debt has no basis, and I strike it out. Our suppliers will release the belongings to the recorded recipients with those names intact. We have yet to learn how the claimant obtained the records, and reports from Ossuary Reach suggest older names are suffering the same treatment."
+          "completion": "The names establish whom these belongings should reach; the added debt has no basis, and I strike it out before the mourners. Our suppliers will release the belongings to the recorded recipients with those names intact. We have yet to learn how the claimant obtained the records, and reports from Ossuary Reach suggest older names are suffering the same treatment."
         }
       ],
       "rewards": {

@@ -139,7 +139,7 @@
       "min_level": 14,
       "level": 15,
       "requires": [],
-      "title": "Who Counts as Cargo?",
+      "title": "Whose Name Is on the Load?",
       "text": "Tovin Ashthumb drove the ore cart, yet the accounts leave no driver to pay. Secure the original load record from the board by the stores in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and bring your findings to me. His name is still on that record; I want it beside the work he did.",
       "objectives": [
         {
@@ -348,7 +348,7 @@
       "level": 17,
       "requires": [],
       "title": "Ask the Carter",
-      "text": "Tovin Ashthumb is being held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}. Go and hear him; a missing load has acquired more attention than its missing driver. He knows that trade from the cart seat, which is a better view than anyone has from my reports.",
+      "text": "Tovin Ashthumb is being held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}. Go and hear him; a missing load has drawn more attention than its missing driver. He watched that trade from the cart seat, and my reports have never had so good a view.",
       "objectives": [
         {
           "type": "talk",
@@ -425,7 +425,7 @@
       "requires": [],
       "title": "Collecting from {name:foreman_nog}",
       "text": "I heard the bandits arranging to sell our ore, and I saw the stamped, stolen purses Nog uses to pay his crew. Kill {name:foreman_nog} at the {name:goblin_dig}, {dir_from_giver:goblin_dig}, and bring me word. He runs a tidy little business, provided nobody counts what he owes the people he took it from.",
-      "completion": "Nog is down, then, and his tidy business has a hole in it. My wages are still owed; put Tovin Ashthumb beside that sum, and leave room for me to collect.",
+      "completion": "Nog is down, then, and his tidy business has a hole in it. My wages are still owed, so write my name beside that sum and leave room for me to collect.",
       "objectives": [
         {
           "type": "kill",

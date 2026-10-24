@@ -221,7 +221,7 @@
       "level": 15,
       "requires": [],
       "title": "Room at the Water",
-      "text": "Waterhole Zebras crowd our herds away whenever the animals try to drink. Hunt eight by day in the {name:tallgrass}, which lies {zone_area:tallgrass}. Our herders work too hard for their water to watch it from a distance.",
+      "text": "Waterhole Zebras crowd our herds off the best grazing before the animals ever reach the water. Hunt eight by day in the {name:tallgrass}, which lies {zone_area:tallgrass}. Our herders work too hard to watch their animals go hungry from a distance.",
       "objectives": [
         {
           "type": "kill",
@@ -353,7 +353,7 @@
       "level": 19,
       "requires": [],
       "title": "{name:water_broker_korr} Owes Us",
-      "text": "I know the barrels Bandit Water-Broker Korr sells; I helped fill them before his men took them. Kill him in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and return to me. He makes our herders pay twice, once with their backs and once with the coin he demands.",
+      "text": "I know the barrels Bandit Water-Broker Korr sells; I helped fill them before his men took them. Kill him here in the {name:bandit_camp} and return to me. He makes our herders pay twice, once with their backs and once with the coin he demands.",
       "completion": "Korr's trading is finished, and I can still name the people who bought those loads. We will put the barrels beside their rightful owners in the account; he does not get to take that knowledge with him.",
       "objectives": [
         {

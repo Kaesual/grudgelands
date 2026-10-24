@@ -98,7 +98,7 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "A report from Starbough says the Bough-Seal is being used to claim timber and labour that were never granted. Speak to Caelir Veinward of The Charter of Stone at the Miner's Guild house here in Lethariel. She works with the army's suppliers and knows the limits of each release. We should establish what the mark permits before anyone makes the forest pay for a generous reading.",
+          "text": "A report from Starbough says the bough-seal is being used to claim timber and labour that were never granted. Speak to Caelir Veinward of The Charter of Stone at the Miner's Guild house here in Lethariel. She works with the army's suppliers and knows the limits of each release. We should establish what the mark permits before anyone makes the forest pay for a generous reading.",
           "completion": "I will take up the report and compare the releases with our suppliers' records. Every permission has a purpose and an edge; we ought to be able to show both. Nima Fern's account deserves more than a glance at a seal."
         }
       ],
@@ -120,7 +120,7 @@
       ],
       "title": "What a Seal Allows",
       "text": "The army's supply office and I have stopped a load here in Highcourt: its sealed record claims the drivers can be reassigned along with the goods. Their agreement was to deliver a load, and I want the record checked before anything moves. Secure the dispatch record in the yard beside the butcher's shop and bring your findings back to me.",
-      "completion": "The seal belongs to a delivery agreement; I reject the added order over the drivers. The supply office and I will release the load to its proper recipient, with the drivers' agreed work unchanged. We still do not know how those papers reached the people misusing them; a report of withheld supports in Frostbarrow Shelf gives us another place to look.",
+      "completion": "The seal covers a delivery agreement and nothing more; I reject the added order over the drivers, and the supply office has sealed that finding with me. The load goes to its proper recipient, with the drivers' agreed work unchanged. We still do not know how those papers reached the people misusing them; a report of withheld supports in Frostbarrow Shelf gives us another place to look.",
       "objectives": [
         {
           "type": "use",
@@ -145,7 +145,7 @@
             }
           ],
           "text": "The army's supply office and I have stopped a load here in Highcourt: its sealed record claims the drivers can be reassigned along with the goods. Their agreement was to deliver a load, and I want the record checked before anything moves. Secure the dispatch record in the yard beside the butcher's shop and bring your findings back to me.",
-          "completion": "The seal belongs to a delivery agreement; I reject the added order over the drivers. The supply office and I will release the load to its proper recipient, with the drivers' agreed work unchanged. We still do not know how those papers reached the people misusing them; a report of withheld supports in Frostbarrow Shelf gives us another place to look."
+          "completion": "The seal covers a delivery agreement and nothing more; I reject the added order over the drivers, and the supply office has sealed that finding with me. The load goes to its proper recipient, with the drivers' agreed work unchanged. We still do not know how those papers reached the people misusing them; a report of withheld supports in Frostbarrow Shelf gives us another place to look."
         },
         {
           "zone": "elandor_dur_brannoc",
@@ -161,7 +161,7 @@
             }
           ],
           "text": "The supply office and I have held a load of material for tools at Dur Brannoc's ore yard. Its record claims the crew has been transferred, which would mark their supply as settled while they work with worn tools. Secure the dispatch record on the ore yard's loading apron and bring your findings back to me. A clean stamp will not hold a failing tool together.",
-          "completion": "The original order names the crew that needs this material, and I reject the claimed transfer. I have agreed its issue with the supply office; the material will go to those miners as intended. We still have to learn how outsiders obtained these papers, and the withheld supports reported in Frostbarrow Shelf need the same close look."
+          "completion": "The original order names the crew that needs this material; I reject the claimed transfer, and the supply office has sealed that finding with me. The material goes to those miners as intended. We still have to learn how outsiders obtained these papers, and the withheld supports reported in Frostbarrow Shelf need the same close look."
         },
         {
           "zone": "elandor_lethariel",
@@ -177,7 +177,7 @@
             }
           ],
           "text": "Our suppliers and I have paused a release of material for tending and repairs here in Lethariel. Its covering sheet claims much more timber, and the tenders' labour along with it. Secure the dispatch record at the timber check beside the bowyer's workshop, then return to me. I want to see where a limited permission became an open claim.",
-          "completion": "The original release covers tending and repairs, and I strike out the wider claim on timber and labour. Our suppliers will issue the material for its agreed purpose. How these papers reached outside hands remains unanswered; the dispute over supports in Frostbarrow Shelf may help us follow their path."
+          "completion": "The original release covers tending and repairs; the wider claim on timber and labour does not stand, and our suppliers have sealed that finding with me. They will issue the material for its agreed purpose. How these papers reached outside hands remains unanswered; the dispute over supports in Frostbarrow Shelf may help us follow their path."
         }
       ],
       "rewards": {
