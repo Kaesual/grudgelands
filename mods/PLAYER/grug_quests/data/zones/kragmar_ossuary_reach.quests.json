@@ -231,8 +231,8 @@
       "level": 28,
       "requires": [],
       "title": "Filed Under Theft",
-      "text": "Skeleton Marrow Archivist stole my chisel and is using it to cut new claims over old names in the {name:deepwood}. I know the uneven bite that tool leaves; I sharpened it for honest work. Kill him, {dir_from_giver:marrow_archivist}, and bring me word. He does not get to call theft an addition to the archive.",
-      "completion": "The Archivist can cut no more claims with my stolen tool. I will preserve the names we can still read and mark the damage plainly; I will not fill the gaps with guesses.",
+      "text": "Skeleton Marrow Archivist stole my chisel and is using it to cut his own entries over old names in the {name:deepwood}. I know the uneven bite that tool leaves; I sharpened it for honest work. Kill him, {dir_from_giver:marrow_archivist}, and bring me word. He does not get to call theft an addition to the archive.",
+      "completion": "The Archivist can cut no more entries with my stolen tool. I will preserve the names we can still read and mark the damage plainly; I will not fill the gaps with guesses.",
       "objectives": [
         {
           "type": "kill",

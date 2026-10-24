@@ -350,8 +350,8 @@
       "level": 20,
       "requires": [],
       "title": "A Steady Hand for a Rash Promise",
-      "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth volunteers the other hand as well. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
-      "completion": "Thank you; that should help with the hand, if not the claim I made with it. I have left room on the score sheet for an honest result.",
+      "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth makes any more promises on my hands' behalf. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
+      "completion": "Thank you; that should steady my hand, if not the judgement that made the claim. I have left room on the score sheet for an honest result.",
       "objectives": [
         {
           "type": "item",
@@ -365,8 +365,8 @@
           "givers": [
             "r20_human_capital_envoy"
           ],
-          "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth volunteers the other hand as well. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
-          "completion": "Thank you; that should help with the hand, if not the claim I made with it. I have left room on the score sheet for an honest result."
+          "text": "I told the guards that a calm record-keeper could shoot as well as any of them, and they have thoughtfully arranged a chance to demonstrate it. Bring me an Elixir of Precision I before my mouth makes any more promises on my hands' behalf. Highcourt's Alchemy trainer at the herb garden in the lore quarter teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; travel from the city's waystone to your first village's waystone for a quick return.",
+          "completion": "Thank you; that should steady my hand, if not the judgement that made the claim. I have left room on the score sheet for an honest result."
         },
         {
           "zone": "elandor_dur_brannoc",
@@ -405,7 +405,7 @@
           "givers": [
             "r20_undead_capital_envoy"
           ],
-          "text": "My score on the old shooting list has remained unremarkable for nearly a century, which seems long enough to be modest. Bring me an Elixir of Precision I for another attempt. Nhal Veyr's Alchemy trainer at the physic house in the market teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; the journey from the city's waystone to your first village's waystone is reassuringly quick.",
+          "text": "My score on the old shooting list has stayed unremarkable for nearly a century, so I rashly announced that this year's attempt would be worth recording. Bring me an Elixir of Precision I for the attempt. Nhal Veyr's Alchemy trainer at the physic house in the market teaches the recipe. Sunleaf and a Boar Tusk from the daytime boars can be found back where you started; the journey from the city's waystone to your first village's waystone is reassuringly quick.",
           "completion": "I will record the score exactly as it falls. If it is worse, at least the list will finally contain something new."
         }
       ],

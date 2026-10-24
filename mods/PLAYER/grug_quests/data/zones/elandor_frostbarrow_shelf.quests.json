@@ -399,8 +399,8 @@
       "level": 29,
       "requires": [],
       "title": "An Explosive Miscalculation",
-      "text": "Goblin Powder-Counter Nib stole our blasting powder and the Dispatch Folio that travelled with it, blank delivery forms and all. He is counting his takings in the {name:rimewood}, {dir_from_giver:powder_counter_nib}. Kill Nib and bring me the Dispatch Folio. I need the powder theft stopped and those papers accounted for before he sells another claim on our work.",
-      "completion": "That is our missing Dispatch Folio: unused delivery forms beside accounts someone has already altered. The blanks went with the stolen powder, so Nib had genuine sheets to put his own demands on. This tells us how he got them; it does not account for every misused paper elsewhere.",
+      "text": "Goblin Powder-Counter Nib stole our blasting powder and the Dispatch Folio that travelled with it, blank delivery forms and all. He is counting his takings in the {name:rimewood}, {dir_from_giver:powder_counter_nib}. Kill Nib and bring me the Dispatch Folio. I want the powder theft stopped and those blanks back in our hands before they turn up under somebody's claim on our work.",
+      "completion": "That is our missing Dispatch Folio: unused delivery forms beside accounts someone has already altered. The blanks went with the stolen powder, so genuine sheets were loose for anyone willing to write a false demand on them. This tells us how they got out; it does not account for every misused paper elsewhere.",
       "objectives": [
         {
           "type": "kill",
@@ -507,7 +507,7 @@
       ],
       "story": true,
       "title": "Held in Our Name",
-      "text": "The supports for Tarncut Mine are sitting in this camp's loading yard because a later order claims them as security for somebody else's debt. I raised it with the guild and the army's supply office; both have confirmed the original delivery should go ahead. Secure the dispatch record and release the held load in the yard, then report to Kelda Screesort at Tarncut Mine. Her crew needs those supports, and I want the order that stopped them kept for examination.",
+      "text": "The supports for Tarncut Mine are sitting on this camp's loading ground because a later order claims them as security for somebody else's debt. I raised it with the guild and the army's supply office; both have confirmed the original delivery should go ahead. Secure the dispatch record and release the held load there, then report to Kelda Screesort at Tarncut Mine. Her crew needs those supports, and I want the order that stopped them kept for examination.",
       "completion": "The supports are ready for Tarncut again; my crew can have a properly braced roof before work resumes. I recognise that delivery form, but nothing in its proper use authorises this added claim. I will keep the record with the case, so we can examine the demand alongside any evidence of where the forms went.",
       "objectives": [
         {
