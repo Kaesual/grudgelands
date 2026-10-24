@@ -15,7 +15,7 @@ end
 
 local function formspec_core(tab)
 	if tab == nil then tab = 1 else tab = tostring(tab) end
-	return "tabheader[0.4,1.25;book_header;" ..
+	return "tabheader[0.4,1.5;book_header;" ..
 		esc(S("Write")) .. "," ..
 		esc(S("Read")) .. ";" ..
 		tab  ..  ";false;false]"
