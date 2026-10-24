@@ -684,7 +684,7 @@ nobody stands on, where the second story quest's quest object stands. Each
 sits in a service plot every world builds (`wp13/capital_services.lua`),
 written into that plot's own roster row (`extra_sockets`, not the template:
 two of the templates are built by more plots), on free ground over the
-plot's turf, two nodes or more from its door, its doorstep path and every
+plot's walkable ground (turf, cobble or blight dirt), two nodes or more from its door, its doorstep path and every
 other socket of the plot:
 
 | Capital | Socket (the quest data's `socket:<capital>/<id>`) | Where |

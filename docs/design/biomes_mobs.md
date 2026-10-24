@@ -205,17 +205,23 @@ split in two**:
 | `[herb Tn]` | **healing herb** — Alchemy only, tier n | **never** |
 | `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by Alchemy **and** by Cooking | **never** (Round 48 ruling 5: spices stay gather-only) |
 
-Both plant lines keep the same three tiers: T1 (levels 10–25), T2 (25–45)
-and T3 (45–60), and each line has exactly one plant per tier, reachable on
-both continents.
+Both plant lines keep the same three tiers, and each line has exactly one
+plant per tier, reachable on both continents. Since Round 60 the Alchemy
+herbs follow the level bands of the recipe tiers that use them (T1 from
+level 1, T2 from 11, T3 from 21): gravemoss T1 in levels 1–30, sunleaf T1 in
+1–20, dragonweed T2 in 11–40 and crimson lotus T3 in 21–60 (`world_zones.md`
+§11: every race's own zones up to level 20, each faction's half of the
+continent from 21 to 40, the fronts from 41); the spices marshbloom T2
+(21–30) and stormkelp T3 (41–60) are unchanged.
 
-**Where the line runs**: healing herbs grow on ground no plough will
-ever touch — bare stone, gravel and mesa clay, dead wood, the deep
-jungle floor — while spices grow on the soft, workable ground of
-meadow, marsh and shore. The split is readable off the biome itself, it
-keeps every healing herb bound to a journey into its own biome, and it
-gives Cooking a supply line that farming can later take over without
-ever touching alchemy's.
+**Where the line runs**: the line is told by the plant more than by the
+ground. Since Round 60 the T1 herbs grow on the six home biomes' soft
+ground, because every start zone needs them; dragonweed keeps the stone,
+clay and dead wood and adds the 11–20 zones' main grounds; crimson lotus
+keeps the jungle floor and adds the deep forest and the swamp
+(`world_zones.md` §11); marshbloom keeps the marsh and stormkelp the shore.
+No herb or spice is farmed (Round 48 ruling 5), so Cooking's crops never
+touch alchemy's supply.
 
 **Farming and claims**: inside an active Claim Stone claim (`housing.md`;
 world integration summary in `world.md` §5) only the owner and players with
@@ -233,18 +239,18 @@ placeholder.
 
 | Biome | Trees / schematics | Ground cover & gathering | Notes |
 |-------|--------------------|--------------------------|-------|
-| grug_meadows | apple (generated) sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[spice T1]` | fields/roads near settlements (WP13) |
-| grug_pine_hills | pine (generated; two rows) (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss on stone `[herb T1]` | scattered boulders (deco) |
-| grug_elf_forest | silverwood + apple mix (generated) (fill 0.007) | pale grass, pastel flowers (Round 51); wild berries `[food]`; sunleaf `[spice T1]` | great-silverwood only via settlement schematics |
-| grug_deep_forest | apple + aspen (generated) dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food]`; dragonweed edge `[herb T2]` | dark, high tree density |
+| grug_meadows | apple (generated) sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[spice T1]`, gravemoss `[herb T1]`, dragonweed `[herb T2]` (in their zones, Round 60) | fields/roads near settlements (WP13) |
+| grug_pine_hills | pine (generated; two rows) (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss `[herb T1]`, sunleaf `[spice T1]`, dragonweed `[herb T2]` (in their zones) | scattered boulders (deco) |
+| grug_elf_forest | silverwood + apple mix (generated) (fill 0.007) | pale grass, pastel flowers (Round 51); wild berries `[food]`; sunleaf `[spice T1]`, gravemoss `[herb T1]`, dragonweed `[herb T2]` (in their zones) | great-silverwood only via settlement schematics |
+| grug_deep_forest | apple + aspen (generated) dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food]`; dragonweed edge `[herb T2]`; crimson lotus `[herb T3]` (in its zones, Round 60) | dark, high tree density |
 | grug_crags | pine (generated) above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`; lichen patches and alpine plants (Round 51) | band-specific nature biome (Dwarf area only) |
-| grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
+| grug_savanna | acacia (generated) sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]`, gravemoss `[herb T1]` (in their zones) | waterhole ponds (deco) |
 | grug_badlands (+ `_east`) | large_cactus, dead shrub, withered bush (Round 51) | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
-| grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, the land kit's bone finds, graveyards and ruins (§2.1); gravemoss `[herb T1]` | fireflies/wisp particles optional |
+| grug_blight | gravewood (generated: bent dead branches, sparse grey leaf remnants) sparse | grey grass tufts, the land kit's bone finds, graveyards and ruins (§2.1); gravemoss `[herb T1]`, sunleaf `[spice T1]`, dragonweed `[herb T2]` (in their zones) | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood (generated) dense (fill 0.015), the land kit (§2.1) | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
-| grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
+| grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]`, gravemoss `[herb T1]`, dragonweed `[herb T2]` (in their zones) | |
 | grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); large-leaved bushes; papyrus at the warm shores (§2.1) | lianas, ferns and strong-coloured flowers (Round 51); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
-| grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), dead bush (no papyrus since Round 51: the reeds and cattails do that job) | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]` | shallow water pools 1–2 deep (mud floor), Round 47 |
+| grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), dead bush (no papyrus since Round 51: the reeds and cattails do that job) | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]`; crimson lotus `[herb T3]` (in its zones, Round 60) | shallow water pools 1–2 deep (mud floor), Round 47 |
 | grug_beach | — | marram on dry sand (Round 51, every biome's sand shore); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
@@ -438,25 +444,23 @@ recipe-book state. Missing, throwing or malformed authorization fails closed;
 spices and foods never call this seam.
 
 **Healing herbs** (Alchemy only, never farmable; both continents reach
-every tier — see §6): **gravemoss T1** (pine hills, blight),
-**dragonweed T2** (crags, badlands, deep forest, bone forest),
-**crimson lotus T3** (deep jungle, jungle fringe). All three sit on
-stone, gravel, mesa clay, dead-wood litter or jungle floor.
-
-The lotus source is the one that had to be repaired: until 2026-08-08 the
-Accord's `grug_jungle_fringe` generated at 0.08 % of the land because the
-deep forest contained its cuboid, so in practice **only the Throng had a
-T3 healing herb**. Biomes now follow the zone palettes of `world_zones.md`
-§8, and the fringe's lotus comes from The Skyglass Canopy (`world_zones.md`
-§11).
+every tier — see §6; Round 60: in their tiers' level bands,
+`world_zones.md` §11): **gravemoss T1** (the six start zones, Copperfell
+Foothills, Mournfen, Whitebridge Shire, Whispering Reedlands; the six home
+biomes), **dragonweed T2** (every 11–20 zone, Frostbarrow Shelf, Ossuary
+Reach, Ashenward March, Bannerbreak Mesa; crags, badlands, the forests, the
+home biomes), **crimson lotus T3** (Whitebridge Shire, Whispering
+Reedlands, Glassroot Wilds, Thunderroot Wilds, The Broken Causeway, The
+Skyglass Canopy, Stormscale Summit; deep forest, jungle floor, swamp).
 
 **Spices** (gathered by everyone, used by both Alchemy and
 Cooking — which costs no main slot — and never farmed, Round 48 ruling 5):
-**sunleaf T1** (meadows, savanna, elf forest, jungle edge),
-**marshbloom T2** (swamp), **stormkelp T3** (the exact cardinal dry-shore
-predicate in `world_zones.md` §11). Sunleaf and Marshbloom sit on workable
-grass/mud; Stormkelp's natural source may use any accepted P7 dry support in
-its four named high/endpoint zones and does not require `grug_beach` or sand.
+**sunleaf T1** (the six start zones and every 11–20 zone, on the six home
+biomes, Round 60), **marshbloom T2** (swamp), **stormkelp T3** (the exact
+cardinal dry-shore predicate in `world_zones.md` §11). Marshbloom sits on
+the swamp's mud; Stormkelp's natural source may use any accepted P7 dry
+support in its four named high/endpoint zones and does not require
+`grug_beach` or sand.
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
 own T1–T6 recipes, `items_crafting.md`; the tiers tie to
@@ -1495,10 +1499,10 @@ nodes and, thinner, one and two tiers deeper (Round 46). The signature wood foll
 | Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 21–60 | deep-forest/fringe spiders; both 41–50 fronts by night (Round 46); T5–T6 outlaws | bone-forest/jungle spiders; the same fronts and outlaws |
 | Food plants (everyone, farmable) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), mushrooms (deep forest/swamp), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, mushrooms (bone forest/swamp), meat/fish |
 | Food plants, **found-only** (everyone, never farmable) | 45–60 (wild cocoa 51–60) | wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
-| Healing herbs T1 (Alchemy) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
-| Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
-| Healing herbs T3 | 45–60 | crimson lotus (jungle fringe, The Skyglass Canopy) | crimson lotus (deep jungle) |
-| Spices T1 (everyone gathers; Alchemy + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
+| Healing herbs T1 (Alchemy; Round 60: by level band) | 1–30 | gravemoss (every start zone, Copperfell, Whitebridge) | gravemoss (every start zone, Mournfen, Whispering Reedlands) |
+| Healing herbs T2 | 11–40 | dragonweed (every 11–20 zone, Frostbarrow, Ashenward) | dragonweed (every 11–20 zone, Ossuary, Bannerbreak) |
+| Healing herbs T3 | 21–60 | crimson lotus (Whitebridge, Glassroot; Broken Causeway, Skyglass shared) | crimson lotus (Whispering Reedlands, Thunderroot; the same fronts, Stormscale) |
+| Spices T1 (everyone gathers; Alchemy + Cooking use) | 1–20 | sunleaf (every start and 11–20 zone) | sunleaf (every start and 11–20 zone) |
 | Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
 | Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, bear claw (slime gel, one faction, has no recipe use since Round 33) | identical (shared tables) |

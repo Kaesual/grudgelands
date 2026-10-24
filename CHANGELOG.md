@@ -12,6 +12,35 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.59.0 — the quests of levels 11–20 and the story's first chapter (2026-10-24)
+
+**Map reset** needed: new quest places in the six capitals and in four
+bandit camps change what world generation builds, so an existing world's
+map is generated anew from its seed. Characters keep their level, gear,
+inventory, money, quests, professions, mounts and waypoints, as in every
+map reset; a quest of levels 11–20 that no longer exists simply leaves the
+quest log. No migration step.
+
+- **Levels 11–20 reworked:** Copperfell Foothills, Goldmead Vale and
+  Starbough Vale (The Accord), Mournfen, Redtusk Savanna and Raincall
+  Basin (The Throng) now offer 13 quests each, every one open from its
+  level on, with no chain to follow (apart from the guild reports) and no need to arrive by the start
+  zone's last quest. Far fewer of them are hunts: repairs, crafts and gathering
+  for the villagers, a witness to find, records and supplies to recover
+  in the bandit camp, snares to cut in the Lower Boughs and names to copy
+  from the grave markers in Mournfen; each zone's hunts ask for three
+  kinds of creature instead of eight to ten. Rewards: a potion choice
+  early, two armor choices with an enchant and a weapon choice with two at
+  the zone's end.
+- **The story's first chapter:** at level 19 the envoy of every capital
+  sends you to the Miner's Guild leader there; at 20 the leader sends you
+  to a spot in the town (a yard, a landing, a court) to secure a record
+  and decides the case when you return.
+- **The quest log** names the zone of the place you took a quest in,
+  also for a quest that several zones offer.
+- **New quest objects:** a dispatch record, a witness record, held supplies
+  and a snare bundle.
+
 ## 0.58.0 — the Miner's Guild and the town fixes (2026-10-24)
 
 **Map reset** needed: new camps, rooms, lifts, guild houses and town fixes

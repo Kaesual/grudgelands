@@ -405,9 +405,11 @@ return function(canonical, raw_sha256, settlement_order)
 			fail("native identity differs")
 		end
 		local gathering = inputs.gathering_manifest
+		-- Round 60 HERBS moved the Alchemy herbs into their tiers' level
+		-- bands (was `1751733095a5cdb1...`).
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v3" or
 			gathering.sha256 ~=
-				"1751733095a5cdb18633918ec8a390bb044f0e4e54272ab9ab27aad405e2fcd5" or
+				"e07dbb94b5bd0649403ae4b50d57bf435a76da83cd71bf013fd86ed93f5d8d00" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end

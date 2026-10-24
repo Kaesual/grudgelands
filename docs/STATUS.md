@@ -22,20 +22,68 @@ recursive Basic unlocks), the quest foundation and the six start zones
 rebuilt on it; it was **pushed on 2026-10-23** (origin/main `69481ed1`) without
 a GUI test: the user tests 0.57 and 0.58 together after Round 58.
 Round 58 (0.58.0, a map reset) builds the Miner's Guild and the Round 56
-town fixes; it is **not pushed** and waits for that joint GUI test
-([checklist](planning/round58-plan.md#gui-checklist-rounds-57-and-58)).
-Next: the joint GUI test, then the story arc and the quest rework of
-levels 11–60 from Round 59, as ordered with the user on 2026-10-23. The
+town fixes; Round 59 (0.59.0, a map reset) reworks the quests of levels
+11–20 and opens chapter 1 of the story arc. Neither is **pushed**; both
+wait for the user's joint GUI test of 0.57, 0.58 and 0.59
+([checklist](planning/round59-plan.md#gui-checklist-rounds-57-58-and-59)).
+Next: that GUI test, then Round 60 (the band 21–30 with chapter 2) and the
+bands 31–60 one per round, then the production deploy with one map reset
+([ROADMAP](../ROADMAP.md)). The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 59 "The story arc's first chapter and the quest rework of levels
+  11–20" complete** (2026-10-24, version 0.59.0, **map reset**, no
+  migration step;
+  [plan, decisions, numbers and the joint GUI checklist](planning/round59-plan.md#completion-2026-10-24)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 and 0.59.0 wait for the user's joint GUI test of 0.57, 0.58 and
+  0.59. From main `567669ee` (the plan): QSYS3 (`138e8e33`), BANDQUESTS
+  (`5b536a68`), STORYQUESTS (`bc415821`), BANDTEXT with TEXTREVIEW's picks
+  (`8f41fb53`) and STORYART-SHIP (`b36f9f70`, `8f84be22`) merged, then this
+  documentation lane D. STORYART-SHIP was added during the round (the
+  picked art ships from the repository). GPT-6 Astra drafted the chapter
+  (CHAPTER1, the user's picks K1–K16 all "A", checked by CHECK1), painted
+  the four quest objects (STORYART, picked) and wrote the 168 text fields
+  (BANDTEXT, with the Opus text review's 20 proposals, all picked). Every
+  code lane independently reviewed by Opus (QSYS3 and BANDQUESTS MERGE
+  AFTER FIXES, QSYS3's fix delta-reviewed, BANDQUESTS' data-only fix
+  checked by the coordinator; STORYQUESTS MERGE, its rebase checked by the
+  coordinator; the generators' `--check` step delta-reviewed). Main has
+  272 portable fixtures (3 new). The declaration is
+  `{"schema": 3, "version": "0.59.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped.
+  - **The band 11–20 (BANDQUESTS, BANDTEXT):** the six zones flagged
+    reworked, 83 → 59 quests (13 offered per zone, three shared), all free
+    play, kill objectives 60 % → 21 %, mob names per zone 8–10 → 3, the
+    reward pattern at item levels 11–20, four use objects, quest places in
+    four bandit camps and two spawn files
+    ([quests.md](design/quests.md#the-band-1120-round-59)); the questing
+    share of 10→20 fell to 54–61 %, which the user kept.
+  - **Chapter 1 (STORYQUESTS):** four story quests (433 shipped): the
+    envoys at 19 to the Miner's Guild leader of their capital, the leaders
+    at 20 to a town place in the capital and back; six leader hubs, the
+    envoys' common line ([quests.md](design/quests.md#chapter-1-in-the-capitals-round-59),
+    [settlements.md](design/settlements.md#chapter-1s-town-places-round-59)).
+  - **The quest system (QSYS3):** `E-free-follow-ups` per faction, the
+    quest log's variant zone, the town place kind on settlement sockets
+    (`socket:<settlement key>/<socket id>`, role `quest_place`)
+    ([quests.md](design/quests.md) "Town places").
+  - **Gates:** each code lane's full fixture run (270–272/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.57.0, with the map
+    reset entry), `check_fresh_server.py`, `validate.py --game`, the full
+    fixtures, a full seed fleet on main and one boot (the
+    [round-end gates](planning/round59-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-59-carry-overs)).
 - **Round 58 "The Miner's Guild and the town fixes" complete** (2026-10-24,
   version 0.58.0, **map reset**, no migration step;
   [plan, decisions, numbers and the joint GUI checklist](planning/round58-plan.md#completion-2026-10-24)).
   **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
-  0.58.0 waits for the user's joint GUI test of 0.57 and 0.58. From main
-  `616112ab` (the plan) and `a9191497` (the skeleton note): GUILDSPEC
+  0.58.0 waits for the user's joint GUI test, now of 0.57, 0.58 and 0.59.
+  From main `616112ab` (the plan) and `a9191497` (the skeleton note): GUILDSPEC
   (`734a914e`), CAMPS (`5d2444cd`), CONSUME (`a2b8386a`, the Ore Sense
   ruling `0edc5faa`, `a42f91b6`), REP (`e8159d96`), HALLS (`0713d49a`),
   TOWNFIX (`63210975`), ROOMS (`1816247e`), CAMPNPC (`c25fbd58`), HALLS2

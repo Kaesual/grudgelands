@@ -41,10 +41,15 @@ M.plants={
  -- Freshwater margins are mostly sand (the near-water material rule), so the
  -- melon also roots in sand there, and the margin is a thin band, so its
  -- rate is four times the default (Round 22 Phase 5).
- row("frost_melon",{"elandor_frostbarrow_shelf","elandor_whitebridge_shire"},
+ -- Round 60 HERBS: two Throng 21-30 swamp zones too (Raw Marsh Roast, T4).
+ row("frost_melon",{"elandor_frostbarrow_shelf","elandor_whitebridge_shire",
+  "kragmar_ossuary_reach","kragmar_whispering_reedlands"},
   {grug_crags={"default:gravel","default:sand"},grug_swamp={"grug_nodes:mud","default:sand"}},21,30,"fresh",64),
  row("jungle_berry",{homes[6]},hosts({"jungle_edge"}),11,20),
- row("pumpkin",subset(homes,1,6),hosts({"meadows","swamp","blight"}),11,20),
+ -- Round 60 HERBS: the grounds of all six home zones (pine hills, elf
+ -- forest and savanna added), as items_crafting.md documents.
+ row("pumpkin",subset(homes,1,6),hosts({"meadows","swamp","blight","pine_hills",
+  "elf_forest","savanna"}),11,20),
  row("salt_crust",{"front_shattered_line"},hosts({"badlands"}),44,50,"none",512),
  row("sugar_cane",{}, {any={"default:sand"}},1,60,"any"),
  row("sunberry",{homes[5]},hosts({"savanna"}),11,20),
