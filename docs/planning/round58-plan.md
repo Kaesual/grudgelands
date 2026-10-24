@@ -407,7 +407,7 @@ Nothing unpicked ships.
 
 Main has 269 portable fixtures (10 new: `r58_guildspec`, `r58_camps`, `r58_consume`, `r58_rep`, `r58_halls`,
 `r58_townfix`, `r58_rooms`, `r58_campnpc`, `r58_lift`, `r58_guildquests`). `mods/` against 0.57.0 (measured, `git diff
-69481ed1 c85f6624 -- mods`): 166 files, +10,594 −349 lines; the new mod `grug_guild` (8 Lua files, 2,344 lines with
+69481ed1 c85f6624 -- mods`): 166 files, +10,594 −349 lines; the new mod `grug_guild` (8 Lua files, 1,676 lines with
 `catalog.lua`), the room and camp files in `wp40`, the six guild-house templates and the 30 quests' data in 26 quest
 files, the picked textures of drops 01 and 02.
 
@@ -565,9 +565,9 @@ Saved state, all without a position:
 One test for both rounds (plan §6, review I9), desktop and the web build (the lanes' web shots were taken at
 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on the synced game.
 
-**Resetting a local world** (what the hosting platform does, contract §3.5; first make a copy of the world folder):
+**Resetting a local world** (what the hosting platform does, contract §3.5):
 
-1. Quit the world (stop the server).
+1. Quit the world (stop the server), then make a copy of the world folder.
 2. Optional, to test the claims' containers: from the repository checkout,
    `python3 tools/migrate.py --world <world folder> --map-reset` (Python 3.13 or newer; it packs the containers in
    every housing claim and must end with exit 0).
@@ -576,10 +576,13 @@ One test for both rounds (plan §6, review I9), desktop and the web build (the l
 4. In Luanti's settings, *Content: Games → Grudgelands → Hosting platform*, raise **Map reset counter**
    (`grug_reset_world`) above the world's record: 1 for a world never reset before, else one more than last time (the
    game reads it at the start; only a value above the record resets).
-5. Start the world. Its map is generated anew from the seed; each existing character is held on the waiting screen
-   and moved to its race's start town at its next join, without the welcome.
+5. Start the world. `debug.txt` must show `[grug_core] map reset N applied to the world (was M)`
+   (`grug_core/map_reset.lua`); if the line is missing, the value was not above the record: quit, restore the copy
+   and start again from step 2 with a higher value. The map is generated anew from the seed; each existing character
+   is held on the waiting screen and moved to its race's start town at its next join, without the welcome.
 6. Afterwards set the counter back to **0**: it is one setting for every local world, and another world whose record
-   is lower would clear its claims and NPC records at its next start (without its map being emptied).
+   is lower would reset at its next start (without its map being emptied): its claims and NPC records cleared, its
+   characters moved to their start towns.
 
 **Order:** (A) the existing world, reset as above, first join with its old characters; (B) everything else on that
 world and with new characters; (C) a new world (or the "test" world) for the bays. *Re-checked (D):* no Round 57 item
@@ -631,26 +634,26 @@ of them (B, guild quests) instead of the capture probe. 15. An existing characte
     drops Cobblestone) and dig on from; inside the room you cannot dig or build ("Miner's Guild – protected"); no
     monster spawns in a room; water and lava next to it stay out (the −650 rooms often border lava); below −501 the
     room is contested ground.
-25. **Reputation** (REP): `/guild_rep <you> 2734`: the Character page shows "Miner's Guild: Rank 3" and "Reputation
+25. **The camp vendor at rank 0** (CAMPNPC; before any `/guild_rep`, or with a fresh character): it opens on
+    Trade-in; Buy shows all six rows locked, "Reach Reputation Rank N" with their prices. Repair: the Repair button
+    opens the repair form and mends a worn tool. An enemy is refused. The Exchange in your capital: Trade-in and Sell;
+    Buy shows only "The Miner's Guild sells its goods at the mining camps."; no repair. At the web size the page fits.
+26. **Reputation** (REP): `/guild_rep <you> 2734`: the Character page shows "Miner's Guild: Rank 3" and "Reputation
     2,734" with the pewter token, the feed the new rank, the rank-3 cloak in the picker. At a Camp Vendor and at the
-    Miner's Guild Exchange in your capital the window opens on **Trade-in** and says "Miner's Guild" only (no guild
-    name): rank, reputation and the lifetime to the next rank; trading 143 Cobblestone gives "Traded 100 … 43 left.",
-    49 Sand is greyed; buying something (below) keeps the rank; the Sell tab still pays copper for the same goods. The
-    mason no longer sells Cobblestone or Gravel. Web: a Claim Stone status of four lines fits between the guild lines
-    and the cloak picker.
-26. **The cloaks:** `/guild_rep <you> 350000`: ranks 6 and 10, the winged cloak; **judge the names** (above).
-27. **The camp vendor's page** (CAMPNPC): Buy at rank 0: all six rows locked, "Reach Reputation Rank N" with their
-    prices; at rank 3 rows 1–3 open with "Use from level N"; buy Ore Sense I: the balance drops by 400, the lifetime
-    stays; with a full bag the purchase is refused and nothing spent. Repair: the Repair button opens the repair form
-    and mends a worn tool. An enemy is refused. The Exchange: Trade-in and Sell; Buy shows only "The Miner's Guild
-    sells its goods at the mining camps."; no repair. At the web size the page fits.
+    Exchange the window opens on **Trade-in** and says "Miner's Guild" only (no guild name): rank, reputation and the
+    lifetime to the next rank; trading 143 Cobblestone gives "Traded 100 … 43 left.", 49 Sand is greyed; the Sell tab
+    still pays copper for the same goods. The mason no longer sells Cobblestone or Gravel. Web: a Claim Stone status
+    of four lines fits between the guild lines and the cloak picker. **Then, still at rank 3**, the camp vendor's
+    page: rows 1–3 open with "Use from level N"; buy Ore Sense I: the balance drops by 400, the lifetime and the rank
+    stay; with a full bag the purchase is refused and nothing spent.
+27. **The cloaks:** `/guild_rep <you> 350000`: ranks 6 and 10, the winged cloak; **judge the names** (above).
 28. **Ore Sense** (CONSUME): a T2 item is refused below level 11; outside its depth the use is refused with the band
     (for example "… works only between y −301 and −500."). Use Ore Sense I above y −100: the status icon appears;
     within 1–2 minutes a small ore tile marks a random ore or gem deposit through the rock for 5 s; a second item is
     refused with the time left and nothing is taken.
 29. **Treasure Hunt:** Treasure Hunt V between y −701 and −1000: a skull-tile marker; dig to it: coins, a bar,
     sometimes a cut gem; walk more than 48 away: it is gone, and about 90 s later a new one appears. Log out and in,
-    and die: the icon and the time continue, and a relog does not skip the pause. A second player sees no marker but
+    and die: the icon and the time left continue (the offline time does not count), and a relog does not skip the pause. A second player sees no marker but
     can dig the block. **Web:** the markers (HUD waypoints) show on the web client too; judge their size and contrast.
 30. **Guild houses** (HALLS2): in each capital's trades district the headframe marks the house; inside, the named
     leader behind a low desk (Highcourt Alis Cartwright, Dur Brannoc Hadrin Beamset, Lethariel Caelir Veinward, Nhal

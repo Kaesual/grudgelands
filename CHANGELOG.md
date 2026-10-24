@@ -52,7 +52,8 @@ Belongings tab. No migration step. Everybody's reputation starts at 0.
   while you are near: dig it for coins, the tier's bar and sometimes a cut
   gem; it vanishes when you go more than 48 nodes away or log out, and the
   next appears about 90 seconds later. Both use their own slot, one at a
-  time, and keep running after you log out or die.
+  time; the time left pauses while you are offline and goes on when you
+  log back in, and a death does not end them.
 - **Cloaks:** reach Reputation Rank 3, 6 and 10 for the three cloaks of
   the Miner's Guild achievement; the last one has wings.
 - **Guild houses:** every capital has a Miner's Guild house in its trades

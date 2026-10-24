@@ -649,7 +649,7 @@ The topic rules below name the one path to use; the
 - **The Miner's Guild's world** (Round 58,
   [miners_guild.md](docs/design/miners_guild.md) §3): the camps are POI
   rows (`wp40/r58_camp_catalog.lua`, the blueprints) and one pure,
-  deterministic camp module (`wp40/r58_camps.lua`, `camps(layout)`, read in
+  deterministic camp module (`wp40/r58_camps.lua`, `camps(layout[, seams])`, read in
   both environments from `placement_layout`); the lift rooms are their own
   step after `refine_or_degrade` with their own degrade
   (`wp40/guild_room_writer.lua`) and a y-bounded protection wrapper beside

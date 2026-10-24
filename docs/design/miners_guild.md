@@ -409,7 +409,7 @@ that path and goes to the coordinator with the change the lane would want.
 |---|---|---|
 | `mod.conf` | GUILDSPEC | `depends = grug_core, grug_materials, grug_money, grug_inventory, grug_mapgen, grug_factions, default` — every dependency the planned mod needs, so no lane edits it; another one goes to the coordinator |
 | `init.lua` | GUILDSPEC | the global `grug_guild`, the catalogue API, one `dofile` per file below, the load audit (every catalogue item registered once the mods have loaded) |
-| `catalog.lua` | GUILDSPEC; its `VALUES` the coordinator (the tuning page); the two `pending` fields REP | every number and id as pure data, the accessors |
+| `catalog.lua` | GUILDSPEC; its `VALUES` the coordinator (the tuning page); REP deleted the two `pending` fields (no row is pending now) | every number and id as pure data, the accessors |
 | `store.lua` | REP | reputation: §10.3 |
 | `exchange.lua` | REP | the trade-in: §10.4 |
 | `effect.lua` | CONSUME | the mining effect: §10.5 |
@@ -417,11 +417,10 @@ that path and goes to the coordinator with the change the lane would want.
 | `vendor.lua` | CAMPNPC | the reputation page's rows and the purchase: §10.7 |
 | `lift.lua` | LIFT | the lift's interaction: overrides `grug_mapgen:guild_lift`'s right-click (the node's static fields and picked art are `world_nodes.lua`'s); `lift_at(pos)`, `use_lift(player, pos)` (§3) |
 
-Until a lane fills its file, its functions are documented stubs that answer
-as for a character of rank 0 with nothing to trade and no effect (`add`,
-`trade_in`, `start_effect` and `buy` refuse with `"unavailable"`). The
-fixture checks only that the functions exist, so each lane fills its file
-without touching it. Outside
+Each lane filled its file (Round 58); while the skeleton stood alone, the
+functions were documented stubs answering as for a character of rank 0 with
+nothing to trade and no effect. The fixture checks only that the functions
+exist, so no lane had to touch it. Outside
 `grug_guild`, the lanes touch: REP `grug_traders` (the mason's shelf, the
 trade-in in the vendor window, the consumables' payout in `prices.lua` from
 `sell_copper`) and `grug_achievements` (§6); CONSUME
