@@ -15,7 +15,7 @@
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "dense"},
           "bank": {"id": "reedbanks", "name": "Whispering Reedbanks",
             "day": [{"role": "reed_crocodile", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "sparse", "quest_target": true},
           "swamp": {"id": "reeds", "name": "Whispering Reeds",
             "day": [{"role": "sullen_bog_ooze", "weight": 1}],
             "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"},
@@ -38,7 +38,7 @@
         "kinds": {
           "open": {"id": "thicket", "name": "Whispering Thicket",
             "day": [{"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal"},
           "bank": {"id": "mudbanks", "name": "Whispering Mudbanks",
             "day": [{"role": "reed_crocodile", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "sparse", "quest_target": true},
@@ -96,6 +96,9 @@
     ],
     "leaders": [
       {"role": "tollkeeper_ush", "at": {"camp": "mire_nests"}, "respawn": 300}
+    ],
+    "places": [
+      {"id": "seized_stores", "name": "Reedlands Seized Stores", "at": {"kind": "reedbanks", "pick": "farthest_from_roads"}}
     ],
     "critters": ["bog_fowl", "parrot"]
   }

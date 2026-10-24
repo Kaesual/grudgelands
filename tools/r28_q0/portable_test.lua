@@ -667,6 +667,33 @@ do
 	eq(status("r15_orc_local", "band_repairs"), "none", "band: ...nor in Redtusk")
 	eq(status("r15_orc_local", "redtusk_fences"), "locked", "band: a level-14 craft is shown locked at 11")
 	for key in pairs(meta) do meta[key] = nil end
+	-- Round 60 (tools/r60_bandquests): a level-21 character is offered the
+	-- band 21-30's first quests at once; the shared steel help taken or done
+	-- at one mine is offered at no other; chapter 2's A4 shows only once A3
+	-- and Nib's free quest are done.
+	grug_xp.get_level = function() return 21 end
+	for _, row in ipairs({{"r20_anchor_014_host", "frostbarrow_melons"}, {"r20_anchor_016_host", "band_corn"},
+			{"r20_anchor_018_host", "lorindor_marshbloom"}, {"r20_anchor_035_host", "moonfall_glass"},
+			{"r20_anchor_020_host", "ossuary_gravewood"}, {"r20_anchor_022_host", "band_corn"},
+			{"r20_anchor_024_host", "whispering_melons"}, {"r20_anchor_047_host", "band_mire_carp"},
+			{"r20_dwarf_capital_cook", "band_mire_carp"}}) do
+		eq(status(row[1], row[2]), "available", "band 21-30: " .. row[1] .. " offers " .. row[2] .. " at once")
+	end
+	eq(status("r20_anchor_061_host", "band_steel"), "locked", "band 21-30: the steel help is shown locked at 21")
+	grug_xp.get_level = function() return 29 end
+	eq(status("r20_anchor_061_host", "frostbarrow_cutting_04"), "available", "band 21-30: Nib's quest needs nothing")
+	eq(status("r20_anchor_061_host", "frostbarrow_departure"), "available", "band 21-30: the departure needs nothing")
+	eq(status("r20_anchor_061_host", "story_accord_04"), "none", "band 21-30: A4 hidden before A3 and Nib")
+	check(Q.accept(player, "band_steel", "r20_anchor_061_host"), "band 21-30: the steel taken at Tarncut")
+	eq(status("r20_anchor_062_host", "band_steel"), "none", "band 21-30: ...not offered at Bridgechalk")
+	meta["grug_quests:state"] = {active = {}, completed = {band_steel = true, story_accord_03 = true},
+		tracked = {}, hud = true}
+	eq(status("r20_anchor_066_host", "band_steel"), "none", "band 21-30: steel done once, nor at Reedstone")
+	eq(status("r20_anchor_061_host", "story_accord_04"), "none", "band 21-30: A4 still hidden without Nib")
+	meta["grug_quests:state"] = {active = {}, tracked = {}, hud = true,
+		completed = {band_steel = true, story_accord_03 = true, frostbarrow_cutting_04 = true}}
+	eq(status("r20_anchor_061_host", "story_accord_04"), "available", "band 21-30: A4 after A3 and Nib")
+	for key in pairs(meta) do meta[key] = nil end
 	grug_xp.get_level = level
 end
 -- What the one-time computation costs at load (reported, not a target).

@@ -318,7 +318,18 @@ since then). Every load error names the zone and the path.
   11–13 open kind: Starbough Vale `snare_ground` "Starbough Snare Ground"
   (the Lower Boughs) and Mournfen `name_rest` "Mournfen Name Rest" (the
   Blightfields, dry ground rather than the fen's mud pools;
-  [quests.md](quests.md) "The band 11–20"). `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
+  [quests.md](quests.md) "The band 11–20"); since Round 60 seven in the
+  band 21–30 ([quests.md](quests.md) "The band 21–30"): Lorindor
+  `snare_ground` "Lorindor Snare Ground" (the Berrywoods), Moonfall Wood
+  `snare_ground` "Moonfall Snare Ground" (the Eaves) and `sighting_post`
+  "Moonfall Sighting Post" (the Deepwood), Ossuary Reach `claim_rest`
+  "Ossuary Claim Rest" (the Barrowlands), Speargrass Reach `banner_cache`
+  "Speargrass Banner Cache" (the Hunting Grounds), Whispering Reedlands
+  `seized_stores` "Reedlands Seized Stores" and Totemwater Reach
+  `reading_bank` "Totemwater Reading Bank" (each zone's Reedbanks). The
+  seed fleet (`tools/seed_fleet/seed.lua`, Round 60) builds the regions of
+  every zone with places on each of its seeds and fails one that places a
+  place not. `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
   from the recipe, `place_spot(zone, id)` its spot on the world.
 - `critters`: ambient critters that keep their ABM rows in the zone.
 

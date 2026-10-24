@@ -1,5 +1,6 @@
 {
   "zone": "elandor_whitebridge_shire",
+  "reworked": true,
   "identity": "Whitebridge sells the same river basket twice while poachers, wolves and wetland collectors each claim a toll.",
   "hubs": [
     {
@@ -34,7 +35,8 @@
         {
           "npc": "r20_anchor_062_host",
           "lines": [
-            "materials"
+            "materials",
+            "steel"
           ]
         }
       ]
@@ -55,73 +57,143 @@
   ],
   "quests": [
     {
-      "id": "whitebridge_baskets_01",
-      "line": "baskets",
-      "giver": "r20_anchor_016_host",
-      "turnin": "r20_anchor_016_host",
-      "min_level": 21,
-      "level": 22,
+      "id": "band_corn",
+      "line": "journeys",
+      "min_level": 20,
+      "level": 21,
       "requires": [],
-      "title": "Sold Twice, Delivered Never",
-      "text": "Basket-Poacher Thorn has found a way to sell every river basket twice, and somehow neither buyer gets supper. His Unlicensed Poachers trade after nightfall in the {name:oakwood} {dir_of:r20_anchor_016:oakwood}; defeat five of them there at night. I have spent years earning this market's good name, and I will not let him sell that twice as well.",
+      "title": "[PH] The Waiting Still Eat",
+      "text": "[PH] Merren Oakstamp feeds the people whose paid delivery never came: bring 8 Corn. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "unlicensed_poacher"
+          "type": "item",
+          "item": "grug_gathering:corn",
+          "count": 8
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_whitebridge_shire",
+          "givers": [
+            "r20_anchor_016_host"
           ],
-          "count": 5,
-          "area": "elandor_whitebridge_shire/oakwood"
+          "text": "[PH] Merren Oakstamp feeds the people whose paid delivery never came: bring 8 Corn. Real text to follow."
+        },
+        {
+          "zone": "kragmar_speargrass_reach",
+          "givers": [
+            "r20_anchor_022_host"
+          ],
+          "text": "[PH] Brakka Jarward feeds the cutting crews before the next shift: bring 8 Corn. Real text to follow."
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "A night outlaw roster in a forest kind.",
-      "duration_min": 9
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Draft §3 'Vorrat für die Wartenden'."
     },
     {
-      "id": "whitebridge_baskets_02",
+      "id": "whitebridge_river_halen",
+      "line": "river",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 22,
+      "level": 23,
+      "requires": [],
+      "title": "[PH] Have the Ramp Measured",
+      "text": "[PH] Jessa Axlewright sends the player to Halen Chalkthumb at Bridgechalk Dig, who should fix the ferry ramp's repair to a measure that holds. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_062_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 6,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "whitebridge_basket_check",
       "line": "baskets",
       "giver": "r20_anchor_016_host",
       "turnin": "r20_anchor_016_host",
       "min_level": 22,
       "level": 23,
-      "requires": [
-        "whitebridge_baskets_01"
-      ],
-      "title": "The Pack at the Back Door",
-      "text": "I routed the carts around Thorn's buyers and straight through the {name:meadows}, which lie {zone_area:meadows}, where Briarpack Wolves hunt at night. Defeat five there after dark so our drivers have a fighting chance. Hurt one and the pack comes running; work from the edge, with room to retreat.",
+      "requires": [],
+      "title": "[PH] Two Pickups for One Basket",
+      "text": "[PH] Merren Oakstamp wants the stored baskets at Market Close checked against the pickup records; two buyers hold slips for the same basket. Real text to follow.",
+      "completion": "[PH] Merren sees which slip is real; her market keeps its good name. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "briarpack_wolf"
-          ],
-          "count": 5,
-          "area": "elandor_whitebridge_shire/meadows"
+          "type": "use",
+          "place": "socket:r20_anchor_016/basket_check",
+          "object": "dispatch_record",
+          "label": "Check the pickup records",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Pack calls: pull from the edge.",
-      "duration_min": 9
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "whitebridge_baskets_03",
       "line": "baskets",
       "giver": "r20_anchor_016_host",
       "turnin": "r20_anchor_016_host",
-      "min_level": 23,
-      "level": 24,
-      "requires": [
-        "whitebridge_baskets_02"
-      ],
-      "title": "Thorn's Double Sale",
-      "text": "{name:basket_poacher_thorn} does his business in the {name:willowbanks} {dir_from_giver:basket_poacher_thorn}, day and night; apparently a man who sells everything twice needs the extra hours. Defeat him and report back to me. Ansel's kitchen paid for those baskets in good faith, and I mean to honour the order.",
+      "min_level": 24,
+      "level": 25,
+      "requires": [],
+      "title": "[PH] Thorn's Double Sale",
+      "text": "[PH] Merren sends the player against Basket-Poacher Thorn in the {name:willowbanks}, who sells the same goods twice. Real text to follow.",
+      "completion": "[PH] Thorn sells nothing more; Merren's customers get their baskets. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -132,12 +204,64 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 5.5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Named normal leader on his own: a fixed, memorable fight.",
-      "duration_min": 8,
-      "climax": true
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
+    },
+    {
+      "id": "whitebridge_ramp_stone",
+      "line": "materials",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [],
+      "title": "[PH] Stone for the Ferry Ramp",
+      "text": "[PH] Halen measures the ferry ramp's repair to what it must carry: bring 20 Stone Bricks. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:stonebrick",
+          "count": 20
+        }
+      ],
+      "rewards": {
+        "weight": 5
+      },
+      "lesson": "A local task of the zone's own people.",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "whitebridge_journey_lorindor",
@@ -146,11 +270,9 @@
       "turnin": "r20_anchor_018_host",
       "min_level": 24,
       "level": 24,
-      "requires": [
-        "whitebridge_baskets_03"
-      ],
-      "title": "The Other End of the River Trade",
-      "text": "Thorn's accounts name Elven buyers too, and an Accord trading partner deserves to hear when somebody is spending her coin. Find Ilwen Petalmeasure at Lorindor Berrycourt in Lorindor and tell her what happened here. This is one of three journeys I can offer you, with more work likely at the other end. Give her my regards before you mention the baskets.",
+      "requires": [],
+      "title": "[PH] The Other End of the River Trade",
+      "text": "[PH] Merren sends the player to Ilwen Petalmeasure in Lorindor, the other end of the river trade. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -158,11 +280,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer: Lorindor.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "whitebridge_journey_dur_brannoc",
@@ -171,11 +293,9 @@
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 24,
       "level": 24,
-      "requires": [
-        "whitebridge_baskets_03"
-      ],
-      "title": "A Ledger for the Dwarves",
-      "text": "Some of Thorn's baskets were sold as Dwarven freight; I expect the buyers will have quite precise objections to his arithmetic. Visit Dorrin Gateledger in Dur Brannoc and explain the double sales. Of the three journeys I can offer, this one takes you to our Dwarven allies. Be clear about which merchant you mean when you say he cheated them.",
+      "requires": [],
+      "title": "[PH] Word for Dur Brannoc",
+      "text": "[PH] Merren sends word of the double sales to Dorrin Gateledger in Dur Brannoc. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -183,11 +303,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer: Dur Brannoc.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "whitebridge_journey_frostbarrow",
@@ -196,11 +316,9 @@
       "turnin": "r20_anchor_014_host",
       "min_level": 24,
       "level": 24,
-      "requires": [
-        "whitebridge_baskets_03"
-      ],
-      "title": "Cold Storage",
-      "text": "Thorn's accounts reach as far as Tarnwatch Fold in Frostbarrow Shelf, which is an impressive distance for a basket nobody has received. Find Edda Tarnmantle there and tell her about his double sales. This is the coldest of the three journeys I can offer you. Pack warmly; I would like our explanation to arrive with all its fingers.",
+      "requires": [],
+      "title": "[PH] Baskets for the Cold",
+      "text": "[PH] Merren sends the player to Edda Tarnmantle in Frostbarrow Shelf, who waits on the same deliveries. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -208,148 +326,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer: Frostbarrow Shelf.",
-      "duration_min": 12
-    },
-    {
-      "id": "whitebridge_materials_01",
-      "line": "materials",
-      "giver": "r20_anchor_062_host",
-      "turnin": "r20_anchor_062_host",
-      "min_level": 23,
-      "level": 24,
-      "requires": [],
-      "title": "A Measure That Stays Put",
-      "text": "My surveying brace shifted in the rain, and for one alarming moment my measurements gave the river a new address. Bring me six planks of any wood and six Steel Bars here at Bridgechalk Dig. Alloy iron with anthracite to make the steel, whenever your other work leaves time. I need the brace to stay put long enough to trust the next reading.",
-      "objectives": [
-        {
-          "type": "item",
-          "group": "wood",
-          "count": 6
-        },
-        {
-          "type": "item",
-          "item": "grug_materials:steel_bar",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "lesson": "Steel: iron and anthracite alloy.",
-      "duration_min": 14
-    },
-    {
-      "id": "whitebridge_materials_bears",
-      "line": "materials",
-      "giver": "r20_anchor_062_host",
-      "turnin": "r20_anchor_062_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [],
-      "title": "Optional: Bears in the Stores",
-      "text": "Bramble Bears from the {name:briarwood} {dir_of:r20_anchor_062:briarwood} keep raiding our stores, and one of them has developed a taste for chalk-dusted biscuits. Bring down five by day. After dark the Orbweavers take that wood, and you are welcome to leave them to it.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_bear"
-          ],
-          "count": 5,
-          "area": "elandor_whitebridge_shire/briarwood"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Optional: heavy daytime animals; the wood changes owner at night.",
+      "lesson": "A travel quest, free (a level only).",
       "duration_min": 10,
-      "optional": true
-    },
-    {
-      "id": "whitebridge_materials_02",
-      "line": "materials",
-      "giver": "r20_anchor_062_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 29,
-      "level": 29,
-      "requires": [
-        "whitebridge_materials_01"
-      ],
-      "title": "A Survey for the Heights",
-      "text": "Borin Splitbolt needs our survey work before he can plan supplies through Stormvault Heights. Take my findings to him at Splitbolt Station, and reach level 30 before you set out into that contested country. Measure twice before you climb, as I always say; up there, nobody gets to cut again.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_027_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Heartland to contested handoff.",
-      "duration_min": 12
-    },
-    {
-      "id": "whitebridge_river_01",
-      "line": "river",
-      "giver": "r20_anchor_030_host",
-      "turnin": "r20_anchor_030_host",
-      "min_level": 27,
-      "level": 28,
-      "requires": [],
-      "title": "The Basket Toll",
-      "text": "Ferry Tollers at the {name:ferry_camp} {dir_from_giver:ferry_camp} demand payment for every river basket, and Murk calls the whole business a ferry service. Defeat five of them, by day or night. They rush to help one another inside the camp, so fight from its edge. I can mend a cart, but I cannot keep mending our accounts after every crossing.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "toll_mirefolk"
-          ],
-          "count": 5,
-          "area": "elandor_whitebridge_shire/ferry_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "A swarm camp: fight at the edge.",
-      "duration_min": 10
-    },
-    {
-      "id": "whitebridge_river_siltbasket",
-      "line": "river",
-      "giver": "r20_anchor_030_host",
-      "turnin": "r20_anchor_030_host",
-      "min_level": 21,
-      "level": 22,
-      "requires": [],
-      "title": "Optional: The Siltbasket Toll",
-      "text": "Before Murk built his ferry business, his relatives set up the {name:siltbasket} {dir_from_giver:siltbasket}, and they still charge carters for the privilege of being robbed. Defeat six Gillbacks there, by day or night. Fight from the edge of the camp; they rush to help each other.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "toll_mirefolk"
-          ],
-          "count": 6,
-          "area": "elandor_whitebridge_shire/siltbasket"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Optional: a smaller swarm camp in the lower shire.",
-      "duration_min": 10,
-      "optional": true
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "whitebridge_river_02",
@@ -358,11 +339,10 @@
       "turnin": "r20_anchor_030_host",
       "min_level": 28,
       "level": 29,
-      "requires": [
-        "whitebridge_river_01"
-      ],
-      "title": "Murk's Final Fare",
-      "text": "{name:ferryman_murk} runs the {name:ferry_camp} {dir_from_giver:ferryman_murk}, charging whatever he thinks a frightened carter will pay. Defeat him; he is there by day and night. There will always be thieves along the river, but this one ought to learn that honest trade has defenders too.",
+      "requires": [],
+      "title": "[PH] Murk's Final Fare",
+      "text": "[PH] Jessa sends the player against Mirefolk Ferryman Murk at the {name:ferry_camp}, who extorts the needed passage from the carters. Real text to follow.",
+      "completion": "[PH] The passage is free again; the carters pay for the river, not for Murk. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -373,12 +353,75 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Named normal leader at the camp centre.",
-      "duration_min": 8,
-      "climax": true
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
+    },
+    {
+      "id": "whitebridge_materials_02",
+      "line": "materials",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 29,
+      "level": 29,
+      "requires": [],
+      "title": "[PH] Measures for Splitbolt",
+      "text": "[PH] Halen sends the player to Borin Splitbolt in Stormvault Heights, where sound measures are needed; no earlier deed is claimed. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 29, it requires nothing."
     }
   ]
 }

@@ -405,6 +405,13 @@ def report_quests(mining, war, records, names):
 
 DUPLICATES = []  # (quest id, zone, role): a hunt that repeats a zone quest's target
 
+# Hunts kept as shipped although the zone's reworked quests would let the
+# script pick anew (round60-plan.md §3: the T3 camp hunts keep working):
+# (tier, zone) -> (night, kind id, role). Round 60: Totemwater's quests no
+# longer hunt its tapirs, so the script would move its night hunt to a day
+# one; the shipped night hunt stays.
+KEPT_HUNTS = {(3, "kragmar_totemwater_reach"): (True, "jungle", "sullen_bog_ooze")}
+
 
 def hunt_quests(mining, war, records):
     """The camp hunts: per camp band (T2, T3 and T4 mining camps in the
@@ -426,6 +433,10 @@ def hunt_quests(mining, war, records):
         groups = {False: [], True: []}
         for zone in zones:
             pick = hunt_targets(zone, ("low", "high") if band else (None,))[band]
+            kept = None if band else KEPT_HUNTS.get((tier, zone))
+            if kept:
+                levels = tuple(recipe(zone)["belts"][0]["levels"])
+                pick = (kept[0], kept[1], kept[2], levels, mob_name(zone, kept[2], levels[0], levels[1]))
             if pick is None:
                 pick = fallback_target(zone, band)
                 DUPLICATES.append(("t%d%s" % (tier, "_" + band if band else ""), zone, pick[2]))

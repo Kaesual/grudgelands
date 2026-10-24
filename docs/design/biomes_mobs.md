@@ -1767,7 +1767,10 @@ otherwise a tinted placeholder; the `icon` brief stays on the item as
 Signature items are mob materials (`grug_material`); their catalogue `tier`
 (1–6) is both their vendor price in copper and their ingredient tier
 (registered by `grug_professions`, so no profession recipe or enchant
-takes one above its own tier). Quest items have no price and no tier. The
+takes one above its own tier). Quest items have no price and no tier, and
+are soulbound (Round 60, group `grug_soulbound`,
+[housing.md](housing.md)'s rule: only the carried inventory holds them;
+dropping one destroys it, it drops again while its quest needs it). The
 trader drop audit covers the band tables too. `generic` items are
 existing ones. Any other kind is a load error.
 

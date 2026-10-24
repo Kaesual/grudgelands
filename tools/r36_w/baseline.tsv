@@ -17,12 +17,12 @@ mournfen_bandit_camp	-12	0	-12	11	8	11	8	quest_captive,quest,10,1,10,0,-1
 redtusk_bandit_camp	-12	0	-12	11	8	11	8	held_supplies,quest_place,11,1,-11,0,1;quest_captive,quest,10,1,10,0,-1
 raincall_bandit_camp	-12	0	-12	11	8	11	8	held_supplies,quest_place,11,1,-11,0,1;quest_captive,quest,10,1,10,0,-1
 r20_anchor_014	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
-r20_anchor_016	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
+r20_anchor_016	-12	0	-12	11	8	11	8	basket_check,quest_place,3,1,-11,-1,0;quest_host,quest,2,1,0,-1,0
 r20_anchor_018	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
 r20_anchor_020	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
 r20_anchor_022	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
 r20_anchor_024	-12	0	-12	11	8	11	8	quest_host,quest,2,1,0,-1,0
-r20_anchor_026	-8	0	-8	7	8	7	8	quest_host,quest,2,1,0,-1,0
+r20_anchor_026	-8	0	-8	7	8	7	8	quest_host,quest,2,1,0,-1,0;signal_stand,quest_place,-4,1,-5,1,0
 r20_anchor_027	-8	0	-8	7	8	7	8	quest_host,quest,2,1,0,-1,0
 r20_anchor_028	-8	0	-8	7	8	7	8	quest_host,quest,2,1,0,-1,0
 r20_anchor_030	-8	0	-8	7	8	7	8	quest_host,quest,2,1,0,-1,0

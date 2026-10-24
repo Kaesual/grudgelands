@@ -84,6 +84,10 @@
     "leaders": [
       {"role": "snarewarden_bracken", "at": {"kind": "elderwood", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "snare_ground", "name": "Moonfall Snare Ground", "at": {"kind": "eaves", "pick": "farthest_from_roads"}},
+      {"id": "sighting_post", "name": "Moonfall Sighting Post", "at": {"kind": "deepwood", "pick": "farthest_from_roads"}}
+    ],
     "critters": []
   }
 }
