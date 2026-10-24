@@ -365,9 +365,9 @@
         "guild_t3_anthracite",
         "guild_t3_garnet"
       ],
-      "title": "[PH] Word to the Guild House (Third depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "Two Hands on the Seal",
+      "text": "The anthracite and garnet orders are filled; this ordinary delivery copy has the guild and military supply office's joint seal on it. Take this delivery copy to Hadrin Beamset at the Miner's Guild house in Dur Brannoc so The Charter of Stone can record it.",
+      "completion": "That joint seal is ours and the army supply office's: The Charter of Stone confirms the load, and they confirm its place in the supply plan. Both sides put their names to work they can answer for.",
       "objectives": [
         {
           "type": "talk",
@@ -388,8 +388,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The anthracite and garnet orders are filled; this ordinary delivery copy has the guild and military supply office's joint seal on it. Take this delivery copy to Hadrin Beamset at the Miner's Guild house in Dur Brannoc so The Charter of Stone can record it.",
+          "completion": "That joint seal is ours and the army supply office's: The Charter of Stone confirms the load, and they confirm its place in the supply plan. Both sides put their names to work they can answer for."
         },
         {
           "zone": "elandor_stormvault_heights",
@@ -404,8 +404,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are settled, and the guild and military supply office have sealed the delivery copy together, as they should. Take this delivery copy to Hadrin Beamset at the Miner's Guild house in Dur Brannoc so The Charter of Stone can record it.",
+          "completion": "That joint seal is ours and the army supply office's: The Charter of Stone confirms the load, and they confirm its place in the supply plan. Both sides put their names to work they can answer for."
         },
         {
           "zone": "elandor_whitebridge_shire",
@@ -420,8 +420,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The anthracite and garnet are accounted for, and this delivery copy bears the joint seal of the guild and military supply office. Take this delivery copy to Alis Cartwright at the Miner's Guild house in Highcourt so The Charter of Stone can record it.",
+          "completion": "The Charter of Stone and the military supply office share this seal because a delivery needs someone responsible at both ends. I can follow it from the driver to the person waiting for the load. This copy belongs with the completed deliveries."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -436,8 +436,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Here is the delivery copy, sealed by the guild and military supply office now that the anthracite and garnet orders are filled. Take this delivery copy to Alis Cartwright at the Miner's Guild house in Highcourt so The Charter of Stone can record it.",
+          "completion": "The Charter of Stone and the military supply office share this seal because a delivery needs someone responsible at both ends. I can follow it from the driver to the person waiting for the load. This copy belongs with the completed deliveries."
         },
         {
           "zone": "elandor_lorindor",
@@ -452,8 +452,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are filled, and the guild and military supply office have put their shared seal to the delivery copy. Take this delivery copy to Caelir Veinward at the Miner's Guild house in Lethariel so The Charter of Stone can record it.",
+          "completion": "The joint seal records the delivery agreed by The Charter of Stone and the military supply office, including its intended use. A clear agreement lets us plan the next cutting without wasting timber or work. I will file this copy with that agreement."
         },
         {
           "zone": "elandor_moonfall_wood",
@@ -468,8 +468,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The anthracite and garnet are accounted for; I have kept this delivery copy clean enough to read the joint guild and military supply seal. Take this delivery copy to Caelir Veinward at the Miner's Guild house in Lethariel so The Charter of Stone can record it.",
+          "completion": "The joint seal records the delivery agreed by The Charter of Stone and the military supply office, including its intended use. A clear agreement lets us plan the next cutting without wasting timber or work. I will file this copy with that agreement."
         },
         {
           "zone": "elandor_glassroot_wilds",
@@ -484,8 +484,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are settled, and the delivery copy has passed under the shared seal of the guild and military supply office. Take this delivery copy to Caelir Veinward at the Miner's Guild house in Lethariel so The Charter of Stone can record it.",
+          "completion": "The joint seal records the delivery agreed by The Charter of Stone and the military supply office, including its intended use. A clear agreement lets us plan the next cutting without wasting timber or work. I will file this copy with that agreement."
         },
         {
           "zone": "front_gravesalt_escarpment",
@@ -501,8 +501,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The anthracite and garnet orders are filled; this delivery copy carries the guild and military supply office's joint seal, with no tally left open. Take this delivery copy to Hadrin Beamset at the Miner's Guild house in Dur Brannoc so The Charter of Stone can record it.",
+          "completion": "That joint seal is ours and the army supply office's: The Charter of Stone confirms the load, and they confirm its place in the supply plan. Both sides put their names to work they can answer for."
         },
         {
           "zone": "front_broken_causeway",
@@ -518,8 +518,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are filled, and I have the delivery copy with the joint guild and military supply seal ready before the next cart arrives. Take this delivery copy to Alis Cartwright at the Miner's Guild house in Highcourt so The Charter of Stone can record it.",
+          "completion": "The Charter of Stone and the military supply office share this seal because a delivery needs someone responsible at both ends. I can follow it from the driver to the person waiting for the load. This copy belongs with the completed deliveries."
         },
         {
           "zone": "front_shattered_line",
@@ -535,8 +535,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The anthracite and garnet are accounted for, and the guild and military supply office have sealed their delivery copy together. Take this delivery copy to Alis Cartwright at the Miner's Guild house in Highcourt so The Charter of Stone can record it.",
+          "completion": "The Charter of Stone and the military supply office share this seal because a delivery needs someone responsible at both ends. I can follow it from the driver to the person waiting for the load. This copy belongs with the completed deliveries."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -552,8 +552,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the third depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are filled; the shared seal on this delivery copy confirms the guild and military supply office's part in the work. Take this delivery copy to Caelir Veinward at the Miner's Guild house in Lethariel so The Charter of Stone can record it.",
+          "completion": "The joint seal records the delivery agreed by The Charter of Stone and the military supply office, including its intended use. A clear agreement lets us plan the next cutting without wasting timber or work. I will file this copy with that agreement."
         }
       ],
       "rewards": {
@@ -567,8 +567,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "[PH] Clear the Camp's Surroundings (t3)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "title": "A Load on Every Back",
+      "text": "Cliffbucks have taken to charging our haulers between the pines, where there is precious little room to dodge. Hunt eight Cliffbucks by day in the {name:pinewood}, which lies {zone_area:pinewood}. A dwarf can carry a load or climb a tree; asking for both is unreasonable.",
       "objectives": [
         {
           "type": "kill",
@@ -593,7 +593,7 @@
               "area": "elandor_frostbarrow_shelf/pinewood"
             }
           ],
-          "text": "[PH] Defeat Cliffbuck × 8 by day in the {name:pinewood}, which lie {zone_area:pinewood}, so the camp's haulers can pass. Real text to follow."
+          "text": "Cliffbucks have taken to charging our haulers between the pines, where there is precious little room to dodge. Hunt eight Cliffbucks by day in the {name:pinewood}, which lies {zone_area:pinewood}. A dwarf can carry a load or climb a tree; asking for both is unreasonable."
         },
         {
           "zone": "elandor_whitebridge_shire",
@@ -608,7 +608,7 @@
               "area": "elandor_whitebridge_shire/meadows"
             }
           ],
-          "text": "[PH] Defeat Acorn Hog × 8 by day in the {name:meadows}, which lie {zone_area:meadows}, so the camp's haulers can pass. Real text to follow."
+          "text": "Acorn Hogs keep rooting through the meadow crossings and catching our cart wheels in the holes. Hunt eight Acorn Hogs by day in the {name:meadows}, which lie {zone_area:meadows}. We are trying to run a camp, and lately most of the work has been lifting carts."
         },
         {
           "zone": "elandor_lorindor",
@@ -623,7 +623,7 @@
               "area": "elandor_lorindor/berrywoods"
             }
           ],
-          "text": "[PH] Defeat Brook Hind × 8 by day in the {name:berrywoods}, which lie {zone_area:berrywoods}, so the camp's haulers can pass. Real text to follow."
+          "text": "Brook Hinds are driving our porters away from the berry woods with more determination than sense. Hunt eight Brook Hinds by day in the {name:berrywoods}, which lie {zone_area:berrywoods}. We need room to carry supplies through, and the animals have declined every reasonable request."
         },
         {
           "zone": "elandor_moonfall_wood",
@@ -638,7 +638,7 @@
               "area": "elandor_moonfall_wood/eaves"
             }
           ],
-          "text": "[PH] Defeat Crescent Stag × 8 by day in the {name:eaves}, which lie {zone_area:eaves}, so the camp's haulers can pass. Real text to follow."
+          "text": "Crescent Stags keep lowering their antlers at anyone carrying timber for the camp. Hunt eight Crescent Stags by day in the {name:eaves}, which lie {zone_area:eaves}. I admire a firm stance until it starts holding up my shift."
         },
         {
           "zone": "kragmar_ossuary_reach",
@@ -653,7 +653,7 @@
               "area": "kragmar_ossuary_reach/bonewood"
             }
           ],
-          "text": "[PH] Defeat Marrow Weevil × 8 by day in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
+          "text": "Marrow Weevil swarms have made the woods miserable for the crew bringing supplies to camp. Hunt eight Marrow Weevils by day in the {name:bonewood}, which lies {zone_area:bonewood}. I need my workers attending to their loads, not picking beetles out of their joints."
         },
         {
           "zone": "kragmar_speargrass_reach",
@@ -668,7 +668,7 @@
               "area": "kragmar_speargrass_reach/plains"
             }
           ],
-          "text": "[PH] Defeat Quagga × 8 by day in the {name:plains}, which lie {zone_area:plains}, so the camp's haulers can pass. Real text to follow."
+          "text": "Quaggas keep charging the haulers crossing the plains, and the last load came back scattered over half a field. Hunt eight Quaggas by day on the {name:plains}, which lie {zone_area:plains}. We gave our word that those supplies would reach camp together."
         },
         {
           "zone": "kragmar_whispering_reedlands",
@@ -683,7 +683,7 @@
               "area": "kragmar_whispering_reedlands/canopy"
             }
           ],
-          "text": "[PH] Defeat Reed Tapir × 8 by day in the {name:canopy}, which lie {zone_area:canopy}, so the camp's haulers can pass. Real text to follow."
+          "text": "Reed Tapirs have been knocking our porters off their footing beneath the trees. Hunt eight Reed Tapirs by day in the {name:canopy}, which lies {zone_area:canopy}. A dropped bundle is trouble enough before it lands in the water."
         }
       ],
       "rewards": {

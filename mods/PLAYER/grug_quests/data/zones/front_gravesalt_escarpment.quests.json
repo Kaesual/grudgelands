@@ -54,9 +54,9 @@
         "guild_t5_emberglass",
         "guild_t5_ruby"
       ],
-      "title": "[PH] Word to the Guild House (Fifth depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "The Whole Camp's Pay",
+      "text": "The emberglass and ruby orders are filled; this routine receipt records the camp pay that provides for the guards and the work crews together. Take this receipt to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
+      "completion": "The guard detail and the work crew are both covered by the camp's pay receipt. The Charter of Stone checks that because a defended camp still needs hands to keep it running. I will mark this receipt accounted for.",
       "objectives": [
         {
           "type": "talk",
@@ -78,8 +78,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The emberglass and ruby orders are filled; this routine receipt records the camp pay that provides for the guards and the work crews together. Take this receipt to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
+          "completion": "The guard detail and the work crew are both covered by the camp's pay receipt. The Charter of Stone checks that because a defended camp still needs hands to keep it running. I will mark this receipt accounted for."
         },
         {
           "zone": "front_broken_causeway",
@@ -95,8 +95,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are settled, and this receipt records the camp pay for fighters and workers; I have checked the workers' total twice. Take this receipt to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
+          "completion": "Here is the provision for the fighters, and here is the workers' share of the same camp pay. The Charter of Stone follows both through the books; otherwise a cart can arrive on time and still leave half the camp waiting. This receipt is in order."
         },
         {
           "zone": "front_shattered_line",
@@ -112,8 +112,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The emberglass and ruby are accounted for; I also have the regular receipt for the camp pay that feeds both our fighters and our workers. Take this receipt to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
+          "completion": "Here is the provision for the fighters, and here is the workers' share of the same camp pay. The Charter of Stone follows both through the books; otherwise a cart can arrive on time and still leave half the camp waiting. This receipt is in order."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -129,8 +129,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the fifth depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are filled; this ordinary receipt covers the camp pay for the fighters holding our ground and the workers keeping it supplied. Take this receipt to Caelir Veinward at the Miner's Guild house in Lethariel for The Charter of Stone.",
+          "completion": "The camp's pay provides for the people holding its ground and the people working it. The Charter of Stone records both, so the next supply plan reflects the whole camp. I will keep this receipt with theirs."
         }
       ],
       "rewards": {
@@ -148,9 +148,9 @@
         "guild_t5_emberglass",
         "guild_t5_ruby"
       ],
-      "title": "[PH] Word to the Guild House (Fifth depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "Everyone Under the Banner",
+      "text": "Both orders are settled; the camp's regular pay receipt records provision for the workers alongside the fighters. Take this receipt to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+      "completion": "Fighters and workers, both entered under the camp's ordinary pay. The Oathdelvers keep both sets of names in the account. I will file this receipt against their provision.",
       "objectives": [
         {
           "type": "talk",
@@ -172,8 +172,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are settled; the camp's regular pay receipt records provision for the workers alongside the fighters. Take this receipt to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+          "completion": "Fighters and workers, both entered under the camp's ordinary pay. The Oathdelvers keep both sets of names in the account. I will file this receipt against their provision."
         },
         {
           "zone": "front_broken_causeway",
@@ -189,8 +189,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The emberglass and ruby are accounted for; this receipt records the pay that provides for the camp's fighters and workers alike. Take this receipt to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "completion": "The fighters held their posts, and the workers kept the camp supplied; the pay receipt covers both. The Oathdelvers keep that promise with the army. I will enter it as received."
         },
         {
           "zone": "front_shattered_line",
@@ -206,8 +206,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled, and this regular receipt covers the camp pay for the workers as well as the fighters; both have kept their part of the promise. Take this receipt to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "completion": "The fighters held their posts, and the workers kept the camp supplied; the pay receipt covers both. The Oathdelvers keep that promise with the army. I will enter it as received."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -223,8 +223,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fifth depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The emberglass and ruby orders are settled; this receipt records the camp pay for the fighters and the workers whose loads keep them here. Take this receipt to Ombali Ropekeeper at the Miner's Guild house in Kezamba for The Oathdelvers.",
+          "completion": "This receipt names the camp's fighters and workers under the same provision of pay. The Oathdelvers remember both when we witness a delivery. I will set it with the account of what each was promised."
         }
       ],
       "rewards": {
@@ -242,9 +242,9 @@
         "guild_t6_crystal",
         "guild_t6_diamond"
       ],
-      "title": "[PH] Word to the Guild House (Sixth depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "A Separate Record",
+      "text": "Your crystal and diamond orders are filled; the salvage crew's record is ready too, with the names they recovered and the personal belongings entered apart from usable material. Take the salvage record to Hadrin Beamset at the Miner's Guild house in Dur Brannoc; The Charter of Stone will see it properly recorded.",
+      "completion": "The recovered names and personal belongings go in their own record; the usable material gets a separate tally. That is how The Charter of Stone files a salvage return. I will keep the names where someone looking for a person can find them.",
       "objectives": [
         {
           "type": "talk",
@@ -266,8 +266,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the sixth depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Your crystal and diamond orders are filled; the salvage crew's record is ready too, with the names they recovered and the personal belongings entered apart from usable material. Take the salvage record to Hadrin Beamset at the Miner's Guild house in Dur Brannoc; The Charter of Stone will see it properly recorded.",
+          "completion": "The recovered names and personal belongings go in their own record; the usable material gets a separate tally. That is how The Charter of Stone files a salvage return. I will keep the names where someone looking for a person can find them."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -283,8 +283,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the sixth depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are settled; I have a salvage record with recovered names and personal belongings on their own lines, separate from the material the workshops can use. Take the salvage record to Caelir Veinward at the Miner's Guild house in Lethariel; The Charter of Stone will see it properly recorded.",
+          "completion": "I will preserve the recovered names with the record of personal belongings, apart from the usable material. The Charter of Stone keeps those entries for the people who may come asking. A workshop's tally has another purpose."
         }
       ],
       "rewards": {
@@ -302,9 +302,9 @@
         "guild_t6_crystal",
         "guild_t6_diamond"
       ],
-      "title": "[PH] Word to the Guild House (Sixth depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "What Comes Back With a Name",
+      "text": "The crystal and diamond orders are filled; this salvage record preserves the recovered names and personal belongings separately from the material we can put back to work. Take the salvage record to Iven Lastshift at the Miner's Guild house in Nhal Veyr; The Oathdelvers will see it properly recorded.",
+      "completion": "I will enter the recovered names and personal belongings together, and file the usable material separately. The Oathdelvers keep a place for anyone who comes seeking a name. They should not have to search a materials ledger for it.",
       "objectives": [
         {
           "type": "talk",
@@ -326,8 +326,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the sixth depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The crystal and diamond orders are filled; this salvage record preserves the recovered names and personal belongings separately from the material we can put back to work. Take the salvage record to Iven Lastshift at the Miner's Guild house in Nhal Veyr; The Oathdelvers will see it properly recorded.",
+          "completion": "I will enter the recovered names and personal belongings together, and file the usable material separately. The Oathdelvers keep a place for anyone who comes seeking a name. They should not have to search a materials ledger for it."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -343,8 +343,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the sixth depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are settled; the salvage crew has listed recovered names and personal belongings apart from usable material, and I want that distinction kept. Take the salvage record to Ombali Ropekeeper at the Miner's Guild house in Kezamba; The Oathdelvers will see it properly recorded.",
+          "completion": "The recovered names and personal belongings will stay together in their own record, with the usable material tallied elsewhere. The Oathdelvers will keep that record for those who ask after someone. Your foreman was right to make the distinction clear."
         }
       ],
       "rewards": {
@@ -358,8 +358,8 @@
       "min_level": 51,
       "level": 52,
       "requires": [],
-      "title": "[PH] Clear the Camp's Surroundings (t6 low)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "title": "The Camp Still Needs Feeding",
+      "text": "Charnel Bears follow the smell of our provision loads through the bonewood and have little patience for the people carrying them. Hunt eight Charnel Bears by day in the {name:bonewood}, which lies {zone_area:bonewood}. I have enough mouths to feed without adding theirs.",
       "objectives": [
         {
           "type": "kill",
@@ -385,7 +385,7 @@
               "area": "front_gravesalt_escarpment/bonewood"
             }
           ],
-          "text": "[PH] Defeat Charnel Bear × 8 by day in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
+          "text": "Charnel Bears follow the smell of our provision loads through the bonewood and have little patience for the people carrying them. Hunt eight Charnel Bears by day in the {name:bonewood}, which lies {zone_area:bonewood}. I have enough mouths to feed without adding theirs."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -401,7 +401,7 @@
               "area": "front_skyglass_canopy/cloudwood"
             }
           ],
-          "text": "[PH] Defeat Saltroad Deserter × 8 by day in the {name:cloudwood}, which lie {zone_area:cloudwood}, so the camp's haulers can pass. Real text to follow."
+          "text": "Saltroad Deserters keep picking off our supply runs under the trees. Defeat eight Saltroad Deserters by day in the {name:cloudwood}, which lies {zone_area:cloudwood}. I am tired of counting a full crew out and wondering how many will come back."
         }
       ],
       "rewards": {
@@ -429,8 +429,8 @@
       "min_level": 58,
       "level": 59,
       "requires": [],
-      "title": "[PH] Clear the Camp's Surroundings (t6 high)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "title": "One More Shift",
+      "text": "Embergrit Gnawer swarms keep sending our haulers stumbling across the pale slopes with their loads. Kill eight Embergrit Gnawers by day on the {name:whitewall}, which lies {zone_area:whitewall}. Down a mine or out in the open, I still have to get this crew home.",
       "objectives": [
         {
           "type": "kill",
@@ -456,7 +456,7 @@
               "area": "front_gravesalt_escarpment/whitewall"
             }
           ],
-          "text": "[PH] Defeat Embergrit Gnawer × 8 by day in the {name:whitewall}, which lie {zone_area:whitewall}, so the camp's haulers can pass. Real text to follow."
+          "text": "Embergrit Gnawer swarms keep sending our haulers stumbling across the pale slopes with their loads. Kill eight Embergrit Gnawers by day on the {name:whitewall}, which lies {zone_area:whitewall}. Down a mine or out in the open, I still have to get this crew home."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -472,7 +472,7 @@
               "area": "front_skyglass_canopy/high_canopy"
             }
           ],
-          "text": "[PH] Defeat Last-Watch Mummy × 8 by day in the {name:high_canopy}, which lie {zone_area:high_canopy}, so the camp's haulers can pass. Real text to follow."
+          "text": "Last-Watch Mummies keep attacking the supply crews beneath the high branches. Defeat eight Last-Watch Mummies by day in the {name:high_canopy}, which lies {zone_area:high_canopy}. My workers are owed the end of their shift, and I would like to give it to them."
         }
       ],
       "rewards": {

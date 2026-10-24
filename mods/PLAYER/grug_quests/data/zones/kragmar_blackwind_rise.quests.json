@@ -284,9 +284,9 @@
         "guild_t4_silver",
         "guild_t4_sapphire"
       ],
-      "title": "[PH] Word to the Guild House (Fourth depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "Name Every Hand",
+      "text": "Both orders are settled; this border report names the drivers and workers affected by lost cargo, with no one buried under a total. Bring the border report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+      "completion": "The drivers and workers are named clearly beside the lost cargo. The Oathdelvers collect these border reports to keep track of whom a loss has left in need. I will enter every name as written.",
       "objectives": [
         {
           "type": "talk",
@@ -307,8 +307,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fourth depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are settled; this border report names the drivers and workers affected by lost cargo, with no one buried under a total. Bring the border report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+          "completion": "The drivers and workers are named clearly beside the lost cargo. The Oathdelvers collect these border reports to keep track of whom a loss has left in need. I will enter every name as written."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -323,8 +323,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fourth depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The silver and sapphire are accounted for; I have written the drivers and workers affected by our lost loads into this border report. Bring the border report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "completion": "Here are the missing loads, and here are the drivers and workers who bore the loss. The Oathdelvers need both in a border report before we can say what help is owed. Your foreman has given us something we can act on."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -339,8 +339,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fourth depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled, and this border report is ready; it names the drivers and workers who bore the trouble when the cargo was lost. Bring the border report to Ombali Ropekeeper at the Miner's Guild house in Kezamba for The Oathdelvers.",
+          "completion": "The lost cargo has a tally, and the drivers and workers have names of their own. The Oathdelvers gather news from the border so we can ask those people what is still needed. This report gives us someone to ask."
         },
         {
           "zone": "front_gravesalt_escarpment",
@@ -356,8 +356,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fourth depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The silver and sapphire orders are settled; this border report records the affected drivers and workers alongside each lost load. Bring the border report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+          "completion": "The drivers and workers are named clearly beside the lost cargo. The Oathdelvers collect these border reports to keep track of whom a loss has left in need. I will enter every name as written."
         },
         {
           "zone": "front_broken_causeway",
@@ -373,8 +373,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fourth depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled, and I have a border report for the guild with the affected drivers and workers named beside the missing cargo. Bring the border report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "completion": "Here are the missing loads, and here are the drivers and workers who bore the loss. The Oathdelvers need both in a border report before we can say what help is owed. Your foreman has given us something we can act on."
         },
         {
           "zone": "front_shattered_line",
@@ -390,8 +390,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fourth depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The silver and sapphire are accounted for; this border report says which drivers and workers were left short when our supplies were lost. Bring the border report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "completion": "Here are the missing loads, and here are the drivers and workers who bore the loss. The Oathdelvers need both in a border report before we can say what help is owed. Your foreman has given us something we can act on."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -407,8 +407,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the fourth depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are settled, and I have put the drivers and workers affected by lost cargo into this border report, where their names can be heard. Bring the border report to Ombali Ropekeeper at the Miner's Guild house in Kezamba for The Oathdelvers.",
+          "completion": "The lost cargo has a tally, and the drivers and workers have names of their own. The Oathdelvers gather news from the border so we can ask those people what is still needed. This report gives us someone to ask."
         }
       ],
       "rewards": {
@@ -422,8 +422,8 @@
       "min_level": 31,
       "level": 32,
       "requires": [],
-      "title": "[PH] Clear the Camp's Surroundings (t4 night)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out after dark. Real text to follow.",
+      "title": "Get the Late Shift Home",
+      "text": "Pall Weavers string webs across our workers' way through the bone forest at night. Kill three Pall Weavers at night in the {name:bonewood}, which lies {zone_area:bonewood}. My crew has spent enough shifts pulling each other loose.",
       "objectives": [
         {
           "type": "kill",
@@ -448,7 +448,7 @@
               "area": "kragmar_blackwind_rise/bonewood"
             }
           ],
-          "text": "[PH] Defeat Pall Weaver × 3 after dark in the {name:bonewood}, which lie {zone_area:bonewood}, so the camp's haulers can pass. Real text to follow."
+          "text": "Pall Weavers string webs across our workers' way through the bone forest at night. Kill three Pall Weavers at night in the {name:bonewood}, which lies {zone_area:bonewood}. My crew has spent enough shifts pulling each other loose."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -463,7 +463,7 @@
               "area": "kragmar_thunderroot_wilds/canopy"
             }
           ],
-          "text": "[PH] Defeat Shade Panther × 3 after dark in the {name:canopy}, which lie {zone_area:canopy}, so the camp's haulers can pass. Real text to follow."
+          "text": "Shade Panthers follow our porters through the jungle at night, waiting for one to fall behind. Hunt three Shade Panthers at night in the {name:canopy}, which lies {zone_area:canopy}. We promised every carrier a place by the camp fire, and I intend to keep every place filled."
         }
       ],
       "rewards": {

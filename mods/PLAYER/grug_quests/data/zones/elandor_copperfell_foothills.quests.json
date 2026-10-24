@@ -451,9 +451,9 @@
         "guild_t2_iron",
         "guild_t2_jade"
       ],
-      "title": "[PH] Word to the Guild House (Second depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "A Name Worth Passing On",
+      "text": "Iron and jade, both orders filled; that is enough for me to put my name beside yours on a recommendation. Take my recommendation to Hadrin Beamset at the Miner's Guild house in Dur Brannoc; The Charter of Stone should know who helped us.",
+      "completion": "A foreman who recommends a helper is putting his own judgement on the page. I will remember your name at The Charter of Stone; reliable hands save a great deal of shouting.",
       "objectives": [
         {
           "type": "talk",
@@ -474,8 +474,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Iron and jade, both orders filled; that is enough for me to put my name beside yours on a recommendation. Take my recommendation to Hadrin Beamset at the Miner's Guild house in Dur Brannoc; The Charter of Stone should know who helped us.",
+          "completion": "A foreman who recommends a helper is putting his own judgement on the page. I will remember your name at The Charter of Stone; reliable hands save a great deal of shouting."
         },
         {
           "zone": "elandor_frostbarrow_shelf",
@@ -490,8 +490,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "You have filled the iron and jade orders, and I have written you a recommendation before another shift distracts me. Take my recommendation to Hadrin Beamset at the Miner's Guild house in Dur Brannoc; The Charter of Stone should know who helped us.",
+          "completion": "A foreman who recommends a helper is putting his own judgement on the page. I will remember your name at The Charter of Stone; reliable hands save a great deal of shouting."
         },
         {
           "zone": "elandor_stormvault_heights",
@@ -506,8 +506,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The iron and jade orders are settled, and a reliable pair of hands deserves a line in my report. Take my recommendation to Hadrin Beamset at the Miner's Guild house in Dur Brannoc; The Charter of Stone should know who helped us.",
+          "completion": "A foreman who recommends a helper is putting his own judgement on the page. I will remember your name at The Charter of Stone; reliable hands save a great deal of shouting."
         },
         {
           "zone": "elandor_goldmead_vale",
@@ -522,8 +522,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both the iron and the jade arrived, which puts you ahead of several people who sent me very handsome promises. Take my recommendation to Alis Cartwright at the Miner's Guild house in Highcourt; The Charter of Stone should know who helped us.",
+          "completion": "Here you are, recommended by the person who had to count the loads. I will keep your name among the helpers The Charter of Stone can call on with confidence."
         },
         {
           "zone": "elandor_whitebridge_shire",
@@ -538,8 +538,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The iron and jade orders are filled, and I can recommend you without having to explain away a missing sack. Take my recommendation to Alis Cartwright at the Miner's Guild house in Highcourt; The Charter of Stone should know who helped us.",
+          "completion": "Here you are, recommended by the person who had to count the loads. I will keep your name among the helpers The Charter of Stone can call on with confidence."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -554,8 +554,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "You got the iron and jade orders filled despite everything clamouring for attention here; I have written that down. Take my recommendation to Alis Cartwright at the Miner's Guild house in Highcourt; The Charter of Stone should know who helped us.",
+          "completion": "Here you are, recommended by the person who had to count the loads. I will keep your name among the helpers The Charter of Stone can call on with confidence."
         },
         {
           "zone": "elandor_starbough_vale",
@@ -570,8 +570,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "You have filled both orders, and I would rather the guild remembered the helper as well as the iron and jade. Take my recommendation to Caelir Veinward at the Miner's Guild house in Lethariel; The Charter of Stone should know who helped us.",
+          "completion": "Your foreman's recommendation is clear, and so is the work behind it. The Charter of Stone will know your name when the next careful pair of hands is needed."
         },
         {
           "zone": "elandor_lorindor",
@@ -586,8 +586,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The iron and jade are accounted for; your part in bringing them should be, too. Take my recommendation to Caelir Veinward at the Miner's Guild house in Lethariel; The Charter of Stone should know who helped us.",
+          "completion": "Your foreman's recommendation is clear, and so is the work behind it. The Charter of Stone will know your name when the next careful pair of hands is needed."
         },
         {
           "zone": "elandor_moonfall_wood",
@@ -602,8 +602,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Both orders are filled, and I have put in a good word for you while I still have a quiet moment to write. Take my recommendation to Caelir Veinward at the Miner's Guild house in Lethariel; The Charter of Stone should know who helped us.",
+          "completion": "Your foreman's recommendation is clear, and so is the work behind it. The Charter of Stone will know your name when the next careful pair of hands is needed."
         },
         {
           "zone": "elandor_glassroot_wilds",
@@ -618,8 +618,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "Iron, jade, and someone I can rely on to finish a job; the guild ought to hear about all three. Take my recommendation to Caelir Veinward at the Miner's Guild house in Lethariel; The Charter of Stone should know who helped us.",
+          "completion": "Your foreman's recommendation is clear, and so is the work behind it. The Charter of Stone will know your name when the next careful pair of hands is needed."
         },
         {
           "zone": "front_gravesalt_escarpment",
@@ -635,8 +635,8 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Hadrin Beamset at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Hadrin Beamset takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "You filled the iron and jade orders without leaving me a short tally, and I have a recommendation ready. Take my recommendation to Hadrin Beamset at the Miner's Guild house in Dur Brannoc; The Charter of Stone should know who helped us.",
+          "completion": "A foreman who recommends a helper is putting his own judgement on the page. I will remember your name at The Charter of Stone; reliable hands save a great deal of shouting."
         },
         {
           "zone": "front_broken_causeway",
@@ -652,8 +652,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "The iron and jade orders are settled; out here I take particular care to remember who comes through for us. Take my recommendation to Alis Cartwright at the Miner's Guild house in Highcourt; The Charter of Stone should know who helped us.",
+          "completion": "Here you are, recommended by the person who had to count the loads. I will keep your name among the helpers The Charter of Stone can call on with confidence."
         },
         {
           "zone": "front_shattered_line",
@@ -669,8 +669,8 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Alis Cartwright at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Alis Cartwright takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "A camp can swallow a good day's work without anyone noticing, so I have written down who filled our iron and jade orders. Take my recommendation to Alis Cartwright at the Miner's Guild house in Highcourt; The Charter of Stone should know who helped us.",
+          "completion": "Here you are, recommended by the person who had to count the loads. I will keep your name among the helpers The Charter of Stone can call on with confidence."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -686,8 +686,8 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "[PH] Both The Charter of Stone orders of the second depth are filled. Take the camp's word to Caelir Veinward at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Caelir Veinward takes the camp's word for The Charter of Stone. Real text to follow."
+          "text": "You have filled both orders, and I have made time to recommend the person behind the iron and jade. Take my recommendation to Caelir Veinward at the Miner's Guild house in Lethariel; The Charter of Stone should know who helped us.",
+          "completion": "Your foreman's recommendation is clear, and so is the work behind it. The Charter of Stone will know your name when the next careful pair of hands is needed."
         }
       ],
       "rewards": {
@@ -701,8 +701,8 @@
       "min_level": 11,
       "level": 12,
       "requires": [],
-      "title": "[PH] Clear the Camp's Surroundings (t2)",
-      "text": "[PH] Beasts by the camp keep the haulers from the lift. Thin them out by day. Real text to follow.",
+      "title": "Clear the Haulers' Path",
+      "text": "Bracken Foxes keep stealing the food our haulers leave beside their packs, and hungry haulers are a poor investment. Hunt eight Bracken Foxes by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. I have spent enough of this shift chasing my own lunch.",
       "objectives": [
         {
           "type": "kill",
@@ -727,7 +727,7 @@
               "area": "elandor_copperfell_foothills/lower_pines"
             }
           ],
-          "text": "[PH] Defeat Bracken Fox × 8 by day in the {name:lower_pines}, which lie {zone_area:lower_pines}, so the camp's haulers can pass. Real text to follow."
+          "text": "Bracken Foxes keep stealing the food our haulers leave beside their packs, and hungry haulers are a poor investment. Hunt eight Bracken Foxes by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. I have spent enough of this shift chasing my own lunch."
         },
         {
           "zone": "elandor_goldmead_vale",
@@ -742,7 +742,7 @@
               "area": "elandor_goldmead_vale/orchards"
             }
           ],
-          "text": "[PH] Defeat Rooter × 8 by day in the {name:orchards}, which lie {zone_area:orchards}, so the camp's haulers can pass. Real text to follow."
+          "text": "Rooters have been turning up the ground where our haulers wheel their loads through the orchards. Hunt eight Rooters by day in the {name:orchards}, which lie {zone_area:orchards}. If I wanted to push every cart myself, I would not have hired haulers."
         },
         {
           "zone": "elandor_starbough_vale",
@@ -757,7 +757,7 @@
               "area": "elandor_starbough_vale/lower_boughs"
             }
           ],
-          "text": "[PH] Defeat Truffle Sow × 8 by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}, so the camp's haulers can pass. Real text to follow."
+          "text": "Our haulers have enough roots to step over without Truffle Sows tearing up the ground around them. Hunt eight Truffle Sows by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}. I would like the next load to arrive with its carrier still upright."
         },
         {
           "zone": "kragmar_mournfen",
@@ -772,7 +772,7 @@
               "area": "kragmar_mournfen/blightfields"
             }
           ],
-          "text": "[PH] Defeat Bog Seep × 8 by day in the {name:blightfields}, which lie {zone_area:blightfields}, so the camp's haulers can pass. Real text to follow."
+          "text": "Bog Seeps keep spreading across the fields our camp haulers use, and each crossing costs us another boot. Hunt eight Bog Seeps by day in the {name:blightfields}, which lie {zone_area:blightfields}. We keep names for the missing here; I refuse to start a register for footwear."
         },
         {
           "zone": "kragmar_redtusk_savanna",
@@ -787,7 +787,7 @@
               "area": "kragmar_redtusk_savanna/grasslands"
             }
           ],
-          "text": "[PH] Defeat Cackler × 8 by day in the {name:grasslands}, which lie {zone_area:grasslands}, so the camp's haulers can pass. Real text to follow."
+          "text": "Cacklers have learned that a hauler with both hands full makes easy prey. Hunt eight Cacklers by day in the {name:grasslands}, which lie {zone_area:grasslands}. Our guards have enemies to watch, and I have loads to move."
         },
         {
           "zone": "kragmar_raincall_basin",
@@ -802,7 +802,7 @@
               "area": "kragmar_raincall_basin/rainwood"
             }
           ],
-          "text": "[PH] Defeat Wallow Sow × 8 by day in the {name:rainwood}, which lie {zone_area:rainwood}, so the camp's haulers can pass. Real text to follow."
+          "text": "Wallow Sows keep barging through the undergrowth and sending our porters scrambling with their loads. Hunt eight Wallow Sows by day in the {name:rainwood}, which lies {zone_area:rainwood}. The last porter saved the sack and landed in the mud; he has told me about it four times."
         }
       ],
       "rewards": {

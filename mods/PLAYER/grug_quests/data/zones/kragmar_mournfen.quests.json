@@ -441,9 +441,9 @@
         "guild_t2_iron",
         "guild_t2_jade"
       ],
-      "title": "[PH] Word to the Guild House (Second depth)",
-      "text": "[PH] Take the camp's word to the Miner's Guild house. Real text to follow.",
-      "completion": "[PH] The guild house takes the camp's word. Real text to follow.",
+      "title": "My Word for Yours",
+      "text": "The iron and jade orders are filled; I have set your name down carefully, with my word beside it. Take my recommendation to Iven Lastshift at the Miner's Guild house in Nhal Veyr; The Oathdelvers should know who helped us.",
+      "completion": "Your name is legible, and the foreman has put his own beside it. I will preserve that recommendation among the reliable helpers of The Oathdelvers.",
       "objectives": [
         {
           "type": "talk",
@@ -464,8 +464,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The iron and jade orders are filled; I have set your name down carefully, with my word beside it. Take my recommendation to Iven Lastshift at the Miner's Guild house in Nhal Veyr; The Oathdelvers should know who helped us.",
+          "completion": "Your name is legible, and the foreman has put his own beside it. I will preserve that recommendation among the reliable helpers of The Oathdelvers."
         },
         {
           "zone": "kragmar_ossuary_reach",
@@ -480,8 +480,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "You helped us settle the iron and jade orders, and I will see that the guild hears who did the work. Take my recommendation to Iven Lastshift at the Miner's Guild house in Nhal Veyr; The Oathdelvers should know who helped us.",
+          "completion": "Your name is legible, and the foreman has put his own beside it. I will preserve that recommendation among the reliable helpers of The Oathdelvers."
         },
         {
           "zone": "kragmar_blackwind_rise",
@@ -496,8 +496,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled, and I have written a recommendation that will outlast my memory of this wretched shift. Take my recommendation to Iven Lastshift at the Miner's Guild house in Nhal Veyr; The Oathdelvers should know who helped us.",
+          "completion": "Your name is legible, and the foreman has put his own beside it. I will preserve that recommendation among the reliable helpers of The Oathdelvers."
         },
         {
           "zone": "kragmar_redtusk_savanna",
@@ -512,8 +512,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Iron and jade, both delivered; you have earned a good word from me, and I do not give those just to fill the silence. Take my recommendation to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak; The Oathdelvers should know who helped us.",
+          "completion": "Both orders filled, and a foreman willing to speak for you. I will remember that here at The Oathdelvers; kept promises make introductions easy."
         },
         {
           "zone": "kragmar_speargrass_reach",
@@ -528,8 +528,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "You saw the iron and jade orders through, so I will stand by my recommendation of you. Take my recommendation to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak; The Oathdelvers should know who helped us.",
+          "completion": "Both orders filled, and a foreman willing to speak for you. I will remember that here at The Oathdelvers; kept promises make introductions easy."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -544,8 +544,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The iron and jade orders are settled, and I want the guild to hear your name while the work is fresh in mind. Take my recommendation to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak; The Oathdelvers should know who helped us.",
+          "completion": "Both orders filled, and a foreman willing to speak for you. I will remember that here at The Oathdelvers; kept promises make introductions easy."
         },
         {
           "zone": "kragmar_raincall_basin",
@@ -560,8 +560,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled; I have written down your help before the next downpour makes an opinion of my handwriting. Take my recommendation to Ombali Ropekeeper at the Miner's Guild house in Kezamba; The Oathdelvers should know who helped us.",
+          "completion": "Your foreman has given his word about your work, and I have heard it. The Oathdelvers will know who helped when those orders needed filling."
         },
         {
           "zone": "kragmar_whispering_reedlands",
@@ -576,8 +576,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The iron and jade are accounted for, and I can speak plainly for the person who helped bring them in. Take my recommendation to Ombali Ropekeeper at the Miner's Guild house in Kezamba; The Oathdelvers should know who helped us.",
+          "completion": "Your foreman has given his word about your work, and I have heard it. The Oathdelvers will know who helped when those orders needed filling."
         },
         {
           "zone": "kragmar_totemwater_reach",
@@ -592,8 +592,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "You have filled both orders, and my recommendation is ready; a good word should travel while it is still useful. Take my recommendation to Ombali Ropekeeper at the Miner's Guild house in Kezamba; The Oathdelvers should know who helped us.",
+          "completion": "Your foreman has given his word about your work, and I have heard it. The Oathdelvers will know who helped when those orders needed filling."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -608,8 +608,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The iron and jade orders are finished, and I would like word of your help to reach the guild over all this noise. Take my recommendation to Ombali Ropekeeper at the Miner's Guild house in Kezamba; The Oathdelvers should know who helped us.",
+          "completion": "Your foreman has given his word about your work, and I have heard it. The Oathdelvers will know who helped when those orders needed filling."
         },
         {
           "zone": "front_gravesalt_escarpment",
@@ -625,8 +625,8 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Iven Lastshift at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Iven Lastshift takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Both orders are filled, and I have added your name to my recommendation with a steady hand, for once. Take my recommendation to Iven Lastshift at the Miner's Guild house in Nhal Veyr; The Oathdelvers should know who helped us.",
+          "completion": "Your name is legible, and the foreman has put his own beside it. I will preserve that recommendation among the reliable helpers of The Oathdelvers."
         },
         {
           "zone": "front_broken_causeway",
@@ -642,8 +642,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "You have helped us honour the iron and jade orders, and I will put my own word behind yours. Take my recommendation to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak; The Oathdelvers should know who helped us.",
+          "completion": "Both orders filled, and a foreman willing to speak for you. I will remember that here at The Oathdelvers; kept promises make introductions easy."
         },
         {
           "zone": "front_shattered_line",
@@ -659,8 +659,8 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Drava Flintshoulder at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Drava Flintshoulder takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "Iron and jade are both accounted for; a helper who sees a job through deserves to be spoken for. Take my recommendation to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak; The Oathdelvers should know who helped us.",
+          "completion": "Both orders filled, and a foreman willing to speak for you. I will remember that here at The Oathdelvers; kept promises make introductions easy."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -676,8 +676,8 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "[PH] Both The Oathdelvers orders of the second depth are filled. Take the camp's word to Ombali Ropekeeper at the Miner's Guild house. Real text to follow.",
-          "completion": "[PH] Ombali Ropekeeper takes the camp's word for The Oathdelvers. Real text to follow."
+          "text": "The iron and jade orders are filled, and I have made a note of the help before the next load takes all my attention. Take my recommendation to Ombali Ropekeeper at the Miner's Guild house in Kezamba; The Oathdelvers should know who helped us.",
+          "completion": "Your foreman has given his word about your work, and I have heard it. The Oathdelvers will know who helped when those orders needed filling."
         }
       ],
       "rewards": {

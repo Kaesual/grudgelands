@@ -10,8 +10,8 @@
       "min_level": 11,
       "level": 13,
       "requires": [],
-      "title": "[PH] Iron Lump × 20 from the Depth",
-      "text": "[PH] The Miner's Guild needs Iron Lump × 20 from the second depth. Real text to follow.",
+      "title": "A Promise in Iron",
+      "text": "The Charter of Stone has promised the army smiths another load, and my last tally is twenty short. Bring me twenty Iron Lumps; the camp lift's second level is a good place to start looking. A charter is easier to honour when there is something in the cart.",
       "objectives": [
         {
           "type": "item",
@@ -44,7 +44,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Iron Lump × 20 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone has promised the army smiths another load, and my last tally is twenty short. Bring me twenty Iron Lumps; the camp lift's second level is a good place to start looking. A charter is easier to honour when there is something in the cart."
         },
         {
           "zone": "oathdelvers",
@@ -70,7 +70,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Iron Lump × 20 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers gave their word to the smiths of The Throng, and I mean to keep it before they come asking again. Bring me twenty Iron Lumps; dig out from the lift room on the second level. I can carry a promise, but I would rather carry the iron."
         }
       ],
       "rewards": {
@@ -84,8 +84,8 @@
       "min_level": 11,
       "level": 13,
       "requires": [],
-      "title": "[PH] Rough Jade × 4 from the Depth",
-      "text": "[PH] The Miner's Guild needs Rough Jade × 4 from the second depth. Real text to follow.",
+      "title": "Four Green Reasons",
+      "text": "The Charter of Stone's gem workers have sent a very neat request for four pieces of Rough Jade. Bring them to me; the lift's second level puts you at the right depth to look. I have kept their paper clean, which is more than I can say for anything else here.",
       "objectives": [
         {
           "type": "item",
@@ -118,7 +118,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Rough Jade × 4 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone's gem workers have sent a very neat request for four pieces of Rough Jade. Bring them to me; the lift's second level puts you at the right depth to look. I have kept their paper clean, which is more than I can say for anything else here."
         },
         {
           "zone": "oathdelvers",
@@ -144,7 +144,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Rough Jade × 4 from the second depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers owe their gem workers four pieces of Rough Jade, and I have heard enough about it to remember the number in my sleep. Bring them to me; you can search beyond the lift room on the second level. Small bundle, same oath."
         }
       ],
       "rewards": {
@@ -158,8 +158,8 @@
       "min_level": 21,
       "level": 23,
       "requires": [],
-      "title": "[PH] Anthracite × 20 from the Depth",
-      "text": "[PH] The Miner's Guild needs Anthracite × 20 from the third depth. Real text to follow.",
+      "title": "Keep the Forges Fed",
+      "text": "The army's orders keep the forges busy, and The Charter of Stone has agreed to keep them fed. Bring me twenty pieces of Anthracite; the lift's third level reaches the right rock. The smiths can work wonders, but they cannot burn my apologies.",
       "objectives": [
         {
           "type": "item",
@@ -188,7 +188,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Anthracite × 20 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The army's orders keep the forges busy, and The Charter of Stone has agreed to keep them fed. Bring me twenty pieces of Anthracite; the lift's third level reaches the right rock. The smiths can work wonders, but they cannot burn my apologies."
         },
         {
           "zone": "oathdelvers",
@@ -210,7 +210,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Anthracite × 20 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The forges serving The Throng are waiting on us, and The Oathdelvers do not leave a promised load sitting in the deep. Bring me twenty pieces of Anthracite; the lift's third level is the place to look. I would like to hear a hammer for once instead of a complaint."
         }
       ],
       "rewards": {
@@ -224,8 +224,8 @@
       "min_level": 21,
       "level": 23,
       "requires": [],
-      "title": "[PH] Rough Garnet × 4 from the Depth",
-      "text": "[PH] The Miner's Guild needs Rough Garnet × 4 from the third depth. Real text to follow.",
+      "title": "A Small Order",
+      "text": "The Charter of Stone has an order for four pieces of Rough Garnet, marked 'small' by someone who will not be carrying it through rock. Bring them to me; the lift's third level reaches their depth. I will handle the tally if you handle the bundle.",
       "objectives": [
         {
           "type": "item",
@@ -254,7 +254,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Rough Garnet × 4 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone has an order for four pieces of Rough Garnet, marked 'small' by someone who will not be carrying it through rock. Bring them to me; the lift's third level reaches their depth. I will handle the tally if you handle the bundle."
         },
         {
           "zone": "oathdelvers",
@@ -276,7 +276,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Rough Garnet × 4 from the third depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "Four pieces of Rough Garnet are still missing from a load The Oathdelvers promised. Bring them to me; try beyond the lift room on the third level. The deep has not agreed to our delivery date, but the gem workers certainly have."
         }
       ],
       "rewards": {
@@ -290,8 +290,8 @@
       "min_level": 31,
       "level": 33,
       "requires": [],
-      "title": "[PH] Silver × 15 from the Depth",
-      "text": "[PH] The Miner's Guild needs Silver × 15 from the fourth depth. Real text to follow.",
+      "title": "Silver on the Tally",
+      "text": "The Charter of Stone's workshops need fifteen pieces of Silver, and I have a blank space on the tally that will not fill itself. Bring them to me; the lift's fourth level will take you to the right depth. I would help, but apparently someone must stay here and be asked where everything is.",
       "objectives": [
         {
           "type": "item",
@@ -316,7 +316,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Silver × 15 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone's workshops need fifteen pieces of Silver, and I have a blank space on the tally that will not fill itself. Bring them to me; the lift's fourth level will take you to the right depth. I would help, but apparently someone must stay here and be asked where everything is."
         },
         {
           "zone": "oathdelvers",
@@ -334,7 +334,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Silver × 15 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers promised fifteen pieces of Silver to the workshops supplying The Throng. Bring them to me; you can dig out from the lift room on the fourth level. We have enough empty sacks to start a second camp, and I would rather fill this one."
         }
       ],
       "rewards": {
@@ -348,8 +348,8 @@
       "min_level": 31,
       "level": 33,
       "requires": [],
-      "title": "[PH] Rough Sapphire × 4 from the Depth",
-      "text": "[PH] The Miner's Guild needs Rough Sapphire × 4 from the fourth depth. Real text to follow.",
+      "title": "Something Blue in the Dust",
+      "text": "The Charter of Stone's gem workers want four pieces of Rough Sapphire, and their order has survived three spills on my desk. Bring them to me; the lift's fourth level reaches the depth to search. Let us finish this before the paper dissolves.",
       "objectives": [
         {
           "type": "item",
@@ -374,7 +374,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Rough Sapphire × 4 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone's gem workers want four pieces of Rough Sapphire, and their order has survived three spills on my desk. Bring them to me; the lift's fourth level reaches the depth to search. Let us finish this before the paper dissolves."
         },
         {
           "zone": "oathdelvers",
@@ -392,7 +392,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Rough Sapphire × 4 from the fourth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers have pledged four pieces of Rough Sapphire, and the waiting craftsmen can quote the promise word for word. Bring them to me; start your search beyond the lift room on the fourth level. I remember it too, but that has not satisfied them."
         }
       ],
       "rewards": {
@@ -406,8 +406,8 @@
       "min_level": 41,
       "level": 43,
       "requires": [],
-      "title": "[PH] Emberglass × 15 from the Depth",
-      "text": "[PH] The Miner's Guild needs Emberglass × 15 from the fifth depth. Real text to follow.",
+      "title": "The Next Load",
+      "text": "The Charter of Stone still has workshops to supply while the army holds the camp. Bring me fifteen pieces of Emberglass; the lift's fifth level reaches the depth we need. I have a cart ready, which is a rare enough event to make use of.",
       "objectives": [
         {
           "type": "item",
@@ -428,7 +428,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Emberglass × 15 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone still has workshops to supply while the army holds the camp. Bring me fifteen pieces of Emberglass; the lift's fifth level reaches the depth we need. I have a cart ready, which is a rare enough event to make use of."
         },
         {
           "zone": "oathdelvers",
@@ -442,7 +442,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Emberglass × 15 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers have a load to finish for the workshops behind our war effort. Bring me fifteen pieces of Emberglass; take the lift to the fifth level if you need a place to look. The guards are holding up their end of the bargain, and I intend to hold up ours."
         }
       ],
       "rewards": {
@@ -456,8 +456,8 @@
       "min_level": 41,
       "level": 43,
       "requires": [],
-      "title": "[PH] Rough Ruby × 4 from the Depth",
-      "text": "[PH] The Miner's Guild needs Rough Ruby × 4 from the fifth depth. Real text to follow.",
+      "title": "Mind the Little Bundle",
+      "text": "The Charter of Stone needs four pieces of Rough Ruby for its gem workers. Bring them to me; you can search at the lift's fifth level. I have set aside a separate sack, because 'somewhere under the other load' is a miserable entry in a ledger.",
       "objectives": [
         {
           "type": "item",
@@ -478,7 +478,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Rough Ruby × 4 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone needs four pieces of Rough Ruby for its gem workers. Bring them to me; you can search at the lift's fifth level. I have set aside a separate sack, because 'somewhere under the other load' is a miserable entry in a ledger."
         },
         {
           "zone": "oathdelvers",
@@ -492,7 +492,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Rough Ruby × 4 from the fifth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers have promised four pieces of Rough Ruby, and this bundle is going into my own hands. Bring them to me; the lift's fifth level reaches the rock to search. Last time I asked where a small delivery had gone, everyone pointed at everyone else."
         }
       ],
       "rewards": {
@@ -506,8 +506,8 @@
       "min_level": 51,
       "level": 53,
       "requires": [],
-      "title": "[PH] Abyssal Crystal × 10 from the Depth",
-      "text": "[PH] The Miner's Guild needs Abyssal Crystal × 10 from the sixth depth. Real text to follow.",
+      "title": "A Load Worth Waiting For",
+      "text": "The Charter of Stone has an order for ten pieces of Abyssal Crystal, and I have refused to promise when the rock will part with them. Bring them to me; the lift's sixth level reaches their depth. The workshops can wait for a load that comes back safely.",
       "objectives": [
         {
           "type": "item",
@@ -524,7 +524,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Abyssal Crystal × 10 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone has an order for ten pieces of Abyssal Crystal, and I have refused to promise when the rock will part with them. Bring them to me; the lift's sixth level reaches their depth. The workshops can wait for a load that comes back safely."
         },
         {
           "zone": "oathdelvers",
@@ -534,7 +534,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Abyssal Crystal × 10 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers have pledged ten pieces of Abyssal Crystal, but the oath does not require anyone to hurry blindly into the deep. Bring them to me; the lift's sixth level reaches the place to search. I would like both you and the order back."
         }
       ],
       "rewards": {
@@ -548,8 +548,8 @@
       "min_level": 51,
       "level": 53,
       "requires": [],
-      "title": "[PH] Rough Diamond × 4 from the Depth",
-      "text": "[PH] The Miner's Guild needs Rough Diamond × 4 from the sixth depth. Real text to follow.",
+      "title": "Four, Counted Twice",
+      "text": "The Charter of Stone's gem workers need four pieces of Rough Diamond, and I mean to count the bundle twice before it leaves. Bring them to me; you can search the rock round the lift room on the sixth level. My eyes may be tired, but that is no excuse for a bad tally.",
       "objectives": [
         {
           "type": "item",
@@ -566,7 +566,7 @@
               "faction": "accord"
             }
           ],
-          "text": "[PH] The Charter of Stone needs Rough Diamond × 4 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Charter of Stone's gem workers need four pieces of Rough Diamond, and I mean to count the bundle twice before it leaves. Bring them to me; you can search the rock round the lift room on the sixth level. My eyes may be tired, but that is no excuse for a bad tally."
         },
         {
           "zone": "oathdelvers",
@@ -576,7 +576,7 @@
               "faction": "throng"
             }
           ],
-          "text": "[PH] The Oathdelvers needs Rough Diamond × 4 from the sixth depth. Take the camp's lift down to the tier's rooms and dig. Real text to follow."
+          "text": "The Oathdelvers promised four pieces of Rough Diamond, and I will stand witness when the bundle changes hands. Bring them to me; the lift's sixth level takes you to the depth to look. Down there, mind your footing before you mind the order."
         }
       ],
       "rewards": {
