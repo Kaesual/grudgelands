@@ -700,16 +700,18 @@ function Q.credit_use(player, key)
 	if copy then save(player, copy); changed(player) end
 	return copy ~= nil
 end
--- Through the give helper (main[9..], the bags, the hotbar last); what does
--- not fit drops at the feet.
+-- Through the give helper (main[9..], the bags, the hotbar last). A quest
+-- item is soulbound (Round 60, grug_mobs items.json kind `quest`), so it is
+-- never dropped at the feet, where anyone could take it: the roll waits for
+-- room (Q.roll_quest_drops), and the item drops again on a later kill.
 local function give(player, item)
-	local rest = grug_inventory.give(player, item)
-	if not rest:is_empty() then core.add_item(player:get_pos(), rest) end
+	grug_inventory.give(player, item)
 	grug_core.feed_item(player, ItemStack(item), 1)
 end
 -- Quest-only drops (ruling 41): rolled once per eligible participant who has
 -- the quest active and still needs the item, straight to that player, so a
--- group never competes for them. `participants` are player names (B2's
+-- group never competes for them; no roll while the item would not fit (the
+-- feed says so once per kill). `participants` are player names (B2's
 -- participant drop hook: the same set kill credit uses).
 function Q.roll_quest_drops(mob, participants, pos)
 	-- Most kills drop nothing for quests: one set lookup ends them here.
@@ -717,7 +719,7 @@ function Q.roll_quest_drops(mob, participants, pos)
 	for _, name in ipairs(participants) do
 		local player = core.get_player_by_name(name)
 		if player then
-			local state, counts, gained = load(player), nil, false
+			local state, counts, gained, full = load(player), nil, false, nil
 			for id, active in pairs(state.active) do
 				local def = Q.registered_quests[id]
 				local variant = Q.variant_of(def, active)
@@ -729,15 +731,24 @@ function Q.roll_quest_drops(mob, participants, pos)
 								if objective.item == drop.item then needed = needed + objective.count end
 							end
 							counts = counts or holdings(player)
-							if (counts[drop.item] or 0) < needed and math.random(drop.chance) == 1 then
-								give(player, drop.item)
-								counts[drop.item], gained = (counts[drop.item] or 0) + 1, true
+							if (counts[drop.item] or 0) < needed then
+								if not grug_inventory.fits(player, drop.item) then
+									full = full or drop.item
+								elseif math.random(drop.chance) == 1 then
+									give(player, drop.item)
+									counts[drop.item], gained = (counts[drop.item] or 0) + 1, true
+								end
 							end
 						end
 					end
 				end
 			end
 			if gained then changed(player) end
+			if full then
+				local def = core.registered_items[full]
+				grug_core.feed(player, "notice", "No room for " .. (def and def.short_description or full) ..
+					"; it can drop on a later kill.")
+			end
 		end
 	end
 end

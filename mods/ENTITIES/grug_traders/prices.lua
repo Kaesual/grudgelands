@@ -118,11 +118,10 @@ BULK["default:cactus"] = 50 -- as a log
 local BULK_GROUPS = {{"leaves", 20}, {"sapling", 20}, {"tree", 50}, {"wood", 12}}
 
 -- Never sellable (sell plan §3.4): the Bag of Coins (economy.md §1), the
--- Fallen Crown, both Captain's Orders, and every soulbound or bound item
--- (the Claim Stone, ability items, the retired mount and boat items).
-local NEVER = {["grug_money:bag_of_coins"] = true,
-	["grug_mobs:throng_captains_orders"] = true,
-	["grug_mobs:accord_captains_orders"] = true}
+-- Fallen Crown, and every soulbound or bound item (the Claim Stone, every
+-- quest-only item since Round 60 -- both Captain's Orders, the Dispatch
+-- Folio --, ability items, the retired mount and boat items).
+local NEVER = {["grug_money:bag_of_coins"] = true}
 local NEVER_GROUPS = {"grug_soulbound", "grug_bound_skill", "grug_rare_trophy"}
 
 -- Groups whose rating is the item's tier.
