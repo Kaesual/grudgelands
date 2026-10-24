@@ -299,7 +299,8 @@ do
 		end
 	end
 	table.sort(repeats)
-	eq(table.concat(repeats, ","), "elandor_lorindor/moss_antler_stag", "S the hunts repeat no zone quest's role but Lorindor's")
+	-- Round 60: Lorindor's stag hunt (lorindor_cutting_opt_01) went with the band 21-30's rework.
+	eq(table.concat(repeats, ","), "", "S the hunts repeat no zone quest's role")
 end
 for _, camp in ipairs(camps_static) do
 	check(hunt_of["r58_foreman_" .. camp.id] ~= nil, "S " .. camp.id .. " has a hunt")
@@ -372,12 +373,17 @@ for id, q in pairs(quests) do
 	end
 end
 -- The camp zones' files keep their rework state: unflagged until their
--- rework (their chains stay), but the band 11-20's six, reworked in Round 59.
-local BAND = {elandor_copperfell_foothills = true, elandor_goldmead_vale = true, elandor_starbough_vale = true,
-	kragmar_mournfen = true, kragmar_redtusk_savanna = true, kragmar_raincall_basin = true}
+-- rework (their chains stay), but the band 11-20's six, reworked in Round 59,
+-- and the band 21-30's eight, reworked in Round 60.
+local BAND = {elandor_copperfell_foothills = 59, elandor_goldmead_vale = 59, elandor_starbough_vale = 59,
+	kragmar_mournfen = 59, kragmar_redtusk_savanna = 59, kragmar_raincall_basin = 59,
+	elandor_frostbarrow_shelf = 60, elandor_whitebridge_shire = 60, elandor_lorindor = 60,
+	elandor_moonfall_wood = 60, kragmar_ossuary_reach = 60, kragmar_speargrass_reach = 60,
+	kragmar_whispering_reedlands = 60, kragmar_totemwater_reach = 60}
 for _, row in ipairs(catalog.mining) do
-	eq(file_data[row.zone_id] and file_data[row.zone_id].reworked, BAND[row.zone_id] or nil,
-		"S " .. row.zone_id .. (BAND[row.zone_id] and " is reworked (Round 59)" or " keeps no rework flag"))
+	eq(file_data[row.zone_id] and file_data[row.zone_id].reworked, BAND[row.zone_id] and true or nil,
+		"S " .. row.zone_id .. (BAND[row.zone_id] and " is reworked (Round " .. BAND[row.zone_id] .. ")" or
+			" keeps no rework flag"))
 end
 
 ------------------------------------------------------------------------------

@@ -241,18 +241,32 @@ local KINDS = {"impounded_pay", "false_requisition", "brand_rubbing", "ash_slab"
 	"courier_ledger", "branded_pay_pit", "pledged_standard", "tally_stone", "rootmark",
 	"survey_cairn", "wreck_pay_chest",
 	"dispatch_record", "witness_record", "snare_bundle", "held_supplies"}
+-- Round 60 (lane BANDQUESTS): four kinds of the band 21-30 and the story
+-- arc's second chapter, whose looks are placeholders until the art lane's
+-- pick: a texture modifier over a shipped object's texture.
+local PLACEHOLDER_KINDS = {signal_lantern = true, sighting_frame = true, reading_knots = true,
+	claim_notice = true}
 local objects = load_json("mods/PLAYER/grug_quests/data/use_objects.json")
 local seen = 0
 for kind, row in pairs(objects) do
 	if kind ~= "notes" then
 		seen = seen + 1
-		eq(row.texture, "grug_quests_obj_" .. kind .. ".png", "O " .. kind .. " texture name")
-		check(exists(repo .. "/mods/PLAYER/grug_quests/textures/" .. tostring(row.texture)), "O " .. kind .. " texture file")
+		local file = tostring(row.texture)
+		if PLACEHOLDER_KINDS[kind] then
+			local base, modifier = file:match("^(grug_quests_obj_[a-z_]+%.png)(%^%[.+)$")
+			check(base ~= nil and modifier ~= nil, "O " .. kind .. " a modifier over a shipped object (" .. file .. ")")
+			file = base or file
+		else
+			eq(row.texture, "grug_quests_obj_" .. kind .. ".png", "O " .. kind .. " texture name")
+		end
+		check(exists(repo .. "/mods/PLAYER/grug_quests/textures/" .. file), "O " .. kind .. " texture file")
 		check(type(row.size) == "number" and row.size >= 1 and row.size <= 1.5, "O " .. kind .. " size")
 	end
 end
 for _, kind in ipairs(KINDS) do check(objects[kind] ~= nil, "O kind " .. kind) end
-eq(seen, 16, "O exactly the sixteen kinds (Round 59: the band's and the first chapter's four)")
+for kind in pairs(PLACEHOLDER_KINDS) do check(objects[kind] ~= nil, "O kind " .. kind) end
+eq(seen, 20, "O exactly the twenty kinds (Round 59: the band's and the first chapter's four; Round 60: four " ..
+	"placeholders)")
 
 local PLACES = {elandor_stormvault_heights = {"brandscar_cairn", "Brandscar Cairn"},
 	elandor_glassroot_wilds = {"couriers_stump", "Courier's Stump"},

@@ -24,7 +24,10 @@
 -- (Copperfell's and Goldmead's load record, Redtusk's and Raincall's held
 -- supplies), bounds and airspace unchanged; and by Round 59 lane
 -- STORYQUESTS for chapter 1's six town places: one `quest_place` socket
--- added to six service plots, nothing else. As a module:
+-- added to six service plots, nothing else; and by Round 60 lane BANDQUESTS
+-- (a declared map reset) for one `quest_place` socket each at Rimebell
+-- Watch and Whitebridge Market Close, bounds and airspace unchanged. As a
+-- module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}

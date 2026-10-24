@@ -1039,10 +1039,11 @@ do
 end
 
 ------------------------------------------------------------------------------
--- Q. The 98 item objectives (spec §4.7; 163 before Round 46 removed the
+-- Q. The 104 item objectives (spec §4.7; 163 before Round 46 removed the
 --    repeatable quests, 158 before Round 57 rebuilt the start zones, 93
 --    before Round 58's gather quests, 103 before Round 59 rebuilt the band
---    11-20: 26 there instead of 31): none names an item that disappears
+--    11-20: 26 there instead of 31; 98 before Round 60 rebuilt the band
+--    21-30: 20 there instead of 14): none names an item that disappears
 --    (a mixture) or that only a profession makes (an Alchemy product, gear).
 ------------------------------------------------------------------------------
 do
@@ -1074,8 +1075,9 @@ do
 		end
 	end
 	handle:close()
-	eq(objectives, 98, "Q the quests hold 98 item objectives (Round 57: the start zones shared theirs; " ..
-		"Round 58: the guild's 10 gather quests; Round 59: the band 11-20's 26)")
+	eq(objectives, 104, "Q the quests hold 104 item objectives (Round 57: the start zones shared theirs; " ..
+		"Round 58: the guild's 10 gather quests; Round 59: the band 11-20's 26; Round 60: the band 21-30's " ..
+		"14 became 20, shared ones counted once)")
 	eq(#flagged, 0, "Q none names a mixture, potion, elixir or grug_gear item (" ..
 		table.concat(flagged, ", ") .. ")")
 end
