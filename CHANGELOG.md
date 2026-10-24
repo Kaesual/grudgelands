@@ -12,6 +12,74 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.58.0 — the Miner's Guild and the town fixes (2026-10-24)
+
+**Map reset** needed: new camps, rooms, lifts, guild houses and town fixes
+change what world generation builds, so an existing world's map is
+generated anew from its seed. Characters keep their level, gear,
+inventory, money, quests, professions, mounts and waypoints, as in every
+map reset; their position and home claim go with the old map, and the
+containers in a housing claim come back through the Claim Stone's
+Belongings tab. No migration step. Everybody's reputation starts at 0.
+
+- **The Miner's Guild:** each faction has one, The Charter of Stone for
+  The Accord and The Oathdelvers for The Throng; the game calls both
+  "Miner's Guild". It serves only its own faction.
+- **Mining camps:** 20 new camps, one in every level-11 to level-40 zone
+  outside the capitals' zones, plus the 16 Battlegrounds war camps, each
+  with a Foreman, a Camp Vendor and a lift. Camps show on the map's POI
+  layer.
+- **Lifts and rooms:** a camp's lift (a rope-drum hoist) takes you to a
+  room at each ore tier's depth down to the camp's own tier: Level 1 at
+  y −50, then −250, −450, −650, −950 and −1050. Right-click it and pick a
+  level: free, no cooldown, not in combat. Rooms are lit and protected, no
+  monster spawns in them, and water and lava stay out; three exits end in
+  a plug of rock you dig through to start mining.
+- **Reputation:** trade ores, gems, stone and sand (stone and sand at 1
+  point per 50) at a Camp Vendor or at the Miner's Guild Exchange in your
+  capital. Ranks 0 to 10 follow everything you have ever earned, so
+  spending never lowers your rank; the Character page shows rank and
+  reputation. Selling the same goods for copper still works. The mason no
+  longer sells Cobblestone or Gravel.
+- **The Camp Vendor** buys like every vendor, repairs your gear and sells
+  the guild's goods for reputation, one row per tier, each opening at
+  Reputation Rank 1 to 6.
+- **Ore Sense and Treasure Hunt** (I to VI, one per tier, usable from
+  levels 1, 11, 21, 31, 41 and 51, each only in its own depth, 30 minutes):
+  Ore Sense marks a random ore or gem deposit within 16 nodes every 1–2
+  minutes for 5 seconds, through the rock and for you alone. Treasure Hunt
+  hides a Miner's Remains in solid rock 12–24 nodes away and marks it
+  while you are near: dig it for coins, the tier's bar and sometimes a cut
+  gem; it vanishes when you go more than 48 nodes away or log out, and the
+  next appears about 90 seconds later. Both use their own slot, one at a
+  time, and keep running after you log out or die.
+- **Cloaks:** reach Reputation Rank 3, 6 and 10 for the three cloaks of
+  the Miner's Guild achievement; the last one has wings.
+- **Guild houses:** every capital has a Miner's Guild house in its trades
+  district, with a headframe and an ore yard, the guild's leader and the
+  Exchange counter.
+- **Guild quests** (30): two gather quests for each depth from level 11
+  on, offered at every own camp whose lift reaches that depth; with both
+  done, a report to the guild's leader in the capital, which carries the
+  guild's own story; a hunt near every camp with a choice of leather,
+  cloth or bars; and in each contested level-31 to level-40 zone a raid
+  on the enemy's camp under construction, with four guards and a named
+  captain.
+- **Town fixes:** Lethariel's bough stairs and the hall doors on its
+  platforms are free to walk; the gatehouses of the five capitals with one
+  have an inner stair with a landing and a wider opening to the deck; two
+  gate guards walk opposite rounds on the city side while the third stands
+  on the deck; every king's royal guards stand beside him and return there
+  after a fight; Silverleaf's terrace stair has its missing step; every
+  start town's waystone and mailbox stand at its centre by the
+  Quartermaster.
+- **Server admins:** stop the server, back the world up, run
+  `python3 tools/migrate.py --world <world directory> --map-reset` from
+  the new version's checkout (it packs the claims' containers), empty the
+  map, raise `grug_reset_world` and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#35-the-pre-reset-pass)).
+
 ## 0.57.0 — the crafting window and the new start zones (2026-10-23)
 
 **Compatible:** no map reset and no migration step.

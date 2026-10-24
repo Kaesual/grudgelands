@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-23. This is the delivery pointer, not another game specification.
+Updated 2026-10-24. This is the delivery pointer, not another game specification.
 
 The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the
@@ -21,14 +21,72 @@ the crafting window (the queue, layout C, recipe details, favourites,
 recursive Basic unlocks), the quest foundation and the six start zones
 rebuilt on it; it was **pushed on 2026-10-23** (origin/main `69481ed1`) without
 a GUI test: the user tests 0.57 and 0.58 together after Round 58.
-Next: Round 58 (the Miner's Guild and the town fixes, a map reset;
-[plan](planning/round58-plan.md)), then
-the story arc and the quest rework of levels 11–60 from Round 59, as
-ordered with the user on 2026-10-23. The
+Round 58 (0.58.0, a map reset) builds the Miner's Guild and the Round 56
+town fixes; it is **not pushed** and waits for that joint GUI test
+([checklist](planning/round58-plan.md#gui-checklist-rounds-57-and-58)).
+Next: the joint GUI test, then the story arc and the quest rework of
+levels 11–60 from Round 59, as ordered with the user on 2026-10-23. The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 58 "The Miner's Guild and the town fixes" complete** (2026-10-24,
+  version 0.58.0, **map reset**, no migration step;
+  [plan, decisions, numbers and the joint GUI checklist](planning/round58-plan.md#completion-2026-10-24)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 waits for the user's joint GUI test of 0.57 and 0.58. From main
+  `616112ab` (the plan) and `a9191497` (the skeleton note): GUILDSPEC
+  (`734a914e`), CAMPS (`5d2444cd`), CONSUME (`a2b8386a`, the Ore Sense
+  ruling `0edc5faa`, `a42f91b6`), REP (`e8159d96`), HALLS (`0713d49a`),
+  TOWNFIX (`63210975`), ROOMS (`1816247e`), CAMPNPC (`c25fbd58`), HALLS2
+  (`1edcd33c`), LIFT (`2a610b86`), GUILDQUESTS (`ab5846c9`) and GUILDTEXT
+  (`c85f6624`) merged, then this documentation lane D. HALLS2 was added
+  during the round (the user wanted the houses out of the civic cores).
+  Every code lane independently reviewed by Opus (HALLS, TOWNFIX, ROOMS,
+  REP, CAMPNPC and HALLS2 MERGE, TOWNFIX, ROOMS and REP with a small
+  follow-up and a delta review; GUILDSPEC, CAMPS, CONSUME, LIFT and
+  GUILDQUESTS MERGE AFTER FIXES, fixed and delta-reviewed, LIFT's merge
+  rounds checked by the coordinator); GPT-6 Astra painted guild art drop 02
+  (LIFTART, picked) and wrote the guild quests' texts (GUILDTEXT, with the
+  Opus text review's 65 proposals, all picked). Main has 269 portable
+  fixtures (10 new). The declaration is
+  `{"schema": 3, "version": "0.58.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset,
+  reputation starts at 0.
+  - **The guild** (`grug_guild`, [miners_guild.md](design/miners_guild.md)):
+    The Charter of Stone and The Oathdelvers, "Miner's Guild" in the
+    interface; the catalogue (ranks, rates, prices, effects, loot: the
+    user accepted the numbers as a first version), reputation with ranks
+    0–10 (lifetime and balance per faction), the trade-in at the camp
+    vendors and the guild houses' exchange, no copper route into
+    reputation (§2a: the mason sells no Cobblestone or Gravel), the
+    achievement `miners_guild` with three cloaks.
+  - **Camps, lifts and rooms (CAMPS, ROOMS, LIFT):** 20 new mining camps,
+    the 16 war camps as mining camps, 6 camps under construction; 148
+    protected rooms at the tier depths from their own generation step
+    (liquid-safe, lit, no spawns, the exits plugged); the faction-only
+    teleport lift through `grug_home.travel`
+    ([settlements.md](design/settlements.md),
+    [world_preparation.md](design/world_preparation.md)).
+  - **People and goods (CAMPNPC, CONSUME):** 36 foremen, six named guild
+    leaders, the Exchange, the camp vendor's rank-locked page and repair;
+    Ore Sense and Treasure Hunt in the `mining_sense` slot across logout
+    and death, the Miner's Remains
+    ([durability_repair.md](design/durability_repair.md),
+    [economy.md](design/economy.md)).
+  - **Houses and quests (HALLS, HALLS2, GUILDQUESTS, GUILDTEXT):** the
+    guild house on a district plot with a headframe in every capital; 30
+    guild quests (453 shipped) ([quests.md](design/quests.md)).
+  - **Town fixes (TOWNFIX):** Lethariel's bough platforms, the five core
+    gatehouses, throne-guard posts in all six capitals, the gate watch, the
+    terrace stair, the start towns' waystone pads.
+  - **Gates:** each code lane's full fixture run (258–269/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.57.0, with the map
+    reset entry), `check_fresh_server.py`, `validate.py --game`, the full
+    fixtures, a full seed fleet on main and one boot (the
+    [round-end gates](planning/round58-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-58-carry-overs)).
 - **Round 57 "The crafting window, the quest foundation and the new start
   zones" complete** (2026-10-23, version 0.57.0, **compatible**, no
   migration step;

@@ -2776,7 +2776,7 @@ tools](#player-meta-read-by-external-tools).
   changes only the right-click (the picked look, node box and selection box
   are static fields there). The camp vendor is
   `grug_traders:vendor_camp` ("Camp Vendor", a profession-style vendor
-  without a shelf of its own until CAMPNPC). **The camp module** `r58_camps.lua` (pure, main and
+  without a shelf: its Buy mode is CAMPNPC's reputation page). **The camp module** `r58_camps.lua` (pure, main and
   mapgen environment, from the `placement_layout` text or parsed
   positions): `camps(layout[, seams])` (the 36 camps with a lift sorted by
   id: `{id, kind, faction, race, zone_id, tier, anchor, lift, levels, label,

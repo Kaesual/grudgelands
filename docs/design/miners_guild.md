@@ -7,7 +7,10 @@ each appears here once, in its own words, marked **Ruling**. Everything this
 spec adds is marked **Proposal** until the user accepts it. Every number is a
 proposal until the user accepts it on the tuning page (§9); the numbers live
 in one place, `mods/PLAYER/grug_guild/catalog.lua`, and code reads them from
-there. Numbers are rough targets, not hard gates.
+there. Numbers are rough targets, not hard gates. The user accepted the
+numbers as a first version on 2026-10-23 (the tuning page saved no change,
+so the catalogue's proposals stand); the names of the cloaks and the
+achievement (§6) are still proposals.
 
 ## 1. Overview
 
@@ -549,8 +552,8 @@ room before it spends (`grug_inventory.fits`) and gives through
 
 ## 11. Guild quests
 
-Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md))
-(built: the structure).
+Built by lanes GUILDQUESTS and GUILDTEXT on the Round 57 quest system
+([quests.md](quests.md)).
 
 - **Ruling:** guild gather quests are bound to the depth, not the camp: one
   quest id per tier (T2–T6) for both factions with a text per guild, taken and
@@ -566,8 +569,9 @@ Built by lane GUILDQUESTS on the Round 57 quest system ([quests.md](quests.md))
 - **Ruling (2026-10-23):** no reputation from guild quests; reputation comes
   only from the exchange. Rewards are XP, copper, materials or choices under
   the budget rule.
-- **As built (the structure; placeholder texts "[PH]" until lane
-  GUILDTEXT):** 30 quests with new ids, written by
+- **As built (the structure by lane GUILDQUESTS; the texts by lane
+  GUILDTEXT with the user's picks of the text review, 2026-10-24):** 30
+  quests with new ids, the structure first written by
   `tools/r58_guildquests/build_structure.py`, checked by
   `tools/r58_guildquests/portable_test.lua`; the structure page is
   `tools/r58_guildquests/questmap.py`. Every reward is XP and the quest
