@@ -1,5 +1,6 @@
 {
   "zone": "elandor_lorindor",
+  "reworked": true,
   "identity": "Lorindor's berry woods and pearl shore pay their tolls twice: to netters in the woods at night and to mirefolk who count pearls that were never theirs.",
   "hubs": [
     {
@@ -22,7 +23,8 @@
         {
           "npc": "r20_anchor_034_host",
           "lines": [
-            "wardenry"
+            "wardenry",
+            "shore"
           ]
         }
       ]
@@ -34,7 +36,8 @@
         {
           "npc": "r20_anchor_063_host",
           "lines": [
-            "cutting"
+            "cutting",
+            "steel"
           ]
         }
       ]
@@ -55,58 +58,182 @@
   ],
   "quests": [
     {
-      "id": "lorindor_berries_01",
-      "line": "berries",
-      "giver": "r20_anchor_018_host",
-      "turnin": "r20_anchor_018_host",
+      "id": "band_snares",
+      "line": "shore",
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "The Harvest Should Have a Song",
-      "text": "I count the harvest in baskets, but I know something is wrong when I cannot hear the birds. Defeat five Fowlers after dark in the {name:berrywoods} {dir_of:r20_anchor_018:berrywoods}, where their nets have emptied the branches. A berrywood ought to offer more than fruit and silence.",
+      "title": "[PH] Loosen the Snares",
+      "text": "[PH] Orya Petalward has an answer to the silent birds: make the snares at the {name:snare_ground} in the {name:berrywoods} useless. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "unlicensed_poacher"
+          "type": "use",
+          "place": "elandor_lorindor/snare_ground",
+          "object": "snare_bundle",
+          "label": "Cut the snare bundle",
+          "hold": 3
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_lorindor",
+          "givers": [
+            "r20_anchor_034_host"
           ],
-          "count": 5,
-          "area": "elandor_lorindor/berrywoods"
+          "text": "[PH] Orya Petalward has an answer to the silent birds: make the snares at the {name:snare_ground} in the {name:berrywoods} useless. Real text to follow."
+        },
+        {
+          "zone": "elandor_moonfall_wood",
+          "givers": [
+            "r20_anchor_035_host"
+          ],
+          "objectives": [
+            {
+              "place": "elandor_moonfall_wood/snare_ground"
+            }
+          ],
+          "text": "[PH] Lethen Moonledger wants the marked snares at the {name:snare_ground} in the {name:eaves} cut; false forest signs are poor company for an observer. Real text to follow."
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 4.5
       },
-      "duration_min": 8
+      "lesson": "A use at a recipe place in the open: the same act in two woods.",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Draft §3 'Schlingen lösen' (K9 A): the snare grounds of Lorindor's Berrywoods and Moonfall's Eaves."
     },
     {
-      "id": "lorindor_berries_02",
+      "id": "lorindor_marshbloom",
+      "line": "berries",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 20,
+      "level": 21,
+      "requires": [],
+      "title": "[PH] A Taste After a Long Road",
+      "text": "[PH] Ilwen Petalmeasure feeds the harvesters and carriers: bring 6 Marshbloom. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_gathering:marshbloom",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "The zone's first errand, a level only; the early potion choice.",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "lorindor_berries_orya",
+      "line": "berries",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "[PH] Why the Wood Goes Quiet",
+      "text": "[PH] Ilwen sends the player to Orya Petalward at Petalbank Wardenry: the missing birdsong is an observation Orya takes seriously. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_034_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 6,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "lorindor_harvest_chests",
       "line": "berries",
       "giver": "r20_anchor_018_host",
       "turnin": "r20_anchor_018_host",
       "min_level": 22,
       "level": 23,
-      "requires": [
-        "lorindor_berries_01"
-      ],
-      "title": "A Pearl for Every Basket",
-      "text": "The Fen Gillbacks at {name:fenhold} {dir_from_giver:fenhold} demand a pearl for every crate my carters carry. Defeat five of them, by day or night, and approach from the edge of the camp so they cannot all rush you together. At these rates, I shall soon be packing pearls and charging extra for the berries.",
+      "requires": [],
+      "title": "[PH] Chests That Arrive",
+      "text": "[PH] Ilwen knows a neat crate list from a harvest that arrives: bring 3 Chests for the loads that leave Berrycourt. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "toll_mirefolk"
-          ],
-          "count": 5,
-          "area": "elandor_lorindor/fenhold"
+          "type": "item",
+          "item": "default:chest",
+          "count": 3
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 9
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "lorindor_cutting_02",
+      "line": "cutting",
+      "giver": "r20_anchor_063_host",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [],
+      "title": "[PH] A Word With Kelda",
+      "text": "[PH] Saevin Rootscribe recommends Kelda Screesort at Tarncut Mine; the visit opens no story on its own. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_061_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "lorindor_journeys_01",
@@ -115,11 +242,9 @@
       "turnin": "r20_human_capital_envoy",
       "min_level": 24,
       "level": 25,
-      "requires": [
-        "lorindor_berries_02"
-      ],
-      "title": "Let the Ledgers Agree",
-      "text": "Some of those toll pearls reach Highcourt, and I would like our human neighbours to know what bought them. Travel to Highcourt and speak with Mariel Waybook about Lorindor's tolls; she keeps the road accounts there. Between her ledger and mine, we may find where an honest delivery becomes somebody else's profit.",
+      "requires": [],
+      "title": "[PH] Word for Highcourt",
+      "text": "[PH] Ilwen sends word of the missing deliveries to Mariel Waybook in Highcourt. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -127,11 +252,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer (Highcourt).",
-      "duration_min": 8
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "lorindor_journeys_02",
@@ -140,11 +265,9 @@
       "turnin": "r20_anchor_016_host",
       "min_level": 24,
       "level": 25,
-      "requires": [
-        "lorindor_berries_02"
-      ],
-      "title": "Berries Do Not Walk Away",
-      "text": "Merren Oakstamp says my crates arrive half empty, as though the berries have taken a stroll. Speak with her at Whitebridge Market Close in Whitebridge Shire about the missing deliveries. It is a long journey through the human lands; a mount will spare your feet for the work awaiting you.",
+      "requires": [],
+      "title": "[PH] The Other End of the Basket Trade",
+      "text": "[PH] Ilwen sends the player to Merren Oakstamp in Whitebridge Shire, who waits on the same loads. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -152,33 +275,77 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer (Whitebridge Shire).",
-      "duration_min": 12
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
-      "id": "lorindor_berries_03",
+      "id": "lorindor_ward_torches",
+      "line": "wardenry",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 26,
+      "level": 27,
+      "requires": [],
+      "title": "[PH] Lights for the Wardens' Rounds",
+      "text": "[PH] Orya's wardens walk the paths at night where the birds went quiet: bring 20 Torches. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:torch",
+          "count": 20
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "lorindor_iss",
       "line": "berries",
       "giver": "r20_anchor_018_host",
       "turnin": "r20_anchor_018_host",
       "min_level": 28,
       "level": 29,
-      "requires": [
-        "lorindor_berries_02"
-      ],
-      "title": "Close the Pearl Account",
-      "text": "All those stolen tolls pass through the hands of {name:pearl_counter_iss} at the {name:pearl_camp} {dir_from_giver:pearl_camp}. Defeat four Pearl Divers there and then Iss, by day or night. I have checked the accounts twice: we owe them nothing, and our carters deserve to travel without paying for that conclusion.",
+      "requires": [],
+      "title": "[PH] Close the Pearl Account",
+      "text": "[PH] Ilwen sends the player against Mirefolk Pearl-Counter Iss at the {name:pearl_camp}, who claims the result of everyone's work. Real text to follow.",
+      "completion": "[PH] Iss's account is closed; the harvest reaches its people. Real text to follow.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "toll_mirefolk"
-          ],
-          "count": 4,
-          "area": "elandor_lorindor/pearl_camp"
-        },
         {
           "type": "kill",
           "roles": [
@@ -188,11 +355,52 @@
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
       "duration_min": 12,
-      "climax": true
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "lorindor_berries_04",
@@ -201,11 +409,9 @@
       "turnin": "r20_anchor_031_host",
       "min_level": 29,
       "level": 30,
-      "requires": [
-        "lorindor_berries_03"
-      ],
-      "title": "Accounts on the Border",
-      "text": "With Iss gone, Lorindor's accounts balance for the first time in a season, and you have earned harder sums than ours. Toren Waterbarrel at Cinderline Watch in Ashenward March feeds a garrison on the contested border and could use someone who counts as carefully as you fight. Follow the road out of Lorindor into the march, and finish your training first; the Accord's seal grows thin there.",
+      "requires": [],
+      "title": "[PH] The Road to Ashenward",
+      "text": "[PH] Ilwen sends the player to Toren Waterbarrel at Cinderline Watch in Ashenward March; no earlier deed is claimed. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -213,173 +419,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Heartland to contested handoff at 30.",
-      "duration_min": 10
-    },
-    {
-      "id": "lorindor_wardenry_01",
-      "line": "wardenry",
-      "giver": "r20_anchor_034_host",
-      "turnin": "r20_anchor_034_host",
-      "min_level": 24,
-      "level": 25,
-      "requires": [],
-      "title": "Do Not Follow That Light",
-      "text": "A traveller sees a light between the trunks and thinks someone has left a lantern for them. Extinguish five False Lanterns after dark in the {name:elderwood}, which lies {zone_area:elderwood}, before that kindness turns into another lost traveller. They appear only at night; keep the path in sight while you work.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "wandering_wisp"
-          ],
-          "count": 5,
-          "area": "elandor_lorindor/elderwood"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 8
-    },
-    {
-      "id": "lorindor_cutting_01",
-      "line": "cutting",
-      "giver": "r20_anchor_063_host",
-      "turnin": "r20_anchor_063_host",
-      "min_level": 24,
-      "level": 25,
-      "requires": [],
-      "title": "Give the Old Roots a Brace",
-      "text": "These roots held the earth before anyone thought to call us the Accord; I mean to repay the favour. Alloy iron with anthracite and bring me four Steel Bars here at the cutting for the props. Check your pick before seeking the deeper seams: respect for stone begins with the right tool.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:steel_bar",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Tier-3 alloy.",
-      "duration_min": 12
-    },
-    {
-      "id": "lorindor_cutting_02",
-      "line": "cutting",
-      "giver": "r20_anchor_063_host",
-      "turnin": "r20_anchor_061_host",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "lorindor_cutting_01"
-      ],
-      "title": "A Rootscribe Recommends You",
-      "text": "Kelda Screesort at Tarncut Mine in Frostbarrow Shelf knows what stone will bear, and I value her judgment. Make the journey to her and say I sent you to help with her work. She will probably ask whether I have measured anything properly yet; tell her the roots remain entirely satisfied.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_061_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Sister-zone offer (Frostbarrow Shelf).",
-      "duration_min": 15
-    },
-    {
-      "id": "lorindor_wardenry_opt_01",
-      "line": "wardenry",
-      "giver": "r20_anchor_034_host",
-      "turnin": "r20_anchor_034_host",
-      "min_level": 25,
-      "level": 26,
-      "requires": [
-        "lorindor_wardenry_01"
-      ],
-      "title": "Optional: Passage at Ankle Height",
-      "text": "The Barnacle Pinchers on the {name:shell_strand} {dir_from_giver:shell_strand} have made our daytime shore patrol a rather undignified dance. Kill five by day so the wardens can walk their rounds. Leave the Bank Crabs alone; they have kept their side of the peace.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "armored_crab"
-          ],
-          "count": 5,
-          "area": "elandor_lorindor/shell_strand"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 9,
-      "optional": true
-    },
-    {
-      "id": "lorindor_wardenry_opt_02",
-      "line": "wardenry",
-      "giver": "r20_anchor_034_host",
-      "turnin": "r20_anchor_034_host",
-      "min_level": 28,
-      "level": 29,
-      "requires": [
-        "lorindor_wardenry_01"
-      ],
-      "title": "Optional: Lights Between Roots",
-      "text": "Among the {name:paleroots}, which lie {zone_area:paleroots}, False Lanterns make every gap look like a welcoming doorway. Extinguish six at night. I would rather our travellers find their way by the stars than trust anything so eager to lead them astray.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "wandering_wisp"
-          ],
-          "count": 6,
-          "area": "elandor_lorindor/paleroots"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
+      "lesson": "A travel quest, free (a level only).",
       "duration_min": 10,
-      "optional": true
-    },
-    {
-      "id": "lorindor_cutting_opt_01",
-      "line": "cutting",
-      "giver": "r20_anchor_063_host",
-      "turnin": "r20_anchor_063_host",
-      "min_level": 27,
-      "level": 28,
-      "requires": [
-        "lorindor_cutting_01"
-      ],
-      "title": "Optional: Antlers in the Bark",
-      "text": "The Pale Harts are stripping bark faster than the roots can mend, and affection alone will not save the trees. Cull six by day in the {name:paleroots}, which lie {zone_area:paleroots}. Their yellow names mean they will not attack first; choose your quarry, and take no more than I ask.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "moss_antler_stag"
-          ],
-          "count": 6,
-          "area": "elandor_lorindor/paleroots"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 8,
-      "optional": true
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 29, it requires nothing."
     }
   ]
 }

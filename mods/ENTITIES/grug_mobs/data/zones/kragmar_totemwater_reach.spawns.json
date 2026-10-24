@@ -38,16 +38,16 @@
         "kinds": {
           "open": {"id": "totemwood", "name": "Totemwater Totemwood",
             "day": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal"},
           "shore": {"id": "shallows", "name": "Totemwater Shallows",
             "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "dense", "quest_target": true},
           "bank": {"id": "reedbanks", "name": "Totemwater Reedbanks",
             "day": [{"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse", "quest_target": true},
           "swamp": {"id": "wispfen", "name": "Totemwater Wispfen",
             "day": [{"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse", "quest_target": true},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "sea_shallows": {"id": "sea_shallows_l24_27", "name": "Totemwater Reach Shallows",
             "day": [{"role": "tortoise_t3", "weight": 1}],
             "night": [{"role": "tortoise_t3", "weight": 1}], "density": "sparse"},
@@ -93,6 +93,9 @@
     ],
     "leaders": [
       {"role": "reed_maw_crocodile", "at": {"kind": "blackwater", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "places": [
+      {"id": "reading_bank", "name": "Totemwater Reading Bank", "at": {"kind": "reedbanks", "pick": "farthest_from_roads"}}
     ],
     "critters": ["bog_fowl", "parrot"]
   }

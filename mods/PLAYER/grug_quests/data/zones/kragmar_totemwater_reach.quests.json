@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_totemwater_reach",
+  "reworked": true,
   "identity": "Totemwater Reach reads its future in river knots, and the knots say something old is hungry.",
   "hubs": [
     {
@@ -9,8 +10,8 @@
         {
           "npc": "r20_anchor_047_host",
           "lines": [
-            "knots",
-            "tides"
+            "shore",
+            "provisions"
           ]
         }
       ]
@@ -31,100 +32,196 @@
   ],
   "quests": [
     {
-      "id": "totemwater_knots_01",
-      "line": "knots",
-      "giver": "r20_anchor_047_host",
-      "turnin": "r20_anchor_047_host",
+      "id": "band_mire_carp",
+      "line": "provisions",
       "min_level": 20,
-      "level": 22,
+      "level": 21,
       "requires": [],
-      "title": "A Future Trampled Flat",
-      "text": "My reading knots speak of something old and hungry beneath the water, but I need fresh reeds to finish the telling. Kill six Reed Tapirs by day in the {name:jungle}, {zone_area:jungle}, where they trample the reeds I use. It is hard enough to read tomorrow without a tapir sitting on it.",
+      "title": "[PH] Fish for the Table",
+      "text": "[PH] Tokai Knotreader admits a seer needs lunch: bring 4 Mire Carp. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "reed_tapir"
+          "type": "item",
+          "item": "grug_fishing:mire_carp",
+          "count": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "kragmar_totemwater_reach",
+          "givers": [
+            "r20_anchor_047_host"
           ],
-          "count": 6,
-          "area": "kragmar_totemwater_reach/jungle"
+          "text": "[PH] Tokai Knotreader admits a seer needs lunch: bring 4 Mire Carp. Real text to follow."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r20_dwarf_capital_cook"
+          ],
+          "text": "[PH] Varda Copperpan's fish pie wants 4 Mire Carp, and she has opinions about who should catch them. Real text to follow."
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 4,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
       },
-      "duration_min": 9
+      "lesson": "A fishing errand, a level only; Totemwater's first quest and Varda's pie.",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. Draft §3 'Fisch für den Tisch': Tokai in Totemwater and Varda Copperpan in Dur Brannoc (her provisions line); lane CAPITALS adds no Mire Carp quest of its own."
     },
     {
-      "id": "totemwater_knots_02",
-      "line": "knots",
+      "id": "totemwater_reading",
+      "line": "shore",
       "giver": "r20_anchor_047_host",
       "turnin": "r20_anchor_047_host",
+      "min_level": 23,
+      "level": 24,
+      "requires": [],
+      "title": "[PH] Check the Knots by the River",
+      "text": "[PH] Tokai Knotreader tests his reading against what he sees: secure his prepared reading cord at the {name:reading_bank} in the {name:reedbanks}; no swimming is asked. Real text to follow.",
+      "completion": "[PH] Tokai rereads the cord and likes the answer less. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "reading_bank",
+          "object": "reading_knots",
+          "label": "Secure the reading cord",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_heavy",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A use at a place or a day hunt; the first armor choice (one enchant, a prefix).",
+      "duration_min": 9,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
+    },
+    {
+      "id": "totemwater_enashi",
+      "line": "shore",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_046_host",
       "min_level": 24,
       "level": 25,
-      "requires": [
-        "totemwater_knots_01"
-      ],
-      "title": "Our Ancestors Are Not Cushions",
-      "text": "The carvers leave their totems in the {name:totemwood}, {zone_area:totemwood}, and the Totem Lynxes promptly curl up on them. Kill six lynxes there by day so the work can continue. An ancestor's face deserves better than a tail across the nose.",
+      "requires": [],
+      "title": "[PH] Hear a Second Voice",
+      "text": "[PH] Tokai sends the player to Enashi Reedvoice in the Whispering Reedlands to put the water travellers' reports together. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "reed_jungle_lynx"
-          ],
-          "count": 6,
-          "area": "kragmar_totemwater_reach/totemwood"
+          "type": "talk",
+          "npc": "r20_anchor_046_host"
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
-      "id": "totemwater_knots_03",
-      "line": "knots",
+      "id": "totemwater_weir_fences",
+      "line": "provisions",
       "giver": "r20_anchor_047_host",
       "turnin": "r20_anchor_047_host",
       "min_level": 26,
       "level": 27,
-      "requires": [
-        "totemwater_knots_02"
-      ],
-      "title": "Read by Restless Light",
-      "text": "The next knot will not speak clearly by firelight, and I do not care for what that usually means. Bring me two Bound Wisp Motes from the Marshlights in the {name:wispfen} {dir_from_giver:wispfen} after dark. I will read again by wisp-light; you keep your feet on a path you trust.",
+      "requires": [],
+      "title": "[PH] Fences for the Weirs",
+      "text": "[PH] Tokai's fishers want their weirs back in the water: bring 8 Jungle Wood Fences. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:bound_wisp_mote",
-          "count": 2,
-          "roles": [
-            "wandering_wisp"
-          ],
-          "area": "kragmar_totemwater_reach/wispfen"
+          "item": "default:fence_junglewood",
+          "count": 8
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_heavy",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 9
+      "lesson": "A later errand or use; the second armor choice (one enchant, a suffix).",
+      "duration_min": 8,
+      "notes": "Round 60 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "totemwater_knots_04",
-      "line": "knots",
+      "line": "shore",
       "giver": "r20_anchor_047_host",
       "turnin": "r20_anchor_047_host",
       "min_level": 28,
       "level": 29,
-      "requires": [
-        "totemwater_knots_03"
-      ],
-      "title": "The Name Beneath the Water",
-      "text": "I have the name at last: Crocodile Reed-Maw, waiting in its dark water {dir_from_giver:reed_maw_crocodile}. It is older than this post, and our fishers have begun to vanish between its jaws. Kill Reed-Maw before another boat comes home with nobody to tie it up.",
+      "requires": [],
+      "title": "[PH] The Name Beneath the Water",
+      "text": "[PH] Tokai names Crocodile Reed-Maw as the known danger {dir_from_giver:reed_maw_crocodile} and sends the player against it; the reading cord is not assumed. Real text to follow.",
+      "completion": "[PH] The old hungry danger of Tokai's knots was the Reed-Maw. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -135,24 +232,63 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "climax": true,
-      "duration_min": 12
+      "lesson": "The named leader; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 60 BANDQUESTS. The id stays (its objectives are unchanged)."
     },
     {
       "id": "totemwater_front_bannerbreak",
-      "line": "knots",
+      "line": "shore",
       "giver": "r20_anchor_047_host",
       "turnin": "r20_anchor_044_host",
       "min_level": 29,
       "level": 30,
-      "requires": [
-        "totemwater_knots_04"
-      ],
-      "title": "The Knot Toward the Mesa",
-      "text": "For once, the knots show me a road instead of teeth. Go to Tornstandard Hold on Bannerbreak Mesa and speak with Yarra Standardmender, who holds the Throng's banners against the Accord. I cannot promise you gentle weather up there, but I would trust your hands with whatever the wind brings.",
+      "requires": [],
+      "title": "[PH] Knots for Bannerbreak",
+      "text": "[PH] Tokai sends the player to Yarra Standardmender at Tornstandard Hold; no earlier deed is claimed. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -160,92 +296,11 @@
         }
       ],
       "rewards": {
-        "weight": 0.5,
-        "items": []
+        "weight": 0.5
       },
-      "duration_min": 10
-    },
-    {
-      "id": "totemwater_tides_01",
-      "line": "tides",
-      "giver": "r20_anchor_047_host",
-      "turnin": "r20_anchor_047_host",
-      "min_level": 24,
-      "level": 26,
-      "requires": [],
-      "title": "A Trap Full of Pincers",
-      "text": "I set traps for fish, yet the Barnacle Pinchers in the {name:shallows} {dir_from_giver:shallows} seem convinced everything I lower into the water belongs to them. Kill six by day and clear space for our traps. A reading on an empty stomach always seems to predict supper.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "armored_crab"
-          ],
-          "count": 6,
-          "area": "kragmar_totemwater_reach/shallows"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "totemwater_tides_optional_wisps",
-      "line": "tides",
-      "giver": "r20_anchor_047_host",
-      "turnin": "r20_anchor_047_host",
-      "min_level": 21,
-      "level": 23,
-      "requires": [],
-      "title": "Optional: Lights Over the Traps",
-      "text": "After dark the Marshlights drift through the {name:jungle} and lead my fishers off the path to the traps. Put out six of them. The knots say nothing about this one; I simply prefer my fishers to come home the way they left.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "wandering_wisp"
-          ],
-          "count": 6,
-          "area": "kragmar_totemwater_reach/jungle"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "optional": true,
-      "duration_min": 10
-    },
-    {
-      "id": "totemwater_tides_02",
-      "line": "tides",
-      "giver": "r20_anchor_047_host",
-      "turnin": "r20_anchor_047_host",
-      "min_level": 26,
-      "level": 27,
-      "requires": [
-        "totemwater_tides_01"
-      ],
-      "title": "Put the Shells to Work",
-      "text": "The Barnacle Pinchers have spent long enough meddling with my traps; now they can contribute something useful. Bring me two Layered Crab Shells from them in the {name:shallows} {dir_from_giver:shallows} by day, and I will make new lids. There is a pleasing turn in that knot.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:layered_crab_shell",
-          "count": 2,
-          "roles": [
-            "armored_crab"
-          ],
-          "area": "kragmar_totemwater_reach/shallows"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 8
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 60 BANDQUESTS. The departure id stays; free from 29, it requires nothing."
     },
     {
       "id": "camp_hunt_t3_night",
