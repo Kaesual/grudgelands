@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_nhal_veyr",
+  "reworked": true,
   "identity": "Nhal Veyr keeps the register of every Throng dead; outside its walls the Debtbound rise to collect debts nobody owes, and a mortuary clerk keeps a ledger of its own.",
   "hubs": [
     {
@@ -37,60 +38,88 @@
   ],
   "quests": [
     {
-      "id": "nhal_veyr_vigil_01",
+      "id": "nhal_veyr_vigil_03",
       "line": "envoy",
       "giver": "r20_undead_capital_envoy",
       "turnin": "r20_undead_capital_envoy",
-      "min_level": 19,
-      "level": 21,
+      "min_level": 26,
+      "level": 28,
       "requires": [],
-      "title": "Payment Due After Death",
-      "text": "Debtbound Zombies walk the {name:blightfields}, which lies {zone_area:blightfields}, at night, knocking to collect debts that appear nowhere in my register. Lay eight to rest before they wear their knuckles down to the last joint. Each carries a clerk's stamp, so this is an unauthorised collection conducted with an infuriating air of legitimacy.",
+      "title": "[PH] The Account Is Closed",
+      "text": "[PH] Ossa Quietregister: Hush once worked at the shared register and kept working copies from that post (K11 A); he now enters our dead as debtors in the tombfields. End his collection. Real text to follow.",
+      "completion": "[PH] Ossa: the collection ends; the names stay, and his copies stay a question. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "debtbound_zombie"
+            "mortuary_clerk_hush"
           ],
-          "count": 8,
-          "area": "kragmar_nhal_veyr/blightfields"
+          "count": 1
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_mobs:heavy_leather",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:heavy_cloth",
+            "count": 3
+          },
+          {
+            "item": "grug_materials:steel_bar",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "The capital's own problem, seeded for the line's climax.",
-      "duration_min": 10
+      "lesson": "The capital's named leader, alone: the local finale and one of chapter 2's prerequisites (T3).",
+      "duration_min": 12,
+      "climax": true,
+      "notes": "Round 60 CAPITALS: the id stays although its revenants are gone (plan §3: T3 requires it); free play, a level only, its one Throng follow-up is T3."
     },
     {
-      "id": "nhal_veyr_provisions_01",
-      "line": "provisions",
-      "giver": "r20_undead_capital_cook",
-      "turnin": "r20_undead_capital_cook",
-      "min_level": 20,
-      "level": 22,
-      "requires": [],
-      "title": "Optional: A Seat at the Table",
-      "text": "Bring me eight Raw Meat from the Gaunt Harts grazing the {name:blightfields} by day. Some mourners have kept vigil so long they have forgotten there is a kitchen. I set places for them anyway; a warm bowl gives the hands something to do when they have run out of things to hold.",
+      "id": "story_throng_04",
+      "line": "envoy",
+      "story": true,
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r58_guild_leader_nhal_veyr",
+      "min_level": 29,
+      "level": 29,
+      "requires": [
+        "story_throng_03",
+        "ossuary_rubbings_03",
+        "nhal_veyr_vigil_03"
+      ],
+      "title": "[PH] Strike the False Claim",
+      "text": "[PH] Chapter 2 (T3, Strike the False Claim): Ossa has brought the findings together with Iven and the supply; the player posts the confirmed correction at the public register in front of the Miner's Guild house and reports to Iven Lastshift. No verdict of the player's own. Real text to follow.",
+      "completion": "[PH] Iven Lastshift: which claims are struck and why the original names stay; he keeps the true records for whoever comes with an old sheet later. Real text to follow.",
       "objectives": [
         {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 8,
-          "roles": [
-            "moss_antler_stag"
-          ],
-          "area": "kragmar_nhal_veyr/blightfields"
+          "type": "use",
+          "place": "socket:nhal_veyr/miners_guild/miners_guild_public_register",
+          "object": "claim_notice",
+          "label": "Post the claim notice",
+          "hold": 3
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t3",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t3",
+            "count": 2
+          }
+        ]
       },
-      "optional": true,
-      "lesson": "A daytime request beside a night hunt.",
-      "duration_min": 6
+      "lesson": "Chapter 2's Throng close: a town place in the capital and the leader's turn-in.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS: T3 (draft §5, K4 A); requires T2a, the free ossuary_rubbings_03 and nhal_veyr_vigil_03."
     },
     {
       "id": "nhal_veyr_dispatch_01",
@@ -99,11 +128,9 @@
       "turnin": "r20_anchor_020_host",
       "min_level": 20,
       "level": 21,
-      "requires": [
-        "nhal_veyr_vigil_01"
-      ],
-      "title": "My Regards Keep Better",
-      "text": "Sovel Namekeeper at Ossuary Ledgerstead needs help: the Gravewood around the archive has begun waking, which cannot be good for quiet study. Go and speak with Sovel, and pass along my regards. I would send a meal, but Sovel never eats, and I refuse to have my cooking filed for posterity.",
+      "requires": [],
+      "title": "[PH] My Regards Keep Better",
+      "text": "[PH] Velis Mourningbowl: Sovel Namekeeper at Ossuary Ledgerstead needs help with the waking gravewood; pass on Velis's regards. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -111,71 +138,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "lesson": "Travel handoff to the race's heartland.",
-      "duration_min": 8
-    },
-    {
-      "id": "nhal_veyr_vigil_02",
-      "line": "envoy",
-      "giver": "r20_undead_capital_envoy",
-      "turnin": "r20_undead_capital_envoy",
-      "min_level": 23,
-      "level": 25,
-      "requires": [
-        "nhal_veyr_vigil_01"
-      ],
-      "title": "The Cost of Staying Dead",
-      "text": "Tithe Revenants stalk the {name:gravefields}, which lies {zone_area:gravefields}, after dark, charging the dead for being dead and the living for taking their time. Destroy eight. Their stamps bear the same clerk's mark: Hush. I have spent centuries keeping these names, and I will not have them turned into a list of debtors.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "stubborn_zombie"
-          ],
-          "count": 8,
-          "area": "kragmar_nhal_veyr/gravefields"
-        }
-      ],
-      "rewards": {
-        "weight": 5,
-        "items": []
-      },
-      "lesson": "A night hunt; the Debtbound Zombies there are the minor role.",
-      "duration_min": 12
-    },
-    {
-      "id": "nhal_veyr_provisions_02",
-      "line": "provisions",
-      "giver": "r20_undead_capital_cook",
-      "turnin": "r20_undead_capital_cook",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "nhal_veyr_provisions_01"
-      ],
-      "title": "Optional: Keep It Off the Menu",
-      "text": "Bring me four Pickled Flesh from the Tithe Revenants in the {name:gravefields} after dark. I mean to compare the samples with my brine; someone is pickling the dead without a licence, and it is giving preservation a bad name. Hand them to me directly, please, well away from the serving bowls.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:pickled_flesh",
-          "count": 4,
-          "roles": [
-            "stubborn_zombie"
-          ],
-          "area": "kragmar_nhal_veyr/gravefields"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "optional": true,
-      "lesson": "A drop request that shares the revenant outing.",
-      "duration_min": 6
+      "lesson": "Capital to band handoff.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     },
     {
       "id": "nhal_veyr_dispatch_orc_wellhold",
@@ -184,11 +151,9 @@
       "turnin": "r20_anchor_022_host",
       "min_level": 24,
       "level": 25,
-      "requires": [
-        "nhal_veyr_vigil_02"
-      ],
-      "title": "Sister Errand: Hands Attached",
-      "text": "Brakka Jarward at Speargrass Wellhold in Speargrass Reach could use another pair of hands. Go and speak with Brakka; do keep the hands attached, since our allies tend to find the alternative unsettling. Choose one of my three sister errands to follow; I am sending you for work, not trying to misplace you.",
+      "requires": [],
+      "title": "[PH] Sister Errand: Hands Attached",
+      "text": "[PH] Velis: Brakka Jarward at Speargrass Wellhold could use another pair of hands. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -196,11 +161,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer (one of three): the orc heartland.",
-      "duration_min": 10
+      "lesson": "Capital to band handoff.",
+      "duration_min": 10,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     },
     {
       "id": "nhal_veyr_dispatch_orc_capital",
@@ -209,11 +174,9 @@
       "turnin": "r20_orc_capital_envoy",
       "min_level": 24,
       "level": 25,
-      "requires": [
-        "nhal_veyr_vigil_02"
-      ],
-      "title": "Sister Errand: Someone Turns Up",
-      "text": "Thorga Roadspeaker in Gor Drazhak complains that everyone wants good roads and nobody turns up to help keep them. Go and speak with Thorga; you have made a fine habit of turning up where you are needed. One of my three sister errands is enough, even if you do have an eternity to fill.",
+      "requires": [],
+      "title": "[PH] Sister Errand: Someone Turns Up",
+      "text": "[PH] Velis: Thorga Roadspeaker in Gor Drazhak wants help with the roads. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -221,11 +184,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer (one of three): the orc capital.",
-      "duration_min": 12
+      "lesson": "Capital to band handoff.",
+      "duration_min": 12,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     },
     {
       "id": "nhal_veyr_dispatch_troll",
@@ -234,11 +197,9 @@
       "turnin": "r20_anchor_024_host",
       "min_level": 24,
       "level": 25,
-      "requires": [
-        "nhal_veyr_vigil_02"
-      ],
-      "title": "Sister Errand: Try to Stay Dry",
-      "text": "If you choose the Whispering Reedlands, speak with Taleko Drycord at Whisperreed Landing about the work there. Take care of your boots; damp gets into joints you had forgotten you owned. You need only follow one of my three sister errands, so there is no obligation to fall apart in every climate.",
+      "requires": [],
+      "title": "[PH] Sister Errand: Try to Stay Dry",
+      "text": "[PH] Velis: Taleko Drycord at Whisperreed Landing has work; mind the damp. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -246,48 +207,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Sister-zone offer (one of three): a troll heartland.",
-      "duration_min": 15
-    },
-    {
-      "id": "nhal_veyr_vigil_03",
-      "line": "envoy",
-      "giver": "r20_undead_capital_envoy",
-      "turnin": "r20_undead_capital_envoy",
-      "min_level": 26,
-      "level": 28,
-      "requires": [
-        "nhal_veyr_vigil_02"
-      ],
-      "title": "The Account Is Closed",
-      "text": "{name:mortuary_clerk_hush} holds court over a ledger in the {name:tombfields}, {dir_from_giver:mortuary_clerk_hush}, entering our dead as debtors. Kill Hush, and destroy four Tithe Revenants among those tombs at night. A name is all some of these people have left, and I will not let a clerk seize it for arrears.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "mortuary_clerk_hush"
-          ],
-          "count": 1
-        },
-        {
-          "type": "kill",
-          "roles": [
-            "stubborn_zombie"
-          ],
-          "count": 4,
-          "area": "kragmar_nhal_veyr/tombfields"
-        }
-      ],
-      "rewards": {
-        "weight": 6,
-        "items": []
-      },
-      "climax": true,
-      "lesson": "The capital line's climax: a named normal leader.",
-      "duration_min": 15
+      "lesson": "Capital to band handoff.",
+      "duration_min": 15,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     },
     {
       "id": "nhal_veyr_vigil_04",
@@ -296,11 +220,9 @@
       "turnin": "r20_anchor_039_host",
       "min_level": 29,
       "level": 30,
-      "requires": [
-        "nhal_veyr_vigil_03"
-      ],
-      "title": "A Debt Freely Owed",
-      "text": "I have entered your service in the register, with thanks rather than a sum beside it. Go to Ashveil Watch in Blackwind Rise and report to Vaska Ashlistener; the Throng holds that ground against the Accord. I would prefer to hear of your next deeds from you, rather than from someone bringing me a name to enter.",
+      "requires": [],
+      "title": "[PH] A Debt Freely Owed",
+      "text": "[PH] Ossa: Vaska Ashlistener at Ashveil Watch on Blackwind Rise needs help, at 30 or later; no finished Hush case is assumed. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -308,11 +230,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "lesson": "Travel handoff to the faction's contested zones.",
-      "duration_min": 10
+      "lesson": "Capital to contested handoff at 30.",
+      "duration_min": 10,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     }
   ]
 }

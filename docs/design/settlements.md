@@ -712,6 +712,19 @@ open air with headroom over the POI's ground): Rimebell Watch
 mining camp has `held_load` (the camp socket contract below). No cell of a
 composition changed.
 
+### Chapter 2's town place (Round 60)
+
+Round 60 lane CAPITALS ([plan](../planning/round60-plan.md) §4, the chapter-2
+pick K4 A): Nhal Veyr's **public register**, where T3's claim notice is
+posted ([quests.md](quests.md) "The capitals"), a `quest_place` socket in the
+`extra_sockets` of the Miner's Guild plot (`nhal_veyr_district.lua`; a plot
+every world builds), `socket:nhal_veyr/miners_guild/miners_guild_public_register`:
+on the cobbled forecourt in front of the hall, west of its door, facing the
+street, more than two nodes from the door, the gate path's columns and every
+other socket of the plot; the plot's cells are unchanged.
+`tools/r60_capitals/portable_test.lua` checks it as the mapgen builds it and
+on seed 42's own chunks.
+
 ### Settlement walkers
 
 Decided in Round 42 ([plan](../planning/round42-plan.md) rulings 5, 12–14,

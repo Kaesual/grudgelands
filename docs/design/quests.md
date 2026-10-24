@@ -173,8 +173,9 @@ total); Round 57 rebuilt the six start zones' 92 quests as 30 (423 in total,
 total, [miners_guild.md](miners_guild.md) §11); Round 59 rebuilt the band
 11–20's 83 zone quests as 59 and added chapter 1's four story quests in the
 capitals (433 in total, "The band 11–20" and "Chapter 1 in the capitals"
-below); Round 60 rebuilt the band 21–30's 84 as 71 (420 in total, "The
-band 21–30" below). This is an editorial budget,
+below); Round 60 rebuilt the band 21–30's 84 as 71 and the six capitals'
+64 as 47 (403 in total, "The band 21–30" and "The capitals" below). This
+is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near
 an oven ("The start zones"). Compatible tasks share an outing; avoid
@@ -633,7 +634,10 @@ camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
 
 - **The foremen:** one per mining camp and war camp (36), id
   `r58_foreman_<camp id>` (the camp ids of `grug_mapgen.mining_camps`), on
-  the camp's `quest_foreman` socket, titled "Foreman", of the camp's race and
+  the camp's `quest_foreman` socket, titled "Foreman" (Round 60: the two
+  foremen the story names carry their names, a per-camp title in
+  `npcs.lua`: Brodd Deeppeg of Frostbarrow Shelf's camp and Rellis
+  Shalemark of Ossuary Reach's, their ids kept), of the camp's race and
   faction, with the giver role **`foreman_t<tier>`**: the camp's zone tier,
   which its deepest lift reaches (`foreman_t2` … `foreman_t6`; 3/4/3/4/4
   camps per faction for T2…T6). A guild quest of tier k lists the role rows
@@ -938,8 +942,8 @@ The story arc's first chapter opens at the level-19 handovers in the six
 capitals ([round59-plan.md](../planning/round59-plan.md) §2 and §4
 STORYQUESTS; the user's chapter picks K1–K16, all "A", 2026-10-24). Four
 story quests, one shared quest per faction and step, a variant per capital;
-the capital files stay unflagged (their band's rework is Round 60), and the
-capitals' other quests stay as they were.
+the capital files stayed unflagged until Round 60 reworked them around
+chapter 1, which stays as shipped ("The capitals" below).
 
 - **`story_accord_01` "A Hearing for the Absent" and `story_throng_01` "Our
   Word, Our Witness"** (level 19, no prerequisite): given by the faction's
@@ -973,6 +977,72 @@ capitals' other quests stay as they were.
   with placeholder texts; since the texts landed (Round 59 BANDTEXT) the
   JSON files are the source, its `--check` compares their structure only,
   and `tools/r59_storyquests/portable_test.lua` checks it.
+
+## The capitals (Round 60)
+
+The six capital files (Highcourt, Dur Brannoc and Lethariel of The Accord;
+Gor Drazhak, Kezamba and Nhal Veyr of The Throng; levels 19–30) are
+reworked on the Round 57 rules ([round60-plan.md](../planning/round60-plan.md)
+§2 point 2, §2a; the chapter-2 picks K1–K13, all "A"): every quest but the
+story quests is free play, gated only by its level; nothing else chains.
+Chapter 1 ("Chapter 1 in the capitals") stays as shipped, and so do the
+envoys' ids and their `front` lines. Each capital keeps its two hubs: the
+envoy (lines `envoy` and `front`) with the cook (`provisions` and
+`dispatch`; Kezamba's cook's `smokehouse` became `provisions`), and the
+guild leader alone (`guild`). 64 quests became 47.
+
+- **Shared quests** (each in its first variant's file, Highcourt's or
+  Lethariel's): `capital_torches` (20 Torches, all six envoys, level 20),
+  `capital_night_dead` (2 Debtbound Zombies after dark, about a third of
+  the capitals' day hunts; the envoys of Highcourt, Dur Brannoc,
+  Lethariel and Nhal Veyr, level 21–22), `capital_precision` (the Alchemy
+  quest, below) and `capital_raw_meat` (8 Raw Meat from the capital's day
+  game, the cooks of Lethariel, Gor Drazhak, Kezamba and Nhal Veyr, level
+  20–21). Varda's Mire Carp in Dur Brannoc is a variant of the band's fish
+  quest `band_mire_carp`, homed in Totemwater Reach.
+- **Local quests**: each capital's climax, its named leader alone and free
+  (Penn, Brakk, Rusk, Garr, Takka's `kezamba_offerings_04` and Hush's
+  `nhal_veyr_vigil_03`, ids kept for the two whose objectives stayed or
+  that the story requires), one day or night hunt and the cook's own errand
+  where it is the capital's own (Highcourt's and Kezamba's Gnarled Boar
+  Tusks, Highcourt's bucks, Dur Brannoc's rams, Lethariel's vixens, Gor
+  Drazhak's scorpions after dark and hyenas, Kezamba's robbers after
+  dark), and the handovers: the cooks' dispatch travels into the band and
+  the envoys' departures at 29 to the 31–40 hosts, all free, their ids
+  kept. Three kill objectives per capital at most (two in Kezamba and Nhal
+  Veyr), two or three mob names.
+- **The Alchemy quest** `capital_precision` (round60-plan.md §2 point 6,
+  §2a points 4–5): at the first capital visit (level 19, reward level 20)
+  each envoy asks, on its `envoy` line and with no prerequisite, for one
+  **Elixir of Precision I** (Sunleaf, a Boar Tusk and a Glass Bottle), which
+  no quest rewards; each envoy has its own playful occasion. The text names
+  the capital's Alchemy trainer by its plot in words (Highcourt's herb
+  garden, Dur Brannoc's and Lethariel's brewhouses, Nhal Veyr's physic
+  house, Gor Drazhak's herb house, Kezamba's herbalist) and sends the
+  player back to where they started, by their start settlement's waystone:
+  Sunleaf grows in every start zone (Round 60 HERBS) and the start zones'
+  boars by day drop the tusk; it never names the start zone (a text
+  follows the giver's race, not the player's). A crafting lesson requests
+  the item, so a friend's elixir counts. It is the one quest that may ask
+  for a profession's product (`tools/r45_st`).
+- **Chapter 2's T3** `story_throng_04` "Strike the False Claim" (story,
+  level 29): Ossa Quietregister sends the player to post the claim notice
+  (`claim_notice`, a 3 s hold) at the public register in front of Nhal
+  Veyr's Miner's Guild house, a town place
+  (`socket:nhal_veyr/miners_guild/miners_guild_public_register`,
+  [settlements.md](settlements.md) "Chapter 2's town place"), and to report
+  to Iven Lastshift, who takes the turn-in. It requires T2a
+  (`story_throng_03`, Ossuary Reach), the free travel quest
+  `ossuary_rubbings_03` and the free Hush quest `nhal_veyr_vigil_03`; it is
+  the one Throng follow-up of each of the two free quests.
+  `nhal_veyr_vigil_04`, the departure to Vaska, requires nothing.
+- **Rewards** (capitals are excepted from the zone budget): the climaxes a
+  choice of 3 Heavy Leather, 3 Heavy Cloth or 2 Steel Bars (the T3 camp
+  hunts' choice), the night task and T3 a choice of 2 Healing Potion III or
+  2 Mana Potion III; the others XP and copper.
+- The structure was written by `tools/r60_capitals/build_structure.py`
+  with placeholder texts (its `--check` compares the structure only);
+  `tools/r60_capitals/portable_test.lua` checks it.
 
 The Miner's Guild's quests (Round 58): [miners_guild.md](miners_guild.md) §11.
 

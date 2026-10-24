@@ -1233,11 +1233,14 @@ def guild_quest_npcs(pois=None, records=None, npcs=QUEST_NPCS):
     leader of each capital (no role)."""
     records = records or zone_records()
     out = {}
+    text = Path(npcs).read_text(encoding="utf-8")
+    # Round 60: the per-camp titles of the story's foremen (npcs.lua
+    # FOREMAN_TITLES rows), "Foreman" for every other camp.
+    titles = dict(re.findall(r'\{camp = "(\w+)", title = "([^"]+)"\}', text))
     for camp in mining_camps(pois=pois, records=records):
         out["r58_foreman_" + camp["key"]] = {"settlement": camp["key"], "socket": "quest_foreman",
-                                             "title": "Foreman", "zone": camp["zone"],
+                                             "title": titles.get(camp["key"], "Foreman"), "zone": camp["zone"],
                                              "faction": camp["faction"], "role": "foreman_t%d" % camp["tier"]}
-    text = Path(npcs).read_text(encoding="utf-8")
     leaders = re.findall(r'\{capital = "(\w+)", title = "([^"]+)"\}', text)
     m = re.search(r'GUILD_HALL = \{[^}]*leader = "([^"]+)"', Path(CAPITAL_SERVICES).read_text(encoding="utf-8"))
     if len(leaders) != 6 or not m:

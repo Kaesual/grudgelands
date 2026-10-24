@@ -161,13 +161,19 @@ for _, cap in ipairs(CAPITALS) do
 		check(socket and socket.role == "idle" and socket.spawn ~= false,
 			key .. ": the resident " .. id)
 	end
-	local hall_sockets = 0
-	for id in pairs(by_id) do
-		if id:find("^miners_guild_") then hall_sockets = hall_sockets + 1 end
+	local hall_sockets, places = 0, 0
+	for id, socket in pairs(by_id) do
+		if id:find("^miners_guild_") then
+			if socket.role == "quest_place" then places = places + 1 else hall_sockets = hall_sockets + 1 end
+		end
 	end
-	-- the five, and the gate spot every plot publishes (`<plot>_gate_idle`)
+	-- the five, and the gate spot every plot publishes (`<plot>_gate_idle`);
+	-- Round 60 CAPITALS: Nhal Veyr's plot also holds chapter 2's town place,
+	-- a quest_place socket nobody stands on (settlements.md "Chapter 2's
+	-- town place").
 	check(hall_sockets == 3 + #HALL.residents, key .. ": six hall plot sockets (" ..
 		hall_sockets .. ")")
+	check(places == (key == "nhal_veyr" and 1 or 0), key .. ": the hall plot's town places (" .. places .. ")")
 	local destination
 	for _, spot in ipairs(bp.landmarks.destinations) do
 		if spot.id == HALL.plot then destination = spot end

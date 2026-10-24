@@ -28,7 +28,9 @@ achievement (§6) are still proposals.
 - **Ruling:** **The Charter of Stone** (The Accord) and **The Oathdelvers**
   (The Throng); the user interface says **"Miner's Guild"**; three equal
   leaders per guild, one per capital; foremen carry the role title "Foreman",
-  only story-relevant ones are named (the story-arc decision).
+  only story-relevant ones are named (the story-arc decision; since Round 60
+  Brodd Deeppeg of Frostbarrow Shelf's camp and Rellis Shalemark of Ossuary
+  Reach's, [quests.md](quests.md) "The Miner's Guild givers").
 - The guilds are loyal allies of their faction's military. Their proper names
   appear in quest texts and on buildings, never in the interface's own labels
   (rank display, vendor page, achievements say "Miner's Guild").

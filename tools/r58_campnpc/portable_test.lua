@@ -7,7 +7,8 @@
 --    settlement sockets of seed 42 (tools/seed_fleet/runtime.lua: the camps'
 --    and capitals' blueprints and templates as the world registers them)
 --    and the real camp index (wp40/r58_camps.lua): 36 foremen, one per camp
---    on its `quest_foreman` socket, titled Foreman, role foreman_t<tier>,
+--    on its `quest_foreman` socket, titled Foreman (two by name since Round
+--    60), role foreman_t<tier>,
 --    of the camp's faction; six leaders on the guild house's leader socket
 --    (capital_services.GUILD_HALL, never a literal id), named, of the
 --    capital's faction; the exchange socket can be taken over as the
@@ -115,7 +116,11 @@ do
 			eq(npc.socket, "quest_foreman", "F " .. id .. " on the camp's quest_foreman socket")
 			local socket = socket_of[camp.id .. "/quest_foreman"]
 			check(socket ~= nil and socket.role == "quest", "F " .. id .. " the socket is a quest socket")
-			eq(npc.title, "Foreman", "F " .. id .. " titled Foreman")
+			-- Round 60 CAPITALS: the story's two foremen carry their names
+			-- (round60-plan.md §2a point 3); every other one is "Foreman".
+			local title = ({mining_camp_frostbarrow_shelf = "Brodd Deeppeg",
+				mining_camp_ossuary_reach = "Rellis Shalemark"})[camp.id] or "Foreman"
+			eq(npc.title, title, "F " .. id .. " titled " .. title)
 			eq(npc.role, "foreman_t" .. camp.tier, "F " .. id .. " the role of its tier")
 			eq(npc.faction, camp.faction, "F " .. id .. " of its camp's faction")
 			eq(Q.npc_by_socket[camp.id .. "/quest_foreman"], id, "F " .. id .. " owns its socket")
