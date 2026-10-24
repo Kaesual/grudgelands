@@ -156,8 +156,17 @@ local function loader(directory)
 		-- yard under the headframe. A required plot (r7_capitals.lua), so
 		-- every world places it; its id is the hall socket contract's plot
 		-- (capital_services.lua GUILD_HALL).
+		--
+		-- Round 60: the public register, chapter 2's town place (quests.md
+		-- "Town places"; nobody stands on it): on the forecourt in front of
+		-- the hall, west of the door and clear of it, the porter's post and
+		-- the gate path, so it is seen from the street.
 		{id = "miners_guild", template = "nhal_veyr_miners_guild",
-			handle = "crypt", roof = "vault"},
+			handle = "crypt", roof = "vault",
+			extra_sockets = function(area)
+				return {{id = "public_register", role = "quest_place",
+					x = area.x0 + 5, z = area.z0 + 4, face = 2}}
+			end},
 	}
 
 	-- THE DISTRICT'S OWN FILL: four dressings on the district's four fill

@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_gor_drazhak",
+  "reworked": true,
   "identity": "Gor Drazhak musters the Throng; round its walls scorpions, hyenas and a bandit ration-broker take their cut.",
   "hubs": [
     {
@@ -197,30 +198,31 @@
       "duration_min": 6
     },
     {
-      "id": "gor_drazhak_muster_01",
+      "id": "gor_drazhak_stingers",
       "line": "envoy",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_orc_capital_envoy",
       "min_level": 19,
       "level": 21,
       "requires": [],
-      "title": "A Sentry Needs Both Feet",
-      "text": "Gor Drazhak's sentries should be watching for enemy banners, yet half their night goes to watching their ankles. Kill eight Dust Stingers after dark on the {name:steppe}, {dir_of:gor_drazhak:steppe}. A sentry hopping on one foot frightens nobody.",
+      "title": "[PH] A Sentry Needs Both Feet",
+      "text": "[PH] Thorga Roadspeaker: a sentry needs both feet; three of the steppe's scorpions at night. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
             "dust_stinger"
           ],
-          "count": 8,
+          "count": 3,
           "area": "kragmar_gor_drazhak/steppe"
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 2
       },
-      "duration_min": 10
+      "lesson": "A short night hunt; a third of a day hunt's count.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS: a new id (its objectives changed); free play, a level only."
     },
     {
       "id": "gor_drazhak_muster_02",
@@ -229,11 +231,9 @@
       "turnin": "r20_orc_capital_envoy",
       "min_level": 23,
       "level": 25,
-      "requires": [
-        "gor_drazhak_muster_01"
-      ],
-      "title": "Optional: Lunch Is Not Included",
-      "text": "Kill eight Dustpack Hyenas by day in the {name:badlands}, {dir_of:gor_drazhak:badlands}, and keep our supply carts moving. They follow the rations as though we packed lunch for them; if they want a meal from the Throng, they can learn to carry a spear.",
+      "requires": [],
+      "title": "[PH] Lunch Is Not Included",
+      "text": "[PH] Thorga: the hyenas take the recruits' lunch; eight of the badlands' hyenas by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -245,33 +245,24 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 4.5
       },
+      "lesson": "A day hunt in the badlands.",
       "duration_min": 12,
-      "optional": true
+      "notes": "Round 60 CAPITALS: the id stays (objectives unchanged); free play, a level only."
     },
     {
-      "id": "gor_drazhak_muster_03",
+      "id": "gor_drazhak_garr",
       "line": "envoy",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_orc_capital_envoy",
       "min_level": 27,
       "level": 28,
-      "requires": [
-        "gor_drazhak_muster_01"
-      ],
-      "title": "His Profit, Our Empty Bowls",
-      "text": "Bandit Ration-Broker Garr buys Korr's stolen supplies and charges hungry fighters for the privilege of getting them back. At the {name:tollcamp}, {dir_of:gor_drazhak:tollcamp}, kill six Toll Archers and Garr himself. Let Garr learn what the Throng charges for stealing its supper.",
+      "requires": [],
+      "title": "[PH] His Profit, Our Empty Bowls",
+      "text": "[PH] Thorga: Bandit Ration-Broker Garr sells Korr's stolen rations again at the toll camp; stop his profit. Garr alone is the task, and no finished Redtusk case is assumed. Real text to follow.",
+      "completion": "[PH] Thorga: the bowls are filled from honest stores again. Real text to follow.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "toll_bandit_archer"
-          ],
-          "count": 6,
-          "area": "kragmar_gor_drazhak/tollcamp"
-        },
         {
           "type": "kill",
           "roles": [
@@ -281,67 +272,26 @@
         }
       ],
       "rewards": {
-        "weight": 6.5,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_mobs:heavy_leather",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:heavy_cloth",
+            "count": 3
+          },
+          {
+            "item": "grug_materials:steel_bar",
+            "count": 2
+          }
+        ]
       },
-      "duration_min": 15,
-      "climax": true
-    },
-    {
-      "id": "gor_drazhak_muster_04",
-      "line": "envoy",
-      "giver": "r20_orc_capital_envoy",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 29,
-      "level": 29,
-      "requires": [
-        "gor_drazhak_muster_03"
-      ],
-      "title": "Your Place in the Line",
-      "text": "You have seen what it takes to keep the Throng fed and marching. Now report to Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa, where our fighters hold the line. Drek judges fighters by what they carry up the ramp, not by what they say at the bottom of it.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_043_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "gor_drazhak_provisions_01",
-      "line": "provisions",
-      "giver": "r20_orc_capital_cook",
-      "turnin": "r20_orc_capital_cook",
-      "min_level": 22,
-      "level": 24,
-      "requires": [],
-      "title": "The Ladle Commands",
-      "text": "Warriors can argue about who leads the march; at supper, every last one answers to my ladle. Bring me eight pieces of Raw Meat and two Braided Sinew from the Quaggas that graze the {name:badlands} by day. We have ration bundles to tie and a hungry muster to fill them for.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 8
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:braided_sinew",
-          "count": 2,
-          "roles": [
-            "watchful_zebra"
-          ],
-          "area": "kragmar_gor_drazhak/badlands"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
+      "lesson": "The capital's named leader at his camp, alone: the capital's local finale.",
+      "duration_min": 12,
+      "climax": true,
+      "notes": "Round 60 CAPITALS: a new id (its objectives changed); free play, a level only."
     },
     {
       "id": "gor_drazhak_dispatch_01",
@@ -350,11 +300,9 @@
       "turnin": "r20_anchor_022_host",
       "min_level": 21,
       "level": 22,
-      "requires": [
-        "gor_drazhak_muster_01"
-      ],
-      "title": "Spears Out, Word Back",
-      "text": "Speargrass Wellhold keeps sending us spears. Brakka Jarward wants word back, and you look ready for a walk. Travel to the Wellhold in Speargrass Reach and speak to Brakka for me. If Brakka asks about my stew, say the bowls come back empty.",
+      "requires": [],
+      "title": "[PH] Spears Out, Word Back",
+      "text": "[PH] Gorla Longladle: spears out, word back; Brakka Jarward at Speargrass Wellhold needs hands. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -362,10 +310,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 10
+      "lesson": "Capital to band handoff.",
+      "duration_min": 10,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     },
     {
       "id": "gor_drazhak_dispatch_02",
@@ -374,11 +323,9 @@
       "turnin": "r20_anchor_024_host",
       "min_level": 22,
       "level": 23,
-      "requires": [
-        "gor_drazhak_muster_01"
-      ],
-      "title": "Salt Keeps a Friendship",
-      "text": "Our troll allies send fish from Whisperreed Landing, and our salt makes the return journey. Go to Whispering Reedlands and speak to Taleko Drycord at the landing. Give our allies a hand; a shared cooking pot holds the Throng together as surely as any war banner.",
+      "requires": [],
+      "title": "[PH] Salt Keeps a Friendship",
+      "text": "[PH] Gorla: salt keeps a friendship; take her regards to Taleko Drycord at Whisperreed Landing. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -386,10 +333,34 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 12
+      "lesson": "Capital to band handoff.",
+      "duration_min": 12,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
+    },
+    {
+      "id": "gor_drazhak_muster_04",
+      "line": "envoy",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 29,
+      "level": 29,
+      "requires": [],
+      "title": "[PH] Your Place in the Line",
+      "text": "[PH] Thorga: your place in the line; Drek Rampbinder on Bannerbreak Mesa needs help, at 30 or later. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_043_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5
+      },
+      "lesson": "Capital to contested handoff at 30.",
+      "duration_min": 10,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     }
   ]
 }

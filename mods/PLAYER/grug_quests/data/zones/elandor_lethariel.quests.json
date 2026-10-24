@@ -1,5 +1,6 @@
 {
   "zone": "elandor_lethariel",
+  "reworked": true,
   "identity": "Lethariel keeps the oldest trees in the Accord, and someone with a forged bough-seal is counting them for the axe.",
   "hubs": [
     {
@@ -37,162 +38,97 @@
   ],
   "quests": [
     {
-      "id": "lethariel_wardens_01",
-      "line": "envoy",
-      "giver": "r20_elf_capital_envoy",
-      "turnin": "r20_elf_capital_envoy",
-      "min_level": 20,
-      "level": 21,
-      "requires": [],
-      "title": "A Debt Beyond the Grave",
-      "text": "Even death has not persuaded the Debtbound Zombies to abandon their unpaid tolls. Lay six to rest at night in the {name:glades} {dir_of:lethariel:glades}, before their wandering feet ruin more saplings. Dawn will burn them, but I would sooner grant them peace than leave the matter to the sun.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "debtbound_zombie"
-          ],
-          "count": 6,
-          "area": "elandor_lethariel/glades"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "duration_min": 9
-    },
-    {
-      "id": "lethariel_provisions_01",
+      "id": "capital_raw_meat",
       "line": "provisions",
-      "giver": "r20_elf_capital_cook",
-      "turnin": "r20_elf_capital_cook",
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "Before the Speeches Begin",
-      "text": "The Star Hall has requested a meal worthy of its deliberations; I should prefer one ready before they end. Bring me five pieces of Raw Meat and one Braided Sinew, hunting Brook Hinds by day in the {name:glades} {dir_of:lethariel:glades} for the sinew. Their yellow names mean they will not attack first, so choose your quarry with care.",
+      "title": "[PH] Meat for the Capital's Kitchen",
+      "text": "[PH] Mirael Petalpot: the Star Hall wants a meal worthy of its deliberations, ready before they end; 8 Raw Meat from the glades' game by day. Real text to follow.",
       "objectives": [
         {
           "type": "item",
           "item": "mobs:meat_raw",
-          "count": 5
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:braided_sinew",
-          "count": 1,
+          "count": 8,
           "roles": [
             "moss_antler_stag"
           ],
           "area": "elandor_lethariel/glades"
         }
       ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 6
-    },
-    {
-      "id": "lethariel_wardens_02",
-      "line": "envoy",
-      "giver": "r20_elf_capital_envoy",
-      "turnin": "r20_elf_capital_envoy",
-      "min_level": 21,
-      "level": 22,
-      "requires": [
-        "lethariel_wardens_01"
-      ],
-      "title": "No Charge for the Grass",
-      "text": "Someone has decided that walking beneath Lethariel's trees requires a fee, complete with an imitation of our bough-seal. Defeat four Lamplight Footpads after dark in the {name:glades} {dir_of:lethariel:glades}; they appear only at night and are few enough to require a patient search. We planted shade for travellers, not a source of revenue for thieves.",
-      "objectives": [
+      "variants": [
         {
-          "type": "kill",
-          "roles": [
-            "toll_bandit"
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r20_elf_capital_cook"
           ],
-          "count": 4,
-          "area": "elandor_lethariel/glades"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 9
-    },
-    {
-      "id": "lethariel_dispatch_01",
-      "line": "dispatch",
-      "giver": "r20_elf_capital_cook",
-      "turnin": "r20_anchor_018_host",
-      "min_level": 21,
-      "level": 22,
-      "requires": [
-        "lethariel_provisions_01"
-      ],
-      "title": "The Missing Half of the Pie",
-      "text": "Ilwen Petalmeasure's berry deliveries keep shrinking, though her crate lists remain beautifully written. Visit her at Lorindor Berrycourt, following the road out into Lorindor, and ask what these tolls are costing us. One cannot bake the missing half of a pie from elegant handwriting.",
-      "objectives": [
+          "text": "[PH] Mirael Petalpot: the Star Hall wants a meal worthy of its deliberations, ready before they end; 8 Raw Meat from the glades' game by day. Real text to follow."
+        },
         {
-          "type": "talk",
-          "npc": "r20_anchor_018_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Capital to heartland handoff.",
-      "duration_min": 8
-    },
-    {
-      "id": "lethariel_dispatch_02",
-      "line": "dispatch",
-      "giver": "r20_elf_capital_cook",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 21,
-      "level": 22,
-      "requires": [
-        "lethariel_provisions_01"
-      ],
-      "title": "Bread Does Not Keep Star-Time",
-      "text": "Lethen Moonledger can predict a star's return but has missed a month's worth of bread collections. Speak with him at the Moonfall Observatory in Moonfall Wood and find out what keeps him from us. If he says he has been busy, remind him that dough rises without an appointment.",
-      "objectives": [
+          "zone": "kragmar_gor_drazhak",
+          "givers": [
+            "r20_orc_capital_cook"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "watchful_zebra"
+              ],
+              "area": "kragmar_gor_drazhak/steppe"
+            }
+          ],
+          "text": "[PH] Gorla Longladle: the ladle commands, and hungry fighters line up; 8 Raw Meat from the steppe's game by day. Real text to follow."
+        },
         {
-          "type": "talk",
-          "npc": "r20_anchor_035_host"
+          "zone": "kragmar_kezamba",
+          "givers": [
+            "r20_troll_capital_cook"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "reed_tapir"
+              ],
+              "area": "kragmar_kezamba/canopy"
+            }
+          ],
+          "text": "[PH] Teshani Smokereed: half of Kezamba follows its nose to the smokehouse; 8 Raw Meat from the canopy's game by day. Real text to follow."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r20_undead_capital_cook"
+          ],
+          "objectives": [
+            {
+              "roles": [
+                "moss_antler_stag"
+              ],
+              "area": "kragmar_nhal_veyr/blightfields"
+            }
+          ],
+          "text": "[PH] Velis Mourningbowl: places set for mourners who forgot there is a kitchen; 8 Raw Meat from the blightfields' game by day. Real text to follow."
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 2
       },
-      "lesson": "Capital to heartland handoff.",
-      "duration_min": 8
+      "lesson": "A daytime errand on the capital's outskirts.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS. Draft §4 and the check's fix: the cooks' simple Raw Meat deliveries as one shared task (Highcourt's cook asks for a Gnarled Boar Tusk, Varda's Mire Carp is BANDQUESTS' fish quest); each capital's day game as the named source."
     },
     {
-      "id": "lethariel_wardens_03",
+      "id": "lethariel_rusk",
       "line": "envoy",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
       "min_level": 27,
       "level": 28,
-      "requires": [
-        "lethariel_wardens_02"
-      ],
-      "title": "What the Seal Was For",
-      "text": "Our bough-seal once meant that a tree would be tended; at the {name:poacher_camp} {dir_from_giver:poacher_camp}, it marks trees for the axe. Defeat five Timber Poachers there, then {name:bough_counter_rusk}, who records the theft. They keep the camp by day and night; separate the leader from his guards before you face him. Some of those trees shaded the hands that first carved our seal.",
+      "requires": [],
+      "title": "[PH] What the Seal Was For",
+      "text": "[PH] Eriath: Poacher Bough-Counter Rusk marks the old trees for the axe with an abused bough-seal at the poacher camp; stop him. Rusk alone stands for the false records. Real text to follow.",
+      "completion": "[PH] Eriath: the seal means tending again; Rusk's handwriting may yet turn up elsewhere. Real text to follow.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "unlicensed_poacher"
-          ],
-          "count": 5,
-          "area": "elandor_lethariel/poacher_camp"
-        },
         {
           "type": "kill",
           "roles": [
@@ -202,37 +138,26 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_mobs:heavy_leather",
+            "count": 3
+          },
+          {
+            "item": "grug_mobs:heavy_cloth",
+            "count": 3
+          },
+          {
+            "item": "grug_materials:steel_bar",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "Camp plus normal-tier leader.",
-      "duration_min": 13,
-      "climax": true
-    },
-    {
-      "id": "lethariel_wardens_04",
-      "line": "envoy",
-      "giver": "r20_elf_capital_envoy",
-      "turnin": "r20_anchor_036_host",
-      "min_level": 29,
-      "level": 30,
-      "requires": [
-        "lethariel_wardens_03"
-      ],
-      "title": "Where the Writ Wears Thin",
-      "text": "Rusk's reckoning reaches into the Glassroot Wilds, beyond the comfort of our walls. Report what you have learned to Faeris Rootbinder at Glassroot Gate. Those lands are contested, and the Accord's seal offers little shelter there; finish your training before you set out.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_anchor_036_host"
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "lesson": "Capital to contested handoff at 30.",
-      "duration_min": 10
+      "lesson": "The capital's named leader at his camp, alone: the capital's local finale.",
+      "duration_min": 12,
+      "climax": true,
+      "notes": "Round 60 CAPITALS: a new id (its objectives changed); free play, a level only."
     },
     {
       "id": "lethariel_wardens_opt_01",
@@ -241,11 +166,9 @@
       "turnin": "r20_elf_capital_envoy",
       "min_level": 24,
       "level": 25,
-      "requires": [
-        "lethariel_wardens_02"
-      ],
-      "title": "Optional: A Forester's Path",
-      "text": "Our foresters know which roots will trip them; it is the teeth between the roots that trouble me. Kill six Silver-Tip Vixens by day in the {name:greatwood} {dir_of:lethariel:greatwood}. They attack passing travellers, so tend to your wounds before seeking the next.",
+      "requires": [],
+      "title": "[PH] A Forester's Path",
+      "text": "[PH] Eriath: the foresters know which roots trip them; it is the teeth between the roots; six of the greatwood's vixens by day. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -257,70 +180,80 @@
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 2.5
       },
+      "lesson": "A day hunt in the greatwood.",
       "duration_min": 9,
-      "optional": true
+      "notes": "Round 60 CAPITALS: the id stays (objectives unchanged); free play, a level only."
     },
     {
-      "id": "lethariel_wardens_opt_02",
+      "id": "lethariel_dispatch_01",
+      "line": "dispatch",
+      "giver": "r20_elf_capital_cook",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "[PH] The Missing Half of the Pie",
+      "text": "[PH] Mirael Petalpot: Ilwen Petalmeasure's berry deliveries keep shrinking; ask her at Lorindor Berrycourt what the tolls cost. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_018_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "Capital to band handoff.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
+    },
+    {
+      "id": "lethariel_dispatch_02",
+      "line": "dispatch",
+      "giver": "r20_elf_capital_cook",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "[PH] Bread Does Not Keep Star-Time",
+      "text": "[PH] Mirael: Lethen Moonledger forgets his bread collections; find out at the Moonfall Observatory what keeps him. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_035_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "Capital to band handoff.",
+      "duration_min": 8,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
+    },
+    {
+      "id": "lethariel_wardens_04",
       "line": "envoy",
       "giver": "r20_elf_capital_envoy",
-      "turnin": "r20_elf_capital_envoy",
-      "min_level": 25,
-      "level": 25,
-      "requires": [
-        "lethariel_wardens_02"
-      ],
-      "title": "Optional: The Last Collection",
-      "text": "A lord once claimed a tithe on this wood; he is long dead and his claim forgotten, yet the Tithe Revenants still come to collect. Lay six to rest at night in the {name:greatwood} {dir_of:lethariel:greatwood}. They endure more punishment than the Debtbound Zombies, so approach them prepared. Let this be the last service anyone performs in that lord's name.",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [],
+      "title": "[PH] Where the Writ Wears Thin",
+      "text": "[PH] Eriath: the Glassroot Wilds lie beyond our walls; report to Faeris Rootbinder at Glassroot Gate, at 30 or later. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "stubborn_zombie"
-          ],
-          "count": 6,
-          "area": "elandor_lethariel/greatwood"
+          "type": "talk",
+          "npc": "r20_anchor_036_host"
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 9,
-      "optional": true
-    },
-    {
-      "id": "lethariel_provisions_opt_01",
-      "line": "provisions",
-      "giver": "r20_elf_capital_cook",
-      "turnin": "r20_elf_capital_cook",
-      "min_level": 24,
-      "level": 25,
-      "requires": [
-        "lethariel_provisions_01"
-      ],
-      "title": "Optional: Streaks in the Glaze",
-      "text": "A councillor who overlooked a forged seal spent ten minutes discussing the streaks in my glaze. Bring me two Silver-Tip Fox Tails from Silver-Tip Vixens in the {name:greatwood} {dir_of:lethariel:greatwood} by day, and I can replace my brushes. At least the vixens make their objections quickly.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:silver_tip_fox_tail",
-          "count": 2,
-          "roles": [
-            "redfang_fox"
-          ],
-          "area": "elandor_lethariel/greatwood"
-        }
-      ],
-      "rewards": {
-        "weight": 2,
-        "items": []
-      },
-      "duration_min": 8,
-      "optional": true
+      "lesson": "Capital to contested handoff at 30.",
+      "duration_min": 10,
+      "notes": "Round 60 CAPITALS: the handover id stays; free play, it requires nothing and claims no earlier deed (draft §10)."
     }
   ]
 }
