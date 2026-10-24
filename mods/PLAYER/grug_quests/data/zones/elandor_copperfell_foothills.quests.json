@@ -236,27 +236,27 @@
       "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
-      "id": "copperfell_gravemoss",
+      "id": "copperfell_firewood",
       "line": "watch",
       "giver": "r14_dwarf_scout",
       "turnin": "r14_dwarf_scout",
       "min_level": 12,
       "level": 13,
       "requires": [],
-      "title": "[PH] Poultices for the Watch",
-      "text": "[PH] Mara's watchers need poultices: bring 5 Gravemoss from the pine hills. Real text to follow.",
+      "title": "[PH] Wood for the Watch Fire",
+      "text": "[PH] Mara keeps a fire burning for the night watch over the cart road: bring 12 logs of any tree. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_gathering:gravemoss",
-          "count": 5
+          "group": "tree",
+          "count": 12
         }
       ],
       "rewards": {
         "weight": 4
       },
       "lesson": "A local task of the zone's own people (draft K15).",
-      "duration_min": 8,
+      "duration_min": 7,
       "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {

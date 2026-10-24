@@ -239,10 +239,11 @@ LOCAL = {
              "title": "The Tally to the Outpost",
              "text": "Orrik sends his cart tally to Mara Deepwatch at the outpost, who turns a loss report "
                      "back into a search for people.", "duration": 5},
-            {"id": "copperfell_gravemoss", "giver": "scout", "line": "watch", "min_level": 12, "level": 13,
-             "objectives": [item("grug_gathering:gravemoss", 5)], "weight": 4,
-             "title": "Poultices for the Watch",
-             "text": "Mara's watchers need poultices: bring 5 Gravemoss from the pine hills.", "duration": 8},
+            {"id": "copperfell_firewood", "giver": "scout", "line": "watch", "min_level": 12, "level": 13,
+             "objectives": [item("tree", 12, group=True)], "weight": 4,
+             "title": "Wood for the Watch Fire",
+             "text": "Mara keeps a fire burning for the night watch over the cart road: bring 12 logs of any "
+                     "tree.", "duration": 7},
             {"id": "copperfell_torches", "giver": "local", "line": "workyard", "min_level": 13, "level": 14,
              "objectives": [item("default:torch", 20)], "weight": 4.5,
              "title": "Light for the Shafts",
@@ -370,10 +371,11 @@ LOCAL = {
     "mournfen": {
         "melee": "greataxe", "slots": ("head", "chest"),
         "quests": [
-            {"id": "mournfen_gravemoss", "giver": "steward", "line": "fen", "min_level": 10, "level": 11,
-             "objectives": [item("grug_gathering:gravemoss", 5)], "weight": 4, "choices": "potions",
-             "title": "Gravemoss for the Rites",
-             "text": "Mordec keeps the burials: bring 5 Gravemoss for the rites.", "duration": 8},
+            {"id": "mournfen_markers", "giver": "steward", "line": "fen", "min_level": 10, "level": 11,
+             "objectives": [item("default:sign_wall_wood", 6)], "weight": 4, "choices": "potions",
+             "title": "Markers for the Graves",
+             "text": "Mordec keeps the burials and their names: bring 6 Wooden Signs to mark graves whose old "
+                     "markings rotted.", "duration": 7},
             {"id": "mournfen_names", "giver": "steward", "line": "fen", "min_level": 11, "level": 12,
              "objectives": [use("name_rest", "witness_record", "Copy the names from the marker", 5)],
              "weight": 4.5,

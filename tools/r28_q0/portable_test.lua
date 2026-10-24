@@ -655,7 +655,7 @@ do
 			"band: the " .. race .. " local offers the repairs at once")
 	end
 	for _, row in ipairs({{"r14_dwarf_steward", "copperfell_copper"}, {"r14_human_steward", "goldmead_corn"},
-			{"r14_elf_steward", "starbough_sunleaf"}, {"r14_undead_steward", "mournfen_gravemoss"},
+			{"r14_elf_steward", "starbough_sunleaf"}, {"r14_undead_steward", "mournfen_markers"},
 			{"r14_orc_steward", "redtusk_corn"}, {"r14_troll_steward", "raincall_melons"}}) do
 		eq(status(row[1], row[2]), "available", "band: " .. row[2] .. " needs no departure")
 	end

@@ -62,20 +62,20 @@
   ],
   "quests": [
     {
-      "id": "mournfen_gravemoss",
+      "id": "mournfen_markers",
       "line": "fen",
       "giver": "r14_undead_steward",
       "turnin": "r14_undead_steward",
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "[PH] Gravemoss for the Rites",
-      "text": "[PH] Mordec keeps the burials: bring 5 Gravemoss for the rites. Real text to follow.",
+      "title": "[PH] Markers for the Graves",
+      "text": "[PH] Mordec keeps the burials and their names: bring 6 Wooden Signs to mark graves whose old markings rotted. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_gathering:gravemoss",
-          "count": 5
+          "item": "default:sign_wall_wood",
+          "count": 6
         }
       ],
       "rewards": {
@@ -92,7 +92,7 @@
         ]
       },
       "lesson": "The zone's first errand, a level only; the early potion choice.",
-      "duration_min": 8,
+      "duration_min": 7,
       "notes": "Round 59 BANDQUESTS: free play, a level only."
     },
     {
