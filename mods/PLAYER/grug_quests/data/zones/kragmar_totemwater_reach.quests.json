@@ -254,7 +254,7 @@
       "level": 22,
       "requires": [],
       "title": "What the Dark Drags In",
-      "text": "Sedge Ooze spreads through the jungle at night, catching the porters coming back to camp in the muck. Destroy three Sedge Ooze in {name:jungle}, {zone_area:jungle}, at night. I want the whole crew back, including the bits they usually wear on their feet.",
+      "text": "Sedge Oozes spread through the jungle at night, catching the porters coming back to camp in the muck. Destroy three Sedge Oozes at night in the {name:jungle}, which lies {zone_area:jungle}. I want the whole crew back, including the bits they usually wear on their feet.",
       "objectives": [
         {
           "type": "kill",
@@ -279,7 +279,7 @@
               "area": "kragmar_totemwater_reach/jungle"
             }
           ],
-          "text": "Sedge Ooze spreads through the jungle at night, catching the porters coming back to camp in the muck. Destroy three Sedge Ooze in {name:jungle}, {zone_area:jungle}, at night. I want the whole crew back, including the bits they usually wear on their feet."
+          "text": "Sedge Oozes spread through the jungle at night, catching the porters coming back to camp in the muck. Destroy three Sedge Oozes at night in the {name:jungle}, which lies {zone_area:jungle}. I want the whole crew back, including the bits they usually wear on their feet."
         }
       ],
       "rewards": {

@@ -70,7 +70,7 @@
               "faction": "throng"
             }
           ],
-          "text": "The Oathdelvers gave their word to the smiths of The Throng, and I mean to keep it before they come asking again. Bring me twenty Iron Lumps; try the rock beyond the camp lift's second level. I can carry a promise, but I would rather carry the iron."
+          "text": "The Oathdelvers gave their word to the smiths of The Throng, and I mean to keep it before they come asking again. Bring me twenty Iron Lumps; dig out from the lift room on the second level. I can carry a promise, but I would rather carry the iron."
         }
       ],
       "rewards": {
@@ -210,7 +210,7 @@
               "faction": "throng"
             }
           ],
-          "text": "The forges serving The Throng are waiting on us, and The Oathdelvers do not leave a promised load sitting in the deep. Bring me twenty pieces of Anthracite; the lift's third level is a place to look. I would like to hear a hammer for once instead of a complaint."
+          "text": "The forges serving The Throng are waiting on us, and The Oathdelvers do not leave a promised load sitting in the deep. Bring me twenty pieces of Anthracite; the lift's third level is the place to look. I would like to hear a hammer for once instead of a complaint."
         }
       ],
       "rewards": {
@@ -334,7 +334,7 @@
               "faction": "throng"
             }
           ],
-          "text": "The Oathdelvers promised fifteen pieces of Silver to the workshops supplying The Throng. Bring them to me; you can look beyond the lift's fourth level. We have enough empty sacks to start a second camp, and I would rather fill this one."
+          "text": "The Oathdelvers promised fifteen pieces of Silver to the workshops supplying The Throng. Bring them to me; you can dig out from the lift room on the fourth level. We have enough empty sacks to start a second camp, and I would rather fill this one."
         }
       ],
       "rewards": {
@@ -549,7 +549,7 @@
       "level": 53,
       "requires": [],
       "title": "Four, Counted Twice",
-      "text": "The Charter of Stone's gem workers need four pieces of Rough Diamond, and I mean to count the bundle twice before it leaves. Bring them to me; you can search beyond the lift's sixth level. My eyes may be tired, but that is no excuse for a bad tally.",
+      "text": "The Charter of Stone's gem workers need four pieces of Rough Diamond, and I mean to count the bundle twice before it leaves. Bring them to me; you can search the rock round the lift room on the sixth level. My eyes may be tired, but that is no excuse for a bad tally.",
       "objectives": [
         {
           "type": "item",
@@ -566,7 +566,7 @@
               "faction": "accord"
             }
           ],
-          "text": "The Charter of Stone's gem workers need four pieces of Rough Diamond, and I mean to count the bundle twice before it leaves. Bring them to me; you can search beyond the lift's sixth level. My eyes may be tired, but that is no excuse for a bad tally."
+          "text": "The Charter of Stone's gem workers need four pieces of Rough Diamond, and I mean to count the bundle twice before it leaves. Bring them to me; you can search the rock round the lift room on the sixth level. My eyes may be tired, but that is no excuse for a bad tally."
         },
         {
           "zone": "oathdelvers",

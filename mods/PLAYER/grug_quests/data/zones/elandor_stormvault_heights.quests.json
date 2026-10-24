@@ -333,7 +333,7 @@
         "guild_t4_sapphire"
       ],
       "title": "Who Was on the Cart",
-      "text": "The silver and sapphire orders are filled; I also have a border report that lists the drivers and workers affected by our lost loads. Bring the camp report to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
+      "text": "The silver and sapphire orders are filled; I also have a border report that lists the drivers and workers affected by our lost loads. Bring the border report to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
       "completion": "Good, the drivers and workers have their own lines beside the lost loads. The Charter of Stone gathers these border reports so we can find out who needs tools, relief or a safer way through. A cargo total alone will not tell us that.",
       "objectives": [
         {
@@ -355,7 +355,7 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "The silver and sapphire orders are filled; I also have a border report that lists the drivers and workers affected by our lost loads. Bring the camp report to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
+          "text": "The silver and sapphire orders are filled; I also have a border report that lists the drivers and workers affected by our lost loads. Bring the border report to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
           "completion": "Good, the drivers and workers have their own lines beside the lost loads. The Charter of Stone gathers these border reports so we can find out who needs tools, relief or a safer way through. A cargo total alone will not tell us that."
         },
         {
@@ -371,7 +371,7 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "Our silver and sapphire are accounted for, but this border report still needs a hearing: it names the drivers and workers behind the lost cargo. Bring the camp report to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
+          "text": "Our silver and sapphire are accounted for, but this border report still needs a hearing: it names the drivers and workers behind the lost cargo. Bring the border report to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
           "completion": "I can see which drivers lost their loads and which workers were left without supplies. That is why The Charter of Stone asks for news from the border. Now I can plan the next delivery around the people waiting for it."
         },
         {
@@ -404,7 +404,7 @@
               "npc": "r58_guild_leader_dur_brannoc"
             }
           ],
-          "text": "The silver and sapphire orders are filled; I have also finished a border report with every affected driver and worker entered beside the lost loads. Bring the camp report to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
+          "text": "The silver and sapphire orders are filled; I have also finished a border report with every affected driver and worker entered beside the lost loads. Bring the border report to Hadrin Beamset at the Miner's Guild house in Dur Brannoc for The Charter of Stone.",
           "completion": "Good, the drivers and workers have their own lines beside the lost loads. The Charter of Stone gathers these border reports so we can find out who needs tools, relief or a safer way through. A cargo total alone will not tell us that."
         },
         {
@@ -421,7 +421,7 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "Both orders are settled, and I can spare a moment for this border report; the lost cargo has its line, and so do the drivers and workers left short. Bring the camp report to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
+          "text": "Both orders are settled, and I can spare a moment for this border report; the lost cargo has its line, and so do the drivers and workers left short. Bring the border report to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
           "completion": "I can see which drivers lost their loads and which workers were left without supplies. That is why The Charter of Stone asks for news from the border. Now I can plan the next delivery around the people waiting for it."
         },
         {
@@ -438,7 +438,7 @@
               "npc": "r58_guild_leader_highcourt"
             }
           ],
-          "text": "The silver and sapphire are accounted for; this border report also gives the names of the drivers and workers affected by the loads that never arrived. Bring the camp report to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
+          "text": "The silver and sapphire are accounted for; this border report also gives the names of the drivers and workers affected by the loads that never arrived. Bring the border report to Alis Cartwright at the Miner's Guild house in Highcourt for The Charter of Stone.",
           "completion": "I can see which drivers lost their loads and which workers were left without supplies. That is why The Charter of Stone asks for news from the border. Now I can plan the next delivery around the people waiting for it."
         },
         {
@@ -455,7 +455,7 @@
               "npc": "r58_guild_leader_lethariel"
             }
           ],
-          "text": "Both orders are filled, and I have a border report ready that names the drivers and workers affected by the missing supplies. Bring the camp report to Caelir Veinward at the Miner's Guild house in Lethariel for The Charter of Stone.",
+          "text": "Both orders are filled, and I have a border report ready that names the drivers and workers affected by the missing supplies. Bring the border report to Caelir Veinward at the Miner's Guild house in Lethariel for The Charter of Stone.",
           "completion": "The names show where a lost load has left work unfinished and people exposed. The Charter of Stone keeps these border reports so the next supply plan can account for both. I will preserve the workers' and drivers' entries with the cargo record."
         }
       ],
@@ -471,7 +471,7 @@
       "level": 32,
       "requires": [],
       "title": "Keep the Loads Moving",
-      "text": "Stormhorn Ram keeps meeting our supply carriers on the crags, and neither party has learned to give way. Hunt eight Stormhorn Ram in the rocky heights of {name:eagle_crags}, {zone_area:eagle_crags}, by day. I trust our workers' footing more when nothing is trying to knock it out from under them.",
+      "text": "Stormhorn Rams keep meeting our supply carriers on the crags, and neither party has learned to give way. Hunt eight Stormhorn Rams by day on the {name:eagle_crags}, which lie {zone_area:eagle_crags}. I trust our workers' footing more when nothing is trying to knock it out from under them.",
       "objectives": [
         {
           "type": "kill",
@@ -496,7 +496,7 @@
               "area": "elandor_stormvault_heights/eagle_crags"
             }
           ],
-          "text": "Stormhorn Ram keeps meeting our supply carriers on the crags, and neither party has learned to give way. Hunt eight Stormhorn Ram in the rocky heights of {name:eagle_crags}, {zone_area:eagle_crags}, by day. I trust our workers' footing more when nothing is trying to knock it out from under them."
+          "text": "Stormhorn Rams keep meeting our supply carriers on the crags, and neither party has learned to give way. Hunt eight Stormhorn Rams by day on the {name:eagle_crags}, which lie {zone_area:eagle_crags}. I trust our workers' footing more when nothing is trying to knock it out from under them."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -511,7 +511,7 @@
               "area": "elandor_ashenward_march/cinderwood"
             }
           ],
-          "text": "Ashwolf has started following the workers who bring our camp supplies through the woods. Hunt eight Ashwolf in the ash woods of {name:cinderwood}, {zone_area:cinderwood}; they prowl by day. The Accord needs these loads, and I need the people carrying them to come back."
+          "text": "Ashwolves have started following the workers who bring our camp supplies through the woods. Hunt eight Ashwolves by day in the {name:cinderwood}, which lies {zone_area:cinderwood}. The Accord needs these loads, and I need the people carrying them to come back."
         },
         {
           "zone": "elandor_glassroot_wilds",
@@ -526,7 +526,7 @@
               "area": "elandor_glassroot_wilds/fringe"
             }
           ],
-          "text": "Rootantler has been charging our wood carriers along the forest fringe. Hunt eight Rootantler in the woodland of {name:fringe}, {zone_area:fringe}, by day. I have allowed for care around the roots in our schedule; being chased through them was not included."
+          "text": "Rootantlers have been charging our wood carriers along the forest fringe. Hunt eight Rootantlers by day in the {name:fringe}, which lies {zone_area:fringe}. I allowed for care around the roots in our schedule; being chased through them was not included."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -541,7 +541,7 @@
               "area": "kragmar_bannerbreak_mesa/badlands"
             }
           ],
-          "text": "Muster Husk keeps marching into our supply crews as if the loads ought to make way for it. Defeat eight Muster Husk in the badlands of {name:badlands}, {zone_area:badlands}; they are abroad by day. The Throng has living and dead workers worth protecting, and all of them have better work to do."
+          "text": "Muster Husks keep marching into our supply crews as if the loads ought to make way for them. Defeat eight Muster Husks by day in the {name:badlands}, which lie {zone_area:badlands}. The Throng has living and dead workers worth protecting, and all of them have better work to do."
         }
       ],
       "rewards": {
@@ -570,7 +570,7 @@
       "level": 40,
       "requires": [],
       "title": "Before the Stakes Take Root",
-      "text": "The Throng is building {name:camp_site_stormvault_heights} {dir_from_giver:camp_site_stormvault_heights}, staking out our contested ground while we are busy keeping loads moving. Defeat four Throng Stakeguards and {captain:camp_site_stormvault_heights} at the construction camp. The Charter of Stone supplies The Accord's army, and we cannot afford an enemy post watching every delivery.",
+      "text": "The Throng is building the {name:camp_site_stormvault_heights} {dir_from_giver:camp_site_stormvault_heights}, staking out our contested ground while we are busy keeping loads moving. Defeat four Throng Stakeguards and {captain:camp_site_stormvault_heights} at the construction camp. The Charter of Stone supplies The Accord's army, and we cannot afford an enemy post watching every delivery.",
       "objectives": [
         {
           "type": "kill",
@@ -609,7 +609,7 @@
               "area": "elandor_stormvault_heights/camp_site_stormvault_heights"
             }
           ],
-          "text": "The Throng is building {name:camp_site_stormvault_heights} {dir_from_giver:camp_site_stormvault_heights}, staking out our contested ground while we are busy keeping loads moving. Defeat four Throng Stakeguards and {captain:camp_site_stormvault_heights} at the construction camp. The Charter of Stone supplies The Accord's army, and we cannot afford an enemy post watching every delivery."
+          "text": "The Throng is building the {name:camp_site_stormvault_heights} {dir_from_giver:camp_site_stormvault_heights}, staking out our contested ground while we are busy keeping loads moving. Defeat four Throng Stakeguards and {captain:camp_site_stormvault_heights} at the construction camp. The Charter of Stone supplies The Accord's army, and we cannot afford an enemy post watching every delivery."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -630,7 +630,7 @@
               "area": "elandor_ashenward_march/camp_site_ashenward_march"
             }
           ],
-          "text": "The Throng is putting up {name:camp_site_ashenward_march} {dir_from_giver:camp_site_ashenward_march} on our contested ground, with a fine view of the trouble it can cause us. Defeat four Throng Stakeguards and {captain:camp_site_ashenward_march} at the construction camp. The Charter of Stone has loads promised to The Accord's army, and their new neighbours are not going to help them arrive."
+          "text": "The Throng is putting up the {name:camp_site_ashenward_march} {dir_from_giver:camp_site_ashenward_march} on our contested ground, with a fine view of the trouble it can cause us. Defeat four Throng Stakeguards and {captain:camp_site_ashenward_march} at the construction camp. The Charter of Stone has loads promised to The Accord's army, and an enemy camp next door will not help them arrive."
         },
         {
           "zone": "elandor_glassroot_wilds",
@@ -651,7 +651,7 @@
               "area": "elandor_glassroot_wilds/camp_site_glassroot_wilds"
             }
           ],
-          "text": "The Throng is driving stakes for {name:camp_site_glassroot_wilds} {dir_from_giver:camp_site_glassroot_wilds}, claiming our contested ground one post at a time. Defeat four Throng Stakeguards and {captain:camp_site_glassroot_wilds} at the construction camp. The Charter of Stone keeps The Accord's army supplied; an enemy foothold in these woods will make that work dearer for everyone."
+          "text": "The Throng is driving stakes for the {name:camp_site_glassroot_wilds} {dir_from_giver:camp_site_glassroot_wilds}, claiming our contested ground one post at a time. Defeat four Throng Stakeguards and {captain:camp_site_glassroot_wilds} at the construction camp. The Charter of Stone keeps The Accord's army supplied; an enemy foothold in these woods will make that work dearer for everyone."
         },
         {
           "zone": "kragmar_blackwind_rise",
@@ -672,7 +672,7 @@
               "area": "kragmar_blackwind_rise/camp_site_blackwind_rise"
             }
           ],
-          "text": "The Accord is raising {name:camp_site_blackwind_rise} {dir_from_giver:camp_site_blackwind_rise} on our contested ground, and I have no intention of letting them settle in comfortably. Defeat four Accord Stakeguards and {captain:camp_site_blackwind_rise} at the construction camp. The Oathdelvers have pledged these loads to The Throng, and our haulers have enough hazards without a new enemy post."
+          "text": "The Accord is raising the {name:camp_site_blackwind_rise} {dir_from_giver:camp_site_blackwind_rise} on our contested ground, and I have no intention of letting them settle in comfortably. Defeat four Accord Stakeguards and {captain:camp_site_blackwind_rise} at the construction camp. The Oathdelvers have pledged these loads to The Throng, and our haulers have enough hazards without a new enemy post."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -693,7 +693,7 @@
               "area": "kragmar_bannerbreak_mesa/camp_site_bannerbreak_mesa"
             }
           ],
-          "text": "The Accord is building {name:camp_site_bannerbreak_mesa} {dir_from_giver:camp_site_bannerbreak_mesa} on our contested ground. Defeat four Accord Stakeguards and {captain:camp_site_bannerbreak_mesa} at the construction camp before they get too comfortable. The Oathdelvers keep their word to The Throng's army, and that gets harder with an enemy camp at our elbow."
+          "text": "The Accord is building the {name:camp_site_bannerbreak_mesa} {dir_from_giver:camp_site_bannerbreak_mesa} on our contested ground. Defeat four Accord Stakeguards and {captain:camp_site_bannerbreak_mesa} at the construction camp before they get too comfortable. The Oathdelvers keep their word to The Throng's army, and that gets harder with an enemy camp at our elbow."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -714,7 +714,7 @@
               "area": "kragmar_thunderroot_wilds/camp_site_thunderroot_wilds"
             }
           ],
-          "text": "The Accord has started {name:camp_site_thunderroot_wilds} {dir_from_giver:camp_site_thunderroot_wilds}, driving its claim into our contested ground. Defeat four Accord Stakeguards and {captain:camp_site_thunderroot_wilds} at the construction camp. The Oathdelvers promised supplies to The Throng's fighters, and I will not leave our porters to carry them past a growing enemy post."
+          "text": "The Accord has started the {name:camp_site_thunderroot_wilds} {dir_from_giver:camp_site_thunderroot_wilds}, driving its claim into our contested ground. Defeat four Accord Stakeguards and {captain:camp_site_thunderroot_wilds} at the construction camp. The Oathdelvers promised supplies to The Throng's fighters, and I will not leave our porters to carry them past a growing enemy post."
         }
       ],
       "rewards": {

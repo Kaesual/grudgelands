@@ -701,8 +701,8 @@
       "min_level": 11,
       "level": 12,
       "requires": [],
-      "title": "Boots Before Breakfast",
-      "text": "Bracken Fox keeps stealing the food our haulers leave beside their packs, and hungry haulers are a poor investment. Hunt eight Bracken Fox in the pinewoods of {name:lower_pines}, {zone_area:lower_pines}; you can find them by day. I have spent enough of this shift chasing my own lunch.",
+      "title": "Clear the Haulers' Path",
+      "text": "Bracken Foxes keep stealing the food our haulers leave beside their packs, and hungry haulers are a poor investment. Hunt eight Bracken Foxes by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. I have spent enough of this shift chasing my own lunch.",
       "objectives": [
         {
           "type": "kill",
@@ -727,7 +727,7 @@
               "area": "elandor_copperfell_foothills/lower_pines"
             }
           ],
-          "text": "Bracken Fox keeps stealing the food our haulers leave beside their packs, and hungry haulers are a poor investment. Hunt eight Bracken Fox in the pinewoods of {name:lower_pines}, {zone_area:lower_pines}; you can find them by day. I have spent enough of this shift chasing my own lunch."
+          "text": "Bracken Foxes keep stealing the food our haulers leave beside their packs, and hungry haulers are a poor investment. Hunt eight Bracken Foxes by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. I have spent enough of this shift chasing my own lunch."
         },
         {
           "zone": "elandor_goldmead_vale",
@@ -742,7 +742,7 @@
               "area": "elandor_goldmead_vale/orchards"
             }
           ],
-          "text": "Rooter has been turning up the ground where our haulers wheel their loads through the orchards. Hunt eight Rooter in {name:orchards}, {zone_area:orchards}, by day. If I wanted to push every cart myself, I would not have hired haulers."
+          "text": "Rooters have been turning up the ground where our haulers wheel their loads through the orchards. Hunt eight Rooters by day in the {name:orchards}, which lie {zone_area:orchards}. If I wanted to push every cart myself, I would not have hired haulers."
         },
         {
           "zone": "elandor_starbough_vale",
@@ -757,7 +757,7 @@
               "area": "elandor_starbough_vale/lower_boughs"
             }
           ],
-          "text": "Our haulers have enough roots to step over without Truffle Sow tearing up the ground around them. Hunt eight Truffle Sow in the woodland of {name:lower_boughs}, {zone_area:lower_boughs}; they are out by day. I would like the next load to arrive with its carrier still upright."
+          "text": "Our haulers have enough roots to step over without Truffle Sows tearing up the ground around them. Hunt eight Truffle Sows by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}. I would like the next load to arrive with its carrier still upright."
         },
         {
           "zone": "kragmar_mournfen",
@@ -772,7 +772,7 @@
               "area": "kragmar_mournfen/blightfields"
             }
           ],
-          "text": "Bog Seep keeps spreading across the fields our camp haulers use, and each crossing costs us another boot. Hunt eight Bog Seep in the blighted fields of {name:blightfields}, {zone_area:blightfields}, by day. We keep names for the missing here; I refuse to start a register for footwear."
+          "text": "Bog Seeps keep spreading across the fields our camp haulers use, and each crossing costs us another boot. Hunt eight Bog Seeps by day in the {name:blightfields}, which lie {zone_area:blightfields}. We keep names for the missing here; I refuse to start a register for footwear."
         },
         {
           "zone": "kragmar_redtusk_savanna",
@@ -787,7 +787,7 @@
               "area": "kragmar_redtusk_savanna/grasslands"
             }
           ],
-          "text": "Cackler has learned that a hauler with both hands full makes easy prey. Hunt eight Cackler in the grasslands of {name:grasslands}, {zone_area:grasslands}; they roam by day. Our guards have enemies to watch, and I have loads to move."
+          "text": "Cacklers have learned that a hauler with both hands full makes easy prey. Hunt eight Cacklers by day in the {name:grasslands}, which lie {zone_area:grasslands}. Our guards have enemies to watch, and I have loads to move."
         },
         {
           "zone": "kragmar_raincall_basin",
@@ -802,7 +802,7 @@
               "area": "kragmar_raincall_basin/rainwood"
             }
           ],
-          "text": "Wallow Sow keeps barging through the undergrowth and sending our porters scrambling with their loads. Hunt eight Wallow Sow in the rain forest of {name:rainwood}, {zone_area:rainwood}, by day. The last porter saved the sack and landed in the mud; he has told me about it four times."
+          "text": "Wallow Sows keep barging through the undergrowth and sending our porters scrambling with their loads. Hunt eight Wallow Sows by day in the {name:rainwood}, which lies {zone_area:rainwood}. The last porter saved the sack and landed in the mud; he has told me about it four times."
         }
       ],
       "rewards": {

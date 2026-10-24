@@ -359,7 +359,7 @@
       "level": 52,
       "requires": [],
       "title": "The Camp Still Needs Feeding",
-      "text": "Charnel Bear follows the smell of our provision loads through the bonewood and has little patience for the people carrying them. Hunt eight Charnel Bear in the bone forest of {name:bonewood}, {zone_area:bonewood}, by day. I have enough mouths to feed without adding those.",
+      "text": "Charnel Bears follow the smell of our provision loads through the bonewood and have little patience for the people carrying them. Hunt eight Charnel Bears by day in the {name:bonewood}, which lies {zone_area:bonewood}. I have enough mouths to feed without adding theirs.",
       "objectives": [
         {
           "type": "kill",
@@ -385,7 +385,7 @@
               "area": "front_gravesalt_escarpment/bonewood"
             }
           ],
-          "text": "Charnel Bear follows the smell of our provision loads through the bonewood and has little patience for the people carrying them. Hunt eight Charnel Bear in the bone forest of {name:bonewood}, {zone_area:bonewood}, by day. I have enough mouths to feed without adding those."
+          "text": "Charnel Bears follow the smell of our provision loads through the bonewood and have little patience for the people carrying them. Hunt eight Charnel Bears by day in the {name:bonewood}, which lies {zone_area:bonewood}. I have enough mouths to feed without adding theirs."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -401,7 +401,7 @@
               "area": "front_skyglass_canopy/cloudwood"
             }
           ],
-          "text": "Saltroad Deserter keeps picking off our supply runs under the trees. Defeat eight Saltroad Deserter in the cloud forest of {name:cloudwood}, {zone_area:cloudwood}; they work by day. I am tired of counting a full crew out and wondering how many will come back."
+          "text": "Saltroad Deserters keep picking off our supply runs under the trees. Defeat eight Saltroad Deserters by day in the {name:cloudwood}, which lies {zone_area:cloudwood}. I am tired of counting a full crew out and wondering how many will come back."
         }
       ],
       "rewards": {
@@ -430,7 +430,7 @@
       "level": 59,
       "requires": [],
       "title": "One More Shift",
-      "text": "Embergrit Gnawer swarms keep sending our haulers stumbling across the pale slopes with their loads. Kill eight Embergrit Gnawer on the salt escarpment of {name:whitewall}, {zone_area:whitewall}, by day. Down a mine or out in the open, I still have to get this crew home.",
+      "text": "Embergrit Gnawer swarms keep sending our haulers stumbling across the pale slopes with their loads. Kill eight Embergrit Gnawers by day on the {name:whitewall}, which lies {zone_area:whitewall}. Down a mine or out in the open, I still have to get this crew home.",
       "objectives": [
         {
           "type": "kill",
@@ -456,7 +456,7 @@
               "area": "front_gravesalt_escarpment/whitewall"
             }
           ],
-          "text": "Embergrit Gnawer swarms keep sending our haulers stumbling across the pale slopes with their loads. Kill eight Embergrit Gnawer on the salt escarpment of {name:whitewall}, {zone_area:whitewall}, by day. Down a mine or out in the open, I still have to get this crew home."
+          "text": "Embergrit Gnawer swarms keep sending our haulers stumbling across the pale slopes with their loads. Kill eight Embergrit Gnawers by day on the {name:whitewall}, which lies {zone_area:whitewall}. Down a mine or out in the open, I still have to get this crew home."
         },
         {
           "zone": "front_skyglass_canopy",
@@ -472,7 +472,7 @@
               "area": "front_skyglass_canopy/high_canopy"
             }
           ],
-          "text": "Last-Watch Mummy keeps attacking the supply crews beneath the high branches. Defeat eight Last-Watch Mummy in the high forest of {name:high_canopy}, {zone_area:high_canopy}; they are abroad by day. My workers are owed the end of their shift, and I would like to give it to them."
+          "text": "Last-Watch Mummies keep attacking the supply crews beneath the high branches. Defeat eight Last-Watch Mummies by day in the {name:high_canopy}, which lies {zone_area:high_canopy}. My workers are owed the end of their shift, and I would like to give it to them."
         }
       ],
       "rewards": {

@@ -568,7 +568,7 @@
       "level": 22,
       "requires": [],
       "title": "A Load on Every Back",
-      "text": "Cliffbuck has taken to charging our haulers between the pines, where there is precious little room to dodge. Hunt eight Cliffbuck in the pinewoods of {name:pinewood}, {zone_area:pinewood}, by day. A man can carry a load or climb a tree; asking for both seems unfair.",
+      "text": "Cliffbucks have taken to charging our haulers between the pines, where there is precious little room to dodge. Hunt eight Cliffbucks by day in the {name:pinewood}, which lies {zone_area:pinewood}. A dwarf can carry a load or climb a tree; asking for both is unreasonable.",
       "objectives": [
         {
           "type": "kill",
@@ -593,7 +593,7 @@
               "area": "elandor_frostbarrow_shelf/pinewood"
             }
           ],
-          "text": "Cliffbuck has taken to charging our haulers between the pines, where there is precious little room to dodge. Hunt eight Cliffbuck in the pinewoods of {name:pinewood}, {zone_area:pinewood}, by day. A man can carry a load or climb a tree; asking for both seems unfair."
+          "text": "Cliffbucks have taken to charging our haulers between the pines, where there is precious little room to dodge. Hunt eight Cliffbucks by day in the {name:pinewood}, which lies {zone_area:pinewood}. A dwarf can carry a load or climb a tree; asking for both is unreasonable."
         },
         {
           "zone": "elandor_whitebridge_shire",
@@ -608,7 +608,7 @@
               "area": "elandor_whitebridge_shire/meadows"
             }
           ],
-          "text": "Acorn Hog keeps rooting through the meadow crossings and catching our cart wheels in the holes. Hunt eight Acorn Hog in the meadows of {name:meadows}, {zone_area:meadows}; they are out by day. We are trying to run a camp, and lately most of the work has been lifting carts."
+          "text": "Acorn Hogs keep rooting through the meadow crossings and catching our cart wheels in the holes. Hunt eight Acorn Hogs by day in the {name:meadows}, which lie {zone_area:meadows}. We are trying to run a camp, and lately most of the work has been lifting carts."
         },
         {
           "zone": "elandor_lorindor",
@@ -623,7 +623,7 @@
               "area": "elandor_lorindor/berrywoods"
             }
           ],
-          "text": "Brook Hind is driving our porters away from the berry woods with more determination than sense. Hunt eight Brook Hind in the woodland of {name:berrywoods}, {zone_area:berrywoods}, by day. We need room to carry supplies through, and the animals have declined every reasonable request."
+          "text": "Brook Hinds are driving our porters away from the berry woods with more determination than sense. Hunt eight Brook Hinds by day in the {name:berrywoods}, which lie {zone_area:berrywoods}. We need room to carry supplies through, and the animals have declined every reasonable request."
         },
         {
           "zone": "elandor_moonfall_wood",
@@ -638,7 +638,7 @@
               "area": "elandor_moonfall_wood/eaves"
             }
           ],
-          "text": "Crescent Stag keeps lowering its antlers at anyone carrying timber for the camp. Hunt eight Crescent Stag under the forest eaves of {name:eaves}, {zone_area:eaves}; they roam by day. I admire a firm stance until it starts holding up my shift."
+          "text": "Crescent Stags keep lowering their antlers at anyone carrying timber for the camp. Hunt eight Crescent Stags by day in the {name:eaves}, which lie {zone_area:eaves}. I admire a firm stance until it starts holding up my shift."
         },
         {
           "zone": "kragmar_ossuary_reach",
@@ -653,7 +653,7 @@
               "area": "kragmar_ossuary_reach/bonewood"
             }
           ],
-          "text": "Marrow Weevil swarms have made the woods miserable for the crew bringing supplies to camp. Hunt eight Marrow Weevil in the bone forest of {name:bonewood}, {zone_area:bonewood}, by day. I need my workers attending to their loads, not picking beetles out of their joints."
+          "text": "Marrow Weevil swarms have made the woods miserable for the crew bringing supplies to camp. Hunt eight Marrow Weevils by day in the {name:bonewood}, which lies {zone_area:bonewood}. I need my workers attending to their loads, not picking beetles out of their joints."
         },
         {
           "zone": "kragmar_speargrass_reach",
@@ -668,7 +668,7 @@
               "area": "kragmar_speargrass_reach/plains"
             }
           ],
-          "text": "Quagga keeps charging the haulers crossing the plains, and the last load came back scattered over half a field. Hunt eight Quagga in the plains of {name:plains}, {zone_area:plains}; you will find them by day. We gave our word that those supplies would reach camp together."
+          "text": "Quaggas keep charging the haulers crossing the plains, and the last load came back scattered over half a field. Hunt eight Quaggas by day on the {name:plains}, which lie {zone_area:plains}. We gave our word that those supplies would reach camp together."
         },
         {
           "zone": "kragmar_whispering_reedlands",
@@ -683,7 +683,7 @@
               "area": "kragmar_whispering_reedlands/canopy"
             }
           ],
-          "text": "Reed Tapir has been knocking our porters off their footing beneath the trees. Hunt eight Reed Tapir in the jungle of {name:canopy}, {zone_area:canopy}, by day. A dropped bundle is trouble enough before it lands in the water."
+          "text": "Reed Tapirs have been knocking our porters off their footing beneath the trees. Hunt eight Reed Tapirs by day in the {name:canopy}, which lies {zone_area:canopy}. A dropped bundle is trouble enough before it lands in the water."
         }
       ],
       "rewards": {

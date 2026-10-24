@@ -285,7 +285,7 @@
         "guild_t4_sapphire"
       ],
       "title": "Name Every Hand",
-      "text": "Both orders are settled; this border report names the drivers and workers affected by lost cargo, with no one buried under a total. Bring the camp report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+      "text": "Both orders are settled; this border report names the drivers and workers affected by lost cargo, with no one buried under a total. Bring the border report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
       "completion": "The drivers and workers are named clearly beside the lost cargo. The Oathdelvers collect these border reports to keep track of whom a loss has left in need. I will enter every name as written.",
       "objectives": [
         {
@@ -307,7 +307,7 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "Both orders are settled; this border report names the drivers and workers affected by lost cargo, with no one buried under a total. Bring the camp report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+          "text": "Both orders are settled; this border report names the drivers and workers affected by lost cargo, with no one buried under a total. Bring the border report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
           "completion": "The drivers and workers are named clearly beside the lost cargo. The Oathdelvers collect these border reports to keep track of whom a loss has left in need. I will enter every name as written."
         },
         {
@@ -323,7 +323,7 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "The silver and sapphire are accounted for; I have written the drivers and workers affected by our lost loads into this border report. Bring the camp report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "text": "The silver and sapphire are accounted for; I have written the drivers and workers affected by our lost loads into this border report. Bring the border report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
           "completion": "Here are the missing loads, and here are the drivers and workers who bore the loss. The Oathdelvers need both in a border report before we can say what help is owed. Your foreman has given us something we can act on."
         },
         {
@@ -339,7 +339,7 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "Both orders are filled, and this border report is ready; it names the drivers and workers who bore the trouble when the cargo was lost. Bring the camp report to Ombali Ropekeeper at the Miner's Guild house in Kezamba for The Oathdelvers.",
+          "text": "Both orders are filled, and this border report is ready; it names the drivers and workers who bore the trouble when the cargo was lost. Bring the border report to Ombali Ropekeeper at the Miner's Guild house in Kezamba for The Oathdelvers.",
           "completion": "The lost cargo has a tally, and the drivers and workers have names of their own. The Oathdelvers gather news from the border so we can ask those people what is still needed. This report gives us someone to ask."
         },
         {
@@ -356,7 +356,7 @@
               "npc": "r58_guild_leader_nhal_veyr"
             }
           ],
-          "text": "The silver and sapphire orders are settled; this border report records the affected drivers and workers alongside each lost load. Bring the camp report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
+          "text": "The silver and sapphire orders are settled; this border report records the affected drivers and workers alongside each lost load. Bring the border report to Iven Lastshift at the Miner's Guild house in Nhal Veyr for The Oathdelvers.",
           "completion": "The drivers and workers are named clearly beside the lost cargo. The Oathdelvers collect these border reports to keep track of whom a loss has left in need. I will enter every name as written."
         },
         {
@@ -373,7 +373,7 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "Both orders are filled, and I have a border report for the guild with the affected drivers and workers named beside the missing cargo. Bring the camp report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "text": "Both orders are filled, and I have a border report for the guild with the affected drivers and workers named beside the missing cargo. Bring the border report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
           "completion": "Here are the missing loads, and here are the drivers and workers who bore the loss. The Oathdelvers need both in a border report before we can say what help is owed. Your foreman has given us something we can act on."
         },
         {
@@ -390,7 +390,7 @@
               "npc": "r58_guild_leader_gor_drazhak"
             }
           ],
-          "text": "The silver and sapphire are accounted for; this border report says which drivers and workers were left short when our supplies were lost. Bring the camp report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
+          "text": "The silver and sapphire are accounted for; this border report says which drivers and workers were left short when our supplies were lost. Bring the border report to Drava Flintshoulder at the Miner's Guild house in Gor Drazhak for The Oathdelvers.",
           "completion": "Here are the missing loads, and here are the drivers and workers who bore the loss. The Oathdelvers need both in a border report before we can say what help is owed. Your foreman has given us something we can act on."
         },
         {
@@ -407,7 +407,7 @@
               "npc": "r58_guild_leader_kezamba"
             }
           ],
-          "text": "Both orders are settled, and I have put the drivers and workers affected by lost cargo into this border report, where their names can be heard. Bring the camp report to Ombali Ropekeeper at the Miner's Guild house in Kezamba for The Oathdelvers.",
+          "text": "Both orders are settled, and I have put the drivers and workers affected by lost cargo into this border report, where their names can be heard. Bring the border report to Ombali Ropekeeper at the Miner's Guild house in Kezamba for The Oathdelvers.",
           "completion": "The lost cargo has a tally, and the drivers and workers have names of their own. The Oathdelvers gather news from the border so we can ask those people what is still needed. This report gives us someone to ask."
         }
       ],
@@ -423,7 +423,7 @@
       "level": 32,
       "requires": [],
       "title": "Get the Late Shift Home",
-      "text": "Pall Weaver strings webs across our workers' way through the bone forest at night. Kill three Pall Weaver in {name:bonewood}, {zone_area:bonewood}, at night. My crew has spent enough shifts pulling each other loose.",
+      "text": "Pall Weavers string webs across our workers' way through the bone forest at night. Kill three Pall Weavers at night in the {name:bonewood}, which lies {zone_area:bonewood}. My crew has spent enough shifts pulling each other loose.",
       "objectives": [
         {
           "type": "kill",
@@ -448,7 +448,7 @@
               "area": "kragmar_blackwind_rise/bonewood"
             }
           ],
-          "text": "Pall Weaver strings webs across our workers' way through the bone forest at night. Kill three Pall Weaver in {name:bonewood}, {zone_area:bonewood}, at night. My crew has spent enough shifts pulling each other loose."
+          "text": "Pall Weavers string webs across our workers' way through the bone forest at night. Kill three Pall Weavers at night in the {name:bonewood}, which lies {zone_area:bonewood}. My crew has spent enough shifts pulling each other loose."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -463,7 +463,7 @@
               "area": "kragmar_thunderroot_wilds/canopy"
             }
           ],
-          "text": "Shade Panther follows our porters through the jungle at night, waiting for one to fall behind. Hunt three Shade Panther in {name:canopy}, {zone_area:canopy}, at night. We promised every carrier a place by the camp fire, and I intend to keep them all filled."
+          "text": "Shade Panthers follow our porters through the jungle at night, waiting for one to fall behind. Hunt three Shade Panthers at night in the {name:canopy}, which lies {zone_area:canopy}. We promised every carrier a place by the camp fire, and I intend to keep every place filled."
         }
       ],
       "rewards": {
