@@ -226,7 +226,8 @@ local function check_objective(add, where, count, objective, index)
 			add(where, "a use objective counts once: leave count out or write 1 [E-objective]")
 		end
 		if type(objective.place) ~= "string" or objective.place == "" then
-			add(where, "a use objective needs a 'place': a clash site key or a quest place [E-objective]")
+			add(where, "a use objective needs a 'place': a clash site key, a quest place or a town place " ..
+				"(socket:<settlement key>/<socket id>) [E-objective]")
 		end
 		if not text(objective.label) then
 			add(where, "a use objective needs a 'label', the act (\"Light the signal fire\") [E-objective]")

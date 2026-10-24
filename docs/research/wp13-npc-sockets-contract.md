@@ -50,6 +50,9 @@ registry in `grug_core` and never touch the mapgen mod.
   - `king` — the throne (capitals only);
   - `waypoint` — reserved for WP17's travel waypoint; the structure lane
     places it, nobody else consumes it yet.
+- Round 59 adds `quest_place`: a town place's standing cell where a "use at
+  a place" quest object stands (`grug_quests`; nobody stands on it,
+  [quests.md](../design/quests.md) "Town places"), as Round 58 added `lift`.
 - Round 10 adds `riding_trainer` (one capital-only service), `mount_display`
   (tags contains exactly the tier string `1`..`4`), `gear_display` (one of
   `weapon`, `armor`, `jewel`) and `public_station` (one exact station id).

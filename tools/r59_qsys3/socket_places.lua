@@ -26,7 +26,10 @@
 --     sockets = {{id, role, x, y, z, dir, tags, required}, ...}} (nil: no
 --     such settlement); places.parse_ref(ref) -> key, socket id (or nil).
 --   places.registry(found) -> settlement_socket_settlements and
---     settlement_sockets_at stand-ins over `found` (anchor 0,0,0).
+--     settlement_sockets_at stand-ins over `found` (anchor 0,0,0);
+--   places.extend(grug_core_stub, REPO, ZONES_DIR, list_dir) adds the town
+--     places the quest files of ZONES_DIR name to a harness's stand-in
+--     (tools/r28_q0, tools/r56_questmap; nothing when none is named).
 -- As a command (tools/r28_design/validate.py):
 --   luajit tools/r59_qsys3/socket_places.lua REPO [--templates DIR] KEY...
 --   prints "settlement <key> <slot> <zone id>" and "socket <key> <id> <role>
@@ -153,6 +156,62 @@ function M.registry(found)
 		return out
 	end
 	return reg
+end
+
+-- The settlement keys the town places of the quest files in `zones_dir`
+-- name (`list_dir(dir)` lists a directory, the harness's
+-- core.get_dir_list), sorted.
+function M.named_keys(zones_dir, list_dir)
+	local keys, seen = {}, {}
+	for _, name in ipairs(list_dir(zones_dir) or {}) do
+		if name:match("%.quests%.json$") then
+			local handle = io.open(zones_dir .. "/" .. name, "rb")
+			local text = handle and handle:read("*a") or ""
+			if handle then handle:close() end
+			for key in text:gmatch('"' .. M.PREFIX .. '([a-z][a-z0-9_]*)/') do
+				if not seen[key] then seen[key], keys[#keys + 1] = true, key end
+			end
+		end
+	end
+	table.sort(keys)
+	return keys
+end
+
+-- A portable quest harness's grug_core stand-in, extended so its two
+-- registry queries also answer the town places that the quest files in
+-- `zones_dir` name: their settlements (added when the stand-in does not
+-- list them) and their quest_place sockets (added to the stand-in's own).
+-- Nothing changes when no file names a town place. Returns what was built.
+function M.extend(stub, repo, zones_dir, list_dir, opts)
+	local keys = M.named_keys(zones_dir, list_dir)
+	if #keys == 0 then return {} end
+	local found = M.sockets(repo, keys, opts)
+	local reg = M.registry(found)
+	local settlements, sockets_at = stub.settlement_socket_settlements, stub.settlement_sockets_at
+	stub.settlement_socket_settlements = function()
+		local out, have = {}, {}
+		for _, row in ipairs(settlements and settlements() or {}) do
+			out[#out + 1], have[row.key] = row, row
+		end
+		for _, row in ipairs(reg.settlement_socket_settlements()) do
+			local own = have[row.key]
+			if own then
+				own.display_name, own.slot = own.display_name or row.display_name, own.slot or row.slot
+				own.anchor = own.anchor or row.anchor
+			else
+				out[#out + 1] = row
+			end
+		end
+		return out
+	end
+	stub.settlement_sockets_at = function(key)
+		local out = sockets_at and sockets_at(key) or {}
+		for _, row in ipairs(found[key] and reg.settlement_sockets_at(key) or {}) do
+			if row.role == "quest_place" then out[#out + 1] = row end
+		end
+		return out
+	end
+	return found
 end
 
 -- The command.

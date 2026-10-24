@@ -171,6 +171,10 @@ return function(repo, data_root)
 			end
 		end
 	end
+	-- Round 59: the settlements of the town places the files name, built
+	-- from their templates and blueprints (tools/r59_qsys3/socket_places.lua).
+	dofile(repo .. "/tools/r59_qsys3/socket_places.lua").extend(grug_core, repo, base .. "data/zones",
+		engine.get_dir_list)
 	for _, file in ipairs({"validate", "loader"}) do dofile(code .. "/" .. file .. ".lua") end
 	local Q = grug_quests
 

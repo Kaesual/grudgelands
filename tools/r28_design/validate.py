@@ -1318,7 +1318,8 @@ class Validator:
                    % obj.get("object"))
         ref = obj.get("place")
         if not isinstance(ref, str) or not ref:
-            self.E("E-objective", file, path, "a use objective needs a 'place': a clash site key or a quest place")
+            self.E("E-objective", file, path, "a use objective needs a 'place': a clash site key, a quest place "
+                   "or a town place (socket:<settlement key>/<socket id>)")
         elif ref.startswith(TOWN_PLACE_PREFIX):
             if self.town_place(ref)[0] is None:
                 self.E("E-use-place", file, path, self.town_place(ref)[1])

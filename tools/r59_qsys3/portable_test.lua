@@ -179,7 +179,36 @@ io.open = function(path, mode)
 	return real_open(path, mode)
 end
 local town = PLACES.sockets(ROOT, {"highcourt"})
+-- A harness's stand-in extended by the town places a quest file names.
+local stub = {settlement_sockets_at = function() return {{id = "hall_quest", role = "quest"}} end}
+local QUEST_FILE = ROOT .. "/r59_fixture_zones/r59_fixture.quests.json"
+local fixture_open = io.open
+io.open = function(path, mode)
+	if path == QUEST_FILE then
+		local text = '{"quests": [{"objectives": [{"type": "use", "place": "socket:highcourt/miners_guild/' ..
+			'miners_guild_cellar"}]}]}'
+		return {read = function() return text end, close = function() end}
+	end
+	return fixture_open(path, mode)
+end
+PLACES.extend(stub, ROOT, ROOT .. "/r59_fixture_zones", function() return {"r59_fixture.quests.json", "x.txt"} end)
 io.open = real_open
+do
+	local listed, roles = {}, {}
+	for _, row in ipairs(stub.settlement_socket_settlements()) do
+		listed[#listed + 1] = row.key .. "=" .. row.display_name
+	end
+	for _, row in ipairs(stub.settlement_sockets_at("highcourt")) do
+		roles[#roles + 1] = row.id .. "=" .. row.role
+	end
+	eq(table.concat(listed, ","), "highcourt=Highcourt", "B a harness's stand-in gains the named settlement")
+	eq(table.concat(roles, ","), "hall_quest=quest,miners_guild/miners_guild_cellar=quest_place," ..
+		"lore_shrine/lore_shrine_vault=quest_place",
+		"B ... and its town places beside its own sockets")
+	local empty = {}
+	PLACES.extend(empty, ROOT, ROOT .. "/r59_fixture_zones", function() return {} end)
+	check(empty.settlement_sockets_at == nil, "B ... and nothing changes when no file names one")
+end
 do
 	local cellar = socket_of(town, "highcourt", "miners_guild/miners_guild_cellar")
 	check(cellar and cellar.role == "quest_place" and cellar.required, "B a template's quest_place socket " ..
