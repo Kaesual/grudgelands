@@ -1,5 +1,5 @@
 {
-  "notes": "Quest-object kinds of \"use at a place\" objectives (Round 36, docs/design/quests.md; the twelve objects of the story bible §4). A kind's `texture` is the one texture of its object, drawn as a square sprite `size` nodes wide (default 1) standing on the ground. The game (grug_quests/use.lua) and tools/r28_design/validate.py read this file.",
+  "notes": "Quest-object kinds of \"use at a place\" objectives (Round 36, docs/design/quests.md; the twelve objects of the story bible §4, and since Round 59 the four of the band 11-20 and the story arc's first chapter: dispatch_record, witness_record, snare_bundle, held_supplies, whose looks are placeholders, a texture modifier over a shipped object, until the art lane's pick). A kind's `texture` is the one texture of its object, drawn as a square sprite `size` nodes wide (default 1) standing on the ground. The game (grug_quests/use.lua) and tools/r28_design/validate.py read this file.",
   "impounded_pay": {"texture": "grug_quests_obj_impounded_pay.png", "size": 1.0},
   "false_requisition": {"texture": "grug_quests_obj_false_requisition.png", "size": 1.0},
   "brand_rubbing": {"texture": "grug_quests_obj_brand_rubbing.png", "size": 1.2},
@@ -11,5 +11,9 @@
   "tally_stone": {"texture": "grug_quests_obj_tally_stone.png", "size": 1.4},
   "rootmark": {"texture": "grug_quests_obj_rootmark.png", "size": 1.1},
   "survey_cairn": {"texture": "grug_quests_obj_survey_cairn.png", "size": 1.4},
-  "wreck_pay_chest": {"texture": "grug_quests_obj_wreck_pay_chest.png", "size": 1.2}
+  "wreck_pay_chest": {"texture": "grug_quests_obj_wreck_pay_chest.png", "size": 1.2},
+  "dispatch_record": {"texture": "grug_quests_obj_false_requisition.png^[colorize:#3c5a8c:130", "size": 1.1},
+  "witness_record": {"texture": "grug_quests_obj_tally_stone.png^[colorize:#e8dcc0:110", "size": 1.1},
+  "snare_bundle": {"texture": "grug_quests_obj_rootmark.png^[colorize:#9a9a92:150", "size": 1.1},
+  "held_supplies": {"texture": "grug_quests_obj_wreck_pay_chest.png^[colorize:#6e8c3a:90", "size": 1.2}
 }
