@@ -49,3 +49,26 @@ row. They contain no lettering.
 | `textures/grug_quests_obj_witness_record.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; two offset pale tablets bound with cord and a side knot; `tools/r59_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_quests_obj_snare_bundle.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; closed hemp-rope snare knotted to a short wooden peg; `tools/r59_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_quests_obj_held_supplies.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; two cloth packs behind stakes and a crossed jute cord; `tools/r59_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## Band 21–30 and chapter 2 objects — Round 60
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-24 (story art drop 02, two proposals and the user's pick: all of
+proposal P2). Hand-placed pixel shapes written with Python/Pillow; no
+image-generation service, downloaded art or third-party source pixels. The
+project dedicates any rights it holds in these originals to CC0-1.0. The
+reproducible generator is kept as provenance at
+`tools/r60_storyart/paint_art.py` (`--check` verifies the files byte for
+byte).
+
+All four files are 32×32 RGBA, with transparent backgrounds (alpha 0 or
+255 only). Like the earlier objects they are upright quest-object sprites,
+viewed from the front and slightly above, with their bases on the bottom
+row. They contain no lettering.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `textures/grug_quests_obj_signal_lantern.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; wide hooded lantern with side shutters and a pale pane on a low timber cradle; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_quests_obj_sighting_frame.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; splayed timber A-frame holding an open pale sighting ring above a brace; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_quests_obj_reading_knots.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; inclined reading cord with three knots between unequal forked pegs; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+| `textures/grug_quests_obj_claim_notice.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; hinged two-wing register on splayed feet, pale kept strokes and a struck claim column; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |

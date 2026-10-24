@@ -1760,9 +1760,10 @@ level 11 on nothing changes.
 is not registered yet become craft items (`grug_mobs:` ids; an id in another
 mod's namespace must be registered by that mod). Description = the name plus
 the flavour line; the inventory image is the item's own icon
-`<mod>_<name>.png` when `grug_mobs/textures/` ships one (all 89 new catalogue
-items do, the Round 28 art set recorded in `docs/planning/round28/art/`),
-otherwise a tinted placeholder; the `icon` brief stays on the item as
+`<mod>_<name>.png` when `grug_mobs/textures/` ships one (all 92 new catalogue
+items do: the Round 28 art set recorded in `docs/planning/round28/art/`, and
+since Round 60 the three quest items' picked icons,
+`tools/r60_storyart/paint_art.py`), otherwise a tinted placeholder; the `icon` brief stays on the item as
 `_grug_icon_brief`.
 Signature items are mob materials (`grug_material`); their catalogue `tier`
 (1–6) is both their vendor price in copper and their ingredient tier
