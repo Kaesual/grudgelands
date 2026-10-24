@@ -24,7 +24,7 @@ quest log. No migration step.
 - **Levels 11–20 reworked:** Copperfell Foothills, Goldmead Vale and
   Starbough Vale (The Accord), Mournfen, Redtusk Savanna and Raincall
   Basin (The Throng) now offer 13 quests each, every one open from its
-  level on, with no chain to follow and no need to arrive by the start
+  level on, with no chain to follow (apart from the guild reports) and no need to arrive by the start
   zone's last quest. Far fewer of them are hunts: repairs, crafts and gathering
   for the villagers, a witness to find, records and supplies to recover
   in the bandit camp, snares to cut in the Lower Boughs and names to copy

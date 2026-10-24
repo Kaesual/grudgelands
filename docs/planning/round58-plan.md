@@ -565,7 +565,7 @@ Saved state, all without a position:
 
 **Superseded (Round 59):** the test was not run before Round 59, so one checklist for 0.57, 0.58 and 0.59 replaces
 this one: [GUI checklist (Rounds 57, 58 and 59)](round59-plan.md#gui-checklist-rounds-57-58-and-59) (the items below
-keep their numbers there; Round 59 changes items 13, 14, 15, 30 and 31).
+keep their numbers there; Round 59 changes items 13, 14, 15 and 30; re-check 31 in a band zone).
 
 One test for both rounds (plan §6, review I9), desktop and the web build (the lanes' web shots were taken at
 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on the synced game.

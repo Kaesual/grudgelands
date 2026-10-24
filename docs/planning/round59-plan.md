@@ -233,7 +233,7 @@ lane D (the version, the declaration, this section, AGENTS, the status owners, t
 main `8f84be22`. **0.59.0 is a map reset:** no migration step; characters keep their items, levels, quests and money;
 a quest whose id vanished is dropped (upgrade contract §4); item, achievement and waypoint ids unchanged; no new
 position in player meta. **Push:** not pushed; 0.57.0 was pushed on 2026-10-23 without its GUI test, and 0.58.0 and
-0.59.0 wait for the user's joint GUI test of all three. **Sync:** by the coordinator after the round.
+0.59.0 wait for the user's joint GUI test of all three. **Sync:** by the coordinator after every merge.
 
 ### Lanes
 
@@ -455,7 +455,7 @@ again in a band zone: the foreman's Iron, Jade and hunt at once, the report turn
     raises the level), in each band zone (Copperfell Foothills, Goldmead Vale, Starbough Vale; Mournfen, Redtusk
     Savanna, Raincall Basin): the village's steward and local, the outpost's scout, the bandit camp's captive and the
     mining camp's foreman offer their quests at once, each from its level, without a departure done first; no quest
-    asks for another. The start departure (level 9) arrives at the steward (Orrik Pineledger, Marta Millward, Ilyra
+    asks for another (apart from the guild reports, which follow both T2 gather quests). The start departure (level 9) arrives at the steward (Orrik Pineledger, Marta Millward, Ilyra
     Mossveil; Mordec Silt, Borak Redgrass, Daro Kapok), whose first quest opens at level 10 (**judge**: a level-9
     arrival finds no offer there yet).
 36. **Shared quests in each zone's voice:** "Something Worth Mending" (4 Iron Bars and 4 Coal Lumps for the local) in
@@ -474,11 +474,11 @@ again in a band zone: the foreman's Iron, Jade and hunt at once, the report turn
 38. **The use places in the four camps:** the load record at the Copperfell and Goldmead bandit camps (by the camp's
     stores) and the held supplies at the Redtusk and Raincall camps (the corner across from the captive's enclosure):
     the map crosshair on the spot, the object only for players who still need it, "<act> at <camp>" in the log and
-    the HUD, the 3 s hold counted in the feed, stepping away or taking damage stops it. **Judge (Redtusk and
+    the HUD, the 4 s hold counted in the feed, stepping away or taking damage stops it. **Judge (Redtusk and
     Raincall):** can the hold be finished with the camp's members around?
 39. **The snare ground and the name rest:** Starbough's "A Cruel Use for a Knot" (cut the snare bundle at the
     Starbough Snare Ground in the Lower Boughs) and Mournfen's "Before the Letters Go" (copy the names from the marker
-    at the Mournfen Name Rest in the Blightfields): the object stands on dry ground, the place's name and direction
+    at the Mournfen Name Rest in the Blightfields): the object stands on dry ground, the holds take 3 s and 5 s, the place's name and direction
     read right in the text, the log and on the map.
 40. **The gathered and crafted items in their zones:** the errands' logs, Corn, Potatoes, Melons, Sunleaf and Copper
     Lumps are found in their zones without a profession, and the torches, Wooden Signs, Wooden Ladders, fences and

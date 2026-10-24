@@ -3218,7 +3218,9 @@ in the [GUI checklist](docs/planning/round59-plan.md#gui-checklist-rounds-57-58-
   newer than the dump counts for both factions (stricter than the game)
   until `tools/r28_design/dump_items.sh` runs again; town places as
   `{name:…}` placeholder targets are not done (a text names the building
-  in words; the user can ask for them).
+  in words; the user can ask for them); the comment at
+  `mods/CORE/grug_core/settlement_sockets.lua:8` ("and later the quest mod
+  read it") is stale.
 - **The band** (BANDQUESTS, its review): kept ids (the departures,
   witnesses, handoffs, five day hunts, three perpetrators) now carry the
   new choice rewards, which characters who finished them never see (only
