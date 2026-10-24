@@ -23,23 +23,75 @@ rebuilt on it; it was **pushed on 2026-10-23** (origin/main `69481ed1`) without
 a GUI test: the user tests 0.57 and 0.58 together after Round 58.
 Round 58 (0.58.0, a map reset) builds the Miner's Guild and the Round 56
 town fixes; Round 59 (0.59.0, a map reset) reworks the quests of levels
-11–20 and opens chapter 1 of the story arc. Neither is **pushed**; both
-wait for the user's joint GUI test of 0.57, 0.58 and 0.59
-([checklist](planning/round59-plan.md#gui-checklist-rounds-57-58-and-59)).
-Next: that GUI test, then Round 60 (the band 21–30 with chapter 2) and the
-bands 31–60 one per round, then the production deploy with one map reset
-([ROADMAP](../ROADMAP.md)). The
+11–20 and opens chapter 1 of the story arc; Round 60 (0.60.0, a map reset)
+reworks the quests of levels 21–30 and the six capitals, adds chapter 2 and
+re-places the Alchemy herbs by level band. None of them is **pushed**;
+they wait for the user's joint GUI test of 0.57, 0.58, 0.59 and 0.60
+([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60)).
+Next: that GUI test, then Round 61 (the band 31–40 with the arc's next
+chapter) and the bands 41–60 one per round, then the production deploy
+with one map reset ([ROADMAP](../ROADMAP.md)). The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 60 "The story arc's second chapter and the quest rework of levels
+  21–30" complete** (2026-10-24, version 0.60.0, **map reset**, no
+  migration step;
+  [plan, decisions, numbers and the joint GUI checklist](planning/round60-plan.md#completion-2026-10-24)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0, 0.59.0 and 0.60.0 wait for the user's joint GUI test of 0.57,
+  0.58, 0.59 and 0.60. From main `e3ca411e` (the plan; its rulings
+  `4a279ae4`, `f1d1f21b`, `56513c2a`, `0ab3aea0`): HERBS (`4007a7e8`),
+  BANDQUESTS (`b235da41`), CAPITALS (`7cceabee`), STORYART-SHIP
+  (`b4792a7c`) and BANDTEXT with TEXTREVIEW's picks and the flag fix
+  (`b63318dd`) merged, then this documentation lane D. HERBS came from the
+  user's Alchemy question while planning; the cooking survey added two crop
+  fixes to it; drop 02b (the Captain's Orders icons), STORYART-SHIP and the
+  flag fix were added during the round. GPT-6 Astra drafted the chapter
+  (CHAPTER2, the user's picks K1–K13 all "A", checked by CHECK2), painted
+  the four quest objects and three item icons (STORYART, all picked P2) and
+  wrote the 291 text fields (BANDTEXT, with the Opus text review's 13
+  proposals, all picked). Every code lane independently reviewed by Opus
+  (HERBS, BANDQUESTS and CAPITALS MERGE; their data- and text-only fixes,
+  CAPITALS' rebase, the text picks and the flag fix checked by the
+  coordinator). Main has 275 portable fixtures (3 new). The declaration is
+  `{"schema": 3, "version": "0.60.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped.
+  - **The band 21–30 (BANDQUESTS, BANDTEXT):** the eight zones flagged
+    reworked, 84 → 71 quests, all free play outside the story, six shared
+    quests, kill objectives 58 % → 19 % (per zone 50–62 % → 17–27 %), about
+    three mob names per zone, the reward pattern at item levels 21–30,
+    three town places and seven open quest places
+    ([quests.md](design/quests.md#the-band-2130-round-60)); quest-only items
+    are soulbound and wait for room before they drop.
+  - **The capitals and chapter 2 (CAPITALS, BANDQUESTS):** the six capital
+    files flagged reworked, 64 → 47 quests (403 shipped), chapter 1 kept;
+    A3 and T2a at 24 from the Frostbarrow and Ossuary camps' named foremen,
+    A4 and T3 at 29 at the Miner's Guild houses of Dur Brannoc and Nhal
+    Veyr; the Alchemy quest at the first capital visit
+    ([quests.md](design/quests.md#the-capitals-round-60)). The questing
+    share of 20→30 is 54–81 % (before 78–103 %), as the user allowed.
+  - **Herbs (HERBS):** each Alchemy tier's herbs grow in its own level band
+    (1–20 in every race's zones, 21–40 on each faction's half), Pumpkin in
+    all six home zones and Frost Melon on The Throng's half
+    ([world_zones.md §11](design/world_zones.md#11-resource-loot-and-poi-budgets));
+    about +7–10 % mapgen CPU on herb-zone chunks, accepted by the user.
+  - **Gates:** each code lane's full fixture run (273–275/0); this lane's
+    `r37_dc`, `check_upgrade.py` (against origin/main 0.57.0, with the map
+    reset entry), `check_fresh_server.py`, `validate.py --game`, the full
+    fixtures, a full seed fleet on main and one boot (the
+    [round-end gates](planning/round60-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-60-carry-overs)).
 - **Round 59 "The story arc's first chapter and the quest rework of levels
   11–20" complete** (2026-10-24, version 0.59.0, **map reset**, no
   migration step;
   [plan, decisions, numbers and the joint GUI checklist](planning/round59-plan.md#completion-2026-10-24)).
   **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
-  0.58.0 and 0.59.0 wait for the user's joint GUI test of 0.57, 0.58 and
-  0.59. From main `567669ee` (the plan): QSYS3 (`138e8e33`), BANDQUESTS
+  0.58.0 and 0.59.0 wait for the user's joint GUI test, now of 0.57, 0.58,
+  0.59 and 0.60. From main `567669ee` (the plan): QSYS3 (`138e8e33`), BANDQUESTS
   (`5b536a68`), STORYQUESTS (`bc415821`), BANDTEXT with TEXTREVIEW's picks
   (`8f41fb53`) and STORYART-SHIP (`b36f9f70`, `8f84be22`) merged, then this
   documentation lane D. STORYART-SHIP was added during the round (the
@@ -82,7 +134,7 @@ user's notes.
   version 0.58.0, **map reset**, no migration step;
   [plan, decisions, numbers and the joint GUI checklist](planning/round58-plan.md#completion-2026-10-24)).
   **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
-  0.58.0 waits for the user's joint GUI test, now of 0.57, 0.58 and 0.59.
+  0.58.0 waits for the user's joint GUI test, now of 0.57 to 0.60.
   From main `616112ab` (the plan) and `a9191497` (the skeleton note): GUILDSPEC
   (`734a914e`), CAMPS (`5d2444cd`), CONSUME (`a2b8386a`, the Ore Sense
   ruling `0edc5faa`, `a42f91b6`), REP (`e8159d96`), HALLS (`0713d49a`),

@@ -180,7 +180,11 @@ not a filler quota.
 A start town offers its quests at once across the elder and the cook near
 an oven ("The start zones"). Compatible tasks share an outing; avoid
 repeated returns for increasing counts of the same mob. Optional item/cooking
-lessons do not block the combat story or implicitly require a profession.
+lessons do not block the combat story or implicitly require a profession
+(`tools/r45_st` refuses an item objective naming a profession's product);
+the one exception is the capitals' Alchemy lesson `capital_precision`
+(Round 60, "The capitals"), which asks for a tier-1 elixir and names the
+trainer who teaches it for free.
 
 Each race has a level-10 capital/service introduction, followed by capital and
 regional bundles and explicit destination-only travel handoffs. Keep existing
@@ -721,10 +725,10 @@ text. A system quest has no dialog: its mod posts its own completion line.
 ## The rework flag (Round 57)
 
 A quest file with `"reworked": true` follows the rules the quest rework
-introduces; the files of levels 21–60 keep their chains until their own
+introduces; the files of levels 31–60 keep their chains until their own
 rework (the band 11–20's six are reworked since Round 59, "The band
-11–20", the band 21–30's eight since Round 60, "The band 21–30"; the
-capitals and levels 31–60 later), and nothing of this section ever reports an
+11–20", the band 21–30's eight and the six capitals since Round 60, "The
+band 21–30" and "The capitals"; levels 31–60 later), and nothing of this section ever reports an
 unflagged file (Round 58: the guild files are flagged; the camp zones and
 the Battlegrounds files are not, so the guild quests homed there are free
 play by construction, checked by `tools/r58_guildquests`). In reworked files
@@ -930,9 +934,10 @@ foreman; no new giver.
   Lorindor head and legs, Moonfall chest and feet; Ossuary chest and legs,
   Speargrass head and feet, Reedlands chest and feet, Totemwater head and
   legs. A3 and T2a pay a potion choice.
-- **Ids**: a quest whose objectives stayed keeps its id (the two cross-lane
-  ids, the departures and travels, six leader or day hunts, the claws);
-  every other quest is new. The structure was written by
+- **Ids**: a quest whose objectives stayed keeps its id (the departures
+  and travels, six leader or day hunts, the claws), and so do the two
+  cross-lane ids (Nib's quest gains the Folio objective); every other
+  quest is new. The structure was written by
   `tools/r60_bandquests/build_structure.py` with placeholder texts (its
   `--check` compares the structure only); `tools/r60_bandquests/
   portable_test.lua` checks it.

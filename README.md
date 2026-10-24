@@ -90,9 +90,22 @@ professions, travel and combat, and includes the sound controls.
 Around level 10, your starting quests send you on to the next zone, whose
 village, outpost and camps offer their quests at once; around level 19
 they lead you to your people's capital, its profession trainers and the
-first chapter of your faction's story.
+first chapter of your faction's story, which goes on in the zones of
+levels 21–30.
 
 ## Current state
+
+**0.60.0** reworks the quests of levels 21–30 and of the six capitals:
+the eight zones and the capitals offer their quests at once, far fewer
+of them hunts and more of them errands, crafts and things to do at a
+place (a signal lantern, snares, a sighting frame, banners, a reading
+cord), with potion, armor and weapon choices as rewards. The story's
+second chapter runs from the mining camps of Frostbarrow Shelf and
+Ossuary Reach at level 24 to the Miner's Guild houses at 29. At your
+first capital visit the envoy asks for an elixir you learn to brew at
+the Alchemy trainer, and the Alchemy herbs now grow in every level band.
+Quest items stay in your bags. It needed a map reset; characters keep
+their level, gear, inventory and quests.
 
 **0.59.0** reworks the quests of levels 11–20: each of the six zones
 offers 13 quests at once, far fewer of them hunts and more of them

@@ -328,8 +328,8 @@ since then). Every load error names the zone and the path.
   `seized_stores` "Reedlands Seized Stores" and Totemwater Reach
   `reading_bank` "Totemwater Reading Bank" (each zone's Reedbanks). The
   seed fleet (`tools/seed_fleet/seed.lua`, Round 60) builds the regions of
-  every zone with places on each of its seeds and fails one that places a
-  place not. `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
+  every zone with places on each of its seeds and fails a seed on which a
+  place is not placed. `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
   from the recipe, `place_spot(zone, id)` its spot on the world.
 - `critters`: ambient critters that keep their ABM rows in the zone.
 
