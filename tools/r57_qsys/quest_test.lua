@@ -804,6 +804,21 @@ local function two_follow_ups(files)
 end
 refused("a free quest with two follow-ups", "E-free-follow-ups", two_follow_ups)
 accepted("... in an unreworked file", function(files) two_follow_ups(files); unflag(files) end)
+-- Round 59: the follow-ups are counted per faction (the givers' factions),
+-- so a free quest may have one follow-up for each; a follow-up given to
+-- both factions counts in each.
+local function throng_follow_up(files, givers)
+	local copy = deep_copy(quest_of(files, "qs_free_b"))
+	copy.id, copy.title, copy.giver, copy.turnin = "qs_free_c", "Water for the Pot", nil, nil
+	copy.variants = {{zone = S, givers = givers or {"r20_orc_start_cook"}}}
+	table.insert(files[2].data.quests, copy)
+end
+accepted("one follow-up per faction", throng_follow_up)
+has(refused("a follow-up given to both factions counts in each", "E-free-follow-ups", function(files)
+	throng_follow_up(files)
+	quest_of(files, "qs_free_c").variants[1].givers = {{role = "foreman", faction = "throng"},
+		{role = "foreman", faction = "accord"}}
+end), "not 2 for The Accord (qs_free_b, qs_free_c)", "F ... named with the faction")
 accepted("a story quest with two follow-ups", function(files)
 	two_follow_ups(files)
 	quest_of(files, "qs_free_a").story = true

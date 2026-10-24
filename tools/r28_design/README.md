@@ -247,7 +247,9 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   affixes}` with at most one prefix and one suffix of a known stat
   (`E-rewards`; the enchant pools are the game's check); `repeatable` is an
   unknown field. In files with `"reworked": true` only: `E-free-requires`,
-  `E-free-follow-ups`, `E-free-chain` (only story quests chain),
+  `E-free-follow-ups` (counted per faction of the follow-ups' givers,
+  Round 59; an unknown giver faction counts for both), `E-free-chain`
+  (only story quests chain),
   `E-reward-budget` and `W-reward-levels` (the zone's equipment rewards by
   enchant count, capitals excepted), `E-reward-requested` (a reward is never
   a requested item or group member) and `W-night-count` (a night-only kill

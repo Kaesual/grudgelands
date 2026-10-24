@@ -599,9 +599,20 @@ camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
   form chains. Their marker and their list category are their own
   ("Confirmed by the user").
 - **Every other quest is free play**: it requires nothing but a level and
-  has at most one follow-up (a quest that names it in `requires`), rarely:
-  the zone's last quest that leads to the next zone's giver, a guild's small
+  has at most one follow-up (a quest that names it in `requires`) **per
+  faction** (Round 59, the user's ruling of 2026-10-24), rarely: the zone's
+  last quest that leads to the next zone's giver, a guild's small
   storyline. A place offers its free quests at once.
+- **The faction of a follow-up** is that of its givers, over every variant:
+  an NPC giver's (the faction it serves) or a role giver's filter
+  (`{"role", "faction"}`). A follow-up whose givers serve both factions (a
+  shared quest with an Accord and a Throng variant) counts as a follow-up
+  in each; a giver that serves everyone counts for both. Example: the guild
+  gather quest `guild_t2_iron` (given to both factions) may be followed by
+  `guild_t2_report_accord` (Accord foremen) and `guild_t2_report_throng`
+  (Throng foremen), one each; a third follow-up of Accord givers, or a
+  report given by the foremen of both factions next to one of them, is
+  refused.
 - These two rules hold only in reworked files ("The rework flag").
 
 ## Completion text (Round 57 ruling 14)
@@ -654,7 +665,10 @@ play by construction, checked by `tools/r58_guildquests`). In reworked files
 - `E-free-requires`: a free quest requires at most one quest, the one it
   follows; only story quests chain;
 - `E-free-follow-ups`: a free quest is required by at most one quest of a
-  reworked file;
+  reworked file per faction (Round 59; "Story and free play"; the game
+  checks it once the givers' factions are resolved, `validate.py` reads
+  them from the item dump's quest NPCs, the fortress and guild NPCs, a new
+  giver's race or the atlas, and an unknown one counts for both);
 - `E-free-chain`: a free follow-up has no free follow-up of its own;
 - `E-reward-budget` (ruling 17): per zone, capitals excepted, at most two
   quests with an equipment reward of one enchant and one with two enchants

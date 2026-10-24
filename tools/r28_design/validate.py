@@ -87,6 +87,9 @@ DROP_OVERRIDE_KEYS = {"roles", "area"}
 # budget, the requested item and the night count apply only in files that
 # carry it.
 REWORK_FLAG = "reworked"
+# Round 59: a free quest's follow-ups are counted per faction.
+FACTIONS = ("accord", "throng")
+FACTION_NAMES = {"accord": "The Accord", "throng": "The Throng"}
 REWARD_BUDGET = {1: 2, 2: 1}
 NIGHT_SHARE = (0.2, 0.5)
 DISPOSITIONS = ("neutral", "aggressive", "critter")
@@ -1222,19 +1225,35 @@ class Validator:
                                                                             "" if enchants == 1 else "s", level))
                     levels.setdefault(level, qid)
 
+    def giver_factions(self, zone, q):
+        """Round 59: the factions quest `q` (of `zone`'s file) is given to,
+        over every variant: an NPC giver's (giver_faction) or a role row's
+        filter; a giver of unknown faction (no atlas: an ordinary hub NPC)
+        or serving everyone gives it to both (validate.lua
+        V.giver_factions)."""
+        found = set()
+        for variant in self.variants(zone, q):
+            for giver in variant["givers"]:
+                faction = self.giver_faction(giver) if isinstance(giver, str) else None
+                found |= {faction} if faction in FACTIONS else set(FACTIONS)
+            found |= {r.get("faction") for r in variant["giver_roles"] if r.get("faction") in FACTIONS}
+        return found or set(FACTIONS)
+
     def free_play(self):
         """Round 57 rulings 10 and 13, reworked files only: only story quests
         chain; a free quest requires at most the one quest it follows
         (E-free-requires), is required by at most one quest of a reworked
-        file (E-free-follow-ups), and a free follow-up has no free follow-up
-        (E-free-chain). The game checks the same (validate.lua V.free_play)."""
-        quests, flagged = {}, {}
+        file per faction (E-free-follow-ups, Round 59: a follow-up counts for
+        each faction its givers serve), and a free follow-up has no free
+        follow-up (E-free-chain). The game checks the same (validate.lua
+        V.free_play and V.free_follow_ups)."""
+        quests, flagged, home = {}, {}, {}
         for suffix, files in ((".quests.json", self.d.quests), (".front.quests.json", self.d.front)):
             for zone, data in files.items():
                 reworked = isinstance(data, dict) and data.get(REWORK_FLAG) is True
                 for q in (data or {}).get("quests") or [] if isinstance(data, dict) else []:
                     if isinstance(q, dict) and isinstance(q.get("id"), str) and q["id"] not in quests:
-                        quests[q["id"]] = q
+                        quests[q["id"]], home[q["id"]] = q, zone
                         if reworked:
                             flagged[q["id"]] = (self.d.zone_file(zone + suffix), "quests[%s]" % q["id"])
 
@@ -1247,7 +1266,8 @@ class Validator:
         followers = {}
         for qid in flagged:
             for req in requires(quests[qid]):
-                followers.setdefault(req, []).append(qid)
+                for faction in self.giver_factions(home[qid], quests[qid]):
+                    followers.setdefault(req, {}).setdefault(faction, []).append(qid)
         for qid, (file, path) in sorted(flagged.items()):
             q = quests[qid]
             if not free(q):
@@ -1261,10 +1281,12 @@ class Validator:
                 if free(prior) and requires(prior):
                     self.E("E-free-chain", file, path, "follows %s, itself a free follow-up: only story quests chain"
                            % req)
-            after = sorted(followers.get(qid) or [])
-            if len(after) > 1:
-                self.E("E-free-follow-ups", file, path, "a free quest has at most one follow-up, not %d (%s); only "
-                       "story quests chain" % (len(after), ", ".join(after)))
+            for faction in FACTIONS:
+                after = sorted((followers.get(qid) or {}).get(faction) or [])
+                if len(after) > 1:
+                    self.E("E-free-follow-ups", file, path, "a free quest has at most one follow-up per faction, "
+                           "not %d for %s (%s); only story quests chain" % (len(after), FACTION_NAMES[faction],
+                                                                          ", ".join(after)))
 
     def use_objective(self, zone, obj, file, path):
         """Round 36: a "use at a place" objective, as the game's validate.lua:
@@ -1474,7 +1496,8 @@ class Validator:
 
     def giver_faction(self, npc):
         """The faction a quest giver serves: a fortress giver's or a guild
-        NPC's own, a new giver's race's, else its atlas zone's; None if
+        NPC's own, a new giver's race's, else the item dump's (the game's
+        registered quest NPCs, Round 59), else its atlas zone's; None if
         unknown."""
         if npc in self.fortress_npcs:
             return self.fortress_npcs[npc]["faction"]
@@ -1483,6 +1506,9 @@ class Validator:
                 for giver in (hub or {}).get("givers") or [] if isinstance(hub, dict) else []:
                     if isinstance(giver, dict) and giver.get("npc") == npc and isinstance(giver.get("new"), dict):
                         return C.RACE_FACTION.get(giver["new"].get("race"))
+        dumped = (self.ex.get("quest_npcs") or {}).get(npc)
+        if isinstance(dumped, dict) and dumped.get("faction") in FACTIONS:
+            return dumped["faction"]
         return self.atlas.npc_faction(npc) if self.atlas else None
 
     def garrison_target(self, q, role, area_ref, area, level, file, path):
@@ -2199,6 +2225,15 @@ def _mutations():
         row["id"], row["requires"] = "sample_hunt_02b", ["sample_hunt_01"]
         d["quests"].append(row)
 
+    def follow_up_givers(givers):
+        """Round 59: the second follow-up given by `givers` (a shared quest
+        of one variant), so it counts for those givers' factions."""
+        def change(d):
+            row = quest(d, "sample_hunt_02b")
+            del row["giver"], row["turnin"]
+            row["variants"] = [{"zone": "elandor_dawnmere_fields", "givers": copy.deepcopy(givers)}]
+        return change
+
     def choice_rows(enchants):
         affixes = [{"channel": "prefix", "stat": "str"}, {"channel": "suffix", "stat": "max_hp_percent"}][:enchants]
         return [{"item": "grug_materials:axe_wood", "affixes": affixes},
@@ -2237,6 +2272,14 @@ def _mutations():
         ("reworked: a free quest with two follow-ups", Q, reworked(all_story, second_follow_up,
                                                                     set_field("sample_hunt_01", "story", False)),
          "E-free-follow-ups"),
+        ("reworked: one follow-up per faction", Q, reworked(all_story, second_follow_up,
+                                                             set_field("sample_hunt_01", "story", False),
+                                                             follow_up_givers([{"role": "foreman",
+                                                                                "faction": "throng"}])),
+         "!E-free-follow-ups"),
+        ("reworked: a follow-up given to both factions counts in each", Q, reworked(
+            all_story, second_follow_up, set_field("sample_hunt_01", "story", False),
+            follow_up_givers(["r14_human_elder", {"role": "foreman", "faction": "throng"}])), "E-free-follow-ups"),
         ("reworked: a free quest requiring two", Q, reworked(all_story, set_field("sample_hunt_03", "story", False),
                                                              set_field("sample_hunt_03", "requires",
                                                                        ["sample_hunt_02", "sample_hunt_01"])),
