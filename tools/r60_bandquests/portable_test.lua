@@ -279,7 +279,10 @@ end
 ------------------------------------------------------------------------------
 -- B. Free play and the story.
 ------------------------------------------------------------------------------
-local ALLOWED_FOLLOWERS = {frostbarrow_cutting_04 = "story_accord_04", story_accord_03 = "story_accord_04"}
+-- Round 60 CAPITALS (merged after this lane): T3 (story_throng_04, Nhal
+-- Veyr) follows T2a and takes ossuary_rubbings_03's one Throng slot.
+local ALLOWED_FOLLOWERS = {frostbarrow_cutting_04 = "story_accord_04", story_accord_03 = "story_accord_04",
+	story_throng_03 = "story_throng_04", ossuary_rubbings_03 = "story_throng_04"}
 for id, entry in pairs(by_id) do
 	local quest = entry.quest
 	local follow = table.concat(followers[id] or {}, ",")
@@ -381,7 +384,8 @@ do
 		eq(table.concat(givers, ","), NPC.mereth .. "," .. NPC.rellis, "ossuary_rubbings_03: Mereth and Rellis give it")
 		eq(table.concat(q.variants[1].turnins or {}, ","), NPC.neris, "ossuary_rubbings_03: turned in at Neris")
 	end
-	eq(#(followers.ossuary_rubbings_03 or {}), 0, "ossuary_rubbings_03: no follow-up on this branch (T3 is CAPITALS')")
+	eq(table.concat(followers.ossuary_rubbings_03 or {}, ","), "story_throng_04",
+		"ossuary_rubbings_03: its one Throng follow-up is CAPITALS' T3")
 end
 
 ------------------------------------------------------------------------------
