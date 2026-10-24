@@ -1101,7 +1101,7 @@ main profession slot (professions.md §1).
   | Wild Onion / Fire Pepper | T1 | T1 | inedible spice | faction start and home palettes |
   | Pumpkin | T2 | T2 | raw HP food | the six home zones, level 11–20 |
   | Blightberry / Sunberry / Jungle Berry | T2 | T2 | raw HP food | Throng level 11–20 palettes |
-  | Frost Melon | T3 | T4 | raw HP food | Frostbarrow and Whitebridge, level 21–30 |
+  | Frost Melon | T3 | T4 | raw HP food | Frostbarrow, Whitebridge, Ossuary and Whispering Reedlands, level 21–30 |
   | Sugar Cane | T1 | T2 | inedible sweetener | fresh and salt shores in every band |
   | Bamboo Shoot | T1 | T1 | raw HP food | jungle and swamp shores |
   | Cave Cap | T3 | T3 | raw HP food | caves at y −100…−500 |

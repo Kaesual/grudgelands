@@ -2288,11 +2288,11 @@ bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
 | cassava | three Throng starts 1–6 | savanna, blight, jungle-edge viable soils | none; 1/256 |
 | wild_onion | Accord starts and paired homes | deep forest, pine, elf viable soils | none; 1/512 |
 | fire_pepper | Throng starts and paired homes | badlands mesa clay, savanna/blight/jungle-edge viable soils | none; 1/512 |
-| pumpkin | six paired homes 11–20 | meadow soil, swamp mud, blight soil | none; 1/256 |
+| pumpkin | six paired homes 11–20 | meadow, pine, elf, savanna and blight soil, swamp mud (pine, elf and savanna since Round 60) | none; 1/256 |
 | blightberry | Mournfen 11–20 | blight viable soil | none; 1/256 |
 | sunberry | Redtusk 11–20 | savanna viable soil | none; 1/256 |
 | jungle_berry | Raincall 11–20 | jungle-edge viable soil | none; 1/256 |
-| frost_melon | Frostbarrow, Whitebridge 21–30 | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
+| frost_melon | Frostbarrow, Whitebridge, Ossuary, Whispering Reedlands 21–30 (the two Throng zones since Round 60) | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
 | sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/256 |
 | bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/256 |
 | cave_cap | cave floors at y −500…−100 (native `all_floors` decoration since Round 49) | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |

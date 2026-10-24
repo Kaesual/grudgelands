@@ -217,6 +217,40 @@ do
 		end
 	end
 	check(frostbarrow == true, "Frostbarrow Shelf cooks a T3 recipe")
+	-- Round 60 HERBS (the cooking survey's two fixes): Pumpkin grows in all
+	-- six home zones, and each faction's 21-30 half has Frost Melon, so the
+	-- recipes that take it are cooked from that half's zones.
+	for _, id in ipairs({"elandor_copperfell_foothills", "elandor_goldmead_vale",
+			"elandor_starbough_vale", "kragmar_mournfen", "kragmar_redtusk_savanna",
+			"kragmar_raincall_basin"}) do
+		check(locality.source(world, id, "grug_cooking:pumpkin") ~= nil, id .. " grows Pumpkin")
+	end
+	for _, half in ipairs({"elandor_", "kragmar_"}) do
+		local zones = {}
+		for _, zone in ipairs(world.zones) do
+			if zone.id:sub(1, #half) == half and zone.level_min >= 21 and
+					zone.level_max <= 30 and not zone.civic_no_hostiles then
+				zones[#zones + 1] = zone.id
+			end
+		end
+		local melon_recipes = 0
+		for _, recipe in ipairs(world.recipes) do
+			local takes_melon, ok = false, true
+			for _, token in ipairs(recipe.inputs) do
+				takes_melon = takes_melon or token == "grug_cooking:frost_melon"
+				local found = false
+				for _, id in ipairs(zones) do
+					found = found or locality.source(world, id, token) ~= nil
+				end
+				ok = ok and found
+			end
+			if takes_melon then
+				melon_recipes = melon_recipes + 1
+				check(ok, half .. " 21-30 zones cook " .. recipe.name)
+			end
+		end
+		check(melon_recipes > 0, half .. " a recipe takes Frost Melon")
+	end
 end
 
 ------------------------------------------------------------------------------
