@@ -251,12 +251,7 @@ local SWITCH_GAP, SWITCH_W, SWITCH_H = 0.08, 0.45, 0.47
 -- shared selection style's tint disappears on the gold Hotbar box, and its
 -- unselected state draws no button at all.
 local function switch_style(field, shown)
-	if shown then
-		return ("style[%s;bgcolor=#c8962f;bgcolor_hovered=#d9a640;" ..
-			"bgcolor_pressed=#a77f3b;border=true;textcolor=#ffffff]"):format(field)
-	end
-	return ("style[%s;bgcolor=#2a2a2a;bgcolor_hovered=#505050;" ..
-		"bgcolor_pressed=#303030;border=true;textcolor=#b4b4b4]"):format(field)
+	return grug_core.ui.button_style(field, shown and "selected" or "normal")
 end
 
 -- The two buttons in real coordinates, `w` x `h` each: "A" at (x, y), "B"

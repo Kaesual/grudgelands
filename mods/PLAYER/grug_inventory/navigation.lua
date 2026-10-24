@@ -69,6 +69,12 @@ function sfinv.handle_scroll(player, context, fields)
 		return true
 	end
 	if not visible(player, context, context.page) then
+		local page = sfinv.pages[context.page]
+		-- Explicit refusal-only hook preserves the owner's audit behavior;
+		-- never dispatch an unauthorized ordinary page action.
+		if page and page.on_navigation_denied then
+			if page:on_navigation_denied(player, context, fields) then return true end
+		end
 		sfinv.set_page(player, sfinv.get_homepage_name(player))
 		return true
 	end

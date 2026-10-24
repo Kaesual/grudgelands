@@ -645,6 +645,11 @@ function grug_mail.admin_fields(player, context, fields)
 end
 
 sfinv.register_page(PAGE, {
+	on_navigation_denied = function(self, player, context, fields)
+		-- The shared navigation invokes this only after is_in_nav refused.
+		-- Keep the existing refusal logger and draft cleanup with this owner.
+		return grug_mail.admin_fields(player, context, fields)
+	end,
 	title = "Admin Mail",
 	is_in_nav = function(_, player)
 		return allowed(player)
