@@ -29,8 +29,7 @@ sfinv.register_page(PAGE, {
 	end,
 	get = function(self, player, context)
 		return sfinv.make_formspec(player, context,
-			"label[0.2,0.3;The map opens in its own window (key Z).]" ..
-			"button[0.2,0.9;3.5,0.8;grug_map_open;Open the map]", false)
+			"label[0.2,0.3;Map & Quests]", false)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
 		if fields.grug_map_open then

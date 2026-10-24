@@ -343,7 +343,8 @@ return function(repo, hidden)
 				set_int = function(_, key, value) meta[key] = tostring(value) end,
 			}
 		end
-		function player.set_inventory_formspec(_, fs)
+		function player:set_formspec_prepend(fs) self.prepend = fs end
+	function player.set_inventory_formspec(_, fs)
 			player.sent = player.sent + 1
 			player.formspec = fs
 		end
@@ -358,6 +359,9 @@ return function(repo, hidden)
 		current_mod, current_path = mod, repo .. "/mods/" .. path
 		for _, file in ipairs(files) do dofile(current_path .. "/" .. file) end
 	end
+	grug_sounds = grug_sounds or {}
+	grug_sounds.CLICK_STYLE = grug_sounds.CLICK_STYLE or ""
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 	dofile(repo .. "/mods/BASE/sfinv/api.lua")
 	grug_inventory = {BAG_COUNT = 4, HOTBAR_SIZE = 8}
 	function grug_inventory.content_list(i) return "grug_bag" .. i .. "_content" end
@@ -398,7 +402,7 @@ return function(repo, hidden)
 	core.get_modpath = function(mod) return repo .. "/mods/PLAYER/" .. mod end
 	load("grug_classes", "PLAYER/grug_classes", {"talent_graph_ui.lua"})
 	core.get_modpath = get_modpath
-	load("grug_inventory", "PLAYER/grug_inventory", {"ui.lua"})
+	load("grug_inventory", "PLAYER/grug_inventory", {"ui.lua", "navigation.lua"})
 	load("grug_skills", "PLAYER/grug_skills", {"init.lua"})
 	for _, fn in ipairs(registered.mods_loaded) do fn() end
 

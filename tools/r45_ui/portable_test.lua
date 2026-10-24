@@ -387,7 +387,11 @@ sfinv.register_page("sfinv:crafting", {title = "Crafting", get = function() retu
 sfinv.register_page("grug_inventory:inventory", {title = "Inventory",
 	get = function() return "INVENTORY" end})
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
+grug_sounds = grug_sounds or {}
+	grug_sounds.CLICK_STYLE = grug_sounds.CLICK_STYLE or ""
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/navigation.lua")
 local I = grug_inventory
 
 grug_jobs = {}
@@ -457,6 +461,7 @@ local function new_player(name)
 	function player:get_meta() return meta end
 	function player:is_player() return true end
 	function player:get_pos() return self.pos end
+	function player:set_formspec_prepend(fs) self.prepend = fs end
 	function player:set_inventory_formspec(fs)
 		self.sent = self.sent + 1
 		self.formspec = fs
@@ -602,14 +607,14 @@ local fs = open(p)
 eq(p.sent, sent + 1, "P opening the tab sends the page once")
 formspec_ok(fs, "P page")
 has(fs, ("formspec_version[6]size[%.3f,%.3f]"):format(grug_inventory.UI.frame_w,
-	grug_inventory.UI.frame_h), "P the inventory window's frame")
+	grug_inventory.UI.window_h), "P the inventory window's frame")
 has(fs, "grug_inv_scroll_short", "P the short inventory view")
 eq(count(fs, "list[current_player;main;"), 2, "P main only in the view")
 for index, label in ipairs({"Basic", "Cooking", "Primary 1", "Primary 2", "Alchemy"}) do
 	has(fs, ("%s%d;%s]"):format(FIELDS.area, index, label), "P area tab " .. label)
 end
-has(fs, "style[grug_craft_area1;bgcolor=#8a682f", "P Basic is the default area, styled selected")
-has(fs, "style[grug_craft_area2,grug_craft_area3,grug_craft_area4,grug_craft_area5;bgcolor=#3d3d3d",
+has(fs, grug_core.ui.button_style("grug_craft_area1", "selected"), "P Basic is the default area, styled selected")
+has(fs, grug_core.ui.button_style("grug_craft_area2,grug_craft_area3,grug_craft_area4,grug_craft_area5", "normal"),
 	"P one style for the other tabs")
 has(fs, "Basic: no tier", "P Basic has no tier")
 -- Round 47 ruling 18: crafts land in the inventory; the overflow slots are
@@ -686,7 +691,7 @@ end
 click(p, {[FIELDS.area .. "4"] = "Primary 2"})
 says(p.formspec, "No primary profession yet. Learn one from its trainer in the capital.",
 	"A an empty primary slot says how to learn one")
-has(p.formspec, "style[grug_craft_area4;bgcolor=#8a682f", "A the chosen tab styled")
+has(p.formspec, grug_core.ui.button_style("grug_craft_area4", "selected"), "A the chosen tab styled")
 click(p, {[FIELDS.area .. "5"] = "Alchemy"})
 says(p.formspec, "Not learned yet. Learn Alchemy from its trainer in the capital.",
 	"A an unlearned profession says how to learn it")

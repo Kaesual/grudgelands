@@ -27,13 +27,7 @@ UI.frame_h = 3 / 4 + 15 / 13 * (UI.height - 1) + 1 + 15 / 13 * 0.35 * 2 / 3
 -- both a gold tint and a border; the unselected state has neither, so the
 -- distinction remains visible without relying on colour alone.
 function grug_inventory.selected_button_style(fieldname, selected)
-	local field = core.formspec_escape(tostring(fieldname or ""))
-	if selected then
-		return ("style[%s;bgcolor=#8a682f;bgcolor_hovered=#a77f3b;" ..
-			"bgcolor_pressed=#6f5427;border=true]"):format(field)
-	end
-	return ("style[%s;bgcolor=#3d3d3d;bgcolor_hovered=#505050;" ..
-		"bgcolor_pressed=#303030;border=false]"):format(field)
+	return grug_core.ui.button_style(fieldname, selected and "selected" or "normal")
 end
 
 function grug_inventory.wrap_text(value, width)
@@ -201,9 +195,8 @@ grug_inventory.VIEW_GEOMETRY = {x = LAYOUT.x, width = VIEW_W,
 
 -- A boxed area's background and its label, top left above the slots.
 function grug_inventory.area_box(x, y, w, h, label, color)
-	return ("box[%.3f,%.3f;%.3f,%.3f;%s]label[%.3f,%.3f;%s]"):format(x, y, w, h,
-		color or grug_inventory.BOX_COLOR, x + LAYOUT.pad, y + LAYOUT.label_h / 2,
-		core.formspec_escape(label))
+	return grug_core.ui.panel(x, y, w, h) ..
+		grug_core.ui.heading(x + LAYOUT.pad, y + LAYOUT.label_h / 2, label)
 end
 
 -- The scroll area's list[] elements and its row count. main[9..] and the
@@ -345,7 +338,7 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	-- The hotbar in its gold box: the engine's hotbar cell art under each
 	-- slot and the first eight cells of main.
 	for index = 0, 7 do
-		fs[#fs + 1] = ("image[%.3f,%.3f;1,1;gui_hb_bg.png]"):format(
+		fs[#fs + 1] = ("image[%.3f,%.3f;1,1;grug_ui_panel.png]"):format(
 			view_x + index * PITCH, hotbar_y)
 	end
 	fs[#fs + 1] = ("list[current_player;main;%.3f,%.3f;8,1;]"):format(view_x,
@@ -467,21 +460,20 @@ end
 -- grug_inventory.refresh).
 --
 function sfinv.make_formspec(player, context, content, show_inv, size)
-	local nav = sfinv.get_nav_fs(player, context, context.nav_titles,
-		context.nav_idx)
-	if size then
-		context.grug_inv_view = nil
-		return size .. nav .. content
-	end
+	local nav = grug_inventory.navigation(player, context, context.page, UI.frame_w)
 	local mode = show_inv == true and "short" or show_inv or nil
 	context.grug_inv_view = mode
+	-- All existing body coordinates remain local to this container, including
+	-- legacy pages. The native tabheader formerly sat outside the window.
 	return table.concat({
-		("formspec_version[6]size[%.3f,%.3f]"):format(UI.frame_w, UI.frame_h),
+		grug_core.ui.frame(UI.frame_w, UI.window_h),
 		nav,
+		("container[0,%.3f]"):format(UI.header_h),
 		mode and grug_inventory.inventory_view(player, mode, context) or "",
 		"real_coordinates[false]",
 		content,
 		mode and bag_rings(player, content) or "",
+		"real_coordinates[true]container_end[]",
 	})
 end
 

@@ -27,8 +27,8 @@ local LOADING_FORM = "grug_classes:loading"
 local META_ARRIVING = "grug_classes:arriving"
 local STASIS_CHECK_INTERVAL = 0.1
 -- no_prepend drops the formspec prepend, so the click style comes along.
-local DARK_BACKGROUND = "no_prepend[]" .. grug_sounds.CLICK_STYLE ..
-	"bgcolor[#080808FF;both;#000000FF]"
+local DARK_BACKGROUND = "no_prepend[]" .. grug_core.ui.prepend(true) ..
+	"bgcolor[#0b1118;both;#0b1118]"
 
 local CREATION_FORMS = {
 	[CREATE_FORM] = true,
@@ -276,6 +276,7 @@ local function one_line(text)
 end
 
 local function button(fs, x, y, w, h, field, label, tooltip, bgcolor, chosen)
+	fs[#fs + 1] = grug_core.ui.button_style(field, chosen and "selected" or "normal")
 	if bgcolor or chosen then
 		fs[#fs + 1] = ("style[%s;bgcolor=%s%s]"):format(field, bgcolor or CHOSEN,
 			chosen and ";font=bold" or "")
@@ -327,10 +328,13 @@ end
 
 local function create_formspec(draft)
 	local fs = {
-		"formspec_version[4]",
+		"formspec_version[6]",
 		("size[%s,%s]"):format(WIDTH, HEIGHT),
 		DARK_BACKGROUND,
-		"label[0.4,0.45;Create your character]",
+		grug_core.ui.heading(0.4, 0.45, "Create your character"),
+		grug_core.ui.panel(0.25, 1.95, 3.3, 8.35),
+		grug_core.ui.panel(3.65, 1.95, 11.1, 2.5),
+		grug_core.ui.panel(3.65, 4.55, 11.1, 4.65),
 	}
 	if draft.faction then
 		-- The chosen faction's button takes the focus at every send (0.45.1):
@@ -395,7 +399,7 @@ local function create_formspec(draft)
 
 	if look_panel then
 		fs[#fs + 1] = look_panel.formspec(draft.race, draft.look, SIDE_X, LOOK_Y,
-			RIGHT_EDGE - SIDE_X, HEIGHT - 0.4 - LOOK_Y)
+			RIGHT_EDGE - SIDE_X, 9.1 - LOOK_Y)
 	end
 	create_button(fs, draft_ready(draft))
 	return table.concat(fs)
@@ -409,7 +413,8 @@ local function loading_formspec(status, failed)
 		eta = ("Time remaining: %dh %02dm"):format(math.floor(minutes / 60), minutes % 60)
 	end
 	local parts = {
-		"formspec_version[4]", "size[10.4,3.5]", DARK_BACKGROUND,
+		"formspec_version[6]", "size[10.4,4.2]", DARK_BACKGROUND,
+		grug_core.ui.panel(0.4, 0.35, 9.6, 3.45),
 		"label[0.6,0.7;" .. core.formspec_escape(
 			("Preparing %s: %d%%"):format(scope, math.floor(status.percent))) .. "]",
 	}
@@ -422,6 +427,11 @@ local function loading_formspec(status, failed)
 	else
 		parts[#parts + 1] = "label[0.6,1.4;" .. core.formspec_escape(eta) .. "]"
 		parts[#parts + 1] = "label[0.6,2.2;You may disconnect and return later.]"
+	end
+	parts[#parts + 1] = "box[0.6,3.1;9.2,0.25;#26323e]"
+	local fraction = math.max(0, math.min(1, (tonumber(status.percent) or 0) / 100))
+	if fraction > 0 then
+		parts[#parts + 1] = ("box[0.6,3.1;%.3f,0.25;#c4a66c]"):format(9.2 * fraction)
 	end
 	return table.concat(parts)
 end

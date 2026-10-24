@@ -185,7 +185,7 @@ local function filter_buttons(state, open_count)
 end
 
 local function ticket_table(fs, rows, selected_id)
-	fs[#fs + 1] = ("tableoptions[background=#0d0e10;border=true;highlight=%s;color=%s]")
+	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=%s;color=%s]")
 		:format(COLOR.row, COLOR.text)
 	fs[#fs + 1] = "tablecolumns[color,span=1;text,width=6;text,width=7;text,width=17;" ..
 		"color,span=1;text,width=5;text,align=right,width=3]"
@@ -204,7 +204,7 @@ local function ticket_table(fs, rows, selected_id)
 end
 
 local function broadcast_table(fs, rows, selected_id)
-	fs[#fs + 1] = ("tableoptions[background=#0d0e10;border=true;highlight=%s;color=%s]")
+	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=%s;color=%s]")
 		:format(COLOR.row, COLOR.text)
 	fs[#fs + 1] = "tablecolumns[image,width=1,1=" .. BADGE .. ";text,width=24;" ..
 		"text,width=8;text,align=right,width=3]"
@@ -387,6 +387,7 @@ function grug_mail.admin_formspec(player, context)
 	-- The focus sits on an invisible button at every send (module guide
 	-- "Initial focus"): an edit box or a table would eat the inventory key.
 	local fs = {"real_coordinates[true]",
+		grug_core.ui.panel(0.2, 1.1, grug_inventory.UI.frame_w - 0.4, 12.35),
 		"set_focus[mail_admin_focus;true]button[0,0;0,0;mail_admin_focus;]"}
 	if not allowed(player) then
 		fs[#fs + 1] = ("label[%.2f,1.0;%s]"):format(X, esc("Admin Mail needs the " ..

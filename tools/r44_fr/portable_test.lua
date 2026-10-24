@@ -81,7 +81,7 @@ local function formspec_ok(fs, label)
 			i = i + 1
 		elseif c == "]" then
 			local text = table.concat(piece)
-			if not text:match("^[%a_]+%[") then
+			if not text:match("^[%w_]+%[") then
 				return check(false, label .. ": not an element before ] at " .. i)
 			end
 			piece = {}
@@ -296,7 +296,9 @@ stub_page("grug_classes:talents", "Talents & Skills", true, {
 	end})
 stub_page("grug_map:atlas", "Map", false)
 stub_page("sfinv:crafting", "Crafting", true)
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
 stub_page("grug_inventory:help", "Help", true)
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 stub_page("grug_parties:group", "Party & PvP", false)
@@ -321,8 +323,11 @@ local plain = make_player("plain", lists_with_bags({}))
 local context = sfinv.get_or_create_context(plain)
 eq(context.page, "grug_inventory:inventory", "a new context opens Inventory")
 local form = sfinv.get_formspec(plain, context)
-has(form, "tabheader[0,0;sfinv_nav_tabs;Inventory,Character,Talents & Skills,Crafting," ..
-	"Party & PvP,Map,Help;1;true;false]", "the tab captions in order, Inventory selected")
+for index, id in ipairs(context.grug_ui_nav) do
+	eq(id, context.nav[index], "custom tabs preserve sfinv page order")
+	has(form, "grug_ui_tab_" .. index .. ";", "each allowed tab has a button")
+end
+lacks(form, "tabheader[", "no legacy external tabheader")
 
 -- No page mod keeps an ordering hook.
 for _, file in ipairs({"mods/PLAYER/grug_classes/talents_ui.lua",
@@ -343,7 +348,7 @@ local legacy_w = 3 / 4 + 5 / 4 * (10.4 - 1) + 1
 local legacy_h = 3 / 4 + 15 / 13 * (11.1 - 1) + 1 + 15 / 13 * 0.35 * 2 / 3
 local L = grug_inventory.LAYOUT
 local frame_h = grug_inventory.UI.frame_h
-local header = ("formspec_version[6]size[%.3f,%.3f]"):format(legacy_w, frame_h)
+local header = ("formspec_version[6]size[%.3f,%.3f]"):format(legacy_w, grug_inventory.UI.window_h)
 eq(form:sub(1, #header), header, "fv6 frame, real-coordinate size first")
 check(math.abs(grug_inventory.UI.frame_w - legacy_w) < 1e-9 and
 	math.abs(frame_h - legacy_h) < 1e-9,
@@ -366,9 +371,8 @@ sfinv.pages["grug_map:atlas"].get = function(_, player, ctx)
 		"formspec_version[4]size[10.4,11.1]real_coordinates[false]")
 end
 local map = sfinv.get_formspec(plain, context)
-eq(map:sub(1, 52), "formspec_version[4]size[10.4,11.1]real_coordinates[f",
-	"a page's own header stays first")
-lacks(map, "formspec_version[6]", "no second header on the Map tab")
+eq(map:sub(1, #header), header, "page content keeps the shared frame")
+lacks(map, "formspec_version[4]", "obsolete page size cannot replace shared frame")
 lacks(map, "list[current_player;main", "the Map tab has no inventory")
 eq(context.grug_inv_view, nil, "no view recorded for the Map tab")
 formspec_ok(form, "Inventory form")
@@ -501,7 +505,7 @@ end
 local function view_boxes(fs)
 	local out = {}
 	for x, y, w, h, color, lx, ly, text in fs:gmatch(
-			"box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^%]]+)%]" ..
+			"background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^;]+);false;6%]" ..
 			"label%[([%d.]+),([%d.]+);([^%]]+)%]") do
 		out[text] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
 			color = color, lx = tonumber(lx), ly = tonumber(ly)}
@@ -517,8 +521,8 @@ do
 		local mode, boxes, view = pair[1], pair[2], pair[3]
 		local inv, hot = boxes.Inventory, boxes.Hotbar
 		if check(inv and hot, mode .. " view: an Inventory and a Hotbar box") then
-			eq(inv.color, grug_inventory.BOX_COLOR, mode .. " view: the Inventory box colour")
-			eq(hot.color, "#8a682f44", mode .. " view: the Hotbar box's gold")
+			eq(inv.color, "grug_ui_panel.png", mode .. " view: rounded Inventory panel")
+			eq(hot.color, "grug_ui_panel.png", mode .. " view: rounded Hotbar panel")
 			local gx, gy = view:match("scroll_container%[([%d.]+),([%d.]+);")
 			check(math.abs(inv.lx - tonumber(gx)) < 0.002 and inv.ly > inv.y and
 				inv.ly < tonumber(gy), mode .. " view: the label inside, top left above the grid")
@@ -604,7 +608,7 @@ for _, name in ipairs({"Bags", "Potion belt", "Inventory", "Hotbar"}) do
 	local box = boxes[name]
 	check(box ~= nil, name .. ": its own box with its label")
 	if box then
-		eq(box.color, name == "Hotbar" and "#8a682f44" or grug_inventory.BOX_COLOR,
+		eq(box.color, "grug_ui_panel.png",
 			name .. ": the box colour")
 		check(close(box.lx, slot_x[name]), name .. ": the label at the slots' left edge")
 		check(box.ly > box.y and box.ly < slot_y[name], name .. ": the label above the slots")

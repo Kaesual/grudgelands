@@ -52,9 +52,3 @@ function UI.frame(w, h, title, opaque)
 	return fs
 end
 
--- grug_core depends on grug_sounds (which depends on default), so this
--- replaces the old default prepend after its click styles were installed.
--- Explicit no_prepend forms opt in using UI.prepend themselves.
-core.register_on_joinplayer(function(player)
-	player:set_formspec_prepend(UI.prepend(false))
-end)

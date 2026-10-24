@@ -2,6 +2,13 @@ grug_core = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/ui.lua")
+-- grug_core depends on grug_sounds (which depends on default), so this
+-- replaces the old default prepend after its click styles were installed.
+-- Explicit no_prepend forms opt in using UI.prepend themselves.
+core.register_on_joinplayer(function(player)
+	player:set_formspec_prepend(grug_core.ui.prepend(false))
+end)
+
 -- World migrations (Round 43): the step registry, then the world version's
 -- start guard, before anything in this game reads or writes saved state (the
 -- map-reset clears included). The mods that can load before grug_core write

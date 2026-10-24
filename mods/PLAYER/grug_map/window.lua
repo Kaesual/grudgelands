@@ -426,7 +426,7 @@ end
 -- information (or nil).
 function W.formspec(player, session, info)
 	local w, h = W.window_size(info)
-	local layout = W.layout(w, h)
+	local layout = W.layout(w, h - grug_inventory.UI.header_h)
 	session.layout = layout
 	local zoom = session.zoom or 1
 	local journal = grug_quests.journal(player)
@@ -442,6 +442,8 @@ function W.formspec(player, session, info)
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
 		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h),
+		grug_inventory.navigation(player, session, "grug_map:atlas", w),
+		("container[0,%.3f]"):format(grug_inventory.UI.header_h),
 		-- The inventory key closes a form unless the focused element eats it
 		-- (guiFormSpecMenu.cpp OnEvent; edit boxes, read-only ones included,
 		-- and textlists do). Without this the engine focuses the quest text
@@ -478,7 +480,10 @@ function W.formspec(player, session, info)
 		session.scroll_y or 0)
 	fs[#fs + 1] = SCROLLBAR_DEFAULTS
 	layer_buttons(fs, layout, session, quest ~= nil)
+	fs[#fs + 1] = grug_core.ui.panel(layout.column.x - 0.1, layout.column.y - 0.1,
+		layout.column.w + 0.1, layout.column.h + 0.1)
 	fs[#fs + 1] = quest_box.content(session, journal, layout.column)
+	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)
 end
 
@@ -659,6 +664,18 @@ function W.handle_fields(player, fields)
 	if not session then return end
 	if fields.quit then
 		session.open = false
+		return
+	end
+	local target, clicked = grug_inventory.navigation_target(player, session, fields)
+	if clicked then
+		if target and target ~= "grug_map:atlas" then
+			session.open, session.pending = false, false
+			if not sfinv.inventory_suspended(player) then
+				sfinv.set_page(player, target)
+				core.show_formspec(name, "", sfinv.get_formspec(player,
+					sfinv.get_or_create_context(player)))
+			end
+		end
 		return
 	end
 	session.open = true

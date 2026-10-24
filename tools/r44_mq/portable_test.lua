@@ -459,7 +459,11 @@ rawset(_G, "grug_mobs", {
 local pages, contexts, inv_forms = {}, {}, {}
 local suspended = {}
 rawset(_G, "sfinv", {
-	register_page = function(name, def) def.name = name; pages[name] = def end,
+	pages = pages, pages_unordered = {},
+	register_page = function(name, def)
+		def.name = name; pages[name] = def
+		sfinv.pages_unordered[#sfinv.pages_unordered + 1] = def
+	end,
 	contexts = contexts,
 	inventory_suspended = function(p) return suspended[p.name] == true end,
 	get_homepage_name = function() return "grug_inventory:inventory" end,
@@ -478,7 +482,10 @@ rawset(_G, "sfinv", {
 	get_formspec = function(p, context) return "inventory:" .. context.page end,
 	make_formspec = function(_, _, content) return content end,
 })
-rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1}})
+rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1, frame_h = 13.673}})
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
+sfinv.register_page("grug_inventory:inventory", {title = "Inventory"})
 do -- the shared selection style, as grug_inventory/ui.lua ships it
 	local source = read("mods/PLAYER/grug_inventory/ui.lua")
 	local body = source:match("\n(function grug_inventory%.selected_button_style.-\nend)\n")
