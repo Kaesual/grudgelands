@@ -29,6 +29,6 @@ sfinv.register_page(PAGE, {
 	end,
 	get = function(self, player, context)
 		return sfinv.make_formspec(player, context,
-			"label[0.2,0.3;Map & Quests]", false)
+			"real_coordinates[true]label[0.2,0.3;Map & Quests]", false)
 	end,
 })

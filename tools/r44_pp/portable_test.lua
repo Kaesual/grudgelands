@@ -486,6 +486,15 @@ submit(alice, {grug_party_hud = "false"})
 eq(last_call(), "hud:false", "B the HUD checkbox")
 submit(alice, {grug_party_health_colors = "1"})
 eq(last_call(), "colors:all_green", "B the health colours dropdown")
+do
+	local before_calls, before_sends, before_notice = #party_calls, alice.sent, context.grug_party_notice
+	submit(alice, {quit = "true", grug_ui_close = "X", grug_party_health_colors = "2"})
+	eq(#party_calls, before_calls, "B closing with X does not apply the echoed dropdown")
+	eq(alice.sent, before_sends, "B closing with X does not rebuild the party page")
+	eq(context.grug_party_notice, before_notice, "B closing with X leaves the existing notice intact")
+	submit(alice, {quit = "true"})
+	eq(alice.sent, before_sends, "B Escape likewise does not rebuild the party page")
+end
 players.dax = nil
 local sent = alice.sent
 submit(alice, {grug_party_refresh = "Refresh"})

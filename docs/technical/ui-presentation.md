@@ -35,6 +35,11 @@ refusal logger and cleanup, never an authorized operation. A build following
 revocation also leaves a restricted page. Character-creation suspension stays
 in sfinv's existing receive/write gates.
 
+The shared X button retains scroll position but forwards only `quit` through
+the prior hook and the current page's handler. Native `button_exit` submits
+editable values too; stripping those values prevents accidental dropdown
+actions while preserving the same cleanup as Escape.
+
 The shared inventory body remains 13.5 by 13.673 units, with a fixed 2.2-unit
 header added above it (one common outer frame for all non-map tabs). The
 body is in a real-coordinate container. Its pages, including Help's Sound

@@ -170,6 +170,7 @@ sfinv.register_page(PAGE, {title = "Party & PvP", on_enter = function(_, player,
 end, get = function(_, player, context)
 	return sfinv.make_formspec(player, context, content(player, context), false)
 end, on_player_receive_fields = function(_, player, context, fields)
+	if fields.quit then return true end
 	local pvp = grug_parties.pvp_section
 	if pvp and pvp.on_fields(player, context, fields) then return true end
 	if fields.grug_party_online_list then
