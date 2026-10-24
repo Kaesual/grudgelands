@@ -41,6 +41,13 @@ approach can reuse more of the current tabheader/dispatch, but paging still
 needs correct index mapping and visibility checks. No automatic adoption,
 sidebar, new tab grouping or new hidden submenu is implied.
 
+User feedback on Atlas 02: Map & Quests should directly expand into its larger
+view and keep the tab bar, without an intermediate Open button. This direction
+is recorded in the plan; the map's precise dimensions and tab handoff remain
+to be worked out. It does not approve larger dimensions for every other tab.
+The current atlas still shows the earlier entry-page study; that flow is
+superseded by this feedback.
+
 ## 2. Window families and transparency
 
 Atlas 02 covers all census families, including a chest and running furnace,

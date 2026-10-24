@@ -69,6 +69,14 @@ present the earlier estimate as a commitment for all game forms.
 6. Prepare browser views for every reachable UI family before game changes
    (2026-10-24). This authorizes the visual study, not implementation or
    acceptance of its proposed navigation and window dimensions.
+7. Preserve the existing UI performance optimizations, particularly animated
+   progress images and the deliberate absence of live seconds counters.
+   Restyling must not introduce repeated formspec sends to animate progress
+   (user feedback, 2026-10-24).
+8. Map & Quests should open directly into the larger map view, with the shared
+   tab bar remaining visible. No intermediate page requiring an Open click.
+   This is the requested presentation direction; exact geometry and the
+   navigation adapter still need implementation design and GUI validation.
 
 ### Proposals for the next visual discussion
 
@@ -112,6 +120,14 @@ post-load adapter can use helpers when forms are built. THEME checks the
 callers and load order before freezing this contract. No event bus, generic
 widget hierarchy or parallel session framework is warranted.
 
+This is a proposed presentation toolkit: shared frame, panels, typography,
+button roles, spacing and navigation rendering. Existing mods continue to own
+their forms' data, field handlers, sessions, validation, update triggers and
+animation timing. Helpers build deterministic formspec fragments from their
+inputs; they do not schedule updates or send forms. In particular, existing
+crafting/furnace progress helpers remain the timing owners even if their
+textures and geometry change. The toolkit API is not frozen by the mockup.
+
 The shared theme must cover default's formspec prepend and preserve
 `grug_sounds.CLICK_STYLE`. Explicit form-local colors and backgrounds can
 override the prepend (Creative is one example), so a prepend replacement
@@ -140,10 +156,25 @@ in [VENDOR.md](../../VENDOR.md). Prefer existing extension seams.
   fixed-window ruling and header/dispatch constraints; any size change needs
   an explicit decision. Do not silently hide pages.
 - Continue using registered sfinv pages, allowed navigation and lifecycle
-  hooks. Keep inventory suspension during creation and map-window handoff.
+  hooks. Keep inventory suspension during creation and safe map-window handoff.
   Validate navigation against current privileges/visibility; losing a
   privilege must leave the restricted page safely. Preserve the page order
   and contextual state unless a different design is approved.
+- Map & Quests uses a larger layout with the same visible navigation; another
+  tab returns to that tab's normal layout. Both the map tab and Z enter the
+  map directly. Today [map/page.lua](../../mods/PLAYER/grug_map/page.lua)
+  already opens a separate form immediately; its Open button is a fallback,
+  not the normal interaction. The browser atlas over-emphasized that fallback.
+  A shared visual frame does not require merging the map's session into sfinv:
+  prefer retaining [window.lua](../../mods/PLAYER/grug_map/window.lua)'s
+  state/update owner and adapting navigation at that boundary. The adapter
+  must stop map sends on tab exit, apply real tab visibility checks and avoid
+  stale map updates reopening a page. Exact close/reopen semantics are still
+  to be specified, including `page.lua`'s deferred `back_home` reset and
+  `window.lua`'s `core.show_formspec` wrapper / `shown_form` backstop. Do not
+  silently remove those lifecycle mechanisms when adding the shared frame;
+  define and test their adapted behavior. The existing frame-size ruling for
+  non-map tabs stays open.
 - Preserve four bag slots, actual belt/equipment slots, continuous eight-column
   bag flow, native list indices, full/short/station views and hotbars A/B.
   The prototype's simplified capacities are not authoritative. Establish
@@ -174,6 +205,41 @@ in [VENDOR.md](../../VENDOR.md). Prefer existing extension seams.
   Appearance introduces no polling, globalstep or redraw on a pure scrollbar
   event. Hover/pressed styles are client-side. Avoid expensive full-catalog
   scans or replicated large textures when a window opens.
+
+### Progress animation and update contract
+
+Source-checked after the user's feedback on 2026-10-24:
+
+- [Crafting UI](../../mods/PLAYER/grug_jobs/ui.lua) explicitly uses
+  `animated_image[]`, with 64 fill frames and 32 full frames as a lag buffer.
+  Reopening/rebuilding starts at the elapsed fraction. Job start, finish,
+  cancellation and existing structural events can send; ordinary delivered
+  items use live inventory updates. There is no per-second countdown resend.
+- [Furnace progress](../../mods/PLAYER/grug_inventory/furnace_progress.lua)
+  keeps fuel and cooking animations independent, preserves paused/end states
+  and end-frame buffers, and starts at the current elapsed fraction.
+  `changed()` ignores advancing animation start frames but detects actual
+  state changes, a new fuel/item and large catch-up jumps. Both the plain
+  furnace and [workspaces](../../mods/PLAYER/grug_jobs/workspaces.lua) use it.
+  Their process ticks must not become per-tick formspec sends during restyling.
+- [Map window](../../mods/PLAYER/grug_map/window.lua) retains its send gap,
+  pending-event coalescing, scrollbar quiet period, changed-party-marker
+  detection and per-pass budgets. Shared tabs must not introduce idle refresh.
+
+Keep these timing and dirty-state rules, including stable animation field
+names and comparison behavior, when changing visuals. Do not replace them
+with server-stepped fills, elapsed-time text or live percentages. Static job
+duration information and existing counters elsewhere are a separate matter;
+this is not a blanket removal of time information. Atlas percentages and
+time examples are not requirements to add live values to the game.
+
+Before converting each surface, its lane records the current update triggers,
+what animates in the client, and which list changes need no form resend.
+After conversion, compare the same interaction/process scenario: forms built,
+forms sent, bytes and build cost. Decoration must not add periodic builds or
+sends. Explain changed payload sizes from the new frame rather than silently
+treating more bytes as more frequent updates. Reuse the existing probes and
+fixtures; do not add a production telemetry or refresh subsystem for this.
 
 ## 4. Lane deliverables
 
@@ -233,6 +299,16 @@ do not need tests that merely copy their constants. Theme textures trigger
 the web-data check where required. Worldgen fleets apply only as required by
 the integration round; this theme adds no worldgen work.
 
+Progress/update regression coverage includes the existing
+[crafting fixture](../../tools/r45_ui/portable_test.lua) and
+[furnace animation fixture](../../tools/r491_anim/portable_test.lua), plus the
+current queue and map fixtures selected by their lanes. Check continuous
+animation without extra sends, reopen at elapsed progress, paused/full output,
+fuel/item transitions, lag/catch-up, cancellation/next job, and no refresh
+after leaving the form. Preserve behavioral assertions when adapting expected
+geometry. The new map navigation additionally exercises Z, all entitlements,
+tab exit and a pending map update that must not reopen the map.
+
 The workstation cap is eight Lua processes **across both coordinators**.
 Agree available capacity before a test fleet; use the workflow's queue and
 idle scheduling. No repeated full runs without a new reason.
@@ -257,7 +333,8 @@ The user's desktop **and web** GUI checklist includes:
       dual workspace; ownership/protection/range; simultaneous users;
       closing/replacing a form must not make a timer reopen it.
 - [ ] Quest offer/progress/ready/completion, choice rewards and long story
-      text; map filters, quest panel, markers, resize and return to inventory.
+      text; direct Map & Quests entry with persistent tabs, larger map layout,
+      filters, quest panel, markers, resize and return to another tab.
 - [ ] Vendor buy/sell/repair and guild trade-in/rank states; crown service;
       profession trainer, Riding Trainer and Shipwright with owned, locked
       and unaffordable rows; home binding, waystone travel and guild lift.
