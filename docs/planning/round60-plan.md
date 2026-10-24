@@ -96,9 +96,10 @@ New for this round:
 8. **Use objects** stand away from mob members in camps (damage breaks the hold); town places only in plots every world
    builds (seven service plots, the inn and the guild house are still free per capital), through the plot's
    `extra_sockets`.
-9. **The Alchemy herbs follow the level bands** (the user, 2026-10-24): each tier's herbs grow in that tier's band in
-   the zones of every race (T1 Sunleaf and Gravemoss in the six start zones, T2 Dragonweed in 11–20, T3/T4 Crimson
-   Lotus in 21–40, T5/T6 as the lane measures), the current places may stay; `grug_gathering/catalog.lua` (zones,
+9. **The Alchemy herbs follow the level bands** (the user, 2026-10-24): for levels 1–20 each tier's herbs grow in the
+   zones of every race (T1 Sunleaf and Gravemoss in the six start zones, T2 Dragonweed in each race's 11–20 zone); from
+   21 to 60 a tier's herbs need only grow somewhere in that tier's band (players may gather outside their own zones:
+   Crimson Lotus in 21–40, T5/T6 as the lane measures); the current places may stay; `grug_gathering/catalog.lua` (zones,
    hosts, density); mob-loot ingredients already drop in their own band (catalogue tier). Mapgen content, so the map
    reset covers it.
 
