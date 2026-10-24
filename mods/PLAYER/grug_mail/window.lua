@@ -764,7 +764,8 @@ local ACTIONS = {reply = true, report = true, report_cancel = true,
 local function idle(fields)
 	if not fields.key_enter_field then return false end
 	for field in pairs(fields) do
-		if ACTIONS[field] or field:match("_prev$") or field:match("_next$") or
+		if ACTIONS[field] or field:match("^grug_mail_tab_%d+$") or
+				field:match("_prev$") or field:match("_next$") or
 				field:match("_send_%d+$") or field:match("^delete_%d+$") or
 				field:match("_confirm_%d+$") or field:match("^ticket_delete_%d+$") then
 			return false

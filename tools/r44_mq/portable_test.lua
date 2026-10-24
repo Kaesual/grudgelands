@@ -1389,11 +1389,11 @@ do
 	after_calls[1].fn(unpack(after_calls[1].args))
 	eq(sfinv.get_page(accord), "grug_inventory:inventory", "Z the inventory is back on its homepage")
 	lacks(page:get(accord, contexts.ann), "grug_map_open", "Z map has no intermediary Open button")
-	shows = {}
-	page:on_player_receive_fields(accord, contexts.ann, {grug_map_open = "x"})
-	eq(sends_to("ann"), 1, "Z its button opens the window")
+	check(page.on_player_receive_fields == nil, "Z no obsolete Open action handler")
 	-- Every window form is well formed: brackets balance outside escapes.
 	local form2 = shows[#shows].form
+	eq(count(form2, "button_exit%[[^%]]-;grug_ui_close;"), 1, "Z one shared close button")
+	lacks(form2, ";grug_map_close;", "Z no duplicate map close button")
 	local depth, bad, i = 0, false, 1
 	while i <= #form2 do
 		local c = form2:sub(i, i)
@@ -1700,6 +1700,15 @@ do
 	advance(2)
 	for _, fn in ipairs(markers_changed) do fn(accord) end
 	eq(sends_to("ann"), before, "NAV pending/quest updates cannot reopen the map")
+	W.open(accord)
+	session.pending = true
+	suspended.ann = true
+	before = sends_to("ann")
+	fields(accord, {["grug_ui_tab_" .. index] = "true"})
+	check(not session.open and not session.pending and shown.ann == nil,
+		"NAV suspension closes the visible map and cancels its owed send")
+	eq(sends_to("ann"), before, "NAV suspension opens no inventory page")
+	suspended.ann = nil
 end
 
 if failures > 0 then

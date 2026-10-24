@@ -31,10 +31,4 @@ sfinv.register_page(PAGE, {
 		return sfinv.make_formspec(player, context,
 			"label[0.2,0.3;Map & Quests]", false)
 	end,
-	on_player_receive_fields = function(self, player, context, fields)
-		if fields.grug_map_open then
-			grug_map.window.open(player)
-			return true
-		end
-	end,
 })

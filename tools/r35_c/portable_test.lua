@@ -713,6 +713,31 @@ for kind, x, y in form:gmatch("(label)%[([%d.]+),([%d.]+);") do
 	if x < 0 or y < 0 or x > W or y > H then outside[#outside + 1] = "label@" .. x .. "," .. y end
 end
 eq(#outside, 0, "F every element inside the window: " .. table.concat(outside, " "))
+-- Card backgrounds must contain the controls they group, with a gap before Create.
+local panels = {}
+for x, y, w, h in form:gmatch("background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_ui_panel%.png;") do
+	panels[#panels + 1] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h)}
+end
+local class_panel, look_panel
+for _, panel in ipairs(panels) do
+	if panel.x > 3 then
+		if panel.y < 3 then class_panel = panel else look_panel = panel end
+	end
+end
+check(class_panel and look_panel, "F class and appearance cards exist")
+for _, box in ipairs(boxes) do
+	if box.kind == "textarea" and box.x > 3 and box.y < 4.55 then
+		check(class_panel and box.y + box.h <= class_panel.y + class_panel.h,
+			"F class description stays inside its card")
+	elseif box.name:match("^look_") then
+		check(look_panel and box.y >= look_panel.y and
+			box.y + box.h <= look_panel.y + look_panel.h,
+			"F " .. box.name .. " stays inside appearance card")
+	elseif box.name == "create_character" then
+		check(look_panel and look_panel.y + look_panel.h < box.y,
+			"F appearance card ends before Create")
+	end
+end
 check(#boxes >= 20, "F the full window has its elements (" .. #boxes .. ")")
 local overlaps = {}
 for i = 1, #boxes do

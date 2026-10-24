@@ -333,7 +333,7 @@ local function create_formspec(draft)
 		grug_core.ui.heading(0.4, 0.45, "Create your character"),
 		grug_core.ui.panel(0.25, 1.95, 3.3, 8.35),
 		grug_core.ui.panel(3.65, 1.95, 11.1, 2.5),
-		grug_core.ui.panel(3.65, 4.55, 11.1, 4.65),
+		grug_core.ui.panel(3.65, 4.55, 11.1, 4.8),
 	}
 	if draft.faction then
 		-- The chosen faction's button takes the focus at every send (0.45.1):
@@ -392,7 +392,7 @@ local function create_formspec(draft)
 			draft.class == id)
 	end
 	local class_def = draft.class and grug_classes.registered_classes[draft.class]
-	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,1.2;;;%s]"):format(SIDE_X, ROW_Y + 0.9,
+	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,1.0;;;%s]"):format(SIDE_X, ROW_Y + 0.9,
 		RIGHT_EDGE - SIDE_X, esc(class_def and one_line(class_def.description) or
 		"Choose your class."))
 

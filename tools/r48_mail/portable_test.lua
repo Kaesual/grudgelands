@@ -990,6 +990,12 @@ do
 		check(formspecs.Alice.text:find("formspec_version[6]", 1, true) ~= nil,
 			"D tab " .. tab .. " builds")
 	end
+	-- A tab remains an action when a submission also names the active field.
+	send_fields(alice, {grug_mail_tab_3 = true, key_enter_field = "mail_subject"})
+	eq(session.tab, "write", "D tab button plus Enter still switches the page")
+	local idle_form = formspecs.Alice.text
+	send_fields(alice, {key_enter_field = "mail_subject"})
+	eq(formspecs.Alice.text, idle_form, "D Enter alone still sends no replacement form")
 	send_fields(alice, {grug_mail_tab_1 = true})
 	check(formspecs.Alice.text:find("Letters (3)", 1, true), "D the Letters tab counts unread")
 	check(formspecs.Alice.text:find("Announcements (1)", 1, true), "D the Announcements tab counts unread")
