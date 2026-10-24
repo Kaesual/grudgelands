@@ -665,6 +665,7 @@ do
 	local shown
 	local show_formspec = core.show_formspec
 	core.show_formspec = function(_, formname, form) shown = {formname, form} end
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 	grug_traders.open_crownbinder(w, "Crownbinder", {x = 0, y = 0, z = 0}, "accord")
 	core.show_formspec = show_formspec
 	if check(shown and shown[2]:find("textarea[", 1, true) and shown[2]:find(";Crown]", 1, true),

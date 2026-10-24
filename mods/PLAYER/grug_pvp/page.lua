@@ -6,55 +6,46 @@
 -- (grug_parties/ui.lua); this file installs the section there
 -- (grug_parties.pvp_section) and keeps it current.
 --
--- Real coordinates, from the y the party page passes down to about 2.9
--- below it. While the tab is the player's page the section's text is
+-- Real coordinates, in the right-hand card positioned by the party page. While the tab is the player's page the section's text is
 -- compared once a second and the page re-sent only when it changed, so a
 -- countdown costs one send per second and a quiet tab none; a state change
 -- re-sends it at once.
 
 local V = dofile(core.get_modpath(core.get_current_modname()) .. "/view.lua")
 local FLAG_FIELD = "grug_pvp_flag"
-local HEADING_COLOR = "#f0c75e"
-local LINE = 0.4 -- one label row
-local BUTTON_X, BUTTON_W, BUTTON_H = 9.6, 3.6, 0.7
-local STATS_X, VALUE_DX, STATS_ROWS = {0.2, 6.85}, 4.2, 4
-
 local function esc(text)
 	return core.formspec_escape(tostring(text or ""))
 end
 
-local function label(y, text, x)
-	return ("label[%.2f,%.2f;%s]"):format(x or 0.2, y, esc(text))
+local function label(x, y, text)
+	return ("label[%.2f,%.2f;%s]"):format(x, y, esc(text))
 end
 
--- The section's formspec, real coordinates, starting at `y` (a label's y is
--- the middle of its line).
+-- A narrow card beside the party roster. The caller supplies a container;
+-- all status texts, statistics and refresh keys still come from view.lua.
 local function section(player, context, y)
 	local state, stats = grug_pvp.state(player), grug_pvp.stats(player)
 	context.grug_pvp_key = V.page_key(state, stats)
 	local lines = V.state_lines(state)
-	local fs = {
-		label(y + 0.15, core.colorize(HEADING_COLOR, "PvP status")),
-		("button[%.2f,%.2f;%.2f,%.2f;%s;Flag me for PvP]"):format(BUTTON_X, y,
-			BUTTON_W, BUTTON_H, FLAG_FIELD),
-		label(y + 0.15 + LINE, core.colorize(lines.color, lines.headline)),
-		label(y + 0.15 + 2 * LINE, lines.detail),
-	}
+	local detail = lines.detail
 	if lines.combat then
-		fs[#fs + 1] = label(y + 0.15 + 3 * LINE, core.colorize(V.COLOR_COMBAT,
-			lines.combat))
+		detail = detail .. "\n" .. core.colorize(V.COLOR_COMBAT, lines.combat)
 	end
-	fs[#fs + 1] = label(y + 0.15 + 4 * LINE,
-		"Flags you for 60 s; pressing it again restarts the 60 s.")
-	fs[#fs + 1] = label(y + 0.15 + 5 * LINE,
-		"PvP needs both players flagged. There is no early unflag.")
-	local stats_y = y + 0.15 + 6 * LINE + 0.1
-	fs[#fs + 1] = label(stats_y, core.colorize(HEADING_COLOR, "Statistics"))
+	local fs = {
+		grug_core.ui.panel(0, y, 6.55, 9.0),
+		grug_core.ui.heading(0.3, y + 0.35, "PvP status"),
+		label(0.3, y + 0.9, core.colorize(lines.color, lines.headline)),
+		("textarea[0.3,%.2f;5.95,1.0;;;%s]"):format(y + 1.2, esc(detail)),
+		("textarea[0.3,%.2f;5.95,1.3;;;%s]"):format(y + 2.2, esc(
+			"Flags you for 60 s; pressing it again restarts the 60 s.\n" ..
+			"PvP needs both players flagged. There is no early unflag.")),
+		grug_core.ui.button_style(FLAG_FIELD, "danger"),
+		("button[0.3,%.2f;5.95,0.7;%s;Flag me for PvP]"):format(y + 3.6, FLAG_FIELD),
+		grug_core.ui.heading(0.3, y + 4.8, "Statistics"),
+	}
 	for index, row in ipairs(V.stats_rows(stats)) do
-		local column = math.floor((index - 1) / STATS_ROWS) + 1
-		local x = STATS_X[column]
-		local row_y = stats_y + (1 + (index - 1) % STATS_ROWS) * LINE
-		fs[#fs + 1] = label(row_y, row[1], x) .. label(row_y, row[2], x + VALUE_DX)
+		local row_y = y + 5.35 + (index - 1) * 0.45
+		fs[#fs + 1] = label(0.3, row_y, row[1]) .. label(5.35, row_y, row[2])
 	end
 	return table.concat(fs)
 end

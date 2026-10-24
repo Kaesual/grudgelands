@@ -132,9 +132,10 @@ local function catalog_row(player, y, context)
 	local fs = {
 		grug_inventory.area_box(layout.box_x, y, layout.box_w,
 			layout.slot_box_h + BAR_H, "Skills"),
-		("label[%.3f,%.3f;%s]"):format(layout.x + HINT_DX, y + layout.label_h / 2,
-			core.formspec_escape("Drag skills onto the hotbar. Drag one back here " ..
-				"to remove it.")),
+		("style_type[label;font_size=*0.85]label[%.3f,%.3f;%s]" ..
+			"style_type[label;font_size=]"):format(layout.x + HINT_DX,
+			y + layout.label_h / 2, core.formspec_escape(
+				"Drag skills onto the hotbar; drag one back here to remove it.")),
 	}
 	local max = math.max(0, #rows - visible) * SLOT_STEPS
 	if max > 0 then

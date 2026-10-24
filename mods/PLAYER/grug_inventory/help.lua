@@ -5,7 +5,7 @@
 -- (Round 34) above its text, built per player.
 --
 -- No inventory view (spec §3.1): the page has the whole window. Legacy
--- coordinates (see ui.lua): the button row sits at y = 0 and the text area
+-- coordinates were replaced with explicit real coordinates; the text area
 -- ends near the window's bottom edge. The body is a hypertext[] element,
 -- which scrolls on its own when a sub-page is longer than the area. Links
 -- are read-only textarea[] elements (selectable, Ctrl+C copies) with a
@@ -218,21 +218,15 @@ local LINKS = {
 -- The welcome window (welcome.lua) links the same addresses.
 grug_inventory.LINKS = LINKS
 
--- Geometry (legacy coordinates, 10.4 wide; the window is 11.85 S high, ui.lua).
--- In legacy units (S = one slot spacing, imgsize = 13/15 S, padding 0.325 S)
--- a textarea/hypertext at (y, h) spans (y + 0.35) S to
--- (y + 0.35 + 0.8667 h - 0.1333) S from the form's top edge. The full body
--- below therefore ends at 11.47 S, the Sound body at 11.46 S; the lowest
--- About button ends at 7.21 S (guiFormSpecMenu.cpp parseHyperText,
--- parseTextArea, parseButton; spacing/padding/m_btn_height at :3339-3342).
-local BUTTON_Y, BUTTON_H = 0.0, 0.7
-local BODY_X, BODY_Y, BODY_W = 0.2, 0.85, 10.2
-local BODY_H = 12.0         -- full-height sub-pages
-local ABOUT_BODY_H = 2.4    -- About: text above the link rows (ends 3.15 S)
-local SOUND_BODY_Y = 2.75   -- Sound: text below the two control rows
-local SOUND_BODY_H = 9.8
-local LINK_Y, LINK_STEP = 2.95, 0.95
-local LINK_FIELD_W, LINK_BUTTON_X, LINK_BUTTON_W, LINK_H = 7.7, 8.1, 2.1, 0.65
+-- All Help sections share the inventory body's real-coordinate bounds.
+-- The text scrolls natively; copyable URL rows keep their actual addresses.
+local BUTTON_Y, BUTTON_H = 0.3, 0.7
+local BODY_X, BODY_Y, BODY_W = 0.45, 1.3, 12.6
+local BODY_H = 11.9
+local ABOUT_BODY_H = 2.5
+local SOUND_BODY_Y, SOUND_BODY_H = 3.85, 9.35
+local LINK_Y, LINK_STEP = 4.0, 1.55
+local LINK_FIELD_W, LINK_BUTTON_X, LINK_BUTTON_W, LINK_H = 9.8, 10.7, 2.1, 0.65
 
 local SECTION_BY_ID = {}
 local BODIES = {}
@@ -277,7 +271,11 @@ end
 local function sound_controls(player)
 	local ambience = rawget(_G, "grug_ambience")
 	if not ambience then return "" end
-	return ambience.settings_formspec(player, BODY_X, BODY_Y + 0.15)
+	-- This existing builder uses legacy dropdown geometry. The real parent
+	-- container supplies its origin; only its own controls switch units.
+	return "container[0.45,1.35]real_coordinates[false]" ..
+		ambience.settings_formspec(player, 0, 0) ..
+		"real_coordinates[true]container_end[]"
 end
 
 local function help_content(player, context)
@@ -287,13 +285,15 @@ local function help_content(player, context)
 	-- otherwise the engine focuses About's first link textarea, which eats the
 	-- inventory key. Forced: unforced, it would not apply when the inventory
 	-- key opens the window.
-	local fs = {("set_focus[grug_help_%s;true]"):format(selected)}
+	local fs = {"real_coordinates[true]",
+		grug_core.ui.panel(0.2, 1.15, 13.1, 12.3),
+		("set_focus[grug_help_%s;true]"):format(selected)}
 	for _, section in ipairs(SECTIONS) do
 		local field = "grug_help_" .. section.id
 		fs[#fs + 1] = grug_inventory.selected_button_style(field,
 			section.id == selected)
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
-			section.x, BUTTON_Y, section.w, BUTTON_H, field, esc(section.label))
+			0.25 + section.x * 1.24, BUTTON_Y, section.w * 1.24 - 0.08, BUTTON_H, field, esc(section.label))
 	end
 	if selected == "sound" then fs[#fs + 1] = sound_controls(player) end
 	fs[#fs + 1] = body_of(selected)
