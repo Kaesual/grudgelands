@@ -457,6 +457,7 @@ grug_inventory = {
 	end,
 	station_formspec = function(_, content) return content end,
 	keep_scroll = function() return false end,
+	hotbar_switch_fields = function() return false end,
 	content_list = function(i) return "grug_bag" .. i .. "_content" end,
 }
 function grug_inventory.carried_lists(inv)
@@ -647,7 +648,8 @@ local SEED_SNAPSHOT = snapshot("grug_housing")
 current_mod = "grug_core"
 dofile(ROOT .. "/mods/CORE/grug_core/world_version.lua")
 dofile(ROOT .. "/mods/CORE/grug_core/node_rightclick.lua")
-grug_sounds = {play = function() end}
+grug_sounds = {play = function() end, CLICK_STYLE = ""}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 grug_factions = {get_faction = function() return "accord" end}
 grug_mobs = {register_start_socket_role = function() end}
 current_mod = "grug_housing"
@@ -678,6 +680,7 @@ local function new_player(name, bag_size)
 		meta = new_meta(), sneak = false}
 	function p:is_player() return true end
 	function p:get_player_name() return self.name end
+	function p:set_formspec_prepend(fs) self.prepend = fs end
 	function p:get_inventory() return self.inv end
 	function p:get_pos() return vector.copy(self.pos) end
 	function p:get_meta() return self.meta end
@@ -968,7 +971,7 @@ do
 	local fs = last_shown("ann").fs
 	has(fs, "not active", "D a draft shows the draft form")
 	lacks(fs, "Belongings", "D ...without the Claim Stone inventory")
-	submit(ann, {stone_tab = "2"})
+	submit(ann, {stone_tab_2 = "Belongings"})
 	lacks(last_shown("ann").fs, "Belongings", "D ...also after a tab click")
 	if recovered_inv("ann") then
 		eq(recovered_inv("ann").callbacks.allow_take(recovered_inv("ann").inv, "recovered", 1,
@@ -979,10 +982,10 @@ do
 	H.model.activate(claim, 5)
 	H.open_stone_interface(ann, claim)
 	fs = last_shown("ann").fs
-	has(fs, "tabheader[0,0;stone_tab;Claim Stone,Belongings (18);1;false;false]",
+	has(fs, "stone_tab_2;Belongings (18)]",
 		"D the active stone's form has the Belongings tab with the count")
 	eq(engine_take(ann, 1, 1, "main", 9), 0, "D the main tab takes nothing")
-	submit(ann, {stone_tab = "2"})
+	submit(ann, {stone_tab_2 = "Belongings"})
 	fs = last_shown("ann").fs
 	has(fs, "list[detached:grug_housing_recovered_ann;recovered;0,0;8,3;]",
 		"D the Claim Stone inventory, three rows")

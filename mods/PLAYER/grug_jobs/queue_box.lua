@@ -10,6 +10,8 @@
 -- button. The ✕ buttons name the entry's id, so a click on a page the queue
 -- has moved on from never cancels another job.
 
+local UI = grug_core.ui
+
 local F = grug_jobs.CRAFT_FIELDS
 local BOX = grug_jobs.CRAFT_BOX
 local n, clip = grug_jobs._fs_number, grug_jobs._clip_chars
@@ -18,10 +20,7 @@ local wrapped_labels = grug_jobs._wrapped_labels
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
 local HEADER_Y = BOX.y + 0.2
-local ROW_H, ROW_STEP = 0.85, 0.95
-local BOX_COLOR = "#00000040"
-local ROW_COLOR = "#ffffff12"
-local DIM = "#9a9a9a"
+local DIM = UI.colors.muted
 local NOTE = "#f0c75e"
 local NOTE_STEP = 0.38
 local CHARS = 6.6
@@ -47,42 +46,48 @@ end
 
 local function build(player, view)
 	local st = view.st
-	local fs = {("box[%s,%s;%s,%s;%s]"):format(n(BOX.x), n(BOX.y), n(BOX.w), n(BOX.h),
-		BOX_COLOR)}
+	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
 	fs[#fs + 1] = ("button[%s,%s;2.6,0.6;%s;%s]"):format(n(X), n(HEADER_Y), F.back,
 		esc("◀ Back to recipe"))
-	fs[#fs + 1] = ("label[%s,%s;Crafting queue]"):format(n(X + 2.8), n(HEADER_Y + 0.3))
+	fs[#fs + 1] = UI.heading(X + 2.8, HEADER_Y + 0.3, "Crafting queue")
 	local used = (view.job and 1 or 0) + #view.queue
 	local slots = used .. " of " .. grug_jobs.QUEUE_MAX .. " slots"
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + W - #slots / CHARS), n(HEADER_Y + 0.3),
 		esc(core.colorize(DIM, slots)))
 	local y = HEADER_Y + 0.85
+	-- Reserve readable client-scrolling notes even with all four waiting
+	-- jobs and the six-slot overflow row visible. No refresh is needed to scroll.
+	local row_step = math.min(0.95, (view.bottom - y - 1.35) / math.max(1, #view.queue))
+	local row_h = row_step - 0.1
 	st.queue_ids = {}
 	for index, job in ipairs(view.queue) do
 		st.queue_ids[index] = job.id
 		local icon = grug_jobs.JOB_ICONS[job.kind or "recipe"]
 		local text = grug_jobs.job_label(job)
-		fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]label[%s,%s;%d]"):format(n(X), n(y), n(W),
-			n(ROW_H), ROW_COLOR, n(X + 0.15), n(y + ROW_H / 2), index)
+		fs[#fs + 1] = UI.panel(X, y, W, row_h) ..
+			("label[%s,%s;%d]"):format(n(X + 0.15), n(y + row_h / 2), index)
 		if icon then
-			fs[#fs + 1] = ("item_image[%s,%s;0.6,0.6;%s]"):format(n(X + 0.45),
-				n(y + (ROW_H - 0.6) / 2), esc(icon(job)))
+			fs[#fs + 1] = ("item_image[%s,%s;0.45,0.45;%s]"):format(n(X + 0.45),
+				n(y + (row_h - 0.45) / 2), esc(icon(job)))
 		end
-		fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 1.2), n(y + 0.25),
-			esc(clip(text, math.floor((W - 2.1) * CHARS))), n(X + 1.2), n(y + 0.6),
+		fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 1.2), n(y + 0.18),
+			esc(clip(text, math.floor((W - 2.1) * CHARS))), n(X + 1.2), n(y + 0.43),
 			esc(core.colorize(DIM, area_of(job))))
-		fs[#fs + 1] = ("button[%s,%s;0.6,0.6;%s%s;✕]tooltip[%s%s;%s]"):format(
-			n(X + W - 0.75), n(y + (ROW_H - 0.6) / 2), F.unqueue, job.id, F.unqueue, job.id,
+		fs[#fs + 1] = UI.button_style(F.unqueue .. job.id, "danger")
+		fs[#fs + 1] = ("button[%s,%s;0.45,0.45;%s%s;✕]tooltip[%s%s;%s]"):format(
+			n(X + W - 0.75), n(y + (row_h - 0.45) / 2), F.unqueue, job.id, F.unqueue, job.id,
 			esc("Cancel this job: its ingredients come back."))
-		y = y + ROW_STEP
+		y = y + row_step
 	end
 	if #view.queue == 0 then
 		y = wrapped_labels(fs, X, y + 0.2, W, view.job and
 			"Nothing is waiting. While a job runs, “Queue” adds the next one here." or
 			"No job running.", DIM, NOTE_STEP)
 	end
-	y = wrapped_labels(fs, X, y + 0.25, W, QUEUE_NOTE, DIM, NOTE_STEP)
-	if st.note then wrapped_labels(fs, X, y + 0.1, W, st.note, NOTE, NOTE_STEP) end
+	local note = st.note and (core.colorize(NOTE, st.note) .. "\n\n") or ""
+	note = note .. core.colorize(DIM, QUEUE_NOTE)
+	fs[#fs + 1] = ("textarea[%s,%s;%s,%s;;;%s]"):format(n(X), n(y + 0.1), n(W),
+		n(math.max(0.5, view.bottom - y - 0.1)), esc(note))
 	return table.concat(fs)
 end
 

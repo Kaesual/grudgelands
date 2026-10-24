@@ -58,6 +58,8 @@
 -- after such a build resends the page once, so the next opening starts
 -- without a focused field again.
 
+local UI = grug_core.ui
+
 local PAGE = "sfinv:crafting"
 local PER_PAGE = 10
 local SEARCH_INTERVAL_US = 1000000
@@ -92,11 +94,10 @@ local F = {
 grug_jobs.CRAFT_FIELDS = F
 
 -- Colours: the gold selection of grug_inventory, the overview's note colour.
-local SELECTED_ROW = "#8a682f80"
-local BOX_COLOR = "#00000040"
-local DIM = "#9a9a9a"
+local SELECTED_ROW = "#bba06235"
+local DIM = UI.colors.muted
 local NOTE_COLOR = "#f0c75e"
-local RULE_COLOR = "#ffffff30"
+local RULE_COLOR = "#d4b77d35"
 
 -- Layout (real coordinates; the frame is 13.5 wide). The boxes end a gap
 -- above the short view's Inventory box, as on the other tabs
@@ -345,8 +346,8 @@ local function list_content(fs, player, st, tab, counts, picks)
 	fs[#fs + 1] = ("checkbox[%s,%s;%s;Craftable only;%s]checkbox[%s,%s;%s;Favorites only;%s]")
 		:format(n(LIST_X), n(CHECK_Y), F.only, tostring(st.only),
 		n(FAV_CHECK_X), n(CHECK_Y), F.fav_only, tostring(st.fav_only == true))
-	fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]"):format(n(LIST_X), n(ROW_Y), n(LIST_W),
-		n(PER_PAGE * ROW_H), BOX_COLOR)
+	-- The panel includes search and pagination; native recipe click targets remain.
+	fs[#fs + 1] = UI.panel(LIST_X - 0.1, BOX.y, LIST_W + 0.2, BOX.h)
 	st.rows = {}
 	local first = (st.page - 1) * PER_PAGE
 	for index = 1, math.min(PER_PAGE, #rows - first) do
@@ -443,6 +444,7 @@ local function job_strip(fs, st, job, waiting)
 	local bar_w = queue_x - 0.3 - STOP_W - 0.1 - x
 	fs[#fs + 1] = grug_jobs.progress_bar(x, STRIP_Y + 0.35, bar_w, 0.3, job, grug_jobs.now())
 	local stop = grug_jobs.stop_field(job)
+	fs[#fs + 1] = UI.button_style(stop, "danger")
 	fs[#fs + 1] = ("button[%s,%s;%s,0.5;%s;■]tooltip[%s;%s]"):format(n(x + bar_w + 0.1),
 		n(STRIP_Y + 0.25), n(STOP_W), stop, stop,
 		esc("Stop this job: what it has not made comes back."))
@@ -503,7 +505,8 @@ function grug_jobs.action_button(view, field, label, enabled, style)
 	local geometry = ("%s,%s;%s,%s"):format(n(BOX.x + BOX.w - 0.2 - ACTION.w),
 		n(view.bottom - ACTION.h), n(ACTION.w), n(ACTION.h))
 	if enabled then
-		return (style or "") .. ("button[%s;%s_%d;%s]"):format(geometry, field, view.serial,
+		return UI.button_style(field .. "_" .. view.serial, "selected") ..
+			(style or "") .. ("button[%s;%s_%d;%s]"):format(geometry, field, view.serial,
 			esc(label))
 	end
 	return DISABLED_STYLE .. ("button[%s;%s;%s]"):format(geometry, F.recheck, esc(label))
@@ -605,30 +608,22 @@ function grug_jobs.crafting_page_content(player, context)
 	-- Whether the page's last build left the focus to a text field.
 	st.field_focus, st.enter_focus = st.enter_focus, nil
 	local fs = {"real_coordinates[true]"}
-	-- Area tabs in the shared selection style: one style[] for the selected
-	-- tab, one naming all the others (style[] takes several names).
-	local others = {}
-	for index in ipairs(tabs) do
-		if index ~= st.slot then others[#others + 1] = F.area .. index end
-	end
-	fs[#fs + 1] = grug_inventory.selected_button_style(F.area .. st.slot, true)
-	fs[#fs + 1] = (grug_inventory.selected_button_style("@", false):gsub("^style%[@;",
-		"style[" .. table.concat(others, ",") .. ";", 1))
-	local x = LIST_X
+	-- Five balanced profession buttons stay in one row. The tier text and
+	-- its static progress occupy their own space, never the last button.
+	local x, tab_w = LIST_X, 2.0
 	for index, entry in ipairs(tabs) do
-		local w = 0.5 + 0.135 * #entry.label
-		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s%d;%s]"):format(n(x), n(TAB_Y), n(w), n(TAB_H),
-			F.area, index, esc(entry.label))
-		x = x + w + 0.1
+		local field = F.area .. index
+		fs[#fs + 1] = UI.button_style(field, index == st.slot and "selected" or "normal")
+		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(x), n(TAB_Y), n(tab_w),
+			n(TAB_H), field, esc(entry.label))
+		x = x + tab_w + 0.1
 	end
 	local text, fill = tier_progress(player, tab)
-	local bar_x = BOX.x + BOX.w - 1.3
-	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(math.min(x + 0.2, bar_x - 2.3)),
-		n(TAB_Y + TAB_H / 2), esc(text))
+	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x + 0.05), n(TAB_Y + 0.2),
+		esc(core.colorize(UI.colors.muted, text)))
 	if fill then
-		fs[#fs + 1] = ("box[%s,%s;1.3,0.25;#00000080]box[%s,%s;%s,0.25;#c9a24a]"):format(
-			n(bar_x), n(TAB_Y + TAB_H / 2 - 0.125), n(bar_x), n(TAB_Y + TAB_H / 2 - 0.125),
-			n(1.3 * fill))
+		fs[#fs + 1] = ("box[%s,%s;2.45,0.12;#111a24b0]box[%s,%s;%s,0.12;#d4b77d]"):format(
+			n(x + 0.05), n(TAB_Y + 0.5), n(x + 0.05), n(TAB_Y + 0.5), n(2.45 * fill))
 	end
 	local recipe = st.selected and grug_jobs.recipe(st.selected) or nil
 	list_content(fs, player, st, tab, counts, grug_jobs.crafting_picks(st, recipe, counts))

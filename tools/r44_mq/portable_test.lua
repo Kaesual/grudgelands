@@ -777,7 +777,7 @@ do
 	has(map, ";Elder Maren]", "Quest mode: the hand-in NPC's name")
 	has(map, ";Defeat q_kill1: 3/7]", "Quest mode: a ring's tooltip is its objective's line")
 	has(map, ";Defeat q_kill2: 0/1]", "Quest mode: the crosshair's tooltip")
-	eq(count(form, "bgcolor=#8a682f"), 0, "Quest mode: no layer button highlighted")
+	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 0, "Quest mode: no layer button highlighted")
 	-- Two objectives on one crosshair share it, one line each.
 	journals.ann.quests[#journals.ann.quests + 1] = {id = "q_two", title = "Two", description = "",
 		objectives = {{type = "kill", count = 0, required = 1, what = "crumb"},
@@ -795,8 +795,8 @@ do
 	-- Outside quest mode the active layer's button is highlighted.
 	state.quest_selected = nil
 	form = W.formspec(accord, state, nil)
-	has(form, "style[grug_map_layer_towns;bgcolor=#8a682f", "O the active layer's button highlighted")
-	eq(count(form, "bgcolor=#8a682f"), 1, "O exactly one button highlighted")
+	has(form, grug_core.ui.button_style("grug_map_layer_towns", "selected"), "O the active layer's button highlighted")
+	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 1, "O exactly one button highlighted")
 	for _, layer in ipairs(grug_map.layers.LIST) do
 		has(form, ";grug_map_layer_" .. layer.id .. ";" .. layer.label .. "]", "O button " .. layer.label)
 		has(form, "tooltip[grug_map_layer_" .. layer.id .. ";" .. fs_escape(layer.title) .. "]",
@@ -943,7 +943,7 @@ do
 	check(W.open(accord), "R the window opens")
 	eq(sends_to("ann"), 1, "R the open sends at once")
 	eq(shown.ann, W.FORMNAME, "R it is the shown form")
-	has(shows[1].form, "size[20.00,12.00]padding[0,0]",
+	has(shows[1].form, "size[20.00,14.20]padding[0,0]",
 		"R fallback size without window information, no padding (max_formspec_size has none)")
 	-- A zoom click inside the first second: owed, sent when the second ends.
 	advance(0.3)
@@ -1163,7 +1163,7 @@ do
 	window_info.ann = {max_formspec_size = {x = 1920 / 72, y = 1080 / 72}}
 	advance(2)
 	fields(accord, {grug_map_zoom_in = "+"})
-	has(shows[#shows].form, "size[22.66,12.75]", "R the size from max_formspec_size")
+	has(shows[#shows].form, "size[22.66,14.95]", "R the size from max_formspec_size")
 end
 
 -- ---------------------------------------------------------------------------
@@ -1388,7 +1388,7 @@ do
 	eq(#after_calls, 1, "Z the homepage follows on the next step")
 	after_calls[1].fn(unpack(after_calls[1].args))
 	eq(sfinv.get_page(accord), "grug_inventory:inventory", "Z the inventory is back on its homepage")
-	has(page:get(accord, contexts.ann), "grug_map_open", "Z the tab's own page offers the button")
+	lacks(page:get(accord, contexts.ann), "grug_map_open", "Z map has no intermediary Open button")
 	shows = {}
 	page:on_player_receive_fields(accord, contexts.ann, {grug_map_open = "x"})
 	eq(sends_to("ann"), 1, "Z its button opens the window")
@@ -1513,7 +1513,7 @@ do
 	fields(accord, {grug_map_layer_towns = "Towns"})
 	eq(state.layer, "towns", "L a button picks its layer")
 	eq(sends_to("ann") - before, 1, "L a layer click sends once")
-	has(shows[#shows].form, "style[grug_map_layer_towns;bgcolor=#8a682f", "L the new layer highlighted")
+	has(shows[#shows].form, grug_core.ui.button_style("grug_map_layer_towns", "selected"), "L the new layer highlighted")
 	check(map_part(shows[#shows].form):find("grug_map_capital.png", 1, true) ~= nil, "L its markers shown")
 	advance(2)
 	before = sends_to("ann")
@@ -1525,7 +1525,7 @@ do
 	eq(state.quest_selected, "q_kill", "L a quest selected")
 	local form = shows[#shows].form
 	check(not map_part(form):find("grug_map_capital.png", 1, true), "L quest mode hides the layer")
-	eq(count(form, "bgcolor=#8a682f"), 0, "L no button highlighted in quest mode")
+	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 0, "L no button highlighted in quest mode")
 	state.quest_abandon = "q_kill"
 	advance(2)
 	before = sends_to("ann")
