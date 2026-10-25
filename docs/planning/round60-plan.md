@@ -896,7 +896,8 @@ shows each window at these sizes for comparison.
      (Nella, Yarra, the Shattered Relief Rest), "What the Ford Kept" (Toren, Drek, Fordward Wreck), "Salt for the
      Stores" (6 Salt Crust, Nella, Yarra), "Stormkelp for the Field Kits" (8 Stormkelp, 47: Alna, Orrel), "Cut the Old
      Wire" (48: Nella, Yarra, No-Man's Orchard), the two group quests (item 111) and "Work Beyond the Line" (50, item
-     110). Taken at one host, the faction's other host does not offer it; each text reads in its giver's voice.
+     110). Each text reads in its giver's voice under the one title; "Work Beyond the Line", given by Nella and Alna,
+     is not offered by the other once taken; the log shows the zone you took it in.
 110. **The departures** (free, requiring nothing, each target with work at once): Drek's "Tell Thorga What Moves a
      Ramp" (42, to Thorga Roadspeaker in Gor Drazhak: "Feed the Hands That Haul"), Alna's "Put the City to Work" (45, to
      Dorrin Gateledger in Dur Brannoc: "Count the Tools Back In"), "Work Beyond the Line" (50: Nella or Alna to Borin
