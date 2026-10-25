@@ -238,28 +238,21 @@ end
 -- 11-20 and the story arc's first chapter (lane STORYART's picks,
 -- tools/r59_storyart/paint_art.py) and since Round 60 the four of the band
 -- 21-30 and the second chapter (tools/r60_storyart/paint_art.py; no longer
--- placeholders): each its own shipped file. Round 61's storm_vessel (the
--- band 31-40, K9 A) has a placeholder look until the user's art pick: a
--- texture modifier over a shipped object's file.
+-- placeholders) and since Round 61 the band 31-40's storm_vessel (K9 A;
+-- tools/r61_storyart/paint_art.py; no longer a placeholder): each its own
+-- shipped file.
 local KINDS = {"impounded_pay", "false_requisition", "brand_rubbing", "ash_slab", "toll_box",
 	"courier_ledger", "branded_pay_pit", "pledged_standard", "tally_stone", "rootmark",
 	"survey_cairn", "wreck_pay_chest",
 	"dispatch_record", "witness_record", "snare_bundle", "held_supplies",
 	"signal_lantern", "sighting_frame", "reading_knots", "claim_notice", "storm_vessel"}
-local PLACEHOLDER = {storm_vessel = true}
 local objects = load_json("mods/PLAYER/grug_quests/data/use_objects.json")
 local seen = 0
 for kind, row in pairs(objects) do
 	if kind ~= "notes" then
 		seen = seen + 1
-		local file = tostring(row.texture)
-		if PLACEHOLDER[kind] then
-			file = file:match("^(grug_quests_obj_[%w_]+%.png)%^%[") or file
-			check(file ~= row.texture, "O " .. kind .. " a placeholder look over a shipped object")
-		else
-			eq(row.texture, "grug_quests_obj_" .. kind .. ".png", "O " .. kind .. " texture name")
-		end
-		check(exists(repo .. "/mods/PLAYER/grug_quests/textures/" .. file), "O " .. kind .. " texture file")
+		eq(row.texture, "grug_quests_obj_" .. kind .. ".png", "O " .. kind .. " texture name")
+		check(exists(repo .. "/mods/PLAYER/grug_quests/textures/" .. tostring(row.texture)), "O " .. kind .. " texture file")
 		check(type(row.size) == "number" and row.size >= 1 and row.size <= 1.5, "O " .. kind .. " size")
 	end
 end
@@ -309,9 +302,10 @@ for _, id in ipairs({"grug_mobs:throng_captains_orders", "grug_mobs:accord_capta
 end
 -- Round 60 (lane STORYART): the quest items ship their own icon
 -- <mod>_<name>.png (tools/r60_storyart/paint_art.py), which subtypes.lua
--- shows instead of the quest kind's placeholder image.
+-- shows instead of the quest kind's placeholder image; since Round 61 also
+-- the Runner's Packet (tools/r61_storyart/paint_art.py).
 for _, id in ipairs({"grug_mobs:throng_captains_orders", "grug_mobs:accord_captains_orders",
-		"grug_mobs:dispatch_folio"}) do
+		"grug_mobs:dispatch_folio", "grug_mobs:runners_packet"}) do
 	check(exists(MOBS .. "/textures/" .. id:gsub(":", "_") .. ".png"), "I " .. id .. " ships its own icon")
 end
 

@@ -773,3 +773,23 @@ the quest kind's tinted placeholder.
 | `textures/grug_mobs_dispatch_folio.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Dispatch Folio, a leather folder with a lowered front flap and staggered pale sheets; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_mobs_accord_captains_orders.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Accord Captain's Orders, a rolled steel-blue despatch with a brass clamp, a pale wax seal tag and a scorched rim; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_mobs_throng_captains_orders.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Throng Captain's Orders, a rolled warm-paper despatch with ochre cord wraps, an oxblood seal tag and a scorched rim; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## Quest item icon — Round 61
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-25 (story art drop 03, two proposals and the user's pick: proposal
+P1). Hand-placed pixel shapes written with Python/Pillow; no
+image-generation service, downloaded art or third-party source pixels. The
+project dedicates any rights it holds in this original to CC0-1.0. The
+reproducible generator is kept as provenance at
+`tools/r61_storyart/paint_art.py` (`--check` verifies the file byte for
+byte).
+
+The file is a 16×16 RGBA inventory icon with a transparent background
+(alpha 0 or 255 only) and no lettering. `subtypes.lua` shows it as the
+quest item's inventory image (`<mod>_<name>.png`) instead of the quest
+kind's tinted placeholder.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `textures/grug_mobs_runners_packet.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; Runner's Packet, a flat waxed-hide envelope with a triangular closing flap and an offset wide carrying strap; `tools/r61_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |

@@ -1540,7 +1540,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A compact folded message envelope with a wide carrying strap and a clearly visible closing flap. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
-    "notes": "Round 61 chapter 3 (K10 A): the quest drop of the shared quest border_packets from the bandit archers (entrenched_bandit_archer) of the six Round 20 bandit camps of the band 31-40, one area per variant. No icon of its own yet: the quest kind's placeholder image until the user's art pick."
+    "icon": "A flat strapped message envelope with a wide offset carrying strap and a clearly visible closing flap. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+    "notes": "Round 61 chapter 3 (K10 A): the quest drop of the shared quest border_packets from the bandit archers (entrenched_bandit_archer) of the six Round 20 bandit camps of the band 31-40, one area per variant. Its icon grug_mobs_runners_packet.png is the user's pick (Round 61 STORYART, tools/r61_storyart/paint_art.py)."
   }
 ]

@@ -1,5 +1,5 @@
 {
-  "notes": "Quest-object kinds of \"use at a place\" objectives (Round 36, docs/design/quests.md: the story bible's objects (§4) and, since Round 59, those of the level bands and the story arc's chapters, each with its own picked art; Round 61's storm_vessel has a placeholder look, a texture modifier over a shipped object, until the user's art pick). A kind's `texture` is the one texture of its object, drawn as a square sprite `size` nodes wide (default 1) standing on the ground. The game (grug_quests/use.lua) and tools/r28_design/validate.py read this file.",
+  "notes": "Quest-object kinds of \"use at a place\" objectives (Round 36, docs/design/quests.md: the story bible's objects (§4) and, since Round 59, those of the level bands and the story arc's chapters, each with its own picked art). A kind's `texture` is the one texture of its object, drawn as a square sprite `size` nodes wide (default 1) standing on the ground. The game (grug_quests/use.lua) and tools/r28_design/validate.py read this file.",
   "impounded_pay": {"texture": "grug_quests_obj_impounded_pay.png", "size": 1.0},
   "false_requisition": {"texture": "grug_quests_obj_false_requisition.png", "size": 1.0},
   "brand_rubbing": {"texture": "grug_quests_obj_brand_rubbing.png", "size": 1.2},
@@ -20,5 +20,5 @@
   "sighting_frame": {"texture": "grug_quests_obj_sighting_frame.png", "size": 1.4},
   "reading_knots": {"texture": "grug_quests_obj_reading_knots.png", "size": 1.3},
   "claim_notice": {"texture": "grug_quests_obj_claim_notice.png", "size": 1.3},
-  "storm_vessel": {"texture": "grug_quests_obj_branded_pay_pit.png^[colorize:#4a6aa8:120", "size": 1.2}
+  "storm_vessel": {"texture": "grug_quests_obj_storm_vessel.png", "size": 1.2}
 }
