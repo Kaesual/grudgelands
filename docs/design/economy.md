@@ -195,7 +195,7 @@ items without one:
 - **Never sellable:** the Bag of Coins, the Fallen Crown, soulbound and
   bound items (`grug_soulbound`, `grug_bound_skill`: the Claim Stone, every
   quest-only item since Round 60 (both Captain's Orders, the Dispatch
-  Folio), ability items, the retired mount and boat items); and,
+  Folio, since Round 61 the Runner's Packet), ability items, the retired mount and boat items); and,
   having no value, dirt and the soils, clay, snow, ice, ground cover,
   flowers and dyes, obsidian, and anything no player can hold (growth
   stages, door halves, liquids, mapgen nodes).

@@ -3133,7 +3133,7 @@ The items the user decides in the GUI test are in the
 **Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.60 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Open GUI judgements:** the camps' places and bands; the headframe
   partly hiding the lift from the side and the lift's light level 3 (LIFT,
@@ -3195,7 +3195,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 **Noted 2026-10-24** ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.60 are
-in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Open GUI judgements:** the held supplies' hold in the Redtusk and
   Raincall bandit camps with the camp's members around (the socket is
@@ -3257,7 +3257,7 @@ in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-
 **Noted 2026-10-24** ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.60 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Open GUI judgements:** the four new objects' look and size (STORYART);
   the holds at the Frostbarrow camp's loading ground and at the seven open
@@ -3323,7 +3323,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 **Noted 2026-10-25** (0.60.1, [UI plan](docs/planning/ui-modernization-plan.md)),
 the three reviews' notes (theoretical or accepted, no severity). The
 GUI points are items 67–81 of the
-[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Vendored rename:** `minetest.` became `core.` throughout
   `mods/BASE/default/nodes.lua`, `default/craftitems.lua` and

@@ -28,7 +28,7 @@ reworks the quests of levels 21–30 and the six capitals, adds chapter 2 and
 re-places the Alchemy herbs by level band; 0.60.1 (compatible) merges the
 UI modernization, a new look for every window. None of them is **pushed**;
 they wait for the user's joint GUI test of 0.57, 0.58, 0.59 and 0.60,
-which now covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui)).
+which now covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)).
 Next: that GUI test, then Round 61 (the band 31–40 with the arc's next
 chapter) and the bands 41–60 one per round, then the production deploy
 with one map reset ([ROADMAP](../ROADMAP.md)). The

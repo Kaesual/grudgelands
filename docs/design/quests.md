@@ -697,6 +697,33 @@ camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
   refused.
 - These two rules hold only in reworked files ("The rework flag").
 
+### Group quests (Round 61)
+
+An elite group quest ("Party:" in its title, the design note `group`)
+asks for more than one player. **Below level 51 a group quest is always
+optional** (the user, 2026-10-25: the player base is small, and a partner
+of the same level online at the same time is rare; from 51 a max-level
+helper is easier to find):
+
+- it is free and standalone: it requires nothing, no quest requires it,
+  and no story step, travel or departure needs it;
+- it never carries a zone's only key reward: the zone's weapon sits on a
+  solo quest, and the group quest gives an extra (in the band 31–40 a
+  choice of plain tier-4 trinkets);
+- the questing share is met without it (the solo ledger skips group
+  quests, `tools/r28_design/ledger.py --party solo`).
+
+From level 51 a group quest may stand on the story path. The rule holds
+in the reworked files; the front files of 41–60 follow it at their rework
+(Round 62). Measured on 0.61.0 (20 group quests): none below level 39;
+the band 31–40's six at 39 ("The band 31–40") are free, require nothing
+and are required by nothing; the four at 50 (`lasthedge_front_05`,
+`archshadow_front_04`, `bb_front_torn_06`, `bw_front_hollow_03`, the
+unreworked front files) are free and required by nothing, but still
+follow their front chain's previous quest; the ten at 59–60 include four
+main-line steps marked `story`, two of them on the path to the final
+turn-in (`accord_main_collector`, `throng_main_finale`).
+
 ## Completion text (Round 57 ruling 14)
 
 A quest may carry `completion`, a short closing paragraph. At the turn-in
@@ -1008,7 +1035,7 @@ objectives, levels, `requires`, lines, texts and home and are only marked
   nothing) and the departures at 40 to a host with front work from 40
   (Alna and Faeris to Nella, Orrel to Drek, Rumela to Yarra; Ashenward's
   and Bannerbreak's hosts give their front quests themselves).
-- **One optional group quest per zone** (round61-plan.md §2 point 8): the
+- **One optional group quest per zone** ("Group quests" above): the
   zone's elite leader ("Party:", level 38–39, ids kept: Split-Seam,
   Red-Receipt, Canopy-Knuckle, Hollowbell, Banner-Eater, Storm-Bottle),
   free, requiring nothing and required by nothing, its extra a choice of
@@ -1053,10 +1080,12 @@ objectives, levels, `requires`, lines, texts and home and are only marked
   Melons feet and Faeris's ladders head; the Throng: Mushrooms head and the
   signal lantern chest, the reserve chest and A Soldier's Due legs, the
   Melons feet and the reading cord legs. A5 and T4 pay a potion choice.
-- **Ids**: a quest whose objectives stayed keeps its id (the travels and
-  departures, the six group leaders, Borin's bars, Alna's Emberglass, A
-  Soldier's Due), and so do the cross-lane ids Scrip and Rattle; every other
-  quest is new. The structure was written by
+- **Ids**: a quest whose objectives stayed keeps its id (the travels,
+  Glassroot's and Thunderroot's departures, the six group leaders, Borin's
+  bars, Alna's Emberglass, A Soldier's Due, the camp and guild quests), and
+  so do the cross-lane ids Scrip and Rattle (Rattle's objectives changed:
+  the upgrade contract's 0.61.0 entry); every other quest is new (31 ids
+  went, 21 came, 29 stayed). The structure was written by
   `tools/r61_bandquests/build_structure.py` with placeholder texts (its
   `--check` compares the structure only); `tools/r61_bandquests/
   portable_test.lua` checks it.
