@@ -791,8 +791,9 @@ reworked files (both validators, the same codes):
   them from the item dump's quest NPCs, the fortress and guild NPCs, a new
   giver's race or the atlas, and an unknown one counts for both);
 - `E-free-chain`: a free follow-up has no free follow-up of its own;
-- `E-reward-budget` (ruling 17): per zone and level band (the reward
-  level's tier band, 1–10 … 51–60, since Round 62), capitals excepted, at
+- `E-reward-budget` (ruling 17): per zone and level band (since Round 62
+  the band `(level − 1) // 10` of the quest's reward `level`: 1–10 …
+  51–60, the same in both validators), capitals excepted, at
   most two quests with an equipment reward of one enchant and one with two
   enchants (counted in every zone a shared quest is given in);
   `W-reward-levels` when two of one kind share a reward level there;
@@ -1056,9 +1057,10 @@ objectives, levels, `requires`, lines, texts and home and are only marked
   raided transport's record secured at the Ashenward Broken Load
   (`dispatch_record`, the Wheelbreak) and taken to **Audra Wainholt**, the
   Ashenward mining camp's foreman; `story_accord_06` A6 "The Cost of
-  Holding Ground" (level 39, requires A5 and `camp_site_raid`): any of the
-  three Accord band foremen sends the player with the raid's report to
-  Nella Hedgeward, who points to the Warmaster; `story_throng_05` T4 "The
+  Holding Ground" (level 40, offered from 39, requires A5 and
+  `camp_site_raid`): any of the three Accord band foremen sends the
+  player with the raid's report to Nella Hedgeward, who points to the
+  Warmaster; `story_throng_05` T4 "The
   Hands Behind the Stores" (level 35, requires T3 and Rattle's free quest):
   Drek Rampbinder, the handover record at the Bannerbreak Scattered Load
   (`witness_record`, the Warplains), turned in at **Greda Stonehaul**, the

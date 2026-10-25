@@ -30,7 +30,7 @@ UI modernization, a new look for every window; Round 61 (0.61.0, a map
 reset) reworks the quests of levels 31–40 and adds chapter 3; 0.61.1
 (compatible) refreshes the vendor, quest-giver and other service windows.
 None of them is **pushed**; they wait for the user's joint GUI test of
-0.57 to 0.61.1, which covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)).
+0.57 to 0.61.1, which covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
 Next: that GUI test, then Round 62 (the front 41–60, the last quest
 round), then the production deploy with one map reset
 ([ROADMAP](../ROADMAP.md)). The
@@ -57,7 +57,7 @@ user's notes.
   migration step;
   [plan, decisions, numbers and the classification](planning/round61-plan.md#completion-2026-10-25);
   its GUI items are part of the
-  [joint checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)).
+  [joint checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
   **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
   0.58.0 to 0.61.0 wait for the user's joint GUI test of 0.57 to 0.61.
   From main `c3861491` (the plan, with the survey, the plan review and the
