@@ -144,10 +144,11 @@ ended with the [Map window](#map-window).
 
 ## Map window
 
-UI modernization (2026-10-24, isolated branch): the following size describes
-the map body. The common 2.2-unit inventory navigation header is added above
-it, preserving the body's map/quest space. The larger form may be scaled by
-the client at small window sizes. Navigation uses allowed sfinv pages and
+UI modernization (2026-10-25 fidelity pass, isolated branch): the following
+size describes the whole window. The compact common inventory navigation
+header is reserved inside that budget, and the map/quest body uses the
+remaining height. The existing minimum-size floor may still require client
+scaling at small window sizes. Navigation uses allowed sfinv pages and
 keeps the existing map session; choosing another tab cancels pending map
 sends before displaying it. Both Z and Map & Quests enter directly, without
 an Open button. Native scrollbars and client-side scrolling are unchanged.

@@ -56,7 +56,7 @@ assert(player.fs:find('grug_ui_tab_13', 1, true))
 assert(not player.fs:find('tabheader[', 1, true))
 local buttons = 0
 for _, y, _, h in player.fs:gmatch('button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_ui_tab_%d+;') do
-	assert(tonumber(y) + tonumber(h) < grug_inventory.UI.header_h, "navigation must fit above body")
+	assert(tonumber(y) + tonumber(h) < ctx.grug_ui_header_h, "navigation must fit above body")
 	buttons = buttons + 1
 end
 assert(buttons == 13)
@@ -96,7 +96,8 @@ sfinv.set_page(player, ids[8])
 admin = false
 local fs = sfinv.get_formspec(player, ctx)
 assert(ctx.page == ids[1] and #ctx.grug_ui_nav == 7)
-assert(fs:match('size%[([^%]]+)%]') == size)
+assert(ctx.grug_ui_header_h == 1.5, 'ordinary pages use one compact row')
+assert(fs:match('size%[([^%]]+)%]') ~= size, 'revoked extra pages no longer reserve a second row')
 suspended = true
 before = builds
 fields({grug_ui_tab_3 = "true"})
@@ -118,4 +119,38 @@ assert(id == ids[2] and clicked)
 id, clicked = grug_inventory.navigation_target(player, map, {grug_ui_tab_99 = "true"})
 assert(id == nil and clicked)
 assert(grug_core.ui.prepend(false):find('sound=click', 1, true))
+-- Larger GUI fonts get additional rows, all pages remain reachable, and
+-- every tab shares the same frame at this size/permission set.
+core.get_player_window_information = function()
+    return {size = {x = 1035, y = 696}, real_gui_scaling = 1.5, max_formspec_size = {x = 20, y = 14}}
+end
+assert(math.abs(grug_core.ui.text_scale(player) - 2 / 3) < 0.00001)
+assert(grug_core.ui.text_scale(nil) == 1, "presentation callers may omit player")
+admin, creative = true, true
+sfinv.set_page(player, ids[1])
+local scaled_size = player.fs:match('size%[([^%]]+)%]')
+assert(#ctx.grug_ui_nav == 13 and ctx.grug_ui_header_h > 2)
+for i = 1, 13 do
+    fields({['grug_ui_tab_' .. i] = 'true'})
+    assert(player.fs:match('size%[([^%]]+)%]') == scaled_size)
+    assert(player.fs:find('grug_ui_tab_13', 1, true))
+end
+-- Creative titles carry translation markup; invisible bytes must not steal
+-- width from the adjacent Admin Mail tab.
+core.get_translated_string = function(_, text)
+    return (text:gsub("\27%([^)]*%)", ""):gsub("\27E", ""))
+end
+local creative_page = sfinv.pages["creative:9"]
+creative_page.title = "All"
+local plain = grug_inventory.navigation(player, ctx, ids[1])
+creative_page.title = "\27(T@creative)All\27E"
+local marked = grug_inventory.navigation(player, ctx, ids[1])
+local function tab_widths(fs)
+    local result = {}
+    for width in fs:gmatch('button%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;grug_ui_tab_%d+;') do
+        result[#result + 1] = width
+    end
+    return table.concat(result, ',')
+end
+assert(tab_widths(plain) == tab_widths(marked), 'translation markup must not change tab widths')
 print('UI NAVIGATION PASS: lifecycle, suspension, revoked/stale input, geometry and scrollbar sends')

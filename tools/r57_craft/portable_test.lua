@@ -742,8 +742,8 @@ do
 	click(c, {[F.queue] = "View Queue"})
 	local fs = c.formspec
 	has(fs, "Crafting queue", "C the queue view")
-	has(fs, "style_type[textarea;textcolor=#a7b2bc]textarea[", "C all soft-wrapped notes stay muted")
-	has(fs, "style_type[textarea;textcolor=#e5e8eb]", "C note styling restores the shared text role")
+	has(fs, "style_type[textarea;textcolor=#a9aea4]textarea[", "C all soft-wrapped notes stay muted")
+	has(fs, "style_type[textarea;textcolor=#eeeae1]", "C note styling restores the shared text role")
 	local note_text = fs:match("textarea%[[^;]+;[^;]+;;;(.-)%]")
 	check(note_text and not note_text:find("\27", 1, true),
 		"C notes remain unnamed read-only text without inline color escapes")
@@ -891,7 +891,7 @@ do
 	lacks(fs, F.stop .. ";", "L no stop button while idle")
 	lacks(fs, F.queue .. ";", "L no View Queue while idle")
 	lacks(fs, "list[current_player;grug_craft_out;", "L no output slots while empty")
-	has(fs, "checkbox[" .. J._fs_number(2.75) .. ",2;" .. F.fav_only .. ";Favorites only;false]",
+	has(fs, "checkbox[" .. J._fs_number(2.75) .. ",2;" .. F.fav_only .. ";Favorites;false]",
 		"L Favorites only beside Craftable only")
 	geometry_ok(fs, "L idle")
 	click(l, {[F.qty] = "4", [go(l)] = "Craft ×4"})

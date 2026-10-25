@@ -506,8 +506,9 @@ local function view_boxes(fs)
 	local out = {}
 	for x, y, w, h, color, lx, ly, text in fs:gmatch(
 			"background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^;]+);false;6%]" ..
-			"label%[([%d.]+),([%d.]+);([^%]]+)%]") do
-		out[text] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
+			"style_type%[[^%]]+%]label%[([%d.]+),([%d.]+);([^%]]+)%]") do
+		local name = ({BAGS = "Bags", ["POTION BELT"] = "Potion belt", INVENTORY = "Inventory", HOTBAR = "Hotbar"})[text] or text
+		out[name] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
 			color = color, lx = tonumber(lx), ly = tonumber(ly)}
 	end
 	return out

@@ -1,6 +1,6 @@
 # UI modernization — implementation plan
 
-Drafted 2026-10-24. **Implemented and independently reviewed in the isolated worktree; main 0.60.0 integrated on 2026-10-25 for the coordinator's new review. Desktop/web GUI acceptance pending. No merge into main or installation.**
+Drafted 2026-10-24. **Implemented and independently reviewed in the isolated worktree; main 0.60.0 integrated and the 2026-10-25 fidelity pass prepared for the coordinator's new review. Texture pick and desktop/web GUI acceptance pending. No merge into main or installation.**
 The user expanded the brief from inventory pages to the game's other forms,
 including privileged pages, containers and NPC services, and asked to plan
 these together before building. The earlier inspector proposal is withdrawn.
@@ -756,3 +756,102 @@ tab switching without a delayed reopen, and craft/furnace progress. Existing
 fixtures and the boot cannot establish visual quality. No known implementation
 blocker is being deferred; release bookkeeping and installation stay with the
 coordinator.
+
+## Fidelity pass — 2026-10-25
+
+The user approved the coordinator's follow-up: move the real forms toward
+Atlas 03, within Luanti's controls, and fix obvious clipping after looking
+at the real client. This is a **compatible, UI-only** follow-up to integrated
+baseline `0d03734a`. It does not assign a release or merge into main. The
+coordinator owns independent review of this delta; the user's texture/look
+pick and interactive desktop/web acceptance remain pending.
+
+The panel fill is now 94/255 alpha with a light border; the normal button
+fill is 9/255, with gold selected and client hover/focus/pressed states.
+The outer frame retains 231/255 alpha for bright-scene contrast. Navigation
+uses small original line icons, text, a gold active underline and compact
+captions, with full-title tooltips. Its header shows an emblem, faction,
+character name/level and slim close mark. The header is 1.5 units for one
+row, plus 0.54 per extra row; enlarged GUI fonts on narrow windows use four
+tabs per row, never hide a page. All non-map pages share the resulting size.
+Map reserves that header inside its whole-window budget, fixing overflow.
+
+Scoped native fonts distinguish titles, section labels, achievement names
+and muted descriptions. Dense fixed-layout summaries compensate enlarged
+GUI fonts when Luanti shrinks the form. Crafting keeps five professions and
+native checkbox routes, with short filter captions and full tooltips at
+high GUI scale. Talent graphs/art, node actions and skill drag/drop remain;
+smaller icon insets and separated hints improve their rendering.
+
+No state/meta/list/capacity/item/quest ID, top-level form name or existing
+field route changes. `grug_quests`, `quest_box`, HUD, mail and transactions
+are untouched by this pass. Additive presentation seams are documented in
+[the toolkit contract](../technical/ui-presentation.md). No new globalstep,
+periodic work or resend trigger is added to the game. Animated craft/furnace
+progress remains client-side. Additional icons/styles increase form bytes
+at construction only; the capture receipt records same-scenario sizes.
+
+The real-client loop uses `tools/ui_theme/capture.sh`, based on the existing
+capture launchers, with an isolated staged game/world and private `/tmp`
+client paths. Every engine process uses `LC_ALL=C LANG=C`; every run uses
+the shared Lua queue. Before/after cover eight views (the requested seven
+plus 13-tab privileged navigation), both dark stone/night and bright snow/day,
+1035×696 and 1920×1080 at GUI 1, plus 1035×696 at GUI 1.5. These are desktop
+client captures, not web-client execution. The probe uses real builders and
+quest data with a disposable NPC position stand-in. The study's example
+content is not reproduced as fabricated game data. Native HUD/chat remain
+visible behind translucent forms. Contact sheets fit complete originals;
+no screenshot painting or cropping.
+
+Early setup attempts exposed a probe privilege/NPC-socket error and are
+excluded. One intermediate GUI-1.5 client aborted with
+`malloc(): unaligned tcache chunk detected`; its incomplete/black output is
+excluded too. Global negative image-button padding from that iteration was
+removed in favor of a two-pixel talent-only inset. This is not proof of the
+crash's cause or an engine fix. Subsequent complete captures passed the
+missing/blank-image check. A final local layout correction addresses the
+13-tab header and Auto/Sort overlap at high GUI scale; translated tab-label
+markup must not count toward visible width.
+
+The private review package is
+`~/projects/grudgelands-orchestration/ui-modernization/fidelity-2026-10-25/`:
+`index.html`, eight `contact-sheets/*.png`, full-size before/after images,
+Atlas originals, logs, hashes and the final completion receipt. Browser
+CSS blur, letter spacing and custom font metrics are not emulated; native
+fonts, alpha/nine-slice geometry and native state styling approximate them.
+Native opaque text lists and scrollbars retain their engine appearance.
+
+**Verification:** the full `tools/run_fixtures.sh` ran once through
+`r45/lua_run.sh` with `JOBS=4` and five reserved slots: **270 passed, six
+failed**. The six findings were checked at source: title helper expectations
+(`r29_b`, `r58_lift`), shortened point-label expectations (`r53_live`), missing
+real presentation helper loading (`r33_c3`, `r55_supporter`), and the generic
+engine stand-in returning a table instead of absent window information
+(`r57_details`). Only those expectations/stand-ins were corrected; mechanics
+assertions remain. A final targeted run after those corrections and the local
+header/Auto-Sort fix passed **28/28**, including all six failures and the four
+main-integration overlaps:
+`r25_interfaces`, `r28_a6_ui`, `r28_b4_quests`, `r28_q0`, `r29_b`, `r30_p1`,
+`r33_c3`, `r35_c`, `r35_m`, `r44_ch`, `r44_fr`, `r44_mq`, `r44_pp`, `r44_ts`,
+`r451_kf`, `r45_st`, `r45_ui`, `r48_admin`, `r48_mail`, `r491_anim`,
+`r491_view`, `r52_graph`, `r53_live`, `r55_supporter`, `r57_craft`,
+`r57_details`, `r58_lift`, `ui_navigation`. The full suite was not repeated;
+its tested-source fingerprint and final correction diff are archived.
+
+The final source passes `check_fresh_server.py`, design validation (0 errors,
+6 existing content warnings), theme byte regeneration, shell syntax, Python
+compilation and whitespace checks. Every changed Lua file, including the
+probe, passes the plain-5.1 parser and sweeps 1–4. Production Lua passes all
+sweeps; the combined host-fixture sweep 5 flags only the unchanged
+`os.exit(1)` in `r29_b` (verified against `0d03734a`). No sandbox rule was
+relaxed. Real-client capture boots provide engine-load coverage in disposable
+worlds. The nil-player presentation default and invisible translation-markup
+width regression also have explicit navigation-fixture checks.
+
+**Acceptance focus:** the user chooses the regenerated texture look from
+the contact sheets. Check readability/contrast in real snow, sand and dark
+scenes; all permission-dependent tabs at enlarged GUI scales; native slot
+and shift-click/drag behavior; long quest text/rewards; map zoom, scrolling
+and tab return; live craft/furnace animation and focus/close behavior. The
+smallest native controls remain constrained by client fonts and engine
+widgets. No web-client execution or user's visual acceptance is claimed.

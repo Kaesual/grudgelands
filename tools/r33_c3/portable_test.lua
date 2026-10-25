@@ -148,6 +148,7 @@ grug_pvp = {
 	end,
 }
 
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_achievements/init.lua")
 local A = grug_achievements
 local R, C, book = A.rules, A.creatures, A.book

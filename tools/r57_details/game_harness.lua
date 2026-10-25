@@ -233,6 +233,8 @@ return function(repo, options)
 		colorize = function(_, text) return text end,
 		get_color_escape_sequence = function() return "" end,
 		get_translator = function() return function(text) return text end end,
+		get_translated_string = function(_, text) return text end,
+		get_player_window_information = function() return nil end,
 		is_singleplayer = function() return false end,
 		register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end,
 		-- No fuel or cooking time is known here (stairs and the curation

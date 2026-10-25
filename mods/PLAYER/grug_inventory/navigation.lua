@@ -1,7 +1,7 @@
 -- Shared visual navigation; sfinv still owns pages, contexts and lifecycle.
 -- Each rendered bar keeps its own id mapping, including the separate map.
 local UI = grug_inventory.UI
-UI.header_h = 2.20
+UI.header_h = 1.5 -- one row; navigation_layout returns the actual height
 UI.window_h = UI.frame_h + UI.header_h
 local PREFIX = "grug_ui_tab_"
 
@@ -10,39 +10,96 @@ local function visible(player, context, id)
 	return page and (not page.is_in_nav or page:is_in_nav(player, context))
 end
 
-function grug_inventory.navigation(player, context, selected, width)
-	width = width or UI.frame_w
-	local ids, titles = {}, {}
-	for _, page in ipairs(sfinv.pages_unordered) do
-		if visible(player, context, page.name) then
-			ids[#ids + 1], titles[#titles + 1] = page.name, page.title
-		end
-	end
-	context.grug_ui_nav = ids
-	local fs = {"real_coordinates[true]",
-		grug_core.ui.heading(0.35, 0.38, "GRUDGELANDS"),
-		("button_exit[%.3f,0.12;0.6,0.55;grug_ui_close;X]"):format(width - 0.95)}
-	-- Seven ordinary pages fit one row; privileged pages use a second one.
-	-- A single fixed header height keeps every tab stable even across grants.
-	-- The current catalogue has at most 13 pages. Adding a fifteenth page
-	-- requires revisiting this shared header and the map's header together.
-	local per_row, gap = 7, 0.07
-	for start = 1, #ids, per_row do
-		local last, weight = math.min(start + per_row - 1, #ids), 0
-		for index = start, last do weight = weight + #titles[index] + 5 end
-		local x, y = 0.35, 0.80 + math.floor((start - 1) / per_row) * 0.66
-		local available = width - 0.7 - (last - start) * gap
-		for index = start, last do
-			local w = available * (#titles[index] + 5) / weight
-			local field = PREFIX .. index
-			fs[#fs + 1] = grug_core.ui.button_style(field,
-				ids[index] == selected and "selected" or "normal")
-			fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.58;%s;%s]"):format(x, y, w,
-				field, core.formspec_escape(titles[index]))
-			x = x + w + gap
-		end
-	end
-	return table.concat(fs)
+-- Compact captions keep every page visible; tooltips retain full titles.
+local captions = {
+    ["grug_classes:talents"] = {"Talents", "talents"},
+    ["grug_inventory:inventory"] = {"Inventory", "inventory"},
+    ["grug_inventory:character"] = {"Character", "character"},
+    ["sfinv:crafting"] = {"Crafting", "crafting"},
+    ["grug_parties:group"] = {"Party", "party"},
+    ["grug_map:atlas"] = {"Map & Quests", "map"},
+    ["grug_inventory:help"] = {"Help", "help"},
+    ["grug_mail:admin"] = {"Admin Mail", "mail"},
+}
+
+function grug_inventory.navigation_layout(player, context, width, info)
+    local ids, titles = {}, {}
+    for _, page in ipairs(sfinv.pages_unordered) do
+        if visible(player, context, page.name) then
+            ids[#ids + 1], titles[#titles + 1] = page.name, page.title
+        end
+    end
+    if not info and core.get_player_window_information then
+        info = core.get_player_window_information(player:get_player_name())
+    end
+    -- Fonts do not shrink when a tall form hits the screen's height limit.
+    -- Give larger GUI fonts more horizontal space instead of clipping labels.
+    local per_row = 7
+    if info and (info.real_gui_scaling or 1) > 1.2 and info.size and info.size.x < 1500 then
+        per_row = 4
+    end
+    return {ids = ids, titles = titles, per_row = per_row,
+        height = UI.header_h + math.max(0, math.ceil(#ids / per_row) - 1) * 0.54}
+end
+
+function grug_inventory.navigation(player, context, selected, width, layout)
+    width = width or UI.frame_w
+    layout = layout or grug_inventory.navigation_layout(player, context, width)
+    local ids, titles = layout.ids, layout.titles
+    context.grug_ui_nav = ids
+    context.grug_ui_header_h = layout.height
+    local esc, accent = core.formspec_escape, grug_core.ui.colors.accent
+    local faction = grug_factions and grug_factions.get_faction and grug_factions.get_faction(player)
+    local faction_name = faction and grug_factions.display_name and grug_factions.display_name(faction) or ""
+    local text_scale = grug_core.ui.text_scale(player)
+    local level = grug_xp and grug_xp.get_level and grug_xp.get_level(player)
+    local fs = {"real_coordinates[true]",
+        "image[0.28,0.17;0.46,0.55;" .. esc("grug_ui_icon_emblem.png^[multiply:" .. accent) .. "]",
+        grug_core.ui.title(0.95, 0.28, "GRUDGELANDS", text_scale),
+        ("style_type[label;font_size=*%.3f]"):format(0.65 * text_scale),
+        ("label[0.95,0.62;%s]"):format(esc(core.colorize(accent, string.upper(faction_name)))),
+        ("style_type[label;font_size=*%.3f]"):format(0.85 * text_scale),
+        ("label[%.3f,0.27;%s]"):format(width - 4.1, esc(player:get_player_name())),
+        ("style_type[label;font_size=*%.3f]"):format(0.65 * text_scale),
+        ("label[%.3f,0.61;%s]"):format(width - 4.1,
+            esc(core.colorize(grug_core.ui.colors.muted, level and ("Level " .. level) or ""))),
+        "style_type[label;font_size=*1]",
+        "style[grug_ui_close;bgimg=grug_ui_clear.png;bgimg_middle=0;padding=0;font_size=*1.1]",
+        ("button_exit[%.3f,0.14;0.45,0.5;grug_ui_close;×]"):format(width - 0.75),
+        ("box[0.25,0.80;%.3f,0.015;#d1c09a2b]"):format(width - 0.5)}
+    -- Translation markup is not visible text and must not inflate widths.
+    local function caption_weight(label)
+        local plain = core.get_translated_string and core.get_translated_string("", label) or label
+        return #plain + 3.5
+    end
+    local per_row, gap = layout.per_row, 0.05
+    for start = 1, #ids, per_row do
+        local last, weight = math.min(start + per_row - 1, #ids), 0
+        for index = start, last do
+            local label = captions[ids[index]] and captions[ids[index]][1] or titles[index]
+            weight = weight + caption_weight(label)
+        end
+        local x, y = 0.25, 0.89 + math.floor((start - 1) / per_row) * 0.54
+        local available = width - 0.5 - (last - start) * gap
+        for index = start, last do
+            local caption = captions[ids[index]] or {titles[index], "creative"}
+            local w = available * caption_weight(caption[1]) / weight
+            local field = PREFIX .. index
+            local active = ids[index] == selected
+            local color = active and accent or grug_core.ui.colors.muted
+            fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgimg_middle=0;padding=0;" ..
+                "font_size=*0.85;textcolor=%s;content_offset=6,0]"):format(field, color)
+            fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.46;%s;%s]"):format(x, y, w, field, esc(caption[1]))
+            fs[#fs + 1] = ("image[%.3f,%.3f;0.27,0.27;%s]"):
+                format(x + 0.09, y + 0.09, esc("grug_ui_icon_" .. caption[2] .. ".png^[multiply:" .. color))
+            fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(titles[index]))
+            if active then
+                fs[#fs + 1] = ("box[%.3f,%.3f;%.3f,0.035;%s]"):format(x, y + 0.47, w, accent)
+            end
+            x = x + w + gap
+        end
+    end
+    return table.concat(fs), layout.height
 end
 
 -- Returns (id, clicked). A stale/revoked id is a consumed click, never an

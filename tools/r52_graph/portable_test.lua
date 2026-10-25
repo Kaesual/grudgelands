@@ -488,7 +488,7 @@ has(fs, "button[0.25,0.15;2.60,0.60;grug_graph_tab_1;Ember (30)]", "E the Ember 
 has(fs, "button[2.95,0.15;2.60,0.60;grug_graph_tab_2;Rime (0)]", "E the Rime tab")
 has(fs, grug_core.ui.button_style("grug_graph_tab_1", "selected"), "E the first tab selected")
 has(fs, grug_core.ui.button_style("grug_graph_tab_2", "normal"), "E the second not")
-has(fs, "label[5.75,0.45;Talent points available: 0 of 30]", "E the points in the header row")
+has(fs, "label[5.75,0.45;Points: 0 / 30]", "E the points in the header row")
 has(fs, "button[9.90,0.15;3.35,0.60;grug_talent_respec;Respec: Free]", "E the respec control")
 has(fs, "image[0.25,0.95;13.00,5.50;grug_classes_tree_ember.png]",
 	"E the picked background fills D5's rectangle")
@@ -675,7 +675,7 @@ has(form, "scrollbaroptions[min=0;max=40;smallstep=10;largestep=80;thumbsize=27;
 local bar_x, bar_y = form:match("scrollbar%[([%d.]+),([%d.]+);9%.750,0%.240;horizontal;" ..
 	"grug_skills_scroll;0%]")
 check(bar_x ~= nil, "F a horizontal scrollbar as wide as eight slots")
-local box_y = tonumber(form:match("background9%[[%d.]+,([%d.]+);[%d.]+,1%.800;[^%]]+%]label%[[%d.]+,[%d.]+;Skills%]"))
+local box_y = tonumber(form:match("background9%[[%d.]+,([%d.]+);[%d.]+,1%.800;[^%]]+%]style_type%[[^%]]+%]label%[[%d.]+,[%d.]+;SKILLS%]"))
 check(box_y and bar_y and tonumber(bar_y) > box_y + 1.38 and tonumber(bar_y) + 0.24 < box_y + 1.8,
 	"F the bar under the slots, inside the box")
 has(form, "scroll_container[1.650,", "F the slots in a scroll container on the hotbar's columns")

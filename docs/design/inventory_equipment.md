@@ -10,7 +10,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 - Built on sfinv pages in one shared frame. The approved UI modernization
   (2026-10-24, implemented in its isolated branch) retains the 13.5 × 13.673
-  body and adds a fixed 2.2-unit header with themed navigation. All non-map
+  body and adds a compact header (1.5 units plus 0.54 per extra tab row)
+  with icon/text navigation and a gold active underline. All non-map
   tabs share that frame; Map & Quests keeps its larger responsive window
   and uses the same navigation. See the [presentation contract](../technical/ui-presentation.md).
   Live page bodies, including Help's Sound controls, use real coordinates

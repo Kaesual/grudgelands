@@ -189,7 +189,7 @@ grug_inventory.VIEW_GEOMETRY = {x = LAYOUT.x, width = VIEW_W,
 -- A boxed area's background and its label, top left above the slots.
 function grug_inventory.area_box(x, y, w, h, label)
 	return grug_core.ui.panel(x, y, w, h) ..
-		grug_core.ui.heading(x + LAYOUT.pad, y + LAYOUT.label_h / 2, label)
+		grug_core.ui.heading(x + LAYOUT.pad, y + LAYOUT.label_h / 2, string.upper(label))
 end
 
 -- The scroll area's list[] elements and its row count. main[9..] and the
@@ -446,14 +446,14 @@ end
 -- re-renders it (pages.lua grug_inventory.refresh).
 --
 function sfinv.make_formspec(player, context, content, show_inv)
-	local nav = grug_inventory.navigation(player, context, context.page, UI.frame_w)
+	local nav, header_h = grug_inventory.navigation(player, context, context.page, UI.frame_w)
 	local mode = show_inv == true and "short" or show_inv or nil
 	context.grug_inv_view = mode
 	-- Body coordinates remain local to this container below the navigation.
 	return table.concat({
-		grug_core.ui.frame(UI.frame_w, UI.window_h),
+		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h),
 		nav,
-		("container[0,%.3f]"):format(UI.header_h),
+		("container[0,%.3f]"):format(header_h),
 		mode and grug_inventory.inventory_view(player, mode, context) or "",
 		"real_coordinates[false]",
 		content,

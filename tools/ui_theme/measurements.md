@@ -87,3 +87,30 @@ The integrated container fixture also passed 1125 checks, including node and
 detached lists, shift-click rings, scroll preservation, hotbar switching,
 per-viewer inventory and seven sign-field/quit/protection checks. Desktop
 and web-client GUI verification remains the user's acceptance step.
+
+
+## Fidelity pass, 2026-10-25
+
+Additional real-client capture payloads compare integrated UI baseline
+`0d03734a` with the fidelity pass, using the same disposable probe and
+1035×696 GUI 1. These are builder string lengths logged by the server,
+excluding the login prepend, transport compression, media and client cost.
+The probe creates the same level/profession/inventory state in fresh worlds;
+character appearance and incidental HUD/chat can differ.
+
+| View | Before bytes | Fidelity bytes |
+|---|---:|---:|
+| Inventory | 3815 | 5596 |
+| Character / Achievements | 9171 | 12179 |
+| Talents | 9635 | 11548 |
+| Crafting overview | 6372 | 9673 |
+| Inventory, 13 visible tabs | 4828 | 7368 |
+
+Icons, full-title tooltips, scoped font styles and the expanded header
+account for the larger payloads. The game adds no globalstep, periodic work
+or resend trigger. Window information is read during form construction only.
+Existing animation/send fixtures (`r491_anim`, `r45_ui`, `r57_craft`,
+`r44_mq`, `ui_navigation`) remain green. No new CPU or client-frame benchmark
+is claimed; the earlier stand-in CPU numbers above describe their original
+implementation, not this pass. Full logs and screenshots live in the private
+`ui-modernization/fidelity-2026-10-25/` review package.

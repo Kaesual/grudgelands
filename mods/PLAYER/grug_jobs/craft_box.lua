@@ -367,7 +367,7 @@ local function build(player, view)
 	if not recipe then
 		-- The overview fills the box above the strip.
 		fs[#fs + 1] = grug_jobs.professions_formspec(grug_jobs.profession_overview(player),
-			{x = X, y = BOX.y + 0.05, w = W, h = view.bottom - BOX.y - 0.1})
+			{x = X, y = BOX.y + 0.05, w = W, h = view.bottom - BOX.y - 0.1}, player)
 		st.pick_rows = nil
 		return table.concat(fs)
 	end

@@ -531,6 +531,13 @@ do
 	-- wins over 720/15, so max_formspec_size is 24 x 13.5.
 	w, h = W.window_size({max_formspec_size = {x = 1280 / (0.5555 * 96), y = 720 / (0.5555 * 96)}})
 	check(near(w, 20.4, 0.011) and near(h, 11.47, 0.011), ("S 720p (%.2fx%.2f)"):format(w, h))
+    -- The shared header belongs inside the whole-window height budget.
+    local info = {max_formspec_size = {x = 1035 / 53.33, y = 696 / 53.33}}
+    for _, header in ipairs({1.5, 2.04, 3.12}) do
+        local fw, body = W.window_size(info, header)
+        check(body > 0 and body + header <= info.max_formspec_size.y,
+            "S shared header must not force extra map scaling")
+    end
 	for _, size in ipairs({{22.66, 12.75}, {20, 12}, {16, 10}, {17, 12.75}, {30, 16}, {20.4, 11.47}}) do
 		local L = W.layout(size[1], size[2])
 		local label = ("S layout %.2fx%.2f"):format(size[1], size[2])
@@ -912,7 +919,7 @@ do
 	state.zoom = 8
 	map = map_part(W.formspec(accord, state, nil))
 	local big = tonumber(map:match("image%[[%d.%-]+,[%d.%-]+;([%d.]+),[%d.]+;grug_map_ring"))
-	local L = W.layout(20, 12)
+	local L = state.layout
 	local view = grug_map.atlas.view()
 	local expect = 2 * targets.ring_radius(9, 32) * L.map_w * 8 / (view.max_x - view.min_x)
 	check(big and near(big, expect, 0.002), ("T ring scales with the region and zoom (%.3f vs %.3f)"):format(
@@ -943,7 +950,7 @@ do
 	check(W.open(accord), "R the window opens")
 	eq(sends_to("ann"), 1, "R the open sends at once")
 	eq(shown.ann, W.FORMNAME, "R it is the shown form")
-	has(shows[1].form, "size[20.00,14.20]padding[0,0]",
+	has(shows[1].form, "size[20.00,12.00]padding[0,0]",
 		"R fallback size without window information, no padding (max_formspec_size has none)")
 	-- A zoom click inside the first second: owed, sent when the second ends.
 	advance(0.3)
@@ -1163,7 +1170,7 @@ do
 	window_info.ann = {max_formspec_size = {x = 1920 / 72, y = 1080 / 72}}
 	advance(2)
 	fields(accord, {grug_map_zoom_in = "+"})
-	has(shows[#shows].form, "size[22.66,14.95]", "R the size from max_formspec_size")
+	has(shows[#shows].form, "size[22.66,12.75]", "R the size from max_formspec_size")
 end
 
 -- ---------------------------------------------------------------------------
@@ -1351,7 +1358,7 @@ do
 	has(form, "scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;thumbsize=1;arrows=default]",
 		"Z scrollbar options reset after the map's scrollbars")
 	local base_w = tonumber(form:match("image%[0,0;([%d.]+),[%d.]+;grug_map_base%.png%]"))
-	check(near(base_w, W.layout(20, 12).map_w * 8, 0.002), "Z base image 8x wide")
+	check(near(base_w, W.layout(20, 12 - grug_inventory.UI.header_h).map_w * 8, 0.002), "Z base image 8x wide")
 	advance(1.1)
 	fields(accord, {grug_map_scroll_x = "CHG:99999", grug_map_scroll_y = "VAL:3500"})
 	eq(state.scroll_x, 7000, "Z scroll clamps to 7000")

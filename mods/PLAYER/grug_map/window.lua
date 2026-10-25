@@ -96,7 +96,7 @@ local function esc(value)
 end
 
 -- The window's size {w, h} for a window information table (or nil).
-function W.window_size(info)
+function W.window_size(info, header_h)
 	local max = type(info) == "table" and info.max_formspec_size
 	local w, h = W.FALLBACK.x, W.FALLBACK.y
 	if type(max) == "table" and type(max.x) == "number" and type(max.y) == "number" and
@@ -104,7 +104,7 @@ function W.window_size(info)
 		w, h = max.x * W.FRACTION, max.y * W.FRACTION
 	end
 	w, h = math.max(W.MIN.x, w), math.max(W.MIN.y, h)
-	return math.floor(w * 100) / 100, math.floor(h * 100) / 100
+	return math.floor(w * 100) / 100, math.floor((h - (header_h or 0)) * 100) / 100
 end
 
 -- Where everything sits in a w x h window. The header and the quest column
@@ -425,8 +425,11 @@ end
 -- The whole window for `player` in state `session`, `info` the window
 -- information (or nil).
 function W.formspec(player, session, info)
-	local w, h = W.window_size(info)
-	local layout = W.layout(w, h)
+	local width = W.window_size(info)
+    local navigation_layout = grug_inventory.navigation_layout(player, session, width, info)
+    local nav, header_h = grug_inventory.navigation(player, session, "grug_map:atlas", width, navigation_layout)
+    local w, h = W.window_size(info, header_h)
+    local layout = W.layout(w, h)
 	session.layout = layout
 	local zoom = session.zoom or 1
 	local journal = grug_quests.journal(player)
@@ -441,9 +444,9 @@ function W.formspec(player, session, info)
 	local fs = {
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
-		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + grug_inventory.UI.header_h),
-		grug_inventory.navigation(player, session, "grug_map:atlas", w),
-		("container[0,%.3f]"):format(grug_inventory.UI.header_h),
+		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + header_h),
+		nav,
+		("container[0,%.3f]"):format(header_h),
 		-- The inventory key closes a form unless the focused element eats it
 		-- (guiFormSpecMenu.cpp OnEvent; edit boxes, read-only ones included,
 		-- and textlists do). Without this the engine focuses the quest text

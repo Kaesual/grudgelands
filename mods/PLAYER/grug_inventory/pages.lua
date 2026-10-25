@@ -83,7 +83,7 @@ local MODE_AREA = {x = 6.8, y = 1.25, w = 6.3, h = BOX_BOTTOM - 0.15 - 1.25}
 local MODES = {
 	{id = "stats", label = "Stats", x = 6.8, w = 1.2},
 	{id = "effects", label = "Effects", x = 8.1, w = 1.4},
-	{id = "achievements", label = "Achievements", x = 9.6, w = 2.1},
+	{id = "achievements", label = "Achievements", x = 9.6, w = 3.35},
 }
 local MODE_Y, MODE_H = 0.35, 0.7
 
@@ -463,6 +463,8 @@ local function mode_content(player, context, selected)
 	for _, mode in ipairs(MODES) do
 		local field = "grug_character_" .. mode.id
 		fs[#fs + 1] = grug_inventory.selected_button_style(field, mode.id == selected)
+		fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(field,
+			0.85 * grug_core.ui.text_scale(player))
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
 			mode.x, MODE_Y, mode.w, MODE_H, field, esc(mode.label))
 	end
@@ -600,6 +602,11 @@ local function inventory_content(player)
 	-- automatic deposit's checkbox in column 6 (Round 46), Sort in columns
 	-- 7-8, ending with the hotbar's last slot.
 	local row_y, x = layout.money_y, layout.x
+	local compact = grug_core.ui.text_scale(player) < 1
+	if compact then
+		fs[#fs + 1] = ("style[grug_money_withdraw,grug_inv_sort;font_size=*%.3f]"):
+			format(0.85 * grug_core.ui.text_scale(player))
+	end
 	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, row_y + 0.25,
 		esc("Money\n" .. grug_money.format(grug_money.get(player))))
 	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_money_withdraw;Withdraw]"):format(
@@ -622,7 +629,7 @@ local function inventory_content(player)
 	fs[#fs + 1] = ("tooltip[grug_money_auto_deposit;%s]"):format(
 		esc("Deposit coin bags automatically on pickup"))
 	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_inv_sort;Sort]"):format(
-		x + 6 * PITCH, row_y, ROW_BUTTON_W)
+		x + (compact and 7 or 6) * PITCH, row_y, compact and 1 or ROW_BUTTON_W)
 	fs[#fs + 1] = ("tooltip[grug_inv_sort;%s]"):format(esc("Sort the inventory " ..
 		"and the bags. The hotbar stays as it is."))
 	return table.concat(fs)

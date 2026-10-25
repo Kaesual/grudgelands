@@ -56,12 +56,14 @@ end
 -- the rows leave room. A row that would pass the area's foot (four capped
 -- rows in the Crafting tab's narrow box) is left out with a pointer to the
 -- area tabs, which show every profession's tier progress. Pure.
-function grug_jobs.professions_formspec(rows, area)
+function grug_jobs.professions_formspec(rows, area, player)
 	local width = math.floor(area.w * CHARS_PER_UNIT)
 	local last_y = area.y + area.h - 0.25
 	local fs = {}
+	local font_scale = player and UI.text_scale(player) or 1
 	local function line(y, text)
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(area.x, y, esc(text))
+		fs[#fs + 1] = ("style_type[label;font_size=*%.3f]label[%.2f,%.2f;%s]" ..
+			"style_type[label;font_size=*1]"):format(0.8 * font_scale, area.x, y, esc(text))
 	end
 	-- One label per wrapped line; returns the y below the last one.
 	local function lines(y, text, color)

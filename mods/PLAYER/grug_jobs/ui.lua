@@ -341,11 +341,14 @@ local function list_content(fs, player, st, tab, counts, picks)
 	end
 	fs[#fs + 1] = ("field[%s,%s;3,0.6;%s;;%s]field_close_on_enter[%s;false]"):format(
 		n(LIST_X), n(SEARCH_Y), F.search, esc(st.typed), F.search)
+	fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(F.find, 0.8 * UI.text_scale(player))
 	fs[#fs + 1] = ("button[%s,%s;0.5,0.6;%s;×]button[%s,%s;1.3,0.6;%s;Search]"):format(
 		n(LIST_X + 3.1), n(SEARCH_Y), F.clear, n(LIST_X + 3.7), n(SEARCH_Y), F.find)
-	fs[#fs + 1] = ("checkbox[%s,%s;%s;Craftable only;%s]checkbox[%s,%s;%s;Favorites only;%s]")
-		:format(n(LIST_X), n(CHECK_Y), F.only, tostring(st.only),
-		n(FAV_CHECK_X), n(CHECK_Y), F.fav_only, tostring(st.fav_only == true))
+	local compact = UI.text_scale(player) < 1
+	fs[#fs + 1] = ("checkbox[%s,%s;%s;%s;%s]checkbox[%s,%s;%s;%s;%s]")
+		:format(n(LIST_X), n(CHECK_Y), F.only, compact and "Craft" or "Craftable", tostring(st.only),
+		n(FAV_CHECK_X), n(CHECK_Y), F.fav_only, compact and "Favs" or "Favorites", tostring(st.fav_only == true))
+	fs[#fs + 1] = ("tooltip[%s;Craftable recipes only]tooltip[%s;Favorite recipes only]"):format(F.only, F.fav_only)
 	-- The panel includes search and pagination; native recipe click targets remain.
 	fs[#fs + 1] = UI.panel(LIST_X - 0.1, BOX.y, LIST_W + 0.2, BOX.h)
 	st.rows = {}
@@ -362,12 +365,14 @@ local function list_content(fs, player, st, tab, counts, picks)
 		end
 		local count = "×" .. crafts
 		local name = label_of(recipe.output)
-		local shown = clip(name, ROW_CHARS)
+		local shown = clip(name, math.min(ROW_CHARS, 21))
+		fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
 		fs[#fs + 1] = ("item_image[%s,%s;%s,%s;%s]label[%s,%s;%s]label[%s,%s;%s]"):format(
 			n(LIST_X + 0.1), n(y + (ROW_H - ICON) / 2), n(ICON), n(ICON), esc(recipe.output),
 			n(LIST_X + 0.7), n(y + ROW_H / 2), esc(shown),
 			n(LIST_X + LIST_W - 0.75), n(y + ROW_H / 2),
 			esc(crafts > 0 and count or core.colorize(DIM, count)))
+		fs[#fs + 1] = "style_type[label;font_size=*1]"
 		-- The click target over the row (the old book's overlay pattern); a
 		-- clipped name in full as its tooltip.
 		fs[#fs + 1] = ("image_button[%s,%s;%s,%s;blank.png;%s%d;;false;false]"):format(
@@ -380,10 +385,12 @@ local function list_content(fs, player, st, tab, counts, picks)
 		wrapped_labels(fs, LIST_X + 0.15, ROW_Y + 0.35, LIST_W - 0.3,
 			empty_text(tab, st.search ~= "", st.fav_only))
 	end
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
 	fs[#fs + 1] = ("button[%s,%s;0.8,%s;%s;<]label[%s,%s;%s]button[%s,%s;0.8,%s;%s;>]"):format(
 		n(LIST_X), n(PAGER_Y), n(PAGER_H), F.prev,
 		n(LIST_X + 1.6), n(PAGER_Y + PAGER_H / 2), ("Page %d of %d"):format(st.page, pages),
 		n(LIST_X + LIST_W - 0.8), n(PAGER_Y), n(PAGER_H), F.next)
+	fs[#fs + 1] = "style_type[label;font_size=*1]"
 end
 
 --
@@ -622,17 +629,20 @@ function grug_jobs.crafting_page_content(player, context)
 		local tab_w = 10 * (0.5 + 0.135 * #entry.label) / total_weight
 		local field = F.area .. index
 		fs[#fs + 1] = UI.button_style(field, index == st.slot and "selected" or "normal")
+		fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(field, 0.75 * UI.text_scale(player))
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(x), n(TAB_Y), n(tab_w),
 			n(TAB_H), field, esc(entry.label))
 		x = x + tab_w + 0.1
 	end
 	local text, fill = tier_progress(player, tab)
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.7 * UI.text_scale(player))
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x + 0.05), n(TAB_Y + 0.2),
 		esc(core.colorize(UI.colors.muted, text)))
 	if fill then
 		fs[#fs + 1] = ("box[%s,%s;2.45,0.12;#111a24b0]box[%s,%s;%s,0.12;#d4b77d]"):format(
 			n(x + 0.05), n(TAB_Y + 0.5), n(x + 0.05), n(TAB_Y + 0.5), n(2.45 * fill))
 	end
+	fs[#fs + 1] = "style_type[label;font_size=*1]"
 	local recipe = st.selected and grug_jobs.recipe(st.selected) or nil
 	list_content(fs, player, st, tab, counts, grug_jobs.crafting_picks(st, recipe, counts))
 	box_buttons(fs, player, st, tab)

@@ -790,7 +790,7 @@ has(fs, "×" .. "1]", "N the long bookshelf: ×1 from the wood group (12 planks)
 click(p, {[FIELDS.only] = "true"})
 fs = p.formspec
 eq(st_of(p).only, true, "N Craftable only on")
-has(fs, "checkbox[0.2,2;grug_craft_only;Craftable only;true]", "N the checkbox echoes its state")
+has(fs, "checkbox[0.2,2;grug_craft_only;Craftable;true]", "N the checkbox echoes its state")
 has(fs, "Page 1 of 1", "N craftable rows only")
 -- Blocks 01..07 (oak 7), the bookshelf (wood 12 >= 6), Torch (stick 3, coal 2).
 eq(count(fs, "image_button["), 9, "N 7 blocks, the bookshelf, the torch")
@@ -1321,7 +1321,7 @@ open(reader)
 click(reader, {[FIELDS.row .. "1"] = ""})
 eq(st_of(reader).selected, long.id, "the long-named recipe chosen")
 fs = reader.formspec
-has(fs, "label[0.9,2.62;A Very Long Decorated..]", "the long name clipped in the list")
+has(fs, "label[0.9,2.62;A Very Long Decorat..]", "the long name clipped in the list")
 has(fs, "tooltip[grug_craft_row1;A Very Long Decorated Ceremonial Bookshelf of Oak]",
 	"... in full as the row's tooltip")
 lacks(fs, "tooltip[grug_craft_row2;", "no tooltip for a name that fits")

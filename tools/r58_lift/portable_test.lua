@@ -422,7 +422,7 @@ own.pos = vnew(lift4.x, lift4.y, lift4.z - 2)
 local form = click(own, lift4)
 check(form and form.formname:find("^grug_guild:lift:") ~= nil, "B own faction: the list opens")
 local fs = form.fs
-check(fs:find(grug_core.ui.heading(0.4, 0.45, "Miner's Guild Lift"), 1, true) and fs:find(t4.label, 1, true),
+check(fs:find(grug_core.ui.title(0.4, 0.45, "Miner's Guild Lift"), 1, true) and fs:find(t4.label, 1, true),
 	"B the list's title and the camp")
 check(fs:find("label[0.4,1.70;Surface]", 1, true) and fs:find("label[6.8,1.70;You are here]", 1, true),
 	"B the surface marked as here")

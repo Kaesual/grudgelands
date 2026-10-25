@@ -111,7 +111,7 @@ end
 -- sfinv context and the row echoes it: a talent refresh or a rebuild does
 -- not jump back to the start. A drag works from any position: the list's
 -- slot index does not depend on the scroll.
-local HINT_DX = 1.0 -- the hint starts this far right of the "Skills" label
+local HINT_DX = 2.1 -- the hint starts this far right of the "Skills" label
 local SCROLL_FIELD = "grug_skills_scroll"
 local PITCH = 1.25 -- a list slot and its spacing in real coordinates
 local SCROLL_FACTOR = 0.125 -- real units per scrollbar unit: a slot is 10
@@ -132,10 +132,10 @@ local function catalog_row(player, y, context)
 	local fs = {
 		grug_inventory.area_box(layout.box_x, y, layout.box_w,
 			layout.slot_box_h + BAR_H, "Skills"),
-		("style_type[label;font_size=*0.85]label[%.3f,%.3f;%s]" ..
-			"style_type[label;font_size=]"):format(layout.x + HINT_DX,
+		("style_type[label;font_size=*%.3f]label[%.3f,%.3f;%s]" ..
+			"style_type[label;font_size=]"):format(0.75 * grug_core.ui.text_scale(player), layout.x + HINT_DX,
 			y + layout.label_h / 2, core.formspec_escape(
-				"Drag skills onto the hotbar; drag one back here to remove it.")),
+				"Drag to hotbar; back to remove.")),
 	}
 	local max = math.max(0, #rows - visible) * SLOT_STEPS
 	if max > 0 then

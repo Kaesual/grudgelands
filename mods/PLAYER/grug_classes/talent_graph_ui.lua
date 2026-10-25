@@ -215,9 +215,12 @@ function graph.page_content(viewer, view)
 		fs[#fs + 1] = ("tooltip[%s;%s]"):format(field,
 			esc(grug_inventory.wrap_text(other.description, 58)))
 	end
+	fs[#fs + 1] = "style_type[label;font_size=*0.8]"
 	fs[#fs + 1] = ("label[5.75,0.45;%s]"):format(esc(view.points_text or ""))
 	fs[#fs + 1] = view.header or ""
+	fs[#fs + 1] = "style_type[label;font_size=*1]"
 
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.85 * grug_core.ui.text_scale(viewer))
 	local background = graph.background_texture(tree)
 	fs[#fs + 1] = background
 		and ("image[%.2f,%.2f;%.2f,%.2f;%s]"):format(page.x, page.y, page.w, page.h,
@@ -258,7 +261,9 @@ function graph.page_content(viewer, view)
 	end
 	fs[#fs + 1] = table.concat(parts)
 	fs[#fs + 1] = grug_core.ui.panel(page.x, page.strip_y, page.w, page.strip_h)
+	fs[#fs + 1] = ("style_type[label;font_size=*1]style_type[textarea;font_size=*%.3f]"):format(0.8 * grug_core.ui.text_scale(viewer))
 	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(page.x, page.strip_y,
 		page.w, page.strip_h, esc(strip_text(viewer, view)))
+	fs[#fs + 1] = "style_type[textarea;font_size=*1]"
 	return table.concat(fs)
 end

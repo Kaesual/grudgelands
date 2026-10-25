@@ -551,7 +551,7 @@ cy.pos = {x = 11, y = 5, z = 10}
 level = 30
 check(grug_mounts.open_trainer(cy, shipwright), "own-faction Shipwright opens")
 local fs = shown[#shown].fs
-check(fs:find(grug_core.ui.heading(0.4, 0.45, "Shipwright"), 1, true) ~= nil, "Shipwright title")
+check(fs:find(grug_core.ui.title(0.4, 0.45, "Shipwright"), 1, true) ~= nil, "Shipwright title")
 check(fs:find("Boat (L15)", 1, true) and fs:find("Improved Boat (L30)", 1, true), "two rows")
 check(fs:find("buy_5;Buy " .. grug_mounts.PRICES[5] .. " copper", 1, true) ~= nil, "Buy button with the price")
 check(fs:find("Learn Boat first", 1, true) ~= nil, "Learn Boat first")
