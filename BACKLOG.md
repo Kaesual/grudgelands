@@ -3525,8 +3525,10 @@ the deploy round starts from the [deploy plan](docs/planning/deploy-plan.md).
   Round 51 and BAGS regenerated it with about 450 lines of registry drift
   (116 items added, three retired skills gone, 42 quest NPCs,
   `legacy_quests` rebuilt); `validate.py --game` reads the same with the
-  old and the new dump. Lane D's regeneration on main: see the
-  [completion](docs/planning/round62-plan.md#round-end-gates).
+  old and the new dump. Lane D regenerated it once more on main's tree
+  (FRONTQUESTS' ids in `legacy_quests`); the war-camp foremen's `race_id`
+  follows the probe world's random seed, so every regeneration moves
+  those 20 lines without a change (a fixed probe seed would end it).
 - **`item_tiers.md`'s generated tables** (BAGS): the crown, upgrade cost,
   income and Warpack Fang tables are stale on main, so `tools/r33_ds/
   build_doc.py --check` fails at the base too; BAGS regenerated only the

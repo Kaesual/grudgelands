@@ -644,4 +644,22 @@ The 0.48.0 step's handler reads the live sizes: a character still carrying its m
 
 ### Round-end gates
 
-GATES_PLACEHOLDER
+Lane D on its branch from `73febfda` (measured; `mods/` identical to main): `check_upgrade.py` PASS (against
+origin/main `69481ed1`, 0.57.0, with the `map_reset` entry 0.62.0; it also passes without that entry, since unpushed
+0.58.0's covers every change against 0.57.0), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (17
+warnings, as after FRONTQUESTS; 11 at the base), `quest_kinds.py --check` 0 differ (104 quest-named kinds),
+`quest_targets.py` 0 missing (839 targets on seeds 42, 7, 2026, CLOCK 0), `guarantee.py --check` PASS,
+`check_rules.py --shipped` 0 problems, `income.py --check` PASS, `r37_dc` PASS (766 checks),
+`tools/building_templates/check.py` PASS (266 templates, 0 errors, 11 warnings, all `unreachable`),
+`tools/r62_frontquests/build_structure.py --check` 0 of 18, `tools/r61_bandquests/build_structure.py --check` 0 of 6,
+`tools/r60_bandquests/build_structure.py --check` 0 of 8, `tools/r60_capitals/build_structure.py --check` 0 of 6,
+`tools/r59_bandquests/build_structure.py --check` and `tools/r59_storyquests/build_structure.py --check` 0 of 6,
+`tools/r58_guildquests/build_structure.py --check --ids` 0 of 26, `tools/r61_storyart/paint_art.py --check` OK (2
+textures), `tools/r60_storyart/paint_art.py --check` OK (7) and `tools/r59_storyart/paint_art.py --check` OK (4), the
+solo ledger of all six races (the table above), a link and anchor check of every touched file (1,449 links, 0 broken),
+the item dump regenerated once on main's tree (`dump_items.sh`, PASS: 1,605 items; it differed in FRONTQUESTS' quest
+ids and in the war-camp foremen's seed-dependent race ids, committed), the full `run_fixtures.sh` (**279 passed, 0
+failed**), the **full seed fleet on main's tree** (`seed_fleet/run.sh full` through the queue at 8 parallel, with the
+quest-place check: **304 of 304 seeds build, 0 failed, 24 min 6 s**; Round 61's took 22 min 34 s) and one headless
+boot (PASS, listening). Each code lane ran the full `run_fixtures.sh` once (BAGS 277/0, TEMPLATEFIX 278/0,
+FRONTQUESTS 279/279; FRONTTEXT 279/279 per Astra).
