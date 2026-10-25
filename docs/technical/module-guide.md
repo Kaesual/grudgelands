@@ -2216,7 +2216,7 @@ tools](#player-meta-read-by-external-tools).
 ## Atlas
 
 - **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x/8x
-  zoom, native scrollbars and an independent marker layer. The UI branch uses
+  zoom, native scrollbars and an independent marker layer. Since 0.60.1 it uses
   a larger version-6 real-coordinate window with the same navigation as the
   other inventory pages ([presentation contract](ui-presentation.md)). Keep the zoom's wanted centre (since 0.45.1 the soft lock on
   the player until the player scrolls, `atlas.zoom_view` and
@@ -3160,7 +3160,7 @@ tools](#player-meta-read-by-external-tools).
 
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
-  coordinate mode deliberately. The isolated UI modernization uses the
+  coordinate mode deliberately. The UI modernization (0.60.1) uses the
   [presentation toolkit](ui-presentation.md) for shared frames and navigation;
   live inventory pages and the map use real coordinates throughout their
   bodies; standalone legacy forms retain their own explicit coordinate contract. 3D preview: `model[]` element.

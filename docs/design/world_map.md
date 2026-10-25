@@ -144,7 +144,7 @@ ended with the [Map window](#map-window).
 
 ## Map window
 
-UI modernization (2026-10-25 fidelity pass, isolated branch): the following
+UI modernization (2026-10-25 fidelity pass, merged in 0.60.1): the following
 size describes the whole window. The compact common inventory navigation
 header is reserved inside that budget, and the map/quest body uses the
 remaining height. The existing minimum-size floor may still require client

@@ -12,7 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.60.0, Round 60 "The story arc's second chapter and
+**Current state:** 0.60.1, the UI modernization (compatible;
+[UI plan](docs/planning/ui-modernization-plan.md)): every window on the
+shared theme and navigation of the presentation toolkit. Before it 0.60.0,
+Round 60 "The story arc's second chapter and
 the quest rework of levels 21–30" (**map reset**, no step;
 [completion](docs/planning/round60-plan.md#completion-2026-10-24)): the
 eight band zones of levels 21–30 and the six capitals rebuilt on the
@@ -25,8 +28,8 @@ Dur Brannoc's guild leader, T3 at 29 at a town place on Nhal Veyr's guild
 house), the mine leaders as guild members, an Alchemy quest at the first
 capital visit, the Alchemy herbs by level band, soulbound quest-only
 items and the seed fleet's quest-place check; four picked quest objects
-and three quest item icons. **Not pushed**; it waits for the user's joint
-GUI test of 0.57.0, 0.58.0, 0.59.0 and 0.60.0. Before it
+and three quest item icons. **Not pushed**; both wait for the user's joint
+GUI test of 0.57.0, 0.58.0, 0.59.0, 0.60.0 and 0.60.1. Before it
 0.59.0, Round 59 "The story arc's first chapter and
 the quest rework of levels 11–20" (**map reset**, no step;
 [completion](docs/planning/round59-plan.md#completion-2026-10-24)): the six
@@ -114,7 +117,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
 are not recorded as passed. Next: the joint GUI test of 0.57.0, 0.58.0,
-0.59.0 and 0.60.0 ([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60)),
+0.59.0, 0.60.0 and 0.60.1 ([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui)),
 then Round 61 (the band 31–40 with the arc's next chapter) and the bands
 41–60 one per round, the production deploy with one map reset, the armor
 redesign and unique items ([ROADMAP](ROADMAP.md)).

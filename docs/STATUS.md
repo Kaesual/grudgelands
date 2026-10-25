@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-24. This is the delivery pointer, not another game specification.
+Updated 2026-10-25. This is the delivery pointer, not another game specification.
 
 The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the
@@ -25,9 +25,10 @@ Round 58 (0.58.0, a map reset) builds the Miner's Guild and the Round 56
 town fixes; Round 59 (0.59.0, a map reset) reworks the quests of levels
 11–20 and opens chapter 1 of the story arc; Round 60 (0.60.0, a map reset)
 reworks the quests of levels 21–30 and the six capitals, adds chapter 2 and
-re-places the Alchemy herbs by level band. None of them is **pushed**;
-they wait for the user's joint GUI test of 0.57, 0.58, 0.59 and 0.60
-([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60)).
+re-places the Alchemy herbs by level band; 0.60.1 (compatible) merges the
+UI modernization, a new look for every window. None of them is **pushed**;
+they wait for the user's joint GUI test of 0.57, 0.58, 0.59 and 0.60,
+which now covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui)).
 Next: that GUI test, then Round 61 (the band 31–40 with the arc's next
 chapter) and the bands 41–60 one per round, then the production deploy
 with one map reset ([ROADMAP](../ROADMAP.md)). The
@@ -35,6 +36,17 @@ with one map reset ([ROADMAP](../ROADMAP.md)). The
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **UI modernization merged** (2026-10-25, version 0.60.1, **compatible**,
+  no saved state, no reset; [plan and receipts](planning/ui-modernization-plan.md)):
+  the shared theme, navigation and form layouts (the user's UI lane by GPT-6
+  Astra; the implementation review MERGE, the fidelity pass's delta review
+  MERGE AFTER FIXES, the fixes' delta review MERGE) merged into main
+  `83f1afd3`, then this documentation lane UI-D. The user picked the seven
+  theme PNGs and the ten tab icons and accepted the quiver total beside the
+  slot and the compact header. **Not pushed**; its GUI points are items
+  67–81 of the joint checklist. The declaration is
+  `{"schema": 3, "version": "0.60.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`
+  ([carry-overs](../BACKLOG.md#ui-modernization-carry-overs)).
 - **Round 60 "The story arc's second chapter and the quest rework of levels
   21–30" complete** (2026-10-24, version 0.60.0, **map reset**, no
   migration step;

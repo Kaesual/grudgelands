@@ -1042,10 +1042,10 @@ damage continue, while custom/native attacks and jumping are blocked.
 Round 16 review correction: mobs `scale_mob` preserves the selectionbox `rotate`
 flag through temporary/permanent scaling for the oriented Ibex targeting box.
 
-## UI modernization — isolated implementation, 2026-10-24
+## UI modernization — 2026-10-24, merged in 0.60.1
 
 These patches change presentation only; their owning sessions and inventory
-rules remain. Integration is tracked by the [UI plan](docs/planning/ui-modernization-plan.md).
+rules remain. Receipts are in the [UI plan](docs/planning/ui-modernization-plan.md).
 
 - `mods/BASE/creative/inventory.lua`: real-coordinate catalog/search/pager/trash
   layout in the shared frame; remove its local old list colors. All five

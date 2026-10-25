@@ -90,6 +90,11 @@ Decided with the user on 2026-10-22 and 2026-10-23
   29), the mine leaders as guild members, an Alchemy quest at the first
   capital visit, the Alchemy herbs by level band, soulbound quest-only
   items. Its GUI test runs together with those of Rounds 57–59.
+- **The UI modernization:** **delivered** in 0.60.1 (compatible;
+  [plan](docs/planning/ui-modernization-plan.md)): every window on one
+  translucent theme with clear buttons, icon tabs, the faction and level in
+  the header and the larger map entered directly. Its GUI test runs
+  together with those of Rounds 57–60.
 - **Round 61 and later, the story arc:** each faction's story from the
   start zones to the front at level 41, built on the Round 57 foundation
   band by band with the quest rework of levels 21–60. The user decided the
@@ -693,6 +698,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   two crop fixes, soulbound quest-only items with their own icons, the
   seed fleet's quest-place check. Complete on 2026-10-24; not pushed, the
   joint GUI test of 0.57, 0.58, 0.59 and 0.60 open.
+- [x] **The UI modernization**
+  ([plan](docs/planning/ui-modernization-plan.md)), version 0.60.1,
+  **compatible**, no step: the shared theme, navigation and form layouts of
+  every window. Merged on 2026-10-25; not pushed, its GUI test part of the
+  joint one of 0.57 to 0.60.
 
 ### Remaining work
 

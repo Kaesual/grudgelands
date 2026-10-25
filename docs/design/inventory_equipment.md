@@ -9,7 +9,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 ## 1. The inventory window (the "i" key)
 
 - Built on sfinv pages in one shared frame. The approved UI modernization
-  (2026-10-24, implemented in its isolated branch) retains the 13.5 × 13.673
+  (2026-10-24, merged in 0.60.1) retains the 13.5 × 13.673
   body and adds a compact header (1.5 units plus 0.54 per extra tab row)
   with icon/text navigation and a gold active underline. All non-map
   tabs share that frame; Map & Quests keeps its larger responsive window
@@ -975,7 +975,7 @@ than a `>` prefix. The skill catalog explains placing and removing skills
 
 ## UI modernization approved direction
 
-User ruling, 2026-10-24; implementation tracked in the
+User ruling, 2026-10-24; merged in 0.60.1, see the
 [UI plan](../planning/ui-modernization-plan.md). Atlas 03 is the accepted
 visual direction: dark translucent panels, small rounded corners, restrained
 brass accents, original game art and readable text. Window dimensions may

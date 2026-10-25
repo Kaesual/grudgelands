@@ -95,6 +95,11 @@ levels 21–30.
 
 ## Current state
 
+**0.60.1** gives every window a new look: translucent panels, clear
+buttons, tabs with icons, your faction and level in the header, and the
+larger map opened directly with the same tabs; the windows stay readable
+in small game windows and at higher GUI scales. No map reset.
+
 **0.60.0** reworks the quests of levels 21–30 and of the six capitals:
 the eight zones and the capitals offer their quests at once, far fewer
 of them hunts and more of them errands, crafts and things to do at a

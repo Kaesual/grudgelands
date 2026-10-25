@@ -177,6 +177,8 @@ list of the platform's migration contract):
   position. `map_reset_pass` stays 0.50.0. Unpushed 0.58.0's entry already
   covers these changes against pushed 0.57.0; the production world moves
   from 0.57.0 to 0.60.0 across one reset.
+- 0.60.1 (the UI modernization) is compatible: presentation only, no saved
+  state, no map reset, no step.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the

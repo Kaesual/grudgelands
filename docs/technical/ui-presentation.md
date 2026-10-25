@@ -1,7 +1,7 @@
 # UI presentation toolkit
 
-Implemented in the isolated [UI branch](../planning/ui-modernization-plan.md);
-release integration and desktop/web visual acceptance are still pending.
+Merged in 0.60.1 ([UI plan](../planning/ui-modernization-plan.md)); the
+desktop/web GUI acceptance is part of the joint GUI test.
 
 `grug_core.ui` (`mods/CORE/grug_core/ui.lua`) builds deterministic formspec
 fragments. `grug_core/init.lua` installs the shared prepend on join after
