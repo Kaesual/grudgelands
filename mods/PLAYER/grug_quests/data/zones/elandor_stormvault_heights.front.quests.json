@@ -1,33 +1,84 @@
 {
   "zone": "elandor_stormvault_heights",
+  "reworked": true,
   "quests": [
     {
-      "id": "archshadow_front_01",
+      "id": "archshadow_crossing",
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
       "min_level": 44,
-      "level": 46,
+      "level": 45,
       "requires": [],
-      "title": "An Arch Under Occupation",
-      "text": "Our surveyors cannot examine the old arches while Causeway Brigands and Aqueduct Bowmen use them for cover. Defeat five of those brigands and bowmen in all, by day in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}. I have several complaints about the masonry, and I prefer to deliver them without arrows coming back.",
+      "title": "[PH] Ground Worth Crossing",
+      "text": "[PH] Alna wants the prepared sighting frame at the {name:front_broken_causeway/crossing_stand} used to judge which ground of the Causeway still carries a load. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "causeway_brigand",
-            "causeway_aqueduct_bowman"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/wraithwood"
+          "type": "use",
+          "place": "front_broken_causeway/crossing_stand",
+          "object": "sighting_frame",
+          "label": "Sight the ground for the crossing",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_silk",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_sleek",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "The hard half of the Causeway: archers among the brigands.",
-      "duration_min": 12
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft AL1: a use at the new recipe place P3 (the Causeway's wraithwood); Stormvault's first armor choice."
+    },
+    {
+      "id": "archshadow_road_dorrin",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 45,
+      "level": 45,
+      "requires": [],
+      "title": "[PH] Dur Brannoc Can Supply It",
+      "text": "[PH] Alna sends the player to Dorrin Gateledger in Dur Brannoc, who coordinates the extra work and supply from there; neither Alna's investigation nor a capital quest is needed. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_dwarf_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only): a departure to a giver with work at once.",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft AL2 (K1 A): the free departure to Dorrin at 45; the check's fix: no 'Guild' in the title (Dorrin is the envoy, Hadrin the guild leader)."
     },
     {
       "id": "archshadow_front_02",
@@ -37,11 +88,12 @@
       "min_level": 45,
       "level": 47,
       "requires": [
-        "archshadow_front_01",
         "cinderline_front_04"
       ],
+      "story": true,
       "title": "The Burn Beneath the Stamp",
       "text": "Copperfell's purse forgers used this style of stamp; the new Tithe-Brand burns where theirs left ink. Take a rubbing of the scorched mark at {name:brandscar_cairn}, {dir_from_giver:brandscar_cairn}. Bring me three Siege Bones from Tollroad Skeletons in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}, after dark. My runesmiths need to compare what the brand does to stone with what it does to a soldier.",
+      "completion": "[PH] Alna ties the bones' renewed service and the brand's renewed payment to Senn's toll business and sends the player against the man who keeps the crossing deadly. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -61,8 +113,7 @@
         }
       ],
       "rewards": {
-        "weight": 5.5,
-        "items": []
+        "weight": 5.5
       },
       "lesson": "The top belt of the Causeway at night.",
       "duration_min": 18,
@@ -80,8 +131,10 @@
       "requires": [
         "archshadow_front_02"
       ],
+      "story": true,
       "title": "Collection Ends Here",
       "text": "The smiths found the same burn in the bones: {name:toll_taker_senn} pays dead soldiers in branded coin to keep them on duty. At the {name:front_broken_causeway/toll_camp}, {dir_from_giver:front_broken_causeway/toll_camp}, defeat five Aqueduct Bowmen or Coal-Purse Factors in all; they guard his takings day and night. Kill Senn as well, then turn out the branded toll-box at {name:r20_anchor_078}. I want to see who considers a road full of corpses a sound investment.",
+      "completion": "[PH] The evidence is enough for a report to the Warmaster; Chirr appears as a further payer, and the link to The Throng stays a suspicion. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -108,8 +161,7 @@
         }
       ],
       "rewards": {
-        "weight": 6,
-        "items": []
+        "weight": 6
       },
       "lesson": "Causeway climax and the main line's chapter 1 climax: a bowman camp, its named normal leader and Senn's toll-box.",
       "duration_min": 16,
@@ -128,8 +180,10 @@
       "requires": [
         "archshadow_front_03"
       ],
+      "story": true,
       "title": "Good Paper, Bad Company",
       "text": "Senn's accounts say more than he ever did: he was paid to keep the road deadly, and his tolls went back to the factors for another branding and another round of wages. A remittance from Paymaster Chirr in The Skyglass Canopy promises more of the same. The bundle came wrapped in a requisition under a seal of The Throng, on paper fit for a fortress pay office. Take all of it to the Warmaster at {name:pvp_fortress_accord}; paper this good deserves an awkward question, and I'd rather it came from someone whose job it is.",
+      "completion": "[PH] The Warmaster ties toll, dead and pay together and sends the player to a pledged standard on the Shattered Line; Audra's regular deliveries stay apart from the suspect pay. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -137,8 +191,7 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
       "lesson": "Main line, chapter 1 (last turn-in): the handoff from Archshadow Post back to the Warmaster.",
       "duration_min": 10,
@@ -147,231 +200,238 @@
       ]
     },
     {
-      "id": "archshadow_front_04",
+      "id": "archshadow_tools_held",
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 49,
-      "level": 50,
-      "requires": [
-        "archshadow_front_03"
-      ],
-      "title": "Party: No More Toll",
-      "text": "Whoever built {name:last_toll_construct} in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct} did solid work and left miserable instructions. Senn is dead, yet the elite war construct still collects his toll from anyone who passes. Gather a party and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
+      "min_level": 48,
+      "level": 49,
+      "requires": [],
+      "title": "[PH] Tools Held Ready",
+      "text": "[PH] Alna wants a tool load already set aside at the guild camp's loading ground made ready for repairs at the front. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "last_toll_construct"
-          ],
-          "count": 1
+          "type": "use",
+          "place": "socket:mining_camp_stormvault_heights/held_load",
+          "object": "held_supplies",
+          "label": "Ready the held tool load",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:staff_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Optional group elite; the route reaches 50 without it.",
-      "duration_min": 12,
-      "optional": true,
-      "group": true
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft AL3: the Stormvault camp's free held load (a town place); Stormvault's weapon (a solo quest)."
     },
     {
-      "id": "archshadow_front_05",
+      "id": "splitbolt_shoring_check",
       "line": "front",
-      "giver": "r20_anchor_028_host",
+      "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 49,
-      "level": 50,
-      "requires": [
-        "archshadow_front_03"
+      "min_level": 50,
+      "level": 51,
+      "requires": [],
+      "title": "[PH] Before the Weight Comes",
+      "text": "[PH] Borin wants a prepared point at the {name:front_gravesalt_escarpment/shoring_check} checked for ground that carries shoring, before anyone salvages near Huskell's watch. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "front_gravesalt_escarpment/shoring_check",
+          "object": "sighting_frame",
+          "label": "Sight the ground for the shoring",
+          "hold": 4
+        }
       ],
-      "title": "Fit for Borin's Crew",
-      "text": "You've done work here that will hold, and Borin Splitbolt needs that sort of hand for Gravesalt Escarpment. Speak with him at Splitbolt Station in Stormvault Heights and pass on my report. He'll grumble that I should have sent you sooner; that's his welcome speech.",
+      "rewards": {
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft BO1: a use at the new recipe place P4 (Gravesalt's saltflats); free from Borin's arrival at 50; Stormvault's first 51-60 armor choice."
+    },
+    {
+      "id": "splitbolt_road_eriath",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 51,
+      "level": 51,
+      "requires": [],
+      "title": "[PH] A Word for Eriath",
+      "text": "[PH] Borin sends the player to Eriath Boughwarden in Lethariel, who needs help with the ways and work sites of the Skyglass Canopy; Huskell is not assumed. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
-          "npc": "r20_anchor_027_host"
+          "npc": "r20_elf_capital_envoy"
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Handoff from the Causeway to Gravesalt.",
-      "duration_min": 6
+      "lesson": "A travel quest, free (a level only): a departure to a giver with work at once.",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft BO2: the free departure to Eriath at 51 (Eriath's work opens at 51)."
     },
     {
-      "id": "splitbolt_front_01",
+      "id": "splitbolt_storm_tuna",
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 50,
-      "level": 52,
+      "min_level": 52,
+      "level": 53,
       "requires": [],
-      "title": "No Shoring, No Sense",
-      "text": "Brine Borers are tunnelling through the {name:front_gravesalt_escarpment/saltflats}, which lie {zone_area:front_gravesalt_escarpment/saltflats}, without a thought for what stands above them. Kill six there by day before another stretch gives way. Even my worst apprentice knew to brace a tunnel, and he once shored up his own beard.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "salt_boring_weevil"
-          ],
-          "count": 6,
-          "area": "front_gravesalt_escarpment/saltflats"
-        }
-      ],
-      "rewards": {
-        "weight": 5,
-        "items": []
-      },
-      "lesson": "Gravesalt entry by day.",
-      "duration_min": 12
-    },
-    {
-      "id": "splitbolt_front_02",
-      "line": "front",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 50,
-      "level": 52,
-      "requires": [],
-      "title": "Rope with Opinions",
-      "text": "A line strung between trees ought to help a traveller find the path. In the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, it helps Tomb Widows find supper. Kill six of those spiders after dark; I'd like our crews to finish a night shift under their own power.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "salt_web_spider"
-          ],
-          "count": 6,
-          "area": "front_gravesalt_escarpment/bonewood"
-        }
-      ],
-      "rewards": {
-        "weight": 5,
-        "items": []
-      },
-      "lesson": "Gravesalt entry by night, in the same outing.",
-      "duration_min": 12
-    },
-    {
-      "id": "splitbolt_front_03",
-      "line": "front",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 53,
-      "level": 55,
-      "requires": [
-        "splitbolt_front_01",
-        "splitbolt_front_02"
-      ],
-      "title": "Something for the Mortar Crew",
-      "text": "The mortar crew has asked for Salt Chitin, and for once the request came without a lecture. Bring me three pieces from Brine Borers on the {name:front_gravesalt_escarpment/blight_terraces}, which lie {zone_area:front_gravesalt_escarpment/blight_terraces}, by day. I'll keep them busy arguing over the mixing trough until you're back.",
+      "title": "[PH] A Meal Between Shifts",
+      "text": "[PH] Borin wants his salvage crews fed between shifts: bring 5 Storm Tuna. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:salt_chitin",
-          "count": 3,
-          "roles": [
-            "salt_boring_weevil"
-          ],
-          "area": "front_gravesalt_escarpment/blight_terraces"
+          "item": "grug_fishing:storm_tuna",
+          "count": 5
         }
       ],
       "rewards": {
-        "weight": 5.5,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t6",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t6",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "The middle belt of Gravesalt by day.",
-      "duration_min": 14
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft BO3: the early 51-60 potion choice (from 52)."
     },
     {
-      "id": "splitbolt_front_04",
-      "line": "front",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 54,
-      "level": 56,
-      "requires": [
-        "splitbolt_front_03"
-      ],
-      "title": "Leave the Graves Out of It",
-      "text": "Brine Witches gather after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, counting salt over the graves. Our ancestors earned their rest, and so did whoever lies there. Kill six of those witches at night before their muttering wakes something we have to bury twice.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "salt_hex_witch"
-          ],
-          "count": 6,
-          "area": "front_gravesalt_escarpment/tomb_fen"
-        }
-      ],
-      "rewards": {
-        "weight": 6,
-        "items": []
-      },
-      "lesson": "Casters in a sparse swamp: close in fast.",
-      "duration_min": 14
-    },
-    {
-      "id": "splitbolt_front_05",
+      "id": "splitbolt_braces",
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
       "min_level": 55,
       "level": 56,
-      "requires": [
-        "splitbolt_front_04"
-      ],
-      "title": "Last Pay, Final Notice",
-      "text": "Last-Pay Archers still loose arrows from the {name:front_gravesalt_escarpment/saltroad_cliffs}, which lie {zone_area:front_gravesalt_escarpment/saltroad_cliffs}, every night. Defeat five there after dark so our road crews can work. Their paymaster got his money's worth; everyone else has been paying for it ever since.",
+      "requires": [],
+      "title": "[PH] Braces Before Salvage",
+      "text": "[PH] Borin wants the prepared bracing timbers at the {name:front_gravesalt_escarpment/work_laydown} checked and made ready for the next salvage. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "last_pay_archer"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/saltroad_cliffs"
+          "type": "use",
+          "place": "front_gravesalt_escarpment/work_laydown",
+          "object": "held_supplies",
+          "label": "Ready the brace load",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 5.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Archers on high ground at night.",
-      "duration_min": 14
-    },
-    {
-      "id": "splitbolt_front_07",
-      "line": "front",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 56,
-      "level": 58,
-      "requires": [
-        "splitbolt_front_05"
-      ],
-      "title": "The Whitewall Dead",
-      "text": "Past the cliffs the salt has built the {name:front_gravesalt_escarpment/whitewall}, which lies {zone_area:front_gravesalt_escarpment/whitewall}, and Last-Watch Mummies walk it by day as if they still had a post to keep. Put six of them down. A dwarf respects a long shift, but not one this long.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "last_watch_husk"
-          ],
-          "count": 6,
-          "area": "front_gravesalt_escarpment/whitewall"
-        }
-      ],
-      "rewards": {
-        "weight": 6,
-        "items": []
-      },
-      "lesson": "The top belt of Gravesalt by day.",
-      "duration_min": 14
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft BO4 (K10 A: held_supplies, no new object): a use at the new recipe place P5 (Gravesalt's blight terraces); Stormvault's second 51-60 armor choice."
     },
     {
       "id": "splitbolt_front_08",
@@ -381,11 +441,12 @@
       "min_level": 57,
       "level": 59,
       "requires": [
-        "splitbolt_front_07",
         "accord_main_roll"
       ],
+      "story": true,
       "title": "The Last Watch Ends",
       "text": "Fresh branded pay reaches the {name:front_gravesalt_escarpment/ossuary_wood}, and the Last-Watch Sentries shoulder their weapons for another night. Destroy five there after dark, then defeat {name:watch_captain_huskell}, {dir_from_giver:watch_captain_huskell}. His roll should tell us who keeps paying for the watch; somebody has to relieve it, and it may as well be you.",
+      "completion": "[PH] The roll lists soldiers of both armies and, freshly entered, Odren Vell himself; Borin points to the payer's marks in the roots and to Eriath. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -405,11 +466,80 @@
       ],
       "rewards": {
         "weight": 7,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:staff_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
       "lesson": "Gravesalt climax: its named normal leader at the heart of the escarpment.",
       "duration_min": 16,
       "climax": true,
+      "tags": [
+        "accord_main"
+      ]
+    },
+    {
+      "id": "splitbolt_front_06",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 57,
+      "level": 58,
+      "requires": [
+        "splitbolt_front_08"
+      ],
+      "story": true,
+      "title": "The Clerk at the Foot",
+      "text": "Huskell's roll is no muster list but a page of the Undertithe's own: soldiers from both armies, each name bought back onto duty with branded pay. Odren Vell is written at the foot in fresh ink; the coin has collected its own clerk. Take the page to Eriath Boughwarden in Lethariel, who remembers the old forged bough-seals and whose watchers keep an eye on Chirr's payments in The Skyglass Canopy. He'll need three graceful sentences to agree with me.",
+      "completion": "[PH] Eriath names Chirr and his archers; Rusk may appear as Eriath's own past, never as the player's deed. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_elf_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "Handoff from Gravesalt to Skyglass.",
+      "duration_min": 15,
       "tags": [
         "accord_main"
       ]
@@ -421,9 +551,7 @@
       "turnin": "r20_anchor_027_host",
       "min_level": 58,
       "level": 59,
-      "requires": [
-        "splitbolt_front_08"
-      ],
+      "requires": [],
       "title": "Party: Nothing Left to Count",
       "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell kept them working; she is already adding up what they might fetch. Gather a party and kill the elite witch. I'd like the next count in that mire to come out at nothing.",
       "objectives": [
@@ -437,40 +565,23 @@
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:manawell_t6"
+          },
+          {
+            "item": "grug_gear:battlebeat_t6"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t6"
+          }
+        ]
       },
       "lesson": "Optional group elite; the route reaches 60 without it.",
       "duration_min": 12,
       "optional": true,
-      "group": true
-    },
-    {
-      "id": "splitbolt_front_06",
-      "line": "front",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_elf_capital_envoy",
-      "min_level": 57,
-      "level": 58,
-      "requires": [
-        "splitbolt_front_08"
-      ],
-      "title": "The Clerk at the Foot",
-      "text": "Huskell's roll is no muster list but a page of the Undertithe's own: soldiers from both armies, each name bought back onto duty with branded pay. Odren Vell is written at the foot in fresh ink; the coin has collected its own clerk. Take the page to Eriath Boughwarden in Lethariel, who remembers the old forged bough-seals and whose watchers keep an eye on Chirr's payments in The Skyglass Canopy. He'll need three graceful sentences to agree with me.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_elf_capital_envoy"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "lesson": "Handoff from Gravesalt to Skyglass.",
-      "duration_min": 15,
-      "tags": [
-        "accord_main"
-      ]
+      "group": true,
+      "notes": "Round 62 FRONTQUESTS. Draft BO5 (K11 A): the optional group quest on Salt-Counter, standalone from its level; its id and objective stay, its prerequisite goes; a trinket choice."
     }
   ]
 }

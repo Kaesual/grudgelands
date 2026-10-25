@@ -279,7 +279,8 @@ for _, row in ipairs(USES) do
 			if chapter == "island" then
 				check(use.q.optional == true and not required[use.id] and use.q.title:match("^Optional: ") ~= nil,
 					"P " .. use.id .. ": an island use is an optional extension")
-				check(closure(use.id).accord_main_roll, "P " .. use.id .. ": open once chapter 3 has begun")
+				-- Round 62 (chapter-4 draft DO6, MA3): free from 60, no story prerequisite.
+				eq(#(use.q.requires or {}), 0, "P " .. use.id .. ": an island use requires nothing")
 			else
 				eq(in_spine[use.id], chapter, "P " .. use.id .. ": " .. kind .. " in chapter " .. chapter)
 			end

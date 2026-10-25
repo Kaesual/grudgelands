@@ -69,6 +69,9 @@
       {"role": "standard_bearer_ninepins", "at": {"kind": "breach", "pick": "farthest_from_roads"}, "respawn": 300},
       {"role": "siege_engine_nine", "at": {"kind": "siegecrest", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "relief_rest", "name": "Shattered Relief Rest", "at": {"kind": "approaches", "pick": "farthest_from_roads"}}
+    ],
     "critters": []
   }
 }

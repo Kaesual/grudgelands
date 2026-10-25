@@ -162,7 +162,9 @@ for id in pairs(line) do
 			"G " .. id .. " opens no earlier than its prerequisite " .. req)
 	end
 end
-check(gated > 20, "G the line's prerequisites are checked (" .. gated .. ")")
+-- Round 62: the spine requires only spine steps and the island uses
+-- nothing, so the line's closure holds 15 prerequisites (24 before).
+check(gated >= 15, "G the line's prerequisites are checked (" .. gated .. ")")
 
 ------------------------------------------------------------------------------
 -- T: the tag on exactly the spine.

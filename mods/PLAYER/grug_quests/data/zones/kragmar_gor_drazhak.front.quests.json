@@ -1,58 +1,130 @@
 {
   "zone": "kragmar_gor_drazhak",
+  "reworked": true,
   "quests": [
     {
-      "id": "gd_front_01",
+      "id": "gordrazhak_ember_eel",
       "line": "front",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_orc_capital_envoy",
-      "min_level": 41,
+      "min_level": 42,
       "level": 43,
       "requires": [],
-      "title": "Give the Road Some Fangs",
-      "text": "Gor Drazhak did not build a road through two front lines just to watch our wardens get buried beside it. Bring me two Scorch Venom from the Sinkmire Vipers by day in the {name:front_broken_causeway/reedmire}, which lies {zone_area:front_broken_causeway/reedmire}. Our archers have volunteered to handle the arrows; funny how nobody volunteered for the snakes.",
+      "title": "[PH] Food for the Next Load",
+      "text": "[PH] Thorga wants provisions for the next load to the front: bring 5 Ember Eel. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:scorch_venom",
-          "count": 2,
-          "roles": [
-            "causeway_sinkmire_viper"
-          ],
-          "area": "front_broken_causeway/reedmire"
+          "item": "grug_fishing:ember_eel",
+          "count": 5
         }
       ],
       "rewards": {
         "weight": 3,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_silk",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_sleek",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 12
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft TH1; the Throng's capital share of the 41-50 pattern."
     },
     {
-      "id": "gd_front_02",
+      "id": "gordrazhak_water_depot",
       "line": "front",
       "giver": "r20_orc_capital_envoy",
       "turnin": "r20_orc_capital_envoy",
-      "min_level": 43,
+      "min_level": 44,
       "level": 45,
-      "requires": [
-        "gd_front_01"
-      ],
-      "title": "Wear the Teeth This Time",
-      "text": "A recruit ought to wear a fang before a fang wears the recruit. Kill four Siegepack Hyenas by day in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and bring me two Siegepack Fangs for the next recruits sent to the front.",
+      "requires": [],
+      "title": "[PH] Ready at the Water Depot",
+      "text": "[PH] Thorga wants a prepared load for the front checked and released at the cook court's water depot. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "warpack_hyena"
-          ],
-          "count": 4,
-          "area": "front_shattered_line/trenches"
-        },
+          "type": "use",
+          "place": "socket:gor_drazhak/warren_cook_court/warren_cook_court_water_depot",
+          "object": "held_supplies",
+          "label": "Release the front load",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_silk",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_sleek",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft TH2: the town place of Gor Drazhak's cook court (chapter 1's, another object and label)."
+    },
+    {
+      "id": "gordrazhak_fangs",
+      "line": "front",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 45,
+      "level": 46,
+      "requires": [],
+      "title": "[PH] A Fang Through the Strap",
+      "text": "[PH] Thorga wants Siegepack Fangs as proof of what straps and gear must stand up to; the Siegepack Hyenas of the {name:front_shattered_line/trenches} carry them: bring 3. Real text to follow.",
+      "objectives": [
         {
           "type": "item",
           "item": "grug_mobs:siegepack_fang",
-          "count": 2,
+          "count": 3,
           "roles": [
             "warpack_hyena"
           ],
@@ -60,10 +132,112 @@
         }
       ],
       "rewards": {
-        "weight": 4.5,
-        "items": []
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:wand_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 12
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft TH3 (K7 A): the item only, no kill count (a mob drop: still a fight); Gor Drazhak's weapon (a solo quest). The Sinkmire Viper hunt, a camp hunt's role, is gone."
+    },
+    {
+      "id": "gordrazhak_krait_bounty",
+      "line": "front",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [],
+      "title": "[PH] Optional: Krait Season",
+      "text": "[PH] Thorga posts a bounty on the Kraits of the {name:front_stormscale_summit/scorchlands} on Stormscale Summit, by day; coin, no leveling. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_fang_serpent"
+          ],
+          "count": 6,
+          "area": "front_stormscale_summit/scorchlands"
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 600
+      },
+      "lesson": "An island bounty: coin, no leveling.",
+      "duration_min": 15,
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft TH4 (K9 A): the Throng's island bounty, another mob than the Accord's (the check: glass_fang_serpent reads 'Krait' on Stormscale); weight 0, copper like the Accord's."
+    },
+    {
+      "id": "gordrazhak_last_offering",
+      "line": "front",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "gordrazhak_krait_bounty"
+      ],
+      "title": "[PH] Party: The Last Offering",
+      "text": "[PH] Thorga asks for a party against {name:last_offering_ape} on Stormscale Summit; optional, nothing needs it. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_offering_ape"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 800
+      },
+      "lesson": "An island bounty: coin, no leveling.",
+      "duration_min": 15,
+      "group": true,
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft TH5 (K9 A): the bounty's one follow-up, the island elite (a recorded exception: the island elites stay per faction, plan §2 point 4)."
     },
     {
       "id": "throng_main_island_wreck",
@@ -72,9 +246,7 @@
       "turnin": "r20_orc_capital_envoy",
       "min_level": 60,
       "level": 60,
-      "requires": [
-        "throng_main_06"
-      ],
+      "requires": [],
       "title": "Optional: Sink the Wages",
       "text": "There is branded pay in the wreck at {name:r20_anchor_086} on Stormscale Summit, waiting for a salvage crew to call it wages. Take a boat from the Shipwright and give the wreck's pay to the sea before anyone accepts it. The sea already has the sailors; it can keep their money too.",
       "objectives": [
@@ -92,7 +264,8 @@
         "items": []
       },
       "duration_min": 30,
-      "optional": true
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft TH6: the optional island use, free from 60 without a story prerequisite."
     }
   ]
 }

@@ -105,6 +105,11 @@
       {"role": "watch_captain_huskell", "at": {"kind": "ossuary_wood", "pick": "farthest_from_roads"}, "respawn": 300},
       {"role": "salt_counter_witch", "at": {"kind": "mourning_mire", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "shoring_check", "name": "Gravesalt Shoring Check", "at": {"kind": "saltflats", "pick": "farthest_from_roads"}},
+      {"id": "work_laydown", "name": "Gravesalt Work Laydown", "at": {"kind": "blight_terraces", "pick": "farthest_from_roads"}},
+      {"id": "recovery_post", "name": "Gravesalt Recovery Post", "at": {"kind": "tombwood", "pick": "farthest_from_roads"}}
+    ],
     "critters": ["bone_weevil", "gull"]
   }
 }

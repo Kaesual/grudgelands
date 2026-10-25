@@ -1,12 +1,68 @@
 {
   "zone": "kragmar_nhal_veyr",
+  "reworked": true,
   "quests": [
+    {
+      "id": "nhalveyr_receiving",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 53,
+      "level": 54,
+      "requires": [],
+      "title": "[PH] A Receiving Place",
+      "text": "[PH] Ossa wants the personal effects prepared for their return sorted at the mourners' hall's receiving court. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:nhal_veyr/homes_mourners_hall/homes_mourners_hall_receiving_court",
+          "object": "held_supplies",
+          "label": "Sort the returned belongings",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft OS1: the town place of Nhal Veyr's mourners' hall (chapter 1's, another object)."
+    },
     {
       "id": "nv_front_01",
       "line": "front",
       "giver": "r20_undead_capital_envoy",
       "turnin": "r20_undead_capital_envoy",
-      "min_level": 53,
+      "min_level": 54,
       "level": 55,
       "requires": [],
       "title": "Dressed for the Long Rest",
@@ -24,37 +80,105 @@
       ],
       "rewards": {
         "weight": 3.5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:wand_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 12
+      "duration_min": 12,
+      "notes": "Round 62 FRONTQUESTS. Draft OS2 (K8 A): Glass Silk from the Gossamer Widows (night, the Skyglass rootways); its id and objective stay, it opens at 54; Nhal Veyr's weapon (a solo quest)."
     },
     {
-      "id": "nv_front_02",
+      "id": "nhalveyr_not_salvage",
       "line": "front",
       "giver": "r20_undead_capital_envoy",
       "turnin": "r20_undead_capital_envoy",
-      "min_level": 57,
-      "level": 58,
-      "requires": [
-        "nv_front_01"
-      ],
-      "title": "Closing the Watch Register",
-      "text": "The register has a space for the end of every watch; I have left these entries open for far too long. Lay five Last Watchmen to rest after dark on the {name:front_gravesalt_escarpment/whitewall}, which lies {zone_area:front_gravesalt_escarpment/whitewall}, and I can finally record their release.",
+      "min_level": 56,
+      "level": 57,
+      "requires": [],
+      "title": "[PH] Not Entered as Salvage",
+      "text": "[PH] Ossa wants the names on personal effects recorded at the {name:front_gravesalt_escarpment/recovery_post} before they vanish into ordinary salvage. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "last_watch_zombie"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/whitewall"
+          "type": "use",
+          "place": "front_gravesalt_escarpment/recovery_post",
+          "object": "witness_record",
+          "label": "Record the names on the effects",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft OS3: a use at the new recipe place P6 (Gravesalt's tombwood, away from Huskell)."
     },
     {
       "id": "throng_main_island_cairn",
@@ -63,9 +187,7 @@
       "turnin": "r20_undead_capital_envoy",
       "min_level": 60,
       "level": 60,
-      "requires": [
-        "throng_main_06"
-      ],
+      "requires": [],
       "title": "Optional: No New Volume",
       "text": "Someone has pressed a branded coin into the survey cairn at {name:r20_anchor_075} on The Wyrmglass Crown, entering an island in the books as though it were another debtor. Get a boat from the Shipwright, cross to the island and pry the brand-coin from the capstone. I have spent centuries correcting the registers of the dead; I refuse to open a new volume for mountains.",
       "objectives": [
@@ -83,7 +205,8 @@
         "items": []
       },
       "duration_min": 30,
-      "optional": true
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft OS4: the optional island use, free from 60 without a story prerequisite."
     }
   ]
 }

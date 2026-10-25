@@ -92,6 +92,10 @@
       {"role": "toll_taker_senn", "at": {"camp": "toll_camp"}, "respawn": 300},
       {"role": "last_toll_construct", "at": {"kind": "toll_fields", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "return_stand", "name": "Causeway Return Stand", "at": {"kind": "floodmeadows", "pick": "farthest_from_roads"}},
+      {"id": "crossing_stand", "name": "Causeway Crossing Stand", "at": {"kind": "wraithwood", "pick": "farthest_from_roads"}}
+    ],
     "critters": ["gull"]
   }
 }

@@ -1,153 +1,170 @@
 {
   "zone": "kragmar_blackwind_rise",
+  "reworked": true,
   "quests": [
     {
-      "id": "bw_front_hollow_01",
+      "id": "throng_main_02",
       "line": "front",
       "giver": "r20_anchor_040_host",
-      "turnin": "r20_anchor_040_host",
-      "min_level": 47,
-      "level": 49,
-      "requires": [],
-      "title": "Nameless, Still on Duty",
-      "text": "Mud has taken the names from their coats, but the Mire-Cured Husks still report for duty. Lay five to rest by day in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}. Accord or Throng, a body deserves better than another shift in that mud.",
+      "turnin": "r31_throng_warmaster",
+      "min_level": 46,
+      "level": 47,
+      "requires": [
+        "bb_front_ramp_05"
+      ],
+      "story": true,
+      "title": "The Fire Is New",
+      "text": "Old death I know: it smells of dust and patience, and this Tithe-Brand smells of a furnace; Mortuary Clerk Hush entered our dead as debtors, but Hush never had fire. Take its coin as pay and it owns you, living or dead; the living cannot even throw it away, only pass it on as pay for another death. Wash the fresh ash from the old stone at the {name:ashen_grave}, {dir_from_giver:ashen_grave}, and you will see the brand laid over the names. Report to the Warmaster; being Undead has never made us somebody's property.",
+      "completion": "[PH] The Warmaster gets the link between names, pay and renewed service; the pledged standard comes next. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "causeway_mire_husk"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/toll_fields"
+          "type": "use",
+          "place": "kragmar_blackwind_rise/ashen_grave",
+          "object": "ash_slab",
+          "label": "Wash fresh ash from old stone",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 1.5
       },
-      "duration_min": 10
+      "duration_min": 15,
+      "tags": [
+        "throng_main"
+      ]
     },
     {
-      "id": "bw_front_hollow_02",
-      "line": "front",
-      "giver": "r20_anchor_040_host",
-      "turnin": "r20_anchor_040_host",
-      "min_level": 47,
-      "level": 49,
-      "requires": [],
-      "title": "A Fare for Nobody",
-      "text": "The Fordwater Zombies still hold out their hands for a fare, though I doubt any remember the crossing. Destroy five after dark at the {name:front_broken_causeway/last_ford}, which lies {zone_area:front_broken_causeway/last_ford}. Keep your coins; I have tried paying, and the service is dreadful.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "causeway_ford_zombie"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/last_ford"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "bw_front_hollow_03",
+      "id": "hollow_strap_names",
       "line": "front",
       "giver": "r20_anchor_040_host",
       "turnin": "r20_anchor_040_host",
       "min_level": 48,
-      "level": 50,
-      "requires": [
-        "bw_front_hollow_01"
-      ],
-      "title": "Party: Close the Account",
-      "text": "War Construct Last-Toll waits in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct}; whoever built it neglected to include a closing hour. Take a party and destroy it, because it will make spare parts of a lone fighter. We have quite enough spare parts here already.",
+      "level": 49,
+      "requires": [],
+      "title": "[PH] A Name on the Strap",
+      "text": "[PH] Orrel wants the markings on left-behind watch gear at {name:r20_anchor_083} recorded, so the things go to the right people. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "last_toll_construct"
-          ],
-          "count": 1
+          "type": "use",
+          "place": "r20_anchor_083",
+          "object": "witness_record",
+          "label": "Record the names on the gear",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_silk",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_sleek",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 15,
-      "optional": true,
-      "group": true
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft OR1: a use at the free clash site 083 (beside F6's snares, another object); Blackwind's first armor choice."
     },
     {
-      "id": "bw_front_hollow_04",
+      "id": "hollow_not_salvage",
       "line": "front",
       "giver": "r20_anchor_040_host",
       "turnin": "r20_anchor_040_host",
       "min_level": 50,
-      "level": 52,
+      "level": 50,
       "requires": [],
-      "title": "The Dead Are Not Rations",
-      "text": "I set the dead in order, and the Saltpack Wolves scatter them again before the graves are ready. Kill five by day in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}. There is only so much dignity I can retrieve from a muzzle.",
+      "title": "[PH] Before It Becomes Salvage",
+      "text": "[PH] Orrel wants a notice posted at {name:r20_anchor_076} that the belongings of the remnant's dead are claimed for their kin, so salvage crews leave them. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "saltpack_wolf"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/bonewood"
+          "type": "use",
+          "place": "r20_anchor_076",
+          "object": "claim_notice",
+          "label": "Post the notice of claim",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_gear:staff_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft OR2, the check's fix (it repeated blackwind_recovery_rest's secured bundle): a posted claim against salvage instead (claim_notice, an existing kind); a use at the free clash site 076; Blackwind's weapon (a solo quest, reward level 50: the band 41-50)."
     },
     {
-      "id": "bw_front_hollow_05",
-      "line": "front",
-      "giver": "r20_anchor_040_host",
-      "turnin": "r20_anchor_040_host",
-      "min_level": 51,
-      "level": 52,
-      "requires": [
-        "bw_front_hollow_04"
-      ],
-      "title": "The Owners Still Object",
-      "text": "Saltroad Deserters are stripping the {name:front_gravesalt_escarpment/tomb_galleries}, which lie {zone_area:front_gravesalt_escarpment/tomb_galleries}, day and night. They call the tombs abandoned. Kill five of the robbers; some of us take a very long time to answer the door.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "saltroad_deserter"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/tomb_galleries"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "bw_front_hollow_06",
+      "id": "hollow_road_ashveil",
       "line": "front",
       "giver": "r20_anchor_040_host",
       "turnin": "r20_anchor_039_host",
       "min_level": 52,
-      "level": 53,
-      "requires": [
-        "bw_front_hollow_05"
-      ],
-      "title": "Someone Who Listens",
-      "text": "Vaska Ashlistener hears the Last Watch in the wind, and lately she has heard little worth smiling about. Go speak with her at Ashveil Watch in Blackwind Rise and say Orrel Hollowstep trusts your work. I should warn you: she hears muttering just as clearly.",
+      "level": 52,
+      "requires": [],
+      "title": "[PH] Ashveil Keeps the Record",
+      "text": "[PH] Orrel sends the player to Vaska Ashlistener at Ashveil Watch, who looks after the higher front and the word that comes back from it. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -155,99 +172,166 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only): a departure to a giver with work at once.",
+      "duration_min": 8,
+      "notes": "Round 62 FRONTQUESTS. Draft OR3: the free travel to Vaska at 52."
     },
     {
-      "id": "bw_front_ashveil_01",
+      "id": "ashveil_rock_salt",
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 53,
-      "level": 55,
+      "min_level": 52,
+      "level": 53,
       "requires": [],
-      "title": "What the Salt Holds",
-      "text": "The salt has kept their bodies, but when I listen for their voices there is only the scrape of feet. Lay five Saltbound Husks to rest by day in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}. Preserving someone ought to mean more than keeping them upright.",
+      "title": "[PH] Keep What Can Be Kept",
+      "text": "[PH] Vaska needs salt to keep the supplies and the recovered things from spoiling; no magic: bring 6 Rock Salt. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "saltbound_husk"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/tomb_fen"
+          "type": "item",
+          "item": "grug_gathering:rock_salt",
+          "count": 6
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft VA1; Blackwind's first 51-60 armor choice."
     },
     {
-      "id": "bw_front_ashveil_02",
+      "id": "ashveil_road_ossa",
+      "line": "front",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 53,
+      "level": 53,
+      "requires": [],
+      "title": "[PH] A Place for Their Belongings",
+      "text": "[PH] Vaska sends the player to Ossa Quietregister in Nhal Veyr, who receives the personal effects of the dead; offered before Vaska's main-line part. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_undead_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only): a departure to a giver with work at once.",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft VA2: the free departure to Ossa at 53."
+    },
+    {
+      "id": "ashveil_next_party",
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 53,
+      "min_level": 54,
       "level": 55,
       "requires": [],
-      "title": "Let Me Have the Last Word",
-      "text": "The Brine Witches whisper hexes over the dead, and the dead cannot rest while they listen. Kill four after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and bring me two Last-Hex Shards. I will read every hex carved into them, and then the dead can stop listening.",
+      "title": "[PH] Word for the Next Party",
+      "text": "[PH] Vaska wants word left at the {name:front_gravesalt_escarpment/work_laydown} for the next work party: what was recovered and what still lies out there. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "salt_hex_witch"
-          ],
-          "count": 4,
-          "area": "front_gravesalt_escarpment/tomb_fen"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:last_hex_shard",
-          "count": 2,
-          "roles": [
-            "salt_hex_witch"
-          ],
-          "area": "front_gravesalt_escarpment/tomb_fen"
+          "type": "use",
+          "place": "front_gravesalt_escarpment/work_laydown",
+          "object": "dispatch_record",
+          "label": "Leave word for the next party",
+          "hold": 4
         }
       ],
       "rewards": {
         "weight": 5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 12
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft VA3, the check's fix (a signal lantern repeated blackwind_signal_lantern): a dispatch record at the new recipe place P5 (beside Borin's braces, another object); Blackwind's second 51-60 armor choice."
     },
     {
-      "id": "bw_front_ashveil_03",
+      "id": "ashveil_vigil_torches",
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 57,
-      "level": 58,
-      "requires": [
-        "bw_front_ashveil_01"
-      ],
-      "title": "Relief Long Overdue",
-      "text": "Nobody came to relieve the Last-Watch Mummies, so they gave their posts everything, even the years after death. Lay five to rest by day on the {name:front_gravesalt_escarpment/whitewall}, which lies {zone_area:front_gravesalt_escarpment/whitewall}. Let them go with more respect than their commanders ever showed them.",
+      "min_level": 55,
+      "level": 56,
+      "requires": [],
+      "title": "[PH] Light for Those Who Wait",
+      "text": "[PH] Vaska wants torches for the vigil of those who wait at Ashveil Watch for word of their dead: bring 20 Torches. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "last_watch_husk"
-          ],
-          "count": 5,
-          "area": "front_gravesalt_escarpment/whitewall"
+          "type": "item",
+          "item": "default:torch",
+          "count": 20
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 4.5
       },
-      "duration_min": 10
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 8,
+      "notes": "Round 62 FRONTQUESTS. Draft VA4, the check's fix (Mushrooms repeated Vaska's 'Something for Those Who Wait'): torches for the vigil instead of food."
     },
     {
       "id": "bw_front_ashveil_04",
@@ -257,12 +341,12 @@
       "min_level": 57,
       "level": 59,
       "requires": [
-        "bw_front_ashveil_02",
-        "bw_front_ashveil_03",
         "throng_main_06"
       ],
+      "story": true,
       "title": "Dismissed, Captain",
       "text": "Watch-Captain Huskell calls soldiers of both armies from the Undertithe's roll; each fresh payment buys their names for another watch. Kill four Last-Watch Sentries at night in the {name:front_gravesalt_escarpment/ossuary_wood} and defeat Huskell, {dir_from_giver:watch_captain_huskell}. I have listened long enough to hear the same names twice; let me hear where his list ends.",
+      "completion": "[PH] The roll holds dead of both armies and, last, Mardra; her guilt gives the Undertithe no claim. Vaska points to Nalo and the payer in the Skyglass Canopy. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -281,8 +365,7 @@
         }
       ],
       "rewards": {
-        "weight": 6.5,
-        "items": []
+        "weight": 6.5
       },
       "duration_min": 15,
       "climax": true,
@@ -297,9 +380,7 @@
       "turnin": "r20_anchor_039_host",
       "min_level": 58,
       "level": 60,
-      "requires": [
-        "bw_front_ashveil_04"
-      ],
+      "requires": [],
       "title": "Party: Nobody's Number",
       "text": "Bog Witch Salt-Counter holds court {dir_from_giver:salt_counter_witch}, counting soldiers like grains of salt and never once by name. Gather a party and kill her; alone, you would only be one more grain on her scale. I remember names, and I would prefer not to add yours to the list I mourn.",
       "objectives": [
@@ -313,41 +394,22 @@
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:manawell_t6"
+          },
+          {
+            "item": "grug_gear:battlebeat_t6"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t6"
+          }
+        ]
       },
       "duration_min": 15,
       "optional": true,
-      "group": true
-    },
-    {
-      "id": "throng_main_02",
-      "line": "front",
-      "giver": "r20_anchor_040_host",
-      "turnin": "r31_throng_warmaster",
-      "min_level": 46,
-      "level": 47,
-      "requires": [
-        "bb_front_ramp_05"
-      ],
-      "title": "The Fire Is New",
-      "text": "Old death I know: it smells of dust and patience, and this Tithe-Brand smells of a furnace; Mortuary Clerk Hush entered our dead as debtors, but Hush never had fire. Take its coin as pay and it owns you, living or dead; the living cannot even throw it away, only pass it on as pay for another death. Wash the fresh ash from the old stone at the {name:ashen_grave}, {dir_from_giver:ashen_grave}, and you will see the brand laid over the names. Report to the Warmaster; being Undead has never made us somebody's property.",
-      "objectives": [
-        {
-          "type": "use",
-          "place": "kragmar_blackwind_rise/ashen_grave",
-          "object": "ash_slab",
-          "label": "Wash fresh ash from old stone",
-          "hold": 4
-        }
-      ],
-      "rewards": {
-        "weight": 1.5,
-        "items": []
-      },
-      "duration_min": 15,
-      "tags": [
-        "throng_main"
-      ]
+      "group": true,
+      "notes": "Round 62 FRONTQUESTS. Draft VA5 (K11 A): the optional group quest on Salt-Counter, standalone from its level; its id and objective stay, its prerequisite goes; a trinket choice."
     },
     {
       "id": "throng_main_07",
@@ -360,8 +422,10 @@
         "bw_front_ashveil_04",
         "kz_front_04"
       ],
+      "story": true,
       "title": "No Names Left to Own",
       "text": "Huskell's roll ends with Mardra in fresh ink, and Chirr's payroll claims the same dead for the Undertithe. Burn our dead off the tally-stone at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}; leave it no names to own. With the names gone from root and stone, the debt has nothing to hold, and its collector will come to the stone in person. Tell the Warmaster what we have called up.",
+      "completion": "[PH] The Warmaster names Isquarre as the collector of this claim and opens the later group finale; Mardra is not acquitted. Real text to follow.",
       "objectives": [
         {
           "type": "use",
@@ -372,8 +436,7 @@
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": []
+        "weight": 2
       },
       "duration_min": 20,
       "tags": [
@@ -390,8 +453,10 @@
       "requires": [
         "throng_main_finale"
       ],
+      "story": true,
       "title": "The Answering Blow",
       "text": "I put my ear to the crack after he fell and listened longer than I meant to; it still burns, and he will come back to collect. Carry my account to the Warmaster at Bannerbreak Warhold word for word, so the drill yard hears it too. His last blow struck the ground. The answering blow came from underneath.",
+      "completion": "[PH] The military report and the responsibility for the names are closed; Greda stands for promises that still hold, Mardra stays part of the faction's own story; ends with the fixed last line, no new journey. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -400,7 +465,47 @@
       ],
       "rewards": {
         "weight": 1,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:staff_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
       "duration_min": 15,
       "tags": [
