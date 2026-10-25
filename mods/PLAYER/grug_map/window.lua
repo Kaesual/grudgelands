@@ -341,7 +341,7 @@ local function overlay(fs, player, session, layout, quest, info)
 	else
 		local layer = W.layer_of(session)
 		if layer.zones then
-			local metrics = layers.zone_labels.metrics(info)
+			local metrics = layers.zone_labels.metrics(info, session.zoom)
 			for _, zone in ipairs(layers.zones) do
 				local sx, sy = at(zone)
 				if sx then

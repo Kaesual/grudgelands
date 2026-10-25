@@ -17,7 +17,7 @@
 --      services, Towns both factions' settlements and the own innkeepers,
 --      home and waystones, Bosses the kings, the dragon once beside its
 --      arena, the rift boss and the rare den with their levels, POIs and
---      PvP both factions' places, Zones a box and a two-line label per
+--      PvP both factions' places, Zones a box and a single-line label per
 --      zone, None only the arrows; every marker's tooltip, topmost first,
 --      the party arrow with the member's name in every layer and mode;
 --      quest mode: the targets with their objectives' lines and the
@@ -732,15 +732,12 @@ do
 	map = layer_form(throng, "pvp")
 	has(map, ";Ashenward Bastion]", "O PvP: the other faction's fortress")
 	has(map, ";Front Throng Low Camp]", "O PvP: a war camp")
-	-- Zones: a box and a two-line label per zone, no icons or tooltips.
+	-- Zones: a box and a single-line label per zone, no icons or tooltips.
 	map = layer_form(accord, "zones")
 	eq(count(map, "box%["), 2, "O Zones: a box per zone")
-	-- Compact two-line labels retain every name and band.
-	has(map, ";Dawnmere]", "O Zones: first name line")
-	has(map, ";Fields 1–10]", "O Zones: second line and band")
-	has(map, ";kezamba]", "O Zones: single-word name")
-	has(map, ";60]", "O Zones: a single-level band")
-	eq(count(map, "label%["), 4, "O Zones: two lines per zone")
+	has(map, ";Dawnmere Fields 1–10]", "O Zones: complete name and band on one line")
+	has(map, ";kezamba 60]", "O Zones: single-word name and single-level band")
+	eq(count(map, "label%["), 2, "O Zones: one line per zone")
 	eq(count(map, "tooltip%["), 0, "O Zones: no tooltips")
 	local zbox = map:find("box%[")
 	local zlabel = map:find("label%[[^%]]*Dawnmere")
@@ -1625,19 +1622,26 @@ do
 	check(m2.char > m.char, "ZL text is wider in units on a smaller screen")
 	local fallback = Z.metrics(nil)
 	check(near(fallback.char, m.char), "ZL the fallback is 1080p at GUI scale 1")
+	local zoomed = Z.metrics(nil, 2)
+	check(zoomed.char > m.char and zoomed.line > m.line,
+		"ZL zoom 1 uses smaller type than zoom 2")
+	check(near(Z.metrics(nil, 8).char, zoomed.char), "ZL higher zoom keeps readable compact type")
+	local zoomed_list = {}
+	Z.elements(zoomed_list, 5, 5, "Dawnmere Fields", "1–10", zoomed, fs_escape)
+	has(table.concat(zoomed_list), "font_size=*0.85", "ZL rendered zoom font matches box metrics")
 	local box = Z.box("Dawnmere Fields", "1–10", m)
-	check(near(box.w, 11 * m.char + 2 * Z.PAD_X) and near(box.h, 2 * m.line + 2 * Z.PAD_Y),
-		"ZL the box fits the longest of two lines (the en dash counts once)")
+	check(near(box.w, 20 * m.char + 2 * Z.PAD_X) and near(box.h, m.line + 2 * Z.PAD_Y),
+		"ZL the box fits one complete line (the en dash counts once)")
 	local list = {}
 	Z.elements(list, 5, 5, "Dawnmere Fields", "1–10", m, fs_escape)
 	local bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
 	local lx, ly = list[3]:match("^label%[([%d.]+),([%d.]+);")
 	check(near(tonumber(bx) + tonumber(bw) / 2, 5, 0.002) and near(tonumber(by) + tonumber(bh) / 2, 5, 0.002),
 		"ZL the box centred on the label point")
-	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), 5 - m.line / 2, 0.002) and #list == 5,
-		"ZL two lines centred in the box (label[] centres its line on its y)")
+	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), 5, 0.002) and #list == 4,
+		"ZL one line centred in the box (label[] centres its line on its y)")
 	list = {}
-	Z.elements(list, 0.1, 9.9, "Dawnmere Fields", "1–10", m, fs_escape, 10, 10)
+	Z.elements(list, 0.1, 9.99, "Dawnmere Fields", "1–10", m, fs_escape, 10, 10)
 	bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
 	check(near(tonumber(bx), 0, 0.002) and near(tonumber(by) + tonumber(bh), 10, 0.002),
 		"ZL a label at the map's edge stays inside it")

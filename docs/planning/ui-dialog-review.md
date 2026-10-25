@@ -212,3 +212,42 @@ installation is part of this work; keep the worktree for the user's review.
   The final result covers **all 276 fixtures**. A second independent review
   checked these adaptations, retaining transaction/state assertions and the
   quest-item-name checks across the newly separated text panes.
+
+
+## Pre-merge review fixes — 2026-10-25
+
+The user's approved follow-up to Opus's review of `a849d18f` is compatible:
+no saved-state, meta, item/list, capacity or field-id changes. The vendor
+remembers its offer scroll position in the existing ephemeral session for
+both CHG and VAL events, clamps it to the current shelf, and resets it on
+mode/tab changes. Scroll-only events send no replacement form. Its native
+scrollbar thumb now represents the visible share of the catalogue.
+
+The user reaffirmed **single-line zone names and bands**. The existing
+startup placement still nudges labels in both axes; 1× uses smaller type
+(0.65), 2× and above use 0.85. Geometry and drawing share those metrics.
+The 2026-10-13 choice and original collision measurements are restored in
+`world_map.md` and explicitly distinguished from the current layout.
+Mail's prose calls now restore the owning form's 0.85 textarea font scale;
+other callers retain the previous default 1.0 restoration. Read-only prose
+and editable field names are unchanged.
+
+Validation: `r48_sell` (including repeated lower-row buys, CHG/VAL, malformed
+values, shrinking stock, shelf/mode changes and reopening), `r44_mq`,
+`r48_mail`, `r48_admin`, `r56_small`, `r57_vendormat`, `r58_campnpc`,
+`r58_rep` and `ui_navigation`: **9 passed**. The map fixture's assertions now
+measure one line; its edge-clamp sample was moved to the actual edge for the
+shorter box. Changed Lua files pass the Lua 5.1 parser and sweeps 1–5;
+`check_fresh_server.py` and `git diff --check` pass. Independent Sol review
+of the bounded runtime/test delta: **no findings**. The full suite was not
+repeated for this narrow delta; the coordinator owns the final merge gates.
+
+Four actual desktop-client captures at 1035×696 (GUI 1), inspected directly:
+Zones at 1×/2×, General merchant, and T1 merchant. Artifacts:
+`~/projects/grudgelands-orchestration/ui-modernization/dialog-review-fixes-2026-10-25/1035x696/`.
+The isolated capture boot completed without server/invalid-formspec errors.
+At seed 12345 the startup diagnostic reports 0 overlapping zone-label pairs
+and 2 over a region name at 1920×1080; at 1035×696, 9 and 3. These are
+estimated label-box diagnostics, not a guarantee of collision-free text.
+The small 1× overview remains dense; zoom 2× is the readable detailed view.
+No personal Luanti data or web client was opened, and no merge/push was done.

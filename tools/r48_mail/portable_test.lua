@@ -1009,6 +1009,9 @@ do
 		"D Report asks first")
 	send_fields(alice, {report_cancel = "Cancel"})
 	send_fields(alice, {["delete_" .. first.id] = "Delete"})
+	check(formspecs.Alice.text:find("style_type[textarea;border=true;font_size=*0.850]", 1, true)
+		and not formspecs.Alice.text:find("style_type[textarea;border=true;font_size=*1", 1, true),
+		"D letter prose preserves the mail form's textarea size")
 	check(session.dialog == "delete" and formspecs.Alice.text:find("still holds its attachments", 1, true),
 		"D deleting a letter with attachments asks first")
 	send_fields(alice, {delete_cancel = "Cancel"})

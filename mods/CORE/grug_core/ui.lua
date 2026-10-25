@@ -79,11 +79,13 @@ end
 
 -- Service typography uses one body size. Section labels are quieter, never
 -- tiny relative to body text. All content comes from the owning service.
-function UI.prose(x, y, w, h, text, muted)
+-- Callers with a textarea type style pass its font scale for restoration.
+-- Anonymous textareas remain read-only; editable field names stay untouched.
+function UI.prose(x, y, w, h, text, muted, restore_font_scale)
     return "style_type[textarea;border=false;font_size=*0.85]" ..
         ("textarea[%.3f,%.3f;%.3f,%.3f;;;%s]"):format(x, y, w, h,
             core.formspec_escape(muted and core.colorize(UI.colors.muted, text) or text)) ..
-        "style_type[textarea;border=true;font_size=*1]"
+        ("style_type[textarea;border=true;font_size=*%.3f]"):format(restore_font_scale or 1)
 end
 
 function UI.service_header(w, title, subtitle, icon)

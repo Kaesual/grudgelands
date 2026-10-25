@@ -233,7 +233,7 @@ end
 
 local function reading_body(fs, entry, height)
 	fs[#fs + 1] = grug_core.ui.panel(PANE_X, BODY_Y, PANE_W, height) ..
-		grug_core.ui.prose(PANE_X + 0.12, BODY_Y + 0.1, PANE_W - 0.24, height - 0.2, entry.body)
+		grug_core.ui.prose(PANE_X + 0.12, BODY_Y + 0.1, PANE_W - 0.24, height - 0.2, entry.body, false, 0.85)
 end
 
 local function dialog_box(fs, y, h)
@@ -265,7 +265,7 @@ end
 local function delete_dialog(fs, letter)
 	dialog_box(fs, 9.25, 2.9)
 	fs[#fs + 1] = grug_core.ui.prose(PANE_X + 0.2, 9.4, PANE_W - 0.4, 1.45,
-        "This letter still holds its attachments.\nDelete it together with them?")
+        "This letter still holds its attachments.\nDelete it together with them?", false, 0.85)
 	fs[#fs + 1] = ("button[%.2f,11.15;1.6,0.75;delete_cancel;Cancel]" ..
 		"style[delete_confirm_%d;bgcolor=#8a3a2c]button[%.2f,11.15;1.6,0.75;delete_confirm_%d;Delete]")
 		:format(PANE_X + 1.4, letter.id, PANE_X + 3.15, letter.id)

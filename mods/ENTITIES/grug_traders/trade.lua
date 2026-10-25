@@ -57,7 +57,7 @@ local FORM_W, FORM_H = 14, 10.2
 local GREYED = "#8a8a8a"
 
 -- player name -> {vendor, faction, pos, origin, mode, tab, page, offer, rows,
--- trade_rows, rep_shown}
+-- trade_rows, rep_shown, offers_scroll, offers_scroll_max}
 local sessions = {}
 
 -- A Miner's Guild vendor (its definition's `guild = true`) shows the
@@ -352,9 +352,19 @@ local function render_buy(parts, player, session, vendor, discount)
 	-- session indices, with one direct purchase per click.
 	local row_count = math.ceil(#offer / GRID_COLS)
 	local extent = math.max(0, row_count * 0.95 - 6.45)
-	parts[#parts + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=10;largestep=40;thumbsize=60]"):
-		format(math.ceil(extent * 100))
-	if extent > 0 then parts[#parts + 1] = "scrollbar[13.35,2.8;0.25,6.45;vertical;offers_scroll;0]" end
+	local maximum = math.ceil(extent * 100)
+	session.offers_scroll_max = maximum
+	session.offers_scroll = math.max(0, math.min(maximum, session.offers_scroll or 0))
+	if maximum > 0 then
+		-- The engine sizes the thumb against max + 1, not content height.
+		-- Keep it proportional and smaller than the track on short shelves.
+		local thumb = math.max(1, math.min(maximum,
+			math.floor(6.45 * (maximum + 1) / (row_count * 0.95) + 0.5)))
+		parts[#parts + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=10;largestep=40;thumbsize=%d]"):
+			format(maximum, thumb)
+		parts[#parts + 1] = ("scrollbar[13.35,2.8;0.25,6.45;vertical;offers_scroll;%d]"):
+			format(session.offers_scroll)
+	end
 	parts[#parts + 1] = "scroll_container[0.5,2.8;12.7,6.45;offers_scroll;vertical;0.01]"
 	for i, entry in ipairs(offer) do
 		local x = ((i - 1) % GRID_COLS) * 6.4
@@ -625,6 +635,7 @@ local function validate(player)
 	-- The Trade-in mode exists only at a guild vendor.
 	if session.mode == "tradein" and not guild_vendor(vendor) then
 		session.mode = "buy"
+		session.offers_scroll = 0
 	end
 	-- A stale bracket tab (an unknown id, or one above the player's level)
 	-- falls back to the always-available core stock.
@@ -638,6 +649,7 @@ local function validate(player)
 				-- buttons are drawn (WP13 round 3's profession vendors).
 				not sells_gear(vendor) then
 			session.tab = "general"
+			session.offers_scroll = 0
 		end
 	end
 	return session, vendor
@@ -912,12 +924,24 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 
+	-- CHG arrives while scrolling; VAL accompanies a purchase. Remember both
+	-- before dispatch, without resending for a scrollbar-only event.
+	if session.mode == "buy" and type(fields.offers_scroll) == "string" then
+		local kind, value = fields.offers_scroll:match("^(%u+):(%-?%d+)$")
+		if kind == "CHG" or kind == "VAL" then
+			session.offers_scroll = math.max(0, math.min(session.offers_scroll_max or 0,
+				tonumber(value)))
+		end
+	end
+
 	if fields.mode_buy then
+		if session.mode ~= "buy" then session.offers_scroll = 0 end
 		session.mode = "buy"
 		show(player)
 		return true
 	end
 	if fields.mode_sell then
+		if session.mode ~= "sell" then session.offers_scroll = 0 end
 		session.mode = "sell"
 		session.page = 1
 		show(player)
@@ -950,6 +974,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	-- any field anywhere).
 	if guild_vendor(vendor) then
 		if fields.mode_tradein then
+			if session.mode ~= "tradein" then session.offers_scroll = 0 end
 			session.mode = "tradein"
 			session.page = 1
 			show(player)
@@ -988,6 +1013,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	-- rows. Anything outside those ranges could not pass do_buy/do_sell's
 	-- snapshot cross-check anyway and is ignored.
 	if fields.tab_general then
+		if session.tab ~= "general" then session.offers_scroll = 0 end
 		session.tab = "general"
 		show(player)
 		return true
@@ -995,6 +1021,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local max_bracket = grug_traders.max_bracket()
 	for b = 1, max_bracket do
 		if fields["tab_" .. b] then
+			if session.tab ~= tostring(b) then session.offers_scroll = 0 end
 			session.tab = tostring(b)
 			show(player)
 			return true

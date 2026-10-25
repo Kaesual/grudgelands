@@ -229,19 +229,29 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   client shows the first rect under the pointer (`guiFormSpecMenu.cpp`
   drawMenu), so they are sent topmost first: the party arrows', then the
   markers' in reverse draw order. They are clipped to the map's view.
-- **Zones layer** (Round 47; compact presentation updated 2026-10-25):
-  every zone retains its name and level band, now on two compact lines over
-  a translucent dark box. Names break at the space nearest their midpoint;
-  the band stays intact on the second line. Text remains a constant native
-  font size at each zoom (0.85 of the client font). Box dimensions use the
-  same two-line metrics as rendering. Selecting Zones from a 1× overview
-  enters the existing 2× zoom around the player; the normal minus button
-  still permits 1×, where crowded zones can overlap.
-  Placement (`grug_map/zone_labels.lua`) remains a single startup pass:
-  sample each zone's land on the 32-node grid, prefer its deepest land cell,
-  and nudge clear of earlier labels and baked region names. Placement sizes
-  use the small viewport; diagnostics report reference and small viewport
-  collisions separately. No per-tick or per-player placement is added.
+- **Zones layer** (Round 47 ruling 7; the one line is the user's pick of
+  2026-10-13 after the screenshots, reaffirmed 2026-10-25): per zone one
+  `label[]` with its name and level band on one line ("Dawnmere Fields 1–10",
+  "Stormscale Summit 60"), over a tight translucent dark box (`#101820c0`)
+  kept inside the map. Text is 0.65 of the client font at 1× and 0.85 at
+  2× and above; larger zooms make room for the more readable type. Box
+  dimensions and rendering share the same font metrics (0.52 em per
+  character, 1.2 em line height; 16 px times GUI scaling, pixels per unit
+  from window information). Selecting Zones from a 1× overview enters
+  the existing 2× zoom around the player; minus still permits 1×.
+  Placement (`grug_map/zone_labels.lua`) reuses Round 28 M1's: at startup
+  sample land on the 32-node grid, prefer the cell farthest from border and
+  coast, and nudge clear of earlier labels and baked region names in both
+  axes. It uses the small viewport's 1× boxes; diagnostics report both
+  reference and small viewport collisions. No per-player or per-tick
+  placement is added, and crowded zones can still overlap at 1×.
+  **Historical measurements (Round 47, before the current layout/font):**
+  seed 42 had 38 labels, at 1× on 1920×1080 no overlapping pair and none
+  over a region name; on 1035×696 (8.84 map units at 53 px per unit),
+  46 overlapping pairs and 6 over a region name. The two-line candidate
+  before the 2026-10-13 pick had 3 and 0, then 79 and 16 respectively.
+  Placement took 0.13 s at startup, the grid 0.12 s of it. Those are the
+  original comparison figures, not measurements of today's half-width map.
 - **Quest boxes** (ruling 14, the quest log of [quests.md](quests.md)):
   the list box (the active count, the Quest HUD switch, the list, Track on
   HUD and Abandon with its confirmation) and below it the selected quest's
