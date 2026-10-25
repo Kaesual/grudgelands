@@ -81,8 +81,8 @@
       "min_level": 31,
       "level": 32,
       "requires": [],
-      "title": "[PH] A Meal Before the Road",
-      "text": "[PH] Toren Waterbarrel feeds the crews before their next run: bring 8 Corn. Real text to follow.",
+      "title": "A Meal Before the Road",
+      "text": "Every driver here is willing to leave at once, provided 'at once' comes after supper. Bring me eight Corn for the pot before the next run. I can get a great deal more work out of a full bowl than a stirring speech.",
       "objectives": [
         {
           "type": "item",
@@ -96,14 +96,14 @@
           "givers": [
             "r20_anchor_031_host"
           ],
-          "text": "[PH] Toren Waterbarrel feeds the crews before their next run: bring 8 Corn. Real text to follow."
+          "text": "Every driver here is willing to leave at once, provided 'at once' comes after supper. Bring me eight Corn for the pot before the next run. I can get a great deal more work out of a full bowl than a stirring speech."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_043_host"
           ],
-          "text": "[PH] Drek Rampbinder feeds the ramp crews before the next shift: bring 8 Corn. Real text to follow."
+          "text": "My ramp crews have a long shift ahead, and the breakfast pot is showing its bottom. Bring me eight Corn so they can eat before they lift another beam. Try hauling one on an empty stomach and you will understand my priorities."
         }
       ],
       "rewards": {
@@ -129,8 +129,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] The Reserve Is for Them",
-      "text": "[PH] Nella wants the replacement load at the guild camp's loading ground made ready for issue to her returning crews. Real text to follow.",
+      "title": "The Reserve Is for Them",
+      "text": "There is a replacement load on the loading ground at Ashenward Mining Camp, set aside for returning crews. Ready it for issue and report back to me. Some of those people have nothing dry left except the ration they are trying to swallow.",
       "objectives": [
         {
           "type": "use",
@@ -146,7 +146,7 @@
           "givers": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] Nella wants the replacement load at the guild camp's loading ground made ready for issue to her returning crews. Real text to follow."
+          "text": "There is a replacement load on the loading ground at Ashenward Mining Camp, set aside for returning crews. Ready it for issue and report back to me. Some of those people have nothing dry left except the ration they are trying to swallow."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -158,7 +158,7 @@
               "place": "socket:mining_camp_bannerbreak_mesa/held_load"
             }
           ],
-          "text": "[PH] Yarra wants the replacement load at the guild camp's loading ground made ready for the crews it was promised to. Real text to follow."
+          "text": "The reserve on the loading ground at Bannerbreak Mining Camp was promised to crews waiting on replacements. Ready that load for issue, then come back to me. I want the people under our banners to have their share while they can still use it."
         }
       ],
       "rewards": {
@@ -205,8 +205,8 @@
       "min_level": 31,
       "level": 32,
       "requires": [],
-      "title": "[PH] Water Has to Be Shared Out",
-      "text": "[PH] Toren needs Iron Buckets to issue water from the barrels that came in: bring 3 Iron Buckets; empty ones will do. Real text to follow.",
+      "title": "A Barrel Is Not a Drinking Cup",
+      "text": "The water barrels have arrived, but half the queue is waiting for the other half to hand a bucket back. Bring me three Iron Buckets so we can share the water out properly. Empty ones will do; we have managed the wet part.",
       "objectives": [
         {
           "type": "item",
@@ -258,9 +258,9 @@
       "min_level": 32,
       "level": 33,
       "requires": [],
-      "title": "[PH] The Account of Quartermaster Scrip",
-      "text": "[PH] Toren sends the player alone against {name:quartermaster_scrip} at the {name:ration_camp}, who sells the supply under the line's own seal. Real text to follow.",
-      "completion": "[PH] Toren confirms Scrip's books never explained the empty bowls; in passing, Requisition Clerk Odren Vell takes over the convoy books, a hand-over and nothing more. Real text to follow.",
+      "title": "The Account of Quartermaster Scrip",
+      "text": "{name:quartermaster_scrip} is selling our rations under The Accord's own supply seal at the {name:ration_camp}, {dir_from_giver:quartermaster_scrip}. His books say the meals were issued, and my drivers are scraping empty bowls. Kill him and bring me word. I cannot feed a crew on his sums.",
+      "completion": "Scrip's figures never explained an empty bowl, and now he will sell no more meals out from under us. Requisition Clerk Odren Vell is taking over the convoy books. I will keep counting what actually reaches the pot.",
       "objectives": [
         {
           "type": "kill",
@@ -326,8 +326,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Splitbolt Needs Hands",
-      "text": "[PH] Toren sends the player to Borin Splitbolt at Splitbolt Station with today's need for help; Scrip is not assumed. Real text to follow.",
+      "title": "Splitbolt Needs Hands",
+      "text": "Borin Splitbolt at Splitbolt Station in Stormvault Heights needs hands to keep his work going. Go and speak to him; his crews help keep the route usable for our loads. If he says a repair can wait until after supper, make certain you heard him correctly.",
       "objectives": [
         {
           "type": "talk",
@@ -349,8 +349,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] The Grown Road",
-      "text": "[PH] Toren sends the player to Faeris Rootbinder at Glassroot Gate, whose carriers use the same supply; Scrip is not assumed. Real text to follow.",
+      "title": "The Grown Road",
+      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds has carriers waiting for the same supplies I am trying to send. Go and ask what she needs to keep their paths usable. A load can have every stamp on it and still need someone to carry it the last stretch.",
       "objectives": [
         {
           "type": "talk",
@@ -372,8 +372,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Who Comes Back to Last Hedge",
-      "text": "[PH] Toren sends the player to Nella Hedgeward at Last Hedge Redoubt, who sees who arrives at the end of these roads; Scrip is not assumed. Real text to follow.",
+      "title": "Who Comes Back to Last Hedge",
+      "text": "Nella Hedgeward at Last Hedge Redoubt is waiting on crews as well as deliveries. Speak to her about the help she needs. I count portions before a cart leaves; she knows who is there to eat them when it arrives.",
       "objectives": [
         {
           "type": "talk",
@@ -395,8 +395,8 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] Party: The Marshal's Receipts",
-      "text": "[PH] Nella asks for a party against {name:red_receipt_marshal} at the {name:poacher_camp}, who trades in stolen supplies; optional, nothing needs it. Real text to follow.",
+      "title": "Party: The Marshal's Receipts",
+      "text": "{name:red_receipt_marshal} trades in stolen provisions at the {name:poacher_camp}, then offers to sell them back to the people he robbed. Gather a group and kill him, {dir_from_giver:red_receipt_marshal}. The receipts must look very respectable to anyone who did not see the arrows.",
       "objectives": [
         {
           "type": "kill",
@@ -438,9 +438,9 @@
         "ashenward_rations_03"
       ],
       "story": true,
-      "title": "[PH] Every Hand on the Road",
-      "text": "[PH] Toren knows the raided transport's load is lost; he wants its remaining transport record secured at the {name:broken_load} in the {name:wheelbreak} and taken to Audra Wainholt, the foreman of the guild camp. Real text to follow.",
-      "completion": "[PH] Audra reads which drivers came back, what they salvaged and whom they brought; the loss is assigned and the right help can be prepared (K2 A). Real text to follow.",
+      "title": "Every Hand on the Road",
+      "text": "Scrip is finished, but the transport attacked on its run through the {name:wheelbreak} still needs a proper account. The drivers brought back salvage and wounded, yet the loss sheet tells me only what did not arrive. Secure their transport record at the {name:broken_load}, {dir_from_giver:broken_load}, and take it to Audra Wainholt, the foreman at Ashenward Mining Camp. She knows the crews; I want their work counted before we decide what help to send.",
+      "completion": "These drivers hauled wounded people home with the material they could save; I will put that beside the losses in our account. Their waiting crews still need tools and supplies, and the drivers need relief. With those needs recorded, I can arrange the right help with Toren instead of sending another load on a guess.",
       "objectives": [
         {
           "type": "use",

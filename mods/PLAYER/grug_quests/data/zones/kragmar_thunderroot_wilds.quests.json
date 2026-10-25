@@ -39,8 +39,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Ashveil Listens Too",
-      "text": "[PH] Rumela sends the player to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; no earlier deed is claimed. Real text to follow.",
+      "title": "Ashveil Listens Too",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise needs help with the people arriving from the fighting. Go and speak to her. She lets a tired carrier finish a sentence, which is rarer than you would think among people waiting for a delivery.",
       "objectives": [
         {
           "type": "talk",
@@ -62,8 +62,8 @@
       "min_level": 32,
       "level": 33,
       "requires": [],
-      "title": "[PH] The Next Crew Should Know",
-      "text": "[PH] Rumela wants a prepared reading cord with the carriers' reports secured on the loading ground of the guild camp, for the next crew; no forecast, no riddle. Real text to follow.",
+      "title": "The Next Crew Should Know",
+      "text": "The carriers have left their reports on a reading cord at the loading ground of Thunderroot Mining Camp. Secure the cord so the next crew can read it before they leave. A loose knot can turn 'the crew is back' into a very long wait.",
       "objectives": [
         {
           "type": "use",
@@ -117,9 +117,9 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] One Stolen Storm Fewer",
-      "text": "[PH] Rumela wants a stored storm vessel made useless at the {name:storm_store} in the {name:stormglades}; no weather changes, no fight starts. Real text to follow.",
-      "completion": "[PH] A visible success of the zone's own before any party goes after Storm-Bottle. Real text to follow.",
+      "title": "One Stolen Storm Fewer",
+      "text": "The carriers working the {name:stormglades} have enough weather to endure without someone keeping a bottled storm to loose on them. Seal the vessel at the {name:storm_store}, {dir_from_giver:storm_store}, so it cannot be opened against the next crew. Leave it there and bring me word. The rain may be stubborn, but this much we can do something about.",
+      "completion": "That vessel is sealed against use now. Whoever meant to loose it on our carriers will have to find another way to spoil their journey.",
       "objectives": [
         {
           "type": "use",
@@ -175,7 +175,7 @@
       },
       "lesson": "The zone's solo quest; the weapon choice (prefix and suffix).",
       "duration_min": 12,
-      "notes": "Round 61 BANDQUESTS. K9 A: the zone's solo quest with its weapon, at a new recipe place in the Stormglades; the new object kind storm_vessel (a placeholder look until the user's art pick)."
+      "notes": "Round 61 BANDQUESTS. K9 A: the zone's solo quest with its weapon, at a new recipe place in the Stormglades; the new object kind storm_vessel (the user's drop-03 P1 art)."
     },
     {
       "id": "thunderroot_rainchar_group",
@@ -185,8 +185,8 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] Party: Storm-Bottle",
-      "text": "[PH] Rumela asks for a party against {name:storm_bottle_witch} in the {name:heartwood}, whose other stores and own violence remain; optional, nothing needs it. Real text to follow.",
+      "title": "Party: Storm-Bottle",
+      "text": "{name:storm_bottle_witch} hoards stolen storms in the {name:heartwood} and turns her own magic on anyone who approaches. Gather a group and kill her, {dir_from_giver:storm_bottle_witch}. She has made enough people flinch at thunder that once meant rain for their gardens.",
       "objectives": [
         {
           "type": "kill",
@@ -224,8 +224,8 @@
       "min_level": 40,
       "level": 40,
       "requires": [],
-      "title": "[PH] Standards at Tornstandard",
-      "text": "[PH] Rumela sends the player to Yarra Standardmender at Tornstandard Hold; neither the vessel nor Storm-Bottle is assumed. Real text to follow.",
+      "title": "The People Under the Banner",
+      "text": "Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa needs help with the fighting beyond our posts. Go and speak to her about it. She keeps the names of the fallen in her banners and a sharp eye on what the living still need.",
       "objectives": [
         {
           "type": "talk",

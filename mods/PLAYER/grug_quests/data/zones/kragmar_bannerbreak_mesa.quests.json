@@ -83,8 +83,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Yarra Keeps the Names",
-      "text": "[PH] Drek sends the player to Yarra Standardmender at Tornstandard Hold, who knows the people behind the banners. Real text to follow.",
+      "title": "Yarra Keeps the Names",
+      "text": "Yarra Standardmender at Tornstandard Hold needs help with the people who march under her banners. Go and speak to her. She can tell you who carried each one, who mended it, and which fool dragged it through a cooking fire.",
       "objectives": [
         {
           "type": "talk",
@@ -106,9 +106,9 @@
       "min_level": 34,
       "level": 35,
       "requires": [],
-      "title": "[PH] Rattle's Bad Arithmetic",
-      "text": "[PH] Drek sends the player alone against {name:provisioner_rattle} at the {name:supply_camp}, who turned the camp workers' next working day into goods. Real text to follow.",
-      "completion": "[PH] The damage to ramp work, camp work and supply is named; no deal with the enemy guild is claimed. Real text to follow.",
+      "title": "Rattle's Bad Arithmetic",
+      "text": "{name:provisioner_rattle} stole wagonloads meant for my ramp crews and the guild workers, and he is selling them out of the {name:supply_camp}. Find him, {dir_from_giver:provisioner_rattle}, and kill him. My people did their work; Rattle did none, yet he is selling their supper and tomorrow's tools as if he had earned them.",
+      "completion": "Rattle is finished, but his theft has left beams waiting for hands, guild workers waiting for tools and carriers with empty loads. We can begin putting that work back in order now. At least he will not be taking a cut of it.",
       "objectives": [
         {
           "type": "kill",
@@ -174,8 +174,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Word for Thunderstep",
-      "text": "[PH] Yarra sends the player to Rumela Stormstep at Thunderstep Watch, who keeps the carriers connected in the rain. Real text to follow.",
+      "title": "Word for Thunderstep",
+      "text": "Rumela Stormstep at Thunderstep Watch in Thunderroot Wilds keeps word passing between the carriers and the crews waiting for them. Go and offer her help. A banner can tell them where we stand; sometimes they would also like to know whether supper is coming.",
       "objectives": [
         {
           "type": "talk",
@@ -197,8 +197,8 @@
       "min_level": 37,
       "level": 38,
       "requires": [],
-      "title": "[PH] A Soldier's Due",
-      "text": "[PH] Yarra wants the old watch of the Trench Mummies in the {name:redcut_flats} ended: defeat 4 of them; honour does not need them standing. Real text to follow.",
+      "title": "A Soldier's Due",
+      "text": "The Trench Mummies still stand their old watch in the {name:redcut_flats}, which lie {zone_area:redcut_flats}. Put four of them to rest. I honour everyone who has served under a banner, but honour has never needed anyone to keep standing.",
       "objectives": [
         {
           "type": "kill",
@@ -253,8 +253,8 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] Party: The Banner-Eater",
-      "text": "[PH] Yarra asks for a party against {name:banner_eater} at the {name:goblin_warcamp}, who threatens the banners she sews the fallen's names into; optional, nothing needs it. Real text to follow.",
+      "title": "Party: The Banner-Eater",
+      "text": "I stitch our fallen's names into the banners, and {name:banner_eater} has been tearing them down to eat. Gather a group and kill him at the {name:goblin_warcamp}, {dir_from_giver:banner_eater}. There are people I remember by the last stitch I made for them, and I will not leave that stitch in his teeth.",
       "objectives": [
         {
           "type": "kill",
@@ -296,9 +296,9 @@
         "bannerbreak_ramp_03"
       ],
       "story": true,
-      "title": "[PH] The Hands Behind the Stores",
-      "text": "[PH] Drek wants the remaining handover record of the raided load secured at the {name:scattered_load} in the {name:warplains} and taken to Greda Stonehaul, the foreman of the guild camp. Real text to follow.",
-      "completion": "[PH] Greda confirms which share of the promise to ramp crew, guards and guild workers stays open; the carriers carry no blame (K3 A). Real text to follow.",
+      "title": "The Hands Behind the Stores",
+      "text": "Rattle will steal no more loads, but the ramp crews, guards and guild workers are still short of what was promised. The handover record for the transport raided on its run through the {name:warplains} should show each crew's share. Secure it at the {name:scattered_load}, {dir_from_giver:scattered_load}, and take it to Greda Stonehaul, the foreman at Bannerbreak Mining Camp. My crews have done their work, and I want to tell them what they can still expect.",
+      "completion": "Here are the shares for the ramp crews, the guards and our guild workers; each one is still owed its delivery. The Oathdelvers will arrange replacements with the army's suppliers. I will record the load as taken in the raid, with no debt laid on the carriers who lost it.",
       "objectives": [
         {
           "type": "use",
