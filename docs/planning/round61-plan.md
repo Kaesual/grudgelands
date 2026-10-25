@@ -1,6 +1,9 @@
 # Round 61 — the story arc's third chapter and the quest rework of levels 31–40 (0.61.0, map reset)
 
-Coordinator: Claude, 2026-10-25. Status: **draft**; the plan review (`r61/reports/plan-review.md`: 2 blockers, 5 important, 8 minor) is folded in, the user's answers are in §2a.
+Coordinator: Claude, 2026-10-25. Status: **complete** ([completion](#completion-2026-10-25)); 0.61.0 not pushed, it
+waits for the user's joint GUI test of 0.57.0 to 0.61.0
+([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)). The plan review
+(`r61/reports/plan-review.md`: 2 blockers, 5 important, 8 minor) is folded in, the user's answers are in §2a.
 
 Round 61 continues the **quest rework of levels 11–60** band by band on the Round 57 quest system (Round 59 did 11–20,
 Round 60 21–30 and the capitals) and builds the **third chapter of the story arc**. This round is the band **31–40**:
@@ -225,10 +228,10 @@ behaviour it changes, and the full run once before its report.
   `tools/r28_regions/run.sh`, `quest_targets.py`, `guarantee.py --check`, `r38_names/check_rules.py --shipped`,
   `income.py --check`, the seed fleet as above,
   one boot per lane.
-- **GUI checklist** (D, draft): a level-31 character of each faction finds the band's quests at once; shared quests in
-  each zone's voice; the reward choices at tier 4; chapter 3 from 34/35 (Toren / Drek, the cargo place, the named
-  foreman), ~39 (A6/T5 after the raid, pointing to the Warmaster); a group leader with a group, and the band played solo without it; the fortress calls and the main line at 41
-  still offered.
+- **GUI checklist:** Round 61's items are part of the joint checklist of 0.57 to 0.61,
+  [Round 60's list](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui) item 8 in (A) and items 82–96 in
+  (B); the draft here (a level-31 character of each faction through the band, chapter 3 at 34/35 and 39/40, a group
+  leader with a group and the band solo without it, the fortress calls and the main line at 41) is folded in there.
 
 ## 7. Orchestration notes
 
@@ -255,3 +258,177 @@ behaviour it changes, and the full run once before its report.
 
 Round 62: the front 41–60 (14 files, 108 quests, the Round 36 main line, the fortresses); then the production deploy
 with one map reset; then the armor redesign and the unique items.
+
+## Completion (2026-10-25)
+
+Every lane is merged on main, the code lane BANDQUESTS independently reviewed (Opus) and every fix checked: its fix
+round and the text picks were data or text only and checked by the coordinator; this lane D (the version, the
+declaration, this section, AGENTS, the status owners, the joint GUI checklist) follows on main `1a5aae56`. **0.61.0 is
+a map reset:** no migration step; characters keep their items, levels, quests and money; a quest whose id vanished is
+dropped (upgrade contract §4); item, achievement and waypoint ids unchanged; no new position in player meta. **Push:**
+not pushed; 0.57.0 was pushed on 2026-10-23 without its GUI test, and 0.58.0 to 0.61.0 wait for the user's joint GUI
+test. **Sync:** by the coordinator after every merge.
+
+### Lanes
+
+Worktrees and branches `r61-<lane>`. Main's first-parent commits, in order (lane tip in brackets):
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| SURVEY | outside the repository | the survey of the band 31–40 (`r61/reports/survey-quests-31-40.md`: 75 quests, the validator dry run, the pins, the ledger, the places, the rewards, the herbs, 12 questions) | the user's answers (§2a points 1–4) |
+| plan | `c3861491` | this plan with the plan review folded in (B1, B2, I1–I5, M1–M8) and the user's answers (§2a), the group-quest rule (§2 point 8) | fresh Opus plan review (2 blockers, 5 important, 8 minor) |
+| CHAPTER3 | outside the repository | GPT-6 Astra's draft of chapter 3 (`r61/reports/chapter3-draft.md`, German): the six zones' local threads, A5/A6 and T4/T5, the foremen's names, six new places, four `held_load` uses, the new object `storm_vessel`, the quest item Runner's Packet, the host line `border`, open points K1–K13 with two variants each | CHECK3 (Opus, read-only, `chapter3-check.md`): ready after two fixes (T3's sentence, one Rattle level) |
+| BANDQUESTS | `309732f9` (`45dec70d`) | the six band files' 31–40 part rebuilt and all six flagged `reworked`, the 15 main-line steps marked `story` (`tools/r61_bandquests/build_structure.py`, fixture, `questmap.py`); chapter 3 (A5, A6, T4, T5); two foremen-title rows (`grug_quests/npcs.lua`); the Runner's Packet (`items.json` kind `quest`) and `storm_vessel` (`use_objects.json`) as placeholders; six recipe places, four leaders dropped, Rattle's level, the `quest_target` flags and the six zones' 36 region maps (six seeds each); the r58 generator's `KEPT_HUNTS` | MERGE AFTER FIXES (Medium: 4 armor pieces per faction, not 6; Low: Rattle's kept id with changed objectives; Low: no fixture for A6/T5's offers); the fix `45dec70d` (six pieces per faction, the new `glassroot_ladders`, the r28_q0 A6/T5 lines) checked by the coordinator as data and fixtures only |
+| STORYART-SHIP | `62f979cd` (`38621c5a`) | the picked drop-03 P1 art (`grug_quests_obj_storm_vessel.png`, size 1.2; `grug_mobs_runners_packet.png`), the rows, `tools/r61_storyart` (`drop03.py`, `paint_art.py --check`), `LICENSE-media.md` "Round 61" | checked by the coordinator (PNGs byte-identical to the picks, the rows, no code) |
+| BANDTEXT, TEXTREVIEW | `1a5aae56` (`1f1b52ad`) | GPT-6 Astra wrote the 121 text fields of the six band files (`99ab9980`: 45 titles, 66 texts, 10 completions), T3's outlook sentence in `kragmar_nhal_veyr` and Stormvault's `identity`; the user's seven text picks and the two storm-vessel notes that still said placeholder, applied by the coordinator's script (`1f1b52ad`) | TEXTREVIEW (Opus): 0 must-fix, 7 proposals, all picked; `1f1b52ad` (text and notes only) checked by the coordinator |
+| D | this section | the version 0.61.0 and the `map_reset` entry, upgrade contract §2, AGENTS, STATUS, CHANGELOG, BACKLOG, ROADMAP, README, the group-quest rule in `quests.md`, the docs check, the joint GUI checklist | independent review |
+
+**STORYART** (GPT-6 Astra, outside the repository): story art drop 03 (the storm vessel and the Runner's Packet icon,
+two proposals each, `story-art/art/drop-03`); the user's picks are below. Nothing unpicked ships.
+
+Main has 277 portable fixtures (1 new: `r61_bandquests`). `mods/` against 0.60.1 (measured, `git diff 1878c103
+1a5aae56 -- mods`): 23 files, +1,566 −1,092 lines: the seven quest files (the six band files and T3's sentence in
+Nhal Veyr's), six spawn files, `subtypes.json`, `names.json`, `items.json`, `use_objects.json`, the two textures and
+their `LICENSE-media.md` rows, the camp blueprint's comment and the title rows in `grug_quests/npcs.lua`.
+
+### Decisions during the round
+
+**The user** (HANDOVER):
+
+- **Two rounds, not one:** Round 61 the band 31–40 and chapter 3, Round 62 the front 41–60 (the last quest round).
+- **§2a points 1–4** (the survey): the contested files flagged whole, their main line marked `story`; a questing share
+  of 30→40 of about 55–60 % is fine; one elite "Party" quest per zone folded into the zone's leader; the Ashenward and
+  Bannerbreak foremen named by a per-camp title.
+- **§2a points 5–7** (the plan review, on the coordinator's recommendations): A6/T5 follow the free camp raid at ~39,
+  no A7/T6; Scrip and Rattle stay solo and carry their zone's weapon; the zone's weapon on a solo quest.
+- **The group-quest rule** (§2 point 8): elite group quests below level 51 are always optional; from 51 they may stand
+  on the story path ([quests.md](../design/quests.md#group-quests-round-61)).
+- **The chapter-3 picks K1–K13: all "A"** (no notes): among them T5 at 40 (K1), the Broken Load and the Scattered Load
+  (K4–K6), the storm vessel (K9), the Runner's Packet (K10), Audra Wainholt and Greda Stonehaul (K12, K13).
+- **QUESTMAP:** accepted ("passt so").
+- **The art picks** (`story-art/pick/picks.md`, Round 61, drop 03): both P1: the storm vessel (a clay crock in a
+  wooden holder, size 1.2) and the Runner's Packet (a flat strapped envelope).
+- **The texts:** all seven proposals of the text review (A Soldier's Due's doubled location, Rattle's and Borin's
+  garbled clauses, Audra's A6 line, Rumela's Packet line, Faeris's ladders text, Alna's Emberglass text).
+
+**The coordinator** (answers to lane questions and the check; each built as stated):
+
+- **CHECK3's fixes, taken into the briefs:** T3's sentence without a second "on Bannerbreak Mesa"; Rattle's quest at
+  minimum 34 with reward level 35 and the leader at 35; one drop area per variant for the Runner's Packet;
+  `r60_bandquests`' `ALLOWED_FOLLOWERS` with A5.
+- **BANDQUESTS' Q1 accepted:** Blackwind's hideout archers (Shroud Archer, L36–37) are named like the camp's archers
+  and drop the Packet too (drops count by the name; the quest opens at 38, so they are only an easier source).
+- **Rattle's kept id accepted** (review finding 2): an active `bannerbreak_ramp_03` saved before 0.61.0 keeps its
+  per-objective progress and may read ready without Rattle's kill; one production world, declared by D
+  ([classification](#classification)).
+- **BANDQUESTS' Q2 answered by the review's fix** (six armor pieces per faction, plan §2 point 4).
+- **The data-only fixes** (BANDQUESTS' fix round, the text picks and the two placeholder notes) checked by the
+  coordinator; no logic changed in them.
+
+### Deviations from the plan
+
+- **No A7/T6** after the plan review (§2a point 5): the free fortress calls carry the player to the Warmaster.
+- **The shared quests:** the survey's shared ape, bear, goblin and Bitter Resin quests (§2a, "Shared quests") were
+  dropped by the draft; the five shared quests are errands, a drop and a use (`border_meal`, `border_melons`,
+  `border_stores`, `border_packets`, `border_reserve`), all on the hosts' new line `border`.
+- **Four leaders dropped** (§3): Bolt-Chewer, Basket-Biter, Grave-Broker Mute and Bottle-Keeper Zek left their spawn
+  files, `subtypes.json` and `names.json`; the six elite leaders stay as the Party quests.
+- **T5 at 40, not ~39** (K1 "A"): A6 at 39, T5 at 40, shown locked at 39.
+- **The armor:** the first build gave 4 pieces per faction; the fix round moved the Packet's reward to potions, put
+  armor on four quests that paid none and added `glassroot_ladders` (Faeris, 10 Wooden Ladders, level 34) for the
+  Accord's sixth piece; Toren's buckets moved to 31 and his travels to 30.
+- **The r58 camp hunt generator** would have re-picked every T4 hunt once the band changed its kinds; BANDQUESTS
+  pinned the shipped ones (`KEPT_HUNTS`, as Round 60).
+- **`check_upgrade.py` passed in every lane** (the plan expected a failure until D): unpushed 0.58.0's entry covers
+  every change against pushed 0.57.0; D declares 0.61.0's reset all the same.
+- **The validator's warnings** grew from 6 to 11: five new `W-night-count` on content whose counts are fixed (the
+  shipped main line and `camp_hunt_t4_night`).
+- **T3's completion has four sentences** (the rule says 1–3): the mandated wording of §2 point 3.
+- **STORYART-SHIP** was added as in Rounds 59 and 60; the two storm-vessel notes that still said placeholder were
+  fixed by the coordinator with the text picks.
+
+### Numbers worth keeping
+
+Measured unless marked "report" (taken from the lane's report).
+
+- **Quests:** the six band files' quests of reward level 31–40, 60 → 50 (measured over the files at `c3861491` and
+  `1a5aae56`; the 15 main-line steps unchanged but for `story`); **393 shipped** in 48 quest files (403 − 60 + 50), 34
+  of them flagged `reworked`; 31 ids dropped, 21 added, 29 kept (one with changed objectives: Rattle's
+  `bannerbreak_ramp_03`). Offered per zone (report, shared and camp or guild variants included, before → after):
+  Stormvault 15 → 15, Ashenward 16 → 16, Glassroot 14 → 14 (13 before the fix round's ladders), Blackwind 13 → 15,
+  Bannerbreak 13 → 15, Thunderroot 14 → 14.
+- **Objectives** (per quest, a shared quest counted once): kill 46 → 13, item 7 → 10, talk 15 → 19, use 0 → 9, so the
+  kill share 68 % → 25 %. Per zone (report, counting each zone's variants with the camp quests): Stormvault 56 → 25 %,
+  Ashenward 61 → 29 %, Glassroot 60 → 29 %, Blackwind 62 → 25 %, Bannerbreak 62 → 38 %, Thunderroot 65 → 27 %.
+- **Mob names per zone** (report, besides the raid's garrison): Stormvault 8 → 3, Ashenward 9 → 4, Glassroot 7 → 3,
+  Blackwind 8 → 3, Bannerbreak 9 → 5, Thunderroot 8 → 3; the Packet's archers Waylayer, Hedge Bowman, Bandit Fletcher,
+  Shroud Archer, Trench Archer and Brigand Bowman (measured, `names.json`).
+- **The ledger 30→40, solo** (`ledger.py --game --track <race> --party solo`, from level 1 / with `--start-level 30`,
+  on main `1a5aae56`): human 62 / 61 %, dwarf 59 / 58 %, elf 58 / 57 %, undead 56 / 56 %, orc 59 / 57 %, troll 56 /
+  55 %; before the round 76–86 % / 70–78 % (report, survey); the group quests are not counted.
+- **Group quests** (measured over all files): none below level 39; six at 39 (this band), four at 50, ten at 59–60
+  (four of them main-line steps marked `story`, two on the path to the final turn-in).
+- **The armor** (measured over the files; each faction six pieces with one enchant at item levels 31–40):
+
+  | Faction | Head | Legs | Chest | Feet |
+  |---|---|---|---|---|
+  | The Accord | Silversteel Bars (prefix), the ladders (suffix) | Emberglass (suffix), the buckets (suffix) | the reserve (prefix) | the Melons (prefix) |
+  | The Throng | the Mushrooms (prefix) | A Soldier's Due (suffix), the reading cord (suffix) | the signal lantern (suffix), the reserve (prefix) | the Melons (prefix) |
+
+  The weapons (one per weapon line, a prefix and a suffix): the Survey Stand (37), Scrip (33), the Carrier Path (39),
+  the Recovery Rest (39), the storm vessel (39), Rattle (35). The potions IV: Frostfin, the Corn, the Chests and the
+  Packet; A5 and T4 a potion choice; the six Party quests a choice of three plain tier-4 trinkets.
+- **The validator:** the dry run with the six files flagged before the round found 52 errors (report, survey);
+  `validate.py --game` on main: 0 errors, 11 warnings, 34 files flagged.
+- **The fleet:** BANDQUESTS' `quick` fleet with the six new places, 100 of 100 seeds, 9 min 45 s at 6 parallel
+  (report, `r61/reports/bandquests-fleet.txt`); this lane's full fleet: see [Round-end gates](#round-end-gates).
+
+### Classification
+
+**Map reset**, no step:
+`{"schema": 3, "version": "0.61.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+The reason ([upgrade contract §2](../technical/upgrade-contract.md#2-the-declaration)): six new quest places in the
+band spawn files, four leaders removed and Rattle's level changed, and the changed `quest_target` flags change the
+spawn recipes and the region maps world generation builds. A world on 0.57.0 (or 0.58.0 to 0.60.1) moves on across one
+reset with the pre-reset pass: characters keep everything but their position and home claim (contract §3.2); an
+active quest whose id vanished leaves the log, a kept id keeps its state.
+
+What needs the reset and what alone would be compatible (the lanes' reports): the six recipe places, the dropped
+leaders, Rattle's level and the flags change what new worlds build, and the quests that use them ride on the reset;
+the quest data itself, the Runner's Packet, the storm vessel, the foremen's titles, the texts and the art alone are
+compatible. Saved state, all without a position: `grug_quests:state` for the new ids (no format change); nothing new
+in player meta or mod storage, so no `register_on_relocate` clear. **One known edge:** Rattle's
+`bannerbreak_ramp_03` kept its id while its objectives went from [Sappers/Slingers ×4, Rattle] to [Rattle]; progress
+is stored per objective position (`grug_quests/state.lua`), so an active copy saved before 0.61.0 with the old count
+can read "ready" without Rattle's kill (the review's probe through the real loader). Accepted by the coordinator: one
+production world, and only a character in the middle of that quest.
+
+### Open notes
+
+- **For the user:** the joint GUI test of 0.57 to 0.61 (Round 60's checklist, extended), with these to judge: the
+  storm vessel's look and size and the Packet's icon at 16 px, the holds at the six new places and the four loading
+  grounds with mobs or the camp around, the Recovery Rest where it falls back near Hollowbell (3 of 6 seeds), the six
+  Party leaders with a group, the band's errands as a first version, the questing share of 30→40 (55–62 %), T3's
+  four-sentence completion; Rattle's edge at the first join.
+- **Round 62** reworks the front 41–60 (14 files, 108 quests, the Round 36 main line, the fortresses) and decides
+  whether the main line at 41 requires A6/T5; the four group quests at 50 still follow their front chains and become
+  standalone there (the group-quest rule).
+- The reviews' and reports' notes are in the [Round 61 carry-overs](../../BACKLOG.md#round-61-carry-overs).
+
+### Round-end gates
+
+Lane D on its branch from `1a5aae56` (measured; `mods/` identical to main): `check_upgrade.py` PASS (against
+origin/main `69481ed1`, 0.57.0, with the `map_reset` entry 0.61.0; it also passes without that entry, since unpushed
+0.58.0's covers every change against 0.57.0), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (11
+warnings, as after BANDQUESTS), `quest_kinds.py --check` 0 differ (114 quest-named kinds), `quest_targets.py` 0
+missing (894 targets on seeds 42, 7, 2026, CLOCK 0), `guarantee.py --check` PASS, `check_rules.py --shipped` 0
+problems, `income.py --check` PASS, `r37_dc` PASS (766 checks), `tools/r61_bandquests/build_structure.py --check` 0 of
+6, `tools/r60_bandquests/build_structure.py --check` 0 of 8, `tools/r60_capitals/build_structure.py --check` 0 of 6,
+`tools/r59_bandquests/build_structure.py --check` and `tools/r59_storyquests/build_structure.py --check` 0 of 6,
+`tools/r58_guildquests/build_structure.py --check --ids` 0 of 26, `tools/r61_storyart/paint_art.py --check` OK (2
+textures), `tools/r60_storyart/paint_art.py --check` OK (7) and `tools/r59_storyart/paint_art.py --check` OK (4), a
+link and anchor check of every touched file (1,145 links), the full `run_fixtures.sh` (**277 passed, 0 failed**), the
+**full seed fleet on main's tree** (`seed_fleet/run.sh full` through the queue at 8 parallel, with the quest-place
+check: **304 of 304 seeds build, 0 failed, 22 min 34 s**; Round 60's took 21 min 25 s) and one headless boot (PASS,
+listening, no ERROR line). Each code lane ran the full `run_fixtures.sh` once (BANDQUESTS 277/277 after its fix round,
+STORYART-SHIP 277/0; BANDTEXT 277/0 per Astra).

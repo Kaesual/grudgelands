@@ -2,7 +2,7 @@
 
 Coordinator: Claude, 2026-10-24. Status: **complete** ([completion](#completion-2026-10-24)); 0.59.0 not pushed, it
 waits for the user's joint GUI test of 0.57.0, 0.58.0, 0.59.0 and 0.60.0
-([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui)); the user's go 2026-10-24. The plan review (a fresh
+([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)); the user's go 2026-10-24. The plan review (a fresh
 Opus, `r59/reports/plan-review.md`) is folded in; its blocker and questions are decided (§2a).
 
 Round 59 starts the **quest rework of levels 11–60** on the Round 57 quest system, one level band per round, and
@@ -384,7 +384,7 @@ for the new ids (no format change); nothing new in player meta or mod storage, s
 ### GUI checklist (Rounds 57, 58 and 59)
 
 **Superseded (Round 60):** the test was not run before Round 60, so one checklist for 0.57, 0.58, 0.59 and 0.60
-replaces this one: [GUI checklist (Rounds 57, 58, 59, 60 and the UI)](round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui) (the items below keep their numbers there; Round 60
+replaces this one: [GUI checklist (Rounds 57, 58, 59, 60, 61 and the UI)](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui) (the items below keep their numbers there; Round 60
 changes items 12, 14, 20, 30, 31, 40, 42, 43 and 46 and adds (A) 5–7 and 49–66).
 
 One test for all three rounds (nothing since 0.57.0 has been tested in the GUI), desktop and the web build (the

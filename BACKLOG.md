@@ -104,8 +104,10 @@ layouts, resource tables or buff values.
   zone ([quests.md](docs/design/quests.md#the-band-1120-round-59)); Round
   60 took the band 21–30 to 17–27 % per zone and about three mob names per
   zone, and the capitals to 2–3 names of their own
-  ([quests.md](docs/design/quests.md#the-band-2130-round-60)); the bands
-  31–60 follow.
+  ([quests.md](docs/design/quests.md#the-band-2130-round-60)); Round 61
+  took the band 31–40 to 25–38 % per zone and 3–5 mob names per zone
+  ([quests.md](docs/design/quests.md#the-band-3140-round-61)); the front
+  41–60 follows (Round 62).
 - Current owners: [quests](docs/design/quests.md) and
   [story](docs/design/story.md). Coordinate teaching steps with the class
   and crafting revisions above.
@@ -3132,8 +3134,8 @@ The items the user decides in the GUI test are in the
 
 **Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
-The items the user decides in the joint GUI test of 0.57 to 0.60 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+The items the user decides in the joint GUI test of 0.57 to 0.61 are in
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Open GUI judgements:** the camps' places and bands; the headframe
   partly hiding the lift from the side and the lift's light level 3 (LIFT,
@@ -3194,8 +3196,8 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 
 **Noted 2026-10-24** ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
-The items the user decides in the joint GUI test of 0.57 to 0.60 are
-in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+The items the user decides in the joint GUI test of 0.57 to 0.61 are
+in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Open GUI judgements:** the held supplies' hold in the Redtusk and
   Raincall bandit camps with the camp's members around (the socket is
@@ -3256,8 +3258,8 @@ in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-
 
 **Noted 2026-10-24** ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
-The items the user decides in the joint GUI test of 0.57 to 0.60 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+The items the user decides in the joint GUI test of 0.57 to 0.61 are in
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Open GUI judgements:** the four new objects' look and size (STORYART);
   the holds at the Frostbarrow camp's loading ground and at the seven open
@@ -3318,12 +3320,72 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
   covers every change against pushed 0.57.0; the entry is declared for the
   record (the production world moves 0.57.0 → 0.60.0 across one reset).
 
+### Round 61 carry-overs
+
+**Noted 2026-10-25** ([completion](docs/planning/round61-plan.md#completion-2026-10-25)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the joint GUI test of 0.57 to 0.61 are
+items 8 and 82–96 of the
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
+
+- **Open GUI judgements:** the storm vessel's look and size (1.2) and the
+  Runner's Packet's icon at 16 px (STORYART-SHIP); the holds at the six new
+  places and the four mining camps' loading grounds with the area's mobs
+  or the camp around; the six Party leaders with a group and the band
+  solo without them; the band's errands as a first version (the user
+  accepted the QUESTMAP); the questing share of 30→40 at 55–62 % solo
+  (human 62, dwarf 59, elf 58, undead 56, orc 59, troll 56 from level 1),
+  within the user's 55–60 % yardstick; Rattle's edge on an old character
+  (below).
+- **Rattle's kept id** (BANDQUESTS' review, finding 2, accepted by the
+  coordinator): `bannerbreak_ramp_03` kept its id while its objectives
+  went from [Sappers/Slingers ×4, Rattle] to [Rattle]; progress is stored
+  per objective position (`grug_quests/state.lua` ~195-197), so an active
+  copy saved before 0.61.0 with the old count reads "ready" without
+  Rattle's kill (its weapon and T4's prerequisite with it). Declared in
+  the 0.61.0 entry of the upgrade contract; only the one production world.
+- **The Recovery Rest** (BANDQUESTS' review): where the Deadmarch forms no
+  region the place falls back to the belt's woods, and on 3 of 6 rendered
+  seeds that fallback lies in Hollowbell's region (91–385 nodes from the
+  elite leader); the fleet's place check tests that it is placed, not
+  where it fell back.
+- **The validator's warnings** (BANDQUESTS' review): five new
+  `W-night-count` warnings, on content whose counts are fixed (the
+  shipped main line and `camp_hunt_t4_night`); `validate.py --game` has
+  11 warnings, 0 errors.
+- **T3's completion** (TEXTREVIEW): four sentences, one more than the
+  completion rule's 1–3, because the appended outlook sentence was
+  mandated wording (plan §2 point 3).
+- **The Runner's Packet's second source** (BANDQUESTS' Q1, accepted):
+  Blackwind's `bandit_hideout` archers (Shroud Archer, L36–37) carry the
+  same name as the camp's, and drops count by the name (`state.lua`
+  ~621), so they drop the Packet too; the quest opens at 38, so they are
+  only an easier source (`guarantee.py` reports it as I-now-counts). A
+  distinct name would close it.
+- **Identity strings** (BANDQUESTS): the six band files' `identity` once
+  named the four dropped leaders; BANDTEXT rewrote them (TEXTREVIEW: none
+  names a dropped leader now; the string is not shown to the player).
+- **The four group quests at 50** (`lasthedge_front_05`,
+  `archshadow_front_04`, `bb_front_torn_06`, `bw_front_hollow_03`, lane D's
+  measurement for the group-quest rule): free and required by nothing, but
+  each still requires its front chain's previous quest; the rule
+  (standalone below 51) applies when Round 62 reworks the front files.
+- **Generators** (BANDQUESTS): the r58 camp hunt generator
+  (`tools/r58_guildquests/build_structure.py`) re-picks every T4 hunt when
+  a band changes its kinds; the shipped ones are pinned in `KEPT_HUNTS`
+  (Rounds 60 and 61), and its plain `--check` reports 10 differences on
+  main as on the base (the gate is `--check --ids`).
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.61.0 `map_reset` entry, because the unpushed 0.58.0 entry already
+  covers every change against pushed 0.57.0; the entry is declared for the
+  record (the production world moves 0.57.0 → 0.61.0 across one reset).
+
 ### UI modernization carry-overs
 
 **Noted 2026-10-25** (0.60.1, [UI plan](docs/planning/ui-modernization-plan.md)),
 the three reviews' notes (theoretical or accepted, no severity). The
 GUI points are items 67–81 of the
-[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
 
 - **Vendored rename:** `minetest.` became `core.` throughout
   `mods/BASE/default/nodes.lua`, `default/craftitems.lua` and
@@ -3416,8 +3478,10 @@ above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-deci
   11–20 and chapter 1, 0.59.0,
   [completion](docs/planning/round59-plan.md#completion-2026-10-24);
   Round 60 the band 21–30, the six capitals and chapter 2, 0.60.0,
-  [completion](docs/planning/round60-plan.md#completion-2026-10-24); the
-  bands 31–40 to 51–60 follow one per round); the arc follows the user's picks
+  [completion](docs/planning/round60-plan.md#completion-2026-10-24);
+  Round 61 the band 31–40 and chapter 3, 0.61.0,
+  [completion](docs/planning/round61-plan.md#completion-2026-10-25); the
+  front 41–60 is Round 62, the last quest round, the user 2026-10-25); the arc follows the user's picks
   on the Round 57 draft ([completion](docs/planning/round57-plan.md#decisions-during-the-round):
   the guilds and their faction's military closely interwoven with little
   conflict inside a faction, a traitor or a wrong decision as the author

@@ -12,6 +12,45 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.61.0 — the quests of levels 31–40 and the story's third chapter (2026-10-25)
+
+**Map reset** needed: new quest places in the wilds of levels 31–40, a
+few leaders gone and Provisioner Rattle at a new level change what world
+generation builds, so an existing world's map is generated anew from its
+seed. Characters keep their level, gear, inventory, money, quests,
+professions, mounts and waypoints, as in every map reset; a quest of
+levels 31–40 that no longer exists simply leaves the quest log. No
+migration step. One known edge: if "Rattle's Bad Arithmetic" was in your
+log before, it may already read ready without Rattle's kill.
+
+- **Levels 31–40 reworked:** Stormvault Heights, Ashenward March and
+  Glassroot Wilds (The Accord), Blackwind Rise, Bannerbreak Mesa and
+  Thunderroot Wilds (The Throng) offer their quests at once from level
+  30, each from its level, with no chain to follow outside the story.
+  Far fewer of them are hunts: set a sighting frame at the Stormvault
+  Survey Stand, loosen a snare on the Glassroot Carrier Path, secure a
+  shroud bundle at the Blackwind Recovery Rest, seal a stolen storm
+  vessel in Thunderroot, ready the reserve load, trim a signal lantern or
+  secure a reading cord at the mining camps' loading grounds, and bring
+  Corn, Melons, Chests, Iron Buckets, Wooden Ladders, Mushrooms and
+  Frostfin to the outposts. Four zones end with a departure to the front;
+  in Ashenward March and Bannerbreak Mesa the hosts give their front quests themselves.
+  Rewards: a choice of Healing or Mana Potion IV, armor choices with an
+  enchant and a weapon choice with two.
+- **The story's third chapter:** at level 34 Toren Waterbarrel sends The
+  Accord to a raided transport at the Ashenward Broken Load and on to
+  Audra Wainholt, the Ashenward mining camp's foreman; at 35 Drek
+  Rampbinder sends The Throng to the Bannerbreak Scattered Load and on to
+  Greda Stonehaul of the Bannerbreak camp. After the camp raid, at 39 and
+  40, the band's foremen send you to Nella Hedgeward or Yarra
+  Standardmender, who point you to the Warmaster.
+- **Optional group quests:** each zone's elite leader is one "Party:"
+  quest at 38 with a choice of trinkets; nothing else needs it, so the
+  band plays well alone.
+- **A new quest item and object:** the Runner's Packet, which the bandit
+  archers of the band's camps drop for "Words Worth Bringing Back", stays
+  in your bags like every quest item; the storm vessel has its own look.
+
 ## 0.60.1 — a new look for every window (2026-10-25)
 
 **Compatible:** no map reset and no migration step.
