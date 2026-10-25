@@ -384,7 +384,7 @@
       ],
       "story": true,
       "title": "An Oath in Hock",
-      "text": "Grave coin under a seal of The Accord: they are buying themselves a cheaper army, and I want the proof in my fist. Yarra Standardmender says the dead on The Shattered Line salute a standard pledged against the next payment. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}. Unpick the pledged standard at {name:r20_anchor_081} and take the stitching to Yarra at Tornstandard Hold; she reads cloth the way I read a liar.",
+      "text": "Grave coin under a seal of The Accord: they are buying themselves a cheaper army, and I want the proof in my fist. Yarra Standardmender says the dead on The Shattered Line salute a standard pledged against the next payment. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}. Unpick the pledged standard where the trenches open onto the line and take the stitching to Yarra at Tornstandard Hold; she reads cloth the way I read a liar.",
       "completion": "[PH] Yarra names Ninepins as the local enforcer; the barred name of the standard's site appears in no text. Real text to follow.",
       "objectives": [
         {
