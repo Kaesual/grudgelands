@@ -150,7 +150,7 @@
               "area": "kragmar_thunderroot_wilds/rainchar_camp"
             }
           ],
-          "text": "My carriers send word of a finished run so the next crew knows when to set out. The Brigand Bowmen at {name:rainchar_camp}, {dir_from_giver:rainchar_camp}, have taken to keeping that word for themselves. Bring me a Runner's Packet from them. Even the loudest drum is no help when nobody knows what happened."
+          "text": "My carriers send word of a finished run so the next crew knows when to set out. The Brigand Bowmen at {name:rainchar_camp}, {dir_from_giver:rainchar_camp}, have taken to keeping that word for themselves. Bring me a Runner's Packet from them. A drum can tell the whole forest that a crew is coming home; it is much worse at saying which one."
         }
       ],
       "rewards": {
@@ -266,7 +266,7 @@
       "level": 31,
       "requires": [],
       "title": "Word for Cinderline Watch",
-      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March feeds the drivers who bring our supplies. He needs help keeping those loads moving, and I need my workers to eat. Go and speak to him; a sound road has something worth carrying on it.",
+      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March feeds the drivers who bring our supplies. He needs help keeping those loads moving, and I need my workers to eat. Go and speak to him; a sound road is not much use without something worth carrying on it.",
       "objectives": [
         {
           "type": "talk",
@@ -312,7 +312,7 @@
       "level": 34,
       "requires": [],
       "title": "A Clearer View of Trouble",
-      "text": "I need two Emberglass for the post's observation work. Bring them to me so we can finish the fittings for our sights. 'Something moved' is a fine beginning to a report; I would like my observers to manage the rest.",
+      "text": "Our new sights have every fitting except the one that matters. Bring me two Emberglass so we can finish them. 'Something moved' is a fine beginning to a report; I would like my observers to manage the rest.",
       "objectives": [
         {
           "type": "item",
@@ -524,7 +524,7 @@
           "turnins": [
             "r20_anchor_032_host"
           ],
-          "text": "I have matched the report of your camp raid to our transport losses: the cargo set aside for the enemy's building work bears our marks. The Throng seized it in an open attack on the transport, while the drivers whose work you recorded brought home what they could. Take these findings to Nella Hedgeward at Last Hedge Redoubt. I have added the replacement tools and relief those crews still need, so she can plan the next delivery with us."
+          "text": "I have matched the report of your camp raid to our transport losses: the cargo set aside for the enemy's building work bears our marks. The Throng seized it in an open attack on the transport; the drivers whose record you brought me saved what they could. Take these findings to Nella Hedgeward at Last Hedge Redoubt. I have added the replacement tools and relief those crews still need, so she can plan the next delivery with us."
         },
         {
           "zone": "elandor_glassroot_wilds",

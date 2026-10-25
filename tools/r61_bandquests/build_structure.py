@@ -606,7 +606,7 @@ LOCAL = {
                      "{name:stormglades}; no weather changes, no fight starts.",
              "completion": "A visible success of the zone's own before any party goes after Storm-Bottle.",
              "notes": "K9 A: the zone's solo quest with its weapon, at a new recipe place in the Stormglades; "
-                      "the new object kind storm_vessel (a placeholder look until the user's art pick).",
+                      "the new object kind storm_vessel (the user's drop-03 P1 art).",
              "duration": 12},
             {"id": "thunderroot_rainchar_group", "giver": "rumela", "line": "rainchar", "min_level": 38,
              "level": 39, "objectives": [kill(["storm_bottle_witch"], 1)], "weight": 6, "choices": "trinkets_b",

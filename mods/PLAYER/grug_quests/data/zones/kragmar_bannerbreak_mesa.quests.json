@@ -107,7 +107,7 @@
       "level": 35,
       "requires": [],
       "title": "Rattle's Bad Arithmetic",
-      "text": "{name:provisioner_rattle} stole wagonloads meant for my ramp crews and the guild workers, and he is selling them out of the {name:supply_camp}. Find him, {dir_from_giver:provisioner_rattle}, and kill him. My people did their work; he does not get to sell their supper and tomorrow's tools for doing none.",
+      "text": "{name:provisioner_rattle} stole wagonloads meant for my ramp crews and the guild workers, and he is selling them out of the {name:supply_camp}. Find him, {dir_from_giver:provisioner_rattle}, and kill him. My people did their work; Rattle did none, yet he is selling their supper and tomorrow's tools as if he had earned them.",
       "completion": "Rattle is finished, but his theft has left beams waiting for hands, guild workers waiting for tools and carriers with empty loads. We can begin putting that work back in order now. At least he will not be taking a cut of it.",
       "objectives": [
         {
@@ -198,7 +198,7 @@
       "level": 38,
       "requires": [],
       "title": "A Soldier's Due",
-      "text": "The Trench Mummies still stand their old watch in the {name:redcut_flats}, {zone_area:redcut_flats}. Put four of them to rest. I sew the fallen's names into our banners so we can carry their memory; they have stood long enough.",
+      "text": "The Trench Mummies still stand their old watch in the {name:redcut_flats}, which lie {zone_area:redcut_flats}. Put four of them to rest. I honour everyone who has served under a banner, but honour has never needed anyone to keep standing.",
       "objectives": [
         {
           "type": "kill",
