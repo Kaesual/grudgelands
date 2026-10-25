@@ -32,7 +32,7 @@ fails while the file is stale.
 | 2 | Copperfell Foothills | 11–20 | Boar, Fox, Frog, Ibex, Shore Crab, Stingray, Tortoise | Frog, Giant Rat, Goblin Raider, Stingray, Tortoise, Zombie | Bandit, Bandit Archer, Goblin Hound, Goblin Slinger | Goblin Foreman Nog | Rabbit |
 | 3 | Dur Brannoc (capital) | 20–30 | Frog, Ibex, Mountain Ram, Tortoise | Bandit, Bandit Archer, Frog, Tortoise, Zombie | Goblin Raider, Goblin Slinger | Goblin Ore-Factor Brakk | – |
 | 4 | Frostbarrow Shelf | 21–30 | Crag Eagle, Frog, Ibex, Mountain Ram, Shore Crab, Stingray, Tortoise | Frog, Goblin Hound, Goblin Raider, Goblin Slinger, Snow Leopard, Stingray, Tortoise | – | Goblin Powder-Counter Nib | – |
-| 5 | Stormvault Heights | 31–40 | Crag Eagle, Frog, Ibex, Mountain Ram, Shore Crab, Stingray, Tortoise | Frog, Frost Stray, Snow Leopard, Stingray, Tortoise, Zombie | Bandit Archer, Goblin Raider, Goblin Slinger | Bolt-Chewer, Stone Golem Split-Seam | Gull |
+| 5 | Stormvault Heights | 31–40 | Crag Eagle, Frog, Ibex, Mountain Ram, Shore Crab, Stingray, Tortoise | Frog, Frost Stray, Snow Leopard, Stingray, Tortoise, Zombie | Bandit Archer, Goblin Raider, Goblin Slinger | Stone Golem Split-Seam | Gull |
 | 6 | Dawnmere Fields | 1–10 | Boar, Fox, Frog, Shore Crab, Stingray, Tortoise | Frog, Giant Rat, Stingray, Tortoise, Zombie | Bandit | Bandit Chief Crumb | Rabbit, Wild Turkey |
 | 7 | Goldmead Vale | 11–20 | Boar, Fox, Frog, Shore Crab, Stingray, Tortoise | Frog, Giant Rat, Poacher, Stingray, Tortoise, Zombie | Bandit, Bandit Archer | Bandit Requisitioner Hobb | Rabbit, Wild Turkey |
 | 8 | Highcourt (capital) | 20–30 | Boar, Fox, Frog, Stag, Tortoise | Bandit, Bandit Archer, Frog, Tortoise, Zombie | Bandit Archer | Bandit Tollmaster Penn | – |
@@ -43,12 +43,12 @@ fails while the file is stale.
 | 13 | Lethariel (capital) | 20–30 | Fox, Frog, Stag, Tortoise | Bandit, Frog, Poacher, Tortoise, Zombie | Poacher | Poacher Bough-Counter Rusk | – |
 | 14 | Lorindor | 21–30 | Frog, Shore Crab, Stag, Stingray, Tortoise | Frog, Poacher, Stingray, Tortoise, Wisp | Mirefolk | Mirefolk Pearl-Counter Iss | – |
 | 15 | Moonfall Wood | 21–30 | Bear, Frog, Shore Crab, Stag, Stingray, Tortoise, Wolf | Frog, Giant Spider, Poacher, Stingray, Tortoise, Wisp, Wolf | – | Poacher Snarewarden Bracken | – |
-| 16 | Glassroot Wilds | 31–40 | Bear, Frog, Jungle Ape, Serpent, Shore Crab, Stag, Stingray, Tortoise, Wolf | Bandit, Frog, Jungle Spider, Panther, Serpent, Stingray, Tortoise, Wisp, Wolf, Zombie | Bandit Archer | Jungle Ape Canopy-Knuckle, Basket-Biter | – |
+| 16 | Glassroot Wilds | 31–40 | Bear, Frog, Jungle Ape, Serpent, Shore Crab, Stag, Stingray, Tortoise, Wolf | Bandit, Frog, Jungle Spider, Panther, Serpent, Stingray, Tortoise, Wisp, Wolf, Zombie | Bandit Archer | Jungle Ape Canopy-Knuckle | – |
 | 17 | Stillgrave Hollow | 1–10 | Boar, Frog, Shore Crab, Stag, Stingray, Tortoise, Zombie | Frog, Giant Rat, Stingray, Tortoise, Zombie | Bandit | Robber-Chief Borrow | Hare |
 | 18 | Mournfen | 11–20 | Boar, Bog Ooze, Crocodile, Frog, Shore Crab, Stingray, Sun-Dried Husk, Tortoise | Bandit, Bog Ooze, Crocodile, Frog, Giant Rat, Stingray, Tortoise, Wisp, Zombie | Bandit Archer, Crocodile, Mirefolk | Mirefolk Reed-Counter Silt | Bog Fowl, Hare |
 | 19 | Nhal Veyr (capital) | 20–30 | Boar, Frog, Stag, Sun-Dried Husk, Tortoise | Bandit, Frog, Tortoise, Zombie | – | Zombie Mortuary-Clerk Hush | – |
 | 20 | Ossuary Reach | 21–30 | Bear, Frog, Shore Crab, Stag, Stingray, Stone Mite, Tortoise, Wolf | Frog, Gravewood Treant, Pale Spider, Skeleton Archer, Stingray, Tortoise, Wolf | – | Skeleton Marrow Archivist | Bone Weevil |
-| 21 | Blackwind Rise | 31–40 | Bear, Frog, Shore Crab, Stag, Stingray, Stone Mite, Sun-Dried Husk, Tortoise, Wolf | Frog, Gravewood Treant, Pale Spider, Skeleton Raider, Stingray, Tortoise, Wolf, Zombie | Bandit, Bandit Archer | Grave-Broker Mute, Gravewood Treant Hollowbell | Bone Weevil, Gull |
+| 21 | Blackwind Rise | 31–40 | Bear, Frog, Shore Crab, Stag, Stingray, Stone Mite, Sun-Dried Husk, Tortoise, Wolf | Frog, Gravewood Treant, Pale Spider, Skeleton Raider, Stingray, Tortoise, Wolf, Zombie | Bandit, Bandit Archer | Gravewood Treant Hollowbell | Bone Weevil, Gull |
 | 22 | Sunscar Flats | 1–10 | Boar, Frog, Plains Runner, Scorpion, Shore Crab, Stingray, Sun-Dried Husk, Tortoise | Frog, Giant Rat, Scorpion, Stingray, Sun-Dried Husk, Tortoise | Bandit | Water Chief Lastdrop | Hare |
 | 23 | Redtusk Savanna | 11–20 | Boar, Frog, Hyena, Shore Crab, Stingray, Sun-Dried Husk, Tortoise, Zebra | Bandit, Frog, Giant Rat, Hyena, Scorpion, Stingray, Sun-Dried Husk, Tortoise | Bandit Archer | Bandit Water-Broker Korr | Hare |
 | 24 | Gor Drazhak (capital) | 20–30 | Frog, Hyena, Sun-Dried Husk, Tortoise, Zebra | Bandit, Frog, Hyena, Scorpion, Sun-Dried Husk, Tortoise | Bandit Archer | Bandit Ration-Broker Garr | – |
@@ -59,7 +59,7 @@ fails while the file is stale.
 | 29 | Kezamba (capital) | 20–30 | Boar, Frog, Jungle Lynx, Tapir, Tortoise | Bandit, Frog, Tortoise, Viper, Zombie | Bandit Archer | Bandit Offering-Broker Takka | – |
 | 30 | Whispering Reedlands | 21–30 | Bog Ooze, Crocodile, Frog, Jungle Lynx, Shore Crab, Stingray, Tapir, Tortoise | Bog Ooze, Crocodile, Frog, Stingray, Tortoise, Wisp | Mirefolk | Mirefolk Tollkeeper Ush | Bog Fowl, Parrot |
 | 31 | Totemwater Reach | 21–30 | Bog Ooze, Crocodile, Frog, Jungle Lynx, Shore Crab, Stingray, Tapir, Tortoise | Bog Ooze, Crocodile, Frog, Stingray, Tortoise, Wisp | – | Crocodile Reed-Maw | Bog Fowl, Parrot |
-| 32 | Thunderroot Wilds | 31–40 | Frog, Jungle Ape, Serpent, Shore Crab, Stingray, Tortoise | Bandit, Bog Witch, Frog, Jungle Spider, Panther, Serpent, Stingray, Tortoise, Zombie | Bandit Archer | Bog Witch Storm-Bottle, Bottle-Keeper Zek | – |
+| 32 | Thunderroot Wilds | 31–40 | Frog, Jungle Ape, Serpent, Shore Crab, Stingray, Tortoise | Bandit, Bog Witch, Frog, Jungle Spider, Panther, Serpent, Stingray, Tortoise, Zombie | Bandit Archer | Bog Witch Storm-Bottle | – |
 | 33 | The Wyrmglass Crown | 60 | Bandit Archer, Carrion Crow, Crag Eagle, Frog, Mountain Ram, Stingray, Sun-Dried Husk, Tortoise | Bandit Archer, Frog, Frost Stray, Snow Leopard, Stingray, Tortoise, Zombie | – | Stone Golem Rime-Bell | Gull |
 | 34 | Gravesalt Escarpment | 51–60 | Bandit, Bandit Archer, Blightfang Wolf, Carrion Crow, Frog, Gaunt Stag, Plaguehide Bear, Reef Lurker, Stingray, Stone Mite, Sun-Dried Husk, Tortoise | Bandit, Bandit Archer, Bog Witch, Frog, Pale Spider, Skeleton Raider, Stingray, Tortoise, Zombie | – | Watch-Captain Huskell, Bog Witch Salt-Counter | Bone Weevil, Gull |
 | 35 | The Broken Causeway | 41–50 | Bandit, Bandit Archer, Carrion Crow, Frog, Sun-Dried Husk, Tortoise, Viper | Frog, Giant Spider, Skeleton Raider, Tortoise, Viper, Wolf, Zombie | Bandit, Bandit Archer | Toll-Taker Senn, War Construct Last-Toll | Gull |
@@ -72,7 +72,7 @@ fails while the file is stale.
 | Family | Day | Night | Camps | Leaders |
 |---|---|---|---|---|
 | Ashen Treant | – | Ashenward March | – | – |
-| Bandit | Gravesalt Escarpment, The Broken Causeway, The Shattered Line, The Skyglass Canopy | Dur Brannoc, Highcourt, Lethariel, Glassroot Wilds, Mournfen, Nhal Veyr, Redtusk Savanna, Gor Drazhak, Bannerbreak Mesa, Raincall Basin, Kezamba, Thunderroot Wilds, Gravesalt Escarpment, The Shattered Line | Hearthpine Vale, Copperfell Foothills, Dawnmere Fields, Goldmead Vale, Ashenward March, Silverleaf Glades, Starbough Vale, Stillgrave Hollow, Blackwind Rise, Sunscar Flats, Kapok Cradle, The Broken Causeway | Hearthpine Vale, Dawnmere Fields, Goldmead Vale, Highcourt, Ashenward March, Stillgrave Hollow, Blackwind Rise, Sunscar Flats, Redtusk Savanna, Gor Drazhak, Kapok Cradle, Raincall Basin, Kezamba, The Broken Causeway, The Skyglass Canopy |
+| Bandit | Gravesalt Escarpment, The Broken Causeway, The Shattered Line, The Skyglass Canopy | Dur Brannoc, Highcourt, Lethariel, Glassroot Wilds, Mournfen, Nhal Veyr, Redtusk Savanna, Gor Drazhak, Bannerbreak Mesa, Raincall Basin, Kezamba, Thunderroot Wilds, Gravesalt Escarpment, The Shattered Line | Hearthpine Vale, Copperfell Foothills, Dawnmere Fields, Goldmead Vale, Ashenward March, Silverleaf Glades, Starbough Vale, Stillgrave Hollow, Blackwind Rise, Sunscar Flats, Kapok Cradle, The Broken Causeway | Hearthpine Vale, Dawnmere Fields, Goldmead Vale, Highcourt, Ashenward March, Stillgrave Hollow, Sunscar Flats, Redtusk Savanna, Gor Drazhak, Kapok Cradle, Raincall Basin, Kezamba, The Broken Causeway, The Skyglass Canopy |
 | Bandit Archer | The Wyrmglass Crown, Gravesalt Escarpment, The Broken Causeway, The Shattered Line, Stormscale Summit | Dur Brannoc, Highcourt, The Wyrmglass Crown, Gravesalt Escarpment, Stormscale Summit | Copperfell Foothills, Stormvault Heights, Goldmead Vale, Highcourt, Ashenward March, Starbough Vale, Glassroot Wilds, Mournfen, Blackwind Rise, Redtusk Savanna, Gor Drazhak, Bannerbreak Mesa, Raincall Basin, Kezamba, Thunderroot Wilds, The Broken Causeway, The Skyglass Canopy | – |
 | Bear | Whitebridge Shire, Ashenward March, Moonfall Wood, Glassroot Wilds, Ossuary Reach, Blackwind Rise | – | – | – |
 | Blightfang Wolf | Gravesalt Escarpment | – | – | – |
@@ -88,7 +88,7 @@ fails while the file is stale.
 | Gaunt Stag | Gravesalt Escarpment | – | – | – |
 | Giant Rat | – | Hearthpine Vale, Copperfell Foothills, Dawnmere Fields, Goldmead Vale, Silverleaf Glades, Starbough Vale, Stillgrave Hollow, Mournfen, Sunscar Flats, Redtusk Savanna, Kapok Cradle, Raincall Basin | – | – |
 | Giant Spider | – | Whitebridge Shire, Ashenward March, Moonfall Wood, The Broken Causeway, The Shattered Line | – | – |
-| Goblin Hound | – | Frostbarrow Shelf | Copperfell Foothills, Bannerbreak Mesa | Stormvault Heights |
+| Goblin Hound | – | Frostbarrow Shelf | Copperfell Foothills, Bannerbreak Mesa | – |
 | Goblin Raider | – | Copperfell Foothills, Frostbarrow Shelf | Dur Brannoc, Stormvault Heights, Speargrass Reach, Bannerbreak Mesa | Copperfell Foothills, Speargrass Reach, Bannerbreak Mesa |
 | Goblin Slinger | – | Frostbarrow Shelf | Copperfell Foothills, Dur Brannoc, Stormvault Heights, Speargrass Reach, Bannerbreak Mesa | Dur Brannoc, Frostbarrow Shelf |
 | Gravewood Treant | – | Ossuary Reach, Blackwind Rise | – | Blackwind Rise |
@@ -106,7 +106,7 @@ fails while the file is stale.
 | Poacher | – | Goldmead Vale, Whitebridge Shire, Starbough Vale, Lethariel, Lorindor, Moonfall Wood | Ashenward March, Silverleaf Glades, Lethariel | Whitebridge Shire, Ashenward March, Silverleaf Glades, Starbough Vale, Lethariel, Moonfall Wood |
 | Reef Lurker | Gravesalt Escarpment, The Skyglass Canopy | – | – | – |
 | Scorpion | Sunscar Flats | Sunscar Flats, Redtusk Savanna, Gor Drazhak, Speargrass Reach, Bannerbreak Mesa, The Shattered Line | – | – |
-| Serpent | Glassroot Wilds, Thunderroot Wilds, The Skyglass Canopy, Stormscale Summit | Glassroot Wilds, Thunderroot Wilds, The Skyglass Canopy | – | Glassroot Wilds, The Skyglass Canopy |
+| Serpent | Glassroot Wilds, Thunderroot Wilds, The Skyglass Canopy, Stormscale Summit | Glassroot Wilds, Thunderroot Wilds, The Skyglass Canopy | – | The Skyglass Canopy |
 | Shore Crab | Hearthpine Vale, Copperfell Foothills, Frostbarrow Shelf, Stormvault Heights, Dawnmere Fields, Goldmead Vale, Whitebridge Shire, Silverleaf Glades, Starbough Vale, Lorindor, Moonfall Wood, Glassroot Wilds, Stillgrave Hollow, Mournfen, Ossuary Reach, Blackwind Rise, Sunscar Flats, Redtusk Savanna, Speargrass Reach, Kapok Cradle, Raincall Basin, Whispering Reedlands, Totemwater Reach, Thunderroot Wilds | – | – | – |
 | Skeleton Archer | – | Ossuary Reach | – | Ossuary Reach |
 | Skeleton Raider | – | Ashenward March, Blackwind Rise, Bannerbreak Mesa, Gravesalt Escarpment, The Broken Causeway, The Shattered Line, The Skyglass Canopy, Stormscale Summit | – | Gravesalt Escarpment, The Shattered Line |

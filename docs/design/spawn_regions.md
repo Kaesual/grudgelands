@@ -307,9 +307,9 @@ since then). Every load error names the zone and the path.
 - `places` (Round 36): quest places of "use at a place" objectives, `id`
   (snake_case, used by no kind, camp, leader or other place of the recipe),
   `name` (what quest texts read) and `at` `{"kind": id, "pick":
-  "farthest_from_roads"}`; placed by step 8 after the leaders. Today one per
-  contested zone without a clash site, each in the zone's 34–37 open kind and
-  named for its main-line use (Round 36 story bible §4): Stormvault Heights
+  "farthest_from_roads"}`; placed by step 8 after the leaders, in recipe
+  order. One per contested zone without a clash site in the zone's 34–37
+  open kind, named for its main-line use (Round 36 story bible §4): Stormvault Heights
   `brandscar_cairn` "Brandscar Cairn", Glassroot Wilds `couriers_stump`
   "Courier's Stump", Blackwind Rise `ashen_grave` "Ashen Grave" and
   Thunderroot Wilds `coinpit_hollow` "Coinpit Hollow" (the last two fall
@@ -326,8 +326,18 @@ since then). Every load error names the zone and the path.
   "Ossuary Claim Rest" (the Barrowlands), Speargrass Reach `banner_cache`
   "Speargrass Banner Cache" (the Hunting Grounds), Whispering Reedlands
   `seized_stores` "Reedlands Seized Stores" and Totemwater Reach
-  `reading_bank` "Totemwater Reading Bank" (each zone's Reedbanks). The
-  seed fleet (`tools/seed_fleet/seed.lua`, Round 60) builds the regions of
+  `reading_bank` "Totemwater Reading Bank" (each zone's Reedbanks); since
+  Round 61 six in the band 31–40 ([quests.md](quests.md) "The band
+  31–40"), each after the zone's main-line place where it has one: Stormvault Heights
+  `survey_stand` "Stormvault Survey Stand" (the Highcrags), Ashenward March
+  `broken_load` "Ashenward Broken Load" (the Wheelbreak), Glassroot Wilds
+  `carrier_path` "Glassroot Carrier Path" (the Canopy, 64 nodes from
+  Canopy-Knuckle by the rule above), Blackwind Rise `recovery_rest`
+  "Blackwind Recovery Rest" (the Deadmarch; it falls back to the belt's
+  woods where the moor forms no region, as on seed 42), Bannerbreak Mesa
+  `scattered_load` "Bannerbreak Scattered Load" (the Warplains) and
+  Thunderroot Wilds `storm_store` "Thunderroot Storm Store" (the
+  Stormglades). The seed fleet (`tools/seed_fleet/seed.lua`, Round 60) builds the regions of
   every zone with places on each of its seeds and fails a seed on which a
   place is not placed. `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
   from the recipe, `place_spot(zone, id)` its spot on the world.

@@ -12,7 +12,7 @@
             "night": [{"role": "marching_zombie", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal"},
           "swamp": {"id": "bogs", "name": "Thunderroot Bogs",
             "day": [{"role": "coiled_serpent", "weight": 1}],
-            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "coiled_serpent", "weight": 1}], "density": "sparse", "quest_target": true},
+            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
           "forest": {"id": "canopy", "name": "Thunderroot Canopy",
             "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
             "night": [{"role": "stalking_panther", "weight": 3}, {"role": "canopy_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
@@ -44,10 +44,10 @@
             "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "dense"},
           "swamp": {"id": "witchmire", "name": "Thunderroot Witchmire",
             "day": [{"role": "coiled_serpent", "weight": 1}],
-            "night": [{"role": "reed_hex_witch", "weight": 1}], "density": "sparse", "quest_target": true},
+            "night": [{"role": "reed_hex_witch", "weight": 1}], "density": "sparse"},
           "forest": {"id": "deepwood", "name": "Thunderroot Deepwood",
             "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
-            "night": [{"role": "canopy_web_spider", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "canopy_web_spider", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal"},
           "highland": {"id": "ridges", "name": "Thunderroot Ridges",
             "day": [{"role": "territorial_ape", "weight": 1}],
             "night": [{"role": "stalking_panther", "weight": 1}], "density": "normal"},
@@ -101,11 +101,11 @@
        "slots": 6, "respawn": [30, 60], "min_player_distance": 16}
     ],
     "leaders": [
-      {"role": "storm_bottle_witch", "at": {"kind": "heartwood", "pick": "farthest_from_roads"}, "respawn": 300},
-      {"role": "bottle_keeper_zek", "at": {"kind": "stormglades", "pick": "farthest_from_roads"}, "respawn": 300}
+      {"role": "storm_bottle_witch", "at": {"kind": "heartwood", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
     "places": [
-      {"id": "coinpit_hollow", "name": "Coinpit Hollow", "at": {"kind": "glades", "pick": "farthest_from_roads"}}
+      {"id": "coinpit_hollow", "name": "Coinpit Hollow", "at": {"kind": "glades", "pick": "farthest_from_roads"}},
+      {"id": "storm_store", "name": "Thunderroot Storm Store", "at": {"kind": "stormglades", "pick": "farthest_from_roads"}}
     ],
     "critters": []
   }

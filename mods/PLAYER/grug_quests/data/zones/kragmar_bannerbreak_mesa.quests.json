@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_bannerbreak_mesa",
+  "reworked": true,
   "identity": "Bannerbreak Mesa is where the orcs carry the Throng's banners to the front; hyenas, goblins and old dead fight over everything those banners leave behind.",
   "hubs": [
     {
@@ -9,7 +10,7 @@
         {
           "npc": "r20_anchor_043_host",
           "lines": [
-            "ramp",
+            "border",
             "front"
           ]
         }
@@ -22,7 +23,7 @@
         {
           "npc": "r20_anchor_044_host",
           "lines": [
-            "standard",
+            "border",
             "front"
           ]
         }
@@ -75,43 +76,15 @@
   ],
   "quests": [
     {
-      "id": "bannerbreak_ramp_01",
-      "line": "ramp",
-      "giver": "r20_anchor_043_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 29,
-      "level": 31,
-      "requires": [],
-      "title": "Breath to Spare",
-      "text": "My crews haul siege timbers all day. The Warpack Hyenas laugh at them from the {name:badlands}, which lie {zone_area:badlands}. Get out there in daylight and kill four. Anything with that much breath to spare can pull a rope or stop making noise.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "warpack_hyena"
-          ],
-          "count": 4,
-          "area": "kragmar_bannerbreak_mesa/badlands"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
       "id": "bannerbreak_ramp_02",
-      "line": "ramp",
+      "line": "border",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_044_host",
-      "min_level": 31,
-      "level": 32,
-      "requires": [
-        "bannerbreak_ramp_01"
-      ],
-      "title": "A Blade for Yarra",
-      "text": "Yarra Standardmender keeps Tornstandard Hold standing with patched banners and fighters too stubborn to fall. Report to her and say Drek sent you. I can spare one blade from my ramp; she needs every one she can get against the Accord.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "[PH] Yarra Keeps the Names",
+      "text": "[PH] Drek sends the player to Yarra Standardmender at Tornstandard Hold, who knows the people behind the banners. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -119,33 +92,24 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 8
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 8,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "bannerbreak_ramp_03",
-      "line": "ramp",
+      "line": "border",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_043_host",
       "min_level": 34,
-      "level": 36,
-      "requires": [
-        "bannerbreak_ramp_01"
-      ],
-      "title": "Rattle's Bad Arithmetic",
-      "text": "At the {name:supply_camp} {dir_from_giver:supply_camp}, Provisioner Rattle counts our stolen wagonloads as profit. Kill four Sappers or Ramp Slingers in any combination, and kill Rattle as well. Let him work out what a dead provisioner earns.",
+      "level": 35,
+      "requires": [],
+      "title": "[PH] Rattle's Bad Arithmetic",
+      "text": "[PH] Drek sends the player alone against {name:provisioner_rattle} at the {name:supply_camp}, who turned the camp workers' next working day into goods. Real text to follow.",
+      "completion": "[PH] The damage to ramp work, camp work and supply is named; no deal with the enemy guild is claimed. Real text to follow.",
       "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "siege_goblin",
-            "siege_goblin_slinger"
-          ],
-          "count": 4,
-          "area": "kragmar_bannerbreak_mesa/supply_camp"
-        },
         {
           "type": "kill",
           "roles": [
@@ -155,59 +119,63 @@
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 15,
-      "climax": true
-    },
-    {
-      "id": "bannerbreak_standard_01",
-      "line": "standard",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 29,
-      "level": 31,
-      "requires": [],
-      "title": "Inspect Your Bedroll",
-      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the Red Stingers after dark in the {name:badlands}, which lie {zone_area:badlands}. Kill four and bring me two Venom Sacs. My fighters have earned one night's sleep out of their armour.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "war_stinger"
-          ],
-          "count": 4,
-          "area": "kragmar_bannerbreak_mesa/badlands"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:venom_sac",
-          "count": 2,
-          "roles": [
-            "war_stinger"
-          ],
-          "area": "kragmar_bannerbreak_mesa/badlands"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 12
+      "lesson": "The zone's solo quest; the weapon choice (prefix and suffix).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (round61-plan.md §2 point 2: T4's free prerequisite); free, it requires nothing; its one Throng follow-up is T4. Only Rattle now (the check: the Sapper and Slinger count goes), the leader at 35 (subtypes.json). The zone's weapon (§2a point 6)."
     },
     {
       "id": "bannerbreak_standard_02",
-      "line": "standard",
+      "line": "border",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_048_host",
-      "min_level": 32,
-      "level": 33,
-      "requires": [
-        "bannerbreak_standard_01"
-      ],
-      "title": "Where the Rain Fights Back",
-      "text": "Rumela Stormstep holds Thunderstep Watch in Thunderroot Wilds, where even the rain sounds ready for a fight. Go and speak with her; the trolls need blades in the jungle as much as we do on the mesa. We keep each other's banners flying.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "[PH] Word for Thunderstep",
+      "text": "[PH] Yarra sends the player to Rumela Stormstep at Thunderstep Watch, who keeps the carriers connected in the rain. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -215,51 +183,22 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 12
-    },
-    {
-      "id": "bannerbreak_standard_03",
-      "line": "standard",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 33,
-      "level": 35,
-      "requires": [
-        "bannerbreak_standard_01"
-      ],
-      "title": "Who Watches the Scouts",
-      "text": "My scouts watch for Accord patrols; the Tigresses have learned to watch my scouts. Kill four of those tigers by day in the {name:warplains}, which lie {zone_area:warplains}. It takes years to teach a fighter when to stay quiet. I will not spend those years feeding cats.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_stalking_tiger"
-          ],
-          "count": 4,
-          "area": "kragmar_bannerbreak_mesa/warplains"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "bannerbreak_standard_04",
-      "line": "standard",
+      "line": "border",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_044_host",
       "min_level": 37,
       "level": 38,
-      "requires": [
-        "bannerbreak_standard_03"
-      ],
-      "title": "A Soldier's Due",
-      "text": "The {name:redcut_flats} lie {zone_area:redcut_flats}, and after dark the Trench Mummies still march there in armour from a war that used them up. Kill four and end their watch. Whatever banner they followed, no soldier owes it an eternity.",
+      "requires": [],
+      "title": "[PH] A Soldier's Due",
+      "text": "[PH] Yarra wants the old watch of the Trench Mummies in the {name:redcut_flats} ended: defeat 4 of them; honour does not need them standing. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -271,23 +210,51 @@
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_scaled",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 12
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays; free, no prerequisite, required by nothing (draft §4.5); not the camp hunt's role (Muster Husks)."
     },
     {
       "id": "bannerbreak_standard_group",
-      "line": "standard",
+      "line": "border",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_044_host",
       "min_level": 38,
       "level": 39,
-      "requires": [
-        "bannerbreak_standard_04"
-      ],
-      "title": "Party: No Banner for Supper",
-      "text": "I stitch the names of our fallen into our standards, and the Goblin Banner-Eater at the {name:goblin_warcamp} {dir_from_giver:goblin_warcamp} eats them, poles and all. Gather a party and kill it; pride alone will not win that fight. Those names belong above our heads.",
+      "requires": [],
+      "title": "[PH] Party: The Banner-Eater",
+      "text": "[PH] Yarra asks for a party against {name:banner_eater} at the {name:goblin_warcamp}, who threatens the banners she sews the fallen's names into; optional, nothing needs it. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -298,12 +265,65 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 6,
+        "choices": [
+          {
+            "item": "grug_gear:manawell_t4"
+          },
+          {
+            "item": "grug_gear:battlebeat_t4"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t4"
+          }
+        ]
       },
+      "lesson": "The optional group quest: free, standalone, a trinket choice as its extra.",
       "duration_min": 15,
+      "group": true,
       "optional": true,
-      "group": true
+      "notes": "Round 61 BANDQUESTS. The optional group quest (round61-plan.md §2 point 8): free, standalone (its old prerequisite is gone), a trinket choice as its extra."
+    },
+    {
+      "id": "story_throng_05",
+      "line": "border",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r58_foreman_mining_camp_bannerbreak_mesa",
+      "min_level": 35,
+      "level": 36,
+      "requires": [
+        "story_throng_04",
+        "bannerbreak_ramp_03"
+      ],
+      "story": true,
+      "title": "[PH] The Hands Behind the Stores",
+      "text": "[PH] Drek wants the remaining handover record of the raided load secured at the {name:scattered_load} in the {name:warplains} and taken to Greda Stonehaul, the foreman of the guild camp. Real text to follow.",
+      "completion": "[PH] Greda confirms which share of the promise to ramp crew, guards and guild workers stays open; the carriers carry no blame (K3 A). Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "scattered_load",
+          "object": "witness_record",
+          "label": "Secure the handover record",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "Chapter 3 of the story arc (story, may chain).",
+      "duration_min": 12,
+      "notes": "Round 61 BANDQUESTS. T4 (story, 35): requires T3 and Rattle's free quest (its one Throng follow-up); turned in at the Bannerbreak mining camp's foreman, titled Greda Stonehaul (K13 A)."
     },
     {
       "id": "throng_main_01",
@@ -313,6 +333,7 @@
       "min_level": 41,
       "level": 42,
       "requires": [],
+      "story": true,
       "title": "Too Warm for Wages",
       "text": "Our riders left an intercepted pay box at {name:r20_anchor_074}, {dir_from_giver:r20_anchor_074}, when its coins burned through their gloves. Break the requisition seal: The Accord has put its stamp on something it ought to explain. Kill three Coal-Purse Factors by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Report to Drek Rampbinder at Red Ramp Post; his crews keep digging up boxes like it.",
       "objectives": [
@@ -351,6 +372,7 @@
       "requires": [
         "throng_main_02"
       ],
+      "story": true,
       "title": "An Oath in Hock",
       "text": "Grave coin under a seal of The Accord: they are buying themselves a cheaper army, and I want the proof in my fist. Yarra Standardmender says the dead on The Shattered Line salute a standard pledged against the next payment. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}. Unpick the pledged standard at {name:r20_anchor_081} and take the stitching to Yarra at Tornstandard Hold; she reads cloth the way I read a liar.",
       "objectives": [
@@ -389,6 +411,7 @@
       "requires": [
         "bb_front_torn_05"
       ],
+      "story": true,
       "title": "Find the Hand That Signed",
       "text": "A bought oath is a debt with a blade on it. Ours were never for sale. Ninepins's pledge slips bear seals of The Accord; {captain:pvp_camp_shattered_line_accord_high}, who holds The Accord's high camp on The Shattered Line, should know whose hand signed them. Kill the captain at the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, and bring me the Accord Captain's Orders; I need the paper more than a story about the fight.",
       "objectives": [
@@ -435,6 +458,7 @@
       "requires": [
         "throng_main_04"
       ],
+      "story": true,
       "title": "Our Tallykeeper's Treason",
       "text": "The Accord's orders call for a hunt on the soot factors and list their own soldiers burned by the factors' pay: they have been robbed and burned too. Worse, the seized grave coin carries our own war-chest tally marks, entered by Tallykeeper Mardra, who left last winter 'to collect what the dead were owed'. I struck her name from our roll before the whole drill yard; everyone heard who sold our dead. Bury the seized branded pay unspent at {name:kragmar_thunderroot_wilds/coinpit_hollow}, {dir_of:r20_anchor_048:kragmar_thunderroot_wilds/coinpit_hollow}; The Accord will not lock our shame in its evidence chest.",
       "objectives": [
@@ -465,6 +489,7 @@
       "requires": [
         "throng_main_05"
       ],
+      "story": true,
       "title": "Party: Greyvow's Last Filing",
       "text": "The captured orders send War Commander Greyvow to run The Accord's hunt from the {name:pvp_camp_skyglass_canopy_accord_high}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_high}. He means to seize the payers and every scrap that tells what they did to our dead. Gather a party and kill him among his garrison; he is an elite commander with plenty of blades behind his paperwork. We will tell our own story in our own yard.",
       "objectives": [
@@ -495,6 +520,7 @@
       "requires": [
         "throng_main_05"
       ],
+      "story": true,
       "title": "Still Buying Our Dead",
       "text": "Mardra sold our dead, and somebody is still buying. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she says the fen's dead whisper about fire, and the hexers do the whispering. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy and will have work for you once Vaska has your report.",
       "objectives": [
@@ -526,6 +552,7 @@
       "requires": [
         "throng_main_07"
       ],
+      "story": true,
       "title": "Party: No Claim on Our Dead",
       "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a party of two or three, kill him beside the burning crack and stay out of it; if The Accord turns up, it can carry its own banner home, and we will carry ours. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
       "objectives": [

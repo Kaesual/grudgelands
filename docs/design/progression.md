@@ -2,7 +2,7 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-The game ships 403 quests, one data file per zone plus a front file per
+The game ships 393 quests, one data file per zone plus a front file per
 front host and the two guild files (`quests.md`, "Quest data"): Round 29's quests — one track per race
 from the start zone to its heartland, the contested 31–40 zones and the 41–60
 front with its island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
@@ -14,7 +14,8 @@ Round 58 adds the Miner's Guild's 30 ([miners_guild.md](miners_guild.md) §11), 
 Round 59 rebuilt the band 11–20's 83 zone quests as 59 (`quests.md`, "The band 11–20") and
 added chapter 1's four story quests in the capitals (`quests.md`, "Chapter 1 in the capitals"), and
 Round 60 rebuilt the band 21–30's 84 as 71 (`quests.md`, "The band 21–30") and the six capitals'
-64 as 47 (`quests.md`, "The capitals").
+64 as 47 (`quests.md`, "The capitals"), and
+Round 61 rebuilt the band 31–40's 60 as 50 (`quests.md`, "The band 31–40").
 
 ## 1. Leveling pace
 

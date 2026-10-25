@@ -140,12 +140,15 @@ end
 -- no camp.
 --
 -- Round 60 (round60-plan.md §2a point 3): the story's foremen carry their
--- names instead of "Foreman", per camp; their ids stay. (One row per camp:
+-- names instead of "Foreman", per camp; their ids stay. Round 61 (§2a point
+-- 4) adds chapter 3's two, the Ashenward and Bannerbreak camps'. (One row per camp:
 -- tools/r28_design/r28common.py reads these rows for the design tools.)
 local FOREMAN_TITLES = {}
 for _, row in ipairs({
 	{camp = "mining_camp_frostbarrow_shelf", title = "Brodd Deeppeg"},
 	{camp = "mining_camp_ossuary_reach", title = "Rellis Shalemark"},
+	{camp = "mining_camp_ashenward_march", title = "Audra Wainholt"},
+	{camp = "mining_camp_bannerbreak_mesa", title = "Greda Stonehaul"},
 }) do
 	FOREMAN_TITLES[row.camp] = row.title
 end

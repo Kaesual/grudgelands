@@ -2911,54 +2911,6 @@
     "leader": true
   },
   {
-    "role": "bolt_chewer",
-    "family": "goblin_hound",
-    "base": "grug_mobs:goblin_hound",
-    "display": "Bolt-Chewer",
-    "size": 1.1,
-    "disposition": "aggressive",
-    "tier": "normal",
-    "levels": [
-      36,
-      36
-    ],
-    "drops": "canid",
-    "notes": "Unique fixed spot in elandor_stormvault_heights. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. A trail of chewed lift bolts leads to the goblins' hoarding hound.",
-    "leader": true
-  },
-  {
-    "role": "basket_biter",
-    "family": "serpent",
-    "base": "grug_mobs:serpent",
-    "display": "Basket-Biter",
-    "size": 1.1,
-    "disposition": "aggressive",
-    "tier": "normal",
-    "levels": [
-      39,
-      39
-    ],
-    "drops": "venomous",
-    "notes": "Unique fixed spot in elandor_glassroot_wilds. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Punctured offering baskets identify the serpent beside the empty cache.",
-    "leader": true
-  },
-  {
-    "role": "grave_broker_mute",
-    "family": "outlaw",
-    "base": "grug_mobs:bandit",
-    "display": "Grave-Broker Mute",
-    "size": 1.1,
-    "disposition": "aggressive",
-    "tier": "normal",
-    "levels": [
-      37,
-      37
-    ],
-    "drops": "outlaw",
-    "notes": "Unique fixed spot in kragmar_blackwind_rise. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Missing grave tags point to a broker who has sold each burial plot twice.",
-    "leader": true
-  },
-  {
     "role": "provisioner_rattle",
     "family": "goblin",
     "base": "grug_mobs:goblin_raider",
@@ -2967,27 +2919,11 @@
     "disposition": "aggressive",
     "tier": "normal",
     "levels": [
-      37,
-      37
+      35,
+      35
     ],
     "drops": "goblin",
     "notes": "Unique fixed spot in kragmar_bannerbreak_mesa. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Empty ration tins lead to the goblin counting them as full.",
-    "leader": true
-  },
-  {
-    "role": "bottle_keeper_zek",
-    "family": "skeleton",
-    "base": "grug_mobs:bog_witch",
-    "display": "Bottle-Keeper Zek",
-    "size": 1.1,
-    "disposition": "aggressive",
-    "tier": "normal",
-    "levels": [
-      39,
-      39
-    ],
-    "drops": "witch",
-    "notes": "Unique fixed spot in kragmar_thunderroot_wilds. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Spoiled offerings share the stopper of Zek's bottle.",
     "leader": true
   },
   {

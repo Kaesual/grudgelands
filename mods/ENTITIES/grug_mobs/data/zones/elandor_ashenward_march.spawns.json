@@ -29,13 +29,13 @@
         "kinds": {
           "open": {"id": "wheelbreak", "name": "Ashenward Wheelbreak Fields",
             "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal", "quest_target": true},
           "swamp": {"id": "wisp_fen", "name": "Ashenward Wisp Fen",
             "day": "open",
             "night": [{"role": "battle_wisp", "weight": 1}], "density": "sparse"},
           "forest": {"id": "hedgewood", "name": "Ashenward Hedgewood",
             "day": [{"role": "territorial_bear", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal"},
           "highland": {"id": "crow_ridges", "name": "Ashenward Crow Ridges",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
             "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"},
@@ -85,6 +85,9 @@
     "leaders": [
       {"role": "quartermaster_scrip", "at": {"camp": "ration_camp"}, "respawn": 300},
       {"role": "red_receipt_marshal", "at": {"camp": "poacher_camp"}, "respawn": 300}
+    ],
+    "places": [
+      {"id": "broken_load", "name": "Ashenward Broken Load", "at": {"kind": "wheelbreak", "pick": "farthest_from_roads"}}
     ],
     "critters": []
   }

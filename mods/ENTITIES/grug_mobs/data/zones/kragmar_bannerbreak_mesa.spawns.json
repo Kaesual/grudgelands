@@ -80,6 +80,9 @@
       {"role": "provisioner_rattle", "at": {"camp": "supply_camp"}, "respawn": 300},
       {"role": "banner_eater", "at": {"camp": "goblin_warcamp"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "scattered_load", "name": "Bannerbreak Scattered Load", "at": {"kind": "warplains", "pick": "farthest_from_roads"}}
+    ],
     "critters": []
   }
 }

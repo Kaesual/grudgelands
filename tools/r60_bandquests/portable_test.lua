@@ -281,8 +281,10 @@ end
 ------------------------------------------------------------------------------
 -- Round 60 CAPITALS (merged after this lane): T3 (story_throng_04, Nhal
 -- Veyr) follows T2a and takes ossuary_rubbings_03's one Throng slot.
+-- Round 61 BANDQUESTS: chapter 3's A5 (story_accord_05, Ashenward March)
+-- follows A4.
 local ALLOWED_FOLLOWERS = {frostbarrow_cutting_04 = "story_accord_04", story_accord_03 = "story_accord_04",
-	story_throng_03 = "story_throng_04", ossuary_rubbings_03 = "story_throng_04"}
+	story_throng_03 = "story_throng_04", ossuary_rubbings_03 = "story_throng_04", story_accord_04 = "story_accord_05"}
 for id, entry in pairs(by_id) do
 	local quest = entry.quest
 	local follow = table.concat(followers[id] or {}, ",")

@@ -695,6 +695,67 @@ do
 		completed = {band_steel = true, story_accord_03 = true, frostbarrow_cutting_04 = true}}
 	eq(status("r20_anchor_061_host", "story_accord_04"), "available", "band 21-30: A4 after A3 and Nib")
 	for key in pairs(meta) do meta[key] = nil end
+	-- Round 61 (tools/r61_bandquests): a level-30 character is offered the
+	-- band 31-40's first quests at once; the shared Runner's Packet taken or
+	-- done at one host is offered at no other; chapter 3's A5 and T4 show
+	-- only once their story step and Scrip's or Rattle's free quest are done.
+	grug_xp.get_level = function() return 30 end
+	for _, row in ipairs({{"r20_anchor_027_host", "stormvault_passes_03"}, {"r20_anchor_031_host", "ashenward_road_last_hedge"},
+			{"r20_anchor_032_host", "border_reserve"}, {"r20_anchor_036_host", "border_melons"},
+			{"r20_anchor_039_host", "blackwind_mushrooms"}, {"r20_anchor_044_host", "border_reserve"},
+			{"r20_anchor_048_host", "border_melons"}, {"r20_anchor_043_host", "bannerbreak_ramp_02"}}) do
+		eq(status(row[1], row[2]), "available", "band 31-40: " .. row[1] .. " offers " .. row[2] .. " at once")
+	end
+	eq(status("r20_anchor_031_host", "border_meal"), "locked", "band 31-40: the Corn is shown locked at 30")
+	grug_xp.get_level = function() return 38 end
+	check(Q.accept(player, "border_packets", "r20_anchor_028_host"), "band 31-40: the Packet taken at Archshadow Post")
+	eq(status("r20_anchor_032_host", "border_packets"), "none", "band 31-40: ...not offered at Last Hedge")
+	meta["grug_quests:state"] = {active = {}, completed = {border_packets = true}, tracked = {}, hud = true}
+	eq(status("r20_anchor_040_host", "border_packets"), "none", "band 31-40: the Packet done once, nor at Hollowarch")
+	eq(status("r20_anchor_031_host", "story_accord_05"), "none", "band 31-40: A5 hidden before A4 and Scrip")
+	meta["grug_quests:state"] = {active = {}, completed = {story_accord_04 = true}, tracked = {}, hud = true}
+	eq(status("r20_anchor_031_host", "story_accord_05"), "none", "band 31-40: A5 still hidden without Scrip")
+	eq(status("r20_anchor_031_host", "ashenward_rations_03"), "available", "band 31-40: Scrip's quest needs nothing")
+	meta["grug_quests:state"] = {active = {}, tracked = {}, hud = true,
+		completed = {story_accord_04 = true, ashenward_rations_03 = true, story_throng_04 = true}}
+	eq(status("r20_anchor_031_host", "story_accord_05"), "available", "band 31-40: A5 after A4 and Scrip")
+	eq(status("r20_anchor_043_host", "story_throng_05"), "none", "band 31-40: T4 hidden without Rattle")
+	eq(status("r20_anchor_043_host", "bannerbreak_ramp_03"), "available", "band 31-40: Rattle's quest needs nothing")
+	eq(status("r20_anchor_044_host", "bannerbreak_standard_group"), "available",
+		"band 31-40: the optional group quest needs nothing")
+	-- A6 and T5 at the band foremen: hidden without the camp raid, then
+	-- offered at all three of the faction's foremen; T5 opens at 40; a travel
+	-- credited on accept is ready at Nella.
+	local function foreman(zone) return "r58_foreman_mining_camp_" .. zone end
+	local ACCORD = {"stormvault_heights", "ashenward_march", "glassroot_wilds"}
+	local THRONG = {"blackwind_rise", "bannerbreak_mesa", "thunderroot_wilds"}
+	grug_xp.get_level = function() return 39 end
+	meta["grug_quests:state"] = {active = {}, tracked = {}, hud = true,
+		completed = {story_accord_05 = true, story_throng_05 = true}}
+	for _, zone in ipairs(ACCORD) do
+		eq(status(foreman(zone), "story_accord_06"), "none", "band 31-40: A6 hidden at " .. zone .. " without the raid")
+	end
+	eq(status(foreman("bannerbreak_mesa"), "story_throng_06"), "none", "band 31-40: T5 hidden without the raid")
+	meta["grug_quests:state"] = {active = {}, tracked = {}, hud = true,
+		completed = {story_accord_05 = true, story_throng_05 = true, camp_site_raid = true}}
+	for _, zone in ipairs(ACCORD) do
+		eq(status(foreman(zone), "story_accord_06"), "available", "band 31-40: A6 offered at " .. zone .. "'s foreman")
+	end
+	for _, zone in ipairs(THRONG) do
+		eq(status(foreman(zone), "story_throng_06"), "locked", "band 31-40: T5 shown locked at 39 at " .. zone)
+	end
+	grug_xp.get_level = function() return 40 end
+	for _, zone in ipairs(THRONG) do
+		eq(status(foreman(zone), "story_throng_06"), "available", "band 31-40: T5 offered at " .. zone .. "'s foreman")
+	end
+	check(Q.accept(player, "story_accord_06", foreman("glassroot_wilds")), "band 31-40: A6 taken in Glassroot")
+	eq(status(foreman("ashenward_march"), "story_accord_06"), "none", "band 31-40: ...not offered at Ashenward")
+	eq(status("r20_anchor_032_host", "story_accord_06"), "ready", "band 31-40: A6 ready at Nella")
+	meta["grug_quests:state"] = {active = {}, tracked = {}, hud = true,
+		completed = {story_accord_05 = true, story_throng_05 = true, camp_site_raid = true}}
+	check(Q.accept(player, "story_throng_06", foreman("thunderroot_wilds")), "band 31-40: T5 taken in Thunderroot")
+	eq(status("r20_anchor_044_host", "story_throng_06"), "ready", "band 31-40: T5 ready at Yarra")
+	for key in pairs(meta) do meta[key] = nil end
 	grug_xp.get_level = level
 end
 -- What the one-time computation costs at load (reported, not a target).

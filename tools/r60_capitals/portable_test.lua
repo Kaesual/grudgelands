@@ -126,7 +126,9 @@ local SHARED = {
 	capital_raw_meat = {giver = cook, line = "provisions",
 		capitals = {"lethariel", "gor_drazhak", "kezamba", "nhal_veyr"}},
 }
-local TITLES = {mining_camp_frostbarrow_shelf = "Brodd Deeppeg", mining_camp_ossuary_reach = "Rellis Shalemark"}
+-- Round 61 BANDQUESTS: chapter 3's two foremen (round61-plan.md §2a point 4).
+local TITLES = {mining_camp_frostbarrow_shelf = "Brodd Deeppeg", mining_camp_ossuary_reach = "Rellis Shalemark",
+	mining_camp_ashenward_march = "Audra Wainholt", mining_camp_bannerbreak_mesa = "Greda Stonehaul"}
 
 ------------------------------------------------------------------------------
 -- S. The files.
