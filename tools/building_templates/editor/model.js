@@ -320,25 +320,38 @@ export class Doc {
     if (!e || e.kind === "race") return { ok: false, message: "nothing to turn here" };
     const next = turned(e, kindOf(e));
     if (!next) return { ok: false, message: "this node does not turn (its kind has no orientation in every placing palette)" };
-    this.put(rec, x, y, z, this.keyFor(next));
+    this.put(rec, x, y, z, this.keyForTurn(x, y, z, next));
     return { ok: true };
   }
   refuse(rec, mark, message) { this.rollback(rec, mark); return { ok: false, message }; }
+  // The key of a turned or flipped entry. One back at facedir 0 (stored
+  // without o=, setFacedir) takes the form the cell has at HEAD when that is
+  // the same entry with o=facedir:0 (a few templates store it so): the same
+  // build, so the cell is no edit there.
+  keyForTurn(x, y, z, text) {
+    const e = parseEntry(text);
+    const h = this.head && this.head.entries.get(this.head.cells[this.index(x, y, z)]);
+    if (h && e.kind !== "race" && !e.o && entryText(h) === entryText({ ...e, o: ["facedir", 0] }))
+      return this.keyFor(entryText(h));
+    return this.keyFor(text);
+  }
 
   // Turn what stands at a cell over: a stair or a slab upside down and back
   // (FLIP_STAIR, FLIP_CORNER), a wallmounted node from a wall to the floor
   // to the ceiling and back onto a wall. kindOf as for rotate; shapeOf(entry)
-  // answers "stair", "corner" or null (see entryShape).
+  // answers "stair", "corner", "mount" or null (see entryShape).
   flip(rec, x, y, z, kindOf, shapeOf) {
     if (this.object(x, y, z)) return { ok: false, message: "a door or a bed does not flip" };
     const e = this.entry(this.get(x, y, z));
     if (!e || e.kind === "race") return { ok: false, message: "nothing to flip here" };
     const kind = kindOf(e);
-    const next = flipped(e, kind, kind === "facedir" ? shapeOf(e) : null);
-    if (next) { this.put(rec, x, y, z, this.keyFor(next)); return { ok: true }; }
+    const next = flipped(e, kind, kind === "none" ? null : shapeOf(e));
+    if (next) { this.put(rec, x, y, z, this.keyForTurn(x, y, z, next)); return { ok: true }; }
     const v = e.o ? e.o[1] : 0;
     if (kind === "facedir" && v >= 4 && v < 20) return { ok: false, message: "a lying tree piece does not flip" };
     if (kind === "facedir") return { ok: false, message: "only a stair or a slab turns upside down (of one shape in every placing palette)" };
+    if (kind === "wallmounted" && v <= 5)
+      return { ok: false, message: "a torch is drawn for its own mount only (wall, floor or ceiling) in a placing palette; paint the role for the other mount" };
     return { ok: false, message: "this node does not flip (its kind has no orientation in every placing palette)" };
   }
 
@@ -451,7 +464,14 @@ function bedTexts(doc, role, o) {
   if (role !== "bed_fancy") return plain;
   return ["_bottom", "_top"].map((v, i) => doc.keyFor(`role bed_fancy variant=${v}${tail} else=${plain[i]}`));
 }
-// The entry text turned by 90 degrees, or null when it does not turn.
+// A facedir of 0 is stored without o=: the default write is
+// parts.place_param2, 0 for every facedir node (only a meshoptions node pins
+// another value, and that kind is never turned), so it builds the same and a
+// cell turned or flipped back to 0 is its old entry again.
+function setFacedir(copy, v) { copy.o = v ? ["facedir", v] : null; }
+// The entry text turned by 90 degrees, or null when it does not turn. An
+// upside-down node steps its rotation down (20 -> 23), so it turns the same
+// way round as an upright one (parts.rotate_param2: rot - turns on axis 20).
 export function turned(e, kind) {
   if (kind !== "facedir" && kind !== "wallmounted") return null;
   const copy = parseEntry(e.text || entryText(e));
@@ -459,7 +479,7 @@ export function turned(e, kind) {
   const v = copy.o ? copy.o[1] : (kind === "wallmounted" ? 1 : 0);
   if (kind === "facedir") {
     if (v >= 4 && v < 20) return null;  // a lying tree piece: not turned here
-    copy.o = ["facedir", (v & ~3) | ((v + 1) & 3)];
+    setFacedir(copy, (v & ~3) | ((v + (v >= 20 ? 3 : 1)) & 3));
   } else {
     if (!WALL_CYCLE.includes(v)) return null;  // on the floor or the ceiling: not turned
     copy.o = ["wallmounted", WALL_CYCLE[(WALL_CYCLE.indexOf(v) + 1) % WALL_CYCLE.length]];
@@ -467,7 +487,8 @@ export function turned(e, kind) {
   return entryText(copy);
 }
 // The entry text turned over, or null when it does not flip. shape: what
-// entryShape answers for a facedir entry. Without o= the value is the
+// entryShape answers ("mount" for a wallmounted node drawn for every
+// mount; a torch is not). Without o= the value is the
 // default write, 0 for every oriented node (parts.place_param2). A node on
 // the ceiling goes back onto the wall of wallmounted 2 (its support at +x,
 // where the rotate tool's wall order starts); Rotate turns it on from there.
@@ -479,9 +500,9 @@ export function flipped(e, kind, shape) {
   if (kind === "facedir") {
     const next = (shape === "corner" ? FLIP_CORNER : shape === "stair" ? FLIP_STAIR : new Map()).get(v);
     if (next === undefined) return null;  // not shaped, or a lying tree piece
-    copy.o = ["facedir", next];
+    setFacedir(copy, next);
   } else {
-    if (v > 5) return null;
+    if (v > 5 || shape !== "mount") return null;
     copy.o = ["wallmounted", WALL_CYCLE.includes(v) ? 1 : v === 1 ? 0 : WALL_CYCLE[0]];
   }
   return entryText(copy);
@@ -548,20 +569,27 @@ export function entryKind(e, bindings, P) {
   }
   return kinds.size === 1 ? [...kinds][0] : "none";
 }
-// May a facedir entry stand upside down, and with which pairing? "stair"
-// (a stair or a slab) or "corner" (an inner or outer stair) when every
-// placing binding whose node is facedir names a shaped node of that shape
-// (the validator's rule: upside down only for parts.shaped; a binding whose
-// node has no orientation writes 0 whatever is stored); null otherwise.
-export function entryShape(e, bindings, P) {
+// May an entry be flipped, and how? For facedir: "stair" (a stair or a
+// slab) or "corner" (an inner or outer stair) when every placing binding
+// whose node is facedir names a shaped node of that shape (the validator's
+// rule: upside down only for parts.shaped; a binding whose node has no
+// orientation writes 0 whatever is stored). For wallmounted: "mount" when
+// no placing binding names a node drawn for one mount only (oneMount, the
+// server's one_mount: the torch triplets; the validator takes any mount,
+// the torch meshes do not). null otherwise.
+export function entryShape(e, bindings, P, oneMount = new Set()) {
   const shapes = new Set();
   for (const b of bindings) {
     const name = entryNode(e, b, P);
     if (!name || name.includes(" ")) continue;
     const n = P.nodes[name] || {};
-    if (n.kind !== "facedir") continue;
-    if (!n.shaped) return null;
-    shapes.add(CORNER.test(name) ? "corner" : "stair");
+    if (n.kind === "wallmounted") {
+      if (oneMount.has(name)) return null;
+      shapes.add("mount");
+    } else if (n.kind === "facedir") {
+      if (!n.shaped) return null;
+      shapes.add(CORNER.test(name) ? "corner" : "stair");
+    }
   }
   return shapes.size === 1 ? [...shapes][0] : null;
 }

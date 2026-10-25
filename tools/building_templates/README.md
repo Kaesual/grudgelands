@@ -185,7 +185,8 @@ it).
 - **Tools** (keys 1–6): Paint (drag to paint), Pick (or Alt+click), Air (force
   air), Unchanged (leave unchanged), Rotate (90°, only where the node's kind
   allows it in every placing palette: facedir 0–3 keeping an upside-down
-  axis, wallmounted only around the four walls, never onto the floor or the
+  axis, turning upright and upside-down nodes the same way round,
+  wallmounted only around the four walls, never onto the floor or the
   ceiling), Flip (no key; only where the result is valid in every placing
   palette, as for Rotate), Move point. A
   click in the 3D view applies the tool to the block under the pointer (a
@@ -197,11 +198,20 @@ it).
   Upside down is offered only when every placing palette whose node is
   facedir names a stair or a slab of the same shape (`parts.shaped`). A
   wallmounted node goes wall → floor (1) → ceiling (0) → wall: always the
-  wall of `wallmounted:2` (support at +x), Rotate turns it on from there. A
-  wallmounted node keeps its node: a wall torch flipped onto the floor stays
-  `light_wall`, not `light_post`. Doors, beds, lying tree pieces and nodes
-  without orientation are refused. Rotating an upside-down stair keeps it
-  upside down.
+  wall of `wallmounted:2` (support at +x), Rotate turns it on from there.
+  That is for nodes drawn for every mount (candle, wagon wheel, ivy, banners,
+  signs); a node drawn for one mount only is refused when any placing
+  palette binds it: the torches (`default:torch`, `torch_wall`,
+  `torch_ceiling` and the anthracite ones), three nodes with one mesh each,
+  so `light_wall` and `light_post` do not flip wherever a placing race binds
+  them to torches (paint the other role instead). The rule is data
+  (`serve.one_mount`): a wallmounted node whose selection or node box
+  defines some but not all of `wall_top`, `wall_bottom` and `wall_side` in
+  `nodes.json`. Doors, beds, lying tree pieces and nodes without orientation
+  are refused too. A facedir of 0 (from Rotate or Flip) is written without
+  `o=` (the default write is 0 for every facedir node), or as
+  `o=facedir:0` where the file at HEAD has that, so a cell turned back is no
+  edit.
 - **Items:** the roles first (with a corner mark, in the preview's material;
   a required role a placing race does not bind, or an optional one no
   placing race binds, is disabled), the role variants with a channel the template uses

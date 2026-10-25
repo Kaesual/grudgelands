@@ -154,6 +154,7 @@ class Editor(object):
                 "editor_palette": self.editor_palette(),
                 "aliases": reg.get("aliases", {}),
                 "overhang": overhanging(reg["nodes"]),
+                "one_mount": one_mount(reg["nodes"], reg.get("aliases", {})),
                 "descriptions": {n: (d.get("description") or "").split("\n")[0]
                                  for n, d in reg["nodes"].items()},
             }, separators=(",", ":")).encode("utf-8")
@@ -433,6 +434,31 @@ def overhanging(nodes):
         if axes:
             out[name] = sorted(axes)
     return out
+
+
+def one_mount(nodes, aliases):
+    """Wallmounted nodes drawn for one mount only, sorted, with their
+    aliases: a wallmounted selection or node box that defines some but not
+    all of wall_top, wall_bottom and wall_side. The torch triplets are
+    three nodes, one mesh per mount (default:torch only wall_bottom,
+    torch_wall only wall_side, torch_ceiling only wall_top); on another
+    mount the mesh lies askew or upside down, so the editor's Flip leaves
+    them where they are. A box with no wall_* keys (ivy, ladders, banners:
+    signlike) or with all three (candle, wagon wheel, signs) is drawn for
+    every mount."""
+    out = set()
+    for name, d in nodes.items():
+        if d.get("paramtype2") not in ("wallmounted", "colorwallmounted"):
+            continue
+        mounts = set()
+        for field in ("node_box", "selection_box"):
+            box = d.get(field) or {}
+            if box.get("type") == "wallmounted":
+                mounts |= {k for k in ("wall_top", "wall_bottom", "wall_side") if box.get(k)}
+        if 0 < len(mounts) < 3:
+            out.add(name)
+    out |= {alias for alias, target in aliases.items() if target in out}
+    return sorted(out)
 
 
 # ---------------------------------------------------------------- HTTP ---
