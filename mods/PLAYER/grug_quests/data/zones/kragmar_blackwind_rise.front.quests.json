@@ -15,7 +15,7 @@
       "story": true,
       "title": "The Fire Is New",
       "text": "Old death I know: it smells of dust and patience, and this Tithe-Brand smells of a furnace; Mortuary Clerk Hush entered our dead as debtors, but Hush never had fire. Take its coin as pay and it owns you, living or dead; the living cannot even throw it away, only pass it on as pay for another death. Wash the fresh ash from the old stone at the {name:ashen_grave}, {dir_from_giver:ashen_grave}, and you will see the brand laid over the names. Report to the Warmaster; being Undead has never made us somebody's property.",
-      "completion": "[PH] The Warmaster gets the link between names, pay and renewed service; the pledged standard comes next. Real text to follow.",
+      "completion": "The ash was fresh over old names: somebody is buying another term of service from people who already gave their lives. The Accord's seal points at a pay office, but I want the living hand behind it. Yarra Standardmender has found a standard pledged against these wages, and I will send you to learn what was promised under it.",
       "objectives": [
         {
           "type": "use",
@@ -41,8 +41,8 @@
       "min_level": 48,
       "level": 49,
       "requires": [],
-      "title": "[PH] A Name on the Strap",
-      "text": "[PH] Orrel wants the markings on left-behind watch gear at {name:r20_anchor_083} recorded, so the things go to the right people. Real text to follow.",
+      "title": "A Name on the Strap",
+      "text": "Watch gear lies abandoned at {name:r20_anchor_083}, and some of its straps still carry their owners' marks. Record those names before the gear is gathered into one anonymous heap. A buckle is a small thing to remember someone by, but it should at least reach the person doing the remembering.",
       "objectives": [
         {
           "type": "use",
@@ -96,8 +96,8 @@
       "min_level": 50,
       "level": 50,
       "requires": [],
-      "title": "[PH] Before It Becomes Salvage",
-      "text": "[PH] Orrel wants a notice posted at {name:r20_anchor_076} that the belongings of the remnant's dead are claimed for their kin, so salvage crews leave them. Real text to follow.",
+      "title": "Before It Becomes Salvage",
+      "text": "The belongings at {name:r20_anchor_076} are being eyed by people who find 'unclaimed' a very convenient word. Post the notice reserving the dead's personal effects for their kin, so the salvage crews leave them alone. I would rather settle this with a notice than spend a week asking a scrap dealer whose initials he has melted.",
       "objectives": [
         {
           "type": "use",
@@ -163,8 +163,8 @@
       "min_level": 52,
       "level": 52,
       "requires": [],
-      "title": "[PH] Ashveil Keeps the Record",
-      "text": "[PH] Orrel sends the player to Vaska Ashlistener at Ashveil Watch, who looks after the higher front and the word that comes back from it. Real text to follow.",
+      "title": "What Reaches Ashveil",
+      "text": "Reports from the Gravesalt crews reach Vaska Ashlistener at Ashveil Watch, here in Blackwind Rise. She has people waiting for word, and work enough keeping the returning parties supplied. Go and offer her help; a visitor who can answer a question makes a pleasant change from a badly folded report.",
       "objectives": [
         {
           "type": "talk",
@@ -186,8 +186,8 @@
       "min_level": 52,
       "level": 53,
       "requires": [],
-      "title": "[PH] Keep What Can Be Kept",
-      "text": "[PH] Vaska needs salt to keep the supplies and the recovered things from spoiling; no magic: bring 6 Rock Salt. Real text to follow.",
+      "title": "Keep What Can Be Kept",
+      "text": "The recovery parties bring back damp packs as often as sound supplies, and I need salt for the stores and for preserving what can be kept of their contents. Bring me six Rock Salt. I cannot promise every belonging will reach its people unchanged, but I can give it a better chance.",
       "objectives": [
         {
           "type": "item",
@@ -239,8 +239,8 @@
       "min_level": 53,
       "level": 53,
       "requires": [],
-      "title": "[PH] A Place for Their Belongings",
-      "text": "[PH] Vaska sends the player to Ossa Quietregister in Nhal Veyr, who receives the personal effects of the dead; offered before Vaska's main-line part. Real text to follow.",
+      "title": "A Place for Their Belongings",
+      "text": "Returning a person's things takes someone willing to receive them, especially when the person cannot come home. Ossa Quietregister arranges that work in Nhal Veyr, and she needs help with the belongings recovered from the front. Go and speak to her; she will make certain a familiar name is not lost in a delivery tally.",
       "objectives": [
         {
           "type": "talk",
@@ -262,8 +262,8 @@
       "min_level": 54,
       "level": 55,
       "requires": [],
-      "title": "[PH] Word for the Next Party",
-      "text": "[PH] Vaska wants word left at the {name:front_gravesalt_escarpment/work_laydown} for the next work party: what was recovered and what still lies out there. Real text to follow.",
+      "title": "Word for the Next Party",
+      "text": "The next recovery party should know which loads have come back and which are still lying out there. Leave that account on the dispatch record at the {name:front_gravesalt_escarpment/work_laydown}, using the returns already gathered there. We ask enough of people without sending them to search for something another crew is carrying home.",
       "objectives": [
         {
           "type": "use",
@@ -317,8 +317,8 @@
       "min_level": 55,
       "level": 56,
       "requires": [],
-      "title": "[PH] Light for Those Who Wait",
-      "text": "[PH] Vaska wants torches for the vigil of those who wait at Ashveil Watch for word of their dead: bring 20 Torches. Real text to follow.",
+      "title": "Until the Names Are Read",
+      "text": "People keep vigil at Ashveil Watch while they wait for word of their dead, and the darkness makes every pause in the reading feel longer. Bring me twenty Torches to keep the vigil lit. They deserve to see the face of whoever brings them an answer.",
       "objectives": [
         {
           "type": "item",
@@ -346,7 +346,7 @@
       "story": true,
       "title": "Dismissed, Captain",
       "text": "Watch-Captain Huskell calls soldiers of both armies from the Undertithe's roll; each fresh payment buys their names for another watch. Kill four Last-Watch Sentries at night in the {name:front_gravesalt_escarpment/ossuary_wood} and defeat Huskell, {dir_from_giver:watch_captain_huskell}. I have listened long enough to hear the same names twice; let me hear where his list ends.",
-      "completion": "[PH] The roll holds dead of both armies and, last, Mardra; her guilt gives the Undertithe no claim. Vaska points to Nalo and the payer in the Skyglass Canopy. Real text to follow.",
+      "completion": "Both armies' dead are entered here, and the newest name is Tallykeeper Mardra; the money she sent out has bought her too. That tells us she is bound, not where she is, and her guilt gives the Undertithe no right to own her. Go to Nalo Pathdrum in Kezamba: he is watching Chirr, the payer who makes living roots carry these claims.",
       "objectives": [
         {
           "type": "kill",
@@ -425,7 +425,7 @@
       "story": true,
       "title": "No Names Left to Own",
       "text": "Huskell's roll ends with Mardra in fresh ink, and Chirr's payroll claims the same dead for the Undertithe. Burn our dead off the tally-stone at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}; leave it no names to own. With the names gone from root and stone, the debt has nothing to hold, and its collector will come to the stone in person. Tell the Warmaster what we have called up.",
-      "completion": "[PH] The Warmaster names Isquarre as the collector of this claim and opens the later group finale; Mardra is not acquitted. Real text to follow.",
+      "completion": "Root and stone have lost their hold on our dead, and Isquarre the Tithe-Eater is coming to collect the claim himself at {name:r20_anchor_077}. Mardra still answers for what she did; no collector gets to turn that judgement into ownership. I will send a group against his body, but whatever gives him his orders beneath the ground remains beyond our reach.",
       "objectives": [
         {
           "type": "use",
@@ -456,7 +456,7 @@
       "story": true,
       "title": "The Answering Blow",
       "text": "I put my ear to the crack after he fell and listened longer than I meant to; it still burns, and he will come back to collect. Carry my account to the Warmaster at Bannerbreak Warhold word for word, so the drill yard hears it too. His last blow struck the ground. The answering blow came from underneath.",
-      "completion": "[PH] The military report and the responsibility for the names are closed; Greda stands for promises that still hold, Mardra stays part of the faction's own story; ends with the fixed last line, no new journey. Real text to follow.",
+      "completion": "Greda Stonehaul at Bannerbreak Mining Camp and The Oathdelvers have my backing for honest wages and promised supplies, and the Warhold will keep the recovered names, Mardra's among them with her treason recorded. His last blow struck the ground. The answering blow came from underneath.",
       "objectives": [
         {
           "type": "talk",

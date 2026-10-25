@@ -10,8 +10,8 @@
       "min_level": 44,
       "level": 45,
       "requires": [],
-      "title": "[PH] Ground Worth Crossing",
-      "text": "[PH] Alna wants the prepared sighting frame at the {name:front_broken_causeway/crossing_stand} used to judge which ground of the Causeway still carries a load. Real text to follow.",
+      "title": "Ground Worth Crossing",
+      "text": "A crossing that carries one scout may put a loaded crew straight through the surface. Use the prepared sighting frame at the {name:front_broken_causeway/crossing_stand} to judge where the ground will bear their weight, then report to me. I would like the next report on a weak spot to arrive before the people standing on it.",
       "objectives": [
         {
           "type": "use",
@@ -65,8 +65,8 @@
       "min_level": 45,
       "level": 45,
       "requires": [],
-      "title": "[PH] Dur Brannoc Can Supply It",
-      "text": "[PH] Alna sends the player to Dorrin Gateledger in Dur Brannoc, who coordinates the extra work and supply from there; neither Alna's investigation nor a capital quest is needed. Real text to follow.",
+      "title": "Put the City to Work",
+      "text": "Front repairs need tools, replacement fittings and someone willing to make a city dispatch them. Speak to Dorrin Gateledger in Dur Brannoc; he coordinates the work from there and needs help with the loads going out and coming back. Tell him Alna wants something she can build with, and he will spare you the ceremonial part.",
       "objectives": [
         {
           "type": "talk",
@@ -93,7 +93,7 @@
       "story": true,
       "title": "The Burn Beneath the Stamp",
       "text": "Copperfell's purse forgers used this style of stamp; the new Tithe-Brand burns where theirs left ink. Take a rubbing of the scorched mark at {name:brandscar_cairn}, {dir_from_giver:brandscar_cairn}. Bring me three Siege Bones from Tollroad Skeletons in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}, after dark. My runesmiths need to compare what the brand does to stone with what it does to a soldier.",
-      "completion": "[PH] Alna ties the bones' renewed service and the brand's renewed payment to Senn's toll business and sends the player against the man who keeps the crossing deadly. Real text to follow.",
+      "completion": "The burn in these bones matches the rubbing: fresh payment is keeping old soldiers in service. Senn pays the dead who hold his crossing, but we have yet to learn who supplies him. I need his toll-box opened before another traveller becomes part of its takings.",
       "objectives": [
         {
           "type": "item",
@@ -134,7 +134,7 @@
       "story": true,
       "title": "Collection Ends Here",
       "text": "The smiths found the same burn in the bones: {name:toll_taker_senn} pays dead soldiers in branded coin to keep them on duty. At the {name:front_broken_causeway/toll_camp}, {dir_from_giver:front_broken_causeway/toll_camp}, defeat five Aqueduct Bowmen or Coal-Purse Factors in all; they guard his takings day and night. Kill Senn as well, then turn out the branded toll-box at {name:r20_anchor_078}. I want to see who considers a road full of corpses a sound investment.",
-      "completion": "[PH] The evidence is enough for a report to the Warmaster; Chirr appears as a further payer, and the link to The Throng stays a suspicion. Real text to follow.",
+      "completion": "Senn was paid to keep the crossing deadly, and Paymaster Chirr's remittance promises more money for more of the same. The bundle bears a seal of The Throng, but a seal on a wrapper does not identify the hand that filled it. The Warmaster must examine this payment circuit; I can read the burn, but a fortress pay office is his responsibility.",
       "objectives": [
         {
           "type": "kill",
@@ -183,7 +183,7 @@
       "story": true,
       "title": "Good Paper, Bad Company",
       "text": "Senn's accounts say more than he ever did: he was paid to keep the road deadly, and his tolls went back to the factors for another branding and another round of wages. A remittance from Paymaster Chirr in The Skyglass Canopy promises more of the same. The bundle came wrapped in a requisition under a seal of The Throng, on paper fit for a fortress pay office. Take all of it to the Warmaster at {name:pvp_fortress_accord}; paper this good deserves an awkward question, and I'd rather it came from someone whose job it is.",
-      "completion": "[PH] The Warmaster ties toll, dead and pay together and sends the player to a pledged standard on the Shattered Line; Audra's regular deliveries stay apart from the suspect pay. Real text to follow.",
+      "completion": "These accounts establish a circuit: tolls return to the factors, the factors brand the coin, and fresh pay keeps the dead at work. Audra's ordinary supply requests remain valid; the seal on this money is grounds for inquiry, not a verdict on its sender. Nella Hedgeward reports a standard pledged against the same pay on The Shattered Line, and I will give you orders to examine it.",
       "objectives": [
         {
           "type": "talk",
@@ -207,8 +207,8 @@
       "min_level": 48,
       "level": 49,
       "requires": [],
-      "title": "[PH] Tools Held Ready",
-      "text": "[PH] Alna wants a tool load already set aside at the guild camp's loading ground made ready for repairs at the front. Real text to follow.",
+      "title": "Ready for the Repair Crew",
+      "text": "There is a tool load held for front repairs at Stormvault Mining Camp's loading ground. Check the prepared bundles and ready them for the repair crews, then bring me word. A sound tool left waiting behind a rope repairs very little.",
       "objectives": [
         {
           "type": "use",
@@ -274,8 +274,8 @@
       "min_level": 50,
       "level": 51,
       "requires": [],
-      "title": "[PH] Before the Weight Comes",
-      "text": "[PH] Borin wants a prepared point at the {name:front_gravesalt_escarpment/shoring_check} checked for ground that carries shoring, before anyone salvages near Huskell's watch. Real text to follow.",
+      "title": "Before the Weight Comes",
+      "text": "Gravesalt has plenty worth salvaging, provided the ground holds while we lift it. Use the sighting frame at the {name:front_gravesalt_escarpment/shoring_check} to check where our shoring can take a load, then report to me. I count a crew member as considerably harder to replace than a beam.",
       "objectives": [
         {
           "type": "use",
@@ -329,8 +329,8 @@
       "min_level": 51,
       "level": 51,
       "requires": [],
-      "title": "[PH] A Word for Eriath",
-      "text": "[PH] Borin sends the player to Eriath Boughwarden in Lethariel, who needs help with the ways and work sites of the Skyglass Canopy; Huskell is not assumed. Real text to follow.",
+      "title": "Ask About the Roots",
+      "text": "My crews brace what they can in Gravesalt; Eriath Boughwarden has carriers picking their way through The Skyglass Canopy. Go and speak to him in Lethariel about the help they need. He understands the roots under those paths, and I am willing to admit that a root is a beam with opinions.",
       "objectives": [
         {
           "type": "talk",
@@ -352,8 +352,8 @@
       "min_level": 52,
       "level": 53,
       "requires": [],
-      "title": "[PH] A Meal Between Shifts",
-      "text": "[PH] Borin wants his salvage crews fed between shifts: bring 5 Storm Tuna. Real text to follow.",
+      "title": "Put Down the Tools",
+      "text": "The salvage crews keep calling a mouthful between lifts a meal. Bring me five Storm Tuna, and I'll have a proper supper waiting when their shift ends. They can put down the tools long enough to use a plate.",
       "objectives": [
         {
           "type": "item",
@@ -386,8 +386,8 @@
       "min_level": 55,
       "level": 56,
       "requires": [],
-      "title": "[PH] Braces Before Salvage",
-      "text": "[PH] Borin wants the prepared bracing timbers at the {name:front_gravesalt_escarpment/work_laydown} checked and made ready for the next salvage. Real text to follow.",
+      "title": "Braces Before Salvage",
+      "text": "I have bracing timbers set aside at the {name:front_gravesalt_escarpment/work_laydown} for the next salvage crew. Check the bundles and ready the load there before anyone goes looking for something heavy to lift. The time to discover a missing brace is while the weight is still on the ground.",
       "objectives": [
         {
           "type": "use",
@@ -446,7 +446,7 @@
       "story": true,
       "title": "The Last Watch Ends",
       "text": "Fresh branded pay reaches the {name:front_gravesalt_escarpment/ossuary_wood}, and the Last-Watch Sentries shoulder their weapons for another night. Destroy five there after dark, then defeat {name:watch_captain_huskell}, {dir_from_giver:watch_captain_huskell}. His roll should tell us who keeps paying for the watch; somebody has to relieve it, and it may as well be you.",
-      "completion": "[PH] The roll lists soldiers of both armies and, freshly entered, Odren Vell himself; Borin points to the payer's marks in the roots and to Eriath. Real text to follow.",
+      "completion": "Soldiers from both armies, bought back onto the watch, and Odren Vell freshly entered at the foot: the clerk has landed in his own account. The roll proves he is bound, but gives us no place to find him. Eriath Boughwarden watches Chirr's payments in The Skyglass Canopy; I have a page he needs to read.",
       "objectives": [
         {
           "type": "kill",
@@ -528,7 +528,7 @@
       "story": true,
       "title": "The Clerk at the Foot",
       "text": "Huskell's roll is no muster list but a page of the Undertithe's own: soldiers from both armies, each name bought back onto duty with branded pay. Odren Vell is written at the foot in fresh ink; the coin has collected its own clerk. Take the page to Eriath Boughwarden in Lethariel, who remembers the old forged bough-seals and whose watchers keep an eye on Chirr's payments in The Skyglass Canopy. He'll need three graceful sentences to agree with me.",
-      "completion": "[PH] Eriath names Chirr and his archers; Rusk may appear as Eriath's own past, never as the player's deed. Real text to follow.",
+      "completion": "Borin is right: Huskell held the names on duty, and Chirr keeps paying to renew their service. My watchers have located his Last-Pay Archers and Ash-Writ Bowmen, though we cannot yet tell how far their burning entries reach. I will send you to the paymaster before he buys another watch.",
       "objectives": [
         {
           "type": "talk",

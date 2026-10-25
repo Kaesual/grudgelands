@@ -15,7 +15,7 @@
       "story": true,
       "title": "Warm Coin, Cold Supper",
       "text": "The coins you brought carry a broken circle with two hooks curling into the gap, and my drivers have seen it before, on the brigands who charge them tolls along the Causeway. The Coal-Purse Factors in the smoke-dark coats call themselves soot factors; the Causeway Brigands only collect for them while our carts stand idle. Defeat five Causeway Brigands or Coal-Purse Factors in all, by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Supper is getting cold while their purses stay warm.",
-      "completion": "[PH] Toren can name the transport trail but not explain the brand on the coins; he prepares the hand-over to Alna. Real text to follow.",
+      "completion": "The brigands collect the tolls, the soot factors handle the pay, and my drivers lose time to both. That tells me how the money travels, but not why it stays hot. Alna Archsight at Archshadow Post has runesmiths who can read the burn; I have an introduction for you.",
       "objectives": [
         {
           "type": "kill",
@@ -49,7 +49,7 @@
       "story": true,
       "title": "A Stamp for Archsight",
       "text": "Speak with Alna Archsight at Archshadow Post in Stormvault Heights about the brand on the convoy pay. Her runesmiths can read a stamp better than my drivers can describe one. Tell her Cinderline Watch still stands, and that the road now charges us in burnt coin as well as lost meals.",
-      "completion": "[PH] Alna names the two things her next task tests: the bones and the brand. No further names. Real text to follow.",
+      "completion": "Toren has found the hands moving this coin; we still need to know what its mark does to the people paid with it. I will have the smiths compare a rubbing of the brand with the bones of the soldiers still collecting tolls. Stone and bone should give us two accounts that no clerk can tidy up.",
       "objectives": [
         {
           "type": "talk",
@@ -78,7 +78,7 @@
       "story": true,
       "title": "Nobody Left to Rally",
       "text": "That stitching is a pledge: every soldier under the standard is borrowed against the next payment, and fresh wages keep them rallying to a war lost long ago. Defeat five Rubble Skeletons or Brandbound Collectors in all, after dark at the {name:front_shattered_line/breach}. Find {name:standard_bearer_ninepins}, {dir_from_giver:standard_bearer_ninepins}, and end his command as well. Report back to me, then seek the Warmaster's orders; I'd like the next thing our watch hears from that breach to be the wind.",
-      "completion": "[PH] Ninepins enforced orders, he did not start the curse; Nella points to the Warmaster, who wants the enemy's military side checked. Real text to follow.",
+      "completion": "Ninepins cannot rally that watch again tonight, but his command was one link in the payments, not their source. Take word to the Warmaster at Ashenward Bastion. He needs the enemy camp's own orders before deciding whether their seal tells the truth.",
       "objectives": [
         {
           "type": "kill",

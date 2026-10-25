@@ -10,8 +10,8 @@
       "min_level": 42,
       "level": 43,
       "requires": [],
-      "title": "[PH] Food for the Next Load",
-      "text": "[PH] Thorga wants provisions for the next load to the front: bring 5 Ember Eel. Real text to follow.",
+      "title": "Feed the Hands That Haul",
+      "text": "The next load to the front needs provisions for the people hauling it. Bring me five Ember Eel, and I will see the cooks pack them into something fit for the journey. If a carrier has to eat the contents of the load to reach its destination, I have provisioned the wrong end of the trip.",
       "objectives": [
         {
           "type": "item",
@@ -63,8 +63,8 @@
       "min_level": 44,
       "level": 45,
       "requires": [],
-      "title": "[PH] Ready at the Water Depot",
-      "text": "[PH] Thorga wants a prepared load for the front checked and released at the cook court's water depot. Real text to follow.",
+      "title": "Ready at the Water Depot",
+      "text": "Our next front load is tied up at the cook court's water depot here in Gor Drazhak, waiting for its final check. Inspect the prepared supplies and release the load there. I promised those crews something useful would arrive; help me send it while they still have a use for it.",
       "objectives": [
         {
           "type": "use",
@@ -118,8 +118,8 @@
       "min_level": 45,
       "level": 46,
       "requires": [],
-      "title": "[PH] A Fang Through the Strap",
-      "text": "[PH] Thorga wants Siegepack Fangs as proof of what straps and gear must stand up to; the Siegepack Hyenas of the {name:front_shattered_line/trenches} carry them: bring 3. Real text to follow.",
+      "title": "A Fang Through the Strap",
+      "text": "The people making our carrying gear ought to see what bites through it. Bring me three Siegepack Fangs; Siegepack Hyenas prowl the {name:front_shattered_line/trenches} by day. I want the next discussion about a stronger strap to include the tooth that broke the last one.",
       "objectives": [
         {
           "type": "item",
@@ -187,8 +187,8 @@
       "min_level": 60,
       "level": 60,
       "requires": [],
-      "title": "[PH] Optional: Krait Season",
-      "text": "[PH] Thorga posts a bounty on the Kraits of the {name:front_stormscale_summit/scorchlands} on Stormscale Summit, by day; coin, no leveling. Real text to follow.",
+      "title": "Optional: Watch Where You Land",
+      "text": "Visitors to Stormscale Summit spend too long looking at the skyline and too little watching their feet. I am offering a bounty on six Kraits in the {name:front_stormscale_summit/scorchlands}, where they hunt by day. Take a boat to the island and keep your attention on what can reach your ankles.",
       "objectives": [
         {
           "type": "kill",
@@ -218,8 +218,8 @@
       "requires": [
         "gordrazhak_krait_bounty"
       ],
-      "title": "[PH] Party: The Last Offering",
-      "text": "[PH] Thorga asks for a party against {name:last_offering_ape} on Stormscale Summit; optional, nothing needs it. Real text to follow.",
+      "title": "Party: Nothing More to Offer",
+      "text": "{name:last_offering_ape} is making the {name:front_stormscale_summit/thunderwood} on Stormscale Summit dangerous for anyone trying to pass through. Gather a group, take a boat each to the island and kill that elite ape, {dir_from_giver:last_offering_ape}. This is work for a party with a plan; a lone visitor is only giving it another reason to stay.",
       "objectives": [
         {
           "type": "kill",
