@@ -542,7 +542,7 @@
       ],
       "story": true,
       "title": "Still Buying Our Dead",
-      "text": "Mardra sold our dead, and somebody is still buying. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she says the fen's dead whisper about fire, and the hexers do the whispering. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy and will have work for you once Vaska has your report.",
+      "text": "Mardra sold our dead, and somebody is still buying. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she says the fen's dead whisper about fire, and the hexers do the whispering. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy, but Vaska's part of this trail comes first.",
       "completion": "Those were fresh demands for service, not the old voices repeating their grief. They lead to Huskell's watch, but I need his roll before I can tell whose names are being called. When you are ready to face him, return to me; until then, there are living people here who need an answer too.",
       "objectives": [
         {
@@ -585,7 +585,7 @@
       "story": true,
       "title": "Party: No Claim on Our Dead",
       "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a party of two or three, kill him beside the burning crack and stay out of it; if The Accord turns up, it can carry its own banner home, and we will carry ours. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
-      "completion": "Isquarre's body has fallen, but the crack still answers; I heard it after the fighting stopped, and I cannot tell how deep that answer began. The names you recovered belong in our keeping, even Mardra's. Take my account to the Warmaster at Bannerbreak Warhold; he must tell our people what was won and what still waits.",
+      "completion": "Isquarre's body has fallen, and the names you recovered stay in our keeping, even Mardra's. Stay a moment before you carry the report: I want to listen at the crack once more, and then the Warmaster at Bannerbreak Warhold must hear what was won and what still waits.",
       "objectives": [
         {
           "type": "kill",

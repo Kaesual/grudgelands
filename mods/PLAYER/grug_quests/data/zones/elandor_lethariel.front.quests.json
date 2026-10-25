@@ -351,7 +351,7 @@
       "level": 59,
       "requires": [],
       "title": "Party: Beneath the Waiting Coils",
-      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Chirr is dead, but our watchers still cannot cross beneath those coils. Gather a party and slay the elite serpent; freeing a forest includes making room for someone to walk through it.",
+      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Whatever becomes of Chirr's payroll, our watchers still cannot cross beneath those coils. Gather a party and slay the elite serpent; a forest worth keeping should leave room for someone to walk through it.",
       "objectives": [
         {
           "type": "kill",

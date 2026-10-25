@@ -553,7 +553,7 @@
       "level": 59,
       "requires": [],
       "title": "Party: Nothing Left to Count",
-      "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell kept them working; she is already adding up what they might fetch. Gather a party and kill the elite witch. I'd like the next count in that mire to come out at nothing.",
+      "text": "{name:salt_counter_witch} sits in the Gravesalt mires, {dir_from_giver:salt_counter_witch}, counting soldiers as entries to spend. Huskell keeps them on watch; she is already adding up what they might fetch. Gather a party and kill the elite witch. I'd like the next count in that mire to come out at nothing.",
       "objectives": [
         {
           "type": "kill",

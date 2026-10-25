@@ -721,7 +721,7 @@
       "story": true,
       "title": "Party: The Collector Comes Due",
       "text": "I entered Odren Vell in the Bastion's roll anyway, with the cause beside his name: \"Every name accounted for. His too.\" Gather a party of two or three and defeat Isquarre the Tithe-Eater at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, where the unsecured debt has given its collector a body of slag and ash. Secure the site before The Throng claims authority over it; our own account of this affair will remain under seal.",
-      "completion": "Your group broke Isquarre's body and denied him the names, but the crack remains open; I cannot enter the Undertithe itself among our defeated enemies. Stay for the final accounting with me. The wages, the deliveries and the people you brought back into the record still need someone to answer for them.",
+      "completion": "Your group broke Isquarre's body and denied him the names; I cannot enter the Undertithe itself among our defeated enemies. Stay for the final accounting with me. The wages, the deliveries and the people you brought back into the record still need someone to answer for them.",
       "objectives": [
         {
           "type": "kill",
@@ -755,7 +755,7 @@
       "story": true,
       "title": "Every Name Accounted For",
       "text": "Isquarre broke at {name:r20_anchor_077}, but the crack did not, and a collector who loses his body keeps the debt. I have sealed your report with the names you brought back, the clerk's among them. We closed his account. Beneath us, someone turned a fresh page.",
-      "completion": "Audra Wainholt at Ashenward Mining Camp will oversee honest pay and replacement supplies with The Charter of Stone, and I will keep the recovered names in the Bastion's care, Odren Vell's guilt beside his own. We closed his account. Beneath us, someone turned a fresh page.",
+      "completion": "Audra Wainholt at Ashenward Mining Camp will see honest pay and replacement supplies through with The Charter of Stone, and the recovered names stay in the Bastion's care, Odren Vell's with his guilt written beside it and none of them left for Isquarre to collect. We closed his account. Beneath us, someone turned a fresh page.",
       "objectives": [
         {
           "type": "talk",

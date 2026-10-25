@@ -86,7 +86,7 @@
       "story": true,
       "title": "A Coin for Orrel",
       "text": "Senn paid the dead to keep them on the road, then sent the tolls back to the soot factors for another burning; a remittance from Paymaster Chirr in The Skyglass Canopy promises fresh payments for every crossing kept deadly. Apparently a corpse earns better than a bridge. I know mud, not the dead, so take one of those coins to Orrel Hollowstep at Hollowarch Station in Blackwind Rise. He'll complain about the fingerprints, but he'll read it.",
-      "completion": "Drek has found a business that pays better when the road kills its customers. The entries remind me of Mortuary Clerk Hush's claims, but this new burn needs its own examination. I will have you wash the ash from the old names at the {name:kragmar_blackwind_rise/ashen_grave}; then we can tell the Warmaster what has been laid over them.",
+      "completion": "Drek has found a business that pays better when the road kills its customers. This burn is new to me, and I will not name it until I have seen what it covers. I will have you wash the ash from the old names at the {name:kragmar_blackwind_rise/ashen_grave}; then we can tell the Warmaster what has been laid over them.",
       "objectives": [
         {
           "type": "talk",
