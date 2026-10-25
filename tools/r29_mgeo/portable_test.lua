@@ -106,11 +106,11 @@ do
 	check(hideout.slope > CORE.CAMP_SLOPE and hideout.slope <= CORE.HIGH_SLOPE,
 		("its slope %.3f lies between CAMP_SLOPE and HIGH_SLOPE"):format(hideout.slope))
 	check(#m.problems == 0, "no problem in " .. zone .. ": " .. table.concat(m.problems, "; "))
-	local leader
+	-- Round 61: the hideout's leader Grave-Broker Mute left the recipe (no
+	-- quest hunts him since the band 31-40's rework); no leader stands there.
 	for _, l in ipairs(m.leaders) do
-		if l.role == "grave_broker_mute" then leader = l end
+		check(l.role ~= "grave_broker_mute", "the hideout keeps no leader of its own")
 	end
-	check(leader and leader.level == 37, "the hideout's leader stands")
 	print(("  steep camp: %s at %d,%d (%.1f s)"):format(hideout.id, hideout.x, hideout.z, os.clock() - t0))
 end
 print(("R29 MGEO PORTABLE PASS checks=%d"):format(checks))

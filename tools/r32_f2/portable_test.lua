@@ -778,8 +778,10 @@ end
 -- Round 59: the band 11-20 keeps two kill quests per zone, its day hunt and
 -- its perpetrator (274 left); Round 60: the band 21-30 keeps three kill
 -- objectives per zone (237 left); Round 60 CAPITALS: the six capitals keep
--- a night hunt, a day hunt and their named leader each (219 left).
-check(kills >= 215, "L the shipped kill objectives were read (" .. kills .. ", " .. garrison_kills ..
+-- a night hunt, a day hunt and their named leader each (219 left); Round
+-- 61: the band 31-40 keeps its camp quests, Scrip, Rattle, A Soldier's Due
+-- and the six optional group leaders (186 left).
+check(kills >= 182, "L the shipped kill objectives were read (" .. kills .. ", " .. garrison_kills ..
 	" garrison kills not checked)")
 local kill_quests = 0
 for id in pairs(changed_quests) do

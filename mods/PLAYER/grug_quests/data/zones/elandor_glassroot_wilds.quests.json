@@ -1,5 +1,6 @@
 {
   "zone": "elandor_glassroot_wilds",
+  "reworked": true,
   "identity": "Glassroot Wilds is the last elven forest before the front: the gate wardens tend the old roots while wolves run the fringe, apes and panthers hold the tangle, and the canopy has a king who answers to nobody.",
   "hubs": [
     {
@@ -9,7 +10,7 @@
         {
           "npc": "r20_anchor_036_host",
           "lines": [
-            "fringe",
+            "border",
             "canopy"
           ]
         }
@@ -31,74 +32,137 @@
   ],
   "quests": [
     {
-      "id": "glassroot_fringe_01",
-      "line": "fringe",
-      "giver": "r20_anchor_036_host",
-      "turnin": "r20_anchor_036_host",
+      "id": "border_melons",
+      "line": "border",
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "Room for the Living",
-      "text": "Rootrunner Wolves hunt the {name:fringe}, which lies {zone_area:fringe}, and after dark their howls press closer to our wardens. Kill five of them to ease the pressure on the paths. I have guarded these woods too long to mistake loving a creature for letting it eat my people.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "briarpack_wolf"
-          ],
-          "count": 5,
-          "area": "elandor_glassroot_wilds/fringe"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Pack hunters: pull from the edge.",
-      "duration_min": 10
-    },
-    {
-      "id": "glassroot_fringe_02",
-      "line": "fringe",
-      "giver": "r20_anchor_036_host",
-      "turnin": "r20_anchor_036_host",
-      "min_level": 31,
-      "level": 32,
-      "requires": [
-        "glassroot_fringe_01"
-      ],
-      "title": "A Warning Without Words",
-      "text": "Bring me three Warpack Fangs from the Rootrunner Wolves of the {name:fringe} for our wardens' sleeves. The pack has learned what those trophies mean, and sometimes that is enough to keep a wolf among the trees. A warning understood saves us both a hunt.",
+      "title": "[PH] Something Fresh for the Carriers",
+      "text": "[PH] Faeris Rootbinder wants the carriers on the grown paths to have something fresh: bring 5 Melons. Real text to follow.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:warpack_fang",
-          "count": 3,
-          "roles": [
-            "briarpack_wolf"
+          "item": "grug_gathering:melon",
+          "count": 5
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r20_anchor_036_host"
           ],
-          "area": "elandor_glassroot_wilds/fringe"
+          "text": "[PH] Faeris Rootbinder wants the carriers on the grown paths to have something fresh: bring 5 Melons. Real text to follow."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r20_anchor_048_host"
+          ],
+          "text": "[PH] Rumela Stormstep's carriers come back soaked and hungry: bring 5 Melons. Real text to follow."
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_scaled",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Family drop request; the first hunt's kills count toward it.",
-      "duration_min": 8
+      "lesson": "A shared errand, the zone's first; the first armor choice (one enchant, a prefix).",
+      "duration_min": 9,
+      "notes": "Round 61 BANDQUESTS. Draft §3 'Something Fresh for the Carriers': Melons for the carriers (Faeris, Rumela)."
+    },
+    {
+      "id": "border_stores",
+      "line": "border",
+      "min_level": 31,
+      "level": 32,
+      "requires": [],
+      "title": "[PH] Keep the Stores Dry",
+      "text": "[PH] Faeris needs Chests so stores and spare material stay usable between runs: bring 3 Chests. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:chest",
+          "count": 3
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r20_anchor_036_host"
+          ],
+          "text": "[PH] Faeris needs Chests so stores and spare material stay usable between runs: bring 3 Chests. Real text to follow."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r20_anchor_040_host"
+          ],
+          "text": "[PH] Orrel Hollowstep keeps recovered belongings dry until they go home: bring 3 Chests. Real text to follow."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r20_anchor_048_host"
+          ],
+          "text": "[PH] Rumela keeps message gear and stores dry between the rains: bring 3 Chests. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "A shared errand, a level only; the zone's early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 61 BANDQUESTS. Draft §3 'Keep the Stores Dry': dry keeping for stores, personal effects and message gear (Faeris, Orrel, Rumela)."
     },
     {
       "id": "glassroot_road_ashenward",
-      "line": "fringe",
+      "line": "canopy",
       "giver": "r20_anchor_036_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 31,
-      "level": 33,
-      "requires": [
-        "glassroot_fringe_01"
-      ],
-      "title": "Regards, and a Leaking Barrel",
-      "text": "Speak with Toren Waterbarrel at Cinderline Watch in Ashenward March; his water carts keep much of the front alive. Carry our thanks, ask how you can help, and let him direct you onward to Stormvault Heights. Mention that his last barrel watered more roots than soldiers; I suspect the trees are his greatest admirers.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "[PH] Supplies Through Cinderline",
+      "text": "[PH] Faeris sends the player to Toren Waterbarrel at Cinderline Watch, where the same supply problems run; no earlier deed is claimed. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -106,125 +170,79 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Contested circuit: the three zones carry the band together.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
-      "id": "glassroot_canopy_01",
+      "id": "glassroot_carrier_path",
       "line": "canopy",
       "giver": "r20_anchor_036_host",
       "turnin": "r20_anchor_036_host",
-      "min_level": 34,
-      "level": 35,
+      "min_level": 38,
+      "level": 39,
       "requires": [],
-      "title": "An Unwelcome Rain of Branches",
-      "text": "By day, the Canopy Apes in the {name:tangle}, which lies {zone_area:tangle}, greet our wardens with whatever comes loose overhead. Kill five of them so we can pass beneath the boughs again. I have tried patience; it did very little for the warden carrying our medicine.",
+      "title": "[PH] A Path for Those Coming Back",
+      "text": "[PH] Faeris wants a prepared snare on the carriers' path loosened at the {name:carrier_path} in the {name:canopy}, so her wardens can watch that stretch again. Real text to follow.",
+      "completion": "[PH] The stretch of path is usable again; a concrete relief, nothing more. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "territorial_ape"
-          ],
-          "count": 5,
-          "area": "elandor_glassroot_wilds/tangle"
+          "type": "use",
+          "place": "carrier_path",
+          "object": "snare_bundle",
+          "label": "Loosen the snare",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Territorial brawlers by day in the middle belt.",
-      "duration_min": 10
-    },
-    {
-      "id": "glassroot_canopy_02",
-      "line": "canopy",
-      "giver": "r20_anchor_036_host",
-      "turnin": "r20_anchor_036_host",
-      "min_level": 35,
-      "level": 36,
-      "requires": [
-        "glassroot_canopy_01"
-      ],
-      "title": "When the Branches Fall Silent",
-      "text": "The {name:tangle} grows quiet when the apes sleep, which is precisely when our least experienced wardens relax. Kill five Shade Panthers there at night before another patrol mistakes silence for safety. Watch the gaps between the roots; the forest has more than one way of keeping a secret.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "stalking_panther"
-          ],
-          "count": 5,
-          "area": "elandor_glassroot_wilds/tangle"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "Night stalkers in the same wood.",
-      "duration_min": 10
-    },
-    {
-      "id": "glassroot_canopy_03",
-      "line": "canopy",
-      "giver": "r20_anchor_036_host",
-      "turnin": "r20_anchor_036_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "glassroot_canopy_02"
-      ],
-      "title": "Centuries Felled for Arrows",
-      "text": "I remember planting the glassroots that the Bandit Fletchers at {name:rootsnare} {dir_from_giver:rootsnare} now fell for arrow shafts. Defeat five of those archers before they cut deeper into the grove. Three centuries of tending, undone in an afternoon with an axe; my patience has grown shorter than the stumps.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "entrenched_bandit_archer"
-          ],
-          "count": 5,
-          "area": "elandor_glassroot_wilds/rootsnare"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Ranged camp at the top of the zone.",
-      "duration_min": 12
-    },
-    {
-      "id": "glassroot_canopy_04",
-      "line": "canopy",
-      "giver": "r20_anchor_036_host",
-      "turnin": "r20_anchor_036_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "glassroot_canopy_03"
-      ],
-      "title": "No Picnic for {name:basket_biter}",
-      "text": "We have lost enough provisions near the {name:serpent_pools} to feed a patrol, and the carriers now refuse to go near the water. Kill {name:basket_biter}, the serpent lurking {dir_from_giver:basket_biter} in those pools. I would prefer our supplies to reach the front without first passing through a snake.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "basket_biter"
-          ],
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Normal named leader at the top of the zone.",
+      "lesson": "The zone's solo quest; the weapon choice (prefix and suffix).",
       "duration_min": 12,
-      "climax": true
+      "notes": "Round 61 BANDQUESTS. K7 A: the zone's solo quest with its weapon, at a new recipe place in the Canopy, 64 nodes from Canopy-Knuckle (the place rule)."
     },
     {
       "id": "glassroot_canopy_05",
@@ -233,11 +251,9 @@
       "turnin": "r20_anchor_036_host",
       "min_level": 38,
       "level": 39,
-      "requires": [
-        "glassroot_canopy_04"
-      ],
-      "title": "Party: No More Broken Bows",
-      "text": "{name:canopy_knuckle} holds the {name:canopy} {dir_from_giver:canopy_knuckle}; three wardens have returned with their bows snapped across its knee. Gather a party and kill the ape before someone fails to return at all. Bows can be grown and bent anew, but I will not spend my wardens so carelessly.",
+      "requires": [],
+      "title": "[PH] Party: The Canopy's Own King",
+      "text": "[PH] Faeris asks for a party against {name:canopy_knuckle} in the {name:canopy}, who has hurt her wardens and broken their bows; optional, nothing needs it. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -249,25 +265,34 @@
       ],
       "rewards": {
         "weight": 6,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:manawell_t4"
+          },
+          {
+            "item": "grug_gear:battlebeat_t4"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t4"
+          }
+        ]
       },
-      "lesson": "Elite climax for a group; the route reaches 40 without it.",
+      "lesson": "The optional group quest: free, standalone, a trinket choice as its extra.",
       "duration_min": 15,
-      "climax": true,
-      "group": true
+      "group": true,
+      "optional": true,
+      "notes": "Round 61 BANDQUESTS. The optional group quest (round61-plan.md §2 point 8): free, standalone, a trinket choice as its extra."
     },
     {
       "id": "glassroot_road_front",
       "line": "canopy",
       "giver": "r20_anchor_036_host",
       "turnin": "r20_anchor_032_host",
-      "min_level": 38,
+      "min_level": 40,
       "level": 40,
-      "requires": [
-        "glassroot_canopy_04"
-      ],
-      "title": "What We Keep Behind Us",
-      "text": "You have made room for life here, and that is worth remembering when the front seems to hold nothing else. Speak with Nella Hedgeward at Last Hedge Redoubt in Ashenward March when you are ready to serve beyond these woods. She sends our wardens and soldiers onward; I will keep a place for you beneath the boughs.",
+      "requires": [],
+      "title": "[PH] Where the Front Begins",
+      "text": "[PH] Faeris sends the player to Nella Hedgeward at Last Hedge Redoubt; Canopy-Knuckle's fall is not assumed. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -275,11 +300,11 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Band end: handoff to a front host.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The departure at 40 (round61-plan.md §2 point 7); free, it requires nothing."
     }
   ]
 }

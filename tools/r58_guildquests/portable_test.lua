@@ -374,12 +374,15 @@ for id, q in pairs(quests) do
 end
 -- The camp zones' files keep their rework state: unflagged until their
 -- rework (their chains stay), but the band 11-20's six, reworked in Round 59,
--- and the band 21-30's eight, reworked in Round 60.
+-- the band 21-30's eight, reworked in Round 60, and the band 31-40's six,
+-- reworked in Round 61 (every camp zone now).
 local BAND = {elandor_copperfell_foothills = 59, elandor_goldmead_vale = 59, elandor_starbough_vale = 59,
 	kragmar_mournfen = 59, kragmar_redtusk_savanna = 59, kragmar_raincall_basin = 59,
 	elandor_frostbarrow_shelf = 60, elandor_whitebridge_shire = 60, elandor_lorindor = 60,
 	elandor_moonfall_wood = 60, kragmar_ossuary_reach = 60, kragmar_speargrass_reach = 60,
-	kragmar_whispering_reedlands = 60, kragmar_totemwater_reach = 60}
+	kragmar_whispering_reedlands = 60, kragmar_totemwater_reach = 60,
+	elandor_stormvault_heights = 61, elandor_ashenward_march = 61, elandor_glassroot_wilds = 61,
+	kragmar_blackwind_rise = 61, kragmar_bannerbreak_mesa = 61, kragmar_thunderroot_wilds = 61}
 for _, row in ipairs(catalog.mining) do
 	eq(file_data[row.zone_id] and file_data[row.zone_id].reworked, BAND[row.zone_id] and true or nil,
 		"S " .. row.zone_id .. (BAND[row.zone_id] and " is reworked (Round " .. BAND[row.zone_id] .. ")" or

@@ -1,5 +1,6 @@
 {
   "zone": "elandor_stormvault_heights",
+  "reworked": true,
   "identity": "Stormvault is the Accord's high road to the front: the storm watch keeps the passes open while the dead walk them at night, a goblin siege crew chews through the watch's bolts, and a split stone golem guards the stormcrags.",
   "hubs": [
     {
@@ -22,7 +23,7 @@
         {
           "npc": "r20_anchor_028_host",
           "lines": [
-            "sighting",
+            "border",
             "front"
           ]
         }
@@ -44,73 +45,160 @@
   ],
   "quests": [
     {
-      "id": "stormvault_passes_01",
-      "line": "passes",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 30,
-      "level": 31,
+      "id": "border_packets",
+      "line": "border",
+      "min_level": 38,
+      "level": 39,
       "requires": [],
-      "title": "Postage and Talons",
-      "text": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Golden Eagles by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
+      "title": "[PH] Words Worth Bringing Back",
+      "text": "[PH] Alna Archsight wants the intercepted messages back from the Waylayers at {name:slatehook}: bring a Runner's Packet. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
+          "type": "item",
+          "item": "grug_mobs:runners_packet",
+          "count": 1
+        }
+      ],
+      "quest_drops": [
+        {
+          "item": "grug_mobs:runners_packet",
+          "chance": 3,
           "roles": [
-            "ridge_crag_eagle"
+            "entrenched_bandit_archer"
           ],
-          "count": 5,
-          "area": "elandor_stormvault_heights/eagle_crags"
+          "area": "elandor_stormvault_heights/slatehook"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r20_anchor_028_host"
+          ],
+          "text": "[PH] Alna Archsight wants the intercepted messages back from the Waylayers at {name:slatehook}: bring a Runner's Packet. Real text to follow."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "elandor_ashenward_march/coalbrand_yard"
+            }
+          ],
+          "text": "[PH] Nella Hedgeward wants the shift reports the Hedge Bowmen at {name:coalbrand_yard} took: bring a Runner's Packet. Real text to follow."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r20_anchor_036_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "elandor_glassroot_wilds/rootsnare"
+            }
+          ],
+          "text": "[PH] Faeris wants the carriers' messages back from the Bandit Fletchers at {name:rootsnare}: bring a Runner's Packet. Real text to follow."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r20_anchor_040_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "kragmar_blackwind_rise/pallcloth_den"
+            }
+          ],
+          "text": "[PH] Orrel wants the word of returned crews back from the Shroud Archers at {name:pallcloth_den}: bring a Runner's Packet. Real text to follow."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "kragmar_bannerbreak_mesa/sunderstrap_camp"
+            }
+          ],
+          "text": "[PH] Yarra Standardmender wants the questions about late deliveries back from the Trench Archers at {name:sunderstrap_camp}: bring a Runner's Packet. Real text to follow."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r20_anchor_048_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "kragmar_thunderroot_wilds/rainchar_camp"
+            }
+          ],
+          "text": "[PH] Rumela wants her carriers' messages back from the Brigand Bowmen at {name:rainchar_camp}: bring a Runner's Packet. Real text to follow."
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 6,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_scaled",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Contested ground: aggressive hunters by day in the first belt.",
-      "duration_min": 10
-    },
-    {
-      "id": "stormvault_passes_02",
-      "line": "passes",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 31,
-      "level": 32,
-      "requires": [
-        "stormvault_passes_01"
-      ],
-      "title": "The Mountain's Night Shift",
-      "text": "The eagles clock off at dusk, but don't put your weapon away. Rime Strays climb out of the snow in the {name:eagle_crags} and loose arrows at our watch fires; break five of them at night. The mountain works two shifts, and neither of them sleeps.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "rime_skeleton_stray"
-          ],
-          "count": 5,
-          "area": "elandor_stormvault_heights/eagle_crags"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "One area, two clocks: the night roster differs from the day roster.",
-      "duration_min": 10
+      "lesson": "A shared quest drop from the bandit archers of the zone's Round 20 bandit camp (an area per variant); the second armor choice (one enchant, a suffix).",
+      "duration_min": 12,
+      "notes": "Round 61 BANDQUESTS. Draft §3 'Words Worth Bringing Back' (K10 A): the Runner's Packet, a soulbound quest-only item (local messages, no proof of the front's plot), drops 1 in 3 from the camp's archers while needed; the area keeps Blackwind's hideout archers out. Done once everywhere: no other text claims a second camp."
     },
     {
       "id": "stormvault_passes_03",
       "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 31,
-      "level": 33,
-      "requires": [
-        "stormvault_passes_01"
-      ],
-      "title": "A Proper Introduction to Rock",
-      "text": "Bring me four Silversteel Bars and I'll trade you a Silversteel Pickaxe. A dual furnace makes the bars from steel and silver; swearing at an ordinary furnace does not, though I've tested that thoroughly. You'll need it when you dig deep enough for Emberglass, where the rock turns too hard for steel.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "[PH] A Proper Introduction to Rock",
+      "text": "[PH] Borin Splitbolt keeps his tool occasion: bring 4 Silversteel Bars for the station's picks, explained by today's crafting path. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -119,29 +207,85 @@
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": [
+        "weight": 5,
+        "choices": [
           {
-            "item": "grug_materials:pick_silversteel",
-            "count": 1
+            "item": "grug_gear:head_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_scaled",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
           }
         ]
       },
-      "lesson": "Silversteel from the dual furnace; the silversteel pick opens tier four rock.",
-      "duration_min": 15
+      "lesson": "A local task; the first armor choice (one enchant, a prefix).",
+      "duration_min": 9,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
+    },
+    {
+      "id": "stormvault_frostfin",
+      "line": "passes",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 31,
+      "level": 32,
+      "requires": [],
+      "title": "[PH] A Meal With Some Variety",
+      "text": "[PH] Borin wants his people at the station to eat something other than rations: bring 4 Frostfin. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_fishing:frostfin",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "An early errand, a level only; the zone's potion choice.",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "stormvault_road_ashenward",
       "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 32,
-      "level": 33,
-      "requires": [
-        "stormvault_passes_02"
-      ],
-      "title": "Good News Travels on Foot",
-      "text": "Tell Toren Waterbarrel at Cinderline Watch in Ashenward March that the passes are open again. He keeps the Accord supplied, which means every clear road earns him another wagon to worry about. Lend him a hand, then ask after Glassroot Wilds; this front takes mountain, march and forest to hold it.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "[PH] Word for Cinderline Watch",
+      "text": "[PH] Borin sends the player to Toren Waterbarrel at Cinderline Watch, whose supplies feed the same road; no earlier deed is claimed. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -149,24 +293,22 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Contested circuit: the three zones carry the band together.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "stormvault_road_archshadow",
       "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 34,
-      "level": 34,
-      "requires": [
-        "stormvault_passes_02"
-      ],
-      "title": "Alna Keeps Count",
-      "text": "Report to Alna Archsight at Archshadow Post when you're ready for harder ground. She keeps the sighting line trained on the front while goblins make off with our bolts. Mind your sums around her; she once found a missing crate by counting what the thieves dropped.",
+      "min_level": 32,
+      "level": 33,
+      "requires": [],
+      "title": "[PH] Alna Needs Good Eyes",
+      "text": "[PH] Borin points the player to Alna Archsight at Archshadow Post, who needs usable observations before the next load leaves. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -174,110 +316,22 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Handoff to the zone's second outpost and its harder ground.",
-      "duration_min": 10
-    },
-    {
-      "id": "stormvault_sighting_01",
-      "line": "sighting",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 34,
-      "level": 36,
-      "requires": [],
-      "title": "Some Assembly Stolen",
-      "text": "Our missing bolts are holding a goblin siege engine together, which is an insult to every smith who threaded them. Defeat six Siege Goblins or Siege Slingers at the {name:goblin_camp} {dir_from_giver:goblin_camp}. Watch the slingers while you work; they have a distressing knack for finding the gap in a helmet.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "siege_goblin",
-            "siege_goblin_slinger"
-          ],
-          "count": 6,
-          "area": "elandor_stormvault_heights/goblin_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "A camp with a ranged minority.",
-      "duration_min": 12
-    },
-    {
-      "id": "stormvault_sighting_02",
-      "line": "sighting",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 35,
-      "level": 36,
-      "requires": [
-        "stormvault_sighting_01"
-      ],
-      "title": "No More Bolts for {name:bolt_chewer}",
-      "text": "{name:bolt_chewer} guards the stolen hardware at the {name:goblin_camp} {dir_from_giver:bolt_chewer}, chewing through the stock between meals. Those bolts took a smith all morning; the beast doesn't even pause to admire the threads. Kill it before another crate ends up between its teeth.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "bolt_chewer"
-          ],
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Normal named leader at its camp; resolves the stolen bolts.",
-      "duration_min": 10,
-      "climax": true
-    },
-    {
-      "id": "stormvault_sighting_03",
-      "line": "sighting",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "stormvault_sighting_02"
-      ],
-      "title": "Thieves Without Favourites",
-      "text": "The Waylayers at {name:slatehook} {dir_from_giver:slatehook} rob the Accord and the Throng with admirable fairness. Defeat five of them before they strip another supply train. Use what cover you can; I want a report, not a demonstration of their aim.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "entrenched_bandit_archer"
-          ],
-          "count": 5,
-          "area": "elandor_stormvault_heights/slatehook"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Ranged camp at the top of the zone.",
-      "duration_min": 12
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 8,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "stormvault_sighting_04",
-      "line": "sighting",
+      "line": "border",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 36,
-      "level": 37,
-      "requires": [
-        "stormvault_sighting_01"
-      ],
-      "title": "A Clearer View of Trouble",
-      "text": "The sighting line needs new lenses; at present I can spot trouble, but not which trouble. Dig deep below the passes, where the rock turns too hard for a steel pick, and bring me two pieces of Emberglass; take a Silversteel Pickaxe for the job. We'll give the watch a clear view before anyone mistakes a siege engine for a supply cart.",
+      "min_level": 33,
+      "level": 34,
+      "requires": [],
+      "title": "[PH] A Clearer View of Trouble",
+      "text": "[PH] Alna needs Emberglass for the post's observation work, free beside Borin's request: bring 2 Emberglass. Real text to follow.",
       "objectives": [
         {
           "type": "item",
@@ -286,24 +340,90 @@
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 5
       },
-      "lesson": "Mining by depth: Emberglass in tier four rock, the next metal's input.",
-      "duration_min": 15
+      "lesson": "A local task of the zone's own people.",
+      "duration_min": 14,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
+    },
+    {
+      "id": "stormvault_survey_stand",
+      "line": "border",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 36,
+      "level": 37,
+      "requires": [],
+      "title": "[PH] A Reliable Stand",
+      "text": "[PH] Alna wants her prepared sighting frame set back on its marked stand at the {name:survey_stand} in the {name:highcrags}; no measured line of sight is asked. Real text to follow.",
+      "completion": "[PH] Alna's observers work from a fixed reference again. Real text to follow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "survey_stand",
+          "object": "sighting_frame",
+          "label": "Set the sighting frame",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "The zone's solo quest; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 61 BANDQUESTS. K6 A: the zone's solo quest with its weapon, at a new recipe place in the Highcrags."
     },
     {
       "id": "stormvault_sighting_05",
-      "line": "sighting",
+      "line": "border",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
       "min_level": 38,
       "level": 39,
-      "requires": [
-        "stormvault_sighting_03"
-      ],
-      "title": "Party: A Crack Is Not a Weakness",
-      "text": "{name:split_seam_warden} roams the {name:stormcrags} {dir_from_giver:split_seam_warden}, with a crack wide enough to tempt any dwarf with a hammer. Don't mistake that seam for an easy job; this golem can flatten a squad. Bring a party and destroy it, and leave the single-handed masonry to the workshop.",
+      "requires": [],
+      "title": "[PH] Party: A Crack Is Not a Weakness",
+      "text": "[PH] Alna asks for a party against {name:split_seam_warden} in the {name:stormcrags}, who threatens the high work paths; optional, nothing needs it. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -315,12 +435,104 @@
       ],
       "rewards": {
         "weight": 6,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:manawell_t4"
+          },
+          {
+            "item": "grug_gear:battlebeat_t4"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t4"
+          }
+        ]
       },
-      "lesson": "Elite climax for a group; the route reaches 40 without it.",
+      "lesson": "The optional group quest: free, standalone, a trinket choice as its extra.",
       "duration_min": 15,
-      "climax": true,
-      "group": true
+      "group": true,
+      "optional": true,
+      "notes": "Round 61 BANDQUESTS. The optional group quest (round61-plan.md §2 point 8): free, standalone, a trinket choice as its extra; the survey stand needs neither its kill nor its spot."
+    },
+    {
+      "id": "stormvault_road_last_hedge",
+      "line": "border",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 40,
+      "level": 40,
+      "requires": [],
+      "title": "[PH] Last Hedge Needs Observers",
+      "text": "[PH] Alna sends the player to Nella Hedgeward at Last Hedge Redoubt, where the front's work begins at once; no earlier deed is claimed. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_032_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The departure at 40 (round61-plan.md §2 point 7): Alna's own front quests start at 44."
+    },
+    {
+      "id": "story_accord_06",
+      "line": "guild",
+      "min_level": 39,
+      "level": 40,
+      "requires": [
+        "story_accord_05",
+        "camp_site_raid"
+      ],
+      "story": true,
+      "title": "[PH] The Cost of Holding Ground",
+      "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow.",
+      "completion": "[PH] Nella names the open deliveries, the crews that need relief and the road the next watch must hold, and points to the Warmaster at Ashenward Bastion. Real text to follow.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_032_host"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r58_foreman_mining_camp_stormvault_heights"
+          ],
+          "turnins": [
+            "r20_anchor_032_host"
+          ],
+          "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r58_foreman_mining_camp_ashenward_march"
+          ],
+          "turnins": [
+            "r20_anchor_032_host"
+          ],
+          "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_glassroot_wilds"
+          ],
+          "turnins": [
+            "r20_anchor_032_host"
+          ],
+          "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 2
+      },
+      "lesson": "Chapter 3 of the story arc (story, may chain): a travel from any band foreman of the faction.",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. A6 (story, 39): requires A5 and the free camp raid (its one Accord follow-up); any of the three Accord band foremen gives it (a raid elsewhere counts)."
     },
     {
       "id": "guild_t4_report_accord",
