@@ -160,14 +160,14 @@ Engine reference for the line citations: `reference_projects/luanti` at
 
 ## 4. Quiver count overlay — retired by UI modernization
 
-The isolated UI branch removes the opaque count cover and the undocumented
+The UI modernization (0.60.1) removes the opaque count cover and the undocumented
 `item_image` stack-count overlay from `grug_inventory/pages.lua`. The native
 slot keeps its ordinary first-stack count and the existing adjacent label
 shows the full quiver total. No inventory semantics change. The old workaround
 relied on `GUIItemImage::draw` deserializing a full ItemStack despite the API
 documenting an item name. That engine assumption is no longer used here.
 The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
-[UI plan](../planning/ui-modernization-plan.md) tracks release integration.
+[UI plan](../planning/ui-modernization-plan.md) has its receipts.
 
 ## 5. `core.find_path` with searchdistance 0 or 1 can abort the server
 

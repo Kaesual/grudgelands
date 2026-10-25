@@ -12,6 +12,23 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.60.1 — a new look for every window (2026-10-25)
+
+**Compatible:** no map reset and no migration step.
+
+- **Every window looks new:** translucent dark panels with small rounded
+  corners, clear buttons that light up under the mouse, tabs with their
+  own icons and a gold line under the open one, and your faction and level
+  in the header. Inventory, character, talents, crafting, furnaces,
+  chests, vendors, trainers, mail, quests and the other windows all share
+  this look; what each window does stays the same.
+- **The map opens directly:** Z and the Map & Quests tab open the larger
+  map at once, with the same tabs on top to move on to another page.
+- **Readable in small windows:** the windows and their text stay readable
+  in small game windows, at higher GUI scales and on high-density
+  displays.
+- **The Scout's quiver** shows its full arrow count beside the slot.
+
 ## 0.60.0 — the quests of levels 21–30, the capitals and the story's second chapter (2026-10-24)
 
 **Map reset** needed: herbs and crops in new places, new quest places in

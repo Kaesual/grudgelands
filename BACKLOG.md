@@ -3133,7 +3133,7 @@ The items the user decides in the GUI test are in the
 **Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.60 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
 
 - **Open GUI judgements:** the camps' places and bands; the headframe
   partly hiding the lift from the side and the lift's light level 3 (LIFT,
@@ -3195,7 +3195,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 **Noted 2026-10-24** ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.60 are
-in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60).
+in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
 
 - **Open GUI judgements:** the held supplies' hold in the Redtusk and
   Raincall bandit camps with the camp's members around (the socket is
@@ -3257,7 +3257,7 @@ in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-
 **Noted 2026-10-24** ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.60 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-and-60).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
 
 - **Open GUI judgements:** the four new objects' look and size (STORYART);
   the holds at the Frostbarrow camp's loading ground and at the seven open
@@ -3317,6 +3317,41 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
   0.60.0 `map_reset` entry, because the unpushed 0.58.0 entry already
   covers every change against pushed 0.57.0; the entry is declared for the
   record (the production world moves 0.57.0 → 0.60.0 across one reset).
+
+### UI modernization carry-overs
+
+**Noted 2026-10-25** (0.60.1, [UI plan](docs/planning/ui-modernization-plan.md)),
+the three reviews' notes (theoretical or accepted, no severity). The
+GUI points are items 67–81 of the
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).
+
+- **Vendored rename:** `minetest.` became `core.` throughout
+  `mods/BASE/default/nodes.lua`, `default/craftitems.lua` and
+  `creative/inventory.lua`; with it undone only the marked sign, book and
+  creative layouts differ, but it bloats every future upstream diff. The
+  creative trash listring warning comment was lost on the way (the ring
+  order is still safe); restore it with the rename's revert.
+- **Media licence:** `grug_core/LICENSE-media.md` covers the 18
+  `grug_ui_*.png` in one paragraph; give each file its own row like the
+  other sections.
+- **Formspec version:** `grug_core/ui.lua`'s prepend styles
+  `button:focused`, a formspec version 7 state, inside version 6 forms; it
+  works on the pinned engine.
+- **Map payload:** the map window's added tab bar (about 1.2 KB per send,
+  estimated) is unmeasured.
+- **Zone labels at 1× in small windows** overlap densely (73 overlapping
+  pairs at 1035 × 696, 10 over baked region names; 3 pairs at 1920 × 1080);
+  the corrected reference geometry does not make them collision-free at
+  every client size (GUI checklist item 75 decides).
+- **Text scale:** `grug_core.ui.text_scale` uses the one-row header height
+  (`grug_inventory.UI.window_h`); with more tab rows (admins, or four tabs
+  per row at GUI above 1.2 on windows under 1500 px) the form is up to
+  about 7 % taller and its text about 7 % less compensated. Very small
+  windows at GUI 1 (for example 800 × 600) are not compensated (the floor
+  is 1), as before.
+- **Theme bytes:** `tools/ui_theme/build.py --check` compares exact PNG
+  bytes, which depend on the Pillow and zlib versions (Pillow 12.3.0
+  today); a Pillow update may need a regeneration without a visual change.
 
 ### Decided for later rounds (Round 56 §8)
 

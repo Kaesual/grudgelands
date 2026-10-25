@@ -1,8 +1,8 @@
 # Round 60 — the story arc's second chapter and the quest rework of levels 21–30 (0.60.0, map reset)
 
 Coordinator: Claude, 2026-10-24. Status: **complete** ([completion](#completion-2026-10-24)); 0.60.0 not pushed, it
-waits for the user's joint GUI test of 0.57.0, 0.58.0, 0.59.0 and 0.60.0
-([checklist](#gui-checklist-rounds-57-58-59-and-60)); the user's go 2026-10-24. The plan review
+waits for the user's joint GUI test of 0.57.0, 0.58.0, 0.59.0, 0.60.0 and 0.60.1 (the merged UI modernization)
+([checklist](#gui-checklist-rounds-57-58-59-60-and-the-ui)); the user's go 2026-10-24. The plan review
 (`r60/reports/plan-review.md`) and the user's answers (§2a) are folded in.
 
 Round 60 continues the **quest rework of levels 11–60** band by band on the Round 57 quest system (Round 59 did
@@ -480,15 +480,16 @@ clear.
 - **Round 61** reworks the band 31–40 with the arc's next chapter (A5 at Ashenward 34, §9).
 - The reviews' and reports' notes are in the [Round 60 carry-overs](../../BACKLOG.md#round-60-carry-overs).
 
-### GUI checklist (Rounds 57, 58, 59 and 60)
+### GUI checklist (Rounds 57, 58, 59, 60 and the UI)
 
-One test for all four rounds (nothing since 0.57.0 has been tested in the GUI), desktop and the web build (the
-lanes' web shots were taken at 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on the synced game. It replaces
-[Round 59's list](round59-plan.md#gui-checklist-rounds-57-58-and-59); items 1–48 keep that list's numbers (and its
-wording, linked below), Round 60 adds items 5–7 in (A) and 49–66 in (B). Where Round 60 changes what an earlier item
-tests, the item says so.
+One test for all four rounds and the UI modernization (0.60.1; nothing since 0.57.0 has been tested in the GUI),
+desktop and the web build (the lanes' web shots were taken at 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on
+the synced game. It replaces [Round 59's list](round59-plan.md#gui-checklist-rounds-57-58-and-59); items 1–48 keep that
+list's numbers (and its wording, linked below), Round 60 adds items 5–7 in (A) and 49–66 in (B), the UI modernization
+items 67–81 in (B). Where Round 60 changes what an earlier item tests, the item says so; every earlier window item now
+also sees the new look.
 
-**Resetting a local world** (what the hosting platform does, contract §3.5; one reset covers 0.58, 0.59 and 0.60):
+**Resetting a local world** (what the hosting platform does, contract §3.5; one reset covers 0.58, 0.59 and 0.60; 0.60.1 needs none):
 
 1. Quit the world (stop the server), then make a copy of the world folder.
 2. Optional, to test the claims' containers: from the repository checkout,
@@ -678,6 +679,39 @@ the user.
     [chapter-2 pick page](https://claude.ai/artifact/75ykbz5V7PMF6YMdfGHRmH), the
     [QUESTMAP](https://claude.ai/artifact/KQ9ZQnCGpvCi4myvScabwW) of the band 21–30 and the capitals and the
     [text pick page](https://claude.ai/artifact/KacTKqvwAciXKtp7dM5gMf).
+
+**(B) The UI modernization (0.60.1, compatible):** the UI plan's own
+[desktop and web checklist](ui-modernization-plan.md#6-verification-and-gui-checklist) (every form, privilege and
+service) is part of this test; the items below are the points its reviews left for the GUI. The seven theme PNGs and
+the ten tab line icons are picked (the fidelity contact sheets, 2026-10-25), the quiver total beside the slot and the
+compact header (1.5 units per tab row) are accepted.
+
+67. **Small windows and GUI scales:** every tab at 1035 × 696 and at 1920 × 1080, at GUI scale 1 and 1.5: titles,
+    labels, achievements, the PvP card, effects and slot labels readable and not clipped. **Judge:** the dense texts
+    (achievement descriptions, crafting rows, the header's faction and level).
+68. **High-density display** (OS scaling 2× or a raised `display_density_factor`): text keeps its size instead of
+    shrinking to about half.
+69. **Privileged tabs:** a player with `mail_admin` only, Creative only, both and neither: the tab rows (two rows when
+    needed), Admin Mail and Creative reachable, a grant or revoke while the window is open handled.
+70. **Native inventory interactions:** drag, shift-click, split, scroll, tooltips and item counts in the bags, the
+    belt, the equipment, the quiver (the total beside the slot) and hotbar A/B unchanged.
+71. **Focus and closing:** the X button and Escape close like before; Enter in the craft search; no window reopens
+    after it was closed or replaced.
+72. **Mail drafts:** unfinished text survives non-send actions, attachments come back on close, no duplicate send.
+73. **Long story text:** a long quest offer, completion text and the reward choice scroll and stay readable.
+74. **Map navigation:** Z and the Map & Quests tab open the larger map directly; the tabs on top lead to every other
+    page and back; zoom, scrolling, filters and the quest panel unchanged.
+75. **Zone labels at 1× in a small window:** the labels overlap densely there (measured 73 overlapping pairs at
+    1035 × 696, 3 at 1920 × 1080). **Judge:** acceptable, or a later fix.
+76. **Progress animations:** crafting and furnace progress still animate without extra sends, also after reopening.
+77. **Hover on the clear tab buttons:** the hover and the selected state are visible on bright, dark and busy
+    backgrounds.
+78. **Narrow tabs:** no overlap of icon and text, also with two tab rows and long labels.
+79. **The one client crash:** a client abort (`malloc(): unaligned tcache chunk detected`) happened once at GUI 1.5
+    under Xvfb in an intermediate version; its cause is unproven. Use GUI 1.5 for a while and note any crash.
+80. **The other windows:** chests, shelves, vendors, trainers, the Claim Stone, signs and books, character creation
+    and the arrival window in the new look.
+81. **Web:** items 67, 69, 70, 74 and 77 in the web build too.
 
 **(C) Round 57 item 16, the bays:** in a new world with the "test" seed (or the reset "test" world).
 

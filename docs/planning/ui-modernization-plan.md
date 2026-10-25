@@ -1,6 +1,6 @@
 # UI modernization — implementation plan
 
-Drafted 2026-10-24. **Implemented and independently reviewed in the isolated worktree; main 0.60.0 integrated and the 2026-10-25 fidelity pass prepared for the coordinator's new review. Texture pick and desktop/web GUI acceptance pending. No merge into main or installation.**
+Drafted 2026-10-24. **Merged into main on 2026-10-25 (`83f1afd3`) and released as 0.60.1 (compatible, no saved state, no reset); every pass independently reviewed (MERGE). The user picked the seven theme PNGs and the ten tab icons and accepted the quiver total beside the slot and the compact header (2026-10-25). Not pushed; the desktop/web GUI acceptance is part of the [joint GUI test](round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui).** The receipts below record the isolated branch's state at their time.
 The user expanded the brief from inventory pages to the game's other forms,
 including privileged pages, containers and NPC services, and asked to plan
 these together before building. The earlier inspector proposal is withdrawn.
@@ -10,9 +10,8 @@ baseline: main `0ab3aea0`. Branch:
 `ui-modernization`, worktree `.claude/worktrees/ui-modernization/`.
 Current integration base: main `a78518b7` (0.60.0), merged into this branch
 with merge commit `f61b8c76`; the integration receipt is below.
-The release number remains unassigned: the quest coordinator owns the
-numbered quest rounds. This branch does not update main's status,
-release metadata or installed game. Only the user pushes.
+The release is 0.60.1, written by the documentation lane UI-D after the
+merge. Only the user pushes.
 
 The approved browser reference is Atlas 03:
 `~/projects/grudgelands-orchestration/ui-mockup-2026-10-24-v3/Grudgelands-UI-Atlas-03.html`
