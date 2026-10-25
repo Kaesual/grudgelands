@@ -698,7 +698,11 @@ other socket of the plot:
 
 `tools/r59_storyquests/portable_test.lua` checks each in its plot as the
 mapgen builds it and on seed 42's own chunks (air and headroom over walkable
-ground).
+ground). Since Round 62 three of them also take a front envoy's task
+([quests.md](quests.md) "The front 41–60"; another object or label, so the
+holds never credit each other): Dur Brannoc's loading apron (Dorrin's
+returned tools), Gor Drazhak's water depot (Thorga's front load) and Nhal
+Veyr's receiving court (Ossa's returned belongings).
 
 ### The band 21–30's town places (Round 60)
 
@@ -1148,7 +1152,7 @@ CAMPNPC, LIFT and GUILDQUESTS):
 | `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`, of the camp's faction): buys like every vendor, opens on the Trade-in, repairs, and its Buy mode is the reputation page ([miners_guild.md](miners_guild.md) §5.2) |
 | `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |
 | `yard_west`, `yard_east` | `guard_post` | tag `camp` | a contested mining camp's two further guards |
-| `held_load` | `quest_place` | – | a mining camp's (not a war camp's) town place on the loading ground between the stall and the ore heap (Round 60; nobody stands on it; named by a quest in Frostbarrow, chapter 2's A3, [quests.md](quests.md) "The band 21–30", and since Round 61 in Ashenward March, Bannerbreak Mesa, Blackwind Rise and Thunderroot Wilds, "The band 31–40") |
+| `held_load` | `quest_place` | – | a mining camp's (not a war camp's) town place on the loading ground between the stall and the ore heap (Round 60; nobody stands on it; named by a quest in Frostbarrow, chapter 2's A3, [quests.md](quests.md) "The band 21–30", since Round 61 in Ashenward March, Bannerbreak Mesa, Blackwind Rise and Thunderroot Wilds, "The band 31–40", and since Round 62 in Stormvault Heights, "The front 41–60") |
 
 A camp under construction has `gate_west`, `gate_east` (tag `gate`),
 `yard_west`, `yard_east` (tag `camp`) and `captain` (role `captain`): the PvP

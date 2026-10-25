@@ -183,7 +183,8 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   unique), and uses its computed level; it names no area (`E-leader-area`),
   because leaders do not spawn from a kind or camp.
 - Front files: `zones/<host>.front.quests.json` (`{"zone": host, "quests":
-  [...]}`) are validated with the host zone. Their quests use the line
+  [...]}`, optionally the rework flag `"reworked": true`, Round 62) are
+  validated with the host zone. Their quests use the line
   `front`, which the host's `quests.json` must declare for that giver
   (`E-front-line`); the host's own quests never use `front`. In a contested
   zone every outpost quest NPC the atlas lists is declared as a giver with
@@ -254,7 +255,8 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   Round 59; an unknown giver faction counts for both), `E-free-chain`
   (only story quests chain),
   `E-reward-budget` and `W-reward-levels` (the zone's equipment rewards by
-  enchant count, capitals excepted), `E-reward-requested` (a reward is never
+  enchant count, per zone and level band of the reward level since Round
+  62, capitals excepted), `E-reward-requested` (a reward is never
   a requested item or group member) and `W-night-count` (a night-only kill
   count about a third of the zone's day median).
 - The atlas predates the Round 31 PvP POIs: `Atlas` adds each fortress and
@@ -329,7 +331,12 @@ python3 tools/r28_design/ledger.py \
   party shares kill credit and splits kill XP; quest XP is not split; every
   member needs their own requested items (ordinary drops go to one player,
   quest-only drops roll per member). Group quests (`"group": true`) count for
-  the party only (`--solo-group` to include them solo).
+  the party only (`--solo-group` to include them solo); since Round 62 a
+  quest that requires a skipped group quest is skipped with it (the final
+  turn-in behind a group finale). A quest drop from a role the quest kills
+  anyway costs no second kill (Round 62: a captain and his orders). A quest
+  of reward weight 0 (the island bounties and uses, paid in coin) counts
+  nothing toward leveling, its kills included (Round 62).
 - Every quest counts once (Round 57 ruling 11: `--repeat` went with the
   repeatable quests); a shared quest (`variants`) counts in the first zone
   of the route that gives it, as that zone's variant
