@@ -1,7 +1,8 @@
 # Round 62 — the front 41–60 and the main line's story layer (0.62.0, map reset)
 
 Coordinator: Claude, 2026-10-25. Status: **planned**. The user took every §2a recommendation (2026-10-25) and added
-the bag sizes (§2 point 11). The plan review has not run yet.
+the bag sizes (§2 point 11). The plan review (`r62/reports/plan-review.md`: 1 blocker, 6 important, 6 minor) is
+folded in (§2b).
 
 Round 62 is **the last round of the quest rework of levels 11–60** on the Round 57 quest system. Earlier rounds did
 11–20 (Round 59), 21–30 and the capitals (Round 60), and 31–40 with chapter 3 of the story arc (Round 61). This round
@@ -119,7 +120,12 @@ New for this round:
    - The four at 50 (`lasthedge_front_05`, `archshadow_front_04`, `bb_front_torn_06`, `bw_front_hollow_03`) become
      standalone free quests.
    - Both factions hunt Engine Nine and Last-Toll, so each of the two becomes one shared quest with a variant per
-     faction's giver (point 7).
+     faction's giver on `border` (Engine Nine: Nella + Yarra; Last-Toll: Alna + Orrel; point 7). Their extra is a
+     plain trinket choice; the pattern's third trinket choice per faction at 41–50 sits on a late solo quest.
+   - **Recorded exceptions** (plan review I2): the elites from 51 (Salt-Counter: Borin and Vaska share no non-front
+     line; Glass-Throat: a shared quest would go into a capital base file), the island elites and the spine climaxes
+     stay per faction. The Throng's island bounty hunts other island mobs (`rimehorn_ram`, `rime_pelt_leopard`,
+     `glass_fang_serpent`, `salt_hex_witch`), so only its elite step repeats the Accord's.
    - The 59–60 group quests may stay on chains. The two finales (`accord_main_collector`, `throng_main_finale`) stay
      the only required group steps.
    - Below 51 a group quest never carries a zone's key reward; it gets an extra, for example a trinket choice.
@@ -134,8 +140,15 @@ New for this round:
    - **Over the round** that is 24 armor pieces, 12 weapons and 12 trinket choices.
    - **The budget problem:** `E-reward-budget` counts per zone and ignores level, and the six contested zones' budgets
      are full from Round 61 (survey §10).
-   - **The fix:** the budget counts **per zone and level band** (31–40, 41–50, 51–60), in both validators
-     (`validate.py`, `grug_quests/validate.lua` ~1149-1200), with a fixture case.
+   - **The fix:** the budget counts **per zone and level band**, the band being `(level − 1) // 10` of the quest's
+     reward `level` (31–40, 41–50, 51–60), in both validators (`validate.py` ~1022-1027, `grug_quests/validate.lua`
+     ~1172-1182), the same band for `W-reward-levels`; fixture cases in `tools/r57_qsys/quest_test.lua` ~846-866 and
+     `validate.py --self-test` ~2368-2375 (the message prefix "… has N equipment rewards with 1 enchant" stays).
+   - **The Accord at 41–50 has only two non-capital giver zones** (Ashenward; Stormvault with Alna alone) and no
+     capital work below 55, so the pattern does not fit there (plan review B1). The fix is a CHAPTER4 pick (§2b
+     point 1): an Accord envoy (Dorrin or Mariel) gets 41–50 work through a departure at about 45, budget-exempt as a
+     capital, mirroring Thorga for the Throng and filling the Accord's thin level 45. The fallback, a smaller 41–50
+     pattern (4 armor + 2 weapons), would be the user's call.
    - The final turn-ins (`*_main_final`, solo) give one key reward.
 6. **Coverage and the unfound givers** (survey §4):
    - **Departures** lead to Thorga (Gor Drazhak, 41–45) and Ossa (Nhal Veyr, 53–58). Their quests fill the Throng's
@@ -149,7 +162,7 @@ New for this round:
    - **The ledger** gets its two known bugs fixed first: the captain's kill counted twice, and the island bounties'
      kill XP (BACKLOG ~1314-1320).
 7. **Shared quests across the factions** sit in a base file on the hosts' `border` line, Round 61's shape. Toren,
-   Nella, Alna, Orrel, Drek and Yarra have `border` + `front`. A shared front quest is homed in its first variant's
+   Nella, Alna, Orrel, Drek and Yarra have `border` + `front` (Faeris and Rumela carry `border` too). A shared front quest is homed in its first variant's
    zone's base file (`V:885-887`), and `tools/r61_bandquests/build_structure.py` learns them (the r61 fixture's
    `--check`).
 8. **Kill share and names:**
@@ -160,15 +173,19 @@ New for this round:
 9. **Places:**
    - The five free clash sites 076, 079, 080, 083 and 085, and new recipe places in the front zones where a pick needs
      one (a map reset anyway).
-   - The Tombroad tally-stone moves off Isquarre's spot (BACKLOG ~1309).
+   - The Tombroad tally-stone stays (plan review I3: quest places have no offset field, and both uses are spine steps
+     pinned at `r20_anchor_077`; a move is not worth a new mechanism). It stays in BACKLOG.
    - No text names "West Trench Mouth" (compass word, `r29_q1`).
    - No new giver sockets: the capitals' free sockets are unverified at runtime (survey §7).
    - No foreman names unless CHAPTER4 puts a war-camp foreman into the story.
 10. **Template defects (TEMPLATEFIX, §2a point 6):** the known-defects baseline that waits for a map-reset round
     (BACKLOG ~3013-3017):
-    - Kezamba's moot-house pane over a door;
-    - the Lethariel mere shrines' inside point on a block;
-    - 25 unreachable points inside their templates.
+    - the three known defects (`known_defects.txt`): Kezamba's moot-house pane over a door and the two Lethariel
+      mere shrines' inside point on a block;
+    - Kezamba's moot-house inside point (5,5,8);
+    - the rest of `check.py`'s 14 unreachable points are triaged in the viewer, not edited: the ten gate posts at the
+      gatehouse fronts and Sunscar's warlord platform are very likely reached from outside the template (plan review
+      I5; the 25 was Round 56's count).
 
     The deploy's one map reset is the last chance before production.
 11. **Bag sizes 8 / 12 / 16 / 20** (the user, 2026-10-25, after playtests: steps of four are right, but four slots
@@ -181,10 +198,18 @@ New for this round:
       equipped bag's content list to that size and grows it freely (`bags.lua` ~363-376); only shrinking needs care
       (the 0.48.0 step). An unequipped bag is always empty. The change is upgrade-compatible on its own; it rides in
       0.62.0.
-    - **The lane checks** the inventory page's layout with four 20-slot bags (80 bag slots, 64 before), the item
-      descriptions "(n slots)", the docs (`inventory_equipment.md`, `items_crafting.md`, the comment at `bags.lua`
-      ~38-42), and the fixtures and probes that pin the sizes (`r48_bags`, `r49_inv`, `r44_ih`, `r33_c1`, `r33_c5`,
-      `r50_hotbar`, …: each pin moves with a reason; the old migration steps' tests keep their historic sizes).
+    - **The inventory page needs no re-layout:** it is one 8-wide scroll grid (`grug_inventory/ui.lua` ~196-225);
+      four 20-slot bags make 13 rows instead of 11 (80 bag slots, 64 before). BAGS does not touch `pages.lua` /
+      `ui.lua` (the user's UI lane proposes inventory height changes); it checks the scroll maximum and makes a
+      capture.
+    - **The lane changes** the item descriptions "(n slots)", the docs (`inventory_equipment.md`,
+      `items_crafting.md`, the comment at `bags.lua` ~38-42), the item dump `docs/planning/round28/items/existing.json`
+      (regenerated, never merged by hand), and the pins that move (plan review I4, measured on a mirror): `r48_bags`
+      section A, `r44_ih`, `r33_c1`. The 0.48.0 step's online part reads the live sizes
+      (`grug_core/migrations.lua` ~192-196): `r48_bags` D/E/F stub the old 4/8/12/16 groups around the handler run, so
+      the step's tested behaviour stays. The pushed step's code stays; a character still carrying the 0.48.0 marker
+      now sorts into the new sizes (harmless; its letter says "half as much"), one line in the upgrade contract's
+      0.48.0 row (`docs/technical/upgrade-contract.md` ~616).
 
 ## 2a. Decided (the user, 2026-10-25: every point as recommended)
 
@@ -227,6 +252,23 @@ Decided by the coordinator (the plan review may object):
 - the validator key fix and the ledger bugs (§2 points 1 and 6);
 - 0.62.0 as a map reset.
 
+## 2b. The plan review (folded, 2026-10-25)
+
+`~/projects/grudgelands-orchestration/r62/reports/plan-review.md`, verdict: buildable with one blocker. The
+coordinator re-measured B1 (the Accord's 41–50 givers: Ashenward and Alna only, no capital below 55).
+
+1. **B1, the Accord's 41–50 rewards:** a K-point on the CHAPTER4 page (recommended: Dorrin or Mariel gets 41–50 work
+   through a departure at about 45; fallback a smaller pattern, the user's call), §2 point 5.
+2. **I1:** FRONTQUESTS owns `tools/r61_bandquests` and limits its band sections (§3).
+3. **I2:** the recorded per-faction exceptions and the Throng's island mobs (§2 point 4).
+4. **I3:** the tally-stone stays (§2 point 9).
+5. **I4:** BAGS' pins, the 0.48.0 step and the item dump (§2 point 11).
+6. **I5:** TEMPLATEFIX's real list (§2 point 10).
+7. **I6:** owners and contested files (§3).
+8. **M1–M6:** the dry-run numbers (§8), the r36 pins (§3); Faeris and Rumela also carry `border`; the join at 41,
+   the departures to Thorga (Drek, Yarra or the Warmaster at 41–43) and Ossa (Orrel or Vaska at 52–53), and Engine
+   Nine / Last-Toll on `border` are legal as planned; a departure requires nothing (r61 ~328-348).
+
 ## 3. Shared conventions
 
 - **Upgrade classification: map reset.** D adds one `map_reset` entry for 0.62.0, its reason taken from the merged
@@ -245,12 +287,15 @@ Decided by the coordinator (the plan review may object):
   - `r45_st` ~1087 (item objectives, exact);
   - `r32_f2` ~784 (the kill floor; the pattern removes far more than 4);
   - `r56_questmap` ~87;
-  - `r36_qa` and `r36_qt` (the spine's `requires` and tags; §2 point 2);
+  - `r36_qt` ~165 (`gated > 20` becomes 17; `r36_qa` passes on the stripped data, plan review M2);
   - `r36_q0` ~260/271 (object kinds, places);
   - `r31_q` (kept);
   - `r58_guildquests` ~117/123 and ~251-273 (kept);
   - `r60_capitals` ~168/183-187, `r59_storyquests` ~154/161-164 (the capital `.front` files kept);
-  - `r61_bandquests` ~205-213, ~452-462 (MAIN), ~756-771 (host lines), ~908-911 (`--check`);
+  - `r61_bandquests`: MAIN ~205-213/~452-462 and the host lines ~756-771 hold; the shared front quests in the host
+    base files break its band sections (~272, ~284 `shared_count == 5`, ~352, ~474, ~523, ~540, ~543, section H
+    ~602-687), which count only quests at level ≤ 40 or exclude a `FRONT_SHARED` set as they exclude `MAIN`; ~908-911
+    (`--check`);
   - `r33_c3`, `r36_r` (the final ids, fixed);
   - the seed fleet (places on every seed);
   - `quest_kinds.py --check`, then `tools/r28_regions/run.sh`, `quest_targets.py`, `guarantee.py --check`,
@@ -259,10 +304,15 @@ Decided by the coordinator (the plan review may object):
 - **Owners:**
   - FRONTQUESTS: the 14 unflagged files (ten `.front`, four Battlegrounds), the main-line quests in the two contested base
     files, shared front quests in the four host base files, the six front spawn files, `subtypes.json`, `names.json`,
-    `use_objects.json`, `items.json`, `validate.py`/`validate.lua` (the key and the budget), `ledger.py` (the two
-    bugs), and the QUESTMAP.
-  - TEMPLATEFIX: `building_templates` and the defects baseline only.
-  - BAGS: `grug_inventory` (bags and the inventory page's bag layout), its docs and the pinned fixtures.
+    `use_objects.json`, `items.json`, `validate.py`/`validate.lua` (the key and the budget) with `r57_qsys`'s budget case
+    and `validate.py --self-test`, `ledger.py` (the two bugs), `tools/r61_bandquests` (test and generator),
+    `tools/r36_qt`, `tools/r60_capitals`/`r59_storyquests` only if quests go into capital base files, and the
+    QUESTMAP.
+  - TEMPLATEFIX: `building_templates`, the defects baseline and `tools/r36_w/baseline.tsv` if a socket point moves.
+  - BAGS: `grug_inventory/bags.lua` (not the page layout), its docs, `tools/r48_bags`, `tools/r44_ih`,
+    `tools/r33_c1`, the item dump.
+  - **Contested:** `BACKLOG.md` (lanes report their lines to D); `existing.json` (regenerated on main after a
+    conflict, never merged); `grug_inventory` (a GUI-test FIX lane merges first; the user's UI lane owns the pages).
   - D: the release files.
 
 ## 4. Lane goals (briefs add file facts)
@@ -394,8 +444,9 @@ The usual ones apply ([round workflow](../process/round-workflow.md)):
 - **Givers:** no giver stands in a front zone except the 16 war-camp foremen, and their two lines (`camp`, `guild`)
   are full. Hosts and envoys give from their own zones. A `.front` file holds `zone`, `quests` and `notes`. A front
   quest has one giver; shared quests live in a base file.
-- **Dry run:** with all 14 flagged, 60 errors; with the main line `story`, 54. All are E-free-chain, E-free-requires
-  or E-free-follow-ups; the Battlegrounds files give 0.
+- **Dry run:** with all 14 flagged, 60 errors (the survey). With the whole 31-id spine `story`, 11; with the spine's
+  10 non-spine `requires` dropped, 10; with the 32 non-spine free `requires` dropped (fortress chains and story kept),
+  **0** in `validate.py`, and the game loader passes (plan review M1). The Battlegrounds files give 0.
 - **Rewards:** today no 41–60 quest gives equipment, a potion or a trinket. The six contested zones' budgets are full.
 - **Ledger solo, questing share:** 86–91 % at 40→50 and 69–85 % at 50→60. The Throng needs about twice the Accord's
   free play at 50→60.
