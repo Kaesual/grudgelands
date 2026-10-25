@@ -14,7 +14,7 @@ Follow your faction's story, develop your talents and team up for dangerous
 bosses. Between adventures, improve your equipment, tend your crops and
 return to a home you built yourself.
 
-**2 factions · 6 peoples · 4 classes · 400+ quests · Progression to level 60**
+**2 factions · 6 peoples · 4 classes · 390+ quests · Progression to level 60**
 
 **[Play in your browser](https://kaesual.com)** ·
 [Join our Luanti server](#play-with-luanti) ·
@@ -91,9 +91,19 @@ Around level 10, your starting quests send you on to the next zone, whose
 village, outpost and camps offer their quests at once; around level 19
 they lead you to your people's capital, its profession trainers and the
 first chapter of your faction's story, which goes on in the zones of
-levels 21–30.
+levels 21–40 and leads you to your faction's fortress at 40.
 
 ## Current state
+
+**0.61.0** reworks the quests of levels 31–40: the six contested zones
+offer their quests at once from level 30, far fewer of them hunts and
+more of them errands and things to do at a place (a sighting frame, a
+snare, a shroud bundle, a storm vessel, the mining camps' loading
+grounds), with potion, armor and weapon choices as rewards. The story's
+third chapter runs from Ashenward March and Bannerbreak Mesa at 34 and
+35 to your faction's fortress zone at 40. Each zone's elite leader is an
+optional quest for a group; the band plays well alone. It needed a map
+reset; characters keep their level, gear, inventory and quests.
 
 **0.60.1** gives every window a new look: translucent panels, clear
 buttons, tabs with icons, your faction and level in the header, and the

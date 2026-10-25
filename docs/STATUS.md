@@ -26,16 +26,67 @@ town fixes; Round 59 (0.59.0, a map reset) reworks the quests of levels
 11–20 and opens chapter 1 of the story arc; Round 60 (0.60.0, a map reset)
 reworks the quests of levels 21–30 and the six capitals, adds chapter 2 and
 re-places the Alchemy herbs by level band; 0.60.1 (compatible) merges the
-UI modernization, a new look for every window. None of them is **pushed**;
-they wait for the user's joint GUI test of 0.57, 0.58, 0.59 and 0.60,
-which now covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)).
-Next: that GUI test, then Round 61 (the band 31–40 with the arc's next
-chapter) and the bands 41–60 one per round, then the production deploy
-with one map reset ([ROADMAP](../ROADMAP.md)). The
+UI modernization, a new look for every window; Round 61 (0.61.0, a map
+reset) reworks the quests of levels 31–40 and adds chapter 3. None of
+them is **pushed**; they wait for the user's joint GUI test of 0.57 to
+0.61, which covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)).
+Next: that GUI test, then Round 62 (the front 41–60, the last quest
+round), then the production deploy with one map reset
+([ROADMAP](../ROADMAP.md)). The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 61 "The story arc's third chapter and the quest rework of levels
+  31–40" complete** (2026-10-25, version 0.61.0, **map reset**, no
+  migration step;
+  [plan, decisions, numbers and the classification](planning/round61-plan.md#completion-2026-10-25);
+  its GUI items are part of the
+  [joint checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 to 0.61.0 wait for the user's joint GUI test of 0.57 to 0.61.
+  From main `c3861491` (the plan, with the survey, the plan review and the
+  user's answers): BANDQUESTS (`309732f9`), STORYART-SHIP (`62f979cd`) and
+  BANDTEXT with TEXTREVIEW's picks (`1a5aae56`) merged, then this
+  documentation lane D. GPT-6 Astra drafted the chapter (CHAPTER3, the
+  user's picks K1–K13 all "A", checked by CHECK3), painted the storm vessel
+  and the Runner's Packet icon (drop 03, both P1 picked) and wrote the 121
+  text fields (BANDTEXT, with the Opus text review's seven proposals, all
+  picked). BANDQUESTS independently reviewed by Opus (MERGE AFTER FIXES;
+  its data-only fix, the art and the text picks checked by the
+  coordinator). Main has 277 portable fixtures (1 new). The declaration is
+  `{"schema": 3, "version": "0.61.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped. One known edge, accepted: an
+  active "Rattle's Bad Arithmetic" (`bannerbreak_ramp_03`) saved before
+  0.61.0 may read ready without Rattle's kill.
+  - **The band 31–40 (BANDQUESTS, BANDTEXT):** the six contested zones
+    flagged reworked, the two contested base files whole with their 15
+    main-line steps marked `story`; 60 → 50 quests (393 shipped), all free
+    play outside the story, five shared quests on the hosts' line
+    `border`, kill objectives 68 % → 25 % (per zone 56–65 % → 25–38 %),
+    3–5 mob names per zone, six armor pieces per faction and a weapon on
+    each zone's solo quest at item levels 31–40, six new quest places and
+    four uses at the mining camps' loading grounds, four leaders retired,
+    one optional group quest per zone
+    ([quests.md](design/quests.md#the-band-3140-round-61)); the questing
+    share of 30→40 is 55–62 % (before 70–86 %), as the user allowed.
+  - **Chapter 3 (BANDQUESTS):** A5 at 34 (Toren Waterbarrel, the
+    Ashenward Broken Load, Audra Wainholt) and T4 at 35 (Drek Rampbinder,
+    the Bannerbreak Scattered Load, Greda Stonehaul), A6 at 39 and T5 at
+    40 after the free camp raid to Nella Hedgeward and Yarra
+    Standardmender, who point to the Warmaster; T3's outlook names Drek.
+  - **The group-quest rule** (the user, 2026-10-25): elite group quests
+    below level 51 are always optional
+    ([quests.md](design/quests.md#group-quests-round-61)).
+  - **Gates:** BANDQUESTS' and STORYART-SHIP's full fixture runs (277/0)
+    and `quick` fleet (100/100); this lane's `r37_dc`, `check_upgrade.py`
+    (against origin/main 0.57.0, with the map reset entry),
+    `check_fresh_server.py`, `validate.py --game`, the full fixtures, a full
+    seed fleet on main and one boot (the
+    [round-end gates](planning/round61-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-61-carry-overs)).
 - **UI modernization merged** (2026-10-25, version 0.60.1, **compatible**,
   no saved state, no reset; [plan and receipts](planning/ui-modernization-plan.md)):
   the shared theme, navigation and form layouts (the user's UI lane by GPT-6
