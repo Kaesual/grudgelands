@@ -201,6 +201,25 @@ list of the platform's migration contract):
   one reset.
 - 0.61.1 (the refreshed service dialogs) is compatible: presentation only,
   no saved state, no map reset, no step.
+- 0.62.0 (Round 62, the quest rework of the front 41–60 and the main
+  line's story layer) needs the eleventh map reset: eight new quest places
+  in the four Battlegrounds spawn files (the Causeway Return Stand and
+  Crossing Stand, the Shattered Relief Rest, the Gravesalt Shoring Check,
+  Work Laydown and Recovery Post, the Skyglass Carrier Clearing and
+  Receiving Stand) and changed `quest_target` flags (eleven kinds of the
+  Broken Causeway, the Shattered Line and Gravesalt Escarpment lose theirs,
+  the Stormscale Scorchlands gain one) change the spawn recipes and the
+  region maps world generation builds from them, and two template fixes
+  change what the capitals build (Kezamba's moot-house door gets its upper
+  cell, the Lethariel mere shrines' inside point stands on the floor). It
+  declares no step: 45 quest ids went (an active quest whose id vanished
+  is dropped, §4), the kept ids keep their objectives (`nv_front_01`
+  changes only its minimum level and its reward), the bags' new sizes 8 / 12 / 16 /
+  20 need none (each join grows an equipped bag's content list, its items
+  kept in their cells), and nothing new holds a position.
+  `map_reset_pass` stays 0.50.0. Unpushed 0.58.0's entry already covers
+  these changes against pushed 0.57.0; the production world moves from
+  0.57.0 to 0.62.0 across one reset.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the
