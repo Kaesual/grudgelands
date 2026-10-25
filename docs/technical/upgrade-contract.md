@@ -179,6 +179,26 @@ list of the platform's migration contract):
   from 0.57.0 to 0.60.0 across one reset.
 - 0.60.1 (the UI modernization) is compatible: presentation only, no saved
   state, no map reset, no step.
+- 0.61.0 (Round 61, the quest rework of levels 31–40 and chapter 3 of the
+  story) needs the tenth map reset: six new quest places in the band's
+  spawn files (the Stormvault Survey Stand, the Ashenward Broken Load, the
+  Glassroot Carrier Path, the Blackwind Recovery Rest, the Bannerbreak
+  Scattered Load, the Thunderroot Storm Store), four leaders removed from
+  their spawn files (Bolt-Chewer, Basket-Biter, Grave-Broker Mute,
+  Bottle-Keeper Zek), Provisioner Rattle's level 37 → 35, and changed
+  `quest_target` flags in the band's spawn files change the spawn recipes
+  and the region maps world generation builds from them. It declares no
+  step: the reworked quests have new ids (an active quest whose id
+  vanished is dropped, §4), the Runner's Packet is a new soulbound quest
+  item, the foremen's titles are text, and nothing new holds a position.
+  One kept id changed its objectives (the plan's cross-lane slot): an
+  active `bannerbreak_ramp_03` saved before 0.61.0 keeps its
+  per-objective progress, so a character who had counted the old Sappers
+  and Slingers may find it ready without Rattle's kill; accepted for the
+  one production world (Round 61 completion). `map_reset_pass` stays
+  0.50.0. Unpushed 0.58.0's entry already covers these changes against
+  pushed 0.57.0; the production world moves from 0.57.0 to 0.61.0 across
+  one reset.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the
