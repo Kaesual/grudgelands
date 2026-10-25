@@ -30,7 +30,9 @@ achievement (§6) are still proposals.
   leaders per guild, one per capital; foremen carry the role title "Foreman",
   only story-relevant ones are named (the story-arc decision; since Round 60
   Brodd Deeppeg of Frostbarrow Shelf's camp and Rellis Shalemark of Ossuary
-  Reach's, [quests.md](quests.md) "The Miner's Guild givers").
+  Reach's, since Round 61 Audra Wainholt of Ashenward March's and Greda
+  Stonehaul of Bannerbreak Mesa's, [quests.md](quests.md) "The Miner's
+  Guild givers").
 - The guilds are loyal allies of their faction's military. Their proper names
   appear in quest texts and on buildings, never in the interface's own labels
   (rank display, vendor page, achievements say "Miner's Guild").

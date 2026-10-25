@@ -174,7 +174,9 @@ total, [miners_guild.md](miners_guild.md) §11); Round 59 rebuilt the band
 11–20's 83 zone quests as 59 and added chapter 1's four story quests in the
 capitals (433 in total, "The band 11–20" and "Chapter 1 in the capitals"
 below); Round 60 rebuilt the band 21–30's 84 as 71 and the six capitals'
-64 as 47 (403 in total, "The band 21–30" and "The capitals" below). This
+64 as 47 (403 in total, "The band 21–30" and "The capitals" below); Round
+61 rebuilt the band 31–40's 60 as 49 with chapter 3's four story quests
+among them (392 in total, "The band 31–40" below). This
 is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near
@@ -236,7 +238,10 @@ last turn-in at the Warmaster carries the bible's last line. Every step a
 chapter names carries the faction's tag; every required step is solo but
 the finale; optional branches (the war commander's "Party:" hunt, the
 islands' interactions) never block the line. The ledger counts a front
-host's main line in the front bands (`ledger.py --track`).
+host's main line in the front bands (`ledger.py --track`). Since Round 61
+the 15 steps homed in the two contested base files (Ashenward March,
+Bannerbreak Mesa) are marked `story`, as their files are reworked ("The
+band 31–40"); the steps in the `.front` files follow with their rework.
 
 - **The Throng** ("Our Oaths Are Ours", tag `throng_main`, the
   Warmaster's line `oaths`): chapter 1 (41) the false requisition at
@@ -370,7 +375,9 @@ counted name, names the text never says).
     spawn recipe, `zone_id/place_id` (a bare id: the quest file's zone),
     placed per seed like a kind leader ([spawn_regions.md](spawn_regions.md)
     step 8 and `places`); the four contested zones without a clash site have
-    one each. Since Round 59 also a **town place** ("Town places" below): a
+    one each for the main line and, since Round 61, a second for the band
+    31–40, and Ashenward March and Bannerbreak Mesa one each for chapter 3
+    ("The band 31–40"). Since Round 59 also a **town place** ("Town places" below): a
     socket of a settlement, `socket:<settlement key>/<socket id>`, a spot in
     a capital, a village or a POI. No mapgen writes.
   - **Quest object:** an entity at the place, added while a player who still
@@ -400,7 +407,9 @@ counted name, names the text never says).
     `sighting_frame`, `reading_knots` and `claim_notice`, with the art the
     user picked (Round 60 STORYART: a shuttered lantern on a timber cradle
     1.2, an A-frame sight with an open ring 1.4, an inclined reading cord
-    on forked pegs 1.3, a hinged two-wing register 1.3). Every aiming ray of a player who
+    on forked pegs 1.3, a hinged two-wing register 1.3), and the band 31–40's
+    `storm_vessel` (Round 61), a placeholder look (a texture modifier over
+    a shipped object's file) until the user's art pick. Every aiming ray of a player who
     does not see it (combat, hand clicks and the crosshair's interact colour,
     a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
@@ -642,7 +651,9 @@ camp catalogues and `npcs.lua` (`tools/r28_design/r28common.py`
   the camp's `quest_foreman` socket, titled "Foreman" (Round 60: the two
   foremen the story names carry their names, a per-camp title in
   `npcs.lua`: Brodd Deeppeg of Frostbarrow Shelf's camp and Rellis
-  Shalemark of Ossuary Reach's, their ids kept), of the camp's race and
+  Shalemark of Ossuary Reach's, and since Round 61 chapter 3's Audra
+  Wainholt of Ashenward March's and Greda Stonehaul of Bannerbreak Mesa's,
+  their ids kept), of the camp's race and
   faction, with the giver role **`foreman_t<tier>`**: the camp's zone tier,
   which its deepest lift reaches (`foreman_t2` … `foreman_t6`; 3/4/3/4/4
   camps per faction for T2…T6). A guild quest of tier k lists the role rows
@@ -725,13 +736,16 @@ text. A system quest has no dialog: its mod posts its own completion line.
 ## The rework flag (Round 57)
 
 A quest file with `"reworked": true` follows the rules the quest rework
-introduces; the files of levels 31–60 keep their chains until their own
+introduces; the files of levels 41–60 keep their chains until their own
 rework (the band 11–20's six are reworked since Round 59, "The band
 11–20", the band 21–30's eight and the six capitals since Round 60, "The
-band 21–30" and "The capitals"; levels 31–60 later), and nothing of this section ever reports an
-unflagged file (Round 58: the guild files are flagged; the camp zones and
-the Battlegrounds files are not, so the guild quests homed there are free
-play by construction, checked by `tools/r58_guildquests`). In reworked files
+band 21–30" and "The capitals", the band 31–40's six since Round 61, "The
+band 31–40", the two contested base files whole with their main line
+marked `story`; the front files 41–60 later), and nothing of this section
+ever reports an unflagged file (Round 58: the guild files are flagged; the
+Battlegrounds files are not, so the guild quests homed there are free play
+by construction, checked by `tools/r58_guildquests`; since Round 61 every
+surface camp zone's file is flagged). In reworked files
 (both validators, the same codes):
 
 - `E-free-requires`: a free quest requires at most one quest, the one it
@@ -900,7 +914,8 @@ foreman; no new giver.
   (`socket:r20_anchor_026/signal_stand`, Hedra's `signal_lantern`), at
   Whitebridge Market Close (`socket:r20_anchor_016/basket_check`,
   Merren's `dispatch_record`; the R20 POI blueprint's `QUEST_PLACES`) and
-  in every mining camp (`held_load`, only Frostbarrow's named: A3); recipe
+  in every mining camp (`held_load`, Frostbarrow's named by A3; since
+  Round 61 four band 31–40 camps' too, "The band 31–40"); recipe
   places Lorindor and Moonfall `snare_ground`, Moonfall `sighting_post`
   (the Deepwood, `sighting_frame`), Ossuary `claim_rest` (the Barrowlands,
   T2a), Speargrass `banner_cache` (the Hunting Grounds, `held_supplies`),
@@ -940,6 +955,104 @@ foreman; no new giver.
   quest is new. The structure was written by
   `tools/r60_bandquests/build_structure.py` with placeholder texts (its
   `--check` compares the structure only); `tools/r60_bandquests/
+  portable_test.lua` checks it.
+
+## The band 31–40 (Round 61)
+
+The six contested zones of levels 31–40 (Stormvault Heights, Ashenward
+March and Glassroot Wilds of The Accord; Blackwind Rise, Bannerbreak Mesa
+and Thunderroot Wilds of The Throng) are reworked on the same rules
+([round61-plan.md](../planning/round61-plan.md) §2, §2a), from the story
+chapter the user picked (chapter 3, every recommendation K1–K13 "A", with
+the feasibility check's fixes). A level-30 character finds each zone's
+first quests (minimum level 30) at once; free quests require only a level,
+and only the story quests chain. The Round 20 hosts and the mining camps'
+foremen give them; no new giver. The two contested base files
+(`elandor_ashenward_march`, `kragmar_bannerbreak_mesa`) are flagged whole:
+their 15 main-line steps (41–60, "The main line") keep their ids,
+objectives, levels, `requires`, lines, texts and home and are only marked
+`story`; the `.front` files stay unflagged. 60 quests of reward level
+31–40 became 49.
+
+- **Shared quests** (one id, one level, one title; the hosts that give one
+  share the line `border`, beside `front` or, for Faeris Rootbinder and
+  Rumela Stormstep, beside their local line): `border_meal` (8 Corn, Toren
+  and Drek, level 31), `border_melons` (5 Melons, Faeris and Rumela, level
+  30), `border_stores` (3 Chests, Faeris, Orrel and Rumela, level 31),
+  `border_packets` "Words Worth Bringing Back" (all six zones' hosts Alna,
+  Nella, Faeris, Orrel, Yarra and Rumela, level 38): the **Runner's
+  Packet** (`grug_mobs:runners_packet`, a soulbound quest-only item, "Quest-
+  only drops"), dropped 1 in 3 by the bandit archers of the zone's Round 20
+  bandit camp while needed, each variant's drop limited to its camp
+  (Slatehook Hideout, Coalbrand Yard, Rootsnare Camp, Pallcloth Den,
+  Sunderstrap Camp, Rainchar Camp; without the area Blackwind's hideout
+  archers would count too), and `border_reserve` (a use at the own mining
+  camp's `held_load`, `held_supplies`, Nella and Yarra, level 30). The
+  camp hunts (`camp_hunt_t4`, `_night`), the raid `camp_site_raid` and the
+  guild reports `guild_t4_report_*` stay as Round 58 shipped them; no zone
+  quest kills a camp hunt's role in its zone.
+- **Local quests**: the hosts' errands (Borin's Silversteel Bars and
+  Frostfin, Alna's Emberglass, Toren's Iron Buckets, Vaska's Mushrooms),
+  the uses at the camps' `held_load` (Vaska's `signal_lantern`, Rumela's
+  `reading_knots`), A Soldier's Due (`bannerbreak_standard_04`, free), each
+  zone's **solo quest with its weapon** (Scrip `ashenward_rations_03` and
+  Rattle `bannerbreak_ramp_03`, ids kept, Rattle's asking only for Rattle,
+  who stands at 35; and a use at a new recipe place: Alna's
+  `sighting_frame` at the Stormvault Survey Stand in the Highcrags,
+  Faeris's `snare_bundle` at the Glassroot Carrier Path in the Canopy,
+  Orrel's `held_supplies` at the Blackwind Recovery Rest in the Deadmarch,
+  Rumela's `storm_vessel` at the Thunderroot Storm Store in the
+  Stormglades), the travels between the hosts (ids kept, requiring
+  nothing) and the departures at 40 to a host with front work from 40
+  (Alna and Faeris to Nella, Orrel to Drek, Rumela to Yarra; Ashenward's
+  and Bannerbreak's hosts give their front quests themselves).
+- **One optional group quest per zone** (round61-plan.md §2 point 8): the
+  zone's elite leader ("Party:", level 38–39, ids kept: Split-Seam,
+  Red-Receipt, Canopy-Knuckle, Hollowbell, Banner-Eater, Storm-Bottle),
+  free, requiring nothing and required by nothing, its extra a choice of
+  three plain tier-4 trinkets; the questing share is met without it. The
+  four normal leaders no quest hunts any more (Bolt-Chewer, Basket-Biter,
+  Grave-Broker Mute, Bottle-Keeper Zek) left their spawn files and the
+  catalogue.
+- **Chapter 3** (story): `story_accord_05` A5 "Every Hand on the Road"
+  (level 34, requires A4 and Scrip's free quest): Toren Waterbarrel has the
+  raided transport's record secured at the Ashenward Broken Load
+  (`dispatch_record`, the Wheelbreak) and taken to **Audra Wainholt**, the
+  Ashenward mining camp's foreman; `story_accord_06` A6 "The Cost of
+  Holding Ground" (level 39, requires A5 and `camp_site_raid`): any of the
+  three Accord band foremen sends the player with the raid's report to
+  Nella Hedgeward, who points to the Warmaster; `story_throng_05` T4 "The
+  Hands Behind the Stores" (level 35, requires T3 and Rattle's free quest):
+  Drek Rampbinder, the handover record at the Bannerbreak Scattered Load
+  (`witness_record`, the Warplains), turned in at **Greda Stonehaul**, the
+  Bannerbreak mining camp's foreman; `story_throng_06` T5 "The Promise
+  Still Stands" (level 40, requires T4 and the raid): any Throng band
+  foreman to Yarra Standardmender, who points to the Warmaster. Scrip's,
+  Rattle's and the raid's free quests keep their ids; their one follow-up
+  per faction is the story step. The free fortress calls
+  (`ashenward_bastion_call`, `bannerbreak_warhold_call`, level 40) carry
+  the player on; there is no A7/T6.
+- **Objectives**: 4–6 kill objectives per zone with the camp quests (the
+  raid's two among them), 3–5 mob names besides the raid's garrison (the
+  camp hunt's, the Packet's archers, the group leader; Scrip and
+  Red-Receipt in Ashenward, Rattle and the Trench Mummies in Bannerbreak),
+  against 8–10 before.
+- **Rewards** at item levels 31–40 (tier-4 pieces, enchant tier 4): each
+  zone's early potion choice (2 Healing Potion IV or 2 Mana Potion IV, from
+  level 31: Frostfin, the Corn, the Chests), two armor choices (a prefix
+  early, a suffix on the Runner's Packet, chest), the weapon on the zone's
+  solo quest (one per weapon line, prefix and suffix). The shared quests
+  count in every zone that gives them (`E-reward-budget`), and a player
+  takes each once, so each faction's four distinct armor quests give every
+  slot once: Silversteel Bars head, Iron Buckets legs, Mushrooms head, A
+  Soldier's Due legs, the Melons feet, the Packet chest. A5 and T4 pay a
+  potion choice.
+- **Ids**: a quest whose objectives stayed keeps its id (the travels and
+  departures, the six group leaders, Borin's bars, Alna's Emberglass, A
+  Soldier's Due), and so do the cross-lane ids Scrip and Rattle; every other
+  quest is new. The structure was written by
+  `tools/r61_bandquests/build_structure.py` with placeholder texts (its
+  `--check` compares the structure only); `tools/r61_bandquests/
   portable_test.lua` checks it.
 
 ## Chapter 1 in the capitals (Round 59)

@@ -162,9 +162,11 @@ return function(options, profile)
 		-- `quest_place`, quests.md "Town places") on the open loading ground
 		-- between the stall and the ore heap, away from the lift, the vendor
 		-- and the guard posts, with room for a second object two nodes
-		-- beside it. Every mining camp has it; only Frostbarrow's is named by
-		-- a quest (A3, story_accord_03). Nobody stands on a quest_place
-		-- socket and it writes no cell, so an unused one is nothing.
+		-- beside it. Every mining camp has it; Frostbarrow's is named by a
+		-- quest (A3, story_accord_03) and since Round 61 four band 31-40
+		-- camps' (Ashenward, Bannerbreak, Blackwind, Thunderroot). Nobody
+		-- stands on a quest_place socket and it writes no cell, so an unused
+		-- one is nothing.
 		socket("held_load","quest_place",8,4,-1,0)
 	else
 		-- Trampled ground from the gate to the command tent.
