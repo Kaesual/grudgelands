@@ -10,8 +10,8 @@
       "min_level": 45,
       "level": 46,
       "requires": [],
-      "title": "[PH] What Came Back",
-      "text": "[PH] Dorrin wants the tools that came back from the front checked against their ordinary dispatch record at the forge yard's loading apron. Real text to follow.",
+      "title": "Count the Tools Back In",
+      "text": "A load of tools has come back from the front, and its dispatch record is waiting at the forge yard's loading apron here in Dur Brannoc. Check the returned load against that record so I can arrange repairs and replacements. 'Most of it' may satisfy a carter in a hurry; it does not tell a smith how many handles to fit.",
       "objectives": [
         {
           "type": "use",
@@ -65,8 +65,8 @@
       "min_level": 46,
       "level": 47,
       "requires": [],
-      "title": "[PH] Labels for the Next Load",
-      "text": "[PH] Dorrin wants new, readable labels for tools and deliveries: bring 10 Paper. Real text to follow.",
+      "title": "Readable in the Rain",
+      "text": "The front sends back labels with the destination rubbed off and the word 'urgent' wonderfully preserved. Bring me ten sheets of Paper for fresh labels on the tools and supplies. I intend to send the next load somewhere more precise than Urgent.",
       "objectives": [
         {
           "type": "item",
@@ -118,8 +118,8 @@
       "min_level": 48,
       "level": 49,
       "requires": [],
-      "title": "[PH] The Last Sound Step",
-      "text": "[PH] Dorrin wants it judged at {name:r20_anchor_080} where a repair of the aqueduct still finds firm footing. Real text to follow.",
+      "title": "A Footing for Repairs",
+      "text": "The repair crews need to know where the damaged aqueduct can still support their work. Use the sighting frame at {name:r20_anchor_080} to judge the last sound footing, and report your findings to me. I can arrange tools and hands from Dur Brannoc once I know they have somewhere to stand.",
       "objectives": [
         {
           "type": "use",

@@ -478,7 +478,7 @@
       "story": true,
       "title": "Bring Me the Account",
       "text": "A Causeway convoy's pay was impounded at {name:r20_anchor_071}, {dir_from_giver:r20_anchor_071}, and the clerk who sealed it will not go near it again: the purse is still warm. Unseal it and take what you find to Toren Waterbarrel at Cinderline Watch; the pay was meant for his drivers. Bring me the account. I already have enough accusations.",
-      "completion": "[PH] Toren is to find out who passes such bundles on; Audra Wainholt is named as the source of the real list of needs; Odren Vell is not yet suspected (K2 A: the pay was stopped before it reached the carriers and camp workers). Real text to follow.",
+      "completion": "Audra Wainholt's needs list from Ashenward Mining Camp names the drivers and camp crews this pay was meant to reach; their tools and provisions are still due. The box was stopped before anyone took those coins as wages, but that stamp gives me no trustworthy sender. I know who handles our convoys, so I'll follow the bundles through the Causeway toll collectors.",
       "objectives": [
         {
           "type": "use",
@@ -520,7 +520,7 @@
       "story": true,
       "title": "The Price of a Salute",
       "text": "The Throng's seal warrants an inquiry; an Undead body proves nothing about who paid it. Nella Hedgeward reports that the dead on The Shattered Line rally to a standard pledged against the same warm coin. Defeat three Brandbound Collectors after dark in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and unpick the pledged standard at {name:r20_anchor_082}. Report to Nella at Last Hedge Redoubt with what the stitching reveals.",
-      "completion": "[PH] Nella recognises who holds the dead's muster together: Ninepins. Her own free supply work stays separate. Real text to follow.",
+      "completion": "This stitching pledges the soldiers under the banner against another payment; every renewal calls them back. Ninepins holds that muster together, though the pledge says nothing of who first supplied his coin. I know the breach he rallies them at, and I have a task for you there.",
       "objectives": [
         {
           "type": "kill",
@@ -560,7 +560,7 @@
       "story": true,
       "title": "Read Before Accusing",
       "text": "Ninepins pledged his standard against the next payment, and The Throng's high war camp sits on the same line, but a seal does not tell us whose hand pressed it. Defeat {captain:pvp_camp_shattered_line_throng_high} at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
-      "completion": "[PH] The orders show impounded pay and harmed Throng soldiers, wrapped in real Ashenward forms with Odren Vell's countersignature (his former office explained); the Warmaster wants them checked at the Courier's Stump. Real text to follow.",
+      "completion": "These orders hunt the soot factors and record The Throng's own soldiers burned by seized pay; they overturn our easy accusation. The seized bundles used genuine Ashenward forms countersigned by Requisition Clerk Odren Vell, who kept our convoy books. His signature puts our office under suspicion; I will order an examination of his courier ledger before calling it proof.",
       "objectives": [
         {
           "type": "item",
@@ -604,7 +604,7 @@
       "story": true,
       "title": "A Quiet Audit",
       "text": "Their orders hunt the same soot factors and list their own soldiers burned by the seized pay, which came wrapped in genuine Ashenward requisitions countersigned by Requisition Clerk Odren Vell. The false seal of The Throng was stamped on our own paper. This finding stays under seal; The Throng must not learn whose office supplied it. Copy Vell's courier ledger at {name:elandor_glassroot_wilds/couriers_stump}, {dir_of:r20_anchor_036:elandor_glassroot_wilds/couriers_stump}, bring the copy to me and nobody else, and come back for your next orders when you can hold your own on Gravesalt's salt.",
-      "completion": "[PH] The Warmaster seals the finding about Vell; Audra gets the practical correction for her deliveries, the guild is not blamed; the trail leads on to Borin (K3 A, K4 A). Real text to follow.",
+      "completion": "Vell's ledger confirms that he used his authority over our convoy books to supply this payment scheme; I am sealing the proof under my own responsibility. The Charter of Stone will receive the corrections, and Audra Wainholt at Ashenward Mining Camp will hold the suspect pay while proper wages, replacement tools and provisions continue. Vell's trail leads into Gravesalt, but we have not found where it ends; return to me for orders when you are ready to follow it to Borin Splitbolt's investigation.",
       "objectives": [
         {
           "type": "use",
@@ -636,7 +636,7 @@
       "story": true,
       "title": "Following Vell's Pay",
       "text": "Odren Vell took over the convoy books after Quartermaster Scrip fell, then left last season 'to settle arrears', without saying whose. His courier ledger traces branded pay to the Saltroad Deserters in Gravesalt Escarpment, whose Debtjaw Hounds carry the same ember stain. Kill four Debtjaw Hounds by day in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Report to Borin Splitbolt at Splitbolt Station in Stormvault Heights; he is following the payments into the Last Watch.",
-      "completion": "[PH] Borin ties the trail to Huskell's watch and can offer free salvage work; the attack on Huskell stays at its later level. Real text to follow.",
+      "completion": "The hounds were guarding the same ground the pay route crosses; now we can follow it towards Huskell's watch. I still need his roll to learn whose names that money keeps on duty. Come back to me when you can face the Last Watch; meanwhile, I have salvage work that needs doing without waking its captain.",
       "objectives": [
         {
           "type": "kill",
@@ -721,7 +721,7 @@
       "story": true,
       "title": "Party: The Collector Comes Due",
       "text": "I entered Odren Vell in the Bastion's roll anyway, with the cause beside his name: \"Every name accounted for. His too.\" Gather a party of two or three and defeat Isquarre the Tithe-Eater at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, where the unsecured debt has given its collector a body of slag and ash. Secure the site before The Throng claims authority over it; our own account of this affair will remain under seal.",
-      "completion": "[PH] The Warmaster accepts the battle report and asks for the final report; no new item, no new foe. Real text to follow.",
+      "completion": "Your group broke Isquarre's body and denied him the names; I cannot enter the Undertithe itself among our defeated enemies. Stay for the final accounting with me. The wages, the deliveries and the people you brought back into the record still need someone to answer for them.",
       "objectives": [
         {
           "type": "kill",
@@ -755,7 +755,7 @@
       "story": true,
       "title": "Every Name Accounted For",
       "text": "Isquarre broke at {name:r20_anchor_077}, but the crack did not, and a collector who loses his body keeps the debt. I have sealed your report with the names you brought back, the clerk's among them. We closed his account. Beneath us, someone turned a fresh page.",
-      "completion": "[PH] The Warmaster closes the human work (honest pay, supply and the recovered names under clear responsibility; Audra stays at her post, Vell's name stays the Accord's own responsibility, K6 A) and ends with the fixed last line; nothing follows it. Real text to follow.",
+      "completion": "Audra Wainholt at Ashenward Mining Camp will see honest pay and replacement supplies through with The Charter of Stone, and the recovered names stay in the Bastion's care, Odren Vell's with his guilt written beside it and none of them left for Isquarre to collect. We closed his account. Beneath us, someone turned a fresh page.",
       "objectives": [
         {
           "type": "talk",
@@ -818,8 +818,8 @@
       "min_level": 41,
       "level": 42,
       "requires": [],
-      "title": "[PH] Seed for the Trampled Plots",
-      "text": "[PH] Toren wants seed potatoes so the outposts' trampled field plots grow something of their own again: bring 8 Potatoes. Real text to follow.",
+      "title": "Seed for the Trampled Plots",
+      "text": "The outposts' growing plots have been trampled flat, and every empty row means another meal my carts must haul. Bring me eight Potatoes to set aside for planting. I have labelled the sack twice; the cooks are very persuasive when they see an unattended potato.",
       "objectives": [
         {
           "type": "item",
@@ -833,14 +833,14 @@
           "givers": [
             "r20_anchor_031_host"
           ],
-          "text": "[PH] Toren wants seed potatoes so the outposts' trampled field plots grow something of their own again: bring 8 Potatoes. Real text to follow."
+          "text": "The outposts' growing plots have been trampled flat, and every empty row means another meal my carts must haul. Bring me eight Potatoes to set aside for planting. I have labelled the sack twice; the cooks are very persuasive when they see an unattended potato."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_043_host"
           ],
-          "text": "[PH] Drek wants seed potatoes for the plots behind the ramps, so not every meal has to be hauled in: bring 8 Potatoes. Real text to follow."
+          "text": "We have crews willing to plant behind the ramps if I can find them something to put in the ground. Bring me eight Potatoes for seed. Let the next thing we dig out of that soil be supper for a change."
         }
       ],
       "rewards": {
@@ -866,8 +866,8 @@
       "min_level": 42,
       "level": 43,
       "requires": [],
-      "title": "[PH] A Light for the Return",
-      "text": "[PH] Toren wants the prepared return lantern at the {name:front_broken_causeway/return_stand} made ready, so his carters find the dry stand at dusk; no escort. Real text to follow.",
+      "title": "A Beacon for Tired Eyes",
+      "text": "My carters come back watching their wheels, and by dusk they can miss a stopping place with a sign as big as the cart. Light the return lantern at the {name:front_broken_causeway/return_stand} so they can pick out the stand. I'll settle for everyone arriving with the same number of wheels they left with.",
       "objectives": [
         {
           "type": "use",
@@ -883,14 +883,14 @@
           "givers": [
             "r20_anchor_031_host"
           ],
-          "text": "[PH] Toren wants the prepared return lantern at the {name:front_broken_causeway/return_stand} made ready, so his carters find the dry stand at dusk; no escort. Real text to follow."
+          "text": "My carters come back watching their wheels, and by dusk they can miss a stopping place with a sign as big as the cart. Light the return lantern at the {name:front_broken_causeway/return_stand} so they can pick out the stand. I'll settle for everyone arriving with the same number of wheels they left with."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_043_host"
           ],
-          "text": "[PH] Drek wants the return lantern at the {name:front_broken_causeway/return_stand} lit for the crews coming back across the floodmeadows; no escort. Real text to follow."
+          "text": "The returning crews need a clear mark to make for when the Causeway starts losing its colour. Light the lantern prepared at the {name:front_broken_causeway/return_stand}. They have spent the day finding work with their hands; let their eyes have an easier job on the way back."
         }
       ],
       "rewards": {
@@ -935,8 +935,8 @@
       "min_level": 43,
       "level": 44,
       "requires": [],
-      "title": "[PH] The Relief Is Counted",
-      "text": "[PH] Nella wants it written down at the {name:front_shattered_line/relief_rest} which of her work parties have reported back and where relief is missing. Real text to follow.",
+      "title": "Who Is Still Out There?",
+      "text": "I have a list of crews sent out and three different accounts of who came back. Check the returns at the {name:front_shattered_line/relief_rest} and record which working parties have reported in. I need to send relief to the people still waiting for it, not to a name someone forgot to cross off.",
       "objectives": [
         {
           "type": "use",
@@ -952,14 +952,14 @@
           "givers": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] Nella wants it written down at the {name:front_shattered_line/relief_rest} which of her work parties have reported back and where relief is missing. Real text to follow."
+          "text": "I have a list of crews sent out and three different accounts of who came back. Check the returns at the {name:front_shattered_line/relief_rest} and record which working parties have reported in. I need to send relief to the people still waiting for it, not to a name someone forgot to cross off."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_044_host"
           ],
-          "text": "[PH] Yarra wants to know which promised reliefs actually arrived: record the returns at the {name:front_shattered_line/relief_rest}. Real text to follow."
+          "text": "A promised relief is no good to a crew until somebody actually arrives. Record the returns at the {name:front_shattered_line/relief_rest}, so I can see which parties are accounted for and which are still waiting. I want the next shift to begin with fresh shoulders under the load."
         }
       ],
       "rewards": {
@@ -975,8 +975,8 @@
       "min_level": 44,
       "level": 45,
       "requires": [],
-      "title": "[PH] What the Ford Kept",
-      "text": "[PH] Toren wants the usable stores and tools of a stranded load secured at {name:r20_anchor_079}. Real text to follow.",
+      "title": "What the Ford Kept",
+      "text": "A stranded load at {name:r20_anchor_079} still has tools and stores worth bringing back. Secure the usable bundles there and let me know they are ready for recovery. I would prefer to write down what we saved before somebody hands me a grand total of what we lost.",
       "objectives": [
         {
           "type": "use",
@@ -992,14 +992,14 @@
           "givers": [
             "r20_anchor_031_host"
           ],
-          "text": "[PH] Toren wants the usable stores and tools of a stranded load secured at {name:r20_anchor_079}. Real text to follow."
+          "text": "A stranded load at {name:r20_anchor_079} still has tools and stores worth bringing back. Secure the usable bundles there and let me know they are ready for recovery. I would prefer to write down what we saved before somebody hands me a grand total of what we lost."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_043_host"
           ],
-          "text": "[PH] Drek wants what can still be used of the stranded freight at {name:r20_anchor_079} secured before the water takes it. Real text to follow."
+          "text": "There is freight at {name:r20_anchor_079} that my crews could still put to work, if the water does not get it first. Secure the stranded load there. A drowned tool will never tell you it would rather be digging, so I am speaking for it."
         }
       ],
       "rewards": {
@@ -1056,8 +1056,8 @@
       "min_level": 44,
       "level": 45,
       "requires": [],
-      "title": "[PH] Salt for the Stores",
-      "text": "[PH] Nella needs salt to keep the front's stores from spoiling; the Shattered Line's badlands have it: bring 6 Salt Crust. Real text to follow.",
+      "title": "Salt for the Stores",
+      "text": "A delayed cart is troublesome enough without the food spoiling before it reaches us. Bring me six Salt Crust for the front's stores; The Shattered Line is one place to gather it. The watch deserves provisions that can survive a little waiting.",
       "objectives": [
         {
           "type": "item",
@@ -1071,14 +1071,14 @@
           "givers": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] Nella needs salt to keep the front's stores from spoiling; the Shattered Line's badlands have it: bring 6 Salt Crust. Real text to follow."
+          "text": "A delayed cart is troublesome enough without the food spoiling before it reaches us. Bring me six Salt Crust for the front's stores; The Shattered Line is one place to gather it. The watch deserves provisions that can survive a little waiting."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_044_host"
           ],
-          "text": "[PH] Yarra needs salt so the stores last until the next delivery: bring 6 Salt Crust. Real text to follow."
+          "text": "I have promised the crews their share of the stores, and I intend that share to be edible. Bring me six Salt Crust to help keep it until the next delivery. Hunger waits badly, but spoiled food is worse at keeping promises."
         }
       ],
       "rewards": {
@@ -1094,8 +1094,8 @@
       "min_level": 48,
       "level": 49,
       "requires": [],
-      "title": "[PH] Cut the Old Wire",
-      "text": "[PH] Nella wants the old wire snares on the carriers' way through {name:r20_anchor_083} cut away; nothing about the ground changes. Real text to follow.",
+      "title": "Cut the Old Wire",
+      "text": "Old snare wire at {name:r20_anchor_083} still catches the people carrying supplies through. Cut it clear of their passage. I have enough injuries to account for without adding another caused by a trap whose owner has long since stopped checking it.",
       "objectives": [
         {
           "type": "use",
@@ -1111,14 +1111,14 @@
           "givers": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] Nella wants the old wire snares on the carriers' way through {name:r20_anchor_083} cut away; nothing about the ground changes. Real text to follow."
+          "text": "Old snare wire at {name:r20_anchor_083} still catches the people carrying supplies through. Cut it clear of their passage. I have enough injuries to account for without adding another caused by a trap whose owner has long since stopped checking it."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_044_host"
           ],
-          "text": "[PH] Yarra wants the old snares at {name:r20_anchor_083} cleared off the path her carriers use. Real text to follow."
+          "text": "Our carriers have found old snares across their way at {name:r20_anchor_083}. Cut the wire before another loaded worker steps into it. Those hands are needed on the load, not picking metal out of someone's leg."
         }
       ],
       "rewards": {
@@ -1163,8 +1163,8 @@
       "min_level": 49,
       "level": 50,
       "requires": [],
-      "title": "[PH] Party: Stop the Grinding",
-      "text": "[PH] Nella asks for a party against {name:siege_engine_nine}, which threatens salvage and supply on the Shattered Line; optional, nothing needs it. Real text to follow.",
+      "title": "Party: Stop the Grinding",
+      "text": "{name:siege_engine_nine} is still grinding through The Shattered Line, threatening the crews trying to carry supplies and recover what is usable. Gather a group and destroy it, {dir_from_giver:siege_engine_nine}. This is an extra undertaking for a willing party; I will keep the ordinary work moving while it is arranged.",
       "objectives": [
         {
           "type": "kill",
@@ -1180,14 +1180,14 @@
           "givers": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] Nella asks for a party against {name:siege_engine_nine}, which threatens salvage and supply on the Shattered Line; optional, nothing needs it. Real text to follow."
+          "text": "{name:siege_engine_nine} is still grinding through The Shattered Line, threatening the crews trying to carry supplies and recover what is usable. Gather a group and destroy it, {dir_from_giver:siege_engine_nine}. This is an extra undertaking for a willing party; I will keep the ordinary work moving while it is arranged."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
           "givers": [
             "r20_anchor_044_host"
           ],
-          "text": "[PH] Yarra asks for a party against {name:siege_engine_nine} before it grinds another supply run down; optional, nothing needs it. Real text to follow."
+          "text": "I can promise a crew supplies; I cannot ask them to stand in front of {name:siege_engine_nine} to collect them. If you have a group willing to take on an elite, destroy it on The Shattered Line, {dir_from_giver:siege_engine_nine}. Everyone else will keep to the supply work; the machine needs a party sent for that purpose."
         }
       ],
       "rewards": {
@@ -1216,8 +1216,8 @@
       "min_level": 50,
       "level": 50,
       "requires": [],
-      "title": "[PH] Work Beyond the Line",
-      "text": "[PH] Nella sends the player to Borin Splitbolt, who needs people for the work beyond the old front; no earlier deed is claimed. Real text to follow.",
+      "title": "Work Beyond the Line",
+      "text": "Borin Splitbolt is arranging salvage work in Gravesalt, and he needs people who will check a footing before trusting it with a load. Speak to him at Splitbolt Station in Stormvault Heights. Tell him I would like his crews to come home carrying the salvage, rather than each other.",
       "objectives": [
         {
           "type": "talk",
@@ -1233,7 +1233,7 @@
           "turnins": [
             "r20_anchor_027_host"
           ],
-          "text": "[PH] Nella sends the player to Borin Splitbolt, who needs people for the work beyond the old front; no earlier deed is claimed. Real text to follow."
+          "text": "Borin Splitbolt is arranging salvage work in Gravesalt, and he needs people who will check a footing before trusting it with a load. Speak to him at Splitbolt Station in Stormvault Heights. Tell him I would like his crews to come home carrying the salvage, rather than each other."
         },
         {
           "zone": "elandor_stormvault_heights",
@@ -1243,7 +1243,7 @@
           "turnins": [
             "r20_anchor_027_host"
           ],
-          "text": "[PH] Alna sends the player to Borin Splitbolt, whose crews work beyond the old front; no earlier deed is claimed. Real text to follow."
+          "text": "Borin Splitbolt has crews preparing for salvage work in Gravesalt and needs help checking the ground and getting them supplied. Go and speak to him at Splitbolt Station. His reports usually tell me both what can be lifted and what ought to be left alone, which is more useful than enthusiasm."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -1258,7 +1258,7 @@
               "npc": "r20_troll_capital_envoy"
             }
           ],
-          "text": "[PH] Yarra sends the player to Nalo Pathdrum in Kezamba, whose carriers work beyond the old front; no earlier deed is claimed. Real text to follow."
+          "text": "Nalo Pathdrum has carriers working the Skyglass routes, and they need food, clear messages and ground they can trust. Go and speak to him in Kezamba. A load promised to the front still needs people to carry it, and he remembers that when he asks for help."
         }
       ],
       "rewards": {

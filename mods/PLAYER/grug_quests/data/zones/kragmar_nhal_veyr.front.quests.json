@@ -10,8 +10,8 @@
       "min_level": 53,
       "level": 54,
       "requires": [],
-      "title": "[PH] A Receiving Place",
-      "text": "[PH] Ossa wants the personal effects prepared for their return sorted at the mourners' hall's receiving court. Real text to follow.",
+      "title": "A Receiving Place",
+      "text": "Personal effects from the front are waiting in the mourners' hall's receiving court here in Nhal Veyr. Sort the prepared bundles for their return, keeping each person's things together. Whoever comes to collect them should not have to search through another family's grief.",
       "objectives": [
         {
           "type": "use",
@@ -133,8 +133,8 @@
       "min_level": 56,
       "level": 57,
       "requires": [],
-      "title": "[PH] Not Entered as Salvage",
-      "text": "[PH] Ossa wants the names on personal effects recorded at the {name:front_gravesalt_escarpment/recovery_post} before they vanish into ordinary salvage. Real text to follow.",
+      "title": "Not Entered as Salvage",
+      "text": "The recovery crews have brought personal effects to the {name:front_gravesalt_escarpment/recovery_post}, where they risk being counted among the ordinary salvage. Record the names on those belongings before the loads are combined. I need an account that will still make sense when someone asks after a person instead of a weight of metal.",
       "objectives": [
         {
           "type": "use",

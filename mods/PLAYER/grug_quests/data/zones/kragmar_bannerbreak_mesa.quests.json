@@ -336,7 +336,7 @@
       "story": true,
       "title": "Too Warm for Wages",
       "text": "Our riders left an intercepted pay box at {name:r20_anchor_074}, {dir_from_giver:r20_anchor_074}, when its coins burned through their gloves. Break the requisition seal: The Accord has put its stamp on something it ought to explain. Kill three Coal-Purse Factors by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Report to Drek Rampbinder at Red Ramp Post; his crews keep digging up boxes like it.",
-      "completion": "[PH] Greda Stonehaul's confirmed needs give the comparison; Drek follows the payment; Mardra is not yet shown as the culprit. Real text to follow.",
+      "completion": "Greda Stonehaul's list from Bannerbreak Mining Camp says what the carriers and camp crews are owed; this scorched requisition does not match it. Their share was intercepted before it reached their hands as wages, and an Accord stamp will not tell me who packed the box. I'll follow the payments to Senn, who keeps finding money for dead toll collectors while my crews wait.",
       "objectives": [
         {
           "type": "use",
@@ -385,7 +385,7 @@
       "story": true,
       "title": "An Oath in Hock",
       "text": "Grave coin under a seal of The Accord: they are buying themselves a cheaper army, and I want the proof in my fist. Yarra Standardmender says the dead on The Shattered Line salute a standard pledged against the next payment. Kill three Brandbound Collectors at night in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}. Unpick the pledged standard where the trenches open onto the line and take the stitching to Yarra at Tornstandard Hold; she reads cloth the way I read a liar.",
-      "completion": "[PH] Yarra names Ninepins as the local enforcer; the barred name of the standard's site appears in no text. Real text to follow.",
+      "completion": "Each new payment pledges these soldiers again, and Ninepins keeps them answering the standard. The seals point to The Accord; the stitching tells me only whose service was sold. I will send you to end his muster, then the Warmaster can demand an answer from the pay office behind those seals.",
       "objectives": [
         {
           "type": "kill",
@@ -424,7 +424,7 @@
       "story": true,
       "title": "Find the Hand That Signed",
       "text": "A bought oath is a debt with a blade on it. Ours were never for sale. Ninepins's pledge slips bear seals of The Accord; {captain:pvp_camp_shattered_line_accord_high}, who holds The Accord's high camp on The Shattered Line, should know whose hand signed them. Kill the captain at the {name:pvp_camp_shattered_line_accord_high}, {dir_from_giver:pvp_camp_shattered_line_accord_high}, and bring me the Accord Captain's Orders; I need the paper more than a story about the fight.",
-      "completion": "[PH] The orders show Accord victims and impounded pay; the Warhold tally marks lead to Tallykeeper Mardra, whose responsibility the Warmaster names openly; the unaccepted pay is to leave circulation at Coinpit Hollow. Real text to follow.",
+      "completion": "These orders show The Accord hunting the same factors and losing soldiers to their pay; I accused the wrong army of starting this. The seized grave coin carries our war-chest marks, entered by Tallykeeper Mardra, and I will name her treason before the drill yard. Under my orders, the seized pay that nobody accepted will be buried at {name:kragmar_thunderroot_wilds/coinpit_hollow}; her guilt cancels no honest worker's wage or family's claim.",
       "objectives": [
         {
           "type": "kill",
@@ -471,7 +471,7 @@
       "story": true,
       "title": "Our Tallykeeper's Treason",
       "text": "The Accord's orders call for a hunt on the soot factors and list their own soldiers burned by the factors' pay: they have been robbed and burned too. Worse, the seized grave coin carries our own war-chest tally marks, entered by Tallykeeper Mardra, who left last winter 'to collect what the dead were owed'. I struck her name from our roll before the whole drill yard; everyone heard who sold our dead. Bury the seized branded pay unspent at {name:kragmar_thunderroot_wilds/coinpit_hollow}, {dir_of:r20_anchor_048:kragmar_thunderroot_wilds/coinpit_hollow}; The Accord will not lock our shame in its evidence chest.",
-      "completion": "[PH] Greda hears that honest work and its pay still stand; Mardra's removal from her office takes no worker's claim (K5 A). Real text to follow.",
+      "completion": "That pay is buried before anyone could accept it; it cannot buy new service, though burying coin would not free a name already sold. Greda Stonehaul at Bannerbreak Mining Camp has my word for The Oathdelvers: Mardra's treason cancels none of the workers' wages, promised supplies or families' honest claims. I will have you report to Vaska Ashlistener when you are ready for Gravesalt; she hears fresh demands among its dead, and we still need to find who is making them.",
       "objectives": [
         {
           "type": "use",
@@ -542,8 +542,8 @@
       ],
       "story": true,
       "title": "Still Buying Our Dead",
-      "text": "Mardra sold our dead, and somebody is still buying. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she says the fen's dead whisper about fire, and the hexers do the whispering. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy and will have work for you once Vaska has your report.",
-      "completion": "[PH] Vaska ties the voices to Huskell's watch; her free tasks look after those left behind and the recovered things. Real text to follow.",
+      "text": "Mardra sold our dead, and somebody is still buying. Kill three Kiln-Whisper Hexers at night in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and report to Vaska Ashlistener at Ashveil Watch in Blackwind Rise; she says the fen's dead whisper about fire, and the hexers do the whispering. Nalo Pathdrum in Kezamba is watching Chirr's archers in The Skyglass Canopy, but Vaska's part of this trail comes first.",
+      "completion": "Those were fresh demands for service, not the old voices repeating their grief. They lead to Huskell's watch, but I need his roll before I can tell whose names are being called. When you are ready to face him, return to me; until then, there are living people here who need an answer too.",
       "objectives": [
         {
           "type": "kill",
@@ -585,7 +585,7 @@
       "story": true,
       "title": "Party: No Claim on Our Dead",
       "text": "Isquarre the Tithe-Eater has come to {name:r20_anchor_077} to claim our dead, and he will not have even Mardra. That debt is ours to judge, not his. Gather a party of two or three, kill him beside the burning crack and stay out of it; if The Accord turns up, it can carry its own banner home, and we will carry ours. Report to Vaska Ashlistener at Ashveil Watch afterwards, so she can hear what his fall leaves behind.",
-      "completion": "[PH] Vaska hears what remains after his fall and sends the player to the Warmaster. Real text to follow.",
+      "completion": "Isquarre's body has fallen, and the names you recovered stay in our keeping, even Mardra's. Stay a moment before you carry the report: I want to listen at the crack once more, and then the Warmaster at Bannerbreak Warhold must hear what was won and what still waits.",
       "objectives": [
         {
           "type": "kill",

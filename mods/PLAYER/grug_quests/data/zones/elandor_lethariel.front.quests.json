@@ -10,8 +10,8 @@
       "min_level": 51,
       "level": 52,
       "requires": [],
-      "title": "[PH] A Path for Carriers",
-      "text": "[PH] Eriath wants old snares taken out of a carriers' passage at the {name:front_skyglass_canopy/carrier_clearing}; ordinary use of the land, no plot yet. Real text to follow.",
+      "title": "Room for a Loaded Step",
+      "text": "A carrier watches the path less easily with a load across both shoulders. Loosen the old snare at the {name:front_skyglass_canopy/carrier_clearing} and clear it from their passage. Whoever set it has had quite enough of the forest's patience.",
       "objectives": [
         {
           "type": "use",
@@ -65,8 +65,8 @@
       "min_level": 52,
       "level": 53,
       "requires": [],
-      "title": "[PH] Something Warm to Share",
-      "text": "[PH] Eriath wants something warm for the people at the far work sites: bring 6 Wild Cocoa. Real text to follow.",
+      "title": "Enough for Another Cup",
+      "text": "The people tending our distant work sites have taken to stretching one pot across a whole shift. Bring me six Wild Cocoa so I can send something worth warming their hands around. A second cup is a small kindness, until you are the person who would otherwise go without it.",
       "objectives": [
         {
           "type": "item",
@@ -118,8 +118,8 @@
       "min_level": 54,
       "level": 55,
       "requires": [],
-      "title": "[PH] Received in Good Order",
-      "text": "[PH] Eriath wants an ordinary supply delivery confirmed at the {name:front_skyglass_canopy/receiving_stand}; it hides no proof against Chirr. Real text to follow.",
+      "title": "Received in Good Order",
+      "text": "A supply load has reached the {name:front_skyglass_canopy/receiving_stand}, but our carriers still need its arrival entered. Confirm the delivery on the dispatch record there. Then I can tell the crews what is waiting for them, and the people who hauled it can stop answering for a journey already made.",
       "objectives": [
         {
           "type": "use",
@@ -173,8 +173,8 @@
       "min_level": 58,
       "level": 59,
       "requires": [],
-      "title": "[PH] The Watch Still Has Names",
-      "text": "[PH] Eriath wants the names and personal records of a lost watch secured at {name:r20_anchor_085}; remembrance and salvage, no ritual. Real text to follow.",
+      "title": "More Than a Lost Watch",
+      "text": "The report from {name:r20_anchor_085} calls them a lost watch and leaves a space where their names should be. Secure the names and personal records left there, so I can give their people something more exact than a number. Someone in Lethariel may have been listening for one particular footstep.",
       "objectives": [
         {
           "type": "use",
@@ -245,7 +245,7 @@
       "story": true,
       "title": "The Price of Another War",
       "text": "I have seen this hand before, in Bough-Counter Rusk's false reckonings; in {name:paymaster_chirr}'s payroll it has grown bold, writing names from both armies in the open. A living recruit who takes this coin cannot spend or discard it; it cools only when passed on as payment for a death. Defeat five Last-Pay Archers or Ash-Writ Bowmen in all at the {name:front_skyglass_canopy/paymaster_camp}, {dir_from_giver:front_skyglass_canopy/paymaster_camp}, where they guard the pay day and night. Kill Chirr too, before he buys another generation beneath these branches.",
-      "completion": "[PH] Eriath explains why Chirr's death alone does not clear the entries; next come Skyroot Crossing and the Tombroad tally-stone. Real text to follow.",
+      "completion": "Chirr paid living and dead alike with coin taken from both armies; his death stops his hand, but leaves the names he burned into root and stone. I can point you to the rootmark at {name:r20_anchor_084} and the tally-stone at {name:r20_anchor_077}, where those claims still hold. Break their hold on the names, then report to the Warmaster at Ashenward Bastion; the collector will answer to an army, not to a forest left alone.",
       "objectives": [
         {
           "type": "kill",
@@ -316,7 +316,7 @@
       "story": true,
       "title": "Names Beyond His Reach",
       "text": "Chirr's purse held coins stripped from both armies' dead, and the Undertithe claims every name bought with them. Smother the burning rootmark at {name:r20_anchor_084} and strike the names from the tally-stone at {name:r20_anchor_077} in Gravesalt Escarpment. Without those names to secure the debt, its unpaid balance will draw the collector to the stone. Report to the Warmaster at {name:pvp_fortress_accord}; we have freed the names and made ourselves an appointment.",
-      "completion": "[PH] The Warmaster names Isquarre and prepares the group task; the own names, Vell's among them, stay in the report. Real text to follow.",
+      "completion": "The names are struck from root and stone, and I will preserve them in our own record, Odren Vell's included. The unsecured claim is drawing its collector to {name:r20_anchor_077}: Isquarre the Tithe-Eater, whose reach beneath the ground we cannot measure. I will commission a group to meet him there; no one is to mistake this for a task to attempt alone.",
       "objectives": [
         {
           "type": "use",
@@ -351,7 +351,7 @@
       "level": 59,
       "requires": [],
       "title": "Party: Beneath the Waiting Coils",
-      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Chirr is dead, but our watchers still cannot cross beneath those coils. Gather a party and slay the elite serpent; freeing a forest includes making room for someone to walk through it.",
+      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Whatever becomes of Chirr's payroll, our watchers still cannot cross beneath those coils. Gather a party and slay the elite serpent; a forest worth keeping should leave room for someone to walk through it.",
       "objectives": [
         {
           "type": "kill",

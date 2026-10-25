@@ -10,8 +10,8 @@
       "min_level": 42,
       "level": 42,
       "requires": [],
-      "title": "[PH] Supplies from Gor Drazhak",
-      "text": "[PH] Drek sends the player to Thorga Roadspeaker in Gor Drazhak: the front needs her help with food and equipment; no earlier deed is claimed. Real text to follow.",
+      "title": "Tell Thorga What Moves a Ramp",
+      "text": "The front needs food and sound gear as much as another load of beams. Go to Thorga Roadspeaker in Gor Drazhak; she has work getting those supplies ready. Tell her Drek can hold a ramp together if the people carrying it have something in their bellies.",
       "objectives": [
         {
           "type": "talk",
@@ -38,7 +38,7 @@
       "story": true,
       "title": "Payment in Full",
       "text": "My crews dig up grave coin with a fresh broken circle burned through it, and Toll-Taker Senn keeps finding more dead to pay. Kill four Aqueduct Bowmen or Coal-Purse Factors in all at the {name:front_broken_causeway/toll_camp}, {dir_from_giver:front_broken_causeway/toll_camp}, where they guard his money day and night, and kill Senn. Turn out his branded toll-box at {name:r20_anchor_078}; I want the name of whoever pays a man to make my road impassable.",
-      "completion": "[PH] Senn earns from the dead on the crossing and his accounts name Chirr and seemingly Accord requisitions; Drek needs someone who can judge the entries for the dead: Orrel. Real text to follow.",
+      "completion": "Chirr paid Senn to keep the crossing deadly, and Senn sent the tolls back for another burning; the dead earned them money in both directions. Those Accord requisitions may name a supplier, but I cannot tell what the entries do to the dead they list. Orrel Hollowstep can read that part, and I have a coin for him to examine.",
       "objectives": [
         {
           "type": "kill",
@@ -86,7 +86,7 @@
       "story": true,
       "title": "A Coin for Orrel",
       "text": "Senn paid the dead to keep them on the road, then sent the tolls back to the soot factors for another burning; a remittance from Paymaster Chirr in The Skyglass Canopy promises fresh payments for every crossing kept deadly. Apparently a corpse earns better than a bridge. I know mud, not the dead, so take one of those coins to Orrel Hollowstep at Hollowarch Station in Blackwind Rise. He'll complain about the fingerprints, but he'll read it.",
-      "completion": "[PH] Orrel sets the inquiry at the Ashen Grave; Hush may be prepared as a comparison for his way of keeping books. Real text to follow.",
+      "completion": "Drek has found a business that pays better when the road kills its customers. This burn is new to me, and I will not name it until I have seen what it covers. I will have you wash the ash from the old names at the {name:kragmar_blackwind_rise/ashen_grave}; then we can tell the Warmaster what has been laid over them.",
       "objectives": [
         {
           "type": "talk",
@@ -114,7 +114,7 @@
       "story": true,
       "title": "Let That Banner Fall",
       "text": "Standard-Bearer Ninepins pledged his banner against the next payment, then the next, until every salute became another debt. Kill four Rubble Skeletons at night in the {name:front_shattered_line/breach} and defeat Ninepins, {dir_from_giver:standard_bearer_ninepins}. Report to the Warmaster: the pledge slips bear seals of The Accord, and I will not stitch our fallen into a pawnbroker's inventory.",
-      "completion": "[PH] The renewed service can be broken locally, but Ninepins did not start the money trail; the Warmaster turns the next inquiry to the enemy captain. Real text to follow.",
+      "completion": "Ninepins has fallen, and the pledge slips prove that fresh payments kept his command alive. They still do not tell us who set the money moving. I want the enemy captain's orders next; a Warmaster should know whose hand he is accusing.",
       "objectives": [
         {
           "type": "kill",

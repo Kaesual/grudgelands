@@ -950,8 +950,8 @@
       "min_level": 47,
       "level": 48,
       "requires": [],
-      "title": "[PH] Stormkelp for the Field Kits",
-      "text": "[PH] Alna needs Stormkelp for the field kits she prepares herself: bring 8 Stormkelp. Real text to follow.",
+      "title": "Stormkelp for the Field Kits",
+      "text": "My field kits are laid out for the next working parties, but I am short of one of the ingredients. Bring me eight Stormkelp; I will handle the preparation. It is much easier to finish a kit here than explain an empty compartment to someone who needs it.",
       "objectives": [
         {
           "type": "item",
@@ -965,14 +965,14 @@
           "givers": [
             "r20_anchor_028_host"
           ],
-          "text": "[PH] Alna needs Stormkelp for the field kits she prepares herself: bring 8 Stormkelp. Real text to follow."
+          "text": "My field kits are laid out for the next working parties, but I am short of one of the ingredients. Bring me eight Stormkelp; I will handle the preparation. It is much easier to finish a kit here than explain an empty compartment to someone who needs it."
         },
         {
           "zone": "kragmar_blackwind_rise",
           "givers": [
             "r20_anchor_040_host"
           ],
-          "text": "[PH] Orrel needs Stormkelp for the field kits of the recovery parties: bring 8 Stormkelp. Real text to follow."
+          "text": "The recovery parties need field kits packed before they leave, and mine are waiting on Stormkelp. Bring me eight, and I will prepare it for them. I take good care of what comes back, but I would rather send fewer belongings home without their owners."
         }
       ],
       "rewards": {
@@ -1017,8 +1017,8 @@
       "min_level": 49,
       "level": 50,
       "requires": [],
-      "title": "[PH] Party: Close the Toll",
-      "text": "[PH] Alna asks for a party against {name:last_toll_construct}, one more deadly grip on the Causeway's crossing; optional, nothing needs it. Real text to follow.",
+      "title": "Party: Close the Toll",
+      "text": "{name:last_toll_construct} holds the {name:front_broken_causeway/toll_fields} on The Broken Causeway, threatening even travellers with nothing worth taking. Gather a group and break that elite construct, {dir_from_giver:last_toll_construct}. This is a separate undertaking for a prepared party; the repair crews have work enough without being sent under its feet.",
       "objectives": [
         {
           "type": "kill",
@@ -1034,14 +1034,14 @@
           "givers": [
             "r20_anchor_028_host"
           ],
-          "text": "[PH] Alna asks for a party against {name:last_toll_construct}, one more deadly grip on the Causeway's crossing; optional, nothing needs it. Real text to follow."
+          "text": "{name:last_toll_construct} holds the {name:front_broken_causeway/toll_fields} on The Broken Causeway, threatening even travellers with nothing worth taking. Gather a group and break that elite construct, {dir_from_giver:last_toll_construct}. This is a separate undertaking for a prepared party; the repair crews have work enough without being sent under its feet."
         },
         {
           "zone": "kragmar_blackwind_rise",
           "givers": [
             "r20_anchor_040_host"
           ],
-          "text": "[PH] Orrel asks for a party against {name:last_toll_construct}, which keeps the crossing a grave; optional, nothing needs it. Real text to follow."
+          "text": "{name:last_toll_construct} stalks the {name:front_broken_causeway/toll_fields} on The Broken Causeway, leaving travellers in need of recovery rather than a crossing. A willing group could do us a service by destroying it, {dir_from_giver:last_toll_construct}. Take a party fit to face an elite; I would like this particular recovery job to begin and end with pieces of the construct."
         }
       ],
       "rewards": {
