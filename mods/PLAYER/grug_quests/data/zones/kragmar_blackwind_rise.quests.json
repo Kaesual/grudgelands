@@ -52,8 +52,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Something for Those Who Wait",
-      "text": "[PH] Vaska Ashlistener feeds the carriers and escorts who arrive at Ashveil Watch: bring 6 Mushrooms. Real text to follow.",
+      "title": "Something for Those Who Wait",
+      "text": "The carriers and escorts who reach Ashveil Watch often arrive hungry enough to resent a welcome speech. Bring me six Mushrooms for their meal. I can listen while they eat; it usually improves the account of the journey.",
       "objectives": [
         {
           "type": "item",
@@ -105,8 +105,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Ramps on the Mesa",
-      "text": "[PH] Vaska sends the player to Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa; no earlier deed is claimed. Real text to follow.",
+      "title": "Ramps on the Mesa",
+      "text": "Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa needs help keeping his crews supplied. Go and speak to him. You will hear plenty about the beams, but listen a little longer and you will hear who is carrying them.",
       "objectives": [
         {
           "type": "talk",
@@ -128,8 +128,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Orrel Keeps What Is Left",
-      "text": "[PH] Vaska sends the player to Orrel Hollowstep at Hollowarch Station, who keeps things usable that someone will want to speak of with dignity. Real text to follow.",
+      "title": "Orrel Keeps What Is Left",
+      "text": "Orrel Hollowstep at Hollowarch Station cares for belongings recovered from the fighting until they can go home. Speak to him about the work waiting there. He grumbles over every frayed edge, and remembers whose coat it belongs to.",
       "objectives": [
         {
           "type": "talk",
@@ -151,8 +151,8 @@
       "min_level": 32,
       "level": 33,
       "requires": [],
-      "title": "[PH] A Light for the Late Road",
-      "text": "[PH] Vaska wants a signal lantern made ready on the loading ground of the guild camp, so late arrivals have a light to steer by. Real text to follow.",
+      "title": "A Light for the Late Road",
+      "text": "Late arrivals at Blackwind Mining Camp need a light to find the loading ground. Trim the signal lantern there and let me know when it is ready. Even someone who has outlived their eyesight appreciates knowing that they are expected.",
       "objectives": [
         {
           "type": "use",
@@ -206,9 +206,9 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] The Names Stay With the Cloth",
-      "text": "[PH] Orrel wants a left-behind bundle of stolen shrouds, their owners' labels still on them, secured at the {name:recovery_rest}, high in the zone. Real text to follow.",
-      "completion": "[PH] Orrel can organise the return to the right people; the kept label is the success. Real text to follow.",
+      "title": "The Names Stay with the Cloth",
+      "text": "A bundle of stolen shrouds was left at the {name:recovery_rest}, {dir_from_giver:recovery_rest}, with the owners' labels still attached. Secure it there and bring me word, keeping each name with its cloth. I can arrange the return once I know the bundle is safe. A thief may see a length of linen; I know people who would recognise the stitching.",
+      "completion": "The labels are still with their shrouds, so I can arrange for each one to go back to the right person. That will spare somebody the indignity of having to describe their own burial clothes again.",
       "objectives": [
         {
           "type": "use",
@@ -274,8 +274,8 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] Party: The Bell in the Wood",
-      "text": "[PH] Orrel asks for a party against {name:hollowbell_treant} in the {name:hollowwood}, whose ringing makes the high wood dangerous; optional, nothing needs it. Real text to follow.",
+      "title": "Party: The Bell in the Wood",
+      "text": "{name:hollowbell_treant} is trampling the {name:hollowwood}, ringing loudly enough for us to hear it at the station. Gather a group and fell it, {dir_from_giver:hollowbell_treant}, before it crushes another working party. I know the difference between a solemn bell and a tree announcing that it intends to step on you.",
       "objectives": [
         {
           "type": "kill",
@@ -313,8 +313,8 @@
       "min_level": 40,
       "level": 40,
       "requires": [],
-      "title": "[PH] Work Waiting at Red Ramp",
-      "text": "[PH] Orrel sends the player to Drek Rampbinder at Red Ramp Post, where front work waits at once; no earlier deed is claimed. Real text to follow.",
+      "title": "Work Waiting at Red Ramp",
+      "text": "Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa is looking for people to help with his work on the front. Go and hear what he needs. He has strong opinions about roads, and most of them concern getting his crews home along one.",
       "objectives": [
         {
           "type": "talk",
@@ -338,9 +338,9 @@
         "camp_site_raid"
       ],
       "story": true,
-      "title": "[PH] The Promise Still Stands",
-      "text": "[PH] The foreman sends the player with the evaluated camp report (own supply laid ready for the enemy build, reached there by an open raid) to Yarra Standardmender at Tornstandard Hold. Real text to follow.",
-      "completion": "[PH] Yarra takes up the renewed delivery promise of The Oathdelvers for the original recipients, names Tallykeeper Mardra only as the old countersignature, and points to the Warmaster at Bannerbreak Warhold. Real text to follow.",
+      "title": "The Promise Still Stands",
+      "text": "The guild has compared the report of your camp raid with our lost loads: goods carrying our marks were laid out for the enemy's building work. The Accord took them in an open attack on our transport. Bring the combined report to Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa. The Oathdelvers stand by the delivery to the original crews, and she should have that promise beside the losses.",
+      "completion": "This old supply order, countersigned by Tallykeeper Mardra, names the ramp crews, guards and guild workers still waiting for their share. The Oathdelvers' renewed promise stands beside those names now, and I will hold our suppliers to it. Speak to the Warmaster at Bannerbreak Warhold; I want someone who remembers who is waiting when the fighting is over.",
       "objectives": [
         {
           "type": "talk",
@@ -356,7 +356,7 @@
           "turnins": [
             "r20_anchor_044_host"
           ],
-          "text": "[PH] The foreman sends the player with the evaluated camp report (own supply laid ready for the enemy build, reached there by an open raid) to Yarra Standardmender at Tornstandard Hold. Real text to follow."
+          "text": "The guild has compared the report of your camp raid with our lost loads: goods carrying our marks were laid out for the enemy's building work. The Accord took them in an open attack on our transport. Bring the combined report to Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa. The Oathdelvers stand by the delivery to the original crews, and she should have that promise beside the losses."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -366,7 +366,7 @@
           "turnins": [
             "r20_anchor_044_host"
           ],
-          "text": "[PH] The foreman sends the player with the evaluated camp report (own supply laid ready for the enemy build, reached there by an open raid) to Yarra Standardmender at Tornstandard Hold. Real text to follow."
+          "text": "I have checked the report of your camp raid: goods taken from our transport in an open attack were stacked for The Accord's building work. Their marks match the supplies promised to the ramp crews, guards and guild workers. Take my renewed delivery promise with that report to Yarra Standardmender at Tornstandard Hold. Those crews did their share, and The Oathdelvers will answer for ours."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -376,7 +376,7 @@
           "turnins": [
             "r20_anchor_044_host"
           ],
-          "text": "[PH] The foreman sends the player with the evaluated camp report (own supply laid ready for the enemy build, reached there by an open raid) to Yarra Standardmender at Tornstandard Hold. Real text to follow."
+          "text": "The guild's report of your camp raid names our cargo among the stores set aside for the enemy's construction. The Accord carried it off in an open attack on our transport, leaving our crews waiting for what they were promised. Take the combined report and The Oathdelvers' renewed delivery promise to Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa. The next carriers need to leave with a load they can deliver, and Yarra knows who is waiting for it."
         }
       ],
       "rewards": {

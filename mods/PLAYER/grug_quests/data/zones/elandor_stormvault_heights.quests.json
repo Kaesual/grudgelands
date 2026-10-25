@@ -1,7 +1,7 @@
 {
   "zone": "elandor_stormvault_heights",
   "reworked": true,
-  "identity": "Stormvault is the Accord's high road to the front: the storm watch keeps the passes open while the dead walk them at night, a goblin siege crew chews through the watch's bolts, and a split stone golem guards the stormcrags.",
+  "identity": "Stormvault Heights is The Accord's high road to the front: Borin keeps the work crews fed and equipped, Alna restores a reliable watch over their routes, and Split-Seam threatens the high paths.",
   "hubs": [
     {
       "id": "splitbolt_station",
@@ -50,8 +50,8 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] Words Worth Bringing Back",
-      "text": "[PH] Alna Archsight wants the intercepted messages back from the Waylayers at {name:slatehook}: bring a Runner's Packet. Real text to follow.",
+      "title": "Words Worth Bringing Back",
+      "text": "My observers send word when a crew returns, changes watch or needs relief; a missing message can leave the next crew waiting in the wrong place. The Waylayers at {name:slatehook}, {dir_from_giver:slatehook}, have been taking those messages off our runners. Bring me a Runner's Packet from them. I would like to plan a watch with information newer than the watch itself.",
       "objectives": [
         {
           "type": "item",
@@ -75,7 +75,7 @@
           "givers": [
             "r20_anchor_028_host"
           ],
-          "text": "[PH] Alna Archsight wants the intercepted messages back from the Waylayers at {name:slatehook}: bring a Runner's Packet. Real text to follow."
+          "text": "My observers send word when a crew returns, changes watch or needs relief; a missing message can leave the next crew waiting in the wrong place. The Waylayers at {name:slatehook}, {dir_from_giver:slatehook}, have been taking those messages off our runners. Bring me a Runner's Packet from them. I would like to plan a watch with information newer than the watch itself."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -90,7 +90,7 @@
               "area": "elandor_ashenward_march/coalbrand_yard"
             }
           ],
-          "text": "[PH] Nella Hedgeward wants the shift reports the Hedge Bowmen at {name:coalbrand_yard} took: bring a Runner's Packet. Real text to follow."
+          "text": "A shift report tells me who is still out there and who ought to be home. The Hedge Bowmen at {name:coalbrand_yard}, {dir_from_giver:coalbrand_yard}, have been taking our runners' messages. Recover a Runner's Packet and bring it to me. Someone is waiting to hear that their crew got back."
         },
         {
           "zone": "elandor_glassroot_wilds",
@@ -105,7 +105,7 @@
               "area": "elandor_glassroot_wilds/rootsnare"
             }
           ],
-          "text": "[PH] Faeris wants the carriers' messages back from the Bandit Fletchers at {name:rootsnare}: bring a Runner's Packet. Real text to follow."
+          "text": "The Bandit Fletchers at {name:rootsnare}, {dir_from_giver:rootsnare}, steal the carriers' messages as readily as they cut our roots for arrow shafts. Those messages tell us which crews have returned and which still need supplies. Bring me a Runner's Packet from the camp. A path is little use if the people at either end cannot hear from one another."
         },
         {
           "zone": "kragmar_blackwind_rise",
@@ -120,7 +120,7 @@
               "area": "kragmar_blackwind_rise/pallcloth_den"
             }
           ],
-          "text": "[PH] Orrel wants the word of returned crews back from the Shroud Archers at {name:pallcloth_den}: bring a Runner's Packet. Real text to follow."
+          "text": "A crew can come home and still be listed as missing if the word never reaches us. The Shroud Archers at {name:pallcloth_den}, {dir_from_giver:pallcloth_den}, have been intercepting those return messages. Bring me a Runner's Packet from them. I would rather welcome someone once than write an apology after their memorial."
         },
         {
           "zone": "kragmar_bannerbreak_mesa",
@@ -135,7 +135,7 @@
               "area": "kragmar_bannerbreak_mesa/sunderstrap_camp"
             }
           ],
-          "text": "[PH] Yarra Standardmender wants the questions about late deliveries back from the Trench Archers at {name:sunderstrap_camp}: bring a Runner's Packet. Real text to follow."
+          "text": "The Trench Archers at {name:sunderstrap_camp}, {dir_from_giver:sunderstrap_camp}, are stealing our runners' messages. Somewhere in that camp is a Runner's Packet full of questions about deliveries that never arrived. Bring one back to me. The people asking have waited long enough for an answer."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
@@ -150,7 +150,7 @@
               "area": "kragmar_thunderroot_wilds/rainchar_camp"
             }
           ],
-          "text": "[PH] Rumela wants her carriers' messages back from the Brigand Bowmen at {name:rainchar_camp}: bring a Runner's Packet. Real text to follow."
+          "text": "My carriers send word of a finished run so the next crew knows when to set out. The Brigand Bowmen at {name:rainchar_camp}, {dir_from_giver:rainchar_camp}, have taken to keeping that word for themselves. Bring me a Runner's Packet from them. Even the loudest drum is no help when nobody knows what happened."
         }
       ],
       "rewards": {
@@ -178,8 +178,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] A Proper Introduction to Rock",
-      "text": "[PH] Borin Splitbolt keeps his tool occasion: bring 4 Silversteel Bars for the station's picks, explained by today's crafting path. Real text to follow.",
+      "title": "A Proper Introduction to Rock",
+      "text": "The stone here sends picks back with their teeth missing, and I am running short of replacements. Bring me four Silversteel Bars for the station's picks; Steel Bars and Silver Bars go together in a Dual Furnace. I will see that the next introduction leaves a mark on the rock.",
       "objectives": [
         {
           "type": "item",
@@ -231,8 +231,8 @@
       "min_level": 31,
       "level": 32,
       "requires": [],
-      "title": "[PH] A Meal With Some Variety",
-      "text": "[PH] Borin wants his people at the station to eat something other than rations: bring 4 Frostfin. Real text to follow.",
+      "title": "A Supper with Fins",
+      "text": "The station's cook has started naming the different ways to serve the same ration. Bring me four Frostfin before he reaches the end of the list and starts again. A crew that works this hard ought to have something to look forward to when the tools go down.",
       "objectives": [
         {
           "type": "item",
@@ -265,8 +265,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Word for Cinderline Watch",
-      "text": "[PH] Borin sends the player to Toren Waterbarrel at Cinderline Watch, whose supplies feed the same road; no earlier deed is claimed. Real text to follow.",
+      "title": "Word for Cinderline Watch",
+      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March feeds the drivers who bring our supplies. He needs help keeping those loads moving, and I need my workers to eat. Go and speak to him; a sound road has something worth carrying on it.",
       "objectives": [
         {
           "type": "talk",
@@ -288,8 +288,8 @@
       "min_level": 32,
       "level": 33,
       "requires": [],
-      "title": "[PH] Alna Needs Good Eyes",
-      "text": "[PH] Borin points the player to Alna Archsight at Archshadow Post, who needs usable observations before the next load leaves. Real text to follow.",
+      "title": "Alna Needs Good Eyes",
+      "text": "Alna Archsight at Archshadow Post needs help with her observations before the next loads go out. Speak to her if you can tell a loose stone from a solid one without waiting for it to land. She is particular about reports, but being wrong up here tends to make a dent.",
       "objectives": [
         {
           "type": "talk",
@@ -311,8 +311,8 @@
       "min_level": 33,
       "level": 34,
       "requires": [],
-      "title": "[PH] A Clearer View of Trouble",
-      "text": "[PH] Alna needs Emberglass for the post's observation work, free beside Borin's request: bring 2 Emberglass. Real text to follow.",
+      "title": "A Clearer View of Trouble",
+      "text": "I need two Emberglass for the post's observation work. Bring them to me so we can finish the fittings for our sights. 'Something moved' is a fine beginning to a report; I would like my observers to manage the rest.",
       "objectives": [
         {
           "type": "item",
@@ -364,9 +364,9 @@
       "min_level": 36,
       "level": 37,
       "requires": [],
-      "title": "[PH] A Reliable Stand",
-      "text": "[PH] Alna wants her prepared sighting frame set back on its marked stand at the {name:survey_stand} in the {name:highcrags}; no measured line of sight is asked. Real text to follow.",
-      "completion": "[PH] Alna's observers work from a fixed reference again. Real text to follow.",
+      "title": "A Reliable Stand",
+      "text": "The observers working the {name:highcrags} need a fixed reference, and our sighting frame has shifted on its stand. Go to the {name:survey_stand}, {dir_from_giver:survey_stand}, and set the frame back on its marks. We can argue over what moved once our own equipment stops joining in.",
+      "completion": "Good, the observers can compare their readings from the same marks again. That should remove at least one wandering mountain from the reports.",
       "objectives": [
         {
           "type": "use",
@@ -432,8 +432,8 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] Party: A Crack Is Not a Weakness",
-      "text": "[PH] Alna asks for a party against {name:split_seam_warden} in the {name:stormcrags}, who threatens the high work paths; optional, nothing needs it. Real text to follow.",
+      "title": "Party: A Crack Is Not a Weakness",
+      "text": "{name:split_seam_warden} is battering the work paths in the {name:stormcrags}, and the split in its stone has encouraged some very poor judgement. Gather a group and bring it down, {dir_from_giver:split_seam_warden}. A crack you can see is not necessarily a crack you can put a pick through.",
       "objectives": [
         {
           "type": "kill",
@@ -471,8 +471,8 @@
       "min_level": 40,
       "level": 40,
       "requires": [],
-      "title": "[PH] Last Hedge Needs Observers",
-      "text": "[PH] Alna sends the player to Nella Hedgeward at Last Hedge Redoubt, where the front's work begins at once; no earlier deed is claimed. Real text to follow.",
+      "title": "What the Watch Needs to Know",
+      "text": "Nella Hedgeward at Last Hedge Redoubt in Ashenward March needs help with the fighting beyond our frontier posts. Speak to her about the work. She wants to know what her next patrol will face, and she listens closely to whoever has to walk there.",
       "objectives": [
         {
           "type": "talk",
@@ -496,9 +496,9 @@
         "camp_site_raid"
       ],
       "story": true,
-      "title": "[PH] The Cost of Holding Ground",
-      "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow.",
-      "completion": "[PH] Nella names the open deliveries, the crews that need relief and the road the next watch must hold, and points to the Warmaster at Ashenward Bastion. Real text to follow.",
+      "title": "The Cost of Holding Ground",
+      "text": "The guild has checked the report of your camp raid: cargo bearing our marks was stacked for the enemy's building work. The Throng took it in an open attack on our transport, and the crews it belonged to still need replacements. Take the combined report to Nella Hedgeward at Last Hedge Redoubt in Ashenward March. You have set their building work back; she can help us put the next load into our own workers' hands.",
+      "completion": "The drivers on this report are due relief, and their crews still need the tools that were taken. The Charter of Stone and I will arrange the replacements and a watch to protect the next delivery along that route. Speak to the Warmaster at Ashenward Bastion; you have brought me an account I can act on, and I want the Bastion to hear it too.",
       "objectives": [
         {
           "type": "talk",
@@ -514,7 +514,7 @@
           "turnins": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow."
+          "text": "The guild has checked the report of your camp raid: cargo bearing our marks was stacked for the enemy's building work. The Throng took it in an open attack on our transport, and the crews it belonged to still need replacements. Take the combined report to Nella Hedgeward at Last Hedge Redoubt in Ashenward March. You have set their building work back; she can help us put the next load into our own workers' hands."
         },
         {
           "zone": "elandor_ashenward_march",
@@ -524,7 +524,7 @@
           "turnins": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow."
+          "text": "I have matched the report of your camp raid to our transport losses: the cargo set aside for the enemy's building work bears our marks. The Throng seized it in an open attack on the transport, while the drivers whose work you recorded brought home what they could. Take these findings to Nella Hedgeward at Last Hedge Redoubt. I have added the replacement tools and relief those crews still need, so she can plan the next delivery with us."
         },
         {
           "zone": "elandor_glassroot_wilds",
@@ -534,7 +534,7 @@
           "turnins": [
             "r20_anchor_032_host"
           ],
-          "text": "[PH] The foreman sends the player with the evaluated report of the reported raid (own cargo with its own marks found ready for the enemy build, reached there by an open raid) to Nella Hedgeward at Last Hedge Redoubt. Real text to follow."
+          "text": "The report of your camp raid has reached us, and the guild has matched the cargo marks at that building site to our lost supplies. The Throng took those goods in an open attack on our transport and laid them aside for its own construction. Carry the combined report to Nella Hedgeward at Last Hedge Redoubt in Ashenward March. The attack you made has bought our crews some room to work; let us see they have the tools and protection to use it."
         }
       ],
       "rewards": {

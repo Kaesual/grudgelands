@@ -37,8 +37,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Something Fresh for the Carriers",
-      "text": "[PH] Faeris Rootbinder wants the carriers on the grown paths to have something fresh: bring 5 Melons. Real text to follow.",
+      "title": "Something Fresh for the Carriers",
+      "text": "My carriers spend their days beneath living branches and their meals chewing things that have been dead a very long time. Bring me five Melons for their next rest. The roots take years to tend; tending the people who walk them should take a little of our time as well.",
       "objectives": [
         {
           "type": "item",
@@ -52,14 +52,14 @@
           "givers": [
             "r20_anchor_036_host"
           ],
-          "text": "[PH] Faeris Rootbinder wants the carriers on the grown paths to have something fresh: bring 5 Melons. Real text to follow."
+          "text": "My carriers spend their days beneath living branches and their meals chewing things that have been dead a very long time. Bring me five Melons for their next rest. The roots take years to tend; tending the people who walk them should take a little of our time as well."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
           "givers": [
             "r20_anchor_048_host"
           ],
-          "text": "[PH] Rumela Stormstep's carriers come back soaked and hungry: bring 5 Melons. Real text to follow."
+          "text": "The carriers come back soaked through, set down their loads, and ask whether anything fresh has arrived. Bring me five Melons so I can say yes. Rain in your collar is much easier to forgive with a decent meal in front of you."
         }
       ],
       "rewards": {
@@ -104,8 +104,8 @@
       "min_level": 31,
       "level": 32,
       "requires": [],
-      "title": "[PH] Keep the Stores Dry",
-      "text": "[PH] Faeris needs Chests so stores and spare material stay usable between runs: bring 3 Chests. Real text to follow.",
+      "title": "Keep the Stores Dry",
+      "text": "The forest is very good at turning neglected supplies into more forest. Bring me three Chests for the stores and spare materials we keep between carrying runs. I would prefer to use our replacement straps before they grow leaves.",
       "objectives": [
         {
           "type": "item",
@@ -119,21 +119,21 @@
           "givers": [
             "r20_anchor_036_host"
           ],
-          "text": "[PH] Faeris needs Chests so stores and spare material stay usable between runs: bring 3 Chests. Real text to follow."
+          "text": "The forest is very good at turning neglected supplies into more forest. Bring me three Chests for the stores and spare materials we keep between carrying runs. I would prefer to use our replacement straps before they grow leaves."
         },
         {
           "zone": "kragmar_blackwind_rise",
           "givers": [
             "r20_anchor_040_host"
           ],
-          "text": "[PH] Orrel Hollowstep keeps recovered belongings dry until they go home: bring 3 Chests. Real text to follow."
+          "text": "Recovered belongings have to stay dry until I can return them to their owners. Bring me three Chests for the things waiting here. People are quite capable of being grateful and complaining about the mildew in the same breath."
         },
         {
           "zone": "kragmar_thunderroot_wilds",
           "givers": [
             "r20_anchor_048_host"
           ],
-          "text": "[PH] Rumela keeps message gear and stores dry between the rains: bring 3 Chests. Real text to follow."
+          "text": "The rain has found its way into our spare message bindings and the stores beside them. Bring me three Chests so I can put both under proper lids. The next crew should be able to open a message without wringing it out."
         }
       ],
       "rewards": {
@@ -161,8 +161,8 @@
       "min_level": 34,
       "level": 35,
       "requires": [],
-      "title": "[PH] Rungs for the High Paths",
-      "text": "[PH] Faeris's carriers climb between the grown paths of the Canopy on rungs the rain has rotted: bring 10 Wooden Ladders. Real text to follow.",
+      "title": "Rungs for the High Paths",
+      "text": "Our carriers wear out the rungs between the grown paths, and rain does the rest. Bring me ten Wooden Ladders to replace them. The roots will outlive us all if we tend them, but I would rather nobody tested that by missing a step.",
       "objectives": [
         {
           "type": "item",
@@ -214,8 +214,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "[PH] Supplies Through Cinderline",
-      "text": "[PH] Faeris sends the player to Toren Waterbarrel at Cinderline Watch, where the same supply problems run; no earlier deed is claimed. Real text to follow.",
+      "title": "Supplies Through Cinderline",
+      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March is trying to keep supplies moving to crews like mine. Speak to him about the work. He understands that a forest path still needs a meal at the end of it.",
       "objectives": [
         {
           "type": "talk",
@@ -237,9 +237,9 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] A Path for Those Coming Back",
-      "text": "[PH] Faeris wants a prepared snare on the carriers' path loosened at the {name:carrier_path} in the {name:canopy}, so her wardens can watch that stretch again. Real text to follow.",
-      "completion": "[PH] The stretch of path is usable again; a concrete relief, nothing more. Real text to follow.",
+      "title": "A Path for Those Coming Back",
+      "text": "Someone has set a snare for the people carrying loads through the {name:canopy}. Loosen it at the {name:carrier_path}, {dir_from_giver:carrier_path}, and report back to me. My wardens can watch that stretch again once they have sound footing. It takes a patient hand to tend these paths and a careless one to make them cruel.",
+      "completion": "That stretch is passable again, and I can send the wardens to watch it. The next tired carrier will have one less thing waiting for an unsteady foot.",
       "objectives": [
         {
           "type": "use",
@@ -305,8 +305,8 @@
       "min_level": 38,
       "level": 39,
       "requires": [],
-      "title": "[PH] Party: The Canopy's Own King",
-      "text": "[PH] Faeris asks for a party against {name:canopy_knuckle} in the {name:canopy}, who has hurt her wardens and broken their bows; optional, nothing needs it. Real text to follow.",
+      "title": "Party: The Canopy's Own King",
+      "text": "{name:canopy_knuckle} has injured my wardens in the {name:canopy} and snapped their bows as though they were fallen twigs. Gather a group and bring him down, {dir_from_giver:canopy_knuckle}. I have tended some of those bow trees longer than he has been alive; my wardens are less replaceable still.",
       "objectives": [
         {
           "type": "kill",
@@ -344,8 +344,8 @@
       "min_level": 40,
       "level": 40,
       "requires": [],
-      "title": "[PH] Where the Front Begins",
-      "text": "[PH] Faeris sends the player to Nella Hedgeward at Last Hedge Redoubt; Canopy-Knuckle's fall is not assumed. Real text to follow.",
+      "title": "Where the Front Begins",
+      "text": "Nella Hedgeward at Last Hedge Redoubt in Ashenward March needs people for the work beyond our frontier. Go and speak to her if you are ready for it. She asks after the ones who come back, which is a good quality in someone who must send others out.",
       "objectives": [
         {
           "type": "talk",
