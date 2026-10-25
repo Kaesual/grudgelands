@@ -91,9 +91,19 @@ Around level 10, your starting quests send you on to the next zone, whose
 village, outpost and camps offer their quests at once; around level 19
 they lead you to your people's capital, its profession trainers and the
 first chapter of your faction's story, which goes on in the zones of
-levels 21–40 and leads you to your faction's fortress at 40.
+levels 21–40 and leads you to your faction's fortress at 40; from 41 your
+Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
+
+**0.62.0** reworks the quests of the front, levels 41–60: the hosts and
+the capitals' envoys offer their Battlegrounds work from its level, far
+fewer of them hunts, with new departures, a Throng island bounty and
+potion, armor, weapon and trinket choices as rewards. The main line from
+the Warmaster at 41 to the finale at 60 is now your faction's story, with
+a closing text at every step. Every bag holds four more slots, and two
+capital buildings are fixed. It needed a map reset; characters keep their
+level, gear, inventory and quests.
 
 **0.61.1** refreshes the vendor, quest-giver, mail, trainer and other
 service windows: vendor offers as compact cards with small icons and

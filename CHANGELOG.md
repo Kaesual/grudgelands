@@ -12,6 +12,43 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.62.0 — the front 41–60, the main line's story and bigger bags (2026-10-25)
+
+**Map reset** needed: new quest places on the Battlegrounds, changed quest
+targets there and two fixed capital buildings change what world
+generation builds, so an existing world's map is generated anew from its
+seed. Characters keep their level, gear, inventory, money, quests,
+professions, mounts and waypoints, as in every map reset; a front quest
+that no longer exists simply leaves the quest log. No migration step: your
+bags simply grow at your next login, with every item where it was.
+
+- **The front 41–60 reworked:** the hosts' and the capitals' envoys'
+  quests for the Battlegrounds are offered from their level, with no
+  chain to follow outside the story, and far fewer of them are hunts: light a lantern at the Causeway Return Stand, count who came
+  back at the Shattered Relief Rest, check the shoring in Gravesalt, loosen
+  the carriers' snares in the Skyglass Canopy, and bring Potatoes, Salt
+  Crust, Stormkelp, Paper, Melons, Wild Cocoa and Torches where they are
+  needed. Engine Nine and War Construct Last-Toll are optional "Party:"
+  quests both factions share.
+- **The main line is the story:** from the Warmaster's first order at 41
+  to the finale at 60, every step is a story quest with a closing text
+  that hands you on; it opens at 41 even if you skipped the earlier
+  chapters, and The Throng now meets Paymaster Chirr after Watch-Captain
+  Huskell.
+- **New departures:** the hosts send you on to Dorrin Gateledger in Dur
+  Brannoc, Thorga Roadspeaker in Gor Drazhak, Borin Splitbolt, Nalo
+  Pathdrum, Eriath Boughwarden, Vaska Ashlistener and Ossa Quietregister,
+  each with work waiting. The Throng gets its own island bounty: Kraits on
+  Stormscale Summit, then a party against Last-Offering.
+- **Quest rewards at 41–60:** a choice of Healing or Mana Potion V and
+  VI, armor with an enchant, weapons with two, trinkets on the group
+  quests, and a weapon choice at the end of the main line.
+- **Bigger bags:** every bag holds four more slots (8, 12, 16 and 20) at
+  the same price and recipe.
+- **Two capital buildings fixed:** both leaves of Kezamba's moot-house
+  door open properly, and visitors to Lethariel's mere shrines stand on
+  the floor.
+
 ## 0.61.1 — refreshed vendor, quest and service windows (2026-10-25)
 
 **Compatible:** no map reset and no migration step.

@@ -28,16 +28,76 @@ reworks the quests of levels 21–30 and the six capitals, adds chapter 2 and
 re-places the Alchemy herbs by level band; 0.60.1 (compatible) merges the
 UI modernization, a new look for every window; Round 61 (0.61.0, a map
 reset) reworks the quests of levels 31–40 and adds chapter 3; 0.61.1
-(compatible) refreshes the vendor, quest-giver and other service windows.
-None of them is **pushed**; they wait for the user's joint GUI test of
-0.57 to 0.61.1, which covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
-Next: that GUI test, then Round 62 (the front 41–60, the last quest
-round), then the production deploy with one map reset
-([ROADMAP](../ROADMAP.md)). The
+(compatible) refreshes the vendor, quest-giver and other service windows;
+Round 62 (0.62.0, a map reset) reworks the front 41–60 and gives the main
+line its story layer, which completes the quest rework of levels 11–60,
+and makes every bag four slots larger. None of them is **pushed**; they
+wait for the user's joint GUI test of 0.57 to 0.62, which covers the UI
+too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
+Next: that GUI test, then the production deploy with one map reset
+(0.57.0 → 0.62.0; its starting list in the
+[deploy plan](planning/deploy-plan.md); [ROADMAP](../ROADMAP.md)). The
 [Class Redesign Board](https://claude.ai/artifact/G2wFpJVxhLq46htZwcogXR) (a
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Round 62 "The front 41–60 and the main line's story layer" complete**
+  (2026-10-25, version 0.62.0, **map reset**, no migration step;
+  [plan, decisions, numbers and the classification](planning/round62-plan.md#completion-2026-10-25);
+  its GUI items are item 9 in (A) and items 107–122 in (B) of the
+  [joint checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
+  **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
+  0.58.0 to 0.62.0 wait for the user's joint GUI test of 0.57 to 0.62; the
+  production world moves 0.57.0 → 0.62.0 across one reset in the deploy
+  that follows. From main `99d5bb73` (the plan, with the survey, the plan
+  review and the user's answers): BAGS (`548f476f`), TEMPLATEFIX
+  (`c2b4efbf`), the bag-size comment (`b1c6462d`), FRONTQUESTS
+  (`c41bfcdf`) and FRONTTEXT with TEXTREVIEW's fixes and picks
+  (`73febfda`) merged, then this documentation lane D. GPT-6 Astra drafted
+  the main line's story layer (CHAPTER4, the user's picks K1–K13 all "A",
+  checked by CHECK4) and wrote the 136 text fields (FRONTTEXT, with the
+  Opus text review's three must-fixes and six proposals, all picked).
+  BAGS (MERGE AFTER FIXES, a test-only fix), TEMPLATEFIX (MERGE) and
+  FRONTQUESTS (MERGE) independently reviewed by Opus. No art lane: no new
+  object or quest item. Main has 279 portable fixtures (2 new). The
+  declaration is
+  `{"schema": 3, "version": "0.62.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0", "0.62.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`;
+  characters keep their items, levels, quests and money across the reset;
+  a quest whose id vanished is dropped; the bags need no step.
+  - **The front 41–60 (FRONTQUESTS, FRONTTEXT):** the fourteen files left
+    (ten `.front`, four Battlegrounds) flagged reworked, so all 48 quest
+    files are; 123 → 120 front quests (390 shipped; 45 ids went, 42 came);
+    the free front at 25 % (The Accord) and 18 % (The Throng) kill
+    objectives, 4–6 mob names per front zone and faction; ten shared
+    front quests on `border`, departures to Dorrin (45), Thorga (42),
+    Borin and Nalo (50), Eriath (51), Vaska (52) and Ossa (53), the two
+    group quests at 50 shared and optional, the Throng's island pair
+    (Krait, Last-Offering), T5/T6 rewards per faction and band with the
+    reward budget per zone and level band, eight new quest places
+    ([quests.md](design/quests.md#the-front-4160-round-62)); the questing
+    share of 40→50 is 72–87 % and of 50→60 55–61 % solo, as the user
+    accepted.
+  - **The main line's story layer:** the r36 spine (17 / 14 steps) is the
+    story path, `story` throughout and chained only on itself, each step
+    with a completion; the opener at 41 requires nothing; The Throng's
+    Chirr follows Huskell; the finals keep their fixed last lines and give
+    a weapon choice.
+  - **Templates (TEMPLATEFIX):** Kezamba's moot-house door and the
+    Lethariel mere shrines' inside points; the known-defects list is
+    empty, `check.py` 17 → 11 warnings (all checker false positives).
+  - **Bags (BAGS):** 8 / 12 / 16 / 20 slots instead of 4 / 8 / 12 / 16,
+    prices and recipes unchanged; each join grows an equipped bag's list
+    with its items kept
+    ([inventory_equipment.md §3](design/inventory_equipment.md#3-bags-classic-mmo-model-lott-implementation-pattern)).
+  - **Gates:** each code lane's full fixture run (BAGS 277/0, TEMPLATEFIX
+    278/0, FRONTQUESTS 279/279, FRONTTEXT 279/279) and FRONTQUESTS'
+    `quick` fleet (100/100); this lane's `r37_dc`, `check_upgrade.py`
+    (against origin/main 0.57.0, with the map reset entry),
+    `check_fresh_server.py`, `validate.py --game`, the full fixtures, a full
+    seed fleet on main and one boot (the
+    [round-end gates](planning/round62-plan.md#round-end-gates)). The sync
+    is the coordinator's; the joint GUI test (desktop and web build) is
+    open ([carry-overs](../BACKLOG.md#round-62-carry-overs)).
 - **Refreshed service dialogs merged** (2026-10-25, version 0.61.1,
   **compatible**, no saved state, no reset;
   [review and receipts](planning/ui-dialog-review.md)): the Atlas 03
@@ -909,7 +969,8 @@ user's notes.
     leaves as fuel ([economy.md §2](design/economy.md)).
   - **HUD (HUD, ARTM):** the daytime band and the corner stack with the
     minimap hidden ([world_map.md](design/world_map.md)).
-  - **Bags (BAGS):** 4 / 8 / 12 / 16 slots, the Small Bag 20c, the step
+  - **Bags (BAGS):** 4 / 8 / 12 / 16 slots (8 / 12 / 16 / 20 since
+    0.62.0), the Small Bag 20c, the step
     0.48.0 with "Lost and Found" letters
     ([inventory_equipment.md §3](design/inventory_equipment.md#3-bags-classic-mmo-model-lott-implementation-pattern)).
   - Its GUI test (desktop and web build, a new world after the map reset
