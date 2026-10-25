@@ -509,7 +509,27 @@ grug_map.atlas.register_marker_provider("zone", function()
 end)
 dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
 local W = dofile(repo .. "/mods/PLAYER/grug_map/window.lua")
+-- Startup zone placement and its small-window collision audit must use the
+-- same body height as a rendered map, with the navigation space reserved.
+local zone_bodies, window_size = {}, W.window_size
+W.window_size = function(info, header_h)
+    local w, h = window_size(info, header_h)
+    zone_bodies[#zone_bodies + 1] = {info = info, w = w, h = h}
+    return w, h
+end
 for _, fn in ipairs(on_loaded) do fn() end
+W.window_size = window_size
+for _, info in ipairs({grug_map.layers.REFERENCE, grug_map.layers.SMALL}) do
+    local found = false
+    local w, h = W.window_size(info, grug_inventory.UI.header_h)
+    for _, body in ipairs(zone_bodies) do
+        if body.info == info then
+            found = true
+            check(near(body.w, w) and near(body.h, h), "ZL collision layout reserves navigation height")
+        end
+    end
+    check(found, "ZL reference and small-window collision layouts exercised")
+end
 local window_step = steps[#steps]
 local field_handler = on_fields[#on_fields]
 

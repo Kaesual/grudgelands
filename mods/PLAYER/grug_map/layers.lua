@@ -165,7 +165,7 @@ local function place_zones()
 	local started = core.get_us_time()
 	local view = atlas.view()
 	local W = grug_map.window
-	local layout = W.layout(W.window_size(L.REFERENCE))
+	local layout = W.layout(W.window_size(L.REFERENCE, grug_inventory.UI.header_h))
 	local nodes = (view.max_x - view.min_x) / layout.map_w
 	local metrics = zone_labels.metrics(L.REFERENCE)
 	-- The baked region names, drawn at normal (bake.SCALE) over the normal
@@ -210,7 +210,7 @@ local function place_zones()
 	end
 	local overlapping, on_names = zone_labels.overlaps(placed, names)
 	-- The same labels' boxes at 1x on the small window.
-	local small_layout = W.layout(W.window_size(L.SMALL))
+	local small_layout = W.layout(W.window_size(L.SMALL, grug_inventory.UI.header_h))
 	local small_nodes = (view.max_x - view.min_x) / small_layout.map_w
 	local small_metrics = zone_labels.metrics(L.SMALL)
 	local small = {}

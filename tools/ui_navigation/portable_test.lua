@@ -121,9 +121,22 @@ assert(id == nil and clicked)
 assert(grug_core.ui.prepend(false):find('sound=click', 1, true))
 -- Larger GUI fonts get additional rows, all pages remain reachable, and
 -- every tab shares the same frame at this size/permission set.
-core.get_player_window_information = function()
-    return {size = {x = 1035, y = 696}, real_gui_scaling = 1.5, max_formspec_size = {x = 20, y = 14}}
+local window_info
+core.get_player_window_information = function() return window_info end
+-- Engine-reported dimensions: max(screen's shorter side / 15, 0.5555 * DPI)
+-- times GUI scale sets the preferred slot size (clientdynamicinfo.cpp).
+for _, size in ipairs({{1035, 696, 0.5555 * 96}, {1920, 1080, 72}}) do
+    window_info = {size = {x = size[1], y = size[2]}, real_gui_scaling = 1,
+        max_formspec_size = {x = size[1] / size[3], y = size[2] / size[3]}}
+    assert(grug_core.ui.text_scale(player) == 1, "GUI 1 captures retain their text scale")
 end
+window_info = {size = {x = 2560, y = 1600}, real_gui_scaling = 2,
+    max_formspec_size = {x = 24, y = 15}}
+local hidpi_scale = grug_core.ui.text_scale(player)
+assert(math.abs(hidpi_scale - 15 / grug_inventory.UI.window_h) < 0.00001)
+assert(hidpi_scale > 0.98 and hidpi_scale <= 1, "density 2 / GUI 1 must not halve dense text")
+window_info = {size = {x = 1035, y = 696}, real_gui_scaling = 1.5,
+    max_formspec_size = {x = 1035 / (0.5555 * 96 * 1.5), y = 696 / (0.5555 * 96 * 1.5)}}
 assert(math.abs(grug_core.ui.text_scale(player) - 2 / 3) < 0.00001)
 assert(grug_core.ui.text_scale(nil) == 1, "presentation callers may omit player")
 admin, creative = true, true

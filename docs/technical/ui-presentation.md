@@ -11,8 +11,10 @@ out of the prepend and explicitly requests the opaque variant.
 
 - `styles()` returns control defaults without a background or send.
 - `text_scale(player)` compensates dense fixed-layout summaries when the client
-  shrinks the form but retains GUI-scaled fonts (available height below 17 units).
-  It reads window information at build time only; no polling or saved setting.
+  shrinks the form but retains GUI-scaled fonts. It uses available height /
+  inventory window height, capped at 1 and floored by 1 / real GUI scaling;
+  display density alone must not halve text. It reads window information at
+  build time only; no polling or saved setting.
 - `prepend(opaque)` returns background, defaults and existing click styles.
 - `panel(x, y, w, h)` returns a nine-slice panel in the caller's coordinate mode.
   Emit it outside scroll containers: the engine parents backgrounds to the

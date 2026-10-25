@@ -855,3 +855,35 @@ and shift-click/drag behavior; long quest text/rewards; map zoom, scrolling
 and tab return; live craft/furnace animation and focus/close behavior. The
 smallest native controls remain constrained by client fonts and engine
 widgets. No web-client execution or user's visual acceptance is claimed.
+
+## Fidelity review fixes — 2026-10-25
+
+The coordinator's independent review of `d6c7fe94` requested two corrections
+(`ui-modernization/review-fidelity.md` in the private orchestration folder).
+Both are addressed, **compatible and presentation-only**:
+
+- Dense-text compensation uses the actual available-height / inventory-window-
+  height ratio, capped at 1 and floored by the prior tested inverse real GUI
+  scale. Density 2 / GUI 1 at 2560×1600 now retains about 0.99, instead of 0.5.
+  Navigation fixtures use the engine's reported dimensions and retain factors
+  1 at both existing GUI-1 capture sizes and 2/3 at 1035×696 / GUI 1.5.
+- Zone-label placement and its small-window collision audit subtract the common
+  navigation header from their reference map bodies. The map fixture checks
+  both startup layouts against the actual body-height contract.
+
+Checks: `ui_navigation`, `r44_mq`, `r57_details` **3/3 PASS**, through the shared
+queue; plain-Lua-5.1 parser and all sweeps PASS for the four changed Lua files;
+`check_fresh_server.py` PASS; whitespace PASS. No full-suite repeat was needed
+for these two review fixes. One isolated real-client capture at 1035×696,
+GUI 1, with the Zones layer enabled, and its headless boot passed. It used
+`LC_ALL=C LANG=C`, disposable paths and two queued slots. Capture/check receipts
+and the temporary one-map probe are archived under
+`~/projects/grudgelands-orchestration/ui-modernization/fidelity-review-fixes-2026-10-25/`.
+
+The map capture also records a remaining limit: at 1×, the small viewport
+still has dense overlapping zone labels (73 overlapping pairs, 10 over baked
+region names; reference 1920×1080: 3 pairs, 0 over names, seed
+`5099651730322752340`). The corrected reference geometry does not establish
+collision-free labels at every client size. The screenshot is evidence of
+this limitation, not visual acceptance. The user's look pick and desktop/web
+acceptance, and the coordinator's fix review, remain pending.

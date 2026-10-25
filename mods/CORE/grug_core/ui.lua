@@ -24,8 +24,12 @@ function UI.text_scale(player)
     if not player then return 1 end
     local info = core.get_player_window_information and
         core.get_player_window_information(player:get_player_name())
-    if info and info.max_formspec_size and info.max_formspec_size.y < 17 then
-        return 1 / math.max(1, info.real_gui_scaling or 1)
+    if info and info.max_formspec_size then
+        -- real_gui_scaling includes display density, not just the GUI setting.
+        -- Compensate actual form shrink, bounded by the tested small-window scale.
+        local rgs = math.max(1, info.real_gui_scaling or 1)
+        local form_h = grug_inventory.UI.window_h
+        return math.max(1 / rgs, math.min(1, info.max_formspec_size.y / form_h))
     end
     return 1
 end
