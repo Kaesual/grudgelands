@@ -7,8 +7,8 @@
 -- identical; set_size truncates) and a grug_mail stand-in for
 -- grug_mail.send_system(to, kind, from, subject, body, stacks) (round plan
 -- §3.2) that keeps the letters and can be made to fail:
---   A. the eight bags: 4 / 8 / 12 / 16 slots, cloth and leather alike, and
---      their descriptions;
+--   A. the eight bags: 8 / 12 / 16 / 20 slots since 0.62.0 (Round 62, four
+--      more each), cloth and leather alike, and their descriptions;
 --   B. the sort without sizes (the Sort button): order, merge, nothing left
 --      over, a sorted inventory unchanged;
 --   C. the sort into target sizes: the order kept, identical stacks merged,
@@ -24,6 +24,14 @@
 --      the rest; nothing lost or duplicated;
 --   F. a character without bags: nothing written, no letter; one with bags
 --      that fit: sorted, no letter.
+-- D, E and F test the pushed step as 0.48.0 shipped it: its handler reads
+-- the live sizes (bag_slots_of), so they run with the 0.48.0 sizes
+-- 4 / 8 / 12 / 16 stubbed into the bag items (with_0_48_0_sizes) and the
+-- step's tested behaviour stays the same. Round 62 adds:
+--   G. the bags of 0.62.0 need no step: the join grows each equipped bag's
+--      content list to its new size, every stack in its cell; a character
+--      still carrying the 0.48.0 marker sorts into the new sizes (fewer
+--      letters, upgrade contract §5.8).
 --
 --   luajit tools/r48_bags/portable_test.lua [REPO]
 -- Prints "R48 BAGS PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -284,12 +292,32 @@ local function name_at(player, list, i) return player.inv:get_stack(list, i):get
 
 local handler = grug_core.migrations.handlers["0.48.0"]
 
+-- The bag sizes 0.48.0 shipped, put into the bag items around `fn` and
+-- restored afterwards (the handler and the join read the live groups).
+local SIZES_0_48_0 = {bag_small = 4, bag_leather_pouch = 4, bag_medium = 8,
+	bag_leather_satchel = 8, bag_large = 12, bag_leather_pack = 12, bag_great = 16,
+	bag_leather_rucksack = 16}
+local function with_0_48_0_sizes(fn)
+	local live = {}
+	for id, size in pairs(SIZES_0_48_0) do
+		local groups = core.registered_items["grug_inventory:" .. id].groups
+		live[id] = groups.bagslots
+		groups.bagslots = size
+	end
+	local ok, err = pcall(fn)
+	for id, size in pairs(live) do
+		core.registered_items["grug_inventory:" .. id].groups.bagslots = size
+	end
+	if not ok then error(err, 0) end
+end
+
 ------------------------------------------------------------------------------
 -- A. The eight bags.
 ------------------------------------------------------------------------------
 do
-	local sizes = {bag_small = 4, bag_leather_pouch = 4, bag_medium = 8, bag_leather_satchel = 8,
-		bag_large = 12, bag_leather_pack = 12, bag_great = 16, bag_leather_rucksack = 16}
+	-- Round 62: four slots more each (round62-plan.md §2 point 11).
+	local sizes = {bag_small = 8, bag_leather_pouch = 8, bag_medium = 12, bag_leather_satchel = 12,
+		bag_large = 16, bag_leather_pack = 16, bag_great = 20, bag_leather_rucksack = 20}
 	local names = {bag_small = "Small Bag", bag_medium = "Medium Bag", bag_large = "Large Bag",
 		bag_great = "Great Cloth Bag", bag_leather_pouch = "Leather Pouch",
 		bag_leather_satchel = "Leather Satchel", bag_leather_pack = "Leather Pack",
@@ -414,7 +442,7 @@ local function full_character(name)
 	return p
 end
 
-do
+with_0_48_0_sizes(function()
 	letters, mail_calls, fail_at, feed_lines, afters = {}, 0, nil, {}, {}
 	local p = full_character("hoarder")
 	local before = census(p)
@@ -452,12 +480,12 @@ do
 	eq(#letters, 16, "D a second run sends nothing")
 	eq(writes, 0, "D a second run writes nothing")
 	eq(#afters, 0, "D a second run queues no feed line")
-end
+end)
 
 ------------------------------------------------------------------------------
 -- E. A failing send.
 ------------------------------------------------------------------------------
-do
+with_0_48_0_sizes(function()
 	letters, mail_calls, fail_at, feed_lines, afters = {}, 0, 3, {}, {}
 	local p = full_character("unlucky")
 	local before = census(p)
@@ -479,12 +507,12 @@ do
 	for i = 1, 4 do
 		eq(p.inv:get_size(I.content_list(i)), 16, "E bag " .. i .. " shrunk to 16")
 	end
-end
+end)
 
 ------------------------------------------------------------------------------
 -- F. Without bags; with bags that fit.
 ------------------------------------------------------------------------------
-do
+with_0_48_0_sizes(function()
 	letters, mail_calls, fail_at, afters = {}, 0, nil, {}
 	local p = new_player("bagless")
 	p.inv:set_stack("main", 20, ItemStack("t:dirt 5"))
@@ -503,6 +531,55 @@ do
 	eq(q.inv:get_size(I.content_list(2)), 8, "F the Medium Bag's list is 8 now")
 	eq(name_at(q, "main", 9), "t:dirt", "F sorted once")
 	same_census(before, census(q), "F")
+end)
+
+------------------------------------------------------------------------------
+-- G. The bags of 0.62.0 (Round 62): no step.
+------------------------------------------------------------------------------
+do
+	-- A 0.61 character: every bag full at its old size, one bag slot empty.
+	local p = new_player("grower")
+	local old = {{"grug_inventory:bag_small", 4, 8}, {"grug_inventory:bag_leather_satchel", 8, 12},
+		{"grug_inventory:bag_great", 16, 20}}
+	local n = 0
+	for i, row in ipairs(old) do
+		old_bag(p, i, row[1], row[2])
+		for index = 1, row[2] do
+			n = n + 1
+			p.inv:set_stack(I.content_list(i), index, ItemStack(("z:junk_%03d"):format(n)))
+		end
+	end
+	local before = census(p)
+	for _, f in ipairs(callbacks.join) do f(p) end
+	local n2, in_place = 0, true
+	for i, row in ipairs(old) do
+		eq(p.inv:get_size(I.content_list(i)), row[3], "G bag " .. i .. " grows to " .. row[3])
+		for index = 1, row[3] do
+			local name = name_at(p, I.content_list(i), index)
+			if index <= row[2] then
+				n2 = n2 + 1
+				in_place = in_place and name == ("z:junk_%03d"):format(n2)
+			else
+				in_place = in_place and name == ""
+			end
+		end
+	end
+	check(in_place, "G every stack stays in its cell, the new cells are empty")
+	eq(p.inv:get_size(I.content_list(4)), 0, "G the empty bag slot has no list")
+	same_census(before, census(p), "G the join")
+
+	-- A character that kept the 0.48.0 marker (last joined under 0.47.0):
+	-- the handler now sorts into 8 / 12 / 16 / 20, so four full 32-slot
+	-- bags and main[9..] (152 stacks) keep 104 and send 48 in 12 letters.
+	letters, mail_calls, fail_at, feed_lines, afters = {}, 0, nil, {}, {}
+	local q = full_character("sleeper")
+	before = census(q)
+	handler.character(q, "1")
+	eq(#letters, 12, "G a marker carrier now gets twelve letters")
+	for i = 1, 4 do
+		eq(q.inv:get_size(I.content_list(i)), 20, "G marker carrier bag " .. i .. " shrunk to 20")
+	end
+	same_census(before, census(q, letters), "G the marker carrier")
 end
 
 if failures > 0 then

@@ -46,6 +46,26 @@ local expected = plan.joins or {}
 local phase = plan.phase or "?"
 local setup = phase:match("^setup") ~= nil
 
+-- Round 62 made every bag four slots larger (8 / 12 / 16 / 20), and the
+-- step's handler reads the live sizes. Under this checkout's game (every
+-- phase but the 0.47.0 setup) the bags get the sizes 0.48.0 shipped back,
+-- test-only, so the step's tested behaviour and e2e.py's expectations stay
+-- (as tools/r48_bags/portable_test.lua's with_0_48_0_sizes).
+local SIZES_0_48_0 = {bag_small = 4, bag_leather_pouch = 4, bag_medium = 8,
+	bag_leather_satchel = 8, bag_large = 12, bag_leather_pack = 12, bag_great = 16,
+	bag_leather_rucksack = 16}
+if not setup then
+	for id, size in pairs(SIZES_0_48_0) do
+		local name = "grug_inventory:" .. id
+		local def = core.registered_items[name]
+		if def then
+			local groups = table.copy(def.groups or {})
+			groups.bagslots = size
+			core.override_item(name, {groups = groups})
+		end
+	end
+end
+
 local obs = {phase = phase, game = wv.game,
 	load = {new_world = wv.new_world, from = wv.from}, joins = {}, leaves = 0}
 

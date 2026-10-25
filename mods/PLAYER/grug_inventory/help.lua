@@ -137,7 +137,7 @@ local SECTIONS = {
 		"• You have two hotbars, A and B: switch with the A and B buttons beside the hotbar (inventory, chests, stations, mail) or in the quickbar (E); new items never land on the hidden one, but crafting, quests, arrows and fuel use its items last.",
 		"",
 		heading("Bags, food and repair"),
-		"• The Inventory tab holds up to four bags of 4 to 16 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
+		"• The Inventory tab holds up to four bags of 8 to 20 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
 		"• The potion belt on the Inventory tab holds four potions or elixirs; drink them from the quickbar (E).",
 		"• Eat food out of combat for a five-minute buff: instant healing, regeneration and sometimes extra stats. Only one food buff is active at a time.",
 		"• Gear wears out with use and stops working when broken. Repairs are made in towns and at the Miner's Guild's mining camps: every profession trainer of your faction repairs it for money, and so does @MENDER@ in every start town and capital (the hammer and anvil on the map), and so does the Camp Vendor of every mining camp.",

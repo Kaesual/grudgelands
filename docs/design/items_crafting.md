@@ -853,7 +853,7 @@ jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP wearers are the
 
 **Exclusive recipes**: named leather-armor enchantments across T1–T6 (§6b)
 and four leather bags at the Tanning Rack — the 8-slot Leather Pouch at
-profession T1, then 16 / 24 / 32 slots at T2 / T4 / T5, each eight leathers
+profession T1, then 12 / 16 / 20 slots at T2 / T4 / T5 (since Round 62), each eight leathers
 of its tier and a Thread (no mastery band since Round 45). (The quiver item
 and its recipe were removed in Round 28; the quiver is a Scout-only slot,
 `inventory_equipment.md` §3.) The Leatherworker makes bows and enchants and
@@ -888,13 +888,14 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
 
 **Exclusive recipes**:
 
-- **Bags** (`inventory_equipment.md` §3) — **four sizes, 4 / 8 / 12 / 16
-  slots** (halved in Round 48), at profession T1 / T2 / T4 / T5 (no mastery
-  band since Round 45). The 4-slot bag (six patch bolts, two light leathers)
-  stays vendor-sellable, because it is the floor tier (vendor floor rule);
-  the 8-slot bag is 8 woven bolts + 2 cured leather, the 12-slot 10 heavy
-  bolts + 4 spider silk + 2 heavy leather, and the 16-slot ("huge bag")
-  is the Master addition of 2026-08-07.
+- **Bags** (`inventory_equipment.md` §3) — **four sizes, 8 / 12 / 16 / 20
+  slots** (halved to 4 / 8 / 12 / 16 in Round 48, four slots more each since
+  Round 62; recipes and prices unchanged), at profession T1 / T2 / T4 / T5
+  (no mastery band since Round 45). The 8-slot bag (six patch bolts, two
+  light leathers) stays vendor-sellable, because it is the floor tier
+  (vendor floor rule); the 12-slot bag is 8 woven bolts + 2 cured leather,
+  the 16-slot 10 heavy bolts + 4 spider silk + 2 heavy leather, and the
+  20-slot ("huge bag") is the Master addition of 2026-08-07.
 - **Named cloth enchantments** across all six tiers (§6b); no separate kit line.
 - **Spellbooks** (Round 33, from the Goldsmith): two bolts of the tier and a
   Parchment at the Tailor Bench, at the profession tier of the book's tier
@@ -1375,8 +1376,8 @@ an enemy player's kill; the raiders' skeleton materials; whelps have none).
 
 **Bags** drop from any mob at **0.1%** per kill (not from the Kraken, the Tide Goby and
 the Reed Angelfish, which drop no quality loot at all), independent of the gear roll,
-sized by the mob's level: 1–15 → 4 slots, 16–30 → 8, 31–45 → 12, 46+ → 16
-(the cloth bag line of `grug_inventory`). The 4-slot bag stays on sale; larger
+sized by the mob's level: 1–15 → 8 slots, 16–30 → 12, 31–45 → 16, 46+ → 20
+(the cloth bag line of `grug_inventory`, sizes since Round 62). The 8-slot bag stays on sale; larger
 bags otherwise come only from the Tailor or the Leatherworker.
 
 Found enchantments do not imply a separate refined state. A found item's
