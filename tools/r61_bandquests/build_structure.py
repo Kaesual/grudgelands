@@ -187,10 +187,13 @@ def reward_choices(kind, melee=None):
 # One quest, one level, one title each; each variant: its zone's giver, its
 # zone-bound fields (use place, quest drop area) and its placeholder text.
 # The first variant's zone is the quest's home (its own objectives).
-# Armor sits on a shared quest where a zone has no local quest left for it
-# (Glassroot gives only shared errands): the Melons (feet, a prefix) and the
-# Runner's Packet (chest, a suffix) count in every zone that gives them
-# (E-reward-budget), and a player takes each once.
+# Every zone gives two one-enchant armor choices (E-reward-budget's limit;
+# a shared quest counts in every zone that gives it) and a player takes a
+# shared quest once, so armor sits only on shared quests given once per
+# faction (the Melons: feet, the reserve: chest, both a prefix) and each
+# faction's three zones give six pieces, every slot at least once
+# (round61-plan.md §2 point 4; the review's fix): the Runner's Packet, given
+# in all six zones, pays a potion choice.
 SHARED = [
     {
         "id": "border_meal", "min_level": 31, "level": 32,
@@ -246,9 +249,9 @@ SHARED = [
         "objectives": [item(PACKET, 1)],
         "quest_drops": [{"item": PACKET, "chance": 3, "roles": ["entrenched_bandit_archer"],
                          "area": "elandor_stormvault_heights/slatehook"}],
-        "rewards": {"weight": 6, "choices": "late:chest"},
+        "rewards": {"weight": 6, "choices": "potions"},
         "lesson": "A shared quest drop from the bandit archers of the zone's Round 20 bandit camp (an area per "
-                  "variant); the second armor choice (one enchant, a suffix).",
+                  "variant); a potion choice (given in all six zones, so no armor: the reward budget).",
         "duration_min": 12,
         "notes": "Draft §3 'Words Worth Bringing Back' (K10 A): the Runner's Packet, a soulbound quest-only item "
                  "(local messages, no proof of the front's plot), drops 1 in 3 from the camp's archers while "
@@ -280,8 +283,9 @@ SHARED = [
         "id": "border_reserve", "min_level": 30, "level": 31,
         "title": "The Reserve Is for Them",
         "objectives": [use(held_load("ashenward"), "held_supplies", "Ready the reserve load", 4)],
-        "rewards": {"weight": 5},
-        "lesson": "A shared use at the own mining camp's held load; free, it needs neither Scrip nor the story.",
+        "rewards": {"weight": 5, "choices": "early:chest"},
+        "lesson": "A shared use at the own mining camp's held load, once per faction; free, it needs neither "
+                  "Scrip nor the story; the first armor choice (one enchant, a prefix).",
         "duration_min": 8,
         "notes": "Draft §3 and §4.2/§4.5 'The Reserve Is for Them': a replacement load already set aside at the "
                  "camp's loading ground, made ready for issue (Nella, Yarra).",
@@ -328,7 +332,8 @@ LOCAL = {
              "text": "Borin points the player to Alna Archsight at Archshadow Post, who needs usable "
                      "observations before the next load leaves.", "duration": 8},
             {"id": "stormvault_sighting_04", "giver": "alna", "line": "border", "min_level": 33, "level": 34,
-             "objectives": [item("grug_materials:emberglass", 2)], "weight": 5, "kept": True,
+             "objectives": [item("grug_materials:emberglass", 2)], "weight": 5, "choices": "late:legs",
+             "kept": True,
              "title": "A Clearer View of Trouble",
              "text": "Alna needs Emberglass for the post's observation work, free beside Borin's request: "
                      "bring 2 Emberglass.", "duration": 14},
@@ -362,8 +367,8 @@ LOCAL = {
     "ashenward": {
         "melee": "sword",
         "quests": [
-            {"id": "ashenward_buckets", "giver": "toren", "line": "border", "min_level": 30, "level": 31,
-             "objectives": [item("grug_farming:empty_iron_bucket", 3)], "weight": 5, "choices": "early:legs",
+            {"id": "ashenward_buckets", "giver": "toren", "line": "border", "min_level": 31, "level": 32,
+             "objectives": [item("grug_farming:empty_iron_bucket", 3)], "weight": 5, "choices": "late:legs",
              "title": "Water Has to Be Shared Out",
              "text": "Toren needs Iron Buckets to issue water from the barrels that came in: bring 3 Iron "
                      "Buckets; empty ones will do.", "duration": 9},
@@ -422,6 +427,13 @@ LOCAL = {
     "glassroot": {
         "melee": "sword",
         "quests": [
+            {"id": "glassroot_ladders", "giver": "faeris", "line": "canopy", "min_level": 34, "level": 35,
+             "objectives": [item("default:ladder_wood", 10)], "weight": 5, "choices": "late:head",
+             "title": "Rungs for the High Paths",
+             "text": "Faeris's carriers climb between the grown paths of the Canopy on rungs the rain has rotted: "
+                     "bring 10 Wooden Ladders.", "duration": 8,
+             "notes": "The review's fix (round61-plan.md §2 point 4): Glassroot's own errand for the Accord's "
+                      "sixth armor piece (a Basic recipe, made anywhere; not Melon, not a gated herb)."},
             {"id": "glassroot_road_ashenward", "giver": "faeris", "line": "canopy", "min_level": 30,
              "level": 31, "objectives": [talk("toren")], "weight": 1, "turnin": "toren", "kept": True,
              "title": "Supplies Through Cinderline",
@@ -475,7 +487,7 @@ LOCAL = {
                      "that someone will want to speak of with dignity.", "duration": 8},
             {"id": "blackwind_signal_lantern", "giver": "vaska", "line": "ashes", "min_level": 32, "level": 33,
              "objectives": [use(held_load("blackwind"), "signal_lantern", "Trim the signal lantern", 4)],
-             "weight": 5,
+             "weight": 5, "choices": "late:chest",
              "title": "A Light for the Late Road",
              "text": "Vaska wants a signal lantern made ready on the loading ground of the guild camp, so late "
                      "arrivals have a light to steer by.", "duration": 9,
@@ -536,7 +548,7 @@ LOCAL = {
                      "connected in the rain.", "duration": 10},
             {"id": "bannerbreak_standard_04", "giver": "yarra", "line": "border", "min_level": 37, "level": 38,
              "objectives": [kill(["unrelenting_husk"], 4, "kragmar_bannerbreak_mesa/redcut_flats")],
-             "weight": 5, "choices": "early:legs", "kept": True,
+             "weight": 5, "choices": "late:legs", "kept": True,
              "title": "A Soldier's Due",
              "text": "Yarra wants the old watch of the Trench Mummies in the {name:redcut_flats} ended: "
                      "defeat 4 of them; honour does not need them standing.",
@@ -580,7 +592,7 @@ LOCAL = {
             {"id": "thunderroot_reading_knots", "giver": "rumela", "line": "rainchar", "min_level": 32,
              "level": 33,
              "objectives": [use(held_load("thunderroot"), "reading_knots", "Secure the reading cord", 4)],
-             "weight": 5,
+             "weight": 5, "choices": "late:legs",
              "title": "The Next Crew Should Know",
              "text": "Rumela wants a prepared reading cord with the carriers' reports secured on the loading "
                      "ground of the guild camp, for the next crew; no forecast, no riddle.", "duration": 9,
@@ -655,6 +667,7 @@ MAIN_LINE = ("accord_main_impounded", "accord_main_standard", "accord_main_order
 LESSONS = {
     "potions": "An early errand, a level only; the zone's potion choice.",
     "early": "A local task; the first armor choice (one enchant, a prefix).",
+    "late": "A local task; the second armor choice (one enchant, a suffix).",
     "weapon": "The zone's solo quest; the weapon choice (prefix and suffix).",
     "trinkets": "The optional group quest: free, standalone, a trinket choice as its extra.",
 }

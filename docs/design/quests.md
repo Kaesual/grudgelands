@@ -175,8 +175,8 @@ total, [miners_guild.md](miners_guild.md) §11); Round 59 rebuilt the band
 capitals (433 in total, "The band 11–20" and "Chapter 1 in the capitals"
 below); Round 60 rebuilt the band 21–30's 84 as 71 and the six capitals'
 64 as 47 (403 in total, "The band 21–30" and "The capitals" below); Round
-61 rebuilt the band 31–40's 60 as 49 with chapter 3's four story quests
-among them (392 in total, "The band 31–40" below). This
+61 rebuilt the band 31–40's 60 as 50 with chapter 3's four story quests
+among them (393 in total, "The band 31–40" below). This
 is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near
@@ -972,7 +972,7 @@ foremen give them; no new giver. The two contested base files
 their 15 main-line steps (41–60, "The main line") keep their ids,
 objectives, levels, `requires`, lines, texts and home and are only marked
 `story`; the `.front` files stay unflagged. 60 quests of reward level
-31–40 became 49.
+31–40 became 50.
 
 - **Shared quests** (one id, one level, one title; the hosts that give one
   share the line `border`, beside `front` or, for Faeris Rootbinder and
@@ -992,7 +992,8 @@ objectives, levels, `requires`, lines, texts and home and are only marked
   guild reports `guild_t4_report_*` stay as Round 58 shipped them; no zone
   quest kills a camp hunt's role in its zone.
 - **Local quests**: the hosts' errands (Borin's Silversteel Bars and
-  Frostfin, Alna's Emberglass, Toren's Iron Buckets, Vaska's Mushrooms),
+  Frostfin, Alna's Emberglass, Toren's Iron Buckets, Faeris's Wooden
+  Ladders, Vaska's Mushrooms),
   the uses at the camps' `held_load` (Vaska's `signal_lantern`, Rumela's
   `reading_knots`), A Soldier's Due (`bannerbreak_standard_04`, free), each
   zone's **solo quest with its weapon** (Scrip `ashenward_rations_03` and
@@ -1039,14 +1040,18 @@ objectives, levels, `requires`, lines, texts and home and are only marked
   against 8–10 before.
 - **Rewards** at item levels 31–40 (tier-4 pieces, enchant tier 4): each
   zone's early potion choice (2 Healing Potion IV or 2 Mana Potion IV, from
-  level 31: Frostfin, the Corn, the Chests), two armor choices (a prefix
-  early, a suffix on the Runner's Packet, chest), the weapon on the zone's
+  level 31: Frostfin, the Corn, the Chests) and the Runner's Packet's,
+  two armor choices (a prefix, then a suffix), the weapon on the zone's
   solo quest (one per weapon line, prefix and suffix). The shared quests
-  count in every zone that gives them (`E-reward-budget`), and a player
-  takes each once, so each faction's four distinct armor quests give every
-  slot once: Silversteel Bars head, Iron Buckets legs, Mushrooms head, A
-  Soldier's Due legs, the Melons feet, the Packet chest. A5 and T4 pay a
-  potion choice.
+  count in every zone that gives them (`E-reward-budget`) and a player
+  takes each once, so armor sits only on shared quests given once per
+  faction (the Melons feet, the reserve chest, both prefixes) and the
+  Packet, given in all six zones, pays potions: each faction's three zones
+  give six pieces, every slot at least once. The Accord: Silversteel Bars
+  head and Emberglass legs, the reserve chest and Iron Buckets legs, the
+  Melons feet and Faeris's ladders head; the Throng: Mushrooms head and the
+  signal lantern chest, the reserve chest and A Soldier's Due legs, the
+  Melons feet and the reading cord legs. A5 and T4 pay a potion choice.
 - **Ids**: a quest whose objectives stayed keeps its id (the travels and
   departures, the six group leaders, Borin's bars, Alna's Emberglass, A
   Soldier's Due), and so do the cross-lane ids Scrip and Rattle; every other

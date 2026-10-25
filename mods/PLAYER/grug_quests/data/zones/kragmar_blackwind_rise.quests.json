@@ -163,9 +163,38 @@
         }
       ],
       "rewards": {
-        "weight": 5
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_scaled",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A local task of the zone's own people.",
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
       "duration_min": 9,
       "notes": "Round 61 BANDQUESTS. K11 A: the camp's held load (a town place every mining camp has)."
     },

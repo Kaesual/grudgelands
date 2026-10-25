@@ -20,10 +20,10 @@
 --      nothing, required by nothing), a trinket choice, no weapon;
 --   F. few mob names per zone; no zone quest hunts a camp hunt's role;
 --   G. no reward is a requested item;
---   H. the reward pattern per zone (the early potion choice at min >= 31, two
---      armor choices on two slots with one enchant, the weapon on a solo
---      quest), each faction's distinct armor quests give every slot, Potion
---      IV only on quests from 31;
+--   H. the reward pattern per zone (the early potion choice at min >= 31 and
+--      the Runner's Packet's, two armor choices on two slots with one
+--      enchant, the weapon on a solo quest), each faction's six distinct
+--      armor quests give every slot, Potion IV only on quests from 31;
 --   I. the use places: every town place a quest_place socket of the named
 --      settlement, every recipe place one of the zone's spawn file, every
 --      object a kind of use_objects.json (storm_vessel's placeholder look a
@@ -616,8 +616,15 @@ for _, row in ipairs(ZONES) do
 			end
 		end
 	end
-	eq(#potions, 1, zone .. ": one potion choice")
-	local p = potions[1]
+	-- The early potion choice (from 31) and the Runner's Packet's, given in
+	-- all six zones (no armor there: the reward budget).
+	local early = {}
+	for _, quest in ipairs(potions) do
+		if quest.id ~= "border_packets" then early[#early + 1] = quest end
+	end
+	eq(#potions, 2, zone .. ": the early potion choice and the Packet's")
+	eq(#early, 1, zone .. ": one early potion choice")
+	local p = early[1]
 	if p then
 		check(p.min_level == 31, zone .. ": the potion choice is early, from 31 (" .. p.id .. ")")
 		local set = {}
@@ -666,13 +673,15 @@ for _, row in ipairs(ZONES) do
 	end
 end
 -- A player takes a shared quest once: each faction's distinct armor quests
--- give every slot.
+-- over its three zones are six pieces, every slot at least once
+-- (round61-plan.md §2 point 4).
+local SLOTS = {accord = {head = 2, legs = 2, chest = 1, feet = 1}, throng = {head = 1, legs = 2, chest = 2, feet = 1}}
 for faction, quests in pairs(armor_quests) do
 	local slots, count = {}, 0
 	for _, slot in pairs(quests) do slots[slot] = (slots[slot] or 0) + 1; count = count + 1 end
-	eq(count, 4, faction .. ": four distinct armor quests over its three zones")
+	eq(count, 6, faction .. ": six distinct armor quests over its three zones")
 	for _, slot in ipairs({"head", "chest", "legs", "feet"}) do
-		eq(slots[slot], 1, faction .. ": the " .. slot .. " slot once")
+		eq(slots[slot], SLOTS[faction][slot], faction .. ": the " .. slot .. " slot (at least once)")
 	end
 end
 

@@ -162,9 +162,38 @@
         }
       ],
       "rewards": {
-        "weight": 5
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_scaled",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A shared use at the own mining camp's held load; free, it needs neither Scrip nor the story.",
+      "lesson": "A shared use at the own mining camp's held load, once per faction; free, it needs neither Scrip nor the story; the first armor choice (one enchant, a prefix).",
       "duration_min": 8,
       "notes": "Round 61 BANDQUESTS. Draft §3 and §4.2/§4.5 'The Reserve Is for Them': a replacement load already set aside at the camp's loading ground, made ready for issue (Nella, Yarra)."
     },
@@ -173,8 +202,8 @@
       "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 30,
-      "level": 31,
+      "min_level": 31,
+      "level": 32,
       "requires": [],
       "title": "[PH] Water Has to Be Shared Out",
       "text": "[PH] Toren needs Iron Buckets to issue water from the barrels that came in: bring 3 Iron Buckets; empty ones will do. Real text to follow.",
@@ -192,8 +221,8 @@
             "item": "grug_gear:legs_cloth_silkweave",
             "affixes": [
               {
-                "channel": "prefix",
-                "stat": "int"
+                "channel": "suffix",
+                "stat": "max_mana_percent"
               }
             ]
           },
@@ -201,8 +230,8 @@
             "item": "grug_gear:legs_leather_scaled",
             "affixes": [
               {
-                "channel": "prefix",
-                "stat": "dex"
+                "channel": "suffix",
+                "stat": "crit_percent"
               }
             ]
           },
@@ -210,14 +239,14 @@
             "item": "grug_gear:legs_metal_silversteel",
             "affixes": [
               {
-                "channel": "prefix",
-                "stat": "str"
+                "channel": "suffix",
+                "stat": "max_hp_percent"
               }
             ]
           }
         ]
       },
-      "lesson": "A local task; the first armor choice (one enchant, a prefix).",
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
       "duration_min": 9,
       "notes": "Round 61 BANDQUESTS. Free play, a level only."
     },

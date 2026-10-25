@@ -1084,10 +1084,10 @@ do
 		end
 	end
 	handle:close()
-	eq(objectives, 99, "Q the quests hold 99 item objectives (Round 57: the start zones shared theirs; " ..
+	eq(objectives, 100, "Q the quests hold 100 item objectives (Round 57: the start zones shared theirs; " ..
 		"Round 58: the guild's 10 gather quests; Round 59: the band 11-20's 26; Round 60: the band 21-30's " ..
 		"14 became 20, shared ones counted once, and the capitals' 12 became 5; Round 61: the band 31-40's " ..
-		"7 became 9)")
+		"7 became 10)")
 	eq(lessons, 1, "Q the Alchemy lesson capital_precision asks for its elixir (the one exception)")
 	eq(#flagged, 0, "Q none names a mixture, potion, elixir or grug_gear item (" ..
 		table.concat(flagged, ", ") .. ")")

@@ -216,8 +216,8 @@
             "item": "grug_gear:legs_cloth_silkweave",
             "affixes": [
               {
-                "channel": "prefix",
-                "stat": "int"
+                "channel": "suffix",
+                "stat": "max_mana_percent"
               }
             ]
           },
@@ -225,8 +225,8 @@
             "item": "grug_gear:legs_leather_scaled",
             "affixes": [
               {
-                "channel": "prefix",
-                "stat": "dex"
+                "channel": "suffix",
+                "stat": "crit_percent"
               }
             ]
           },
@@ -234,14 +234,14 @@
             "item": "grug_gear:legs_metal_silversteel",
             "affixes": [
               {
-                "channel": "prefix",
-                "stat": "str"
+                "channel": "suffix",
+                "stat": "max_hp_percent"
               }
             ]
           }
         ]
       },
-      "lesson": "A local task; the first armor choice (one enchant, a prefix).",
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
       "duration_min": 10,
       "notes": "Round 61 BANDQUESTS. The id stays; free, no prerequisite, required by nothing (draft §4.5); not the camp hunt's role (Muster Husks)."
     },

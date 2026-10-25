@@ -157,35 +157,16 @@
         "weight": 6,
         "choices": [
           {
-            "item": "grug_gear:chest_cloth_silkweave",
-            "affixes": [
-              {
-                "channel": "suffix",
-                "stat": "max_mana_percent"
-              }
-            ]
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
           },
           {
-            "item": "grug_gear:chest_leather_scaled",
-            "affixes": [
-              {
-                "channel": "suffix",
-                "stat": "crit_percent"
-              }
-            ]
-          },
-          {
-            "item": "grug_gear:chest_metal_silversteel",
-            "affixes": [
-              {
-                "channel": "suffix",
-                "stat": "max_hp_percent"
-              }
-            ]
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
           }
         ]
       },
-      "lesson": "A shared quest drop from the bandit archers of the zone's Round 20 bandit camp (an area per variant); the second armor choice (one enchant, a suffix).",
+      "lesson": "A shared quest drop from the bandit archers of the zone's Round 20 bandit camp (an area per variant); a potion choice (given in all six zones, so no armor: the reward budget).",
       "duration_min": 12,
       "notes": "Round 61 BANDQUESTS. Draft §3 'Words Worth Bringing Back' (K10 A): the Runner's Packet, a soulbound quest-only item (local messages, no proof of the front's plot), drops 1 in 3 from the camp's archers while needed; the area keeps Blackwind's hideout archers out. Done once everywhere: no other text claims a second camp."
     },
@@ -340,9 +321,38 @@
         }
       ],
       "rewards": {
-        "weight": 5
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_scaled",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "A local task of the zone's own people.",
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
       "duration_min": 14,
       "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },

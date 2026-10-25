@@ -83,7 +83,7 @@ check(not has(f.m2.flags, "deep"), "F not deep below it")
 
 -- M ---------------------------------------------------------------------------
 local model = dofile(repo .. "/tools/r56_questmap/model.lua")(repo)
--- (Round 61: 392 ship after the band 31-40's rework.)
+-- (Round 61: 393 ship after the band 31-40's rework.)
 check(#model.quests > 380, "M the shipped quests load (" .. #model.quests .. ")")
 eq(#model.warnings, 0, "M the loader logs nothing")
 check(rawget(_G, "grug_quests") == nil and rawget(_G, "core") == nil, "M the model puts its globals back")
