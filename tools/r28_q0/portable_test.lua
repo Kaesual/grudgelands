@@ -140,11 +140,14 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 	make_formspec = function(_, _, content) return content end, get_page = function() return "" end,
 	pages = pages, pages_unordered = {}}
 
--- The zone records' level bands (wp40 simple map, as grug_zones serves them).
+-- The zone records' level bands (wp40 simple map, as grug_zones serves them)
+-- and the capitals' flag (Round 62: the loader's reward budget excepts the
+-- capitals by it, wp40/zones.lua).
 local BANDS = {}
 local MAP_SOURCE = dofile("mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
 for _, row in ipairs(MAP_SOURCE.zones) do
-	BANDS[row.id] = {level_min = row.level_min, level_max = row.level_max}
+	BANDS[row.id] = {level_min = row.level_min, level_max = row.level_max,
+		civic_no_hostiles = row.civic_no_hostiles == true}
 end
 
 -- Named places of {dir_of:<place>:...}: the settlement roster's keys and

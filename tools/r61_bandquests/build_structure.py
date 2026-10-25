@@ -819,7 +819,10 @@ def build():
         by_id = {q["id"]: q for q in data["quests"]}
         main = [mark_story(by_id[i]) for i in MAIN_LINE if i in by_id]
         guild = [q for q in data["quests"] if q["id"] in GUILD_IDS]
-        quests = shared.get(zone, []) + local_quests(town) + closing.get(zone, []) + main + guild
+        # Round 62: the shared front quests (41-60) homed in these base
+        # files are tools/r62_frontquests/build_structure.py's, kept as written.
+        front = [q for q in data["quests"] if q.get("level", 0) > 40 and q["id"] not in MAIN_LINE]
+        quests = shared.get(zone, []) + local_quests(town) + closing.get(zone, []) + main + guild + front
         out = {"zone": data["zone"], "reworked": True, "identity": data["identity"],
                "hubs": hubs(data["hubs"]), "quests": quests}
         files[path] = json.dumps(out, indent=2, ensure_ascii=False) + "\n"

@@ -337,7 +337,19 @@ since then). Every load error names the zone and the path.
   woods where the moor forms no region, as on seed 42), Bannerbreak Mesa
   `scattered_load` "Bannerbreak Scattered Load" (the Warplains) and
   Thunderroot Wilds `storm_store` "Thunderroot Storm Store" (the
-  Stormglades). The seed fleet (`tools/seed_fleet/seed.lua`, Round 60) builds the regions of
+  Stormglades); since Round 62 eight in the four Battlegrounds zones
+  ([quests.md](quests.md) "The front 41–60"): The Broken Causeway
+  `return_stand` "Causeway Return Stand" (the Floodmeadows) and
+  `crossing_stand` "Causeway Crossing Stand" (the Wraithwood), The
+  Shattered Line `relief_rest` "Shattered Relief Rest" (the Approaches),
+  Gravesalt Escarpment `shoring_check` "Gravesalt Shoring Check" (the
+  Saltflats), `work_laydown` "Gravesalt Work Laydown" (the Blight Terraces)
+  and `recovery_post` "Gravesalt Recovery Post" (the Tombwood), and The
+  Skyglass Canopy `carrier_clearing` "Skyglass Carrier Clearing" (the
+  Clearings; it falls back to the belt's Cloudwood where the clearings
+  form no region, on three of the six rendered seeds, so the texts name
+  the place) and `receiving_stand` "Skyglass Receiving Stand" (the
+  Rootways). The seed fleet (`tools/seed_fleet/seed.lua`, Round 60) builds the regions of
   every zone with places on each of its seeds and fails a seed on which a
   place is not placed. `grug_mobs.spawn_regions.zone_place(zone, id)` reads one
   from the recipe, `place_spot(zone, id)` its spot on the world.

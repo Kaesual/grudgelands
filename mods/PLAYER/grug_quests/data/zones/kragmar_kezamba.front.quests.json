@@ -1,103 +1,162 @@
 {
   "zone": "kragmar_kezamba",
+  "reworked": true,
   "quests": [
     {
-      "id": "kz_front_01",
+      "id": "kezamba_melons",
       "line": "front",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_troll_capital_envoy",
       "min_level": 50,
-      "level": 52,
+      "level": 51,
       "requires": [],
-      "title": "The Fruit Has Other Owners",
-      "text": "The canopy spirits asked me to settle a quarrel over fruit; the Cloud Apes settled their part by throwing it at my messengers. Kill five by day in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}. A fistful of fruit is a poor argument, however loudly you make it.",
+      "title": "[PH] Fruit for the Carriers",
+      "text": "[PH] Nalo wants food for his carriers that starts no quarrel with another beast: bring 6 Melons. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "glass_knuckle_ape"
-          ],
-          "count": 5,
-          "area": "front_skyglass_canopy/cloudwood"
+          "type": "item",
+          "item": "grug_gathering:melon",
+          "count": 6
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft NA1: Nalo's first task at 50 (F10 sends Yarra's players)."
     },
     {
-      "id": "kz_front_02",
+      "id": "kezamba_message_knots",
       "line": "front",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_troll_capital_envoy",
-      "min_level": 51,
+      "min_level": 52,
       "level": 53,
       "requires": [],
-      "title": "Teach the Drum to Scratch",
-      "text": "Our shrine drum needs a voice that will make even the canopy spirits sit up. Kill four Glass Panthers at night in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}, and bring me two Gleaming Cat Claws. I'll do the playing. You have the difficult part: asking the cats for an instrument.",
+      "title": "[PH] A Message That Arrives",
+      "text": "[PH] Nalo wants the prepared way-messages of his carriers read at the {name:front_skyglass_canopy/carrier_clearing}; no riddle, no new rules. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "glass_shadow_panther"
-          ],
-          "count": 4,
-          "area": "front_skyglass_canopy/cloudwood"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:glass_cat_claw",
-          "count": 2,
-          "roles": [
-            "glass_shadow_panther"
-          ],
-          "area": "front_skyglass_canopy/cloudwood"
+          "type": "use",
+          "place": "front_skyglass_canopy/carrier_clearing",
+          "object": "reading_knots",
+          "label": "Read the carriers' knots",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t6",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t6",
+            "count": 2
+          }
+        ]
       },
-      "duration_min": 12
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft NA2: a use at the new recipe place P7; the early 51-60 potion choice."
     },
     {
-      "id": "kz_front_03",
+      "id": "kezamba_root_load",
       "line": "front",
       "giver": "r20_troll_capital_envoy",
       "turnin": "r20_troll_capital_envoy",
-      "min_level": 53,
-      "level": 55,
-      "requires": [
-        "kz_front_01"
-      ],
-      "title": "The Canopy Names Its Price",
-      "text": "I asked the canopy spirits what the shrine owed them, and they answered with a hiss. Kill five Vine Serpents by day in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}, and bring me two Glass Venom. Next time I bargain with a tree, remind me to settle the price before asking for favours.",
+      "min_level": 55,
+      "level": 56,
+      "requires": [],
+      "title": "[PH] Roots Under the Load",
+      "text": "[PH] Nalo wants it judged at the {name:front_skyglass_canopy/receiving_stand} whether a root crossing still carries a load; no bridge, no change to the roots. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "glass_fang_serpent"
-          ],
-          "count": 5,
-          "area": "front_skyglass_canopy/rootways"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:glass_venom",
-          "count": 2,
-          "roles": [
-            "glass_fang_serpent"
-          ],
-          "area": "front_skyglass_canopy/rootways"
+          "type": "use",
+          "place": "front_skyglass_canopy/receiving_stand",
+          "object": "sighting_frame",
+          "label": "Sight the root crossing under load",
+          "hold": 4
         }
       ],
       "rewards": {
         "weight": 5,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:staff_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 12
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft NA3: a use at the new recipe place P8; Kezamba's weapon (a solo quest)."
     },
     {
       "id": "kz_front_04",
@@ -107,12 +166,12 @@
       "min_level": 57,
       "level": 59,
       "requires": [
-        "kz_front_02",
-        "kz_front_03",
-        "throng_main_06"
+        "bw_front_ashveil_04"
       ],
+      "story": true,
       "title": "Promises with Bowstrings",
       "text": "Paymaster Chirr promises his archers wages for holding land, then pays them in branded coin for every mark they burn into living roots. His payroll lists both banners, and he makes the forest carry the debt for their dead. Kill four Last-Pay Archers or Ash-Writ Bowmen in all at the {name:front_skyglass_canopy/paymaster_camp}, {dir_from_giver:front_skyglass_canopy/paymaster_camp}, by day or night, and kill Chirr. Smother the burning rootmark at {name:r20_anchor_084} to erase the names scorched there; the roots have complained about it louder than the spirits.",
+      "completion": "[PH] Chirr turned a promised payment into branded claims; Nalo points back to Vaska, who must have the last claim at the Tombroad tally-stone broken (K12 A: after Huskell). Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -140,7 +199,35 @@
       ],
       "rewards": {
         "weight": 7,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
       "duration_min": 20,
       "climax": true,
@@ -155,9 +242,7 @@
       "turnin": "r20_troll_capital_envoy",
       "min_level": 58,
       "level": 60,
-      "requires": [
-        "kz_front_04"
-      ],
+      "requires": [],
       "title": "Party: More Than One Voice",
       "text": "Serpent Glass-Throat has grown fat among the burnt roots of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. The canopy spirits stop talking whenever its coils move; even my drum gets a very careful answer. Gather a party and kill the elite serpent, so the next song from those branches can use more than a whisper.",
       "objectives": [
@@ -171,11 +256,22 @@
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t6"
+          },
+          {
+            "item": "grug_gear:apothecary_loop_t6"
+          },
+          {
+            "item": "grug_gear:reclaimers_mark_t6"
+          }
+        ]
       },
       "duration_min": 15,
       "optional": true,
-      "group": true
+      "group": true,
+      "notes": "Round 62 FRONTQUESTS. Draft NA4 (K11 A): the optional group quest on Glass-Throat, standalone from its level; its id and objective stay, its prerequisite goes; a trinket choice."
     }
   ]
 }

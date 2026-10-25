@@ -98,6 +98,17 @@ TOWN_SOCKETS = C.REPO / "tools" / "r59_qsys3" / "socket_places.lua"
 FACTIONS = ("accord", "throng")
 FACTION_NAMES = {"accord": "The Accord", "throng": "The Throng"}
 REWARD_BUDGET = {1: 2, 2: 1}
+
+
+def reward_band(level):
+    """Round 62: the reward budget counts per zone and level band, the band
+    of the quest's reward level (its item tier): 1-10, 11-20, ..., 51-60
+    (the game's V.reward_band)."""
+    return (level - 1) // 10 if isinstance(level, int) and not isinstance(level, bool) else 0
+
+
+def band_label(band):
+    return "levels %d-%d" % (band * 10 + 1, band * 10 + 10)
 NIGHT_SHARE = (0.2, 0.5)
 DISPOSITIONS = ("neutral", "aggressive", "critter")
 FRONT_LINE = "front"
@@ -780,8 +791,9 @@ class Validator:
         if self.atlas and self.zone_info(host) is None:
             self.E("E-unknown-zone", file, "zone", "host zone %s is not in the atlas" % host)
         for key in data:
-            if key not in ("zone", "quests", "notes"):
-                self.W("W-unknown-key", file, "$", "unknown field %r (a front file holds zone and quests)" % key)
+            if key not in ("zone", REWORK_FLAG, "quests", "notes"):
+                self.W("W-unknown-key", file, "$", "unknown field %r (a front file holds zone, the rework flag and "
+                       "quests)" % key)
         if giver_lines is None:
             self.W("W-front-host-missing", file, "$", "zones/%s.quests.json does not exist yet: front givers "
                    "are checked against the atlas only" % host)
@@ -1023,7 +1035,7 @@ class Validator:
             if enchants:
                 for vzone in sorted({v["zone"] for v in variants if isinstance(v["zone"], str)}):
                     if not (self.zone_records().get(vzone) or {}).get("capital"):
-                        self.budget.setdefault(vzone, {1: [], 2: []})[min(enchants, 2)].append(
+                        self.budget.setdefault((vzone, reward_band(level)), {1: [], 2: []})[min(enchants, 2)].append(
                             (qid, level, file, path))
             for variant in variants:
                 self.count_phases(variant, file, path, all_areas)
@@ -1217,15 +1229,18 @@ class Validator:
 
     def reward_budget(self):
         """Ruling 17: per zone (capitals excepted) at most two equipment
-        rewards with one enchant and one with two, at different levels."""
-        for zone in sorted(self.budget):
+        rewards with one enchant and one with two, at different levels;
+        since Round 62 per zone and level band (reward_band), so the front's
+        41-50 and 51-60 rewards do not share the 31-40 band's budget."""
+        for zone, band in sorted(self.budget):
             for enchants, limit in sorted(REWARD_BUDGET.items()):
-                rows = sorted(self.budget[zone][enchants])
+                rows = sorted(self.budget[(zone, band)][enchants])
                 if len(rows) > limit:
                     qid, _, file, path = rows[-1]
                     self.E("E-reward-budget", file, path, "%s has %d equipment rewards with %d enchant%s (%s); at most "
-                           "%d per zone, capitals excepted" % (zone, len(rows), enchants, "" if enchants == 1 else "s",
-                                                               ", ".join(r[0] for r in rows), limit))
+                           "%d per zone and level band (%s), capitals excepted" % (
+                               zone, len(rows), enchants, "" if enchants == 1 else "s",
+                               ", ".join(r[0] for r in rows), limit, band_label(band)))
                 levels = {}
                 for qid, level, file, path in rows:
                     if level in levels:
@@ -2370,6 +2385,14 @@ def _mutations():
          "E-reward-budget"),
         ("reworked: two two-enchant rewards", Q, reworked(all_story, budget(2, ["sample_hunt_01", "sample_hunt_04"])),
          "E-reward-budget"),
+        # Round 62: the budget counts per zone and level band (the reward
+        # level's tier band, 1-10, 11-20, ...).
+        ("reworked: three one-enchant rewards in two level bands", Q, reworked(
+            all_story, budget(1, ["sample_hunt_01", "sample_hunt_02", "sample_hunt_04"]),
+            set_field("sample_hunt_04", "level", 11)), "!E-reward-budget"),
+        ("reworked: two two-enchant rewards in two level bands", Q, reworked(
+            all_story, budget(2, ["sample_hunt_01", "sample_hunt_04"]), set_field("sample_hunt_04", "level", 11)),
+         "!E-reward-budget"),
         ("reworked: two one-enchant rewards at one level", Q, reworked(all_story, budget(1, ["sample_hunt_01",
                                                                                             "sample_hunt_02"]),
                                                                         set_field("sample_hunt_02", "level", 2)),

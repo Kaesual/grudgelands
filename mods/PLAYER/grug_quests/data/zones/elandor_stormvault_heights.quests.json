@@ -943,6 +943,126 @@
         "weight": 4
       },
       "notes": "Round 58 raid: the camp under construction of each contested T4 zone, given by the own T4 foreman; its four guards and its captain, as a war camp's raid."
+    },
+    {
+      "id": "front_stormkelp",
+      "line": "border",
+      "min_level": 47,
+      "level": 48,
+      "requires": [],
+      "title": "[PH] Stormkelp for the Field Kits",
+      "text": "[PH] Alna needs Stormkelp for the field kits she prepares herself: bring 8 Stormkelp. Real text to follow.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_gathering:stormkelp",
+          "count": 8
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r20_anchor_028_host"
+          ],
+          "text": "[PH] Alna needs Stormkelp for the field kits she prepares herself: bring 8 Stormkelp. Real text to follow."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r20_anchor_040_host"
+          ],
+          "text": "[PH] Orrel needs Stormkelp for the field kits of the recovery parties: bring 8 Stormkelp. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silk",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_sleek",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft F7: the host processes it; the second armor choice of Stormvault and Blackwind."
+    },
+    {
+      "id": "front_last_toll",
+      "line": "border",
+      "min_level": 49,
+      "level": 50,
+      "requires": [],
+      "title": "[PH] Party: Close the Toll",
+      "text": "[PH] Alna asks for a party against {name:last_toll_construct}, one more deadly grip on the Causeway's crossing; optional, nothing needs it. Real text to follow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_toll_construct"
+          ],
+          "count": 1
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r20_anchor_028_host"
+          ],
+          "text": "[PH] Alna asks for a party against {name:last_toll_construct}, one more deadly grip on the Causeway's crossing; optional, nothing needs it. Real text to follow."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r20_anchor_040_host"
+          ],
+          "text": "[PH] Orrel asks for a party against {name:last_toll_construct}, which keeps the crossing a grave; optional, nothing needs it. Real text to follow."
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t5"
+          },
+          {
+            "item": "grug_gear:apothecary_loop_t5"
+          },
+          {
+            "item": "grug_gear:reclaimers_mark_t5"
+          }
+        ]
+      },
+      "lesson": "An optional group quest: free, standalone, a trinket choice as its extra.",
+      "duration_min": 15,
+      "group": true,
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft F9: the optional group quest (as F8); replaces archshadow_front_04 and bw_front_hollow_03."
     }
   ]
 }

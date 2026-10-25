@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "saltflats", "name": "Gravesalt Saltflats",
             "day": [{"role": "salt_boring_weevil", "weight": 3}, {"role": "saltbound_husk", "weight": 1}],
-            "night": [{"role": "saltbound_zombie", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "saltbound_zombie", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
           "swamp": {"id": "brinemire", "name": "Gravesalt Brinemire",
             "day": [{"role": "saltbound_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
             "night": [{"role": "salt_hex_witch", "weight": 3}, {"role": "saltbound_zombie", "weight": 1}], "density": "sparse"},
@@ -18,7 +18,7 @@
             "night": [{"role": "salt_web_spider", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "tomb_galleries", "name": "Gravesalt Tomb Galleries",
             "day": [{"role": "saltroad_deserter", "weight": 3}, {"role": "salt_antler_stag", "weight": 1}],
-            "night": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
           "shore": {"id": "salt_strand", "name": "Gravesalt Salt Strand",
             "day": [{"role": "salt_boring_weevil", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
             "night": "open", "density": "normal"},
@@ -41,7 +41,7 @@
         "kinds": {
           "open": {"id": "blight_terraces", "name": "Gravesalt Blight Terraces",
             "day": [{"role": "salt_boring_weevil", "weight": 3}, {"role": "embergrit_gnawer", "weight": 1}],
-            "night": [{"role": "saltbound_zombie", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "saltbound_zombie", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "normal"},
           "swamp": {"id": "tomb_fen", "name": "Gravesalt Tomb Fen",
             "day": [{"role": "saltbound_husk", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
             "night": [{"role": "salt_hex_witch", "weight": 3}, {"role": "kiln_whisper_hexer", "weight": 1}], "density": "sparse", "quest_target": true},
@@ -50,7 +50,7 @@
             "night": [{"role": "salt_web_spider", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
           "highland": {"id": "saltroad_cliffs", "name": "Gravesalt Saltroad Cliffs",
             "day": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_pay_archer", "weight": 1}],
-            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "ash_writ_bowman", "weight": 1}], "density": "normal"},
           "shore": {"id": "brine_shore", "name": "Gravesalt Brine Shore",
             "day": [{"role": "salt_boring_weevil", "weight": 7}, {"role": "salt_reef_lurker", "weight": 1}],
             "night": "open", "density": "normal"},
@@ -104,6 +104,11 @@
     "leaders": [
       {"role": "watch_captain_huskell", "at": {"kind": "ossuary_wood", "pick": "farthest_from_roads"}, "respawn": 300},
       {"role": "salt_counter_witch", "at": {"kind": "mourning_mire", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "places": [
+      {"id": "shoring_check", "name": "Gravesalt Shoring Check", "at": {"kind": "saltflats", "pick": "farthest_from_roads"}},
+      {"id": "work_laydown", "name": "Gravesalt Work Laydown", "at": {"kind": "blight_terraces", "pick": "farthest_from_roads"}},
+      {"id": "recovery_post", "name": "Gravesalt Recovery Post", "at": {"kind": "tombwood", "pick": "farthest_from_roads"}}
     ],
     "critters": ["bone_weevil", "gull"]
   }

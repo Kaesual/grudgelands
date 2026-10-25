@@ -1,5 +1,6 @@
 {
   "zone": "elandor_highcourt",
+  "reworked": true,
   "quests": [
     {
       "id": "highcourt_front_01",
@@ -68,9 +69,7 @@
       "turnin": "r20_human_capital_envoy",
       "min_level": 60,
       "level": 60,
-      "requires": [
-        "accord_main_roll"
-      ],
+      "requires": [],
       "title": "Optional: A Chest Overboard",
       "text": "The wreck at {name:r20_anchor_086} on Stormscale Summit holds a chest of branded pay that some fortunate salvager will mistake for wages. Reach it by boat from the Shipwright at the stables, keeping to the shelf and channel away from the Kraken's deep water. Give the wreck's pay to the sea before anyone accepts it; I can defend the loss of a chest more easily than the loss of its next crew.",
       "objectives": [
@@ -89,7 +88,8 @@
       },
       "lesson": "Optional island extension of the main line (chapter 3 on): one use, coin only.",
       "duration_min": 30,
-      "optional": true
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft MA3: the optional island use, free from 60 without a story prerequisite."
     }
   ]
 }

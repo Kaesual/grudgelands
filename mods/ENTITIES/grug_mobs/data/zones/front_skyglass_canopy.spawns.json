@@ -92,6 +92,10 @@
       {"role": "paymaster_chirr", "at": {"camp": "paymaster_camp"}, "respawn": 300},
       {"role": "glass_throat_serpent", "at": {"kind": "high_canopy", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
+    "places": [
+      {"id": "carrier_clearing", "name": "Skyglass Carrier Clearing", "at": {"kind": "clearings", "pick": "farthest_from_roads"}},
+      {"id": "receiving_stand", "name": "Skyglass Receiving Stand", "at": {"kind": "rootways", "pick": "farthest_from_roads"}}
+    ],
     "critters": []
   }
 }

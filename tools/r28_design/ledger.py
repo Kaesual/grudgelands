@@ -87,6 +87,9 @@ class Ledger:
         self.kill_rows = []
         self.zone_rows = []
         self.done = set()
+        # Quests the route skips (a solo run's group quests and what requires
+        # them; Round 62): a quest after a skipped one is skipped too.
+        self.skipped = set()
         self.lines = set(lines) if lines else None
         self.per_band = defaultdict(lambda: defaultdict(float))
         # (route entry label, band) -> acc: the 20-30 split own zones/sister.
@@ -270,6 +273,17 @@ class Ledger:
             if self.skip_optional and q.get("optional"):
                 continue
             if q.get("group") and self.participants == 1 and not self.include_group:
+                self.skipped.add(q.get("id"))
+                continue
+            # Round 62: a quest behind a skipped one (the solo turn-in after a
+            # group finale) is not reached on this run either.
+            if any(req in self.skipped for req in q.get("requires") or []):
+                self.skipped.add(q.get("id"))
+                continue
+            # Round 62: a quest of reward weight 0 (the island bounties and
+            # uses, paid in coin) counts nothing toward leveling (quests.md
+            # "Every quest once"), its kills included.
+            if not (q.get("rewards") or {}).get("weight"):
                 continue
             for req in q.get("requires") or []:
                 if req not in self.done and req not in {o.get("id") for o in quests}:
@@ -343,7 +357,15 @@ class Ledger:
                 return
             # Rolled per eligible participant: a party shares the kills.
             kills = count * max(1, drop.get("chance", 1))
-            self.add_kills(kills, role, levels, acc, "drop_kills")
+            # Round 62: the quest's own kill objectives on the drop's roles
+            # (throng_main_04: the captain and his orders) are those kills
+            # already, counted once.
+            for other in q.get("objectives") or []:
+                if other.get("type") == "kill" and (other.get("area") or None) == (drop.get("area") or None) and \
+                        set(other.get("roles") or []) & set(roles):
+                    kills -= other.get("count", 1)
+            if kills > 0:
+                self.add_kills(kills, role, levels, acc, "drop_kills")
             return
         if obj.get("group"):
             members = ((self.existing.get("groups") or {}).get(obj["group"]) or {}).get("members") or []
@@ -767,6 +789,45 @@ def self_test():
         shared, _ = run(sdesign, existing, Route("elandor_dawnmere_fields,elandor_goldmead_vale"), 1, args)
         check([row["quests"] for row in shared.zone_rows] == [13, 0], "a shared quest counts once per route (%s)"
               % [row["quests"] for row in shared.zone_rows])
+    finally:
+        shutil.rmtree(tmp)
+    # Round 62: a quest drop of a role the quest kills anyway costs no second
+    # kill; a weight-0 quest (the island bounties) counts nothing; a solo run
+    # skips what requires a skipped group quest (the turn-in after a finale).
+    tmp = Path(tempfile.mkdtemp(prefix="r28_ledger_"))
+    try:
+        shutil.copytree(sample, tmp / "design")
+        qfile = tmp / "design" / "zones" / "elandor_dawnmere_fields.quests.json"
+        data = json.loads(qfile.read_text())
+        base = {"line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder", "min_level": 1,
+                "level": 2, "title": "R62", "text": "Round 62. Sample."}
+        area = "elandor_dawnmere_fields/meadows"
+        data["quests"] = [
+            dict(base, id="r62_orders", requires=[], rewards={"weight": 1},
+                 objectives=[{"type": "kill", "roles": ["small_boar"], "count": 1, "area": area},
+                             {"type": "item", "item": "grug_mobs:crop_ledger", "count": 1}],
+                 quest_drops=[{"item": "grug_mobs:crop_ledger", "chance": 1, "roles": ["small_boar"],
+                               "area": area}]),
+            dict(base, id="r62_bounty", requires=[], rewards={"weight": 0, "copper": 600},
+                 objectives=[{"type": "kill", "roles": ["small_boar"], "count": 6, "area": area}]),
+            dict(base, id="r62_finale", requires=[], group=True, rewards={"weight": 5},
+                 objectives=[{"type": "kill", "roles": ["small_boar"], "count": 1, "area": area}]),
+            dict(base, id="r62_final", requires=["r62_finale"], rewards={"weight": 1},
+                 objectives=[{"type": "talk", "npc": "r14_human_elder"}]),
+        ]
+        qfile.write_text(json.dumps(data))
+        rdesign = C.Design(tmp / "design")
+        r62, _ = run(rdesign, existing, Route("elandor_dawnmere_fields"), 1, args)
+        rows = {k["quest"]: k for k in r62.kill_rows}
+        acc = r62.zone_rows[0]["acc"]
+        check(acc["drop_kills"] == 0 and "r62_orders" in rows,
+              "the orders' drop comes with the quest's own kill, counted once (%.0f drop-kill XP)" % acc["drop_kills"])
+        check("r62_bounty" not in rows and "r62_bounty" not in r62.done, "a weight-0 bounty counts nothing")
+        check(r62.zone_rows[0]["quests"] == 1 and "r62_final" in r62.skipped,
+              "solo: the turn-in behind the group finale is skipped with it (%s)" % sorted(r62.skipped))
+        duo, _ = run(rdesign, existing, Route("elandor_dawnmere_fields"), 2, args)
+        check(duo.zone_rows[0]["quests"] == 3, "a party plays the finale and the turn-in (%d)"
+              % duo.zone_rows[0]["quests"])
     finally:
         shutil.rmtree(tmp)
     if failures:

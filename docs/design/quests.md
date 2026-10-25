@@ -176,7 +176,10 @@ capitals (433 in total, "The band 11–20" and "Chapter 1 in the capitals"
 below); Round 60 rebuilt the band 21–30's 84 as 71 and the six capitals'
 64 as 47 (403 in total, "The band 21–30" and "The capitals" below); Round
 61 rebuilt the band 31–40's 60 as 50 with chapter 3's four story quests
-among them (393 in total, "The band 31–40" below). This
+among them (393 in total, "The band 31–40" below); Round 62 rebuilt the
+front 41–60's 123 (the fourteen front and Battlegrounds files and the main
+line in the contested base files) as 120 (390 in total, "The front 41–60"
+below). This
 is an editorial budget,
 not a filler quota.
 A start town offers its quests at once across the elder and the cook near
@@ -241,7 +244,10 @@ islands' interactions) never block the line. The ledger counts a front
 host's main line in the front bands (`ledger.py --track`). Since Round 61
 the 15 steps homed in the two contested base files (Ashenward March,
 Bannerbreak Mesa) are marked `story`, as their files are reworked ("The
-band 31–40"); the steps in the `.front` files follow with their rework.
+band 31–40"); since Round 62 the whole spine is `story` and the story
+path: the 17 Accord and 14 Throng steps (the front climaxes on Senn,
+Ninepins, Huskell and Chirr among them) each require only spine steps, and
+The Throng's Chirr step follows Huskell's ("The front 41–60").
 
 - **The Throng** ("Our Oaths Are Ours", tag `throng_main`, the
   Warmaster's line `oaths`): chapter 1 (41) the false requisition at
@@ -255,7 +261,8 @@ band 31–40"); the steps in the `.front` files follow with their rework.
   the tally-stone at Tombroad Ambush; then the finale, turned in at Vaska,
   and `throng_main_final` at the Warmaster. Optional: War Commander
   Greyvow (57, Party:), the survey cairn and the wreck's pay chest on the
-  islands (60, from the Nhal Veyr and Gor Drazhak envoys).
+  islands (60, from the Nhal Veyr and Gor Drazhak envoys, free since Round
+  62).
 - **The Accord** ("Every Name Accounted For", tag `accord_main`, the
   Warmaster's line `main`): chapter 1 (41) the impounded pay at Ashen
   Wheelbreak, Toren Waterbarrel's Coal-Purse Factors, Alna Archsight's
@@ -269,9 +276,9 @@ band 31–40"); the steps in the `.front` files follow with their rework.
   Boughwarden's Chirr, the rootmark at Skyroot Crossing and the
   tally-stone at Tombroad Ambush; then the finale at the Warmaster and
   `accord_main_final`, a report given and taken there. Optional: War
-  Commander Stonegrudge (57, Party:), Salt-Counter (58, Party:, Borin),
-  the survey cairn and the wreck's pay chest on the islands (60, from the
-  Dur Brannoc and Highcourt envoys, once chapter 3 has begun).
+  Commander Stonegrudge (57, Party:), the survey cairn and the wreck's
+  pay chest on the islands (60, from the Dur Brannoc and Highcourt envoys,
+  free since Round 62).
 
 ## Objective presentation
 
@@ -714,15 +721,15 @@ helper is easier to find):
   quests, `tools/r28_design/ledger.py --party solo`).
 
 From level 51 a group quest may stand on the story path. The rule holds
-in the reworked files; the front files of 41–60 follow it at their rework
-(Round 62). Measured on 0.61.0 (20 group quests): none below level 39;
-the band 31–40's six at 39 ("The band 31–40") are free, require nothing
-and are required by nothing; the four at 50 (`lasthedge_front_05`,
-`archshadow_front_04`, `bb_front_torn_06`, `bw_front_hollow_03`, the
-unreworked front files) are free and required by nothing, but still
-follow their front chain's previous quest; the ten at 59–60 include four
-main-line steps marked `story`, two of them on the path to the final
-turn-in (`accord_main_collector`, `throng_main_finale`).
+in the reworked files, since Round 62 all 48. Measured on 0.62.0 (19
+group quests): none below level 39; the band 31–40's six at 39 ("The band
+31–40") and the front's two at 50 (`front_engine_nine`,
+`front_last_toll`, each shared by both factions, "The front 41–60") are
+free, require nothing and are required by nothing; the eleven at 59–60
+are the elites Salt-Counter and Glass-Throat per faction (standalone),
+the island elites (each the one follow-up of its bounty) and the main
+line's four, two of them on the path to the final turn-in
+(`accord_main_collector`, `throng_main_finale`).
 
 ## Completion text (Round 57 ruling 14)
 
@@ -764,17 +771,17 @@ text. A system quest has no dialog: its mod posts its own completion line.
 ## The rework flag (Round 57)
 
 A quest file with `"reworked": true` follows the rules the quest rework
-introduces; the files of levels 41–60 keep their chains until their own
-rework (the band 11–20's six are reworked since Round 59, "The band
+introduces (the band 11–20's six are reworked since Round 59, "The band
 11–20", the band 21–30's eight and the six capitals since Round 60, "The
 band 21–30" and "The capitals", the band 31–40's six since Round 61, "The
 band 31–40", the two contested base files whole with their main line
-marked `story`; the front files 41–60 later), and nothing of this section
-ever reports an unflagged file (Round 58: the guild files are flagged; the
-Battlegrounds files are not, so the guild quests homed there are free play
-by construction, checked by `tools/r58_guildquests`; since Round 61 every
-surface camp zone's file is flagged). In reworked files
-(both validators, the same codes):
+marked `story`; since Round 62 the ten `.front` files and the four
+Battlegrounds files, "The front 41–60", so all 48 quest files are
+flagged), and nothing of this section ever reports an unflagged file
+(Round 58: the guild files are flagged; the Battlegrounds files' guild
+quests are free play by construction, checked by `tools/r58_guildquests`).
+A `.front` file carries the flag beside its `zone` and `quests`. In
+reworked files (both validators, the same codes):
 
 - `E-free-requires`: a free quest requires at most one quest, the one it
   follows; only story quests chain;
@@ -784,10 +791,11 @@ surface camp zone's file is flagged). In reworked files
   them from the item dump's quest NPCs, the fortress and guild NPCs, a new
   giver's race or the atlas, and an unknown one counts for both);
 - `E-free-chain`: a free follow-up has no free follow-up of its own;
-- `E-reward-budget` (ruling 17): per zone, capitals excepted, at most two
-  quests with an equipment reward of one enchant and one with two enchants
-  (counted in every zone a shared quest is given in);
-  `W-reward-levels` when two of one kind share a reward level;
+- `E-reward-budget` (ruling 17): per zone and level band (the reward
+  level's tier band, 1–10 … 51–60, since Round 62), capitals excepted, at
+  most two quests with an equipment reward of one enchant and one with two
+  enchants (counted in every zone a shared quest is given in);
+  `W-reward-levels` when two of one kind share a reward level there;
 - `E-reward-requested`: a reward (an item or a choice) is never a requested
   item, nor a member of a requested group;
 - `W-night-count` (ruling 12; a day lasts 15 real minutes, a night 5): a
@@ -1088,6 +1096,107 @@ objectives, levels, `requires`, lines, texts and home and are only marked
   went, 21 came, 29 stayed). The structure was written by
   `tools/r61_bandquests/build_structure.py` with placeholder texts (its
   `--check` compares the structure only); `tools/r61_bandquests/
+  portable_test.lua` checks it.
+
+## The front 41–60 (Round 62)
+
+The front of levels 41–60 (The Broken Causeway and The Shattered Line at
+41–50, Gravesalt Escarpment and The Skyglass Canopy at 51–60, the two
+islands at 60) is reworked on the same rules
+([round62-plan.md](../planning/round62-plan.md) §2, §2a; the chapter-4
+story layer the user picked, K1–K13 all "A", with the feasibility check's
+fixes). All fourteen files that stayed unflagged are flagged: the ten
+`.front` files of the four contested hosts and six capitals and the four
+Battlegrounds files, whose guild and camp quests stay as Round 58 shipped
+them. No giver stands in a front zone but the war-camp foremen (lines
+`camp` and `guild`); the hosts and envoys give from their own zones and
+send the player there. 123 quests of reward level 41–60 became 120.
+
+- **The story path** is the main line ("The main line" above): its 31
+  steps (17 Accord, 14 Throng, the climaxes on Senn, Ninepins, Huskell and
+  Chirr among them) are `story` and each requires only spine steps; ids,
+  objectives, levels, texts and hand-offs stay, each step gets a completion
+  (the text lane's). The opener at 41 requires nothing, so a character who
+  skipped the earlier chapters is not locked out; A6 and T5 reach it
+  through the free fortress calls. The Throng's Chirr step
+  (`kz_front_04`) follows Huskell's (`bw_front_ashveil_04`, K12 A). The war
+  commander hunts stay optional story branches; the two finales are the
+  only required group steps.
+- **The fortress quests** (Round 31) keep their ids, chains, lines and
+  files: the entry call, the three ordinary quests and the eight camp
+  raids per faction, the two camps of a band chained by zone.
+- **Shared front quests** (one id, one level, one title, the hosts' line
+  `border`, each in its first variant's base file, Ashenward March's or
+  Stormvault Heights'): `front_potatoes` (8 Potatoes as seed for the
+  outposts' field plots, Toren and Drek, level 41), `front_return_light`
+  (`signal_lantern` at the Causeway Return Stand, Toren and Drek, 42),
+  `front_relief_count` (`witness_record` at the Shattered Relief Rest,
+  Nella and Yarra, 43), `front_ford_salvage` (`held_supplies` at Fordward
+  Wreck, Toren and Drek, 44), `front_salt_stores` (6 Salt Crust, Nella and
+  Yarra, 44), `front_stormkelp` (8 Stormkelp, Alna and Orrel, 47),
+  `front_old_wire` (`snare_bundle` at No-Man's Orchard, Nella and Yarra,
+  48), the two optional group quests at 49/50 on the elites both factions
+  hunt, `front_engine_nine` (Nella and Yarra) and `front_last_toll` (Alna
+  and Orrel), and the departure `front_beyond_line` at 50 (Nella or Alna to
+  Borin Splitbolt, Yarra to Nalo Pathdrum).
+- **Local quests** (line `front`, each giver's `.front` file): Alna's
+  `sighting_frame` at the Causeway Crossing Stand and the held tool load at
+  the Stormvault mining camp's `held_load`; Dorrin Gateledger's three tasks
+  at 45–48 (the returned tools at Dur Brannoc's forge yard, 10 Paper, a
+  `sighting_frame` at Aqueduct Last Step), the Accord's third 41–50 giver
+  (K1 A); Thorga Roadspeaker's at 42–45 (5 Ember Eel, the front load at Gor
+  Drazhak's water depot, 3 Siegepack Fangs from the Siegepack Hyenas, an
+  item only); Borin's from 50 (a `sighting_frame` at the Gravesalt Shoring
+  Check, 5 Storm Tuna, the brace load at the Gravesalt Work Laydown);
+  Eriath Boughwarden's from 51 (a `snare_bundle` at the Skyglass Carrier
+  Clearing, 6 Wild Cocoa, a `dispatch_record` at the Skyglass Receiving
+  Stand, a `witness_record` at Cloudwatch Fall); Orrel Hollowstep's (a
+  `witness_record` at No-Man's Orchard, a `claim_notice` at Saltgate
+  Remnant); Vaska Ashlistener's (6 Rock Salt, a `dispatch_record` at the
+  Work Laydown, 20 Torches for the vigil); Nalo's (6 Melons, the
+  `reading_knots` at the Carrier Clearing, a `sighting_frame` at the
+  Receiving Stand); Ossa Quietregister's (the returned belongings at Nhal
+  Veyr's receiving court, `nv_front_01`'s Glass Silk from the Gossamer
+  Widows, a `witness_record` at the Gravesalt Recovery Post). The free
+  departures require nothing and lead to a giver with work at once: Alna to
+  Dorrin (45), Drek to Thorga (42), Borin to Eriath (51), Orrel to Vaska
+  (52), Vaska to Ossa (53).
+- **Group quests**: below 51 only the two shared ones (free, standalone,
+  a plain trinket choice); from 51 Salt-Counter (Borin, Vaska) and
+  Glass-Throat (Eriath, Nalo) per faction, standalone (a recorded
+  exception: the hosts share no line, and Glass-Throat's shared quest would
+  live in a capital base file), and the island elites.
+- **The islands** (60, weight 0, coin only, "Every quest once"): the
+  Accord's Dur Brannoc and Highcourt bounty pairs as shipped, the Throng's
+  new pair at Thorga (`gordrazhak_krait_bounty`, 6 Kraits in the Stormscale
+  Scorchlands by day, then the group quest on Last-Offering, K9 A); the
+  four island uses free from 60.
+- **Rewards** per faction and level band (tier 5 at 41–50, tier 6 at
+  51–60; the budget per zone and level band, "The rework flag"): six armor
+  choices with one enchant (every slot), three weapon choices with prefix
+  and suffix on solo quests, three plain trinket choices (the two group
+  quests at 50 and the Ninepins step at 41–50; Salt-Counter, Glass-Throat
+  and the war commander from 51), a Healing or Mana Potion V/VI choice on
+  the openers at 41 and 53 and early errands; the final turn-ins
+  (`*_main_final`) a weapon choice. Shared quests given once per faction
+  carry Ashenward's and Bannerbreak's (Toren and Drek, Nella and Yarra) and
+  Stormvault's and Blackwind's (Alna and Orrel) share; the capitals carry
+  the rest.
+- **Objectives**: 3–6 mob names per front zone and faction besides the
+  camp hunts and the garrisons (the spine's targets and the elites among
+  them); the free front about a quarter kill (25 % The Accord, 18 % The
+  Throng), the spine, fortress and camp quests keeping theirs (about 47 %
+  per faction over all).
+- **Places**: eight new recipe places in the Battlegrounds spawn files
+  ([spawn_regions.md](spawn_regions.md) `places`), the free clash sites
+  076, 079, 080, 083 and 085, Stormvault's mining-camp `held_load` and the
+  capitals' town places; no new object kind. No text names West Trench
+  Mouth (a compass word).
+- **Ids**: the spine, the fortress quests, the island uses, the four
+  elites and Glass Silk (`nv_front_01`) keep theirs; every other quest is
+  new (45 ids went, 42 came). The structure was written by
+  `tools/r62_frontquests/build_structure.py` with placeholder texts (its
+  `--check` compares the structure only); `tools/r62_frontquests/
   portable_test.lua` checks it.
 
 ## Chapter 1 in the capitals (Round 59)

@@ -1,87 +1,29 @@
 {
   "zone": "kragmar_bannerbreak_mesa",
+  "reworked": true,
   "quests": [
     {
-      "id": "bb_front_ramp_01",
+      "id": "bb_ramp_road_thorga",
       "line": "front",
       "giver": "r20_anchor_043_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 40,
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 42,
       "level": 42,
       "requires": [],
-      "title": "Make the Mud Keep Them",
-      "text": "A road is for marching, and I will not have the dead setting our pace. Break five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows}, which lie {zone_area:front_broken_causeway/floodmeadows}. The mud kept them once already; this time, make it keep them for good.",
+      "title": "[PH] Supplies from Gor Drazhak",
+      "text": "[PH] Drek sends the player to Thorga Roadspeaker in Gor Drazhak: the front needs her help with food and equipment; no earlier deed is claimed. Real text to follow.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "causeway_mire_husk"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/floodmeadows"
+          "type": "talk",
+          "npc": "r20_orc_capital_envoy"
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 10
-    },
-    {
-      "id": "bb_front_ramp_02",
-      "line": "front",
-      "giver": "r20_anchor_043_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 41,
-      "level": 43,
-      "requires": [
-        "bb_front_ramp_01"
-      ],
-      "title": "No Marching After Death",
-      "text": "Hear that sloshing after sundown? Fordwater Zombies are climbing through the {name:front_broken_causeway/reedmire}, which lies {zone_area:front_broken_causeway/reedmire}, and every patrol has to fight for dry footing. Kill five there at night; I want boots coming home with soldiers still in them.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "causeway_ford_zombie"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/reedmire"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "bb_front_ramp_03",
-      "line": "front",
-      "giver": "r20_anchor_043_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 43,
-      "level": 45,
-      "requires": [
-        "bb_front_ramp_01"
-      ],
-      "title": "Footsteps That Aren't Ours",
-      "text": "Our scouts keep hearing paws where they ought to hear their own footsteps. Hunt down five Fenrunner Wolves at night in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}. Save the boasting for when you can see what is listening.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "causeway_fenrunner_wolf"
-          ],
-          "count": 5,
-          "area": "front_broken_causeway/wraithwood"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only): a departure to a giver with work at once.",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft DR1: the free departure to Thorga at 42 (her work at 42, 44 and 45)."
     },
     {
       "id": "bb_front_ramp_04",
@@ -91,12 +33,12 @@
       "min_level": 46,
       "level": 48,
       "requires": [
-        "bb_front_ramp_02",
-        "bb_front_ramp_03",
         "throng_main_01"
       ],
+      "story": true,
       "title": "Payment in Full",
       "text": "My crews dig up grave coin with a fresh broken circle burned through it, and Toll-Taker Senn keeps finding more dead to pay. Kill four Aqueduct Bowmen or Coal-Purse Factors in all at the {name:front_broken_causeway/toll_camp}, {dir_from_giver:front_broken_causeway/toll_camp}, where they guard his money day and night, and kill Senn. Turn out his branded toll-box at {name:r20_anchor_078}; I want the name of whoever pays a man to make my road impassable.",
+      "completion": "[PH] Senn earns from the dead on the crossing and his accounts name Chirr and seemingly Accord requisitions; Drek needs someone who can judge the entries for the dead: Orrel. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -123,8 +65,7 @@
         }
       ],
       "rewards": {
-        "weight": 6.5,
-        "items": []
+        "weight": 6.5
       },
       "duration_min": 20,
       "climax": true,
@@ -142,8 +83,10 @@
       "requires": [
         "bb_front_ramp_04"
       ],
+      "story": true,
       "title": "A Coin for Orrel",
       "text": "Senn paid the dead to keep them on the road, then sent the tolls back to the soot factors for another burning; a remittance from Paymaster Chirr in The Skyglass Canopy promises fresh payments for every crossing kept deadly. Apparently a corpse earns better than a bridge. I know mud, not the dead, so take one of those coins to Orrel Hollowstep at Hollowarch Station in Blackwind Rise. He'll complain about the fingerprints, but he'll read it.",
+      "completion": "[PH] Orrel sets the inquiry at the Ashen Grave; Hush may be prepared as a comparison for his way of keeping books. Real text to follow.",
       "objectives": [
         {
           "type": "talk",
@@ -151,139 +94,12 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
       "duration_min": 8,
       "tags": [
         "throng_main"
       ]
-    },
-    {
-      "id": "bb_front_torn_01",
-      "line": "front",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 40,
-      "level": 42,
-      "requires": [],
-      "title": "Nobody Laughs at Supper",
-      "text": "Siegepack Hyenas have found our supply trail, and now the laughing starts before supper. Kill five by day in the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. I can mend a torn ration sack; I cannot sew the meat back into it.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "warpack_hyena"
-          ],
-          "count": 5,
-          "area": "front_shattered_line/approaches"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "bb_front_torn_02",
-      "line": "front",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 40,
-      "level": 42,
-      "requires": [],
-      "title": "Mind the Boots",
-      "text": "I patch enough holes in our soldiers without Siege Scorpions punching fresh ones through their boots. Kill five after dark on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and give the next patrol a fighting chance to march home.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "war_stinger"
-          ],
-          "count": 5,
-          "area": "front_shattered_line/bluffs"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "bb_front_torn_03",
-      "line": "front",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 42,
-      "level": 44,
-      "requires": [
-        "bb_front_torn_01"
-      ],
-      "title": "A Standard with Claws",
-      "text": "This banner has survived arrows, rain, and a cook who mistook it for a towel. It deserves teeth of its own: kill four Ash Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring me two Notched Cat Claws. Let's give the Accord something new to stare at.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_stalking_tiger"
-          ],
-          "count": 4,
-          "area": "front_shattered_line/bluffs"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:siege_cat_claw",
-          "count": 2,
-          "roles": [
-            "reed_stalking_tiger"
-          ],
-          "area": "front_shattered_line/bluffs"
-        }
-      ],
-      "rewards": {
-        "weight": 4.5,
-        "items": []
-      },
-      "duration_min": 12
-    },
-    {
-      "id": "bb_front_torn_04",
-      "line": "front",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 45,
-      "level": 47,
-      "requires": [
-        "bb_front_torn_02"
-      ],
-      "title": "Stings for Our Side",
-      "text": "The archers want venom, and for once their request comes with its own legs. Siege Scorpions crawl at night over the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}; kill five and bring me two Scorch Venom. Carry it home in a pouch, please, not in your leg.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "war_stinger"
-          ],
-          "count": 5,
-          "area": "front_shattered_line/ramparts"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:scorch_venom",
-          "count": 2,
-          "roles": [
-            "war_stinger"
-          ],
-          "area": "front_shattered_line/ramparts"
-        }
-      ],
-      "rewards": {
-        "weight": 4.5,
-        "items": []
-      },
-      "duration_min": 12
     },
     {
       "id": "bb_front_torn_05",
@@ -293,12 +109,12 @@
       "min_level": 46,
       "level": 48,
       "requires": [
-        "bb_front_torn_03",
-        "bb_front_torn_04",
         "throng_main_03"
       ],
+      "story": true,
       "title": "Let That Banner Fall",
       "text": "Standard-Bearer Ninepins pledged his banner against the next payment, then the next, until every salute became another debt. Kill four Rubble Skeletons at night in the {name:front_shattered_line/breach} and defeat Ninepins, {dir_from_giver:standard_bearer_ninepins}. Report to the Warmaster: the pledge slips bear seals of The Accord, and I will not stitch our fallen into a pawnbroker's inventory.",
+      "completion": "[PH] The renewed service can be broken locally, but Ninepins did not start the money trail; the Warmaster turns the next inquiry to the enemy captain. Real text to follow.",
       "objectives": [
         {
           "type": "kill",
@@ -318,66 +134,23 @@
       ],
       "rewards": {
         "weight": 6,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t5"
+          },
+          {
+            "item": "grug_gear:battlebeat_t5"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t5"
+          }
+        ]
       },
       "duration_min": 15,
       "climax": true,
       "tags": [
         "throng_main"
       ]
-    },
-    {
-      "id": "bb_front_torn_06",
-      "line": "front",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 48,
-      "level": 50,
-      "requires": [
-        "bb_front_torn_05"
-      ],
-      "title": "Party: Break the Paid Machine",
-      "text": "Engine Nine keeps grinding across the {name:front_shattered_line/siegecrest}, {dir_from_giver:siege_engine_nine}, because somebody is still paying for its orders. Gather a party and destroy the elite construct. Ninepins pawned a banner; this thing will grind the cloth, the pole and everyone standing under it.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "siege_engine_nine"
-          ],
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 15,
-      "optional": true,
-      "group": true
-    },
-    {
-      "id": "bb_front_torn_07",
-      "line": "front",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_troll_capital_envoy",
-      "min_level": 49,
-      "level": 50,
-      "requires": [
-        "bb_front_torn_05"
-      ],
-      "title": "Send a Fighter, Save a Banner",
-      "text": "I would send Kezamba a banner listing what you have done, but you would need a longer pole. Go and speak with Nalo Pathdrum there; he sends fighters into The Skyglass Canopy, where Paymaster Chirr's archers draw their pay. Tell him Yarra Standardmender vouches for you, and mind that you keep earning it.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_troll_capital_envoy"
-        }
-      ],
-      "rewards": {
-        "weight": 1,
-        "items": []
-      },
-      "duration_min": 12
     },
     {
       "id": "bannerbreak_warhold_call",

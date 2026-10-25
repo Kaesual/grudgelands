@@ -661,13 +661,15 @@ Built by lanes GUILDQUESTS and GUILDTEXT on the Round 57 quest system
     its foreman (lines `camp` and `guild`) and the guild quests whose first
     variant is that zone's; it keeps its own quests and its rework state
     (unflagged: its chains stay until its rework). The four Battlegrounds
-    zones get a quest file of their own (not reworked: both factions'
-    follow-ups there require the same gather quests, which the free-play
-    count `E-free-follow-ups` read as two follow-ups until Round 59; since
-    then it counts them per faction, as a player sees only their own
-    faction's, [quests.md](quests.md) "Story and free play").
+    zones get a quest file of their own (reworked since Round 62; before,
+    unflagged: both factions' follow-ups there require the same gather
+    quests, which the free-play count `E-free-follow-ups` read as two
+    follow-ups until Round 59; since then it counts them per faction, as a
+    player sees only their own faction's, [quests.md](quests.md) "Story and
+    free play").
   - **The reward budget** (`E-reward-budget`) counts equipment rewards per
-    zone a quest is given in, that is per variant zone: a role variant in
+    zone a quest is given in (per zone and level band since Round 62), that
+    is per variant zone: a role variant in
     its guild zone, an NPC variant in its camp zone. No guild quest rewards
     equipment, so it counts none anywhere.
   - All of a camp's quests can be taken at once (only the follow-ups wait

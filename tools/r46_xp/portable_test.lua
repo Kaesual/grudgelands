@@ -273,8 +273,10 @@ do
 	-- CAPITALS rebuilds the six capitals' 64 as 47 (4 shared, T3 added);
 	-- Round 61 rebuilds the band 31-40's 60 (the guild's 5 among them; the
 	-- 15 main-line steps kept) as 50 (5 shared, chapter 3's 4 story quests
-	-- among them).
-	eq(quests, 393, "C 393 quests ship (485 less the start zones', the three bands' and the capitals' rework, " ..
+	-- among them); Round 62 rebuilds the front 41-60's 123 (the fourteen
+	-- files' 108, the guild's 8 among them, and the 15 main-line steps of the
+	-- contested base files) as 120 (10 shared front quests among them).
+	eq(quests, 390, "C 390 quests ship (485 less the start zones', the four bands' and the capitals' rework, " ..
 		"plus the guild's 30 and chapter 1's 4)")
 	eq(table.concat(repeatables, ", "), "", "C no repeatable quest ships")
 	local empty = {}
