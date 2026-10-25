@@ -241,43 +241,61 @@ for _, row in ipairs(ZONES) do
 	offered[row[1]] = {}
 end
 local shared_count, local_count = 0, 0
+-- Round 62: the shared front quests (41-60) homed in these base files are
+-- the front's (tools/r62_frontquests checks them), like the main line: no
+-- band section counts them.
+local FRONT_SHARED = {}
 for _, row in ipairs(ZONES) do
 	local zone = row[1]
 	for _, quest in ipairs(files[zone].quests) do
-		check(by_id[quest.id] == nil, quest.id .. ": one id, one quest")
-		by_id[quest.id] = {quest = quest, file = zone}
-		if quest.variants then
-			local want = SHARED[quest.id]
-			if want then
-				shared_count = shared_count + 1
-				eq(quest.variants[1].zone, zone, quest.id .. ": lives in its first variant's file")
-				eq(#quest.variants, #want, quest.id .. ": one variant per zone that gives it")
-				for index, variant in ipairs(quest.variants) do
-					local expect = want[index] or {}
-					eq(variant.zone, ZONE_OF[expect[1]], quest.id .. ": variant " .. index .. "'s zone")
-					check(#variant.givers == 1 and variant.givers[1] == NPC[expect[2]],
-						quest.id .. ": given in " .. tostring(expect[1]) .. " by " .. tostring(expect[2]))
+		if quest.level > 40 and not MAIN[quest.id] then
+			check(FRONT_SHARED[quest.id] == nil and quest.variants ~= nil and quest.line == "border",
+				quest.id .. ": a shared front quest on the hosts' line")
+			FRONT_SHARED[quest.id] = zone
+		end
+	end
+end
+for _, row in ipairs(ZONES) do
+	local zone = row[1]
+	for _, quest in ipairs(files[zone].quests) do
+		if FRONT_SHARED[quest.id] then
+			-- the front's, above
+		else
+			check(by_id[quest.id] == nil, quest.id .. ": one id, one quest")
+			by_id[quest.id] = {quest = quest, file = zone}
+			if quest.variants then
+				local want = SHARED[quest.id]
+				if want then
+					shared_count = shared_count + 1
+					eq(quest.variants[1].zone, zone, quest.id .. ": lives in its first variant's file")
+					eq(#quest.variants, #want, quest.id .. ": one variant per zone that gives it")
+					for index, variant in ipairs(quest.variants) do
+						local expect = want[index] or {}
+						eq(variant.zone, ZONE_OF[expect[1]], quest.id .. ": variant " .. index .. "'s zone")
+						check(#variant.givers == 1 and variant.givers[1] == NPC[expect[2]],
+							quest.id .. ": given in " .. tostring(expect[1]) .. " by " .. tostring(expect[2]))
+					end
+				elseif CLOSERS[quest.id] then
+					local spec = CLOSERS[quest.id]
+					eq(#quest.variants, 3, quest.id .. ": three foremen give it")
+					for index, variant in ipairs(quest.variants) do
+						local short = spec[1][index]
+						eq(variant.zone, ZONE_OF[short], quest.id .. ": variant " .. index .. "'s zone")
+						eq(table.concat(variant.givers, ","), foreman(short), quest.id .. ": given by " .. short .. "'s foreman")
+						eq(table.concat(variant.turnins or {}, ","), NPC[spec[2]], quest.id .. ": turned in at " .. spec[2])
+					end
+					eq(quest.variants[1].zone, zone, quest.id .. ": lives in its first variant's file")
+				else
+					check(GUILD[quest.id], quest.id .. ": a quest with variants is a shared, a closing or a guild one")
 				end
-			elseif CLOSERS[quest.id] then
-				local spec = CLOSERS[quest.id]
-				eq(#quest.variants, 3, quest.id .. ": three foremen give it")
-				for index, variant in ipairs(quest.variants) do
-					local short = spec[1][index]
-					eq(variant.zone, ZONE_OF[short], quest.id .. ": variant " .. index .. "'s zone")
-					eq(table.concat(variant.givers, ","), foreman(short), quest.id .. ": given by " .. short .. "'s foreman")
-					eq(table.concat(variant.turnins or {}, ","), NPC[spec[2]], quest.id .. ": turned in at " .. spec[2])
+				for _, variant in ipairs(quest.variants) do
+					if BAND[variant.zone] then table.insert(offered[variant.zone], quest) end
 				end
-				eq(quest.variants[1].zone, zone, quest.id .. ": lives in its first variant's file")
-			else
-				check(GUILD[quest.id], quest.id .. ": a quest with variants is a shared, a closing or a guild one")
+			elseif not MAIN[quest.id] then
+				-- (the main line is the front's, section D)
+				local_count = local_count + 1
+				table.insert(offered[zone], quest)
 			end
-			for _, variant in ipairs(quest.variants) do
-				if BAND[variant.zone] then table.insert(offered[variant.zone], quest) end
-			end
-		elseif not MAIN[quest.id] then
-			-- (the main line is the front's, section D)
-			local_count = local_count + 1
-			table.insert(offered[zone], quest)
 		end
 	end
 end
