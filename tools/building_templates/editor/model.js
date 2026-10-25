@@ -24,6 +24,18 @@ export const AIR = ".", UNCHANGED = " ";
 // The order the rotate tool turns a wallmounted node in: around the four
 // walls only, never onto the floor or the ceiling (0, 1).
 const WALL_CYCLE = [2, 5, 3, 4];
+// The flip tool's facedir pairs, upright <-> upside down, both ways. Axis 5
+// (20-23) is the upright node turned half about z, so its rotation runs the
+// other way round: 20 + r points (facedir_to_dir) where the upright 0, 3, 2,
+// 1 do, the swap of 21 and 23 the stairs mod's rotate_and_place makes. That
+// is a stair's or a slab's mirror image under its cell's middle; an inner or
+// outer stair is not symmetric about its facing, and its mirror image (the
+// raised quarter over the same quarter of the cell) is the other pairing.
+const FLIP_STAIR = pairs([[0, 20], [1, 23], [2, 22], [3, 21]]);
+const FLIP_CORNER = pairs([[0, 21], [1, 20], [2, 23], [3, 22]]);
+// An inner or outer stair: stairs:stair_outer_<m>, grug_decor:<m>_stair_inner.
+const CORNER = /(^|[:_])stair_(inner|outer)(_|$)/;
+function pairs(list) { return new Map(list.flatMap(([a, b]) => [[a, b], [b, a]])); }
 
 // ------------------------------------------------------------- entries ---
 // A legend entry's text as fields: {kind, name, variant, channel, o, else,
@@ -313,6 +325,23 @@ export class Doc {
   }
   refuse(rec, mark, message) { this.rollback(rec, mark); return { ok: false, message }; }
 
+  // Turn what stands at a cell over: a stair or a slab upside down and back
+  // (FLIP_STAIR, FLIP_CORNER), a wallmounted node from a wall to the floor
+  // to the ceiling and back onto a wall. kindOf as for rotate; shapeOf(entry)
+  // answers "stair", "corner" or null (see entryShape).
+  flip(rec, x, y, z, kindOf, shapeOf) {
+    if (this.object(x, y, z)) return { ok: false, message: "a door or a bed does not flip" };
+    const e = this.entry(this.get(x, y, z));
+    if (!e || e.kind === "race") return { ok: false, message: "nothing to flip here" };
+    const kind = kindOf(e);
+    const next = flipped(e, kind, kind === "facedir" ? shapeOf(e) : null);
+    if (next) { this.put(rec, x, y, z, this.keyFor(next)); return { ok: true }; }
+    const v = e.o ? e.o[1] : 0;
+    if (kind === "facedir" && v >= 4 && v < 20) return { ok: false, message: "a lying tree piece does not flip" };
+    if (kind === "facedir") return { ok: false, message: "only a stair or a slab turns upside down (of one shape in every placing palette)" };
+    return { ok: false, message: "this node does not flip (its kind has no orientation in every placing palette)" };
+  }
+
   movePoint(rec, i, x, y, z) {
     if (!this.inBox(x, y, z)) return { ok: false, message: "points stay inside the box" };
     const p = this.points[i];
@@ -437,6 +466,26 @@ export function turned(e, kind) {
   }
   return entryText(copy);
 }
+// The entry text turned over, or null when it does not flip. shape: what
+// entryShape answers for a facedir entry. Without o= the value is the
+// default write, 0 for every oriented node (parts.place_param2). A node on
+// the ceiling goes back onto the wall of wallmounted 2 (its support at +x,
+// where the rotate tool's wall order starts); Rotate turns it on from there.
+export function flipped(e, kind, shape) {
+  if (kind !== "facedir" && kind !== "wallmounted") return null;
+  const copy = parseEntry(e.text || entryText(e));
+  if (copy.o && copy.o[0] !== kind) return null;
+  const v = copy.o ? copy.o[1] : 0;
+  if (kind === "facedir") {
+    const next = (shape === "corner" ? FLIP_CORNER : shape === "stair" ? FLIP_STAIR : new Map()).get(v);
+    if (next === undefined) return null;  // not shaped, or a lying tree piece
+    copy.o = ["facedir", next];
+  } else {
+    if (v > 5) return null;
+    copy.o = ["wallmounted", WALL_CYCLE.includes(v) ? 1 : v === 1 ? 0 : WALL_CYCLE[0]];
+  }
+  return entryText(copy);
+}
 
 // ---------------------------------------------------------- resolution ---
 // P: the palettes data (palettes.lua: required, optional, families, races,
@@ -498,6 +547,23 @@ export function entryKind(e, bindings, P) {
     if (k !== "none" && k !== "meshoptions") kinds.add(k);
   }
   return kinds.size === 1 ? [...kinds][0] : "none";
+}
+// May a facedir entry stand upside down, and with which pairing? "stair"
+// (a stair or a slab) or "corner" (an inner or outer stair) when every
+// placing binding whose node is facedir names a shaped node of that shape
+// (the validator's rule: upside down only for parts.shaped; a binding whose
+// node has no orientation writes 0 whatever is stored); null otherwise.
+export function entryShape(e, bindings, P) {
+  const shapes = new Set();
+  for (const b of bindings) {
+    const name = entryNode(e, b, P);
+    if (!name || name.includes(" ")) continue;
+    const n = P.nodes[name] || {};
+    if (n.kind !== "facedir") continue;
+    if (!n.shaped) return null;
+    shapes.add(CORNER.test(name) ? "corner" : "stair");
+  }
+  return shapes.size === 1 ? [...shapes][0] : null;
 }
 // Every cell the stamp writes for a binding: [{i, x, y, z, name, p2}]
 // (force air as name "air"), panes settled; and the cells that do not

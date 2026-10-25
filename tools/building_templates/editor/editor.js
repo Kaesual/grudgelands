@@ -8,7 +8,7 @@ import * as THREE from "three";
 import { createNodeView, cellData } from "/renderer.js";
 import {
   Doc, AIR, UNCHANGED, FACE_STEP, parseEntry, entryText, turned, resolveKey, resolvedCells,
-  entryKind, entryNode,
+  entryKind, entryShape, entryNode,
 } from "/model.js";
 
 const $ = id => document.getElementById(id);
@@ -312,11 +312,14 @@ for (const b of document.querySelectorAll("[data-tool]")) b.onclick = () => setT
 // Turning follows the node's kind in every palette that places the template
 // (the validator checks those, not the preview).
 function kindOf(e) { return entryKind(e, placingBindings(), P); }
+// Flipping upside down likewise: a shaped node of one shape in all of them.
+function shapeOf(e) { return entryShape(e, placingBindings(), P); }
 
 // One tool use at a cell (grid or 3D). `rec` is the open stroke record.
 function use(rec, x, y, z) {
   if (tool === "pick") { pickAt(x, y, z); return true; }
   if (tool === "rotate") return report(doc.rotate(rec, x, y, z, kindOf));
+  if (tool === "flip") return report(doc.flip(rec, x, y, z, kindOf, shapeOf));
   if (tool === "point") { pointAt(x, y, z); return true; }
   const b = tool === "air" ? { kind: "air" } : tool === "unchanged" ? { kind: "unchanged" } : brush;
   return report(doc.apply(rec, x, y, z, b));
@@ -972,7 +975,7 @@ $("back").onclick = () => { location.hash = ""; };
 window.__editor = {
   get doc() { return doc; }, get tpl() { return tpl; }, get view() { return view; },
   get layer() { return layer; }, get tool() { return tool; }, get brush() { return brush; },
-  setLayer, setTool, setBrush, open, dirty, findings: () => findings,
+  setLayer, setTool, setBrush, open, dirty, kindOf, shapeOf, findings: () => findings,
   // The page position of a grid cell's centre on the current layer.
   cellPoint(x, z) {
     const r = grid.getBoundingClientRect();

@@ -7,10 +7,11 @@ disposable clone (never the working tree), with screenshots.
 Real clicks and keys through the DevTools protocol (cdp.py): the template
 list, open a building, noclip through it, the edit rules of model.js on a
 copy of the document (multi-cell placement and removal, the locked door
-cell, turning, points), then on the grid: a bed and a door on layer 1, the
-locked cell above the door on layer 2, a block on layer 3, undo, reset, a
-walled-in entrance refused by Save, a valid edit saved and the file on disk
-changed, the fixed-node flag and "used 2x" on the shared template, a draft
+cell, turning, flipping, points), then on the grid: a bed and a door on
+layer 1, the locked cell above the door on layer 2, a block on layer 3, undo,
+reset, a walled-in entrance refused by Save, a valid edit saved and the file
+on disk changed, a seat and a light flipped with the Flip button and saved,
+the fixed-node flag and "used 2x" on the shared template, a draft
 restored after a reload. Exits 1 on the first failure. Needs chromium and
 network access to the pinned three.js on the CDN.
 """
@@ -121,6 +122,73 @@ MODEL_CHECKS = r"""
   d.put(rec, x, 2, z, wallKey);
   ok(!d.rotate(rec, x, 2, z, () => "none").ok, "a node without orientation does not turn");
   d.commit(rec);
+  // flipping, with the page's own answers for the dwarf palette (seat: a
+  // stair, table_top: a slab, roof_stair_outer: a corner, shelf: a facedir
+  // node that is not shaped)
+  const K = E.kindOf, S = E.shapeOf, at = () => d.entry(d.get(x, 2, z));
+  const flip = () => d.flip(rec, x, 2, z, K, S);
+  const parse = t => d.entry(d.keyFor(t));
+  ok(S(parse("role seat")) === "stair" && S(parse("role table_top")) === "stair" &&
+    S(parse("role roof_stair_outer")) === "corner" && S(parse("role roof_stair_inner")) === "corner" &&
+    S(parse("role shelf")) === null, "the shapes the page answers");
+  rec = d.begin();
+  for (const [role, pairs] of [["seat", [[0, 20], [1, 23], [2, 22], [3, 21]]], ["table_top", [[1, 23]]],
+                               ["roof_stair_outer", [[0, 21], [1, 20], [2, 23], [3, 22]]]])
+    for (const [a, b] of pairs) {
+      d.put(rec, x, 2, z, d.keyFor(`role ${role} o=facedir:${a}`));
+      ok(flip().ok && at().o.join(":") === "facedir:" + b, `${role}: flip ${a} -> ${b}: ${at().text}`);
+      ok(flip().ok && at().o.join(":") === "facedir:" + a, `${role}: flip ${b} -> ${a}`);
+    }
+  d.put(rec, x, 2, z, d.keyFor("role seat"));
+  ok(flip().ok && at().text === "role seat o=facedir:20", "a stair without o= (facedir 0) flips to 20");
+  // rotate after flip: an upside-down stair turns within 20-23 and flips back upright
+  d.put(rec, x, 2, z, d.keyFor("role seat o=facedir:20"));
+  const turns = [];
+  for (let k = 0; k < 4; k++) { ok(d.rotate(rec, x, 2, z, K).ok, "an upside-down stair turns"); turns.push(at().o[1]); }
+  ok(turns.join() === "21,22,23,20", "turning keeps it upside down: " + turns);
+  d.rotate(rec, x, 2, z, K);
+  ok(flip().ok && at().o[1] === 3, "a turned upside-down stair (21) flips upright to 3");
+  // wallmounted: wall -> floor -> ceiling -> the wall of wallmounted 2
+  d.put(rec, x, 2, z, d.keyFor("role light_wall o=wallmounted:3"));
+  const walls = [];
+  for (let k = 0; k < 3; k++) { ok(flip().ok, "a wallmounted node flips"); walls.push(at().o[1]); }
+  ok(walls.join() === "1,0,2", "wall -> floor -> ceiling -> wall: " + walls);
+  d.put(rec, x, 2, z, d.keyFor("role light_post o=wallmounted:1"));
+  ok(flip().ok && at().text === "role light_post o=wallmounted:0", "a floor light flips onto the ceiling");
+  // refusals: each leaves the cell as it was
+  for (const [text, why] of [["node grug_trees:apple_base o=facedir:4", "lying tree piece"],
+                             ["node grug_trees:apple_base", "stair or a slab"],
+                             ["role shelf o=facedir:1", "stair or a slab"],
+                             ["role wall", "does not flip"]]) {
+    const key = d.keyFor(text);
+    d.put(rec, x, 2, z, key);
+    const r = flip();
+    ok(!r.ok && r.message.includes(why) && d.get(x, 2, z) === key, `${text} is refused (${r.message})`);
+  }
+  d.commit(rec);
+  rec = d.begin();
+  d.put(rec, x, 2, z, ".");
+  ok(d.apply(rec, x, 1, z, { kind: "door", variant: "_a", o: 0 }).ok, "a door to flip");
+  ok(!d.flip(rec, x, 1, z, K, S).ok && !d.flip(rec, x, 2, z, K, S).ok && d.partKind(x, 1, z) === "leaf",
+    "a door (either cell) does not flip");
+  ok(d.apply(rec, x, 1, z, { kind: "air" }).ok && d.apply(rec, x, 1, z, { kind: "bed", role: "bed", o: 0 }).ok, "a bed to flip");
+  const r = d.flip(rec, x, 1, z, K, S);
+  ok(!r.ok && r.message.includes("bed") && d.partKind(x, 1, z) === "bottom", "a bed does not flip");
+  d.apply(rec, x, 1, z, { kind: "air" });
+  d.commit(rec);
+  // undo, redo and the changed outline with a flipped cell
+  const f = new D(E.tpl);
+  let fx = null;
+  for (let i = 0; i < f.cells.length && fx === null; i++) if (f.entry(f.cells[i])?.text === "role seat") fx = f.pos(i);
+  ok(fx, "the template has an upright seat");
+  rec = f.begin();
+  ok(f.flip(rec, ...fx, K, S).ok, "flipping the seat");
+  f.commit(rec);
+  ok(f.entry(f.get(...fx)).text === "role seat o=facedir:20" && f.changedSinceHead().has(f.index(...fx)), "a flipped cell is changed since commit");
+  f.undo();
+  ok(f.entry(f.get(...fx)).text === "role seat" && f.changedSinceHead().size === 0, "undo takes the flip back");
+  f.redo();
+  ok(f.entry(f.get(...fx)).text === "role seat o=facedir:20", "redo flips it again");
   // an optional role is stored with its fallback: the template's own entry
   // for the role, else else=air; never a second entry differing by else=
   const o1 = new D(E.tpl); o1.optional = E.doc.optional;
@@ -324,6 +392,37 @@ def main(argv):
             time.sleep(0.8)
             shot("09-saved.png")
             print("saved edit (in the clone):\n" + subprocess.run(["git", "diff", "--stat"], cwd=root, capture_output=True, text=True).stdout)
+
+            # Flip from the tool bar: a seat upside down and a floor light onto
+            # the ceiling, saved through the validator and read back
+            b.click_selector("[data-tool=flip]")
+            check(b.js("window.__editor.tool") == "flip", "the Flip button selects the tool")
+            flips = b.js("""(() => { const d = window.__editor.doc, out = {};
+              for (let i = 0; i < d.cells.length; i++) { const t = d.entry(d.cells[i])?.text;
+                if ((t === 'role seat' || t === 'role light_post o=wallmounted:1') && !out[t]) out[t] = d.pos(i); }
+              return out; })()""")
+            check(len(flips) == 2, "a seat and a floor light to flip: %s" % flips)
+            for pos in flips.values():
+                cell(b, *pos)
+            got = b.js("[%s].map(p => window.__editor.doc.entry(window.__editor.doc.get(...p)).text)"
+                       % ",".join(json.dumps(p) for p in flips.values()))
+            want = {"role seat": "role seat o=facedir:20", "role light_post o=wallmounted:1": "role light_post o=wallmounted:0"}
+            check(got == [want[k] for k in flips], "clicks with Flip turn them over: %s" % got)
+            check(b.js("[%s].every(p => window.__editor.doc.changedSinceHead().has(window.__editor.doc.index(...p)))"
+                       % ",".join(json.dumps(p) for p in flips.values())), "the flipped cells show as changed since commit")
+            shot("09b-flipped.png")
+            b.click_selector("#save")
+            b.wait("!document.getElementById('modal').hidden || document.getElementById('message').textContent.startsWith('Save refused')", 30)
+            check(not b.js("document.getElementById('message').textContent.startsWith('Save refused')"),
+                  "the validator takes the flipped cells: %s" % b.js("document.getElementById('message').textContent"))
+            modal_click(b, b.js("document.querySelector('#modal-buttons button.primary').textContent"))
+            b.wait("document.getElementById('message').textContent.startsWith('Saved')", 30)
+            text = disk(root, TPL).decode()
+            check("role seat o=facedir:20" in text and "role light_post o=wallmounted:0" in text, "the file holds the flipped entries")
+            back = json.loads(b.js("""fetch('/api/template?name=%s').then(r => r.json()).then(t => {
+              const d = new window.__editor.doc.constructor(t);
+              return JSON.stringify([%s].map(p => d.entry(d.get(...p)).text)); })""" % (TPL, ",".join(json.dumps(p) for p in flips.values()))))
+            check(back == got, "the saved file reads back the flipped cells: %s" % back)
 
             # a draft survives a reload
             item(b, "br.kind === 'entry' && br.text === 'role wall_accent'")

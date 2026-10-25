@@ -186,9 +186,22 @@ it).
   air), Unchanged (leave unchanged), Rotate (90°, only where the node's kind
   allows it in every placing palette: facedir 0–3 keeping an upside-down
   axis, wallmounted only around the four walls, never onto the floor or the
-  ceiling), Move point. A
+  ceiling), Flip (no key; only where the result is valid in every placing
+  palette, as for Rotate), Move point. A
   click in the 3D view applies the tool to the block under the pointer (a
   point moves onto it).
+- **Flip** turns a stair or a slab upside down and back, keeping its look:
+  facedir 0↔20, 1↔23, 2↔22, 3↔21 (the axis 20 rotation runs the other way,
+  as the stairs mod writes it), and for an inner or outer stair 0↔21, 1↔20,
+  2↔23, 3↔22 (its raised quarter stays over the same quarter of the cell).
+  Upside down is offered only when every placing palette whose node is
+  facedir names a stair or a slab of the same shape (`parts.shaped`). A
+  wallmounted node goes wall → floor (1) → ceiling (0) → wall: always the
+  wall of `wallmounted:2` (support at +x), Rotate turns it on from there. A
+  wallmounted node keeps its node: a wall torch flipped onto the floor stays
+  `light_wall`, not `light_post`. Doors, beds, lying tree pieces and nodes
+  without orientation are refused. Rotating an upside-down stair keeps it
+  upside down.
 - **Items:** the roles first (with a corner mark, in the preview's material;
   a required role a placing race does not bind, or an optional one no
   placing race binds, is disabled), the role variants with a channel the template uses
