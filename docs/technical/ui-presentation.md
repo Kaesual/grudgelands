@@ -1,7 +1,9 @@
 # UI presentation toolkit
 
 Merged in 0.60.1 ([UI plan](../planning/ui-modernization-plan.md)); the
-desktop/web GUI acceptance is part of the joint GUI test.
+service-dialog helpers (`service_header`, `prose`) came with 0.61.1
+([dialog review](../planning/ui-dialog-review.md)). The desktop/web GUI
+acceptance is part of the joint GUI test.
 
 `grug_core.ui` (`mods/CORE/grug_core/ui.lua`) builds deterministic formspec
 fragments. `grug_core/init.lua` installs the shared prepend on join after
@@ -26,6 +28,10 @@ out of the prepend and explicitly requests the opaque variant.
   restores `border=true` and the caller's optional textarea font scale
   (default 1). A form with a textarea type style, such as Mail's 0.85,
   passes that scale so later text fields keep the form's typography.
+- `service_header(w, title, subtitle, icon)` draws a service window's head
+  for a form `w` wide: an icon (default the emblem), the title, an escaped
+  muted subtitle and a thin gold rule at y 1.35; the owner's content starts
+  below it.
 - `button_style(name, role)` styles one existing field (`normal`, `selected`,
   `danger`). Names are single fields, not comma-separated selector lists.
 - `frame(w, h, title, opaque)` opens a version-6 real-coordinate form; optional

@@ -12,6 +12,30 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.61.1 — refreshed vendor, quest and service windows (2026-10-25)
+
+**Compatible:** no map reset and no migration step.
+
+- **Vendors:** the offers are compact cards in two columns, each with a
+  small icon, its name, its price and its own Buy button; a long shelf
+  scrolls inside its pane and keeps its place after a purchase, so you
+  can buy from the bottom of the list twice in a row. Reputation shops
+  use the same smaller icons.
+- **Quest givers:** the list of quests stands beside the quest's text
+  and objectives, with the rewards in their own pane below them; a chosen
+  reward still shows its full details.
+- **The other service windows:** mail, trainers, mount trainers,
+  innkeepers, waystones, mining lifts, the Housing Steward, repair (with
+  durability and the total cost), character creation and the welcome
+  window (its tips in two columns) share the new look; what each window
+  does stays the same.
+- **Crafting:** the recipe details use the same text sizes as the list,
+  and the tier status reads more clearly; gathering sources show each
+  zone's own level band.
+- **Map & Quests:** the map and the quest column each take half the
+  window. Zone names stay on one line, a little smaller at 1× and larger
+  from 2×; choosing the Zones layer from the overview zooms in to 2×.
+
 ## 0.61.0 — the quests of levels 31–40 and the story's third chapter (2026-10-25)
 
 **Map reset** needed: new quest places in the wilds of levels 31–40, a

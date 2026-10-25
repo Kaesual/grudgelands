@@ -12,8 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.61.0, Round 61 "The story arc's third chapter and
-the quest rework of levels 31–40" (**map reset**, no step;
+**Current state:** 0.61.1, the refreshed service dialogs (compatible;
+[dialog review](docs/planning/ui-dialog-review.md)): the Atlas 03 vendor,
+quest-giver, mail, trainer and service windows and the typography audit
+on the shared presentation toolkit. Before it 0.61.0, Round 61 "The
+story arc's third chapter and the quest rework of levels 31–40" (**map reset**, no step;
 [completion](docs/planning/round61-plan.md#completion-2026-10-25)): the
 six contested zones of levels 31–40 rebuilt on the Round 57 quest system
 and flagged reworked, the two contested base files whole with their 15
@@ -25,7 +28,7 @@ Rampbinder to the Ashenward and Bannerbreak mining camps' foremen Audra
 Wainholt and Greda Stonehaul, A6 and T5 at 39/40 after the free camp raid
 to Nella Hedgeward and Yarra Standardmender), one optional group quest per
 zone, six new quest places, the Runner's Packet and the storm vessel with
-their picked art. **Not pushed**; it waits with 0.58.0–0.60.1 for the
+their picked art. **Not pushed**; both wait with 0.58.0–0.60.1 for the
 user's joint GUI test. Before it 0.60.1, the UI modernization (compatible;
 [UI plan](docs/planning/ui-modernization-plan.md)): every window on the
 shared theme and navigation of the presentation toolkit. Before it 0.60.0,
@@ -43,7 +46,7 @@ house), the mine leaders as guild members, an Alchemy quest at the first
 capital visit, the Alchemy herbs by level band, soulbound quest-only
 items and the seed fleet's quest-place check; four picked quest objects
 and three quest item icons. **Not pushed**; both wait for the user's joint
-GUI test of 0.57.0 to 0.61.0. Before it
+GUI test of 0.57.0 to 0.61.1. Before it
 0.59.0, Round 59 "The story arc's first chapter and
 the quest rework of levels 11–20" (**map reset**, no step;
 [completion](docs/planning/round59-plan.md#completion-2026-10-24)): the six
@@ -130,8 +133,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the joint GUI test of 0.57.0 to 0.61.0
-([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)),
+are not recorded as passed. Next: the joint GUI test of 0.57.0 to 0.61.1
+([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)),
 then Round 62 (the front 41–60 with the Round 36 main line and the
 fortresses, the last quest round), the production deploy with one map
 reset, the armor redesign and unique items ([ROADMAP](ROADMAP.md)).

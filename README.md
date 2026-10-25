@@ -95,6 +95,12 @@ levels 21–40 and leads you to your faction's fortress at 40.
 
 ## Current state
 
+**0.61.1** refreshes the vendor, quest-giver, mail, trainer and other
+service windows: vendor offers as compact cards with small icons and
+their own Buy button, the quest list beside its text and rewards, and
+clearer crafting text; the map and the quest column share the window
+half and half. No map reset.
+
 **0.61.0** reworks the quests of levels 31–40: the six contested zones
 offer their quests at once from level 30, far fewer of them hunts and
 more of them errands and things to do at a place (a sighting frame, a

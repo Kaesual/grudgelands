@@ -2,7 +2,7 @@
 
 Coordinator: Claude, 2026-10-24. Status: **complete** ([completion](#completion-2026-10-24)); 0.60.0 not pushed, it
 waits for the user's joint GUI test of 0.57.0, 0.58.0, 0.59.0, 0.60.0 and 0.60.1 (the merged UI modernization)
-([checklist](#gui-checklist-rounds-57-58-59-60-61-and-the-ui)); the user's go 2026-10-24. The plan review
+([checklist](#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)); the user's go 2026-10-24. The plan review
 (`r60/reports/plan-review.md`) and the user's answers (§2a) are folded in.
 
 Round 60 continues the **quest rework of levels 11–60** band by band on the Round 57 quest system (Round 59 did
@@ -480,17 +480,18 @@ clear.
 - **Round 61** reworks the band 31–40 with the arc's next chapter (A5 at Ashenward 34, §9).
 - The reviews' and reports' notes are in the [Round 60 carry-overs](../../BACKLOG.md#round-60-carry-overs).
 
-### GUI checklist (Rounds 57, 58, 59, 60, 61 and the UI)
+### GUI checklist (Rounds 57, 58, 59, 60, 61, the UI and 0.61.1)
 
-One test for all five rounds and the UI modernization (0.60.1; nothing since 0.57.0 has been tested in the GUI),
-desktop and the web build (the lanes' web shots were taken at 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on
-the synced game. It replaces [Round 59's list](round59-plan.md#gui-checklist-rounds-57-58-and-59); items 1–48 keep that
-list's numbers (and its wording, linked below), Round 60 adds items 5–7 in (A) and 49–66 in (B), the UI modernization
-items 67–81 in (B), Round 61 ([plan](round61-plan.md#completion-2026-10-25), 0.61.0) item 8 in (A) and items 82–96 in
-(B). Where Round 60 or 61 changes what an earlier item tests, the item says so; every earlier window item now also
-sees the new look.
+One test for all five rounds, the UI modernization (0.60.1) and the refreshed dialogs (0.61.1; nothing since 0.57.0
+has been tested in the GUI), desktop and the web build (the lanes' web shots were taken at 1024 × 600; Round 57's at
+1280 × 720 and 1035 × 696), on the synced game. It replaces [Round 59's
+list](round59-plan.md#gui-checklist-rounds-57-58-and-59); items 1–48 keep that list's numbers (and its wording, linked
+below), Round 60 adds items 5–7 in (A) and 49–66 in (B), the UI modernization items 67–81 in (B), Round 61
+([plan](round61-plan.md#completion-2026-10-25), 0.61.0) item 8 in (A) and items 82–96 in (B), the refreshed dialogs
+(0.61.1) items 97–106 in (B). Where Round 60 or 61 changes what an earlier item tests, the item says so; every earlier
+window item now also sees the new look.
 
-**Resetting a local world** (what the hosting platform does, contract §3.5; one reset covers 0.58, 0.59, 0.60 and 0.61; 0.60.1 needs none):
+**Resetting a local world** (what the hosting platform does, contract §3.5; one reset covers 0.58, 0.59, 0.60 and 0.61; 0.60.1 and 0.61.1 need none):
 
 1. Quit the world (stop the server), then make a copy of the world folder.
 2. Optional, to test the claims' containers: from the repository checkout,
@@ -814,6 +815,48 @@ compact header (1.5 units per tab row) are accepted.
     [QUESTMAP](https://claude.ai/artifact/Fb66tx9LqhvTeEwg1shzHN) of the band 31–40, the
     [story art pick page](https://claude.ai/artifact/WXgiuzQPtFNVnP8VqajemW) of drop 03 and the
     [text pick page](https://claude.ai/artifact/38zFyCvYFEFYnQz53hotLJ).
+
+**(B) The refreshed dialogs (0.61.1, compatible;
+[review and receipts](ui-dialog-review.md)):** the Atlas 03 service windows (views 18–34) and the typography audit,
+from the user's UI lane. The points below are the ones its reviews and the implementer left for the GUI. Desktop at
+1035 × 696, 1920 × 1080 and 2560 × 1440, GUI scale 1, unless an item says otherwise. The implementer's local capture
+gallery (`~/projects/grudgelands-orchestration/ui-modernization/dialogs-2026-10-25/final/index.html`, 289 frames)
+shows each window at these sizes for comparison.
+
+97. **Every service window in the new look:** vendors, quest givers, the mailbox and Admin Mail, the profession and
+    mount trainers, the innkeeper, the waystone, the mining lift, the Housing Steward and the Claim Stone, repair (each
+    item's durability and the total), the Crownbinder (also with nothing to offer), character creation, the welcome
+    window (its tips in two columns), the quickbar (E) and the coin withdrawal (three fields in one row). What each
+    window does is unchanged: the same buttons and refusals, the Alchemy rules beside the primary profession, a mount's
+    predecessor, level and owned states. **Judge:** the look against the Atlas 03 views.
+98. **Vendors:** the offer cards with small icons; the icon and the Buy button tooltips show inside the scrolling list
+    (also after scrolling). On a long shelf (a T1 gear shelf, 18 offers) scroll to the bottom and buy twice in a row:
+    the list keeps its place after each purchase, and the second click buys the offer under the mouse. The scrollbar's
+    thumb can be dragged (on the General shelf, 14 offers, it nearly fills the track; on longer shelves it is
+    smaller); the mouse wheel scrolls; changing the shelf or the mode (buy, sell, trade-in) starts at the top. A camp's
+    reputation shop: its smaller icons, Buy only on unlocked rows.
+99. **Quest givers:** the narrower list beside the text and objectives, the status legend under it; the rewards in
+    their own pane, which stays readable in the small window (1035 × 696) with a choice row; at the turn-in the chosen
+    reward's details head the text; long texts scroll; Close still holds the focus (the inventory key closes).
+100. **Mail and Admin Mail:** the text sizes of the list, the letter, the compose fields and Admin Mail's smaller
+     text and shorter buttons; the list shows subject then sender, the open letter its full sender and date;
+     deleting a letter with attachments shows the wrapping warning before it goes. At **GUI scale 1.5** in the small
+     window some mail labels do not fit (the mail tabs, Admin Mail's preview labels, the mailbox footer).
+     **Judge:** acceptable, or a later fix.
+101. **Crafting:** the recipe details in the list's text sizes, the tier status legible, the buttons not clipped
+     (some are tight at GUI 1.5); a gathered material's sources show each zone's own level band (a zone's name with
+     "(L21–30)"), no longer the plant's spread.
+102. **Map & Quests:** the map and the quest column each half the body; at 1920 × 1080 the layer buttons stand in
+     two rows of four.
+103. **Zone labels:** one line each ("Dawnmere Fields 1–10"), smaller at 1× (0.65 of the font, new) and larger from
+     2× (0.85); choosing Zones from a 1× overview enters 2× around you, the minus button still allows 1×, where
+     small windows stay dense. **Judge:** the size at 1× by eye.
+104. **WQHD** (2560 × 1440, GUI scale 1): the client keeps its pixel font size while the panels grow, so the text
+     looks relatively small. **Judge:** acceptable, or a later change (raise GUI scale or font size?).
+105. **Welcome and small sizes:** at GUI 1.5 in the small window the welcome window needs more scrolling; the Claim
+     Stone's fuel text and the Sound controls no longer collide; tabs drop their icon only where the caption needs
+     the room.
+106. **Web:** items 98, 99, 100 and 103 in the web build; the implementer captured the desktop client only.
 
 **(C) Round 57 item 16, the bays:** in a new world with the "test" seed (or the reset "test" world).
 

@@ -27,9 +27,10 @@ town fixes; Round 59 (0.59.0, a map reset) reworks the quests of levels
 reworks the quests of levels 21–30 and the six capitals, adds chapter 2 and
 re-places the Alchemy herbs by level band; 0.60.1 (compatible) merges the
 UI modernization, a new look for every window; Round 61 (0.61.0, a map
-reset) reworks the quests of levels 31–40 and adds chapter 3. None of
-them is **pushed**; they wait for the user's joint GUI test of 0.57 to
-0.61, which covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)).
+reset) reworks the quests of levels 31–40 and adds chapter 3; 0.61.1
+(compatible) refreshes the vendor, quest-giver and other service windows.
+None of them is **pushed**; they wait for the user's joint GUI test of
+0.57 to 0.61.1, which covers the UI too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)).
 Next: that GUI test, then Round 62 (the front 41–60, the last quest
 round), then the production deploy with one map reset
 ([ROADMAP](../ROADMAP.md)). The
@@ -37,12 +38,26 @@ round), then the production deploy with one map reset
 private claude.ai page, Round 50 ART) shows the planning state with the
 user's notes.
 
+- **Refreshed service dialogs merged** (2026-10-25, version 0.61.1,
+  **compatible**, no saved state, no reset;
+  [review and receipts](planning/ui-dialog-review.md)): the Atlas 03
+  service windows (views 18–34: vendor cards with small icons and direct
+  Buy, the quest list beside its text with a reward pane, mail, trainers,
+  services, creation and welcome) and the typography audit (crafting,
+  Map & Quests half and half, gather sources by zone band), plus the tab
+  hover correction (the user's UI lane `ui-tab-hover` by GPT-6 Astra; Opus
+  review MERGE AFTER FIXES, the fixes keep the vendor's scroll place and
+  restore one-line zone labels, delta review MERGE) merged into main
+  `e17c731d`, then this documentation lane UI-D2. **Not pushed**; its GUI
+  points are items 97–106 of the joint checklist. The declaration is
+  `{"schema": 3, "version": "0.61.1", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`
+  ([carry-overs](../BACKLOG.md#ui-dialogs-carry-overs)).
 - **Round 61 "The story arc's third chapter and the quest rework of levels
   31–40" complete** (2026-10-25, version 0.61.0, **map reset**, no
   migration step;
   [plan, decisions, numbers and the classification](planning/round61-plan.md#completion-2026-10-25);
   its GUI items are part of the
-  [joint checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)).
+  [joint checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)).
   **Not pushed:** 0.57.0 was pushed on 2026-10-23 without a GUI test, and
   0.58.0 to 0.61.0 wait for the user's joint GUI test of 0.57 to 0.61.
   From main `c3861491` (the plan, with the survey, the plan review and the

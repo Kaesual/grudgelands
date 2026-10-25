@@ -96,6 +96,11 @@ Decided with the user on 2026-10-22 and 2026-10-23
   translucent theme with clear buttons, icon tabs, the faction and level in
   the header and the larger map entered directly. Its GUI test runs
   together with those of Rounds 57–61.
+- **The refreshed service dialogs:** **delivered** in 0.61.1 (compatible;
+  [dialog review](docs/planning/ui-dialog-review.md)): the vendor,
+  quest-giver, mail, trainer and service windows in the Atlas 03 layouts
+  and the typography audit. Its GUI test runs together with those of
+  Rounds 57–61.
 - **Round 61, the band 31–40 and chapter 3:** **delivered** in 0.61.0 (a
   map reset; [completion](docs/planning/round61-plan.md#completion-2026-10-25)):
   the six contested zones reworked on the Round 57 system (all free play
@@ -727,6 +732,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   Greda Stonehaul, one optional group quest per zone, the Runner's Packet
   and the storm vessel with their picked art. Complete on 2026-10-25; not
   pushed, the joint GUI test of 0.57 to 0.61 open.
+- [x] **The refreshed service dialogs**
+  ([dialog review](docs/planning/ui-dialog-review.md)), version 0.61.1,
+  **compatible**, no step: the Atlas 03 service windows (views 18–34) and
+  the typography audit. Merged on 2026-10-25; not pushed, its GUI test part
+  of the joint one of 0.57 to 0.61.1.
 
 ### Remaining work
 

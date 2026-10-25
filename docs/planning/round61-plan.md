@@ -2,7 +2,7 @@
 
 Coordinator: Claude, 2026-10-25. Status: **complete** ([completion](#completion-2026-10-25)); 0.61.0 not pushed, it
 waits for the user's joint GUI test of 0.57.0 to 0.61.0
-([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui)). The plan review
+([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)). The plan review
 (`r61/reports/plan-review.md`: 2 blockers, 5 important, 8 minor) is folded in, the user's answers are in §2a.
 
 Round 61 continues the **quest rework of levels 11–60** band by band on the Round 57 quest system (Round 59 did 11–20,
@@ -229,7 +229,7 @@ behaviour it changes, and the full run once before its report.
   `income.py --check`, the seed fleet as above,
   one boot per lane.
 - **GUI checklist:** Round 61's items are part of the joint checklist of 0.57 to 0.61,
-  [Round 60's list](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui) item 8 in (A) and items 82–96 in
+  [Round 60's list](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611) item 8 in (A) and items 82–96 in
   (B); the draft here (a level-31 character of each faction through the band, chapter 3 at 34/35 and 39/40, a group
   leader with a group and the band solo without it, the fortress calls and the main line at 41) is folded in there.
 
