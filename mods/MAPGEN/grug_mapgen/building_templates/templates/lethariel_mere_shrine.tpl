@@ -127,7 +127,7 @@ layer 9
 |.........|
 
 points
-inside 4 1 2
+inside 4 2 3
 lights 3 2 4
 lights 5 2 4
 sockets 2 2 4 face=1 activity=pray id={id}_keeper role=work
