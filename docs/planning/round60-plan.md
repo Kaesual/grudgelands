@@ -884,7 +884,7 @@ shows each window at these sizes for comparison.
      Hounds and Huskell, Eriath's Chirr and the tally-stone (53–59) to "Party: The Collector Comes Due" and "Every Name
      Accounted For" at 60; The Throng's 14 from the opener through Drek's Senn, Orrel's ash slab, Yarra's Ninepins, the
      captain and Coinpit Hollow (41–50), the Kiln-Whisper Hexers, Vaska's Huskell, then Nalo's Chirr (**only after
-     Huskell**, K12) and the tally-stone (53–59) to "Party: No Claim on Our Dead" at Vaska and "The Answering Blow" at
+     Huskell**, K12) and the tally-stone (53–59) to "Party: No Claim on Our Dead" (from the Warmaster, turned in at Vaska) and "The Answering Blow" at
      the Warmaster. Each step is offered only after the one before it; nothing free blocks it. The finals' completions
      end with the fixed last lines ("We closed his account. Beneath us, someone turned a fresh page." and "His last
      blow struck the ground. The answering blow came from underneath."). The war commanders' "Party: Stonegrudge's
@@ -909,7 +909,7 @@ shows each window at these sizes for comparison.
 111. **The optional group quests:** "Party: Stop the Grinding" (Engine Nine on the Shattered Line, Nella and Yarra) and
      "Party: Close the Toll" (War Construct Last-Toll in the Causeway Toll Fields, Alna and Orrel), offered at 49, each
      a choice of three plain tier-5 trinkets. **Play 41–50 solo without them:** nothing requires them, and each band's
-     weapons sit on solo quests. From 51, Salt-Counter ("Party: Nothing Left to Count", Borin; "Party: Nobody's Number",
+     weapons sit on solo quests. At 58–59, Salt-Counter ("Party: Nothing Left to Count", Borin; "Party: Nobody's Number",
      Vaska) and Glass-Throat ("Party: Beneath the Waiting Coils", Eriath; "Party: More Than One Voice", Nalo) are
      standalone with a tier-6 trinket choice. **Judge:** each elite with a group.
 112. **The island pairs at 60** (optional, coin only): The Accord's as before (Dorrin's 6 Spire Eagles, then Stone Golem

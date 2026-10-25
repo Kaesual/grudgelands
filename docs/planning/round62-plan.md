@@ -495,8 +495,8 @@ Worktrees and branches `r62-<lane>`. Main's first-parent commits, in order (lane
 **STORYART** did not run: the picks added no object kind and no quest item.
 
 Main has 279 portable fixtures (2 new: `r62_templatefix`, `r62_frontquests`). `mods/` against 0.61.1 (measured, `git
-diff cf3fab5e 73febfda -- mods`): 30 files, +2,404 −1,197 lines: the 18 quest files (the fourteen flagged, the four
-host base files), five front spawn files, the three template files and `known_defects.txt`, `bags.lua`, `help.lua`,
+diff cf3fab5e 73febfda -- mods`): 30 files, +2,404 −1,197 lines: the 17 quest files (the fourteen flagged, three host
+base files; Blackwind's is unchanged), five front spawn files, the three template files and `known_defects.txt`, `bags.lua`, `help.lua`,
 `ui.lua`'s comment and `grug_quests/validate.lua`.
 
 ### Decisions during the round
@@ -557,7 +557,8 @@ host base files), five front spawn files, the three template files and `known_de
   every change against pushed 0.57.0; D declares 0.62.0's reset all the same.
 - **The validator's warnings** grew from 11 to 17: six new `W-night-count` on the spine's fixed objectives, now in
   flagged files.
-- **TEMPLATEFIX' review** was saved only in the coordinator's log (verdict MERGE, one Low wording finding).
+- **TEMPLATEFIX' review** (verdict MERGE, one Low wording finding) was first kept only in the coordinator's log;
+  it is saved as `r62/reports/templatefix-review.md` since the D review.
 
 ### Numbers worth keeping
 

@@ -5,7 +5,8 @@ starts from; it holds no plan and decides nothing. The deploy round's coordinato
 
 ## What moves
 
-- **The production world moves from 0.57.0 to 0.62.0 across one map reset.** origin/main is `69481ed1` (0.57.0,
+- **The production world moves from its current version (pushed: 0.57.0; the last recorded deploy is 0.55.1) to
+  0.62.0 across one map reset.** origin/main is `69481ed1` (0.57.0,
   pushed 2026-10-23 without its GUI test); 0.58.0 to 0.62.0 are on main and not pushed
   ([STATUS](../STATUS.md)).
 - **The declaration** (`tools/web_data/upgrade.json`, [upgrade contract §2](../technical/upgrade-contract.md#2-the-declaration)):

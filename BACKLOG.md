@@ -3521,6 +3521,9 @@ the deploy round starts from the [deploy plan](docs/planning/deploy-plan.md).
   towns at hard-coded placements (Lethariel's core shrine at x 16, z 12;
   Sunscar's hall at x −7, z 14 with its outer stair at x 8, z 16–23; the
   gatehouse decks); a layout change that moves one updates the fixture.
+- **The capitals' freeze report** (TEMPLATEFIX' review): `tools/building_templates/freeze_report_capitals.txt`
+  still lists Kezamba's moot house with "legend 28"; it is a freeze-time snapshot (Round 58 did not update it
+  either), so it stays unless the freeze is rerun.
 - **The item dump** (BAGS and its review): `existing.json` was stale since
   Round 51 and BAGS regenerated it with about 450 lines of registry drift
   (116 items added, three retired skills gone, 42 quest NPCs,

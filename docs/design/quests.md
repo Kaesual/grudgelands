@@ -1184,11 +1184,11 @@ send the player there. 123 quests of reward level 41–60 became 120.
   carry Ashenward's and Bannerbreak's (Toren and Drek, Nella and Yarra) and
   Stormvault's and Blackwind's (Alna and Orrel) share; the capitals carry
   the rest.
-- **Objectives**: 3–6 mob names per front zone and faction besides the
+- **Objectives**: 4–6 mob names per front zone and faction besides the
   camp hunts and the garrisons (the spine's targets and the elites among
   them); the free front about a quarter kill (25 % The Accord, 18 % The
-  Throng), the spine, fortress and camp quests keeping theirs (about 47 %
-  per faction over all).
+  Throng), the spine, fortress and camp quests keeping theirs (49 % The Accord,
+  48 % The Throng over all, lane D's count).
 - **Places**: eight new recipe places in the Battlegrounds spawn files
   ([spawn_regions.md](spawn_regions.md) `places`), the free clash sites
   076, 079, 080, 083 and 085, Stormvault's mining-camp `held_load` and the
