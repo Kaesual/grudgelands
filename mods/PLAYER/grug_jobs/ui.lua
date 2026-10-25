@@ -635,7 +635,7 @@ function grug_jobs.crafting_page_content(player, context)
 		x = x + tab_w + 0.1
 	end
 	local text, fill = tier_progress(player, tab)
-	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.7 * UI.text_scale(player))
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x + 0.05), n(TAB_Y + 0.2),
 		esc(core.colorize(UI.colors.muted, text)))
 	if fill then
@@ -651,6 +651,7 @@ function grug_jobs.crafting_page_content(player, context)
 	local overflow = not player:get_inventory():is_empty(grug_jobs.OUTPUT_LIST)
 	local bottom = STRIP_Y - (overflow and OVERFLOW_H or 0)
 	st.serial = (st.serial or 0) + 1
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
 		recipe = recipe, queue = waiting, bottom = bottom - 0.1, serial = st.serial,
 		full = job ~= nil and 1 + #waiting >= grug_jobs.QUEUE_MAX})

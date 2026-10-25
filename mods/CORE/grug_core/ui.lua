@@ -76,3 +76,21 @@ function UI.frame(w, h, title, opaque)
 	if title then fs = fs .. UI.title(0.4, 0.45, title) end
 	return fs
 end
+
+-- Service typography uses one body size. Section labels are quieter, never
+-- tiny relative to body text. All content comes from the owning service.
+function UI.prose(x, y, w, h, text, muted)
+    return "style_type[textarea;border=false;font_size=*0.85]" ..
+        ("textarea[%.3f,%.3f;%.3f,%.3f;;;%s]"):format(x, y, w, h,
+            core.formspec_escape(muted and core.colorize(UI.colors.muted, text) or text)) ..
+        "style_type[textarea;border=true;font_size=*1]"
+end
+
+function UI.service_header(w, title, subtitle, icon)
+    return "style_type[label;font_size=*0.85]" ..
+        ("image[0.4,0.4;0.65,0.65;%s]"):format(icon or "grug_ui_icon_emblem.png") ..
+        UI.title(1.25, 0.56, title) ..
+        "style_type[label;font_size=*0.85]" ..
+        ("label[1.25,0.97;%s]box[0.4,1.35;%.3f,0.015;#d4b77d40]"):
+            format(core.formspec_escape(core.colorize(UI.colors.muted, subtitle or "")), w - 0.8)
+end

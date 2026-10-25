@@ -151,8 +151,8 @@ local function build_rows()
 	end
 end
 
--- The zone labels: the grid, the reference size (a 1920x1080 window at GUI
--- scale 1 at zoom 1, the map's units to nodes) and the region names' baked
+-- The zone labels: the grid, the small viewport at zoom 1 (the map's units
+-- to nodes) and the region names' baked
 -- boxes as obstacles, then the placement.
 L.REFERENCE = {size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 72, y = 1080 / 72},
 	real_gui_scaling = 1}
@@ -165,9 +165,9 @@ local function place_zones()
 	local started = core.get_us_time()
 	local view = atlas.view()
 	local W = grug_map.window
-	local layout = W.layout(W.window_size(L.REFERENCE, grug_inventory.UI.header_h))
+	local layout = W.layout(W.window_size(L.SMALL, grug_inventory.UI.header_h))
 	local nodes = (view.max_x - view.min_x) / layout.map_w
-	local metrics = zone_labels.metrics(L.REFERENCE)
+	local metrics = zone_labels.metrics(L.SMALL)
 	-- The baked region names, drawn at normal (bake.SCALE) over the normal
 	-- image's width: their glyph box in nodes.
 	local art = dofile(modpath .. "/baked_art.lua")
@@ -207,6 +207,13 @@ local function place_zones()
 				x = point.x, z = point.z}
 			placed[#placed + 1] = {x = point.x, z = point.z, rx = row.rx, rz = row.rz}
 		end
+	end
+	local reference_layout = W.layout(W.window_size(L.REFERENCE, grug_inventory.UI.header_h))
+	local reference_nodes = (view.max_x - view.min_x) / reference_layout.map_w
+	local reference_metrics = zone_labels.metrics(L.REFERENCE)
+	for index, zone in ipairs(L.zones) do
+		local box = zone_labels.box(zone.name, zone.band, reference_metrics)
+		placed[index].rx, placed[index].rz = box.w / 2 * reference_nodes, box.h / 2 * reference_nodes
 	end
 	local overlapping, on_names = zone_labels.overlaps(placed, names)
 	-- The same labels' boxes at 1x on the small window.

@@ -331,7 +331,7 @@ end
 
 local function compose_view(state, fs)
 	local draft = state.compose
-	fs[#fs + 1] = "button[" .. X .. ",0.2;2.8,0.7;mail_admin_back;Back to admin mail]"
+	fs[#fs + 1] = "button[" .. X .. ",0.2;2.8,0.7;mail_admin_back;Back]tooltip[mail_admin_back;Back to admin mail]"
 	fs[#fs + 1] = ("image[%.2f,0.3;0.5,0.5;%s]label[%.2f,0.55;%s]"):format(X + 3.1, BADGE,
 		X + 3.75, esc(colored(COLOR.gold, "New admin letter")))
 	fs[#fs + 1] = ("label[%.2f,1.55;To]"):format(X)
@@ -373,7 +373,7 @@ local function compose_view(state, fs)
 		"Admin letters always arrive, also in a full mailbox and while the player is offline.")))
 	fs[#fs + 1] = status_line(state, 12.25)
 	fs[#fs + 1] = ("button[%.2f,12.6;2.0,0.8;mail_admin_discard;Discard]" ..
-		"style[%s;bgcolor=#3d5f8a]button[%.2f,12.6;3.2,0.8;%s;Send as Server Admin]"):format(
+		"style[%s;bgcolor=#3d5f8a]button[%.2f,12.6;3.2,0.8;%s;Send letter]"):format(
 		X + CONTENT_W - 5.3, serial(state, "send"), X + CONTENT_W - 3.2, serial(state, "send"))
 end
 
@@ -386,7 +386,7 @@ function grug_mail.admin_formspec(player, context)
 	state.draw = state.draw + 1
 	-- The focus sits on an invisible button at every send (module guide
 	-- "Initial focus"): an edit box or a table would eat the inventory key.
-	local fs = {"real_coordinates[true]",
+	local fs = {"real_coordinates[true]", "style_type[label,textarea,table;font_size=*0.85]",
 		grug_core.ui.panel(0.2, 1.1, grug_inventory.UI.frame_w - 0.4, 12.35),
 		"set_focus[mail_admin_focus;true]button[0,0;0,0;mail_admin_focus;]"}
 	if not allowed(player) then

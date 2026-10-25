@@ -144,6 +144,7 @@ local function frame(player, session, counts)
 		-- "Initial focus"): an edit box or a table would eat the inventory key.
 		"set_focus[grug_mail_focus;true]button[0,0;0,0;grug_mail_focus;]",
 		table.concat(nav), "container[0,0.95]",
+		"style_type[label,textarea;font_size=*0.85]",
 		grug_core.ui.panel(0.25, 0.95, W - 0.5, H - 1.2),
 		"label[0.4,0.55;", esc(mailbox_text(session)), "]",
 		("label[%.2f,0.55;%s]"):format(W - 3.4, esc(colored(COLOR.dim, "Purse: ") ..
@@ -174,15 +175,17 @@ local function clip(text, max)
 	if M.text_length(text) <= max then return text end
 	return M.truncate(text, max - 3) .. "..."
 end
-local FROM_CHARS, SUBJECT_CHARS = 15, 18
+local FROM_CHARS, SUBJECT_CHARS = 10, 22
 
 -- A letter or broadcast list as a table[] of one page: the unread dot, the
--- badge, sender, subject (with the number of attachments) and date.
+-- badge, subject (with the attachment count) and sender. The selected
+-- letter retains the full sender, subject and date.
 local function letter_table(fs, name, rows, selected_id, x, y, w, h)
+	fs[#fs + 1] = "style_type[table;font_size=*0.8]"
 	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=#4e3f28;" ..
 		"color=%s]"):format(COLOR.text)
 	fs[#fs + 1] = ("tablecolumns[color,span=1;text,width=0.6;image,width=1,1=%s,2=%s;" ..
-		"color;text,width=6;text,width=8;text,align=right,width=3]"):format(BADGE, SEAL)
+		"color;text,width=6;text,width=4]"):format(BADGE, SEAL)
 	local cells, selected = {}, 0
 	for index, row in ipairs(rows) do
 		local marker = row.items and #row.items > 0 and (" (+" .. #row.items .. ")") or ""
@@ -190,8 +193,7 @@ local function letter_table(fs, name, rows, selected_id, x, y, w, h)
 			SUBJECT_CHARS - #marker) .. marker
 		local badge = (row.kind == "admin" or not row.kind) and 1 or row.kind == "npc" and 2 or 0
 		local entries = {COLOR.dot, row.read and "" or "•", tostring(badge),
-			row.read and COLOR.read or COLOR.unread, clip(row.from or M.ADMIN_LABEL, FROM_CHARS),
-			subject, date(row.time)}
+			row.read and COLOR.read or COLOR.unread, subject, clip(row.from or M.ADMIN_LABEL, FROM_CHARS)}
 		for _, entry in ipairs(entries) do cells[#cells + 1] = esc(entry) end
 		if row.id == selected_id then selected = index end
 	end
@@ -209,8 +211,8 @@ end
 -- Letters and Announcements: the list left, the reading pane right
 --
 
-local LIST_X, LIST_Y, LIST_W, LIST_H = 0.4, 1.45, 7.5, 5.4
-local PANE_X, PANE_W = 8.15, 4.95
+local LIST_X, LIST_Y, LIST_W, LIST_H = 0.4, 1.45, 6.1, 5.4
+local PANE_X, PANE_W = 6.75, 6.35
 local BODY_Y = 3.15
 
 local function reading_head(fs, entry, kind)
@@ -230,9 +232,8 @@ local function reading_head(fs, entry, kind)
 end
 
 local function reading_body(fs, entry, height)
-	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#0d0e10]textarea[%.2f,%.2f;%.2f,%.2f;;;%s]")
-		:format(PANE_X, BODY_Y, PANE_W, height, PANE_X, BODY_Y, PANE_W, height,
-			esc(entry.body))
+	fs[#fs + 1] = grug_core.ui.panel(PANE_X, BODY_Y, PANE_W, height) ..
+		grug_core.ui.prose(PANE_X + 0.12, BODY_Y + 0.1, PANE_W - 0.24, height - 0.2, entry.body)
 end
 
 local function dialog_box(fs, y, h)
@@ -263,9 +264,8 @@ end
 -- drawn for another letter (a row clicked meanwhile) acts on nothing.
 local function delete_dialog(fs, letter)
 	dialog_box(fs, 9.25, 2.9)
-	fs[#fs + 1] = ("label[%.2f,9.6;%s]label[%.2f,10.25;%s]"):format(PANE_X + 0.2,
-		esc(colored(COLOR.bad, "This letter still holds\nits attachments.")), PANE_X + 0.2,
-		esc("Delete it together with them?"))
+	fs[#fs + 1] = grug_core.ui.prose(PANE_X + 0.2, 9.4, PANE_W - 0.4, 1.45,
+        "This letter still holds its attachments.\nDelete it together with them?")
 	fs[#fs + 1] = ("button[%.2f,11.15;1.6,0.75;delete_cancel;Cancel]" ..
 		"style[delete_confirm_%d;bgcolor=#8a3a2c]button[%.2f,11.15;1.6,0.75;delete_confirm_%d;Delete]")
 		:format(PANE_X + 1.4, letter.id, PANE_X + 3.15, letter.id)
@@ -281,7 +281,7 @@ local function letters_tab(player, session, fs)
 	local unread = 0
 	for _, letter in ipairs(letters) do if not letter.read then unread = unread + 1 end end
 	fs[#fs + 1] = ("label[%.2f,1.2;%s]"):format(LIST_X, esc(colored(COLOR.dim,
-		"From, subject and date, newest first")))
+		"Subject and sender, newest first")))
 	letter_table(fs, "letters", rows, selected and selected.id, LIST_X, LIST_Y, LIST_W, LIST_H)
 	fs[#fs + 1] = pager("letters", LIST_X, 7.05, page, pages)
 	fs[#fs + 1] = ("label[%.2f,8.1;%s]"):format(LIST_X, esc(colored(COLOR.dim,

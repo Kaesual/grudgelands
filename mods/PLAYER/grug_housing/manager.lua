@@ -110,24 +110,26 @@ local function formspec(session, player)
 		for index, line in ipairs(LINES) do lines[index] = line end
 		lines[#lines + 1] = grug_housing.recovered.NOTICE
 	end
-	-- One more line moves the rest down by a line.
-	local shift = (#lines - #LINES) * 0.45
-	local fs = {grug_core.ui.frame(10.5, 6.8 + shift, "Housing Steward"),
-		grug_core.ui.panel(0.2, 0.85, 10.1, 3.55 + shift)}
-	for index, line in ipairs(lines) do
-		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.7 + index * 0.45, ui.esc(line))
-	end
+	local shift = #lines > #LINES and 0.6 or 0
+	local UI = grug_core.ui
+	local fs = {UI.frame(12, 7.4 + shift), "set_focus[close;true]", UI.service_header(12, "Housing Steward", "Your place in the world"),
+		UI.panel(0.4, 1.65, 5.5, 3.9), UI.panel(6.1, 1.65, 5.5, 3.9),
+		UI.heading(0.65, 2.0, "YOUR CLAIM"), UI.heading(6.35, 2.0, "KEEP IT FUELLED"),
+		UI.prose(0.65, 2.3, 5, 3, LINES[1] .. "\n\n" .. LINES[2] .. "\n\n" .. LINES[3] .. " " .. LINES[4]),
+		UI.prose(6.35, 2.3, 5, 3, table.concat(LINES, "\n", 5, #LINES))}
+	if shift > 0 then fs[#fs + 1] = UI.prose(0.5, 5.65, 11, 0.6, lines[#lines]) end
+	fs[#fs + 1] = "style_type[label;font_size=*0.85]"
 	if session.message then
-		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(4.75 + shift, ui.text(session.message,
+		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(5.95 + shift, ui.text(session.message,
 			session.message_color))
 	end
 	local ok, reason = grug_housing.can_receive_stone(player)
 	if ok then
-		fs[#fs + 1] = ("button[0.4,%g;5.2,0.8;receive;Receive Claim Stone]"):format(5.5 + shift)
+		fs[#fs + 1] = ("button[0.4,%g;3.4,0.6;receive;Receive Claim Stone]"):format(6.35 + shift)
 	else
-		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(5.9 + shift, ui.esc(reason))
+		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(6.6 + shift, ui.esc(reason))
 	end
-	fs[#fs + 1] = ("button_exit[6.9,%g;3.2,0.8;close;Close]"):format(5.5 + shift)
+	fs[#fs + 1] = ("button_exit[9.8,%g;1.7,0.6;close;Close]"):format(6.35 + shift)
 	return table.concat(fs)
 end
 

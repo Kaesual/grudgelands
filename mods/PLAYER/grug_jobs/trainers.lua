@@ -80,7 +80,7 @@ end
 -- a longer text grows the window instead of needing a scrollbar.
 local WIDTH, PAD, LINE_STEP = 11, 0.4, 0.42
 local GREETING_LINES, NOTICE_LINES = 3, 2
-local BUTTON_H, BUTTON_GAP, CLOSE_W = 0.8, 0.25, 1.8
+local BUTTON_H, BUTTON_GAP, CLOSE_W = 0.6, 0.25, 1.8
 -- Characters per line (overview.lua's estimate: 6.6 per unit).
 local LINE_CHARS = math.floor((WIDTH - 2 * PAD) * 6.6)
 
@@ -108,10 +108,11 @@ local function trainer_formspec(player, profession, confirming)
 	elseif known then
 		text = crafting_hint(profession)
 	end
-	local fs = {grug_core.ui.heading(PAD, 0.45, definition.name .. " Trainer")}
+	local fs = {grug_core.ui.service_header(WIDTH, definition.name .. " Trainer",
+		definition.class == "primary" and "Primary profession" or "Additional profession")}
 	-- `y` is the centre of the next line (real-coordinate labels are centred
 	-- on their y); a block takes at least `reserved` lines.
-	local y = 1.1
+	local y = 1.8
 	local function block(value, reserved)
 		local count = 0
 		if value then
@@ -124,7 +125,12 @@ local function trainer_formspec(player, profession, confirming)
 	end
 	block(grug_jobs.GREETINGS[profession], GREETING_LINES)
 	y = y + 0.2
+	fs[#fs + 1] = grug_core.ui.panel(0.3, y - 0.23, WIDTH - 0.6, 0.65)
 	block(status, 1)
+	y = y + 0.3
+	if profession == "alchemist" then
+		block("Alchemy does not use a primary profession slot.", 1)
+	end
 	block(text, NOTICE_LINES)
 	local buttons = {}
 	if confirming then
@@ -153,7 +159,7 @@ local function trainer_formspec(player, profession, confirming)
 	fs[#fs + 1] = ("button_exit[%.2f,%.2f;%.2f,%.2f;grug_jobs_close;Close]"):format(
 		WIDTH - PAD - CLOSE_W, row_y, CLOSE_W, BUTTON_H)
 	return grug_core.ui.frame(WIDTH, row_y + BUTTON_H + PAD) ..
-		grug_core.ui.panel(0.2, 0.8, WIDTH - 0.4, row_y - 1.0) .. table.concat(fs)
+		table.concat(fs)
 end
 
 function grug_jobs.open_trainer(player, profession, position, entity)

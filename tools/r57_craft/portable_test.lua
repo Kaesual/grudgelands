@@ -742,7 +742,7 @@ do
 	click(c, {[F.queue] = "View Queue"})
 	local fs = c.formspec
 	has(fs, "Crafting queue", "C the queue view")
-	has(fs, "style_type[textarea;textcolor=#a9aea4]textarea[", "C all soft-wrapped notes stay muted")
+	has(fs, "style_type[textarea;font_size=*0.8;textcolor=#a9aea4]textarea[", "C all soft-wrapped notes stay muted")
 	has(fs, "style_type[textarea;textcolor=#eeeae1]", "C note styling restores the shared text role")
 	local note_text = fs:match("textarea%[[^;]+;[^;]+;;;(.-)%]")
 	check(note_text and not note_text:find("\27", 1, true),
@@ -767,7 +767,7 @@ do
 	click(c, {[F.unqueue .. id] = "✕"})
 	eq(raw(c, J.QUEUE_KEY), before, "C a cancel without room changes nothing")
 	has(c.formspec, "Not enough inventory space to cancel", "C ... and says why")
-	has(c.formspec, "style_type[textarea;textcolor=#f0c75e]textarea[",
+	has(c.formspec, "style_type[textarea;font_size=*0.8;textcolor=#f0c75e]textarea[",
 		"C a refusal uses one consistent warning color across soft wraps")
 	-- A stale ✕ (an id no job waits under) cancels nothing.
 	clear_slots(c, filled)

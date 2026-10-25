@@ -54,17 +54,19 @@ local NOTICE = {[true] = "#7ae08a", [false] = "#ff6b6b"}
 -- entry (default: the Riding Trainer).
 function grug_mounts.trainer_formspec(rows, notice, service)
 	service = service or SERVICES.riding_trainer
-	local fs = {grug_core.ui.frame(11, 6.5, service.title),
-		"label[0.4,0.85;" .. esc(service.subtitle) .. "]"}
+	local fs = {grug_core.ui.frame(11, 7.6),
+		grug_core.ui.service_header(11, service.title, service.subtitle)}
 	for index, row in ipairs(rows) do
-		local y = 1.5 + (index - 1) * 0.85
-		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.35, 10.5, 0.76)
-		local name = ("%s (L%d)"):format(row.name, row.level)
+		local y = 2.0 + (index - 1) * 1.1
+		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.35, 10.5, 1.0)
+		local name = row.name
+		fs[#fs + 1] = ("label[0.55,%.2f;%s]"):format(y + 0.36,
+			esc(core.colorize(grug_core.ui.colors.muted, "Level " .. row.level)))
 		local open = row.state == "buy" or row.state == "owned"
-		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y,
+		fs[#fs + 1] = ("label[0.55,%.2f;%s]"):format(y,
 			esc(open and name or core.colorize(GREY, name)))
 		if row.state == "buy" then
-			fs[#fs + 1] = ("button[7.3,%.2f;3.0,0.65;buy_%d;%s]"):format(y - 0.3,
+			fs[#fs + 1] = ("button[7.9,%.2f;2.5,0.55;buy_%d;%s]"):format(y - 0.3,
 				row.id, esc("Buy " .. row.price))
 		else
 			local text
@@ -75,15 +77,15 @@ function grug_mounts.trainer_formspec(rows, notice, service)
 			else
 				text = core.colorize(GREY, "Learn " .. row.previous .. " first")
 			end
-			fs[#fs + 1] = ("label[5.6,%.2f;%s]"):format(y, esc(text))
+			fs[#fs + 1] = ("label[5.3,%.2f;%s]"):format(y, esc(text))
 		end
 	end
 	if notice then
-		fs[#fs + 1] = ("label[0.4,5.0;%s]"):format(esc(core.colorize(
+		fs[#fs + 1] = ("label[0.4,6.25;%s]"):format(esc(core.colorize(
 			NOTICE[notice.ok == true], notice.text)))
 	end
-	fs[#fs + 1] = "label[0.4,5.45;" .. esc(grug_mounts.QUICKBAR_TIP) .. "]"
-	fs[#fs + 1] = "button_exit[8.9,5.65;1.7,0.6;close;Close]"
+	fs[#fs + 1] = "label[0.4,6.8;" .. esc(grug_mounts.QUICKBAR_TIP) .. "]"
+	fs[#fs + 1] = "button_exit[8.9,6.7;1.7,0.55;close;Close]"
 	return table.concat(fs)
 end
 

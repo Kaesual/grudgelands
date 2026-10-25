@@ -1,7 +1,9 @@
 # Atlas 03 dialog review
 
-2026-10-25. Design evaluation only; no runtime implementation is authorized by
-this artifact. The user wants to revisit Atlas 03 views **18–34**, especially
+2026-10-25. The user approved implementation of the refreshed views **18–34**
+(the archive remains reference only), followed by a typography and scaling
+audit of every current game window. This is a compatible presentation change,
+with no saved-state or gameplay changes. The focus includes
 vendors and quest givers, while preserving the existing mechanisms. They also
 reported oversized purchase icons in 0.60.1. Keep the `ui-tab-hover` worktree;
 its separate hover correction is commit `0727925c`.
@@ -64,6 +66,149 @@ Luanti small-window font behavior, input/focus and desktop/web acceptance still
 need implementation-time checks. No Luanti changes or personal installation
 were made for this review.
 
-Next is the user's visual feedback on these proposals, before a runtime lane.
+Implementation is authorized in the retained `ui-tab-hover` worktree.
 The existing shared UI helpers should remain the rendering foundation; the
 service mods keep their current mechanics and authoritative data.
+
+## Implementation and visual acceptance
+
+- Use the shared presentation helpers; retain service-owned sessions, fields,
+  action validation, native inventories and update cadence.
+- Correct source labels to show each zone's own level band; do not change
+  plant placement. Balance crafting list/detail type and tier status.
+- Allocate Map & Quests approximately half the width to each side.
+- Capture every window family in a disposable actual client at 1035×696,
+  1600×900 and 2560×1440, GUI scale 1. Inspect all images.
+- Complete the first implementation before the visual correction passes;
+  at most two correction passes, then the user's GUI acceptance.
+- Keep screenshots and a coverage/iteration log with the capture artifact.
+  Run the affected fixtures, Lua checks, fresh-server audit, independent
+  review and the full fixture suite once on the final implementation.
+- Keep the worktree. Do not merge, push or install into the user's client.
+
+## Implementation review, 2026-10-25
+
+Implemented on `ui-tab-hover`, compatible. The shared UI module adds only
+presentation helpers for service headers and wrapping read-only prose. Service
+owners retain their sessions and validation; no saved keys, formspec ids,
+inventory lists/capacities or existing public APIs change. No globalstep,
+per-tick work, new countdown or faster form resend was added. Vendor cards add
+presentation elements to their existing bounded catalogue; scrolling is client
+side. Zone-label placement remains a single startup pass.
+
+- **Trade and services:** two-column vendor cards with small icons, item
+  names, prices and direct Buy actions; smaller reputation-shop icons; repair
+  durability and totals; Crown previews; common service headers for trainers,
+  innkeepers, waystones, mining lifts and the Housing Steward. Every tier,
+  destination, restriction and transaction route remains the owner's.
+- **Quests:** categorized native list beside conversation/objectives and a
+  separate reward panel. Chosen enchanted reward details still head the text;
+  native text scrolling and item tooltips remain available. Accept/Complete
+  and Close keep their field routes and safe initial focus.
+- **Other windows:** balanced mailbox reading/list widths and subject-first
+  list rows, full sender/date in the selected letter, existing attachment-loss
+  confirmation with wrapping text; smaller admin-mail text and shorter compose
+  actions; one-page creation, two-column Welcome, compact quickbar and the
+  three coin fields in one row.
+- **Existing UI audit:** crafting details match list typography; tier status
+  is more legible; gather sources show zone bands instead of plant placement
+  filters. Map/quest columns use half the body width each. Compact zone labels
+  enter the existing 2× zoom when selected from an overview; manual 1× remains
+  possible. Tabs omit decorative icons only when their captions need the room.
+  Claim fuel instructions and Sound controls no longer collide at small size.
+
+### Visual passes
+
+Initial implementation was frozen before captures; then exactly **two** visual
+correction passes were made. Initial coverage: 67 views at each of 1035×696,
+1600×900 and 2560×1440 (201 actual-client frames), all inspected. The first pass
+fixed vendor backgrounds that did not follow their scroll parent, reward-panel
+height, housing/Welcome text fit, mail-list width, and compact legacy labels.
+The second fixed the mail deletion warning, admin compose captions, narrow tab
+icons and the crowded zone view. The already identified Crown empty-state
+position was corrected in this second pass as well.
+
+Final coverage adds admin compose and attachment deletion (69 views per
+resolution), plus a bright snow scene at the small size. Original PNGs, exact
+formspec strings, manifests and engine logs are retained with the offline
+inspection gallery. Extra small-window captures cover chosen quest rewards,
+a running crafting queue, the empty Crown list and selected GUI-scale-1.5 views.
+
+Independent read-only code review found no correctness/mechanism blockers after
+fixes. It specifically checked focus, guild/Alchemy rules, mail input and
+confirmation routes, quest choices, tab mappings, travel and map zoom.
+
+### Practical limits and user acceptance
+
+The browser's CSS layout is approximated with native formspec widgets; there
+is no browser-style automatic layout or variable row height. Long quest and
+reward texts keep native client scrolling. The manually selected 1× Zones
+overview can still overlap; 2× is the readable entry view. Native font settings
+remain authoritative: WQHD at GUI scale 1 keeps the client's pixel font size
+while widgets grow. No global font rewriting was introduced.
+
+The extra 1035×696 / GUI-scale-1.5 audit found remaining clipping/overlap in
+mail tabs, admin preview labels and mailbox footer labels; Welcome needs more
+scrolling and some crafting buttons are tight. These are visible review items,
+not a claim that every font/GUI setting now fits. The two authorized visual
+correction passes are exhausted; no third redesign was started. WQHD's native
+pixel fonts still look small relative to the larger panels.
+
+The bright scene follows the dark scene in the same temporary player session.
+It intentionally exposes retained page state (for example Admin Mail compose
+and the manually reset 1× Zones view); it is a contrast audit, not a reset-state
+comparison. The dark series covers the default entry states at all three sizes.
+
+Final inspection artifact:
+`~/projects/grudgelands-orchestration/ui-modernization/dialogs-2026-10-25/final/index.html`.
+It contains **289 inspected frames**: 69 at each requested resolution, 69
+additional bright-scene frames, three transaction/queue/empty-state examples
+and ten GUI-scale-1.5 examples. The parent folder retains initial/pass-one
+snapshots, contact sheets, exact formspecs and logs; `atlas-comparisons/` has
+17 browser/client pairs. The offline gallery's count, scene, resolution and
+search filters were checked in a separate headless Firefox profile.
+
+The native implementation deliberately simplifies the browser study: service
+windows use one service header rather than duplicating the inventory header;
+quest selection retains the native categorized text list; narrative and reward
+text use scrollable native text areas; vendor windows retain their existing
+transaction context instead of adding an inventory strip. No additional item
+inspection mode or new workflow was introduced.
+
+The desktop Flatpak client was rendered in isolated test worlds. This is not
+a web-build execution claim; the user's desktop/web acceptance remains open.
+Inspect vendor hover/purchase scrolling, quest reward selection, mail with
+attachments, and personal font/GUI settings. No merge, push or personal Luanti
+installation is part of this work; keep the worktree for the user's review.
+
+### Verification
+
+- Final targeted fixtures: `ui_navigation`, `r44_mq`, `r57_qsys`,
+  `r57_details`, `r48_mail`, `r50_pgame`, `r44_qb`, `r58_lift`: **8 passed**.
+  Earlier affected checks also passed: `r451_mc`, `r451_sc`, `r45_ui`,
+  `r502_home`. Geometry/text expectations were updated to the new rendering;
+  transaction assertions remain. New checks cover actual zone bands and
+  entering/leaving the 2× Zones view through existing field routes.
+- `check_fresh_server.py`: PASS. `r28_design/validate.py --game`:
+  **0 errors**, six existing Rift quest/spawn warnings.
+- Every changed Lua file parses as Lua 5.1. `check_lua.sh` sweeps pass on
+  changed production files, the capture probe and the other changed fixtures.
+  Five CLI fixtures retain pre-existing sweep-5 findings: `r27_quest_item_names`
+  and `r57_qsys/quest_test.lua` use `io.popen` for fixture directory discovery;
+  `r29_b` and `r451_nq` use `os.exit`; `r35_f` uses both. This patch changes
+  their rendering assertions only; runtime mods have no such addition.
+  All five execute successfully under LuaJIT.
+- Python compilation, shell syntax and `git diff --check`: PASS.
+  All capture boots completed without server errors. Client logs contain
+  only the expected shutdown disconnect (`fidelity capture complete`), no
+  invalid-formspec warnings. All worlds and client profiles were isolated;
+  engine runs used `LC_ALL=C LANG=C` and the shared Lua queue.
+- The full suite was run **once**, `JOBS=4` with five reserved slots (one
+  fixture runs two seeds). It reported **266 passed, 10 failed**; each failure
+  was traced to an old layout/text extraction assertion. Updated fixtures:
+  `r25_interfaces`, `r27_quest_item_names`, `r28_a6_ui`, `r29_b`, `r35_f`,
+  `r451_nq`, `r451_tr`, `r48_admin`, `r57_craft`, `r58_campnpc`. All ten
+  subsequently passed targeted reruns; no runtime changes were needed.
+  The final result covers **all 276 fixtures**. A second independent review
+  checked these adaptations, retaining transaction/state assertions and the
+  quest-item-name checks across the newly separated text panes.

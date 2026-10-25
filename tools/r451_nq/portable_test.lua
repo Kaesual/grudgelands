@@ -94,7 +94,7 @@ do
 	local entity = {_grug_start = "s", _grug_socket = "1", object = {is_valid = function() return true end,
 		get_pos = function() return {x = 0, y = 0, z = 0} end}}
 	local function on_row()
-		return tonumber(shown:match("textlist%[[^%]]-;quests;[^%]]-;(%d+);false%]"))
+		return tonumber(shown:match("textlist%[[^%]]-;quests;[^%]]-;(%d+);true%]"))
 	end
 	local function shows(id) return shown:find("Text " .. id, 1, true) ~= nil end
 	local function row(id, status) return {id = id, title = "T " .. id, status = status} end
@@ -116,7 +116,7 @@ do
 	eq(#sounds, 1, "Q the first open plays its cue")
 	eq(sounds[1], "npc_quest", "Q ...the quest giver's cue")
 	local focus = shown:find("set_focus[close;true]", 1, true)
-	local close = shown:find("button_exit[13.3,8.4;2.3,0.7;close;Close]", 1, true)
+	local close = shown:find("button_exit[13.45,10.55;2,0.55;close;Close]", 1, true)
 	check(focus ~= nil and close ~= nil and focus < close, "Q Close holds the focus (set before it)")
 
 	-- A click in the list shows the clicked row, without the open cue.

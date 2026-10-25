@@ -48,7 +48,7 @@
 local FORMNAME = "grug_traders:trade"
 
 local TRADE_RANGE = 6 -- m; the form closes beyond this
-local GRID_COLS = 6
+local GRID_COLS = 2
 local SELL_ROWS = 8 -- rows per page
 
 local FORM_W, FORM_H = 14, 10.2
@@ -221,7 +221,8 @@ end
 --
 
 local function header(parts, player, session, vendor, discount)
-	parts[#parts + 1] = grug_core.ui.heading(0.5, 0.6, vendor.nametag)
+	parts[#parts + 1] = grug_core.ui.title(0.5, 0.6, vendor.nametag) ..
+		"style_type[label;font_size=*0.85]"
 	parts[#parts + 1] = "label[0.5,1.2;Your money: " ..
 		esc(grug_money.format(grug_money.get(player))) .. "]"
 	if discount then
@@ -297,25 +298,19 @@ local function render_reputation(parts, player, session)
 			return esc(row.unlocked and value or core.colorize(GREYED, value))
 		end
 		for column, item in ipairs(row.items) do
-			local x = 0.7 + (column - 1) * 4.6
+			local x = 0.65 + (column - 1) * 4.6
+			parts[#parts + 1] = ("item_image[%.2f,%.2f;0.5,0.5;%s]"):format(x, y + 0.17, item.item)
+			local tip = esc(full_desc(item.item) .. "\nPrice: " ..
+				grug_guild.format_points(item.price) .. " reputation")
+			parts[#parts + 1] = ("tooltip[%.2f,%.2f;0.5,0.5;%s]"):format(x, y + 0.17, tip)
+			parts[#parts + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.65, y + 0.2, text(short_desc(item.item)))
+			parts[#parts + 1] = grug_guild.reputation_formspec(x + 0.65, y + 0.62, item.price)
 			if row.unlocked then
 				local key = key_of[item.item]
 				session.rep_shown[item.item] = true
-				parts[#parts + 1] = ("item_image_button[%.2f,%.2f;0.9,0.9;%s;repbuy_%d;]")
-					:format(x, y, item.item, key)
-				parts[#parts + 1] = ("tooltip[repbuy_%d;%s]"):format(key,
-					esc(full_desc(item.item) .. "\nPrice: " ..
-						grug_guild.format_points(item.price) .. " reputation"))
-			else
-				parts[#parts + 1] = ("item_image[%.2f,%.2f;0.9,0.9;%s]"):format(x, y, item.item)
-				parts[#parts + 1] = ("tooltip[%.2f,%.2f;0.9,0.9;%s]"):format(x, y,
-					esc(full_desc(item.item)))
+				parts[#parts + 1] = ("button[%.2f,%.2f;1.0,0.45;repbuy_%d;Buy]tooltip[repbuy_%d;%s]"):
+					format(x + 3.4, y + 0.38, key, key, tip)
 			end
-			parts[#parts + 1] = ("label[%.2f,%.2f;%s]"):format(x + 1.1, y + 0.2,
-				text(short_desc(item.item)))
-			-- The price through the one reputation display (its icon once
-			-- picked), in a locked row too: the player sees what it will cost.
-			parts[#parts + 1] = grug_guild.reputation_formspec(x + 1.1, y + 0.62, item.price)
 		end
 		parts[#parts + 1] = ("label[9.9,%.2f;%s]"):format(y + 0.42, row.unlocked and
 			esc(("Use from level %d"):format(row.items[1].use_level)) or
@@ -353,22 +348,31 @@ local function render_buy(parts, player, session, vendor, discount)
 
 	local offer = current_offer(player, session, vendor, discount)
 	session.offer = offer
+	-- A bounded, client-scrolled catalogue: all offers keep their stable
+	-- session indices, with one direct purchase per click.
+	local row_count = math.ceil(#offer / GRID_COLS)
+	local extent = math.max(0, row_count * 0.95 - 6.45)
+	parts[#parts + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=10;largestep=40;thumbsize=60]"):
+		format(math.ceil(extent * 100))
+	if extent > 0 then parts[#parts + 1] = "scrollbar[13.35,2.8;0.25,6.45;vertical;offers_scroll;0]" end
+	parts[#parts + 1] = "scroll_container[0.5,2.8;12.7,6.45;offers_scroll;vertical;0.01]"
 	for i, entry in ipairs(offer) do
-		local col = (i - 1) % GRID_COLS
-		local row = math.floor((i - 1) / GRID_COLS)
-		local x = 0.6 + col * 2.2
-		local y = 2.9 + row * 2.5
-		parts[#parts + 1] = grug_core.ui.panel(x - 0.12, y - 0.12, 2.05, 2.3)
-		parts[#parts + 1] = ("item_image_button[%.2f,%.2f;1.6,1.6;%s;buy_%d;]")
-			:format(x, y, entry.item, i)
+		local x = ((i - 1) % GRID_COLS) * 6.4
+		local y = math.floor((i - 1) / GRID_COLS) * 0.95
+		parts[#parts + 1] = ("image[%.2f,%.2f;6.2,0.85;grug_ui_panel.png;6]"):format(x, y)
+		parts[#parts + 1] = ("item_image[%.2f,%.2f;0.55,0.55;%s]"):format(x + 0.12, y + 0.15, entry.item)
+		parts[#parts + 1] = grug_core.ui.prose(x + 0.8, y + 0.06, 4.1, 0.42, short_desc(entry.item))
 		local price_text = grug_money.format(entry.price)
 		local tip = full_desc(entry.item) .. "\nPrice: " .. price_text
 		if entry.base ~= entry.price then
 			tip = tip .. "\n(normally " .. grug_money.format(entry.base) .. ")"
 		end
-		parts[#parts + 1] = ("label[%.2f,%.2f;%s]"):format(x, y + 1.85, esc(price_text))
-		parts[#parts + 1] = ("tooltip[buy_%d;%s]"):format(i, esc(tip))
+		parts[#parts + 1] = ("label[%.2f,%.2f;%s]button[%.2f,%.2f;1.0,0.5;buy_%d;Buy]"):
+			format(x + 0.8, y + 0.64, esc(core.colorize(grug_core.ui.colors.accent, price_text)), x + 5.05, y + 0.17, i)
+		parts[#parts + 1] = ("tooltip[buy_%d;%s]tooltip[%.2f,%.2f;0.55,0.55;%s]"):
+			format(i, esc(tip), x + 0.12, y + 0.15, esc(tip))
 	end
+	parts[#parts + 1] = "scroll_container_end[]"
 	if #offer == 0 then
 		-- The guild house's exchange counter sells nothing: the guild's goods
 		-- are the camp vendors'.
@@ -376,11 +380,7 @@ local function render_buy(parts, player, session, vendor, discount)
 			"The Miner's Guild sells its goods at the mining camps." or
 			"The vendor has nothing on this shelf.") .. "]"
 	end
-	-- Required form height. The full gear shelf is 18 entries (six weapon
-	-- families and twelve armour pieces); filtered profession views are smaller. General-tab supplies
-	-- may also extend to a third row, so derive the window from the actual view.
-	local grid_rows = math.ceil(#offer / GRID_COLS)
-	return 2.9 + grid_rows * 2.5 + 1.2
+	return FORM_H
 end
 
 local function render_sell(parts, player, session)

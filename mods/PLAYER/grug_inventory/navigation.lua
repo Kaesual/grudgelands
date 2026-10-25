@@ -38,7 +38,14 @@ function grug_inventory.navigation_layout(player, context, width, info)
     if info and (info.real_gui_scaling or 1) > 1.2 and info.size and info.size.x < 1500 then
         per_row = 4
     end
-    return {ids = ids, titles = titles, per_row = per_row,
+    local ppu, font_scale = 53.33, 1
+    if info and info.size and info.max_formspec_size then
+        ppu = info.size.y / info.max_formspec_size.y
+        local form_h = UI.frame_h + UI.header_h + math.max(0, math.ceil(#ids / per_row) - 1) * 0.54
+        ppu = ppu * math.min(1, info.max_formspec_size.y / form_h)
+        font_scale = info.real_gui_scaling or 1
+    end
+    return {ids = ids, titles = titles, per_row = per_row, ppu = ppu, font_scale = font_scale,
         height = UI.header_h + math.max(0, math.ceil(#ids / per_row) - 1) * 0.54}
 end
 
@@ -90,11 +97,16 @@ function grug_inventory.navigation(player, context, selected, width, layout)
             local field = PREFIX .. index
             local active = ids[index] == selected
             local color = active and accent or grug_core.ui.colors.muted
+            -- Prefer readable captions when a narrow tab cannot also fit its icon.
+            local icon = w * (layout.ppu or 53.33) >=
+                (#caption[1] * 7.1 + 24) * (layout.font_scale or 1)
             fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgimg_middle=6;padding=-6,-6,6,6;" ..
-                "font_size=*0.85;textcolor=%s;content_offset=6,0]"):format(field, color)
+                "font_size=*0.85;textcolor=%s;content_offset=%d,0]"):format(field, color, icon and 6 or 0)
             fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.46;%s;%s]"):format(x, y, w, field, esc(caption[1]))
-            fs[#fs + 1] = ("image[%.3f,%.3f;0.27,0.27;%s]"):
+            if icon then
+                fs[#fs + 1] = ("image[%.3f,%.3f;0.27,0.27;%s]"):
                 format(x + 0.09, y + 0.09, esc("grug_ui_icon_" .. caption[2] .. ".png^[multiply:" .. color))
+            end
             fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(titles[index]))
             if active then
                 fs[#fs + 1] = ("box[%.3f,%.3f;%.3f,0.035;%s]"):format(x, y + 0.47, w, accent)

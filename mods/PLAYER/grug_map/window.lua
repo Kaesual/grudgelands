@@ -61,7 +61,7 @@ local PASS = 0.1
 -- under the horizontal scrollbar (Round 47): BUTTON_TOP below it, one row
 -- when every button gets at least BUTTON_MIN units, else two.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
-local COLUMN_MIN, COLUMN_SHARE = 6.5, 0.3
+local COLUMN_SHARE = 0.5
 local BUTTON_H, BUTTON_GAP, BUTTON_TOP = 0.6, 0.1, 0.15
 W.BUTTON_MIN = 1.25
 -- Overlay sizes in formspec units, constant at every zoom (only positions
@@ -115,7 +115,7 @@ end
 function W.layout(w, h)
 	local count = #layers.LIST
 	local map_y = PAD + HEADER_H + 0.2
-	local column = math.max(COLUMN_MIN, w * COLUMN_SHARE)
+	local column = (w - 2 * PAD - GAP) * COLUMN_SHARE
 	local avail_w = w - 2 * PAD - BAR - BAR_GAP - GAP - column
 	local function map_width(rows)
 		local reserve = rows > 0 and BUTTON_TOP + rows * BUTTON_H + (rows - 1) * BUTTON_GAP or 0
@@ -128,7 +128,7 @@ function W.layout(w, h)
 		map_w = map_width(2)
 	end
 	local map_h = map_w * 8 / 9
-	local column_x = PAD + map_width(0) + BAR_GAP + BAR + GAP
+	local column_x = w - PAD - column
 	return {w = w, h = h, map_x = PAD, map_y = map_y, map_w = map_w, map_h = map_h,
 		column = {x = column_x, y = map_y, w = w - PAD - column_x, h = h - PAD - map_y},
 		buttons = {rows = rows, per_row = per_row, h = BUTTON_H, gap = BUTTON_GAP,
@@ -712,6 +712,11 @@ function W.handle_fields(player, fields)
 		if fields["grug_map_layer_" .. layer.id] then
 			if session.layer ~= layer.id or session.quest_selected then
 				session.layer = layer.id
+                -- Names need room on the half-width map. Enter this layer at
+                -- 2x; the normal minus button still restores the whole-world view.
+                if layer.zones and (session.zoom or 1) == 1 then
+                    atlas.zoom_view(session, true, atlas.view(), player:get_pos())
+                end
 				quest_box.deselect(session)
 				changed = true
 			end

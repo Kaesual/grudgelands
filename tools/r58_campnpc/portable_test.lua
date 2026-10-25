@@ -442,8 +442,8 @@ eq(count_of(bo.inv, T1.item), 0, "W a forged click on a locked row buys nothing"
 -- Rank 3.
 grug_guild.add(bo, C.RANKS[3], "test")
 submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
-check(has("Rank 3 of 10") and has("repbuy_" .. KEY[T1.item] .. ";]") and
-	has("repbuy_" .. KEY[T3.item] .. ";]"), "W rank 3: rows 1-3 have buttons")
+check(has("Rank 3 of 10") and has("repbuy_" .. KEY[T1.item] .. ";Buy]") and
+	has("repbuy_" .. KEY[T3.item] .. ";Buy]"), "W rank 3: rows 1-3 have buttons")
 check(not has("repbuy_" .. KEY[T4.item] .. ";") and has("Reach Reputation Rank 4") and
 	not has("Reach Reputation Rank 3"), "W rank 3: row 4 locked")
 check(has("Use from level 21"), "W an unlocked row says its use level")

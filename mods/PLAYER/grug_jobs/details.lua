@@ -191,7 +191,8 @@ function KIND_LINES.gather(list)
 		if #source.zones > 0 then
 			for _, id in ipairs(source.zones) do
 				local zone = index().zone(id)
-				local levels = source.levels or (zone and {zone.level_min, zone.level_max})
+				-- The plant filter is not the zone band (e.g. grain spans L4–20).
+				local levels = zone and {zone.level_min, zone.level_max} or source.levels
 				parts[#parts + 1] = (zone and zone.display_name or id) ..
 					(levels and (" (" .. range(levels) .. ")") or "")
 			end
@@ -562,7 +563,8 @@ local function group_page(fs, player, view, page)
 end
 
 local function build(player, view)
-	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
+	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h),
+		("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))}
 	local page = current(view.st)
 	if page and page.kind == "group" then
 		group_page(fs, player, view, page)
@@ -571,6 +573,7 @@ local function build(player, view)
 	elseif page then
 		recipe_page(fs, player, view, page)
 	end
+	fs[#fs + 1] = "style_type[label;font_size=*1]"
 	return table.concat(fs)
 end
 
