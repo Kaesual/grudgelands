@@ -414,3 +414,21 @@ production world, and only a character in the middle of that quest.
   whether the main line at 41 requires A6/T5; the four group quests at 50 still follow their front chains and become
   standalone there (the group-quest rule).
 - The reviews' and reports' notes are in the [Round 61 carry-overs](../../BACKLOG.md#round-61-carry-overs).
+
+### Round-end gates
+
+Lane D on its branch from `1a5aae56` (measured; `mods/` identical to main): `check_upgrade.py` PASS (against
+origin/main `69481ed1`, 0.57.0, with the `map_reset` entry 0.61.0; it also passes without that entry, since unpushed
+0.58.0's covers every change against 0.57.0), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (11
+warnings, as after BANDQUESTS), `quest_kinds.py --check` 0 differ (114 quest-named kinds), `quest_targets.py` 0
+missing (894 targets on seeds 42, 7, 2026, CLOCK 0), `guarantee.py --check` PASS, `check_rules.py --shipped` 0
+problems, `income.py --check` PASS, `r37_dc` PASS (766 checks), `tools/r61_bandquests/build_structure.py --check` 0 of
+6, `tools/r60_bandquests/build_structure.py --check` 0 of 8, `tools/r60_capitals/build_structure.py --check` 0 of 6,
+`tools/r59_bandquests/build_structure.py --check` and `tools/r59_storyquests/build_structure.py --check` 0 of 6,
+`tools/r58_guildquests/build_structure.py --check --ids` 0 of 26, `tools/r61_storyart/paint_art.py --check` OK (2
+textures), `tools/r60_storyart/paint_art.py --check` OK (7) and `tools/r59_storyart/paint_art.py --check` OK (4), a
+link and anchor check of every touched file (1,145 links), the full `run_fixtures.sh` (**277 passed, 0 failed**), the
+**full seed fleet on main's tree** (`seed_fleet/run.sh full` through the queue at 8 parallel, with the quest-place
+check: **304 of 304 seeds build, 0 failed, 22 min 34 s**; Round 60's took 21 min 25 s) and one headless boot (PASS,
+listening, no ERROR line). Each code lane ran the full `run_fixtures.sh` once (BANDQUESTS 277/277 after its fix round,
+STORYART-SHIP 277/0; BANDTEXT 277/0 per Astra).
