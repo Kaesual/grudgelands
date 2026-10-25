@@ -9,7 +9,8 @@
 --         tables (wp13/troll_palette.lua), and for every node name listed in
 --         the file NAMES (one per line) the wp13/parts.lua predicates the
 --         template stamp uses: param2_kind, place_param2, is_pane,
---         pane_connects.
+--         pane_connects, and shaped (a stair or a slab, the only nodes that
+--         may stand upside down; the editor's Flip tool reads it).
 --     luajit tools/building_templates/viewer/palettes.lua panes
 --         reads cells "x y z name param2" from stdin, runs
 --         parts.resolve_panes over them and prints the cells back in the
@@ -81,6 +82,7 @@ if MODE == "palettes" then
 				place = parts.place_param2(name),
 				pane = parts.is_pane(name),
 				connects = parts.pane_connects(name),
+				shaped = parts.shaped(name),
 			}
 		end
 	end

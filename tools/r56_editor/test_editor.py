@@ -16,6 +16,8 @@ On a disposable clone (common.scratch_root), never the working tree:
 - fixed size and move-only points (the page sends positions only; extra
   point data, a missing point and a resized box are refused; a moved point
   keeps its group, face and attributes in the file);
+- flipped cells (an upside-down stair, a wagon wheel on the ceiling) saved
+  and read back; an upside-down shelf refused by the gate, as Flip refuses it;
 - the version at HEAD for the "changed since commit" highlight.
 Exits 1 on the first failure. Python 3, git and LuaJIT (the validator).
 """
@@ -244,6 +246,38 @@ def main():
         # a stale page check reports it
         status, r = request(port, "POST", "/api/check", e.body())
         check(status == 200 and r["stale"], "a check says the page is stale")
+
+        # -- flipped cells (the Flip tool's results) through the save gate: an
+        # upside-down seat and roof stair, a wagon wheel on the ceiling;
+        # saved and read back. A facedir node that is not a stair or a slab
+        # upside down is refused, as the tool refuses it. (The gate takes a
+        # torch on any mount; the tool refuses that, gui_run.py checks it.)
+        status, cur = request(port, "GET", "/api/template?name=" + TPL)
+        e = Edit(cur)
+        flips = []
+        for was, now in (("role seat", "role seat o=facedir:20"), ("role roof_stair o=facedir:2", "role roof_stair o=facedir:22"),
+                         (".", "node grug_decor:cottages_wagon_wheel o=wallmounted:0")):
+            k = e.key(was) if was != "." else "."
+            at = find(e, lambda x, y, z: e.get(x, y, z) == k and (k != "." or (y >= 3 and 2 <= x <= 6 and 2 <= z <= 6)))
+            check(at, "the template has a %s cell" % was)
+            e.put(*at, e.key(now))
+            flips.append((at, now))
+        status, r = request(port, "POST", "/api/save", e.body(confirm=True))
+        check(status == 200 and r["saved"], "the flipped cells are saved: %s" % r.get("errors", r))
+        text = open(path, "r", encoding="utf-8").read()
+        status, back = request(port, "GET", "/api/template?name=" + TPL)
+        b = Edit(back)
+        for at, now in flips:
+            check(dict(b.legend).get(b.get(*at)) == now, "%s reads back at %s" % (now, at))
+        check(tplfile.dump(tplfile.load(text, path)) == text, "the saved file is canonical")
+        e = Edit(back)
+        shelf = find(e, lambda x, y, z: e.get(x, y, z) == e.key("role shelf o=facedir:1"))
+        e.put(*shelf, e.key("role shelf o=facedir:23"))
+        status, r = request(port, "POST", "/api/save", e.body(confirm=True))
+        check(status == 409 and any(f["rule"] == "orientation" for f in r["errors"]),
+              "an upside-down shelf is refused: %s" % r.get("errors"))
+        check(open(path, "r", encoding="utf-8").read() == text, "and nothing written")
+        again = back
 
         # warnings need a confirmation: a fixed node in a template two races place
         status, shared = request(port, "GET", "/api/template?name=" + SHARED)
