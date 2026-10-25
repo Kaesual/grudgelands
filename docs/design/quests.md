@@ -791,8 +791,9 @@ reworked files (both validators, the same codes):
   them from the item dump's quest NPCs, the fortress and guild NPCs, a new
   giver's race or the atlas, and an unknown one counts for both);
 - `E-free-chain`: a free follow-up has no free follow-up of its own;
-- `E-reward-budget` (ruling 17): per zone and level band (the reward
-  level's tier band, 1–10 … 51–60, since Round 62), capitals excepted, at
+- `E-reward-budget` (ruling 17): per zone and level band (since Round 62
+  the band `(level − 1) // 10` of the quest's reward `level`: 1–10 …
+  51–60, the same in both validators), capitals excepted, at
   most two quests with an equipment reward of one enchant and one with two
   enchants (counted in every zone a shared quest is given in);
   `W-reward-levels` when two of one kind share a reward level there;
@@ -1056,9 +1057,10 @@ objectives, levels, `requires`, lines, texts and home and are only marked
   raided transport's record secured at the Ashenward Broken Load
   (`dispatch_record`, the Wheelbreak) and taken to **Audra Wainholt**, the
   Ashenward mining camp's foreman; `story_accord_06` A6 "The Cost of
-  Holding Ground" (level 39, requires A5 and `camp_site_raid`): any of the
-  three Accord band foremen sends the player with the raid's report to
-  Nella Hedgeward, who points to the Warmaster; `story_throng_05` T4 "The
+  Holding Ground" (level 40, offered from 39, requires A5 and
+  `camp_site_raid`): any of the three Accord band foremen sends the
+  player with the raid's report to Nella Hedgeward, who points to the
+  Warmaster; `story_throng_05` T4 "The
   Hands Behind the Stores" (level 35, requires T3 and Rattle's free quest):
   Drek Rampbinder, the handover record at the Bannerbreak Scattered Load
   (`witness_record`, the Warplains), turned in at **Greda Stonehaul**, the
@@ -1182,11 +1184,11 @@ send the player there. 123 quests of reward level 41–60 became 120.
   carry Ashenward's and Bannerbreak's (Toren and Drek, Nella and Yarra) and
   Stormvault's and Blackwind's (Alna and Orrel) share; the capitals carry
   the rest.
-- **Objectives**: 3–6 mob names per front zone and faction besides the
+- **Objectives**: 4–6 mob names per front zone and faction besides the
   camp hunts and the garrisons (the spine's targets and the elites among
   them); the free front about a quarter kill (25 % The Accord, 18 % The
-  Throng), the spine, fortress and camp quests keeping theirs (about 47 %
-  per faction over all).
+  Throng), the spine, fortress and camp quests keeping theirs (49 % The Accord,
+  48 % The Throng over all, lane D's count).
 - **Places**: eight new recipe places in the Battlegrounds spawn files
   ([spawn_regions.md](spawn_regions.md) `places`), the free clash sites
   076, 079, 080, 083 and 085, Stormvault's mining-camp `held_load` and the

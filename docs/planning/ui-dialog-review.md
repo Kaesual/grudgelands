@@ -3,7 +3,7 @@
 **Merged into main on 2026-10-25 (`e17c731d`, with the tab hover correction
 and the review fixes) and released as 0.61.1 (compatible, no saved state, no
 reset). Not pushed; its GUI points are items 97–106 of the
-[joint GUI test](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611),
+[joint GUI test](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611),
 its remaining limits in the
 [BACKLOG](../../BACKLOG.md#ui-dialogs-carry-overs).** The sections below
 record the lane's state at their time.

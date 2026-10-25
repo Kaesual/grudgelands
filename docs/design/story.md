@@ -93,7 +93,12 @@ threat, beats, objects, cloaks), the quest structure is in
   step is solo but the finale, and optional "Party:" hunts never block the
   line. Some steps are done **at a place** with a quest object only the
   quest's holders see (breaking a seal, taking a rubbing, burning names off
-  a tally-stone).
+  a tally-stone). Since Round 62 the line is the story path of 41–60 (every step
+  `story`, with a completion that hands the player on; the opener at 41
+  requires no earlier chapter), and its texts carry the guild thread: the
+  pay meant for the war-camp workers, Audra Wainholt and Greda Stonehaul at
+  the opener, after the proof and at the final ([quests.md](quests.md)
+  "The front 41–60").
 - **The Accord, "Every Name Accounted For":** (1) branded pay on the
   Causeway leads to Senn, whose bundle wears a Throng requisition on good
   fortress paper; (2) after Ninepins, the Throng captain's orders from its

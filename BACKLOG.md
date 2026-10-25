@@ -106,8 +106,11 @@ layouts, resource tables or buff values.
   zone, and the capitals to 2–3 names of their own
   ([quests.md](docs/design/quests.md#the-band-2130-round-60)); Round 61
   took the band 31–40 to 25–38 % per zone and 3–5 mob names per zone
-  ([quests.md](docs/design/quests.md#the-band-3140-round-61)); the front
-  41–60 follows (Round 62).
+  ([quests.md](docs/design/quests.md#the-band-3140-round-61)); Round 62
+  took the free front 41–60 to 25 % (The Accord) and 18 % (The Throng)
+  kill objectives and 4–6 mob names per front zone and faction
+  ([quests.md](docs/design/quests.md#the-front-4160-round-62)), which
+  completes the quest rework of levels 11–60.
 - Current owners: [quests](docs/design/quests.md) and
   [story](docs/design/story.md). Coordinate teaching steps with the class
   and crafting revisions above.
@@ -1310,11 +1313,13 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   uses at Tombroad Ambush stand on the site's centre, where the boss
   appears; a chapter-3 player there can be hit only while a finale group
   has him up (the spawn rule needs a finale holder near). Quest places have
-  no offset field (lane E's format).
+  no offset field (lane E's format). Round 62 kept it (plan review I3: both
+  uses are spine steps at `r20_anchor_077`).
 - **The ledger counts the Throng captain's kill twice**
   (`throng_main_04`: the kill and the orders it drops), and it still counts
   the island bounties' kill XP in 50 → 60 although quests.md says they
-  count nothing (round36-plan §7).
+  count nothing (round36-plan §7). **Fixed in Round 62** (FRONTQUESTS,
+  `ledger.py`: the drop kill subtracted, the island bounties weight 0).
 - **Quest share above the old level:** with the main line the solo share
   (`ledger.py --repeat 2`) rose to 106–112 % (40 → 50) and 105–125 %
   (50 → 60) per race, Human highest (reported, not gated; plan §2.8).
@@ -3010,11 +3015,15 @@ The items the user decides in the GUI test are in the
 - **Quest overview** (QUESTMAP): items show their short id (in-game names
   need every item mod); PvP captains read "Captain Throng (named per
   world)"; the flag thresholds are fixed in `flags.lua`.
-- **Template defects** (the known-defects baseline, warnings until fixed in
-  a map-reset round): Kezamba's moot house has a pane over a door's upper
-  cell; both Lethariel mere shrines have an inside point on a block; 25
-  points are unreachable inside their templates (gates, shrines, Sunscar's
-  warlord platform, which the town's outer stair reaches).
+- **Template defects:** the known-defects list is empty since 0.62.0
+  (Round 62 TEMPLATEFIX fixed Kezamba's moot-house door and both Lethariel
+  mere shrines' inside point). `check.py` still warns about 11 unreachable
+  points, all checker false positives: the ten core gatehouse passage
+  posts, reached from the passage mouths and dropped by `gate_watch.lua`,
+  and Sunscar's warlord platform, reached by the town's outer stair.
+  Proposed: let the walker also start at the box edge's ground cells (11 →
+  1; [Round 62 carry-overs](#round-62-carry-overs)). `tools/r62_templatefix`
+  walks them in the built towns.
 - **Template data** (FREEZE-TOWNS, FREEZE-CAPITALS, TREES, their reviews):
   `troll_palette.lua` duplicates `kezamba.roster` (it stays for the tools);
   near-duplicate templates are kept apart by their meta
@@ -3135,7 +3144,7 @@ The items the user decides in the GUI test are in the
 **Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611).
 
 - **Open GUI judgements:** the camps' places and bands; the headframe
   partly hiding the lift from the side and the lift's light level 3 (LIFT,
@@ -3197,7 +3206,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 **Noted 2026-10-24** ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are
-in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
+in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611).
 
 - **Open GUI judgements:** the held supplies' hold in the Redtusk and
   Raincall bandit camps with the camp's members around (the socket is
@@ -3259,7 +3268,7 @@ in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-
 **Noted 2026-10-24** ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611).
 
 - **Open GUI judgements:** the four new objects' look and size (STORYART);
   the holds at the Frostbarrow camp's loading ground and at the seven open
@@ -3326,7 +3335,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are
 items 8 and 82–96 of the
-[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611).
 
 - **Open GUI judgements:** the storm vessel's look and size (1.2) and the
   Runner's Packet's icon at 16 px (STORYART-SHIP); the holds at the six new
@@ -3370,6 +3379,8 @@ items 8 and 82–96 of the
   measurement for the group-quest rule): free and required by nothing, but
   each still requires its front chain's previous quest; the rule
   (standalone below 51) applies when Round 62 reworks the front files.
+  **Done in Round 62:** the four ids are gone; the two shared quests
+  `front_engine_nine` and `front_last_toll` at 50 are standalone.
 - **Generators** (BANDQUESTS): the r58 camp hunt generator
   (`tools/r58_guildquests/build_structure.py`) re-picks every T4 hunt when
   a band changes its kinds; the shipped ones are pinned in `KEPT_HUNTS`
@@ -3385,7 +3396,7 @@ items 8 and 82–96 of the
 **Noted 2026-10-25** (0.60.1, [UI plan](docs/planning/ui-modernization-plan.md)),
 the three reviews' notes (theoretical or accepted, no severity). The
 GUI points are items 67–81 of the
-[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611).
 
 - **Vendored rename:** `minetest.` became `core.` throughout
   `mods/BASE/default/nodes.lua`, `default/craftitems.lua` and
@@ -3422,7 +3433,7 @@ the implementer's stated limits and the two reviews' notes (accepted or for
 the user to judge, no severity). The implementer's two visual correction
 passes are used up, so any further fit work is a new lane. The GUI points
 are items 97–106 of the
-[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611).
 
 - **GUI scale 1.5 in small windows** (1035 × 696): the mail tabs, Admin
   Mail's preview labels and the mailbox footer labels clip or overlap, the
@@ -3453,6 +3464,88 @@ are items 97–106 of the
   `check_lua.sh` sweep-5 findings (`io.popen` in `r27_quest_item_names` and
   `r57_qsys/quest_test.lua`, `os.exit` in `r29_b` and `r451_nq`, both in
   `r35_f`); the dialog lane changed only their rendering assertions.
+
+### Round 62 carry-overs
+
+**Noted 2026-10-25** ([completion](docs/planning/round62-plan.md#completion-2026-10-25)),
+the reviews' and reports' notes (theoretical or accepted, no severity).
+The items the user decides in the joint GUI test of 0.57 to 0.62 are
+item 9 and items 107–122 of the
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611);
+the deploy round starts from the [deploy plan](docs/planning/deploy-plan.md).
+
+- **Open GUI judgements:** the main line's hand-overs and completions in
+  order for each faction (the length of the 31 completions in the dialog);
+  the two optional group quests at 50 and the four elites from 58 with a
+  group, and 41–50 solo without them; the holds at the eight new places
+  with the area's mobs around; the free front's errands as a first version
+  (the user accepted the QUESTMAP); the questing share of 40→50 at 72–87 %
+  solo (accepted, above the plan's ~65 %) and of 50→60 at 55–61 %; four
+  20-slot bags on the Inventory page; Kezamba's moot-house door from both
+  sides.
+- **The Skyglass Carrier Clearing** (FRONTQUESTS' Q3, accepted): where the
+  canopy forms no `clearings` region the place falls back to the Cloudwood,
+  on 3 of 6 rendered seeds; its texts name the place only. Flagging the
+  clearings as a quest kind would change Skyglass's map.
+- **"West Trench Mouth"** (FRONTQUESTS' Q2, accepted): the objective label
+  of `throng_main_03` "An Oath in Hock" reads "… at West Trench Mouth"
+  (the engine appends the place's name; the texts never name it, `r29_q1`).
+  Moving the pledged standard to 083 would end it (the r36 pins allow it).
+- **Orrel's departure at 40** (lane D): "Work Waiting at Red Ramp"
+  (`blackwind_road_red_ramp`) reaches Drek Rampbinder at 40, whose first
+  front quests now open at 41 ("Seed for the Trampled Plots"); Nella and
+  Yarra offer their fortress calls at 40. One level, the GUI test judges it
+  (item 90).
+- **Two T6 choices at minimum level 50** (FRONTQUESTS' review):
+  `splitbolt_shoring_check` and `kezamba_melons` (reward level 51) give
+  tier-6 armor offered at 50; the band follows the reward level, as ruled.
+- **Items without a quest** (FRONTQUESTS' review): Salt Chitin and Siege
+  Cat Claw lost their last quest; `items.json` still lists them with uses
+  `["quest"]`.
+- **The validator's warnings:** 17 (11 before the round): six new
+  `W-night-count` on the spine's fixed objectives, now in flagged files;
+  `validate.py --game` 0 errors.
+- **Texts** (TEXTREVIEW): the texts call both Warmasters "he" (5 places;
+  no canon contradicts it); two place names repeat their zone
+  ("Stormscale Thunderwood on Stormscale Summit", "Causeway Toll Fields on
+  The Broken Causeway"); the overlaps orders → audit and Huskell → Eriath's
+  page come from the kept texts and stay.
+- **The template checker** (TEMPLATEFIX' Q3): letting `check.py`'s walker
+  also start at every standing cell on a template's box edge at y = 1
+  (the street round a building) would turn 11 warnings into 1 (only
+  Sunscar's platform; measured on a scratch copy, `--self-test` passing);
+  it changes the §6.2 entrance rule. `BASELINE` was not moved (Q2), so a
+  regression of the fixed points is a warning there; `tools/r62_templatefix`
+  pins them.
+- **`tools/r62_templatefix`'s placements:** the fixture walks the built
+  towns at hard-coded placements (Lethariel's core shrine at x 16, z 12;
+  Sunscar's hall at x −7, z 14 with its outer stair at x 8, z 16–23; the
+  gatehouse decks); a layout change that moves one updates the fixture.
+- **The capitals' freeze report** (TEMPLATEFIX' review): `tools/building_templates/freeze_report_capitals.txt`
+  still lists Kezamba's moot house with "legend 28"; it is a freeze-time snapshot (Round 58 did not update it
+  either), so it stays unless the freeze is rerun.
+- **The item dump** (BAGS and its review): `existing.json` was stale since
+  Round 51 and BAGS regenerated it with about 450 lines of registry drift
+  (116 items added, three retired skills gone, 42 quest NPCs,
+  `legacy_quests` rebuilt); `validate.py --game` reads the same with the
+  old and the new dump. Lane D regenerated it once more on main's tree
+  (FRONTQUESTS' ids in `legacy_quests`); the war-camp foremen's `race_id`
+  follows the probe world's random seed, so every regeneration moves
+  those 20 lines without a change (a fixed probe seed would end it).
+- **`item_tiers.md`'s generated tables** (BAGS): the crown, upgrade cost,
+  income and Warpack Fang tables are stale on main, so `tools/r33_ds/
+  build_doc.py --check` fails at the base too; BAGS regenerated only the
+  progression block (the bag sizes). A regeneration of the whole doc is
+  open.
+- **The 0.48.0 step** (BAGS): its pushed comment and letter keep "half as
+  much"; a character still carrying the 0.48.0 marker now sorts into 8 /
+  12 / 16 / 20 (harmless; upgrade contract, the 0.48.0 row).
+- **Fixture sweeps** (BAGS, FRONTQUESTS): `check_lua.sh`'s sweep 5 still
+  flags `io.popen` and `os.exit` in the tool fixtures, as before the round.
+- **Release** (lane D): `check_upgrade.py` passes with or without the
+  0.62.0 `map_reset` entry, because unpushed 0.58.0's entry already covers
+  every change against pushed 0.57.0; the entry is declared for the
+  record.
 
 ### Decided for later rounds (Round 56 §8)
 
@@ -3519,8 +3612,10 @@ above; the detail is in [Round 57 plan §8](docs/planning/round57-plan.md#8-deci
   Round 60 the band 21–30, the six capitals and chapter 2, 0.60.0,
   [completion](docs/planning/round60-plan.md#completion-2026-10-24);
   Round 61 the band 31–40 and chapter 3, 0.61.0,
-  [completion](docs/planning/round61-plan.md#completion-2026-10-25); the
-  front 41–60 is Round 62, the last quest round, the user 2026-10-25); the arc follows the user's picks
+  [completion](docs/planning/round61-plan.md#completion-2026-10-25);
+  Round 62 the front 41–60 and the main line's story layer, 0.62.0, the
+  last quest round,
+  [completion](docs/planning/round62-plan.md#completion-2026-10-25)); the arc follows the user's picks
   on the Round 57 draft ([completion](docs/planning/round57-plan.md#decisions-during-the-round):
   the guilds and their faction's military closely interwoven with little
   conflict inside a faction, a traitor or a wrong decision as the author

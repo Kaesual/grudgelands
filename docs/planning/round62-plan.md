@@ -1,8 +1,10 @@
 # Round 62 — the front 41–60 and the main line's story layer (0.62.0, map reset)
 
-Coordinator: Claude, 2026-10-25. Status: **planned**. The user took every §2a recommendation (2026-10-25) and added
-the bag sizes (§2 point 11). The plan review (`r62/reports/plan-review.md`: 1 blocker, 6 important, 6 minor) is
-folded in (§2b).
+Coordinator: Claude, 2026-10-25. Status: **complete** ([completion](#completion-2026-10-25)); 0.62.0 not pushed, it
+waits with 0.58.0–0.61.1 for the user's joint GUI test
+([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)), then the production deploy
+([deploy plan](deploy-plan.md)). The user took every §2a recommendation (2026-10-25) and added the bag sizes (§2
+point 11). The plan review (`r62/reports/plan-review.md`: 1 blocker, 6 important, 6 minor) is folded in (§2b).
 
 Round 62 is **the last round of the quest rework of levels 11–60** on the Round 57 quest system. Earlier rounds did
 11–20 (Round 59), 21–30 and the capitals (Round 60), and 31–40 with chapter 3 of the story arc (Round 61). This round
@@ -413,7 +415,8 @@ The usual ones apply ([round workflow](../process/round-workflow.md)):
   - the seed fleet;
   - one boot per lane.
 - **GUI checklist:** Round 62's items extend the joint checklist of 0.57 to 0.61.1
-  ([Round 60's list](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)). The draft:
+  ([Round 60's list](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)); as shipped they are
+  item 9 in (A) and items 107–122 in (B) there. The draft:
   - a level-40 character of each faction through 41–60;
   - the main line with its completions;
   - the four group quests at 50 solo-skippable;
@@ -458,3 +461,206 @@ The usual ones apply ([round workflow](../process/round-workflow.md)):
 
 The production deploy with one map reset (0.57.0 → 0.62.0 on the user's world), then the armour redesign and the
 unique items.
+
+## Completion (2026-10-25)
+
+Every lane is merged on main, each code lane independently reviewed (Opus) and every fix checked: BAGS' fix round was
+test-only, the text review's must-fixes and the user's text picks text only, both checked by the coordinator; this
+lane D (the version, the declaration, this section, AGENTS, the status owners, the joint GUI checklist, the deploy
+list) follows on main `73febfda`. **0.62.0 is a map reset:** no migration step; characters keep their items, levels,
+quests and money; a quest whose id vanished is dropped (upgrade contract §4); item, achievement and waypoint ids
+unchanged; no new position in player meta; the bags' new sizes need no step. **Push:** not pushed; 0.57.0 was pushed
+on 2026-10-23 without its GUI test, and 0.58.0 to 0.62.0 wait for the user's joint GUI test. **Sync:** by the
+coordinator after every merge.
+
+This round ends the **quest rework of levels 11–60** (Rounds 57 and 59–62): all 48 quest files are flagged
+`reworked`.
+
+### Lanes
+
+Worktrees and branches `r62-<lane>`. Main's first-parent commits, in order (lane tip in brackets):
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| SURVEY | outside the repository | the survey of the front 41–60 (`r62/reports/survey-front-41-60.md`: 127 quests, the validator dry run, the budgets, the ledger, the unfound givers, 15 questions) | the user's answers (§2a points 1–6) |
+| plan | `908ebb83`, `99d5bb73` | this plan with the user's answers (§2a), the bag sizes (§2 point 11) and the plan review folded in (§2b) | fresh Opus plan review (1 blocker, 6 important, 6 minor) |
+| BAGS | `548f476f` (`5e6ff05a`) | bag sizes 8 / 12 / 16 / 20, prices, recipes and stock unchanged, no migration; the "(n slots)" descriptions, the Help line, the docs, the pins `r48_bags` (the 0.48.0 step under its own sizes, a new section G), `r44_ih`, `r33_c1`; the item dump regenerated; `tools/r62_bags` (the capture) | MERGE AFTER FIXES (Medium: `r48_bags`' end-to-end probe expected the old sizes); the test-only fix `5e6ff05a` checked by the coordinator |
+| TEMPLATEFIX | `c2b4efbf` (`9269f5ef`) | Kezamba's moot-house double door gets its upper cell (`door_hidden`), the two Lethariel mere shrines' inside point stands on the floor (4 2 3); `known_defects.txt` empty; `r56_freeze_capitals`' two digests; `tools/r62_templatefix` | MERGE (Low: README and format-doc wording, fixed by the coordinator in `9269f5ef`) |
+| comment | `b1c6462d` | `grug_inventory/ui.lua:94`'s bag-size comment (8, 12, 16 or 20; the user asked, the UI lane held only drafts) | coordinator, comment only |
+| CHAPTER4 | outside the repository | GPT-6 Astra's story layer of the main line 41–60 (`r62/reports/chapter4-draft.md`, German): the spine's steps and completions, Vell and Mardra, Audra and Greda, the free front threads by host, the departures, the Throng's island pair, eight places, open points K1–K11 with two variants each | CHECK4 (Opus, read-only, `chapter4-check.md`): ready after fixes, K12 and K13 added |
+| FRONTQUESTS | `c41bfcdf` (`fbdda7ce`) | the fourteen unflagged files rebuilt and flagged (all 48 flagged), the 31 spine steps `story` with placeholder completions and rewards, ten shared front quests on `border`, the departures, the Throng's island pair, T5/T6 rewards, the reward budget per zone and level band in both validators, the `.front` flag key in `validate.py`, the ledger's two bugs, eight recipe places, the `quest_target` flags and the front region maps, placeholder texts; `tools/r62_frontquests` (`build_structure.py`, fixture, `questmap.py`) | MERGE (no finding; backlog notes) |
+| FRONTTEXT, TEXTREVIEW | `73febfda` (`8ddb32a4`) | GPT-6 Astra wrote the 136 text fields (`e270abda`: 42 titles, 63 texts with variants, 31 completions); the text review's three must-fixes in older texts and the user's six picks applied by the coordinator's script (`8ddb32a4`) | TEXTREVIEW (Opus): MERGE AFTER FIXES, 3 must-fix, 6 proposals, all picked; `8ddb32a4` (text only) checked by the coordinator |
+| D | this section | the version 0.62.0 and the `map_reset` entry, upgrade contract §2, AGENTS, STATUS, CHANGELOG, BACKLOG, ROADMAP, README, `quests.md`, the docs check, the joint GUI checklist, the [deploy plan](deploy-plan.md) | independent review |
+
+**STORYART** did not run: the picks added no object kind and no quest item.
+
+Main has 279 portable fixtures (2 new: `r62_templatefix`, `r62_frontquests`). `mods/` against 0.61.1 (measured, `git
+diff cf3fab5e 73febfda -- mods`): 30 files, +2,404 −1,197 lines: the 17 quest files (the fourteen flagged, three host
+base files; Blackwind's is unchanged), five front spawn files, the three template files and `known_defects.txt`, `bags.lua`, `help.lua`,
+`ui.lua`'s comment and `grug_quests/validate.lua`.
+
+### Decisions during the round
+
+**The user** (HANDOVER):
+
+- **Scope:** the front 41–60 in one round, the last quest round; then the production deploy with one map reset.
+- **§2a points 1–6, all as recommended:** the r36 spine as the story path, the opener at 41 free, the per-band reward
+  pattern with the budget per zone and level band, the Throng's island bounty pair, a questing share of 40→50 up to
+  about 65 %, TEMPLATEFIX in this round.
+- **The bag sizes 8 / 12 / 16 / 20** (§2 point 11), prices unchanged; the BAGS lane.
+- **The chapter-4 picks K1–K13: all "A"** (no notes): Dorrin as the Accord's third giver at 41–50 through a departure
+  at 45 (K1, the plan review's B1); the pay stopped before it reached the workers (K2); Audra and Greda at the opener,
+  after the proof and at the final (K3); the Accord's sealed proof with the corrections to the guild (K4); Mardra's
+  guilt cancels no honest claim (K5); honest pay, supply and the names before the fixed last line (K6); Thorga's
+  Siegepack Fangs (K7); Ossa's Glass Silk (K8); Thorga's Krait bounty and Last-Offering (K9); the existing held load
+  for Borin's braces (K10); Salt-Counter and Glass-Throat standalone (K11); the Throng's Chirr after Huskell (K12,
+  CHECK4's addition); the kill share counted over all front quests, 43–54 % per faction (K13, CHECK4's question).
+- **QUESTMAP:** accepted.
+- **The questing share of 40→50** (FRONTQUESTS' Q1): accepted as it is, The Accord 82–87 %, The Throng 72–75 %
+  (option a), above the plan's ~65 %.
+- **The texts:** all six proposals of the text review (both finals' completions naming Isquarre last before the
+  fixed line, Kezamba's Chirr completion, Orrel's Senn completion and the two finales' completions without
+  repeating the next text).
+
+**The coordinator** (answers to lane questions and the reviews; each built as stated):
+
+- **The plan review** (§2b): B1 became K1 on the chapter page; I1 FRONTQUESTS owns `tools/r61_bandquests` and limits its
+  band sections; I2 the recorded per-faction exceptions (the elites from 51, the island elites, the spine climaxes);
+  I3 the tally-stone stays; I4 BAGS' pins, the 0.48.0 step's stub and the dump; I5 TEMPLATEFIX's real list (three
+  known defects and the moot-house point; the other points triaged, not edited); I6 the owners; M1–M6 folded.
+- **CHECK4's fixes, taken into the FRONTQUESTS brief:** the Throng scout is the Causeway Brigand; the names Krait,
+  Rimepelt Leopard, Stormwife and Last Watchman; Alna's departure title without "Guild"; Vaska's and Orrel's repeats
+  (VA4 torches, VA3 `dispatch_record`, OR2 a `claim_notice`) and F1's seed potatoes.
+- **TEMPLATEFIX' questions:** Q1 the shrines' inside point stays at (4,2,3); Q2 `BASELINE` not moved (the r62
+  fixture pins the points); Q3 the checker's edge-walk goes to BACKLOG.
+- **BAGS' question:** the Help line (`help.lua`, outside its list) stays; the `ui.lua:94` comment fixed on main
+  (`b1c6462d`) once the user said the UI lane held only drafts.
+- **FRONTQUESTS' Q2 and Q3:** the "West Trench Mouth" objective label on `throng_main_03` accepted (the place's
+  name, shown as a label); the Skyglass Carrier Clearing's fallback to the Cloudwood accepted (its text names the
+  place).
+- **The text review's three must-fixes** applied as proposed (`lethariel_front_05` no longer says Chirr is dead,
+  `splitbolt_front_09` in the present tense, `throng_main_06` no longer sends the player to Nalo before Huskell).
+
+### Deviations from the plan
+
+- **The tally-stone stays** at Tombroad Ambush (plan review I3; both uses are spine steps at `r20_anchor_077`).
+- **No art lane:** the picks added no object kind and no quest item, so STORYART and its ship step did not run.
+- **No leader left a spawn file** (§2 point 8 expected some): every front leader is still hunted.
+- **The questing share of 40→50** is 72–87 % solo, above the plan's ~65 %: the spine, fortress and camp quests alone
+  give 56–68 % (FRONTQUESTS, measured with the free tasks' weight 0); the user accepted it.
+- **`r36_qt`'s gated count** ends at 15, not 17: the island uses require nothing now.
+- **`r28_q0`'s harness** gained the capitals flag, so the loader's budget exempts the capitals there too (the game's
+  loader was already right).
+- **The item dump** (`existing.json`) was regenerated by BAGS, not on main: it had been stale since Round 51 (about
+  450 lines of registry drift); FRONTQUESTS added no item or NPC (this lane's check below).
+- **`check_upgrade.py` passed in every lane** (the plan expected a failure until D): unpushed 0.58.0's entry covers
+  every change against pushed 0.57.0; D declares 0.62.0's reset all the same.
+- **The validator's warnings** grew from 11 to 17: six new `W-night-count` on the spine's fixed objectives, now in
+  flagged files.
+- **TEMPLATEFIX' review** (verdict MERGE, one Low wording finding) was first kept only in the coordinator's log;
+  it is saved as `r62/reports/templatefix-review.md` since the D review.
+
+### Numbers worth keeping
+
+Measured unless marked "report" (taken from the lane's report).
+
+- **Quests:** 393 → **390 shipped** in 48 quest files, all flagged `reworked`; 45 ids dropped, 42 added (measured over
+  the files at `cf3fab5e` and `73febfda`). The front files and the base main line at reward level 41–60: 123 → 120
+  (127 → 124 with the guild gathers; report). Kept: the 31 spine steps, the 24 fortress quests, the islands' four uses
+  and four bounty quests, the four elites, `nv_front_01` (its minimum level 53 → 54 and its reward only).
+- **Objectives:** the free front's kill share **25 %** for The Accord (8 of 32 objectives) and **18 %** for The Throng
+  (6 of 33), measured by `tools/r62_frontquests`; before 76 / 66 % (report). Over all quests of 41–60 49 / 48 %,
+  before 69 / 68 % (report).
+- **Mob names** per front zone and faction (measured, camp hunts and garrisons left out): the Broken Causeway 6 / 5,
+  the Shattered Line 5 / 5, Gravesalt Escarpment 5 / 5, the Skyglass Canopy 4 / 5 (before 7–11, report): Aqueduct
+  Bowman, Causeway Brigand, Coal-Purse Factor, Toll-Taker Senn, Tollroad Skeleton (The Accord), War Construct
+  Last-Toll; Brandbound Collector, Engine Nine, Rubble Skeleton, Siegepack Hyena, Standard-Bearer Ninepins; Bog Witch
+  Salt-Counter, Debtjaw Hound (The Accord) or Kiln-Whisper Hexer (The Throng), Last-Watch Sentry, Tomb Conscript,
+  Watch-Captain Huskell; Ash-Writ Bowman, Gossamer Widow (The Throng), Last-Pay Archer, Paymaster Chirr, Serpent
+  Glass-Throat.
+- **The ledger, solo, questing share 40→50 / 50→60** (`ledger.py --game --track <race> --party solo` on main
+  `73febfda`; before and with the bug fixes only: report):
+
+  | Race | Before | Bug fixes only | After |
+  |---|---|---|---|
+  | human | 91 / 85 % | 91 / 79 % | **87 / 60 %** |
+  | dwarf | 86 / 80 % | 86 / 74 % | **82 / 55 %** |
+  | elf | 86 / 80 % | 86 / 74 % | **82 / 55 %** |
+  | undead | 87 / 69 % | 86 / 69 % | **72 / 59 %** |
+  | orc | 88 / 69 % | 87 / 69 % | **75 / 61 %** |
+  | troll | 87 / 69 % | 86 / 69 % | **72 / 59 %** |
+
+- **Group quests** (measured over all files, 19): none below level 39; six at 39 (Round 61's); two at 50,
+  `front_engine_nine` and `front_last_toll`, each shared by both factions, free and required by nothing; eleven at
+  59–60: the four elites (standalone), the three island elites (each its bounty's one follow-up) and the main line's
+  four (two optional war commanders, the two finales on the path to the final turn-in).
+- **The rewards** (measured over the files; tier 5 at reward levels 41–50, tier 6 at 51–60; armor with one enchant,
+  weapons with a prefix and a suffix, plain trinkets, 2 Healing or 2 Mana Potion V/VI):
+
+  | | 41–50 | 51–60 |
+  |---|---|---|
+  | **The Accord** | Potions: "Bring Me the Account", "Seed for the Trampled Plots". Armor: feet "A Beacon for Tired Eyes", head "Cut the Old Wire" (shared); chest "Ground Worth Crossing", legs "Stormkelp for the Field Kits" (Alna); legs "Count the Tools Back In", head "Readable in the Rain" (Dorrin). Weapons: "What the Ford Kept", "Ready for the Repair Crew", "A Footing for Repairs". Trinkets: "Party: Stop the Grinding", "Party: Close the Toll", "Nobody Left to Rally" (Ninepins). | Potions: "Following Vell's Pay", "Put Down the Tools". Armor: head "Before the Weight Comes", legs "Braces Before Salvage" (Borin); chest "Room for a Loaded Step", legs "Enough for Another Cup", feet "Received in Good Order", chest "The Price of Another War" (Eriath, Chirr). Weapons: "The Last Watch Ends" (Huskell), "More Than a Lost Watch", "Every Name Accounted For" (final). Trinkets: "Party: Nothing Left to Count", "Party: Beneath the Waiting Coils", "Party: Stonegrudge's Inquiry". |
+  | **The Throng** | Potions: "Too Warm for Wages", "Seed for the Trampled Plots". Armor: feet "A Beacon for Tired Eyes", head "Cut the Old Wire", legs "Stormkelp for the Field Kits" (shared); chest "A Name on the Strap" (Orrel); head "Feed the Hands That Haul", chest "Ready at the Water Depot" (Thorga). Weapons: "What the Ford Kept", "Before It Becomes Salvage", "A Fang Through the Strap". Trinkets: the two Party quests at 50, "Let That Banner Fall" (Ninepins). | Potions: "Still Buying Our Dead", "A Message That Arrives". Armor: head "Keep What Can Be Kept", feet "Word for the Next Party" (Vaska); chest "Fruit for the Carriers", chest "Promises with Bowstrings" (Nalo, Chirr); legs "A Receiving Place", legs "Not Entered as Salvage" (Ossa). Weapons: "Roots Under the Load", "Dressed for the Long Rest", "The Answering Blow" (final). Trinkets: "Party: Nobody's Number", "Party: More Than One Voice", "Party: Greyvow's Last Filing". |
+
+  Two T6 choices open at minimum level 50 ("Before the Weight Comes", "Fruit for the Carriers", reward level 51: the
+  band follows the reward level, as ruled).
+- **The templates:** `check.py` warnings 17 → 11, all `unreachable` and all checker false positives (ten core
+  gatehouse passage posts, Sunscar's warlord platform); the proposed edge-walk would leave 1 (report, measured on a
+  scratch copy).
+- **The bags:** four 20-slot bags give 80 bag slots and 13 grid rows (64 and 11 before), the full view's scrollbar
+  maximum 60 (40 before; report, measured in the engine).
+- **The validator:** the dry run with all fourteen files flagged before the round found 60 errors (report, survey);
+  `validate.py --game` on main: 0 errors, 17 warnings, 48 files flagged.
+- **The fleet:** FRONTQUESTS' `quick` fleet with the eight new places, 100 of 100 seeds, 9 min 53 s at 6 parallel
+  (report, `r62/reports/frontquests-fleet.txt`); this lane's full fleet: see [Round-end gates](#round-end-gates).
+
+### Classification
+
+**Map reset**, no step:
+`{"schema": 3, "version": "0.62.0", "map_reset": ["0.40.1", "0.46.0", "0.47.0", "0.48.0", "0.49.0", "0.51.0", "0.58.0", "0.59.0", "0.60.0", "0.61.0", "0.62.0"], "new_server": [], "migrate": ["0.44.0", "0.45.0", "0.47.0", "0.48.0", "0.53.0"], "map_reset_pass": "0.50.0"}`.
+The reason ([upgrade contract §2](../technical/upgrade-contract.md#2-the-declaration)): eight new quest places in the
+four Battlegrounds spawn files and the changed `quest_target` flags (eleven kinds lose theirs, the Stormscale
+Scorchlands gain one) change the spawn recipes and the region maps world generation builds; the Kezamba and Lethariel
+template fixes change what the capitals build. A world on 0.57.0 (or 0.58.0 to 0.61.1) moves on across one reset with
+the pre-reset pass: characters keep everything but their position and home claim (contract §3.2); an active quest
+whose id vanished leaves the log, a kept id keeps its state.
+
+What needs the reset and what alone would be compatible (the lanes' reports): the places, the flags and the two
+template fixes change what new worlds build, and the quests that use the places ride on the reset; the quest data,
+the validator and ledger changes, the texts and the bag sizes alone are compatible (BAGS passed `check_upgrade.py` as
+0.61.1). Saved state, all without a position: `grug_quests:state` for the new ids (no format change); the bags' existing
+content lists `grug_bagN_content`, grown by the join; nothing new in player meta or mod storage, so no
+`register_on_relocate` clear. No kept id changed its objectives, so there is no "ready" edge like Round 61's Rattle.
+The 0.48.0 step's handler reads the live sizes: a character still carrying its marker now sorts into 8 / 12 / 16 / 20
+(upgrade contract, the 0.48.0 row).
+
+### Open notes
+
+- **For the user:** the joint GUI test of 0.57 to 0.62 (Round 60's checklist, extended), with these to judge: the
+  hand-overs and completions of the main line in order, the two group quests at 50 and the four elites with a group,
+  the holds at the eight new places with the area's mobs around, the Carrier Clearing where it falls back, the
+  "West Trench Mouth" label, Orrel's departure at 40 reaching Drek one level before his first front quest, the bags
+  with four 20-slot bags, the moot-house door; then the production deploy ([deploy plan](deploy-plan.md)).
+- The reviews' and reports' notes are in the [Round 62 carry-overs](../../BACKLOG.md#round-62-carry-overs).
+
+### Round-end gates
+
+Lane D on its branch from `73febfda` (measured; `mods/` identical to main): `check_upgrade.py` PASS (against
+origin/main `69481ed1`, 0.57.0, with the `map_reset` entry 0.62.0; it also passes without that entry, since unpushed
+0.58.0's covers every change against 0.57.0), `check_fresh_server.py` PASS, `validate.py --game` 0 errors (17
+warnings, as after FRONTQUESTS; 11 at the base), `quest_kinds.py --check` 0 differ (104 quest-named kinds),
+`quest_targets.py` 0 missing (839 targets on seeds 42, 7, 2026, CLOCK 0), `guarantee.py --check` PASS,
+`check_rules.py --shipped` 0 problems, `income.py --check` PASS, `r37_dc` PASS (766 checks),
+`tools/building_templates/check.py` PASS (266 templates, 0 errors, 11 warnings, all `unreachable`),
+`tools/r62_frontquests/build_structure.py --check` 0 of 18, `tools/r61_bandquests/build_structure.py --check` 0 of 6,
+`tools/r60_bandquests/build_structure.py --check` 0 of 8, `tools/r60_capitals/build_structure.py --check` 0 of 6,
+`tools/r59_bandquests/build_structure.py --check` and `tools/r59_storyquests/build_structure.py --check` 0 of 6,
+`tools/r58_guildquests/build_structure.py --check --ids` 0 of 26, `tools/r61_storyart/paint_art.py --check` OK (2
+textures), `tools/r60_storyart/paint_art.py --check` OK (7) and `tools/r59_storyart/paint_art.py --check` OK (4), the
+solo ledger of all six races (the table above), a link and anchor check of every touched file (1,449 links, 0 broken),
+the item dump regenerated once on main's tree (`dump_items.sh`, PASS: 1,605 items; it differed in FRONTQUESTS' quest
+ids and in the war-camp foremen's seed-dependent race ids, committed), the full `run_fixtures.sh` (**279 passed, 0
+failed**), the **full seed fleet on main's tree** (`seed_fleet/run.sh full` through the queue at 8 parallel, with the
+quest-place check: **304 of 304 seeds build, 0 failed, 24 min 6 s**; Round 61's took 22 min 34 s) and one headless
+boot (PASS, listening). Each code lane ran the full `run_fixtures.sh` once (BAGS 277/0, TEMPLATEFIX 278/0,
+FRONTQUESTS 279/279; FRONTTEXT 279/279 per Astra).

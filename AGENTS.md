@@ -12,7 +12,25 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.61.1, the refreshed service dialogs (compatible;
+**Current state:** 0.62.0, Round 62 "The front 41–60 and the main
+line's story layer" (**map reset**, no step;
+[completion](docs/planning/round62-plan.md#completion-2026-10-25)): the
+last round of the quest rework, which is now complete for levels 11–60;
+the fourteen front files left (the ten `.front` files, the four
+Battlegrounds files) rebuilt on the Round 57 quest system and flagged
+reworked, so all 48 quest files are flagged (123 → 120 front quests, 390
+shipped); the Round 36 main line is the story path (its 31 spine steps
+`story`, chained only on themselves, with completions; the opener at 41
+requires nothing; The Throng's Chirr after Huskell); ten shared front
+quests on the hosts' line `border`, the two optional group quests at 50
+shared by both factions, departures to Dorrin, Thorga, Eriath, Vaska and
+Ossa, the Throng's island bounty pair (Krait, Last-Offering), T5/T6
+reward choices with the reward budget per zone and level band, eight new
+quest places, the free front at 25 % (The Accord) and 18 % (The Throng)
+kill objectives; the Kezamba moot-house door and the Lethariel mere
+shrines fixed in their templates; bags of 8 / 12 / 16 / 20 slots. **Not pushed**; it waits with 0.58.0–0.61.1 for the
+user's joint GUI test, then the production deploy with one map reset.
+Before it 0.61.1, the refreshed service dialogs (compatible;
 [dialog review](docs/planning/ui-dialog-review.md)): the Atlas 03 vendor,
 quest-giver, mail, trainer and service windows and the typography audit
 on the shared presentation toolkit. Before it 0.61.0, Round 61 "The
@@ -133,11 +151,11 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 47 too (2026-10-14), Round 52 (0.52.0) on 2026-10-20, Rounds 53–55 with
 0.53.1, 0.54.1 and 0.55.1 on 2026-10-21, Round 56 with 0.56.1 on 2026-10-23; the GUI tests of Rounds 36–38, 40,
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
-are not recorded as passed. Next: the joint GUI test of 0.57.0 to 0.61.1
-([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611)),
-then Round 62 (the front 41–60 with the Round 36 main line and the
-fortresses, the last quest round), the production deploy with one map
-reset, the armor redesign and unique items ([ROADMAP](ROADMAP.md)).
+are not recorded as passed. Next: the joint GUI test of 0.57.0 to 0.62.0
+([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)),
+then the production deploy with one map reset (0.57.0 → 0.62.0; its
+starting list in the [deploy plan](docs/planning/deploy-plan.md)), the
+armor redesign and unique items ([ROADMAP](ROADMAP.md)).
 Details: [STATUS](docs/STATUS.md).
 
 ## Language rules
@@ -600,6 +618,13 @@ The topic rules below name the one path to use; the
   change.
 - **Profession progress** comes only from recipes with the `progress` flag,
   through `grug_jobs.award_progress`.
+- **A bag's size** is its `bagslots` group (`grug_inventory/bags.lua`; 8 /
+  12 / 16 / 20 since Round 62): each join sizes an equipped bag's content
+  list to it and only grows it, so a larger size needs no step and a
+  smaller one does (the 0.48.0 step). The pins: `tools/r48_bags` (it runs
+  the 0.48.0 step under that step's own sizes), `tools/r44_ih`,
+  `tools/r33_c1`; `tools/r62_bags/capture.sh` shows the Inventory page with
+  four 20-slot bags (one boot).
 - **The Alchemy herbs follow the level bands** (Round 60,
   `grug_gathering/catalog.lua`; [world_zones.md
   §11](docs/design/world_zones.md#11-resource-loot-and-poi-budgets)): each
@@ -653,23 +678,29 @@ The topic rules below name the one path to use; the
   needs only a level and has at most one follow-up; rewards may be a
   `choices` list (equipment with author-fixed enchants at the reward
   level); every quest is done once (`repeatable` is gone). The new rules
-  apply to files marked `"reworked": true` (the six start zones, the band
-  11–20's six, the band 21–30's eight and the band 31–40's six zones, the
-  six capitals and the two guild files; 34 files), so the unreworked
-  files (the front files of 41–60) stay valid until their rework; a free
-  quest's one follow-up counts per faction (Round 59).
-- **The quest rework** (Round 59 on, one level band per round): the bands
-  11–20 (Round 59), 21–30 and the six capitals (Round 60) and 31–40
-  (Round 61) are reworked on the Round 57 system; chapter 1 of the story
+  apply to files marked `"reworked": true`, since Round 62 all 48 quest
+  files (a `.front` file carries the flag beside its `zone` and `quests`);
+  a free quest's one follow-up counts per faction (Round 59). The reward
+  budget (`E-reward-budget`) counts per zone and level band, the band
+  `(level − 1) // 10` of the quest's reward `level` (Round 62, both
+  validators; [quests.md](docs/design/quests.md#the-rework-flag-round-57)).
+- **The quest rework** (Rounds 59–62, one level band per round) is
+  complete for levels 11–60: the bands 11–20 (Round 59), 21–30 and the
+  six capitals (Round 60), 31–40 (Round 61) and the front 41–60 (Round
+  62) are reworked on the Round 57 system; chapter 1 of the story
   arc runs in the capitals at 19–20, chapter 2 at 24–29 in Frostbarrow
   Shelf, Ossuary Reach, Dur Brannoc and Nhal Veyr, chapter 3 at 34–40 in
   Ashenward March, Bannerbreak Mesa and the band's mining camps, and the
   mine leaders speak for their Miner's Guild
   ([quests.md](docs/design/quests.md) "The band 11–20", "The band
   21–30", "The band 31–40", "Chapter 1 in the capitals", "The
-  capitals"). The front 41–60 is Round 62's. The band 31–40's hosts share
-  the line `border` for its shared quests (beside `front` or their local
-  line). **Elite group quests below level 51 are always optional** (the
+  capitals"). From 41 the **main line is the story path**: the r36
+  spine (17 Accord, 14 Throng steps, pinned by `tools/r36_qa` and
+  `tools/r36_qt`, the four front climaxes among them) is `story` and
+  each step requires only spine steps; every other front quest is free
+  play ([quests.md](docs/design/quests.md) "The front 41–60"). The hosts
+  of 31–60 share the line `border` for their shared quests (beside
+  `front` or their local line). **Elite group quests below level 51 are always optional** (the
   user, 2026-10-25): free, standalone, never on the story path, never a
   zone's key reward; from 51 they may stand on the story path
   ([quests.md](docs/design/quests.md#group-quests-round-61)). A quest place can
@@ -677,7 +708,7 @@ The topic rules below name the one path to use; the
   `socket:<settlement key>/<socket id>` ([quests.md](docs/design/quests.md)
   "Town places"; fixtures `tools/r59_qsys3`, `tools/r59_bandquests`,
   `tools/r59_storyquests`, `tools/r60_bandquests`, `tools/r60_capitals`,
-  `tools/r61_bandquests`).
+  `tools/r61_bandquests`, `tools/r62_frontquests`).
   A **quest-only item** (`items.json` kind `quest`) is soulbound
   (`grug_soulbound`: only the carried inventory, never a chest, station,
   mail, trade or the trash; dropping destroys it) and is not rolled while
@@ -687,8 +718,9 @@ The topic rules below name the one path to use; the
   `tools/r59_bandquests/build_structure.py --check`,
   `tools/r59_storyquests/build_structure.py --check`,
   `tools/r60_bandquests/build_structure.py --check`,
-  `tools/r60_capitals/build_structure.py --check` and
-  `tools/r61_bandquests/build_structure.py --check` compare their
+  `tools/r60_capitals/build_structure.py --check`,
+  `tools/r61_bandquests/build_structure.py --check` and
+  `tools/r62_frontquests/build_structure.py --check` compare their
   structure (everything but the texts), and a rerun without `--check`
   would write the placeholder texts back. After the shipped quest art
   changes: `python3 tools/r59_storyart/paint_art.py --check` (the four
@@ -751,7 +783,10 @@ The topic rules below name the one path to use; the
   runs the game's loader and builds every town and capital) and `check.py
   --self-test`; `tools/building_templates/viewer/test_templates.py` (the
   viewer's reader) and `tools/r56_editor/test_editor.py` (the editor;
-  LuaJIT inside, about 1.5 minutes, so through the Lua queue).
+  LuaJIT inside, about 1.5 minutes, so through the Lua queue). The
+  known-defects list is empty since 0.62.0; `check.py` still warns about
+  11 unreachable points, all checker false positives that
+  `tools/r62_templatefix` walks in the built towns (Round 62).
   `export.py --check` is retired (Round 58 HALLS made the first
   deliberate template edits: it prints RETIRED and passes, and the export
   itself refuses to run without `--overwrite-edits`), so `check.py` is the
