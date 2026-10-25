@@ -33,7 +33,8 @@ log before, it may already read ready without Rattle's kill.
   vessel in Thunderroot, ready the reserve load, trim a signal lantern or
   secure a reading cord at the mining camps' loading grounds, and bring
   Corn, Melons, Chests, Iron Buckets, Wooden Ladders, Mushrooms and
-  Frostfin to the outposts. Each zone ends with a departure to the front.
+  Frostfin to the outposts. Four zones end with a departure to the front;
+  in Ashenward March and Bannerbreak Mesa the hosts give their front quests themselves.
   Rewards: a choice of Healing or Mana Potion IV, armor choices with an
   enchant and a weapon choice with two.
 - **The story's third chapter:** at level 34 Toren Waterbarrel sends The
