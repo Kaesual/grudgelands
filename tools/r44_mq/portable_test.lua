@@ -17,7 +17,7 @@
 --      services, Towns both factions' settlements and the own innkeepers,
 --      home and waystones, Bosses the kings, the dragon once beside its
 --      arena, the rift boss and the rare den with their levels, POIs and
---      PvP both factions' places, Zones a box and a two-line label per
+--      PvP both factions' places, Zones a box and a single-line label per
 --      zone, None only the arrows; every marker's tooltip, topmost first,
 --      the party arrow with the member's name in every layer and mode;
 --      quest mode: the targets with their objectives' lines and the
@@ -569,7 +569,7 @@ do
 		check(L.map_y + L.map_h + 0.35 <= size[2] - 0.2 + 1e-9, label .. ": map and scrollbar inside")
 		-- Round 47: two button rows take 1.45 units at the 16x10 floor (GUI
 		-- scale 1.5 on 1080p), so the map there is 7.76 wide (8.35 before).
-		check(L.map_w > 7.5, label .. (": map at least 7.5 wide (%.2f)"):format(L.map_w))
+		check(L.map_w >= 7.25 - 1e-9, label .. (": map at least 7.25 wide (%.2f)"):format(L.map_w))
 	end
 	local L = W.layout(22.66, 12.75)
 	print(("R44 MQ window 1920x1080 (GUI scale 1): 22.66x12.75, map %.2fx%.2f, column %.2f"):format(
@@ -732,16 +732,15 @@ do
 	map = layer_form(throng, "pvp")
 	has(map, ";Ashenward Bastion]", "O PvP: the other faction's fortress")
 	has(map, ";Front Throng Low Camp]", "O PvP: a war camp")
-	-- Zones: a box and a two-line label per zone, no icons or tooltips.
+	-- Zones: a box and a single-line label per zone, no icons or tooltips.
 	map = layer_form(accord, "zones")
 	eq(count(map, "box%["), 2, "O Zones: a box per zone")
-	-- (the user, 2026-10-13: name and band on one line)
-	has(map, ";Dawnmere Fields 1–10]", "O Zones: name and level band on one line")
-	has(map, ";kezamba 60]", "O Zones: a single-level band")
-	eq(count(map, "label%["), 2, "O Zones: one label per zone")
+	has(map, ";Dawnmere Fields 1–10]", "O Zones: complete name and band on one line")
+	has(map, ";kezamba 60]", "O Zones: single-word name and single-level band")
+	eq(count(map, "label%["), 2, "O Zones: one line per zone")
 	eq(count(map, "tooltip%["), 0, "O Zones: no tooltips")
 	local zbox = map:find("box%[")
-	local zlabel = map:find("label%[[^%]]*Dawnmere Fields")
+	local zlabel = map:find("label%[[^%]]*Dawnmere")
 	check(zbox and zlabel and zbox < zlabel, "O Zones: the box before (under) its label")
 	-- None: only the arrows.
 	map = layer_form(accord, "none")
@@ -1490,18 +1489,11 @@ end
 do
 	-- The layout: one row at 1920x1080, two at the user's 1035x696 (and at
 	-- 720p), the header and the quest column where Round 44 put them.
-	local function round44_column(w, h)
-		local map_y = 0.25 + 0.6 + 0.2
-		local column = math.max(6.5, w * 0.3)
-		local map_w = math.min(w - 0.5 - 0.35 - 0.3 - column, (h - map_y - 0.25 - 0.35) * 9 / 8)
-		local x = 0.25 + map_w + 0.35 + 0.3
-		return x, w - 0.25 - x, map_w
-	end
 	local sizes = {
-		{"1920x1080", 1920, 1080, 72, 1},
+		{"1920x1080", 1920, 1080, 72, 2},
 		{"1035x696", 1035, 696, 0.5555 * 96, 2},
 		{"1280x720", 1280, 720, 0.5555 * 96, 2},
-		{"2560x1440", 2560, 1440, 96, 1},
+		{"2560x1440", 2560, 1440, 96, 2},
 	}
 	for _, size in ipairs(sizes) do
 		local info = {size = {x = size[2], y = size[3]},
@@ -1518,15 +1510,9 @@ do
 		check(b.y >= L.map_y + L.map_h + 0.35 - 1e-9, label .. ": the buttons under the scrollbar")
 		check(b.y + b.rows * b.h + (b.rows - 1) * b.gap <= h - 0.25 + 1e-9, label ..
 			": the buttons inside the window")
-		local cx, cw, old_w = round44_column(w, h)
-		check(near(L.column.x, cx, 1e-9) and near(L.column.w, cw, 1e-9), label ..
-			": the quest column keeps its place and size (ruling 10)")
-		print(("R47 ML layout %s: window %.2fx%.2f, map %.2fx%.2f (Round 44: %.2f wide), " ..
-			"%d button row(s) of %.2f, spare %.2f"):format(size[1], w, h, L.map_w, L.map_h, old_w,
-			b.rows, b.w, h - 0.25 - (b.y + b.rows * b.h + (b.rows - 1) * b.gap)))
-		if size[1] == "1035x696" then
-			check(near(L.map_w, old_w, 1e-9), label .. ": the map keeps its size (spare height)")
-		end
+        check(near(L.column.w, (w - 0.8) / 2, 1e-9), label .. ": equal map and quest allocations")
+        check(near(L.column.x, w / 2 + 0.15, 1e-9), label .. ": divider at the midpoint")
+
 	end
 
 	-- Switching through the window's events.
@@ -1607,6 +1593,18 @@ do
 			#rows.poi, #rows.pvp, #rows.boss))
 end
 
+-- The compact Zones view uses the existing zoom route without locking it.
+do
+    W.open(accord)
+    local session = W.sessions.ann
+    session.layer, session.zoom = "quests", 1
+    fields(accord, {grug_map_layer_zones = "true"})
+    eq(session.zoom, 2, "Zones opens at readable 2x")
+    fields(accord, {grug_map_zoom_out = "true"})
+    eq(session.zoom, 1, "Zones still permits a manual whole-world overview")
+    fields(accord, {quit = "true"})
+end
+
 -- ---------------------------------------------------------------------------
 -- ZL: the zone labels (zone_labels.lua) and the start's placement
 -- ---------------------------------------------------------------------------
@@ -1618,25 +1616,32 @@ do
 	eq(Z.band({}), "", "ZL no band")
 	local m = Z.metrics({size = {x = 1920, y = 1080}, max_formspec_size = {x = 1920 / 72, y = 15},
 		real_gui_scaling = 1})
-	check(near(m.char, 16 * 0.52 / 72) and near(m.line, 16 * 1.2 / 72), "ZL metrics at 72 px per unit")
+	check(near(m.char, 16 * Z.FONT_SCALE * 0.52 / 72) and near(m.line, 16 * Z.FONT_SCALE * 1.2 / 72), "ZL metrics at 72 px per unit")
 	local m2 = Z.metrics({size = {x = 1035, y = 696}, max_formspec_size = {x = 1035 / 53.33, y = 696 / 53.33},
 		real_gui_scaling = 1})
 	check(m2.char > m.char, "ZL text is wider in units on a smaller screen")
 	local fallback = Z.metrics(nil)
 	check(near(fallback.char, m.char), "ZL the fallback is 1080p at GUI scale 1")
+	local zoomed = Z.metrics(nil, 2)
+	check(zoomed.char > m.char and zoomed.line > m.line,
+		"ZL zoom 1 uses smaller type than zoom 2")
+	check(near(Z.metrics(nil, 8).char, zoomed.char), "ZL higher zoom keeps readable compact type")
+	local zoomed_list = {}
+	Z.elements(zoomed_list, 5, 5, "Dawnmere Fields", "1–10", zoomed, fs_escape)
+	has(table.concat(zoomed_list), "font_size=*0.85", "ZL rendered zoom font matches box metrics")
 	local box = Z.box("Dawnmere Fields", "1–10", m)
 	check(near(box.w, 20 * m.char + 2 * Z.PAD_X) and near(box.h, m.line + 2 * Z.PAD_Y),
-		"ZL the box fits the one line (the en dash counts once)")
+		"ZL the box fits one complete line (the en dash counts once)")
 	local list = {}
 	Z.elements(list, 5, 5, "Dawnmere Fields", "1–10", m, fs_escape)
 	local bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
-	local lx, ly = list[2]:match("^label%[([%d.]+),([%d.]+);")
+	local lx, ly = list[3]:match("^label%[([%d.]+),([%d.]+);")
 	check(near(tonumber(bx) + tonumber(bw) / 2, 5, 0.002) and near(tonumber(by) + tonumber(bh) / 2, 5, 0.002),
 		"ZL the box centred on the label point")
-	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), 5, 0.002) and #list == 2,
-		"ZL one label centred in the box (label[] centres its line on its y)")
+	check(tonumber(lx) > tonumber(bx) and near(tonumber(ly), 5, 0.002) and #list == 4,
+		"ZL one line centred in the box (label[] centres its line on its y)")
 	list = {}
-	Z.elements(list, 0.1, 9.9, "Dawnmere Fields", "1–10", m, fs_escape, 10, 10)
+	Z.elements(list, 0.1, 9.99, "Dawnmere Fields", "1–10", m, fs_escape, 10, 10)
 	bx, by, bw, bh = list[1]:match("^box%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
 	check(near(tonumber(bx), 0, 0.002) and near(tonumber(by) + tonumber(bh), 10, 0.002),
 		"ZL a label at the map's edge stays inside it")

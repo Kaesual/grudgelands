@@ -156,8 +156,8 @@ local function fuel_section(fs, claim, inv)
 		fs[#fs + 1] = ("label[1.7,1.65;%s]"):format(ui.text(
 			"No fuel: anyone can access your home right now", ui.RED))
 	end
-	fs[#fs + 1] = "label[1.7,2.15;" ..
-		ui.esc("Lump 7 h 16 min, Anthracite 10 h 54 min; up to about 30 days.") .. "]"
+	fs[#fs + 1] = grug_core.ui.prose(1.7, 1.95, 8.2, 0.65,
+		"Lump: 7 h 16 min · Anthracite: 10 h 54 min\nUp to about 30 days.", true)
 	local wait = grug_housing.pickup_wait(claim) or 0
 	if wait > 0 then
 		fs[#fs + 1] = "label[1.7,2.6;" .. ui.esc("Pick-up possible in " ..

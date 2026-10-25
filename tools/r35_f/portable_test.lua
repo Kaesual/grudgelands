@@ -27,7 +27,7 @@
 --   Q  the quest dialog and log (grug_quests/npc.lua, grug_map/quest_box.lua
 --      since Round 44): one colour per
 --      status as the entry's colour, "(R)" for repeatable, no "(available)"
---      or "[Repeatable]" text, the dialog 16 units wide with a 7-unit list,
+--      or "[Repeatable]" text, the dialog 16 units wide with a compact list,
 --      a legend and a tooltip, the description a read-only textarea (no
 --      textarea in our mods has a name), the quest log uses the same entries.
 -- Prints "R35 F PORTABLE PASS checks=<n>" or the failures.
@@ -431,21 +431,23 @@ do
 	local form = shown or ""
 	check(tonumber(form:match("size%[([%d.]+),")) == 16, "Q the dialog is 16 units wide")
 	local list_w = tonumber(form:match("textlist%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;quests;"))
-	check(list_w and list_w >= 7, "Q the quest list is at least 7 units wide (got " .. tostring(list_w) .. ")")
-	local list = form:match("textlist%[(.-);false%]") or ""
+	check(list_w and list_w >= 4.8, "Q the quest list is at least 4.8 units wide (got " .. tostring(list_w) .. ")")
+	local list = form:match("textlist%[(.-);true%]") or ""
 	check(list ~= "" and not list:find("(available)", 1, true) and not list:find("Repeatable", 1, true),
 		"Q no status or [Repeatable] text in the list")
 	check(form:find(Q.STATUS_COLORS.available .. "Break Ranks", 1, true) ~= nil, "Q the available entry is coloured")
 	check(form:find(Q.STATUS_COLORS.ready .. "Bounty: Threads\\, Across", 1, true) ~= nil and
 		not form:find("(R)", 1, true), "Q the ready entry is coloured, without a repeatable mark")
 	check(form:find("tooltip[quests;", 1, true) ~= nil, "Q the list has a tooltip")
-	check(form:find(legend, 1, true) ~= nil, "Q the dialog shows the legend")
+	check(form:find(Q.status_legend({"available", "ready"}), 1, true) ~= nil and
+		form:find(Q.status_legend({"active", "locked"}), 1, true) ~= nil,
+		"Q the dialog shows all four legend statuses in two lines")
 	local description = form:match("(textarea%[[^%]]-;)")
 	check(description ~= nil and form:find("textarea%[[%d.]+,[%d.]+;[%d.]+,[%d.]+;;;") ~= nil,
 		"Q the description is a read-only textarea (no name)")
 	-- 0.45.1: the dialog opens on the first quest ready to complete (row 2
 	-- here), so it offers Complete, not row 1's Accept.
-	check(form:find("button[7.8,8.4;2,0.7;turnin;Complete]", 1, true) ~= nil and
+	check(form:find("button[11.1,10.55;2,0.55;turnin;Complete]", 1, true) ~= nil and
 		form:find("accept;Accept]", 1, true) == nil, "Q Complete for the preselected ready quest")
 
 	-- No textarea in our mods has a name (a named one is editable), except
@@ -477,13 +479,11 @@ do
 	check(ui:find("tooltip[grug_quest_list;", 1, true) ~= nil, "Q the quest log list has the tooltip")
 	check(not ui:find("[Repeatable]", 1, true) and not ui:find("[Ready]", 1, true),
 		"Q the quest log has no [Repeatable] or [Ready] text")
-	-- The list spans the window's quest column (at least COLUMN_MIN wide)
-	-- less the box padding on both sides.
-	local column = tonumber(read(ROOT .. "/mods/PLAYER/grug_map/window.lua"):match(
-		"\nlocal COLUMN_MIN, COLUMN_SHARE = ([%d.]+),"))
-	local pad = tonumber(ui:match("\nlocal PAD, GAP, ROW_H, BUTTON_H = ([%d.]+),"))
-	local log_w = column and pad and column - 2 * pad
-	check(log_w and log_w > 3.45, "Q the quest log list is wider than before (got " .. tostring(log_w) .. ")")
+	-- The real window geometry is exercised by r44_mq; the column now owns
+	-- half the available body instead of the former minimum-width rule.
+	local share = tonumber(read(ROOT .. "/mods/PLAYER/grug_map/window.lua"):match(
+		"\nlocal COLUMN_SHARE = ([%d.]+)"))
+	eq(share, 0.5, "Q the quest column shares the body equally with the map")
 end
 
 if failures > 0 then

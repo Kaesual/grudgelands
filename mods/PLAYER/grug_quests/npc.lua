@@ -158,7 +158,7 @@ end
 -- The choice row (Round 57 ruling 15) under the text: item icons with
 -- their tooltips; at the turn-in buttons, the picked one framed, above the
 -- Complete button; in the offer and while active, icons to read only.
-local CHOICE_X, CHOICE_Y, CHOICE_SIZE, CHOICE_STEP = 7.8, 5.95, 1.15, 1.4
+local CHOICE_X, CHOICE_Y, CHOICE_SIZE, CHOICE_STEP = 5.9, 8.65, 0.7, 1.05
 local function choice_row(player, def, ready, picked)
 	local esc, out = core.formspec_escape, {}
 	out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y - 0.35,
@@ -195,8 +195,8 @@ local function choice_row(player, def, ready, picked)
 	return table.concat(out)
 end
 
--- The dialog is wide enough for the longest quest title in the list at a
--- full-HD window (the title column is 7 of 16 units). `selected` is the row
+-- The narrow categorized list shares the dialog with a separate detail pane;
+-- the selected quest's full title is repeated there. `selected` is the row
 -- to show: an index (a click in the list), a quest id (that quest's row if
 -- it is still listed, else the preselection), {after = quest id} (the
 -- preselection, else that quest's row) or nil (the preselection). `notice`
@@ -238,14 +238,14 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	local at_giver = def.giver_variant[id] ~= nil and not active
 	local source = active or {giver = def.giver_variant[id] and id or nil}
 	local completion = row.status == "ready" and Q.completion_text(def, active)
-	local detail = (completion or Q.quest_text(def, at_giver or (active and active.giver == id), source)) .. "\n\n"
+	local detail = (completion or Q.quest_text(def, at_giver or (active and active.giver == id), source)) .. "\n\nOBJECTIVES\n"
 	-- One line per objective (ruling 41), with its targets' level range
 	-- (Lane Q0): "Defeat Barrow Piglet × 8 (level 1–2)".
 	for _, objective in ipairs(Q.variant_of(def, source).objectives) do
 		detail = detail .. (objective.description or Q.objective_action(objective)) ..
 			" × " .. objective.count .. Q.objective_levels_text(objective) .. "\n"
 	end
-	detail = detail .. "\n" .. table.concat(Q.reward_lines(def, player), "\n")
+	local rewards = table.concat(Q.reward_lines(def, player), "\n")
 	local choices = #def.rewards.choices > 0
 	if not (row.status == "ready" and def.rewards.choices[picked or 0]) then picked = nil end
 	-- At the turn-in the picked reward's whole tooltip (item level, stats,
@@ -254,23 +254,26 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	local chosen = picked_lines(player, def, picked)
 	if chosen then detail = "Chosen:\n" .. table.concat(chosen, "\n") .. "\n\n" .. detail end
 	-- The description is a read-only text (no field name).
-	local form = grug_core.ui.frame(16, 9.4, npc.title or id) ..
-		grug_core.ui.panel(0.25, 0.75, 7.3, 6.8) ..
-		grug_core.ui.panel(7.65, 0.75, 8.1, 6.8) ..
-		"style_type[textarea;border=false]" ..
-		grug_core.ui.button_style("accept", "selected") ..
-		grug_core.ui.button_style("turnin", "selected") ..
-		"textlist[0.4,0.9;7,6;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. ";false]" ..
+	local UI = grug_core.ui
+	local form = UI.frame(16, 11.5) .. UI.service_header(16, npc.title or id,
+		row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png") ..
+		UI.panel(0.35, 1.6, 5.1, 8.65) .. UI.panel(5.65, 1.6, 10, 8.65) ..
+		"style_type[textarea;border=false;font_size=*0.85]style_type[textlist;font_size=*0.85]" ..
+		UI.button_style("accept", "selected") .. UI.button_style("turnin", "selected") ..
+		"textlist[0.5,1.8;4.8,7.1;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. ";true]" ..
 		"tooltip[quests;" .. Q.status_tooltip() .. "]" ..
-		"label[0.4,7.3;" .. Q.status_legend() .. "]" ..
-		"textarea[7.8,0.9;7.8," .. (choices and "4.3" or "6") .. ";;;" .. esc(detail) .. "]" ..
+		"style_type[label;font_size=*0.85]label[0.55,9.25;" .. Q.status_legend({"available", "ready"}) .. "]" ..
+		"label[0.55,9.65;" .. Q.status_legend({"active", "locked"}) .. "]" ..
+		UI.prose(5.9, 1.85, 9.5, 0.65, row.title) ..
+		UI.prose(5.9, 2.6, 9.5, 3.25, detail) ..
+		UI.panel(5.8, 5.95, 9.7, 4.15) ..
+		UI.prose(5.95, 6.08, 9.35, choices and 2.1 or 3.8, rewards) ..
 		(choices and choice_row(player, def, row.status == "ready", picked) or "") ..
-		-- The Close button holds the focus (0.45.1): a focused text area or
-		-- list would swallow the inventory key that closes the dialog.
-		"label[0.4,7.9;" .. esc(notice or row.reason or "") .. "]set_focus[close;true]" ..
-		"button_exit[13.3,8.4;2.3,0.7;close;Close]"
-	if row.status == "available" then form = form .. "button[7.8,8.4;2,0.7;accept;Accept]" end
-	if row.status == "ready" then form = form .. "button[7.8,8.4;2,0.7;turnin;Complete]" end
+		UI.prose(0.5, 10.4, 10, 0.7, notice or row.reason or "") ..
+		"set_focus[close;true]button_exit[13.45,10.55;2,0.55;close;Close]"
+	if row.status == "available" then form = form .. "button[11.1,10.55;2,0.55;accept;Accept]" end
+	if row.status == "ready" then form = form .. "button[11.1,10.55;2,0.55;turnin;Complete]" end
+
 	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected,
 		row_of = row_of, picked = picked}
 	if not redraw then grug_sounds.play("npc_quest", player) end

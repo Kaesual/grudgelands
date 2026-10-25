@@ -312,6 +312,69 @@ do
 end
 
 ------------------------------------------------------------------------------
+-- I. Buying from a scrolled shelf keeps the same offer under the pointer.
+------------------------------------------------------------------------------
+do
+	setup({}, 10000)
+	local bought = {}
+	grug_inventory.fits = function() return true end
+	grug_inventory.give = function(_, stack) bought[#bought + 1] = stack:get_name() end
+	grug_traders.stock = {}
+	local gear = {}
+	for i = 1, 18 do
+		local entry = {item = "t:offer" .. i, price = i}
+		gear[i] = entry
+		if i <= 14 then grug_traders.stock[i] = entry end
+	end
+	grug_traders.max_bracket = function() return 1 end
+	grug_traders.bracket_label = function() return "T1" end
+	grug_traders.vendor_bracket_stock = function() return gear end
+	click("mode_buy")
+	local function scroll_value()
+		return tonumber(shown:match("vertical;offers_scroll;(%d+)%]"))
+	end
+	local maximum, thumb = shown:match("scrollbaroptions%[min=0;max=(%d+);smallstep=10;largestep=40;thumbsize=(%d+)%]")
+	maximum, thumb = tonumber(maximum), tonumber(thumb)
+	check(maximum > 0 and thumb > 0 and thumb < maximum + 1,
+		"I short General shelf has a draggable thumb smaller than the track")
+	local before = shown
+	handler(player, "grug_traders:trade", {offers_scroll = "CHG:10"})
+	eq(shown, before, "I scrollbar-only event sends no replacement form")
+	click("buy_14")
+	eq(scroll_value(), 10, "I purchase retains the CHG scroll value")
+	handler(player, "grug_traders:trade", {offers_scroll = "VAL:15", buy_14 = "Buy"})
+	eq(scroll_value(), 15, "I purchase saves the submitted VAL before resending")
+	eq(bought[1], "t:offer14", "I first click buys the shown lower offer")
+	eq(bought[2], bought[1], "I second click buys the same offer")
+	click("tab_general")
+	eq(scroll_value(), 15, "I clicking the active tab keeps its position")
+	click("tab_1")
+	eq(scroll_value(), 0, "I changing shelf resets position")
+	handler(player, "grug_traders:trade", {offers_scroll = "VAL:180", buy_18 = "Buy"})
+	eq(scroll_value(), 180, "I lower Gear shelf purchase retains position")
+	-- Stock shrinks between draw and click: existing transaction validation
+	-- still refuses the removed offer and the replacement form clamps scroll.
+	for i = 18, 15, -1 do gear[i] = nil end
+	click("buy_18")
+	eq(scroll_value(), maximum, "I redraw clamps the old position to the shorter shelf")
+	eq(#bought, 3, "I missing offer spends nothing and gives nothing")
+	for _, value in ipairs({"CHG:bad", "CHG:1.5", "BAD:0", "VAL:nan"}) do
+		handler(player, "grug_traders:trade", {offers_scroll = value, buy_14 = "Buy"})
+		eq(scroll_value(), maximum, "I malformed scroll is ignored: " .. value)
+	end
+	handler(player, "grug_traders:trade", {offers_scroll = "VAL:-90", buy_14 = "Buy"})
+	eq(scroll_value(), 0, "I negative scroll is clamped")
+	handler(player, "grug_traders:trade", {offers_scroll = "VAL:9999999999999999999999999", buy_14 = "Buy"})
+	eq(scroll_value(), maximum, "I oversized scroll is bounded")
+	click("mode_sell")
+	click("mode_buy")
+	eq(scroll_value(), 0, "I leaving and returning to Buy resets position")
+	handler(player, "grug_traders:trade", {offers_scroll = "CHG:10"})
+	grug_traders.open(player, "grug_traders:vendor_general_accord", {x = 0, y = 0, z = 0}, "accord")
+	eq(scroll_value(), 0, "I reopening starts a fresh scroll session")
+end
+
+------------------------------------------------------------------------------
 -- G. The real resolution (prices.lua under registry stubs): a block that nine
 -- items pack into and that unpacks into the nine back pays nine times its item
 -- (no halving); a block that does not unpack is a crafted good (halved).

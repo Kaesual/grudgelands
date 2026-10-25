@@ -170,34 +170,18 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   which scroll the map), and a click on the selected quest sends the
   window too. A click into the quest text keeps the focus there until the
   next send.
-- **Size:** 85 % of the client's `max_formspec_size`
-  (`core.get_player_window_information`, read at every send) with
-  `padding[0,0]` (`max_formspec_size` assumes no padding; the default 0.05
-  would shrink the form to about 76 % of the screen), 20×12 units for
-  clients that do not report it, at least 16×10 (the client shrinks a
-  larger form itself). At 1920×1080 and GUI scale 1 (72 px per unit) that
-  is 22.66×12.75 units: the map 12.49×11.10, the quest column 9.0 wide. At
-  1280×720 the client's fixed image size (0.5555 inch, 53.3 px) wins over
-  1/15 of the height, so `max_formspec_size` is 24×13.5 and the window
-  20.4×11.47 (the map 10.85×9.64). At GUI scale 1.5 on 1080p the window
-  sits at the 16×10 floor, which still fits (17.8×10 maximum). The
-  inventory tabs keep their own size.
-- **Layout:** a header row (the zoom, the location as "Current:", the
-  minimap switch "Show minimap", stored per player in player meta, or "No
-  minimap available", "Back to inventory", the close button); the 9:8 map
-  with its scrollbars on the left and the layer buttons under it; the quest
-  column on the right, at least 6.5 units and 30 % of the window wide plus
-  what the map's aspect leaves. The header and the quest column keep their
-  Round 44 size and place (Round 47 ruling 10): the column stands where the
-  map without buttons would end. The buttons sit 0.15 units under the
-  horizontal scrollbar, left-aligned with the map and as wide as it, 0.6
-  units high: one row when each of the eight gets at least 1.25 units,
-  else two rows of four. Where the window has spare height under the map
-  the map keeps its size; otherwise it gives up the rows' height. Seed-free
-  figures (the fixture `tools/r44_mq`, GUI scale 1): at 1920×1080 one row,
-  the map 11.64 wide (12.49 before Round 47); at 1280×720 two rows, 9.42
-  (11.05); at 1035×696 two rows in the spare height, 8.84 unchanged; at
-  the 16×10 floor (GUI scale 1.5 on 1080p) two rows, 7.76 (8.35).
+- **Size:** 85 % of the client's `max_formspec_size`, read when rendering,
+  with `padding[0,0]`. The shared navigation header is included in that
+  height budget. Clients without window information use the fallback in
+  `grug_map/window.lua`; a minimum body size remains client-scalable.
+- **Layout (dialog review, 2026-10-25):** shared inventory navigation above
+  the map controls. The body allocates half its usable width to the map and
+  half to the quest column. The map keeps its 9:8 aspect ratio and native
+  scrollbars; available height may leave some horizontal space between the
+  image and the quest column. Layer buttons remain beneath the horizontal
+  scrollbar, in one row when all eight fit and otherwise two rows. The map
+  remains larger than regular inventory tabs. Zoom, minimap settings, quest
+  selection and HUD controls keep their existing owners and field routes.
 - **Marker layers** (Round 47, the user's rulings of 2026-10-13, the
   [work package](../planning/round47-map-layers.md); until then Round 44's
   fixed overlay of ruling 12): the player picks **one** layer at a time
@@ -246,22 +230,28 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   drawMenu), so they are sent topmost first: the party arrows', then the
   markers' in reverse draw order. They are clipped to the map's view.
 - **Zones layer** (Round 47 ruling 7; the one line is the user's pick of
-  2026-10-13 after the screenshots): per zone one `label[]` with its name
-  and level band on one line ("Dawnmere Fields 1–10", "Stormscale Summit
-  60"), over a tight translucent dark box (`#1a1208a0`) kept inside the
-  map, at a constant text size at every zoom; the box is sized from the
-  text at 0.52 em per character and 1.2 em of line height of the client's
-  font (16 px times its GUI scaling; pixels per unit from the window
-  information). Placement (`grug_map/zone_labels.lua`) reuses Round
-  28 M1's: at start each zone's land is sampled on a 32-node grid and its
-  label put at the cell farthest from its border and coast (the pole of
-  inaccessibility), nudged clear of the labels placed before it and of the
-  baked region names, sized at 1x on a 1920×1080 window; it is not cached.
-  At 1x small zones may still collide: seed 42 has 38 labels, at 1x on
-  1920×1080 no overlapping pair and none over a region name, on 1035×696
-  (8.84 units of map at 53 px per unit) 46 overlapping pairs and 6 over a
-  region name (the two-line labels before the user's pick: 3 and 0, 79 and
-  16); placement 0.13 s at start, the grid 0.12 of it.
+  2026-10-13 after the screenshots, reaffirmed 2026-10-25): per zone one
+  `label[]` with its name and level band on one line ("Dawnmere Fields 1–10",
+  "Stormscale Summit 60"), over a tight translucent dark box (`#101820c0`)
+  kept inside the map. Text is 0.65 of the client font at 1× and 0.85 at
+  2× and above; larger zooms make room for the more readable type. Box
+  dimensions and rendering share the same font metrics (0.52 em per
+  character, 1.2 em line height; 16 px times GUI scaling, pixels per unit
+  from window information). Selecting Zones from a 1× overview enters
+  the existing 2× zoom around the player; minus still permits 1×.
+  Placement (`grug_map/zone_labels.lua`) reuses Round 28 M1's: at startup
+  sample land on the 32-node grid, prefer the cell farthest from border and
+  coast, and nudge clear of earlier labels and baked region names in both
+  axes. It uses the small viewport's 1× boxes; diagnostics report both
+  reference and small viewport collisions. No per-player or per-tick
+  placement is added, and crowded zones can still overlap at 1×.
+  **Historical measurements (Round 47, before the current layout/font):**
+  seed 42 had 38 labels, at 1× on 1920×1080 no overlapping pair and none
+  over a region name; on 1035×696 (8.84 map units at 53 px per unit),
+  46 overlapping pairs and 6 over a region name. The two-line candidate
+  before the 2026-10-13 pick had 3 and 0, then 79 and 16 respectively.
+  Placement took 0.13 s at startup, the grid 0.12 s of it. Those are the
+  original comparison figures, not measurements of today's half-width map.
 - **Quest boxes** (ruling 14, the quest log of [quests.md](quests.md)):
   the list box (the active count, the Quest HUD switch, the list, Track on
   HUD and Abandon with its confirmation) and below it the selected quest's

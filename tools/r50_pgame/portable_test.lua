@@ -1221,7 +1221,7 @@ do
 		"F the Steward says the same")
 	check(H.open_manager(carl, entity), "F the Steward talks to carl")
 	lacks(last_shown("carl").fs, "Belongings", "F ...and says nothing of it to a player without")
-	has(last_shown("carl").fs, "size[10.500,6.800]", "F ...in the themed form without a belongings notice")
+	has(last_shown("carl").fs, "size[12.000,7.400]", "F ...in the themed form without a belongings notice")
 end
 
 if failures > 0 then

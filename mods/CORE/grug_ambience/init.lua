@@ -939,7 +939,7 @@ function grug_ambience.settings_formspec(player, x, y)
 			row.channel, core.formspec_escape(row.label), setting.on and "true" or "false")
 		fs[#fs + 1] = ("label[%.2f,%.2f;Volume]"):format(x + 2.6, top + 0.325)
 		fs[#fs + 1] = ("dropdown[%.2f,%.2f;2.4,0.65;grug_ambience_%s_volume;%s;%d;true]"):format(
-			x + 3.8, top, row.channel, VOLUME_ITEMS, volume_index(setting.volume))
+			x + 4.2, top, row.channel, VOLUME_ITEMS, volume_index(setting.volume))
 	end
 	return table.concat(fs)
 end

@@ -551,8 +551,9 @@ cy.pos = {x = 11, y = 5, z = 10}
 level = 30
 check(grug_mounts.open_trainer(cy, shipwright), "own-faction Shipwright opens")
 local fs = shown[#shown].fs
-check(fs:find(grug_core.ui.title(0.4, 0.45, "Shipwright"), 1, true) ~= nil, "Shipwright title")
-check(fs:find("Boat (L15)", 1, true) and fs:find("Improved Boat (L30)", 1, true), "two rows")
+check(fs:find(grug_core.ui.title(1.25, 0.56, "Shipwright"), 1, true) ~= nil, "Shipwright title")
+check(fs:find(";Boat]", 1, true) and fs:find("Improved Boat", 1, true), "two rows")
+check(fs:find("Level 15", 1, true) and fs:find("Level 30", 1, true), "both boat level requirements remain visible")
 check(fs:find("buy_5;Buy " .. grug_mounts.PRICES[5] .. " copper", 1, true) ~= nil, "Buy button with the price")
 check(fs:find("Learn Boat first", 1, true) ~= nil, "Learn Boat first")
 check(not fs:find("Riding", 1, true), "no riding tier in the Shipwright dialogue")
@@ -573,7 +574,7 @@ local trainer = {_grug_socket_role = "riding_trainer", _grug_start = "lethariel"
 sockets.lethariel[2] = {id = "riding.trainer", role = "riding_trainer", pos = {x = 10, y = 5, z = 10}}
 check(grug_mounts.open_trainer(cy, trainer), "Riding Trainer opens")
 fs = shown[#shown].fs
-check(fs:find("Master Riding (L60)", 1, true) and not fs:find("Boat", 1, true),
+check(fs:find("Master Riding", 1, true) and fs:find("Level 60", 1, true) and not fs:find("Boat", 1, true),
 	"Riding Trainer lists the four riding tiers only")
 
 ------------------------------------------------------------------------------

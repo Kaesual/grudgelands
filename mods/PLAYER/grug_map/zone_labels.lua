@@ -1,14 +1,14 @@
 -- Zone names on the map window's Zones layer (Round 47 lane ML,
 -- docs/design/world_map.md "Map window"; the work package's ruling 7): one
--- label per zone, its name and level band on one line ("Dawnmere Fields
--- 1–10", the user's pick of 2026-10-13), with a tight translucent box behind
+-- label per zone, its name and level band on one line, with a tight translucent box behind
 -- it. The placement is Round 28 M1's
 -- (commit 42c1f418, removed in Round 44): each zone's label sits at the land
 -- cell of that zone farthest from its border and coast (the pole of
 -- inaccessibility on a GRID_STEP grid), nudged clear of the labels placed
 -- before it and of the baked region names. Placed once per start from the
 -- world authority's zone queries; the formspec draws it at every zoom with
--- a constant text size, so at 1x small zones may still collide.
+-- compact text at 2x and above, smaller text at 1x. The Zones button opens
+-- at 2x; a manual 1x overview may still have collisions.
 -- PURE Lua: the zone queries come in as arguments, so the portable fixture
 -- runs the real file.
 local Z = {}
@@ -21,7 +21,9 @@ Z.GRID_STEP = 32
 -- default, times its real GUI scaling), LINE_EM em for the line's height.
 Z.PAD_X, Z.PAD_Y = 0.05, 0.01
 Z.CHAR_EM, Z.LINE_EM, Z.FONT_PX = 0.52, 1.2, 16
-Z.BOX = "#1a1208a0"
+Z.BOX = "#101820c0"
+Z.FONT_SCALE = 0.65
+Z.ZOOM_FONT_SCALE = 0.85
 
 -- The level band "1–10", or "60" for a single-level zone ("" without one).
 function Z.band(record)
@@ -40,7 +42,7 @@ end
 -- information table (core.get_player_window_information) or nil: the
 -- client's pixels per unit are its size over max_formspec_size; without
 -- them a 1920x1080 window at GUI scale 1 (72 px per unit).
-function Z.metrics(info)
+function Z.metrics(info, zoom)
 	local px, scale = 72, 1
 	local size, max = type(info) == "table" and info.size, type(info) == "table" and
 		info.max_formspec_size
@@ -52,8 +54,9 @@ function Z.metrics(info)
 			info.real_gui_scaling > 0 then
 		scale = info.real_gui_scaling
 	end
-	local font = Z.FONT_PX * scale
-	return {char = font * Z.CHAR_EM / px, line = font * Z.LINE_EM / px}
+	local font_scale = (zoom or 1) >= 2 and Z.ZOOM_FONT_SCALE or Z.FONT_SCALE
+	local font = Z.FONT_PX * scale * font_scale
+	return {char = font * Z.CHAR_EM / px, line = font * Z.LINE_EM / px, font_scale = font_scale}
 end
 
 -- The UTF-8 characters of `text` (the en dash counts once).
@@ -79,8 +82,10 @@ function Z.elements(list, sx, sy, name, band, metrics, esc, max_w, max_h)
 	if max_w then x0 = math.max(0, math.min(max_w - box.w, x0)) end
 	if max_h then y0 = math.max(0, math.min(max_h - box.h, y0)) end
 	list[#list + 1] = ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(x0, y0, box.w, box.h, Z.BOX)
-	list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X, y0 + box.h / 2,
-		esc(Z.text(name, band)))
+	list[#list + 1] = ("style_type[label;font_size=*%.2f]"):format(metrics.font_scale)
+	list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X,
+		y0 + Z.PAD_Y + metrics.line / 2, esc(Z.text(name, band)))
+	list[#list + 1] = "style_type[label;font_size=*1]"
 	return box
 end
 

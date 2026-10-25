@@ -21,6 +21,11 @@ out of the prepend and explicitly requests the opaque variant.
   form, so a panel inside a scroll container would neither scroll nor clip.
 - `heading(x, y, text)` escapes an existing heading and scopes its gold, small
   bold style; `title(x, y, text, scale)` scopes a larger normal title (optional scale).
+- `prose(x, y, w, h, text, muted, restore_font_scale)` emits escaped,
+  read-only body text at 0.85 of the client font. Its anonymous textarea
+  restores `border=true` and the caller's optional textarea font scale
+  (default 1). A form with a textarea type style, such as Mail's 0.85,
+  passes that scale so later text fields keep the form's typography.
 - `button_style(name, role)` styles one existing field (`normal`, `selected`,
   `danger`). Names are single fields, not comma-separated selector lists.
 - `frame(w, h, title, opaque)` opens a version-6 real-coordinate form; optional
@@ -83,6 +88,9 @@ browser study's CSS effects are not runtime dependencies. Panels use alpha
 with client-side hover/focus/pressed and gold selected states. The outer
 window retains alpha 231/255 for readability on bright terrain. Nine-slice
 button padding cancels four of the six inset pixels, avoiding clipped text.
+Transparent navigation tabs and the close mark retain the same six-pixel
+nine-slice corners for their inherited hover/focus/pressed images, with all
+six inset pixels cancelled so their content keeps its original position.
 Talent icon buttons use a two-pixel inset. Native checkboxes cannot style
 font size: the crowded Crafting filters use shorter captions and full
 tooltips at enlarged GUI scales. `professions_formspec(rows, area, player)`

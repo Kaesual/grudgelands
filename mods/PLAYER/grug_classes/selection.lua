@@ -330,7 +330,8 @@ local function create_formspec(draft)
 		"formspec_version[6]",
 		("size[%s,%s]"):format(WIDTH, HEIGHT),
 		DARK_BACKGROUND,
-		grug_core.ui.heading(0.4, 0.45, "Create your character"),
+		grug_core.ui.title(0.4, 0.45, "Create your character"),
+		"style_type[label,textarea;font_size=*0.85]style_type[textarea;border=false]",
 		grug_core.ui.panel(0.25, 1.95, 3.3, 8.35),
 		grug_core.ui.panel(3.65, 1.95, 11.1, 2.5),
 		grug_core.ui.panel(3.65, 4.55, 11.1, 4.8),
@@ -414,6 +415,7 @@ local function loading_formspec(status, failed)
 	local parts = {
 		"formspec_version[6]", "size[10.4,4.2]", DARK_BACKGROUND,
 		grug_core.ui.panel(0.4, 0.35, 9.6, 3.45),
+		"style_type[label;font_size=*0.85]",
 		"label[0.6,0.7;" .. core.formspec_escape(
 			("Preparing %s: %d%%"):format(scope, math.floor(status.percent))) .. "]",
 	}

@@ -761,12 +761,12 @@ has(fs, "From level 20 you get one Claim Stone for free.", "level-20 line")
 has(fs, "99 lumps last about 30 days.", "upkeep line")
 has(fs, "coal lumps or charcoal", "fuel kinds line")
 has(fs, "When the fuel runs out\\, the protection ends.", "empty-fuel line")
-has(fs, grug_core.ui.title(0.4, 0.45, "Housing Steward"), "Steward title")
+has(fs, grug_core.ui.title(1.25, 0.56, "Housing Steward"), "Steward title")
 lacks(fs, "Manager", "no Manager wording")
 lacks(fs, "24 hours", "no daily rule any more")
 has(fs, "Activate it within 5 minutes with 5 coal lumps or charcoal", "activation line")
 has(fs, "stays in place for 12 hours", "pick-up lock line")
-has(fs, "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]", "receive button")
+has(fs, "button[0.4,6.35;3.4,0.6;receive;Receive Claim Stone]", "receive button")
 
 -- A successful hand-out: the window then shows the reason in place of the
 -- button (Round 49 ruling 4).
@@ -776,7 +776,7 @@ eq(calls.issue[1], "visitor", "receive calls issue_stone")
 fs = last_shown("visitor").fs
 has(fs, "\27(c@#8fdc7a)Here is your Claim Stone.", "issue ok in green")
 lacks(fs, "Receive Claim Stone", "after the hand-out: no button")
-has(fs, "label[0.4,5.9;You already carry a Claim Stone.]", "after the hand-out: the reason")
+has(fs, "label[0.4,6.6;You already carry a Claim Stone.]", "after the hand-out: the reason")
 -- A full inventory keeps the button and refuses on the click, in red.
 receive_result = {true}
 issue_result = {false, "Make room in your inventory for the Claim Stone."}
@@ -784,13 +784,13 @@ submit(visitor, "grug_housing:manager", {receive = ""})
 fs = last_shown("visitor").fs
 has(fs, "\27(c@#ff6060)Make room in your inventory for the Claim Stone.",
 	"issue refusal in red")
-has(fs, "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]", "a full inventory keeps the button")
+has(fs, "button[0.4,6.35;3.4,0.6;receive;Receive Claim Stone]", "a full inventory keeps the button")
 -- Opened while the player cannot receive one: the reason, no button.
 receive_result = {false, "You need level 20 to receive a Claim Stone."}
 check(H.open_manager(visitor, manager), "Steward opens below level 20")
 fs = last_shown("visitor").fs
 lacks(fs, "Receive Claim Stone", "below level 20: no button")
-has(fs, "label[0.4,5.9;You need level 20 to receive a Claim Stone.]", "below level 20: the reason")
+has(fs, "label[0.4,6.6;You need level 20 to receive a Claim Stone.]", "below level 20: the reason")
 receive_result = {true}
 
 factions.visitor = "throng"

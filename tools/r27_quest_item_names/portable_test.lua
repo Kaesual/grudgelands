@@ -361,12 +361,18 @@ for _, id in ipairs(ids) do
 	if check(selected ~= nil, "offer listed by giver: " .. id) then
 		shown = {}
 		check(Q.open_npc(player, entity_for(def.npc), selected), "dialogue opens: " .. id)
-		-- Round 57: a quest with a choice of rewards has a shorter text field
-		-- (the choice row sits below it), its "and one of:" line and one line
-		-- per choice.
+		-- A choice of rewards shortens the separate rewards field (the choice
+		-- row sits below it), with "and one of:" and one line per choice.
 		local choice_lines = #(def.rewards.choices or {}) > 0 and 1 + #def.rewards.choices or 0
-		local detail = shown[1] and (element(shown[1].form, "textarea[7.8,0.9;7.8,6;;;") or
-			element(shown[1].form, "textarea[7.8,0.9;7.8,4.3;;;"))
+		local detail = shown[1] and element(shown[1].form, "textarea[5.900,2.600;9.500,3.250;;;")
+		local rewards = shown[1] and (element(shown[1].form, "textarea[5.950,6.080;9.350,3.800;;;") or
+			element(shown[1].form, "textarea[5.950,6.080;9.350,2.100;;;"))
+		check(rewards ~= nil, "dialogue reward pane present: " .. id)
+		-- The new presentation splits rewards from narrative/objectives. Join
+		-- their content to retain every original item-name and line assertion.
+		if detail and rewards then
+			detail = detail:gsub("\nOBJECTIVES\n", "\n", 1) .. "\n" .. rewards
+		end
 		if check(detail ~= nil, "dialogue detail present: " .. id) then
 			check(stat_hit(detail) == nil, "dialogue free of stats: " .. id .. " " .. tostring(stat_hit(detail)))
 			check(not detail:find(ESC, 1, true), "dialogue free of escapes: " .. id)

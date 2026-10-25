@@ -634,15 +634,17 @@ local rows = {
 }
 local trainer_fs = grug_mounts.trainer_formspec(rows, {ok = false, text = "You do not have enough money."})
 formspec_ok(trainer_fs, "trainer")
-has(trainer_fs, "button[7.3,2.05;3.0,0.65;buy_2;Buy 15 silver]", "buy button with price")
+has(trainer_fs, "button[7.9,2.80;2.5,0.55;buy_2;Buy 15 silver]", "buy button with price")
 lacks(trainer_fs, "buy_1", "no button for an owned tier")
 lacks(trainer_fs, "buy_3", "no button below the level")
 lacks(trainer_fs, "buy_4", "no button without the previous tier")
 has(trainer_fs, fs_escape(colorize("#7ae08a", "Owned")), "owned state")
 has(trainer_fs, fs_escape(colorize("#8a8a8a", "Requires level 45")), "level state greyed")
 has(trainer_fs, fs_escape(colorize("#8a8a8a", "Learn Expert Riding first")), "previous state greyed")
-has(trainer_fs, fs_escape(colorize("#8a8a8a", "Master Riding (L60)")), "blocked tier name greyed")
-has(trainer_fs, "Apprentice Riding (L15)", "owned tier name plain")
+has(trainer_fs, fs_escape(colorize("#8a8a8a", "Master Riding")), "blocked tier name greyed")
+has(trainer_fs, "Apprentice Riding", "owned tier name plain")
+has(trainer_fs, "Level 15", "owned tier level remains visible on its second line")
+has(trainer_fs, "Level 60", "blocked tier level remains visible on its second line")
 has(trainer_fs, fs_escape(colorize("#ff6b6b", "You do not have enough money.")), "purchase error in the form")
 for tier = 1, 4 do has(trainer_fs, rows[tier].name, "all four tiers listed: " .. tier) end
 

@@ -385,7 +385,7 @@ local ada = make_player("ada", "accord", "human")
 local fs = grug_quickbar.formspec(ada)
 has(fs, "formspec_version[6]", "real coordinates")
 has(fs, "position[0.02,0.5]anchor[0,0.5]", "the window sits on the left")
-has(fs, grug_core.ui.heading(0.375, 0.45, "Quickbar"), "themed title")
+has(fs, grug_core.ui.title(0.375, 0.45, "Quickbar"), "themed title")
 has(fs, "Active Hotbar", "hotbar section heading")
 has(fs, "No mounts or boats yet.", "no mount: the empty line")
 eq(count_buttons(fs, "image_button"), 0, "no mount: no mount button")
@@ -668,10 +668,10 @@ for tier_id, tier in ipairs(grug_mounts.TIERS) do
 end
 -- The tip in both dialogues.
 local rows = {{id = 1, name = "Apprentice Riding", level = 15, state = "owned"}}
-has(grug_mounts.trainer_formspec(rows, nil), "label[0.4,5.45;Press E to open your mounts.]",
+has(grug_mounts.trainer_formspec(rows, nil), "label[0.4,6.8;Press E to open your mounts.]",
 	"the Riding Trainer's tip")
 has(grug_mounts.trainer_formspec(rows, nil, grug_mounts.SERVICES.shipwright),
-	"label[0.4,5.45;Press E to open your mounts.]", "the Shipwright's tip")
+	"label[0.4,6.8;Press E to open your mounts.]", "the Shipwright's tip")
 -- One source per wording: the tip and (0.45.1) the first mount's banner.
 local tip_count, hint_count = 0, 0
 for _, path in ipairs({"catalog.lua", "state.lua", "items.lua", "trainer.lua", "shipwright.lua"}) do

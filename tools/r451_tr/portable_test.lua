@@ -299,7 +299,7 @@ local function trainer_check(player, profession, label, expect)
 	local title = form.labels[1]
 	check(title and title.text == grug_jobs.PROFESSIONS[profession].name .. " Trainer",
 		label .. ": the title first")
-	local status = form.labels[#ys + 2]
+	local status = form.labels[#ys + 3]
 	check(status and status.y >= greeting_last + 0.42, label .. ": the status line below the greeting")
 	return form
 end
@@ -415,17 +415,21 @@ do
 end
 
 -- G: a 200-character greeting fits whole, the window grows to hold it, and
--- the placeholder windows keep one height across the states.
+-- each profession keeps one height across its states. Alchemy has its own
+-- extra explanatory line and may be taller than a primary trainer.
 do
 	local heights = {}
 	for _, entry in ipairs(shown) do
 		if entry.form == "grug_jobs:trainer" then
-			heights[parse(entry.spec)[2].args[1][2]] = true
+			local title = entry.spec:match("label%[[^;]+;([^%]]+)%]")
+			local height = tonumber(entry.spec:match("size%[[%d.]+,([%d.]+)%]"))
+			if heights[title] then eq(height, heights[title], "G trainer height stable across states") end
+			heights[title] = height
 		end
 	end
 	local count = 0
 	for _ in pairs(heights) do count = count + 1 end
-	eq(count, 1, "G the placeholder trainer windows share one height")
+	check(count >= 7, "G every trainer is included in the height check")
 	local saved = grug_jobs.GREETINGS.tailor
 	grug_jobs.GREETINGS.tailor = ("Ah, you're interested in learning the art of tailoring. " ..
 		"Well, you've come to the right place! Thread, needle and patience: I teach all three, " ..
@@ -478,9 +482,9 @@ for _, items in ipairs({{}, full_page}) do
 	for _, other in ipairs({{trainer, "teaching trainer"}, {station, "station"}}) do
 		local plain = repair_form(other[1], items, other[2] .. tag)
 		check(line_ys(plain, grug_jobs.GREETINGS.mender)[1] == false, other[2] .. tag .. ": no greeting")
-		eq(plain.H, 9, other[2] .. tag .. ": the form keeps its height")
+		eq(plain.H, 10.85, other[2] .. tag .. ": the form keeps its height")
 		eq(plain.labels[1].text, "Equipment repairs", other[2] .. tag .. ": the plain title")
-		check(find_label(plain, "All professions can repair your equipment for money.").y == 0.9,
+		check(find_label(plain, "All professions can repair your equipment for money.").y == 1.55,
 			other[2] .. tag .. ": the info line where it was")
 	end
 end

@@ -101,10 +101,10 @@ local dialogs, serial = {}, 0
 
 local function form(found)
 	local count = #found.levels
-	local fs = {grug_core.ui.frame(10, 2.4 + 0.8 * count, grug_guild.catalog.UI_NAME .. " Lift"),
-		"label[0.4,0.95;", core.formspec_escape(found.camp.label or found.camp.id), "]"}
+	local fs = {grug_core.ui.frame(10, 2.65 + 0.8 * count),
+		grug_core.ui.service_header(10, grug_guild.catalog.UI_NAME .. " Lift", found.camp.label or found.camp.id)}
 	for index, entry in ipairs(found.levels) do
-		local y = 0.9 + 0.8 * index
+		local y = 1.15 + 0.8 * index
 		fs[#fs + 1] = grug_core.ui.panel(0.2, y - 0.35, 9.6, 0.72)
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, core.formspec_escape(entry.label))
 		if entry.level == found.level then
@@ -113,7 +113,7 @@ local function form(found)
 			fs[#fs + 1] = ("button[6.8,%.2f;2.4,0.6;go_%d;Travel]"):format(y - 0.3, entry.level)
 		end
 	end
-	fs[#fs + 1] = ("button_exit[7.9,%.2f;1.7,0.65;close;Close]"):format(1.5 + 0.8 * count)
+	fs[#fs + 1] = ("button_exit[7.9,%.2f;1.7,0.65;close;Close]"):format(1.75 + 0.8 * count)
 	return table.concat(fs)
 end
 

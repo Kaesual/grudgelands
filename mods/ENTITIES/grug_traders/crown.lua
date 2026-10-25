@@ -164,19 +164,21 @@ local function form(player, session)
 	-- Close takes the focus at every send (0.45.1): otherwise the engine
 	-- focuses the first preview textarea, which eats the inventory key, or
 	-- keeps a clicked Crown button, which Space would press again.
-	local fs = {grug_core.ui.frame(12, 9.8, "Crownbinder"),
+	local fs = {grug_core.ui.frame(12, 10.8),
+		grug_core.ui.service_header(12, "Crownbinder", "A fallen crown, a stronger legacy"),
 		"set_focus[close;true]",
-		"label[0.4,0.95;" .. esc("\"A crown remembers its king. Lend me one, " ..
+		"label[0.4,1.7;" .. esc("\"A crown remembers its king. Lend me one, " ..
 			"and your gear will remember it too.\"") .. "]",
-		"label[0.4,1.45;" .. esc("Fee: " .. grug_money.format(grug_traders.CROWN_FEE) ..
+		"label[0.4,2.15;" .. esc("Fee: " .. grug_money.format(grug_traders.CROWN_FEE) ..
 			" and one Fallen Crown. Once per item.") .. "]",
-		"label[0.4,1.9;" .. esc("Your money: " ..
+		"label[0.4,2.6;" .. esc("Your money: " ..
 			grug_money.format(grug_money.get(player)) .. "    Fallen Crown: " ..
 			(crown and "yes" or "none")) .. "]"}
 	local first = (session.page - 1) * PAGE_SIZE + 1
 	for i = first, math.min(#rows, first + PAGE_SIZE - 1) do
-		local row, y = rows[i], 2.4 + (i - first) * 0.9
-		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.04, 11.5, 0.86)
+		local row, y = rows[i], 3.15 + (i - first) * 0.9
+		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.04, 11.5, 0.86) ..
+			"style_type[textarea;border=false;font_size=*0.85]"
 		fs[#fs + 1] = ("item_image[0.4,%.2f;0.8,0.8;%s]"):format(y, esc(row.expected:get_name()))
 		fs[#fs + 1] = ("label[1.4,%.2f;%s]"):format(y + 0.2, esc(first_line(row.expected)))
 		-- A read-only textarea wraps the preview ("Item level 50 becomes 55.
@@ -184,18 +186,18 @@ local function form(player, session)
 		fs[#fs + 1] = ("textarea[1.4,%.2f;8,0.55;;;%s]"):format(y + 0.4,
 			esc(row.result and (row.text or "") or (row.reason or "")))
 		if row.result then
-			fs[#fs + 1] = ("button[9.6,%.2f;2,0.8;crown_%d;Crown]"):format(y, i)
+			fs[#fs + 1] = ("button[9.6,%.2f;2,0.55;crown_%d;Crown]"):format(y, i)
 		end
 	end
 	if #rows == 0 then
-		fs[#fs + 1] = "label[0.4,2.8;You carry no equipment.]"
+		fs[#fs + 1] = "label[0.4,3.4;You carry no equipment.]"
 	end
 	if session.status then
-		fs[#fs + 1] = "label[0.4,9.25;" .. esc(session.status) .. "]"
+		fs[#fs + 1] = "label[0.4,10.2;" .. esc(session.status) .. "]"
 	end
-	fs[#fs + 1] = "button[4.2,8.2;0.7,0.7;previous;<]button[6.6,8.2;0.7,0.7;next;>]"
-	fs[#fs + 1] = ("label[5.25,8.55;%d / %d]"):format(session.page, pages)
-	fs[#fs + 1] = "button_exit[9.6,8.2;2,0.7;close;Close]"
+	fs[#fs + 1] = "button[4.2,9.1;0.7,0.7;previous;<]button[6.6,9.1;0.7,0.7;next;>]"
+	fs[#fs + 1] = ("label[5.25,9.45;%d / %d]"):format(session.page, pages)
+	fs[#fs + 1] = "button_exit[9.6,9.1;2,0.7;close;Close]"
 	return table.concat(fs)
 end
 

@@ -166,4 +166,16 @@ local function tab_widths(fs)
     return table.concat(result, ',')
 end
 assert(tab_widths(plain) == tab_widths(marked), 'translation markup must not change tab widths')
+-- Prose is read-only and restores the caller's text-area typography, so
+-- later editable mail/admin fields do not inherit its default 1x reset.
+do
+	for _, scale in ipairs({0.85, 0.7}) do
+		local fs = grug_core.ui.prose(0, 0, 4, 1, "Message", false, scale)
+		assert(fs:find(";;;Message]", 1, true), "prose must remain anonymous and read-only")
+		local restored = fs:match("style_type%[textarea;border=true;font_size=%*([%d.]+)%]$")
+		assert(tonumber(restored) == scale, "restore the owning form's textarea size")
+	end
+	assert(grug_core.ui.prose(0, 0, 4, 1, "Message"):find("font_size=*1.000]", 1, true),
+		"existing default-font callers keep their previous reset")
+end
 print('UI NAVIGATION PASS: lifecycle, suspension, revoked/stale input, geometry and scrollbar sends')

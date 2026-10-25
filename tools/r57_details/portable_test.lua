@@ -371,6 +371,11 @@ grug_jobs.register_craft_box = function(name, def)
 end
 dofile(repo .. "/mods/PLAYER/grug_jobs/details.lua")
 grug_jobs.register_craft_box = register_box
+-- Zone labels use the zone's band, not the plant's broader placement filter.
+local grain_lines = table.concat(grug_jobs.source_lines("grug_cooking:wild_grain"), "\n")
+check(not grain_lines:find("L4–20", 1, true), "P source filter is not mislabeled as a zone band")
+check(grain_lines:find("L11–20", 1, true), "P grain names the actual zone band")
+
 local box = boxes.details
 check(box and type(box.build) == "function" and type(box.fields) == "function",
 	"P details.lua registers the details box")

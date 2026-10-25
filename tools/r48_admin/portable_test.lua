@@ -488,7 +488,8 @@ end
 do
 	send(jan, {mail_admin_new = "New admin letter"})
 	has(jan.formspec, "Back to admin mail", "C New admin letter opens the compose view")
-	has(jan.formspec, "Send as Server Admin", "C the compose view sends as Server Admin")
+	has(jan.formspec, "Send letter", "C the compose view has the send action")
+	has(jan.formspec, "Server Admin", "C the compose preview identifies Server Admin")
 	lacks(jan.formspec, "list[", "C admin letters carry no items: no item slots")
 	-- One player.
 	local before = #letters_of("Brakka")
@@ -501,7 +502,7 @@ do
 	has(jan.formspec, "mailbox (Letters)", "C the preview names the Letters list")
 	local sending = button(jan, "send")
 	send(jan, {mail_admin_to = "brakka", mail_admin_subject = "Hello there",
-		mail_admin_body = "Welcome.", [sending] = "Send as Server Admin"})
+		mail_admin_body = "Welcome.", [sending] = "Send letter"})
 	local letter = letters_of("Brakka")[1]
 	check(#letters_of("Brakka") == before + 1 and letter.kind == "admin" and
 		letter.from == "Server Admin" and letter.subject == "Hello there" and #letter.items == 0,
@@ -509,13 +510,13 @@ do
 	check(logged("admin Jan wrote admin letter #" .. letter.id .. " to Brakka"),
 		"C the admin letter is logged with the admin's name")
 	send(jan, {mail_admin_to = "brakka", mail_admin_subject = "Hello there",
-		mail_admin_body = "Welcome.", [sending] = "Send as Server Admin"})
+		mail_admin_body = "Welcome.", [sending] = "Send letter"})
 	eq(#letters_of("Brakka"), before + 1, "C a double click sends one letter")
 	send(jan, {mail_admin_to = "Nobody", mail_admin_subject = "x",
-		[button(jan, "send")] = "Send as Server Admin"})
+		[button(jan, "send")] = "Send letter"})
 	has(jan.formspec, "There is no player called Nobody.", "C an unknown name is refused")
 	send(jan, {mail_admin_to = "Alice", mail_admin_subject = "  ",
-		[button(jan, "send")] = "Send as Server Admin"})
+		[button(jan, "send")] = "Send letter"})
 	has(jan.formspec, "Write a subject.", "C a subject is needed")
 	-- All players: one broadcast, read per player.
 	local alice_box_writes = storage_writes["box:Alice"] or 0
@@ -527,9 +528,9 @@ do
 	local alice_before, brakka_before = grug_mail.unread_count("Alice"), grug_mail.unread_count("Brakka")
 	sending = button(jan, "send")
 	send(jan, {mail_admin_subject = "Restart on Sunday", mail_admin_body = "Back within minutes.",
-		[sending] = "Send as Server Admin"})
+		[sending] = "Send letter"})
 	send(jan, {mail_admin_subject = "Restart on Sunday", mail_admin_body = "Back within minutes.",
-		[sending] = "Send as Server Admin"})
+		[sending] = "Send letter"})
 	local broadcasts = grug_mail.broadcasts()
 	eq(#broadcasts, 1, "C an announcement is stored once (a double click too)")
 	eq(storage_writes["box:Alice"] or 0, alice_box_writes, "C no player's mailbox is written")
@@ -586,7 +587,7 @@ do
 	context.page = PAGE
 	context.grug_mail_admin = {view = "compose", page = 1, draw = 5, floor = 0, answer = "",
 		compose = {to = "Alice", all = true, subject = "Hacked", body = "x"}}
-	send(brakka, {mail_admin_send_5 = "Send as Server Admin"})
+	send(brakka, {mail_admin_send_5 = "Send letter"})
 	report = grug_mail.ticket(report.id)
 	check(report and report.state == "open", "N the report stays open and is not deleted")
 	eq(#letters_of("Alice"), letters, "N no letter is sent")

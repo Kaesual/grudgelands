@@ -47,7 +47,7 @@ end
 function grug_quickbar.formspec(player)
 	local fs = {}
 	local y = 0.45
-	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Quickbar")
+	fs[#fs + 1] = grug_core.ui.title(PAD, y, "Quickbar") .. "style_type[label;font_size=*0.85]"
 	y = y + 0.55
 	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Mounts and boats")
 	y = y + 0.3
@@ -83,9 +83,9 @@ function grug_quickbar.formspec(player)
 	-- click on the framed mount.
 	if active then
 		y = y + GAP
-		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.8;grug_quickbar_dismount;Dismount]"):format(PAD, y,
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.6;grug_quickbar_dismount;Dismount]"):format(PAD, y,
 			WIDTH - PAD * 2)
-		y = y + 0.8
+		y = y + 0.6
 	end
 	y = y + 0.45
 	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Potion belt")
@@ -110,14 +110,15 @@ function grug_quickbar.formspec(player)
 	y = y + 0.3
 	fs[#fs + 1] = grug_inventory.hotbar_switch(player, PAD, y, SLOT, 0.6, PITCH, 0)
 	y = y + 0.6
+	fs[#fs + 1] = "style_type[label;font_size=*0.85]"
 	local home_label, home_state = grug_inventory.home_state(player)
 	if home_label then
 		y = y + 0.45
 		fs[#fs + 1] = ("label[%.3f,%.2f;%s]"):format(PAD, y, esc("Home: " .. home_label))
 		y = y + 0.3
-		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.8;grug_quickbar_home;%s]"):format(PAD, y,
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.6;grug_quickbar_home;%s]"):format(PAD, y,
 			WIDTH - PAD * 2, esc(("Return home (%s)"):format(home_state)))
-		y = y + 0.8
+		y = y + 0.6
 	end
 	-- Two lines: formspec labels do not wrap, and the window is narrow.
 	y = y + 0.45
