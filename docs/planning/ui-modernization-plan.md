@@ -1,6 +1,6 @@
 # UI modernization — implementation plan
 
-Drafted 2026-10-24. **Merged into main on 2026-10-25 (`83f1afd3`) and released as 0.60.1 (compatible, no saved state, no reset); every pass independently reviewed (MERGE). The user picked the seven theme PNGs and the ten tab icons and accepted the quiver total beside the slot and the compact header (2026-10-25). Not pushed; the desktop/web GUI acceptance is part of the [joint GUI test](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).** The receipts below record the isolated branch's state at their time.
+Drafted 2026-10-24. **Merged into main on 2026-10-25 (`83f1afd3`) and released as 0.60.1 (compatible, no saved state, no reset); every pass independently reviewed (MERGE). The user picked the seven theme PNGs and the ten tab icons and accepted the quiver total beside the slot and the compact header (2026-10-25). Not pushed; the desktop/web GUI acceptance is part of the [joint GUI test](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).** The receipts below record the isolated branch's state at their time.
 The user expanded the brief from inventory pages to the game's other forms,
 including privileged pages, containers and NPC services, and asked to plan
 these together before building. The earlier inspector proposal is withdrawn.
@@ -888,6 +888,9 @@ this limitation, not visual acceptance. The user's look pick and desktop/web
 acceptance, and the coordinator's fix review, remain pending.
 
 ## Tab hover correction — 2026-10-25
+
+Merged into main with the [dialog review](ui-dialog-review.md)'s work on
+2026-10-25 (`e17c731d`) and released in 0.61.1 (compatible).
 
 The user's post-merge screenshots exposed stretched hover corners, especially
 on the full-width Admin Mail tab. On `ui-tab-hover`, based on main `1878c103`,

@@ -3135,7 +3135,7 @@ The items the user decides in the GUI test are in the
 **Noted 2026-10-24** ([completion](docs/planning/round58-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
 
 - **Open GUI judgements:** the camps' places and bands; the headframe
   partly hiding the lift from the side and the lift's light level 3 (LIFT,
@@ -3197,7 +3197,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 **Noted 2026-10-24** ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are
-in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
+in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
 
 - **Open GUI judgements:** the held supplies' hold in the Redtusk and
   Raincall bandit camps with the camp's members around (the socket is
@@ -3259,7 +3259,7 @@ in the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-
 **Noted 2026-10-24** ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are in
-the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
+the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
 
 - **Open GUI judgements:** the four new objects' look and size (STORYART);
   the holds at the Frostbarrow camp's loading ground and at the seven open
@@ -3326,7 +3326,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
 the reviews' and reports' notes (theoretical or accepted, no severity).
 The items the user decides in the joint GUI test of 0.57 to 0.61 are
 items 8 and 82–96 of the
-[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
 
 - **Open GUI judgements:** the storm vessel's look and size (1.2) and the
   Runner's Packet's icon at 16 px (STORYART-SHIP); the holds at the six new
@@ -3385,7 +3385,7 @@ items 8 and 82–96 of the
 **Noted 2026-10-25** (0.60.1, [UI plan](docs/planning/ui-modernization-plan.md)),
 the three reviews' notes (theoretical or accepted, no severity). The
 GUI points are items 67–81 of the
-[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-and-the-ui).
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
 
 - **Vendored rename:** `minetest.` became `core.` throughout
   `mods/BASE/default/nodes.lua`, `default/craftitems.lua` and
@@ -3414,6 +3414,45 @@ GUI points are items 67–81 of the
 - **Theme bytes:** `tools/ui_theme/build.py --check` compares exact PNG
   bytes, which depend on the Pillow and zlib versions (Pillow 12.3.0
   today); a Pillow update may need a regeneration without a visual change.
+
+### UI dialogs carry-overs
+
+**Noted 2026-10-25** (0.61.1, [dialog review](docs/planning/ui-dialog-review.md)),
+the implementer's stated limits and the two reviews' notes (accepted or for
+the user to judge, no severity). The implementer's two visual correction
+passes are used up, so any further fit work is a new lane. The GUI points
+are items 97–106 of the
+[GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-the-ui-and-0611).
+
+- **GUI scale 1.5 in small windows** (1035 × 696): the mail tabs, Admin
+  Mail's preview labels and the mailbox footer labels clip or overlap, the
+  welcome window needs more scrolling and some crafting buttons are tight
+  (items 100, 101 and 105 decide).
+- **WQHD font size:** at 2560 × 1440 and GUI scale 1 the client keeps its
+  pixel font size while the panels grow, so text looks small next to them;
+  no global font scaling was added (item 104 decides).
+- **Zone labels at 1×:** the 1× text is now 0.65 of the font and choosing
+  Zones from an overview enters 2×, but a manually chosen 1× overview stays
+  dense. The startup diagnostic at seed 12345 (estimated label boxes)
+  reports 0 overlapping pairs and 2 over a region name at 1920 × 1080, 9
+  and 3 at 1035 × 696; the 0.60.1 figures above predate the half-width map
+  (item 103 decides).
+- **Map figures:** `docs/design/world_map.md` no longer records the map's
+  size and layout per window size for the half-width layout (dropped in
+  `a849d18f`, only the Round 47 figures remain as history); measure them
+  again with `tools/r44_mq` when the map is next touched.
+- **Web build unchecked:** the implementer captured the desktop client only
+  (item 106).
+- **Vendor thumb on short shelves:** the thumb shows the visible share of
+  the list, so on the General shelf (14 offers) it fills 20/21 of the track
+  and is barely draggable; accurate, the mouse wheel scrolls.
+- **`grug_core.ui.prose`** restores `border=true` and the caller's textarea
+  font scale (default 1) after its text; a new caller whose form styles
+  textareas differently must pass its scale (only Mail does today, 0.85).
+- **Fixture sweeps:** five CLI fixtures keep their existing
+  `check_lua.sh` sweep-5 findings (`io.popen` in `r27_quest_item_names` and
+  `r57_qsys/quest_test.lua`, `os.exit` in `r29_b` and `r451_nq`, both in
+  `r35_f`); the dialog lane changed only their rendering assertions.
 
 ### Decided for later rounds (Round 56 §8)
 
