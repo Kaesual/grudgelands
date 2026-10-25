@@ -26,8 +26,8 @@
 --      armor quests give every slot, Potion IV only on quests from 31;
 --   I. the use places: every town place a quest_place socket of the named
 --      settlement, every recipe place one of the zone's spawn file, every
---      object a kind of use_objects.json (storm_vessel's placeholder look a
---      texture modifier over a shipped object);
+--      object a kind of use_objects.json (storm_vessel with its own picked
+--      art since Round 61 STORYART);
 --   J. the line plan: the hosts' shared line `border`;
 --   K. the Runner's Packet: a quest item of items.json, registered
 --      soulbound, refused by a chest and the trash, lost when dropped; its
@@ -744,9 +744,10 @@ for _, row in ipairs(NEW_PLACES) do
 end
 local vessel = objects.storm_vessel
 if check(vessel ~= nil, "use_objects: the new kind storm_vessel") then
-	local base = vessel.texture:match("^(grug_quests_obj_[%w_]+%.png)%^%[")
-	check(base and io.open(ROOT .. "/mods/PLAYER/grug_quests/textures/" .. base) ~= nil,
-		"storm_vessel: a placeholder look, a texture modifier over a shipped object (" .. vessel.texture .. ")")
+	-- Round 61 STORYART: the user's picked art replaced the placeholder look.
+	eq(vessel.texture, "grug_quests_obj_storm_vessel.png", "storm_vessel: its own picked art")
+	check(io.open(ROOT .. "/mods/PLAYER/grug_quests/textures/" .. vessel.texture) ~= nil,
+		"storm_vessel: its texture file ships")
 end
 
 ------------------------------------------------------------------------------
@@ -808,7 +809,13 @@ do
 		registered_items = items, registered_entities = {},
 		get_modpath = function() return modpaths.grug_mobs end,
 		get_current_modname = function() return "grug_mobs" end,
-		get_dir_list = function() return {} end,
+		-- The mod's real textures/ listing: item_image() prefers an item's own icon.
+		get_dir_list = function(path)
+			local list, handle = {}, io.popen('ls "' .. path .. '"')
+			for entry in handle:lines() do list[#list + 1] = entry end
+			handle:close()
+			return list
+		end,
 		parse_json = function(text) return (json.decode(text)) end,
 		register_craftitem = function(name, def) items[name] = def end,
 		register_on_mods_loaded = function() end,
@@ -828,8 +835,8 @@ do
 	if check(def ~= nil, PACKET .. " registers") then
 		eq((def.groups or {}).grug_soulbound, 1, PACKET .. " is soulbound")
 		check(type(def.on_drop) == "function", PACKET .. " has its own drop")
-		check(type(def.inventory_image) == "string" and def.inventory_image:find("%^%[multiply") ~= nil,
-			PACKET .. ": the quest kind's placeholder icon until the art pick (" .. tostring(def.inventory_image) .. ")")
+		-- Round 61 STORYART: the user's picked icon replaced the quest kind's placeholder.
+		eq(def.inventory_image, "grug_mobs_runners_packet.png", PACKET .. ": its own picked icon")
 		registered[PACKET] = def
 		local dropper = {is_player = function() return true end, get_player_name = function() return "ann" end}
 		fed = {}

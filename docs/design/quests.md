@@ -408,8 +408,9 @@ counted name, names the text never says).
     user picked (Round 60 STORYART: a shuttered lantern on a timber cradle
     1.2, an A-frame sight with an open ring 1.4, an inclined reading cord
     on forked pegs 1.3, a hinged two-wing register 1.3), and the band 31–40's
-    `storm_vessel` (Round 61), a placeholder look (a texture modifier over
-    a shipped object's file) until the user's art pick. Every aiming ray of a player who
+    `storm_vessel` (Round 61), with the art the user picked (Round 61
+    STORYART: a smoked-clay crock with a pale lightning tear under a
+    rope-bound cork on low forked feet 1.2). Every aiming ray of a player who
     does not see it (combat, hand clicks and the crosshair's interact colour,
     a skill item's right-click) passes through it.
   - **The hold:** a right-click within 5 nodes starts it, the message feed
