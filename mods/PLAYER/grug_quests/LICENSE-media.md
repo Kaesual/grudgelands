@@ -72,3 +72,23 @@ row. They contain no lettering.
 | `textures/grug_quests_obj_sighting_frame.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; splayed timber A-frame holding an open pale sighting ring above a brace; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_quests_obj_reading_knots.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; inclined reading cord with three knots between unequal forked pegs; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
 | `textures/grug_quests_obj_claim_notice.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; hinged two-wing register on splayed feet, pale kept strokes and a struck claim column; `tools/r60_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
+
+## Band 31–40 and chapter 3 object — Round 61
+
+Original, AI-assisted pixel art painted for Grudgelands by GPT-6 Astra on
+2026-10-25 (story art drop 03, two proposals and the user's pick: proposal
+P1). Hand-placed pixel shapes written with Python/Pillow; no
+image-generation service, downloaded art or third-party source pixels. The
+project dedicates any rights it holds in this original to CC0-1.0. The
+reproducible generator is kept as provenance at
+`tools/r61_storyart/paint_art.py` (`--check` verifies the file byte for
+byte).
+
+The file is 32×32 RGBA, with a transparent background (alpha 0 or 255
+only). Like the earlier objects it is an upright quest-object sprite,
+viewed from the front and slightly above, with its base on the bottom
+row. It contains no lettering.
+
+| File | Author | Source | License |
+|------|--------|--------|---------|
+| `textures/grug_quests_obj_storm_vessel.png` | GPT-6 Astra (Grudgelands) | Own work, AI-assisted; squat smoked-clay crock holding a pale lightning tear under an oversized rope-bound cork, on two low forked wooden feet with a shallow crosspiece; `tools/r61_storyart/paint_art.py` (Python/Pillow) | CC0-1.0 |
