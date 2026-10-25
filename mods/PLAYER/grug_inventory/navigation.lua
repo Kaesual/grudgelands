@@ -53,6 +53,9 @@ function grug_inventory.navigation(player, context, selected, width, layout)
     local faction_name = faction and grug_factions.display_name and grug_factions.display_name(faction) or ""
     local text_scale = grug_core.ui.text_scale(player)
     local level = grug_xp and grug_xp.get_level and grug_xp.get_level(player)
+    -- Clear buttons inherit the theme's hover/focus/pressed images. Keep
+    -- their six-pixel nine-slice corners in every state; cancel only the
+    -- content inset so labels/icons stay in place when the state changes.
     local fs = {"real_coordinates[true]",
         "image[0.28,0.17;0.46,0.55;" .. esc("grug_ui_icon_emblem.png^[multiply:" .. accent) .. "]",
         grug_core.ui.title(0.95, 0.28, "GRUDGELANDS", text_scale),
@@ -64,7 +67,7 @@ function grug_inventory.navigation(player, context, selected, width, layout)
         ("label[%.3f,0.61;%s]"):format(width - 4.1,
             esc(core.colorize(grug_core.ui.colors.muted, level and ("Level " .. level) or ""))),
         "style_type[label;font_size=*1]",
-        "style[grug_ui_close;bgimg=grug_ui_clear.png;bgimg_middle=0;padding=0;font_size=*1.1]",
+        "style[grug_ui_close;bgimg=grug_ui_clear.png;bgimg_middle=6;padding=-6,-6,6,6;font_size=*1.1]",
         ("button_exit[%.3f,0.14;0.45,0.5;grug_ui_close;×]"):format(width - 0.75),
         ("box[0.25,0.80;%.3f,0.015;#d1c09a2b]"):format(width - 0.5)}
     -- Translation markup is not visible text and must not inflate widths.
@@ -87,7 +90,7 @@ function grug_inventory.navigation(player, context, selected, width, layout)
             local field = PREFIX .. index
             local active = ids[index] == selected
             local color = active and accent or grug_core.ui.colors.muted
-            fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgimg_middle=0;padding=0;" ..
+            fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgimg_middle=6;padding=-6,-6,6,6;" ..
                 "font_size=*0.85;textcolor=%s;content_offset=6,0]"):format(field, color)
             fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.46;%s;%s]"):format(x, y, w, field, esc(caption[1]))
             fs[#fs + 1] = ("image[%.3f,%.3f;0.27,0.27;%s]"):

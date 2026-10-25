@@ -886,3 +886,21 @@ region names; reference 1920×1080: 3 pairs, 0 over names, seed
 collision-free labels at every client size. The screenshot is evidence of
 this limitation, not visual acceptance. The user's look pick and desktop/web
 acceptance, and the coordinator's fix review, remain pending.
+
+## Tab hover correction — 2026-10-25
+
+The user's post-merge screenshots exposed stretched hover corners, especially
+on the full-width Admin Mail tab. On `ui-tab-hover`, based on main `1878c103`,
+transparent navigation and close buttons retain the theme's six-pixel
+nine-slice inset with zero net content padding. This is **compatible and
+presentation-only**: textures, positions, routes, ids, state and update cadence
+are unchanged. Native 1920×1080 / GUI 1 captures verify Talents hover, the wide
+Admin Mail hover and pressed states, and close hover. Screenshots, the temporary
+repro driver and logs are archived under
+`~/projects/grudgelands-orchestration/ui-modernization/tab-hover-fix-2026-10-25/`.
+
+Checks: `ui_navigation` and `r44_mq` **2/2 PASS**; the full queued fixture run
+**276/276 PASS**; plain-Lua-5.1 parser and applicable sweeps, source audit,
+whitespace and isolated client/engine capture PASS. Five fixture slots plus
+two capture slots stayed within the shared limit. No personal client paths,
+merge, install or push; desktop/web acceptance remains the user's.

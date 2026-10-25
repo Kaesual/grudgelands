@@ -83,6 +83,9 @@ browser study's CSS effects are not runtime dependencies. Panels use alpha
 with client-side hover/focus/pressed and gold selected states. The outer
 window retains alpha 231/255 for readability on bright terrain. Nine-slice
 button padding cancels four of the six inset pixels, avoiding clipped text.
+Transparent navigation tabs and the close mark retain the same six-pixel
+nine-slice corners for their inherited hover/focus/pressed images, with all
+six inset pixels cancelled so their content keeps its original position.
 Talent icon buttons use a two-pixel inset. Native checkboxes cannot style
 font size: the crowded Crafting filters use shorter captions and full
 tooltips at enlarged GUI scales. `professions_formspec(rows, area, player)`
