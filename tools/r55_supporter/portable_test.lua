@@ -128,6 +128,7 @@ grug_visuals = {
 }
 sfinv = {set_player_inventory_formspec = function() end}
 
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_achievements/init.lua")
 dofile = real_dofile
 local A = grug_achievements

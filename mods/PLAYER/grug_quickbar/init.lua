@@ -47,9 +47,9 @@ end
 function grug_quickbar.formspec(player)
 	local fs = {}
 	local y = 0.45
-	fs[#fs + 1] = ("label[%.3f,%.2f;Quickbar]"):format(PAD, y)
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Quickbar")
 	y = y + 0.55
-	fs[#fs + 1] = ("label[%.3f,%.2f;Mounts and boats]"):format(PAD, y)
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Mounts and boats")
 	y = y + 0.3
 	local tiers = grug_mounts.owned_tier_ids(player)
 	local active = grug_mounts.active[player:get_player_name()]
@@ -88,7 +88,7 @@ function grug_quickbar.formspec(player)
 		y = y + 0.8
 	end
 	y = y + 0.45
-	fs[#fs + 1] = ("label[%.3f,%.2f;Potion belt]"):format(PAD, y)
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Potion belt")
 	y = y + 0.3
 	local inv = player:get_inventory()
 	for index = 1, grug_inventory.POTION_BELT_SIZE do
@@ -106,7 +106,7 @@ function grug_quickbar.formspec(player)
 	-- The hotbar switch (Round 50 ruling 2): the inventory views' element,
 	-- the two buttons side by side on the slot columns.
 	y = y + 0.45
-	fs[#fs + 1] = ("label[%.3f,%.2f;Hotbar]"):format(PAD, y)
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Active Hotbar")
 	y = y + 0.3
 	fs[#fs + 1] = grug_inventory.hotbar_switch(player, PAD, y, SLOT, 0.6, PITCH, 0)
 	y = y + 0.6
@@ -127,8 +127,8 @@ function grug_quickbar.formspec(player)
 	fs[#fs + 1] = ("label[%.3f,%.2f;%s]"):format(PAD, y,
 		esc(core.colorize("#c8c8c8", "A and B switch the hotbar.")))
 	local height = y + 0.45
-	return ("formspec_version[6]size[%.3f,%.3f]position[0.02,0.5]anchor[0,0.5]"):format(
-		WIDTH, height) .. table.concat(fs)
+	return grug_core.ui.frame(WIDTH, height) ..
+		"position[0.02,0.5]anchor[0,0.5]" .. table.concat(fs)
 end
 
 -- Opens the window (the rising edge of aux1). Not while dead or while

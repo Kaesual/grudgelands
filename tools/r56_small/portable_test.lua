@@ -204,6 +204,7 @@ grug_traders.vendors = {[HUMAN_QM] = {name = HUMAN_QM, kind = "race", race = "hu
 	nametag = "Human Quartermaster"}}
 grug_traders.max_bracket = function() return 0 end
 grug_traders.stock = {{item = "t:torch", price = 10}}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/ENTITIES/grug_traders/trade.lua")
 
 local function new_player(name, race, faction, sizes)

@@ -1,14 +1,13 @@
 -- The Party & PvP tab (spec §3.8, Round 44 lane PP): the party section on
 -- top (invitation and HUD settings, the online players of the own faction,
--- pending invitations, the current party), the PvP section below it
+-- pending invitations, the current party), the PvP section beside it
 -- (grug_pvp/page.lua installs it as grug_parties.pvp_section). No inventory
 -- view: the page has the whole window. Real coordinates.
 
 local PAGE = "grug_parties:group"
 grug_parties.PAGE = PAGE
--- Where the PvP section starts, under the party's lowest row (7.83) and the
--- separator line.
-local SEPARATOR_Y, PVP_Y = 8.10, 8.35
+-- The current party and PvP share the lower row as two readable cards.
+local PVP_Y = 4.3
 
 local function esc(value) return core.formspec_escape(tostring(value or "")) end
 local function health_color_mode(player)
@@ -69,6 +68,11 @@ local function content(player, context)
 	local view, pending = grug_parties.view(player), grug_parties.pending(player)
 	local fs = {
 		"real_coordinates[true]",
+		grug_core.ui.panel(0.1, 0.65, 6.55, 3.5),
+		grug_core.ui.panel(6.75, 0.65, 6.55, 3.5),
+		grug_core.ui.panel(0.1, 4.3, 6.55, 9.0),
+		grug_core.ui.button_style("grug_party_leave", "danger"),
+		grug_core.ui.button_style("grug_party_kick", "danger"),
 		-- Refresh takes the focus at every send (0.45.1): otherwise the engine
 		-- focuses a read-only textarea or the member table, and both eat the
 		-- inventory key. Unforced it would not apply when the inventory key
@@ -81,8 +85,8 @@ local function content(player, context)
 		"label[7.10,0.22;Health colors]",
 		("dropdown[9.30,0.00;3.90,0.50;grug_party_health_colors;All green,By class;%d;true]")
 			:format(health_color_mode(player) == "by_class" and 2 or 1),
-		"label[0.20,0.95;Online same-faction players]",
-		"label[6.85,0.95;Pending invitations]",
+		grug_core.ui.heading(0.3, 0.95, "Online same-faction players"),
+		grug_core.ui.heading(6.95, 0.95, "Pending invitations"),
 	}
 	-- Index -1 actively clears GUITable's preserved dynamic selection. Index 0
 	-- skips setSelected and can leave an old row highlighted after a refresh.
@@ -115,7 +119,7 @@ local function content(player, context)
 	fs[#fs + 1] = "button[6.85,3.40;1.35,0.58;grug_party_accept;Accept]"
 	fs[#fs + 1] = "button[8.37,3.40;1.35,0.58;grug_party_decline;Decline]"
 	if view then
-		fs[#fs + 1] = "label[0.20,4.25;Current party]"
+		fs[#fs + 1] = grug_core.ui.heading(0.3, 4.65, "Current party")
 		-- A table rather than a textlist so each member row can carry the
 		-- class icon (Round 26 ruling 22); image 0 is blank (offline or no
 		-- class yet), images 1..n are the class icons.
@@ -138,24 +142,25 @@ local function content(player, context)
 		for index, row in ipairs(view.members) do if row.name == selected.name then selected_index = index end end
 		fs[#fs + 1] = "tablecolumns[image,align=center," ..
 			table.concat(images, ",") .. ";text,padding=0.25]"
-		fs[#fs + 1] = ("table[0.20,4.58;6.35,2.55;grug_party_members;%s;%d]")
+		fs[#fs + 1] = ("table[0.30,5.05;6.10,5.2;grug_party_members;%s;%d]")
 			:format(table.concat(cells, ","), selected_index)
 		local own_name = player:get_player_name()
 		if view.leader == own_name and selected.name ~= own_name then
-			fs[#fs + 1] = "button[0.20,7.25;1.35,0.58;grug_party_kick;Kick]"
-			fs[#fs + 1] = "button[1.72,7.25;1.90,0.58;grug_party_transfer;Make leader]"
+			fs[#fs + 1] = "button[0.30,10.45;1.35,0.58;grug_party_kick;Kick]"
+			fs[#fs + 1] = "button[1.82,10.45;1.90,0.58;grug_party_transfer;Make leader]"
 		end
-		fs[#fs + 1] = "button[3.80,7.25;1.15,0.58;grug_party_leave;Leave]"
+		fs[#fs + 1] = "button[4.00,10.45;1.15,0.58;grug_party_leave;Leave]"
 	else
-		fs[#fs + 1] = "textarea[0.20,4.25;6.35,1.05;;;You are not in a party. Select an online same-faction player above.]"
+		fs[#fs + 1] = "textarea[0.30,4.65;6.10,1.5;;;You are not in a party. Select an online same-faction player above.]"
 	end
 	if context.grug_party_notice then
-		fs[#fs + 1] = "textarea[6.85,4.25;6.35,1.45;;;" .. esc(context.grug_party_notice) .. "]"
+		fs[#fs + 1] = "textarea[0.30,11.3;6.10,1.65;;;" .. esc(context.grug_party_notice) .. "]"
 	end
 	local pvp = grug_parties.pvp_section
 	if pvp then
-		fs[#fs + 1] = ("box[0.20,%.2f;13.10,0.03;#ffffff40]"):format(SEPARATOR_Y)
-		fs[#fs + 1] = pvp.get(player, context, PVP_Y)
+		fs[#fs + 1] = ("container[6.75,%.2f]"):format(PVP_Y)
+		fs[#fs + 1] = pvp.get(player, context, 0)
+		fs[#fs + 1] = "container_end[]"
 	end
 	return table.concat(fs)
 end
@@ -165,6 +170,7 @@ sfinv.register_page(PAGE, {title = "Party & PvP", on_enter = function(_, player,
 end, get = function(_, player, context)
 	return sfinv.make_formspec(player, context, content(player, context), false)
 end, on_player_receive_fields = function(_, player, context, fields)
+	if fields.quit then return true end
 	local pvp = grug_parties.pvp_section
 	if pvp and pvp.on_fields(player, context, fields) then return true end
 	if fields.grug_party_online_list then

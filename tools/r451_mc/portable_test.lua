@@ -269,6 +269,13 @@ grug_inventory = {POTION_BELT = "grug_potion_belt", POTION_BELT_SIZE = 4,
 grug_home = {return_home = function() end}
 grug_keys = {register_on_press = function() end}
 
+-- Exercise real presentation helpers; this fixture does not test the join prepend.
+do
+	local join = core.register_on_joinplayer
+	core.register_on_joinplayer = function() end
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+	core.register_on_joinplayer = join
+end
 local function load(path) dofile(ROOT .. "/" .. path) end
 grug_mounts = {}
 load("mods/PLAYER/grug_mounts/catalog.lua")
@@ -770,6 +777,6 @@ end
 
 if failures > 0 then
 	print(("%d checks, %d failures"):format(checks, failures))
-	os.exit(1)
+	error("portable fixture failed", 0)
 end
 print(("R451 MC PORTABLE PASS checks=%d"):format(checks))

@@ -66,89 +66,41 @@ end
 
 --
 -- Character page (Round 44, spec ruling 6 and §3.3, wireframe v1), in real
--- coordinates: the mode box top left (Stats with the model and the cloak
--- picker -- one mode since the Round 45 playtest --, Effects, Achievements;
--- the professions overview moved to the Crafting tab in Round 45), the gear
--- box top right (eight equipment slots, the Scout's quiver, Return home), and
+-- coordinates: equipment and the model on the left, Stats (with the cloak
+-- picker), Effects and Achievements on the right; the professions overview
+-- remains on Crafting. Both share the Scout's quiver and Return home, and
 -- below them the frame's short inventory view. Both boxes end a gap above
 -- the view's Inventory box.
 --
 
 local CHARACTER_PAGE = "grug_inventory:character"
 local BOX_BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
-local MODE_BOX = {x = 0.2, y = 0.2, w = 7.9, h = BOX_BOTTOM - 0.2}
-local GEAR_BOX = {x = 8.3, y = 0.2, w = 5.0, h = BOX_BOTTOM - 0.2}
-local BOX_COLOR = grug_inventory.BOX_COLOR
+local MODE_BOX = {x = 6.6, y = 0.2, w = 6.7, h = BOX_BOTTOM - 0.2}
+local GEAR_BOX = {x = 0.2, y = 0.2, w = 6.2, h = BOX_BOTTOM - 0.2}
 -- The mode body's area inside the mode box, below the mode buttons; the
 -- Achievements body is drawn into it by its mod.
-local MODE_AREA = {x = 0.4, y = 1.25, w = 7.5, h = BOX_BOTTOM - 0.15 - 1.25}
+local MODE_AREA = {x = 6.8, y = 1.25, w = 6.3, h = BOX_BOTTOM - 0.15 - 1.25}
 local MODES = {
-	{id = "stats", label = "Stats", x = 0.35, w = 1.2},
-	{id = "effects", label = "Effects", x = 1.65, w = 1.4},
-	{id = "achievements", label = "Achievements", x = 3.15, w = 2.1},
+	{id = "stats", label = "Stats", x = 6.8, w = 1.2},
+	{id = "effects", label = "Effects", x = 8.1, w = 1.4},
+	{id = "achievements", label = "Achievements", x = 9.6, w = 3.35},
 }
 local MODE_Y, MODE_H = 0.35, 0.7
 
--- The gear box (weapon-slot design B5): the four armor pieces in the left
--- column, the two hands and the two trinkets in the right one, each slot's
--- name beside it. Positions only -- the slot list, its order and its label
--- come from grug_inventory.equipment_slots (the two hands' label and ghost
--- from the class rules, grug_inventory.HAND_RULES), so a new slot is one
--- entry there plus one row here. The Scout's quiver sits below the grid.
+-- Equipment surrounds the model; native list slots retain their size and
+-- routing. Labels sit below the slots so no text runs through the preview.
 local SLOT_POS = {
-	grug_head = {8.5, 0.95},
-	grug_chest = {8.5, 2.2},
-	grug_legs = {8.5, 3.45},
-	grug_feet = {8.5, 4.7},
-	grug_weapon = {10.9, 0.95},
-	grug_offhand = {10.9, 2.2},
-	grug_trinket1 = {10.9, 3.45},
-	grug_trinket2 = {10.9, 4.7},
+	grug_head = {0.5, 1.05}, grug_chest = {0.5, 2.4},
+	grug_legs = {0.5, 3.75}, grug_feet = {0.5, 5.1},
+	grug_weapon = {5.05, 1.05}, grug_offhand = {5.05, 2.4},
+	grug_trinket1 = {5.05, 3.75}, grug_trinket2 = {5.05, 5.1},
 }
-local LABEL_DX = 1.1 -- a slot's name starts this far right of the slot
-local LABEL_CHARS = 8 -- and wraps at this width ("Caster offhand")
-local QUIVER_POS = {8.5, 6.1}
+local QUIVER_POS = {0.5, 6.7}
 local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
--- The cover over the quiver cell's count corner (Round 41 ruling 6): the
--- slot's colour as drawn, default's listcolors slot #00000069 over the
--- #343434 of gui_formbg.png, approximately (accepted). Generated, no texture
--- file.
-local QUIVER_COVER = "[fill:8x8:#1f1f1f"
--- Slot units the cover reaches past its size, about one pixel (see its use).
-local QUIVER_COVER_OVER = 0.02
--- The engine's count "100" in the default font (font_size 16 times display
--- density and gui_scaling, fontengine.cpp getFontSize; window information
--- reports that product as real_gui_scaling), in pixels per unit of that
--- scale, with room to spare: the font's digits are about 0.56 em wide, its
--- line about 1.12 em high.
-local COUNT_W_PX, COUNT_H_PX = 30, 20
--- Return home at the foot of the gear box, in every mode.
-local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.6, BOX_BOTTOM - 1.2
-
--- The cover's size in slot units for this player's window, so the count is
--- hidden at any GUI scale and window size. The slot is the engine's imgsize
--- (guiFormSpecMenu.cpp calculateImgsize): the preferred size, which window
--- information gives unpadded as size / max_formspec_size (the 5 % padding on
--- each side lowers it by at most 10 %), capped so the inventory form (a
--- real-coordinate size, Round 44) fits the padded window. Slot and count both
--- grow with gui_scaling, so the ratio changes mainly where that cap holds (a
--- small window, a large scale). Without window information (a page built
--- right at join) the cover takes most of the cell.
-local function quiver_cover_size(player)
-	local info = core.get_player_window_information(player:get_player_name())
-	if not (info and info.size and info.max_formspec_size and
-			info.real_gui_scaling) then
-		return 0.9, 0.65
-	end
-	local width, height = info.size.x * 0.9, info.size.y * 0.9
-	local slot = math.min(0.9 * info.size.x / info.max_formspec_size.x,
-		width / grug_inventory.UI.frame_w, height / grug_inventory.UI.frame_h)
-	-- Rounded up to the formspec's two decimals, never below the count.
-	local function units(px)
-		return math.min(1, math.ceil(px * info.real_gui_scaling / slot * 100) / 100)
-	end
-	return units(COUNT_W_PX), units(COUNT_H_PX)
-end
+local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.1, BOX_BOTTOM - 0.8
+local MODEL = {x = 1.65, y = 0.95, w = 3.25, h = 5.6}
+-- The engine provides mouse rotation; no preview timer or separate input.
+local MODEL_VIEW = "0,130"
 
 -- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
 -- §1). Reused grug_gear art for the five slots with a natural match, dimmed by
@@ -193,8 +145,8 @@ local DAMAGE_REDUCTION_TOOLTIP = "Armor reduction against an enemy of your " ..
 	"level. Higher against lower-level enemies, lower against higher-level ones."
 
 -- The Scout's quiver slot (Round 28 ruling 26): the first cell of the quiver
--- list (above 100 arrows showing the true total, Round 41), its name and the
--- arrow total beside it.
+-- list with its native stack count, its name and the true arrow total
+-- beside it. No opaque cover or item-image overlay captures the slot hover.
 local function quiver_content(player)
 	local inv = player:get_inventory()
 	local total = grug_inventory.quiver_count(player)
@@ -208,40 +160,12 @@ local function quiver_content(player)
 			esc("Quiver — up to " .. grug_inventory.quiver_capacity() ..
 				" arrows. Drag or shift-click arrows in; click to take up to " ..
 				"100. Shots draw from here first.")),
-		("label[%.2f,%.2f;%s]"):format(x + LABEL_DX, y + 0.25,
+		("label[%.2f,%.2f;%s]"):format(x + 1.15, y + 0.25,
 			esc("Quiver\n" .. total .. "/" .. grug_inventory.quiver_capacity())),
 	}
 	local first = inv:get_stack(grug_inventory.QUIVER_LIST, 1)
 	if first:is_empty() then
 		fs[#fs + 1] = ("image[%.2f,%.2f;1,1;%s]"):format(x, y, QUIVER_GHOST)
-	elseif total > first:get_stack_max() then
-		-- Above one stack the slot shows the true total (Round 41 ruling 6):
-		-- drawn after the list[]. Clicks still reach the cell (inventory
-		-- clicks are found by position, guiFormSpecMenu.cpp getItemAtPos).
-		-- The hover does not: since the frame's formspec_version 6 (Round 44)
-		-- elements stack in definition order, mouse moves go to the topmost
-		-- element under the pointer (:4410-4422), here the full-cell
-		-- item_image, so the cell loses its hover highlight and item tooltip
-		-- while the overlay is shown (the same holds for the ghost images
-		-- over empty equipment, quiver and deposit slots: no highlight). A
-		-- cover hides the engine's count corner, then an item_image of the
-		-- same item and slot rect draws the total with the list's own font
-		-- and corner (guiItemImage.cpp draw -> drawItemStack). The count in an
-		-- item_image string is undocumented engine behaviour
-		-- (docs/technical/upstream-workarounds.md §4).
-		-- Real coordinates: positions and sizes are both slot units, so the
-		-- cover's offset into the cell is (1 - size). The engine truncates
-		-- position and size to pixels, so the position is rounded down and
-		-- the cover is QUIVER_COVER_OVER larger: at most about a pixel past
-		-- the slot, onto its border (listcolors' #141318), never short of the
-		-- count.
-		local cover_w, cover_h = quiver_cover_size(player)
-		fs[#fs + 1] = ("image[%.3f,%.3f;%.2f,%.2f;%s]"):format(
-			math.floor((x + 1 - cover_w) * 1000) / 1000,
-			math.floor((y + 1 - cover_h) * 1000) / 1000,
-			cover_w + QUIVER_COVER_OVER, cover_h + QUIVER_COVER_OVER, QUIVER_COVER)
-		fs[#fs + 1] = ("item_image[%.2f,%.2f;1,1;%s %d]"):format(x, y,
-			first:get_name(), total)
 	end
 	return table.concat(fs)
 end
@@ -280,10 +204,12 @@ local function gear_content(player, context)
 	local class_id = grug_classes.get_class(player)
 	local route = ("listring[current_player;%s]"):format(grug_inventory.SHIFT_LIST)
 	local fs = {
-		("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(GEAR_BOX.x, GEAR_BOX.y, GEAR_BOX.w,
-			GEAR_BOX.h, BOX_COLOR),
-		("label[%.2f,0.55;Gear]"):format(SLOT_POS.grug_head[1]),
+		grug_core.ui.panel(GEAR_BOX.x, GEAR_BOX.y, GEAR_BOX.w, GEAR_BOX.h),
+		grug_core.ui.heading(0.5, 0.6, "Equipment"),
 	}
+	local mesh, textures = preview_model(player)
+	fs[#fs + 1] = ("model[%.2f,%.2f;%.2f,%.2f;grug_preview;%s;%s;%s]"):format(
+		MODEL.x, MODEL.y, MODEL.w, MODEL.h, esc(mesh), esc_texture_list(textures), MODEL_VIEW)
 	local function ring(list)
 		fs[#fs + 1] = ("listring[current_player;%s]"):format(list) .. route
 	end
@@ -299,9 +225,8 @@ local function gear_content(player, context)
 			fs[#fs + 1] = ("list[current_player;%s;%.2f,%.2f;1,1;]"):format(
 				slot.list, pos[1], pos[2])
 			local name = grug_inventory.slot_label(class_id, slot.list) or slot.label
-			fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(pos[1] + LABEL_DX,
-				pos[2] + (#name > LABEL_CHARS and 0.25 or 0.5),
-				esc(grug_inventory.wrap_text(name, LABEL_CHARS)))
+			fs[#fs + 1] = ("style_type[label;font_size=*0.75]label[%.2f,%.2f;%s]" ..
+				"style_type[label;font_size=]"):format(pos[1], pos[2] + 1.16, esc(name == "Caster offhand" and "Offhand" or name))
 			-- The area tooltip repeats the slot's name over the cell. It shows
 			-- on EMPTY slots only, which is what we want — a slot with an item in
 			-- it should describe the item: guiFormSpecMenu.cpp:3672-3682 runs the
@@ -339,37 +264,20 @@ local function gear_content(player, context)
 		local x = SLOT_POS.grug_head[1]
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x, HOME_LABEL_Y,
 			esc("Home: " .. label))
-		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.8;grug_character_home;%s]"):format(
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.65;grug_character_home;%s]"):format(
 			x, HOME_BUTTON_Y, GEAR_BOX.x + GEAR_BOX.w - 0.15 - x,
 			esc(("Return home (%s)"):format(state)))
 	end
 	return table.concat(fs)
 end
 
--- Stats (3D and Stats in one mode since the Round 45 playtest): the player
--- model on the left; right of it the pools, armor, crit and dodge, the
--- Miner's Guild rank and reputation (Round 58), the Claim Stone status, and
--- at the foot, bottom-aligned with the model, the cloak picker (Round 33,
--- §2.10). The balance and Withdraw are on the Inventory
--- tab. The column is about 4 units wide: lines wrap at STAT_CHARS (0.15
--- units a character, a small web window's font against its slots).
-local MODEL = {x = 0.4, y = 1.35, w = 3.3, h = BOX_BOTTOM - 0.25 - 1.35}
--- The view (Round 54, a first version for the user to tune): the camera's
--- rotation (x, y in degrees; a three-quarter view from the weapon side, so
--- the card held forward shows its length -- head-on, as at 0,160 before, it
--- is foreshortened to a stub), then continuous rotation off, the mouse turns
--- the model, and no frame range or speed: the model stands still in frame 0,
--- the first frame of the stand animation.
-local MODEL_VIEW = "0,130"
-local STAT_X, STAT_Y, STAT_STEP = 3.95, 1.6, 0.5
-local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.15 - STAT_X
+-- The detail column keeps the actual pool/combat values, guild balance,
+-- housing status and Stats-only cloak picker. No illustrative browser stats.
+local STAT_X, STAT_Y, STAT_STEP = 6.9, 1.6, 0.5
+local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.25 - STAT_X
 local STAT_CHARS = math.floor(STAT_W / 0.15)
--- The cloak block: the label and under it the dropdown (one unit high),
--- ending at the model's bottom; the hint is the dropdown's tooltip, so the
--- block stays clear of a four-line Claim Stone status (a draft stone's).
-local CLOAK_Y = MODEL.y + MODEL.h - 1
+local CLOAK_Y = BOX_BOTTOM - 1.15
 local function stats_content(player)
-	local mesh, textures = preview_model(player)
 	local class = grug_classes.get_class_def(player)
 	local hp = grug_classes.get_pool_breakdown(player, "hp")
 	local mana = class and class.resource == "mana"
@@ -390,11 +298,7 @@ local function stats_content(player)
 		("Crit: %.1f%%"):format(crit),
 		("Dodge: %.1f%%"):format(dodge),
 	}
-	local fs = {
-		("model[%.2f,%.2f;%.2f,%.2f;grug_preview;%s;%s;%s]"):format(MODEL.x,
-			MODEL.y, MODEL.w, MODEL.h, esc(mesh), esc_texture_list(textures),
-			MODEL_VIEW),
-	}
+	local fs = {}
 	for index, line in ipairs(lines) do
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(STAT_X,
 			STAT_Y + (index - 1) * STAT_STEP, esc(line))
@@ -446,9 +350,9 @@ end
 -- Effects (Round 26): every active effect of the status icon row with its
 -- name, detail and remaining time -- the text the row itself has no room
 -- for. One column in the mode box.
-local EFFECT_X, EFFECT_Y, EFFECT_STEP, EFFECT_ROWS = 0.4, 1.3, 0.95, 8
+local EFFECT_X, EFFECT_Y, EFFECT_STEP, EFFECT_ROWS = 6.9, 1.3, 0.95, 8
 local EFFECT_ICON = 0.8
-local NAME_CHARS, DETAIL_CHARS = 28, 34
+local NAME_CHARS, DETAIL_CHARS = 25, 32
 local TIME_COLOR = "#f0c75e"
 
 local function selected_mode(context)
@@ -488,16 +392,24 @@ local function effects_content(player, context)
 	local effects = grug_core.status_effects(player)
 	context.grug_effects_key = grug_inventory.effects_key(player)
 	if #effects == 0 then
-		return ("label[%.2f,1.6;%s]"):format(EFFECT_X, esc("No active effects. " ..
-			"Food, elixirs, skills, talents\nand hostile attacks show up here."))
+		return ("textarea[%.2f,1.45;6.1,1.7;;;%s]"):format(EFFECT_X, esc("No active effects. " ..
+			"Food, elixirs, skills, talents and hostile attacks show up here."))
 	end
-	local fs = {}
+	local fs = {"style_type[label;font_size=*0.85]"}
 	-- A full box keeps its last row for the "more" line.
 	local shown = #effects > EFFECT_ROWS and EFFECT_ROWS - 1 or #effects
 	for index = 1, shown do
 		local effect = effects[index]
 		local y = EFFECT_Y + (index - 1) * EFFECT_STEP
 		local name, time, detail = effect_lines(effect)
+		fs[#fs + 1] = grug_core.ui.panel(EFFECT_X - 0.05, y - 0.02, 6.05, 0.9)
+		local full_detail = effect.detail or ""
+		if effect.value ~= nil then
+			full_detail = full_detail .. (full_detail ~= "" and ": " or "") ..
+				effect.caption .. " left"
+		end
+		fs[#fs + 1] = ("tooltip[%.2f,%.2f;6.05,0.9;%s]"):format(EFFECT_X, y,
+			esc(effect.name .. "\n" .. full_detail .. "\n" .. time))
 		fs[#fs + 1] = ("image[%.2f,%.2f;%.2f,%.2f;%s]"):format(EFFECT_X, y,
 			EFFECT_ICON, EFFECT_ICON, esc(effect.texture))
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(EFFECT_X + 0.95, y + 0.2,
@@ -512,6 +424,7 @@ local function effects_content(player, context)
 			EFFECT_Y + shown * EFFECT_STEP + 0.4,
 			esc(("... and %d more"):format(#effects - shown)))
 	end
+	fs[#fs + 1] = "style_type[label;font_size=]"
 	return table.concat(fs)
 end
 
@@ -545,12 +458,13 @@ local function mode_content(player, context, selected)
 		-- Forced: unforced, it would not apply when the inventory key opens
 		-- the window.
 		("set_focus[grug_character_%s;true]"):format(selected),
-		("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(MODE_BOX.x, MODE_BOX.y, MODE_BOX.w,
-			MODE_BOX.h, BOX_COLOR),
+		grug_core.ui.panel(MODE_BOX.x, MODE_BOX.y, MODE_BOX.w, MODE_BOX.h),
 	}
 	for _, mode in ipairs(MODES) do
 		local field = "grug_character_" .. mode.id
 		fs[#fs + 1] = grug_inventory.selected_button_style(field, mode.id == selected)
+		fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(field,
+			0.85 * grug_core.ui.text_scale(player))
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
 			mode.x, MODE_Y, mode.w, MODE_H, field, esc(mode.label))
 	end
@@ -688,6 +602,11 @@ local function inventory_content(player)
 	-- automatic deposit's checkbox in column 6 (Round 46), Sort in columns
 	-- 7-8, ending with the hotbar's last slot.
 	local row_y, x = layout.money_y, layout.x
+	local compact = grug_core.ui.text_scale(player) < 1
+	if compact then
+		fs[#fs + 1] = ("style[grug_money_withdraw,grug_inv_sort;font_size=*%.3f]"):
+			format(0.85 * grug_core.ui.text_scale(player))
+	end
 	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, row_y + 0.25,
 		esc("Money\n" .. grug_money.format(grug_money.get(player))))
 	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_money_withdraw;Withdraw]"):format(
@@ -710,7 +629,7 @@ local function inventory_content(player)
 	fs[#fs + 1] = ("tooltip[grug_money_auto_deposit;%s]"):format(
 		esc("Deposit coin bags automatically on pickup"))
 	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_inv_sort;Sort]"):format(
-		x + 6 * PITCH, row_y, ROW_BUTTON_W)
+		x + (compact and 7 or 6) * PITCH, row_y, compact and 1 or ROW_BUTTON_W)
 	fs[#fs + 1] = ("tooltip[grug_inv_sort;%s]"):format(esc("Sort the inventory " ..
 		"and the bags. The hotbar stays as it is."))
 	return table.concat(fs)

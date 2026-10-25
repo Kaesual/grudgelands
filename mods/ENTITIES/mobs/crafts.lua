@@ -218,10 +218,14 @@ core.register_tool(":mobs:mob_reset_stick", {
 
 			local name = user:get_player_name()
 
-			core.show_formspec(name, "mobs_texture", "size[8,4]"
-			.. "field[0.5,1;7.5,0;name;"
-			.. FS("Enter texture:") .. ";" .. bt .. "]"
-			.. "button_exit[2.5,3.5;3,1;mob_texture_change;"
+			-- GRUG PATCH: runtime theme seam; the original editor owns the action.
+			local game = rawget(_G, "grug_core")
+			local frame = game and game.ui and game.ui.frame(10, 3.7, S("Mob texture")) or
+				"formspec_version[6]size[10,3.7]"
+			core.show_formspec(name, "mobs_texture", frame
+			.. "field[0.4,1.45;9.2,0.7;name;"
+			.. FS("Enter texture:") .. ";" .. core.formspec_escape(bt) .. "]"
+			.. "button_exit[6.6,2.6;3,0.7;mob_texture_change;"
 			.. FS("Change") .. "]")
 		end
 	end

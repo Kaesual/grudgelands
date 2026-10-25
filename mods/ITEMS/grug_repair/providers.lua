@@ -101,7 +101,7 @@ local function form(session)
 	session.page = math.max(1, math.min(pages, session.page))
 	local mender = is_mender(quote.provider)
 	local greeting = mender and grug_jobs.GREETINGS and grug_jobs.GREETINGS.mender
-	local fs = {"", ("label[0.4,0.4;%s]"):format(mender and esc(grug_jobs.MENDER_TITLE) or
+	local fs = {"", grug_core.ui.heading(0.4, 0.45, mender and grug_jobs.MENDER_TITLE or
 		"Equipment repairs")}
 	local dy = 0
 	if greeting then
@@ -118,6 +118,7 @@ local function form(session)
 	for i = first, math.min(#quote.items, first + PAGE_SIZE - 1) do
 		local row = quote.items[i]
 		local stack, y = row.expected, 1.6 + dy + (i - first) * 0.72
+		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.04, 10.5, 0.68)
 		local label = stack:get_description():match("^[^\n]+") or stack:get_name()
 		local percent = math.floor((65535 - stack:get_wear()) * 100 / 65535)
 		fs[#fs + 1] = ("item_image[0.4,%.2f;0.6,0.6;%s]"):format(y, esc(stack:get_name()))
@@ -135,7 +136,7 @@ local function form(session)
 		:format(row_y, row_y)
 	fs[#fs + 1] = ("label[5,%.2f;%d / %d]"):format(row_y + 0.35, session.page, pages)
 	fs[#fs + 1] = ("button_exit[8.5,%.2f;2,0.7;close;Close]"):format(row_y)
-	fs[1] = ("formspec_version[4]size[11,%.2f]"):format(9 + dy)
+	fs[1] = grug_core.ui.frame(11, 9 + dy)
 	return table.concat(fs)
 end
 

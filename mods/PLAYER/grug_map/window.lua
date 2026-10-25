@@ -96,7 +96,7 @@ local function esc(value)
 end
 
 -- The window's size {w, h} for a window information table (or nil).
-function W.window_size(info)
+function W.window_size(info, header_h)
 	local max = type(info) == "table" and info.max_formspec_size
 	local w, h = W.FALLBACK.x, W.FALLBACK.y
 	if type(max) == "table" and type(max.x) == "number" and type(max.y) == "number" and
@@ -104,7 +104,7 @@ function W.window_size(info)
 		w, h = max.x * W.FRACTION, max.y * W.FRACTION
 	end
 	w, h = math.max(W.MIN.x, w), math.max(W.MIN.y, h)
-	return math.floor(w * 100) / 100, math.floor(h * 100) / 100
+	return math.floor(w * 100) / 100, math.floor((h - (header_h or 0)) * 100) / 100
 end
 
 -- Where everything sits in a w x h window. The header and the quest column
@@ -425,8 +425,11 @@ end
 -- The whole window for `player` in state `session`, `info` the window
 -- information (or nil).
 function W.formspec(player, session, info)
-	local w, h = W.window_size(info)
-	local layout = W.layout(w, h)
+	local width = W.window_size(info)
+    local navigation_layout = grug_inventory.navigation_layout(player, session, width, info)
+    local nav, header_h = grug_inventory.navigation(player, session, "grug_map:atlas", width, navigation_layout)
+    local w, h = W.window_size(info, header_h)
+    local layout = W.layout(w, h)
 	session.layout = layout
 	local zoom = session.zoom or 1
 	local journal = grug_quests.journal(player)
@@ -441,7 +444,9 @@ function W.formspec(player, session, info)
 	local fs = {
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
-		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h),
+		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + header_h),
+		nav,
+		("container[0,%.3f]"):format(header_h),
 		-- The inventory key closes a form unless the focused element eats it
 		-- (guiFormSpecMenu.cpp OnEvent; edit boxes, read-only ones included,
 		-- and textlists do). Without this the engine focuses the quest text
@@ -456,7 +461,6 @@ function W.formspec(player, session, info)
 		("label[3.3,%.2f;Current: %s]"):format(cy, esc(current_zone(player))),
 		minimap,
 		("button[%.2f,%.2f;3.2,0.6;grug_map_back;Back to inventory]"):format(right - 3.95, PAD),
-		("button_exit[%.2f,%.2f;0.6,0.6;grug_map_close;X]"):format(right - 0.6, PAD),
 		("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;horizontal;%.5f]"):format(layout.map_x,
 			layout.map_y, layout.map_w, layout.map_h, SCROLL_X, layout.map_w / 1000),
 		-- The inner clipper spans the full scaled width so horizontal scrolling
@@ -478,7 +482,10 @@ function W.formspec(player, session, info)
 		session.scroll_y or 0)
 	fs[#fs + 1] = SCROLLBAR_DEFAULTS
 	layer_buttons(fs, layout, session, quest ~= nil)
+	fs[#fs + 1] = grug_core.ui.panel(layout.column.x - 0.1, layout.column.y - 0.1,
+		layout.column.w + 0.1, layout.column.h + 0.1)
 	fs[#fs + 1] = quest_box.content(session, journal, layout.column)
+	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)
 end
 
@@ -659,6 +666,20 @@ function W.handle_fields(player, fields)
 	if not session then return end
 	if fields.quit then
 		session.open = false
+		return
+	end
+	local target, clicked = grug_inventory.navigation_target(player, session, fields)
+	if clicked then
+		if target and target ~= "grug_map:atlas" then
+			session.open, session.pending = false, false
+			if not sfinv.inventory_suspended(player) then
+				sfinv.set_page(player, target)
+				core.show_formspec(name, "", sfinv.get_formspec(player,
+					sfinv.get_or_create_context(player)))
+			else
+				core.close_formspec(name, W.FORMNAME)
+			end
+		end
 		return
 	end
 	session.open = true

@@ -795,21 +795,24 @@ do
 	grug_xp.register_on_level_change = function() end
 	grug_money.register_on_change = function() end
 	local steps_before = #registered.register_globalstep
+	core.colorize = function(_, text) return text end
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 	dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 	local character_step = registered.register_globalstep[steps_before + 1]
 	check(character_step ~= nil and #registered.register_globalstep == steps_before + 1,
 		"K the Character page registers its one 1 s pass")
 	local character = pages["grug_inventory:character"]
 	local kay = new_player("kay", {x = 0, y = 10, z = 0})
+	function kay:set_formspec_prepend() end
 	function kay:get_properties() return {visual = "mesh", mesh = "m.b3d", textures = {"t.png"}} end
 	join(kay)
 	local ctx = {page = "grug_inventory:character"}
 	sfinv.contexts.kay = ctx
 	home_left, home_pending, has_home = 0, false, true
 	sfinv.set_player_inventory_formspec(kay, ctx)
-	local button = "button[8.50,7.84;4.65,0.8;grug_character_home;"
+	local button = "button[0.50,8.24;5.75,0.65;grug_character_home;"
 	check(kay.form:find(button .. "Return home (Ready)]", 1, true) and
-		kay.form:find("label[8.50,7.44;Home: Inn]", 1, true),
+		kay.form:find("label[0.50,7.94;Home: Inn]", 1, true),
 		"K the gear box shows Home: Inn and Return home (Ready)")
 	local function second() character_step(1.0) end
 	kay.sends = 0

@@ -179,6 +179,13 @@ grug_traders.has_discount = function() return false end
 grug_traders.apply_discount = function(price) return price end
 grug_traders.max_bracket = function() return 0 end
 grug_traders.stock = {}
+-- Exercise real presentation helpers; this fixture does not test the join prepend.
+do
+	local join = core.register_on_joinplayer
+	core.register_on_joinplayer = function() end
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+	core.register_on_joinplayer = join
+end
 dofile(ROOT .. "/mods/ENTITIES/grug_traders/trade.lua")
 
 local inv

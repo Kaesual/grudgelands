@@ -534,6 +534,8 @@ function alice:get_inventory() return {get_size = function() return 0 end} end
 grug_xp = {register_on_level_change = function() end, get_level = function() return 5 end}
 grug_money = {register_on_change = function() end}
 function grug_core.register_on_equipment_change() end
+player_api = {registered_models = {}}
+dofile("mods/CORE/grug_core/ui.lua")
 dofile("mods/PLAYER/grug_inventory/pages.lua")
 local character = pages["grug_inventory:character"]
 check(character ~= nil, "character page registered")
@@ -546,7 +548,7 @@ local page = character:get(alice, context)
 check(page:find("No active effects", 1, true) ~= nil, "effects empty state")
 check(page:find("style[grug_character_effects;true]", 1, true) ~= nil,
 	"effects button styled selected")
-check(page:find("button[0.35,0.35;1.20,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
+check(page:find("button[6.80,0.35;1.20,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
 	"stats mode button")
 
 -- Several effects: icon with frame, name, time, detail.
@@ -564,7 +566,7 @@ page = character:get(alice, context)
 local function has(text, label) check(page:find(text, 1, true) ~= nil, label) end
 has(";0.80,0.80;" .. fs_escape(bread .. "^grug_status_frame_buff.png") .. "]",
 	"food row shows the item image on its frame")
-has("image[0.40,1.30;0.80,0.80;" ..
+has("image[6.90,1.30;0.80,0.80;" ..
 	fs_escape("grug_status_elixir_focus.png^grug_status_frame_buff.png") .. "]",
 	"first row: row order (elixir before food)")
 has(fs_escape("Bread  (c@#f0c75e)5 min left"), "food name and time")
@@ -620,7 +622,7 @@ local group_fs = group:get(alice, group_context)
 check(group_fs:find("tablecolumns[image,align=center,0=blank.png,1=grug_class_warrior.png," ..
 	"2=grug_class_mage.png,3=grug_class_priest.png,4=grug_class_scout.png;text", 1, true) ~= nil,
 	"member table declares the class icons")
-check(group_fs:find("table[0.20,4.58;6.35,2.55;grug_party_members;1," ..
+check(group_fs:find("table[0.30,5.05;6.10,5.2;grug_party_members;1," ..
 	fs_escape("* alice [Lv 5]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 5]  10/20 HP") ..
 	",0," .. fs_escape("cyd [Lv 4]  Offline") .. ";1]", 1, true) ~= nil,
 	"member rows carry class indices (offline: blank)")

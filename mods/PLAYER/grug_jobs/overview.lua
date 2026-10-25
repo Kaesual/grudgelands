@@ -38,6 +38,8 @@ function grug_jobs.profession_overview(player)
 	return rows
 end
 
+local UI = grug_core.ui
+
 local NOTE_COLOR = "#f0c75e"
 -- Real-coordinate labels are centred on their y; one printed line each.
 local LINE_STEP, ROW_GAP = 0.42, 0.26
@@ -54,12 +56,14 @@ end
 -- the rows leave room. A row that would pass the area's foot (four capped
 -- rows in the Crafting tab's narrow box) is left out with a pointer to the
 -- area tabs, which show every profession's tier progress. Pure.
-function grug_jobs.professions_formspec(rows, area)
+function grug_jobs.professions_formspec(rows, area, player)
 	local width = math.floor(area.w * CHARS_PER_UNIT)
 	local last_y = area.y + area.h - 0.25
 	local fs = {}
+	local font_scale = player and UI.text_scale(player) or 1
 	local function line(y, text)
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(area.x, y, esc(text))
+		fs[#fs + 1] = ("style_type[label;font_size=*%.3f]label[%.2f,%.2f;%s]" ..
+			"style_type[label;font_size=*1]"):format(0.8 * font_scale, area.x, y, esc(text))
 	end
 	-- One label per wrapped line; returns the y below the last one.
 	local function lines(y, text, color)
@@ -100,7 +104,7 @@ function grug_jobs.professions_formspec(rows, area)
 			lines(y, "More on the area tabs above.")
 			return table.concat(fs)
 		end
-		line(y, ("%s — Tier %d"):format(row.name, row.tier))
+		fs[#fs + 1] = UI.heading(area.x, y, ("%s — Tier %d"):format(row.name, row.tier))
 		y = lines(y + LINE_STEP, progress)
 		if note then y = lines(y, note, NOTE_COLOR) end
 		y = y + ROW_GAP

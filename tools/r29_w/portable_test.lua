@@ -191,6 +191,7 @@ player = {race="human", hp=20, pos=vnew(0, 101, 0),
  get_meta=function() return meta end, get_hp=function(self) return self.hp end,
  get_pos=function(self) return self.pos end,
  set_pos=function(self, p) self.pos = vnew(p) end}
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 

@@ -211,7 +211,7 @@ end
 do
 	local steps, loaded, pages, sends = {}, {}, {}, {}
 	local players = {}
-	local PAGE, TOP = "grug_parties:group", 8.35
+	local PAGE, TOP = "grug_parties:group", 0.5
 	change_callbacks = {}
 	rawset(_G, "core", {
 		get_current_modname = function() return "grug_pvp" end,
@@ -242,6 +242,7 @@ do
 		end,
 	})
 	rawset(_G, "grug_pvp", fake_pvp())
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 	dofile(repo .. "/mods/PLAYER/grug_pvp/page.lua")
 	local section = grug_parties.pvp_section
 	check(section and type(section.get) == "function" and
@@ -258,7 +259,7 @@ do
 		generals = 0, kings = 1}
 	local form = section.get(bob, context, TOP)
 	check(not form:find("list[", 1, true), "P the section carries no inventory")
-	check(form:find("button[9.60,8.35;3.60,0.70;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
+	check(form:find("button[0.3,4.10;5.95,0.7;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
 		"P the Flag me for PvP button")
 	check(form:find("Flagged for 12 s", 1, true) ~= nil, "P the headline with seconds")
 	check(form:find("PvP contact", 1, true) ~= nil, "P the reason line")
@@ -270,28 +271,28 @@ do
 	check(not form:find("rank", 1, true) and not form:find("title", 1, true),
 		"P statistics only: no rank or titles")
 	-- Geometry (real coordinates): every element from TOP down and inside the
-	-- 13.5 x 13.67 window, a label at about 0.15 units a character (the web
+	-- 6.55 x 9 card, a label at about 0.15 units a character (the web
 	-- build; generous) and 0.2 below its middle.
 	local inside = true
-	for kind, args in form:gmatch("(%a+)%[([^%]]*)%]") do
+	for kind, args in form:gmatch("([%w_]+)%[([^%]]*)%]") do
 		local x, y, rest = args:match("^([%d.]+),([%d.]+);(.*)$")
 		x, y = tonumber(x), tonumber(y)
 		if kind == "label" and x then
 			local text = rest:gsub("\27%(c@#%x+%)", "")
-			if y < TOP or y + 0.2 > 13.4 or x + #text * 0.15 > 13.3 then
+			if y < TOP or y + 0.2 > TOP + 9 or x + #text * 0.15 > 6.55 then
 				inside = false
 				print("outside: " .. args)
 			end
-		elseif kind == "button" and x then
+		elseif (kind == "button" or kind == "textarea" or kind == "background9") and x then
 			local w, h = rest:match("^([%d.]+),([%d.]+);")
-			if y < TOP or y + tonumber(h) > 13.4 or x + tonumber(w) > 13.4 then inside = false end
+			if y < TOP or y + tonumber(h) > TOP + 9 or x + tonumber(w) > 6.55 then inside = false end
 		end
 	end
-	check(inside, "P every element inside the window, under the section's top")
+	check(inside, "P every element inside the card, under the section's top")
 	-- Stats labels do not run into their values.
 	local longest = 0
 	for _, row in ipairs(V.STATS) do longest = math.max(longest, #row[2]) end
-	check(longest * 0.15 < 4.2, "P counter labels end before their values")
+	check(longest * 0.15 < 5.05, "P counter labels end before their values")
 
 	-- The button.
 	sends = {}

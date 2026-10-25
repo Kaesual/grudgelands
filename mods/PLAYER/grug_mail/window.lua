@@ -130,14 +130,21 @@ local function frame(player, session, counts)
 		counts.announcements > 0 and ("Announcements (" .. counts.announcements .. ")") or
 			"Announcements",
 		"Write", "To the admin"}
-	for index, caption in ipairs(captions) do captions[index] = esc(caption) end
+	local nav = {}
+	for index, caption in ipairs(captions) do
+		local name = "grug_mail_tab_" .. index
+		nav[#nav + 1] = grug_core.ui.button_style(name,
+			index == TAB_INDEX[session.tab] and "selected" or "normal")
+		nav[#nav + 1] = ("button[%.3f,0.2;%.3f,0.6;%s;%s]"):format(
+			0.4 + (index - 1) * ((W - 0.8) / 4), (W - 0.8) / 4 - 0.1, name, esc(caption))
+	end
 	return table.concat({
-		("formspec_version[6]size[%.3f,%.3f]"):format(W, H),
+		("formspec_version[6]size[%.3f,%.3f]"):format(W, H + 0.95),
 		-- The focus sits on an invisible button at every send (module guide
 		-- "Initial focus"): an edit box or a table would eat the inventory key.
 		"set_focus[grug_mail_focus;true]button[0,0;0,0;grug_mail_focus;]",
-		("tabheader[0,0;grug_mail_tab;%s;%d;false;true]"):format(
-			table.concat(captions, ","), TAB_INDEX[session.tab]),
+		table.concat(nav), "container[0,0.95]",
+		grug_core.ui.panel(0.25, 0.95, W - 0.5, H - 1.2),
 		"label[0.4,0.55;", esc(mailbox_text(session)), "]",
 		("label[%.2f,0.55;%s]"):format(W - 3.4, esc(colored(COLOR.dim, "Purse: ") ..
 			grug_money.format(grug_money.get(player)))),
@@ -172,7 +179,7 @@ local FROM_CHARS, SUBJECT_CHARS = 15, 18
 -- A letter or broadcast list as a table[] of one page: the unread dot, the
 -- badge, sender, subject (with the number of attachments) and date.
 local function letter_table(fs, name, rows, selected_id, x, y, w, h)
-	fs[#fs + 1] = ("tableoptions[background=#0d0e10;border=true;highlight=#2c3a4f;" ..
+	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=#4e3f28;" ..
 		"color=%s]"):format(COLOR.text)
 	fs[#fs + 1] = ("tablecolumns[color,span=1;text,width=0.6;image,width=1,1=%s,2=%s;" ..
 		"color;text,width=6;text,width=8;text,align=right,width=3]"):format(BADGE, SEAL)
@@ -439,7 +446,7 @@ local ADMIN_HINT = "Questions, problems or a player to report? Feedback on " ..
 	"the game and bug reports are very welcome too. Mail to the admin is free."
 
 local function ticket_table(fs, rows, selected_id, x, y, w, h)
-	fs[#fs + 1] = ("tableoptions[background=#0d0e10;border=true;highlight=#2c3a4f;" ..
+	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=#4e3f28;" ..
 		"color=%s]"):format(COLOR.text)
 	fs[#fs + 1] = "tablecolumns[text,width=12;color;text,align=right,width=5]"
 	local cells, selected = {}, 0
@@ -542,6 +549,7 @@ end
 function grug_mail.window_formspec(player, session)
 	local fs = {frame(player, session, counts_of(player))}
 	TAB_BUILDERS[session.tab](player, session, fs)
+	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)
 end
 
@@ -756,7 +764,8 @@ local ACTIONS = {reply = true, report = true, report_cancel = true,
 local function idle(fields)
 	if not fields.key_enter_field then return false end
 	for field in pairs(fields) do
-		if ACTIONS[field] or field:match("_prev$") or field:match("_next$") or
+		if ACTIONS[field] or field:match("^grug_mail_tab_%d+$") or
+				field:match("_prev$") or field:match("_next$") or
 				field:match("_send_%d+$") or field:match("^delete_%d+$") or
 				field:match("_confirm_%d+$") or field:match("^ticket_delete_%d+$") then
 			return false
@@ -797,6 +806,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if scrolled(session, fields) or idle(fields) then return true end
 	session.status = nil
 	local tab = tonumber(fields.grug_mail_tab)
+	for index = 1, #TABS do
+		if fields["grug_mail_tab_" .. index] then tab = index; break end
+	end
 	if tab and TABS[tab] and TABS[tab] ~= session.tab then
 		session.tab, session.dialog = TABS[tab], nil
 	else

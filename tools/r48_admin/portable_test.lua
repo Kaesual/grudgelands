@@ -223,8 +223,10 @@ grug_inventory = {BAG_COUNT = 4, INBOX_LIST = "grug_inbox",
 	give = function(_, stack) return ItemStack(stack) end,
 	fits = function() return true end,
 	content_list = function(i) return "grug_bag" .. i .. "_content" end}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/BASE/sfinv/api.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/navigation.lua")
 grug_inventory.GAME_VERSION = "0.48.0"
 function sfinv.get_homepage_name() return "grug_inventory:inventory" end
 local function stub_page(name, title)
@@ -279,14 +281,18 @@ local function send(player, fields)
 	end
 end
 local function nav_titles(player)
-	return player.formspec:match("tabheader%[0,0;sfinv_nav_tabs;([^;]*);") or ""
+	local titles = {}
+	for title in player.formspec:gmatch("button%[[^%]]-;grug_ui_tab_%d+;([^%]]+)%]") do
+		titles[#titles + 1] = title
+	end
+	return table.concat(titles, ",")
 end
 local function open_tab(player, title)
 	local index = 0
 	for entry in (nav_titles(player) .. ","):gmatch("([^,]*),") do
 		index = index + 1
 		if entry == title then
-			send(player, {sfinv_nav_tabs = tostring(index)})
+			send(player, {["grug_ui_tab_" .. index] = true})
 			return true
 		end
 	end

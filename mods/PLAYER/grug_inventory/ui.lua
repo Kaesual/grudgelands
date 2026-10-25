@@ -7,33 +7,24 @@
 -- the old legacy size[10.4,11.1] frame: a legacy size of W x H is
 -- 3/8 + 5/4 (W - 1) + 1 + 3/8 slot units wide and 3/8 + 15/13 (H - 1) + 1 +
 -- 3/8 plus two thirds of a button half-height (15/13 * 0.35) high
--- (guiFormSpecMenu.cpp regenerateGui), 13.5 x 13.673 real units. Every tab
--- keeps that size (spec ui-crafting-rework-plan.md §7); the Inventory tab's
--- boxed layout (LAYOUT below) fits it with seven rows and the money row
--- (the user, 2026-10-09). Page content follows a real_coordinates[false], so
--- pages still written in legacy coordinates keep their place; a page in real
--- coordinates starts its content with real_coordinates[true]. Legacy content
--- ends before y = 7.0 (content_bottom), which is real y 8.45; the inventory
--- views sit below it. The map has its own window since Round 44 (grug_map
--- window.lua); the legacy width and height below remain the old Map tab's
--- reference size.
+-- (guiFormSpecMenu.cpp regenerateGui), 13.5 x 13.673 real body units. The
+-- modernization adds the shared navigation header above this body. LAYOUT
+-- retains seven full-view rows and the money row (the user, 2026-10-09).
+-- Every live page starts its content with real_coordinates[true]. The old
+-- default switch before content is not a safe legacy-layout contract: in
+-- legacy mode the engine rescales the inherited header-container offset.
+-- New fragments must use real coordinates throughout. The legacy constants
+-- below only derive the retained body size; Map has its own larger window.
 grug_inventory.UI = {width = 10.4, height = 11.1, inventory_y = 7.2,
 	content_bottom = 7.0}
 local UI = grug_inventory.UI
 UI.frame_w = 3 / 4 + 5 / 4 * (UI.width - 1) + 1
 UI.frame_h = 3 / 4 + 15 / 13 * (UI.height - 1) + 1 + 15 / 13 * 0.35 * 2 / 3
 
--- Shared selection treatment for page-local buttons. The selected state has
--- both a gold tint and a border; the unselected state has neither, so the
--- distinction remains visible without relying on colour alone.
+-- Shared selection treatment for page-local buttons: the selected role
+-- uses the toolkit's brass-accent texture; other buttons use its normal role.
 function grug_inventory.selected_button_style(fieldname, selected)
-	local field = core.formspec_escape(tostring(fieldname or ""))
-	if selected then
-		return ("style[%s;bgcolor=#8a682f;bgcolor_hovered=#a77f3b;" ..
-			"bgcolor_pressed=#6f5427;border=true]"):format(field)
-	end
-	return ("style[%s;bgcolor=#3d3d3d;bgcolor_hovered=#505050;" ..
-		"bgcolor_pressed=#303030;border=false]"):format(field)
+	return grug_core.ui.button_style(fieldname, selected and "selected" or "normal")
 end
 
 function grug_inventory.wrap_text(value, width)
@@ -130,10 +121,6 @@ local ROW_STEPS = PITCH / SCROLL_FACTOR
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
 grug_inventory.VIEW_ROWS = {full = 7, short = 2, station = 3}
--- The background of the window's boxed areas (the Character tab's boxes, the
--- views' Inventory boxes, the Inventory tab's areas).
-grug_inventory.BOX_COLOR = "#00000040"
-local HOTBAR_COLOR = "#8a682f44"
 
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 	short = "grug_inv_scroll_short", station = "grug_inv_scroll_station"}
@@ -200,10 +187,9 @@ grug_inventory.VIEW_GEOMETRY = {x = LAYOUT.x, width = VIEW_W,
 	hotbar_y = LAYOUT.hotbar_y, top = LAYOUT.short_y}
 
 -- A boxed area's background and its label, top left above the slots.
-function grug_inventory.area_box(x, y, w, h, label, color)
-	return ("box[%.3f,%.3f;%.3f,%.3f;%s]label[%.3f,%.3f;%s]"):format(x, y, w, h,
-		color or grug_inventory.BOX_COLOR, x + LAYOUT.pad, y + LAYOUT.label_h / 2,
-		core.formspec_escape(label))
+function grug_inventory.area_box(x, y, w, h, label)
+	return grug_core.ui.panel(x, y, w, h) ..
+		grug_core.ui.heading(x + LAYOUT.pad, y + LAYOUT.label_h / 2, string.upper(label))
 end
 
 -- The scroll area's list[] elements and its row count. main[9..] and the
@@ -243,7 +229,7 @@ end
 
 --
 -- The hotbar switch (Round 50 ruling 2): two small buttons, "A" and "B", the
--- shown layout marked (bright gold against dark, switch_style below). It
+-- shown layout marked with the shared selected role (switch_style below). It
 -- is the one element every form showing the hotbar draws: the views below
 -- (the inventory pages, the station forms, the mail's Write tab) right of
 -- the hotbar's slots, and the quickbar (E). Whoever receives the form's
@@ -254,16 +240,10 @@ grug_inventory.HOTBAR_FIELDS = {A = "grug_hotbar_a", B = "grug_hotbar_b"}
 -- In a view: between the last slot and the box's right edge (0.57).
 local SWITCH_GAP, SWITCH_W, SWITCH_H = 0.08, 0.45, 0.47
 
--- The shown layout in bright gold, the other one dark, both framed: the
--- shared selection style's tint disappears on the gold Hotbar box, and its
--- unselected state draws no button at all.
+-- Match page-local buttons: selected for the shown layout, normal for the
+-- other layout. Both sit on the same shared panel as the native slots.
 local function switch_style(field, shown)
-	if shown then
-		return ("style[%s;bgcolor=#c8962f;bgcolor_hovered=#d9a640;" ..
-			"bgcolor_pressed=#a77f3b;border=true;textcolor=#ffffff]"):format(field)
-	end
-	return ("style[%s;bgcolor=#2a2a2a;bgcolor_hovered=#505050;" ..
-		"bgcolor_pressed=#303030;border=true;textcolor=#b4b4b4]"):format(field)
+	return grug_core.ui.button_style(field, shown and "selected" or "normal")
 end
 
 -- The two buttons in real coordinates, `w` x `h` each: "A" at (x, y), "B"
@@ -309,7 +289,7 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	local fs = {"real_coordinates[true]",
 		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory"),
 		grug_inventory.area_box(box_x, hotbar_box_y, LAYOUT.box_w,
-			LAYOUT.slot_box_h, "Hotbar", HOTBAR_COLOR),
+			LAYOUT.slot_box_h, "Hotbar"),
 	}
 
 	local max = grug_inventory.view_scroll_max(rows, visible)
@@ -342,10 +322,10 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	end
 	fs[#fs + 1] = "scroll_container_end[]"
 
-	-- The hotbar in its gold box: the engine's hotbar cell art under each
+	-- The hotbar in its shared panel: the engine's hotbar cell art under each
 	-- slot and the first eight cells of main.
 	for index = 0, 7 do
-		fs[#fs + 1] = ("image[%.3f,%.3f;1,1;gui_hb_bg.png]"):format(
+		fs[#fs + 1] = ("image[%.3f,%.3f;1,1;grug_ui_panel.png]"):format(
 			view_x + index * PITCH, hotbar_y)
 	end
 	fs[#fs + 1] = ("list[current_player;main;%.3f,%.3f;8,1;]"):format(view_x,
@@ -459,29 +439,26 @@ function grug_inventory.station_formspec(player, content, content_h, context)
 end
 
 --
--- The frame. A page passes show_inv = "full" or "short" for that view, true
--- for the short view (pages not yet reworked) and false or nil for none. A
--- page with its own header (`size`; none since the map got its own window)
--- gets the tabs and its content only. context.grug_inv_view records the
--- view the page shows, so a bag change re-renders it (pages.lua
--- grug_inventory.refresh).
+-- One common frame for inventory pages; Map & Quests builds its larger frame
+-- separately with the same navigation. A page passes show_inv = "full" or
+-- "short" for that view, true for the short view and false or nil for none.
+-- context.grug_inv_view records the view the page shows, so a bag change
+-- re-renders it (pages.lua grug_inventory.refresh).
 --
-function sfinv.make_formspec(player, context, content, show_inv, size)
-	local nav = sfinv.get_nav_fs(player, context, context.nav_titles,
-		context.nav_idx)
-	if size then
-		context.grug_inv_view = nil
-		return size .. nav .. content
-	end
+function sfinv.make_formspec(player, context, content, show_inv)
+	local nav, header_h = grug_inventory.navigation(player, context, context.page, UI.frame_w)
 	local mode = show_inv == true and "short" or show_inv or nil
 	context.grug_inv_view = mode
+	-- Body coordinates remain local to this container below the navigation.
 	return table.concat({
-		("formspec_version[6]size[%.3f,%.3f]"):format(UI.frame_w, UI.frame_h),
+		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h),
 		nav,
+		("container[0,%.3f]"):format(header_h),
 		mode and grug_inventory.inventory_view(player, mode, context) or "",
 		"real_coordinates[false]",
 		content,
 		mode and bag_rings(player, content) or "",
+		"real_coordinates[true]container_end[]",
 	})
 end
 

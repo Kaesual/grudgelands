@@ -355,7 +355,9 @@ sfinv.register_page("sfinv:crafting", {title = "Crafting", get = function() retu
 sfinv.register_page("grug_inventory:inventory", {title = "Inventory",
 	get = function() return "INVENTORY" end})
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/navigation.lua")
 
 grug_jobs = {}
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/registry.lua")

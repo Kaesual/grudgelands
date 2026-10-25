@@ -280,6 +280,14 @@ for _, camp in ipairs(camps.camps) do
 		{x = camp.anchor.x, y = GROUND, z = camp.anchor.z}, bp.landmarks.sockets, camp.label)
 end
 
+core.colorize = function(_, text) return text end
+-- Load presentation helpers without adding a join callback to this fixture.
+do
+	local join = core.register_on_joinplayer
+	core.register_on_joinplayer = function() end
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+	core.register_on_joinplayer = join
+end
 dofile(repo .. "/mods/PLAYER/grug_guild/lift.lua")
 eq(override_calls, 1, "B one override")
 eq(override_name, LIFT, "B the override is the lift's")
@@ -414,13 +422,13 @@ own.pos = vnew(lift4.x, lift4.y, lift4.z - 2)
 local form = click(own, lift4)
 check(form and form.formname:find("^grug_guild:lift:") ~= nil, "B own faction: the list opens")
 local fs = form.fs
-check(fs:find("label[0.4,0.5;Miner's Guild Lift]", 1, true) and fs:find(t4.label, 1, true),
+check(fs:find(grug_core.ui.title(0.4, 0.45, "Miner's Guild Lift"), 1, true) and fs:find(t4.label, 1, true),
 	"B the list's title and the camp")
-check(fs:find("label[0.4,1.70;Surface]", 1, true) and fs:find("label[4.2,1.70;You are here]", 1, true),
+check(fs:find("label[0.4,1.70;Surface]", 1, true) and fs:find("label[6.8,1.70;You are here]", 1, true),
 	"B the surface marked as here")
 check(not fs:find("go_0", 1, true), "B no button for the current level")
 for level = 1, 4 do
-	check(fs:find(("label[0.4,%.2f;Level %d (%d)]"):format(1.0 + 0.7 * (level + 1), level,
+	check(fs:find(("label[0.4,%.2f;Level %d (%d)]"):format(0.9 + 0.8 * (level + 1), level,
 		C.ROOM_FLOOR_Y[level]), 1, true) and fs:find("go_" .. level .. ";Travel]", 1, true),
 		"B level " .. level .. " listed with Travel")
 end

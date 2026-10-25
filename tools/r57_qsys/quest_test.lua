@@ -224,6 +224,7 @@ grug_core = {register_tag_visibility = function() end, level_scale = function() 
 		fed_items[#fed_items + 1] = player:get_player_name() .. " " .. ItemStack(stack):get_name() .. " " .. count
 	end,
 	feed = function(_, kind, text) fed_lines[#fed_lines + 1] = kind .. ": " .. text end}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 dofile(ROOT .. "/mods/CORE/grug_core/item_names.lua")
 local granted_xp = {}
 grug_xp = {get_level = function(player) return level_of[player:get_player_name()] or 1 end,

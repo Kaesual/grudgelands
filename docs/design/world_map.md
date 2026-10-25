@@ -144,6 +144,15 @@ ended with the [Map window](#map-window).
 
 ## Map window
 
+UI modernization (2026-10-25 fidelity pass, isolated branch): the following
+size describes the whole window. The compact common inventory navigation
+header is reserved inside that budget, and the map/quest body uses the
+remaining height. The existing minimum-size floor may still require client
+scaling at small window sizes. Navigation uses allowed sfinv pages and
+keeps the existing map session; choosing another tab cancels pending map
+sends before displaying it. Both Z and Map & Quests enter directly, without
+an Open button. Native scrollbars and client-side scrolling are unchanged.
+
 Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
 
 - **Opening:** Z (the zoom key; `grug_keys` reports its rising edge, and

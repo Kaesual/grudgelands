@@ -474,6 +474,7 @@ function grug_achievements.character_achievements_formspec(player, context, area
 	local page = math.max(1, math.min(context.grug_achievements_page or 1, pages))
 	context.grug_achievements_page = page
 	local fs = {}
+	local font_scale = grug_core.ui.text_scale(player)
 	local first = (page - 1) * PER_PAGE
 	for slot = 1, PER_PAGE do
 		local ach = list[first + slot]
@@ -485,16 +486,21 @@ function grug_achievements.character_achievements_formspec(player, context, area
 		local title, status, text, image, tip = grug_achievements.row(player, ach)
 		-- The rect covers the row's picture and both lines.
 		fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,0.85;%s]"):format(x, y, area.w,
-			core.formspec_escape(tip))
+			core.formspec_escape(title .. " — " .. status .. "\n" .. tip))
 		if image then
 			fs[#fs + 1] = ("image[%.2f,%.2f;0.42,0.84;%s]"):format(x, y,
 				core.formspec_escape(image))
 		end
-		-- Real-coordinate labels are centred on their y.
+		-- Real-coordinate labels are centred on their y. Keep the summary
+		-- subordinate to the name; the complete description stays in its tooltip.
+		fs[#fs + 1] = ("style_type[label;font=bold;font_size=*%.3f]"):format(0.85 * font_scale)
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.2,
 			core.formspec_escape(title .. "  " .. status))
+		fs[#fs + 1] = ("style_type[label;font=normal;font_size=*%.3f]"):format(0.75 * font_scale)
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.62,
-			core.formspec_escape(clip(text, TEXT_CHARS)))
+			core.formspec_escape(core.colorize("#a9aea4",
+				clip(text, math.min(TEXT_CHARS, math.floor((area.w - 0.6) / 0.15))))))
+		fs[#fs + 1] = "style_type[label;font=normal;font_size=*1]"
 	end
 	if pages > 1 then
 		local right, y = area.x + area.w, area.y + area.h - PAGER_H

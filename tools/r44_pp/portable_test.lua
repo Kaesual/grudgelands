@@ -63,7 +63,7 @@ local function elements(fs)
 			i = i + 1
 		elseif c == "]" then
 			local text = table.concat(piece)
-			local name, args = text:match("^([%a_]+)%[(.*)$")
+			local name, args = text:match("^([%w_]+)%[(.*)$")
 			out[#out + 1] = {name = name, args = args or "", raw = text}
 			piece = {}
 		else
@@ -235,8 +235,10 @@ end
 -- Load the real files.
 --
 
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/BASE/sfinv/api.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
 sfinv.get_homepage_name = function() return "grug_inventory:help" end
 dofile(repo .. "/mods/PLAYER/grug_inventory/help.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/welcome.lua")
@@ -274,7 +276,9 @@ check(mod_conf:match("\ndepends = [^\n]*grug_parties") ~= nil,
 local alice, bob, cyd, dax = make_player("alice"), make_player("bob"),
 	make_player("cyd"), make_player("dax")
 local page = sfinv.pages[PAGE]
-local FRAME_W, FRAME_H = grug_inventory.UI.frame_w, grug_inventory.UI.frame_h
+local FRAME_W = grug_inventory.UI.frame_w
+local FRAME_H = grug_inventory.UI.window_h or grug_inventory.UI.frame_h
+local HEADER_H = grug_inventory.UI.header_h or 0
 
 -- Every positioned element inside the window; labels at about 0.15 units a
 -- character (the web build at 720 px, 48 px a unit, 7 px a character;
@@ -285,21 +289,29 @@ local function geometry(fs, label)
 	local list = elements(fs)
 	local rects, inside = {}, true
 	local real = false
+	local ox, oy, stack = 0, 0, {}
 	for _, element in ipairs(list) do
 		if element.name == "real_coordinates" then real = element.args == "true" end
 		local f = fields_of(element.args)
 		local pos = f[1] and numbers(f[1])
 		local size = f[2] and numbers(f[2])
-		if real and pos and pos[1] and pos[2] and element.name ~= "tabheader" then
+		if element.name == "container" then
+			stack[#stack + 1] = {ox, oy}
+			ox, oy = ox + pos[1], oy + pos[2]
+		elseif element.name == "container_end" then
+			local origin = table.remove(stack)
+			ox, oy = origin[1], origin[2]
+		end
+		if real and pos and pos[1] and pos[2] and element.name ~= "tabheader" and element.name ~= "container" then
 			local x, y, w, h
 			if element.name == "label" then
 				local text = f[2]:gsub("\27%(c@#%x+%)", ""):gsub("\\(.)", "%1")
-				x, y, w, h = pos[1], pos[2] - 0.18, #text * 0.15, 0.36
+				x, y, w, h = pos[1] + ox, pos[2] + oy - 0.18, #text * 0.15, 0.36
 				rects[#rects + 1] = {kind = "label", x = x, y = y, w = w, h = h, text = text}
 			elseif element.name == "checkbox" then
-				x, y, w, h = pos[1], pos[2] - 0.2, 0.5 + #f[3] * 0.15, 0.4
+				x, y, w, h = pos[1] + ox, pos[2] + oy - 0.2, 0.5 + #f[3] * 0.15, 0.4
 			elseif size and size[1] and size[2] then
-				x, y, w, h = pos[1], pos[2], size[1], size[2]
+				x, y, w, h = pos[1] + ox, pos[2] + oy, size[1], size[2]
 				rects[#rects + 1] = {kind = element.name, x = x, y = y, w = w, h = h,
 					text = f[3]}
 			end
@@ -329,38 +341,30 @@ local function pvp_section(fs, label)
 	has(fs, "There is no early unflag.", label .. ": the flag rule")
 end
 
--- The PvP section sits under every party element, and no label runs into a
--- button or another label of its row.
+-- Cards share the lower row. Their controls must not collide, including
+-- container offsets; decorative background panels deliberately enclose them.
 local function layout(rects, label)
-	local party_bottom, pvp_top = 0, math.huge
-	local separator
+	local roster, flag
 	for _, rect in ipairs(rects) do
-		if rect.kind == "box" then separator = rect end
+		if rect.kind == "table" then roster = rect end
+		if rect.kind == "button" and rect.text == "grug_pvp_flag" then flag = rect end
 	end
-	check(separator ~= nil, label .. ": a separator line")
-	if not separator then return end
-	for _, rect in ipairs(rects) do
-		if rect ~= separator then
-			if rect.y < separator.y then
-				party_bottom = math.max(party_bottom, rect.y + rect.h)
-			else
-				pvp_top = math.min(pvp_top, rect.y)
-			end
-		end
+	check(flag and flag.x >= 6.75, label .. ": PvP lives in the right card")
+	if roster then
+		check(roster.x + roster.w < flag.x, label .. ": party stays left of PvP")
 	end
-	check(party_bottom <= separator.y and pvp_top >= separator.y + separator.h,
-		label .. ": the PvP section starts under the party section")
 	local clash = false
 	for i, a in ipairs(rects) do
 		for j = i + 1, #rects do
 			local b = rects[j]
-			if a.y >= separator.y and b.y >= separator.y and overlap(a, b) then
+			if a.y >= 4.3 + HEADER_H and b.y >= 4.3 + HEADER_H and a.kind ~= "background9" and
+					b.kind ~= "background9" and overlap(a, b) then
 				clash = true
 				print("  overlap: " .. tostring(a.text) .. " / " .. tostring(b.text))
 			end
 		end
 	end
-	check(not clash, label .. ": no PvP element overlaps another")
+	check(not clash, label .. ": no lower-card controls overlap")
 end
 
 pvp_state.alice = {flagged = true, reason = "location_contested", pvp_combat = true}
@@ -378,7 +382,7 @@ local out_fs = alice.formspec
 formspec_ok(out_fs, "P out of a party")
 local frame_header = ("formspec_version[6]size[%.3f,%.3f]"):format(FRAME_W, FRAME_H)
 eq(out_fs:sub(1, #frame_header), frame_header, "P out of a party: the window's frame")
-has(out_fs, "tabheader[0,0;sfinv_nav_tabs;", "P the tab row")
+has(out_fs, ";grug_ui_tab_", "P the shared tab buttons")
 has(out_fs, "Party & PvP", "P the tab caption")
 no_inventory(out_fs, "P out of a party")
 has(out_fs, "checkbox[0.20,0.22;grug_party_invites;Allow invitations;true]",
@@ -399,12 +403,12 @@ has(out_fs, ";grug_party_accept;Accept]", "P out of a party: Accept")
 has(out_fs, ";grug_party_decline;Decline]", "P out of a party: Decline")
 has(out_fs, "You are not in a party.", "P out of a party: the hint")
 lacks(out_fs, "grug_party_members", "P out of a party: no member table")
-lacks(out_fs, "grug_party_leave", "P out of a party: no Leave")
+lacks(out_fs, ";grug_party_leave;", "P out of a party: no Leave")
 pvp_section(out_fs, "P out of a party")
 has(out_fs, "Flagged: Contested Territory", "P the PvP headline")
 has(out_fs, "In PvP combat", "P the PvP combat line")
-has(out_fs, "label[4.40,12.60;9]", "P a counter value (guards 9, fourth row)")
-has(out_fs, "label[11.05,11.40;1]", "P a counter value (captains 1, second column)")
+has(out_fs, "label[5.35,6.70;9]", "P a counter value (guards 9, fourth row)")
+has(out_fs, "label[5.35,7.15;1]", "P a counter value (captains 1, second column)")
 layout(geometry(out_fs, "P out of a party"), "P out of a party")
 local bytes_out = #out_fs
 
@@ -420,8 +424,8 @@ sfinv.set_player_inventory_formspec(alice, context)
 local in_fs = alice.formspec
 formspec_ok(in_fs, "P in a party")
 no_inventory(in_fs, "P in a party")
-has(in_fs, "label[0.20,4.25;Current party]", "P in a party: the heading")
-has(in_fs, "table[0.20,4.58;6.35,2.55;grug_party_members;1," ..
+has(in_fs, grug_core.ui.heading(0.3, 4.65, "Current party"), "P in a party: the heading")
+has(in_fs, "table[0.30,5.05;6.10,5.2;grug_party_members;1," ..
 	fs_escape("* alice [Lv 12]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 12]  10/20 HP") ..
 	",0," .. fs_escape("cyd [Lv 11]  Offline") .. ";2]", "P in a party: the member table")
 has(in_fs, ";grug_party_kick;Kick]", "P in a party: Kick for the leader")
@@ -437,7 +441,7 @@ local bytes_in = #in_fs
 -- Selecting oneself: no Kick or Make leader.
 context.grug_party_member = "alice"
 sfinv.set_player_inventory_formspec(alice, context)
-lacks(alice.formspec, "grug_party_kick", "P own row: no Kick")
+lacks(alice.formspec, ";grug_party_kick;", "P own row: no Kick")
 has(alice.formspec, ";grug_party_leave;Leave]", "P own row: Leave")
 
 -- Safe, not in combat: the section without the combat line still fits.
@@ -482,6 +486,15 @@ submit(alice, {grug_party_hud = "false"})
 eq(last_call(), "hud:false", "B the HUD checkbox")
 submit(alice, {grug_party_health_colors = "1"})
 eq(last_call(), "colors:all_green", "B the health colours dropdown")
+do
+	local before_calls, before_sends, before_notice = #party_calls, alice.sent, context.grug_party_notice
+	submit(alice, {quit = "true", grug_ui_close = "X", grug_party_health_colors = "2"})
+	eq(#party_calls, before_calls, "B closing with X does not apply the echoed dropdown")
+	eq(alice.sent, before_sends, "B closing with X does not rebuild the party page")
+	eq(context.grug_party_notice, before_notice, "B closing with X leaves the existing notice intact")
+	submit(alice, {quit = "true"})
+	eq(alice.sent, before_sends, "B Escape likewise does not rebuild the party page")
+end
 players.dax = nil
 local sent = alice.sent
 submit(alice, {grug_party_refresh = "Refresh"})
@@ -548,10 +561,7 @@ sfinv.set_page(alice, "grug_inventory:help")
 local help_fs = alice.formspec
 formspec_ok(help_fs, "H Help")
 no_inventory(help_fs, "H Help")
--- Hypertext bodies in legacy coordinates end inside the window: (y + 0.35
--- + 0.8667 h - 0.1333) slot spacings (help.lua), the window FRAME_H real
--- units (13.673 = 11.85 spacings until the Round 45 playtest) high.
-local window_s = FRAME_H * 13 / 15
+-- Help bodies now use real coordinates and fit the shared body.
 for _, section in ipairs({"start", "quests", "basics", "formulas", "about", "sound"}) do
 	context.grug_help_section = section
 	local fs = sfinv.get_formspec(alice, context)
@@ -560,8 +570,8 @@ for _, section in ipairs({"start", "quests", "basics", "formulas", "about", "sou
 		if element.name == "hypertext" then
 			local f = fields_of(element.args)
 			local pos, size = numbers(f[1]), numbers(f[2])
-			local bottom = pos[2] + 0.35 + 0.8667 * size[2] - 0.1333
-			if bottom > window_s - 0.3 then inside = false end
+			local bottom = pos[2] + size[2]
+			if bottom > grug_inventory.UI.frame_h - 0.3 then inside = false end
 		end
 	end
 	check(inside, "H Help " .. section .. ": the body ends inside the window")

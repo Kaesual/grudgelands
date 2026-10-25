@@ -52,7 +52,7 @@ end, slot_order = function(inv)
 end}
 -- 0.49.1 VIEW: station forms draw the bag view through grug_inventory
 -- (tested by tools/r491_view); a pass-through stand-in here.
-grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25}
+grug_inventory.STATION = {x = 0.52, y = 0.78, pitch = 1.25, box_w = 10.44}
 grug_inventory.station_box = function() return "", 1 end
 grug_inventory.station_formspec = function(_, content) return content end
 grug_inventory.keep_scroll = function() return false end
@@ -192,6 +192,7 @@ local function new_engine()
 		}
 	end
 	local c = permissive({registered_nodes = {}, registered_items = {}})
+	function c.colorize(color, text) return "\27(c@" .. color .. ")" .. text .. "\27(c@#ffffff)" end
 	c.registered_nodes.air = {name = "air", buildable_to = true, groups = {},
 		floodable = false}
 	c.settings = {get_bool = function(_, _, default) return default end,
@@ -523,6 +524,7 @@ do
 		get_inventory_drops = function() end}
 	real_dofile(path("mods/BASE/default/node_formspec.lua"))
 	grug_core = {interaction_protected = function() return false end}
+	real_dofile(path("mods/CORE/grug_core/ui.lua"))
 	grug_sounds = {play = function() end}
 	grug_jobs = {
 		station_info = function() return {display_name = "Furnace", node = "default:furnace"} end,
@@ -595,6 +597,7 @@ do
 		get_inventory_drops = function() end}
 	real_dofile(path("mods/BASE/default/node_formspec.lua"))
 	grug_core = {interaction_protected = function() return false end}
+	real_dofile(path("mods/CORE/grug_core/ui.lua"))
 	grug_sounds = {play = function() end}
 	grug_money = {format = function(copper) return copper .. " copper" end}
 	grug_housing = {claim_at = function() return {} end, is_active = function() return true end}

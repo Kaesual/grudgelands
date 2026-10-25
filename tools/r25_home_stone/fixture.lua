@@ -181,6 +181,8 @@ player = {race="human", hp=20, pos=vnew(0, 100, 0),
  get_look_horizontal=function() return 0 end}
 local before_home = {}
 for kind, list in pairs(callbacks) do before_home[kind] = #list end
+core.colorize = function(_, text) return text end
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 check(#claim_listeners == 1, "D grug_home registers one claim-change listener")

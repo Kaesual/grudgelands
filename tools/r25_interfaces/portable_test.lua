@@ -167,6 +167,7 @@ end
 local function new_player(name, pos)
 	local p = {name = name, pos = pos, hp = 20, given = {}, main_full = false}
 	function p:get_player_name() return self.name end
+	function p:set_formspec_prepend(fs) self.prepend = fs end
 	function p:is_player() return true end
 	function p:get_pos() return {x = self.pos.x, y = self.pos.y, z = self.pos.z} end
 	function p:get_hp() return self.hp end
@@ -195,6 +196,7 @@ end}
 --
 
 grug_core = {}
+dofile("mods/CORE/grug_core/ui.lua")
 -- Round 41: the platform's map reset (grug_core/map_reset.lua), idle here.
 grug_core.map_reset = {clear = function() end}
 dofile("mods/CORE/grug_core/settlement_sockets.lua")
@@ -422,7 +424,7 @@ has(last_shown("owner").fs, "button[3.8,6.75;3.1,0.8;set_home;Set as home]",
 submit(owner, "grug_housing:stone", {set_home = ""})
 eq(home_calls[1], 7, "Set as home passes the claim")
 has(last_shown("owner").fs, "Your Claim Stone is now your home.", "home message shown")
-lacks(last_shown("owner").fs, "tabheader[", "no Waypoints tab without travel from the stone")
+lacks(last_shown("owner").fs, "stone_tab_2;Waypoints]", "no Waypoints tab without travel from the stone")
 grug_home = nil
 
 -- Round 45 PT9 follow-up: the activated stone's Waypoints tab, with
@@ -437,11 +439,11 @@ do
 		return true
 	end}
 	H.open_stone_interface(owner, claim)
-	has(last_shown("owner").fs, "tabheader[0,0;stone_tab;Claim Stone,Waypoints;1;false;false]",
+	has(last_shown("owner").fs, "stone_tab_2;Waypoints]",
 		"PT9 the owner's form has the two tabs")
-	submit(owner, "grug_housing:stone", {stone_tab = "2"})
+	submit(owner, "grug_housing:stone", {stone_tab_2 = "Waypoints"})
 	local wp = last_shown("owner").fs
-	has(wp, "tabheader[0,0;stone_tab;Claim Stone,Waypoints;2;false;false]", "PT9 Waypoints tab selected")
+	has(wp, grug_core.ui.button_style("stone_tab_2", "selected"), "PT9 Waypoints tab selected")
 	has(wp, "label[0.4,1.30;Dawnmere]", "PT9 a discovered waystone listed")
 	has(wp, "go_highcourt;Travel]", "PT9 a Travel button per waystone")
 	lacks(wp, "go_claim", "PT9 the stone itself is not listed")
@@ -455,8 +457,8 @@ do
 		"PT9 a started trip closes the form")
 	H.open_stone_interface(owner, claim)
 	has(last_shown("owner").fs, "Fuel: coal lumps, charcoal or anthracite", "PT9 the form opens on the first tab")
-	submit(owner, "grug_housing:stone", {stone_tab = "2"})
-	submit(owner, "grug_housing:stone", {stone_tab = "1"})
+	submit(owner, "grug_housing:stone", {stone_tab_2 = "Waypoints"})
+	submit(owner, "grug_housing:stone", {stone_tab_1 = "Claim Stone"})
 	has(last_shown("owner").fs, "Fuel: coal lumps, charcoal or anthracite", "PT9 back to the first tab")
 	-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): Close has
 	-- the focus when the form opens and after a tab click, never the name
@@ -658,7 +660,7 @@ lacks(fs, "set_home", "a draft is no home: no Set-as-home button")
 grug_home.known_waypoints = function() return {} end
 grug_home.travel_from_claim = function() return true end
 H.open_stone_interface(owner, draft)
-lacks(last_shown("owner").fs, "tabheader[", "PT9 a draft is no waypoint: no Waypoints tab")
+lacks(last_shown("owner").fs, "stone_tab_", "PT9 a draft is no waypoint: no Waypoints tab")
 grug_home.known_waypoints, grug_home.travel_from_claim = nil, nil
 has(fs, "pick_up;Pick up stone", "a draft can be picked up")
 d = detached["grug_housing_fuel_owner"]
@@ -759,7 +761,7 @@ has(fs, "From level 20 you get one Claim Stone for free.", "level-20 line")
 has(fs, "99 lumps last about 30 days.", "upkeep line")
 has(fs, "coal lumps or charcoal", "fuel kinds line")
 has(fs, "When the fuel runs out\\, the protection ends.", "empty-fuel line")
-has(fs, "label[0.4,0.5;Housing Steward]", "Steward title")
+has(fs, grug_core.ui.title(0.4, 0.45, "Housing Steward"), "Steward title")
 lacks(fs, "Manager", "no Manager wording")
 lacks(fs, "24 hours", "no daily rule any more")
 has(fs, "Activate it within 5 minutes with 5 coal lumps or charcoal", "activation line")

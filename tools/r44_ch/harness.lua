@@ -306,7 +306,11 @@ if hotbars then
 end
 dofile(repo .. "/mods/PLAYER/grug_inventory/equipment.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/bags.lua")
+grug_sounds = grug_sounds or {}
+	grug_sounds.CLICK_STYLE = grug_sounds.CLICK_STYLE or ""
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 H.refreshes = 0
 local real_set = sfinv.set_player_inventory_formspec
@@ -384,6 +388,7 @@ function H.player(name, class_id, bags, level)
 			get_string = function(_, k) return meta[k] or "" end,
 			set_string = function(_, k, v) meta[k] = v ~= "" and v or nil end}
 	end
+	function player:set_formspec_prepend(fs) self.prepend = fs end
 	function player:set_inventory_formspec(fs)
 		self.sent = self.sent + 1
 		self.formspec = fs

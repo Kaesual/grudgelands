@@ -164,8 +164,8 @@ local function form(player, session)
 	-- Close takes the focus at every send (0.45.1): otherwise the engine
 	-- focuses the first preview textarea, which eats the inventory key, or
 	-- keeps a clicked Crown button, which Space would press again.
-	local fs = {"formspec_version[4]size[12,9.4]set_focus[close;true]",
-		"label[0.4,0.45;Crownbinder]",
+	local fs = {grug_core.ui.frame(12, 9.8, "Crownbinder"),
+		"set_focus[close;true]",
 		"label[0.4,0.95;" .. esc("\"A crown remembers its king. Lend me one, " ..
 			"and your gear will remember it too.\"") .. "]",
 		"label[0.4,1.45;" .. esc("Fee: " .. grug_money.format(grug_traders.CROWN_FEE) ..
@@ -176,6 +176,7 @@ local function form(player, session)
 	local first = (session.page - 1) * PAGE_SIZE + 1
 	for i = first, math.min(#rows, first + PAGE_SIZE - 1) do
 		local row, y = rows[i], 2.4 + (i - first) * 0.9
+		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.04, 11.5, 0.86)
 		fs[#fs + 1] = ("item_image[0.4,%.2f;0.8,0.8;%s]"):format(y, esc(row.expected:get_name()))
 		fs[#fs + 1] = ("label[1.4,%.2f;%s]"):format(y + 0.2, esc(first_line(row.expected)))
 		-- A read-only textarea wraps the preview ("Item level 50 becomes 55.
@@ -190,7 +191,7 @@ local function form(player, session)
 		fs[#fs + 1] = "label[0.4,2.8;You carry no equipment.]"
 	end
 	if session.status then
-		fs[#fs + 1] = "label[0.4,8.55;" .. esc(session.status) .. "]"
+		fs[#fs + 1] = "label[0.4,9.25;" .. esc(session.status) .. "]"
 	end
 	fs[#fs + 1] = "button[4.2,8.2;0.7,0.7;previous;<]button[6.6,8.2;0.7,0.7;next;>]"
 	fs[#fs + 1] = ("label[5.25,8.55;%d / %d]"):format(session.page, pages)

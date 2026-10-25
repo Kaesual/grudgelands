@@ -77,15 +77,18 @@ same backdrop. The two example lines are "Katabasis I" and "Scott Buckley"
 as supplied in the brief; no music or other downloaded content is included.
 
 The **232 × 44** box uses **`#3434344D`** (RGB 52/52/52, alpha 77/255 =
-30.20%). The actual inventory window's flat colour is `#343434`, sampled
-from [gui_formbg.png](../../mods/BASE/default/textures/gui_formbg.png) and
-corroborated by the cover-colour comment in
-[pages.lua](../../mods/PLAYER/grug_inventory/pages.lua).
-[default/init.lua](../../mods/BASE/default/init.lua) adds that texture with
-`background9`. The `#080808BB` there is the fullscreen dimmer;
-[ui.lua](../../mods/PLAYER/grug_inventory/ui.lua)'s `BOX_COLOR` is the black
-translucent fill of inner inventory areas. Neither is the window's flat
-colour used for this HUD.
+30.20%). This historical study sampled the then-current inventory window's
+flat `#343434` from
+[gui_formbg.png](../../mods/BASE/default/textures/gui_formbg.png). At that
+time default's prepend used the texture with `background9`; its
+`#080808BB` fullscreen dimmer and the black translucent inner panels were
+separate colors, not the sampled window color.
+
+The modern forms use the shared
+[presentation toolkit](../../mods/CORE/grug_core/ui.lua) and its window/panel
+textures. This does not change the study's HUD swatch or preview artwork;
+`grug_inventory.area_box` now delegates to that shared panel without a
+separate color parameter.
 
 The zone-name line is a client-sized text HUD element in
 [minimap.lua](../../mods/PLAYER/grug_map/minimap.lua). Final integration

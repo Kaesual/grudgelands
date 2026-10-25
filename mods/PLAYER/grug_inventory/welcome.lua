@@ -18,8 +18,8 @@
 local FORM = "grug_inventory:welcome"
 local CREDITS_URL = "https://github.com/Kaesual/grudgelands/blob/main/CREDITS.md"
 
-local HEADING_COLOR = "#f0c75e"
-local MUTED_COLOR = "#b8b0a0"
+local HEADING_COLOR = "#d4b77d"
+local MUTED_COLOR = "#a7b2bc"
 local RULE_COLOR = "#3a3833"
 
 local function esc(text)
@@ -86,7 +86,7 @@ local function build_tail()
 			x, link.w, link.id, esc(link.label), esc(url))
 		x = x + link.w + LINK_GAP
 	end
-	fs[#fs + 1] = "style[grug_welcome_ok;bgcolor=#2f6a2a;font=bold]"
+	fs[#fs + 1] = grug_core.ui.button_style("grug_welcome_ok", "selected")
 	fs[#fs + 1] = ("button_exit[%.2f,8.55;2.5,0.8;grug_welcome_ok;Got it]"):format(
 		LEFT + TEXT_W - 2.5)
 	return table.concat(fs)
@@ -115,7 +115,7 @@ end
 function grug_inventory.welcome_formspec(player)
 	local head = "<big><b>" .. colored(HEADING_COLOR, "Welcome to Grudgelands") ..
 		"</b></big>\n" .. colored(MUTED_COLOR, who(player))
-	return "formspec_version[4]size[14,9.75]" ..
+	return grug_core.ui.frame(14, 9.75) .. grug_core.ui.panel(0.25, 1.6, 13.5, 6.9) ..
 		("hypertext[%.2f,0.35;%.2f,1.4;;%s]"):format(LEFT, TEXT_W, esc(head)) .. TAIL
 end
 

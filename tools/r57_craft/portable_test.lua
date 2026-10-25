@@ -345,7 +345,8 @@ grug_core = {
 grug_classes = {get_class = function() return "warrior" end}
 grug_gear = {initialize_weapon_tooltip = function() return false end}
 grug_xp = {get_level = function() return character_level end}
-grug_sounds = {play = function() end}
+grug_sounds = {play = function() end, CLICK_STYLE = ""}
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 grug_items = {crafted_output = function() return false end}
 
 grug_items = {
@@ -396,6 +397,7 @@ sfinv.register_page("grug_inventory:inventory", {title = "Inventory",
 	get = function() return "INVENTORY" end})
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/ui.lua")
+dofile(ROOT .. "/mods/PLAYER/grug_inventory/navigation.lua")
 
 grug_jobs = {}
 dofile(ROOT .. "/mods/PLAYER/grug_jobs/registry.lua")
@@ -482,6 +484,7 @@ local function new_player(name, opts)
 	function player:get_meta() return self.meta end
 	function player:is_player() return true end
 	function player:get_pos() return self.pos end
+	function player:set_formspec_prepend(fs) self.prepend = fs end
 	function player:set_inventory_formspec(fs)
 		self.sent = self.sent + 1
 		self.formspec = fs
@@ -739,6 +742,11 @@ do
 	click(c, {[F.queue] = "View Queue"})
 	local fs = c.formspec
 	has(fs, "Crafting queue", "C the queue view")
+	has(fs, "style_type[textarea;textcolor=#a9aea4]textarea[", "C all soft-wrapped notes stay muted")
+	has(fs, "style_type[textarea;textcolor=#eeeae1]", "C note styling restores the shared text role")
+	local note_text = fs:match("textarea%[[^;]+;[^;]+;;;(.-)%]")
+	check(note_text and not note_text:find("\27", 1, true),
+		"C notes remain unnamed read-only text without inline color escapes")
 	local queue = J.queue_state(c)
 	has(fs, F.unqueue .. queue[1].id .. ";✕]", "C a ✕ per waiting job")
 	-- ✕ on the enchant: the cloak (whole, its meta kept) and the dust back.
@@ -759,6 +767,8 @@ do
 	click(c, {[F.unqueue .. id] = "✕"})
 	eq(raw(c, J.QUEUE_KEY), before, "C a cancel without room changes nothing")
 	has(c.formspec, "Not enough inventory space to cancel", "C ... and says why")
+	has(c.formspec, "style_type[textarea;textcolor=#f0c75e]textarea[",
+		"C a refusal uses one consistent warning color across soft wraps")
 	-- A stale ✕ (an id no job waits under) cancels nothing.
 	clear_slots(c, filled)
 	click(c, {[F.unqueue .. (id + 7)] = "✕"})
@@ -881,7 +891,7 @@ do
 	lacks(fs, F.stop .. ";", "L no stop button while idle")
 	lacks(fs, F.queue .. ";", "L no View Queue while idle")
 	lacks(fs, "list[current_player;grug_craft_out;", "L no output slots while empty")
-	has(fs, "checkbox[" .. J._fs_number(2.75) .. ",2;" .. F.fav_only .. ";Favorites only;false]",
+	has(fs, "checkbox[" .. J._fs_number(2.75) .. ",2;" .. F.fav_only .. ";Favorites;false]",
 		"L Favorites only beside Craftable only")
 	geometry_ok(fs, "L idle")
 	click(l, {[F.qty] = "4", [go(l)] = "Craft ×4"})
@@ -925,7 +935,7 @@ do
 	has(fs, "2 of 5 slots", "L ... its slots")
 	has(fs, "Aspen Wood Planks ×8", "L ... the waiting job's line")
 	has(fs, F.back .. ";" .. core.formspec_escape("◀ Back to recipe") .. "]", "L ... Back to recipe")
-	has(fs, "style[" .. F.queue .. ";bgcolor=#8a682f", "L View Queue in the selection colour")
+	has(fs, grug_core.ui.button_style(F.queue, "selected"), "L View Queue in the selection colour")
 	has(fs, "animated_image[5.6,", "L the bar under the queue view")
 	geometry_ok(fs, "L the queue view")
 	click(l, {[F.back] = "x"})
@@ -941,6 +951,18 @@ do
 	fs = open(l)
 	has(fs, "list[current_player;grug_craft_out;5.6,", "L the output row while filled")
 	geometry_ok(fs, "L a full queue and the overflow")
+	click(l, {[F.queue] = "View Queue"})
+	fs = l.formspec
+	geometry_ok(fs, "L all waiting jobs with overflow")
+	local note_found = false
+	for _, r in ipairs(rects(content(fs))) do
+		if r.name == "textarea" then
+			note_found = true
+			check(r.y + r.h <= J.CRAFT_STRIP_Y - 1.6 - 0.1 + 0.01,
+				"L queue notes stay above the overflow and animation")
+		end
+	end
+	check(note_found, "L queue explanation/refusal scroll locally in reserved space")
 	put(l, OUT, 1, "")
 	advance(30)
 	run_timers()
@@ -1066,6 +1088,30 @@ do
 	check(listed[bolt.id] and listed[thread.id] and listed[silk_bolt.id],
 		"U Basic lists the unlocked recipes")
 	eq(#bag.ingredients + #robe.ingredients, 4, "U (the recipes' own lists unchanged)")
+end
+
+-- The real profession catalogue includes longer names than the placeholder
+-- primary slots. Every legal pair retains five non-overlapping tabs and the
+-- same tier area; Leatherworker keeps at least its original text allowance.
+for first = 1, #J.PRIMARY_PROFESSIONS - 1 do
+	for second = first + 1, #J.PRIMARY_PROFESSIONS do
+		local p = new_player("tab_width_" .. first .. "_" .. second)
+		J.learn(p, J.PRIMARY_PROFESSIONS[first], true)
+		J.learn(p, J.PRIMARY_PROFESSIONS[second], true)
+		local fs = open(p)
+		local right, found = 0.1, 0
+		for x, width, label in fs:gmatch("button%[([%d%.]+),0%.25;([%d%.]+),0%.65;grug_craft_area%d;([^%]]+)%]") do
+			x, width = tonumber(x), tonumber(width)
+			check(x >= right + 0.08 and width >= 1.3, "tabs retain readable widths and gaps")
+			if label == "Leatherworker" then
+				check(width >= 2.255, "Leatherworker retains its original label allowance")
+			end
+			right, found = x + width, found + 1
+		end
+		eq(found, 5, "every profession pair shows five tabs")
+		check(right <= 10.61, "profession tabs stay clear of the unchanged tier area")
+		has(fs, "label[10.75,0.45;", "the tier label does not move between profession pairs")
+	end
 end
 
 if failures > 0 then

@@ -400,6 +400,7 @@ do
 			giver_variant = {giver = "main"}, rewards = {copper = 5, items = {}, choices = {}}}
 	end
 	grug_quests.npc_quests = function() return rows end
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 	assert(loadfile(ROOT .. "/mods/PLAYER/grug_quests/npc.lua"))()
 	local Q = grug_quests
 	local colors = {}
@@ -428,7 +429,7 @@ do
 		get_pos = function() return {x = 0, y = 0, z = 0} end}}
 	eq(Q.open_npc(player, entity), true, "Q the dialog opens")
 	local form = shown or ""
-	check(form:find("size[16,", 1, true) ~= nil, "Q the dialog is 16 units wide")
+	check(tonumber(form:match("size%[([%d.]+),")) == 16, "Q the dialog is 16 units wide")
 	local list_w = tonumber(form:match("textlist%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;quests;"))
 	check(list_w and list_w >= 7, "Q the quest list is at least 7 units wide (got " .. tostring(list_w) .. ")")
 	local list = form:match("textlist%[(.-);false%]") or ""

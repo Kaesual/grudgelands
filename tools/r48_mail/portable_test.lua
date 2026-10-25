@@ -554,6 +554,7 @@ current_mod = "grug_housing"
 dofile(ROOT .. "/mods/PLAYER/grug_housing/soulbound.lua")
 current_mod = "grug_money"
 dofile(ROOT .. "/mods/PLAYER/grug_money/init.lua")
+dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
 current_mod = "grug_mail"
 -- The Admin Mail tab (admin.lua, lane ADMIN) registers an sfinv page; its
 -- own fixture is tools/r48_admin.
@@ -981,11 +982,21 @@ do
 	grug_mail.send_letter(brakka, "Alice", "Ingots", "For you.")
 	grug_mail.send_broadcast("News", "Read me.", "Jan")
 	for tab = 1, 4 do
-		send_fields(alice, {grug_mail_tab = tostring(tab)})
+		check(formspecs.Alice.text:find(";grug_mail_tab_" .. tab .. ";", 1, true),
+			"D tab " .. tab .. " is a rendered navigation button")
+		send_fields(alice, {["grug_mail_tab_" .. tab] = true})
+		eq(session.tab, ({"letters", "announcements", "write", "admin"})[tab],
+			"D tab button " .. tab .. " selects its real page")
 		check(formspecs.Alice.text:find("formspec_version[6]", 1, true) ~= nil,
 			"D tab " .. tab .. " builds")
 	end
-	send_fields(alice, {grug_mail_tab = "1"})
+	-- A tab remains an action when a submission also names the active field.
+	send_fields(alice, {grug_mail_tab_3 = true, key_enter_field = "mail_subject"})
+	eq(session.tab, "write", "D tab button plus Enter still switches the page")
+	local idle_form = formspecs.Alice.text
+	send_fields(alice, {key_enter_field = "mail_subject"})
+	eq(formspecs.Alice.text, idle_form, "D Enter alone still sends no replacement form")
+	send_fields(alice, {grug_mail_tab_1 = true})
 	check(formspecs.Alice.text:find("Letters (3)", 1, true), "D the Letters tab counts unread")
 	check(formspecs.Alice.text:find("Announcements (1)", 1, true), "D the Announcements tab counts unread")
 	send_fields(alice, {letters = "CHG:1:5"})
@@ -1026,7 +1037,7 @@ do
 	send_fields(alice, {reply = "Reply"})
 	check(session.tab == "admin" and session.admin.subject == "Re: Welcome",
 		"D Reply on an admin letter writes to the admin")
-	send_fields(alice, {grug_mail_tab = "1"})
+	send_fields(alice, {grug_mail_tab_1 = true})
 	send_fields(alice, {letters = "CHG:1:5"})
 	send_fields(alice, {reply = "Reply"})
 	check(session.tab == "write" and session.draft.to == "Brakka" and
@@ -1069,7 +1080,7 @@ do
 	-- attachment slots, the attachment slots to the inbox (the engine takes
 	-- the entry after the first one naming the source list).
 	alice.inv:set_size("grug_bag1_content", 8)
-	send_fields(alice, {grug_mail_tab = "3"})
+	send_fields(alice, {grug_mail_tab_3 = true})
 	local ring = {}
 	for list in formspecs.Alice.text:gmatch("listring%[current_player;([^%]]+)%]") do
 		ring[#ring + 1] = list
@@ -1092,7 +1103,7 @@ do
 		"D a scroll event keeps the value and sends nothing")
 	formspecs.Alice.text = shown
 	-- To the admin through the window.
-	send_fields(alice, {grug_mail_tab = "4"})
+	send_fields(alice, {grug_mail_tab_4 = true})
 	local admin_send = button(alice, "admin_send")
 	send_fields(alice, {admin_topic = "2", admin_subject = "Lag", admin_body = "Slow.",
 		[admin_send] = "Send (free)"})
@@ -1113,7 +1124,7 @@ do
 	grug_mail.open_mailbox(alice, MAILBOX)
 	alice.pos = {x = 120, y = 10, z = 100}
 	alice.inv:set_stack(ATTACH, 1, ItemStack("t:ingot 1"))
-	send_fields(alice, {grug_mail_tab = "2"})
+	send_fields(alice, {grug_mail_tab_2 = true})
 	check(not grug_mail.session("Alice") and #closed > 0 and alice.inv:is_empty(ATTACH),
 		"D walking away closes the window and returns the attachments")
 	nodes["102,10,100"] = nil
@@ -1127,7 +1138,7 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 	grug_money.set(alice, 500)
 	check(grug_mail.open_mailbox(alice, MAILBOX), "D the window opens again")
 	local session = grug_mail.session("Alice")
-	send_fields(alice, {grug_mail_tab = "3"})
+	send_fields(alice, {grug_mail_tab_3 = true})
 	local hint = core.formspec_escape("Up to 4,000 characters.")
 	check(formspecs.Alice.text:find(hint, 1, true), "D the Write tab shows the hint")
 	-- Round 50 HOTBAR: the view's hotbar switch on the Write tab draws the
@@ -1170,7 +1181,7 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 	check(#letters_of("Brakka") == count and grug_money.get(alice) == 500 and
 		alice.inv:get_stack(ATTACH, 2):equals(ItemStack("t:ingot 2")),
 		"D nothing sent, nothing charged, the attachment stays in its slot")
-	send_fields(alice, {mail_body = string.rep("v", 12000), grug_mail_tab = "3"})
+	send_fields(alice, {mail_body = string.rep("v", 12000), grug_mail_tab_3 = true})
 	eq(session.draft.body, string.rep("v", 10000), "D a 12,000-character submit is kept at 10,000")
 	check(formspecs.Alice.text:find(string.rep("v", 10000), 1, true) and
 		not formspecs.Alice.text:find(string.rep("v", 10001), 1, true),
@@ -1183,7 +1194,7 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 		#letters_of("Brakka")[1].items == 1 and grug_money.get(alice) == 465,
 		"D shortened to 4,000 the letter arrives whole with its stack")
 	-- To the admin: the same.
-	send_fields(alice, {grug_mail_tab = "4"})
+	send_fields(alice, {grug_mail_tab_4 = true})
 	check(formspecs.Alice.text:find(hint, 1, true), "D the To the admin tab shows the hint")
 	local own = #M.tickets_of(grug_mail.tickets(), "Alice")
 	send_fields(alice, {admin_topic = "3", admin_subject = "Long", admin_body = string.rep("u", 4001),
@@ -1192,7 +1203,7 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 		session.admin.body == string.rep("u", 4001) and session.admin.subject == "Long" and
 		#M.tickets_of(grug_mail.tickets(), "Alice") == own,
 		"D To the admin refuses a long message and keeps the draft")
-	send_fields(alice, {admin_body = string.rep("u", 12000), grug_mail_tab = "4"})
+	send_fields(alice, {admin_body = string.rep("u", 12000), grug_mail_tab_4 = true})
 	eq(session.admin.body, string.rep("u", 10000), "D the admin draft is kept at 10,000")
 	send_fields(alice, {admin_body = string.rep("u", 4000), [button(alice, "admin_send")] = "Send (free)"})
 	local mine = M.tickets_of(grug_mail.tickets(), "Alice")
@@ -1203,7 +1214,7 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 	M.deliver(box, M.letter(grug_mail.store.next_id(), "player", "Brakka", "Saga",
 		string.rep("s", 3000), {}, clock))
 	grug_mail.store.save_box("Alice", box)
-	send_fields(alice, {grug_mail_tab = "1"})
+	send_fields(alice, {grug_mail_tab_1 = true})
 	send_fields(alice, {letters = "CHG:1:5"})
 	send_fields(alice, {reply = "Reply"})
 	check(session.tab == "write" and session.draft.body == "\n\n> " .. string.rep("s", 500) .. " [...]",

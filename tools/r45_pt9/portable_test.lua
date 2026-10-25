@@ -193,6 +193,13 @@ local function new_player(name, faction, race)
 end
 player = new_player("tester", "accord", "human")
 other = new_player("neighbour", "accord", "human")
+-- Load presentation helpers without adding a join callback to this fixture.
+do
+	local join = core.register_on_joinplayer
+	core.register_on_joinplayer = function() end
+	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+	core.register_on_joinplayer = join
+end
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 

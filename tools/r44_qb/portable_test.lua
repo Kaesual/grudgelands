@@ -315,6 +315,13 @@ grug_home = {
 	innkeeper = function() return nil end,
 }
 
+-- Exercise real presentation helpers; this fixture does not test the join prepend.
+do
+	local join = core.register_on_joinplayer
+	core.register_on_joinplayer = function() end
+	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+	core.register_on_joinplayer = join
+end
 local function load(path) dofile(ROOT .. "/" .. path) end
 grug_traders = {}
 load("mods/ENTITIES/grug_traders/potion.lua")
@@ -378,7 +385,8 @@ local ada = make_player("ada", "accord", "human")
 local fs = grug_quickbar.formspec(ada)
 has(fs, "formspec_version[6]", "real coordinates")
 has(fs, "position[0.02,0.5]anchor[0,0.5]", "the window sits on the left")
-has(fs, "label[0.375,0.45;Quickbar]", "title")
+has(fs, grug_core.ui.heading(0.375, 0.45, "Quickbar"), "themed title")
+has(fs, "Active Hotbar", "hotbar section heading")
 has(fs, "No mounts or boats yet.", "no mount: the empty line")
 eq(count_buttons(fs, "image_button"), 0, "no mount: no mount button")
 eq(count_buttons(fs, "item_image_button"), 0, "empty belt: no item button")
@@ -694,6 +702,6 @@ print(("bytes: quickbar, one tier, one potion, a home: %d"):format(#grug_quickba
 
 if failures > 0 then
 	print(("%d checks, %d failures"):format(checks, failures))
-	os.exit(1)
+	error("portable fixture failed", 0)
 end
 print(("R44 QB PORTABLE PASS checks=%d"):format(checks))

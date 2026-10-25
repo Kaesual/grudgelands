@@ -2216,9 +2216,9 @@ tools](#player-meta-read-by-external-tools).
 ## Atlas
 
 - **Atlas**: `grug_map` owns one whole-world cartographic atlas with 1x/2x/4x/8x
-  zoom, native scrollbars and an independent marker layer. Formspec v4 wraps
-  the shared legacy inventory window; only Map content switches to real
-  coordinates. Keep the zoom's wanted centre (since 0.45.1 the soft lock on
+  zoom, native scrollbars and an independent marker layer. The UI branch uses
+  a larger version-6 real-coordinate window with the same navigation as the
+  other inventory pages ([presentation contract](ui-presentation.md)). Keep the zoom's wanted centre (since 0.45.1 the soft lock on
   the player until the player scrolls, `atlas.zoom_view` and
   `atlas.scroll_event`, [world_map.md](../design/world_map.md#atlas-navigation)),
   fixed-size markers, clipping and hit bounds in the same transform. A new tab visit resets zoom/scroll; live
@@ -3160,8 +3160,10 @@ tools](#player-meta-read-by-external-tools).
 
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
-  coordinate mode deliberately. Map retains the shared legacy outer window and
-  uses real coordinates only inside its content. 3D preview: `model[]` element.
+  coordinate mode deliberately. The isolated UI modernization uses the
+  [presentation toolkit](ui-presentation.md) for shared frames and navigation;
+  live inventory pages and the map use real coordinates throughout their
+  bodies; standalone legacy forms retain their own explicit coordinate contract. 3D preview: `model[]` element.
   Skill tree = formspec with an `image_button` grid.
   Gains (XP, loot, quest progress, catches), combat notices and personal
   notices (item-use refusals, mount notices, talent points) go to the message

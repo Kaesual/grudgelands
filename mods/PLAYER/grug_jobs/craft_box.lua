@@ -58,6 +58,8 @@
 -- inventory opens, so a player who walked to the forge refreshes it this
 -- way).
 
+local UI = grug_core.ui
+
 local F = grug_jobs.CRAFT_FIELDS
 local BOX = grug_jobs.CRAFT_BOX
 local n, clip = grug_jobs._fs_number, grug_jobs._clip
@@ -80,7 +82,6 @@ local NOTE_STEP = 0.38
 -- the room a scrollbar takes from the text's width.
 local DESCRIPTION_LINE, DESCRIPTION_MIN, SCROLLBAR_W = 0.35, 0.8, 0.3
 local COOKED_NOTE = "Must be cooked in a furnace to become edible."
-local BOX_COLOR = "#00000040"
 local WARN = "#ff9f5a"
 local NOTE = "#f0c75e"
 local XP_GREEN = "#7ae08a"
@@ -362,12 +363,11 @@ end
 
 local function build(player, view)
 	local st, recipe, job = view.st, view.recipe, view.job
-	local fs = {("box[%s,%s;%s,%s;%s]"):format(n(BOX.x), n(BOX.y), n(BOX.w), n(BOX.h),
-		BOX_COLOR)}
+	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
 	if not recipe then
 		-- The overview fills the box above the strip.
 		fs[#fs + 1] = grug_jobs.professions_formspec(grug_jobs.profession_overview(player),
-			{x = X, y = BOX.y + 0.05, w = W, h = view.bottom - BOX.y - 0.1})
+			{x = X, y = BOX.y + 0.05, w = W, h = view.bottom - BOX.y - 0.1}, player)
 		st.pick_rows = nil
 		return table.concat(fs)
 	end
@@ -405,7 +405,7 @@ local function build(player, view)
 	fs[#fs + 1] = ("item_image[%s,%s;0.9,0.9;%s]"):format(n(X), n(BOX.y + 0.2),
 		esc(recipe.output))
 	for _, piece in ipairs(name) do
-		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 1.05), n(y), esc(piece))
+		fs[#fs + 1] = UI.heading(X + 1.05, y, piece)
 		y = y + 0.35
 	end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 1.05), n(y + 0.05), esc(sub))
@@ -450,13 +450,12 @@ local function build(player, view)
 		local needed = line_count(text, W - SCROLLBAR_W) * DESCRIPTION_LINE + 0.15
 		local height = math.min(needed, limit - below - MIDDLE_Y)
 		if height >= DESCRIPTION_MIN then
-			fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]textarea[%s,%s;%s,%s;;;%s]"):format(
-				n(X), n(top), n(W), n(height), BOX_COLOR, n(X), n(top), n(W), n(height),
-				esc(text))
+			fs[#fs + 1] = UI.panel(X, top, W, height) ..
+				("textarea[%s,%s;%s,%s;;;%s]"):format(n(X), n(top), n(W), n(height), esc(text))
 			y = top + height + 0.25
 		end
 	end
-	fs[#fs + 1] = ("label[%s,%s;Ingredients (have/need)]"):format(n(X), n(y))
+	fs[#fs + 1] = UI.heading(X, y, "Ingredients (have/need)")
 	-- The seam of the recipe details page (Round 57, lane DETAILS registers
 	-- the "details" box).
 	if grug_jobs.has_craft_box("details") then

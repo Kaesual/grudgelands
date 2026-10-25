@@ -26,6 +26,9 @@
 
 return function(ui)
 
+local theme = grug_core.ui
+local TAB_OFFSET = 0.85
+
 local FORMNAME = "grug_housing:stone"
 local NOTICE = "grug_housing:notice"
 local LIST = "fuel"
@@ -108,8 +111,8 @@ end
 -- R26 rulings 8-9: the draft's own form (redrawn every second while open).
 local function draft_formspec(claim, session)
 	local need = grug_housing.ACTIVATION_LUMPS
-	local fs = {"formspec_version[4]size[10.75,4.9]",
-		"label[0.4,0.5;" .. ui.esc("Your Claim Stone (draft, not active)") .. "]"}
+	local fs = {theme.frame(10.75, 4.9, "Your Claim Stone (draft, not active)"),
+		theme.button_style("activate", "selected"), theme.button_style("pick_up", "danger")}
 	fs[#fs + 1] = ("label[0.4,1.05;%s]"):format(ui.text(
 		"It protects nothing yet and crumbles in " ..
 		countdown(grug_housing.draft_remaining(claim)) ..
@@ -136,7 +139,8 @@ local function fuel_section(fs, claim, inv)
 	local left = grug_housing.is_active(claim) and
 		(grug_housing.remaining_seconds(claim) or 0) or 0
 	local lumps = ui.lumps(left)
-	fs[#fs + 1] = "label[0.4,0.5;Your Claim Stone]"
+	fs[#fs + 1] = theme.panel(0.25, 0.2, 10.25, 2.6)
+	fs[#fs + 1] = theme.heading(0.4, 0.5, "Your Claim Stone")
 	fs[#fs + 1] = "label[0.4,1.1;Fuel: coal lumps, charcoal or anthracite]"
 	fs[#fs + 1] = ("list[%s;%s;0.4,1.4;1,1;]"):format(inv, LIST)
 	if lumps > 0 then
@@ -172,7 +176,7 @@ end
 
 -- The tabs of the activated stone's form: the stone, Waypoints when grug_home
 -- offers travel, Belongings while some wait. session.tab_ids keeps the shown
--- order for the tabheader's index; "" when there is only the stone's tab.
+-- order for the tab index; buttons translate to that existing event below.
 local function tabs(player, session)
 	local ids, labels = {"main"}, {"Claim Stone"}
 	if travel_api() then
@@ -188,9 +192,14 @@ local function tabs(player, session)
 		if id == session.tab then selected = index end
 	end
 	session.tab = ids[selected]
-	if #ids == 1 then return "" end
-	return ("tabheader[0,0;stone_tab;%s;%d;false;false]"):format(table.concat(labels, ","),
-		selected)
+	local fs = {}
+	for index, label in ipairs(labels) do
+		local field = "stone_tab_" .. index
+		fs[#fs + 1] = theme.button_style(field, index == selected and "selected" or "normal")
+		fs[#fs + 1] = ("button[%.2f,0.15;3.3,0.6;%s;%s]"):format(
+			0.4 + (index - 1) * 3.4, field, ui.esc(label))
+	end
+	return table.concat(fs)
 end
 
 -- The Waypoints tab: one Travel button per discovered waystone of the own
@@ -198,8 +207,9 @@ end
 local function waypoints_formspec(player, session, home, header)
 	local rows = home.known_waypoints(player)
 	local height = 2.6 + 0.7 * math.max(1, #rows)
-	local fs = {("formspec_version[4]size[10.75,%.2f]"):format(height), header,
-		"label[0.4,0.5;" .. ui.esc("Travel from your Claim Stone") .. "]"}
+	local fs = {theme.frame(10.75, height + TAB_OFFSET), header,
+		"container[0," .. TAB_OFFSET .. "]",
+		theme.heading(0.4, 0.5, "Travel from your Claim Stone")}
 	for index, row in ipairs(rows) do
 		local y = 0.6 + 0.7 * index
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, ui.esc(row.label))
@@ -213,6 +223,7 @@ local function waypoints_formspec(player, session, home, header)
 			ui.text(session.message, session.message_color))
 	end
 	fs[#fs + 1] = ("button_exit[7.25,%.2f;3.1,0.8;close;Close]"):format(height - 1.0)
+	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)
 end
 
@@ -248,7 +259,7 @@ local function belongings_formspec(player, session, header)
 	local box, bottom = grug_inventory.station_box("Belongings from the old map", area_h)
 	local inv = "detached:" .. recovered_name(name)
 	local width = grug_inventory.VIEW_GEOMETRY.width
-	local fs = {header, box}
+	local fs = {header, "container[0," .. TAB_OFFSET .. "]", box}
 	local steps = pitch / SCROLL_FACTOR
 	local max = math.max(0, rows - visible) * steps
 	if max > 0 then
@@ -275,7 +286,8 @@ local function belongings_formspec(player, session, header)
 	fs[#fs + 1] = ("button_exit[%.3f,%.3f;3.1,0.8;close;Close]"):format(
 		station.box_x + station.box_w - 3.1, y)
 	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, RECOVERED)
-	return grug_inventory.station_formspec(player, table.concat(fs), y + 0.8, session)
+	fs[#fs + 1] = "container_end[]"
+	return grug_inventory.station_formspec(player, table.concat(fs), y + 0.8 + TAB_OFFSET, session)
 end
 
 local function main_formspec(player, claim, session)
@@ -293,7 +305,8 @@ local function main_formspec(player, claim, session)
 	-- Close takes the focus at every send (0.45.1): otherwise the engine
 	-- focuses the name field, which eats the inventory key, also after a tab
 	-- switch; the field gets it when the player clicks into it.
-	local fs = {"set_focus[close;true]", header}
+	local fs = {"set_focus[close;true]", header, "container[0," .. TAB_OFFSET .. "]",
+		theme.button_style("pick_up", "danger"), theme.button_style("perm_remove", "danger")}
 	fuel_section(fs, claim, inv)
 
 	local rows = access_rows(claim)
@@ -306,7 +319,8 @@ local function main_formspec(player, claim, session)
 	if session.selected and not session.names[session.selected] then
 		session.selected = nil
 	end
-	fs[#fs + 1] = "label[0.4,3.0;Access for other players]"
+	fs[#fs + 1] = theme.panel(0.25, 2.85, 10.25, 3.25)
+	fs[#fs + 1] = theme.heading(0.4, 3.0, "Access for other players")
 	if #entries == 0 then
 		fs[#fs + 1] = "textlist[0.4,3.3;5.4,2.65;perm_list;#999999Nobody else has access.;0;false]"
 	else
@@ -335,7 +349,8 @@ local function main_formspec(player, claim, session)
 	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, LIST)
 	-- The player's whole combined bag below (0.49.1 ruling 6); the session
 	-- keeps its scroll position.
-	return grug_inventory.station_formspec(player, table.concat(fs), 6.75 + 0.8,
+	fs[#fs + 1] = "container_end[]"
+	return grug_inventory.station_formspec(player, table.concat(fs), 6.75 + 0.8 + TAB_OFFSET,
 		session)
 end
 
@@ -346,14 +361,14 @@ local function confirm_formspec(draft)
 		("label[0.4,1.1;The protection ends at once. Whole unburnt lumps come back.]" ..
 		"label[0.4,1.6;" .. ui.esc(("You can place it again at once; activation " ..
 			"costs %d lumps again."):format(grug_housing.ACTIVATION_LUMPS)) .. "]")
-	return "formspec_version[4]size[9.5,3.9]" ..
-		"label[0.4,0.5;Pick up your Claim Stone?]" .. lines ..
+	return theme.frame(10.75, 3.9, "Pick up your Claim Stone?") ..
+		theme.button_style("confirm_pick_up", "danger") .. lines ..
 		"button[0.4,2.6;4.2,0.8;confirm_pick_up;Pick up]" ..
 		"button[4.9,2.6;4.2,0.8;cancel_pick_up;Cancel]"
 end
 
 local function notice_formspec(message, color)
-	return "formspec_version[4]size[9.5,2.9]" ..
+	return theme.frame(9.5, 2.9) ..
 		("label[0.4,0.7;%s]"):format(ui.text(message, color)) ..
 		"button_exit[3.15,1.6;3.2,0.8;ok;OK]"
 end
@@ -611,6 +626,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			sessions[name] = nil
 		end
 		return true
+	end
+	-- The themed buttons retain the existing validated tab-index route.
+	for index in ipairs(session.tab_ids or {}) do
+		if fields["stone_tab_" .. index] then fields.stone_tab = tostring(index); break end
 	end
 	if fields.perm_name then session.typed = fields.perm_name end
 	-- The Claim Stone inventory's scroll value, as the bag view keeps its own.

@@ -112,8 +112,8 @@ local function formspec(session, player)
 	end
 	-- One more line moves the rest down by a line.
 	local shift = (#lines - #LINES) * 0.45
-	local fs = {("formspec_version[4]size[10.5,%g]"):format(6.8 + shift),
-		"label[0.4,0.5;Housing Steward]"}
+	local fs = {grug_core.ui.frame(10.5, 6.8 + shift, "Housing Steward"),
+		grug_core.ui.panel(0.2, 0.85, 10.1, 3.55 + shift)}
 	for index, line in ipairs(lines) do
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.7 + index * 0.45, ui.esc(line))
 	end

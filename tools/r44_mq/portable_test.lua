@@ -459,7 +459,11 @@ rawset(_G, "grug_mobs", {
 local pages, contexts, inv_forms = {}, {}, {}
 local suspended = {}
 rawset(_G, "sfinv", {
-	register_page = function(name, def) def.name = name; pages[name] = def end,
+	pages = pages, pages_unordered = {},
+	register_page = function(name, def)
+		def.name = name; pages[name] = def
+		sfinv.pages_unordered[#sfinv.pages_unordered + 1] = def
+	end,
 	contexts = contexts,
 	inventory_suspended = function(p) return suspended[p.name] == true end,
 	get_homepage_name = function() return "grug_inventory:inventory" end,
@@ -478,7 +482,10 @@ rawset(_G, "sfinv", {
 	get_formspec = function(p, context) return "inventory:" .. context.page end,
 	make_formspec = function(_, _, content) return content end,
 })
-rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1}})
+rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1, frame_h = 13.673}})
+dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
+sfinv.register_page("grug_inventory:inventory", {title = "Inventory"})
 do -- the shared selection style, as grug_inventory/ui.lua ships it
 	local source = read("mods/PLAYER/grug_inventory/ui.lua")
 	local body = source:match("\n(function grug_inventory%.selected_button_style.-\nend)\n")
@@ -502,7 +509,27 @@ grug_map.atlas.register_marker_provider("zone", function()
 end)
 dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
 local W = dofile(repo .. "/mods/PLAYER/grug_map/window.lua")
+-- Startup zone placement and its small-window collision audit must use the
+-- same body height as a rendered map, with the navigation space reserved.
+local zone_bodies, window_size = {}, W.window_size
+W.window_size = function(info, header_h)
+    local w, h = window_size(info, header_h)
+    zone_bodies[#zone_bodies + 1] = {info = info, w = w, h = h}
+    return w, h
+end
 for _, fn in ipairs(on_loaded) do fn() end
+W.window_size = window_size
+for _, info in ipairs({grug_map.layers.REFERENCE, grug_map.layers.SMALL}) do
+    local found = false
+    local w, h = W.window_size(info, grug_inventory.UI.header_h)
+    for _, body in ipairs(zone_bodies) do
+        if body.info == info then
+            found = true
+            check(near(body.w, w) and near(body.h, h), "ZL collision layout reserves navigation height")
+        end
+    end
+    check(found, "ZL reference and small-window collision layouts exercised")
+end
 local window_step = steps[#steps]
 local field_handler = on_fields[#on_fields]
 
@@ -524,6 +551,13 @@ do
 	-- wins over 720/15, so max_formspec_size is 24 x 13.5.
 	w, h = W.window_size({max_formspec_size = {x = 1280 / (0.5555 * 96), y = 720 / (0.5555 * 96)}})
 	check(near(w, 20.4, 0.011) and near(h, 11.47, 0.011), ("S 720p (%.2fx%.2f)"):format(w, h))
+    -- The shared header belongs inside the whole-window height budget.
+    local info = {max_formspec_size = {x = 1035 / 53.33, y = 696 / 53.33}}
+    for _, header in ipairs({1.5, 2.04, 3.12}) do
+        local fw, body = W.window_size(info, header)
+        check(body > 0 and body + header <= info.max_formspec_size.y,
+            "S shared header must not force extra map scaling")
+    end
 	for _, size in ipairs({{22.66, 12.75}, {20, 12}, {16, 10}, {17, 12.75}, {30, 16}, {20.4, 11.47}}) do
 		local L = W.layout(size[1], size[2])
 		local label = ("S layout %.2fx%.2f"):format(size[1], size[2])
@@ -770,7 +804,7 @@ do
 	has(map, ";Elder Maren]", "Quest mode: the hand-in NPC's name")
 	has(map, ";Defeat q_kill1: 3/7]", "Quest mode: a ring's tooltip is its objective's line")
 	has(map, ";Defeat q_kill2: 0/1]", "Quest mode: the crosshair's tooltip")
-	eq(count(form, "bgcolor=#8a682f"), 0, "Quest mode: no layer button highlighted")
+	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 0, "Quest mode: no layer button highlighted")
 	-- Two objectives on one crosshair share it, one line each.
 	journals.ann.quests[#journals.ann.quests + 1] = {id = "q_two", title = "Two", description = "",
 		objectives = {{type = "kill", count = 0, required = 1, what = "crumb"},
@@ -788,8 +822,8 @@ do
 	-- Outside quest mode the active layer's button is highlighted.
 	state.quest_selected = nil
 	form = W.formspec(accord, state, nil)
-	has(form, "style[grug_map_layer_towns;bgcolor=#8a682f", "O the active layer's button highlighted")
-	eq(count(form, "bgcolor=#8a682f"), 1, "O exactly one button highlighted")
+	has(form, grug_core.ui.button_style("grug_map_layer_towns", "selected"), "O the active layer's button highlighted")
+	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 1, "O exactly one button highlighted")
 	for _, layer in ipairs(grug_map.layers.LIST) do
 		has(form, ";grug_map_layer_" .. layer.id .. ";" .. layer.label .. "]", "O button " .. layer.label)
 		has(form, "tooltip[grug_map_layer_" .. layer.id .. ";" .. fs_escape(layer.title) .. "]",
@@ -905,7 +939,7 @@ do
 	state.zoom = 8
 	map = map_part(W.formspec(accord, state, nil))
 	local big = tonumber(map:match("image%[[%d.%-]+,[%d.%-]+;([%d.]+),[%d.]+;grug_map_ring"))
-	local L = W.layout(20, 12)
+	local L = state.layout
 	local view = grug_map.atlas.view()
 	local expect = 2 * targets.ring_radius(9, 32) * L.map_w * 8 / (view.max_x - view.min_x)
 	check(big and near(big, expect, 0.002), ("T ring scales with the region and zoom (%.3f vs %.3f)"):format(
@@ -1344,7 +1378,7 @@ do
 	has(form, "scrollbaroptions[min=0;max=1000;smallstep=10;largestep=100;thumbsize=1;arrows=default]",
 		"Z scrollbar options reset after the map's scrollbars")
 	local base_w = tonumber(form:match("image%[0,0;([%d.]+),[%d.]+;grug_map_base%.png%]"))
-	check(near(base_w, W.layout(20, 12).map_w * 8, 0.002), "Z base image 8x wide")
+	check(near(base_w, W.layout(20, 12 - grug_inventory.UI.header_h).map_w * 8, 0.002), "Z base image 8x wide")
 	advance(1.1)
 	fields(accord, {grug_map_scroll_x = "CHG:99999", grug_map_scroll_y = "VAL:3500"})
 	eq(state.scroll_x, 7000, "Z scroll clamps to 7000")
@@ -1381,12 +1415,12 @@ do
 	eq(#after_calls, 1, "Z the homepage follows on the next step")
 	after_calls[1].fn(unpack(after_calls[1].args))
 	eq(sfinv.get_page(accord), "grug_inventory:inventory", "Z the inventory is back on its homepage")
-	has(page:get(accord, contexts.ann), "grug_map_open", "Z the tab's own page offers the button")
-	shows = {}
-	page:on_player_receive_fields(accord, contexts.ann, {grug_map_open = "x"})
-	eq(sends_to("ann"), 1, "Z its button opens the window")
+	lacks(page:get(accord, contexts.ann), "grug_map_open", "Z map has no intermediary Open button")
+	check(page.on_player_receive_fields == nil, "Z no obsolete Open action handler")
 	-- Every window form is well formed: brackets balance outside escapes.
 	local form2 = shows[#shows].form
+	eq(count(form2, "button_exit%[[^%]]-;grug_ui_close;"), 1, "Z one shared close button")
+	lacks(form2, ";grug_map_close;", "Z no duplicate map close button")
 	local depth, bad, i = 0, false, 1
 	while i <= #form2 do
 		local c = form2:sub(i, i)
@@ -1506,7 +1540,7 @@ do
 	fields(accord, {grug_map_layer_towns = "Towns"})
 	eq(state.layer, "towns", "L a button picks its layer")
 	eq(sends_to("ann") - before, 1, "L a layer click sends once")
-	has(shows[#shows].form, "style[grug_map_layer_towns;bgcolor=#8a682f", "L the new layer highlighted")
+	has(shows[#shows].form, grug_core.ui.button_style("grug_map_layer_towns", "selected"), "L the new layer highlighted")
 	check(map_part(shows[#shows].form):find("grug_map_capital.png", 1, true) ~= nil, "L its markers shown")
 	advance(2)
 	before = sends_to("ann")
@@ -1518,7 +1552,7 @@ do
 	eq(state.quest_selected, "q_kill", "L a quest selected")
 	local form = shows[#shows].form
 	check(not map_part(form):find("grug_map_capital.png", 1, true), "L quest mode hides the layer")
-	eq(count(form, "bgcolor=#8a682f"), 0, "L no button highlighted in quest mode")
+	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 0, "L no button highlighted in quest mode")
 	state.quest_abandon = "q_kill"
 	advance(2)
 	before = sends_to("ann")
@@ -1669,6 +1703,39 @@ do
 	check(base:find("bake.draw(pixels, WIDTH, HEIGHT, view, bake.world_layer(layer)", 1, true) and
 		base:find("bake.draw(mini_pixels, mini.width, mini.height, view, layer, layer.art", 1, true),
 		"I base.lua: the world images get the names only, the minimap the whole layer")
+end
+
+-- Shared navigation must cancel an owed map send and survive its deferred
+-- back-home callback; the real native scrollbar pipeline is still exercised above.
+do
+	sfinv.register_page("grug_inventory:character", {title = "Character"})
+	sfinv.set_page(accord, "grug_map:atlas")
+	local session = W.sessions.ann
+	session.pending = true
+	local index
+	for n, id in ipairs(session.grug_ui_nav) do
+		if id == "grug_inventory:character" then index = n end
+	end
+	check(index ~= nil, "NAV Character is visible in the map's shared bar")
+	fields(accord, {["grug_ui_tab_" .. index] = "true"})
+	eq(sfinv.get_page(accord), "grug_inventory:character", "NAV tab selects the real page")
+	check(not session.open and not session.pending, "NAV pending map send cancelled on tab exit")
+	local before = sends_to("ann")
+	for _, entry in ipairs(after_calls) do entry.fn(unpack(entry.args)) end
+	eq(sfinv.get_page(accord), "grug_inventory:character", "NAV deferred home reset cannot overwrite chosen page")
+	shown.ann = nil
+	advance(2)
+	for _, fn in ipairs(markers_changed) do fn(accord) end
+	eq(sends_to("ann"), before, "NAV pending/quest updates cannot reopen the map")
+	W.open(accord)
+	session.pending = true
+	suspended.ann = true
+	before = sends_to("ann")
+	fields(accord, {["grug_ui_tab_" .. index] = "true"})
+	check(not session.open and not session.pending and shown.ann == nil,
+		"NAV suspension closes the visible map and cancels its owed send")
+	eq(sends_to("ann"), before, "NAV suspension opens no inventory page")
+	suspended.ann = nil
 end
 
 if failures > 0 then

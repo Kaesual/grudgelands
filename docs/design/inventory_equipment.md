@@ -1,6 +1,6 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (last revised 2026-10-08; established 2026-08-06).
+Decided spec (last revised 2026-10-24; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
 hand count), WP38 (native swing capability/pointability bridge), WP39
@@ -8,17 +8,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 ## 1. The inventory window (the "i" key)
 
-- Built on sfinv pages in one frame (Round 44, `grug_inventory/ui.lua`):
-  `formspec_version[6]` with a real-coordinate `size[13.500,13.673]`, the
-  same window as the old legacy 10.4 × 11.1 form. Every tab keeps that size
-  (the Inventory tab's boxed layout fits it with seven rows and the money
-  row; the user, 2026-10-09);
-  the Map & Quests tab ("Map" until 0.45.1) opens the map window, a form
-  of its own sized to the screen (Round 44,
-  [world_map.md](world_map.md#map-window)). Page content follows a
-  `real_coordinates[false]`, so pages still in legacy coordinates keep their
-  place and end before legacy y=7.0; pages in real coordinates start their
-  content with `real_coordinates[true]`.
+- Built on sfinv pages in one shared frame. The approved UI modernization
+  (2026-10-24, implemented in its isolated branch) retains the 13.5 × 13.673
+  body and adds a compact header (1.5 units plus 0.54 per extra tab row)
+  with icon/text navigation and a gold active underline. All non-map
+  tabs share that frame; Map & Quests keeps its larger responsive window
+  and uses the same navigation. See the [presentation contract](../technical/ui-presentation.md).
+  Live page bodies, including Help's Sound controls, use real coordinates
+  inside the header's container. Inventory capacity is unchanged.
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
   Character · Talents & Skills · Crafting · Party & PvP · Map & Quests ·
@@ -34,7 +31,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   are accepted"), and the hotbar (`main[1..8]`) below it, outside the
   scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
   `grug_inventory.LAYOUT`): an **Inventory** box with the grid and its
-  scrollbar and the gold **Hotbar** box, each labelled inside, top left
+  scrollbar and the **Hotbar** panel, each labelled inside, top left
   above the slots. **Full** shows seven rows (the Inventory tab, layout
   below); **short** shows two (every other tab with an inventory), its
   Inventory box right above the Hotbar box; **station** shows three (0.49.1
@@ -69,10 +66,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   stay, and the cooldown overlay follows the skill to its slot on the new
   layout); one switch per 0.25 s at most, an anti-spam limit, not a
   cooldown. The control is two small buttons, **A** and **B**, the shown
-  layout marked bright gold, the other one dark, both framed, right of the
+  layout using the selected theme role and the other the normal role, right of the
   hotbar's slots in every inventory view (so on every inventory page, every
   station form and the mail's Write tab) and in a **Hotbar** row of the
-  quickbar (E). A switch re-shows the form it was made in, at its scroll
+  quickbar (E), headed **Active Hotbar**. A switch re-shows the form it was made in, at its scroll
   position. The cursor's picked-up stack is the client's selection of a
   slot, not a server move: a switch moves nothing in flight; the picked
   stack goes with its layout and the cursor then holds what that slot holds
@@ -88,8 +85,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   belt** (`grug_potion_belt`, potions and elixirs only), sharing the full
   width; below them the **Inventory** box (the full view's grid and
   scrollbar, at most 24 + 4 × 32 = 152 slots in 19 rows), the **money
-  row** and the **Hotbar** box (gold, the other boxes the Character tab's
-  dark tint). All boxes share one left edge and one right edge; the group
+  row** and the **Hotbar** panel (the same translucent theme as the other
+  inventory areas). All boxes share one left edge and one right edge; the group
   is centred in the window. The money row has no box and lies on the slot
   columns: "Money" over the balance (e.g. "123456g 99s 99c"), **Withdraw**
   (opens the Bag of Coins dialog, [economy.md](economy.md) §1), the Bag of
@@ -102,23 +99,16 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
   for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
   time, a 32-slot bag cut to 24) is gone.
-- **The Character tab** (Round 44, [UI rework spec](../planning/ui-crafting-rework-plan.md)
-  ruling 6 and §3.3; real coordinates): top left the **mode box**, top right
-  the **gear box**, both ending a gap above the short inventory view's box.
-  The mode buttons switch the box only, the choice is runtime context (never
-  stored): **Stats** (the default: the model on the left, wearing the
-  character's armor and cloak and holding the main hand's weapon on the
-  model's weapon card, the off-hand not drawn, turned with the mouse
-  (Round 54); right of it the
-  stats and the Claim Stone status, and at the foot the cloak picker,
-  bottom-aligned with the model, "Cloaks unlock through achievements." as
-  its tooltip; 3D and Stats are one mode since the Round
-  45 playtest), **Effects** and **Achievements**; the professions overview
-  moved to the Crafting tab in Round 45.
-  The gear box shows the eight equipment slots with each slot's name beside
-  it (the hands' names per class, §1 below), the Scout's quiver under them
-  and, at its foot in every mode, the travel home's name and the **Return
-  home** button with its state ([home_travel.md](home_travel.md)).
+- **The Character tab:** model and eight labelled native equipment slots
+  on the left, the selected Stats/Effects/Achievements panel on the right,
+  both above the short inventory view. The mode lives only in runtime
+  context; Stats is the default. The original model preview remains
+  mouse-rotatable. Stats includes the actual combat values, Claim
+  Stone status and cloak picker; the professions overview stays in Crafting.
+  Effects retain their coarse remaining-time labels. Achievements retain
+  their real catalog and bottom pager, with full tooltip descriptions.
+  The Scout quiver and the Return home control remain in the equipment
+  area, including travel state ([home_travel.md](home_travel.md)).
   **Shift-click** moves between the inventory and the equipment: every list
   the page draws rings to `grug_shift`, a one-slot list no page draws and
   that never holds anything (whatever another writer leaves there goes back
@@ -139,10 +129,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   armor's reduction against an enemy of the character's own level; its tooltip
   says so and that it is higher against lower-level and lower against
   higher-level enemies; Round 28 ruling 21) and maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
-- Talents keeps the shared legacy inventory geometry but uses real coordinates
-  for its page content. Class, tree selection, rank rows and description occupy
-  separate bands; combat statistics belong to Character. Both chains use equally
-  sized available/locked controls and wrapped tooltips. Clicking an available
+- Talents uses the shared frame and real coordinates for its page content.
+  The existing class talent graphs and their backgrounds, details and skill
+  catalogue retain separate areas; combat statistics belong to Character.
+  Available/locked controls retain their sizes and wrapped tooltips. Clicking an available
   talent buys one rank immediately. Respec retains confirmation and its price.
 - Help is a short player guide in six sub-pages chosen by buttons at its top
   (the selection lives in the sfinv context; Start is the default): **Start**
@@ -639,10 +629,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   slot. It holds up to **500 arrows**; arrows stack to **100** in any
   inventory. Internally the list `grug_quiver_content` carries five stacks of
   100, but only its first cell is drawn and it always holds min(total, 100):
-  **clicking the slot takes up to 100 arrows as one stack**. Above 100 arrows
-  the cell shows the true total (e.g. 181) over the engine's count (Round 41
-  ruling 6); its count corner matches the slot background only approximately
-  and shows no hover highlight (accepted). Arrows enter by
+  **clicking the slot takes up to 100 arrows as one stack**. The native cell
+  shows the first stack's count; the adjacent label shows the true total
+  (e.g. 181). The UI modernization removes the old opaque count-cover/image
+  workaround so native hover and transparency remain intact. Arrows enter by
   **drag** (onto the slot), **shift-click** (from the inventory) and **pickup**
   while the quiver has room; anything else is refused. A shift-click on the
   slot moves its up to 100 arrows into the inventory in the give order,
@@ -982,3 +972,32 @@ equipping or hotbar-weapon combat fallback. The top inventory row is explicitly
 highlighted as Hotbar. Selected page controls use a visible border/tint rather
 than a `>` prefix. The skill catalog explains placing and removing skills
 (§6).
+
+## UI modernization approved direction
+
+User ruling, 2026-10-24; implementation tracked in the
+[UI plan](../planning/ui-modernization-plan.md). Atlas 03 is the accepted
+visual direction: dark translucent panels, small rounded corners, restrained
+brass accents, original game art and readable text. Window dimensions may
+change for appearance/usability. Non-map inventory tabs share one frame size;
+Map & Quests is larger and retains the shared navigation. This supersedes the
+fixed dimensions in the earlier Round 44/45 description above and ruling 10
+of the earlier crafting/UI plan. All allowed tabs stay visible, using two
+rows when necessary. Slot sizes/capacities, native inventory input, page
+lifecycle and permission checks remain.
+
+Existing controls may be rearranged; underlying functionality and mechanisms
+remain. No item inspector or inspection mode. Character creation stays on one
+page. Achievement pagination is at the bottom; Active Hotbar has a heading;
+coin denomination fields share one row. Use real talent trees, backgrounds,
+professions and item data. Do not add item lore, ordinary-letter category
+icons or the redundant mining-effect-slot note. The Scout quiver total uses
+its existing adjacent label without the opaque count-cover overlay.
+
+Crafting/furnaces preserve client-side animation strips and existing timing,
+buffering and change detection. No new processing percentages or second
+counters; arrival preparation keeps its existing percentage/ETA and a static
+bar. Keep coarse Effects duration labels. Map scrolling remains native and
+client-side. Reversible implementation details may be decided independently;
+fundamental changes wait for the user. Desktop and web visual acceptance are
+still required after implementation.
