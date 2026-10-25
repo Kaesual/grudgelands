@@ -67,8 +67,17 @@ V.FACTIONS = {accord = true, throng = true}
 -- "never the requested item" rule and the night-count warning.
 V.REWORK_FLAG = "reworked"
 -- Ruling 17: per zone (capitals excepted) at most this many equipment
--- rewards with one and with two enchants.
+-- rewards with one and with two enchants; since Round 62 per zone and level
+-- band (V.reward_band), so the front's 41-50 and 51-60 rewards do not share
+-- the 31-40 band's budget.
 V.BUDGET = {[1] = 2, [2] = 1}
+
+-- The level band of a quest's reward level (its item tier): 0 for 1-10, 1
+-- for 11-20, ..., 5 for 51-60 (tools/r28_design/validate.py reward_band).
+function V.reward_band(level)
+	if type(level) ~= "number" then return 0 end
+	return math.floor((level - 1) / 10)
+end
 -- Ruling 12: a night-only kill target asks about a third of the zone's day
 -- counts (a day lasts 15 minutes, a night 5); outside this share of the
 -- median day count it is a warning.
@@ -1170,8 +1179,9 @@ function V.world(files, world)
 					local zone = variant.zone
 					if zone and not counted[zone] and not (world.capital and world.capital(zone)) then
 						counted[zone] = true
-						budget[zone] = budget[zone] or {[1] = {}, [2] = {}}
-						table.insert(budget[zone][math.min(enchants, 2)], {id = quest.id, level = quest.level, add = add,
+						local key = zone .. "|" .. V.reward_band(quest.level)
+						budget[key] = budget[key] or {[1] = {}, [2] = {}, zone = zone, band = V.reward_band(quest.level)}
+						table.insert(budget[key][math.min(enchants, 2)], {id = quest.id, level = quest.level, add = add,
 							warn = warn, where = row.where})
 					end
 				end
@@ -1179,19 +1189,20 @@ function V.world(files, world)
 		end
 	end
 	local zones = {}
-	for zone in pairs(budget) do zones[#zones + 1] = zone end
+	for key in pairs(budget) do zones[#zones + 1] = key end
 	table.sort(zones)
-	for _, zone in ipairs(zones) do
+	for _, key in ipairs(zones) do
+		local zone, band = budget[key].zone, budget[key].band
 		for enchants, limit in ipairs(V.BUDGET) do
-			local list_of = budget[zone][enchants]
+			local list_of = budget[key][enchants]
 			table.sort(list_of, function(a, b) return a.id < b.id end)
 			if #list_of > limit then
 				local ids = {}
 				for _, entry in ipairs(list_of) do ids[#ids + 1] = entry.id end
 				local last = list_of[#list_of]
-				last.add(last.where, ("%s has %d equipment rewards with %d enchant%s (%s); at most %d per zone, " ..
-					"capitals excepted [E-reward-budget]"):format(zone, #list_of, enchants, enchants == 1 and "" or "s",
-					table.concat(ids, ", "), limit))
+				last.add(last.where, ("%s has %d equipment rewards with %d enchant%s (%s); at most %d per zone and " ..
+					"level band (levels %d-%d), capitals excepted [E-reward-budget]"):format(zone, #list_of, enchants,
+					enchants == 1 and "" or "s", table.concat(ids, ", "), limit, band * 10 + 1, band * 10 + 10))
 			end
 			local levels = {}
 			for _, entry in ipairs(list_of) do
