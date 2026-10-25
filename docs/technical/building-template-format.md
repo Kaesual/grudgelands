@@ -370,7 +370,8 @@ with `--no-ff`, never squashed or rebased), or `BASELINE` names a tag.
   rectangle);
 - a fixed node painted into a template several races use (the editor flags it too, ruling 22);
 - every entry of `known_defects.txt` that still holds (the frozen state's known defects, ruling 33: what the freeze
-  lanes list; the Lethariel bough stair was fixed in the templates in Round 58). An entry that no longer holds is
+  lanes list; the Lethariel bough stair was fixed in the templates in Round 58, the Kezamba moot-house door and the Lethariel mere
+  shrines' inside points in Round 62, so the list is empty). An entry that no longer holds is
   reported so it can be removed.
 - every standing point unreachable in the baseline version already (reported, not refused).
 
