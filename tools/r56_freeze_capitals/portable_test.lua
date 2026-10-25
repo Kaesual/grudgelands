@@ -104,7 +104,10 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- the identities unchanged) the new point and build digests; since Round 60
 -- (CAPITALS, chapter 2's public register: one quest_place socket in Nhal
 -- Veyr's Miner's Guild plot, its cells and identity unchanged) Nhal Veyr's
--- new point and build digests.
+-- new point and build digests; since Round 62 (TEMPLATEFIX, a declared map
+-- reset: the moot house's door gets its upper cell, the mere shrines' inside
+-- point stands on the floor) Kezamba's new identity and build digests and
+-- Lethariel's new point and build digests (its district shrine's destination).
 local FROZEN = {
 	highcourt = {"1a8e47431522d9772031f7fd380a0413d71a63f72ec61b6ddde522dac13e150e",
 		"9fa04dee8ea0448cd5a0fe1f80025ce5a1f83399ab0cb054703b58d442d0acd1",
@@ -113,17 +116,17 @@ local FROZEN = {
 		"120271ea5fb8146855dc8a41d10e10212d3f681ad13ae6d13c56b4f9e82172a5",
 		"41a7b568310143ca27bd9d5a801b09f07a51ee901a6f30b6a8f11ee0c11c91f9"},
 	lethariel = {"cb9e93140373282d5aa51075f18ad32e3a5e11c4ab65e806227968349e8f147a",
-		"b1f29ca4c47ac47413b26038200ddd4fccc81b219f8fa6c17ebc94ae34d604ed",
-		"36dbde6e1e0b2e9554423b5927c15a50e5343365c5aec85346762acb90ba76b4"},
+		"14b69a9a2678a6069faddf69f5de102854a2f01c874cb3cf07d970d6f5f55427",
+		"7f85eba5dd9b4bb251b65ec889641c67648abc082f2289239b3e69f6d050d90c"},
 	nhal_veyr = {"55fce09f1fdef53ede607ae33f276be57e00d7fc5b85d0c394612880db240b21",
 		"d89dd8e4f3d886dfda4ae241bca702378783e206a622da642ba229ea5357c2d8",
 		"821349a1c3ea6bd7ed4200868c067b1d44a6a11c583367b525044c1c7ea3d5c2"},
 	gor_drazhak = {"2ad9738730febee444c8ab4606423a5d339181b75a99d43083f2b6df1e25962b",
 		"e53f3d4ac3f80315bf6edd5f9aba85fd4d4cf372d0c660b730a249fa718c2806",
 		"885ad9a5731edbfc9c3829da7efdb8c0744f8985cfabc39f85c6b7eac5e9f2bf"},
-	kezamba = {"88c1dc1917216b02ea8ec15a1b28894b8d60616414b3bbed923123f7fd28bd31",
+	kezamba = {"d610b41fea4baeeea4f3424ae68fe7676e23cb08dd60e7de8fdc008a5d279745",
 		"5846e721abf75b65ed16a673b0c64d1dc33bc7e311b8603d8edbd91fdd3f86ca",
-		"bdb7c70e4a5d265b865afb482f4c232c97f4a97a2a9b8983f8fa632c3743ff7b"},
+		"3c5ecd5d8caf44b64645ea93547e670647597db152f62dc57d8ee736495d1ead"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
