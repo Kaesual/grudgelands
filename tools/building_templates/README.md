@@ -121,8 +121,8 @@ record of how they were made and the gates that keep them honest.
   that is not air and warns, rule `stem_soil`, when that ground is not wild
   soil for a placing race, where no tree grows): `check.py`
   (against `BASELINE`), `check.py --baseline=self` (the freeze),
-  `--write-known-defects` (the exporter's known-defects baseline: three
-  capital defects, none for the start towns), `--self-test` (the parser and
+  `--write-known-defects` (the exporter's known-defects baseline, empty
+  since Round 62), `--self-test` (the parser and
   every rule on mutated copies of a frozen template, the loader parity and the
   roster cases). It reads the palettes and the param2 rules from the game's
   Lua through `palette_dump.lua` (LuaJIT), the registry from `nodes.json`, and
