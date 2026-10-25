@@ -54,6 +54,7 @@ if __name__=='__main__':
  (OUT/'content.js').write_text('window.PAGES='+json.dumps(PAGES,ensure_ascii=False)+';')
  for source in (ROOT/'src').iterdir(): shutil.copyfile(source,OUT/source.name)
  runpy.run_path(str(ROOT/'assets.py'),run_name='__main__')
+ runpy.run_path(str(ROOT/'revision_assets.py'),run_name='__main__')
  expected={p['id'] for p in PAGES}
  for resolution,shots in captures.items():
   if set(shots)!=expected: raise ValueError('Capture census mismatch: '+resolution)
