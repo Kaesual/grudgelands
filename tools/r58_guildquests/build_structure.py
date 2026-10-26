@@ -409,8 +409,16 @@ DUPLICATES = []  # (quest id, zone, role): a hunt that repeats a zone quest's ta
 # script pick anew (round60-plan.md §3: the T3 camp hunts keep working):
 # (tier, zone) -> (night, kind id, role). Round 60: Totemwater's quests no
 # longer hunt its tapirs, so the script would move its night hunt to a day
-# one; the shipped night hunt stays.
-KEPT_HUNTS = {(3, "kragmar_totemwater_reach"): (True, "jungle", "sullen_bog_ooze")}
+# one; the shipped night hunt stays. Round 61: the band 31-40's quests hunt
+# none of the zones' first-belt roles any more, so the script would pick the
+# T4 hunts anew; the shipped ones stay (round61-plan.md §2 point 6).
+KEPT_HUNTS = {(3, "kragmar_totemwater_reach"): (True, "jungle", "sullen_bog_ooze"),
+              (4, "elandor_stormvault_heights"): (False, "eagle_crags", "storm_ridge_ram"),
+              (4, "elandor_ashenward_march"): (False, "cinderwood", "briarpack_wolf"),
+              (4, "elandor_glassroot_wilds"): (False, "fringe", "watchful_stag"),
+              (4, "kragmar_blackwind_rise"): (True, "bonewood", "grave_web_spider"),
+              (4, "kragmar_bannerbreak_mesa"): (False, "badlands", "marching_husk"),
+              (4, "kragmar_thunderroot_wilds"): (True, "canopy", "stalking_panther")}
 
 
 def hunt_quests(mining, war, records):

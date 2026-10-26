@@ -1,6 +1,7 @@
 {
   "zone": "elandor_stormvault_heights",
-  "identity": "Stormvault is the Accord's high road to the front: the storm watch keeps the passes open while the dead walk them at night, a goblin siege crew chews through the watch's bolts, and a split stone golem guards the stormcrags.",
+  "reworked": true,
+  "identity": "Stormvault Heights is The Accord's high road to the front: Borin keeps the work crews fed and equipped, Alna restores a reliable watch over their routes, and Split-Seam threatens the high paths.",
   "hubs": [
     {
       "id": "splitbolt_station",
@@ -22,7 +23,7 @@
         {
           "npc": "r20_anchor_028_host",
           "lines": [
-            "sighting",
+            "border",
             "front"
           ]
         }
@@ -44,73 +45,141 @@
   ],
   "quests": [
     {
-      "id": "stormvault_passes_01",
-      "line": "passes",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 30,
-      "level": 31,
+      "id": "border_packets",
+      "line": "border",
+      "min_level": 38,
+      "level": 39,
       "requires": [],
-      "title": "Postage and Talons",
-      "text": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Golden Eagles by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
+      "title": "Words Worth Bringing Back",
+      "text": "My observers send word when a crew returns, changes watch or needs relief; a missing message can leave the next crew waiting in the wrong place. The Waylayers at {name:slatehook}, {dir_from_giver:slatehook}, have been taking those messages off our runners. Bring me a Runner's Packet from them. I would like to plan a watch with information newer than the watch itself.",
       "objectives": [
         {
-          "type": "kill",
+          "type": "item",
+          "item": "grug_mobs:runners_packet",
+          "count": 1
+        }
+      ],
+      "quest_drops": [
+        {
+          "item": "grug_mobs:runners_packet",
+          "chance": 3,
           "roles": [
-            "ridge_crag_eagle"
+            "entrenched_bandit_archer"
           ],
-          "count": 5,
-          "area": "elandor_stormvault_heights/eagle_crags"
+          "area": "elandor_stormvault_heights/slatehook"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r20_anchor_028_host"
+          ],
+          "text": "My observers send word when a crew returns, changes watch or needs relief; a missing message can leave the next crew waiting in the wrong place. The Waylayers at {name:slatehook}, {dir_from_giver:slatehook}, have been taking those messages off our runners. Bring me a Runner's Packet from them. I would like to plan a watch with information newer than the watch itself."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "elandor_ashenward_march/coalbrand_yard"
+            }
+          ],
+          "text": "A shift report tells me who is still out there and who ought to be home. The Hedge Bowmen at {name:coalbrand_yard}, {dir_from_giver:coalbrand_yard}, have been taking our runners' messages. Recover a Runner's Packet and bring it to me. Someone is waiting to hear that their crew got back."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r20_anchor_036_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "elandor_glassroot_wilds/rootsnare"
+            }
+          ],
+          "text": "The Bandit Fletchers at {name:rootsnare}, {dir_from_giver:rootsnare}, steal the carriers' messages as readily as they cut our roots for arrow shafts. Those messages tell us which crews have returned and which still need supplies. Bring me a Runner's Packet from the camp. A path is little use if the people at either end cannot hear from one another."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r20_anchor_040_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "kragmar_blackwind_rise/pallcloth_den"
+            }
+          ],
+          "text": "A crew can come home and still be listed as missing if the word never reaches us. The Shroud Archers at {name:pallcloth_den}, {dir_from_giver:pallcloth_den}, have been intercepting those return messages. Bring me a Runner's Packet from them. I would rather welcome someone once than write an apology after their memorial."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "kragmar_bannerbreak_mesa/sunderstrap_camp"
+            }
+          ],
+          "text": "The Trench Archers at {name:sunderstrap_camp}, {dir_from_giver:sunderstrap_camp}, are stealing our runners' messages. Somewhere in that camp is a Runner's Packet full of questions about deliveries that never arrived. Bring one back to me. The people asking have waited long enough for an answer."
+        },
+        {
+          "zone": "kragmar_thunderroot_wilds",
+          "givers": [
+            "r20_anchor_048_host"
+          ],
+          "quest_drops": [
+            {
+              "roles": [
+                "entrenched_bandit_archer"
+              ],
+              "area": "kragmar_thunderroot_wilds/rainchar_camp"
+            }
+          ],
+          "text": "My carriers send word of a finished run so the next crew knows when to set out. The Brigand Bowmen at {name:rainchar_camp}, {dir_from_giver:rainchar_camp}, have taken to keeping that word for themselves. Bring me a Runner's Packet from them. A drum can tell the whole forest that a crew is coming home; it is much worse at saying which one."
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 6,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "Contested ground: aggressive hunters by day in the first belt.",
-      "duration_min": 10
-    },
-    {
-      "id": "stormvault_passes_02",
-      "line": "passes",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 31,
-      "level": 32,
-      "requires": [
-        "stormvault_passes_01"
-      ],
-      "title": "The Mountain's Night Shift",
-      "text": "The eagles clock off at dusk, but don't put your weapon away. Rime Strays climb out of the snow in the {name:eagle_crags} and loose arrows at our watch fires; break five of them at night. The mountain works two shifts, and neither of them sleeps.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "rime_skeleton_stray"
-          ],
-          "count": 5,
-          "area": "elandor_stormvault_heights/eagle_crags"
-        }
-      ],
-      "rewards": {
-        "weight": 3,
-        "items": []
-      },
-      "lesson": "One area, two clocks: the night roster differs from the day roster.",
-      "duration_min": 10
+      "lesson": "A shared quest drop from the bandit archers of the zone's Round 20 bandit camp (an area per variant); a potion choice (given in all six zones, so no armor: the reward budget).",
+      "duration_min": 12,
+      "notes": "Round 61 BANDQUESTS. Draft §3 'Words Worth Bringing Back' (K10 A): the Runner's Packet, a soulbound quest-only item (local messages, no proof of the front's plot), drops 1 in 3 from the camp's archers while needed; the area keeps Blackwind's hideout archers out. Done once everywhere: no other text claims a second camp."
     },
     {
       "id": "stormvault_passes_03",
       "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 31,
-      "level": 33,
-      "requires": [
-        "stormvault_passes_01"
-      ],
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
       "title": "A Proper Introduction to Rock",
-      "text": "Bring me four Silversteel Bars and I'll trade you a Silversteel Pickaxe. A dual furnace makes the bars from steel and silver; swearing at an ordinary furnace does not, though I've tested that thoroughly. You'll need it when you dig deep enough for Emberglass, where the rock turns too hard for steel.",
+      "text": "The stone here sends picks back with their teeth missing, and I am running short of replacements. Bring me four Silversteel Bars for the station's picks; Steel Bars and Silver Bars go together in a Dual Furnace. I will see that the next introduction leaves a mark on the rock.",
       "objectives": [
         {
           "type": "item",
@@ -119,29 +188,85 @@
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": [
+        "weight": 5,
+        "choices": [
           {
-            "item": "grug_materials:pick_silversteel",
-            "count": 1
+            "item": "grug_gear:head_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_scaled",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
           }
         ]
       },
-      "lesson": "Silversteel from the dual furnace; the silversteel pick opens tier four rock.",
-      "duration_min": 15
+      "lesson": "A local task; the first armor choice (one enchant, a prefix).",
+      "duration_min": 9,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
+    },
+    {
+      "id": "stormvault_frostfin",
+      "line": "passes",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 31,
+      "level": 32,
+      "requires": [],
+      "title": "A Supper with Fins",
+      "text": "The station's cook has started naming the different ways to serve the same ration. Bring me four Frostfin before he reaches the end of the list and starts again. A crew that works this hard ought to have something to look forward to when the tools go down.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_fishing:frostfin",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "An early errand, a level only; the zone's potion choice.",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "stormvault_road_ashenward",
       "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 32,
-      "level": 33,
-      "requires": [
-        "stormvault_passes_02"
-      ],
-      "title": "Good News Travels on Foot",
-      "text": "Tell Toren Waterbarrel at Cinderline Watch in Ashenward March that the passes are open again. He keeps the Accord supplied, which means every clear road earns him another wagon to worry about. Lend him a hand, then ask after Glassroot Wilds; this front takes mountain, march and forest to hold it.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "Word for Cinderline Watch",
+      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March feeds the drivers who bring our supplies. He needs help keeping those loads moving, and I need my workers to eat. Go and speak to him; a sound road is not much use without something worth carrying on it.",
       "objectives": [
         {
           "type": "talk",
@@ -149,24 +274,22 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Contested circuit: the three zones carry the band together.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "stormvault_road_archshadow",
       "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 34,
-      "level": 34,
-      "requires": [
-        "stormvault_passes_02"
-      ],
-      "title": "Alna Keeps Count",
-      "text": "Report to Alna Archsight at Archshadow Post when you're ready for harder ground. She keeps the sighting line trained on the front while goblins make off with our bolts. Mind your sums around her; she once found a missing crate by counting what the thieves dropped.",
+      "min_level": 32,
+      "level": 33,
+      "requires": [],
+      "title": "Alna Needs Good Eyes",
+      "text": "Alna Archsight at Archshadow Post needs help with her observations before the next loads go out. Speak to her if you can tell a loose stone from a solid one without waiting for it to land. She is particular about reports, but being wrong up here tends to make a dent.",
       "objectives": [
         {
           "type": "talk",
@@ -174,110 +297,22 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Handoff to the zone's second outpost and its harder ground.",
-      "duration_min": 10
-    },
-    {
-      "id": "stormvault_sighting_01",
-      "line": "sighting",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 34,
-      "level": 36,
-      "requires": [],
-      "title": "Some Assembly Stolen",
-      "text": "Our missing bolts are holding a goblin siege engine together, which is an insult to every smith who threaded them. Defeat six Siege Goblins or Siege Slingers at the {name:goblin_camp} {dir_from_giver:goblin_camp}. Watch the slingers while you work; they have a distressing knack for finding the gap in a helmet.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "siege_goblin",
-            "siege_goblin_slinger"
-          ],
-          "count": 6,
-          "area": "elandor_stormvault_heights/goblin_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "A camp with a ranged minority.",
-      "duration_min": 12
-    },
-    {
-      "id": "stormvault_sighting_02",
-      "line": "sighting",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 35,
-      "level": 36,
-      "requires": [
-        "stormvault_sighting_01"
-      ],
-      "title": "No More Bolts for {name:bolt_chewer}",
-      "text": "{name:bolt_chewer} guards the stolen hardware at the {name:goblin_camp} {dir_from_giver:bolt_chewer}, chewing through the stock between meals. Those bolts took a smith all morning; the beast doesn't even pause to admire the threads. Kill it before another crate ends up between its teeth.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "bolt_chewer"
-          ],
-          "count": 1
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "lesson": "Normal named leader at its camp; resolves the stolen bolts.",
-      "duration_min": 10,
-      "climax": true
-    },
-    {
-      "id": "stormvault_sighting_03",
-      "line": "sighting",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "stormvault_sighting_02"
-      ],
-      "title": "Thieves Without Favourites",
-      "text": "The Waylayers at {name:slatehook} {dir_from_giver:slatehook} rob the Accord and the Throng with admirable fairness. Defeat five of them before they strip another supply train. Use what cover you can; I want a report, not a demonstration of their aim.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "entrenched_bandit_archer"
-          ],
-          "count": 5,
-          "area": "elandor_stormvault_heights/slatehook"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Ranged camp at the top of the zone.",
-      "duration_min": 12
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 8,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "stormvault_sighting_04",
-      "line": "sighting",
+      "line": "border",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 36,
-      "level": 37,
-      "requires": [
-        "stormvault_sighting_01"
-      ],
+      "min_level": 33,
+      "level": 34,
+      "requires": [],
       "title": "A Clearer View of Trouble",
-      "text": "The sighting line needs new lenses; at present I can spot trouble, but not which trouble. Dig deep below the passes, where the rock turns too hard for a steel pick, and bring me two pieces of Emberglass; take a Silversteel Pickaxe for the job. We'll give the watch a clear view before anyone mistakes a siege engine for a supply cart.",
+      "text": "Our new sights have every fitting except the one that matters. Bring me two Emberglass so we can finish them. 'Something moved' is a fine beginning to a report; I would like my observers to manage the rest.",
       "objectives": [
         {
           "type": "item",
@@ -286,24 +321,119 @@
         }
       ],
       "rewards": {
-        "weight": 2.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_scaled",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Mining by depth: Emberglass in tier four rock, the next metal's input.",
-      "duration_min": 15
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
+      "duration_min": 14,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
+    },
+    {
+      "id": "stormvault_survey_stand",
+      "line": "border",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 36,
+      "level": 37,
+      "requires": [],
+      "title": "A Reliable Stand",
+      "text": "The observers working the {name:highcrags} need a fixed reference, and our sighting frame has shifted on its stand. Go to the {name:survey_stand}, {dir_from_giver:survey_stand}, and set the frame back on its marks. We can argue over what moved once our own equipment stops joining in.",
+      "completion": "Good, the observers can compare their readings from the same marks again. That should remove at least one wandering mountain from the reports.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "survey_stand",
+          "object": "sighting_frame",
+          "label": "Set the sighting frame",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "The zone's solo quest; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 61 BANDQUESTS. K6 A: the zone's solo quest with its weapon, at a new recipe place in the Highcrags."
     },
     {
       "id": "stormvault_sighting_05",
-      "line": "sighting",
+      "line": "border",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
       "min_level": 38,
       "level": 39,
-      "requires": [
-        "stormvault_sighting_03"
-      ],
+      "requires": [],
       "title": "Party: A Crack Is Not a Weakness",
-      "text": "{name:split_seam_warden} roams the {name:stormcrags} {dir_from_giver:split_seam_warden}, with a crack wide enough to tempt any dwarf with a hammer. Don't mistake that seam for an easy job; this golem can flatten a squad. Bring a party and destroy it, and leave the single-handed masonry to the workshop.",
+      "text": "{name:split_seam_warden} is battering the work paths in the {name:stormcrags}, and the split in its stone has encouraged some very poor judgement. Gather a group and bring it down, {dir_from_giver:split_seam_warden}. A crack you can see is not necessarily a crack you can put a pick through.",
       "objectives": [
         {
           "type": "kill",
@@ -315,12 +445,104 @@
       ],
       "rewards": {
         "weight": 6,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:manawell_t4"
+          },
+          {
+            "item": "grug_gear:battlebeat_t4"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t4"
+          }
+        ]
       },
-      "lesson": "Elite climax for a group; the route reaches 40 without it.",
+      "lesson": "The optional group quest: free, standalone, a trinket choice as its extra.",
       "duration_min": 15,
-      "climax": true,
-      "group": true
+      "group": true,
+      "optional": true,
+      "notes": "Round 61 BANDQUESTS. The optional group quest (round61-plan.md §2 point 8): free, standalone, a trinket choice as its extra; the survey stand needs neither its kill nor its spot."
+    },
+    {
+      "id": "stormvault_road_last_hedge",
+      "line": "border",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 40,
+      "level": 40,
+      "requires": [],
+      "title": "What the Watch Needs to Know",
+      "text": "Nella Hedgeward at Last Hedge Redoubt in Ashenward March needs help with the fighting beyond our frontier posts. Speak to her about the work. She wants to know what her next patrol will face, and she listens closely to whoever has to walk there.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_032_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The departure at 40 (round61-plan.md §2 point 7): Alna's own front quests start at 44."
+    },
+    {
+      "id": "story_accord_06",
+      "line": "guild",
+      "min_level": 39,
+      "level": 40,
+      "requires": [
+        "story_accord_05",
+        "camp_site_raid"
+      ],
+      "story": true,
+      "title": "The Cost of Holding Ground",
+      "text": "The guild has checked the report of your camp raid: cargo bearing our marks was stacked for the enemy's building work. The Throng took it in an open attack on our transport, and the crews it belonged to still need replacements. Take the combined report to Nella Hedgeward at Last Hedge Redoubt in Ashenward March. You have set their building work back; she can help us put the next load into our own workers' hands.",
+      "completion": "The drivers on this report are due relief, and their crews still need the tools that were taken. The Charter of Stone and I will arrange the replacements and a watch to protect the next delivery along that route. Speak to the Warmaster at Ashenward Bastion; you have brought me an account I can act on, and I want the Bastion to hear it too.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_032_host"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r58_foreman_mining_camp_stormvault_heights"
+          ],
+          "turnins": [
+            "r20_anchor_032_host"
+          ],
+          "text": "The guild has checked the report of your camp raid: cargo bearing our marks was stacked for the enemy's building work. The Throng took it in an open attack on our transport, and the crews it belonged to still need replacements. Take the combined report to Nella Hedgeward at Last Hedge Redoubt in Ashenward March. You have set their building work back; she can help us put the next load into our own workers' hands."
+        },
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r58_foreman_mining_camp_ashenward_march"
+          ],
+          "turnins": [
+            "r20_anchor_032_host"
+          ],
+          "text": "I have matched the report of your camp raid to our transport losses: the cargo set aside for the enemy's building work bears our marks. The Throng seized it in an open attack on the transport; the drivers whose record you brought me saved what they could. Take these findings to Nella Hedgeward at Last Hedge Redoubt. I have added the replacement tools and relief those crews still need, so she can plan the next delivery with us."
+        },
+        {
+          "zone": "elandor_glassroot_wilds",
+          "givers": [
+            "r58_foreman_mining_camp_glassroot_wilds"
+          ],
+          "turnins": [
+            "r20_anchor_032_host"
+          ],
+          "text": "The report of your camp raid has reached us, and the guild has matched the cargo marks at that building site to our lost supplies. The Throng took those goods in an open attack on our transport and laid them aside for its own construction. Carry the combined report to Nella Hedgeward at Last Hedge Redoubt in Ashenward March. The attack you made has bought our crews some room to work; let us see they have the tools and protection to use it."
+        }
+      ],
+      "rewards": {
+        "weight": 2
+      },
+      "lesson": "Chapter 3 of the story arc (story, may chain): a travel from any band foreman of the faction.",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. A6 (story, 39): requires A5 and the free camp raid (its one Accord follow-up); any of the three Accord band foremen gives it (a raid elsewhere counts)."
     },
     {
       "id": "guild_t4_report_accord",
@@ -721,6 +943,126 @@
         "weight": 4
       },
       "notes": "Round 58 raid: the camp under construction of each contested T4 zone, given by the own T4 foreman; its four guards and its captain, as a war camp's raid."
+    },
+    {
+      "id": "front_stormkelp",
+      "line": "border",
+      "min_level": 47,
+      "level": 48,
+      "requires": [],
+      "title": "Stormkelp for the Field Kits",
+      "text": "My field kits are laid out for the next working parties, but I am short of one of the ingredients. Bring me eight Stormkelp; I will handle the preparation. It is much easier to finish a kit here than explain an empty compartment to someone who needs it.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_gathering:stormkelp",
+          "count": 8
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r20_anchor_028_host"
+          ],
+          "text": "My field kits are laid out for the next working parties, but I am short of one of the ingredients. Bring me eight Stormkelp; I will handle the preparation. It is much easier to finish a kit here than explain an empty compartment to someone who needs it."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r20_anchor_040_host"
+          ],
+          "text": "The recovery parties need field kits packed before they leave, and mine are waiting on Stormkelp. Bring me eight, and I will prepare it for them. I take good care of what comes back, but I would rather send fewer belongings home without their owners."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silk",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_sleek",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft F7: the host processes it; the second armor choice of Stormvault and Blackwind."
+    },
+    {
+      "id": "front_last_toll",
+      "line": "border",
+      "min_level": 49,
+      "level": 50,
+      "requires": [],
+      "title": "Party: Close the Toll",
+      "text": "{name:last_toll_construct} holds the {name:front_broken_causeway/toll_fields} on The Broken Causeway, threatening even travellers with nothing worth taking. Gather a group and break that elite construct, {dir_from_giver:last_toll_construct}. This is a separate undertaking for a prepared party; the repair crews have work enough without being sent under its feet.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_toll_construct"
+          ],
+          "count": 1
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r20_anchor_028_host"
+          ],
+          "text": "{name:last_toll_construct} holds the {name:front_broken_causeway/toll_fields} on The Broken Causeway, threatening even travellers with nothing worth taking. Gather a group and break that elite construct, {dir_from_giver:last_toll_construct}. This is a separate undertaking for a prepared party; the repair crews have work enough without being sent under its feet."
+        },
+        {
+          "zone": "kragmar_blackwind_rise",
+          "givers": [
+            "r20_anchor_040_host"
+          ],
+          "text": "{name:last_toll_construct} stalks the {name:front_broken_causeway/toll_fields} on The Broken Causeway, leaving travellers in need of recovery rather than a crossing. A willing group could do us a service by destroying it, {dir_from_giver:last_toll_construct}. Take a party fit to face an elite; I would like this particular recovery job to begin and end with pieces of the construct."
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t5"
+          },
+          {
+            "item": "grug_gear:apothecary_loop_t5"
+          },
+          {
+            "item": "grug_gear:reclaimers_mark_t5"
+          }
+        ]
+      },
+      "lesson": "An optional group quest: free, standalone, a trinket choice as its extra.",
+      "duration_min": 15,
+      "group": true,
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft F9: the optional group quest (as F8); replaces archshadow_front_04 and bw_front_hollow_03."
     }
   ]
 }

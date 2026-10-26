@@ -37,6 +37,7 @@ Y role table_leg
 Z role table_top
 a role wall
 b role window
+c role door_hidden o=facedir:1
 end
 
 layer -2
@@ -222,7 +223,7 @@ layer 6
 |...........|
 |...........|
 |...........|
-|..KabDbaK..|
+|..KacDbaK..|
 |..Z..G..Z..|
 |..Z.....Z..|
 |..Z.....Z..|

@@ -28,10 +28,9 @@ if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapge
 local parts = dofile(module_dir.."/../wp13/parts.lua")
 local rot = dofile(module_dir.."/../wp13/plot_approach.lua").rot
 local catalog = dofile(module_dir.."/r31_pvp_catalog.lua")
-local camps = dofile(module_dir.."/r58_camp_catalog.lua")
+local camp_blueprint = dofile(module_dir.."/r63_camp_blueprint.lua")
 
 local SIZE = {pvp_fortress={r=24,h=16}, pvp_camp_low={r=11,h=9}, pvp_camp_high={r=13,h=9}}
-local FACTION_OF = {dwarf="accord",human="accord",elf="accord",undead="throng",orc="throng",troll="throng"}
 -- Faction cloth: tents, banners and pennants carry the side's colour
 -- (grug_core.factions: Accord blue, Throng red).
 local CLOTH = {accord={main="wool:blue",trim="wool:white"},throng={main="wool:red",trim="wool:black"}}
@@ -48,29 +47,6 @@ local FORT = {
 		up="grug_decor:darkage_adobe",post="default:acacia_tree",floor="default:acacia_wood",
 		roof="default:desert_stonebrick",form="flat",fence="default:fence_acacia_wood"},
 }
--- The camps: race ground, timber and signature stone (wp13/palette.lua
--- `signature`), the race rug inside the command tent.
-local CAMP = {
-	dwarf={ground="default:dirt_with_coniferous_litter",yard="default:gravel",stone="default:stone_block",
-		wood="default:pine_wood",post="default:pine_tree",roof="stairs:slab_pine_wood",rug="wool:brown",
-		fence="default:fence_pine_wood"},
-	human={ground="default:dirt_with_grass",yard="default:gravel",stone="default:brick",
-		wood="default:wood",post="default:tree",roof="stairs:slab_wood",rug="wool:white",
-		fence="default:fence_wood"},
-	elf={ground="grug_nodes:dirt_with_silver_litter",yard="default:silver_sand",stone="grug_decor:darkage_marble",
-		wood="grug_trees:silverwood_wood",post="grug_trees:silverwood_tree",roof="grug_decor:darkage_slate_tile_slab",
-		rug="wool:white",fence="default:fence_aspen_wood"},
-	undead={ground="grug_nodes:dirt_with_bone_litter",yard="grug_nodes:blight_dirt",stone="default:obsidianbrick",
-		wood="grug_trees:gravewood_wood",post="grug_trees:gravewood_tree",roof="stairs:slab_obsidianbrick",
-		rug="wool:black",fence="default:fence_wood"},
-	orc={ground="default:dry_dirt_with_dry_grass",yard="default:dry_dirt",stone="grug_decor:darkage_adobe",
-		wood="default:acacia_wood",post="default:acacia_tree",roof="stairs:slab_desert_stonebrick",
-		rug="wool:orange",fence="default:fence_acacia_wood"},
-	troll={ground="default:dirt_with_rainforest_litter",yard="default:dirt",stone="grug_decor:darkage_basalt",
-		wood="default:junglewood",post="default:jungletree",roof="stairs:slab_junglewood",rug="wool:green",
-		fence="default:fence_junglewood"},
-}
-
 return function(options, profile)
 	local art = assert(profile and profile.art, "Round 31 PvP art missing")
 	local size = assert(SIZE[art.kind], "Round 31 PvP kind differs")
@@ -83,6 +59,7 @@ return function(options, profile)
 		race = art.race or catalog.camp_race(assert(options and options.raw_sha256,
 			"Round 31 PvP camp needs the SHA-256 seam"), assert(options.full_seed,
 			"Round 31 PvP camp needs the world seed"), profile.numeric_id, art.faction)
+		return camp_blueprint(options, profile, race)
 	end
 	local by_pos, structures, sockets = {}, {}, {}
 	local function key(x,y,z) return ((z+r)*(height+1)+y)*(2*r+1)+x+r end
@@ -292,129 +269,6 @@ return function(options, profile)
 		socket("quest_outrider","quest",7,-9,0,-1)
 		socket("vendor_quartermaster","vendor",19,0,-1,0,{kind="general"})
 		socket("travel_waypoint","waypoint",12,-12,0,1)
-	else
-		local c=assert(CAMP[race], "Round 31 PvP camp race differs")
-		assert(FACTION_OF[race]==art.faction, "Round 31 PvP camp race is not of its faction")
-		local high=art.kind=="pvp_camp_high"
-		fill(-r,0,-r,r,0,r,c.ground)
-		fill(-r,1,-r,r,height,r,"air")
-		-- Palisade: one ring of upright logs, every other one a node taller,
-		-- the gate three wide on local -z between two flag posts.
-		for z=-r,r do for x=-r,r do
-			if math.max(math.abs(x),math.abs(z))==r then
-				fill(x,1,z,x,3+(x+z)%2,z,c.post)
-			end
-		end end
-		fill(-1,1,-r,1,4,-r,"air")
-		for _,x in ipairs({-2,2}) do
-			put(x,1,-r,c.stone); fill(x,2,-r,x,5,-r,c.post); put(x,6,-r,"default:torch",1)
-		end
-		fill(-1,3,-r,-1,4,-r,cloth.main); fill(1,3,-r,1,4,-r,cloth.main)
-		record("palisade",0,0,r,r,5,"palisade")
-		-- The yard: trampled ground from the gate to the command tent.
-		fill(-1,0,-r,1,0,-r+3,c.yard)
-		fill(-6,0,-r+3,6,0,high and 4 or 3,c.yard)
-		-- A ridge tent of faction cloth along z: the courses step in one node
-		-- per course to a ridge `half`+1 high, the back closed, the front open.
-		local function tent(label,cx,z1,z2,half,kind)
-			record(label,cx,math.floor((z1+z2)/2),half,math.floor((z2-z1)/2),half+1,kind)
-			for z=z1,z2 do for dx=-half,half do put(cx+dx,half+1-math.abs(dx),z,cloth.main) end end
-			put(cx,half+1,z1,cloth.trim)
-			for dx=-half+1,half-1 do fill(cx+dx,1,z2,cx+dx,half-math.abs(dx),z2,cloth.main) end
-		end
-		-- The command tent and its standard, the captain before its door.
-		local ch=high and 4 or 3
-		local cz1,cz2=high and 5 or 4, high and 10 or 8
-		tent("command tent",0,cz1,cz2,ch,"command")
-		fill(-ch+1,0,cz1+1,ch-1,0,cz2-1,c.rug)
-		put(-ch+1,1,cz2-1,"grug_decor:xdecor_barrel"); put(ch-1,1,cz2-1,"grug_decor:xdecor_table")
-		pennant(ch+2,1,cz2,c.post,5)
-		-- Soldiers' tents in one row on the west side, all facing the gate.
-		local tx=high and -9 or -8
-		local rows=high and {{-6,-3},{0,3}} or {{-8,-5},{-2,1}}
-		for i,z in ipairs(rows) do
-			tent("soldiers' tent "..i,tx,z[1],z[2],2,"tent")
-			put(tx-1,1,z[2]-1,"grug_decor:cottages_straw_mat"); put(tx+1,1,z[2]-1,"grug_decor:cottages_straw_mat")
-		end
-		-- The shelter for own-faction players on the east side: a roofed,
-		-- open-fronted lean-to with bedrolls, a bench and a light.
-		local sx1,sx2,sz1,sz2=5,high and 11 or 10,high and -5 or -8,high and 3 or 1
-		record("shelter",math.floor((sx1+sx2)/2),math.floor((sz1+sz2)/2),
-			math.floor((sx2-sx1)/2),math.floor((sz2-sz1)/2),4,"shelter")
-		fill(sx2,1,sz1,sx2,3,sz2,c.wood)
-		fill(sx1+1,1,sz1,sx2,2,sz1,c.wood); fill(sx1+1,1,sz2,sx2,2,sz2,c.wood)
-		for _,z in ipairs({sz1,sz2}) do fill(sx1,1,z,sx1,3,z,c.post); fill(sx2,1,z,sx2,3,z,c.post) end
-		fill(sx1,4,sz1,sx2,4,sz2,c.roof)
-		fill(sx1+1,0,sz1+1,sx2-1,0,sz2-1,c.wood)
-		for z=sz1+1,sz2-1,2 do put(sx2-1,1,z,"grug_decor:cottages_straw_mat") end
-		put(sx1+1,1,sz2-1,"grug_decor:cottages_bench"); put(sx1+2,1,sz2-1,"grug_decor:cottages_bench")
-		put(sx2-1,1,sz2-1,"grug_decor:xdecor_lantern")
-		-- Supplies and a weapon rail by the command tent, a cooking place
-		-- opposite: no open fire, the camp's light is torches and lanterns.
-		local nz=high and 9 or 7
-		for _,q in ipairs({{-r+2,nz},{-r+3,nz},{-r+2,nz-1}}) do put(q[1],1,q[2],"grug_decor:xdecor_barrel") end
-		put(-r+2,2,nz,"grug_decor:xdecor_barrel")
-		fill(-r+2,1,nz-3,-r+4,1,nz-3,c.fence)
-		put(r-4,1,nz,"grug_decor:xdecor_cauldron")
-		for _,q in ipairs({{-1,0},{1,0},{0,-1},{0,1}}) do put(r-4+q[1],0,nz+q[2],c.stone) end
-		lamp(-4,-r+3,c.post); lamp(4,-r+3,c.post)
-		local captain_z=cz1-1
-		if high then
-			-- Two watchtowers by the gate: a deck on four posts, a railing
-			-- open over the ladder, a roof; the ladder on the inner side.
-			for _,cx in ipairs({-10,10}) do
-				local cz=-10
-				record("watchtower",cx,cz,1,1,8,"tower")
-				for _,dx in ipairs({-1,1}) do for _,dz in ipairs({-1,1}) do
-					fill(cx+dx,1,cz+dz,cx+dx,7,cz+dz,c.post)
-				end end
-				fill(cx,1,cz+1,cx,5,cz+1,c.post)
-				fill(cx-1,5,cz-1,cx+1,5,cz+1,c.wood)
-				for x=cx-1,cx+1 do put(x,6,cz-1,c.fence) end
-				put(cx-1,6,cz,c.fence); put(cx+1,6,cz,c.fence)
-				fill(cx-1,8,cz-1,cx+1,8,cz+1,c.roof)
-				for y=1,5 do put(cx,y,cz+2,"default:ladder_wood",5) end
-			end
-			-- Straw targets: a drill line inside the palisade.
-			for _,x in ipairs({-4,-2}) do put(x,1,nz+2,c.post); put(x,2,nz+2,"grug_decor:cottages_straw_bale") end
-			-- Round 47: the gate pair flank the gateway and face across it
-			-- (they faced the flag posts in the palisade, 0,-1); the tower
-			-- guards turn from their ladders to the camp.
-			socket("gate_west","guard_post",-2,-r+2,1,0,{tags={"gate"}})
-			socket("gate_east","guard_post",2,-r+2,-1,0,{tags={"gate"}})
-			socket("tower_west","guard_post",-10,-7,1,0,{tags={"camp"}})
-			socket("tower_east","guard_post",10,-7,-1,0,{tags={"camp"}})
-			socket("yard_west","guard_post",-5,captain_z,0,-1,{tags={"camp"}})
-		else
-			socket("gate_west","guard_post",-2,-r+2,1,0,{tags={"gate"}})
-			socket("gate_east","guard_post",2,-r+2,-1,0,{tags={"gate"}})
-			socket("yard_west","guard_post",-4,captain_z,0,-1,{tags={"camp"}})
-			socket("yard_east","guard_post",4,captain_z,0,-1,{tags={"camp"}})
-		end
-		socket("captain","captain",0,captain_z,0,-1)
-		-- Round 58: a war camp is a mining camp of its faction's Miner's Guild
-		-- too (round58-plan.md §2): on the open ground east of the command tent
-		-- the lift's headframe on a timber deck (the lift node at
-		-- `r58_camp_catalog.LIFT`, the cell the module turns with the camp),
-		-- the camp vendor beside it and the foreman west of the command tent.
-		-- The raid role, the garrison and the protection stay as they were.
-		local lift=assert(camps.LIFT[art.kind], "Round 58 war camp lift missing")
-		local lx,lz=lift.x,lift.z
-		fill(lx-1,0,lz-1,lx+1,0,lz+1,c.wood)
-		fill(lx-1,1,lz,lx-1,3,lz,c.post); fill(lx+1,1,lz,lx+1,3,lz,c.post)
-		fill(lx-1,4,lz,lx+1,4,lz,c.wood)
-		fill(lx,2,lz,lx,3,lz,c.fence)
-		-- param2 0: its front toward the gate (4dir, turned with the camp)
-		put(lx,1,lz,"grug_mapgen:guild_lift",0)
-		record("lift headframe",lx,lz,1,1,4,"lift")
-		socket("lift","lift",lx,lz,0,-1)
-		if high then
-			socket("vendor_camp","vendor",7,7,-1,0,{kind="camp"})
-			socket("quest_foreman","quest",-6,8,0,-1)
-		else
-			socket("vendor_camp","vendor",6,2,-1,0,{kind="camp"})
-			socket("quest_foreman","quest",-5,6,0,-1)
-		end
 	end
 
 	-- The anchor root and its yard stay open; nothing is authored onto them.

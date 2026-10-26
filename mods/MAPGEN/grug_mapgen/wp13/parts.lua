@@ -265,6 +265,8 @@ end
 
 -- Whole families whose every member is shaped.
 local PREFIX_KIND = {
+	["grug_mapgen:camp_"] = M.FACEDIR,
+	["grug_mapgen:faction_banner_"] = M.FACEDIR,
 	["stairs:"] = M.FACEDIR,
 	["doors:"] = M.FACEDIR,
 	["beds:"] = M.FACEDIR,

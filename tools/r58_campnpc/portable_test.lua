@@ -117,9 +117,11 @@ do
 			local socket = socket_of[camp.id .. "/quest_foreman"]
 			check(socket ~= nil and socket.role == "quest", "F " .. id .. " the socket is a quest socket")
 			-- Round 60 CAPITALS: the story's two foremen carry their names
-			-- (round60-plan.md §2a point 3); every other one is "Foreman".
+			-- (round60-plan.md §2a point 3), and since Round 61 chapter 3's
+			-- two (round61-plan.md §2a point 4); every other one is "Foreman".
 			local title = ({mining_camp_frostbarrow_shelf = "Brodd Deeppeg",
-				mining_camp_ossuary_reach = "Rellis Shalemark"})[camp.id] or "Foreman"
+				mining_camp_ossuary_reach = "Rellis Shalemark", mining_camp_ashenward_march = "Audra Wainholt",
+				mining_camp_bannerbreak_mesa = "Greda Stonehaul"})[camp.id] or "Foreman"
 			eq(npc.title, title, "F " .. id .. " titled " .. title)
 			eq(npc.role, "foreman_t" .. camp.tier, "F " .. id .. " the role of its tier")
 			eq(npc.faction, camp.faction, "F " .. id .. " of its camp's faction")

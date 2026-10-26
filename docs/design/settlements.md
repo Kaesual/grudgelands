@@ -698,7 +698,11 @@ other socket of the plot:
 
 `tools/r59_storyquests/portable_test.lua` checks each in its plot as the
 mapgen builds it and on seed 42's own chunks (air and headroom over walkable
-ground).
+ground). Since Round 62 three of them also take a front envoy's task
+([quests.md](quests.md) "The front 41–60"; another object or label, so the
+holds never credit each other): Dur Brannoc's loading apron (Dorrin's
+returned tools), Gor Drazhak's water depot (Thorga's front load) and Nhal
+Veyr's receiving court (Ossa's returned belongings).
 
 ### The band 21–30's town places (Round 60)
 
@@ -1101,7 +1105,7 @@ replace the prior no-outside-apron policy where it prevents access.
 Anchors 101–118 add the two faction fortresses (49 × 49, stone curtain wall,
 one gate, keep, barracks, the Quartermaster's store, armoury, drill yard and
 waystone pad) and the 16 Battlegrounds camps (23 × 23 pickets and 27 × 27
-war camps: palisade, faction-cloth tents, a command tent and a shelter,
+war camps: the fortified mining outpost described below,
 watchtowers at the war camps), built by `wp40/r31_pvp_poi_blueprint.lua`. A
 fortress registers as its faction's seat race (human, orc); a camp rolls one
 race of its faction per world and builds in that race's materials. Their
@@ -1111,9 +1115,30 @@ and a Quartermaster in a fortress, and the fortress waystone. Garrisons,
 levels and quests: [pvp.md](pvp.md) §6–§7; positions and protection:
 [world_zones.md](world_zones.md) §16.
 Since Round 58 every war camp is a mining camp of its faction's Miner's
-Guild too: its lift, foreman and camp vendor stand on the open ground beside
-the command tent (the sockets below); its garrison, raid role and protection
+Guild too: its lift, foreman and camp vendor occupy the shared mining
+outpost's markers (the sockets below); its garrison, raid role and protection
 are unchanged.
+
+## Round 63 mining outpost appearance
+
+All 36 completed camps use the twelve ordinary `mining_camp_<race>` and
+`mining_camp_<race>_large` templates, selected by `r63_camp_blueprint.lua`.
+The footprints remain 23 × 23 or 27 × 27; their headframes reach y=16.
+Stone plinths, log posts, recessed timber panels and a capped entrance
+make a protected outpost. The large camp retains two watchtowers.
+Canvas replaces bright faction wool; muted blue-grey and rust-red trims
+identify The Accord and The Throng. Their banner heraldry (three joined
+pillars under an arch; three tusks) is distinct from guild heraldry.
+The same faction symbol appears in the inventory header.
+
+Banner straps meet the visible cloth's upper edge and hook into the
+supporting timber. The headframe reuses each capital's guild-house design.
+The lift is at (-1,1,7) before rotation, with an unobstructed, full timber
+return deck at (-1,0,6). Its column also positions the underground rooms.
+All gameplay socket IDs and garrison roles remain stable. Construction
+sites retain their unfinished design. New art is reproducible with
+`tools/r63_camp_art/build.py`; the templates are frozen from the approved
+browser composition by `tools/r63_camps/build_templates.py`.
 
 ## Round 58 mining camps and camps under construction
 
@@ -1124,9 +1149,9 @@ both 23 × 23 and centred like the war camps):
 - **20 mining camps**, one in every level-11–40 zone outside the capital
   zones (6 T2, 8 T3, 6 T4). A camp belongs to the faction of its continent
   half (a contested T4 camp too) and builds from its zone's race palette: a
-  fence ring with a lit gate on every side, the lift's headframe on a timber
-  deck, the foreman's tent in faction cloth, the vendor's stall, ore heaps,
-  an ore cart and a timber stack. Two faction guards hold the gate, two more
+  fortified timber enclosure with one five-node entrance, canvas tents,
+  the capital guild house's headframe, vendor stall, ore and timber stacks.
+  Two faction guards hold the gate, two more
   the yard in a contested camp.
 - **6 camps under construction**, one in each contested T4 zone, built by
   the other faction (the race of the zone across the front): a palisade
@@ -1148,7 +1173,7 @@ CAMPNPC, LIFT and GUILDQUESTS):
 | `vendor_camp` | `vendor` | kind `camp` | the Camp Vendor (`grug_traders:vendor_camp`, of the camp's faction): buys like every vendor, opens on the Trade-in, repairs, and its Buy mode is the reputation page ([miners_guild.md](miners_guild.md) §5.2) |
 | `gate_west`, `gate_east` | `guard_post` | tag `gate` | faction guards (a mining camp's: the ordinary guards; a war camp's: its garrison) |
 | `yard_west`, `yard_east` | `guard_post` | tag `camp` | a contested mining camp's two further guards |
-| `held_load` | `quest_place` | – | a mining camp's (not a war camp's) town place on the loading ground between the stall and the ore heap (Round 60; nobody stands on it; only Frostbarrow's is named by a quest, chapter 2's A3, [quests.md](quests.md) "The band 21–30") |
+| `held_load` | `quest_place` | – | a mining camp's (not a war camp's) town place on the loading ground between the stall and the ore heap (Round 60; nobody stands on it; named by a quest in Frostbarrow, chapter 2's A3, [quests.md](quests.md) "The band 21–30", since Round 61 in Ashenward March, Bannerbreak Mesa, Blackwind Rise and Thunderroot Wilds, "The band 31–40", and since Round 62 in Stormvault Heights, "The front 41–60") |
 
 A camp under construction has `gate_west`, `gate_east` (tag `gate`),
 `yard_west`, `yard_east` (tag `camp`) and `captain` (role `captain`): the PvP

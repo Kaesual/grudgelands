@@ -1,5 +1,6 @@
 {
   "zone": "elandor_ashenward_march",
+  "reworked": true,
   "identity": "Ashenward March is the Accord's supply road to the front: a crooked quartermaster sells the rations, the ash woods walk at night, and a poacher marshal sells the March's game back to the army it was meant to feed.",
   "hubs": [
     {
@@ -9,7 +10,7 @@
         {
           "npc": "r20_anchor_031_host",
           "lines": [
-            "rations",
+            "border",
             "front"
           ]
         }
@@ -22,7 +23,7 @@
         {
           "npc": "r20_anchor_032_host",
           "lines": [
-            "hedge",
+            "border",
             "front"
           ]
         }
@@ -75,82 +76,191 @@
   ],
   "quests": [
     {
-      "id": "ashenward_rations_01",
-      "line": "rations",
-      "giver": "r20_anchor_031_host",
-      "turnin": "r20_anchor_031_host",
-      "min_level": 30,
-      "level": 31,
+      "id": "border_meal",
+      "line": "border",
+      "min_level": 31,
+      "level": 32,
       "requires": [],
-      "title": "Three Crates Out, Two Crates In",
-      "text": "Every third ration crate vanishes between the storehouse and the line, and my cooks are running out of ways to call hot water supper. Defeat five Ration Robbers at the {name:ration_camp} {dir_from_giver:ration_camp}, where our missing meals have found an appreciative audience. Someone is keeping those thieves very well supplied.",
+      "title": "A Meal Before the Road",
+      "text": "Every driver here is willing to leave at once, provided 'at once' comes after supper. Bring me eight Corn for the pot before the next run. I can get a great deal more work out of a full bowl than a stirring speech.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "entrenched_bandit"
+          "type": "item",
+          "item": "grug_gathering:corn",
+          "count": 8
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_031_host"
           ],
-          "count": 5,
-          "area": "elandor_ashenward_march/ration_camp"
+          "text": "Every driver here is willing to leave at once, provided 'at once' comes after supper. Bring me eight Corn for the pot before the next run. I can get a great deal more work out of a full bowl than a stirring speech."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_043_host"
+          ],
+          "text": "My ramp crews have a long shift ahead, and the breakfast pot is showing its bottom. Bring me eight Corn so they can eat before they lift another beam. Try hauling one on an empty stomach and you will understand my priorities."
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
+          }
+        ]
       },
-      "lesson": "A bandit camp in the first belt.",
-      "duration_min": 10
+      "lesson": "A shared errand, a level only; the zone's early potion choice.",
+      "duration_min": 8,
+      "notes": "Round 61 BANDQUESTS. Draft §3 'A Meal Before the Road': Corn for the crews before the next run (Toren, Drek)."
     },
     {
-      "id": "ashenward_rations_02",
-      "line": "rations",
+      "id": "border_reserve",
+      "line": "border",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "The Reserve Is for Them",
+      "text": "There is a replacement load on the loading ground at Ashenward Mining Camp, set aside for returning crews. Ready it for issue and report back to me. Some of those people have nothing dry left except the ration they are trying to swallow.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:mining_camp_ashenward_march/held_load",
+          "object": "held_supplies",
+          "label": "Ready the reserve load",
+          "hold": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "text": "There is a replacement load on the loading ground at Ashenward Mining Camp, set aside for returning crews. Ready it for issue and report back to me. Some of those people have nothing dry left except the ration they are trying to swallow."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "objectives": [
+            {
+              "place": "socket:mining_camp_bannerbreak_mesa/held_load"
+            }
+          ],
+          "text": "The reserve on the loading ground at Bannerbreak Mining Camp was promised to crews waiting on replacements. Ready that load for issue, then come back to me. I want the people under our banners to have their share while they can still use it."
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_scaled",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A shared use at the own mining camp's held load, once per faction; free, it needs neither Scrip nor the story; the first armor choice (one enchant, a prefix).",
+      "duration_min": 8,
+      "notes": "Round 61 BANDQUESTS. Draft §3 and §4.2/§4.5 'The Reserve Is for Them': a replacement load already set aside at the camp's loading ground, made ready for issue (Nella, Yarra)."
+    },
+    {
+      "id": "ashenward_buckets",
+      "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
       "min_level": 31,
       "level": 32,
-      "requires": [
-        "ashenward_rations_01"
-      ],
-      "title": "The Trees Can Pay for That",
-      "text": "At night, Charred Oaks roam the {name:cinderwood}, which lies {zone_area:cinderwood}, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
+      "requires": [],
+      "title": "A Barrel Is Not a Drinking Cup",
+      "text": "The water barrels have arrived, but half the queue is waiting for the other half to hand a bucket back. Bring me three Iron Buckets so we can share the water out properly. Empty ones will do; we have managed the wet part.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "rootbound_treant"
-          ],
-          "count": 5,
-          "area": "elandor_ashenward_march/cinderwood"
-        },
-        {
           "type": "item",
-          "item": "grug_mobs:bitter_resin",
-          "count": 2,
-          "roles": [
-            "rootbound_treant"
-          ],
-          "area": "elandor_ashenward_march/cinderwood"
+          "item": "grug_farming:empty_iron_bucket",
+          "count": 3
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_scaled",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Kill and drop request from the same outing.",
-      "duration_min": 12
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 61 BANDQUESTS. Free play, a level only."
     },
     {
       "id": "ashenward_rations_03",
-      "line": "rations",
+      "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
       "min_level": 32,
       "level": 33,
-      "requires": [
-        "ashenward_rations_02"
-      ],
-      "title": "The Account of {name:quartermaster_scrip}",
-      "text": "Our own supply seal is on those stolen crates: {name:quartermaster_scrip} has been selling the line's supper out from under it. Find the quartermaster at the {name:ration_camp} {dir_from_giver:quartermaster_scrip} and defeat them. There are soldiers scraping empty bowls while that ledger balances beautifully.",
+      "requires": [],
+      "title": "The Account of Quartermaster Scrip",
+      "text": "{name:quartermaster_scrip} is selling our rations under The Accord's own supply seal at the {name:ration_camp}, {dir_from_giver:quartermaster_scrip}. His books say the meals were issued, and my drivers are scraping empty bowls. Kill him and bring me word. I cannot feed a crew on his sums.",
+      "completion": "Scrip's figures never explained an empty bowl, and now he will sell no more meals out from under us. Requisition Clerk Odren Vell is taking over the convoy books. I will keep counting what actually reaches the pot.",
       "objectives": [
         {
           "type": "kill",
@@ -161,25 +271,63 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:wand_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Normal named leader; the climax resolves the first quest's theft.",
+      "lesson": "The zone's solo quest; the weapon choice (prefix and suffix).",
       "duration_min": 10,
-      "climax": true
+      "notes": "Round 61 BANDQUESTS. The id stays (round61-plan.md §2 point 2: A5's free prerequisite); free, it requires nothing; its one Accord follow-up is A5. The zone's weapon (§2a point 6)."
     },
     {
       "id": "ashenward_road_stormvault",
-      "line": "rations",
+      "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 32,
-      "level": 33,
-      "requires": [
-        "ashenward_rations_03"
-      ],
-      "title": "Bread for the Mountain Watch",
-      "text": "Take word to Borin Splitbolt at Splitbolt Station in Stormvault Heights: the March road is clear and his supplies can move again. Ask what needs doing while you're there; Borin won't send a useful pair of hands home idle. Between his passes and Faeris's woods in Glassroot Wilds, there's work enough for both journeys.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "Splitbolt Needs Hands",
+      "text": "Borin Splitbolt at Splitbolt Station in Stormvault Heights needs hands to keep his work going. Go and speak to him; his crews help keep the route usable for our loads. If he says a repair can wait until after supper, make certain you heard him correctly.",
       "objectives": [
         {
           "type": "talk",
@@ -187,24 +335,22 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Contested circuit: the three zones carry the band together.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "ashenward_road_glassroot",
-      "line": "rations",
+      "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_036_host",
-      "min_level": 32,
-      "level": 33,
-      "requires": [
-        "ashenward_rations_03"
-      ],
-      "title": "An Answer for Faeris",
-      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds has had nothing from my carts lately but apologies. Tell her the barrels are rolling again, and ask where she needs help. I've work for you in Stormvault Heights as well; the forest and the mountain are keeping this same army on its feet.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "The Grown Road",
+      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds has carriers waiting for the same supplies I am trying to send. Go and ask what she needs to keep their paths usable. A load can have every stamp on it and still need someone to carry it the last stretch.",
       "objectives": [
         {
           "type": "talk",
@@ -212,24 +358,22 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Contested circuit: the three zones carry the band together.",
-      "duration_min": 10
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "ashenward_road_last_hedge",
-      "line": "rations",
+      "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_032_host",
-      "min_level": 34,
-      "level": 34,
-      "requires": [
-        "ashenward_rations_03"
-      ],
-      "title": "One More Pair of Hands",
-      "text": "Nella Hedgeward at Last Hedge Redoubt keeps the last post before the front standing by sheer refusal to leave it. Report to her when you're ready for the harder fighting. Her last request was for timber, food and people who could think on their feet; I can at least send her you.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "Who Comes Back to Last Hedge",
+      "text": "Nella Hedgeward at Last Hedge Redoubt is waiting on crews as well as deliveries. Speak to her about the help she needs. I count portions before a cart leaves; she knows who is there to eat them when it arrives.",
       "objectives": [
         {
           "type": "talk",
@@ -237,138 +381,22 @@
         }
       ],
       "rewards": {
-        "weight": 1,
-        "items": []
+        "weight": 1
       },
-      "lesson": "Handoff to the zone's second outpost and its harder ground.",
-      "duration_min": 10
-    },
-    {
-      "id": "ashenward_hedge_01",
-      "line": "hedge",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 34,
-      "level": 35,
-      "requires": [],
-      "title": "Honey Is Not Worth a Driver",
-      "text": "The Bruins in the {name:hedgewood}, which lies {zone_area:hedgewood}, have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill four of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_bear"
-          ],
-          "count": 4,
-          "area": "elandor_ashenward_march/hedgewood"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Heavy hitters by day in the middle belt.",
-      "duration_min": 10
-    },
-    {
-      "id": "ashenward_hedge_webs",
-      "line": "hedge",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 35,
-      "level": 36,
-      "requires": [
-        "ashenward_hedge_01"
-      ],
-      "title": "Webs Across the Wagon Road",
-      "text": "With the bears thinned, Ash Widows take the {name:hedgewood} at night and string our wagon road shut, horses and all. Kill four of them after dark. Cut the drivers loose first if you find any; the spiders will wait, they always do.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "briar_web_spider"
-          ],
-          "count": 4,
-          "area": "elandor_ashenward_march/hedgewood"
-        }
-      ],
-      "rewards": {
-        "weight": 2.5,
-        "items": []
-      },
-      "lesson": "Same wood, night roster: the middle belt holds the hedge line between 34 and 37.",
-      "duration_min": 10
-    },
-    {
-      "id": "ashenward_hedge_02",
-      "line": "hedge",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "ashenward_hedge_webs"
-      ],
-      "title": "A Uniform Is Not a Target",
-      "text": "Hedge Bowmen at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Keep low on the approach; I'd rather read your report than have you delivered as one.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "entrenched_bandit_archer"
-          ],
-          "count": 5,
-          "area": "elandor_ashenward_march/coalbrand_yard"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Ranged camp at the top of the zone.",
-      "duration_min": 12
-    },
-    {
-      "id": "ashenward_hedge_03",
-      "line": "hedge",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 37,
-      "level": 39,
-      "requires": [
-        "ashenward_hedge_02"
-      ],
-      "title": "The Price of an Empty Pot",
-      "text": "Wartrail Poachers at the {name:poacher_camp} {dir_from_giver:poacher_camp} take the March's game, then charge our cooks whatever desperation will bear. Defeat five of them and break their hold on the hunting grounds. Their marshal signs every sale, as though neat handwriting could make this honest.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "wartrail_poacher"
-          ],
-          "count": 5,
-          "area": "elandor_ashenward_march/poacher_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "lesson": "Second camp of the top belt; seeds the group climax.",
-      "duration_min": 12
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 8,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
       "id": "ashenward_hedge_04",
-      "line": "hedge",
+      "line": "border",
       "giver": "r20_anchor_032_host",
       "turnin": "r20_anchor_032_host",
       "min_level": 38,
       "level": 39,
-      "requires": [
-        "ashenward_hedge_03"
-      ],
-      "title": "Party: The Last Receipt",
-      "text": "{name:red_receipt_marshal} still runs the trade from the {name:poacher_camp} {dir_from_giver:red_receipt_marshal}, signing away our soldiers' supper in red ink. Gather a party and kill the elite marshal; I've written enough letters this season without starting one about you. Bring everyone back, and the first supper he can no longer sell is yours.",
+      "requires": [],
+      "title": "Party: The Marshal's Receipts",
+      "text": "{name:red_receipt_marshal} trades in stolen provisions at the {name:poacher_camp}, then offers to sell them back to the people he robbed. Gather a group and kill him, {dir_from_giver:red_receipt_marshal}. The receipts must look very respectable to anyone who did not see the arrows.",
       "objectives": [
         {
           "type": "kill",
@@ -380,12 +408,64 @@
       ],
       "rewards": {
         "weight": 6,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t4"
+          },
+          {
+            "item": "grug_gear:apothecary_loop_t4"
+          },
+          {
+            "item": "grug_gear:reclaimers_mark_t4"
+          }
+        ]
       },
-      "lesson": "Elite climax for a group; the route reaches 40 without it.",
+      "lesson": "The optional group quest: free, standalone, a trinket choice as its extra.",
       "duration_min": 15,
-      "climax": true,
-      "group": true
+      "group": true,
+      "optional": true,
+      "notes": "Round 61 BANDQUESTS. The optional group quest (round61-plan.md §2 point 8): free, standalone (the poacher hunt before it is gone), a trinket choice as its extra; no story proof lies with him."
+    },
+    {
+      "id": "story_accord_05",
+      "line": "border",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r58_foreman_mining_camp_ashenward_march",
+      "min_level": 34,
+      "level": 35,
+      "requires": [
+        "story_accord_04",
+        "ashenward_rations_03"
+      ],
+      "story": true,
+      "title": "Every Hand on the Road",
+      "text": "Scrip is finished, but the transport attacked on its run through the {name:wheelbreak} still needs a proper account. The drivers brought back salvage and wounded, yet the loss sheet tells me only what did not arrive. Secure their transport record at the {name:broken_load}, {dir_from_giver:broken_load}, and take it to Audra Wainholt, the foreman at Ashenward Mining Camp. She knows the crews; I want their work counted before we decide what help to send.",
+      "completion": "These drivers hauled wounded people home with the material they could save; I will put that beside the losses in our account. Their waiting crews still need tools and supplies, and the drivers need relief. With those needs recorded, I can arrange the right help with Toren instead of sending another load on a guess.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "broken_load",
+          "object": "dispatch_record",
+          "label": "Secure the transport record",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t4",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t4",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "Chapter 3 of the story arc (story, may chain).",
+      "duration_min": 12,
+      "notes": "Round 61 BANDQUESTS. A5 (story, 34): requires A4 and Scrip's free quest (its one Accord follow-up); turned in at the Ashenward mining camp's foreman, titled Audra Wainholt (K12 A)."
     },
     {
       "id": "accord_main_impounded",
@@ -395,8 +475,10 @@
       "min_level": 41,
       "level": 42,
       "requires": [],
+      "story": true,
       "title": "Bring Me the Account",
       "text": "A Causeway convoy's pay was impounded at {name:r20_anchor_071}, {dir_from_giver:r20_anchor_071}, and the clerk who sealed it will not go near it again: the purse is still warm. Unseal it and take what you find to Toren Waterbarrel at Cinderline Watch; the pay was meant for his drivers. Bring me the account. I already have enough accusations.",
+      "completion": "Audra Wainholt's needs list from Ashenward Mining Camp names the drivers and camp crews this pay was meant to reach; their tools and provisions are still due. The box was stopped before anyone took those coins as wages, but that stamp gives me no trustworthy sender. I know who handles our convoys, so I'll follow the bundles through the Causeway toll collectors.",
       "objectives": [
         {
           "type": "use",
@@ -408,7 +490,16 @@
       ],
       "rewards": {
         "weight": 2,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t5",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t5",
+            "count": 2
+          }
+        ]
       },
       "lesson": "Main line, chapter 1 (41): the Warmaster's first order; a use at Ashenward March's clash site, turned in at Cinderline Watch.",
       "duration_min": 10,
@@ -426,8 +517,10 @@
       "requires": [
         "accord_main_accounts"
       ],
+      "story": true,
       "title": "The Price of a Salute",
       "text": "The Throng's seal warrants an inquiry; an Undead body proves nothing about who paid it. Nella Hedgeward reports that the dead on The Shattered Line rally to a standard pledged against the same warm coin. Defeat three Brandbound Collectors after dark in the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and unpick the pledged standard at {name:r20_anchor_082}. Report to Nella at Last Hedge Redoubt with what the stitching reveals.",
+      "completion": "This stitching pledges the soldiers under the banner against another payment; every renewal calls them back. Ninepins holds that muster together, though the pledge says nothing of who first supplied his coin. I know the breach he rallies them at, and I have a task for you there.",
       "objectives": [
         {
           "type": "kill",
@@ -446,8 +539,7 @@
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 3.5
       },
       "lesson": "Main line, chapter 2 (46): the opener; a corrupted sub-type in the Shattered Line trenches by night and a use at its clash site, turned in at Last Hedge Redoubt.",
       "duration_min": 15,
@@ -465,8 +557,10 @@
       "requires": [
         "lasthedge_front_04"
       ],
+      "story": true,
       "title": "Read Before Accusing",
       "text": "Ninepins pledged his standard against the next payment, and The Throng's high war camp sits on the same line, but a seal does not tell us whose hand pressed it. Defeat {captain:pvp_camp_shattered_line_throng_high} at the {name:pvp_camp_shattered_line_throng_high}, which lies {zone_area:pvp_camp_shattered_line_throng_high}, and bring me the Throng Captain's Orders. I want their own words before I accuse them of anything.",
+      "completion": "These orders hunt the soot factors and record The Throng's own soldiers burned by seized pay; they overturn our easy accusation. The seized bundles used genuine Ashenward forms countersigned by Requisition Clerk Odren Vell, who kept our convoy books. His signature puts our office under suspicion; I will order an examination of his courier ledger before calling it proof.",
       "objectives": [
         {
           "type": "item",
@@ -489,8 +583,7 @@
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 3
       },
       "lesson": "Main line, chapter 2 (47): behind the lines, solo; the captain of the enemy war camp on The Shattered Line drops his orders (quest drop).",
       "duration_min": 20,
@@ -508,8 +601,10 @@
       "requires": [
         "accord_main_orders"
       ],
+      "story": true,
       "title": "A Quiet Audit",
       "text": "Their orders hunt the same soot factors and list their own soldiers burned by the seized pay, which came wrapped in genuine Ashenward requisitions countersigned by Requisition Clerk Odren Vell. The false seal of The Throng was stamped on our own paper. This finding stays under seal; The Throng must not learn whose office supplied it. Copy Vell's courier ledger at {name:elandor_glassroot_wilds/couriers_stump}, {dir_of:r20_anchor_036:elandor_glassroot_wilds/couriers_stump}, bring the copy to me and nobody else, and come back for your next orders when you can hold your own on Gravesalt's salt.",
+      "completion": "Vell's ledger confirms that he used his authority over our convoy books to supply this payment scheme; I am sealing the proof under my own responsibility. The Charter of Stone will receive the corrections, and Audra Wainholt at Ashenward Mining Camp will hold the suspect pay while proper wages, replacement tools and provisions continue. Vell's trail leads into Gravesalt, but we have not found where it ends; return to me for orders when you are ready to follow it to Borin Splitbolt's investigation.",
       "objectives": [
         {
           "type": "use",
@@ -520,8 +615,7 @@
         }
       ],
       "rewards": {
-        "weight": 2,
-        "items": []
+        "weight": 2
       },
       "lesson": "Main line, chapter 2 (last turn-in): the traitor named; a use at Glassroot Wilds' quest place.",
       "duration_min": 15,
@@ -539,8 +633,10 @@
       "requires": [
         "accord_main_audit"
       ],
+      "story": true,
       "title": "Following Vell's Pay",
       "text": "Odren Vell took over the convoy books after Quartermaster Scrip fell, then left last season 'to settle arrears', without saying whose. His courier ledger traces branded pay to the Saltroad Deserters in Gravesalt Escarpment, whose Debtjaw Hounds carry the same ember stain. Kill four Debtjaw Hounds by day in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Report to Borin Splitbolt at Splitbolt Station in Stormvault Heights; he is following the payments into the Last Watch.",
+      "completion": "The hounds were guarding the same ground the pay route crosses; now we can follow it towards Huskell's watch. I still need his roll to learn whose names that money keeps on duty. Come back to me when you can face the Last Watch; meanwhile, I have salvage work that needs doing without waking its captain.",
       "objectives": [
         {
           "type": "kill",
@@ -553,7 +649,16 @@
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t6",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t6",
+            "count": 2
+          }
+        ]
       },
       "lesson": "Main line, chapter 3 (53): the Warmaster's opener, a corrupted sub-type in the Tombwood by day, turned in at Splitbolt Station.",
       "duration_min": 15,
@@ -571,6 +676,7 @@
       "requires": [
         "accord_main_orders"
       ],
+      "story": true,
       "title": "Party: Stonegrudge's Inquiry",
       "text": "The captain's orders put War Commander Stonegrudge in charge of The Throng's hunt for the factors, from the {name:pvp_camp_gravesalt_escarpment_throng_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_throng_high}. A rival inquiry is no invitation to share intelligence, least of all one heading for our requisition office. Gather a party and defeat him among his garrison; he is an elite commander, and I expect a plan that accounts for everyone coming back.",
       "objectives": [
@@ -585,7 +691,17 @@
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t6"
+          },
+          {
+            "item": "grug_gear:battlebeat_t6"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t6"
+          }
+        ]
       },
       "lesson": "Optional group elite: the war commander the orders name, at his camp's level (raids there open at 57).",
       "duration_min": 15,
@@ -602,8 +718,10 @@
       "requires": [
         "accord_main_tally"
       ],
+      "story": true,
       "title": "Party: The Collector Comes Due",
       "text": "I entered Odren Vell in the Bastion's roll anyway, with the cause beside his name: \"Every name accounted for. His too.\" Gather a party of two or three and defeat Isquarre the Tithe-Eater at {name:r20_anchor_077}, {dir_from_giver:r20_anchor_077}, where the unsecured debt has given its collector a body of slag and ash. Secure the site before The Throng claims authority over it; our own account of this affair will remain under seal.",
+      "completion": "Your group broke Isquarre's body and denied him the names; I cannot enter the Undertithe itself among our defeated enemies. Stay for the final accounting with me. The wages, the deliveries and the people you brought back into the record still need someone to answer for them.",
       "objectives": [
         {
           "type": "kill",
@@ -614,8 +732,7 @@
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 5
       },
       "lesson": "Main line, the finale (60): the rift boss at Tombroad Ambush, for a group of two or three.",
       "duration_min": 20,
@@ -635,8 +752,10 @@
       "requires": [
         "accord_main_collector"
       ],
+      "story": true,
       "title": "Every Name Accounted For",
       "text": "Isquarre broke at {name:r20_anchor_077}, but the crack did not, and a collector who loses his body keeps the debt. I have sealed your report with the names you brought back, the clerk's among them. We closed his account. Beneath us, someone turned a fresh page.",
+      "completion": "Audra Wainholt at Ashenward Mining Camp will see honest pay and replacement supplies through with The Charter of Stone, and the recovered names stay in the Bastion's care, Odren Vell's with his guilt written beside it and none of them left for Isquarre to collect. We closed his account. Beneath us, someone turned a fresh page.",
       "objectives": [
         {
           "type": "talk",
@@ -645,13 +764,509 @@
       ],
       "rewards": {
         "weight": 1,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:wand_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
       "lesson": "Main line, the last Warmaster turn-in (the achievement counts this id).",
       "duration_min": 2,
       "tags": [
         "accord_main"
       ]
+    },
+    {
+      "id": "front_potatoes",
+      "line": "border",
+      "min_level": 41,
+      "level": 42,
+      "requires": [],
+      "title": "Seed for the Trampled Plots",
+      "text": "The outposts' growing plots have been trampled flat, and every empty row means another meal my carts must haul. Bring me eight Potatoes to set aside for planting. I have labelled the sack twice; the cooks are very persuasive when they see an unattended potato.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_gathering:potato",
+          "count": 8
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_031_host"
+          ],
+          "text": "The outposts' growing plots have been trampled flat, and every empty row means another meal my carts must haul. Bring me eight Potatoes to set aside for planting. I have labelled the sack twice; the cooks are very persuasive when they see an unattended potato."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_043_host"
+          ],
+          "text": "We have crews willing to plant behind the ramps if I can find them something to put in the ground. Bring me eight Potatoes for seed. Let the next thing we dig out of that soil be supper for a change."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_alchemy:potion_healing_t5",
+            "count": 2
+          },
+          {
+            "item": "grug_alchemy:potion_mana_t5",
+            "count": 2
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 8,
+      "notes": "Round 62 FRONTQUESTS. Draft F1, the check's fix: another purpose than border_meal (Corn, the same givers): seed for the field plots, not a meal; the early potion choice."
+    },
+    {
+      "id": "front_return_light",
+      "line": "border",
+      "min_level": 42,
+      "level": 43,
+      "requires": [],
+      "title": "A Beacon for Tired Eyes",
+      "text": "My carters come back watching their wheels, and by dusk they can miss a stopping place with a sign as big as the cart. Light the return lantern at the {name:front_broken_causeway/return_stand} so they can pick out the stand. I'll settle for everyone arriving with the same number of wheels they left with.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "front_broken_causeway/return_stand",
+          "object": "signal_lantern",
+          "label": "Light the return lantern",
+          "hold": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_031_host"
+          ],
+          "text": "My carters come back watching their wheels, and by dusk they can miss a stopping place with a sign as big as the cart. Light the return lantern at the {name:front_broken_causeway/return_stand} so they can pick out the stand. I'll settle for everyone arriving with the same number of wheels they left with."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_043_host"
+          ],
+          "text": "The returning crews need a clear mark to make for when the Causeway starts losing its colour. Light the lantern prepared at the {name:front_broken_causeway/return_stand}. They have spent the day finding work with their hands; let their eyes have an easier job on the way back."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_silk",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_sleek",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft F2: a use at the new recipe place P1 (the Causeway's floodmeadows); the first armor choice of Ashenward and Bannerbreak."
+    },
+    {
+      "id": "front_relief_count",
+      "line": "border",
+      "min_level": 43,
+      "level": 44,
+      "requires": [],
+      "title": "Who Is Still Out There?",
+      "text": "I have a list of crews sent out and three different accounts of who came back. Check the returns at the {name:front_shattered_line/relief_rest} and record which working parties have reported in. I need to send relief to the people still waiting for it, not to a name someone forgot to cross off.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "front_shattered_line/relief_rest",
+          "object": "witness_record",
+          "label": "Record who has reported back",
+          "hold": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "text": "I have a list of crews sent out and three different accounts of who came back. Check the returns at the {name:front_shattered_line/relief_rest} and record which working parties have reported in. I need to send relief to the people still waiting for it, not to a name someone forgot to cross off."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "text": "A promised relief is no good to a crew until somebody actually arrives. Record the returns at the {name:front_shattered_line/relief_rest}, so I can see which parties are accounted for and which are still waiting. I want the next shift to begin with fresh shoulders under the load."
+        }
+      ],
+      "rewards": {
+        "weight": 3
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft F4: a use at the new recipe place P2 (the Shattered Line's approaches)."
+    },
+    {
+      "id": "front_ford_salvage",
+      "line": "border",
+      "min_level": 44,
+      "level": 45,
+      "requires": [],
+      "title": "What the Ford Kept",
+      "text": "A stranded load at {name:r20_anchor_079} still has tools and stores worth bringing back. Secure the usable bundles there and let me know they are ready for recovery. I would prefer to write down what we saved before somebody hands me a grand total of what we lost.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_079",
+          "object": "held_supplies",
+          "label": "Secure the stranded load",
+          "hold": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_031_host"
+          ],
+          "text": "A stranded load at {name:r20_anchor_079} still has tools and stores worth bringing back. Secure the usable bundles there and let me know they are ready for recovery. I would prefer to write down what we saved before somebody hands me a grand total of what we lost."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_043_host"
+          ],
+          "text": "There is freight at {name:r20_anchor_079} that my crews could still put to work, if the water does not get it first. Secure the stranded load there. A drowned tool will never tell you it would rather be digging, so I am speaking for it."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:wand_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 12,
+      "notes": "Round 62 FRONTQUESTS. Draft F3: a use at the free clash site 079; the weapon of Ashenward and Bannerbreak (a solo quest)."
+    },
+    {
+      "id": "front_salt_stores",
+      "line": "border",
+      "min_level": 44,
+      "level": 45,
+      "requires": [],
+      "title": "Salt for the Stores",
+      "text": "A delayed cart is troublesome enough without the food spoiling before it reaches us. Bring me six Salt Crust for the front's stores; The Shattered Line is one place to gather it. The watch deserves provisions that can survive a little waiting.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_cooking:salt_crust",
+          "count": 6
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "text": "A delayed cart is troublesome enough without the food spoiling before it reaches us. Bring me six Salt Crust for the front's stores; The Shattered Line is one place to gather it. The watch deserves provisions that can survive a little waiting."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "text": "I have promised the crews their share of the stores, and I intend that share to be edible. Bring me six Salt Crust to help keep it until the next delivery. Hunger waits badly, but spoiled food is worse at keeping promises."
+        }
+      ],
+      "rewards": {
+        "weight": 3
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft F5: Salt Crust (the Shattered Line, or a salt pan)."
+    },
+    {
+      "id": "front_old_wire",
+      "line": "border",
+      "min_level": 48,
+      "level": 49,
+      "requires": [],
+      "title": "Cut the Old Wire",
+      "text": "Old snare wire at {name:r20_anchor_083} still catches the people carrying supplies through. Cut it clear of their passage. I have enough injuries to account for without adding another caused by a trap whose owner has long since stopped checking it.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_083",
+          "object": "snare_bundle",
+          "label": "Cut the old snare wire",
+          "hold": 4
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "text": "Old snare wire at {name:r20_anchor_083} still catches the people carrying supplies through. Cut it clear of their passage. I have enough injuries to account for without adding another caused by a trap whose owner has long since stopped checking it."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "text": "Our carriers have found old snares across their way at {name:r20_anchor_083}. Cut the wire before another loaded worker steps into it. Those hands are needed on the load, not picking metal out of someone's leg."
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_silk",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_sleek",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft F6: a use at the free clash site 083 (late in the zone); the second armor choice of Ashenward and Bannerbreak."
+    },
+    {
+      "id": "front_engine_nine",
+      "line": "border",
+      "min_level": 49,
+      "level": 50,
+      "requires": [],
+      "title": "Party: Stop the Grinding",
+      "text": "{name:siege_engine_nine} is still grinding through The Shattered Line, threatening the crews trying to carry supplies and recover what is usable. Gather a group and destroy it, {dir_from_giver:siege_engine_nine}. This is an extra undertaking for a willing party; I will keep the ordinary work moving while it is arranged.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_engine_nine"
+          ],
+          "count": 1
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "text": "{name:siege_engine_nine} is still grinding through The Shattered Line, threatening the crews trying to carry supplies and recover what is usable. Gather a group and destroy it, {dir_from_giver:siege_engine_nine}. This is an extra undertaking for a willing party; I will keep the ordinary work moving while it is arranged."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "text": "I can promise a crew supplies; I cannot ask them to stand in front of {name:siege_engine_nine} to collect them. If you have a group willing to take on an elite, destroy it on The Shattered Line, {dir_from_giver:siege_engine_nine}. Everyone else will keep to the supply work; the machine needs a party sent for that purpose."
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "choices": [
+          {
+            "item": "grug_gear:manawell_t5"
+          },
+          {
+            "item": "grug_gear:battlebeat_t5"
+          },
+          {
+            "item": "grug_gear:mercy_seal_t5"
+          }
+        ]
+      },
+      "lesson": "An optional group quest: free, standalone, a trinket choice as its extra.",
+      "duration_min": 15,
+      "group": true,
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft F8: the optional group quest (below 51: free, standalone, a trinket choice as its extra, never the key reward); replaces lasthedge_front_05 and bb_front_torn_06."
+    },
+    {
+      "id": "front_beyond_line",
+      "line": "border",
+      "min_level": 50,
+      "level": 50,
+      "requires": [],
+      "title": "Work Beyond the Line",
+      "text": "Borin Splitbolt is arranging salvage work in Gravesalt, and he needs people who will check a footing before trusting it with a load. Speak to him at Splitbolt Station in Stormvault Heights. Tell him I would like his crews to come home carrying the salvage, rather than each other.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_ashenward_march",
+          "givers": [
+            "r20_anchor_032_host"
+          ],
+          "turnins": [
+            "r20_anchor_027_host"
+          ],
+          "text": "Borin Splitbolt is arranging salvage work in Gravesalt, and he needs people who will check a footing before trusting it with a load. Speak to him at Splitbolt Station in Stormvault Heights. Tell him I would like his crews to come home carrying the salvage, rather than each other."
+        },
+        {
+          "zone": "elandor_stormvault_heights",
+          "givers": [
+            "r20_anchor_028_host"
+          ],
+          "turnins": [
+            "r20_anchor_027_host"
+          ],
+          "text": "Borin Splitbolt has crews preparing for salvage work in Gravesalt and needs help checking the ground and getting them supplied. Go and speak to him at Splitbolt Station. His reports usually tell me both what can be lifted and what ought to be left alone, which is more useful than enthusiasm."
+        },
+        {
+          "zone": "kragmar_bannerbreak_mesa",
+          "givers": [
+            "r20_anchor_044_host"
+          ],
+          "turnins": [
+            "r20_troll_capital_envoy"
+          ],
+          "objectives": [
+            {
+              "npc": "r20_troll_capital_envoy"
+            }
+          ],
+          "text": "Nalo Pathdrum has carriers working the Skyglass routes, and they need food, clear messages and ground they can trust. Go and speak to him in Kezamba. A load promised to the front still needs people to carry it, and he remembers that when he asks for help."
+        }
+      ],
+      "rewards": {
+        "weight": 1
+      },
+      "lesson": "A travel quest, free (a level only): a departure to a giver with work at once.",
+      "duration_min": 10,
+      "notes": "Round 62 FRONTQUESTS. Draft F10: the free departure at 50 (Nella or Alna to Borin, Yarra to Nalo), one title and one level; replaces lasthedge_front_06, archshadow_front_05 and bb_front_torn_07."
     }
   ]
 }

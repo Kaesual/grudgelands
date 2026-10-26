@@ -1,6 +1,182 @@
 {
   "zone": "elandor_dur_brannoc",
+  "reworked": true,
   "quests": [
+    {
+      "id": "durbrannoc_returned_tools",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 45,
+      "level": 46,
+      "requires": [],
+      "title": "Count the Tools Back In",
+      "text": "A load of tools has come back from the front, and its dispatch record is waiting at the forge yard's loading apron here in Dur Brannoc. Check the returned load against that record so I can arrange repairs and replacements. 'Most of it' may satisfy a carter in a hurry; it does not tell a smith how many handles to fit.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "socket:dur_brannoc/forge_ore_yard/forge_ore_yard_loading_apron",
+          "object": "dispatch_record",
+          "label": "Check the returned tools",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silk",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_sleek",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft DO1 (K1 A): the town place of Dur Brannoc's forge yard (chapter 1's, another label); the Accord's third 41-50 giver (capitals are budget-exempt)."
+    },
+    {
+      "id": "durbrannoc_labels",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 46,
+      "level": 47,
+      "requires": [],
+      "title": "Readable in the Rain",
+      "text": "The front sends back labels with the destination rubbed off and the word 'urgent' wonderfully preserved. Bring me ten sheets of Paper for fresh labels on the tools and supplies. I intend to send the next load somewhere more precise than Urgent.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:paper",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:head_cloth_silk",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_leather_sleek",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:head_metal_embersteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 8,
+      "notes": "Round 62 FRONTQUESTS. Draft DO2: Paper, a Basic recipe."
+    },
+    {
+      "id": "durbrannoc_last_step",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 48,
+      "level": 49,
+      "requires": [],
+      "title": "A Footing for Repairs",
+      "text": "The repair crews need to know where the damaged aqueduct can still support their work. Use the sighting frame at {name:r20_anchor_080} to judge the last sound footing, and report your findings to me. I can arrange tools and hands from Dur Brannoc once I know they have somewhere to stand.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "r20_anchor_080",
+          "object": "sighting_frame",
+          "label": "Sight the last sound step",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "choices": [
+          {
+            "item": "grug_gear:staff_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_embersteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 12,
+      "notes": "Round 62 FRONTQUESTS. Draft DO3: a use at the free clash site 080; Dur Brannoc's weapon (a solo quest)."
+    },
     {
       "id": "durbrannoc_front_01",
       "line": "front",
@@ -68,9 +244,7 @@
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 60,
       "level": 60,
-      "requires": [
-        "accord_main_roll"
-      ],
+      "requires": [],
       "title": "Optional: No Claim on the Crown",
       "text": "A branded coin has been wedged into the survey cairn at {name:r20_anchor_075} on The Wyrmglass Crown, as though a capstone could sign away an island. Take a boat from the Shipwright at our stables, follow the shelf and channel, and pry the brand-coin out of the cairn. The clan paid for a survey; it did not authorise a sale.",
       "objectives": [
@@ -89,7 +263,8 @@
       },
       "lesson": "Optional island extension of the main line (chapter 3 on): one use, coin only.",
       "duration_min": 30,
-      "optional": true
+      "optional": true,
+      "notes": "Round 62 FRONTQUESTS. Draft DO6: the optional island use, free from 60 without a story prerequisite."
     }
   ]
 }

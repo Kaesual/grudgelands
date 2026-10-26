@@ -121,8 +121,8 @@ record of how they were made and the gates that keep them honest.
   that is not air and warns, rule `stem_soil`, when that ground is not wild
   soil for a placing race, where no tree grows): `check.py`
   (against `BASELINE`), `check.py --baseline=self` (the freeze),
-  `--write-known-defects` (the exporter's known-defects baseline: three
-  capital defects, none for the start towns), `--self-test` (the parser and
+  `--write-known-defects` (the exporter's known-defects baseline, empty
+  since Round 62), `--self-test` (the parser and
   every rule on mutated copies of a frozen template, the loader parity and the
   roster cases). It reads the palettes and the param2 rules from the game's
   Lua through `palette_dump.lua` (LuaJIT), the registry from `nodes.json`, and
@@ -185,10 +185,33 @@ it).
 - **Tools** (keys 1–6): Paint (drag to paint), Pick (or Alt+click), Air (force
   air), Unchanged (leave unchanged), Rotate (90°, only where the node's kind
   allows it in every placing palette: facedir 0–3 keeping an upside-down
-  axis, wallmounted only around the four walls, never onto the floor or the
-  ceiling), Move point. A
+  axis, turning upright and upside-down nodes the same way round,
+  wallmounted only around the four walls, never onto the floor or the
+  ceiling), Flip (no key; only where the result is valid in every placing
+  palette, as for Rotate), Move point. A
   click in the 3D view applies the tool to the block under the pointer (a
   point moves onto it).
+- **Flip** turns a stair or a slab upside down and back, keeping its look:
+  facedir 0↔20, 1↔23, 2↔22, 3↔21 (the axis 20 rotation runs the other way,
+  as the stairs mod writes it), and for an inner or outer stair 0↔21, 1↔20,
+  2↔23, 3↔22 (its raised quarter stays over the same quarter of the cell).
+  Upside down is offered only when every placing palette whose node is
+  facedir names a stair or a slab of the same shape (`parts.shaped`). A
+  wallmounted node goes wall → floor (1) → ceiling (0) → wall: always the
+  wall of `wallmounted:2` (support at +x), Rotate turns it on from there.
+  That is for nodes drawn for every mount (candle, wagon wheel, ivy, banners,
+  signs); a node drawn for one mount only is refused when any placing
+  palette binds it: the torches (`default:torch`, `torch_wall`,
+  `torch_ceiling` and the anthracite ones), three nodes with one mesh each,
+  so `light_wall` and `light_post` do not flip wherever a placing race binds
+  them to torches (paint the other role instead). The rule is data
+  (`serve.one_mount`): a wallmounted node whose selection or node box
+  defines some but not all of `wall_top`, `wall_bottom` and `wall_side` in
+  `nodes.json`. Doors, beds, lying tree pieces and nodes without orientation
+  are refused too. A facedir of 0 (from Rotate or Flip) is written without
+  `o=` (the default write is 0 for every facedir node), or as
+  `o=facedir:0` where the file at HEAD has that, so a cell turned back is no
+  edit.
 - **Items:** the roles first (with a corner mark, in the preview's material;
   a required role a placing race does not bind, or an optional one no
   placing race binds, is disabled), the role variants with a channel the template uses

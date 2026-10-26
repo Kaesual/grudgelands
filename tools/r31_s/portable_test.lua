@@ -71,14 +71,14 @@ local function read(path)
 	return text
 end
 
--- Registered node names: the static tile index of the wp13 renderer, the
+-- Registered node names: the current headless engine node dump, the
 -- loop-registered wool colours, and grug_mapgen's own node file (the
 -- waystone) for the rest.
-local tiles = read(repo .. "/tools/wp13/node_tiles.json")
+local tiles = read(repo .. "/tools/building_templates/nodes.json")
 local registered_cache = {}
 local function registered(name)
 	if registered_cache[name] ~= nil then return registered_cache[name] end
-	local ok = name == "air" or tiles:find('"' .. name:gsub("%p", "%%%0") .. '": {', 1) ~= nil
+	local ok = name == "air" or tiles:find('"' .. name:gsub("%p", "%%%0") .. '":{', 1) ~= nil
 	local colour = name:match("^wool:(.+)$")
 	if not ok and colour then
 		ok = read(repo .. "/mods/BASE/wool/textures/wool_" .. colour .. ".png") ~= nil
@@ -100,7 +100,7 @@ for _, kind in ipairs({"pvp_camp_low", "pvp_camp_high"}) do
 		compositions[#compositions + 1] = {kind = kind, faction = RACES[race], race = race}
 	end
 end
-local GATE_WIDTH = {pvp_fortress = 5, pvp_camp_low = 3, pvp_camp_high = 3}
+local GATE_WIDTH = {pvp_fortress = 5, pvp_camp_low = 5, pvp_camp_high = 5}
 
 local function profile_for(c, turns)
 	local stem = "grug_r31_test_" .. c.kind .. "_" .. (c.race or c.faction)

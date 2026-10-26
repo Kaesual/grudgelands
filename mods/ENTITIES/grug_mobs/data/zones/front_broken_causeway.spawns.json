@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "floodmeadows", "name": "Causeway Floodmeadows",
             "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "tallow_sealed_husk", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "bank": {"id": "fords", "name": "Causeway Fords",
             "day": "open",
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
@@ -35,7 +35,7 @@
         "kinds": {
           "open": {"id": "battlefield", "name": "Causeway Battlefield",
             "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "causeway_brigand", "weight": 1}],
-            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal"},
           "bank": {"id": "wreck_fords", "name": "Causeway Wreck Fords",
             "day": "open",
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
@@ -44,7 +44,7 @@
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "wraithwood", "name": "Causeway Wraithwood",
             "day": [{"role": "causeway_brigand", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
-            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal"},
           "highland": {"id": "ramparts", "name": "Causeway Ramparts",
             "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
             "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"},
@@ -64,7 +64,7 @@
             "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "brandbound_collector", "weight": 1}], "density": "normal", "quest_target": true},
           "bank": {"id": "last_ford", "name": "Causeway Last Ford",
             "day": "open",
-            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse", "quest_target": true},
+            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "drowned_mire", "name": "Causeway Drowned Mire",
             "day": [{"role": "causeway_sinkmire_viper", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
             "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
@@ -91,6 +91,10 @@
     "leaders": [
       {"role": "toll_taker_senn", "at": {"camp": "toll_camp"}, "respawn": 300},
       {"role": "last_toll_construct", "at": {"kind": "toll_fields", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "places": [
+      {"id": "return_stand", "name": "Causeway Return Stand", "at": {"kind": "floodmeadows", "pick": "farthest_from_roads"}},
+      {"id": "crossing_stand", "name": "Causeway Crossing Stand", "at": {"kind": "wraithwood", "pick": "farthest_from_roads"}}
     ],
     "critters": ["gull"]
   }

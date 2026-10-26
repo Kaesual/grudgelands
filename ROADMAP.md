@@ -58,7 +58,11 @@ remain delivered foundations, with this refinement work still ahead.
   first chapter in the six capitals; Round 60 rebuilt the band 21–30 (84
   as 71, kill objectives 58 % → 19 %) and the six capitals (64 as 47),
   added the second chapter and an Alchemy lesson at the first capital
-  visit.
+  visit; Round 61 rebuilt the band 31–40 (60 as 50, kill objectives 68 %
+  → 25 %) and added the third chapter; Round 62 rebuilt the front 41–60
+  (123 as 120, the free front at 25 % and 18 % kill objectives) and made
+  the Round 36 main line the story path, which **completes the quest
+  rework of levels 11–60**.
 
 Decided with the user on 2026-10-22 and 2026-10-23
 ([Round 57 plan §8–§9](docs/planning/round57-plan.md#8-decided-for-round-58),
@@ -94,21 +98,42 @@ Decided with the user on 2026-10-22 and 2026-10-23
   [plan](docs/planning/ui-modernization-plan.md)): every window on one
   translucent theme with clear buttons, icon tabs, the faction and level in
   the header and the larger map entered directly. Its GUI test runs
-  together with those of Rounds 57–60.
-- **Round 61 and later, the story arc:** each faction's story from the
-  start zones to the front at level 41, built on the Round 57 foundation
-  band by band with the quest rework of levels 21–60. The user decided the
-  arc's direction on 2026-10-23
-  ([decisions](docs/planning/round57-plan.md#decisions-during-the-round)):
+  together with those of Rounds 57–61.
+- **The refreshed service dialogs:** **delivered** in 0.61.1 (compatible;
+  [dialog review](docs/planning/ui-dialog-review.md)): the vendor,
+  quest-giver, mail, trainer and service windows in the Atlas 03 layouts
+  and the typography audit. Its GUI test runs together with those of
+  Rounds 57–61.
+- **Round 61, the band 31–40 and chapter 3:** **delivered** in 0.61.0 (a
+  map reset; [completion](docs/planning/round61-plan.md#completion-2026-10-25)):
+  the six contested zones reworked on the Round 57 system (all free play
+  outside the story, five shared quests, 3–5 mob names per zone, six new
+  quest places, the reward pattern at item levels 31–40), chapter 3 of the
+  story arc (A5 and T4 at 34/35 to the Ashenward and Bannerbreak mining
+  camps' named foremen, A6 and T5 at 39/40 after the camp raid to the
+  fortress zones' hosts), one optional group quest per zone (elite group
+  quests below level 51 are always optional, the user 2026-10-25). Its GUI
+  test runs together with those of Rounds 57–60.
+- **Round 62, the front 41–60 and the main line's story layer:**
+  **delivered** in 0.62.0 (a map reset;
+  [completion](docs/planning/round62-plan.md#completion-2026-10-25)): the
+  last fourteen quest files reworked on the Round 57 system, so all 48 are
+  flagged (ten shared front quests, departures to the capitals' envoys,
+  the Throng's island bounty pair, the reward pattern at item levels
+  41–60), the Round 36 main line as the story path with completions,
+  two template fixes before production, bags of 8 / 12 / 16 / 20 slots.
+  With it the story arc runs from the start zones to the finale at 60 on
+  the Round 57 foundation (the user's direction of 2026-10-23,
+  [decisions](docs/planning/round57-plan.md#decisions-during-the-round):
   the Miner's Guilds and their faction's military closely interwoven, with
   little conflict inside a faction, and the enemy faction's guild rather
-  impersonal. **Next**, Round 61: the band 31–40 with the arc's next
-  chapter (A5 at Ashenward March at level 34;
-  [Round 60 plan §9](docs/planning/round60-plan.md#9-later)); then the
-  bands 41–50 (the front at 41) and 51–60, one per round; then the production deploy
-  with one map reset; then the armor redesign with several polygon groups
-  per slot and unique, non-craftable items (quest rewards, boss loot for
-  the instances, world finds).
+  impersonal). Its GUI test runs together with those of Rounds 57–61.
+- **Next: the production deploy with one map reset** (0.57.0 → 0.62.0),
+  after the user's joint GUI test of 0.57 to 0.62; its starting list (the
+  release gates, the unpicked names, the server notes) is the
+  [deploy plan](docs/planning/deploy-plan.md). Then the armor redesign
+  with several polygon groups per slot and unique, non-craftable items
+  (quest rewards, boss loot for the instances, world finds).
 
 These are goals for the next design and playtest passes, not changes already
 available in the game. Detailed follow-up scope and current design owners:
@@ -672,8 +697,8 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   trade-in of raw mined goods, three cloaks), the camp vendor's rank-locked
   page, Ore Sense and Treasure Hunt, the Miner's Remains, a guild house on
   a district plot in every capital, 30 guild quests; the Round 56 town
-  fixes. Complete on 2026-10-24; not pushed, the joint GUI test of 0.57,
-  0.58, 0.59 and 0.60 open.
+  fixes. Complete on 2026-10-24; not pushed, the joint GUI test of 0.57
+  to 0.61 open.
 - [x] **Round 59 "The story arc's first chapter and the quest rework of
   levels 11–20"**
   ([completion](docs/planning/round59-plan.md#completion-2026-10-24)),
@@ -684,7 +709,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   story quests, the guild leaders' hubs, six town places), the town place
   kind on settlement sockets, `E-free-follow-ups` per faction and the quest
   log's variant zone. Complete on 2026-10-24; not pushed, the joint GUI
-  test of 0.57, 0.58, 0.59 and 0.60 open.
+  test of 0.57 to 0.61 open.
 - [x] **Round 60 "The story arc's second chapter and the quest rework of
   levels 21–30"**
   ([completion](docs/planning/round60-plan.md#completion-2026-10-24)),
@@ -697,12 +722,45 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   quest at the first capital visit, the Alchemy herbs by level band and
   two crop fixes, soulbound quest-only items with their own icons, the
   seed fleet's quest-place check. Complete on 2026-10-24; not pushed, the
-  joint GUI test of 0.57, 0.58, 0.59 and 0.60 open.
+  joint GUI test of 0.57 to 0.61 open.
 - [x] **The UI modernization**
   ([plan](docs/planning/ui-modernization-plan.md)), version 0.60.1,
   **compatible**, no step: the shared theme, navigation and form layouts of
   every window. Merged on 2026-10-25; not pushed, its GUI test part of the
-  joint one of 0.57 to 0.60.
+  joint one of 0.57 to 0.61.
+- [x] **Round 61 "The story arc's third chapter and the quest rework of
+  levels 31–40"**
+  ([completion](docs/planning/round61-plan.md#completion-2026-10-25)),
+  version 0.61.0, **map reset**, no step: the six contested zones of levels
+  31–40 rebuilt on the Round 57 system and flagged reworked, the two
+  contested base files whole with their 15 main-line steps marked `story`
+  (60 → 50 band quests, 393 shipped, kill objectives 68 % → 25 %, five
+  shared quests on the hosts' line `border`, six new quest places and four
+  uses at the mining camps' loading grounds, four leaders retired), chapter
+  3 of the story arc (A5, A6, T4, T5), the named foremen Audra Wainholt and
+  Greda Stonehaul, one optional group quest per zone, the Runner's Packet
+  and the storm vessel with their picked art. Complete on 2026-10-25; not
+  pushed, the joint GUI test of 0.57 to 0.61 open.
+- [x] **The refreshed service dialogs**
+  ([dialog review](docs/planning/ui-dialog-review.md)), version 0.61.1,
+  **compatible**, no step: the Atlas 03 service windows (views 18–34) and
+  the typography audit. Merged on 2026-10-25; not pushed, its GUI test part
+  of the joint one of 0.57 to 0.61.1.
+- [x] **Round 62 "The front 41–60 and the main line's story layer"**
+  ([completion](docs/planning/round62-plan.md#completion-2026-10-25)),
+  version 0.62.0, **map reset**, no step: the ten `.front` files and the
+  four Battlegrounds files rebuilt on the Round 57 system and flagged
+  reworked, so all 48 quest files are (123 → 120 front quests, 390
+  shipped; the free front at 25 % / 18 % kill objectives, 4–6 mob names
+  per front zone and faction, ten shared front quests on `border`, eight
+  new quest places), the Round 36 main line as the story path (31 steps
+  `story` with completions, the opener at 41 free, The Throng's Chirr
+  after Huskell), departures to Dorrin, Thorga, Borin, Nalo, Eriath,
+  Vaska and Ossa, the Throng's island bounty pair, T5/T6 reward choices
+  with the reward budget per zone and level band; the Kezamba moot-house
+  door and the Lethariel mere shrines; bags of 8 / 12 / 16 / 20 slots.
+  Complete on 2026-10-25; not pushed, the joint GUI test of 0.57 to 0.62
+  open; the production deploy with one map reset follows.
 
 ### Remaining work
 
@@ -750,8 +808,10 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   [Round 56](BACKLOG.md#round-56-carry-overs),
   [Round 57](BACKLOG.md#round-57-carry-overs),
   [Round 58](BACKLOG.md#round-58-carry-overs),
-  [Round 59](BACKLOG.md#round-59-carry-overs) and
-  [Round 60](BACKLOG.md#round-60-carry-overs) carry-overs (Round 40: the
+  [Round 59](BACKLOG.md#round-59-carry-overs),
+  [Round 60](BACKLOG.md#round-60-carry-overs),
+  [Round 61](BACKLOG.md#round-61-carry-overs) and
+  [Round 62](BACKLOG.md#round-62-carry-overs) carry-overs (Round 40: the
   sounds left out of it, a later particle art order, the Charge arrival
   hold to pick; Round 41: the bow's second cause; Round 42: theoretical
   navigation notes only; Round 43: theoretical migration notes only;
@@ -775,7 +835,12 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   guild-quest notes; Round 59: the open GUI judgements, quest-system,
   band, chapter, tool and doc notes, the questing share; Round 60: the
   open GUI judgements, the mob-loot gaps of T2, the cooking gaps left,
-  quest, item, fleet, tool and doc notes);
+  quest, item, fleet, tool and doc notes; Round 61: the open GUI
+  judgements, Rattle's kept id, the Recovery Rest's fallback, the
+  Packet's second source, the group quests at 50 and tool notes; Round 62:
+  the open GUI judgements, the Carrier Clearing's fallback, the West Trench
+  Mouth label, Orrel's departure at 40, the template checker's edge-walk,
+  the stale generated tables and tool notes);
   Round 36 settled
   Priest healing, the Scout's set and spell rounding. The audit's design
   questions and later fix packages:

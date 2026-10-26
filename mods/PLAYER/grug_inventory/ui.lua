@@ -91,7 +91,7 @@ end
 -- content list in a scroll_container, and the hotbar (main[1..8]) below it,
 -- outside the scroll area, with the A/B switch beside it (hotbar_switch
 -- below). The lists flow on as one
--- 8-wide grid (the user, Round 48 playtest): a bag (4, 8, 12 or 16 slots)
+-- 8-wide grid (the user, Round 48 playtest): a bag (8, 12, 16 or 20 slots)
 -- starts in the column after the previous list's last slot, so only the very
 -- last row may be partial (view_elements below). Both are boxed (LAYOUT
 -- below): an Inventory box with the grid and the Hotbar box, each labelled

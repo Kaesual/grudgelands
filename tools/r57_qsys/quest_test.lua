@@ -861,6 +861,16 @@ refused("two two-enchant rewards in a zone", "E-reward-budget", function(files)
 	enchanted_reward(files, "qs_story_wolves", 2)
 end)
 accepted("... not in an unreworked file", function(files) over_budget(files); unflag(files) end)
+-- Round 62: the budget counts per zone and level band (the reward level's
+-- tier band), so a third one-enchant reward at level 12 is another band's.
+accepted("... not across two level bands", function(files)
+	over_budget(files)
+	quest_of(files, "qs_free_a").level = 12
+end)
+has(refused("... but within one band", "E-reward-budget", function(files)
+	over_budget(files)
+	quest_of(files, "qs_free_a").level = 9
+end), "per zone and level band (levels 1-10)", "F ... named with its band")
 local capital_world = setmetatable({capital = function(zone) return zone == D end}, {__index = loader_world})
 accepted("... not in a capital", over_budget, capital_world)
 local warns = accepted("two one-enchant rewards at one level", function(files)

@@ -7,7 +7,7 @@
         "kinds": {
           "open": {"id": "scorchlands", "name": "Stormscale Scorchlands",
             "day": [{"role": "glass_fang_serpent", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
-            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "glass_web_spider", "weight": 1}], "density": "normal"},
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "glass_web_spider", "weight": 1}], "density": "normal", "quest_target": true},
           "shore": {"id": "wreck_shore", "name": "Stormscale Wreck Shore",
             "day": [{"role": "last_watch_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
             "night": [{"role": "last_watch_zombie", "weight": 3}, {"role": "salt_hex_witch", "weight": 1}], "density": "dense", "quest_target": true},

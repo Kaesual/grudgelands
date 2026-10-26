@@ -2,7 +2,7 @@
 
 Coordinator: Claude, 2026-10-24. Status: **complete** ([completion](#completion-2026-10-24)); 0.60.0 not pushed, it
 waits for the user's joint GUI test of 0.57.0, 0.58.0, 0.59.0, 0.60.0 and 0.60.1 (the merged UI modernization)
-([checklist](#gui-checklist-rounds-57-58-59-60-and-the-ui)); the user's go 2026-10-24. The plan review
+([checklist](#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)); the user's go 2026-10-24. The plan review
 (`r60/reports/plan-review.md`) and the user's answers (§2a) are folded in.
 
 Round 60 continues the **quest rework of levels 11–60** band by band on the Round 57 quest system (Round 59 did
@@ -480,16 +480,20 @@ clear.
 - **Round 61** reworks the band 31–40 with the arc's next chapter (A5 at Ashenward 34, §9).
 - The reviews' and reports' notes are in the [Round 60 carry-overs](../../BACKLOG.md#round-60-carry-overs).
 
-### GUI checklist (Rounds 57, 58, 59, 60 and the UI)
+### GUI checklist (Rounds 57, 58, 59, 60, 61, 62, the UI and 0.61.1)
 
-One test for all four rounds and the UI modernization (0.60.1; nothing since 0.57.0 has been tested in the GUI),
-desktop and the web build (the lanes' web shots were taken at 1024 × 600; Round 57's at 1280 × 720 and 1035 × 696), on
-the synced game. It replaces [Round 59's list](round59-plan.md#gui-checklist-rounds-57-58-and-59); items 1–48 keep that
-list's numbers (and its wording, linked below), Round 60 adds items 5–7 in (A) and 49–66 in (B), the UI modernization
-items 67–81 in (B). Where Round 60 changes what an earlier item tests, the item says so; every earlier window item now
-also sees the new look.
+One test for all six rounds, the UI modernization (0.60.1) and the refreshed dialogs (0.61.1; nothing since 0.57.0
+has been tested in the GUI), desktop and the web build (the lanes' web shots were taken at 1024 × 600; Round 57's at
+1280 × 720 and 1035 × 696), on the synced game. It replaces [Round 59's
+list](round59-plan.md#gui-checklist-rounds-57-58-and-59); items 1–48 keep that list's numbers (and its wording, linked
+below), Round 60 adds items 5–7 in (A) and 49–66 in (B), the UI modernization items 67–81 in (B), Round 61
+([plan](round61-plan.md#completion-2026-10-25), 0.61.0) item 8 in (A) and items 82–96 in (B), the refreshed dialogs
+(0.61.1) items 97–106 in (B), Round 62 ([plan](round62-plan.md#completion-2026-10-25), 0.62.0) item 9 in (A) and
+items 107–122 in (B). Where Round 60, 61 or 62 changes what an earlier item tests, the item says so; every earlier
+window item now also sees the new look.
 
-**Resetting a local world** (what the hosting platform does, contract §3.5; one reset covers 0.58, 0.59 and 0.60; 0.60.1 needs none):
+**Resetting a local world** (what the hosting platform does, contract §3.5; one reset covers 0.58, 0.59, 0.60, 0.61 and 0.62; 0.60.1 and 0.61.1
+need none):
 
 1. Quit the world (stop the server), then make a copy of the world folder.
 2. Optional, to test the claims' containers: from the repository checkout,
@@ -510,16 +514,18 @@ also sees the new look.
 
 **Order:** (A) the existing world, reset as above, first join with its old characters; (B) everything else on that
 world and with new characters; (C) a new world (or the "test" world) for the bays. *Re-checked (D, as Rounds 58 and
-59):* no Round 57–60 item needs the old **map**; Round 57's items 3 (its last sentence), 5 (its last sentence) and 15,
-Round 59's band ids and Round 60's kept ids and soulbound Orders test an old character's **first join on the new
-code**, which the reset keeps (player meta stays), so they run in (A) at that first join, the path the production
+59):* no Round 57–62 item needs the old **map**; Round 57's items 3 (its last sentence), 5 (its last sentence) and 15,
+Round 59's band ids, Round 60's kept ids and soulbound Orders, Round 61's kept ids and Rattle's edge and Round 62's
+front ids and grown bags test an old character's **first join on the new code**, which the reset keeps (player meta stays), so they run in (A) at that first join, the path the production
 world takes. Do not join the existing world on the new game before the reset, or that first join is spent. Items 1,
 2 and 4 of Round 57 need no old state.
 
 **(A) The existing world, at the first join after the reset** (a character above level 10 with old start quests done
 or active, ideally one with old band quests of levels 11–20 active or done, **one of level 21 or more with old band
-21–30 or capital quests active or done**, a crafting job running when it last logged out, enchanted items, a housing
-claim if you have one):
+21–30 or capital quests active or done**, **one of level 30 or more with old band 31–40 quests active or done
+(ideally Rattle's "Rattle's Bad Arithmetic" active with Sappers or Slingers counted)**, **one of level 40 or more with
+old front quests of 41–60 active or done (ideally a main-line step active) and equipped bags with items in them**, a
+crafting job running when it last logged out, enchanted items, a housing claim if you have one):
 
 1. **The reset:** the character arrives at its race's start town without the welcome and keeps its level, inventory,
    equipment, money, quests, professions, mounts and waypoints; its home claim is gone (Return home falls back to the
@@ -544,6 +550,22 @@ claim if you have one):
    right in the log.
 7. **Round 60, the Captain's Orders an old character carries:** they are soulbound now: a chest, the mail, a trade and
    the trash refuse them, dropping one destroys it (item 52).
+8. **Round 61, the band 31–40 for an old character:** a character of level 30 or more finds the reworked band quests
+   at its zone's hosts (item 82); an old band 31–40 quest that no longer exists is gone from the log without an error
+   (31 ids went); a kept id keeps its state (Scrip's and Rattle's quests, the travels, Glassroot's and Thunderroot's
+   departures, the six Party quests, Borin's bars, Alna's Emberglass, A Soldier's Due, the camp and guild quests): done
+   stays done and is not offered again, and a kept quest whose old prerequisite went now opens by its level alone.
+   **Rattle's edge** (the [0.61.0 declaration](round61-plan.md#classification)): if "Rattle's Bad Arithmetic"
+   (`bannerbreak_ramp_03`, Drek) was active with old Sappers or Slingers counted, it may show ready without Rattle's
+   kill; accepted. **Judge:** it reads without an error; turning it in gives the weapon choice and opens T4 (item 85).
+9. **Round 62, the front 41–60 and the bags for an old character:** an old front quest that no longer exists is gone
+   from the log without an error (45 ids went, among them every old `.front` chain step outside the main line and the
+   four group quests at 50); a kept id keeps its state (the 31 main-line steps, the 24 fortress quests, the island
+   bounties and uses, the four elites Salt-Counter and Glass-Throat, Ossa's "Dressed for the Long Rest"): done stays
+   done and is not offered again, an active main-line step stays active with its count. Every equipped bag shows four
+   more slots (8 / 12 / 16 / 20): all items stay in their cells and the new cells are empty at the end of each bag;
+   nothing is mailed ([0.62.0 declaration](round62-plan.md#classification)). **Judge:** the log and the bags read
+   without an error.
 
 **(B) Round 57** (its [checklist](round57-plan.md#gui-checklist-round-57) items, unchanged unless noted):
 
@@ -554,12 +576,13 @@ quests. 12. Choice rewards (Round 58's hunts add a choice of materials; Rounds 5
 and 54). 13. Completion text: **changed by Round 59:** the start town's departure (level 9) now leads to the level-11
 zone's steward, whose first quest opens at level 10 (item 35). 14. Story marking: **changed by Rounds 58–60**: judge
 the violet "!", the "Story" heading and the map icons on a guild follow-up (item 31), on chapter 1 at an envoy (item
-43) or on chapter 2 (items 55–56) instead of the capture probe. 15. An existing character above level 10 (in A).
+43) or on chapter 2 (items 55–56) instead of the capture probe; **since Round 62** on the whole main line 41–60 (item 108). 15. An existing character above level 10 (in A).
 16. Bays (in C). 17. The chin underside. 18. Help. 19. The pages for the user.
 
 **(B) Round 58** (items 20–34 of [Round 58's list](round58-plan.md#gui-checklist-rounds-57-and-58), unchanged unless
 noted): 20. Mining camps (**since Round 60** every camp has an empty `held_load` cell on its loading ground; only
-Frostbarrow's shows objects, for A3, item 55). 21. Camps under construction. 22. The map. 23. The lift. 24. The rooms.
+Frostbarrow's shows objects, for A3, item 55, and **since Round 61** the Ashenward, Bannerbreak, Blackwind and
+Thunderroot camps' for their quests, item 88). 21. Camps under construction. 22. The map. 23. The lift. 24. The rooms.
 25. The camp vendor at rank 0. 26. Reputation. 27. The cloaks. 28. Ore Sense. 29. Treasure Hunt. 30. Guild houses
 (**since Round 59** each leader also gives chapter 1's second quest, item 44; **since Round 60** Hadrin Beamset takes
 A4 and Iven Lastshift T3). 31. Guild quests: the T2 ones in a band 11–20 zone (Round 59's note), **the T3 ones in a band
@@ -662,7 +685,8 @@ the user.
     Gravemoss says "Requires the Alchemy profession."); in an 11–20 zone Dragonweed; in Whitebridge or the Reedlands
     Crimson Lotus; in Copperfell, Starbough or Redtusk Pumpkin; in Ossuary or the Reedlands Frost Melon at a freshwater
     edge. **Judge:** the recipe card's "Grows in …" line (clipped on the card, full in the tooltip).
-61. **Name tags:** Brodd Deeppeg and Rellis Shalemark over their camps' foremen; every other foreman "Foreman".
+61. **Name tags:** Brodd Deeppeg and Rellis Shalemark over their camps' foremen (**since Round 61** also Audra
+    Wainholt and Greda Stonehaul, item 92); every other foreman "Foreman".
 62. **The guild quests and camp hunts in the band 21–30:** the foreman's T3 gather quests ("Keep the Forges Fed", "A
     Small Order", one variant per guild), the camp hunt "A Load on Every Back" (8 of the zone's game, a choice of
     materials) in seven zones and Totemwater's "What the Dark Drags In" (3 Sedge Oozes after dark), the T3 reports
@@ -712,6 +736,227 @@ compact header (1.5 units per tab row) are accepted.
 80. **The other windows:** chests, shelves, vendors, trainers, the Claim Stone, signs and books, character creation
     and the arrival window in the new look.
 81. **Web:** items 67, 69, 70, 74 and 77 in the web build too.
+
+**(B) Round 61** (0.61.0, [plan](round61-plan.md#completion-2026-10-25)):
+
+82. **The band at level 30** (BANDQUESTS): with a level-30 character of each faction (`/xp give <you> <amount>`), the
+    hosts offer their first quests at once: Borin Splitbolt at Splitbolt Station ("A Proper Introduction to Rock", 4
+    Silversteel Bars, and the travels), Toren Waterbarrel at Cinderline Watch (three travels at 30, "A Meal Before the
+    Road" and "A Barrel Is Not a Drinking Cup" at 31), Nella Hedgeward at Last Hedge Redoubt ("The Reserve Is for
+    Them"), Faeris Rootbinder at Glassroot Gate ("Something Fresh for the Carriers", 5 Melons, and her travel); Vaska
+    Ashlistener at Ashveil Watch ("Something for Those Who Wait", 6 Mushrooms, and her travels), Yarra Standardmender
+    at Tornstandard Hold ("The Reserve Is for Them" and "Word for Thunderstep"), Rumela Stormstep at Thunderstep Watch (the Melons and "Ashveil
+    Listens Too"), Drek Rampbinder at Red Ramp Post ("Yarra Keeps the Names"). Orrel Hollowstep's first opens at 31
+    ("Keep the Stores Dry"), Alna Archsight's at 33 ("A Clearer View of Trouble"; Borin's travel to her at 32). No
+    free quest asks for another; the band's first potion choice is 2 Healing or 2 Mana Potion IV (item 91).
+83. **The shared quests in each zone's voice** (one title, line `border`): "A Meal Before the Road" (8 Corn, 31: Toren,
+    Drek), "Something Fresh for the Carriers" (5 Melons, 30: Faeris, Rumela), "Keep the Stores Dry" (3 Chests, 31:
+    Faeris, Orrel, Rumela), "The Reserve Is for Them" (30: Nella, Yarra; Ready the reserve load at the own mining camp's
+    loading ground, 4 s) and "Words Worth Bringing Back" (the Runner's Packet, 38: Alna, Nella, Faeris, Orrel, Yarra,
+    Rumela; item 89). Taken in one zone, the faction's other zones do not offer it while it is active and never again
+    once done; each zone's text reads in its own voice; "Return to" names the giver; the log shows the zone you took it
+    in.
+84. **Chapter 3, The Accord** (story, violet): at 34, after A4 "Under a Joint Seal" and Scrip's "The Account of
+    Quartermaster Scrip" (Toren, 32, free), Toren offers A5 "Every Hand on the Road": Secure the transport record (the
+    dispatch record, 4 s) at the Ashenward Broken Load in the Wheelbreak, then turn in only at **Audra Wainholt**, the
+    Ashenward mining camp's foreman (a potion IV choice). **Judge:** the place and its direction in the text, the log
+    and on the map.
+85. **Chapter 3, The Throng** (story): at 35, after T3 "Strike the False Claim" and Rattle's "Rattle's Bad Arithmetic"
+    (Drek, 34, free; Provisioner Rattle now level 35 at the supply camp), Drek offers T4 "The Hands Behind the Stores":
+    Secure the handover record (the witness record, 4 s) at the Bannerbreak Scattered Load in the Warplains, then turn
+    in only at **Greda Stonehaul**, the Bannerbreak mining camp's foreman (a potion IV choice).
+86. **The camp raid, A6 and T5:** "Before the Stakes Take Root" (`camp_site_raid`, any band foreman, from 36) stays as
+    Round 58 shipped it. After A5 and the raid, A6 "The Cost of Holding Ground" (39) is offered at any of the three
+    Accord band foremen (Stormvault, Audra in Ashenward, Glassroot) and turns in only at Nella Hedgeward; after T4 and
+    the raid, T5 "The Promise Still Stands" (40, shown locked at 39) at any of the three Throng foremen, turned in only
+    at Yarra Standardmender. Without the raid neither shows; once taken, the other foremen no longer offer it. Nella's
+    and Yarra's completions point to the Warmaster, and the free fortress calls "A Posting at Ashenward Bastion"
+    (Nella) and "Room Under the Banner" (Yarra), level 40, still carry you there without the story; the main line at
+    41 is still offered at the Warmaster.
+87. **The six optional group quests** (one per zone, free, at 38, reward level 39): "Party: A Crack Is Not a Weakness"
+    (Alna, Split-Seam), "Party: The Marshal's Receipts" (Nella, Red-Receipt), "Party: The Canopy's Own King" (Faeris,
+    Canopy-Knuckle); "Party: The Bell in the Wood" (Orrel, Hollowbell), "Party: The Banner-Eater" (Yarra),
+    "Party: Storm-Bottle" (Rumela); each a choice of three plain tier-4 trinkets (Manawell Pendant, Battlebeat Band and
+    Mercy Seal, or Last Light Locket, Apothecary Loop and Reclaimer's Mark). **Play the band solo without them:** no
+    quest asks for one, chapter 3 and the departures open without them, and each zone's weapon is on a solo quest.
+    **Judge:** each elite leader with a group.
+88. **The six new places and the four loading grounds:** the map crosshair on the spot, the object only for players
+    who still need it, the label in the log and the HUD, the hold counted in the feed, stepping away or taking damage
+    stops it. The Stormvault Survey Stand in the Highcrags (Alna's "A Reliable Stand", Set the sighting frame, 36), the
+    Ashenward Broken Load (A5, item 84), the Glassroot Carrier Path in the Canopy (Faeris's "A Path for Those Coming
+    Back", Loosen the snare, 38), the Blackwind Recovery Rest in the Deadmarch (Orrel's "The Names Stay with the
+    Cloth", Secure the shroud bundle, the held supplies, 38; where the moor forms no region it falls back to the belt's
+    woods, on 3 of 6 rendered seeds in Hollowbell's region, 91–385 nodes from him), the Bannerbreak Scattered Load (T4, item 85), the Thunderroot Storm Store in the
+    Stormglades (Rumela's "One Stolen Storm Fewer", Seal the storm vessel, 5 s, 38). At the mining camps' loading
+    grounds: Ashenward's and Bannerbreak's held supplies for "The Reserve Is for Them", Blackwind's signal lantern
+    (Vaska's "A Light for the Late Road", Trim the signal lantern, 32) and Thunderroot's reading knots (Rumela's "The
+    Next Crew Should Know", Secure the reading cord, 32). **Judge:** can each hold be finished with the area's mobs or
+    the camp around, and does the Recovery Rest read right where it stands near Hollowbell?
+89. **The storm vessel and the Runner's Packet** (STORYART): the storm vessel (size 1.2, a clay crock in a wooden
+    holder) sits on the ground at the Storm Store and its size reads right; the Packet's icon (a flat strapped envelope)
+    reads in the inventory, the hotbar and the quest log at 16 px. The Packet drops 1 in 3 from the bandit archers of
+    the zone's Round 20 bandit camp while "Words Worth Bringing Back" needs it (Waylayer, Hedge Bowman, Bandit
+    Fletcher; Shroud Archer, Trench Archer, Brigand Bowman); Blackwind's hideout archers (also Shroud Archers, 36–37)
+    drop it too (accepted). It is soulbound like the Dispatch Folio (item 52): a chest refuses it, dropping it destroys
+    it with the feed notice, and with full bags nothing is rolled.
+90. **The departures at 40** (free, requiring nothing): Alna's "What the Watch Needs to Know" and Faeris's "Where the
+    Front Begins" to Nella, Orrel's "Work Waiting at Red Ramp" to Drek, Rumela's "The People Under the Banner" to
+    Yarra. **Changed by Round 62:** the old front quests named here are gone; at 40 Nella and Yarra offer the fortress
+    calls, and Toren, Drek, Nella and Yarra their new front work from 41 (item 107). **Judge:** Orrel's departure
+    reaches Drek at 40, one level before his first front quest.
+91. **The reward choices at tier 4** (as items 37 and 54, at item levels 31–40): each zone's potion choice (2 Healing
+    or 2 Mana Potion IV: Borin's Frostfin, the Corn, the Chests, the Packet; A5 and T4); six armor pieces with one
+    enchant per faction over its three zones (the Accord: Borin's bars and Faeris's ladders head, Alna's Emberglass and
+    Toren's buckets legs, the reserve chest, the Melons feet; the Throng: Vaska's Mushrooms head, A Soldier's Due and
+    Rumela's reading cord legs, Vaska's signal lantern and the reserve chest, the Melons feet); a weapon per weapon line
+    with a prefix and a suffix on each zone's solo quest (the Survey Stand, Scrip, the Carrier Path; the Recovery Rest,
+    Rattle, the storm vessel). The offer lists each by its enchanted name with its enchant lines, and the item received
+    has them.
+92. **Name tags:** Audra Wainholt over the Ashenward mining camp's foreman and Greda Stonehaul over Bannerbreak's (with
+    Brodd and Rellis, item 61); every other foreman "Foreman".
+93. **T3's new last sentence:** Iven Lastshift's completion of "Strike the False Claim" now ends "Speak to Drek
+    Rampbinder at Red Ramp Post when you are ready to follow that work." (four sentences, the mandated wording).
+    **Judge:** the length in the dialog.
+94. **The hunts and leaders:** 3–5 mob names per zone besides the raid's garrison; Provisioner Rattle at level 35;
+    Bolt-Chewer, Basket-Biter, Grave-Broker Mute and Bottle-Keeper Zek no longer spawn (on the reset map); A Soldier's
+    Due reads its Redcut Flats once.
+95. **Web:** a tier-4 reward choice's dialog, the Packet's feed notices and the storm vessel at the web size.
+96. **The pages for the user** (outside the game, private claude.ai pages): the
+    [chapter-3 pick page](https://claude.ai/artifact/TCyebwKgcxZYWZdbh1N6x6), the
+    [QUESTMAP](https://claude.ai/artifact/Fb66tx9LqhvTeEwg1shzHN) of the band 31–40, the
+    [story art pick page](https://claude.ai/artifact/WXgiuzQPtFNVnP8VqajemW) of drop 03 and the
+    [text pick page](https://claude.ai/artifact/38zFyCvYFEFYnQz53hotLJ).
+
+**(B) The refreshed dialogs (0.61.1, compatible;
+[review and receipts](ui-dialog-review.md)):** the Atlas 03 service windows (views 18–34) and the typography audit,
+from the user's UI lane. The points below are the ones its reviews and the implementer left for the GUI. Desktop at
+1035 × 696, 1920 × 1080 and 2560 × 1440, GUI scale 1, unless an item says otherwise. The implementer's local capture
+gallery (`~/projects/grudgelands-orchestration/ui-modernization/dialogs-2026-10-25/final/index.html`, 289 frames)
+shows each window at these sizes for comparison.
+
+97. **Every service window in the new look:** vendors, quest givers, the mailbox and Admin Mail, the profession and
+    mount trainers, the innkeeper, the waystone, the mining lift, the Housing Steward and the Claim Stone, repair (each
+    item's durability and the total), the Crownbinder (also with nothing to offer), character creation, the welcome
+    window (its tips in two columns), the quickbar (E) and the coin withdrawal (three fields in one row). What each
+    window does is unchanged: the same buttons and refusals, the Alchemy rules beside the primary profession, a mount's
+    predecessor, level and owned states. **Judge:** the look against the Atlas 03 views.
+98. **Vendors:** the offer cards with small icons; the icon and the Buy button tooltips show inside the scrolling list
+    (also after scrolling). On a long shelf (a T1 gear shelf, 18 offers) scroll to the bottom and buy twice in a row:
+    the list keeps its place after each purchase, and the second click buys the offer under the mouse. The scrollbar's
+    thumb can be dragged (on the General shelf, 14 offers, it nearly fills the track; on longer shelves it is
+    smaller); the mouse wheel scrolls; changing the shelf or the mode (buy, sell, trade-in) starts at the top. A camp's
+    reputation shop: its smaller icons, Buy only on unlocked rows.
+99. **Quest givers:** the narrower list beside the text and objectives, the status legend under it; the rewards in
+    their own pane, which stays readable in the small window (1035 × 696) with a choice row; at the turn-in the chosen
+    reward's details head the text; long texts scroll; Close still holds the focus (the inventory key closes).
+100. **Mail and Admin Mail:** the text sizes of the list, the letter, the compose fields and Admin Mail's smaller
+     text and shorter buttons; the list shows subject then sender, the open letter its full sender and date;
+     deleting a letter with attachments shows the wrapping warning before it goes. At **GUI scale 1.5** in the small
+     window some mail labels do not fit (the mail tabs, Admin Mail's preview labels, the mailbox footer).
+     **Judge:** acceptable, or a later fix.
+101. **Crafting:** the recipe details in the list's text sizes, the tier status legible, the buttons not clipped
+     (some are tight at GUI 1.5); a gathered material's sources show each zone's own level band (a zone's name with
+     "(L21–30)"), no longer the plant's spread.
+102. **Map & Quests:** the map and the quest column each half the body; at 1920 × 1080 the layer buttons stand in
+     two rows of four.
+103. **Zone labels:** one line each ("Dawnmere Fields 1–10"), smaller at 1× (0.65 of the font, new) and larger from
+     2× (0.85); choosing Zones from a 1× overview enters 2× around you, the minus button still allows 1×, where
+     small windows stay dense. **Judge:** the size at 1× by eye.
+104. **WQHD** (2560 × 1440, GUI scale 1): the client keeps its pixel font size while the panels grow, so the text
+     looks relatively small. **Judge:** acceptable, or a later change (raise GUI scale or font size?).
+105. **Welcome and small sizes:** at GUI 1.5 in the small window the welcome window needs more scrolling; the Claim
+     Stone's fuel text and the Sound controls no longer collide; tabs drop their icon only where the caption needs
+     the room.
+106. **Web:** items 98, 99, 100 and 103 in the web build; the implementer captured the desktop client only.
+
+**(B) Round 62** (0.62.0, [plan](round62-plan.md#completion-2026-10-25)):
+
+107. **The front at level 41** (FRONTQUESTS): with a level-40 character of each faction that never played A6 or T5
+     (`/xp give <you> <amount>`), the Warmaster offers the main line's opener at 41 at once: "Bring Me the Account" at
+     Ashenward Bastion (unseal the impounded pay at Ashen Wheelbreak, turned in at Toren Waterbarrel) and "Too Warm for
+     Wages" at Bannerbreak Warhold (to Drek Rampbinder), each with a choice of 2 Healing or 2 Mana Potion V. The free
+     front work opens from its level with no chain: "Seed for the Trampled Plots" (8 Potatoes, 41: Toren, Drek), "A
+     Beacon for Tired Eyes" (42), "Who Is Still Out There?" (43: Nella, Yarra), "What the Ford Kept" and "Salt for the
+     Stores" (44). The fortress calls and the fortress quests (Round 31) are unchanged.
+108. **The main line as the story path** (story, violet, every step with a completion that names the next giver): The
+     Accord's 17 steps from the opener through Toren's Coal-Purse Factors, Alna's rubbing and Toll-Taker Senn (41–48),
+     the Warmaster's standard, Nella's Ninepins, the Captain's Orders and the courier's ledger (46–49), Borin's Debtjaw
+     Hounds and Huskell, Eriath's Chirr and the tally-stone (53–59) to "Party: The Collector Comes Due" and "Every Name
+     Accounted For" at 60; The Throng's 14 from the opener through Drek's Senn, Orrel's ash slab, Yarra's Ninepins, the
+     captain and Coinpit Hollow (41–50), the Kiln-Whisper Hexers, Vaska's Huskell, then Nalo's Chirr (**only after
+     Huskell**, K12) and the tally-stone (53–59) to "Party: No Claim on Our Dead" (from the Warmaster, turned in at Vaska) and "The Answering Blow" at
+     the Warmaster. Each step is offered only after the one before it; nothing free blocks it. The finals' completions
+     end with the fixed last lines ("We closed his account. Beneath us, someone turned a fresh page." and "His last
+     blow struck the ground. The answering blow came from underneath."). The war commanders' "Party: Stonegrudge's
+     Inquiry" and "Party: Greyvow's Last Filing" (57) stay optional. **Judge:** the hand-overs read in order; Odren Vell
+     and Tallykeeper Mardra are named as bound, not lost; Audra Wainholt and Greda Stonehaul appear in the
+     completions; the completions' length in the dialog.
+109. **The shared front quests in each voice** (one title, line `border`; as item 83): "Seed for the Trampled Plots"
+     (Toren, Drek), "A Beacon for Tired Eyes" (Toren, Drek, the Causeway Return Stand), "Who Is Still Out There?"
+     (Nella, Yarra, the Shattered Relief Rest), "What the Ford Kept" (Toren, Drek, Fordward Wreck), "Salt for the
+     Stores" (6 Salt Crust, Nella, Yarra), "Stormkelp for the Field Kits" (8 Stormkelp, 47: Alna, Orrel), "Cut the Old
+     Wire" (48: Nella, Yarra, No-Man's Orchard), the two group quests (item 111) and "Work Beyond the Line" (50, item
+     110). Each text reads in its giver's voice under the one title; "Work Beyond the Line", given by Nella and Alna,
+     is not offered by the other once taken; the log shows the zone you took it in.
+110. **The departures** (free, requiring nothing, each target with work at once): Drek's "Tell Thorga What Moves a
+     Ramp" (42, to Thorga Roadspeaker in Gor Drazhak: "Feed the Hands That Haul"), Alna's "Put the City to Work" (45, to
+     Dorrin Gateledger in Dur Brannoc: "Count the Tools Back In"), "Work Beyond the Line" (50: Nella or Alna to Borin
+     Splitbolt, "Before the Weight Comes"; Yarra to Nalo Pathdrum, "Fruit for the Carriers"), Borin's "Ask About the
+     Roots" (51, to Eriath Boughwarden: "Room for a Loaded Step"), Orrel's "What Reaches Ashveil" (52, to Vaska
+     Ashlistener: "Keep What Can Be Kept"), Vaska's "A Place for Their Belongings" (53, to Ossa Quietregister: "A
+     Receiving Place"). The town places of these capital quests (Dur Brannoc's forge yard, Gor Drazhak's water depot,
+     Nhal Veyr's receiving court) as item 51.
+111. **The optional group quests:** "Party: Stop the Grinding" (Engine Nine on the Shattered Line, Nella and Yarra) and
+     "Party: Close the Toll" (War Construct Last-Toll in the Causeway Toll Fields, Alna and Orrel), offered at 49, each
+     a choice of three plain tier-5 trinkets. **Play 41–50 solo without them:** nothing requires them, and each band's
+     weapons sit on solo quests. At 58–59, Salt-Counter ("Party: Nothing Left to Count", Borin; "Party: Nobody's Number",
+     Vaska) and Glass-Throat ("Party: Beneath the Waiting Coils", Eriath; "Party: More Than One Voice", Nalo) are
+     standalone with a tier-6 trinket choice. **Judge:** each elite with a group.
+112. **The island pairs at 60** (optional, coin only): The Accord's as before (Dorrin's 6 Spire Eagles, then Stone Golem
+     Rime-Bell; Mariel Waybook's 6 Last Watchmen, then Jungle Ape Last-Offering); The Throng's new pair at Thorga:
+     "Optional: Watch Where You Land" (6 Kraits in the Stormscale Scorchlands by day; the kill counts the name
+     "Krait"), then "Party: Nothing More to Offer" (Last-Offering). The four island uses (the survey cairn and the
+     wreck's pay chest per faction) are offered from 60 without a main-line step.
+113. **The reward choices at tier 5 and 6** (as item 91, at item levels 41–60): per faction and band six armor pieces
+     with one enchant (every slot), three weapons with a prefix and a suffix on solo quests, three plain trinket
+     choices and a Healing or Mana Potion V/VI choice; tier 5 up to reward level 50, tier 6 from 51 (Borin's "Before
+     the Weight Comes" and Nalo's "Fruit for the Carriers" are offered at 50 with item level 51); the finals "Every
+     Name Accounted For" and "The Answering Blow" a weapon choice. The offer lists each by its enchanted name, the item
+     level is the reward level, and the item received has the enchants.
+114. **The eight new places** (as item 88): the Causeway Return Stand ("A Beacon for Tired Eyes", Light the return
+     lantern) and Crossing Stand (Alna's "Ground Worth Crossing"), the Shattered Relief Rest ("Who Is Still Out
+     There?"), the Gravesalt Shoring Check (Borin's "Before the Weight Comes"), Work Laydown (Vaska's "Word for the
+     Next Party", Borin's "Braces Before Salvage") and Recovery Post (Ossa's "Not Entered as Salvage"), the Skyglass
+     Carrier Clearing (Eriath's "Room for a Loaded Step", Nalo's "A Message That Arrives") and Receiving Stand
+     (Eriath's "Received in Good Order", Nalo's "Roots Under the Load"); the free clash sites (Fordward Wreck, No-Man's
+     Orchard, Aqueduct Last Step, Saltgate Remnant, Cloudwatch Fall) and the Stormvault mining camp's loading ground
+     (Alna's "Ready for the Repair Crew"). **Judge:** each hold with the area's mobs around; the Carrier Clearing
+     where it falls back to the Cloudwood (3 of 6 rendered seeds); the objective label of "An Oath in Hock" still
+     reads "… at West Trench Mouth" (the place's name, accepted).
+115. **The hunts:** 4–6 mob names per front zone and faction besides the camp hunts and garrisons; the free front is
+     about a quarter kill, the main line and the fortress quests keep their hunts.
+116. **Kezamba's moot house** (TEMPLATEFIX; on the reset map): the moot house on stilts at the lake's edge, west of
+     the core (its porch faces the bank): both door leaves open, you walk in through either, and from inside the right
+     leaf has a door top, not wooden bars.
+117. **Lethariel's mere shrines:** the shrine in the core (east of the mere) and the one on the mere district plot
+     look unchanged; visitors who walk to a shrine stand on its floor, not inside it. The core gatehouses and Sunscar's
+     warlord platform are unchanged (a regression look only).
+118. **The bags** (BAGS): the tooltips read Small Bag (8 slots), Medium (12), Large (16), Great Cloth Bag (20),
+     Leather Pouch (8), Satchel (12), Pack (16), Rucksack (20); the vendor's Small Bag still costs 20c. With four
+     20-slot bags the Inventory page scrolls through 13 rows and the last row is reachable; the short and station
+     views scroll too. Help → Inventory says "bags of 8 to 20 slots". An old character's bags: item 9.
+119. **The quest log and HUD:** a shared front quest shows the zone you took it in; a main-line step with several
+     objectives (Senn's with his toll-box, Eriath's rootmark and tally-stone) shows one line per objective in the
+     dialog and the log.
+120. **The free order** (TEXTREVIEW): a free quest read before its story step does not assume it (Eriath's "Party:
+     Beneath the Waiting Coils" before or without Chirr, Borin's "Party: Nothing Left to Count" before or without
+     Huskell).
+121. **Web:** a tier-5 or tier-6 reward choice's dialog, a long main-line completion and the Inventory page with four
+     20-slot bags scrolled to the end at the web size.
+122. **The pages for the user** (outside the game, private claude.ai pages): the
+     [chapter-4 pick page](https://claude.ai/artifact/Xc3ppuiBCtPbRBGFES34XL), the
+     [QUESTMAP](https://claude.ai/artifact/H2SAHZ6NmyKRkkNSUir5SW) of the front 41–60 and the
+     [text pick page](https://claude.ai/artifact/SNCaLQEhZybywGruJie1wN).
 
 **(C) Round 57 item 16, the bays:** in a new world with the "test" seed (or the reset "test" world).
 

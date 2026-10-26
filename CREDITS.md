@@ -178,7 +178,8 @@ our changes. Derivatives keep their source's licence.
   (`grug_decor`).
 
 The rest of our art — item and node icons, map markers, the status and class
-icons, the cloaks, the character looks, the crest — is the Grudgelands
+icons, the cloaks, the character looks, the crest, and Round 63's scripted
+canvas and faction heraldry — is the Grudgelands
 project's own work, CC0 1.0, much of it painted or generated for the project
 (the licence files name the tools and GPT-6 Astra where it painted).
 

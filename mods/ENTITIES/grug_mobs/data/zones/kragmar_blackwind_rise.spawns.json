@@ -53,7 +53,7 @@
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
           "forest": {"id": "webwood", "name": "Blackwind Webwood",
             "day": [{"role": "marrow_weevil", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
-            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal", "quest_target": true},
+            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal"},
           "highland": {"id": "crags", "name": "Blackwind Crags",
             "day": [{"role": "briarpack_wolf", "weight": 1}],
             "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"},
@@ -113,11 +113,11 @@
        "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 6}
     ],
     "leaders": [
-      {"role": "grave_broker_mute", "at": {"camp": "bandit_hideout"}, "respawn": 300},
       {"role": "hollowbell_treant", "at": {"kind": "hollowwood", "pick": "farthest_from_roads"}, "respawn": 300}
     ],
     "places": [
-      {"id": "ashen_grave", "name": "Ashen Grave", "at": {"kind": "gravemoor", "pick": "farthest_from_roads"}}
+      {"id": "ashen_grave", "name": "Ashen Grave", "at": {"kind": "gravemoor", "pick": "farthest_from_roads"}},
+      {"id": "recovery_rest", "name": "Blackwind Recovery Rest", "at": {"kind": "deadmarch", "pick": "farthest_from_roads"}}
     ],
     "critters": ["bone_weevil", "gull"]
   }

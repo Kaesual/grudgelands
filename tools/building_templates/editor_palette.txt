@@ -759,3 +759,26 @@ node grug_trees:liana
 node grug_trees:liana_strand
 node grug_trees:swamp_hanging_moss
 node grug_trees:swamp_hanging_moss_strand
+
+# Round 63 mining outpost art.
+node grug_mapgen:camp_canvas
+node grug_mapgen:camp_ridge
+node grug_mapgen:camp_trim_accord
+node grug_mapgen:camp_trim_throng
+node grug_mapgen:faction_banner_accord
+node grug_mapgen:faction_banner_throng
+node grug_mapgen:camp_stockade_human
+node grug_mapgen:camp_stockade_dwarf
+node grug_mapgen:camp_stockade_elf
+node grug_mapgen:camp_stockade_orc
+node grug_mapgen:camp_stockade_undead
+node grug_mapgen:camp_stockade_troll
+node grug_mapgen:camp_wall_cap_human
+node grug_mapgen:camp_wall_cap_dwarf
+node grug_mapgen:camp_wall_cap_elf
+node grug_mapgen:camp_wall_cap_orc
+node grug_mapgen:camp_wall_cap_undead
+node grug_mapgen:camp_wall_cap_troll
+role rubble
+node default:ladder_wood
+node grug_mapgen:guild_lift

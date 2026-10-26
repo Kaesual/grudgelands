@@ -2,7 +2,7 @@
 
 Coordinator: Claude, 2026-10-23. Status: **complete** ([completion](#completion-2026-10-24)); 0.58.0 not pushed, it
 waits for the user's joint GUI test of 0.57.0, 0.58.0, 0.59.0 and 0.60.0
-([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui)); the user's go 2026-10-23. The plan review (a fresh
+([checklist](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)); the user's go 2026-10-23. The plan review (a fresh
 Opus, 2026-10-23, `r58/reports/plan-review.md`) is folded in; its blocker is decided (§2a).
 
 Round 58 is the **one map reset** of this stretch. Its rulings were decided with the user on 2026-10-22 and
@@ -565,7 +565,7 @@ Saved state, all without a position:
 
 **Superseded (Round 59):** the test was not run before Round 59, so one checklist for 0.57, 0.58 and 0.59 replaces
 this one: [GUI checklist (Rounds 57, 58 and 59)](round59-plan.md#gui-checklist-rounds-57-58-and-59), itself replaced
-by the [GUI checklist (Rounds 57, 58, 59, 60 and the UI)](round60-plan.md#gui-checklist-rounds-57-58-59-60-and-the-ui) (the items below
+by the [GUI checklist (Rounds 57, 58, 59, 60, 61, 62, the UI and 0.61.1)](round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611) (the items below
 keep their numbers there; Round 59 changes items 13, 14, 15 and 30; re-check 31 in a band zone).
 
 One test for both rounds (plan §6, review I9), desktop and the web build (the lanes' web shots were taken at

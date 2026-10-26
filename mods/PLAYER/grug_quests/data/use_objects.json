@@ -19,5 +19,6 @@
   "signal_lantern": {"texture": "grug_quests_obj_signal_lantern.png", "size": 1.2},
   "sighting_frame": {"texture": "grug_quests_obj_sighting_frame.png", "size": 1.4},
   "reading_knots": {"texture": "grug_quests_obj_reading_knots.png", "size": 1.3},
-  "claim_notice": {"texture": "grug_quests_obj_claim_notice.png", "size": 1.3}
+  "claim_notice": {"texture": "grug_quests_obj_claim_notice.png", "size": 1.3},
+  "storm_vessel": {"texture": "grug_quests_obj_storm_vessel.png", "size": 1.2}
 }

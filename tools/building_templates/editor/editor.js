@@ -8,7 +8,7 @@ import * as THREE from "three";
 import { createNodeView, cellData } from "/renderer.js";
 import {
   Doc, AIR, UNCHANGED, FACE_STEP, parseEntry, entryText, turned, resolveKey, resolvedCells,
-  entryKind, entryNode,
+  entryKind, entryShape, entryNode,
 } from "/model.js";
 
 const $ = id => document.getElementById(id);
@@ -19,6 +19,7 @@ const DRAFT = "grudge-template-draft:";
 
 let A = null;          // assets: types, textures, meshes, palettes, editor_palette, ...
 let P = null;          // palettes data
+let oneMount = null;   // wallmounted nodes drawn for one mount only (serve.one_mount)
 let typeIndex = null;  // node name -> type index
 let colors = [];       // type index -> [r, g, b, alpha] (top texture average)
 let tpl = null, doc = null;
@@ -42,7 +43,7 @@ async function api(path, body) {
 async function boot() {
   const [assets, list] = await Promise.all([api("/api/assets"), api("/api/list")]);
   if (!assets.ok || !list.ok) { $("status").textContent = "The editor server did not answer."; return; }
-  A = assets.data; P = A.palettes;
+  A = assets.data; P = A.palettes; oneMount = new Set(A.one_mount);
   typeIndex = new Map(A.types.map((t, i) => [t ? t.name : null, i]));
   for (const [alias, real] of Object.entries(A.aliases || {})) if (typeIndex.has(real)) typeIndex.set(alias, typeIndex.get(real));
   colors = await textureColors();
@@ -312,11 +313,15 @@ for (const b of document.querySelectorAll("[data-tool]")) b.onclick = () => setT
 // Turning follows the node's kind in every palette that places the template
 // (the validator checks those, not the preview).
 function kindOf(e) { return entryKind(e, placingBindings(), P); }
+// Flipping upside down likewise: a shaped node of one shape in all of them.
+// A torch (drawn for one mount only) does not flip in any of them.
+function shapeOf(e) { return entryShape(e, placingBindings(), P, oneMount); }
 
 // One tool use at a cell (grid or 3D). `rec` is the open stroke record.
 function use(rec, x, y, z) {
   if (tool === "pick") { pickAt(x, y, z); return true; }
   if (tool === "rotate") return report(doc.rotate(rec, x, y, z, kindOf));
+  if (tool === "flip") return report(doc.flip(rec, x, y, z, kindOf, shapeOf));
   if (tool === "point") { pointAt(x, y, z); return true; }
   const b = tool === "air" ? { kind: "air" } : tool === "unchanged" ? { kind: "unchanged" } : brush;
   return report(doc.apply(rec, x, y, z, b));
@@ -972,7 +977,7 @@ $("back").onclick = () => { location.hash = ""; };
 window.__editor = {
   get doc() { return doc; }, get tpl() { return tpl; }, get view() { return view; },
   get layer() { return layer; }, get tool() { return tool; }, get brush() { return brush; },
-  setLayer, setTool, setBrush, open, dirty, findings: () => findings,
+  setLayer, setTool, setBrush, open, dirty, kindOf, shapeOf, findings: () => findings,
   // The page position of a grid cell's centre on the current layer.
   cellPoint(x, z) {
     const r = grid.getBoundingClientRect();

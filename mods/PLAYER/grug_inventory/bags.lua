@@ -37,38 +37,41 @@ end
 --
 -- Bag items. Recipes deliberately do not exist yet: bags are Tailor
 -- products (WP10) plus one vendor-sold small bag (WP7). Test via /give.
--- Sizes 4 / 8 / 12 / 16 since 0.48.0, half the earlier ones (Round 48,
--- sell-fuel-daytime-plan.md ruling 7); the migration step 0.48.0 moved
--- what no longer fit (grug_core/migrations.lua).
+-- Sizes 8 / 12 / 16 / 20 since 0.62.0 (Round 62, round62-plan.md §2 point
+-- 11: four slots more each, the steps of four kept). 0.48.0 had halved the
+-- earlier 8 / 16 / 24 / 32 to 4 / 8 / 12 / 16 (Round 48,
+-- sell-fuel-daytime-plan.md ruling 7) and its migration step moved what no
+-- longer fit (grug_core/migrations.lua). Growing needs no step: the join
+-- below sizes each equipped bag's list up, and an unequipped bag is empty.
 --
 
 core.register_craftitem("grug_inventory:bag_small", {
-	description = "Small Bag (4 slots)",
+	description = "Small Bag (8 slots)",
 	inventory_image = "grug_inventory_bag_small.png",
-	stack_max = 1,
-	groups = {bagslots = 4},
-})
-
-core.register_craftitem("grug_inventory:bag_medium", {
-	description = "Medium Bag (8 slots)",
-	inventory_image = "grug_inventory_bag_medium.png",
 	stack_max = 1,
 	groups = {bagslots = 8},
 })
 
-core.register_craftitem("grug_inventory:bag_large", {
-	description = "Large Bag (12 slots)",
-	inventory_image = "grug_inventory_bag_large.png",
+core.register_craftitem("grug_inventory:bag_medium", {
+	description = "Medium Bag (12 slots)",
+	inventory_image = "grug_inventory_bag_medium.png",
 	stack_max = 1,
 	groups = {bagslots = 12},
 })
 
+core.register_craftitem("grug_inventory:bag_large", {
+	description = "Large Bag (16 slots)",
+	inventory_image = "grug_inventory_bag_large.png",
+	stack_max = 1,
+	groups = {bagslots = 16},
+})
+
 local extra_bags = {
-	{"bag_great", "Great Cloth Bag", 16, "grug_inventory_bag_large.png"},
-	{"bag_leather_pouch", "Leather Pouch", 4, "grug_inventory_bag_small.png^[colorize:#6b4428:58"},
-	{"bag_leather_satchel", "Leather Satchel", 8, "grug_inventory_bag_medium.png^[colorize:#6b4428:58"},
-	{"bag_leather_pack", "Leather Pack", 12, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
-	{"bag_leather_rucksack", "Leather Rucksack", 16, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
+	{"bag_great", "Great Cloth Bag", 20, "grug_inventory_bag_large.png"},
+	{"bag_leather_pouch", "Leather Pouch", 8, "grug_inventory_bag_small.png^[colorize:#6b4428:58"},
+	{"bag_leather_satchel", "Leather Satchel", 12, "grug_inventory_bag_medium.png^[colorize:#6b4428:58"},
+	{"bag_leather_pack", "Leather Pack", 16, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
+	{"bag_leather_rucksack", "Leather Rucksack", 20, "grug_inventory_bag_large.png^[colorize:#6b4428:58"},
 }
 for _, row in ipairs(extra_bags) do
 	core.register_craftitem("grug_inventory:" .. row[1], {

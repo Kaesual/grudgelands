@@ -1,5 +1,6 @@
 {
   "zone": "kragmar_thunderroot_wilds",
+  "reworked": true,
   "identity": "Thunderroot Wilds is the trolls' storm jungle at the Throng's far flank; bog witches bottle its thunder and bandits sell what the storm leaves.",
   "hubs": [
     {
@@ -9,7 +10,7 @@
         {
           "npc": "r20_anchor_048_host",
           "lines": [
-            "storm",
+            "border",
             "rainchar"
           ]
         }
@@ -31,80 +32,15 @@
   ],
   "quests": [
     {
-      "id": "thunderroot_storm_01",
-      "line": "storm",
-      "giver": "r20_anchor_048_host",
-      "turnin": "r20_anchor_048_host",
-      "min_level": 29,
-      "level": 31,
-      "requires": [],
-      "title": "An Unhelpful Chorus",
-      "text": "The Thunder Apes in the {name:canopy}, which lies {zone_area:canopy}, greet every scout with a chorus loud enough to guide an Accord patrol. Hunt them by day and kill four. I asked the spirits for silence; they sent more rain, which was thoughtful but unhelpful.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "territorial_ape"
-          ],
-          "count": 4,
-          "area": "kragmar_thunderroot_wilds/canopy"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "thunderroot_storm_02",
-      "line": "storm",
-      "giver": "r20_anchor_048_host",
-      "turnin": "r20_anchor_048_host",
-      "min_level": 31,
-      "level": 32,
-      "requires": [
-        "thunderroot_storm_01"
-      ],
-      "title": "Thunder Needs No Cork",
-      "text": "The Bottle Witches gather after dark in the {name:bogs}, which lie {zone_area:bogs}, bottling thunder as though the sky were theirs to pickle. Kill four and bring me two Hex Bottle Shards; let us see whose storm they thought they could keep.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "reed_hex_witch"
-          ],
-          "count": 4,
-          "area": "kragmar_thunderroot_wilds/bogs"
-        },
-        {
-          "type": "item",
-          "item": "grug_mobs:hex_bottle_shard",
-          "count": 2,
-          "roles": [
-            "reed_hex_witch"
-          ],
-          "area": "kragmar_thunderroot_wilds/bogs"
-        }
-      ],
-      "rewards": {
-        "weight": 4,
-        "items": []
-      },
-      "duration_min": 12
-    },
-    {
       "id": "thunderroot_storm_03",
-      "line": "storm",
+      "line": "rainchar",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 32,
-      "level": 33,
-      "requires": [
-        "thunderroot_storm_02"
-      ],
-      "title": "Rain for the Ashes",
-      "text": "Our drums carry through rain, but our allies at Ashveil Watch have only the ash wind for company. Find Vaska Ashlistener there on Blackwind Rise and offer your help. Roots hold together beneath the soil; so must the Throng, even where our branches cannot touch.",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "Ashveil Listens Too",
+      "text": "Vaska Ashlistener at Ashveil Watch in Blackwind Rise needs help with the people arriving from the fighting. Go and speak to her. She lets a tired carrier finish a sentence, which is rarer than you would think among people waiting for a delivery.",
       "objectives": [
         {
           "type": "talk",
@@ -112,128 +48,134 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 15
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The id stays (its objectives are unchanged); free, it requires nothing."
     },
     {
-      "id": "thunderroot_storm_04",
-      "line": "storm",
-      "giver": "r20_anchor_048_host",
-      "turnin": "r20_anchor_048_host",
-      "min_level": 34,
-      "level": 35,
-      "requires": [
-        "thunderroot_storm_02"
-      ],
-      "title": "Messages Wrapped in Silk",
-      "text": "A message wrapped in silk sounds grand until you learn the messenger is still inside. Kill four Funnelwebs after dark in the {name:deepwood}, which lies {zone_area:deepwood}. Our words must reach the other outposts before the spiders finish reading them.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "canopy_web_spider"
-          ],
-          "count": 4,
-          "area": "kragmar_thunderroot_wilds/deepwood"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 10
-    },
-    {
-      "id": "thunderroot_rainchar_01",
+      "id": "thunderroot_reading_knots",
       "line": "rainchar",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_048_host",
-      "min_level": 34,
-      "level": 36,
+      "min_level": 32,
+      "level": 33,
       "requires": [],
-      "title": "Listen for the Hiss",
-      "text": "The marsh speaks to those who listen, but lately our foragers hear nothing except hissing. Kill four Mambas basking by day in the {name:witchmire}, which lies {zone_area:witchmire}. The spirits may teach patience; I would rather our foragers came home to learn it.",
+      "title": "The Next Crew Should Know",
+      "text": "The carriers have left their reports on a reading cord at the loading ground of Thunderroot Mining Camp. Secure the cord so the next crew can read it before they leave. A loose knot can turn 'the crew is back' into a very long wait.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "coiled_serpent"
-          ],
-          "count": 4,
-          "area": "kragmar_thunderroot_wilds/witchmire"
+          "type": "use",
+          "place": "socket:mining_camp_thunderroot_wilds/held_load",
+          "object": "reading_knots",
+          "label": "Secure the reading cord",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 3.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_silkweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_scaled",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_silversteel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 10
+      "lesson": "A local task; the second armor choice (one enchant, a suffix).",
+      "duration_min": 9,
+      "notes": "Round 61 BANDQUESTS. The camp's held load (a town place every mining camp has)."
     },
     {
-      "id": "thunderroot_rainchar_02",
-      "line": "rainchar",
-      "giver": "r20_anchor_048_host",
-      "turnin": "r20_anchor_048_host",
-      "min_level": 37,
-      "level": 38,
-      "requires": [
-        "thunderroot_rainchar_01"
-      ],
-      "title": "A Debt at {name:rainchar_camp}",
-      "text": "The bandits at the {name:rainchar_camp} {dir_from_giver:rainchar_camp} sell our stolen supplies back to us and call the bill a debt, while Thunderstep's fighters make do with scraps. Kill four Brigand Bowmen there; Raincall Basin once had collectors like these, selling farmers their own rain. Hungry fighters hold no line, whatever the spirits promise.",
-      "objectives": [
-        {
-          "type": "kill",
-          "roles": [
-            "entrenched_bandit_archer"
-          ],
-          "count": 4,
-          "area": "kragmar_thunderroot_wilds/rainchar_camp"
-        }
-      ],
-      "rewards": {
-        "weight": 3.5,
-        "items": []
-      },
-      "duration_min": 12
-    },
-    {
-      "id": "thunderroot_rainchar_03",
+      "id": "thunderroot_storm_vessel",
       "line": "rainchar",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_048_host",
       "min_level": 38,
       "level": 39,
-      "requires": [
-        "thunderroot_rainchar_02"
-      ],
-      "title": "Zek Keeps the Wrong Company",
-      "text": "Bottle-Keeper Zek guards the witches' stolen storms in the {name:stormglades}, {dir_from_giver:bottle_keeper_zek}, with thunder in bottles and apes in the grass. Go by day and kill Zek along with four Thunder Apes in those glades. I want to hear the sky speak with its whole voice again.",
+      "requires": [],
+      "title": "One Stolen Storm Fewer",
+      "text": "The carriers working the {name:stormglades} have enough weather to endure without someone keeping a bottled storm to loose on them. Seal the vessel at the {name:storm_store}, {dir_from_giver:storm_store}, so it cannot be opened against the next crew. Leave it there and bring me word. The rain may be stubborn, but this much we can do something about.",
+      "completion": "That vessel is sealed against use now. Whoever meant to loose it on our carriers will have to find another way to spoil their journey.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "territorial_ape"
-          ],
-          "count": 4,
-          "area": "kragmar_thunderroot_wilds/stormglades"
-        },
-        {
-          "type": "kill",
-          "roles": [
-            "bottle_keeper_zek"
-          ],
-          "count": 1
+          "type": "use",
+          "place": "storm_store",
+          "object": "storm_vessel",
+          "label": "Seal the storm vessel",
+          "hold": 5
         }
       ],
       "rewards": {
-        "weight": 5,
-        "items": []
+        "weight": 7,
+        "choices": [
+          {
+            "item": "grug_gear:staff_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:greataxe_silversteel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "duration_min": 15,
-      "climax": true
+      "lesson": "The zone's solo quest; the weapon choice (prefix and suffix).",
+      "duration_min": 12,
+      "notes": "Round 61 BANDQUESTS. K9 A: the zone's solo quest with its weapon, at a new recipe place in the Stormglades; the new object kind storm_vessel (the user's drop-03 P1 art)."
     },
     {
       "id": "thunderroot_rainchar_group",
@@ -242,11 +184,9 @@
       "turnin": "r20_anchor_048_host",
       "min_level": 38,
       "level": 39,
-      "requires": [
-        "thunderroot_rainchar_03"
-      ],
-      "title": "Party: A Storm Too Many",
-      "text": "The Bog Witch Storm-Bottle waits in the {name:heartwood}, {dir_from_giver:storm_bottle_witch}, clutching enough stolen thunder to make even the spirits keep their distance. Bring a party and kill her; no one should face that storm alone. Courage is easier to find with friends standing in the rain beside you.",
+      "requires": [],
+      "title": "Party: Storm-Bottle",
+      "text": "{name:storm_bottle_witch} hoards stolen storms in the {name:heartwood} and turns her own magic on anyone who approaches. Gather a group and kill her, {dir_from_giver:storm_bottle_witch}. She has made enough people flinch at thunder that once meant rain for their gardens.",
       "objectives": [
         {
           "type": "kill",
@@ -257,25 +197,35 @@
         }
       ],
       "rewards": {
-        "weight": 4,
-        "items": []
+        "weight": 6,
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t4"
+          },
+          {
+            "item": "grug_gear:apothecary_loop_t4"
+          },
+          {
+            "item": "grug_gear:reclaimers_mark_t4"
+          }
+        ]
       },
+      "lesson": "The optional group quest: free, standalone, a trinket choice as its extra.",
       "duration_min": 15,
+      "group": true,
       "optional": true,
-      "group": true
+      "notes": "Round 61 BANDQUESTS. The optional group quest (round61-plan.md §2 point 8): free, standalone, a trinket choice as its extra."
     },
     {
       "id": "thunderroot_rainchar_04",
       "line": "rainchar",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_044_host",
-      "min_level": 39,
+      "min_level": 40,
       "level": 40,
-      "requires": [
-        "thunderroot_rainchar_03"
-      ],
-      "title": "Carry the Thunder",
-      "text": "You came through this jungle listening for danger; now the jungle knows your footsteps. Travel to Tornstandard Hold on Bannerbreak Mesa and report to Yarra Standardmender; she sends Throng fighters on to the front from there. Carry our thunder with you.",
+      "requires": [],
+      "title": "The People Under the Banner",
+      "text": "Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa needs help with the fighting beyond our posts. Go and speak to her about it. She keeps the names of the fallen in her banners and a sharp eye on what the living still need.",
       "objectives": [
         {
           "type": "talk",
@@ -283,10 +233,11 @@
         }
       ],
       "rewards": {
-        "weight": 1.5,
-        "items": []
+        "weight": 1
       },
-      "duration_min": 15
+      "lesson": "A travel quest, free (a level only).",
+      "duration_min": 10,
+      "notes": "Round 61 BANDQUESTS. The departure at 40 (round61-plan.md §2 point 7); free, it requires nothing."
     }
   ]
 }

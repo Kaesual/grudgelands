@@ -88,3 +88,22 @@ plank texture (`default_wood.png` with a colorize modifier).
 | `textures/grug_mapgen_guild_banner_oathdelvers.png` | GPT-6 Astra (Round 58) | guild-art drop 02 P2 `banner_oathdelvers.png` (32×32 cloth, split ore in tongs); byte-identical copy | CC0-1.0 |
 | `textures/grug_mapgen_guild_emblem_charter.png` | GPT-6 Astra (Round 58) | guild-art drop 02 P1 `emblem_charter.png` (16 px, keystone under a pick); byte-identical copy | CC0-1.0 |
 | `textures/grug_mapgen_guild_emblem_oathdelvers.png` | GPT-6 Astra (Round 58) | guild-art drop 02 P1 `emblem_oathdelvers.png` (16 px, crossed picks round ore); byte-identical copy | CC0-1.0 |
+
+## Mining outposts and faction heraldry (Round 63)
+
+Original scripted art by the Grudgelands project with OpenAI Codex, CC0-1.0.
+Reproducible from `tools/r63_camp_art/build.py`; the approved camp preview
+provided the canvas, heraldry and metal attachment geometry. No imported
+source pixels. Existing wood and steel materials referenced by the nodes
+retain their original licenses.
+
+| File | Source | License |
+|---|---|---|
+| `models/grug_mapgen_camp_canvas.b3d` | Original generator output | CC0-1.0 |
+| `models/grug_mapgen_faction_banner.b3d` | Original generator output | CC0-1.0 |
+| `textures/grug_mapgen_camp_canvas.png` | Original generator output | CC0-1.0 |
+| `textures/grug_mapgen_camp_ridge.png` | Original generator output | CC0-1.0 |
+| `textures/grug_mapgen_camp_trim_accord.png` | Original generator output | CC0-1.0 |
+| `textures/grug_mapgen_camp_trim_throng.png` | Original generator output | CC0-1.0 |
+| `textures/grug_mapgen_faction_banner_accord.png` | Original generator output | CC0-1.0 |
+| `textures/grug_mapgen_faction_banner_throng.png` | Original generator output | CC0-1.0 |

@@ -84,11 +84,11 @@ M.BOUNDS = {
 	-- keeps them (`r31_pvp_poi_blueprint.lua`); the fitting profiles' cores
 	-- (source/simple_map.lua) are one node wider than these boxes.
 	pvp_fortress = {min = {x = -24, y = 0, z = -24}, max = {x = 24, y = 16, z = 24}},
-	pvp_camp_low = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 9, z = 11}},
-	pvp_camp_high = {min = {x = -13, y = 0, z = -13}, max = {x = 13, y = 9, z = 13}},
+	pvp_camp_low = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 16, z = 11}},
+	pvp_camp_high = {min = {x = -13, y = 0, z = -13}, max = {x = 13, y = 16, z = 13}},
 	-- Round 58 camps (`r58_camp_blueprint.lua`): square and centred like the
 	-- war camps, their fitting profiles' cores one node wider.
-	mining_camp = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 9, z = 11}},
+	mining_camp = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 16, z = 11}},
 	camp_construction = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 9, z = 11}},
 }
 

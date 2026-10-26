@@ -1,90 +1,236 @@
 {
   "zone": "elandor_lethariel",
+  "reworked": true,
   "quests": [
     {
-      "id": "lethariel_front_01",
+      "id": "lethariel_carrier_path",
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 55,
-      "level": 56,
+      "min_level": 51,
+      "level": 52,
       "requires": [],
-      "title": "The Healers Are Waiting",
-      "text": "Our healers have patients waiting and no Glass Venom left; I would spare them having to choose who waits longest. Bring me three portions from Vine Serpents in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}, by day. Walk with care among those roots; I would rather not hand the healers another patient.",
+      "title": "Room for a Loaded Step",
+      "text": "A carrier watches the path less easily with a load across both shoulders. Loosen the old snare at the {name:front_skyglass_canopy/carrier_clearing} and clear it from their passage. Whoever set it has had quite enough of the forest's patience.",
+      "objectives": [
+        {
+          "type": "use",
+          "place": "front_skyglass_canopy/carrier_clearing",
+          "object": "snare_bundle",
+          "label": "Loosen the carriers' snare",
+          "hold": 4
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
+      },
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft ER1: a use at the new recipe place P7 (Skyglass clearings); Eriath's work from 51."
+    },
+    {
+      "id": "lethariel_cocoa",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 52,
+      "level": 53,
+      "requires": [],
+      "title": "Enough for Another Cup",
+      "text": "The people tending our distant work sites have taken to stretching one pot across a whole shift. Bring me six Wild Cocoa so I can send something worth warming their hands around. A second cup is a small kindness, until you are the person who would otherwise go without it.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:glass_venom",
-          "count": 3,
-          "roles": [
-            "glass_fang_serpent"
-          ],
-          "area": "front_skyglass_canopy/rootways"
+          "item": "grug_gathering:wild_cocoa",
+          "count": 6
         }
       ],
       "rewards": {
-        "weight": 5.5,
-        "items": []
+        "weight": 4.5,
+        "choices": [
+          {
+            "item": "grug_gear:legs_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:legs_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "Skyglass entry by day.",
-      "duration_min": 14
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 9,
+      "notes": "Round 62 FRONTQUESTS. Draft ER2."
     },
     {
-      "id": "lethariel_front_02",
+      "id": "lethariel_received",
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 55,
-      "level": 56,
+      "min_level": 54,
+      "level": 55,
       "requires": [],
-      "title": "Threads Across the Living Path",
-      "text": "Gossamer Widows draw their threads across the {name:front_skyglass_canopy/rootways} each night, until even familiar paths become snares. Kill six of them after dark. A forest must leave room for more than one kind of hunger.",
+      "title": "Received in Good Order",
+      "text": "A supply load has reached the {name:front_skyglass_canopy/receiving_stand}, but our carriers still need its arrival entered. Confirm the delivery on the dispatch record there. Then I can tell the crews what is waiting for them, and the people who hauled it can stop answering for a journey already made.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "glass_web_spider"
-          ],
-          "count": 6,
-          "area": "front_skyglass_canopy/rootways"
+          "type": "use",
+          "place": "front_skyglass_canopy/receiving_stand",
+          "object": "dispatch_record",
+          "label": "Confirm the delivery",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 5.5,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:feet_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:feet_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "The same kind at night; one outing serves both.",
-      "duration_min": 14
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 11,
+      "notes": "Round 62 FRONTQUESTS. Draft ER3: a use at the new recipe place P8 (Skyglass rootways)."
     },
     {
-      "id": "lethariel_front_03",
+      "id": "lethariel_watch_names",
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 57,
+      "min_level": 58,
       "level": 59,
-      "requires": [
-        "lethariel_front_01",
-        "lethariel_front_02"
-      ],
-      "title": "A Disagreement in the Branches",
-      "text": "I sent a scout to listen to the {name:front_skyglass_canopy/high_canopy}, which lies {zone_area:front_skyglass_canopy/high_canopy}; the Knucklers answered with a branch. Defeat six of them there by day so our watchers can return. Listening to the forest requires a little quiet, and preferably an unbroken head.",
+      "requires": [],
+      "title": "More Than a Lost Watch",
+      "text": "The report from {name:r20_anchor_085} calls them a lost watch and leaves a space where their names should be. Secure the names and personal records left there, so I can give their people something more exact than a number. Someone in Lethariel may have been listening for one particular footstep.",
       "objectives": [
         {
-          "type": "kill",
-          "roles": [
-            "glass_knuckle_ape"
-          ],
-          "count": 6,
-          "area": "front_skyglass_canopy/high_canopy"
+          "type": "use",
+          "place": "r20_anchor_085",
+          "object": "witness_record",
+          "label": "Record the watch's names",
+          "hold": 4
         }
       ],
       "rewards": {
-        "weight": 6,
-        "items": []
+        "weight": 5,
+        "choices": [
+          {
+            "item": "grug_gear:wand_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "int"
+              },
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:bow_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "dex"
+              },
+              {
+                "channel": "suffix",
+                "stat": "attack_speed_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:sword_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "prefix",
+                "stat": "str"
+              },
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          }
+        ]
       },
-      "lesson": "The top belt of Skyglass by day.",
-      "duration_min": 14
+      "lesson": "A free front task of the giver's own people (a level only).",
+      "duration_min": 12,
+      "notes": "Round 62 FRONTQUESTS. Draft ER4: a use at the free clash site 085; Lethariel's weapon (a solo quest)."
     },
     {
       "id": "lethariel_front_04",
@@ -94,11 +240,12 @@
       "min_level": 58,
       "level": 59,
       "requires": [
-        "lethariel_front_03",
         "splitbolt_front_06"
       ],
+      "story": true,
       "title": "The Price of Another War",
       "text": "I have seen this hand before, in Bough-Counter Rusk's false reckonings; in {name:paymaster_chirr}'s payroll it has grown bold, writing names from both armies in the open. A living recruit who takes this coin cannot spend or discard it; it cools only when passed on as payment for a death. Defeat five Last-Pay Archers or Ash-Writ Bowmen in all at the {name:front_skyglass_canopy/paymaster_camp}, {dir_from_giver:front_skyglass_canopy/paymaster_camp}, where they guard the pay day and night. Kill Chirr too, before he buys another generation beneath these branches.",
+      "completion": "Chirr paid living and dead alike with coin taken from both armies; his death stops his hand, but leaves the names he burned into root and stone. I can point you to the rootmark at {name:r20_anchor_084} and the tally-stone at {name:r20_anchor_077}, where those claims still hold. Break their hold on the names, then report to the Warmaster at Ashenward Bastion; the collector will answer to an army, not to a forest left alone.",
       "objectives": [
         {
           "type": "kill",
@@ -119,7 +266,35 @@
       ],
       "rewards": {
         "weight": 7,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:chest_cloth_stormweave",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_mana_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_leather_nightscale",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "crit_percent"
+              }
+            ]
+          },
+          {
+            "item": "grug_gear:chest_metal_abyssal_steel",
+            "affixes": [
+              {
+                "channel": "suffix",
+                "stat": "max_hp_percent"
+              }
+            ]
+          }
+        ]
       },
       "lesson": "Front climax and the main line's chapter 3 climax: the last named normal leader before 60.",
       "duration_min": 18,
@@ -138,8 +313,10 @@
       "requires": [
         "lethariel_front_04"
       ],
+      "story": true,
       "title": "Names Beyond His Reach",
       "text": "Chirr's purse held coins stripped from both armies' dead, and the Undertithe claims every name bought with them. Smother the burning rootmark at {name:r20_anchor_084} and strike the names from the tally-stone at {name:r20_anchor_077} in Gravesalt Escarpment. Without those names to secure the debt, its unpaid balance will draw the collector to the stone. Report to the Warmaster at {name:pvp_fortress_accord}; we have freed the names and made ourselves an appointment.",
+      "completion": "The names are struck from root and stone, and I will preserve them in our own record, Odren Vell's included. The unsecured claim is drawing its collector to {name:r20_anchor_077}: Isquarre the Tithe-Eater, whose reach beneath the ground we cannot measure. I will commission a group to meet him there; no one is to mistake this for a task to attempt alone.",
       "objectives": [
         {
           "type": "use",
@@ -157,8 +334,7 @@
         }
       ],
       "rewards": {
-        "weight": 3,
-        "items": []
+        "weight": 3
       },
       "lesson": "Main line, chapter 3 (last turn-in): two uses, at a Skyglass clash site and at Tombroad Ambush, then back to the Warmaster.",
       "duration_min": 20,
@@ -173,11 +349,9 @@
       "turnin": "r20_elf_capital_envoy",
       "min_level": 59,
       "level": 59,
-      "requires": [
-        "lethariel_front_04"
-      ],
+      "requires": [],
       "title": "Party: Beneath the Waiting Coils",
-      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Chirr is dead, but our watchers still cannot cross beneath those coils. Gather a party and slay the elite serpent; freeing a forest includes making room for someone to walk through it.",
+      "text": "{name:glass_throat_serpent} has fattened among the scorched branches of the {name:front_skyglass_canopy/high_canopy}, {dir_from_giver:glass_throat_serpent}. Whatever becomes of Chirr's payroll, our watchers still cannot cross beneath those coils. Gather a party and slay the elite serpent; a forest worth keeping should leave room for someone to walk through it.",
       "objectives": [
         {
           "type": "kill",
@@ -189,12 +363,23 @@
       ],
       "rewards": {
         "weight": 4,
-        "items": []
+        "choices": [
+          {
+            "item": "grug_gear:last_light_t6"
+          },
+          {
+            "item": "grug_gear:apothecary_loop_t6"
+          },
+          {
+            "item": "grug_gear:reclaimers_mark_t6"
+          }
+        ]
       },
       "lesson": "Optional group elite; the route reaches 60 without it.",
       "duration_min": 12,
       "optional": true,
-      "group": true
+      "group": true,
+      "notes": "Round 62 FRONTQUESTS. Draft ER5 (K11 A): the optional group quest on Glass-Throat, standalone from its level; its id and objective stay, its prerequisite goes; a trinket choice."
     }
   ]
 }

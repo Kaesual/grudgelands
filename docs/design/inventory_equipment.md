@@ -26,7 +26,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one continuous 8-wide grid in a scroll area: each bag starts in
   the column right after the previous list's last slot, so only the very
-  last row may be partial (three 4-slot bags make one and a half rows; the
+  last row may be partial (one 12-slot bag makes one and a half rows; the
   user, Round 48 playtest, replacing the round's earlier "half-empty rows
   are accepted"), and the hotbar (`main[1..8]`) below it, outside the
   scroll area. Both are boxed like the Inventory tab (Round 45 playtest,
@@ -545,12 +545,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 - **Base inventory stays 32 slots** (must not feel cramped); **4 bag
   slots** extend it. Cloth and leather each have four named variants, at
-  profession tiers T1 / T2 / T4 / T5: **4 / 8 / 12 / 16** slots (`bagslots` group; bag slots + contents are
-  player-inventory lists, see above; halved in Round 48). Four of the
-  largest therefore add 64 slots, 96 in all. The parallel cloth/leather catalog is an explicit one-item-per-concept
+  profession tiers T1 / T2 / T4 / T5: **8 / 12 / 16 / 20** slots (`bagslots` group; bag slots + contents are
+  player-inventory lists, see above; halved to 4 / 8 / 12 / 16 in Round 48,
+  four slots more each since Round 62). Four of the
+  largest therefore add 80 slots, 112 in all (the full view's scroll grid
+  then has 13 rows: `main[9..]`'s three and ten of bags). The parallel cloth/leather catalog is an explicit one-item-per-concept
   exception; neither material grants stats, affixes or extra capacity.
 - Cloth bags are Tailor products and leather bags are Leatherworker products.
-  The **small 4-slot cloth bag is the
+  The **small 8-slot cloth bag is the
   exception and stays vendor-sellable** (the Small Bag, 20c since Round
   48): it is the floor tier of its item category (professions.md §4), so
   it is bought, not crafted-only.
@@ -619,6 +621,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   bags' join callback never shrinks a content list over items (`set_size`
   would delete them): a character whose step did not finish keeps them
   until it runs again.
+- **The bag change of 0.62.0** (Round 62): every bag four slots larger
+  (8 / 12 / 16 / 20). No step: the bags' join callback sizes each equipped
+  bag's content list up from its bag, keeping its items, and an unequipped
+  bag is always empty.
 - **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
   elixirs only (group `grug_potion`), created for every player; filled here
   and drunk from the quickbar (below).

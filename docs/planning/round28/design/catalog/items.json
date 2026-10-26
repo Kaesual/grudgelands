@@ -1530,5 +1530,17 @@
     ],
     "icon": "An opened folder with a stack of still pale sheets and a clearly marked cover sheet. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
     "notes": "Round 60 chapter 2 (K3 A): the Accord's quest drop from Goblin Powder-Counter Nib (frostbarrow_cutting_04), every kill while needed. Its icon grug_mobs_dispatch_folio.png is the user's pick (Round 60 STORYART, tools/r60_storyart/paint_art.py)."
+  },
+  {
+    "id": "grug_mobs:runners_packet",
+    "name": "Runner's Packet",
+    "tier": 4,
+    "kind": "quest",
+    "description": "A runner's strapped packet of local messages.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A flat strapped message envelope with a wide offset carrying strap and a clearly visible closing flap. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+    "notes": "Round 61 chapter 3 (K10 A): the quest drop of the shared quest border_packets from the bandit archers (entrenched_bandit_archer) of the six Round 20 bandit camps of the band 31-40, one area per variant. Its icon grug_mobs_runners_packet.png is the user's pick (Round 61 STORYART, tools/r61_storyart/paint_art.py)."
   }
 ]

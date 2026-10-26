@@ -12,6 +12,118 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.63.0 — fortified mining outposts and faction banners (2026-10-26)
+
+**Map reset** needed: all 36 completed mining camps use new templates and
+relocated lift columns. Underground rooms follow their camp's lift. This
+joins the already planned production map reset; no migration step.
+
+- Canvas tents in muted faction colours, timber walls on stone plinths,
+  a framed entrance and the capital guild houses' tall mining headframe.
+- Attached banners for The Accord and The Throng, with matching heraldry
+  in the inventory header. The larger war camps keep their watchtowers.
+- Camp captains, guards, foremen, vendors and quest places keep their roles.
+
+## 0.62.0 — the front 41–60, the main line's story and bigger bags (2026-10-25)
+
+**Map reset** needed: new quest places on the Battlegrounds, changed quest
+targets there and two fixed capital buildings change what world
+generation builds, so an existing world's map is generated anew from its
+seed. Characters keep their level, gear, inventory, money, quests,
+professions, mounts and waypoints, as in every map reset; a front quest
+that no longer exists simply leaves the quest log. No migration step: your
+bags simply grow at your next login, with every item where it was.
+
+- **The front 41–60 reworked:** the hosts' and the capitals' envoys'
+  quests for the Battlegrounds are offered from their level, with no
+  chain to follow outside the story, and far fewer of them are hunts: light a lantern at the Causeway Return Stand, count who came
+  back at the Shattered Relief Rest, check the shoring in Gravesalt, loosen
+  the carriers' snares in the Skyglass Canopy, and bring Potatoes, Salt
+  Crust, Stormkelp, Paper, Melons, Wild Cocoa and Torches where they are
+  needed. Engine Nine and War Construct Last-Toll are optional "Party:"
+  quests both factions share.
+- **The main line is the story:** from the Warmaster's first order at 41
+  to the finale at 60, every step is a story quest with a closing text
+  that hands you on; it opens at 41 even if you skipped the earlier
+  chapters, and The Throng now meets Paymaster Chirr after Watch-Captain
+  Huskell.
+- **New departures:** the hosts send you on to Dorrin Gateledger in Dur
+  Brannoc, Thorga Roadspeaker in Gor Drazhak, Borin Splitbolt, Nalo
+  Pathdrum, Eriath Boughwarden, Vaska Ashlistener and Ossa Quietregister,
+  each with work waiting. The Throng gets its own island bounty: Kraits on
+  Stormscale Summit, then a party against Last-Offering.
+- **Quest rewards at 41–60:** a choice of Healing or Mana Potion V and
+  VI, armor with an enchant, weapons with two, trinkets on the group
+  quests, and a weapon choice at the end of the main line.
+- **Bigger bags:** every bag holds four more slots (8, 12, 16 and 20) at
+  the same price and recipe.
+- **Two capital buildings fixed:** both leaves of Kezamba's moot-house
+  door open properly, and visitors to Lethariel's mere shrines stand on
+  the floor.
+
+## 0.61.1 — refreshed vendor, quest and service windows (2026-10-25)
+
+**Compatible:** no map reset and no migration step.
+
+- **Vendors:** the offers are compact cards in two columns, each with a
+  small icon, its name, its price and its own Buy button; a long shelf
+  scrolls inside its pane and keeps its place after a purchase, so you
+  can buy from the bottom of the list twice in a row. Reputation shops
+  use the same smaller icons.
+- **Quest givers:** the list of quests stands beside the quest's text
+  and objectives, with the rewards in their own pane below them; a chosen
+  reward still shows its full details.
+- **The other service windows:** mail, trainers, mount trainers,
+  innkeepers, waystones, mining lifts, the Housing Steward, repair (with
+  durability and the total cost), character creation and the welcome
+  window (its tips in two columns) share the new look; what each window
+  does stays the same.
+- **Crafting:** the recipe details use the same text sizes as the list,
+  and the tier status reads more clearly; gathering sources show each
+  zone's own level band.
+- **Map & Quests:** the map and the quest column each take half the
+  window. Zone names stay on one line, a little smaller at 1× and larger
+  from 2×; choosing the Zones layer from the overview zooms in to 2×.
+
+## 0.61.0 — the quests of levels 31–40 and the story's third chapter (2026-10-25)
+
+**Map reset** needed: new quest places in the wilds of levels 31–40, a
+few leaders gone and Provisioner Rattle at a new level change what world
+generation builds, so an existing world's map is generated anew from its
+seed. Characters keep their level, gear, inventory, money, quests,
+professions, mounts and waypoints, as in every map reset; a quest of
+levels 31–40 that no longer exists simply leaves the quest log. No
+migration step. One known edge: if "Rattle's Bad Arithmetic" was in your
+log before, it may already read ready without Rattle's kill.
+
+- **Levels 31–40 reworked:** Stormvault Heights, Ashenward March and
+  Glassroot Wilds (The Accord), Blackwind Rise, Bannerbreak Mesa and
+  Thunderroot Wilds (The Throng) offer their quests at once from level
+  30, each from its level, with no chain to follow outside the story.
+  Far fewer of them are hunts: set a sighting frame at the Stormvault
+  Survey Stand, loosen a snare on the Glassroot Carrier Path, secure a
+  shroud bundle at the Blackwind Recovery Rest, seal a stolen storm
+  vessel in Thunderroot, ready the reserve load, trim a signal lantern or
+  secure a reading cord at the mining camps' loading grounds, and bring
+  Corn, Melons, Chests, Iron Buckets, Wooden Ladders, Mushrooms and
+  Frostfin to the outposts. Four zones end with a departure to the front;
+  in Ashenward March and Bannerbreak Mesa the hosts give their front quests themselves.
+  Rewards: a choice of Healing or Mana Potion IV, armor choices with an
+  enchant and a weapon choice with two.
+- **The story's third chapter:** at level 34 Toren Waterbarrel sends The
+  Accord to a raided transport at the Ashenward Broken Load and on to
+  Audra Wainholt, the Ashenward mining camp's foreman; at 35 Drek
+  Rampbinder sends The Throng to the Bannerbreak Scattered Load and on to
+  Greda Stonehaul of the Bannerbreak camp. After the camp raid, at 39 and
+  40, the band's foremen send you to Nella Hedgeward or Yarra
+  Standardmender, who point you to the Warmaster.
+- **Optional group quests:** each zone's elite leader is one "Party:"
+  quest at 38 with a choice of trinkets; nothing else needs it, so the
+  band plays well alone.
+- **A new quest item and object:** the Runner's Packet, which the bandit
+  archers of the band's camps drop for "Words Worth Bringing Back", stays
+  in your bags like every quest item; the storm vessel has its own look.
+
 ## 0.60.1 — a new look for every window (2026-10-25)
 
 **Compatible:** no map reset and no migration step.
