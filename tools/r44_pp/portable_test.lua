@@ -8,8 +8,8 @@
 --   P. the page out of a party and in one (as leader and as member): the
 --      party section (settings, online same-faction players, pending
 --      invitations, the member table and its buttons) and the PvP section
---      below it (state, the flag button, the statistics); no inventory view;
---      every element inside the window, the PvP section under the party's;
+--      beside it (state, the flag button, the statistics); no inventory view;
+--      every element inside the window, party cards stacked left of PvP;
 --   B. every party and PvP field still handled: each button, checkbox,
 --      dropdown, textlist and table event reaches its grug_parties or
 --      grug_pvp call; the flag button re-sends the page once;
@@ -321,7 +321,7 @@ local function geometry(fs, label)
 			end
 		end
 	end
-	check(inside, label .. ": every element inside the 13.5 x 13.67 window")
+	check(inside, label .. ": every element inside the shared window")
 	return rects
 end
 local function overlap(a, b)
@@ -341,30 +341,41 @@ local function pvp_section(fs, label)
 	has(fs, "There is no early unflag.", label .. ": the flag rule")
 end
 
--- Cards share the lower row. Their controls must not collide, including
+-- Party cards stack left of a full-height PvP card. Controls must not collide, including
 -- container offsets; decorative background panels deliberately enclose them.
 local function layout(rects, label)
-	local roster, flag
+	local roster, flag, online, pending, current_heading, pvp_heading
 	for _, rect in ipairs(rects) do
 		if rect.kind == "table" then roster = rect end
 		if rect.kind == "button" and rect.text == "grug_pvp_flag" then flag = rect end
+		if rect.kind == "textlist" and rect.text == "grug_party_online_list" then online = rect end
+		if rect.kind == "textlist" and rect.text == "grug_party_pending" then pending = rect end
+		if rect.kind == "label" and rect.text == "Current party" then current_heading = rect end
+		if rect.kind == "label" and rect.text == "PvP status" then pvp_heading = rect end
 	end
-	check(flag and flag.x >= 6.75, label .. ": PvP lives in the right card")
+	check(flag and flag.x >= 12, label .. ": PvP lives in the right card")
+	check(current_heading and pvp_heading and math.abs(current_heading.y - pvp_heading.y) < 0.01,
+		label .. ": current party and PvP start at the same height")
+	if online and pending then
+		check(online.x == pending.x and online.y + online.h < pending.y,
+			label .. ": online players and invitations stack in the left column")
+	end
 	if roster then
 		check(roster.x + roster.w < flag.x, label .. ": party stays left of PvP")
+		check(not online or roster.y + roster.h < online.y, label .. ": current party precedes online players")
 	end
 	local clash = false
 	for i, a in ipairs(rects) do
 		for j = i + 1, #rects do
 			local b = rects[j]
-			if a.y >= 4.3 + HEADER_H and b.y >= 4.3 + HEADER_H and a.kind ~= "background9" and
+			if a.y >= 0.85 + HEADER_H and b.y >= 0.85 + HEADER_H and a.kind ~= "background9" and
 					b.kind ~= "background9" and overlap(a, b) then
 				clash = true
 				print("  overlap: " .. tostring(a.text) .. " / " .. tostring(b.text))
 			end
 		end
 	end
-	check(not clash, label .. ": no lower-card controls overlap")
+	check(not clash, label .. ": no body controls overlap")
 end
 
 pvp_state.alice = {flagged = true, reason = "location_contested", pvp_combat = true}
@@ -385,20 +396,20 @@ eq(out_fs:sub(1, #frame_header), frame_header, "P out of a party: the window's f
 has(out_fs, ";grug_ui_tab_", "P the shared tab buttons")
 has(out_fs, "Party & PvP", "P the tab caption")
 no_inventory(out_fs, "P out of a party")
-has(out_fs, "checkbox[0.4,0.35;grug_party_invites;Allow invitations;true]",
+has(out_fs, "checkbox[0.4,0.35;grug_party_invites;Invitations;true]",
 	"P out of a party: the invitations checkbox")
 has(out_fs, ";grug_party_hud;Party HUD;true]", "P out of a party: the HUD checkbox")
 has(out_fs, ";grug_party_health_colors;All green,By class;2;true]",
 	"P out of a party: the health colours dropdown")
-has(out_fs, "textlist[0.40,1.45;9.2,2.00;grug_party_online_list;" ..
-	fs_escape("bob [Lv 12]") .. "," .. fs_escape("cyd [Lv 12] (Invites off)") .. ";1;false]",
+has(out_fs, "textlist[0.50,6.05;11.0,1.60;grug_party_online_list;" ..
+	fs_escape("bob [Lv 12]") .. "," .. fs_escape("cyd [Lv 12] (Invites off)") .. ";1;true]",
 	"P out of a party: online players of the own faction only, sorted")
 lacks(out_fs, "dax", "P out of a party: no player of the other faction")
 has(out_fs, ";grug_party_invite;Invite]", "P out of a party: Invite")
 has(out_fs, ";grug_party_refresh;Refresh]", "P out of a party: Refresh")
-has(out_fs, "textlist[10.20,1.45;9.2,2.00;grug_party_pending;" ..
+has(out_fs, "textlist[0.50,9.65;11.0,1.60;grug_party_pending;" ..
 	fs_escape("bob [Lv 12] (2/10, 50s)") .. "," .. fs_escape("cyd [Lv 11] (1/10, 20s)") ..
-	";1;false]", "P out of a party: the pending invitations")
+	";1;true]", "P out of a party: the pending invitations")
 has(out_fs, ";grug_party_accept;Accept]", "P out of a party: Accept")
 has(out_fs, ";grug_party_decline;Decline]", "P out of a party: Decline")
 has(out_fs, "You are not in a party.", "P out of a party: the hint")
@@ -407,8 +418,8 @@ lacks(out_fs, ";grug_party_leave;", "P out of a party: no Leave")
 pvp_section(out_fs, "P out of a party")
 has(out_fs, "Flagged: Contested Territory", "P the PvP headline")
 has(out_fs, "In PvP combat", "P the PvP combat line")
-has(out_fs, "label[5.35,6.70;9]", "P a counter value (guards 9, fourth row)")
-has(out_fs, "label[5.35,7.15;1]", "P a counter value (captains 1, second column)")
+has(out_fs, "label[6.30,9.05;9]", "P a counter value (guards 9, fourth row)")
+has(out_fs, "label[6.30,9.70;1]", "P a counter value (captains 1, second column)")
 layout(geometry(out_fs, "P out of a party"), "P out of a party")
 local bytes_out = #out_fs
 
@@ -424,8 +435,8 @@ sfinv.set_player_inventory_formspec(alice, context)
 local in_fs = alice.formspec
 formspec_ok(in_fs, "P in a party")
 no_inventory(in_fs, "P in a party")
-has(in_fs, grug_core.ui.heading(0.4, 4.85, "Current party"), "P in a party: the heading")
-has(in_fs, "table[0.40,5.25;9.2,5.0;grug_party_members;1," ..
+has(in_fs, grug_core.ui.heading(0.5, 1.2, "Current party"), "P in a party: the heading")
+has(in_fs, "table[0.50,1.60;11.0,2.45;grug_party_members;1," ..
 	fs_escape("* alice [Lv 12]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 12]  10/20 HP") ..
 	",0," .. fs_escape("cyd [Lv 11]  Offline") .. ";2]", "P in a party: the member table")
 has(in_fs, ";grug_party_kick;Kick]", "P in a party: Kick for the leader")
@@ -452,6 +463,21 @@ has(bob.formspec, "Safe", "P safe headline")
 lacks(bob.formspec, "In PvP combat", "P no combat line when safe")
 pvp_section(bob.formspec, "P safe")
 layout(geometry(bob.formspec, "P safe"), "P safe")
+
+-- Empty lists are explicit top-aligned copy, never selectable dummy rows.
+local saved_pending = pending_rows
+pending_rows = {}
+local bob_context = sfinv.get_or_create_context(bob)
+bob_context.grug_party_online_rows = {}
+sfinv.set_player_inventory_formspec(bob, bob_context)
+has(bob.formspec, "No other same-faction players are online.", "P empty online roster hint")
+has(bob.formspec, "No pending invitations.", "P empty invitation hint")
+lacks(bob.formspec, ";grug_party_online_list;", "P no selectable empty online row")
+lacks(bob.formspec, ";grug_party_pending;", "P no selectable empty invitation row")
+layout(geometry(bob.formspec, "P empty lists"), "P empty lists")
+pending_rows = saved_pending
+bob_context.grug_party_online_rows = nil
+
 
 --
 -- B. Every field still handled

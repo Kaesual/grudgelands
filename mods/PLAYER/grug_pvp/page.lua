@@ -21,31 +21,32 @@ local function label(x, y, text)
 	return ("label[%.2f,%.2f;%s]"):format(x, y, esc(text))
 end
 
--- A narrow card beside the party roster. The caller supplies a container;
+-- A full-height card beside the party column. The caller supplies a container;
 -- all status texts, statistics and refresh keys still come from view.lua.
 local function section(player, context, y)
 	local state, stats = grug_pvp.state(player), grug_pvp.stats(player)
+	local scale = grug_core.ui.text_scale(player)
 	context.grug_pvp_key = V.page_key(state, stats)
 	local lines = V.state_lines(state)
 	local detail = lines.detail
 	if lines.combat then
 		detail = detail .. "\n" .. core.colorize(V.COLOR_COMBAT, lines.combat)
 	end
-	local fs = {
-		grug_core.ui.panel(0, y, 6.55, 9.0),
-		grug_core.ui.heading(0.3, y + 0.35, "PvP status"),
-		label(0.3, y + 0.9, core.colorize(lines.color, lines.headline)),
-		("textarea[0.3,%.2f;5.95,1.0;;;%s]"):format(y + 1.2, esc(detail)),
-		("textarea[0.3,%.2f;5.95,1.3;;;%s]"):format(y + 2.2, esc(
+	local fs = {grug_core.ui.fonts(scale),
+		grug_core.ui.panel(0, y, 7.5, 12.35),
+		grug_core.ui.heading(0.4, y + 0.35, "PvP status", scale),
+		label(0.4, y + 1.05, core.colorize(lines.color, lines.headline)),
+		grug_core.ui.prose(0.4, y + 1.5, 6.7, 1.3, detail, false, scale),
+		grug_core.ui.prose(0.4, y + 2.9, 6.7, 2.2,
 			"Flags you for 60 s; pressing it again restarts the 60 s.\n" ..
-			"PvP needs both players flagged. There is no early unflag.")),
-		grug_core.ui.button_style(FLAG_FIELD, "danger"),
-		("button[0.3,%.2f;5.95,0.7;%s;Flag me for PvP]"):format(y + 3.6, FLAG_FIELD),
-		grug_core.ui.heading(0.3, y + 4.8, "Statistics"),
+			"PvP needs both players flagged. There is no early unflag.", true, scale),
+		grug_core.ui.button_style(FLAG_FIELD, "danger", scale),
+		("button[0.4,%.2f;6.7,0.75;%s;Flag me for PvP]"):format(y + 5.3, FLAG_FIELD),
+		grug_core.ui.heading(0.4, y + 6.4, "Statistics", scale),
 	}
 	for index, row in ipairs(V.stats_rows(stats)) do
-		local row_y = y + 5.35 + (index - 1) * 0.45
-		fs[#fs + 1] = label(0.3, row_y, row[1]) .. label(5.35, row_y, row[2])
+		local row_y = y + 7.1 + (index - 1) * 0.65
+		fs[#fs + 1] = label(0.4, row_y, row[1]) .. label(6.3, row_y, row[2])
 	end
 	return table.concat(fs)
 end

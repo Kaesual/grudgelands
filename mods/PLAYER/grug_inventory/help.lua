@@ -288,7 +288,7 @@ local function help_content(player, context)
 	for index, section in ipairs(SECTIONS) do
 		local field = "grug_help_" .. section.id
 		fs[#fs + 1] = grug_core.ui.navigation_style(field, section.id == selected,
-			0.35, BUTTON_Y + (index - 1) * 0.85, 3.0, BUTTON_H, true)
+			0.35, BUTTON_Y + (index - 1) * 0.85, 3.0, BUTTON_H, true, grug_core.ui.text_scale(player))
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
 			0.35, BUTTON_Y + (index - 1) * 0.85, 3.0, BUTTON_H, field, esc(section.label))
 		if section.tooltip then

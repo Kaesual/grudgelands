@@ -91,7 +91,7 @@ function grug_inventory.navigation(player, context, selected, width, layout)
                 ids[index]:match("^creative:") and selected:match("^creative:"))
             local color = active and accent or grug_core.ui.colors.muted
             fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgimg_middle=6;padding=-6,-6,6,6;" ..
-                "font_size=*%.3f;textcolor=%s;content_offset=0,0]"):format(field, 0.85 * text_scale, color)
+                "font_size=*%.3f;textcolor=%s;content_offset=0,0]"):format(field, 1.1 * text_scale, color)
             fs[#fs + 1] = ("style[%s:hovered;bgimg=grug_ui_clear.png;textcolor=%s]" ..
                 "style[%s:pressed;bgimg=grug_ui_clear.png;textcolor=%s]"):
                 format(field, accent, field, accent)

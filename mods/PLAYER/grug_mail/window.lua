@@ -125,6 +125,7 @@ local function pager(prefix, x, y, page, pages)
 end
 
 local function frame(player, session, counts)
+	local scale = grug_core.ui.text_scale(player)
 	local captions = {
 		counts.letters > 0 and ("Letters (" .. counts.letters .. ")") or "Letters",
 		counts.announcements > 0 and ("Announcements (" .. counts.announcements .. ")") or
@@ -135,6 +136,7 @@ local function frame(player, session, counts)
 		local name = "grug_mail_tab_" .. index
 		nav[#nav + 1] = grug_core.ui.navigation_style(name, index == TAB_INDEX[session.tab],
 			0.4 + (index - 1) * ((W - 0.8) / 4), 0.2, (W - 0.8) / 4 - 0.1, 0.6)
+		nav[#nav + 1] = ("style[%s;font_size=*%.3f]"):format(name, 1.1 * scale)
 		nav[#nav + 1] = ("button[%.3f,0.2;%.3f,0.6;%s;%s]"):format(
 			0.4 + (index - 1) * ((W - 0.8) / 4), (W - 0.8) / 4 - 0.1, name, esc(caption))
 	end
@@ -144,7 +146,7 @@ local function frame(player, session, counts)
 		-- "Initial focus"): an edit box or a table would eat the inventory key.
 		"set_focus[grug_mail_focus;true]button[0,0;0,0;grug_mail_focus;]",
 		table.concat(nav), "container[0,0.95]",
-		"style_type[label,textarea;font_size=*0.85]",
+		grug_core.ui.fonts(scale),
 		"label[0.4,0.55;", esc(mailbox_text(session)), "]",
 		("label[%.2f,0.55;%s]"):format(W - 3.4, esc(colored(COLOR.dim, "Purse: ") ..
 			grug_money.format(grug_money.get(player)))),
@@ -174,17 +176,17 @@ local function clip(text, max)
 	if M.text_length(text) <= max then return text end
 	return M.truncate(text, max - 3) .. "..."
 end
-local FROM_CHARS, SUBJECT_CHARS = 14, 30
+local FROM_CHARS, SUBJECT_CHARS = 10, 18
 
 -- A letter or broadcast list as a table[] of one page: the unread dot, the
 -- badge, subject (with the attachment count) and sender. The selected
 -- letter retains the full sender, subject and date.
 local function letter_table(fs, name, rows, selected_id, x, y, w, h)
-	fs[#fs + 1] = "style_type[table;font_size=*0.8]"
+	fs[#fs + 1] = ("style_type[table;font_size=*%.3f]"):format(1.15 * fs.text_scale)
 	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=#4e3f28;" ..
 		"color=%s]"):format(COLOR.text)
-	fs[#fs + 1] = ("tablecolumns[color,span=1;text,width=0.6;image,width=1,1=%s,2=%s;" ..
-		"color;text,width=6;text,width=4]"):format(BADGE, SEAL)
+	fs[#fs + 1] = ("tablecolumns[color,span=1;text,padding=0,width=0.4;image,padding=0.2,width=1,1=%s,2=%s;" ..
+		"color;text,padding=0.3,width=6;text,padding=0.7,width=4]"):format(BADGE, SEAL)
 	local cells, selected = {}, 0
 	for index, row in ipairs(rows) do
 		local marker = row.items and #row.items > 0 and (" (+" .. #row.items .. ")") or ""
@@ -210,8 +212,8 @@ end
 -- Letters and Announcements: the list left, the reading pane right
 --
 
-local LIST_X, LIST_Y, LIST_W, LIST_H = 0.5, 1.45, 7.0, 9.8
-local PANE_X, PANE_W = 8.0, W - 8.5
+local LIST_X, LIST_Y, LIST_W, LIST_H = 0.5, 1.45, 7.8, 9.8
+local PANE_X, PANE_W = 8.8, W - 9.3
 local BODY_Y = 3.15
 
 local function reading_head(fs, entry, kind)
@@ -232,7 +234,7 @@ end
 
 local function reading_body(fs, entry, height)
 	fs[#fs + 1] = grug_core.ui.panel(PANE_X, BODY_Y, PANE_W, height) ..
-		grug_core.ui.prose(PANE_X + 0.12, BODY_Y + 0.1, PANE_W - 0.24, height - 0.2, entry.body, false, 0.85)
+		grug_core.ui.prose(PANE_X + 0.12, BODY_Y + 0.1, PANE_W - 0.24, height - 0.2, entry.body, false, fs.text_scale, 1.05 * fs.text_scale)
 end
 
 local function dialog_box(fs, y, h)
@@ -265,7 +267,7 @@ end
 local function delete_dialog(fs, letter)
 	dialog_box(fs, 9.25, 2.9)
 	fs[#fs + 1] = grug_core.ui.prose(PANE_X + 0.2, 9.4, PANE_W - 0.4, 1.45,
-        "This letter still holds its attachments.\nDelete it together with them?", false, 0.85)
+        "This letter still holds its attachments.\nDelete it together with them?", false, fs.text_scale, 1.05 * fs.text_scale)
 	fs[#fs + 1] = ("button[%.2f,11.15;1.6,0.75;delete_cancel;Cancel]" ..
 		"style[delete_confirm_%d;bgcolor=#8a3a2c]button[%.2f,11.15;1.6,0.75;delete_confirm_%d;Delete]")
 		:format(PANE_X + 1.4, letter.id, PANE_X + 3.15, letter.id)
@@ -287,7 +289,7 @@ local function letters_tab(player, session, fs)
 	letter_table(fs, "letters", rows, selected and selected.id, LIST_X, LIST_Y, LIST_W, LIST_H)
 	fs[#fs + 1] = pager("letters", LIST_X, 11.45, page, pages)
 	fs[#fs + 1] = ("label[%.2f,12.45;%s]"):format(LIST_X, esc(colored(COLOR.dim,
-		("%d letters · %d unread · %d player letters at most"):format(#letters, unread,
+		("%d letters · %d unread · limit %d"):format(#letters, unread,
 		M.LETTER_LIMIT))))
 	if #letters == 0 then
 		fs[#fs + 1] = ("label[%.2f,1.5;%s]"):format(PANE_X, esc(colored(COLOR.dim,
@@ -484,8 +486,7 @@ local function admin_tab(player, session, fs)
 	local own = M.tickets_of(tickets, name)
 	fs[#fs + 1] = ("image[0.4,1.1;0.55,0.55;%s]label[1.1,1.4;%s]"):format(BADGE,
 		esc(colored(COLOR.gold, "Write to the server admin")))
-	fs[#fs + 1] = ("label[0.4,2.0;%s]"):format(esc(colored(COLOR.dim,
-		grug_inventory.wrap_text(ADMIN_HINT, 65))))
+	fs[#fs + 1] = grug_core.ui.prose(0.4, 1.8, 9.0, 1.4, ADMIN_HINT, true, fs.text_scale)
 	local topics = {}
 	for index, topic in ipairs(M.TOPICS) do topics[index] = esc(topic) end
 	fs[#fs + 1] = ("label[0.4,3.6;Topic]dropdown[1.6,3.3;7.8,0.6;admin_topic;%s;%d;true]")
@@ -560,7 +561,7 @@ local function counts_of(player)
 end
 
 function grug_mail.window_formspec(player, session)
-	local fs = {frame(player, session, counts_of(player))}
+	local fs = {frame(player, session, counts_of(player)), text_scale = grug_core.ui.text_scale(player)}
 	TAB_BUILDERS[session.tab](player, session, fs)
 	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)

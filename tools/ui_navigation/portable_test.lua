@@ -181,6 +181,20 @@ do
 	assert(grug_core.ui.prose(0, 0, 4, 1, "Message"):find("font_size=*1.000]", 1, true),
 		"existing default-font callers keep their previous reset")
 end
+-- Fitted fonts must survive scoped role styles instead of jumping back to
+-- the oversized client default in a shrunken fixed form.
+do
+    local U, scale = grug_core.ui, 2 / 3
+    assert(U.fonts(scale):find("font_size=*0.667]", 1, true))
+    assert(U.heading(0, 0, "Heading", scale):find("font=normal;font_size=*0.667]", 1, true))
+    assert(U.button_style("action", "selected", scale):find("font_size=*0.667;", 1, true))
+    assert(U.navigation_style("tab", true, 0, 0, 3, 1, true, scale):find("font_size=*0.667;", 1, true))
+    local body = U.prose(0, 0, 4, 1, "Message", false, scale)
+    assert(body:find("border=false;font_size=*0.667]", 1, true))
+    local title = U.prose(0, 0, 4, 1, "Title", false, scale, 1.2 * scale)
+    assert(title:find("border=false;font_size=*0.800]", 1, true))
+    assert(title:find("border=true;font_size=*0.667]", 1, true))
+end
 -- The primary Creative entry shares permission checks with category routes.
 sfinv.set_page(player, ids[1])
 fields({grug_ui_creative = "true"})

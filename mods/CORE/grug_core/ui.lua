@@ -9,7 +9,7 @@ function UI.styles()
 	return table.concat({
 		"listcolors[#111a24b0;#344452cc;#d1c09a40;#0a1017f2;#eeeae1]",
 		"style_type[button,button_exit;border=false;bgcolor=#ffffff;",
-		"bgimg=grug_ui_button.png;bgimg_middle=6;padding=-4,-4,4,4;font_size=*0.85;textcolor=#e6e6dd;content_offset=0,0]",
+		"bgimg=grug_ui_button.png;bgimg_middle=6;padding=-4,-4,4,4;font_size=*1;textcolor=#e6e6dd;content_offset=0,0]",
 		"style_type[button:hovered,button_exit:hovered;bgimg=grug_ui_hover.png]",
 		"style_type[button:focused,button_exit:focused;bgimg=grug_ui_focus.png]",
 		"style_type[button:pressed,button_exit:pressed;bgimg=grug_ui_pressed.png]",
@@ -34,6 +34,13 @@ function UI.text_scale(player)
     return 1
 end
 
+-- Scope supported native controls to the fitted text size. Checkboxes and
+-- dropdowns retain the client font; their captions need room independently.
+function UI.fonts(scale)
+    return ("style_type[label,button,button_exit,field,textarea,table,textlist;font_size=*%.3f]"):
+        format(scale or 1)
+end
+
 function UI.prepend(opaque)
 	return (opaque and "bgcolor[#0b1118;true]" or "bgcolor[#05090c66;true]") ..
 		"background9[0,0;1,1;grug_ui_window.png;true;6]" .. UI.styles() ..
@@ -47,11 +54,12 @@ function UI.panel(x, y, w, h)
 		format(x, y, w, h)
 end
 
-function UI.heading(x, y, text)
-    return "style_type[label;font=bold;font_size=*0.75]" ..
+function UI.heading(x, y, text, scale)
+    scale = scale or 1
+    return ("style_type[label;font=bold;font_size=*%.3f]"):format(0.9 * scale) ..
         ("label[%.3f,%.3f;%s]"):format(x, y,
             core.formspec_escape(core.colorize(UI.colors.accent, text))) ..
-        "style_type[label;font=normal;font_size=*1]"
+        ("style_type[label;font=normal;font_size=*%.3f]"):format(scale)
 end
 
 function UI.title(x, y, text, scale)
@@ -63,28 +71,28 @@ end
 
 -- Role styles apply to specific existing fields. Set normal explicitly when
 -- a form reuses a name for an unselected state; no semantic color changes.
-function UI.button_style(name, role)
+function UI.button_style(name, role, scale)
 	local texture = role == "selected" and "selected" or
 		role == "danger" and "danger" or "button"
 	local color = role == "selected" and "#e6ca8d" or
 		role == "danger" and "#e0aca0" or "#e6e6dd"
 	return ("style[%s;border=false;bgcolor=#ffffff;bgimg=grug_ui_%s.png;" ..
-		"bgimg_middle=6;padding=-4,-4,4,4;font_size=*0.85;textcolor=%s;content_offset=0,0]"):
-		format(core.formspec_escape(name), texture, color)
+		"bgimg_middle=6;padding=-4,-4,4,4;font_size=*%.3f;textcolor=%s;content_offset=0,0]"):
+		format(core.formspec_escape(name), texture, scale or 1, color)
 end
 
 -- Navigation is distinct from actions: clear text tabs or a flat side-menu
 -- selection, with one active edge. Fields and click handling stay with owners.
-function UI.navigation_style(name, selected, x, y, w, h, vertical)
+function UI.navigation_style(name, selected, x, y, w, h, vertical, scale)
 	local field = core.formspec_escape(name)
 	local color = selected and UI.colors.accent or UI.colors.muted
 	local texture = vertical and selected and "nav_selected" or "clear"
 	local fs = ("style[%s;border=false;bgcolor=#ffffff;bgimg=grug_ui_%s.png;" ..
-		"bgimg_middle=6;padding=-6,-6,6,6;font_size=*0.85;textcolor=%s;content_offset=0,0]" ..
+		"bgimg_middle=6;padding=-6,-6,6,6;font_size=*%.3f;textcolor=%s;content_offset=0,0]" ..
 		"style[%s:hovered;bgimg=grug_ui_nav_hover.png;textcolor=%s]" ..
 		"style[%s:focused;bgimg=grug_ui_focus.png;textcolor=%s]" ..
 		"style[%s:pressed;bgimg=grug_ui_pressed.png;textcolor=%s]"):
-		format(field, texture, color, field, UI.colors.accent,
+		format(field, texture, scale or 1, color, field, UI.colors.accent,
 			field, UI.colors.accent, field, UI.colors.accent)
 	if selected then
 		fs = fs .. ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(x,
@@ -107,18 +115,19 @@ end
 -- tiny relative to body text. All content comes from the owning service.
 -- Callers with a textarea type style pass its font scale for restoration.
 -- Anonymous textareas remain read-only; editable field names stay untouched.
-function UI.prose(x, y, w, h, text, muted, restore_font_scale)
-    return "style_type[textarea;border=false;font_size=*0.85]" ..
+function UI.prose(x, y, w, h, text, muted, restore_font_scale, font_scale)
+    return ("style_type[textarea;border=false;font_size=*%.3f]"):format(font_scale or restore_font_scale or 1) ..
         ("textarea[%.3f,%.3f;%.3f,%.3f;;;%s]"):format(x, y, w, h,
             core.formspec_escape(muted and core.colorize(UI.colors.muted, text) or text)) ..
         ("style_type[textarea;border=true;font_size=*%.3f]"):format(restore_font_scale or 1)
 end
 
-function UI.service_header(w, title, subtitle, icon)
-    return "style_type[label;font_size=*0.85]" ..
+function UI.service_header(w, title, subtitle, icon, scale)
+    scale = scale or 1
+    return UI.fonts(scale) ..
         ("image[0.4,0.4;0.65,0.65;%s]"):format(icon or "grug_ui_icon_emblem.png") ..
-        UI.title(1.25, 0.56, title) ..
-        "style_type[label;font_size=*0.85]" ..
+        UI.title(1.25, 0.56, title, scale) ..
+        ("style_type[label;font_size=*%.3f]"):format(scale) ..
         ("label[1.25,0.97;%s]box[0.4,1.35;%.3f,0.015;#d4b77d40]"):
             format(core.formspec_escape(core.colorize(UI.colors.muted, subtitle or "")), w - 0.8)
 end

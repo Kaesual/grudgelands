@@ -285,3 +285,65 @@ subsequent tab switches, GUI scaling and density 2. Artifacts and exact forms:
 `~/projects/grudgelands-orchestration/ui-playtest-fixes-2026-10-26/`.
 The user authorized synchronizing this branch into local Luanti for playtest;
 only game files are copied, no worlds and no merge into main.
+
+
+## Typography and fidelity correction after the next playtest (2026-10-26)
+
+The user's screenshots exposed an insufficient fidelity review: earlier
+captures had primarily checked containment and routes, while small native
+fonts and the old Party arrangement remained. This correction compares the
+actual Revision 04 browser renders with native captures, including originals
+at 100%, rather than treating small contact sheets as typography evidence.
+
+- Main and mailbox tabs use 1.1× text; ordinary action/body text uses 1×
+  instead of 0.8–0.85×. Section headings use 0.9× bold; reading text 1.05×.
+- Party stacks current members, online players and invitations on the left,
+  with status, action and statistics in a full-height right column. Empty
+  states start at the top; native lists are transparent. The short PvP rules
+  fit without a scrollbar at the inspected settings.
+- Quest givers use an 18.8×12.2 frame, enlarged title/list text and reward
+  icons. Full narrative, objectives, choice stats and selected reward tooltip
+  remain in native scrollable read-only fields. The oversized inner reward
+  panel is replaced by a separator.
+- Mail tables use 1.15× text, increasing native row height. The list has more
+  horizontal space and deliberately abbreviated subject/sender columns; full
+  text remains in the reading pane. The To the admin introduction wraps within
+  its column. Admin compose/editor fonts restore the owning form's scale.
+- Existing `text_scale` fitting passes through scoped native font helpers for
+  Party, Mail and quests, and through Help/Talent side menus. This prevents
+  GUI 1.5 text from overrunning a form shrunk by the client. Checkboxes and
+  dropdowns retain the client's font; Party uses the shorter Invitations label
+  with an explanatory tooltip. Geometry and first-open sizing stay unchanged.
+
+This is compatible: no saved-state, player-meta, inventory-capacity, formspec
+identity, transaction or permission changes. Existing table event mappings,
+party callbacks, quest choice validation and mail sessions remain. No new
+polling, timers, globalsteps or refresh sends. The toolkit adds optional font
+scales and `fonts(scale)`; existing callers keep working.
+
+Native tables do not provide independent row padding; their height follows
+font height plus four pixels. Consequently the browser's two-line mail cards
+and generous row padding are still an approximation, not completed fidelity.
+Long quest/reward text still scrolls. Font family, rasterization and some native
+control fonts remain client-owned. Desktop rendering is checked here; web
+interaction acceptance remains the user's.
+
+Validation: 27 distinct targeted fixtures pass: `ui_navigation`, `r44_pp`,
+`r31_p2`, `r31_pvp`, `r48_mail`, `r48_admin`, `r451_nq`,
+`r27_quest_item_names`, `r29_q1`, `r30_p1`, `r57_qsys`, `r44_fr`, `r44_ch`,
+`r45_ui`, `r45_eu`, `r491_view`, `r44_ts`, `r52_graph`, `r53_live`, `r44_qb`,
+`r451_tr`, `r58_campnpc`, `r451_mz`, `r44_mq`, `r35_f`, `r35_m`,
+`r25_interfaces`. Geometry assertions were updated without dropping behavioral
+checks. New checks cover scoped font restoration. Lua 5.1 parsing and sweeps
+1–4 pass; sweep 5 only reports the pre-existing standalone fixture `io.popen`
+and `os.exit` uses. Runtime Lua files pass all sweeps. Fresh-server source audit,
+theme asset check and whitespace check pass. Independent delta review: PASS.
+The full fixture suite was not repeated for this correction.
+
+The final gallery contains 67 selected native screenshots: fourteen views at
+1035×696, 1600×900 and 2560×1440, the same fourteen in a bright scene at small
+GUI 1.5, and eleven neighboring views at small GUI 1. Two correction passes
+follow the first targeted render, plus an isolated final mail-hint check.
+Exact forms, raw run logs, contact sheets and the browser comparison are at
+`~/projects/grudgelands-orchestration/ui-readability-2026-10-26/`.
+The worktree is retained; no merge into main and no push.

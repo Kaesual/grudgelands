@@ -116,7 +116,7 @@ do
 	eq(#sounds, 1, "Q the first open plays its cue")
 	eq(sounds[1], "npc_quest", "Q ...the quest giver's cue")
 	local focus = shown:find("set_focus[close;true]", 1, true)
-	local close = shown:find("button_exit[0.5,9.3;2,0.55;close;Close]", 1, true)
+	local close = shown:find("button_exit[0.5,11.25;2.2,0.65;close;Close]", 1, true)
 	check(focus ~= nil and close ~= nil and focus < close, "Q Close holds the focus (set before it)")
 
 	-- A click in the list shows the clicked row, without the open cue.

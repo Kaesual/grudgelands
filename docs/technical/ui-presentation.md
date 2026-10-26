@@ -21,21 +21,36 @@ out of the prepend and explicitly requests the opaque variant.
 - `panel(x, y, w, h)` returns a nine-slice panel in the caller's coordinate mode.
   Emit it outside scroll containers: the engine parents backgrounds to the
   form, so a panel inside a scroll container would neither scroll nor clip.
-- `heading(x, y, text)` escapes an existing heading and scopes its gold, small
+- `heading(x, y, text, scale)` escapes an existing heading and scopes its gold, small
   bold style; `title(x, y, text, scale)` scopes a larger normal title (optional scale).
-- `prose(x, y, w, h, text, muted, restore_font_scale)` emits escaped,
-  read-only body text at 0.85 of the client font. Its anonymous textarea
-  restores `border=true` and the caller's optional textarea font scale
-  (default 1). A form with a textarea type style, such as Mail's 0.85,
-  passes that scale so later text fields keep the form's typography.
-- `service_header(w, title, subtitle, icon)` draws a service window's head
+- `prose(x, y, w, h, text, muted, restore_font_scale, font_scale)` emits
+  escaped, read-only body text at the normal client font by default. An
+  explicit body scale can distinguish a title or reading text; otherwise it
+  uses the caller's restoration scale (default 1). Its anonymous textarea
+  restores `border=true` and that scale so later editable fields retain the
+  owning form's typography.
+- `service_header(w, title, subtitle, icon, scale)` draws a service window's head
   for a form `w` wide: an icon (default the emblem), the title, an escaped
   muted subtitle and a thin gold rule at y 1.35; the owner's content starts
   below it.
-- `button_style(name, role)` styles one existing field (`normal`, `selected`,
+- `button_style(name, role, scale)` styles one existing field (`normal`, `selected`,
   `danger`). Names are single fields, not comma-separated selector lists.
 - `frame(w, h, title, opaque)` opens a version-6 real-coordinate form; optional
   title at 0.4,0.45. It does not offset content or close a container.
+
+`fonts(scale)` scopes native control text sizes within a form. Party, quests
+and Mail pass the existing `text_scale(player)` through scoped heading, button,
+prose and service-header helpers, so a large GUI font cannot overrun the fixed
+form after native fitting. This changes neither frame geometry nor refresh
+cadence. Main and mailbox navigation uses 1.1× text; quest/mail tables use
+1.15×; reading text 1.05×; section headings 0.9× bold. At GUI scale 1 these
+roles no longer reduce ordinary body/action text to 0.8–0.85×.
+
+Native table row height follows its font height plus four pixels
+(`src/gui/guiTable.cpp`, `setOverrideFont`). Larger type increases row height,
+but the browser's independently padded/two-line cards are not reproduced by
+these single-row tables. Mail keeps separate subject and sender columns with
+shortened list captions; the selected letter retains the complete text.
 
 Frame fitting belongs to the client. Forms must not add padding derived from
 server-side window reports: those can be absent for the first inventory form
@@ -45,7 +60,7 @@ large windows. Default native padding remains; Map keeps its explicit zero
 padding and separate viewport budget. Quickbar keeps its left position/anchor.
 No polling or corrective resend is introduced.
 
-`navigation_style(name, selected, x, y, w, h, vertical)` styles an existing
+`navigation_style(name, selected, x, y, w, h, vertical, scale)` styles an existing
 navigation field. Horizontal choices have an active underline; side menus have
 a flat selection and left marker. The owning caller still emits the native
 button and keeps its field route. Native button text remains centered. Actions

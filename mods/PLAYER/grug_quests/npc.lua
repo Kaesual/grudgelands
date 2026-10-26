@@ -158,7 +158,7 @@ end
 -- The choice row (Round 57 ruling 15) under the text: item icons with
 -- their tooltips; at the turn-in buttons, the picked one framed, above the
 -- Complete button; in the offer and while active, icons to read only.
-local CHOICE_X, CHOICE_Y, CHOICE_SIZE, CHOICE_STEP = 5.9, 7.55, 0.7, 1.05
+local CHOICE_X, CHOICE_Y, CHOICE_SIZE, CHOICE_STEP = 6.5, 8.75, 0.9, 1.2
 local function choice_row(player, def, ready, picked)
 	local esc, out = core.formspec_escape, {}
 	out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y - 0.35,
@@ -272,24 +272,25 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	if chosen then detail = "Chosen:\n" .. table.concat(chosen, "\n") .. "\n\n" .. detail end
 	-- The description is a read-only text (no field name).
 	local UI = grug_core.ui
-	local form = UI.frame(16, 10.2) .. UI.service_header(16, npc.title or id,
-		row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png") ..
-		UI.panel(0.35, 1.6, 5.1, 7.4) .. UI.panel(5.65, 1.6, 10, 7.4) ..
-		"style_type[textarea;border=false;font_size=*0.85]style_type[textlist;font_size=*0.85]" ..
-		UI.button_style("accept", "selected") .. UI.button_style("turnin", "selected") ..
+	local scale = UI.text_scale(player)
+	local form = UI.frame(18.8, 12.2) .. UI.service_header(18.8, npc.title or id,
+		row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png", scale) ..
+		UI.panel(0.35, 1.6, 5.6, 9.3) .. UI.panel(6.15, 1.6, 12.3, 9.3) ..
+		("style_type[textarea;border=false]style_type[table;font_size=*%.3f]"):format(1.15 * scale) ..
+		UI.button_style("accept", "selected", scale) .. UI.button_style("turnin", "selected", scale) ..
 		"tableoptions[background=#00000000;border=false;highlight=#b8a46b44]" ..
 		"tablecolumns[" .. table.concat(columns, ";") .. "]" ..
-		"table[0.5,1.8;4.8,6.9;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. "]" ..
+		"table[0.5,1.85;5.25,8.8;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. "]" ..
 		"tooltip[quests;Available: !\nReady to complete: ?\nIn progress: muted ?\nLocked: muted !\nStory: framed marker]" ..
-		UI.prose(5.9, 1.85, 9.5, 0.65, row.title) ..
-		UI.prose(5.9, 2.6, 9.5, 2.8, detail) ..
-		UI.panel(5.8, 5.5, 9.7, 3.4) ..
-		UI.prose(5.95, 5.63, 9.35, choices and 1.2 or 3.1, rewards) ..
+		UI.prose(6.5, 1.85, 11.55, 0.85, row.title, false, scale, 1.2 * scale) ..
+		UI.prose(6.5, 2.9, 11.55, choices and 3.95 or 6.1, detail, false, scale, 1.05 * scale) ..
+		("box[6.5,%.2f;11.55,0.02;#d1c09a2b]"):format(choices and 6.95 or 9.15) ..
+		UI.prose(6.5, choices and 7.1 or 9.3, 11.55, choices and 1.2 or 1.25, rewards, false, scale) ..
 		(choices and choice_row(player, def, row.status == "ready", picked) or "") ..
-		UI.prose(2.8, 9.25, 8, 0.65, notice or row.reason or STATUS_NAMES[row.status][1]) ..
-		"set_focus[close;true]button_exit[0.5,9.3;2,0.55;close;Close]"
-	if row.status == "available" then form = form .. "button[13.45,9.3;2,0.55;accept;Accept]" end
-	if row.status == "ready" then form = form .. "button[13.45,9.3;2,0.55;turnin;Complete]" end
+		UI.prose(3.0, 11.2, 10, 0.7, notice or row.reason or STATUS_NAMES[row.status][1], false, scale) ..
+		"set_focus[close;true]button_exit[0.5,11.25;2.2,0.65;close;Close]"
+	if row.status == "available" then form = form .. "button[15.9,11.25;2.2,0.65;accept;Accept]" end
+	if row.status == "ready" then form = form .. "button[15.9,11.25;2.2,0.65;turnin;Complete]" end
 
 	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected,
 		row_of = row_of, picked = picked}

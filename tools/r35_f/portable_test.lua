@@ -27,7 +27,7 @@
 --   Q  the quest dialog and log (grug_quests/npc.lua, grug_map/quest_box.lua
 --      since Round 44): one colour per
 --      status as the entry's colour, "(R)" for repeatable, no "(available)"
---      or "[Repeatable]" text, the dialog 16 units wide with a compact list,
+--      or "[Repeatable]" text, the dialog 18.8 units wide with a compact list,
 --      a legend and a tooltip, the description a read-only textarea (no
 --      textarea in our mods has a name), the quest log uses the same entries.
 -- Prints "R35 F PORTABLE PASS checks=<n>" or the failures.
@@ -429,7 +429,7 @@ do
 		get_pos = function() return {x = 0, y = 0, z = 0} end}}
 	eq(Q.open_npc(player, entity), true, "Q the dialog opens")
 	local form = shown or ""
-	check(tonumber(form:match("size%[([%d.]+),")) == 16, "Q the dialog is 16 units wide")
+	check(tonumber(form:match("size%[([%d.]+),")) == 18.8, "Q the dialog is 18.8 units wide")
 	local list_w = tonumber(form:match("table%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;quests;"))
 	check(list_w and list_w >= 4.8, "Q the quest list is at least 4.8 units wide (got " .. tostring(list_w) .. ")")
 	local list = form:match("table%[[^;]+;[^;]+;quests;(.-);%d+%]") or ""
@@ -449,7 +449,7 @@ do
 		"Q the description is a read-only textarea (no name)")
 	-- 0.45.1: the dialog opens on the first quest ready to complete (row 2
 	-- here), so it offers Complete, not row 1's Accept.
-	check(form:find("button[13.45,9.3;2,0.55;turnin;Complete]", 1, true) ~= nil and
+	check(form:find("button[15.9,11.25;2.2,0.65;turnin;Complete]", 1, true) ~= nil and
 		form:find("accept;Accept]", 1, true) == nil, "Q Complete for the preselected ready quest")
 
 	-- No textarea in our mods has a name (a named one is editable), except
