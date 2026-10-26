@@ -436,3 +436,18 @@ panel equally, with 0.2-unit outer margins and 0.1-unit gaps. Geometry derives
 from the panel width; labels, font sizes and field routes remain unchanged.
 Compatible presentation-only change. Runtime Lua checks and the existing
 `r44_ch` / `r26_status_icons` fixtures pass.
+
+
+### Main delivery — 2026-10-27
+
+The user explicitly authorized merging and pushing, superseding this plan's
+earlier branch-only delivery restriction. The runtime candidate `32379f98`
+joined main by fast-forward without conflicts. The final independent review
+also passed the character model enlargement (`64eae6cc`) and equal sub-tabs
+(`32379f98`); no blocking findings remain. The validation above covers the
+merged runtime; only delivery documentation follows it.
+
+The UI changes are compatible and join the first publication of 0.63.0,
+whose existing map reset belongs to the camp redesign. Full desktop/web GUI
+acceptance remains pending. The `ui-tab-hover` worktree is retained; the
+unrelated local `docs/planning/map-icon-inventory.html` is excluded.

@@ -4,7 +4,8 @@ Initial user authorization, 2026-10-26: implement the accepted browser
 proposal, sync to local Luanti, **do not commit before the user's in-game
 review**. After the reported GUI issue and its correction below, the user
 explicitly authorized **committing all changes, without pushing** on the
-same day; this supersedes the earlier hold.
+same day; this supersedes the earlier hold. On 2026-10-27 the user explicitly
+authorized the UI merge and push to main, superseding the push hold too.
 Production remains 0.55.1. Version 0.63.0 needs a **map reset**, already
 planned with the pending rounds; no migration step, no production action.
 
@@ -69,7 +70,7 @@ pass. The corrected file was synced to local Luanti.
 The full game-data validator passes with zero errors (17 existing advisory
 warnings); the economy price check and ridden-mesh reproduction check pass.
 All technical gates for this change are complete. The user has authorized
-the local commit; pushing remains prohibited.
+the local commit; the later 2026-10-27 authorization also permits the push.
 GUI acceptance remains the user's.
 
 ## GUI correction — mesh units and transparent heraldry (2026-10-26)
@@ -109,5 +110,13 @@ Existing generated camps do not change merely by copying game files.
 - Open the inventory for each faction and inspect the top-left heraldry.
 - Repeat visual/interaction checks on desktop and web before release.
 
-Commit authorized by the user on 2026-10-26; **do not push**. Full desktop
-and web GUI acceptance is not recorded by this commit authorization.
+Commit authorized on 2026-10-26; merge and push authorized on 2026-10-27.
+Full desktop and web GUI acceptance is not recorded by these authorizations.
+
+## UI merge and publication — 2026-10-27
+
+The independently reviewed [UI polish](ui-polish-implementation.md) through
+`32379f98` joined main by fast-forward, followed by delivery documentation.
+Its changes are compatible; the existing 0.63.0 camp map-reset declaration
+remains unchanged. Publication does not deploy production or establish GUI
+acceptance. The UI worktree stays available for follow-up work.

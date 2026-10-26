@@ -1,12 +1,15 @@
 # Project status
 
-Updated 2026-10-26. This is the delivery pointer, not another game specification.
+Updated 2026-10-27. This is the delivery pointer, not another game specification.
 
-**0.63.0 / Round 63 is the local playtest candidate, not pushed**: the
-approved mining-camp redesign and faction heraldry ([plan and GUI checklist](planning/round63-plan.md)).
-After the first local playtest and its art correction, the user authorized
-**committing all changes, without pushing** (2026-10-26), superseding the
-earlier no-commit hold. Local Luanti is synced; technical gates and
+**0.63.0 / Round 63 is published on main; full GUI acceptance is pending**:
+the approved mining-camp redesign and faction heraldry
+([plan and GUI checklist](planning/round63-plan.md)), plus the
+[UI polish](planning/ui-polish-implementation.md). The user explicitly
+authorized merging and pushing on 2026-10-27, superseding the earlier
+commit-only authorization. The reviewed UI runtime at `32379f98` was merged
+by fast-forward; the publication includes the documentation follow-up.
+Local Luanti is synced; technical gates and
 independent review pass, including the 304-seed fleet. The first GUI check
 found undersized animated meshes; the compatible scale/transparency art fix
 is implemented and locally synced (details in the Round 63 plan). GUI

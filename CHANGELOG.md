@@ -23,6 +23,15 @@ joins the already planned production map reset; no migration step.
 - Attached banners for The Accord and The Throng, with matching heraldry
   in the inventory header. The larger war camps keep their watchtowers.
 - Camp captains, guards, foremen, vendors and quest places keep their roles.
+- UI follow-up (2026-10-27): clearer inventory, talents, help, Party and
+  service layouts, flat buttons and text tabs; larger character preview and
+  equally spaced character sub-tabs.
+- Quest-giver, map quest and mailbox lists use taller selectable rows with
+  status information. Windows stop growing beyond their equivalent Full-HD
+  size when rebuilt; container and station sections share the inventory frame.
+- Traders keep Repair in their navigation and offer quantity shortcuts;
+  the double furnace has four output slots, preserving existing contents.
+  These UI changes are compatible and add no migration or map reset.
 
 ## 0.62.0 — the front 41–60, the main line's story and bigger bags (2026-10-25)
 

@@ -104,6 +104,10 @@ Decided with the user on 2026-10-22 and 2026-10-23
   quest-giver, mail, trainer and service windows in the Atlas 03 layouts
   and the typography audit. Its GUI test runs together with those of
   Rounds 57–61.
+- **The UI polish:** **delivered** with 0.63.0 (compatible;
+  [implementation and validation](docs/planning/ui-polish-implementation.md)):
+  revised inventory and service layouts, readable quest/mail rows, consistent
+  navigation and a Full-HD scaling ceiling. Final desktop/web acceptance is pending.
 - **Round 61, the band 31–40 and chapter 3:** **delivered** in 0.61.0 (a
   map reset; [completion](docs/planning/round61-plan.md#completion-2026-10-25)):
   the six contested zones reworked on the Round 57 system (all free play

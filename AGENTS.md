@@ -12,9 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.63.0, Round 63 mining-camp redesign, **not pushed**.
-Local Luanti is synced; the user authorized committing all changes on
-2026-10-26, explicitly without pushing ([plan](docs/planning/round63-plan.md)).
+**Current state:** 0.63.0, Round 63 mining-camp redesign and the
+[UI polish](docs/planning/ui-polish-implementation.md), published on main
+with the user's explicit merge-and-push authorization on 2026-10-27
+([delivery status](docs/STATUS.md)). Local Luanti is synced.
 Full GUI acceptance is not recorded. Map reset joins the planned deployment;
 production remains 0.55.1. Previous: 0.62.0, Round 62 "The front 41–60 and the main
 line's story layer" (**map reset**, no step;

@@ -98,7 +98,10 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 **0.63.0** gives the 36 mining camps fortified timber walls, canvas tents,
 tall mining headframes and faction banners, with matching inventory icons.
-It needs a map reset and awaits the local playtest.
+It also refreshes inventory and service layouts, adds clearer quest and mail
+rows, and limits window scaling to the equivalent Full-HD size. It needs a
+map reset for the camp changes; final desktop and web playtest acceptance
+is pending.
 
 **0.62.0** reworks the quests of the front, levels 41–60: the hosts and
 the capitals' envoys offer their Battlegrounds work from its level, far

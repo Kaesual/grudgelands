@@ -10,6 +10,8 @@ not additional current contracts. No behavior changes are authorized by this cle
 
 Requested during [UI polish review](docs/planning/ui-polish-review.md); these
 are separate future work, not changes authorized by the browser study.
+The [UI implementation](docs/planning/ui-polish-implementation.md) was merged
+on 2026-10-27; these two follow-ups remain open.
 
 - **Shipwright venue:** evaluate a small dedicated building or an annex beside
   the stable, displaying the actual boats, optionally in a shallow display
