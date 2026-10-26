@@ -1084,3 +1084,13 @@ rules remain. Receipts are in the [UI plan](docs/planning/ui-modernization-plan.
 Each change has a `GRUG PATCH` marker. No reverse dependency on grug_core is
 added to a vendored mod; these builders resolve the theme at runtime. Existing
 sfinv hooks support the new navigation without another vendored API patch.
+
+
+## Full-HD UI ceiling — 2026-10-26
+
+The existing book/sign and mob-editor presentation patches now pass their player
+to the shared frame so it can cap the available viewport on rebuild. The legacy
+mob-nametag form also uses the runtime padding helper after `size[]`, retaining
+its original coordinates and action handler. No dependency or interaction rule
+changes; the new nametag seam has its own `GRUG PATCH` marker. Details and limits
+are in [the presentation contract](docs/technical/ui-presentation.md).

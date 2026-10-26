@@ -90,6 +90,7 @@ end
 
 -- The window's size {w, h} for a window information table (or nil).
 function W.window_size(info, header_h)
+	if grug_core.ui.window_information then info = grug_core.ui.window_information(info) end
 	local max = type(info) == "table" and info.max_formspec_size
 	local w, h = W.FALLBACK.x, W.FALLBACK.y
 	if type(max) == "table" and type(max.x) == "number" and type(max.y) == "number" and
@@ -418,7 +419,8 @@ function W.formspec(player, session, info)
 	local fs = {
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
-		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + header_h),
+		("formspec_version[6]size[%.2f,%.2f]"):format(w, h + header_h) ..
+			(grug_core.ui.window_padding and grug_core.ui.window_padding(nil, 0, info) or "padding[0,0]"),
 		nav,
 		("container[0,%.3f]"):format(header_h),
 		-- The inventory key closes a form unless the focused element eats it
@@ -445,7 +447,8 @@ function W.formspec(player, session, info)
 			math.max(0, (layout.viewport_h - mh) / 2)),
 		("image[0,0;%.3f,%.3f;%s]"):format(mw, mh, esc(atlas.view().texture)),
 	}
-	overlay(fs, player, session, layout, quest, info)
+	overlay(fs, player, session, layout, quest,
+		grug_core.ui.window_information and grug_core.ui.window_information(info) or info)
 	fs[#fs + 1] = "container_end[]scroll_container_end[]scroll_container_end[]"
 	-- Scrollbar values are transport state: echoed from the last event.
 	local limit = atlas.scroll_limit(zoom)
@@ -705,7 +708,10 @@ function W.handle_fields(player, fields)
 			break
 		end
 	end
-	local quest_changed = quest_box.handle(player, session, fields)
+	local quest_changed, quest_scrolled = quest_box.handle(player, session, fields)
+	-- The quest rows share the map's form: refreshing party arrows or quest
+	-- progress while their scrollbar is dragged would interrupt that drag too.
+	if quest_scrolled then session.quiet_until = core.get_us_time() + W.QUIET_US end
 	session.busy = nil
 	if changed or quest_changed or session.dirty then
 		session.dirty = nil

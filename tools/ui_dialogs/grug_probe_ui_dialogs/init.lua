@@ -294,15 +294,22 @@ local function show(player, kind)
   local session={tab=kind=="claim" and "main" or kind=="claim_travel" and "waypoints" or "belongings"}
   form(C.stone(player,claim,session))
  elseif kind:match("^mail_") then
+  if kind == "mail_long" then
+   for i=1,8 do
+    grug_mail.send_system(NAME,"npc","Housing Steward with a long sender name",
+     "Preparations for the journey through the northern foothills " .. i,
+     "Long-title and attachment-count layout check.",{"default:paper 1"})
+   end
+  end
   node_window(player,grug_mail.MAILBOX_NODE)
   local session=assert(grug_mail.session(NAME))
-  session.tab=kind == "mail_delete" and "letters" or kind:sub(6)
+  session.tab=(kind == "mail_delete" or kind == "mail_long") and "letters" or kind:sub(6)
   local letters=grug_mail.store.box(NAME).letters
   if #letters>0 then session.selected.letters=letters[1].id end
   if kind == "mail_delete" then session.dialog="delete" end
   form(grug_mail.window_formspec(player,session))
  elseif kind == "creation" then form(C.creation({faction="accord",race="human",class="warrior",look=grug_visuals.get_look(player)}, player))
- elseif kind == "preparing" then form(C.preparing({mode="full",percent=63,eta_seconds=480,ready=false}))
+ elseif kind == "preparing" then form(C.preparing({mode="full",percent=63,eta_seconds=480,ready=false},nil,player))
  elseif kind == "welcome" then form(grug_inventory.welcome_formspec(player))
  elseif kind == "quickbar" then
   grug_mounts.purchase(player,1); grug_mounts.purchase(player,5)

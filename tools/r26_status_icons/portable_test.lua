@@ -546,8 +546,9 @@ contexts.alice = context
 context.grug_character_tab = "effects"
 local page = character:get(alice, context)
 check(page:find("No active effects", 1, true) ~= nil, "effects empty state")
-check(page:find("style[grug_character_effects;true]", 1, true) ~= nil,
-	"effects button styled selected")
+local effects_style = page:match("style%[grug_character_effects;([^%]]+)%]")
+check(effects_style and effects_style:find("textcolor=#d4b77d", 1, true) ~= nil,
+    "effects navigation styled selected")
 check(page:find("button[10.00,0.35;2.20,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
 	"stats mode button")
 
@@ -622,7 +623,7 @@ local group_fs = group:get(alice, group_context)
 check(group_fs:find("tablecolumns[image,align=center,0=blank.png,1=grug_class_warrior.png," ..
 	"2=grug_class_mage.png,3=grug_class_priest.png,4=grug_class_scout.png;text", 1, true) ~= nil,
 	"member table declares the class icons")
-check(group_fs:find("table[0.40,5.25;9.2,5.0;grug_party_members;1," ..
+check(group_fs:find(";grug_party_members;1," ..
 	fs_escape("* alice [Lv 5]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 5]  10/20 HP") ..
 	",0," .. fs_escape("cyd [Lv 4]  Offline") .. ";1]", 1, true) ~= nil,
 	"member rows carry class indices (offline: blank)")

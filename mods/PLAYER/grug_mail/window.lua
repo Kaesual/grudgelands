@@ -141,7 +141,7 @@ local function frame(player, session, counts)
 			0.4 + (index - 1) * ((W - 0.8) / 4), (W - 0.8) / 4 - 0.1, name, esc(caption))
 	end
 	return table.concat({
-		grug_core.ui.frame(W, H + 0.95),
+		grug_core.ui.frame(W, H + 0.95, nil, nil, player),
 		-- The focus sits on an invisible button at every send (module guide
 		-- "Initial focus"): an edit box or a table would eat the inventory key.
 		"set_focus[grug_mail_focus;true]button[0,0;0,0;grug_mail_focus;]",
@@ -176,30 +176,24 @@ local function clip(text, max)
 	if M.text_length(text) <= max then return text end
 	return M.truncate(text, max - 3) .. "..."
 end
-local FROM_CHARS, SUBJECT_CHARS = 10, 18
-
--- A letter or broadcast list as a table[] of one page: the unread dot, the
--- badge, subject (with the attachment count) and sender. The selected
--- letter retains the full sender, subject and date.
-local function letter_table(fs, name, rows, selected_id, x, y, w, h)
-	fs[#fs + 1] = ("style_type[table;font_size=*%.3f]"):format(1.15 * fs.text_scale)
-	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=#4e3f28;" ..
-		"color=%s]"):format(COLOR.text)
-	fs[#fs + 1] = ("tablecolumns[color,span=1;text,padding=0,width=0.4;image,padding=0.2,width=1,1=%s,2=%s;" ..
-		"color;text,padding=0.3,width=6;text,padding=0.7,width=4]"):format(BADGE, SEAL)
-	local cells, selected = {}, 0
-	for index, row in ipairs(rows) do
-		local marker = row.items and #row.items > 0 and (" (+" .. #row.items .. ")") or ""
-		local subject = clip(row.subject ~= "" and row.subject or "(no subject)",
-			SUBJECT_CHARS - #marker) .. marker
-		local badge = (row.kind == "admin" or not row.kind) and 1 or row.kind == "npc" and 2 or 0
-		local entries = {COLOR.dot, row.read and "" or "•", tostring(badge),
-			row.read and COLOR.read or COLOR.unread, subject, clip(row.from or M.ADMIN_LABEL, FROM_CHARS)}
-		for _, entry in ipairs(entries) do cells[#cells + 1] = esc(entry) end
-		if row.id == selected_id then selected = index end
-	end
-	fs[#fs + 1] = ("table[%.2f,%.2f;%.2f,%.2f;%s;%s;%d]"):format(x, y, w, h, name,
-		table.concat(cells, ","), selected)
+-- Larger rows keep the subject and sender separate; provenance, unread state
+-- and attachment counts remain visible without widening native table columns.
+local function letter_rows(fs, session, name, rows, selected_id, x, y, w, h)
+    local entries = {}
+    for index, row in ipairs(rows) do
+        local subject = row.subject ~= "" and row.subject or "(no subject)"
+        local attachment = row.items and #row.items > 0 and
+            (#row.items .. (#row.items == 1 and " attachment" or " attachments")) or ""
+        local marker = attachment ~= "" and (" · " .. attachment) or ""
+        entries[index] = {title = subject,
+            subtitle = (row.read and "" or "Unread · ") ..
+                (attachment ~= "" and attachment .. " · " or "") .. (row.from or M.ADMIN_LABEL),
+            icon = (row.kind == "admin" or not row.kind) and BADGE or row.kind == "npc" and SEAL or nil,
+            selected = row.id == selected_id,
+            tooltip = subject .. "\n" .. (row.from or M.ADMIN_LABEL) .. " · " .. date(row.time) .. marker}
+    end
+    fs[#fs + 1] = grug_core.ui.rows(session, {name = name, rows = entries,
+        x = x, y = y, w = w, h = h, scale = fs.text_scale})
 end
 
 -- The row a table event names ("CHG:<row>:<column>"), or nil.
@@ -286,7 +280,7 @@ local function letters_tab(player, session, fs)
 	for _, letter in ipairs(letters) do if not letter.read then unread = unread + 1 end end
 	fs[#fs + 1] = ("label[%.2f,1.2;%s]"):format(LIST_X, esc(colored(COLOR.dim,
 		"Subject and sender, newest first")))
-	letter_table(fs, "letters", rows, selected and selected.id, LIST_X, LIST_Y, LIST_W, LIST_H)
+	letter_rows(fs, session, "letters", rows, selected and selected.id, LIST_X, LIST_Y, LIST_W, LIST_H)
 	fs[#fs + 1] = pager("letters", LIST_X, 11.45, page, pages)
 	fs[#fs + 1] = ("label[%.2f,12.45;%s]"):format(LIST_X, esc(colored(COLOR.dim,
 		("%d letters · %d unread · limit %d"):format(#letters, unread,
@@ -357,7 +351,7 @@ local function announcements_tab(player, session, fs)
 	session.rows = rows
 	fs[#fs + 1] = ("label[%.2f,1.2;%s]"):format(LIST_X, esc(colored(COLOR.dim,
 		"Letters from the admin to all players")))
-	letter_table(fs, "announcements", rows, selected and selected.id, LIST_X, LIST_Y,
+	letter_rows(fs, session, "announcements", rows, selected and selected.id, LIST_X, LIST_Y,
 		LIST_W, LIST_H)
 	fs[#fs + 1] = pager("announcements", LIST_X, 11.45, page, pages)
 	if #list == 0 then
@@ -647,9 +641,11 @@ end
 
 local function page_turn(session, fields, prefix, key)
 	if fields[prefix .. "_prev"] then
+		grug_core.ui.rows_reset(session, prefix)
 		session.pages[key] = session.pages[key] - 1
 		return true
 	elseif fields[prefix .. "_next"] then
+		grug_core.ui.rows_reset(session, prefix)
 		session.pages[key] = session.pages[key] + 1
 		return true
 	end
@@ -684,7 +680,7 @@ local function letters_event(player, session, fields)
 		say(session, grug_mail.delete_letter(player, letter.id))
 		session.selected.letters, session.dialog = nil, nil
 	else
-		local row = table_row(fields.letters)
+		local row = grug_core.ui.rows_event(session, "letters", fields)
 		local entry = row and session.rows and session.rows[row]
 		if entry then
 			session.selected.letters, session.dialog = entry.id, nil
@@ -700,7 +696,7 @@ local function announcements_event(player, session, fields)
 		start_reply(player, session, broadcast, true)
 		return
 	end
-	local row = table_row(fields.announcements)
+	local row = grug_core.ui.rows_event(session, "announcements", fields)
 	local entry = row and session.rows and session.rows[row]
 	if entry then
 		session.selected.announcements = entry.id
@@ -775,17 +771,20 @@ local ACTIONS = {reply = true, report = true, report_cancel = true,
 
 -- Whether the event asks for nothing (an Enter in a single-line field):
 -- no resend, so the field keeps its focus.
+local function has_action(fields)
+    for field in pairs(fields) do
+        if ACTIONS[field] or field:match("^grug_mail_tab_%d+$") or
+                field:match("^letters_row_%d+$") or field:match("^announcements_row_%d+$") or
+                field:match("_prev$") or field:match("_next$") or
+                field:match("_send_%d+$") or field:match("^delete_%d+$") or
+                field:match("_confirm_%d+$") or field:match("^ticket_delete_%d+$") then
+            return true
+        end
+    end
+    return false
+end
 local function idle(fields)
-	if not fields.key_enter_field then return false end
-	for field in pairs(fields) do
-		if ACTIONS[field] or field:match("^grug_mail_tab_%d+$") or
-				field:match("_prev$") or field:match("_next$") or
-				field:match("_send_%d+$") or field:match("^delete_%d+$") or
-				field:match("_confirm_%d+$") or field:match("^ticket_delete_%d+$") then
-			return false
-		end
-	end
-	return true
+    return fields.key_enter_field and not has_action(fields)
 end
 
 -- A Send from an older draw than the one shown last: no action and none of
@@ -817,7 +816,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	keep_drafts(session, fields)
-	if scrolled(session, fields) or idle(fields) then return true end
+	local _, list_scroll = grug_core.ui.rows_event(session, session.tab, fields)
+    -- A scrollbar CHG sends no action. VAL accompanying a button is kept too.
+    if scrolled(session, fields) or (list_scroll and not has_action(fields)) or idle(fields) then return true end
 	session.status = nil
 	local tab = tonumber(fields.grug_mail_tab)
 	for index = 1, #TABS do
@@ -825,6 +826,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 	if tab and TABS[tab] and TABS[tab] ~= session.tab then
 		session.tab, session.dialog = TABS[tab], nil
+		grug_core.ui.rows_reset(session, session.tab)
 	else
 		TAB_EVENTS[session.tab](player, session, fields)
 	end

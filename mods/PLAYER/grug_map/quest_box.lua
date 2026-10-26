@@ -114,8 +114,8 @@ function M.content(session, journal, rect)
 	local list_h = math.max(LIST_MIN, rect.h * LIST_SHARE)
 	local right = x + w - PAD
 	-- The list with its "Story" category (Round 57 ruling 13): story quests
-	-- first under their header in the story accent, the others under "Side
-	-- quests"; each entry keeps its status colour.
+	-- first under their header, the others under "Side quests". State
+	-- markers and subtitles keep the title neutral and readable.
 	local ordered = {}
 	for _, row in ipairs(journal.quests) do
 		if row.story then ordered[#ordered + 1] = row end
@@ -123,15 +123,24 @@ function M.content(session, journal, rect)
 	for _, row in ipairs(journal.quests) do
 		if not row.story then ordered[#ordered + 1] = row end
 	end
-	local rows, row_of, entry_of = grug_quests.category_list(ordered, function(row, indent)
-		return grug_quests.list_entry((tracked(journal, row.id) and "* " or "") .. row.title,
-			row.ready and "ready" or "active", indent)
-	end)
+	local categories, row_of = grug_quests.category_list(ordered, function(row) return row.title end)
+	local rows = {}
 	session.quest_rows = {}
-	for entry, index in pairs(row_of) do session.quest_rows[entry] = ordered[index].id end
-	local selected_entry = 0
-	for index, row in ipairs(ordered) do
-		if quest and row.id == quest.id then selected_entry = entry_of[index] end
+	for entry, category in ipairs(categories) do
+		local index = row_of[entry]
+		local row = index and ordered[index]
+		if row then
+			session.quest_rows[entry] = row.id
+			local status = row.ready and "Ready to complete" or "In progress"
+			local subtitle = status .. (tracked(journal, row.id) and " · Tracked" or "")
+			rows[entry] = {title = row.title, subtitle = subtitle,
+				icon = "grug_map_quest_" .. (row.story and "story_" or "") ..
+					(row.ready and "ready" or "active") .. ".png",
+				tooltip = row.title .. "\n" .. subtitle .. "\n" .. level_line(row),
+				selected = quest and row.id == quest.id or false}
+		else
+			rows[entry] = {title = category:gsub("^#[%x]+", ""), header = true}
+		end
 	end
 	local row_y = y + list_h - PAD - BUTTON_H
 	local fs = {
@@ -139,10 +148,11 @@ function M.content(session, journal, rect)
 		("label[%.2f,%.2f;Active quests: %d/20]"):format(x + PAD, y + PAD + ROW_H / 2, #journal.quests),
 		("checkbox[%.2f,%.2f;grug_quest_hud;Quest HUD;%s]"):format(right - HUD_W,
 			y + PAD + ROW_H / 2, journal.hud_enabled and "true" or "false"),
-		("textlist[%.2f,%.2f;%.2f,%.2f;grug_quest_list;%s;%d;false]"):format(x + PAD,
-			y + PAD + ROW_H + 0.1, w - 2 * PAD, row_y - (y + PAD + ROW_H + 0.1) - 0.15,
-			table.concat(rows, ","), selected_entry),
-		("tooltip[grug_quest_list;%s]"):format(grug_quests.status_tooltip({"active", "ready"})),
+		grug_core.ui.rows(session, {name = "grug_quest_list", x = x + PAD,
+			y = y + PAD + ROW_H + 0.1, w = w - 2 * PAD,
+			h = row_y - (y + PAD + ROW_H + 0.1) - 0.15,
+			-- The responsive map already budgets for the native GUI font.
+			rows = rows, scale = 1}),
 	}
 	local text_y = y + list_h + GAP
 	local text_h = rect.h - list_h - GAP
@@ -195,27 +205,19 @@ function M.content(session, journal, rect)
 end
 
 -- Applies the boxes' fields; true when one of them changed something the
--- window shows (the caller sends the window again).
+-- window shows (the caller sends the window again). The second result marks
+-- a scrollbar move so the owner can defer existing automatic refreshes.
 function M.handle(player, session, fields)
 	local journal = grug_quests.journal(player)
 	local changed = false
-	if fields.grug_quest_list then
-		local event = core.explode_textlist_event(fields.grug_quest_list)
-		local rows = session.quest_rows or {}
-		if (event.type == "CHG" or event.type == "DCL") and rows[event.index] then
-			if session.quest_selected ~= rows[event.index] then
-				session.quest_selected = rows[event.index]
-				session.quest_abandon, session.quest_notice = nil, nil
-			end
-			-- A click on the selected row sends too: the clicked list holds
-			-- the focus and would eat the inventory key, the window's send
-			-- moves the focus away (window.lua, set_focus).
-			changed = true
-		elseif event.type == "CHG" or event.type == "DCL" then
-			-- A category header (Round 57) selects nothing: the window is sent
-			-- again with the selection it had.
-			changed = true
+	local clicked, scrolled = grug_core.ui.rows_event(session, "grug_quest_list", fields)
+	local rows = session.quest_rows or {}
+	if clicked and rows[clicked] then
+		if session.quest_selected ~= rows[clicked] then
+			session.quest_selected = rows[clicked]
+			session.quest_abandon, session.quest_notice = nil, nil
 		end
+		changed = true
 	end
 	local id = session.quest_selected
 	if fields.grug_quest_hud and
@@ -243,7 +245,7 @@ function M.handle(player, session, fields)
 		session.quest_selected, session.quest_abandon = nil, nil
 		changed = true
 	end
-	return changed
+	return changed, scrolled
 end
 
 return M

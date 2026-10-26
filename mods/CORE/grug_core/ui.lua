@@ -24,6 +24,7 @@ function UI.text_scale(player)
     if not player then return 1 end
     local info = core.get_player_window_information and
         core.get_player_window_information(player:get_player_name())
+    if UI.window_information then info = UI.window_information(info) end
     if info and info.max_formspec_size then
         -- real_gui_scaling includes display density, not just the GUI setting.
         -- Compensate actual form shrink, bounded by the tested small-window scale.
@@ -102,10 +103,10 @@ function UI.navigation_style(name, selected, x, y, w, h, vertical, scale)
 	return fs
 end
 
--- Leave fitting to the client. Geometry must not depend on window information
--- arriving after the initial inventory form or on a previous window size.
-function UI.frame(w, h, title, opaque)
-	local fs = ("formspec_version[6]size[%.3f,%.3f]"):format(w, h)
+-- Native fitting within the capped viewport; no delayed corrective send.
+function UI.frame(w, h, title, opaque, player)
+	local fs = ("formspec_version[6]size[%.3f,%.3f]"):format(w, h) ..
+		(UI.window_padding and UI.window_padding(player) or "")
 	if opaque then fs = fs .. "no_prepend[]" .. UI.prepend(true) end
 	if title then fs = fs .. UI.title(0.4, 0.45, title) end
 	return fs

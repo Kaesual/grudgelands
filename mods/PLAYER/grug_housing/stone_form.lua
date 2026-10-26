@@ -109,9 +109,9 @@ local function countdown(seconds)
 end
 
 -- R26 rulings 8-9: the draft's own form (redrawn every second while open).
-local function draft_formspec(claim, session)
+local function draft_formspec(claim, session, player)
 	local need = grug_housing.ACTIVATION_LUMPS
-	local fs = {theme.frame(10.75, 4.9, "Your Claim Stone (draft, not active)"),
+	local fs = {theme.frame(10.75, 4.9, "Your Claim Stone (draft, not active)", nil, player),
 		theme.button_style("activate", "selected"), theme.button_style("pick_up", "danger")}
 	fs[#fs + 1] = ("label[0.4,1.05;%s]"):format(ui.text(
 		"It protects nothing yet and crumbles in " ..
@@ -207,7 +207,7 @@ end
 local function waypoints_formspec(player, session, home, header)
 	local rows = home.known_waypoints(player)
 	local height = 2.6 + 0.7 * math.max(1, #rows)
-	local fs = {theme.frame(10.75, height + TAB_OFFSET), header,
+	local fs = {theme.frame(10.75, height + TAB_OFFSET, nil, nil, player), header,
 		"container[0," .. TAB_OFFSET .. "]",
 		theme.heading(0.4, 0.5, "Travel from your Claim Stone")}
 	for index, row in ipairs(rows) do
@@ -292,7 +292,7 @@ end
 
 local function main_formspec(player, claim, session)
 	session.draft = grug_housing.is_draft(claim)
-	if session.draft then return draft_formspec(claim, session) end
+	if session.draft then return draft_formspec(claim, session, player) end
 	local home = travel_api()
 	local header = tabs(player, session)
 	if session.tab == "waypoints" then
@@ -355,21 +355,21 @@ local function main_formspec(player, claim, session)
 		session, 2)
 end
 
-local function confirm_formspec(draft)
+local function confirm_formspec(draft, player)
 	local lines = draft and
 		("label[0.4,1.1;" .. ui.esc("It is not active yet; you can place it " ..
 			"again at once.") .. "]") or
 		("label[0.4,1.1;The protection ends at once. Whole unburnt lumps come back.]" ..
 		"label[0.4,1.6;" .. ui.esc(("You can place it again at once; activation " ..
 			"costs %d lumps again."):format(grug_housing.ACTIVATION_LUMPS)) .. "]")
-	return theme.frame(10.75, 3.9, "Pick up your Claim Stone?") ..
+	return theme.frame(10.75, 3.9, "Pick up your Claim Stone?", nil, player) ..
 		theme.button_style("confirm_pick_up", "danger") .. lines ..
 		"button[0.4,2.6;4.2,0.8;confirm_pick_up;Pick up]" ..
 		"button[4.9,2.6;4.2,0.8;cancel_pick_up;Cancel]"
 end
 
-local function notice_formspec(message, color)
-	return theme.frame(9.5, 2.9) ..
+local function notice_formspec(message, color, player)
+	return theme.frame(9.5, 2.9, nil, nil, player) ..
 		("label[0.4,0.7;%s]"):format(ui.text(message, color)) ..
 		"button_exit[3.15,1.6;3.2,0.8;ok;OK]"
 end
@@ -379,7 +379,7 @@ local function show(player, session)
 	if session.mode == "confirm" then
 		local claim = current_claim(player, session)
 		core.show_formspec(name, FORMNAME, confirm_formspec(claim ~= nil and
-			grug_housing.is_draft(claim)))
+			grug_housing.is_draft(claim), player))
 		return true
 	end
 	local claim = current_claim(player, session)
@@ -591,7 +591,7 @@ local function pick_up(player, session)
 	if ok then
 		sessions[name] = nil
 		core.show_formspec(name, NOTICE, notice_formspec(
-			message or "You picked up your Claim Stone."))
+			message or "You picked up your Claim Stone.", nil, player))
 		return
 	end
 	session.mode = "main"

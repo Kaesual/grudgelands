@@ -147,7 +147,7 @@ local function form(session, player)
 	body, session.page = grug_repair.quote_formspec(quote, session.page, width, top, footer)
 	fs[#fs + 1] = body
 	fs[#fs + 1] = ("button_exit[0.5,%.2f;2,0.6;close;Close]"):format(footer)
-	fs[1] = grug_core.ui.frame(width, footer + 1.0)
+	fs[1] = grug_core.ui.frame(width, footer + 1.0, nil, nil, player)
 	return table.concat(fs)
 end
 

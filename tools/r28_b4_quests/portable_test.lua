@@ -144,6 +144,7 @@ grug_core = {register_tag_visibility = function() end,
 	end,
 	feed = function(_, kind, text) fed_lines[#fed_lines + 1] = kind .. ": " .. text end}
 dofile("mods/CORE/grug_core/ui.lua")
+dofile("mods/CORE/grug_core/ui_rows.lua")
 dofile("mods/CORE/grug_core/item_names.lua")
 local level_of = {}
 local granted_xp, quest_reward_calls = {}, {}

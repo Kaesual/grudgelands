@@ -410,8 +410,8 @@ end
 function grug_inventory.station_box(label, inner_h)
 	local station = grug_inventory.STATION
 	local h = LAYOUT.label_h + inner_h + LAYOUT.pad
-	return grug_core.ui.heading(station.x, station.margin + LAYOUT.label_h / 2,
-		string.upper(label)), station.margin + h
+	return grug_inventory.area_box(station.box_x, station.margin,
+		station.box_w, h, label), station.margin + h
 end
 
 -- The whole station form: the header, `content` (real coordinates, ending
@@ -423,7 +423,7 @@ function grug_inventory.station_formspec(player, content, content_h, context, vi
 	local view_h = LAYOUT.label_h + rows * PITCH - (PITCH - SLOT) + LAYOUT.pad +
 		LAYOUT.gap + LAYOUT.slot_box_h
 	return table.concat({
-		grug_core.ui.frame(station.width, top + view_h + station.margin),
+		grug_core.ui.frame(station.width, top + view_h + station.margin, nil, nil, player),
 		content,
 		grug_inventory.inventory_view(player, "station", context, top, rows),
 		bag_rings(player, content),
@@ -443,7 +443,7 @@ function sfinv.make_formspec(player, context, content, show_inv)
 	context.grug_inv_view = mode
 	-- Body coordinates remain local to this container below the navigation.
 	return table.concat({
-		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h),
+		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h, nil, nil, player),
 		nav,
 		("container[0,%.3f]"):format(header_h),
 		mode and grug_inventory.inventory_view(player, mode, context) or "",

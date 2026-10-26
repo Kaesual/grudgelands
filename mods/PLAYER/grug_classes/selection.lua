@@ -332,6 +332,7 @@ local function create_formspec(draft, player)
 	local fs = {
 		"formspec_version[6]",
 		("size[%s,%s]"):format(WIDTH, HEIGHT),
+		(grug_core.ui.window_padding and grug_core.ui.window_padding(player) or ""),
 		DARK_BACKGROUND,
 		grug_core.ui.title(0.4, 0.45, "Create your character"),
 		"style_type[label,textarea;font_size=*0.85]style_type[textarea;border=false]",
@@ -408,7 +409,7 @@ local function create_formspec(draft, player)
 	return table.concat(fs)
 end
 
-local function loading_formspec(status, failed)
+local function loading_formspec(status, failed, player)
 	local scope = status.mode == "full" and "the world surface" or "the starting areas"
 	local eta = "Estimating time remaining..."
 	if status.eta_seconds then
@@ -416,7 +417,8 @@ local function loading_formspec(status, failed)
 		eta = ("Time remaining: %dh %02dm"):format(math.floor(minutes / 60), minutes % 60)
 	end
 	local parts = {
-		"formspec_version[6]", "size[10.4,4.2]", DARK_BACKGROUND,
+		"formspec_version[6]", "size[10.4,4.2]",
+		(grug_core.ui.window_padding and grug_core.ui.window_padding(player) or ""), DARK_BACKGROUND,
 		grug_core.ui.panel(0.4, 0.35, 9.6, 3.45),
 		"style_type[label;font_size=*0.85]",
 		"label[0.6,0.7;" .. core.formspec_escape(
@@ -448,14 +450,14 @@ current_step = function(player, session)
 	local status = grug_core.world_preparation_status()
 	if not status.ready then
 		return status.failed and "failed" or "waiting", LOADING_FORM,
-			loading_formspec(status, status.failed)
+			loading_formspec(status, status.failed, player)
 	end
 	if not session.preparation_only and not arrival_key(player) then
 		return "create", CREATE_FORM, create_formspec(session.draft, player)
 	end
 	local failed = session.load_failed ~= nil or grug_core.starts_preload_failed()
 	return failed and "failed" or "waiting", LOADING_FORM,
-		loading_formspec(status, failed)
+		loading_formspec(status, failed, player)
 end
 
 local function hint_text(session, step)

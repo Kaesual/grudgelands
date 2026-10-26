@@ -23,7 +23,8 @@ Talents: left menu matching artwork height, Points bottom aligned, full tree
 artwork and only unlocked skills below. Help uses a left topic menu. Dialogs
 retain clear list/detail or status/action hierarchy. Service windows and simple
 travel/housing windows are compact without reducing text readability.
-Containers/stations: unframed upper slots on inventory columns, four to six
+Containers/stations: upper slots on inventory columns with the same panel as
+inventory/hotbar (user follow-up, 2026-10-26), four to six
 visible player rows with remaining rows scrollable. Furnace input in column 1
 (dual 1–2), fuel in 4, arrow spanning 5–6, 2×2 output in 7–8.
 
@@ -363,3 +364,67 @@ bound updated to the real equipment-column boundary. Both changed Lua files
 pass the Lua 5.1 parser and all checker sweeps. Native Character captures at
 1035×696, 1600×900 and 2560×1440 are stored in
 `~/projects/grudgelands-orchestration/ui-character-model-2026-10-26/`.
+
+
+## Full-HD ceiling, selectable rows and container panels — 2026-10-26
+
+The user approved the custom-row variant for quest givers, Map quests and
+Mailbox letters, plus a maximum scale equivalent to the current Full-HD
+rendering of each window and matching upper panels on containers/stations.
+This follow-up supersedes the earlier decision to leave upper slots unframed.
+
+Implementation is compatible: transient presentation state and field routing
+only; no saved inventory, quest/mail data, capacities or world changes. Shared
+rows retain real status/story/provenance icons, unread state, attachment counts,
+selection, scroll position and full-text tooltips. Mail announcements share the
+letter renderer. Existing action validation, reward choice, read/attachment/
+delete behavior and Map tracking/abandon remain in their owners. Map scroll
+holds use its existing quiet period; no new polling or redraw cadence.
+
+The ceiling is evaluated on existing builds using the reported viewport and
+native padding, preserving the client's GUI and density settings. Below Full
+HD fitting is unchanged. Initial/stale reports are deliberately not polled:
+a cached initial inventory can open uncapped until the next existing rebuild.
+There is no hard live-resize guarantee. Native Tab/Shift-Tab + Enter operates
+row buttons; the old table/textlist arrow-selection behavior is replaced.
+
+Upper panels use the existing station_box/area_box helper, covering both chests,
+shelves and all furnace workspaces without changing slot geometry or animation.
+The existing Claim Stone belongings helper also gets its consistent panel.
+
+Verification:
+
+- One complete shared-queue run (`JOBS=7`, eight slots including the two-seed
+  fixture): 282 fixtures passed; `r26_status_icons` had two stale expectations
+  from earlier UI changes (Effects navigation styling and Party coordinates).
+  Its unchanged runtime owners were checked, the assertions were refreshed to
+  test selected styling and member content, and its 412 checks then passed.
+  No full-suite repeat. Final Map typography correction also passed `r44_mq`.
+- New `ui_rows` covers selection/header rejection, transient scrolling,
+  clamping, initial reveal, UTF-8 and scrollbar thumb sizing. New
+  `ui_window_cap` passes 261 checks across resolutions, GUI1/1.5, density1/2,
+  absent reports and rebuilds. `ui_navigation`, `r48_mail`, `r451_nq`,
+  `r44_mq` and all quest fixtures pass; Map's 693 checks include pending
+  quest/party updates while dragging. Mail covers no resend on scroll,
+  selection preserving position, page reset and invalid indices.
+- All 28 changed runtime Lua files pass parser and all sweeps. Changed
+  fixture files parse and pass sweeps1–4; sweep5 flags only their existing
+  `io.popen`/`os.exit` test harness calls. New fixtures and capture probe pass
+  all sweeps. Fresh-server and theme audits pass; design validation reports
+  zero errors and 17 existing content warnings.
+- Isolated native clients at 1035×696, 1920×1080 and 2560×1440, plus bright
+  GUI1.5 captures. Shared-queue runs never exceed eight Lua processes. Native
+  boots have no server errors or formspec parse errors; the client shutdown
+  message `fidelity capture complete` is intentional. Contact sheets and
+  original-size long-title captures were inspected; Full-HD/WQHD centered
+  comparisons keep the same physical pixels to verify the ceiling.
+- Independent read-only review passed after fixing Map's drag quiet period,
+  explicit subtitle truncation and documentation. No new globalstep or timer;
+  row construction/payload grows with the existing rendered page size.
+
+Artifacts: `/home/jan/projects/grudgelands-orchestration/ui-rows-cap-2026-10-26/`
+contains 40 published screenshots, contact sheets, comparisons, formspecs and
+test logs (earlier Full-HD GUI1.5 captures are archived separately). Final
+Desktop/Web interactive acceptance remains with the user, especially keyboard
+row navigation, resizing and first inventory opening. Worktree retained;
+no main merge or push.

@@ -401,6 +401,7 @@ do
 	end
 	grug_quests.npc_quests = function() return rows end
 	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+	dofile(ROOT .. "/mods/CORE/grug_core/ui_rows.lua")
 	assert(loadfile(ROOT .. "/mods/PLAYER/grug_quests/npc.lua"))()
 	local Q = grug_quests
 	local colors = {}
@@ -430,19 +431,16 @@ do
 	eq(Q.open_npc(player, entity), true, "Q the dialog opens")
 	local form = shown or ""
 	check(tonumber(form:match("size%[([%d.]+),")) == 18.8, "Q the dialog is 18.8 units wide")
-	local list_w = tonumber(form:match("table%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;quests;"))
-	check(list_w and list_w >= 4.8, "Q the quest list is at least 4.8 units wide (got " .. tostring(list_w) .. ")")
-	local list = form:match("table%[[^;]+;[^;]+;quests;(.-);%d+%]") or ""
-	check(list ~= "" and not list:find("(available)", 1, true) and not list:find("Repeatable", 1, true),
-		"Q no status or [Repeatable] text in the list")
-	check(form:find("1,Break Ranks", 1, true) ~= nil and
-		form:find("1=grug_map_quest_available.png", 1, true) ~= nil, "Q the available entry has its state icon")
-	check(form:find("2,Bounty: Threads\\, Across", 1, true) ~= nil and
-		form:find("2=grug_map_quest_ready.png", 1, true) ~= nil and
+	local list_w = tonumber(form:match("scroll_container%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;quests_scroll;"))
+	check(list_w and list_w >= 4.8, "Q the quest rows are at least 4.8 units wide (got " .. tostring(list_w) .. ")")
+	check(form:find("Break Ranks", 1, true) ~= nil and
+		form:find("grug_map_quest_available.png", 1, true) ~= nil, "Q the available entry has its state icon")
+	check(form:find("Bounty: Threads", 1, true) ~= nil and
+		form:find("grug_map_quest_ready.png", 1, true) ~= nil and
 		not form:find("(R)", 1, true), "Q the ready entry has its state icon, without a repeatable mark")
-	check(form:find("tooltip[quests;", 1, true) ~= nil, "Q the list has a tooltip")
-	for _, hint in ipairs({"Available: !", "Ready to complete: ?", "In progress: muted ?", "Locked: muted !"}) do
-		check(form:find(hint, 1, true) ~= nil, "Q the status tooltip explains " .. hint)
+	check(form:find("tooltip[quests_row_", 1, true) ~= nil, "Q each quest has a full-title and status tooltip")
+	for _, hint in ipairs({"Available", "Ready to complete", "In progress", "Locked"}) do
+		check(form:find(hint, 1, true) ~= nil, "Q the status subtitle explains " .. hint)
 	end
 	local description = form:match("(textarea%[[^%]]-;)")
 	check(description ~= nil and form:find("textarea%[[%d.]+,[%d.]+;[%d.]+,[%d.]+;;;") ~= nil,
@@ -477,8 +475,8 @@ do
 
 	-- The quest log is the map window's quest box since Round 44.
 	local ui = read(ROOT .. "/mods/PLAYER/grug_map/quest_box.lua")
-	check(ui:find("grug_quests.list_entry(", 1, true) ~= nil, "Q the quest log uses the same entries")
-	check(ui:find("tooltip[grug_quest_list;", 1, true) ~= nil, "Q the quest log list has the tooltip")
+	check(ui:find("grug_core.ui.rows(", 1, true) ~= nil, "Q the quest log uses the shared custom rows")
+	check(ui:find("tooltip = row.title", 1, true) ~= nil, "Q the quest log has full-title tooltips")
 	check(not ui:find("[Repeatable]", 1, true) and not ui:find("[Ready]", 1, true),
 		"Q the quest log has no [Repeatable] or [Ready] text")
 	-- The real window geometry is exercised by r44_mq; the column now owns

@@ -484,6 +484,7 @@ rawset(_G, "sfinv", {
 })
 rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1, frame_h = 13.673}})
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
 sfinv.register_page("grug_inventory:inventory", {title = "Inventory"})
 do -- the shared selection style, as grug_inventory/ui.lua ships it
@@ -1149,6 +1150,24 @@ do
 	eq(sends_to("ann") - before, 0, "R the pause restarts with every move")
 	advance(0.2)
 	eq(sends_to("ann") - before, 1, "R the owed send goes out after the pause")
+	-- The custom quest list is part of the same form, so its drag must hold
+	-- a pending marker refresh too. VAL fields must not prolong the pause.
+	advance(2)
+	before = sends_to("ann")
+	fields(accord, {grug_quest_list_scroll = "CHG:40"})
+	for _, fn in ipairs(markers_changed) do fn(accord) end
+	check(W.sessions.ann.pending, "R quest-list drag leaves marker refresh pending")
+	advance(0.4)
+	eq(sends_to("ann") - before, 0, "R marker refresh waits during quest-list drag")
+	fields(accord, {grug_quest_list_scroll = "CHG:100"})
+	advance(0.4)
+	eq(sends_to("ann") - before, 0, "R each quest-list move restarts the pause")
+	local quiet = W.sessions.ann.quiet_until
+	fields(accord, {grug_quest_list_scroll = "VAL:100"})
+	eq(W.sessions.ann.quiet_until, quiet, "R an echoed list scroll does not extend the pause")
+	advance(0.2)
+	eq(sends_to("ann") - before, 1, "R pending marker refresh sends after the list drag")
+	has(shows[#shows].form, ";grug_quest_list_scroll;100]", "R deferred refresh preserves list scroll")
 	-- In a party: the 2 s check (5 s before Round 47) waits for the pause too.
 	local cara = make_player("cara", {x = 600, z = 600}, "accord")
 	players.cara = cara
@@ -1165,6 +1184,19 @@ do
 	advance(0.6)
 	eq(sends_to("ann") - before, 1, "R ...and sends once it is still")
 	check(clock_us - held >= 2e6, "R (the drag lasted past the 2 s check)")
+	-- Likewise, automatic party movement cannot rebuild a form under a
+	-- dragged quest list, even when no explicit quest refresh is pending.
+	advance(1.8)
+	cara.pos = {x = -900, z = -900}
+	before = sends_to("ann")
+	for _ = 1, 10 do
+		fields(accord, {grug_quest_list_scroll = "CHG:125"})
+		advance(0.2)
+	end
+	eq(sends_to("ann") - before, 0, "R party refresh waits during quest-list drag")
+	advance(0.6)
+	eq(sends_to("ann") - before, 1, "R party refresh sends once the quest-list drag ends")
+	has(shows[#shows].form, ";grug_quest_list_scroll;125]", "R party refresh preserves list scroll")
 	parties.ann, parties.cara, players.cara = nil, nil, nil
 	shown.ann = nil
 	fields(accord, {quit = "true"})
@@ -1282,8 +1314,8 @@ do
 	W.open(accord)
 	local form = shows[#shows].form
 	check(state.quest_selected == nil, "Q no quest preselected")
-	has(form, ";grug_quest_list;#active* Title q_kill,#ready", "Q the list")
-	check(form:match(";grug_quest_list;[^%]]*;0;false%]") ~= nil, "Q the list shows no selection")
+	has(form, ";grug_quest_list_row_1;]", "Q the list has selectable rows")
+	check(not form:find("style%[grug_quest_list_row_%d+;border=false;bgimg=grug_ui_nav_selected.png"), "Q the list shows no selection")
 	has(form, "Select a quest to read it and to see its targets on the map.", "Q the hint")
 	lacks(form, "grug_quest_abandon", "Q no Abandon without a selection")
 	lacks(form, "grug_quest_track", "Q no Track on HUD without a selection")
@@ -1294,29 +1326,35 @@ do
 	has(form, "Active quests: 5/20", "Q the active count")
 	has(form, "checkbox[", "Q checkboxes")
 	has(form, ";grug_quest_hud;Quest HUD;true]", "Q the Quest HUD switch")
-	has(form, "textlist[", "Q the list")
-	has(form, ";grug_quest_list;#active* Title q_kill,#ready", "Q tracked quest starred, status colour")
+	has(form, "scroll_container[", "Q the list scrolls natively")
+	has(form, "In progress · Tracked", "Q tracked quest subtitle")
+	has(form, "grug_map_quest_active.png", "Q status icon")
 	has(form, ";grug_quest_track;Track on HUD;true]", "Q Track on HUD for the selected quest")
 	has(form, ";grug_quest_abandon;Abandon]", "Q Abandon")
 	has(form, fs_escape("About q_kill\n\nDefeat q_kill1: 3/7\nDefeat q_kill2: 0/1\n\nRewards: 40 XP, 12c"),
 		"Q description, objectives and rewards in one text, unwrapped")
 	has(form, "Level 4 · Dawnmere Fields", "Q the level and zone line")
 	lacks(form, "Ready to return", "Q no ready line while in progress")
+	-- Scrolling stays local while retaining the offset for the next action.
+	local before_scroll = #shows
+	fields(accord, {grug_quest_list_scroll = "CHG:125"})
+	eq(#shows, before_scroll, "Q scrolling the quest list does not resend the map")
+	eq(state._ui_rows.grug_quest_list.scroll, 125, "Q scroll offset remembered")
 	-- The list selects; the targets follow.
 	advance(2)
-	fields(accord, {grug_quest_list = "CHG:2"})
+	fields(accord, {grug_quest_list_row_2 = "true"})
 	eq(state.quest_selected, "q_wolf", "Q a list click selects")
 	form = shows[#shows].form
 	has(form, "Ready to return to Elder Maren.", "Q the ready line")
 	check(count(map_part(form), "grug_map_ring") == 0 and count(map_part(form), "crosshair") == 0,
 		"Q a finished kill quest marks nothing")
 	advance(2)
-	fields(accord, {grug_quest_list = "CHG:1"})
+	fields(accord, {grug_quest_list_row_1 = "true"})
 	form = shows[#shows].form
 	check(count(map_part(form), "grug_map_ring") == 2 and count(map_part(form), "crosshair") == 1,
 		"Q the selection's targets follow the list (the camp rings and the leader)")
 	advance(2)
-	fields(accord, {grug_quest_list = "CHG:2"})
+	fields(accord, {grug_quest_list_row_2 = "true"})
 	-- Track, HUD, abandon with confirmation.
 	advance(2)
 	quest_calls = {}
@@ -1484,11 +1522,11 @@ do
 	-- A click on the already selected quest sends as well: the clicked list
 	-- would keep the focus and eat the inventory key.
 	advance(2)
-	fields(accord, {grug_quest_list = "CHG:1"})
+	fields(accord, {grug_quest_list_row_1 = "true"})
 	check(state.quest_selected ~= nil, "M a quest is selected")
 	advance(2)
 	before = sends_to("ann")
-	fields(accord, {grug_quest_list = "CHG:1"})
+	fields(accord, {grug_quest_list_row_1 = "true"})
 	eq(sends_to("ann") - before, 1, "M a click on the selected row sends the window")
 end
 
@@ -1557,7 +1595,7 @@ do
 	eq(sends_to("ann") - before, 0, "L the active layer's button changes nothing")
 	-- A quest selection is its own mode; a layer button deselects it.
 	advance(2)
-	fields(accord, {grug_quest_list = "CHG:1"})
+	fields(accord, {grug_quest_list_row_1 = "true"})
 	eq(state.quest_selected, "q_kill", "L a quest selected")
 	local form = shows[#shows].form
 	check(not map_part(form):find("grug_map_capital.png", 1, true), "L quest mode hides the layer")
@@ -1582,20 +1620,20 @@ do
 	eq(state.layer, "pois", "L ...and shows that layer")
 	eq(sends_to("ann") - before, 1, "L ...in one send")
 	form = shows[#shows].form
-	check(form:match(";grug_quest_list;[^%]]*;0;false%]") ~= nil, "L the list back to no selection")
+	check(not form:find("style%[grug_quest_list_row_%d+;border=false;bgimg=grug_ui_nav_selected.png"), "L the list back to no selection")
 	has(form, "Select a quest to read it and to see its targets on the map.", "L the text box's hint")
 	lacks(form, "grug_quest_abandon", "L Abandon acts on no quest")
 	check(map_part(form):find("grug_map_bandit.png", 1, true) ~= nil and
 		count(map_part(form), "crosshair") == 0, "L the layer, no targets")
 	-- The active layer's button in quest mode deselects too.
 	advance(2)
-	fields(accord, {grug_quest_list = "CHG:1"})
+	fields(accord, {grug_quest_list_row_1 = "true"})
 	advance(2)
 	fields(accord, {grug_map_layer = "5"})
 	check(state.quest_selected == nil, "L the last layer's button deselects as well")
 	-- A selected quest that leaves the log: back to the last layer.
 	advance(2)
-	fields(accord, {grug_quest_list = "CHG:4"})
+	fields(accord, {grug_quest_list_row_4 = "true"})
 	local id = state.quest_selected
 	check(id ~= nil, "L a quest selected again")
 	local saved = journals.ann.quests
@@ -1608,7 +1646,7 @@ do
 	journals.ann.quests = saved
 	-- The layer is kept between openings (session only, §8 default), the
 	-- quest selection is not.
-	fields(accord, {grug_quest_list = "CHG:1"})
+	fields(accord, {grug_quest_list_row_1 = "true"})
 	shown.ann = nil
 	fields(accord, {quit = "true"})
 	advance(2)

@@ -35,30 +35,67 @@ out of the prepend and explicitly requests the opaque variant.
   below it.
 - `button_style(name, role, scale)` styles one existing field (`normal`, `selected`,
   `danger`). Names are single fields, not comma-separated selector lists.
-- `frame(w, h, title, opaque)` opens a version-6 real-coordinate form; optional
-  title at 0.4,0.45. It does not offset content or close a container.
+- `frame(w, h, title, opaque, player)` opens a version-6 real-coordinate form;
+  optional title at 0.4,0.45. The player supplies the current viewport report
+  for the Full-HD cap. It does not offset content or close a container.
 
 `fonts(scale)` scopes native control text sizes within a form. Party, quests
 and Mail pass the existing `text_scale(player)` through scoped heading, button,
 prose and service-header helpers, so a large GUI font cannot overrun the fixed
 form after native fitting. This changes neither frame geometry nor refresh
-cadence. Main and mailbox navigation uses 1.1× text; quest/mail tables use
-1.15×; reading text 1.05×; section headings 0.9× bold. At GUI scale 1 these
-roles no longer reduce ordinary body/action text to 0.8–0.85×.
+cadence. Main and mailbox navigation uses 1.1× text; selectable quest/mail
+row titles use 1× and secondary text 0.9×; reading text 1.05×; section headings
+0.9× bold. At GUI scale 1 ordinary body/action text is not reduced to 0.8–0.85×.
 
-Native table row height follows its font height plus four pixels
-(`src/gui/guiTable.cpp`, `setOverrideFont`). Larger type increases row height,
-but the browser's independently padded/two-line cards are not reproduced by
-these single-row tables. Mail keeps separate subject and sender columns with
-shortened list captions; the selected letter retains the complete text.
+`rows(state, spec)` in `grug_core/ui_rows.lua` renders the quest giver, Map's
+quest list and Mailbox letters/announcements as buttons in a native scroll
+container. Each row has a title, secondary line and optional existing
+state/provenance icon. Long titles wrap to two lines; ellipsis and full tooltips
+cover overflow. Category headers are not selectable. `rows_event(state, name,
+fields)` maps only rendered selectable indices, keeps scrollbar CHG/VAL values,
+and returns a click index plus whether this was a scroll change. Owners retain
+all id mapping, permissions and action validation. `rows_reset` clears transient
+scroll on page/giver changes; redraws clamp it to the current range. Explicit
+`reveal_selected` brings initial/automatic giver selections into view.
 
-Frame fitting belongs to the client. Forms must not add padding derived from
-server-side window reports: those can be absent for the first inventory form
-or stale after resizing. The attempted WQHD cap was removed after the user's
-playtest found a first-open/tab-switch size jump and excessive shrinking on
-large windows. Default native padding remains; Map keeps its explicit zero
-padding and separate viewport budget. Quickbar keeps its left position/anchor.
-No polling or corrective resend is introduced.
+These are native buttons: mouse selection and Tab/Shift-Tab focus with Enter
+activation replace table/textlist arrow-key selection. Scrolling is client-side;
+a pure scrollbar event never sends the form. Map list dragging uses the existing
+map quiet period to defer pending automatic refreshes. The helper adds no timer,
+globalstep or saved state. It emits more formspec elements per rendered row;
+Mailbox retains eight-row pages and the quest log retains its existing limit.
+The responsive Map retains native text scale 1 for rows and surrounding labels;
+its geometry already incorporates the GUI scale, so inventory-fit compensation
+must not leak into its typography. Other native tables, including Admin Mail,
+keep their own existing behavior.
+
+Native frame fitting remains enabled, with a Full-HD viewport ceiling
+(`grug_core/ui_window.lua`). On each existing rebuild, `window_padding(player,
+base, info)` limits the available viewport to `min(width, 1920)` by
+`min(height, 1080)`, retaining the ordinary 5% padding (Map uses 0%). The
+engine then applies its usual DPI, GUI-scale and form-size calculation. This
+reproduces that same window's Full-HD rendering with the same client settings;
+it does not force GUI scale 1 or impose the same dimensions on every dialog.
+For an actual Full-HD or smaller viewport the regular frame is unchanged.
+Padding must follow `position[]` and `anchor[]` and precede `no_prepend[]`;
+Quickbar therefore adds it after its existing left anchor.
+
+`window_information(info)` derives the matching virtual viewport and maximum
+formspec size for responsive layouts and fitted typography. Map uses it both
+for its body budget and zone-label metrics. The derivation retains the native
+fixed image-size floor (`0.5555 * 96 * real_gui_scaling`); density is never
+assumed to equal the GUI setting. The fixture `tools/ui_window_cap` compares
+native fitting equations on small, Full-HD, WQHD, 4K, ultrawide and portrait
+windows, GUI 1/1.5, density 1/2, real/legacy forms and resize rebuilds.
+
+Reports can be absent at join and lag a resize. An absent report leaves native
+fitting uncapped; a later existing rebuild applies the latest known cap.
+While an already-open window is resized, its last reported padding remains
+until such a rebuild. There is no immediate hard pixel guarantee during that
+interval, no polling and no corrective resend. For forms built from the same stable report, opening
+and changing tabs use the same cap. A cached initial inventory built before
+the first report can still open uncapped until an existing action rebuilds it. Geometry is never reduced to create the
+cap: only the available client viewport changes.
 
 `navigation_style(name, selected, x, y, w, h, vertical, scale)` styles an existing
 navigation field. Horizontal choices have an active underline; side menus have

@@ -194,6 +194,7 @@ dofile(repo .. "/mods/ENTITIES/grug_mobs/start_villagers.lua")
 grug_traders = {PROFESSION_BRACKETS = {}}
 dofile(repo .. "/mods/ENTITIES/grug_traders/vendors.lua")
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
 dofile(repo .. "/mods/ENTITIES/grug_traders/trade.lua")
 
 grug_inventory = {BAG_COUNT = 0}

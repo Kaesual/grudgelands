@@ -55,7 +55,7 @@ local NOTICE = {[true] = "#7ae08a", [false] = "#ff6b6b"}
 function grug_mounts.trainer_formspec(rows, notice, service, player)
 	service = service or SERVICES.riding_trainer
 	local bottom = 2 + #rows * 1.1 + 0.65
-	local fs = {grug_core.ui.frame(12, bottom + 1.0),
+	local fs = {grug_core.ui.frame(12, bottom + 1.0, nil, nil, player),
 		grug_core.ui.service_header(12, service.title, service.subtitle)}
 	for index, row in ipairs(rows) do
 		local y = 2.0 + (index - 1) * 1.1

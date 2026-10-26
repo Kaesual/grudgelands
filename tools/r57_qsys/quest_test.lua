@@ -229,6 +229,7 @@ grug_core = {register_tag_visibility = function() end, level_scale = function() 
 	end,
 	feed = function(_, kind, text) fed_lines[#fed_lines + 1] = kind .. ": " .. text end}
 dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+dofile(ROOT .. "/mods/CORE/grug_core/ui_rows.lua")
 dofile(ROOT .. "/mods/CORE/grug_core/item_names.lua")
 local granted_xp = {}
 grug_xp = {get_level = function(player) return level_of[player:get_player_name()] or 1 end,
@@ -606,9 +607,9 @@ do
 	eq(Q.marker_parts(states[EL]), "available", "C ... its status on its own")
 	check(select(2, Q.marker_parts(states[EL])), "C ... and its story part")
 	local form = dialogue(di, EL, "qs_story_landing")
-	has(form, "0,Story,5,The Landing", "C the dialog Story header and framed available marker")
-	has(form, "0,Side quests,", "C ... and the neutral side quests header")
-	has(form, "5=grug_map_quest_story_available.png", "C a story quest keeps its available state in the marker")
+	has(form, ";Story]", "C the dialog Story header and framed available marker")
+	has(form, ";Side quests]", "C ... and the neutral side quests header")
+	has(form, "grug_map_quest_story_available.png", "C a story quest keeps its available state in the marker")
 	-- A ready side quest at a mixed giver still shows.
 	check(Q.accept(di, "qs_crop_thieves", EL), "C a side quest accepted")
 	kill(di, "Barley Piglet", 8)
@@ -617,13 +618,13 @@ do
 	check(Q.accept(di, "qs_story_landing", EL), "C the story quest accepted")
 	local session = {quest_selected = "qs_story_landing"}
 	local log = quest_box.content(session, Q.journal(di), {x = 13.4, y = 1.05, w = 7, h = 10.7})
-	has(log, Q.STORY_COLOR .. "Story", "C the quest log's Story category")
+	has(log, "Story", "C the quest log's Story category")
 	has(log, "Side quests", "C ... and the side quests")
-	local entries = log:match("textlist%[[^;]*;[^;]*;grug_quest_list;([^;]*);")
+	local entries = log
 	check(entries and entries:find("Story", 1, true) < entries:find("Crop Thieves", 1, true),
 		"C story quests first in the log")
 	eq(session.quest_rows[1], nil, "C a header selects no quest")
-	check(quest_box.handle(di, session, {grug_quest_list = "CHG:1"}), "C a click on a header redraws the log")
+	check(not quest_box.handle(di, session, {grug_quest_list_row_1 = "true"}), "C a forged header click is ignored")
 	eq(session.quest_selected, "qs_story_landing", "C ... and keeps the selected quest")
 	eq(session.quest_rows[2], "qs_story_landing", "C the story quest under its header")
 	kill(di, "Wreck Snapper", 4)

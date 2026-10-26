@@ -9,7 +9,7 @@ local esc = core.formspec_escape
 -- grug_core. Keep the book's native tabs, fields, paging and save callbacks.
 local function book_frame(player)
 	local game = rawget(_G, "grug_core")
-	if game and game.ui then return game.ui.frame(14, 10.6, S("Book")) end
+	if game and game.ui then return game.ui.frame(14, 10.6, S("Book"), nil, player) end
 	return "formspec_version[6]size[14,10.6]"
 end
 

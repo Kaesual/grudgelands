@@ -159,7 +159,7 @@ local function trainer_formspec(player, profession, confirming)
 	end
 	fs[#fs + 1] = ("button_exit[%.2f,%.2f;%.2f,%.2f;grug_jobs_close;Close]"):format(
 		PAD, row_y, CLOSE_W, BUTTON_H)
-	return grug_core.ui.frame(WIDTH, row_y + BUTTON_H + PAD) ..
+	return grug_core.ui.frame(WIDTH, row_y + BUTTON_H + PAD, nil, nil, player) ..
 		table.concat(fs)
 end
 

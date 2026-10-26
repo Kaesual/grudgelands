@@ -2,6 +2,8 @@ grug_core = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/ui.lua")
+dofile(modpath .. "/ui_rows.lua")
+dofile(modpath .. "/ui_window.lua")
 -- grug_core depends on grug_sounds (which depends on default), so this
 -- replaces the old default prepend after its click styles were installed.
 -- Explicit no_prepend forms opt in using UI.prepend themselves.

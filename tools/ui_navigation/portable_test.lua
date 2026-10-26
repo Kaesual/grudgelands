@@ -18,6 +18,7 @@ dump = tostring
 grug_core, grug_sounds = {}, {CLICK_STYLE = "style_type[button;sound=click]"}
 grug_inventory = {}
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+dofile(repo .. "/mods/CORE/grug_core/ui_window.lua")
 dofile(repo .. "/mods/BASE/sfinv/api.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
@@ -136,8 +137,9 @@ end
 window_info = {size = {x = 2560, y = 1600}, real_gui_scaling = 2,
     max_formspec_size = {x = 24, y = 15}}
 local hidpi_scale = grug_core.ui.text_scale(player)
-assert(math.abs(hidpi_scale - 15 / grug_inventory.UI.window_h) < 0.00001)
-assert(hidpi_scale > 0.98 and hidpi_scale <= 1, "density 2 / GUI 1 must not halve dense text")
+local capped_hidpi = grug_core.ui.window_information(window_info)
+assert(math.abs(hidpi_scale - capped_hidpi.max_formspec_size.y / grug_inventory.UI.window_h) < 0.00001)
+assert(hidpi_scale > 0.65 and hidpi_scale <= 1, "density 2 uses actual capped fit, not division by density")
 window_info = {size = {x = 1035, y = 696}, real_gui_scaling = 1.5,
     max_formspec_size = {x = 1035 / (0.5555 * 96 * 1.5), y = 696 / (0.5555 * 96 * 1.5)}}
 assert(math.abs(grug_core.ui.text_scale(player) - 2 / 3) < 0.00001)
@@ -205,23 +207,27 @@ local before = actions
 fields({grug_ui_creative = "true"})
 assert(ctx.page == ids[1] and actions == before, "revoked primary Creative click is consumed")
 -- Initial inventory forms can be built before client window data arrives.
--- Later navigation/resends and resizing must retain the same sizing header.
+-- Geometry stays fixed; available viewport padding follows the latest report.
 do
 	local saved_info = window_info
 	window_info = nil
-	local initial = grug_core.ui.frame(20,15,"Title",true)
+	local initial = grug_core.ui.frame(20,15,"Title",true,player)
 	for _, case in ipairs({{1035,696,1}, {1600,900,1}, {2560,1440,1},
 		{1035,696,1.5}, {2560,1600,2}}) do
 		window_info = {size={x=case[1], y=case[2]}, real_gui_scaling=case[3]}
-		assert(grug_core.ui.frame(20,15,"Title",true) == initial,
-			"first-open and later forms use the same native sizing")
+		local rebuilt = grug_core.ui.frame(20,15,"Title",true,player)
+		assert(rebuilt:match("size%[([^%]]+)%]") == initial:match("size%[([^%]]+)%]"),
+			"first-open and later forms retain their own geometry")
 		sfinv.set_page(player, ids[1])
 		local first_size = player.fs:match("size%[([^%]]+)%]")
+		local first_padding = player.fs:match("padding%[([^%]]+)%]")
 		fields({grug_ui_tab_2 = "true"})
 		assert(player.fs:match("size%[([^%]]+)%]") == first_size)
 		fields({grug_ui_tab_1 = "true"})
 		assert(player.fs:match("size%[([^%]]+)%]") == first_size)
-		assert(not player.fs:find("padding[",1,true), "no server size cap or stale margins")
+		assert(player.fs:match("padding%[([^%]]+)%]") == first_padding, "tab changes share the same cap")
+		assert((first_padding ~= nil) == (case[1] > 1920 or case[2] > 1080),
+			"only windows above Full HD receive capped padding")
 	end
 	assert(not initial:find(",true]",1,true), "native resize fitting stays enabled")
 	window_info = saved_info

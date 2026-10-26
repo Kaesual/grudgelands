@@ -108,6 +108,7 @@ grug_core = {register_tag_visibility = function() end,
 	hud_layout = {side_text_width = function() return 38 end},
 	settlement_sockets_at = function(key) return deep_copy(SOCKETS[key] or {}) end}
 dofile("mods/CORE/grug_core/ui.lua")
+dofile("mods/CORE/grug_core/ui_rows.lua")
 dofile("mods/CORE/grug_core/item_names.lua")
 grug_xp = {get_level = function() return 60 end, register_on_level_change = function() end,
 	quest_reward = function(level, weight) return weight * 10 * level end}
@@ -345,7 +346,7 @@ local entity = {_grug_start = "dawnmere", _grug_socket = "hall_quest", object = 
 	is_valid = function() return true end, get_pos = function() return {x = 0, y = 0, z = 0} end}}
 shown = {}
 Q.open_npc(player, entity, 1)
-has(shown[1], "1,Raid on the Bandit Camp", "offer list: the filled title")
+has(shown[1], "tooltip[quests_row_1;Raid on the Bandit Camp", "offer list: the filled title")
 has(shown[1], "Bandits hold a camp northeast from here.", "offer dialogue: the filled text")
 has(shown[1], "Rewards: 360 XP, 8 copper", "offer dialogue: the computed copper")
 check(Q.accept(player, "q1_camp"), "accept q1_camp")

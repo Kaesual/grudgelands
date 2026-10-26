@@ -484,6 +484,7 @@ grug_inventory = {BAG_COUNT = 0,
 	-- Round 50: the views' A/B switch reads the shown layout (storage.lua).
 	active_hotbar = function() return "A" end}
 dofile("mods/CORE/grug_core/ui.lua")
+dofile("mods/CORE/grug_core/ui_rows.lua")
 dofile("mods/PLAYER/grug_inventory/ui.lua")
 dofile("mods/PLAYER/grug_inventory/navigation.lua")
 grug_money = {format = function(c) return c .. " copper" end, get = function() return 0 end,
@@ -522,16 +523,17 @@ local function rect_of(fs, pattern)
 	return g[1] and {left = g[1], top = g[2], right = g[1] + g[3], bottom = g[2] + g[4]} or nil
 end
 local function near(a, b) return a and b and math.abs(a - b) < 0.011 end
-local list = rect_of(quest_fs, "textlist%[([%d.,;]+);grug_quest_list;")
+local list = rect_of(quest_fs, "scroll_container%[([%d.,;]+);grug_quest_list_scroll;")
 local text = rect_of(quest_fs, "textarea%[([%d.,;]+);;;")
 local textareas = 0
 for _ in quest_fs:gmatch("textarea%[") do textareas = textareas + 1 end
 eq(textareas, 1, "one text field for description, objectives and rewards (Round 32)")
 check(list and text and text.top - list.bottom >= 0.5, "the text field below the list box")
-check(list and near(list.left, text.left) and near(list.right, text.right),
-	"list and text share the column's edges")
+check(list and near(list.left, text.left) and near(list.right + 0.28, text.right),
+	"list and text share the left edge; scrollbar reserves 0.28 units on the right")
 check(text.right <= RECT.x + RECT.w and text.bottom <= RECT.y + RECT.h, "the text inside the column")
-local title_x = tonumber(quest_fs:match("label%[([%d.]+),[%d.]+;Boar Trouble%]"))
+local title_x
+for x in quest_fs:gmatch("label%[([%d.]+),[%d.]+;Boar Trouble%]") do title_x = tonumber(x) end
 check(near(title_x, text.left), "title label starts where the text starts")
 has(quest_fs, "Level 3 · Dawnmere Fields", "the level and zone line")
 has(quest_fs, "Small Boar: 3/10", "objective text unchanged")
@@ -559,7 +561,7 @@ local track_y = tonumber(quest_fs:match("checkbox%[[%d.]+,([%d.]+);grug_quest_tr
 local track_x = tonumber(quest_fs:match("checkbox%[([%d.]+),[%d.]+;grug_quest_track;"))
 local abandon = button_rect(quest_fs, "grug_quest_abandon")
 check(abandon and near((abandon.top + abandon.bottom) / 2, track_y), "row: Abandon on the checkbox row")
-check(abandon and near(abandon.right, list.right), "row: Abandon ends at the list's right edge")
+check(abandon and near(abandon.right, list.right + 0.28), "row: Abandon ends at the list's right edge")
 check(near(track_x, list.left), "row: Track on HUD starts at the list's left edge")
 check(abandon and abandon.top - list.bottom >= 0.1, "row: below the list")
 check(abandon and abandon.bottom < text.top, "row: above the text box")
@@ -568,7 +570,7 @@ formspec_ok(confirm_fs, "quest log, confirm abandon")
 local confirm = button_rect(confirm_fs, "grug_quest_confirm")
 local cancel = button_rect(confirm_fs, "grug_quest_cancel")
 check(confirm and cancel and cancel.left - confirm.right > 0.1, "Confirm abandon left of Cancel")
-check(cancel and near(cancel.right, list.right) and near(confirm.top, abandon.top),
+check(cancel and near(cancel.right, list.right + 0.28) and near(confirm.top, abandon.top),
 	"confirm row: in the Abandon row, ending at the list's right edge")
 -- "Track on HUD" (about 125 px x gui_scaling with its box) would reach into
 -- Confirm abandon at a large GUI scale, so the confirmation takes the row

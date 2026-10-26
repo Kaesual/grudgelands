@@ -213,7 +213,6 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	end
 	local rows = Q.npc_quests(player, id)
 	if #rows == 0 then return false end
-	local esc = core.formspec_escape
 	-- The first open of the dialog plays its cue; a redraw (another quest
 	-- chosen, after Accept or Complete) does not.
 	local redraw = selected ~= nil or notice ~= nil
@@ -226,27 +225,30 @@ function Q.open_npc(player, entity, selected, notice, picked)
 		selected = type(selected) == "string" and listed or nil
 	end
 	selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows, listed)
-	-- A native image/text table keeps full titles and scrolling, with neutral
-	-- text and the same state markers as the map. Story is independent of status.
-	local category_entries, row_of, entry_of = Q.category_list(rows, function(r) return r.title end)
-	local columns = {"image,padding=0,width=1.5"}
-	local icon_of = {}
-	for story_index = 0, 1 do
-		for status_index, status in ipairs(STATUS_ORDER) do
-			local key = (story_index == 1 and "story_" or "") .. status
-			local icon = story_index * #STATUS_ORDER + status_index
-			icon_of[key] = icon
-			columns[1] = columns[1] .. "," .. icon .. "=grug_map_quest_" .. key .. ".png"
-		end
-	end
-	columns[2] = "text,padding=0.4"
+	-- State markers and story categories survive the larger two-line rows.
+	local category_entries, row_of = Q.category_list(rows, function(r) return r.title end)
 	local entries = {}
 	for index, category in ipairs(category_entries) do
-		local r = row_of[index] and rows[row_of[index]]
-		entries[#entries + 1] = r and tostring(icon_of[(r.story and "story_" or "") .. r.status] or 0) or "0"
-		entries[#entries + 1] = r and esc(r.title) or category:gsub("^#[%x]+", "")
+		local row_index = row_of[index]
+		local r = row_index and rows[row_index]
+		entries[index] = r and {
+			title = r.title, subtitle = STATUS_NAMES[r.status][1],
+			icon = "grug_map_quest_" .. (r.story and "story_" or "") .. r.status .. ".png",
+			tooltip = r.title .. "\n" .. (r.story and "Story · " or "") .. STATUS_NAMES[r.status][1],
+			selected = row_index == selected,
+		} or {title = category:gsub("^#[%x]+", ""), header = true}
+	end
+	local name = player:get_player_name()
+	local previous = sessions[name]
+	local session = {entity = entity, npc = id, rows = rows, selected = selected, row_of = row_of}
+	-- Reopening another giver starts at the top; redraws keep the client scroll.
+	if previous and previous.entity == entity and previous.npc == id then
+		session._ui_rows = previous._ui_rows
 	end
 	local row = rows[selected]
+	local previous_row = previous and previous.rows[previous.selected]
+	local reveal_selected = not session._ui_rows or (notice ~= nil and
+		(not previous_row or previous_row.id ~= row.id))
 	local def = Q.registered_quests[row.id]
 	local active = Q.active_entry(player, row.id)
 	-- The giver's own text where it gives the quest, else the text of the
@@ -273,15 +275,13 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	-- The description is a read-only text (no field name).
 	local UI = grug_core.ui
 	local scale = UI.text_scale(player)
-	local form = UI.frame(18.8, 12.2) .. UI.service_header(18.8, npc.title or id,
+	local form = UI.frame(18.8, 12.2, nil, nil, player) .. UI.service_header(18.8, npc.title or id,
 		row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png", scale) ..
 		UI.panel(0.35, 1.6, 5.6, 9.3) .. UI.panel(6.15, 1.6, 12.3, 9.3) ..
-		("style_type[textarea;border=false]style_type[table;font_size=*%.3f]"):format(1.15 * scale) ..
+		"style_type[textarea;border=false]" ..
 		UI.button_style("accept", "selected", scale) .. UI.button_style("turnin", "selected", scale) ..
-		"tableoptions[background=#00000000;border=false;highlight=#b8a46b44]" ..
-		"tablecolumns[" .. table.concat(columns, ";") .. "]" ..
-		"table[0.5,1.85;5.25,8.8;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. "]" ..
-		"tooltip[quests;Available: !\nReady to complete: ?\nIn progress: muted ?\nLocked: muted !\nStory: framed marker]" ..
+		UI.rows(session, {name = "quests", x = 0.5, y = 1.85, w = 5.25, h = 8.8,
+			rows = entries, scale = scale, reveal_selected = reveal_selected}) ..
 		UI.prose(6.5, 1.85, 11.55, 0.85, row.title, false, scale, 1.2 * scale) ..
 		UI.prose(6.5, 2.9, 11.55, choices and 3.95 or 6.1, detail, false, scale, 1.05 * scale) ..
 		("box[6.5,%.2f;11.55,0.02;#d1c09a2b]"):format(choices and 6.95 or 9.15) ..
@@ -292,8 +292,8 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	if row.status == "available" then form = form .. "button[15.9,11.25;2.2,0.65;accept;Accept]" end
 	if row.status == "ready" then form = form .. "button[15.9,11.25;2.2,0.65;turnin;Complete]" end
 
-	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected,
-		row_of = row_of, picked = picked}
+	session.picked = picked
+	sessions[name] = session
 	if not redraw then grug_sounds.play("npc_quest", player) end
 	core.show_formspec(player:get_player_name(), FORM, form)
 	return true
@@ -308,16 +308,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		sessions[name] = nil
 		return true
 	end
-	if fields.quests then
-		local event = core.explode_table_event(fields.quests)
-		local index = event.row and session.row_of[event.row]
-		if index and session.rows[index] then
-			if index ~= session.selected then grug_sounds.play("quest_page", player) end
-			Q.open_npc(player, session.entity, index)
-		elseif event.row then
-			-- A category header: the same quest stays shown.
-			Q.open_npc(player, session.entity, session.selected, nil, session.picked)
-		end
+	local clicked = grug_core.ui.rows_event(session, "quests", fields)
+	local index = clicked and session.row_of[clicked]
+	if index and session.rows[index] then
+		if index ~= session.selected then grug_sounds.play("quest_page", player) end
+		Q.open_npc(player, session.entity, index, nil, index == session.selected and session.picked or nil)
 		return true
 	end
 	local row = session.rows[session.selected]
@@ -337,7 +332,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		ok, message = Q.turn_in(player, row.id, session.picked)
 	end
 	if ok ~= nil then
-		sessions[name] = nil
 		-- After a Complete the dialog preselects again; after an Accept it
 		-- preselects too and stays on the accepted quest only when nothing
 		-- is ready or acceptable (the user, 2026-10-10); a failed Accept or
@@ -348,6 +342,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		elseif ok then target = {after = row.id} end
 		if not Q.open_npc(player, session.entity, target, message or "Quest updated.",
 				not ok and session.picked or nil) then
+			sessions[name] = nil
 			core.close_formspec(name, FORM)
 		end
 	end

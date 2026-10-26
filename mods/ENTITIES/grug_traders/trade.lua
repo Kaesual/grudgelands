@@ -536,7 +536,7 @@ local function build(player, session, vendor, status)
 	if status and status ~= "" then
 		body[#body + 1] = ("label[0.5,%.2f;%s]"):format(height - 0.5, esc(status))
 	end
-	return grug_core.ui.frame(FORM_W, height) ..
+	return grug_core.ui.frame(FORM_W, height, nil, nil, player) ..
 		table.concat(body)
 end
 

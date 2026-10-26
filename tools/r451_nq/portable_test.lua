@@ -46,10 +46,11 @@ end
 ------------------------------------------------------------------------------
 do
 	local shown, sounds, handler = nil, {}, nil
+	local sends = 0
 	core = {
 		formspec_escape = function(s) return (s:gsub("[%[%];,\\]", "\\%0")) end,
 		colorize = function(color, text) return color .. text end,
-		show_formspec = function(_, _, form) shown = form end,
+		show_formspec = function(_, _, form) shown = form; sends = sends + 1 end,
 		close_formspec = function() shown = "closed" end,
 		register_on_player_receive_fields = function(fn) handler = fn end,
 		register_on_leaveplayer = function() end,
@@ -87,6 +88,7 @@ do
 			giver_variant = {giver = "main"}, objectives = {}, rewards = {copper = 5, items = {}, choices = {}}}
 	end
 	dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+	dofile(ROOT .. "/mods/CORE/grug_core/ui_rows.lua")
 	assert(loadfile(ROOT .. "/mods/PLAYER/grug_quests/npc.lua"))()
 	local Q = grug_quests
 	local player = {get_player_name = function() return "alice" end, is_player = function() return true end,
@@ -94,7 +96,7 @@ do
 	local entity = {_grug_start = "s", _grug_socket = "1", object = {is_valid = function() return true end,
 		get_pos = function() return {x = 0, y = 0, z = 0} end}}
 	local function on_row()
-		return tonumber(shown:match("table%[[^%]]-;quests;[^%]]-;(%d+)%]"))
+		return tonumber(shown:match("style%[quests_row_(%d+);border=false;bgimg=grug_ui_nav_selected.png"))
 	end
 	local function shows(id) return shown:find("Text " .. id, 1, true) ~= nil end
 	local function row(id, status) return {id = id, title = "T " .. id, status = status} end
@@ -120,14 +122,14 @@ do
 	check(focus ~= nil and close ~= nil and focus < close, "Q Close holds the focus (set before it)")
 
 	-- A click in the list shows the clicked row, without the open cue.
-	handler(player, "grug_quests:dialogue", {quests = "CHG:1:2"})
+	handler(player, "grug_quests:dialogue", {quests_row_1 = "true"})
 	eq(on_row(), 1, "Q a click shows the clicked row")
 	check(shown:find("accept;Accept]", 1, true) ~= nil, "Q ...an available quest with Accept")
 	eq(#sounds, 2, "Q a click plays the page cue only")
 	eq(sounds[2], "quest_page", "Q ...the page cue")
 
 	-- Complete: the quest leaves the list; the next ready quest is preselected.
-	handler(player, "grug_quests:dialogue", {quests = "CHG:3:2"})
+	handler(player, "grug_quests:dialogue", {quests_row_3 = "true"})
 	Q.turn_in = function(_, id)
 		for index, r in ipairs(rows) do if r.id == id then table.remove(rows, index) end end
 		return true, "Quest completed."
@@ -146,7 +148,7 @@ do
 	-- A failed Complete stays on its quest.
 	rows = {row("q1", "available"), row("q2", "ready"), row("q3", "ready")}
 	Q.open_npc(player, entity)
-	handler(player, "grug_quests:dialogue", {quests = "CHG:3:2"})
+	handler(player, "grug_quests:dialogue", {quests_row_3 = "true"})
 	Q.turn_in = function() return false, "Your coin purse cannot hold the reward." end
 	handler(player, "grug_quests:dialogue", {turnin = "Complete"})
 	eq(on_row(), 3, "Q a failed Complete stays on its quest")
@@ -192,6 +194,44 @@ do
 	handler(player, "grug_quests:dialogue", {accept = "Accept"})
 	eq(on_row(), 1, "Q after Accept of a quest handed in elsewhere: the first row")
 	check(shows("q2"), "Q ...q2")
+	-- Native scrolling never resends by itself; every actionable redraw keeps
+	-- the offset and clamps it when quests leave the giver's list.
+	rows = {}
+	for i = 1, 12 do rows[i] = row("q1", "available") end
+	Q.open_npc(player, entity)
+	local before = sends
+	handler(player, "grug_quests:dialogue", {quests_scroll = "CHG:400"})
+	eq(sends, before, "Q scrolling does not resend")
+	handler(player, "grug_quests:dialogue", {quests_row_8 = "true", quests_scroll = "VAL:400"})
+	eq(on_row(), 8, "Q a scrolled row selects the intended entry")
+	check(shown:find(";quests_scroll;400]", 1, true), "Q selection preserves scroll offset")
+	Q.accept = function() return false, "Full log." end
+	handler(player, "grug_quests:dialogue", {accept = "true", quests_scroll = "VAL:350"})
+	check(shown:find(";quests_scroll;350]", 1, true), "Q refused accept preserves client scroll")
+	Q.accept = function() rows = {row("q1", "active")}; return true, "Accepted." end
+	handler(player, "grug_quests:dialogue", {accept = "true", quests_scroll = "VAL:350"})
+	check(shown:find(";quests_scroll;0]", 1, true), "Q a shorter list clamps its saved scroll")
+	before = sends
+	handler(player, "grug_quests:dialogue", {quests_row_999 = "true"})
+	eq(sends, before, "Q a forged row outside the shown list is ignored")
+	rows = {}
+	for i = 1, 12 do rows[i] = row("q1", "available") end
+	Q.open_npc(player, entity)
+	handler(player, "grug_quests:dialogue", {quests_scroll = "CHG:400"})
+	Q.npc_by_socket["s/2"] = "giver"
+	local other_entity = {_grug_start = "s", _grug_socket = "2", object = entity.object}
+	Q.open_npc(player, other_entity)
+	check(shown:find(";quests_scroll;0]", 1, true), "Q another giver starts at the top")
+	handler(player, "grug_quests:dialogue", {quests_scroll = "CHG:400"})
+	handler(player, "grug_quests:dialogue", {quit = "true"})
+	Q.open_npc(player, other_entity)
+	check(shown:find(";quests_scroll;0]", 1, true), "Q close discards transient scroll")
+	handler(player, "grug_quests:dialogue", {quit = "true"})
+	rows[12].status = "ready"
+	Q.open_npc(player, other_entity)
+	eq(on_row(), 12, "Q the last ready quest is preselected")
+	local revealed = tonumber(shown:match(";quests_scroll;(%d+)%]"))
+	check(revealed and revealed > 0, "Q initial preselection scrolls the ready quest into view")
 	core, grug_sounds, grug_factions, grug_money, grug_core, ItemStack, vector, grug_quests =
 		nil, nil, nil, nil, nil, nil, nil, nil
 end

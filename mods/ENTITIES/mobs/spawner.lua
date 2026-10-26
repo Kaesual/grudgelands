@@ -45,7 +45,7 @@ local function spawner_formspec(pos, player)
 
 	-- GRUG PATCH: runtime theme seam, without a reverse load dependency.
 	local game = rawget(_G, "grug_core")
-	local frame = game and game.ui and game.ui.frame(12, 4.3, S("Mob Spawner")) or
+	local frame = game and game.ui and game.ui.frame(12, 4.3, S("Mob Spawner"), nil, player) or
 		"formspec_version[6]size[12,4.3]"
 	return frame
 		.. (game and game.ui and game.ui.input_background(0.4, 1.9, 11.2, 0.7, "text") or "")

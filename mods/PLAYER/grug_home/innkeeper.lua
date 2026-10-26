@@ -13,7 +13,7 @@ end
 local function form(player,row)
  local home = grug_home.get(player)
  local UI = grug_core.ui
- return UI.frame(9, 4.7) .. "set_focus[close;true]" .. UI.service_header(9, row.label .. " Innkeeper", "A place to return to") ..
+ return UI.frame(9, 4.7, nil, nil, player) .. "set_focus[close;true]" .. UI.service_header(9, row.label .. " Innkeeper", "A place to return to") ..
   UI.panel(0.4, 1.6, 8.2, 1.9) .. UI.heading(0.65, 1.92, "YOUR HOME") ..
   UI.prose(0.65, 2.2, 7.7, 1.0, (home and home.label or "No home set") .. "\n" ..
    (home and home.id == row.id and "This is your home." or "Set " .. row.label .. " as your home.")) ..

@@ -5162,7 +5162,11 @@ function mobs:feed_tame(self, clicker, feed_count, breed, tame)
 		local tag = self._nametag or ""
 		local esc = core.formspec_escape
 
-		core.show_formspec(name, "mobs_nametag", "size[8,4]"
+		-- GRUG PATCH: cap the legacy form viewport, retaining its coordinates.
+		local game = rawget(_G, "grug_core")
+		local padding = game and game.ui and game.ui.window_padding and
+			game.ui.window_padding(clicker) or ""
+		core.show_formspec(name, "mobs_nametag", "size[8,4]" .. padding
 			.. "field[0.5,1;7.5,0;name;" .. esc(FS("Enter name:")) .. ";" .. esc(tag) .. "]"
 			.. "button_exit[2.5,3.5;3,1;mob_rename;" .. esc(FS("Rename")) .. "]")
 

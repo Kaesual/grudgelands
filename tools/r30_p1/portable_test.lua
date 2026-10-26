@@ -797,6 +797,7 @@ do
 	local steps_before = #registered.register_globalstep
 	core.colorize = function(_, text) return text end
 	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+	dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
 	dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
 	local character_step = registered.register_globalstep[steps_before + 1]
 	check(character_step ~= nil and #registered.register_globalstep == steps_before + 1,

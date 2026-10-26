@@ -440,6 +440,7 @@ grug_core = {
 	faction_ids = {"accord", "throng"},
 }
 dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+dofile(ROOT .. "/mods/CORE/grug_core/ui_rows.lua")
 grug_inventory = {BAG_COUNT = 0, content_list = function(i) return "grug_bag" .. i .. "_content" end,
 	carried_lists = function() return {"main"} end,
 	fits = function() return true end,

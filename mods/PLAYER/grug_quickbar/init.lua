@@ -138,9 +138,10 @@ function grug_quickbar.formspec(player)
 	fs[#fs + 1] = ("label[%.3f,%.2f;%s]"):format(PAD, y,
 		esc(core.colorize("#c8c8c8", "A and B switch the hotbar.")))
 	local height = y + 0.45
-	-- Native positioning stays independent of server-side window reports.
+	-- Padding must follow the native position/anchor in the parser.
 	return grug_core.ui.frame(WIDTH, height) ..
 		"position[0.02,0.5]anchor[0,0.5]" ..
+		(grug_core.ui.window_padding and grug_core.ui.window_padding(player) or "") ..
 		table.concat(fs)
 end
 

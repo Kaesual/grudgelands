@@ -555,6 +555,7 @@ dofile(ROOT .. "/mods/PLAYER/grug_housing/soulbound.lua")
 current_mod = "grug_money"
 dofile(ROOT .. "/mods/PLAYER/grug_money/init.lua")
 dofile(ROOT .. "/mods/CORE/grug_core/ui.lua")
+dofile(ROOT .. "/mods/CORE/grug_core/ui_rows.lua")
 current_mod = "grug_mail"
 -- The Admin Mail tab (admin.lua, lane ADMIN) registers an sfinv page; its
 -- own fixture is tools/r48_admin.
@@ -999,7 +1000,7 @@ do
 	send_fields(alice, {grug_mail_tab_1 = true})
 	check(formspecs.Alice.text:find("Letters (3)", 1, true), "D the Letters tab counts unread")
 	check(formspecs.Alice.text:find("Announcements (1)", 1, true), "D the Announcements tab counts unread")
-	send_fields(alice, {letters = "CHG:1:5"})
+	send_fields(alice, {letters_row_1 = "true"})
 	local first = letters_of("Alice")[1]
 	check(first.read and session.selected.letters == first.id, "D clicking a letter opens it and marks it read")
 	check(formspecs.Alice.text:find("Take all", 1, true) and formspecs.Alice.text:find("report", 1, true),
@@ -1020,28 +1021,28 @@ do
 	local count, tickets_before = #letters_of("Alice"), #grug_mail.tickets()
 	local second_letter = letters_of("Alice")[2]
 	send_fields(alice, {["delete_" .. first.id] = "Delete"})
-	send_fields(alice, {letters = "CHG:2:5"})
+	send_fields(alice, {letters_row_2 = "true"})
 	send_fields(alice, {["delete_confirm_" .. first.id] = "Delete"})
 	check(#letters_of("Alice") == count and session.selected.letters == second_letter.id,
 		"D a stale Delete confirm after a row change deletes nothing")
-	send_fields(alice, {letters = "CHG:1:5"})
+	send_fields(alice, {letters_row_1 = "true"})
 	send_fields(alice, {report = "Report"})
-	send_fields(alice, {letters = "CHG:3:5"})
+	send_fields(alice, {letters_row_3 = "true"})
 	send_fields(alice, {["report_confirm_" .. first.id] = "Report"})
 	check(#grug_mail.tickets() == tickets_before and not letters_of("Alice")[1].reported,
 		"D a stale Report confirm after a row change reports nothing")
 	send_fields(alice, {["delete_" .. first.id] = "Delete"})
 	eq(#letters_of("Alice"), count, "D a stale Delete for another letter deletes nothing")
-	send_fields(alice, {letters = "CHG:2:5"})
+	send_fields(alice, {letters_row_2 = "true"})
 	check(formspecs.Alice.text:find("cannot be answered", 1, true), "D an NPC letter has no Reply")
-	send_fields(alice, {letters = "CHG:3:5"})
+	send_fields(alice, {letters_row_3 = "true"})
 	check(formspecs.Alice.text:find("Sent by the server administration", 1, true),
 		"D an admin letter carries the banner")
 	send_fields(alice, {reply = "Reply"})
 	check(session.tab == "admin" and session.admin.subject == "Re: Welcome",
 		"D Reply on an admin letter writes to the admin")
 	send_fields(alice, {grug_mail_tab_1 = true})
-	send_fields(alice, {letters = "CHG:1:5"})
+	send_fields(alice, {letters_row_1 = "true"})
 	send_fields(alice, {reply = "Reply"})
 	check(session.tab == "write" and session.draft.to == "Brakka" and
 		session.draft.subject == "Re: Ingots" and session.draft.body:find("> For you.", 1, true),
@@ -1225,11 +1226,34 @@ do -- fix 0.49.1 MLEN: the hint, a refusal keeps the draft, the draft cap
 		string.rep("s", 3000), {}, clock))
 	grug_mail.store.save_box("Alice", box)
 	send_fields(alice, {grug_mail_tab_1 = true})
-	send_fields(alice, {letters = "CHG:1:5"})
+	send_fields(alice, {letters_row_1 = "true"})
 	send_fields(alice, {reply = "Reply"})
 	check(session.tab == "write" and session.draft.body == "\n\n> " .. string.rep("s", 500) .. " [...]",
 		"D Reply on a 3,000-character letter quotes 500 with \" [...]\"")
 	send_fields(alice, {quit = "true"})
+end
+
+-- Custom rows preserve position through actions and never resend on dragging.
+do
+    alice.pos = {x=100,y=10,z=103}
+    for i=1,10 do
+        grug_mail.send_system("Alice", "npc", "Sender", "A longer subject for row " .. i,
+            "Body", {})
+    end
+    check(grug_mail.open_mailbox(alice, MAILBOX), "E open row scroll test")
+    local session = grug_mail.session("Alice")
+    local before = formspecs.Alice.text
+    send_fields(alice, {letters_scroll="CHG:15"})
+    eq(formspecs.Alice.text,before,"E pure list scroll does not resend")
+    eq(session._ui_rows.letters.scroll,15,"E list position retained")
+    send_fields(alice, {letters_scroll="VAL:18",letters_row_8=true})
+    eq(session.selected.letters,session.rows[8].id,"E last row selects its real letter")
+    eq(session._ui_rows.letters.scroll,18,"E selection keeps scroll")
+    send_fields(alice, {letters_next=true,letters_scroll="VAL:18"})
+    eq(session._ui_rows.letters.scroll,0,"E page turn resets position")
+    send_fields(alice, {letters_row_999=true})
+    check(session.selected.letters ~= 999,"E forged index never selects")
+    send_fields(alice, {quit="true"})
 end
 
 if failures > 0 then
