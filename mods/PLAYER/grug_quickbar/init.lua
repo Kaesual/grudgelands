@@ -138,10 +138,10 @@ function grug_quickbar.formspec(player)
 	fs[#fs + 1] = ("label[%.3f,%.2f;%s]"):format(PAD, y,
 		esc(core.colorize("#c8c8c8", "A and B switch the hotbar.")))
 	local height = y + 0.45
-	-- Native header order is size, position, anchor, then padding.
+	-- Native positioning stays independent of server-side window reports.
 	return grug_core.ui.frame(WIDTH, height) ..
 		"position[0.02,0.5]anchor[0,0.5]" ..
-		grug_core.ui.readable_padding(player, WIDTH, height) .. table.concat(fs)
+		table.concat(fs)
 end
 
 -- Opens the window (the rising edge of aux1). Not while dead or while

@@ -588,9 +588,8 @@ local function box_buttons(fs, player, st, tab)
 	local w = (LIST_W - 0.1 * (#shown - 1)) / #shown
 	for index, name in ipairs(shown) do
 		local field = F.box .. name
-		if st.box == name then
-			fs[#fs + 1] = grug_inventory.selected_button_style(field, true)
-		end
+		fs[#fs + 1] = UI.navigation_style(field, st.box == name,
+			LIST_X + (index - 1) * (w + 0.1), BOX_BUTTON_Y, w, BOX_BUTTON_H)
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(LIST_X + (index - 1) * (w + 0.1)),
 			n(BOX_BUTTON_Y), n(w), n(BOX_BUTTON_H), field, esc(boxes[name].button.label))
 		if boxes[name].button.tooltip then
@@ -629,7 +628,7 @@ function grug_jobs.crafting_page_content(player, context)
 	for index, entry in ipairs(tabs) do
 		local tab_w = (FRAME_W - 3.5) * (0.5 + 0.135 * #entry.label) / total_weight
 		local field = F.area .. index
-		fs[#fs + 1] = UI.button_style(field, index == st.slot and "selected" or "normal")
+		fs[#fs + 1] = UI.navigation_style(field, index == st.slot, x, TAB_Y, tab_w, TAB_H)
 		fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(field, 0.9 * UI.text_scale(player))
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(x), n(TAB_Y), n(tab_w),
 			n(TAB_H), field, esc(entry.label))

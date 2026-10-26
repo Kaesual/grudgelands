@@ -175,7 +175,7 @@ local function filter_buttons(state, open_count)
 	for _, entry in ipairs({{"open", 0.0, 1.9, "Open (" .. open_count .. ")"},
 			{"all", 2.0, 1.3, "All"}, {"announcements", 3.4, 2.5, "Announcements"}}) do
 		local field = "mail_admin_filter_" .. entry[1]
-		fs[#fs + 1] = grug_inventory.selected_button_style(field, state.filter == entry[1])
+		fs[#fs + 1] = grug_core.ui.navigation_style(field, state.filter == entry[1], X + entry[2], 0.2, entry[3], 0.7)
 		fs[#fs + 1] = ("button[%.2f,0.2;%.2f,0.7;%s;%s]"):format(X + entry[2], entry[3],
 			field, esc(entry[4]))
 	end

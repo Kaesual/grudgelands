@@ -1,3 +1,6 @@
+local function nav_style(field, selected, vertical)
+	return grug_core.ui.navigation_style(field, selected, 0, 0, 1, 1, vertical):match("^style%[[^%]]+%]")
+end
 -- Round 44 lane CH portable test: the Character tab (round44-plan.md §4.5,
 -- spec ruling 6 and §3.3). Through tools/r44_ch/harness.lua (the real
 -- sfinv, grug_inventory equipment/bags/storage/ui/pages, grug_gear
@@ -116,7 +119,7 @@ local MODES = {"stats", "effects", "achievements"}
 local warrior = H.player("wara", "warrior", {16})
 local default_fs = H.page(warrior, nil)
 eq(H.context.grug_character_tab, nil, "no mode stored before a click")
-has(default_fs, grug_core.ui.button_style("grug_character_stats", "selected"), "Stats is the default mode")
+has(default_fs, nav_style("grug_character_stats", true), "Stats is the default mode")
 lacks(default_fs, "grug_character_3d", "no 3D mode (one Stats mode, Round 45 playtest)")
 -- The Stats mode: the model on the left, the stats right of it, the cloak
 -- picker at the foot of the stats column.
@@ -178,8 +181,7 @@ for _, mode in ipairs(MODES) do
 	for _, other in ipairs(MODES) do
 		has(fs, ("grug_character_%s;%s]"):format(other, labels[other]),
 			label .. ": the " .. other .. " button")
-		has(fs, grug_core.ui.button_style("grug_character_" .. other,
-			other == mode and "selected" or "normal"), label .. ": " .. other .. " styled")
+		has(fs, nav_style("grug_character_" .. other, other == mode), label .. ": " .. other .. " styled")
 	end
 	-- The gear box in every mode.
 	has(fs, "list[current_player;grug_head;0.50,1.05;1,1;]", label .. ": the gear box")

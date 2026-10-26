@@ -2606,7 +2606,7 @@ core.register_node("default:bookshelf", default_bookshelf_def)
 -- still exits the form, preserving the existing quit-gated write handler.
 local function sign_formspec(pos, player)
 	local ui = grug_core.ui
-	return ui.frame(9, 3.4, S("Sign text"), nil, player) .. ui.input_background(0.5, 1.15, 8, 0.65, "text") ..
+	return ui.frame(9, 3.4, S("Sign text")) .. ui.input_background(0.5, 1.15, 8, 0.65, "text") ..
 		"set_focus[text;true]field[0.5,1.15;8,0.65;text;;" ..
 		core.formspec_escape(core.get_meta(pos):get_string("text")) .. "]" ..
 		ui.button_style("save", "selected") .. "button_exit[6.2,2.4;2.3,0.65;save;" ..

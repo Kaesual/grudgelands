@@ -1,3 +1,6 @@
+local function nav_style(field, selected, vertical)
+	return grug_core.ui.navigation_style(field, selected, 0, 0, 1, 1, vertical):match("^style%[[^%]]+%]")
+end
 -- Round 45 lane EU portable test (LuaJIT): enchants and upgrades as crafting
 -- jobs (round45-plan.md §4.6; ui-crafting-rework-plan.md §2.24, §2.26,
 -- §2.30-2.32, §4.3, §4.6).
@@ -755,18 +758,17 @@ do
 	fs = smith.formspec
 	has(fs, "grug_craft_box_enchant;Enchant]", "T the enchant button in a learned primary")
 	has(fs, "grug_craft_box_upgrade;Upgrade]", "T the upgrade button")
-	-- Round 45 playtest fix 3: ordinary buttons (the pane and its border),
-	-- not the borderless tab style that read as text; the open box's button
-	-- gold.
-	lacks(fs, "style[grug_craft_box_", "T no style on the closed boxes' buttons")
+	-- Current navigation uses text tabs and an active underline.
+	has(fs, nav_style("grug_craft_box_enchant", false), "T closed enchant tab stays inactive")
+	has(fs, nav_style("grug_craft_box_upgrade", false), "T closed upgrade tab stays inactive")
 	has(fs, "button[0.2,8.05;2.95,0.75;grug_craft_box_enchant;", "T the enchant button's size")
 	has(fs, "button[3.25,8.05;2.95,0.75;grug_craft_box_upgrade;", "T the upgrade button's size")
 	has(fs, "button[0.2,7.45;0.8,0.55;grug_craft_prev;<]", "T the pager above them")
 	local sent = smith.sent
 	click(smith, {grug_craft_box_enchant = "Enchant an item"})
 	eq(st_of(smith).box, "enchant", "T the button opens the enchant box")
-	has(smith.formspec, grug_core.ui.button_style("grug_craft_box_enchant", "selected"), "T the open box's button in the gold style")
-	lacks(smith.formspec, "style[grug_craft_box_upgrade", "T the other button stays plain")
+	has(smith.formspec, nav_style("grug_craft_box_enchant", true), "T the open box's button in the gold style")
+	has(smith.formspec, nav_style("grug_craft_box_upgrade", false), "T the other tab stays inactive")
 	lacks(smith.formspec, "border=false]button[0.2,8.45", "T no borderless entry button")
 	eq(smith.sent, sent + 1, "T one resend")
 	has(smith.formspec, "list[current_player;grug_craft_target;", "T the box draws the slot")

@@ -164,7 +164,7 @@ local function form(player, session)
 	-- Close takes the focus at every send (0.45.1): otherwise the engine
 	-- focuses the first preview textarea, which eats the inventory key, or
 	-- keeps a clicked Crown button, which Space would press again.
-	local fs = {grug_core.ui.frame(16, 10.2, nil, nil, player),
+	local fs = {grug_core.ui.frame(16, 10.2),
 		grug_core.ui.service_header(16, "Crownbinder", "A fallen crown, a stronger legacy"),
 		"set_focus[close;true]",
 		"label[0.4,1.7;" .. esc("\"A crown remembers its king. Lend me one, " ..

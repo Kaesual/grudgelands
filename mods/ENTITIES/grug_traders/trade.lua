@@ -236,8 +236,8 @@ local function header(parts, player, session, vendor, discount)
 	for index, mode in ipairs(modes) do
 		local name = mode[1] == "repair" and "repair" or "mode_" .. mode[1]
 		local x = FORM_W - 0.5 - (#modes - index + 1) * 1.85
-		parts[#parts + 1] = grug_core.ui.button_style(name,
-			session.mode == mode[1] and "selected" or "normal")
+		parts[#parts + 1] = grug_core.ui.navigation_style(name,
+			session.mode == mode[1], x, 0.3, 1.75, 0.65)
 		parts[#parts + 1] = ("button[%.2f,0.3;1.75,0.65;%s;%s]"):format(x, name, mode[2])
 	end
 end
@@ -343,8 +343,8 @@ local function render_buy(parts, player, session, vendor, discount)
 	end
 	for i, tab in ipairs(tabs) do
 		local x = 0.5 + (i - 1) * 1.75
-		parts[#parts + 1] = grug_core.ui.button_style("tab_" .. tab.id,
-			session.tab == tab.id and "selected" or "normal")
+		parts[#parts + 1] = grug_core.ui.navigation_style("tab_" .. tab.id,
+			session.tab == tab.id, x, 1.9, 1.65, 0.7)
 		parts[#parts + 1] = ("button[%.2f,1.9;1.65,0.7;tab_%s;%s]"):format(
 			x, tab.id, esc(tab.label))
 	end
@@ -536,7 +536,7 @@ local function build(player, session, vendor, status)
 	if status and status ~= "" then
 		body[#body + 1] = ("label[0.5,%.2f;%s]"):format(height - 0.5, esc(status))
 	end
-	return grug_core.ui.frame(FORM_W, height, nil, nil, player) ..
+	return grug_core.ui.frame(FORM_W, height) ..
 		table.concat(body)
 end
 

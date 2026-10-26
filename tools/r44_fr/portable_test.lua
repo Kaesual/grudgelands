@@ -573,9 +573,7 @@ has(inventory, ("list[current_player;%s;"):format(grug_inventory.POTION_BELT),
 has(inventory, ";" .. grug_inventory.POTION_BELT_SIZE .. ",1;]", "the belt's slots")
 has(inventory, "list[detached:grug_money_deposit_four;deposit;", "the coin deposit")
 has(inventory, "button[", "a button")
-has(inventory, ";grug_inv_sort;Sort inventory]", "the Sort button")
-has(inventory, ";4.4,0.65;grug_inv_sort;Sort inventory]",
-	"Sort has room for its label at the tested small GUI1.5 scale")
+has(inventory, ";grug_inv_sort;Sort]", "the compact Sort button")
 lacks(inventory, "listring", "no listring on the Inventory page")
 local count = 0
 for _, element in ipairs(list_elements(scroll_part(inventory))) do
@@ -584,13 +582,8 @@ end
 eq(count, 24 + 4 * 32, "the Inventory page shows 152 slots in its grid")
 print(("bytes: Inventory page with four 32-slot bags %d"):format(#inventory))
 
--- The boxed layout (Round 45 playtest): one box per area with its label
--- inside, top left above the slots; Bags, Inventory and Hotbar on one left
--- edge; Bags and Potion belt share the width, ending where Inventory and
--- Hotbar end; the group centred. Between the Inventory and the Hotbar box
--- the money row: "Money" over the balance, Withdraw, the deposit slot and
--- Sort, as tall as a slot, on the slot columns, Sort ending with the
--- hotbar's last slot. No Coins box.
+-- The current boxed layout: inventory and Sort left, stacked utilities
+-- right with aligned bottoms, and a centered hotbar below.
 local function num(value) return tonumber(value) end
 local boxes = view_boxes(inventory)
 local function close(a, b) return a and b and math.abs(a - b) < 0.002 end
@@ -605,6 +598,12 @@ slot_x["Potion belt"], slot_y["Potion belt"] = slot_at(
 	"list%[current_player;" .. grug_inventory.POTION_BELT .. ";([%d.]+),([%d.]+);")
 slot_x.Inventory, slot_y.Inventory = slot_at("scroll_container%[([%d.]+),([%d.]+);")
 slot_x.Hotbar, slot_y.Hotbar = slot_at("list%[current_player;main;([%d.]+),([%d.]+);8,1;%]")
+local sx, sy, sw, sh = inventory:match("button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_inv_sort;")
+sx, sy, sw, sh = num(sx), num(sy), num(sw), num(sh)
+check(sx and sx >= boxes.Inventory.x and sx + sw <= boxes.Inventory.x + boxes.Inventory.w,
+	"Sort belongs horizontally to the inventory grid, not Money")
+check(sy and sy >= boxes.Inventory.y and sy + sh <= slot_y.Inventory,
+	"Sort fits in the inventory heading without covering slots")
 local frame = grug_inventory.UI
 check(boxes.Coins == nil, "no Coins box")
 for _, name in ipairs({"Bags", "Potion belt", "Inventory", "Hotbar"}) do

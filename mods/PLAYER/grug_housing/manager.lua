@@ -112,7 +112,7 @@ local function formspec(session, player)
 	end
 	local shift = #lines > #LINES and 0.6 or 0
 	local UI = grug_core.ui
-	local fs = {UI.frame(11.5, 8.6 + shift, nil, nil, player), "set_focus[close;true]",
+	local fs = {UI.frame(11.5, 8.6 + shift), "set_focus[close;true]",
 		UI.service_header(11.5, "Housing Steward", "Your place in the world"),
 		UI.panel(0.4, 1.6, 10.7, 5.4),
 		UI.heading(0.65, 1.95, "01 · RECEIVE YOUR CLAIM STONE"),

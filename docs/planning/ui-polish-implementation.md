@@ -131,13 +131,14 @@ permissions remain. Exceptions/extensions explicitly part of this work:
 - Map adds `grug_map_layer` and stable dropdown indices; old layer buttons
   remain accepted. Geometry arguments on atlas helpers are optional. The
   quest_box interface and HUD ownership are unchanged.
-- Core `frame` gains an optional fifth player argument; `readable_padding`
-  and `input_background` build presentation fragments. Station forms accept
+- Core `frame` and `input_background` build presentation fragments. The
+  initial window-dependent padding helper was removed after GUI feedback
+  (see the playtest correction below). Station forms accept
   an optional fifth visible-row count. Existing callers keep their defaults.
 
 No new globalstep, ABM, LBM, per-tick pass or periodic formspec send. Window
 information is read only while building an already requested form. Native
-padding caps oversized WQHD geometry without switching off resize fitting.
+client fitting controls geometry, without server-side window-dependent padding.
 Forms contain extra styles/backings and can have different byte sizes; this
 is not a measured CPU/frame-rate improvement. Existing queue, animation,
 scroll and send-throttle fixtures pass. No new CPU benchmark is claimed.
@@ -216,8 +217,8 @@ Lua processes. Headless/client runs use `LC_ALL=C LANG=C` and disposable paths.
 Desktop and web GUI acceptance is still pending. In particular, exercise:
 
 - Navigation with Admin Mail and Creative together; resize/reopen, GUI scaling
-  and HiDPI. WQHD padding uses the information available at form construction;
-  reopening after resizing recomputes it, without polling.
+  and HiDPI. Initial opening, tab switches and resizing should use the same
+  native fitting, without polling or size caps based on window reports.
 - Drag/shift-click with maximum bags, the last scrolled rows, hotbar A/B and
   special slot backgrounds; fourth dual-furnace output after reopening.
 - Enchant selection, upgrade quantities and an active queue; animation should
@@ -241,3 +242,46 @@ separately recorded backlog topics. No fundamental design question blocks this
 implementation; final appearance and the remaining stress-size edges are for
 the user's next GUI review.
 
+
+## Playtest correction — 2026-10-26
+
+The user found first-open/tab-switch size jumps, an excessive WQHD size cap,
+Sort still in Money, and button/menu styling unlike the intended flat design.
+The user's clarification takes precedence over the older browser CSS outlines.
+
+- Removed the server-window-dependent padding helper and every caller. Native
+  fitting now applies before and after window information arrives and when
+  resizing, without any additional formspec send or timer.
+- Moved Sort to a dedicated full-inventory heading; eight visible rows and
+  the aligned right-column bottom remain. Sort behavior/cooldown is unchanged.
+- Action backgrounds have no perimeter outline. Normal, hover, keyboard focus,
+  selected and pressed fills remain distinguishable; selected text is gold.
+- Help, Talents and race choices use flat side-menu selection and a left
+  marker. Local horizontal navigation uses active underlines. Native button
+  labels stay centered; this is an approximation of the browser's left-aligned
+  menu text, without a separate click/label mechanism.
+
+The earlier screenshot series and correction counts describe the initial
+delivery. This additional correction is explicitly requested by the user's
+subsequent playtest. Classification remains compatible: no saved-state, list
+capacity, field routes, permission checks or refresh cadence changes.
+
+Correction verification: 20 targeted fixtures pass (`ui_navigation`, `r44_fr`,
+`r44_qb`, `r44_ch`, `r44_ts`, `r52_graph`, `r53_live`, `r45_ui`, `r45_eu`,
+`r451_cu`, `r48_mail`, `r48_admin`, `r451_tr`, `r58_campnpc`, `r451_mz`,
+`r44_mq`, `r491_view`, `r35_f`, `r35_m`, `r25_interfaces`). Old button-style
+assertions were updated; the crafting action's vertical-spacing assertion
+no longer assumes a stale 2.6-unit width. Lua 5.1 parsing and sweeps 1–4 pass;
+sweep 5 reports only the existing `os.exit` in `r45_eu` (also present in
+`28fa1aac`). Fresh-server audit, theme regeneration check and whitespace check
+pass. Independent native-agent delta review passes, compatible.
+
+Inspected 27 real-client shots (nine views at 1035×696, 1600×900 and
+2560×1440), plus three corrected creation-menu captures and five bright-scene
+shots at 1035×696 / GUI 1.5. The final gallery selects 32 current shots. Shared
+inventory sizing headers agree across all captured inventory pages and
+resolutions; regression tests also cover missing initial window reports,
+subsequent tab switches, GUI scaling and density 2. Artifacts and exact forms:
+`~/projects/grudgelands-orchestration/ui-playtest-fixes-2026-10-26/`.
+The user authorized synchronizing this branch into local Luanti for playtest;
+only game files are copied, no worlds and no merge into main.

@@ -272,7 +272,7 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	if chosen then detail = "Chosen:\n" .. table.concat(chosen, "\n") .. "\n\n" .. detail end
 	-- The description is a read-only text (no field name).
 	local UI = grug_core.ui
-	local form = UI.frame(16, 10.2, nil, nil, player) .. UI.service_header(16, npc.title or id,
+	local form = UI.frame(16, 10.2) .. UI.service_header(16, npc.title or id,
 		row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png") ..
 		UI.panel(0.35, 1.6, 5.1, 7.4) .. UI.panel(5.65, 1.6, 10, 7.4) ..
 		"style_type[textarea;border=false;font_size=*0.85]style_type[textlist;font_size=*0.85]" ..

@@ -115,7 +115,7 @@ end
 function grug_inventory.welcome_formspec(player)
 	local head = "<big><b>" .. colored(HEADING_COLOR, "Welcome to Grudgelands") ..
 		"</b></big>\n" .. colored(MUTED_COLOR, who(player))
-	return grug_core.ui.frame(14, 11.25, nil, nil, player) ..
+	return grug_core.ui.frame(14, 11.25) ..
 		("hypertext[%.2f,0.35;%.2f,1.4;;%s]"):format(LEFT, TEXT_W, esc(head)) .. TAIL
 end
 

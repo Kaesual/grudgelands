@@ -1,3 +1,6 @@
+local function nav_style(field, selected, vertical)
+	return grug_core.ui.navigation_style(field, selected, 0, 0, 1, 1, vertical):match("^style%[[^%]]+%]")
+end
 -- Round 44 lane TS portable test: the Talents & Skills tab. Loads, through
 -- tools/r44_ts/harness.lua, the REAL sfinv, grug_inventory/ui.lua (frame and
 -- views), the talent files (since Round 53 the graph talents and their page,
@@ -104,7 +107,7 @@ local lctx = sfinv.get_or_create_context(learner)
 H.render(learner, "grug_classes:talents")
 local page = sfinv.pages["grug_classes:talents"]
 page:on_player_receive_fields(learner, lctx, {grug_graph_tab_2 = "x"})
-has(learner.formspec, grug_core.ui.button_style("grug_graph_tab_2", "selected"), "a tab click shows Veil")
+has(learner.formspec, nav_style("grug_graph_tab_2", true, true), "a tab click shows Veil")
 local field = graph.node_field("veil_fine_edge")
 page:on_player_receive_fields(learner, lctx, {[field] = "x"})
 eq(grug_classes.talent_rank(learner, "veil_fine_edge"), 1, "the click bought a rank")

@@ -419,7 +419,6 @@ function W.formspec(player, session, info)
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
 		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + header_h),
-		grug_core.ui.readable_padding(player, w, h + header_h),
 		nav,
 		("container[0,%.3f]"):format(header_h),
 		-- The inventory key closes a form unless the focused element eats it

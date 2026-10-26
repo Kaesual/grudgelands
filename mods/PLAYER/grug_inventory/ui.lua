@@ -129,7 +129,8 @@ do
 	local function grid_box_h(rows)
 		return label_h + rows * PITCH - (PITCH - SLOT) + pad
 	end
-	local inventory_h = grid_box_h(grug_inventory.VIEW_ROWS.full)
+	local full_label_h = 0.75
+	local inventory_h = grid_box_h(grug_inventory.VIEW_ROWS.full) + full_label_h - label_h
 	local money_h = inventory_h - 2 * slot_box_h - 2 * gap
 	local top_y = 0.35
 	local box_x = (UI.frame_w - box_w) / 2
@@ -152,7 +153,7 @@ do
 		view_h = station_h + gap + slot_box_h,
 	}
 	grug_inventory.LAYOUT = {
-		pad = pad, label_h = label_h, gap = gap,
+		pad = pad, label_h = label_h, full_label_h = full_label_h, gap = gap,
 		box_x = box_x, box_w = box_w, x = box_x + pad,
 		top_y = top_y, slot_box_h = slot_box_h,
 		full_x = 1.1, side_x = 12.0, side_w = 6.9,
@@ -170,9 +171,9 @@ grug_inventory.VIEW_GEOMETRY = {x = LAYOUT.x, width = VIEW_W,
 	hotbar_y = LAYOUT.hotbar_y, top = LAYOUT.short_y}
 
 -- A boxed area's background and its label, top left above the slots.
-function grug_inventory.area_box(x, y, w, h, label)
+function grug_inventory.area_box(x, y, w, h, label, label_h)
 	return grug_core.ui.panel(x, y, w, h) ..
-		grug_core.ui.heading(x + LAYOUT.pad, y + LAYOUT.label_h / 2, string.upper(label))
+		grug_core.ui.heading(x + LAYOUT.pad, y + (label_h or LAYOUT.label_h) / 2, string.upper(label))
 end
 
 -- The scroll area's list[] elements and its row count. main[9..] and the
@@ -267,14 +268,15 @@ function grug_inventory.inventory_view(player, mode, context, top, visible_rows)
 		hotbar_box_x = box_x
 		hotbar_box_y = top + box_h + LAYOUT.gap
 	end
-	local area_y = box_y + LAYOUT.label_h
+	local label_h = mode == "full" and LAYOUT.full_label_h or LAYOUT.label_h
+	local area_y = box_y + label_h
 	local hotbar_y = hotbar_box_y + LAYOUT.label_h
 	local view_x = box_x + LAYOUT.pad
 	local scrollbar_x = view_x + SCROLLBAR_DX
 	local field = grug_inventory.SCROLL_FIELDS[mode]
 	-- The two boxes, drawn first so the lists lie on them.
 	local fs = {"real_coordinates[true]",
-		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory"),
+		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory", label_h),
 		grug_inventory.area_box(hotbar_box_x, hotbar_box_y, LAYOUT.box_w,
 			LAYOUT.slot_box_h, "Active hotbar"),
 	}
@@ -421,7 +423,7 @@ function grug_inventory.station_formspec(player, content, content_h, context, vi
 	local view_h = LAYOUT.label_h + rows * PITCH - (PITCH - SLOT) + LAYOUT.pad +
 		LAYOUT.gap + LAYOUT.slot_box_h
 	return table.concat({
-		grug_core.ui.frame(station.width, top + view_h + station.margin, nil, nil, player),
+		grug_core.ui.frame(station.width, top + view_h + station.margin),
 		content,
 		grug_inventory.inventory_view(player, "station", context, top, rows),
 		bag_rings(player, content),
@@ -441,7 +443,7 @@ function sfinv.make_formspec(player, context, content, show_inv)
 	context.grug_inv_view = mode
 	-- Body coordinates remain local to this container below the navigation.
 	return table.concat({
-		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h, nil, nil, player),
+		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h),
 		nav,
 		("container[0,%.3f]"):format(header_h),
 		mode and grug_inventory.inventory_view(player, mode, context) or "",

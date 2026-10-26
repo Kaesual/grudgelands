@@ -389,8 +389,7 @@ core.get_player_window_information = function()
 	return {size = {x = 2560, y = 1440}, real_gui_scaling = 1}
 end
 local large_fs = grug_quickbar.formspec(ada)
-check(large_fs:match("^formspec_version%[6%]size%[[^%]]+%]position%[0%.02,0%.5%]anchor%[0,0%.5%]padding%[") ~= nil,
-	"WQHD placement precedes padding so the native parser keeps the left anchor")
+eq(large_fs, fs, "WQHD data must not add stale padding or alter the left anchor")
 core.get_player_window_information = nil
 has(fs, grug_core.ui.title(0.5, 0.45, "Quickbar"), "themed title")
 has(fs, "Active Hotbar", "hotbar section heading")

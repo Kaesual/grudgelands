@@ -133,13 +133,13 @@ local function frame(player, session, counts)
 	local nav = {}
 	for index, caption in ipairs(captions) do
 		local name = "grug_mail_tab_" .. index
-		nav[#nav + 1] = grug_core.ui.button_style(name,
-			index == TAB_INDEX[session.tab] and "selected" or "normal")
+		nav[#nav + 1] = grug_core.ui.navigation_style(name, index == TAB_INDEX[session.tab],
+			0.4 + (index - 1) * ((W - 0.8) / 4), 0.2, (W - 0.8) / 4 - 0.1, 0.6)
 		nav[#nav + 1] = ("button[%.3f,0.2;%.3f,0.6;%s;%s]"):format(
 			0.4 + (index - 1) * ((W - 0.8) / 4), (W - 0.8) / 4 - 0.1, name, esc(caption))
 	end
 	return table.concat({
-		grug_core.ui.frame(W, H + 0.95, nil, nil, player),
+		grug_core.ui.frame(W, H + 0.95),
 		-- The focus sits on an invisible button at every send (module guide
 		-- "Initial focus"): an edit box or a table would eat the inventory key.
 		"set_focus[grug_mail_focus;true]button[0,0;0,0;grug_mail_focus;]",

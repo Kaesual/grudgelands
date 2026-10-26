@@ -1,3 +1,6 @@
+local function nav_style(field, selected, vertical)
+	return grug_core.ui.navigation_style(field, selected, 0, 0, 1, 1, vertical):match("^style%[[^%]]+%]")
+end
 -- Round 52 lane GRAPH portable test, rewritten for the live graph in Round 53
 -- (round53-plan.md §4 "LIVE": the four class data files, <tree>_<name> ids,
 -- the live page). Loads, on the stub world of tools/r44_ts/harness.lua (the
@@ -486,8 +489,8 @@ local page = sfinv.pages["grug_classes:talents"]
 local fs = H.render(mage, "grug_classes:talents")
 has(fs, "button[0.35,0.40;4.70,0.65;grug_graph_tab_1;Ember (30)]", "E the Ember tab")
 has(fs, "button[0.35,1.20;4.70,0.65;grug_graph_tab_2;Rime (0)]", "E the Rime tab")
-has(fs, grug_core.ui.button_style("grug_graph_tab_1", "selected"), "E the first tab selected")
-has(fs, grug_core.ui.button_style("grug_graph_tab_2", "normal"), "E the second not")
+has(fs, nav_style("grug_graph_tab_1", true, true), "E the first tab selected")
+has(fs, nav_style("grug_graph_tab_2", false, true), "E the second not")
 has(fs, "label[0.5,6.02;Points: 0 / 30]", "E the points in the header row")
 has(fs, "button[0.50,5.05;4.1,0.60;grug_talent_respec;Respec: Free]", "E the respec control")
 has(fs, "image[5.40,0.25;14.35,6.07;grug_classes_tree_ember.png]",
@@ -518,7 +521,7 @@ eq(table.concat(gate_labels, ","), "0,2,6,12,16,20", "E the gate of each used ro
 page:on_player_receive_fields(mage, ctx, {grug_graph_tab_2 = "Rime (0)"})
 eq(ctx.grug_talent_tab, 2, "E a tab click is kept in the context")
 fs = mage.formspec
-has(fs, grug_core.ui.button_style("grug_graph_tab_2", "selected"), "E and selects Rime")
+has(fs, nav_style("grug_graph_tab_2", true, true), "E and selects Rime")
 has(fs, "box[5.40,0.25;14.35,6.07;#101318c8]", "E without its background (hidden): the plain one")
 local locked = fs:match("style%[([^%]]-);bgcolor=#2e2e2e")
 check(locked and locked:find(field_of("R12"), 1, true), "E Far Frost is locked (no points left)")

@@ -1,3 +1,6 @@
+local function nav_style(field, selected, vertical)
+	return grug_core.ui.navigation_style(field, selected, 0, 0, 1, 1, vertical):match("^style%[[^%]]+%]")
+end
 -- Round 45 lane UI portable test (LuaJIT): the Crafting tab (round45-plan.md
 -- §3, §4.4; ui-crafting-rework-plan.md §2.16-2.22, §2.33, §4.2-4.5).
 --
@@ -613,9 +616,9 @@ eq(count(fs, "list[current_player;main;"), 2, "P main only in the view")
 for index, label in ipairs({"Basic", "Cooking", "Primary 1", "Primary 2", "Alchemy"}) do
 	has(fs, ("%s%d;%s]"):format(FIELDS.area, index, label), "P area tab " .. label)
 end
-has(fs, grug_core.ui.button_style("grug_craft_area1", "selected"), "P Basic is the default area, styled selected")
+has(fs, nav_style("grug_craft_area1", true), "P Basic is the default area, styled selected")
 for index = 2, 5 do
-	has(fs, grug_core.ui.button_style("grug_craft_area" .. index, "normal"),
+	has(fs, nav_style("grug_craft_area" .. index, false),
 		"P unselected profession button " .. index)
 end
 has(fs, "Basic: no tier", "P Basic has no tier")
@@ -693,7 +696,7 @@ end
 click(p, {[FIELDS.area .. "4"] = "Primary 2"})
 says(p.formspec, "No primary profession yet. Learn one from its trainer in the capital.",
 	"A an empty primary slot says how to learn one")
-has(p.formspec, grug_core.ui.button_style("grug_craft_area4", "selected"), "A the chosen tab styled")
+has(p.formspec, nav_style("grug_craft_area4", true), "A the chosen tab styled")
 click(p, {[FIELDS.area .. "5"] = "Alchemy"})
 says(p.formspec, "Not learned yet. Learn Alchemy from its trainer in the capital.",
 	"A an unlearned profession says how to learn it")
@@ -1199,7 +1202,7 @@ do
 	local max_y = label_y(part, "Max: ")
 	local hint_y = label_y(part, "Crafting this will")
 	local quantity_y = tonumber(part:match("field%[[%d%.]+,([%d%.]+);"))
-	local button_y = tonumber(part:match("button%[[%d%.]+,([%d%.]+);2%.6,0%.8;grug_craft_go_%d+;"))
+	local button_y = tonumber(part:match("button%[[%d%.]+,([%d%.]+);[%d%.]+,0%.8;grug_craft_go_%d+;"))
 	check(sub_y and desc and sub_y + 0.2 <= desc.y, "D top: the output above the description")
 	check(desc and ingredients_y and desc.y + desc.h <= ingredients_y - 0.2,
 		"D middle: the description above the ingredients")

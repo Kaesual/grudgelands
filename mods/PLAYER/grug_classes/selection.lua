@@ -277,10 +277,8 @@ end
 local function button(fs, x, y, w, h, field, label, tooltip, bgcolor, chosen)
 	fs[#fs + 1] = grug_core.ui.button_style(field, chosen and "selected" or "normal")
 	if field:match("^faction_") or field:match("^race_") or field:match("^class_") then
-		fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgcolor=white;content_offset=0,0]"):format(field)
-		if chosen then
-			fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,0.03;%s]"):format(x, y + h, w, grug_core.ui.colors.accent)
-		end
+        fs[#fs + 1] = grug_core.ui.navigation_style(field, chosen, x, y, w, h,
+            field:match("^race_") ~= nil)
 	elseif bgcolor then
 		fs[#fs + 1] = ("style[%s;bgcolor=%s]"):format(field, bgcolor)
 	end
@@ -334,7 +332,6 @@ local function create_formspec(draft, player)
 	local fs = {
 		"formspec_version[6]",
 		("size[%s,%s]"):format(WIDTH, HEIGHT),
-		grug_core.ui.readable_padding(player, WIDTH, HEIGHT),
 		DARK_BACKGROUND,
 		grug_core.ui.title(0.4, 0.45, "Create your character"),
 		"style_type[label,textarea;font_size=*0.85]style_type[textarea;border=false]",

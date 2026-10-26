@@ -9,9 +9,9 @@ function UI.styles()
 	return table.concat({
 		"listcolors[#111a24b0;#344452cc;#d1c09a40;#0a1017f2;#eeeae1]",
 		"style_type[button,button_exit;border=false;bgcolor=#ffffff;",
-		"bgimg=grug_ui_button.png;bgimg_middle=6;padding=-4,-4,4,4;font_size=*0.85;textcolor=#eeeae1]",
+		"bgimg=grug_ui_button.png;bgimg_middle=6;padding=-4,-4,4,4;font_size=*0.85;textcolor=#e6e6dd;content_offset=0,0]",
 		"style_type[button:hovered,button_exit:hovered;bgimg=grug_ui_hover.png]",
-		"style_type[button:focused,button_exit:focused;bgimg=grug_ui_hover.png]",
+		"style_type[button:focused,button_exit:focused;bgimg=grug_ui_focus.png]",
 		"style_type[button:pressed,button_exit:pressed;bgimg=grug_ui_pressed.png]",
 		"style_type[field,pwdfield,textarea;textcolor=#eeeae1]",
 		"style_type[table,textlist;font=normal]",
@@ -66,31 +66,38 @@ end
 function UI.button_style(name, role)
 	local texture = role == "selected" and "selected" or
 		role == "danger" and "danger" or "button"
+	local color = role == "selected" and "#e6ca8d" or
+		role == "danger" and "#e0aca0" or "#e6e6dd"
 	return ("style[%s;border=false;bgcolor=#ffffff;bgimg=grug_ui_%s.png;" ..
-		"bgimg_middle=6;padding=-4,-4,4,4;font_size=*0.85;textcolor=#eeeae1]"):format(core.formspec_escape(name), texture)
+		"bgimg_middle=6;padding=-4,-4,4,4;font_size=*0.85;textcolor=%s;content_offset=0,0]"):
+		format(core.formspec_escape(name), texture, color)
 end
 
--- At large desktop resolutions, native slots grow with the screen while
--- fonts keep their DPI/GUI size. Cap the preferred slot scale with padding,
--- retaining the client's ordinary fit/shrink behavior when its window resizes.
--- Engine: GUIFormSpecMenu::getFixedImgsize and calculateImgsize. Padding must
--- follow size/position/anchor and precede no_prepend or any visible element.
-function UI.readable_padding(player, w, h)
-	if not player or not core.get_player_window_information then return "" end
-	local info = core.get_player_window_information(player:get_player_name())
-	local size = info and info.size
-	local scale = info and info.real_gui_scaling
-	if not size or not scale or scale <= 0 or size.x <= 0 or size.y <= 0 or
-			size.y / scale < 1080 then return "" end
-	local pixels = 0.5555 * 96 * scale
-	local x = math.max(0.05, 0.5 - 0.5 * w * pixels / size.x)
-	local y = math.max(0.05, 0.5 - 0.5 * h * pixels / size.y)
-	return ("padding[%.6f,%.6f]"):format(x, y)
+-- Navigation is distinct from actions: clear text tabs or a flat side-menu
+-- selection, with one active edge. Fields and click handling stay with owners.
+function UI.navigation_style(name, selected, x, y, w, h, vertical)
+	local field = core.formspec_escape(name)
+	local color = selected and UI.colors.accent or UI.colors.muted
+	local texture = vertical and selected and "nav_selected" or "clear"
+	local fs = ("style[%s;border=false;bgcolor=#ffffff;bgimg=grug_ui_%s.png;" ..
+		"bgimg_middle=6;padding=-6,-6,6,6;font_size=*0.85;textcolor=%s;content_offset=0,0]" ..
+		"style[%s:hovered;bgimg=grug_ui_nav_hover.png;textcolor=%s]" ..
+		"style[%s:focused;bgimg=grug_ui_focus.png;textcolor=%s]" ..
+		"style[%s:pressed;bgimg=grug_ui_pressed.png;textcolor=%s]"):
+		format(field, texture, color, field, UI.colors.accent,
+			field, UI.colors.accent, field, UI.colors.accent)
+	if selected then
+		fs = fs .. ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(x,
+			vertical and y or y + h - 0.035, vertical and 0.035 or w,
+			vertical and h or 0.035, UI.colors.accent)
+	end
+	return fs
 end
 
-function UI.frame(w, h, title, opaque, player)
-	local fs = ("formspec_version[6]size[%.3f,%.3f]"):format(w, h) ..
-		UI.readable_padding(player, w, h)
+-- Leave fitting to the client. Geometry must not depend on window information
+-- arriving after the initial inventory form or on a previous window size.
+function UI.frame(w, h, title, opaque)
+	local fs = ("formspec_version[6]size[%.3f,%.3f]"):format(w, h)
 	if opaque then fs = fs .. "no_prepend[]" .. UI.prepend(true) end
 	if title then fs = fs .. UI.title(0.4, 0.45, title) end
 	return fs

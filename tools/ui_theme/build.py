@@ -10,11 +10,14 @@ OUT = ROOT / 'mods/CORE/grug_core/textures'
 COLORS = {
     'window': ((18, 24, 31, 231), (91, 96, 102, 210)),
     'panel': ((10, 16, 17, 94), (209, 192, 154, 43)),
-    'button': ((212, 179, 117, 9), (209, 192, 154, 55)),
-    'hover': ((212, 179, 117, 25), (212, 179, 117, 156)),
-    'pressed': ((212, 179, 117, 42), (241, 211, 155, 210)),
-    'selected': ((212, 179, 117, 24), (212, 179, 117, 200)),
-    'danger': ((150, 60, 65, 28), (203, 146, 144, 130)),
+    'button': ((238, 234, 225, 14), None),
+    'hover': ((238, 234, 225, 27), None),
+    'focus': ((212, 183, 125, 38), None),
+    'pressed': ((187, 160, 98, 48), None),
+    'selected': ((187, 160, 98, 30), None),
+    'danger': ((200, 137, 122, 18), None),
+    'nav_hover': ((238, 234, 225, 14), None),
+    'nav_selected': ((187, 160, 98, 24), None),
 }
 
 def symbol(name):
@@ -62,7 +65,7 @@ def build(check=False):
     for name, (fill, border) in COLORS.items():
         image = Image.new('RGBA', (96, 96))
         draw = ImageDraw.Draw(image)
-        draw.rounded_rectangle((0, 0, 95, 95), radius=18, fill=fill, outline=border, width=3)
+        draw.rounded_rectangle((0, 0, 95, 95), radius=18 if border else (0 if name.startswith('nav_') else 9), fill=fill, outline=border, width=3)
         image = image.resize((32, 32), Image.Resampling.LANCZOS)
         images[name] = image
     images['clear'] = Image.new('RGBA', (32, 32))

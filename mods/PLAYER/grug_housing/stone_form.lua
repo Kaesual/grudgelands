@@ -207,7 +207,7 @@ end
 local function waypoints_formspec(player, session, home, header)
 	local rows = home.known_waypoints(player)
 	local height = 2.6 + 0.7 * math.max(1, #rows)
-	local fs = {theme.frame(10.75, height + TAB_OFFSET, nil, nil, player), header,
+	local fs = {theme.frame(10.75, height + TAB_OFFSET), header,
 		"container[0," .. TAB_OFFSET .. "]",
 		theme.heading(0.4, 0.5, "Travel from your Claim Stone")}
 	for index, row in ipairs(rows) do

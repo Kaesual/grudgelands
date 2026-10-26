@@ -462,7 +462,7 @@ local function mode_content(player, context, selected)
 	}
 	for _, mode in ipairs(MODES) do
 		local field = "grug_character_" .. mode.id
-		fs[#fs + 1] = grug_inventory.selected_button_style(field, mode.id == selected)
+		fs[#fs + 1] = grug_core.ui.navigation_style(field, mode.id == selected, mode.x, MODE_Y, mode.w, MODE_H)
 		fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(field,
 			0.85 * grug_core.ui.text_scale(player))
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
@@ -589,12 +589,8 @@ local function inventory_content(player)
 		grug_inventory.POTION_BELT, belt_x, belt_y, belt)
 	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(belt_x, belt_y,
 		belt * PITCH - 0.25, esc("Potion belt — potions and elixirs only"))
-	-- The money row (Round 45 playtest; the balance and Withdraw moved here
-	-- from the Character page): "Money" over the balance in columns 1-2
-	-- (a real-coordinate label's lines are half a slot apart, centred on
-	-- their y), Withdraw in columns 3-4, the deposit slot in column 5, the
-	-- automatic deposit's checkbox in column 6 (Round 46), Sort in columns
-	-- 7-8, ending with the hotbar's last slot.
+	-- Money actions stay in the right utility column. Sorting belongs to
+	-- the inventory heading on the left.
 	local row_y, x = layout.money_y, layout.side_x + layout.pad
 	fs[#fs + 1] = grug_inventory.area_box(layout.side_x, row_y,
 		layout.side_w, layout.money_h, "Money")
@@ -608,8 +604,8 @@ local function inventory_content(player)
 		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
 	fs[#fs + 1] = ("checkbox[%.3f,%.3f;grug_money_auto_deposit;Auto deposit;%s]"):format(
 		x + 1.3, deposit_y + 0.5, tostring(grug_money.auto_deposit(player)))
-	fs[#fs + 1] = ("button[%.3f,%.3f;4.4,0.65;grug_inv_sort;Sort inventory]"):format(
-		x, row_y + layout.money_h - 0.9)
+	fs[#fs + 1] = ("button[%.3f,%.3f;2.2,0.55;grug_inv_sort;Sort]"):format(
+		layout.full_x + layout.box_w - layout.pad - 2.2, layout.inventory_y + 0.10)
 	fs[#fs + 1] = "tooltip[grug_inv_sort;Sort the inventory and the bags. The hotbar stays as it is.]"
 	return table.concat(fs)
 end

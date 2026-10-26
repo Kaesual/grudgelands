@@ -208,7 +208,8 @@ function graph.page_content(viewer, view)
 	}
 	for index, other in ipairs(view.trees) do
 		local field = "grug_graph_tab_" .. index
-		fs[#fs + 1] = grug_inventory.selected_button_style(field, index == view.tab)
+		fs[#fs + 1] = grug_core.ui.navigation_style(field, index == view.tab,
+			0.35, page.y + 0.15 + (index - 1) * 0.8, page.tab_w, 0.65, true)
 		fs[#fs + 1] = ("button[0.35,%.2f;%.2f,0.65;%s;%s]"):format(
 			page.y + 0.15 + (index - 1) * 0.8, page.tab_w, field,
 			esc(("%s (%d)"):format(other.name, graph.tree_points(view.ranks, other.id))))

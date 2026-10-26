@@ -53,9 +53,8 @@ function grug_inventory.navigation(player, context, selected, width, layout)
     local faction_name = faction and grug_factions.display_name and grug_factions.display_name(faction) or ""
     local text_scale = grug_core.ui.text_scale(player)
     local level = grug_xp and grug_xp.get_level and grug_xp.get_level(player)
-    -- Clear buttons inherit the theme's hover/focus/pressed images. Keep
-    -- their six-pixel nine-slice corners in every state; cancel only the
-    -- content inset so labels/icons stay in place when the state changes.
+    -- Text navigation stays unboxed on hover and press. Keyboard focus has
+    -- its own visible fill; the active page keeps its underline.
     local fs = {"real_coordinates[true]",
         "image[0.28,0.17;0.46,0.55;" .. esc(emblem) .. "]",
         grug_core.ui.title(0.95, 0.28, "GRUDGELANDS", text_scale),
@@ -93,6 +92,9 @@ function grug_inventory.navigation(player, context, selected, width, layout)
             local color = active and accent or grug_core.ui.colors.muted
             fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgimg_middle=6;padding=-6,-6,6,6;" ..
                 "font_size=*%.3f;textcolor=%s;content_offset=0,0]"):format(field, 0.85 * text_scale, color)
+            fs[#fs + 1] = ("style[%s:hovered;bgimg=grug_ui_clear.png;textcolor=%s]" ..
+                "style[%s:pressed;bgimg=grug_ui_clear.png;textcolor=%s]"):
+                format(field, accent, field, accent)
             fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.46;%s;%s]"):format(x, y, w, field, esc(caption))
             fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(titles[index]))
             if active then

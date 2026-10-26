@@ -190,34 +190,37 @@ creative = false
 local before = actions
 fields({grug_ui_creative = "true"})
 assert(ctx.page == ids[1] and actions == before, "revoked primary Creative click is consumed")
--- A large-screen padding cap keeps slot/text proportions, without the
--- fixed-size flag which would disable native fit when the client resizes.
+-- Initial inventory forms can be built before client window data arrives.
+-- Later navigation/resends and resizing must retain the same sizing header.
 do
 	local saved_info = window_info
-	for _, case in ipairs({{1035,696,1}, {1600,900,1}, {1035,696,1.5},
-		{2560,1440,1.5}, {2560,1600,2}}) do
-		window_info = {size={x=case[1], y=case[2]}, real_gui_scaling=case[3]}
-		assert(grug_core.ui.readable_padding(player,20,15) == "",
-			"small, medium, GUI1.5 and density2 windows keep native sizing")
-	end
-	window_info = {size={x=2560,y=1440}, real_gui_scaling=1}
-	local padding = grug_core.ui.readable_padding(player,20,15)
-	local px, py = padding:match("padding%[([%d.]+),([%d.]+)%]")
-	px, py = tonumber(px), tonumber(py)
-	assert(px and py and px >= 0.05 and px < 0.5 and py >= 0.05 and py < 0.5)
-	local fit = math.min(2560*(1-2*px)/20,1440*(1-2*py)/15)
-	assert(math.abs(fit - 0.5555*96) < 0.001, "WQHD fits the DPI-sized native slot")
-	-- The same padding at a smaller client size still permits fitting.
-	assert(math.min(1035*(1-2*px)/20,696*(1-2*py)/15) < fit)
-	local fs = grug_core.ui.frame(20,15,"Title",true,player)
-	assert(fs:find("size[20.000,15.000]" .. padding .. "no_prepend[]",1,true),
-		"padding precedes no_prepend/content as the native parser requires")
-	assert(not fs:find(",true]",1,true), "the frame must not lock native resizing")
 	window_info = nil
-	assert(grug_core.ui.readable_padding(player,20,15) == "")
-	assert(grug_core.ui.readable_padding(nil,20,15) == "")
-	window_info = {size={x=2560,y=1440}}
-	assert(grug_core.ui.readable_padding(player,20,15) == "")
+	local initial = grug_core.ui.frame(20,15,"Title",true)
+	for _, case in ipairs({{1035,696,1}, {1600,900,1}, {2560,1440,1},
+		{1035,696,1.5}, {2560,1600,2}}) do
+		window_info = {size={x=case[1], y=case[2]}, real_gui_scaling=case[3]}
+		assert(grug_core.ui.frame(20,15,"Title",true) == initial,
+			"first-open and later forms use the same native sizing")
+		sfinv.set_page(player, ids[1])
+		local first_size = player.fs:match("size%[([^%]]+)%]")
+		fields({grug_ui_tab_2 = "true"})
+		assert(player.fs:match("size%[([^%]]+)%]") == first_size)
+		fields({grug_ui_tab_1 = "true"})
+		assert(player.fs:match("size%[([^%]]+)%]") == first_size)
+		assert(not player.fs:find("padding[",1,true), "no server size cap or stale margins")
+	end
+	assert(not initial:find(",true]",1,true), "native resize fitting stays enabled")
 	window_info = saved_info
+end
+-- Navigation keeps existing field names but has one active edge; actions
+-- use their own backgrounds and the selected text color.
+do
+	local menu = grug_core.ui.navigation_style("topic",true,1,2,3,0.6,true)
+	assert(menu:find("bgimg=grug_ui_nav_selected.png",1,true))
+	assert(menu:find("box[1.000,2.000;0.035,0.600;",1,true), "side menu has a left marker")
+	local tab = grug_core.ui.navigation_style("topic",true,1,2,3,0.6)
+	assert(tab:find("box[1.000,2.565;3.000,0.035;",1,true), "tab has an underline")
+	assert(not grug_core.ui.navigation_style("topic",false,1,2,3,0.6):find("box[",1,true))
+	assert(grug_core.ui.button_style("action","selected"):find("textcolor=#e6ca8d",1,true))
 end
 print('UI NAVIGATION PASS: lifecycle, suspension, revoked/stale input, geometry and scrollbar sends')

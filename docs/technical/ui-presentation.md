@@ -34,21 +34,24 @@ out of the prepend and explicitly requests the opaque variant.
   below it.
 - `button_style(name, role)` styles one existing field (`normal`, `selected`,
   `danger`). Names are single fields, not comma-separated selector lists.
-- `frame(w, h, title, opaque, player)` opens a version-6 real-coordinate form; optional
+- `frame(w, h, title, opaque)` opens a version-6 real-coordinate form; optional
   title at 0.4,0.45. It does not offset content or close a container.
 
-`readable_padding(player, w, h)` bounds oversized desktop geometry using native
-padding, emitted immediately after `size` by the optional fifth `player`
-argument of `frame`. At effective height `size.y / real_gui_scaling >= 1080`,
-the fitted unit is capped at `0.5555 * 96 * real_gui_scaling` pixels, matching
-Luanti's fixed-image reference size. It does **not** enable fixed-size forms;
-the client can still shrink a form after window resizing. Missing window data,
-small/medium screens and high-density or enlarged-GUI cases below the threshold
-keep their existing fitting. Reopening recomputes padding; no polling is added.
-Map uses the helper after its explicit zero-padding default and keeps its
-larger layout budget. A caller with explicit `position`/`anchor` (Quickbar)
-uses `frame` without the player, emits those headers, then calls
-`readable_padding`: Luanti parses these header elements in that order.
+Frame fitting belongs to the client. Forms must not add padding derived from
+server-side window reports: those can be absent for the first inventory form
+or stale after resizing. The attempted WQHD cap was removed after the user's
+playtest found a first-open/tab-switch size jump and excessive shrinking on
+large windows. Default native padding remains; Map keeps its explicit zero
+padding and separate viewport budget. Quickbar keeps its left position/anchor.
+No polling or corrective resend is introduced.
+
+`navigation_style(name, selected, x, y, w, h, vertical)` styles an existing
+navigation field. Horizontal choices have an active underline; side menus have
+a flat selection and left marker. The owning caller still emits the native
+button and keeps its field route. Native button text remains centered. Actions
+use translucent fills without outlines, selected actions use gold text/fill,
+and hover, keyboard focus and press have distinct fills. Native input controls
+and their focus handling are unchanged.
 
 `input_background(x, y, w, h, name)` draws a slate backing and scopes borderless
 styling to an existing native input. The input keeps its own name, focus,
@@ -110,20 +113,21 @@ tab cancels pending map sends before sfinv displays the target. The deferred
 home reset cannot overwrite that target, and the existing shown-form backstop,
 quiet period, send gap and party-marker budget remain.
 
-Theme assets are 18 original 32-by-32 RGBA geometric images (seven frame/
+Theme assets are 21 original 32-by-32 RGBA geometric images (ten frame/
 control states, one clear image, ten line icons), reproducible with
 `python3 tools/ui_theme/build.py` (`--check`). The check compares PNG bytes;
 reproduction depends on the Pillow and zlib versions used to generate them.
 Their license is in
 `mods/CORE/grug_core/LICENSE-media.md`. Native client fonts are used; the
 browser study's CSS effects are not runtime dependencies. Panels use alpha
-94/255 and thin light borders; normal buttons are ghost surfaces (9/255),
+94/255 and thin light borders; normal buttons are flat ghost surfaces (14/255) without outlines,
 with client-side hover/focus/pressed and gold selected states. The outer
 window retains alpha 231/255 for readability on bright terrain. Nine-slice
 button padding cancels four of the six inset pixels, avoiding clipped text.
-Transparent navigation tabs and the close mark retain the same six-pixel
-nine-slice corners for their inherited hover/focus/pressed images, with all
-six inset pixels cancelled so their content keeps its original position.
+Main navigation stays transparent on hover and press, changing text color;
+focus remains visible through its fill. Side menus use square flat fills and
+a left active marker. Navigation cancels all six inset pixels so content
+keeps its original position. The close mark inherits the flat action states.
 Talent icon buttons use a two-pixel inset. Native checkboxes cannot style
 font size: the crowded Crafting filters use shorter captions and full
 tooltips at enlarged GUI scales. `professions_formspec(rows, area, player)`
