@@ -126,3 +126,19 @@ for p in PAGES:
  if p['id']=='repair':
   p['effort']='Mittel';p['limit']='Gezielte neue Navigation: heutige Händlersitzung endet beim Reparaturaufruf. Kontext und Prüfungen müssen erhalten werden; Reparaturangebote bleiben serverseitig validiert und einmalig. Normale Händler erhalten keine neue Reparaturfähigkeit.'
  if p['id']=='quest':p['changes']+=['Vorhandene Zustandsmarker neben neutralen Titeln; Story als eigene Kategorie und mit dem vorhandenen besonderen Marker, unabhängig vom Quest-Zustand.']
+
+# Revision 04: remove redundant framing, tighten dialog sizes and show selection.
+for p in PAGES:
+ if p['layout']=='container':
+  p['changes']=['Behälterslots ohne zusätzlichen Rahmen direkt über den Inventarspalten ausrichten.','Gleiche Slotgrößen und Rasterbreite oben und unten; Kisten vier, Regale sechs sichtbare Inventarreihen.','Weitere Reihen bleiben scrollbar; spezielle Slot-Hintergründe und native Transfers bleiben.']
+ if p['layout']=='furnace':
+  p['changes']=['Rahmenloses Raster: Input in 1 bzw. 1–2, Brennstoff in 4, Pfeil über 5–6 und Ausgabe in 7–8.','Ausgabe immer 2×2: beim Doppelofen ausdrücklich neue Kapazität von vier statt zwei Slots, wie von dir gewünscht.','Feuer unter Fuel; vorhandene Animationen ohne zusätzliche Formspec-Updates. Fünf sichtbare Inventarreihen, Rest scrollbar.']
+  p['keep']='Input- und Brennstofflisten, gemeinsamer/persönlicher Arbeitsplatz, Transfers und Prozessregeln bleiben. Vier Ausgabeslots im Doppelofen sind eine gewünschte Erweiterung, noch nicht implementiert.'
+  p['limit']='Spätere Umsetzung: gemeinsame und persönliche Ausgabelisten sicher von zwei auf vier erweitern; vorhandene Inhalte erhalten, Persistenz, Entnahme und volle Ausgabe testen. Kein Countdown oder neuer Aktualisierungstakt.'
+ if p['id']=='talents':p['changes']+=['Menü exakt so hoch wie die Baumgrafik; Points am unteren Menürand. Hinweise und Skills beginnen erst unterhalb dieser gemeinsamen Kante.']
+ if p['id'] in ['claim','claim_travel','claim_belongings','housing','waystone','innkeeper']:
+  p['changes']+=['Kleineres, auf die Aufgabe zugeschnittenes Fenster; Schrift und Slots werden nicht verkleinert. Vorhandene Texte und Aktionen bleiben erreichbar.']
+ if p['group']=='Handel & Dienste':p['changes']+=['Fenster moderat schmaler und niedriger; Typografie, Angebotsscrolling und bestehende Aktionen bleiben.']
+ if p['id'] in ['craft_enchant','craft_upgrade']:
+  p['changes']+=['Zusätzliche innere Kachel entfernen: Zielslot, Erklärung und Aktion direkt auf der Arbeitsfläche.']
+ if p['id']=='craft_enchant':p['changes']+=['Unter Weitere Zustände: eingelegtes Schwert, scrollbar auswählbare zulässige Verzauberungen, markierte Auswahl, Ergebnisvorschau und Materialien. Bestehende Auswahlmechanik, kein neuer Dialog.']

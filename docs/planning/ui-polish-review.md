@@ -1,6 +1,6 @@
 # UI polish review — 2026-10-25
 
-Status: revision 03 (2026-10-26) after user feedback; browser proposals, not approved implementation.
+Status: revision 04 (2026-10-26) after user feedback; browser proposals, not approved implementation.
 Classification: documentation/artifact only; no persistence or runtime change.
 
 The user requested a critique of every current UI page, one improved graphical
@@ -13,7 +13,7 @@ new proposals.
 ## Deliverable
 
 Local browser entry:
-`/home/jan/projects/grudgelands-orchestration/ui-polish-review-2026-10-26-v3/index.html`.
+`/home/jan/projects/grudgelands-orchestration/ui-polish-review-2026-10-26-v4/index.html`.
 
 Reproducible source: [tools/ui_polish_review](../../tools/ui_polish_review/README.md).
 The bundle contains 69 layouts, 207 actual client screenshots (three resolutions),
@@ -135,3 +135,40 @@ Swiftness uses its valid existing short-time caption, and an empty recovery
 store returns to the management tab. Existing client screenshots remain frozen;
 there is no new Luanti runtime acceptance claim. Revisions 01 and 02 remain
 archived separately.
+
+## Revision 04 — compact dialogs and slot alignment (2026-10-26)
+
+Browser study only; runtime and saved state unchanged. The user requests four
+output slots for both furnace variants. The proposed dual-furnace increase from
+two to four is explicitly a capacity change for later implementation, including
+shared and personal workspaces, content preservation and persistence/transfer
+checks. This revision implements no resize or migration.
+
+Container/station top regions lose their enclosing panel. Their slot columns
+align with the player inventory: input at 1 (dual 1–2), fuel at 4, arrow across
+5–6, output across 7–8 in two rows. Existing animations and visible inventory
+row limits stay. Claim, Housing Steward, Waystone and Innkeeper are narrower
+and shorter; trade/service windows shrink moderately without reducing type or
+slot size. The talent menu matches the artwork height with Points at its foot.
+Enchant/Upgrade no longer nest an extra panel inside the work area.
+
+The added enchant state illustrates the existing eligible textlist, a selected
+T3 prefix for an unenchanted item-level-25 Steel Sword, result preview and real
+recipe inputs. Source: `grug_jobs/operation_box.lua`, `grug_quality/init.lua`
+and `grug_professions/data/enchants.json`. The preview's base icon stands in for
+runtime enchant coloration; it is not a second inventory slot. Existing channel
+replacement, restrictions and queue semantics remain. No new selection API.
+
+Validation receipts are in the revision 04 bundle's `qa/`. Prior published
+revisions and their immutable client evidence are preserved.
+
+Revision 04 checks: all 69 primary views and 29 selectable states rendered
+without missing images or canvas overrun. Sixty-four browser assertions passed,
+including exact slot columns, four outputs in each furnace variant, the talent
+menu edge and absence of nested operation panels. A further check of five travel
+states caught and corrected inner overflow: destinations scroll within their
+panel and Innkeeper has enough minimum height. The enchant example also fits a
+390-pixel browser width. Affected layouts and the new selection example were
+visually inspected; independent source review verified the recipe and preserved
+mechanisms. JavaScript/Python syntax and whitespace checks passed. This does not
+claim a new Luanti/desktop/web-client acceptance pass.

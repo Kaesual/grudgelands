@@ -1,4 +1,4 @@
-# UI polish review — browser study, revision 03
+# UI polish review — browser study, revision 04
 
 This is a review artifact, not implemented or approved game design. It compares
 69 captured UI states with exactly one proposed layout per state. Actual Luanti
@@ -107,7 +107,7 @@ pass found no remaining blocker in that scope; this is not an exhaustive proof
 of every runtime state. No runtime files changed and no new Luanti run occurred.
 
 Revision 01 stays archived separately. The current standalone bundle is
-`~/projects/grudgelands-orchestration/ui-polish-review-2026-10-26-v3/`; earlier
+`~/projects/grudgelands-orchestration/ui-polish-review-2026-10-26-v4/`; earlier
 bundles remain unchanged.
 
 ## Revision 03 scope
@@ -136,3 +136,19 @@ Validation evidence is in the published bundle's `qa/`. The independent source
 review's invalid Swiftness duration example and empty-recovery-tab discrepancy
 were corrected and re-rendered. These checks do not simulate native GUI scaling,
 web-client behavior or an arbitrary recovery-store size.
+
+## Revision 04 scope
+
+Unframed container/station tops share inventory slot columns. Furnace input is
+at column 1 (dual: 1–2), fuel at 4, arrow at 5–6 and output at 7–8, two rows.
+Four dual-furnace outputs are a user-requested future capacity increase, not a
+runtime change in this study. Shared/personal state preservation and full-output
+behavior must be tested when implemented. Previous blanket capacity-preservation
+statements apply to the other lists.
+
+Task-specific travel/housing dialogs are smaller, services modestly smaller,
+without smaller typography. The talent menu ends at the tree's bottom; Points
+sits at that edge. Enchant/Upgrade have no inner panel. The added enchant state
+shows the existing valid-enchant textlist and a selected concrete recipe with
+its result preview and inputs. The artifact retains all original screenshots;
+new checks concern browser layouts only.
