@@ -6,6 +6,28 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## UI review follow-ups (2026-10-26)
+
+Requested during [UI polish review](docs/planning/ui-polish-review.md); these
+are separate future work, not changes authorized by the browser study.
+
+- **Shipwright venue:** evaluate a small dedicated building or an annex beside
+  the stable, displaying the actual boats, optionally in a shallow display
+  pond. Preserve the trainer's access and purchase rules. Check settlement
+  footprint, navigation, water/boat presentation and generation implications
+  before choosing a layout; no new building or pond is committed as design.
+- **Claim recovery scale:** audit very large claims, including the user's
+  example of 10,000 chests. The current recovery UI enumerates stored recovery
+  entries and grows its list; a packed container is one entry, not one item.
+  No application hard cap was found in these paths, which is not a guarantee
+  that storage, migration, metadata, detached inventories, transfer validation,
+  network payload and client rendering support arbitrary counts. Measure the
+  whole recovery path and failure behavior before proposing bounds or paging.
+  Do not add a cap, truncate stored contents or build virtualization as part
+  of the layout work. Owners: `grug_housing/recovered.lua`,
+  `grug_housing/stone_form.lua`, the map-reset container migration tools;
+  [housing design](docs/design/housing.md).
+
 ## Player experience follow-up (2026-10-11)
 
 Open follow-up work from the user's playtest assessment of 2026-10-11.

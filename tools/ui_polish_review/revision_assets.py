@@ -47,3 +47,21 @@ s=fix.with_name('ui_capture_dark_map_zones_1x.txt').read_text()
 s=s[s.index('scroll_container['):s.index('scroll_container_end[]')]
 labels=[{'x':float(x)/7.301*100,'y':float(y)/6.490*100,'text':t} for x,y,t in re.findall(r'label\[([\d.]+),([\d.]+);([^\]]+)\]',s)]
 with (R/'revision-data.js').open('a') as f:f.write('\nwindow.ZONE_LABELS='+json.dumps(labels,ensure_ascii=False)+';')
+
+# Revision 03 restores reward/status/trainer art and normalizes catalogue slots.
+for kind in ['available','ready','active','locked']:
+ for prefix in ['','story_']:
+  t=f'grug_map_quest_{prefix}{kind}.png';shutil.copyfile(textures[t],R/'assets'/t)
+for suffix in ['human','expert_accord','master_accord','improved_boat']:
+ t=f'grug_mounts_icon_{suffix}.png';shutil.copyfile(textures[t],R/'assets'/t)
+for name in ['hunter','kingslayer','wyvernslayer','dragonslayer','honored','zombie_slayer','boaring_work']:
+ im=Image.open(textures[f'grug_achievements_cloak_{name}_1.png']);im.crop((0,0,im.width//2,im.height)).save(R/'assets'/f'cloak-{name}.webp',lossless=True)
+for name in ['swiftness','cave']:
+ im=Image.open(textures[f'grug_status_alchemy_{name}.png']).convert('RGBA')
+ frame=Image.open(textures['grug_status_frame_buff.png']).convert('RGBA')
+ im.alpha_composite(frame.resize(im.size));im.save(R/'assets'/f'effect-{name}.webp',lossless=True)
+for key in ['creative_all','creative_nodes','creative_tools','creative_craftitems','creative_food']:
+ im=Image.open(R/'assets'/f'native-{key}.webp')
+ for i in range(32):
+  x=round((i%8)*63.7);y=round((i//8)*63.5)
+  im.crop((x+3,y+3,x+51,y+51)).save(R/'assets'/f'creative-{key}-{i}.webp',lossless=True)

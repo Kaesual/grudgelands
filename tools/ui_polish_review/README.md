@@ -1,4 +1,4 @@
-# UI polish review — browser study, revision 02
+# UI polish review — browser study, revision 03
 
 This is a review artifact, not implemented or approved game design. It compares
 69 captured UI states with exactly one proposed layout per state. Actual Luanti
@@ -23,7 +23,7 @@ The default immutable capture archive is
 `~/projects/grudgelands-orchestration/ui-modernization/dialogs-2026-10-25/final/`.
 Use `--captures PATH` to supply a copy with the same three resolution folders,
 `dark_NAME.png` images and `ui_capture_dark_NAME.txt` formspec evidence.
-Revision 02 additionally reads these local archived inputs (paths in
+The asset builder additionally reads these local archived inputs (paths in
 `revision_assets.py`):
 
 - `ui-modernization/dialog-review-fixes-2026-10-25/1035x696/` under the same
@@ -72,9 +72,10 @@ licences and provenance remain in the repository's `LICENSE-media.md`,
 
 ## Review
 
-All 69 proposal canvases and 25 additional selectable states were rendered in
-isolated Firefox and visually inspected in contact sheets. The revised study
-also checks 88-slot scrolling, base capacity, the two-row minimum, all nine
+Revision 03 renders all 69 proposal canvases and 29 additional selectable states
+in isolated Firefox; affected families were visually inspected in contact
+sheets. Revision 02 had additionally inspected all main canvases. The revised study
+also checks 104-slot scrolling, base capacity, the two-row minimum, all nine
 main tabs, five Creative categories, recipe icons/counts, Party roles, map
 scrolling and the repair-all price. Browser checks cover missing images, controls extending
 outside a canvas or a clipped panel, navigation, screenshot resolution switches,
@@ -105,5 +106,33 @@ Innkeeper home, guild art/rank text and upgrade/quiver examples. Its final sourc
 pass found no remaining blocker in that scope; this is not an exhaustive proof
 of every runtime state. No runtime files changed and no new Luanti run occurred.
 
-Revision 01 stays archived separately. Revision 02's standalone bundle is
-`~/projects/grudgelands-orchestration/ui-polish-review-2026-10-25-v2/`.
+Revision 01 stays archived separately. The current standalone bundle is
+`~/projects/grudgelands-orchestration/ui-polish-review-2026-10-26-v3/`; earlier
+bundles remain unchanged.
+
+## Revision 03 scope
+
+Inventory has equal-height columns (grid left; Bags, Potion Belt, Money right)
+and a separately centered Hotbar. Character art is smaller; cloaks and active
+effect art are visible. Talent selection is a left menu, the full original tree
+fills its area, and only unlocked skill slots appear below it. Empty messages
+start at the top. Map centers at 1× and fills the scrolling area above it.
+
+Camp-vendor Repair is proposed as a fourth service tab, while standalone repair
+keeps its own closing action. This needs a deliberate validated routing change:
+the current Repair call ends the vendor session. Quest status and Story use
+existing marker assets with neutral titles and textual/category cues. Story is
+independent of status. Trainer actions have fixed positions and mount/boat
+images use the character's existing faction/race art.
+
+Recovery displays actual occupied entries without rounding its visible final
+row to eight; at zero its tab disappears as today. Containers show four to six
+inventory rows, furnaces five with the existing slot order. Creative slots use
+the same common dimensions, with four inventory rows. Current-main 20-slot bags
+raise the maximum example to 13 rows; the 11-row historic option stays labelled.
+The two world/scale follow-ups are backlog entries, not implementations.
+
+Validation evidence is in the published bundle's `qa/`. The independent source
+review's invalid Swiftness duration example and empty-recovery-tab discrepancy
+were corrected and re-rendered. These checks do not simulate native GUI scaling,
+web-client behavior or an arbitrary recovery-store size.

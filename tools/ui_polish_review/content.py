@@ -103,3 +103,26 @@ for p in PAGES:
   p['limit']='Bewusste Funktionserweiterung: im Sell gibt es bisher 1/All nur bei Stückware, im Trade-in bisher nur All. Mengenbuttons benötigen validierte Serveraktionen, keine neue Wirtschaftsregel.'
  if p['layout']=='character':p['changes']+=['Alle acht Ausrüstungsslots behalten ihre Ghost-Icons; mindestens zwei Inventarzeilen und die identische Hotbar bleiben darunter.']
  if p['layout']=='map':p['keep']='50/50-Aufteilung, acht Layer, native Scrollbarkeit, HUD-Schalter, bestehende Abandon-Bestätigung und keine automatische Questauswahl. Der redundante Rückkehrbutton entfällt auf deinen Wunsch.'
+
+# Revision 03: proportions and concrete state/navigation feedback, browser only.
+r3={
+ 'inventory':('Die zweite Studie bündelte Taschen oberhalb des Inventars und richtete die Hotbar am linken Raster aus.', ['Inventar links, Bags → Potion belt → Money untereinander rechts; beide Spalten schließen unten bündig.','Hotbar als eigener, über die gesamte Fensterbreite zentrierter Abschluss.','Aktuelles Taschenmaximum: 13 Reihen. Der frühere 11-Reihen-Stand und die Basis bleiben im Wähler vergleichbar.']),
+ 'effects':('Der Leerzustand stand mittig, aktive Effekte waren nur als Textskizze sichtbar.', ['Leermeldung und Effektliste beginnen an derselben oberen Kante.','Aktive Effekte behalten das vorhandene Status-Icon und ihre bestehenden Details.','Zustandswähler zeigt leer und aktiv; keine neuen Aktualisierungen.']),
+ 'achievements':('In der Studie fehlten die Umhangabbildungen als erkennbare Belohnung.', ['Die vorhandene Umhangvorderseite steht wieder neben jeder passenden Achievement-Zeile.','Nicht verdiente Umhänge bleiben gedämpft; Fortschritt und Bedingung bleiben daneben.','Pagination bleibt unter der Liste.']),
+ 'talents':('Die horizontale Baumauswahl und zusätzliche Seitenabstände verkleinerten die Grafik; leere Skill-Slots täuschten Inhalt vor.', ['Baumauswahl als schmales linkes Menü, vollständiger Baum rechts flächenfüllend ohne zusätzliche Seitenränder.','Skills unmittelbar darunter, ohne eigene Box und ohne leere Auffüllslots.','Native Liste mit genau den freigeschalteten Skills; Scrollen erst bei Platzbedarf. Respec und Bestätigung bleiben.']),
+ 'repair':('Repair verlässt aktuell die Händlersitzung und öffnet einen separaten Dialog ohne Rückweg in dessen Tabs.', ['Beim Camp-Händler Repair gleichwertig neben Buy, Sell und Trade-in integrieren.','Kein zusätzlicher Close-Button in diesem Tab; Hauptfenster schließen oder anderen Tab wählen.','Eigenständige Reparaturdienste behalten Close; vorhandene Quote, Gesamtkosten und Prüfungen bleiben.']),
+ 'claim_belongings':('Das heutige UI und die bisherige Studie füllen die letzte Reihe auf acht Slots auf; gewünscht sind ausschließlich belegte Einträge.', ['Genau ein sichtbarer Slot pro Recovery-Eintrag als neue Darstellungsregel; 1/37 im Zustandswähler. Nach letzter Entnahme verschwindet der Tab weiterhin.','Viele Einträge bleiben scrollbar; gepackte Container sind einzelne Einträge.','Belastbarkeit sehr großer Claims separat prüfen; Backlog enthält das Beispiel mit 10.000 Truhen.'])
+}
+for p in PAGES:
+ if p['id'] in r3:p['problem'],p['changes']=r3[p['id']]
+ if p['layout']=='character':p['changes']+=['Charaktermodell kleiner gegenüber den Ausrüstungsslots; Inventar und Hotbar bleiben an ihrer gemeinsamen Position.']
+ if p['layout']=='container':p['changes']=['Vier sichtbare Inventarreihen bei Kisten, sechs bei den kleineren Regalen; weitere Reihen scrollen.','Kompaktere Fensterhöhe statt eines fast bildschirmhohen Inventars.','Native Behälteranzahl und spezielle Slot-Hintergründe bleiben.']
+ if p['layout']=='furnace':p['changes']=['Bestehende Reihenfolge aufgreifen: Input, Fuel mit Feuer darunter, Prozesspfeil, Output.','Pfeil etwas länger; Animation und Feuer behalten ihre bisherigen Aufgaben und Aktualisierungstakte.','Fünf sichtbare Inventarreihen, Rest scrollbar; alle nativen Listen und Kapazitäten bleiben.']
+ if p['layout']=='creative':p['changes']+=['Katalog- und Inventarslots mit exakt denselben Außenmaßen; vier sichtbare Inventarreihen nutzen die frei werdende Höhe.']
+ if p['layout']=='map':p['changes']+=['Ungezoomte Karte bei überschüssiger Höhe vertikal zentrieren; ab 2× den ganzen Ausschnitt nutzen.']
+ if p['layout']=='trainer':p['changes']+=['Close immer links, Learn bzw. Unlearn immer rechts. Unlearn bleibt als riskante Aktion erkennbar und behält seine Bestätigung.']
+ if p['layout']=='mount':p['changes']+=['Vorhandenes Mount-/Boot-Icon neben jedem Angebot; im Spiel abhängig von Fraktion und Volk.']
+ if p['layout'] in ['mail','craft']:p['changes']+=['Leermeldungen oben am Beginn ihrer jeweiligen Inhaltsfläche ausrichten.']
+ if p['id']=='repair':
+  p['effort']='Mittel';p['limit']='Gezielte neue Navigation: heutige Händlersitzung endet beim Reparaturaufruf. Kontext und Prüfungen müssen erhalten werden; Reparaturangebote bleiben serverseitig validiert und einmalig. Normale Händler erhalten keine neue Reparaturfähigkeit.'
+ if p['id']=='quest':p['changes']+=['Vorhandene Zustandsmarker neben neutralen Titeln; Story als eigene Kategorie und mit dem vorhandenen besonderen Marker, unabhängig vom Quest-Zustand.']

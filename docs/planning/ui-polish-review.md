@@ -1,6 +1,6 @@
 # UI polish review — 2026-10-25
 
-Status: revision 02 after user feedback; browser proposals, not approved implementation.
+Status: revision 03 (2026-10-26) after user feedback; browser proposals, not approved implementation.
 Classification: documentation/artifact only; no persistence or runtime change.
 
 The user requested a critique of every current UI page, one improved graphical
@@ -13,7 +13,7 @@ new proposals.
 ## Deliverable
 
 Local browser entry:
-`/home/jan/projects/grudgelands-orchestration/ui-polish-review-2026-10-25-v2/index.html`.
+`/home/jan/projects/grudgelands-orchestration/ui-polish-review-2026-10-26-v3/index.html`.
 
 Reproducible source: [tools/ui_polish_review](../../tools/ui_polish_review/README.md).
 The bundle contains 69 layouts, 207 actual client screenshots (three resolutions),
@@ -87,3 +87,51 @@ An independent read-only source review checked conditional behavior and its
 reported sample contradictions were fixed. Native font scaling and the complete
 runtime state space remain implementation gates, not claimed browser coverage.
 The original revision 01 bundle is preserved, including its local-notes origin.
+
+## Revision 03 — proportions and navigation (2026-10-26)
+
+Browser study only, compatible; no runtime, saved-state, world or server change.
+Source comparisons against main `8eeddb0d` verified the relevant repair, quest,
+skill, recovery and mount interfaces. Unlike the frozen captures, current main
+has 8/12/16/20-slot bags: the board now defaults to 13 inventory rows (104 slots),
+with historical 11-row and base 3-row examples still selectable.
+
+- Inventory left; Bags, Potion Belt and Money stacked on the right, matching
+  bottom edges. The Hotbar is independently centered below both columns.
+- Smaller character preview, top-aligned effect/other empty states, active
+  effect icons and achievement cloak images restored.
+- Talent-tree menu on the left, original artwork filling its area, skills
+  directly below without another panel. Only actual unlocked entries draw slots
+  (two in the captured Warrior); existing horizontal scrolling and Respec stay.
+- Unzoomed map vertically centered when shorter than its viewport; zoomed map
+  keeps the entire scrollable viewport.
+- Quest lists retain neutral titles and reuse existing status markers. Story
+  remains an independent category and existing special marker, not a fifth
+  status. The Story/other-state examples below the captured quest proposal are
+  explicitly independent of Elian's actual offer list.
+- Camp-vendor Repair shares Buy/Sell/Trade-in navigation and window dimensions.
+  The current call ends the trader session, so this is a proposed routing change,
+  preserving faction/range/provider checks and authoritative single-use quotes.
+  Standalone repairs remain separate and keep Close. Ordinary traders gain no
+  new capability. Trainer footers consistently put Close left, Learn/Unlearn
+  right, keeping Unlearn's warning and confirmation.
+- Riding/boat offers show existing faction/race-appropriate images. Belongings
+  proposes drawing only populated recovery entries instead of rounded-up blank
+  slots; its tab still disappears after the last take, returning to Claim Stone.
+- Chests show four player-inventory rows, smaller shelves six, furnaces five;
+  more rows scroll. Furnaces return to Input, Fuel/fire, process arrow, Output;
+  the longer arrow retains existing animation semantics, no new update cadence.
+  Creative uses the same slot dimensions as inventory and four inventory rows.
+
+The [BACKLOG](../../BACKLOG.md#ui-review-follow-ups-2026-10-26) holds the separate
+Shipwright venue idea and the 10,000-container recovery stress investigation.
+Neither a building choice nor a limit/paging mechanism is decided here.
+
+Validation: 69 primary canvases plus 29 additional states rendered; affected
+families visually inspected. Thirty browser assertions cover geometry, slot
+counts, scrolling, icons, navigation, original capture resolutions and page
+widths. Two corrected states were re-rendered after the independent review:
+Swiftness uses its valid existing short-time caption, and an empty recovery
+store returns to the management tab. Existing client screenshots remain frozen;
+there is no new Luanti runtime acceptance claim. Revisions 01 and 02 remain
+archived separately.
