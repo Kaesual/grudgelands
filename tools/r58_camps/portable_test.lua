@@ -367,7 +367,7 @@ do
 		check(pvp.gate_turns(row) == (row.faction == "accord" and 0 or 2), "K " .. row.key .. " turns")
 	end
 	local x, z = rot(catalog.LIFT.mining_camp.x, catalog.LIFT.mining_camp.z, 2)
-	check(x == 0 and z == -catalog.LIFT.mining_camp.z, "K a Throng camp's lift turns with it")
+	check(x == -catalog.LIFT.mining_camp.x and z == -catalog.LIFT.mining_camp.z, "K a Throng camp's lift turns with it")
 end
 
 print(("R58 CAMPS PORTABLE PASS checks=%d (%.1f s)"):format(checks, os.clock() - t0))

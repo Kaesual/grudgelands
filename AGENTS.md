@@ -12,7 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.62.0, Round 62 "The front 41–60 and the main
+**Current state:** 0.63.0, Round 63 mining-camp redesign, **not pushed**.
+Local Luanti is synced; the user authorized committing all changes on
+2026-10-26, explicitly without pushing ([plan](docs/planning/round63-plan.md)).
+Full GUI acceptance is not recorded. Map reset joins the planned deployment;
+production remains 0.55.1. Previous: 0.62.0, Round 62 "The front 41–60 and the main
 line's story layer" (**map reset**, no step;
 [completion](docs/planning/round62-plan.md#completion-2026-10-25)): the
 last round of the quest rework, which is now complete for levels 11–60;

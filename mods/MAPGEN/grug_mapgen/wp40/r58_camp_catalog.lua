@@ -76,9 +76,9 @@ end
 
 -- The lift node's cell per composition kind (local, unturned, y = 1).
 M.LIFT = {
-	mining_camp = {x = 0, z = 6},
-	pvp_camp_low = {x = 8, z = 4},
-	pvp_camp_high = {x = 9, z = 5},
+	mining_camp = {x = -1, z = 7},
+	pvp_camp_low = {x = -1, z = 7},
+	pvp_camp_high = {x = -1, z = 7},
 }
 
 -- The room floors per tier depth (round58-plan.md §2: the tier's lowest y

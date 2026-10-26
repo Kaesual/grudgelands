@@ -1,5 +1,6 @@
 -- Real mature crop visuals, independent wild harvest and no farming lifecycle.
 return function(engine, directory, nodes, gathering)
+ dofile(directory.."/camp_nodes.lua")(engine, default, directory)
  local catalog=dofile(directory.."/wp40/world_content_catalog.lua")
  for _,row in ipairs(catalog.plants) do
   local def=nodes.crop_visual(row.key,4,default.node_sound_leaves_defaults(),"wild")

@@ -12,14 +12,8 @@
 --   turns      quarter turns about +Y (local +z to world +x per turn, as
 --              `wp13/parts.lua`); at 0 the gate faces local -z
 --
--- The mining camp: a fence ring with a gate on every side, the lift's
--- headframe on its timber deck (the lift node, `grug_mapgen:guild_lift`, at
--- `r58_camp_catalog.LIFT.mining_camp`), the foreman's tent in faction
--- cloth, the vendor's stall, ore heaps, an ore cart and the timber stack;
--- torches on the gate posts. The camp under construction: a palisade begun
--- on its gate side, a scaffolded watchtower, a hut frame, timber and
--- supplies and the command tent; no lift, no vendor, no shelter and no bed,
--- nothing an enemy could use.
+-- Mining camps use the shared Round 63 templates; construction sites keep
+-- their scaffold, unfinished palisade and command tent.
 --
 -- Every composition is square and centred on the anchor (-r..r), so a turn
 -- keeps its bounds. The anchor column stays open: solid support at (0,0,0)
@@ -36,17 +30,17 @@ local parts = dofile(wp13.."/parts.lua")
 local rot = dofile(wp13.."/plot_approach.lua").rot
 local palettes = dofile(wp13.."/palette.lua")
 local decor = dofile(wp13.."/decor_kit.lua")(wp13)
-local catalog = dofile(module_dir.."/r58_camp_catalog.lua")
+local camp_blueprint = dofile(module_dir.."/r63_camp_blueprint.lua")
 
-local SIZE = {mining_camp={r=11,h=9}, camp_construction={r=11,h=9}}
+local SIZE = {camp_construction={r=11,h=9}}
 local FACTION_OF = {dwarf="accord",human="accord",elf="accord",undead="throng",orc="throng",troll="throng"}
 -- Faction cloth, as the war camps' (grug_core.factions: Accord blue, Throng red).
 local CLOTH = {accord={main="wool:blue",trim="wool:white"},throng={main="wool:red",trim="wool:black"}}
 local LIFT_NODE = "grug_mapgen:guild_lift"
-local TABLE = "grug_decor:cottages_table"
 
 return function(options, profile)
 	local art = assert(profile and profile.art, "Round 58 camp art missing")
+	if art.kind=="mining_camp" then return camp_blueprint(options, profile, art.race) end
 	local size = assert(SIZE[art.kind], "Round 58 camp kind differs")
 	local cloth = assert(CLOTH[art.faction], "Round 58 camp faction differs")
 	local race = art.race
@@ -95,80 +89,10 @@ return function(options, profile)
 		for dx=-half+1,half-1 do fill(cx+dx,1,z2,cx+dx,half-math.abs(dx),z2,cloth.main) end
 		fill(cx-half+1,0,z1+1,cx+half-1,0,z2-1,p.node("rug"))
 	end
-	-- An ore cart along +x: two planks loaded with the race's rubble, the
-	-- wheels on its -z side where the race has wheels (no lying log, so the
-	-- cart turns with the composition).
-	local function cart(x,z)
-		for u=0,1 do
-			put(x+u,1,z,p.node("floor")); put(x+u,2,z,p.node("rubble"))
-			parts.wall_prop(brush.buf,p,"wheel",x+u,1,z-1,0,0,1)
-		end
-	end
 
 	fill(-r,0,-r,r,0,r,p.node("ground"))
 	fill(-r,1,-r,r,height,r,"air")
-	if art.kind=="mining_camp" then
-		-- The ways: gate to gate in both directions, crossing at the anchor.
-		fill(-1,0,-r,1,0,r,p.node("path"))
-		fill(-r,0,-1,r,0,1,p.node("path"))
-		-- A fence ring with a three-wide gate on every side, its posts lit.
-		for z=-r,r do for x=-r,r do
-			if math.max(math.abs(x),math.abs(z))==r and math.abs(x)>1 and math.abs(z)>1 then
-				put(x,1,z,p.node("fence"))
-			end
-		end end
-		for _,q in ipairs({{-2,-r},{2,-r},{-2,r},{2,r},{-r,-2},{-r,2},{r,-2},{r,2}}) do
-			lamp(q[1],q[2],2)
-		end
-		record("fence",0,0,r,r,3,"fence")
-		-- The lift: a timber deck, the headframe's two posts and beam, the rope
-		-- over the lift node; the lift socket is the node's cell.
-		local lift=assert(catalog.LIFT.mining_camp)
-		local lx,lz=lift.x,lift.z
-		fill(lx-2,0,lz-1,lx+2,0,lz+1,p.node("floor"))
-		fill(lx-1,1,lz,lx-1,4,lz,p.node("post")); fill(lx+1,1,lz,lx+1,4,lz,p.node("post"))
-		fill(lx-1,5,lz,lx+1,5,lz,p.node("beam"))
-		fill(lx,2,lz,lx,4,lz,p.maybe("rope") or p.node("fence"))
-		-- param2 0: its front toward the gate (4dir, turned with the camp)
-		put(lx,1,lz,LIFT_NODE,0)
-		record("lift headframe",lx,lz,2,1,5,"lift")
-		-- The foreman's tent (west) with the foreman at its door.
-		tent("foreman's tent",-7,3,7,2,"foreman")
-		put(-8,1,6,p.node("storage")); put(-6,1,6,TABLE)
-		-- The vendor's stall (east): four posts, a slab roof, a counter.
-		for _,q in ipairs({{5,-6},{9,-6},{5,-2},{9,-2}}) do fill(q[1],1,q[2],q[1],3,q[2],p.node("post")) end
-		fill(5,4,-6,9,4,-2,p.node("roof_slab"))
-		put(5,1,-5,p.node("storage")); put(5,1,-4,TABLE); put(5,1,-3,p.node("storage"))
-		record("vendor's stall",7,-4,2,2,4,"stall")
-		decor.piece(brush,"stores",8,-8,0)
-		-- The work: ore heaps by the lift and the gate, the cart, timber.
-		cart(3,7)
-		decor.piece(brush,"ore_heap",-4,9,0)
-		decor.piece(brush,"ore_heap",7,8,0)
-		decor.piece(brush,"ore_heap",-6,-6,0)
-		decor.piece(brush,"woodpile",-9,-9,0,3)
-		lamp(-6,-3,2); lamp(4,4,2)
-		-- Sockets (the camp socket contract, settlements.md "Mining camps").
-		socket("lift","lift",lx,lz,0,-1)
-		socket("quest_foreman","quest",-7,2,0,-1)
-		socket("vendor_camp","vendor",6,-4,-1,0,{kind="camp"})
-		socket("gate_west","guard_post",-2,-r+1,1,0,{tags={"gate"}})
-		socket("gate_east","guard_post",2,-r+1,-1,0,{tags={"gate"}})
-		if art.contested then
-			socket("yard_west","guard_post",-4,-2,0,-1,{tags={"camp"}})
-			socket("yard_east","guard_post",4,2,0,-1,{tags={"camp"}})
-		end
-		-- Round 60 (lane BANDQUESTS): the held load, a town place (role
-		-- `quest_place`, quests.md "Town places") on the open loading ground
-		-- between the stall and the ore heap, away from the lift, the vendor
-		-- and the guard posts, with room for a second object two nodes
-		-- beside it. Every mining camp has it; Frostbarrow's is named by a
-		-- quest (A3, story_accord_03) and since Round 61 four band 31-40
-		-- camps' (Ashenward, Bannerbreak, Blackwind, Thunderroot). Nobody
-		-- stands on a quest_place socket and it writes no cell, so an unused
-		-- one is nothing.
-		socket("held_load","quest_place",8,4,-1,0)
-	else
+	do
 		-- Trampled ground from the gate to the command tent.
 		fill(-1,0,-r,1,0,3,p.node("rubble"))
 		-- The palisade begun on the gate side and stopped halfway along the

@@ -96,6 +96,10 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.63.0** gives the 36 mining camps fortified timber walls, canvas tents,
+tall mining headframes and faction banners, with matching inventory icons.
+It needs a map reset and awaits the local playtest.
+
 **0.62.0** reworks the quests of the front, levels 41–60: the hosts and
 the capitals' envoys offer their Battlegrounds work from its level, far
 fewer of them hunts, with new departures, a Throng island bounty and
@@ -386,7 +390,7 @@ investigations and delivery records.
 
 | Area | Design documents |
 |------|------------------|
-| World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns and capitals; [story](docs/design/story.md): factions and the campaign. |
+| World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns, capitals and fortified mining camps; [story](docs/design/story.md): factions and the campaign. |
 | Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit; [Miner's Guild](docs/design/miners_guild.md): mining camps, lifts, reputation and the guild's goods. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags, crafting stations and the approved UI presentation rules; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |

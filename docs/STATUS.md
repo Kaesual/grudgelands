@@ -1,6 +1,18 @@
 # Project status
 
-Updated 2026-10-25. This is the delivery pointer, not another game specification.
+Updated 2026-10-26. This is the delivery pointer, not another game specification.
+
+**0.63.0 / Round 63 is the local playtest candidate, not pushed**: the
+approved mining-camp redesign and faction heraldry ([plan and GUI checklist](planning/round63-plan.md)).
+After the first local playtest and its art correction, the user authorized
+**committing all changes, without pushing** (2026-10-26), superseding the
+earlier no-commit hold. Local Luanti is synced; technical gates and
+independent review pass, including the 304-seed fleet. The first GUI check
+found undersized animated meshes; the compatible scale/transparency art fix
+is implemented and locally synced (details in the Round 63 plan). GUI
+acceptance is pending.
+Map reset, no migration; joins the planned
+production reset. Production is still **0.55.1** (user, 2026-10-26).
 
 The class rework ([delivery plan](planning/class-redesign/delivery-plan.md),
 planned 2026-10-12 to 2026-10-20 in the

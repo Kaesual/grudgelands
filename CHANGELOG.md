@@ -12,6 +12,18 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.63.0 — fortified mining outposts and faction banners (2026-10-26)
+
+**Map reset** needed: all 36 completed mining camps use new templates and
+relocated lift columns. Underground rooms follow their camp's lift. This
+joins the already planned production map reset; no migration step.
+
+- Canvas tents in muted faction colours, timber walls on stone plinths,
+  a framed entrance and the capital guild houses' tall mining headframe.
+- Attached banners for The Accord and The Throng, with matching heraldry
+  in the inventory header. The larger war camps keep their watchtowers.
+- Camp captains, guards, foremen, vendors and quest places keep their roles.
+
 ## 0.62.0 — the front 41–60, the main line's story and bigger bags (2026-10-25)
 
 **Map reset** needed: new quest places on the Battlegrounds, changed quest

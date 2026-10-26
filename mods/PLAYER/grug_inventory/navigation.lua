@@ -57,6 +57,9 @@ function grug_inventory.navigation(player, context, selected, width, layout)
     context.grug_ui_header_h = layout.height
     local esc, accent = core.formspec_escape, grug_core.ui.colors.accent
     local faction = grug_factions and grug_factions.get_faction and grug_factions.get_faction(player)
+    local emblem = (faction == "accord" or faction == "throng")
+        and ("grug_inventory_faction_" .. faction .. ".png")
+        or ("grug_ui_icon_emblem.png^[multiply:" .. accent)
     local faction_name = faction and grug_factions.display_name and grug_factions.display_name(faction) or ""
     local text_scale = grug_core.ui.text_scale(player)
     local level = grug_xp and grug_xp.get_level and grug_xp.get_level(player)
@@ -64,7 +67,7 @@ function grug_inventory.navigation(player, context, selected, width, layout)
     -- their six-pixel nine-slice corners in every state; cancel only the
     -- content inset so labels/icons stay in place when the state changes.
     local fs = {"real_coordinates[true]",
-        "image[0.28,0.17;0.46,0.55;" .. esc("grug_ui_icon_emblem.png^[multiply:" .. accent) .. "]",
+        "image[0.28,0.17;0.46,0.55;" .. esc(emblem) .. "]",
         grug_core.ui.title(0.95, 0.28, "GRUDGELANDS", text_scale),
         ("style_type[label;font_size=*%.3f]"):format(0.65 * text_scale),
         ("label[0.95,0.62;%s]"):format(esc(core.colorize(accent, string.upper(faction_name)))),

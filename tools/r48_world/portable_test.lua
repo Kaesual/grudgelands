@@ -43,6 +43,11 @@ do
 	local quiet = function() return {} end
 	local saved_default = rawget(_G, "default")
 	_G.default = setmetatable({}, {__index = function() return quiet end})
+	-- Camp panels read the registered race timber material.
+	engine.registered_nodes = {}
+	for _, palette in pairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp13/palette.lua").races) do
+		engine.registered_nodes[palette.floor] = {tiles = {"fixture_wood.png"}}
+	end
 	dofile(repo .. "/mods/MAPGEN/grug_mapgen/world_nodes.lua")(engine,
 		repo .. "/mods/MAPGEN/grug_mapgen", {crop_visual = function() return {} end},
 		{source_can_dig = function() return function() end end})

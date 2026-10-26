@@ -858,6 +858,11 @@ do
 	end
 	-- The wild crops and the wild Salt Crust source (grug_mapgen/world_nodes.lua).
 	local engine = permissive({register_node = function(name, def) registered_nodes[name] = def end})
+	-- Camp panels read the registered race timber material.
+	engine.registered_nodes = {}
+	for _, palette in pairs(real_dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp13/palette.lua").races) do
+		engine.registered_nodes[palette.floor] = {tiles = {"fixture_wood.png"}}
+	end
 	real_dofile(repo .. "/mods/MAPGEN/grug_mapgen/world_nodes.lua")(engine,
 		repo .. "/mods/MAPGEN/grug_mapgen", grug_nodes, {source_can_dig = function() return noop end})
 	local salt = registered_nodes["grug_mapgen:salt_crust_source"]
