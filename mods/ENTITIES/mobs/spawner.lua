@@ -36,7 +36,7 @@ local FORMNAME = "mobs:spawner_settings"
 local MAX_DISTANCE = 10
 local sessions = {} -- [player name] = spawner pos
 
-local function spawner_formspec(pos)
+local function spawner_formspec(pos, player)
 
 	local head = S("(mob name) (min light) (max light) (amount)"
 			.. " (player distance) (Y offset)")
@@ -45,9 +45,10 @@ local function spawner_formspec(pos)
 
 	-- GRUG PATCH: runtime theme seam, without a reverse load dependency.
 	local game = rawget(_G, "grug_core")
-	local frame = game and game.ui and game.ui.frame(12, 4.3, S("Mob Spawner")) or
+	local frame = game and game.ui and game.ui.frame(12, 4.3, S("Mob Spawner"), nil, player) or
 		"formspec_version[6]size[12,4.3]"
 	return frame
+		.. (game and game.ui and game.ui.input_background(0.4, 1.9, 11.2, 0.7, "text") or "")
 		.. "label[0.4,1.1;" .. core.formspec_escape(head) .. "]"
 		.. "field[0.4,1.9;11.2,0.7;text;" .. S("Command:")
 		.. ";" .. esc(core.get_meta(pos):get_string("command")) .. "]"
@@ -85,7 +86,7 @@ core.register_node("mobs:spawner", {
 			local at = vector.new(pos.x, pos.y, pos.z)
 
 			sessions[name] = at
-			core.show_formspec(name, FORMNAME, spawner_formspec(at))
+			core.show_formspec(name, FORMNAME, spawner_formspec(at, clicker))
 		end
 
 		return itemstack

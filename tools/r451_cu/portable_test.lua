@@ -486,8 +486,8 @@ end
 -- its name since Round 46 (lane ID): its label reads "dropdown:<items>".
 local function ingredient_labels(fs)
 	local out = {}
-	for icon, kind, text in fs:gmatch("item_image%[5%.6,[%d%.]+;0%.4,0%.4;([^%]]*)%]" ..
-			"(%a+)%[6%.1,[%d%.]+;(.-[^\\])%]") do
+	for icon, kind, text in fs:gmatch("item_image%[6%.8,[%d%.]+;0%.4,0%.4;([^%]]*)%]" ..
+			"(%a+)%[7%.3,[%d%.]+;(.-[^\\])%]") do
 		if kind == "label" then
 			out[#out + 1] = {icon = icon, label = text}
 		elseif kind == "dropdown" then
@@ -572,7 +572,7 @@ put(q, "main", 12, "t:stone_stone 3")
 open(q)
 select(q, soup.id)
 has(q.formspec, "Max: 3]", "Q setup: the maximum is 3")
-local X = 5.6
+local X = 6.8
 local row = {}
 -- Round 57 layout C: the bottom row above the job strip, left of the big
 -- button.
@@ -640,9 +640,9 @@ eq(q.sent, sent, "Q a forged + for a non-stackable output: no resend")
 ------------------------------------------------------------------------------
 local s = new_player("s")
 local fs = open(s)
-has(fs, "field[0.2,1.1;3,0.6;grug_craft_search;;]", "S the narrower field")
-has(fs, "button[3.3,1.1;0.5,0.6;grug_craft_clear;×]", "S × right of the field")
-has(fs, "button[3.9,1.1;1.3,0.6;grug_craft_find;Search]", "S then Search")
+has(fs, "field[0.2,1.1;4,0.6;grug_craft_search;;]", "S the wider search field")
+has(fs, "button[4.3,1.1;0.5,0.6;grug_craft_clear;×]", "S × right of the field")
+has(fs, "button[4.9,1.1;1.3,0.6;grug_craft_find;Search]", "S then Search")
 local pages_all = fs:match("Page 1 of (%d+)")
 click(s, {[FIELDS.next] = ">"})
 click(s, {[FIELDS.next] = ">"})

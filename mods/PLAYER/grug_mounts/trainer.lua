@@ -52,21 +52,23 @@ local NOTICE = {[true] = "#7ae08a", [false] = "#ff6b6b"}
 -- One row per tier: {id, name, level, state, price, previous}. Pure, so the
 -- portable fixture renders it without an engine. `service` is a SERVICES
 -- entry (default: the Riding Trainer).
-function grug_mounts.trainer_formspec(rows, notice, service)
+function grug_mounts.trainer_formspec(rows, notice, service, player)
 	service = service or SERVICES.riding_trainer
-	local fs = {grug_core.ui.frame(11, 7.6),
-		grug_core.ui.service_header(11, service.title, service.subtitle)}
+	local bottom = 2 + #rows * 1.1 + 0.65
+	local fs = {grug_core.ui.frame(12, bottom + 1.0, nil, nil, player),
+		grug_core.ui.service_header(12, service.title, service.subtitle)}
 	for index, row in ipairs(rows) do
 		local y = 2.0 + (index - 1) * 1.1
-		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.35, 10.5, 1.0)
+		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.35, 11.5, 1.0)
+		if row.icon then fs[#fs + 1] = ("image[0.55,%.2f;0.75,0.75;%s]"):format(y - 0.25, esc(row.icon)) end
 		local name = row.name
-		fs[#fs + 1] = ("label[0.55,%.2f;%s]"):format(y + 0.36,
+		fs[#fs + 1] = ("label[1.55,%.2f;%s]"):format(y + 0.36,
 			esc(core.colorize(grug_core.ui.colors.muted, "Level " .. row.level)))
 		local open = row.state == "buy" or row.state == "owned"
-		fs[#fs + 1] = ("label[0.55,%.2f;%s]"):format(y,
+		fs[#fs + 1] = ("label[1.55,%.2f;%s]"):format(y,
 			esc(open and name or core.colorize(GREY, name)))
 		if row.state == "buy" then
-			fs[#fs + 1] = ("button[7.9,%.2f;2.5,0.55;buy_%d;%s]"):format(y - 0.3,
+			fs[#fs + 1] = ("button[8.9,%.2f;2.5,0.55;buy_%d;%s]"):format(y - 0.3,
 				row.id, esc("Buy " .. row.price))
 		else
 			local text
@@ -77,15 +79,15 @@ function grug_mounts.trainer_formspec(rows, notice, service)
 			else
 				text = core.colorize(GREY, "Learn " .. row.previous .. " first")
 			end
-			fs[#fs + 1] = ("label[5.3,%.2f;%s]"):format(y, esc(text))
+			fs[#fs + 1] = ("label[6.0,%.2f;%s]"):format(y, esc(text))
 		end
 	end
 	if notice then
-		fs[#fs + 1] = ("label[0.4,6.25;%s]"):format(esc(core.colorize(
+		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(bottom - 0.5, esc(core.colorize(
 			NOTICE[notice.ok == true], notice.text)))
 	end
-	fs[#fs + 1] = "label[0.4,6.8;" .. esc(grug_mounts.QUICKBAR_TIP) .. "]"
-	fs[#fs + 1] = "button_exit[8.9,6.7;1.7,0.55;close;Close]"
+	fs[#fs + 1] = ("label[2.6,%.2f;%s]"):format(bottom + 0.28, esc(grug_mounts.QUICKBAR_TIP))
+	fs[#fs + 1] = ("button_exit[0.4,%.2f;1.7,0.55;close;Close]"):format(bottom)
 	return table.concat(fs)
 end
 
@@ -95,11 +97,12 @@ local function formspec(player, service, notice)
 		local tier = grug_mounts.TIERS[tier_id]
 		local state, price = grug_mounts.tier_state(player, tier_id)
 		local previous = grug_mounts.TIERS[service.tiers[index - 1] or 0]
+		local model = grug_mounts.model_for(player, tier_id)
 		rows[index] = {id = tier_id, name = tier.name, level = tier.level,
 			state = state, price = price and grug_money.format(price),
-			previous = previous and previous.name}
+			previous = previous and previous.name, icon = model and model.icon}
 	end
-	return grug_mounts.trainer_formspec(rows, notice, service)
+	return grug_mounts.trainer_formspec(rows, notice, service, player)
 end
 
 -- Opens the dialogue of the service the NPC's socket role names.

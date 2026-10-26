@@ -34,17 +34,37 @@ out of the prepend and explicitly requests the opaque variant.
   below it.
 - `button_style(name, role)` styles one existing field (`normal`, `selected`,
   `danger`). Names are single fields, not comma-separated selector lists.
-- `frame(w, h, title, opaque)` opens a version-6 real-coordinate form; optional
+- `frame(w, h, title, opaque, player)` opens a version-6 real-coordinate form; optional
   title at 0.4,0.45. It does not offset content or close a container.
+
+`readable_padding(player, w, h)` bounds oversized desktop geometry using native
+padding, emitted immediately after `size` by the optional fifth `player`
+argument of `frame`. At effective height `size.y / real_gui_scaling >= 1080`,
+the fitted unit is capped at `0.5555 * 96 * real_gui_scaling` pixels, matching
+Luanti's fixed-image reference size. It does **not** enable fixed-size forms;
+the client can still shrink a form after window resizing. Missing window data,
+small/medium screens and high-density or enlarged-GUI cases below the threshold
+keep their existing fitting. Reopening recomputes padding; no polling is added.
+Map uses the helper after its explicit zero-padding default and keeps its
+larger layout budget. A caller with explicit `position`/`anchor` (Quickbar)
+uses `frame` without the player, emits those headers, then calls
+`readable_padding`: Luanti parses these header elements in that order.
+
+`input_background(x, y, w, h, name)` draws a slate backing and scopes borderless
+styling to an existing native input. The input keeps its own name, focus,
+editing, submission and validation behavior. Luanti edit boxes have no styled
+fill color; disabling their native border also disables that native fill.
 
 No helper sends forms, schedules work, rewrites finished formspec strings,
 adds fields to transactions, or owns inventory lists. Existing mods keep
 validation, session identity, persistence, timers, animation and dirty-state
 comparison. Native inventory slots and scrollbars stay native.
 
-`grug_inventory/navigation.lua` renders the allowed sfinv pages as buttons
-(up to seven per row, four when GUI scaling exceeds 1.2 on windows narrower
-than 1500 pixels). Icons, text and an active underline replace filled tabs.
+`grug_inventory/navigation.lua` renders the allowed sfinv pages as text buttons
+with caption-weighted widths and an active underline. Admin Mail stays in the
+primary row. Creative has one primary entry and a separate category row,
+reserved on every tab while the player has that privilege. Full titles remain
+in tooltips; permissions are never replaced by hidden navigation.
 `navigation_layout(player, context, width, info)` returns the visible pages
 and required height; `navigation` optionally accepts that layout and returns
 the fragment and height. It keeps the rendered id mapping in its context and
@@ -61,7 +81,7 @@ the prior hook and the current page's handler. Native `button_exit` submits
 editable values too; stripping those values prevents accidental dropdown
 actions while preserving the same cleanup as Escape.
 
-The shared inventory body remains 13.5 by 13.673 units, with a compact 1.5-unit
+The shared inventory body is 20 by 13.5 units, with a compact 1.5-unit
 header plus 0.54 per additional navigation row. For the same window and
 permissions all non-map tabs share one outer frame. The header shows the
 emblem, faction, character name and level; its layout height is ephemeral
@@ -72,13 +92,20 @@ inherited container offset to legacy units: the engine multiplies that offset
 by legacy spacing (X: 5/4, Y: 15/13) instead of the real slot size, and also
 adds legacy padding (`guiFormSpecMenu.cpp`, `getElementBasePos` versus
 `getRealCoordinateBasePos`). A standalone legacy form must keep its own
-explicit coordinate contract. Full/short/station views still show
-seven/two/three rows and the original slot sizes.
+explicit coordinate contract. Full/short views show eight/two rows with native 1-unit slots and 1.25 pitch.
+The centered hotbar is shared across inventory tabs. Station callers can pass
+an optional fifth `visible_rows` argument: chests four, shelves six, furnaces
+five, Claim Stone management two and recovery three. Remaining bag contents
+scroll without changing list capacity or inventory routes.
 The map reserves the same header **inside** its responsive whole-window
 budget. `window_size(info, header_h)` optionally returns the remaining body;
 without the second argument it retains the whole-window result. The existing
-minimum-size floor remains. Its
-own session keeps a separate tab mapping; switching to an allowed inventory
+minimum-size floor remains. Two equal columns hold the map viewport and separate quest-list/detail panels.
+At 1× the undistorted map is centered within its viewport; enlarged zooms use
+the available viewport. Scroll factors and thumb sizes account for the actual
+image extent on each axis. Layer dropdown indices stay stable across quest
+selection; unchanged dropdown echoes do not clear that selection. The map
+session keeps a separate tab mapping; switching to an allowed inventory
 tab cancels pending map sends before sfinv displays the target. The deferred
 home reset cannot overwrite that target, and the existing shown-form backstop,
 quiet period, send gap and party-marker budget remain.

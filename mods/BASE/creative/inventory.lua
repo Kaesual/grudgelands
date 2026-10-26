@@ -162,18 +162,19 @@ function creative.register_tab(name, title, items)
 			-- Native lists, pagination, search and the inbox rings stay unchanged.
 			local theme = grug_core.ui
 			return sfinv.make_formspec(player, context,
-				"real_coordinates[true]" .. theme.heading(0.4, 0.4, title) ..
-				theme.panel(1.05, 0.8, 11.4, 5.2) ..
-				(inv.size == 0 and ("label[3,2;" .. esc(S("No items to show.")) .. "]") or "") ..
-				"list[detached:creative_" .. player_name .. ";main;1.3,1.0;8,4;" .. inv.start_i .. "]" ..
-				"field[0.4,6.3;3.5,0.65;creative_filter;;" .. esc(inv.filter) .. "]" ..
+				"real_coordinates[true]" .. theme.heading(4.9, 0.4, title) ..
+				theme.panel(4.78, 0.8, 10.44, 5.2) ..
+				(inv.size == 0 and ("label[4.9,1.3;" .. esc(S("No items to show.")) .. "]") or "") ..
+				"list[detached:creative_" .. player_name .. ";main;4.9,1.0;8,4;" .. inv.start_i .. "]" ..
+				theme.input_background(4.9, 6.3, 4.3, 0.65, "creative_filter") ..
+				"field[4.9,6.3;4.3,0.65;creative_filter;;" .. esc(inv.filter) .. "]" ..
 				"field_enter_after_edit[creative_filter;true]field_close_on_enter[creative_filter;false]" ..
-				"button[4,6.3;1.3,0.65;creative_search;" .. esc(S("Search")) .. "]" ..
-				"button[5.4,6.3;1.3,0.65;creative_clear;" .. esc(S("Reset")) .. "]" ..
-				"image[7.0,6.15;1,1;creative_trash_icon.png]list[detached:trash;main;7.0,6.15;1,1;]" ..
-				"button[8.7,6.3;0.7,0.65;creative_prev;<]" ..
-				"label[9.6,6.625;" .. pagenum .. " / " .. pagemax .. "]" ..
-				"button[12.1,6.3;0.7,0.65;creative_next;>]" ..
+				"button[9.3,6.3;1.5,0.65;creative_search;" .. esc(S("Search")) .. "]" ..
+				"button[10.9,6.3;1.5,0.65;creative_clear;" .. esc(S("Reset")) .. "]" ..
+				"image[14.0,6.15;1,1;creative_trash_icon.png]list[detached:trash;main;14.0,6.15;1,1;]" ..
+				"button[4.9,7.25;0.7,0.65;creative_prev;<]" ..
+				"label[9.4,7.575;" .. pagenum .. " / " .. pagemax .. "]" ..
+				"button[14.2,7.25;0.7,0.65;creative_next;>]" ..
 				"tooltip[creative_prev;" .. esc(S("Previous page")) .. "]" ..
 				"tooltip[creative_next;" .. esc(S("Next page")) .. "]" ..
 				"listring[current_player;main]listring[detached:creative_" .. player_name .. ";main]" ..

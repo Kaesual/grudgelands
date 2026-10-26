@@ -5,7 +5,7 @@
 local automatic = {}
 automatic.sizes = {
 	furnace = {src = 1, fuel = 1, dst = 4},
-	dual_furnace = {input = 2, fuel = 1, output = 2},
+	dual_furnace = {input = 2, fuel = 1, output = 4},
 }
 
 -- Seconds of flame per item in both furnaces; wood burns 15 s and leaves

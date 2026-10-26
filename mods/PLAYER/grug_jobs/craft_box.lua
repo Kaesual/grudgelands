@@ -363,7 +363,7 @@ end
 
 local function build(player, view)
 	local st, recipe, job = view.st, view.recipe, view.job
-	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
+	local fs = {}
 	if not recipe then
 		-- The overview fills the box above the strip.
 		fs[#fs + 1] = grug_jobs.professions_formspec(grug_jobs.profession_overview(player),
@@ -450,8 +450,7 @@ local function build(player, view)
 		local needed = line_count(text, W - SCROLLBAR_W) * DESCRIPTION_LINE + 0.15
 		local height = math.min(needed, limit - below - MIDDLE_Y)
 		if height >= DESCRIPTION_MIN then
-			fs[#fs + 1] = UI.panel(X, top, W, height) ..
-				("textarea[%s,%s;%s,%s;;;%s]"):format(n(X), n(top), n(W), n(height), esc(text))
+			fs[#fs + 1] = ("textarea[%s,%s;%s,%s;;;%s]"):format(n(X), n(top), n(W), n(height), esc(text))
 			y = top + height + 0.25
 		end
 	end
@@ -473,6 +472,7 @@ local function build(player, view)
 		y = wrapped_labels(fs, X, y, W, entry[1], entry[2], NOTE_STEP)
 	end
 	if stacks then
+		fs[#fs + 1] = UI.input_background(X + 2, quantity_y, 0.95, 0.6, F.qty)
 		-- Quantity [−][field][+] [Max], the big button right of it ("Quantity"
 		-- needs about 1.3 units at the web client's size).
 		fs[#fs + 1] = ("label[%s,%s;Quantity]button[%s,%s;0.55,0.6;%s;−]" ..

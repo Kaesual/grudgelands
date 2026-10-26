@@ -276,7 +276,12 @@ end
 
 local function button(fs, x, y, w, h, field, label, tooltip, bgcolor, chosen)
 	fs[#fs + 1] = grug_core.ui.button_style(field, chosen and "selected" or "normal")
-	if bgcolor then
+	if field:match("^faction_") or field:match("^race_") or field:match("^class_") then
+		fs[#fs + 1] = ("style[%s;bgimg=grug_ui_clear.png;bgcolor=white;content_offset=0,0]"):format(field)
+		if chosen then
+			fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,0.03;%s]"):format(x, y + h, w, grug_core.ui.colors.accent)
+		end
+	elseif bgcolor then
 		fs[#fs + 1] = ("style[%s;bgcolor=%s]"):format(field, bgcolor)
 	end
 	if chosen then fs[#fs + 1] = ("style[%s;font=bold]"):format(field) end
@@ -295,9 +300,9 @@ local function faction_tooltip(id)
 end
 
 local function create_button(fs, ready)
-	-- Two short lines, so a large font (a phone) still ends before the button.
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(SIDE_X + 3.7, CREATE_Y + 0.15,
-		esc(core.colorize(HINT_COLOUR, "This choice\nis final.")))
+	-- Keep the confirmation hint on one line beside the final action.
+	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(SIDE_X + 0.15, CREATE_Y + CREATE_H / 2,
+		esc(core.colorize(HINT_COLOUR, "This choice is final.")))
 	if ready then
 		button(fs, CREATE_X, CREATE_Y, CREATE_W, CREATE_H, "create_character",
 			"Create character", "Store faction, race, class and look for good " ..
@@ -325,10 +330,11 @@ local function draft_ready(draft)
 		grug_classes.registered_classes[draft.class or ""] ~= nil
 end
 
-local function create_formspec(draft)
+local function create_formspec(draft, player)
 	local fs = {
 		"formspec_version[6]",
 		("size[%s,%s]"):format(WIDTH, HEIGHT),
+		grug_core.ui.readable_padding(player, WIDTH, HEIGHT),
 		DARK_BACKGROUND,
 		grug_core.ui.title(0.4, 0.45, "Create your character"),
 		"style_type[label,textarea;font_size=*0.85]style_type[textarea;border=false]",
@@ -363,7 +369,7 @@ local function create_formspec(draft)
 
 	-- The race column with the chosen race's description under it.
 	local races = grug_classes.race_ids[draft.faction] or {}
-	fs[#fs + 1] = ("label[%.2f,2.2;Race]"):format(LEFT)
+	fs[#fs + 1] = grug_core.ui.heading(LEFT, 2.2, "RACE")
 	for index, id in ipairs(races) do
 		local def = grug_classes.registered_races[id]
 		button(fs, LEFT, ROW_Y + (index - 1) * 0.9, RACE_W, 0.8, "race_" .. id,
@@ -385,7 +391,7 @@ local function create_formspec(draft)
 	-- The class row, the chosen class's description in one line under it.
 	local classes = grug_classes.class_ids
 	local class_w = (RIGHT_EDGE - SIDE_X - (#classes - 1) * 0.2) / #classes
-	fs[#fs + 1] = ("label[%.2f,2.2;Class]"):format(SIDE_X)
+	fs[#fs + 1] = grug_core.ui.heading(SIDE_X, 2.2, "CLASS")
 	for index, id in ipairs(classes) do
 		local def = grug_classes.registered_classes[id]
 		button(fs, SIDE_X + (index - 1) * (class_w + 0.2), ROW_Y, class_w, 0.8,
@@ -448,7 +454,7 @@ current_step = function(player, session)
 			loading_formspec(status, status.failed)
 	end
 	if not session.preparation_only and not arrival_key(player) then
-		return "create", CREATE_FORM, create_formspec(session.draft)
+		return "create", CREATE_FORM, create_formspec(session.draft, player)
 	end
 	local failed = session.load_failed ~= nil or grug_core.starts_preload_failed()
 	return failed and "failed" or "waiting", LOADING_FORM,

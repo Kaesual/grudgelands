@@ -541,7 +541,7 @@ grug_inventory = {refresh = function() end}
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/inbox.lua")
 grug_inventory.GAME_VERSION = "0.48.0"
-grug_inventory.UI = {frame_w = 13.5, frame_h = 13.673}
+grug_inventory.UI = {frame_w = 20, frame_h = 13.5}
 grug_inventory.SCROLL_FIELDS = {short = "grug_inv_scroll_short"}
 grug_inventory.inventory_view = function() return "<inventory view>" end
 -- Round 50: the view's hotbar switch (tested by tools/r50_hotbar; the Write
@@ -1107,6 +1107,11 @@ do
 	formspecs.Alice.text = shown
 	-- To the admin through the window.
 	send_fields(alice, {grug_mail_tab_4 = true})
+	check(formspecs.Alice.text:find("label[10.20,1.95;", 1, true) and
+		formspecs.Alice.text:find("You have not written to the admin.", 1, true),
+		"D empty tickets start directly below their heading")
+	check(not formspecs.Alice.text:find(";tickets;", 1, true),
+		"D empty tickets do not render an empty list control")
 	local admin_send = button(alice, "admin_send")
 	send_fields(alice, {admin_topic = "2", admin_subject = "Lag", admin_body = "Slow.",
 		[admin_send] = "Send (free)"})
@@ -1114,6 +1119,8 @@ do
 		[admin_send] = "Send (free)"})
 	local own = M.tickets_of(grug_mail.tickets(), "Alice")
 	eq(#own, 1, "D a double click on Send (free) makes one ticket")
+	check(formspecs.Alice.text:find("table[10.20,1.70;9.30,4.00;tickets;", 1, true),
+		"D populated tickets retain their native selection table")
 	check(own[1] and own[1].topic == "Bug report" and own[1].mailbox == "Mailbox in Dur Brannoc",
 		"D the window sends a ticket with topic and mailbox")
 	send_fields(alice, {tickets = "CHG:1:1"})

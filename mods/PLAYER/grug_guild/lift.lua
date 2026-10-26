@@ -99,9 +99,9 @@ end
 
 local dialogs, serial = {}, 0
 
-local function form(found)
+local function form(found, player)
 	local count = #found.levels
-	local fs = {grug_core.ui.frame(10, 2.65 + 0.8 * count),
+	local fs = {grug_core.ui.frame(10, 2.65 + 0.8 * count, nil, nil, player),
 		grug_core.ui.service_header(10, grug_guild.catalog.UI_NAME .. " Lift", found.camp.label or found.camp.id)}
 	for index, entry in ipairs(found.levels) do
 		local y = 1.15 + 0.8 * index
@@ -130,7 +130,7 @@ function grug_guild.use_lift(player, pos)
 	serial = serial + 1
 	local formname = FORM_PREFIX .. serial
 	dialogs[name] = {formname = formname, camp = found.camp.id, pos = pos}
-	core.show_formspec(name, formname, form(found))
+	core.show_formspec(name, formname, form(found, player))
 end
 
 core.override_item(LIFT, {

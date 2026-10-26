@@ -190,6 +190,10 @@ core = {
 	show_formspec = function(_, _, form) shown[#shown + 1] = form end,
 	close_formspec = function() end,
 	chat_send_player = function(_, text) chat[#chat + 1] = text end,
+	explode_table_event = function(value)
+		local kind, index = value:match("^(%u+):(%d+):%d+$")
+		return {type = kind, row = tonumber(index)}
+	end,
 	explode_textlist_event = function(value)
 		local kind, index = value:match("^(%u+):(%d+)$")
 		return {type = kind, index = tonumber(index)}
@@ -602,9 +606,9 @@ do
 	eq(Q.marker_parts(states[EL]), "available", "C ... its status on its own")
 	check(select(2, Q.marker_parts(states[EL])), "C ... and its story part")
 	local form = dialogue(di, EL, "qs_story_landing")
-	has(form, Q.STORY_COLOR .. "Story", "C the dialog's Story category in the accent")
-	has(form, "#b8b8b8Side quests", "C ... and the side quests' header")
-	has(form, Q.STATUS_COLORS.available .. "  The Landing", "C a story quest keeps its status colour")
+	has(form, "0,Story,5,The Landing", "C the dialog Story header and framed available marker")
+	has(form, "0,Side quests,", "C ... and the neutral side quests header")
+	has(form, "5=grug_map_quest_story_available.png", "C a story quest keeps its available state in the marker")
 	-- A ready side quest at a mixed giver still shows.
 	check(Q.accept(di, "qs_crop_thieves", EL), "C a side quest accepted")
 	kill(di, "Barley Piglet", 8)
@@ -647,8 +651,8 @@ do
 	local ed = make_player("ed", "accord", 5)
 	local form = dialogue(ed, EL, "qs_armor")
 	has(form, "You will choose one reward:", "D the offer shows the choice")
-	has(form, "item_image[5.90,8.65;0.70,0.70;grug_gear:chest_cloth_patch]", "D ... the cloth robe as an icon")
-	has(form, "item_image[8.00,8.65;0.70,0.70;grug_gear:chest_metal_bronze]", "D ... the third, the chestplate")
+	has(form, "item_image[5.90,7.55;0.70,0.70;grug_gear:chest_cloth_patch]", "D ... the cloth robe as an icon")
+	has(form, "item_image[8.00,7.55;0.70,0.70;grug_gear:chest_metal_bronze]", "D ... the third, the chestplate")
 	has(form, "Item level 5", "D ... its tooltip names the reward's item level")
 	has(form, "of the Owl", "D ... and its fixed enchant")
 	-- Round 57 follow-up (the user): the enchants readable without hovering.
@@ -664,15 +668,15 @@ do
 	has(form, "Choose your reward:", "D the turn-in asks for the choice")
 	has(form, "Pick an item to see its enchantments above, or hover it.", "D ... with the hint before a pick")
 	lacks(form, "Chosen:", "D ... and no chosen reward yet")
-	has(form, "item_image_button[5.90,8.65;0.70,0.70;grug_gear:chest_cloth_patch;choice_1;]",
+	has(form, "item_image_button[5.90,7.55;0.70,0.70;grug_gear:chest_cloth_patch;choice_1;]",
 		"D ... selectable buttons")
 	has(form, "tooltip[choice_2;", "D ... each with its tooltip")
-	has(form, "button[11.1,10.55;2,0.55;turnin;Complete]", "D Complete below them")
+	has(form, "button[13.45,9.3;2,0.55;turnin;Complete]", "D Complete below them")
 	form = click(ed, {turnin = "Complete"})
 	has(form, "Choose your reward first.", "D Complete refused without a pick")
 	eq(Q.status(ed, "qs_armor"), "ready", "D ... the quest stays")
 	form = click(ed, {choice_2 = "2"})
-	has(form, "box[6.87,8.57;0.86,0.86;#7ee06a]", "D the picked choice is framed")
+	has(form, "box[6.87,7.47;0.86,0.86;#7ee06a]", "D the picked choice is framed")
 	has(form, "Chosen: Quick Light Jerkin (see above)", "D ... and named by its enchanted name")
 	has(form, "Chosen:\nQuick Light Jerkin\nItem level 5\nLeather\n", "D the picked stack's tooltip in the text")
 	has(form, "Prefix: +1 Dexterity (T1)\nUsable by:", "D ... with its enchant line")
@@ -682,7 +686,7 @@ do
 	form = click(ed, {turnin = "Complete"})
 	has(form, "Make room in your inventory or bags for the rewards.", "D a full inventory refuses")
 	eq(Q.status(ed, "qs_armor"), "ready", "D ... and keeps the quest")
-	has(form, "box[6.87,8.57;0.86,0.86;#7ee06a]", "D ... and the pick")
+	has(form, "box[6.87,7.47;0.86,0.86;#7ee06a]", "D ... and the pick")
 	slots[16] = ItemStack("")
 	click(ed, {turnin = "Complete"})
 	eq(Q.status(ed, "qs_armor"), "completed", "D completed with room for the reward")

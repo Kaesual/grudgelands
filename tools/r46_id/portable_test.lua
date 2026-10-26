@@ -600,7 +600,7 @@ eq(d[1] and d[1].selected, 3, "C the dropdown shows the choice")
 eq(d[2] and d[2].selected, 1, "C the other group stays Automatic")
 eq(max_of(p.formspec), 2, "C Max: 4 cassava make 2")
 eq(row_n(p.formspec, "Sweetroot Mash"), 2, "C the list's ×N follows the choice")
-has(p.formspec, "item_image[5.6,", "C the row keeps its icon")
+has(p.formspec, "item_image[6.8,", "C the row keeps its icon")
 check(content(p.formspec):find("0.4,0.4;t:cassava]dropdown[", 1, true) ~= nil,
 	"C the icon shows the chosen kind")
 -- Both groups on cassava: three per craft.

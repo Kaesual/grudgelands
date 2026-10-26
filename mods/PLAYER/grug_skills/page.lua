@@ -98,10 +98,9 @@ local function create(player)
 	rebuild(player)
 end
 
--- The row: the catalog on the hotbar's columns in a "Skills" box like the
--- Hotbar box (grug_inventory.LAYOUT), the hint beside the box's label. `y`
--- is the box's top, in the page's real coordinates; the box is the Hotbar
--- box's height (1.5) plus BAR_H for the scrollbar under the slots.
+-- The row: unlocked skills on the hotbar columns, with a heading and drag
+-- hint, directly below the tree. No surrounding panel or placeholder cells.
+-- The reserved row height also leaves room for the optional scrollbar.
 --
 -- The scroll position (Round 52 C13): the slots sit in a horizontal
 -- scroll_container as wide as the hotbar's eight; past eight skills a
@@ -117,7 +116,6 @@ local PITCH = 1.25 -- a list slot and its spacing in real coordinates
 local SCROLL_FACTOR = 0.125 -- real units per scrollbar unit: a slot is 10
 local SLOT_STEPS = PITCH / SCROLL_FACTOR
 local BAR_GAP, BAR_SIZE = 0.06, 0.24
-local BAR_H = 0.3 -- the room for the scrollbar under the slots
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
 
@@ -130,8 +128,7 @@ local function catalog_row(player, y, context)
 	local location = "detached:" .. core.formspec_escape(inv_name(player:get_player_name()))
 	local slots_y = y + layout.label_h
 	local fs = {
-		grug_inventory.area_box(layout.box_x, y, layout.box_w,
-			layout.slot_box_h + BAR_H, "Skills"),
+		grug_core.ui.heading(layout.x, y + layout.label_h / 2, "SKILLS"),
 		("style_type[label;font_size=*%.3f]label[%.3f,%.3f;%s]" ..
 			"style_type[label;font_size=]"):format(0.75 * grug_core.ui.text_scale(player), layout.x + HINT_DX,
 			y + layout.label_h / 2, core.formspec_escape(
@@ -151,7 +148,9 @@ local function catalog_row(player, y, context)
 	end
 	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,1;%s;horizontal;%.3f]"):format(
 		layout.x, slots_y, view_w, SCROLL_FIELD, SCROLL_FACTOR)
-	fs[#fs + 1] = ("list[%s;catalog;0,0;%d,1;0]"):format(location, math.max(visible, #rows))
+	if #rows > 0 then
+		fs[#fs + 1] = ("list[%s;catalog;0,0;%d,1;0]"):format(location, #rows)
+	end
 	fs[#fs + 1] = "scroll_container_end[]"
 	return table.concat(fs)
 end

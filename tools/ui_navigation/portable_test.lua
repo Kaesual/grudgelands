@@ -59,7 +59,10 @@ for _, y, _, h in player.fs:gmatch('button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);
 	assert(tonumber(y) + tonumber(h) < ctx.grug_ui_header_h, "navigation must fit above body")
 	buttons = buttons + 1
 end
-assert(buttons == 13)
+assert(buttons == 13, "eight regular pages and five creative categories retain stable IDs")
+assert(player.fs:find(";grug_ui_creative;Creative]", 1, true), "Creative primary entry has its own style target")
+assert(player.fs:find(";Creative]", 1, true))
+assert(not player.fs:find("grug_ui_icon_inventory.png", 1, true), "primary navigation is text-only")
 local size = player.fs:match('size%[([^%]]+)%]')
 fields({grug_ui_tab_3 = "true"})
 assert(ctx.page == ids[3] and enter == 2 and leave == 2)
@@ -177,5 +180,44 @@ do
 	end
 	assert(grug_core.ui.prose(0, 0, 4, 1, "Message"):find("font_size=*1.000]", 1, true),
 		"existing default-font callers keep their previous reset")
+end
+-- The primary Creative entry shares permission checks with category routes.
+sfinv.set_page(player, ids[1])
+fields({grug_ui_creative = "true"})
+assert(ctx.page == "creative:9", "primary Creative opens its first category")
+sfinv.set_page(player, ids[1])
+creative = false
+local before = actions
+fields({grug_ui_creative = "true"})
+assert(ctx.page == ids[1] and actions == before, "revoked primary Creative click is consumed")
+-- A large-screen padding cap keeps slot/text proportions, without the
+-- fixed-size flag which would disable native fit when the client resizes.
+do
+	local saved_info = window_info
+	for _, case in ipairs({{1035,696,1}, {1600,900,1}, {1035,696,1.5},
+		{2560,1440,1.5}, {2560,1600,2}}) do
+		window_info = {size={x=case[1], y=case[2]}, real_gui_scaling=case[3]}
+		assert(grug_core.ui.readable_padding(player,20,15) == "",
+			"small, medium, GUI1.5 and density2 windows keep native sizing")
+	end
+	window_info = {size={x=2560,y=1440}, real_gui_scaling=1}
+	local padding = grug_core.ui.readable_padding(player,20,15)
+	local px, py = padding:match("padding%[([%d.]+),([%d.]+)%]")
+	px, py = tonumber(px), tonumber(py)
+	assert(px and py and px >= 0.05 and px < 0.5 and py >= 0.05 and py < 0.5)
+	local fit = math.min(2560*(1-2*px)/20,1440*(1-2*py)/15)
+	assert(math.abs(fit - 0.5555*96) < 0.001, "WQHD fits the DPI-sized native slot")
+	-- The same padding at a smaller client size still permits fitting.
+	assert(math.min(1035*(1-2*px)/20,696*(1-2*py)/15) < fit)
+	local fs = grug_core.ui.frame(20,15,"Title",true,player)
+	assert(fs:find("size[20.000,15.000]" .. padding .. "no_prepend[]",1,true),
+		"padding precedes no_prepend/content as the native parser requires")
+	assert(not fs:find(",true]",1,true), "the frame must not lock native resizing")
+	window_info = nil
+	assert(grug_core.ui.readable_padding(player,20,15) == "")
+	assert(grug_core.ui.readable_padding(nil,20,15) == "")
+	window_info = {size={x=2560,y=1440}}
+	assert(grug_core.ui.readable_padding(player,20,15) == "")
+	window_info = saved_info
 end
 print('UI NAVIGATION PASS: lifecycle, suspension, revoked/stale input, geometry and scrollbar sends')

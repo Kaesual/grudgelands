@@ -19,7 +19,7 @@ function default.chest.get_chest_formspec(pos, player, context)
 		"listring[nodemeta:" .. spos .. ";main]" ..
 		"listring[current_player;grug_inbox]" ..
 		"listring[current_player;main]",
-		bottom, context)
+		bottom, context, 4)
 end
 
 function default.chest.chest_lid_obstructed(pos)

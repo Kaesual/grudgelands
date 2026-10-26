@@ -552,7 +552,7 @@ do
 		local bx, by, bw, bh = content:match(
 			"hypertext%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);;")
 		bx, by, bw, bh = tonumber(bx), tonumber(by), tonumber(bw), tonumber(bh)
-		check(bx and bx >= 0 and bx + bw <= 13.5 and by + bh <= 13.673,
+		check(bx and bx >= 0 and bx + bw <= 20 and by + bh <= 13.5,
 			"R Help Sound: the explanatory body stays inside the shared frame")
 		local count, previous_bottom = 0, 0
 		for x, y, w, h, kind in content:gmatch(
@@ -560,7 +560,7 @@ do
 			x, y, w, h = tonumber(x), tonumber(y), tonumber(w), tonumber(h)
 			count = count + 1
 			check(by and y >= previous_bottom and y + h < by and
-				x >= 0 and x + w <= 13.5 and w > 0 and h > 0,
+				x >= 0 and x + w <= 20 and w > 0 and h > 0,
 				"R Help Sound: " .. kind .. " dropdown fits above text without row overlap")
 			local cy = tonumber(content:match(
 				"checkbox%[[%d.]+,([%d.]+);grug_ambience_" .. kind .. ";"))

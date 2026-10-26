@@ -262,7 +262,7 @@ local function last_spec(name)
 	end
 end
 
--- The trainer window's own checks: one button row, Close on the right, the
+-- The trainer window's own checks: one button row, Close on the left, the
 -- greeting on top, the status line below it.
 local function trainer_check(player, profession, label, expect)
 	local entry = last_spec(player:get_player_name())
@@ -277,10 +277,10 @@ local function trainer_check(player, profession, label, expect)
 	local close = form.buttons[#form.buttons]
 	eq(close and close.name, "grug_jobs_close", label .. ": Close is the last button")
 	for _, b in ipairs(form.buttons) do
-		check(b == close or b.x + b.w <= close.x, label .. ": " .. b.name .. " left of Close")
+		check(b == close or b.x >= close.x + close.w, label .. ": " .. b.name .. " right of Close")
 	end
-	check(close and math.abs(close.x + close.w - (form.W - 0.4)) < 0.001,
-		label .. ": Close sits at the right edge")
+	check(close and math.abs(close.x - 0.4) < 0.001,
+		label .. ": Close sits at the left edge")
 	check(close and math.abs(close.y + close.h - (form.H - 0.4)) < 0.001,
 		label .. ": the row sits at the bottom")
 	for _, l in ipairs(form.labels) do
@@ -482,7 +482,7 @@ for _, items in ipairs({{}, full_page}) do
 	for _, other in ipairs({{trainer, "teaching trainer"}, {station, "station"}}) do
 		local plain = repair_form(other[1], items, other[2] .. tag)
 		check(line_ys(plain, grug_jobs.GREETINGS.mender)[1] == false, other[2] .. tag .. ": no greeting")
-		eq(plain.H, 10.85, other[2] .. tag .. ": the form keeps its height")
+		eq(plain.H, #items == 0 and 4.35 or 9.6, other[2] .. tag .. ": compact height follows visible rows")
 		eq(plain.labels[1].text, "Equipment repairs", other[2] .. tag .. ": the plain title")
 		check(find_label(plain, "All professions can repair your equipment for money.").y == 1.55,
 			other[2] .. tag .. ": the info line where it was")

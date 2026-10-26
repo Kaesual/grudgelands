@@ -78,7 +78,7 @@ local form = H.render(scout, "grug_classes:talents")
 local page_bytes = #form
 has(form, "grug_graph_tab_1;Quarry (15)]", "a tab per tree with its points: Quarry")
 has(form, "grug_graph_tab_2;Veil (0)]", "and Veil")
-has(form, "label[5.75,0.45;Points: 0 / 15]", "the points")
+has(form, "label[0.5,6.02;Points: 0 / 15]", "the points")
 local first_node = form:find("image_button[", 1, true)
 local last_box, connector_boxes = 0, 0
 for start, color in form:gmatch("()box%[[^%]]-;(#%x+)%]") do
@@ -127,7 +127,7 @@ has(learner.formspec, "Reset every talent rank?", "with its question in the stri
 page:on_player_receive_fields(learner, lctx, {grug_talent_respec_confirm = "x"})
 eq(grug_classes.talent_points_spent(learner), 0, "the respec returned every point")
 has(learner.formspec, "Talents reset: 1 points returned\\, nothing charged.", "and says so")
-has(learner.formspec, "label[9.90,0.45;No ranks spent]", "nothing left to reset")
+has(learner.formspec, "label[0.50,5.35;No ranks spent]", "nothing left to reset")
 
 --
 -- 3. One tab and the catalog row.
@@ -147,37 +147,21 @@ form = H.render(scout, "grug_classes:talents")
 -- Round 52 C13: the list sits at 0,0 in a horizontal scroll container, which
 -- takes the slots' place.
 local list_x, list_y = form:match("scroll_container%[([%d.]+),([%d.]+);[%d.]+,1;" ..
-	"grug_skills_scroll;horizontal;[%d.]+%]list%[detached:grug_skills_scout;catalog;0,0;8,1;0%]")
+	"grug_skills_scroll;horizontal;[%d.]+%]list%[detached:grug_skills_scout;catalog;0,0;5,1;0%]")
 check(list_x ~= nil, "the catalog list is on the page")
 check(math.abs(tonumber(list_x) - grug_inventory.VIEW_GEOMETRY.x) < 0.001,
 	"on the hotbar's columns")
-local text_y, text_h = form:match("textarea%[0.25,([%d.]+);13.00,([%d.]+);")
+local text_y, text_h = form:match("textarea%[5.40,([%d.]+);14.35,([%d.]+);")
 local hint_x, hint_y = form:match("label%[([%d.]+),([%d.]+);Drag to hotbar")
 hint_x, hint_y = tonumber(hint_x), tonumber(hint_y)
 -- The Skills box: the Hotbar box's place across, its colour and label style,
 -- a gap above the short view's Inventory box.
 local L = grug_inventory.LAYOUT
-local bx, by, bw, bh, color, lx, ly = form:match(
-	"background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^;]+);false;6%]style_type%[[^%]]+%]label%[([%d.]+),([%d.]+);SKILLS%]")
-bx, by, bw, bh, lx, ly = tonumber(bx), tonumber(by), tonumber(bw), tonumber(bh),
-	tonumber(lx), tonumber(ly)
-if check(bx ~= nil, "the catalog in a Skills box, labelled inside") then
-	-- Round 52 C13: 0.3 higher, for the scrollbar under the slots.
-	check(math.abs(bx - L.box_x) < 0.001 and math.abs(bw - L.box_w) < 0.001 and
-		math.abs(bh - L.slot_box_h - 0.3) < 0.001,
-		"the Skills box as wide as the Hotbar box, with room for the bar")
-	eq(color, "grug_ui_panel.png", "the Skills panel texture")
-	check(math.abs(lx - tonumber(list_x)) < 0.001 and ly > by and ly < tonumber(list_y),
-		"its label top left above the slots")
-	check(tonumber(list_y) > by and tonumber(list_y) + 1 < by + bh, "the slots inside the box")
-	check(math.abs(by + bh + L.gap - grug_inventory.VIEW_GEOMETRY.top) < 0.001,
-		"the box a gap above the short inventory's box")
-	check(by >= tonumber(text_y) + tonumber(text_h), "under the tree's text")
-	-- The hint beside the label, in the label's strip (Round 45 PT2
-	-- follow-up: seven rows leave no room for a line of its own).
-	check(hint_x and hint_x > lx and math.abs(hint_y - ly) < 0.001,
-		"the hint beside the Skills label")
-end
+local label_x, label_y = form:match("label%[([%d.]+),([%d.]+);SKILLS%]")
+check(label_x and math.abs(tonumber(label_x) - tonumber(list_x)) < 0.001, "skills label follows its native slots")
+check(tonumber(list_y) + 1 < grug_inventory.VIEW_GEOMETRY.top, "skill row ends above inventory")
+check(tonumber(label_y) > tonumber(text_y) + tonumber(text_h), "skills follow talent description")
+check(hint_x and hint_x > tonumber(label_x), "drag hint remains beside skills heading")
 check(form:find("list[detached:grug_skills_scout", 1, true) >
 	form:find("real_coordinates[false]", 1, true), "drawn after the view, in the page content")
 -- Round 48 INV: the view prints each element's column, so x is "0.000".

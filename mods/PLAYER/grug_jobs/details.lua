@@ -563,8 +563,8 @@ local function group_page(fs, player, view, page)
 end
 
 local function build(player, view)
-	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h),
-		("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))}
+	local fs = {
+		("style_type[label;font_size=*%.3f]"):format(0.9 * UI.text_scale(player))}
 	local page = current(view.st)
 	if page and page.kind == "group" then
 		group_page(fs, player, view, page)

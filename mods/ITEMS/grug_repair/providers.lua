@@ -90,55 +90,71 @@ local function esc(text) return core.formspec_escape(tostring(text)) end
 -- everything below moves down by the greeting's height. A teaching
 -- trainer's "Repair equipment" form keeps the plain title and shows no
 -- greeting.
-local GREETING_CHARS = math.floor(10.2 * 6.6)
 local function is_mender(provider)
 	return provider.kind == "trainer" and not grug_jobs.trainer_teaches(provider.profession)
 end
 
-local function form(session)
-	local quote = session.quote
+-- Shared content for standalone services and the trader's Repair tab. The
+-- caller retains the server-owned quote; this renderer cannot authorize repair.
+function grug_repair.quote_formspec(quote, page, width, top, footer, action_prefix)
+	action_prefix = action_prefix or ""
 	local pages = math.max(1, math.ceil(#quote.items / PAGE_SIZE))
-	session.page = math.max(1, math.min(pages, session.page))
-	local mender = is_mender(quote.provider)
-	local greeting = mender and grug_jobs.GREETINGS and grug_jobs.GREETINGS.mender
-	local fs = {"", grug_core.ui.service_header(11, mender and grug_jobs.MENDER_TITLE or
-		"Equipment repairs", "Restore your equipment")}
-	local dy = 0.65
-	if greeting then
-		for piece in (grug_inventory.wrap_text(greeting, GREETING_CHARS) .. "\n"):gmatch("(.-)\n") do
-			fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.9 + dy, esc(piece))
-			dy = dy + 0.42
-		end
-		dy = dy + 0.1
-	end
-	fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.9 + dy, esc(quote.provider.kind == "camp_vendor" and
-		"The camp vendor repairs your equipment for money." or
-		"All professions can repair your equipment for money."))
-	local first = (session.page - 1) * PAGE_SIZE + 1
+	page = math.max(1, math.min(pages, page or 1))
+	local fs = {}
+	local first = (page - 1) * PAGE_SIZE + 1
 	for i = first, math.min(#quote.items, first + PAGE_SIZE - 1) do
 		local row = quote.items[i]
-		local stack, y = row.expected, 1.6 + dy + (i - first) * 0.9
-		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.04, 10.5, 0.84)
+		local stack, y = row.expected, top + (i - first) * 0.75
 		local label = stack:get_description():match("^[^\n]+") or stack:get_name()
 		local percent = math.floor((65535 - stack:get_wear()) * 100 / 65535)
-		fs[#fs + 1] = ("item_image[0.4,%.2f;0.6,0.6;%s]"):format(y, esc(stack:get_name()))
-		fs[#fs + 1] = ("label[1.2,%.2f;%s]label[1.2,%.2f;%s]"):format(y + 0.2, esc(label), y + 0.57,
-			esc(core.colorize(grug_core.ui.colors.muted, "Durability: " .. percent .. "%")))
-		fs[#fs + 1] = ("button[7.8,%.2f;2.7,0.55;repair_%d;Repair %s]")
-			:format(y, i, esc(grug_money.format(row.price)))
+		fs[#fs + 1] = ("item_image[0.5,%.2f;0.6,0.6;%s]"):format(y, esc(stack:get_name()))
+		fs[#fs + 1] = ("tooltip[0.5,%.2f;0.6,0.6;%s]"):format(y, esc(stack:get_description()))
+		fs[#fs + 1] = ("label[1.3,%.2f;%s]"):format(y + 0.3, esc(label))
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(width - 5.8, y + 0.3,
+			esc("Durability " .. percent .. "%"))
+		fs[#fs + 1] = ("button[%.2f,%.2f;2.35,0.55;%srepair_%d;Repair %s]")
+			:format(width - 2.85, y, action_prefix, i, esc(grug_money.format(row.price)))
 	end
-	if #quote.items == 0 then
-		fs[#fs + 1] = ("label[0.4,%.2f;Nothing needs repair.]"):format(2 + dy)
+	if #quote.items == 0 then fs[#fs + 1] = ("label[0.5,%.2f;Nothing needs repair.]"):format(top + 0.3) end
+	fs[#fs + 1] = ("button[%.2f,%.2f;3.5,0.6;%sall;Repair all: %s]")
+		:format(width - 4, footer, action_prefix, esc(grug_money.format(quote.total)))
+	fs[#fs + 1] = ("button[%.2f,%.2f;0.7,0.6;previous;<]button[%.2f,%.2f;0.7,0.6;next;>]")
+		:format(width / 2 - 1.6, footer, width / 2 + 0.9, footer)
+	fs[#fs + 1] = ("label[%.2f,%.2f;%d / %d]"):format(width / 2 - 0.55, footer + 0.3, page, pages)
+	return table.concat(fs), page
+end
+
+local function form(session, player)
+	local quote = session.quote
+	local mender = is_mender(quote.provider)
+	local greeting = mender and grug_jobs.GREETINGS and grug_jobs.GREETINGS.mender
+	local width, top = 16, 2.2
+	local fs = {"", grug_core.ui.service_header(width, mender and grug_jobs.MENDER_TITLE or
+		"Equipment repairs", "Restore your equipment")}
+	local info_y = 1.55
+	if greeting then
+		for piece in (grug_inventory.wrap_text(greeting, 67) .. "\n"):gmatch("(.-)\n") do
+			fs[#fs + 1] = ("label[0.5,%.2f;%s]"):format(info_y, esc(piece))
+			info_y = info_y + 0.42
+		end
+		info_y = info_y + 0.1
 	end
-	local row_y = 9.05 + dy
-	fs[#fs + 1] = ("button[0.4,%.2f;3.4,0.7;all;Repair all: %s]")
-		:format(row_y, esc(grug_money.format(quote.total)))
-	fs[#fs + 1] = ("button[4,%.2f;0.7,0.7;previous;<]button[6.5,%.2f;0.7,0.7;next;>]")
-		:format(row_y, row_y)
-	fs[#fs + 1] = ("label[5,%.2f;%d / %d]"):format(row_y + 0.35, session.page, pages)
-	fs[#fs + 1] = ("button_exit[8.5,%.2f;2,0.7;close;Close]"):format(row_y)
-	fs[1] = grug_core.ui.frame(11, 10.2 + dy)
+	fs[#fs + 1] = ("label[0.5,%.2f;%s]"):format(info_y, esc(quote.provider.kind == "camp_vendor" and
+		"The camp vendor repairs your equipment for money." or "All professions can repair your equipment for money."))
+	top = info_y + 0.65
+	local footer = top + math.max(1, math.min(PAGE_SIZE, #quote.items)) * 0.75 + 0.4
+	local body
+	body, session.page = grug_repair.quote_formspec(quote, session.page, width, top, footer)
+	fs[#fs + 1] = body
+	fs[#fs + 1] = ("button_exit[0.5,%.2f;2,0.6;close;Close]"):format(footer)
+	fs[1] = grug_core.ui.frame(width, footer + 1.0, nil, nil, player)
 	return table.concat(fs)
+end
+
+-- The trader embeds the quote in its own session; all provider authorization
+-- still goes through the same authoritative camp socket validator.
+function grug_repair.camp_vendor_quote(player, settlement, socket)
+	return grug_repair.quote(player, camp_vendor_provider(settlement, socket))
 end
 
 function grug_repair.open(player, provider)
@@ -147,7 +163,7 @@ function grug_repair.open(player, provider)
 	serial = serial + 1
 	local session = {quote = quote, page = 1, formname = PREFIX .. serial}
 	sessions[player:get_player_name()] = session
-	core.show_formspec(player:get_player_name(), session.formname, form(session))
+	core.show_formspec(player:get_player_name(), session.formname, form(session, player))
 	return true
 end
 
@@ -183,7 +199,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		grug_repair.open(player, session.quote.provider)
 	elseif fields.next or fields.previous then
 		session.page = session.page + (fields.next and 1 or -1)
-		core.show_formspec(name, formname, form(session))
+		core.show_formspec(name, formname, form(session, player))
 	end
 	return true
 end)

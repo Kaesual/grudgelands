@@ -607,6 +607,13 @@ send(jan, {mail_admin_list = "CHG:1:1"})
 print(("bytes: Admin Mail inbox with a selected report %d"):format(#jan.formspec))
 send(jan, {mail_admin_new = "New admin letter"})
 print(("bytes: Admin Mail compose %d"):format(#jan.formspec))
+local compose_x, compose_y, compose_w, compose_h = jan.formspec:match(
+	"textarea%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);mail_admin_body;")
+check(compose_x and tonumber(compose_x) + tonumber(compose_w) < 10,
+	"UI compose editor occupies the left column")
+has(jan.formspec, "textarea[10.100,4.800;9.500,4.800;;;", "UI body preview occupies a separate right column")
+has(jan.formspec, "style[mail_admin_body;border=false", "UI editor has a scoped native input style")
+
 
 if failures > 0 then
 	error(("R48 ADMIN PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)

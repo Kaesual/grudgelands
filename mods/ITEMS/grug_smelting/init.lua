@@ -4,7 +4,7 @@
 --   alloys.lua   the `dualfurn` recipe registry: `grug_smelting.RECIPES`, the
 --                either-order matcher and the anti-loop read surface the
 --                §3.8 audit in `grug_traders` walks
---   node.lua     the ported dual furnace node pair (two material slots, two
+--   node.lua     the ported dual furnace node pair (two material slots, four
 --                output slots, one fuel slot, node-timer driven)
 --   recipes.lua  every registration: the five §3.2 cooking recipes, the five
 --                §3.3 alloys, the twelve §3.4 storage pack/unpack pairs and

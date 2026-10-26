@@ -133,7 +133,7 @@ end
 local function progress_images(x, y, view)
 	local progress = grug_inventory.furnace_progress
 	return progress.fire(x, y + 1.15, 0.65, 0.65, view.left, view.total, view.burning) ..
-		progress.arrow(x + 1.35, y + 0.3, 0.8, 0.8, view.done, view.time, view.cooking)
+		progress.arrow(x + 1.1, y + 0.3, 2.0, 0.7, view.done, view.time, view.cooking)
 end
 
 -- Built per viewer (0.49.1 ruling 6): the station in a box at the top, the
@@ -151,7 +151,7 @@ local function formspec(ctx, player)
 	local source = ctx.station == "furnace" and "src" or "input"
 	local output = ctx.station == "furnace" and "dst" or "output"
 	local width = ctx.station == "dual_furnace" and 2 or 1
-	local rows = ctx.station == "furnace" and 2 or 1
+	local rows = 2
 	local process = ctx.process
 	if not ctx.personal then
 		process = core.deserialize(core.get_meta(ctx.pos):get_string(
@@ -161,21 +161,21 @@ local function formspec(ctx, player)
 	local station = grug_inventory.STATION
 	local pitch, top = station.pitch, station.y
 	local function column(index) return station.x + index * pitch end
-	local lists_y = top + 1.55
-	local box, bottom = grug_inventory.station_box(title, 4.3)
+	local lists_y = top + 1.65
+	local box, bottom = grug_inventory.station_box(title, 3.95)
 	local UI = grug_core.ui
 	local content = box .. UI.heading(column(0), top + 0.2, mode) ..
 		("textarea[%.3f,%.3f;%.3f,0.8;;;%s]"):format(column(0), top + 0.45,
 			station.box_w - 0.25, core.formspec_escape(explanation)) ..
 		UI.heading(column(0), lists_y - 0.25, "Input") ..
 		UI.heading(column(3), lists_y - 0.25, "Fuel") ..
-		UI.heading(column(5), lists_y - 0.25, "Finished output") ..
+		UI.heading(column(6), lists_y - 0.25, "Finished output") ..
 		("list[%s;%s;%.3f,%.3f;%d,1;]"):format(location, source, column(0), lists_y, width) ..
 		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(location, column(3), lists_y) ..
-		("list[%s;%s;%.3f,%.3f;2,%d;]"):format(location, output, column(5), lists_y, rows) ..
+		("list[%s;%s;%.3f,%.3f;2,%d;]"):format(location, output, column(6), lists_y, rows) ..
 		ring(location, output) .. ring(location, source) .. ring(location, "fuel") ..
 		progress_images(column(3) + 0.15, lists_y, view)
-	local result = grug_inventory.station_formspec(player, content, bottom, ctx)
+	local result = grug_inventory.station_formspec(player, content, bottom, ctx, 5)
 	return result, not grug_inventory.furnace_progress.changed(ctx, result,
 		view.left, view.done)
 end
@@ -271,6 +271,8 @@ function workspaces.open(pos, player)
 	for list, size in pairs(sizes) do
 		ctx.inv:set_size(list, size)
 		if data.lists and data.lists[list] then ctx.inv:set_list(list, data.lists[list]) end
+		-- Growth preserves saved stacks; every restored dual furnace has four outputs.
+		if ctx.inv:get_size(list) < size then ctx.inv:set_size(list, size) end
 	end
 	viewers[name] = ctx
 	advance(ctx)

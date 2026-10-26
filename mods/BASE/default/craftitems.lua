@@ -7,10 +7,10 @@ local S = default.get_translator
 local esc = core.formspec_escape
 -- GRUG PATCH: the service theme is resolved at use time: default loads before
 -- grug_core. Keep the book's native tabs, fields, paging and save callbacks.
-local function book_frame()
+local function book_frame(player)
 	local game = rawget(_G, "grug_core")
-	if game and game.ui then return game.ui.frame(10, 11, S("Book")) end
-	return "formspec_version[6]size[10,11]"
+	if game and game.ui then return game.ui.frame(14, 10.6, S("Book"), nil, player) end
+	return "formspec_version[6]size[14,10.6]"
 end
 
 local function formspec_core(tab)
@@ -22,27 +22,28 @@ local function formspec_core(tab)
 end
 
 local function formspec_write(title, text)
-	return "field[0.4,1.95;9.2,0.65;title;" .. esc(S("Title:")) .. ";" ..
+	return grug_core.ui.input_background(0.4, 1.95, 13.2, 0.65, "title") ..
+		grug_core.ui.input_background(0.4, 3.1, 13.2, 6.1, "text") .. "field[0.4,1.95;13.2,0.65;title;" .. esc(S("Title:")) .. ";" ..
 			esc(title) .. "]" ..
-		"textarea[0.4,3.1;9.2,6.5;text;" .. esc(S("Contents:")) .. ";" ..
+		"textarea[0.4,3.1;13.2,6.1;text;" .. esc(S("Contents:")) .. ";" ..
 			esc(text) .. "]" ..
-		"button_exit[6.6,9.9;3,0.7;save;" .. esc(S("Save")) .. "]"
+		"button_exit[10.6,9.6;3,0.7;save;" .. esc(S("Save")) .. "]"
 end
 
 local function formspec_read(owner, title, string, text, page, page_max)
 	-- GRUG PATCH: the ">" button takes the focus at every send (0.45.1);
 	-- otherwise the engine focuses the read-only textarea, which eats the
 	-- inventory key, so the key could not close the book.
-	return "set_focus[book_next;true]" ..
+	return "box[0.4,3.1;13.2,6.1;#1b282c]style_type[textarea;border=false]set_focus[book_next;true]" ..
 		"label[0.4,2.55;" .. esc(S("by @1", owner)) .. "]" ..
 		"tablecolumns[color;text]" ..
 		"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
-		"table[0.4,1.65;9.2,0.6;title;#d4b77d," .. esc(title) .. "]" ..
-		"textarea[0.4,3.1;9.2,6.5;;;" ..
+		"table[0.4,1.65;13.2,0.6;title;#d4b77d," .. esc(title) .. "]" ..
+		"textarea[0.4,3.1;13.2,6.1;;;" ..
 			esc(string ~= "" and string or text) .. "]" ..
-		"button[2.5,9.9;0.8,0.7;book_prev;<]" ..
-		"label[3.6,10.25;" .. esc(S("Page @1 of @2", page, page_max)) .. "]" ..
-		"button[6.7,9.9;0.8,0.7;book_next;>]"
+		"button[4.5,9.6;0.8,0.7;book_prev;<]" ..
+		"label[5.6,9.95;" .. esc(S("Page @1 of @2", page, page_max)) .. "]" ..
+		"button[8.7,9.6;0.8,0.7;book_next;>]"
 end
 
 local function formspec_string(lpp, page, lines, string)
@@ -102,7 +103,7 @@ local function book_on_use(itemstack, user)
 		formspec = formspec_read(owner, title, string, text, page, page_max)
 	end
 
-	core.show_formspec(player_name, "default:book", book_frame() .. formspec)
+	core.show_formspec(player_name, "default:book", book_frame(user) .. formspec)
 	-- Store the wield index in case the user accidentally switches before the formspec is shown
 	book_writers[player_name] = {wield_index = user:get_wield_index()}
 	return itemstack
@@ -152,7 +153,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			return -- malicious data
 		end
 		tab_number = tab
-		local formspec = book_frame() .. formspec_core(tab) .. contents
+		local formspec = book_frame(player) .. formspec_core(tab) .. contents
 		core.show_formspec(player_name, "default:book", formspec)
 		return
 	end

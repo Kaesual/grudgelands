@@ -3,7 +3,7 @@
 -- wireframe v1's Crafting artboard, variants "enchant" and "upgrade"; Round
 -- 57 layout C), drawn into grug_jobs.CRAFT_BOX through register_craft_box,
 -- above ui.lua's job strip (the bar, the stop button, View Queue). A learned
--- primary area shows the buttons "Enchant an item" and "Upgrade an item"
+-- primary area shows the buttons "Enchant" and "Upgrade"
 -- below its list; the jobs are operation_jobs.lua's, queued while a job runs
 -- (Round 57: the item leaves the slot with the materials, so the next one
 -- can go in).
@@ -214,7 +214,7 @@ end
 
 local function enchant_build(player, view)
 	local st = view.st
-	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
+	local fs = {}
 	local profession = area_profession(player, view.tab, "enchant")
 	if not profession then return no_area(fs) end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(TITLE_Y),
@@ -363,7 +363,7 @@ end
 
 local function upgrade_build(player, view)
 	local st = view.st
-	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
+	local fs = {}
 	local profession = area_profession(player, view.tab, "upgrade")
 	if not profession then return no_area(fs) end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(TITLE_Y),
@@ -396,10 +396,11 @@ local function upgrade_build(player, view)
 		local shown = levels and math.min(levels, v.gap) or 1
 		-- The bottom row: +N levels [field] [Max], the big button right of it.
 		local row_y = view.bottom - ACTION.h + (ACTION.h - 0.6) / 2
+		fs[#fs + 1] = UI.input_background(X + 2.7, row_y, 1, 0.6, F.levels)
 		fs[#fs + 1] = ("label[%s,%s;+N levels]field[%s,%s;1,0.6;%s;;%s]" ..
 			"field_close_on_enter[%s;false]button[%s,%s;1,0.6;%s;Max]"):format(
-			n(X), n(row_y + 0.3), n(X + 1.35), n(row_y), F.levels, esc(st.levels or "1"),
-			F.levels, n(X + 2.5), n(row_y), F.max)
+			n(X), n(row_y + 0.3), n(X + 2.7), n(row_y), F.levels, esc(st.levels or "1"),
+			F.levels, n(X + 3.85), n(row_y), F.max)
 		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X), n(y), esc("Result: item level " ..
 			(v.ilvl + shown) .. (v.ilvl + shown == v.cap and " (cap)" or "")))
 		y = y + 0.25
@@ -514,7 +515,7 @@ end
 
 grug_jobs.register_craft_box("enchant", {build = remember_tab(enchant_build),
 	fields = enchant_fields,
-	button = {label = "Enchant an item", shown = shown_for("enchant")}})
+	button = {label = "Enchant", tooltip = "Enchant an item", shown = shown_for("enchant")}})
 grug_jobs.register_craft_box("upgrade", {build = remember_tab(upgrade_build),
 	fields = upgrade_fields,
-	button = {label = "Upgrade an item", shown = shown_for("upgrade")}})
+	button = {label = "Upgrade", tooltip = "Upgrade an item", shown = shown_for("upgrade")}})

@@ -430,24 +430,26 @@ do
 	eq(Q.open_npc(player, entity), true, "Q the dialog opens")
 	local form = shown or ""
 	check(tonumber(form:match("size%[([%d.]+),")) == 16, "Q the dialog is 16 units wide")
-	local list_w = tonumber(form:match("textlist%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;quests;"))
+	local list_w = tonumber(form:match("table%[[%d.]+,[%d.]+;([%d.]+),[%d.]+;quests;"))
 	check(list_w and list_w >= 4.8, "Q the quest list is at least 4.8 units wide (got " .. tostring(list_w) .. ")")
-	local list = form:match("textlist%[(.-);true%]") or ""
+	local list = form:match("table%[[^;]+;[^;]+;quests;(.-);%d+%]") or ""
 	check(list ~= "" and not list:find("(available)", 1, true) and not list:find("Repeatable", 1, true),
 		"Q no status or [Repeatable] text in the list")
-	check(form:find(Q.STATUS_COLORS.available .. "Break Ranks", 1, true) ~= nil, "Q the available entry is coloured")
-	check(form:find(Q.STATUS_COLORS.ready .. "Bounty: Threads\\, Across", 1, true) ~= nil and
-		not form:find("(R)", 1, true), "Q the ready entry is coloured, without a repeatable mark")
+	check(form:find("1,Break Ranks", 1, true) ~= nil and
+		form:find("1=grug_map_quest_available.png", 1, true) ~= nil, "Q the available entry has its state icon")
+	check(form:find("2,Bounty: Threads\\, Across", 1, true) ~= nil and
+		form:find("2=grug_map_quest_ready.png", 1, true) ~= nil and
+		not form:find("(R)", 1, true), "Q the ready entry has its state icon, without a repeatable mark")
 	check(form:find("tooltip[quests;", 1, true) ~= nil, "Q the list has a tooltip")
-	check(form:find(Q.status_legend({"available", "ready"}), 1, true) ~= nil and
-		form:find(Q.status_legend({"active", "locked"}), 1, true) ~= nil,
-		"Q the dialog shows all four legend statuses in two lines")
+	for _, hint in ipairs({"Available: !", "Ready to complete: ?", "In progress: muted ?", "Locked: muted !"}) do
+		check(form:find(hint, 1, true) ~= nil, "Q the status tooltip explains " .. hint)
+	end
 	local description = form:match("(textarea%[[^%]]-;)")
 	check(description ~= nil and form:find("textarea%[[%d.]+,[%d.]+;[%d.]+,[%d.]+;;;") ~= nil,
 		"Q the description is a read-only textarea (no name)")
 	-- 0.45.1: the dialog opens on the first quest ready to complete (row 2
 	-- here), so it offers Complete, not row 1's Accept.
-	check(form:find("button[11.1,10.55;2,0.55;turnin;Complete]", 1, true) ~= nil and
+	check(form:find("button[13.45,9.3;2,0.55;turnin;Complete]", 1, true) ~= nil and
 		form:find("accept;Accept]", 1, true) == nil, "Q Complete for the preselected ready quest")
 
 	-- No textarea in our mods has a name (a named one is editable), except

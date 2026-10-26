@@ -345,7 +345,7 @@ local entity = {_grug_start = "dawnmere", _grug_socket = "hall_quest", object = 
 	is_valid = function() return true end, get_pos = function() return {x = 0, y = 0, z = 0} end}}
 shown = {}
 Q.open_npc(player, entity, 1)
-has(shown[1], grug_quests.STATUS_COLORS.available .. "Raid on the Bandit Camp", "offer list: the filled title")
+has(shown[1], "1,Raid on the Bandit Camp", "offer list: the filled title")
 has(shown[1], "Bandits hold a camp northeast from here.", "offer dialogue: the filled text")
 has(shown[1], "Rewards: 360 XP, 8 copper", "offer dialogue: the computed copper")
 check(Q.accept(player, "q1_camp"), "accept q1_camp")

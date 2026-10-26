@@ -62,17 +62,49 @@ function M.centre_scroll(view, position, zoom)
 		M.clamp_scroll(fy * 1000 * zoom - 500, zoom)
 end
 
+-- The map image keeps its aspect while its clipper uses the whole column.
+-- Scroll ranges stay normalized; only the conversion to visible units changes.
+function M.scroll_factor(image_extent, viewport_extent, zoom)
+	local limit = M.scroll_limit(zoom)
+	return limit > 0 and math.max(0, image_extent * zoom - viewport_extent) / limit or 0
+end
+
+local function geometry_scroll(value, old_zoom, new_zoom, image_extent, viewport_extent)
+	local offset = value * M.scroll_factor(image_extent, viewport_extent, old_zoom)
+	local origin = math.max(0, (viewport_extent - image_extent * old_zoom) / 2)
+	local fraction = (offset + viewport_extent / 2 - origin) / (image_extent * old_zoom)
+	local factor = M.scroll_factor(image_extent, viewport_extent, new_zoom)
+	return factor > 0 and M.clamp_scroll((fraction * image_extent * new_zoom -
+		viewport_extent / 2) / factor, new_zoom) or 0
+end
+
+local function geometry_centre(fraction, zoom, image_extent, viewport_extent)
+	local factor = M.scroll_factor(image_extent, viewport_extent, zoom)
+	return factor > 0 and M.clamp_scroll((fraction * image_extent * zoom -
+		viewport_extent / 2) / factor, zoom) or 0
+end
+
 -- The map window's view {zoom, scroll_x, scroll_y, follow} (0.45.1, the
 -- user's soft lock). While `follow` is set (every opening, and again at
 -- each return to 1x) every zoom step centres on the player's position, in
 -- and out alike, recomputed each time so edges cause no drift. The player's
 -- own scrolling at 2x-8x clears it; from then on a zoom step keeps the
 -- current centre of the view.
-function M.zoom_view(state, zoom_in, view, position)
+function M.zoom_view(state, zoom_in, view, position, geometry)
 	local old = state.zoom or 1
 	local zoom = M.step_zoom(old, zoom_in)
 	if zoom == 1 then state.follow = true end
-	if state.follow and position then
+	if geometry and geometry.viewport_w then
+		if state.follow and position then
+			state.scroll_x = geometry_centre((position.x - view.min_x) / (view.max_x - view.min_x),
+				zoom, geometry.map_w, geometry.viewport_w)
+			state.scroll_y = geometry_centre((view.max_z - position.z) / (view.max_z - view.min_z),
+				zoom, geometry.map_h, geometry.viewport_h)
+		else
+			state.scroll_x = geometry_scroll(state.scroll_x or 0, old, zoom, geometry.map_w, geometry.viewport_w)
+			state.scroll_y = geometry_scroll(state.scroll_y or 0, old, zoom, geometry.map_h, geometry.viewport_h)
+		end
+	elseif state.follow and position then
 		state.scroll_x, state.scroll_y = M.centre_scroll(view, position, zoom)
 	else
 		state.scroll_x = M.zoom_scroll(state.scroll_x or 0, old, zoom)
@@ -87,7 +119,7 @@ end
 -- zoom of the form the values come from (a zoom step may still be owed).
 -- A CHG at 2x-8x ends the soft lock; while it holds the server owns the
 -- view and the echoed values are ignored. True when a bar was moved.
-function M.scroll_event(state, raw_x, raw_y, shown_zoom)
+function M.scroll_event(state, raw_x, raw_y, shown_zoom, geometry)
 	local values, moved = {}, false
 	for axis, raw in pairs({x = raw_x, y = raw_y}) do
 		local kind, value
@@ -103,7 +135,13 @@ function M.scroll_event(state, raw_x, raw_y, shown_zoom)
 	local shown = shown_zoom or zoom
 	for axis, value in pairs(values) do
 		value = M.clamp_scroll(value, shown)
-		state["scroll_" .. axis] = shown == zoom and value or M.zoom_scroll(value, shown, zoom)
+		if geometry and geometry.viewport_w and shown ~= zoom then
+			local extent, viewport = geometry.map_w, geometry.viewport_w
+			if axis == "y" then extent, viewport = geometry.map_h, geometry.viewport_h end
+			state["scroll_" .. axis] = geometry_scroll(value, shown, zoom, extent, viewport)
+		else
+			state["scroll_" .. axis] = shown == zoom and value or M.zoom_scroll(value, shown, zoom)
+		end
 	end
 	return moved
 end

@@ -116,6 +116,51 @@ local function show(player, kind)
   local ctx=sfinv.get_or_create_context(player)
   sfinv.pages["grug_mail:admin"]:on_player_receive_fields(player,ctx,{mail_admin_new="true"})
   form(sfinv.get_formspec(player,ctx))
+ elseif kind == "inventory_full" then
+  -- Extra-only scenario: use the shipped bag capacity and resize API.
+  -- Deliberately absent from the default sweep because it changes inventory.
+  local inv = player:get_inventory()
+  for index = 1, grug_inventory.BAG_COUNT do
+   local bag = ItemStack("grug_inventory:bag_great")
+   inv:set_stack(grug_inventory.bag_list(index), 1, bag)
+   local size = grug_inventory.bag_slots_of(bag)
+   grug_inventory.apply_bag_resize(player, inv, index, size)
+   for cell = 1, size do
+    inv:set_stack(grug_inventory.content_list(index), cell,
+     (cell % 2 == 0 and "default:cobble " or "default:wood ") .. cell)
+   end
+  end
+  grug_inventory.refresh(player)
+  inventory_page(player, "grug_inventory:inventory")
+ elseif kind == "effects_active" then
+  -- Real status records and icon resolver; no polling or fake formspec rows.
+  assert(grug_core.set_status(player, "alchemy_cave", {
+   label="Cave Draught", duration=480, detail="Night vision"}))
+  assert(grug_core.set_status(player, "food", {
+   label="Hearty Stew", duration=300, detail="Regeneration out of combat"}))
+  inventory_page(player, "grug_inventory:character", function(ctx)
+   ctx.grug_character_tab = "effects"
+  end)
+ elseif kind == "party_member" then
+  -- The disposable client has no second connected player. Supply one offline
+  -- companion through the real renderer's view boundary, then restore it.
+  -- No party state is saved and no invitation/permission route is replaced.
+  local original_view = grug_parties.view
+  grug_parties.view = function(subject)
+   if subject ~= player then return original_view(subject) end
+   return {id="capture", leader=NAME, faction=grug_factions.get_faction(player), members={
+    {name=NAME, online=true, level=grug_xp.get_level(player),
+     class=grug_classes.get_class(player), hp=player:get_hp(), hp_max=player:get_properties().hp_max},
+    {name="Trail Companion", online=false, level=28},
+   }}
+  end
+  local ok, err = pcall(function()
+   inventory_page(player, "grug_parties:group", function(ctx)
+    ctx.grug_party_member = "Trail Companion"
+   end)
+  end)
+  grug_parties.view = original_view
+  assert(ok, err)
  elseif ids[kind] then
   inventory_page(player, ids[kind], function(ctx)
    if kind == "stats" or kind == "effects" or kind == "achievements" then ctx.grug_character_tab = kind end
@@ -124,6 +169,9 @@ local function show(player, kind)
   inventory_page(player, "grug_inventory:help", function(ctx) ctx.grug_help_section = kind:sub(6) end)
  elseif kind:match("^creative_") then inventory_page(player, "creative:" .. kind:sub(10))
  elseif kind:match("^craft_") then
+  if kind == "craft_enchant_selected" or kind == "craft_upgrade_selected" then
+   player:get_inventory():set_stack(grug_jobs.TARGET_LIST, 1, grug_items.make_stack("grug_gear:sword_steel", 25, nil, player))
+  end
   if kind=="craft_busy" then
    player:get_inventory():add_item("main","default:wood 99")
    local recipe=assert(grug_jobs.recipes_for_output("default:stick")[1])
@@ -142,7 +190,7 @@ local function show(player, kind)
    if kind == "craft_details" or kind == "craft_group" then
     grug_jobs.open_recipe_details(st, {kind="recipe",id=recipe.id})
     if kind == "craft_group" then table.insert(st.details.pages,{kind="group",group="wood",n=1,page=1}) end
-   else st.slot=3; st.box = ({craft_queue="queue",craft_busy="queue",craft_enchant="enchant",craft_upgrade="upgrade"})[kind] end
+   else st.slot=3; st.box = ({craft_queue="queue",craft_busy="queue",craft_enchant="enchant",craft_enchant_selected="enchant",craft_upgrade="upgrade",craft_upgrade_selected="upgrade"})[kind] end
   end)
  elseif kind == "chest" then node_window(player,"default:chest")
  elseif kind == "locked_chest" then node_window(player,"default:chest_locked")
@@ -160,9 +208,10 @@ local function show(player, kind)
  elseif kind == "sign" then node_window(player,"default:sign_wall_wood")
  elseif kind == "mob_spawner" then node_window(player,"mobs:spawner")
  elseif kind == "quest" or kind == "quest_ready" then quest(player,kind=="quest_ready")
- elseif kind == "map" or kind == "map_zones" then
+ elseif kind == "map" or kind == "map_zones" or kind == "map_zoom2" then
   grug_map.window.open(player)
   if kind == "map_zones" then submit(player, grug_map.window.FORMNAME,{grug_map_layer_zones="true"}) end
+  if kind == "map_zoom2" then submit(player, grug_map.window.FORMNAME,{grug_map_zoom_in="true"}) end
  elseif kind:match("^vendor") then
   local vendor = "grug_traders:vendor_race_human"
   if not grug_traders.get_vendor(vendor) then
@@ -170,12 +219,36 @@ local function show(player, kind)
     if grug_traders.get_vendor(key) then vendor=key;break end
    end
   end
-  if kind == "vendor_guild" or kind == "vendor_exchange" then vendor="grug_traders:vendor_camp" end
+  local origin, position, previous = nil, base, nil
+  if kind == "vendor_guild" or kind == "vendor_exchange" or kind == "vendor_repair" then
+   vendor="grug_traders:vendor_camp"
+   -- Use an authored allied camp socket so the real repair provider can
+   -- validate it. Restore the capture platform before the next rendered frame.
+   for _, settlement in ipairs(grug_core.settlement_socket_settlements()) do
+    local race=grug_classes.registered_races[settlement.race_id]
+    if race and race.faction==grug_factions.get_faction(player) then
+     for _, socket in ipairs(grug_core.settlement_sockets_at(settlement.key)) do
+      if socket.role=="vendor" and socket.kind=="camp" then
+       origin={settlement=settlement.key,socket=socket.id};position=socket.pos;break
+      end
+     end
+    end
+    if origin then break end
+   end
+   assert(origin,"No authored allied camp vendor")
+   previous=player:get_pos();player:set_pos(position)
+  end
   assert(grug_traders.get_vendor(vendor), "missing vendor " .. vendor)
-  grug_traders.open(player,vendor,base,"accord")
+  grug_traders.open(player,vendor,position,"accord",origin)
   if kind == "vendor_gear" then submit(player,last_form,{tab_1="true"}) end
   if kind == "vendor_sell" then submit(player,last_form,{mode_sell="true"}) end
   if kind == "vendor_guild" then grug_guild.add(player,2500,"capture"); submit(player,last_form,{mode_buy="true"}) end
+  if kind == "vendor_exchange" then submit(player,last_form,{mode_tradein="true"}) end
+  if kind == "vendor_repair" then
+   submit(player,last_form,{repair="true"})
+   assert(last_form=="grug_traders:trade" and last_fs:find("quote_",1,true),"Embedded repair did not open")
+  end
+  if previous then player:set_pos(previous) end
  elseif kind == "repair" then
   local quote={items={},total=0,provider={kind="camp_vendor"}}
   for i,stack in ipairs(player:get_inventory():get_list("main")) do
@@ -183,7 +256,7 @@ local function show(player, kind)
     local price=assert(grug_repair.cost(stack));quote.items[#quote.items+1]={expected=stack,price=price,list="main",index=i};quote.total=quote.total+price
    end
   end
-  form(C.repair({quote=quote,page=1}))
+  form(C.repair({quote=quote,page=1},player))
  elseif kind == "crown_empty" then
   for list,items in pairs(player:get_inventory():get_lists()) do
    for index in ipairs(items) do player:get_inventory():set_stack(list,index,"") end
@@ -197,9 +270,10 @@ local function show(player, kind)
   for i,id in ipairs(service.tiers) do
    local tier=grug_mounts.TIERS[id];local mode,price=grug_mounts.tier_state(player,id)
    local previous=grug_mounts.TIERS[service.tiers[i-1] or 0]
-   rows[#rows+1]={id=id,name=tier.name,level=tier.level,state=mode,price=price and grug_money.format(price),previous=previous and previous.name}
+   local model=grug_mounts.model_for(player,id)
+   rows[#rows+1]={id=id,name=tier.name,level=tier.level,state=mode,price=price and grug_money.format(price),previous=previous and previous.name,icon=model and model.icon}
   end
-  form(grug_mounts.trainer_formspec(rows,nil,service))
+  form(grug_mounts.trainer_formspec(rows,nil,service,player))
  elseif kind == "innkeeper" then form(C.innkeeper(player,assert(grug_home.location("dawnmere"))))
  elseif kind == "waystone" then form(C.waystone(player))
  elseif kind == "lift" then
@@ -210,7 +284,7 @@ local function show(player, kind)
   assert(camp,"capture camp")
   rooms={{level=0,label="Surface"}}
   for _,room in ipairs(grug_mapgen.guild_rooms.rooms_for_camp(camp.id)) do rooms[#rooms+1]={level=room.tier,label=("Level %d (%d)"):format(room.tier,room.floor_y),room=room} end
-  form(C.lift({camp=camp,level=0,levels=rooms}))
+  form(C.lift({camp=camp,level=0,levels=rooms},player))
  elseif kind == "housing" then form(C.housing({},player))
  elseif kind:match("^claim") then
   grug_housing.storage:set_string("recovered:" .. NAME .. ":999:1", "default:coal_lump 20")
@@ -227,15 +301,15 @@ local function show(player, kind)
   if #letters>0 then session.selected.letters=letters[1].id end
   if kind == "mail_delete" then session.dialog="delete" end
   form(grug_mail.window_formspec(player,session))
- elseif kind == "creation" then form(C.creation({faction="accord",race="human",class="warrior",look=grug_visuals.get_look(player)}))
+ elseif kind == "creation" then form(C.creation({faction="accord",race="human",class="warrior",look=grug_visuals.get_look(player)}, player))
  elseif kind == "preparing" then form(C.preparing({mode="full",percent=63,eta_seconds=480,ready=false}))
  elseif kind == "welcome" then form(grug_inventory.welcome_formspec(player))
  elseif kind == "quickbar" then
   grug_mounts.purchase(player,1); grug_mounts.purchase(player,5)
   grug_quickbar.open(player)
  elseif kind == "withdraw" then grug_money.show_withdraw(player)
- elseif kind == "book" then
-  local book=ItemStack("default:book_written");book:get_meta():from_table({fields={owner=NAME,title="Field notes",text="A journey begins in Dawnmere.\nFollow the road and speak to the people you meet.",page="1",page_max="1",text_len="2"}})
+ elseif kind == "book" or kind == "book_read" then
+  local book=ItemStack("default:book_written");book:get_meta():from_table({fields={owner=kind == "book_read" and "Wayfarer" or NAME,title="Field notes",text="A journey begins in Dawnmere.\nFollow the road and speak to the people you meet.",page="1",page_max="1",text_len="2"}})
   player:set_wielded_item(book)
   core.registered_items[book:get_name()].on_use(book,player)
  elseif kind == "mob_texture" then

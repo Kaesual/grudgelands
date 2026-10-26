@@ -99,25 +99,22 @@ local DIM = UI.colors.muted
 local NOTE_COLOR = "#f0c75e"
 local RULE_COLOR = "#d4b77d35"
 
--- Layout (real coordinates; the frame is 13.5 wide). The boxes end a gap
--- above the short view's Inventory box, as on the other tabs
--- (grug_inventory.VIEW_GEOMETRY.top, 9.14 since the Round 45 playtest).
+-- One recipe list and one detail column in the shared inventory frame.
+-- Both stop above the common two-row inventory view.
 local BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
 local TAB_Y, TAB_H = 0.25, 0.65
-local LIST_X, LIST_W = 0.2, 5.0
+local FRAME_W = grug_inventory.UI.frame_w
+local LIST_X, LIST_W = 0.2, 6.0
 local SEARCH_Y, CHECK_Y = 1.1, 2.0
--- "Favorites only" beside "Craftable only" (Round 57 ruling 7). At the web
--- client's size the two labels need about 5.2 units (measured on the
--- Round 57 shots), so the second may run into the gap before the box.
-local FAV_CHECK_X = 2.75
--- Rows 0.54 high (0.56 until the boxes moved up), so the box buttons below
--- the pager keep their height.
-local ROW_Y, ROW_H, ICON = 2.35, 0.54, 0.45
+-- Filters share one row above the recipe list.
+local FAV_CHECK_X = 3.4
+-- Ten recipes leave a full-height operation button row below pagination.
+local ROW_Y, ROW_H, ICON = 2.35, 0.50, 0.42
 local PAGER_Y = ROW_Y + PER_PAGE * ROW_H + 0.1
 local PAGER_H = 0.55
 -- Layout C (Round 57 ruling 1): the right column is gone and the box spans
 -- to the frame's edge.
-local BOX = {x = 5.4, y = 0.95, w = 7.9, h = BOTTOM - 0.95}
+local BOX = {x = 6.6, y = 0.95, w = FRAME_W - 6.8, h = BOTTOM - 0.95}
 grug_jobs.CRAFT_BOX = BOX
 -- The job strip at the box's bottom (a rule, the bar with the stop button,
 -- the job's line, View Queue), the overflow row above it while it holds
@@ -127,13 +124,13 @@ local STRIP_H = 1.35
 local STRIP_Y = BOX.y + BOX.h - STRIP_H
 local OVERFLOW_H, OVERFLOW_SLOTS = 1.6, 6
 local STOP_W, QUEUE_W = 0.6, 2.6
-local ACTION = {w = 2.6, h = 0.8}
+local ACTION = {w = 3.4, h = 0.8}
 grug_jobs.CRAFT_ACTION = ACTION
 grug_jobs.CRAFT_STRIP_Y = STRIP_Y
 -- Characters per real unit for clipping and wrapping (the overview's rate),
 -- and a row's room for its name between the icon and ×N.
 local CHARS_PER_UNIT = 6.6
-local ROW_CHARS = math.floor(3.55 * CHARS_PER_UNIT)
+local ROW_CHARS = math.floor((LIST_W - 1.55) * CHARS_PER_UNIT)
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -339,11 +336,12 @@ local function list_content(fs, player, st, tab, counts, picks)
 	if not st.field_focus then
 		fs[#fs + 1] = ("set_focus[%s;true]"):format(F.find)
 	end
-	fs[#fs + 1] = ("field[%s,%s;3,0.6;%s;;%s]field_close_on_enter[%s;false]"):format(
+	fs[#fs + 1] = UI.input_background(LIST_X, SEARCH_Y, 4, 0.6, F.search)
+	fs[#fs + 1] = ("field[%s,%s;4,0.6;%s;;%s]field_close_on_enter[%s;false]"):format(
 		n(LIST_X), n(SEARCH_Y), F.search, esc(st.typed), F.search)
-	fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(F.find, 0.8 * UI.text_scale(player))
+	fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(F.find, 0.9 * UI.text_scale(player))
 	fs[#fs + 1] = ("button[%s,%s;0.5,0.6;%s;×]button[%s,%s;1.3,0.6;%s;Search]"):format(
-		n(LIST_X + 3.1), n(SEARCH_Y), F.clear, n(LIST_X + 3.7), n(SEARCH_Y), F.find)
+		n(LIST_X + 4.1), n(SEARCH_Y), F.clear, n(LIST_X + 4.7), n(SEARCH_Y), F.find)
 	local compact = UI.text_scale(player) < 1
 	fs[#fs + 1] = ("checkbox[%s,%s;%s;%s;%s]checkbox[%s,%s;%s;%s;%s]")
 		:format(n(LIST_X), n(CHECK_Y), F.only, compact and "Craft" or "Craftable", tostring(st.only),
@@ -365,8 +363,8 @@ local function list_content(fs, player, st, tab, counts, picks)
 		end
 		local count = "×" .. crafts
 		local name = label_of(recipe.output)
-		local shown = clip(name, math.min(ROW_CHARS, 21))
-		fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
+		local shown = clip_chars(name, ROW_CHARS)
+		fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.9 * UI.text_scale(player))
 		fs[#fs + 1] = ("item_image[%s,%s;%s,%s;%s]label[%s,%s;%s]label[%s,%s;%s]"):format(
 			n(LIST_X + 0.1), n(y + (ROW_H - ICON) / 2), n(ICON), n(ICON), esc(recipe.output),
 			n(LIST_X + 0.7), n(y + ROW_H / 2), esc(shown),
@@ -385,7 +383,7 @@ local function list_content(fs, player, st, tab, counts, picks)
 		wrapped_labels(fs, LIST_X + 0.15, ROW_Y + 0.35, LIST_W - 0.3,
 			empty_text(tab, st.search ~= "", st.fav_only))
 	end
-	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.9 * UI.text_scale(player))
 	fs[#fs + 1] = ("button[%s,%s;0.8,%s;%s;<]label[%s,%s;%s]button[%s,%s;0.8,%s;%s;>]"):format(
 		n(LIST_X), n(PAGER_Y), n(PAGER_H), F.prev,
 		n(LIST_X + 1.6), n(PAGER_Y + PAGER_H / 2), ("Page %d of %d"):format(st.page, pages),
@@ -443,7 +441,7 @@ local function job_strip(fs, st, job, waiting)
 	fs[#fs + 1] = ("box[%s,%s;%s,0.03;%s]"):format(n(x), n(STRIP_Y + 0.1), n(right - x),
 		RULE_COLOR)
 	if not job then
-		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(STRIP_Y + 0.6),
+		fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(STRIP_Y + 0.4),
 			esc(core.colorize(DIM, "No job running")))
 		return
 	end
@@ -546,8 +544,8 @@ end
 -- the box's own content ends (above the overflow row and the job strip,
 -- which ui.lua draws; the big button's row ends there, action_button). The
 -- box drawn is context.grug_craft.box (default "recipe"). A box with
--- `button = {label, shown = fn(player, tab)}` gets a button below the list
--- where `shown` says so (lane EU: "Enchant an item", "Upgrade an item" in
+-- `button = {label, tooltip, shown = fn(player, tab)}` gets a button below the list
+-- where `shown` says so (lane EU: "Enchant", "Upgrade" in
 -- the primary areas); a click opens it, a recipe row or an area tab returns
 -- to the recipe box. A box without one opens from a button of another box
 -- (open_craft_box: the queue view from View Queue; the seam for the recipe
@@ -595,6 +593,9 @@ local function box_buttons(fs, player, st, tab)
 		end
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(LIST_X + (index - 1) * (w + 0.1)),
 			n(BOX_BUTTON_Y), n(w), n(BOX_BUTTON_H), field, esc(boxes[name].button.label))
+		if boxes[name].button.tooltip then
+			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(boxes[name].button.tooltip))
+		end
 	end
 end
 
@@ -620,22 +621,22 @@ function grug_jobs.crafting_page_content(player, context)
 	local fs = {"real_coordinates[true]"}
 	-- Five balanced profession buttons stay in one row. The tier text and
 	-- its static progress occupy their own space, never the last button.
-	-- Give longer names (especially Leatherworker) their share of the same
-	-- ten-unit button budget. Gaps and the tier area's position stay fixed.
+	-- Longer profession names receive more of the available width; the tier
+	-- progress has a reserved area at the right.
 	local total_weight = 0
 	for _, entry in ipairs(tabs) do total_weight = total_weight + 0.5 + 0.135 * #entry.label end
 	local x = LIST_X
 	for index, entry in ipairs(tabs) do
-		local tab_w = 10 * (0.5 + 0.135 * #entry.label) / total_weight
+		local tab_w = (FRAME_W - 3.5) * (0.5 + 0.135 * #entry.label) / total_weight
 		local field = F.area .. index
 		fs[#fs + 1] = UI.button_style(field, index == st.slot and "selected" or "normal")
-		fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(field, 0.75 * UI.text_scale(player))
+		fs[#fs + 1] = ("style[%s;font_size=*%.3f]"):format(field, 0.9 * UI.text_scale(player))
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(x), n(TAB_Y), n(tab_w),
 			n(TAB_H), field, esc(entry.label))
 		x = x + tab_w + 0.1
 	end
 	local text, fill = tier_progress(player, tab)
-	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.9 * UI.text_scale(player))
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x + 0.05), n(TAB_Y + 0.2),
 		esc(core.colorize(UI.colors.muted, text)))
 	if fill then
@@ -651,7 +652,8 @@ function grug_jobs.crafting_page_content(player, context)
 	local overflow = not player:get_inventory():is_empty(grug_jobs.OUTPUT_LIST)
 	local bottom = STRIP_Y - (overflow and OVERFLOW_H or 0)
 	st.serial = (st.serial or 0) + 1
-	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.9 * UI.text_scale(player))
+	fs[#fs + 1] = UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
 		recipe = recipe, queue = waiting, bottom = bottom - 0.1, serial = st.serial,
 		full = job ~= nil and 1 + #waiting >= grug_jobs.QUEUE_MAX})

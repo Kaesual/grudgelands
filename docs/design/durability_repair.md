@@ -56,9 +56,9 @@ equipment, main and bag inventories.
 camp has a vendor who … repairs", [miners_guild.md](miners_guild.md) §3):
 the trainers and Grudge-Free Repairs above and the Camp Vendor of every
 mining camp and war camp are the only providers. The Camp Vendor's window
-has a Repair button that opens the same repair form ("Equipment repairs",
-the line "The camp vendor repairs your equipment for money.") with the same
-prices and rules; its provider is the camp's `vendor_camp` socket
+has a Repair tab alongside Buy, Sell and Trade-in, with the same quotes,
+prices and rules as the standalone repair service. The tab displays the total
+price on Repair all and permits returning directly to the other vendor tabs; its provider is the camp's `vendor_camp` socket
 (`grug_repair` kind `camp_vendor`: the player within 8 nodes of it and of
 the camp's faction, rechecked on every action). No Claim Stone claim, furnace, dual furnace or other station
 repairs, and no crafting table or craft grid does (the engine craft grid is

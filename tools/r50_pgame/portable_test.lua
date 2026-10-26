@@ -1006,7 +1006,7 @@ do
 	eq(#shown, before + 1, "D ...and shows the form again")
 	has(last_shown("ann").fs, "list[detached:grug_housing_recovered_ann;recovered;0,0;8,3;]",
 		"D ...on the Belongings tab")
-	eq(recovered_inv("ann").inv:get_size("recovered"), 24, "D the list rounded up to whole rows")
+	eq(recovered_inv("ann").inv:get_size("recovered"), 18, "D the list contains exactly the recovered entries")
 	eq(slot("ann", 1), stored("recovered:ann:1:1"), "D slot 1: the older pass first")
 	eq(slot("ann", 17), "grug_smelting:charcoal 51", "D slot 17: the charcoal's rest")
 
@@ -1221,7 +1221,7 @@ do
 		"F the Steward says the same")
 	check(H.open_manager(carl, entity), "F the Steward talks to carl")
 	lacks(last_shown("carl").fs, "Belongings", "F ...and says nothing of it to a player without")
-	has(last_shown("carl").fs, "size[12.000,7.400]", "F ...in the themed form without a belongings notice")
+	has(last_shown("carl").fs, "size[11.500,8.600]", "F ...in the themed form without a belongings notice")
 end
 
 if failures > 0 then

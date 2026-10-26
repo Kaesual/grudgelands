@@ -2520,7 +2520,7 @@ local function bookshelf_formspec(pos, player, context)
 				x + (i - 1) % 8 * pitch, y + math.floor((i - 1) / 8) * pitch)
 		end
 	end
-	return grug_inventory.station_formspec(player, formspec, bottom, context)
+	return grug_inventory.station_formspec(player, formspec, bottom, context, 6)
 end
 
 local function update_bookshelf(pos)
@@ -2604,9 +2604,9 @@ core.register_node("default:bookshelf", default_bookshelf_def)
 -- GRUG PATCH (UI modernization): the runtime theme is loaded by the time
 -- the sign opens; no reverse dependency from default to grug_core. Save
 -- still exits the form, preserving the existing quit-gated write handler.
-local function sign_formspec(pos)
+local function sign_formspec(pos, player)
 	local ui = grug_core.ui
-	return ui.frame(9, 3.4, S("Sign text")) .. ui.panel(0.3, 0.9, 8.4, 1.15) ..
+	return ui.frame(9, 3.4, S("Sign text"), nil, player) .. ui.input_background(0.5, 1.15, 8, 0.65, "text") ..
 		"set_focus[text;true]field[0.5,1.15;8,0.65;text;;" ..
 		core.formspec_escape(core.get_meta(pos):get_string("text")) .. "]" ..
 		ui.button_style("save", "selected") .. "button_exit[6.2,2.4;2.3,0.65;save;" ..

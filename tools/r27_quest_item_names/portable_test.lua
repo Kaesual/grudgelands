@@ -364,9 +364,9 @@ for _, id in ipairs(ids) do
 		-- A choice of rewards shortens the separate rewards field (the choice
 		-- row sits below it), with "and one of:" and one line per choice.
 		local choice_lines = #(def.rewards.choices or {}) > 0 and 1 + #def.rewards.choices or 0
-		local detail = shown[1] and element(shown[1].form, "textarea[5.900,2.600;9.500,3.250;;;")
-		local rewards = shown[1] and (element(shown[1].form, "textarea[5.950,6.080;9.350,3.800;;;") or
-			element(shown[1].form, "textarea[5.950,6.080;9.350,2.100;;;"))
+		local detail = shown[1] and element(shown[1].form, "textarea[5.900,2.600;9.500,2.800;;;")
+		local rewards = shown[1] and (element(shown[1].form, "textarea[5.950,5.630;9.350,3.100;;;") or
+			element(shown[1].form, "textarea[5.950,5.630;9.350,1.200;;;"))
 		check(rewards ~= nil, "dialogue reward pane present: " .. id)
 		-- The new presentation splits rewards from narrative/objectives. Join
 		-- their content to retain every original item-name and line assertion.

@@ -815,6 +815,23 @@ update:
   `grug_inventory.keep_scroll`, and a pure scrollbar event ends there, so a
   `refresh` re-show keeps the scroll position.
 
+### Atlas polish follow-up (2026-10-26)
+
+The same builders keep their list IDs and ghost images, but use an unframed
+station heading and aligned eight-column grids. The optional fifth
+`station_formspec` argument limits visible player rows: four for chests, six
+for bookshelves/vessels shelves and five for furnaces; remaining bag rows scroll.
+The plain furnace places input in column 1, fuel in 4, its animated arrow
+across 5–6 and the existing four outputs in columns 7–8. Animation timing,
+refresh suppression and inventory callbacks are unchanged.
+
+`default/craftitems.lua` uses a wider book frame and the shared slate backing
+for title/content inputs; read/write/save/page fields and item metadata stay
+unchanged. The existing `GRUG PATCH` book presentation block owns this change.
+Sign, mob-spawner and mob-texture editor inputs use the same backing helper;
+their existing presentation seams pass the player for large-screen fitting.
+Field IDs, save gates and runtime theme lookup are retained.
+
 ## 0.49.1 ANIM — the furnace's fire and arrow animated (2026-10-16)
 
 The furnace form draws its fire and arrow through

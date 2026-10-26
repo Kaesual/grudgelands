@@ -103,7 +103,7 @@ local function rects(part)
 end
 
 -- The boxes end a gap above the short view's Inventory box (ui.lua).
-local GEAR_RIGHT, MODE_LEFT = 6.4, 6.6
+local GEAR_RIGHT, MODE_LEFT = 9.5, 9.8
 local BOXES_BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
 local FRAME = ("formspec_version[6]size[%.3f,%.3f]"):format(grug_inventory.UI.frame_w,
 	(grug_inventory.UI.window_h or grug_inventory.UI.frame_h))
@@ -128,14 +128,14 @@ check(mx ~= nil, "the model in the Stats mode")
 -- card (tools/r54_view checks the seam, the fallback and the escaping).
 has(default_fs, "grug_preview;grug_visuals_character.b3d;character.png,blank.png,blank.png,blank.png;",
 	"the preview seam's model and four textures")
-has(default_fs, "label[6.90,1.60;Maximum HP: 120]", "the stats right of the model")
+has(default_fs, "label[10.10,1.60;Maximum HP: 120]", "the stats right of the model")
 check(mx and mx + mw <= 6.6, "the model ends left of the stats column")
 -- The cloak label sits over the dropdown at the detail panel's foot; the
 -- hint is the dropdown's tooltip.
-local dd_y = tonumber(default_fs:match("dropdown%[6%.90,([%d.]+);6%.15;grug_cloak;"))
+local dd_y = tonumber(default_fs:match("dropdown%[10%.10,([%d.]+);9%.25;grug_cloak;"))
 check(dd_y and dd_y + 1 <= BOXES_BOTTOM + 0.006,
 	"the cloak picker in the stats column, inside the detail panel")
-local cloak_y = tonumber(default_fs:match("label%[6%.90,([%d.]+);Cloak%]"))
+local cloak_y = tonumber(default_fs:match("label%[10%.10,([%d.]+);Cloak%]"))
 check(cloak_y and dd_y and math.abs(cloak_y + 0.35 - dd_y) < 0.006, "the cloak label above it")
 has(default_fs, "tooltip[grug_cloak;Cloaks unlock through achievements.]",
 	"the hint is the dropdown's tooltip")
@@ -150,7 +150,7 @@ end})
 local draft_fs = H.page(warrior, "stats")
 rawset(_G, "grug_housing", nil)
 local status_y, status_text = draft_fs:match(
-	"label%[6%.90,([%d.]+);[^%]]-(Your Claim Stone is not[^%]]*)%]")
+	"label%[10%.10,([%d.]+);[^%]]-(Your Claim Stone is not[^%]]*)%]")
 local status_lines = select(2, (status_text or ""):gsub("\n", "")) + 1
 check(status_lines >= 2 and status_lines <= 4, "a draft stone's status wraps in the detail column")
 check(status_y and cloak_y and
@@ -183,7 +183,7 @@ for _, mode in ipairs(MODES) do
 	end
 	-- The gear box in every mode.
 	has(fs, "list[current_player;grug_head;0.50,1.05;1,1;]", label .. ": the gear box")
-	has(fs, "button[0.50,8.24;5.75,0.65;grug_character_home;Return home (Ready)]",
+	has(fs, "button[0.50,8.00;8.85,0.65;grug_character_home;Return home (Ready)]",
 		label .. ": Return home at the foot of the gear box")
 	-- Geometry: the page's content above the view's Inventory box, the mode
 	-- body right of the gear box.
@@ -218,16 +218,16 @@ for _, line in ipairs({"Maximum HP: 120", "Maximum rage: 100", "Damage reduction
 		"Crit: 5.0%", "Dodge: 5.0%"}) do
 	has(stats, line, "stats: " .. line)
 end
-has(stats, "tooltip[6.90,2.85;6.15,0.50;Armor reduction against", "stats: the reduction tooltip")
+has(stats, "tooltip[10.10,2.85;9.25,0.50;Armor reduction against", "stats: the reduction tooltip")
 lacks(stats, "deposit", "no deposit slot on the Character page")
 H.click(warrior, {grug_money_withdraw = "Withdraw"})
 eq(H.withdrawn, 0, "the Character page no longer handles Withdraw")
 
 -- Effects: one column, the overflow line.
 local effects = H.page(warrior, "effects")
-has(effects, "label[7.85,1.50;Hearty Stew  10m]", "effects: name and time")
-has(effects, "label[7.85,1.90;+2% HP/5s]", "effects: detail")
-has(effects, "label[7.85,2.85;Absorb: 30 left]", "effects: a shield's value")
+has(effects, "label[11.05,1.50;Hearty Stew  10m]", "effects: name and time")
+has(effects, "label[11.05,1.90;+2% HP/5s]", "effects: detail")
+has(effects, "label[11.05,2.75;Absorb: 30 left]", "effects: a shield's value")
 H.status_effects = {}
 for i = 1, 10 do
 	H.status_effects[i] = {id = "e" .. i, name = "Effect " .. i, texture = "e.png",
@@ -236,18 +236,22 @@ end
 effects = H.page(warrior, "effects")
 has(effects, "Effect 7  0m", "effects: seven rows when more than eight")
 lacks(effects, "Effect 8  ", "effects: the eighth row holds the overflow")
-has(effects, "... and 3 more", "effects: the overflow line")
+has(effects, "label[11.05,7.65;... and 3 more]", "effects: overflow stays above the inventory")
+H.status_effects[9], H.status_effects[10] = nil, nil
+effects = H.page(warrior, "effects")
+has(effects, "image[10.10,7.25;0.80,0.80;e.png]", "effects: eighth icon stays inside the detail panel")
+lacks(effects, "... and", "effects: all eight effects remain visible")
 H.status_effects = {}
 has(H.page(warrior, "effects"), "No active effects.", "effects: the empty text")
 
 -- Achievements: one column of seven, the pager at the foot of the box.
 local ach = H.page(warrior, "achievements")
-local rows = count_of(ach, "tooltip[6.80,")
+local rows = count_of(ach, "tooltip[10.00,")
 eq(rows, 7, "achievements: seven rows per page")
 has(ach, "grug_ach_next;>]", "achievements: the pager")
-has(ach, "label[10.60,8.54;1/3]", "achievements: page 1 of 3")
+has(ach, "label[16.80,8.30;1/3]", "achievements: page 1 of 3")
 check(H.click(warrior, {grug_ach_next = ">"}), "achievements: next page handled")
-has(H.page(warrior, "achievements"), "label[10.60,8.54;2/3]", "achievements: page 2")
+has(H.page(warrior, "achievements"), "label[16.80,8.30;2/3]", "achievements: page 2")
 
 -- No Professions mode since Round 45 (the overview is on the Crafting tab).
 lacks(H.page(warrior, nil), "grug_character_professions", "no Professions mode button")
@@ -286,10 +290,10 @@ for class_id, hands in pairs(HANDS) do
 	for _, name in ipairs({"Head", "Chest", "Legs", "Feet", "Trinket"}) do
 		has(fs, (";%s]"):format(name), label .. ": label " .. name)
 	end
-	has(fs, "label[5.05,2.21;" .. hands[1] .. "]", label .. ": weapon hand label")
-	has(fs, "label[5.05,3.56;" .. hands[2] .. "]", label .. ": offhand label")
-	has(fs, "tooltip[5.05,1.05;1,1;" .. hands[1] .. " — equip here", label .. ": weapon tooltip")
-	has(fs, "image[5.05,2.40;1,1;" .. grug_inventory.slot_ghost(class_id, "grug_offhand"):gsub(",", "\\,"),
+	has(fs, "label[8.05,2.21;" .. hands[1] .. "]", label .. ": weapon hand label")
+	has(fs, "label[8.05,3.56;" .. hands[2] .. "]", label .. ": offhand label")
+	has(fs, "tooltip[8.05,1.05;1,1;" .. hands[1] .. " — equip here", label .. ": weapon tooltip")
+	has(fs, "image[8.05,2.40;1,1;" .. grug_inventory.slot_ghost(class_id, "grug_offhand"):gsub(",", "\\,"),
 		label .. ": the class's offhand ghost")
 	has(fs, "listring[current_player;main]listring[current_player;grug_shift]",
 		label .. ": main rings to the routing list")
@@ -327,9 +331,9 @@ has(fs_q, "label[1.65,6.95;Quiver\n181/500]", "181 arrows: the total beside the 
 
 -- Return home: every mode, the countdown in minutes, the click.
 H.home.remaining = 150
-has(H.page(archer, "achievements"), "button[0.50,8.24;5.75,0.65;grug_character_home;" ..
+has(H.page(archer, "achievements"), "button[0.50,8.00;8.85,0.65;grug_character_home;" ..
 	"Return home (3 min)]", "Return home: the cooldown in minutes")
-has(H.page(archer, "achievements"), "label[0.50,7.94;Home: Ironhold Inn]", "the home's name")
+has(H.page(archer, "achievements"), "label[0.50,7.70;Home: Ironhold Inn]", "the home's name")
 H.home.remaining = 0
 local sent_home = archer.sent
 H.page(archer, "effects")

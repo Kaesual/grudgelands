@@ -553,14 +553,14 @@ local function rects(part)
 end
 -- Columns: the list and the crafting box (Round 57 layout C: the right
 -- column is gone, the box spans to the frame's edge); the tab row spans all.
-local COLUMNS = {{0.2, 5.2}, {5.4, 13.3}}
+local COLUMNS = {{0.2, 6.2}, {6.6, grug_inventory.UI.frame_w - 0.2}}
 local function geometry_ok(fs, label)
 	local part = content(fs)
 	check(part:sub(1, 22) == "real_coordinates[true]", label .. ": real coordinates")
 	local ok = true
 	for _, r in ipairs(rects(part)) do
 		local right, bottom = r.x + r.w, r.y + r.h
-		if r.x < 0 or r.y < 0 or right > 13.5 + 1e-6 or
+		if r.x < 0 or r.y < 0 or right > grug_inventory.UI.frame_w + 1e-6 or
 				bottom > grug_inventory.VIEW_GEOMETRY.top - 0.1 + 0.01 then
 			ok = check(false, ("%s: %s at %.2f,%.2f+%.2f,%.2f leaves the page area"):format(
 				label, r.name, r.x, r.y, r.w, r.h))
@@ -657,7 +657,7 @@ do
 		}
 	end
 	fs = open(p)
-	has(fs, grug_core.ui.heading(5.6, 1.35, "Weaponsmith — Tier 2"), "O the first row at the box's top")
+	has(fs, grug_core.ui.heading(6.8, 1.35, "Weaponsmith — Tier 2"), "O the first row at the box's top")
 	says(fs, "Capped by your level: reach level 21, then craft once more for tier 3.",
 		"O the cap note, wrapped")
 	says(fs, "Alchemy — Tier 6 Highest tier reached.", "O a T6 row")
@@ -673,7 +673,7 @@ do
 		return out
 	end
 	fs = open(p)
-	says(fs, "More on the area tabs above.", "O four capped rows: the pointer")
+	lacks(fs, "More on the area tabs above.", "O four capped rows fit the wider detail column")
 	lacks(fs, "Only crafts of the current", "O ... and no footer")
 	geometry_ok(fs, "O four capped rows")
 	J.profession_overview = real_overview
@@ -703,7 +703,7 @@ click(p, {[FIELDS.area .. "3"] = "Weaponsmith"})
 fs = p.formspec
 has(fs, "grug_craft_area3;Weaponsmith]", "A the primary slot's tab names its profession")
 has(fs, "Tier 1 · 4/10", "A the tier progress")
-has(fs, "box[10.75,0.75;0.98,0.12;#d4b77d]", "A the tier bar filled 4/10")
+has(fs, "box[17.25,0.75;0.98,0.12;#d4b77d]", "A the tier bar filled 4/10")
 has(fs, "Copper Sword", "A the T1 recipe listed")
 -- Round 45 playtest fix 3: tiers above the profession tier are hidden.
 lacks(fs, "Iron Battle Axe", "A the T2 recipe hidden at weaponsmith tier 1")
@@ -744,7 +744,7 @@ fs = p.formspec
 has(fs, "Page 1 of 1", "L the search filters to one page")
 eq(count(fs, "image_button["), 5, "L Block 20..24")
 -- 0.45.1: the field is narrower, "×" sits between it and Search.
-has(fs, "field[0.2,1.1;3,0.6;grug_craft_search;;block 2]", "L the typed text echoed")
+has(fs, "field[0.2,1.1;4,0.6;grug_craft_search;;block 2]", "L the typed text echoed")
 -- A second search within a second is ignored: no resend, nothing changes.
 advance(0.5)
 sent = p.sent
@@ -819,15 +819,15 @@ click(cook, {[FIELDS.area .. "2"] = "Cooking"})
 click(cook, {[FIELDS.row .. "1"] = ""})
 fs = cook.formspec
 eq(st_of(cook).selected, stew.id, "Q a row click chooses the recipe")
-has(fs, "box[0.2,2.35;5,0.54;#bba06235]", "Q the chosen row is highlighted")
-has(fs, "item_image[5.6,1.15;0.9,0.9;t:stew]", "Q the output's icon")
+has(fs, "box[0.2,2.35;6,0.5;#bba06235]", "Q the chosen row is highlighted")
+has(fs, "item_image[6.8,1.15;0.9,0.9;t:stew]", "Q the output's icon")
 has(fs, "Cooking · Tier 1", "Q the area and tier")
-has(fs, grug_core.ui.heading(5.6, 2.35, "Ingredients (have/need)"), "Q the ingredients heading")
-has(fs, "item_image[5.6,2.6;0.4,0.4;t:meat]", "Q an ingredient icon")
+has(fs, grug_core.ui.heading(6.8, 2.35, "Ingredients (have/need)"), "Q the ingredients heading")
+has(fs, "item_image[6.8,2.6;0.4,0.4;t:meat]", "Q an ingredient icon")
 has(fs, "30/1]", "Q have/need for one")
 has(fs, "Max: 12]", "Q the maximum (12 grain)")
 -- 0.45.1: Quantity [−][field][+] [Max].
-has(fs, "field[7.6,", "Q a quantity field for a stackable output")
+has(fs, "field[8.8,", "Q a quantity field for a stackable output")
 has(fs, "grug_craft_qty;;1]", "Q the field's default is 1")
 has(fs, "field_close_on_enter[grug_craft_qty;false]", "Q Enter keeps the window open")
 has(fs, "grug_craft_max;Max]", "Q the Max button")
@@ -873,7 +873,7 @@ has(fs, go(cook) .. ";Queue ×12]", "J Craft ×N turned into Queue ×N")
 has(fs, "grug_craft_queue;" .. fs_escape("View Queue [0]") .. "]", "J View Queue")
 lacks(fs, "Crafting…", "J no indicator (one line below the bar)")
 -- 12 s job: 1.5 x 12 s / 96 frames = 187.5 -> 188 ms; elapsed 0 -> frame 1.
-has(fs, "animated_image[5.6,", "J the bar")
+has(fs, "animated_image[6.8,", "J the bar")
 has(fs, ";grug_craft_bar;grug_jobs_progress_bar.png;96;188;1]", "J frame 1 at the start")
 geometry_ok(fs, "J during a job")
 print(("bytes: Crafting tab, a page during a job (recipe chosen): content %d, page %d"):format(
@@ -989,7 +989,7 @@ do
 	put(v, OUT, 1, "t:stew 3")
 	fs = open(v)
 	-- Round 57 layout C: one row above the job strip.
-	has(fs, ("list[current_player;grug_craft_out;5.6,%s;4,1;]"):format(
+	has(fs, ("list[current_player;grug_craft_out;6.8,%s;4,1;]"):format(
 		J._fs_number(J.CRAFT_STRIP_Y - 1.6 + 0.45)),
 		"V the overflow slots while it holds something")
 	has(fs, "listring[current_player;grug_craft_out]listring[current_player;grug_inbox]" ..
@@ -1027,7 +1027,7 @@ do
 	put(v, OUT, 2, "t:stew 1")
 	fs = open(v)
 	has(fs, "grug_craft_out;", "V the overflow beside the running job")
-	has(fs, "animated_image[5.6,", "V ... and the bar")
+	has(fs, "animated_image[6.8,", "V ... and the bar")
 	geometry_ok(fs, "V a job and the overflow")
 	advance(1.5)
 	run_timers()
@@ -1079,7 +1079,7 @@ has(fs, "style[grug_craft_recheck,grug_craft_recheck:hovered,grug_craft_recheck:
 	"S unavailable button keeps the same image and tint in every pointer state")
 has(fs, "grug_craft_recheck;Craft ×1]", "S ... and disabled (it cannot start)")
 lacks(fs, "grug_craft_go_", "S no live Craft now")
-lacks(fs, "field[7.6,", "S no quantity field for a non-stackable output")
+lacks(fs, "field[8.8,", "S no quantity field for a non-stackable output")
 says(fs, "Crafting this will not give you a Weaponsmith experience point",
 	"S the XP hint below the profession tier")
 has(fs, "(c@#8a8a8a)Crafting this will not", "S ... in grey")
@@ -1127,8 +1127,9 @@ local function box_part(fs)
 	local box = grug_jobs.CRAFT_BOX
 	local from = part:find(grug_core.ui.panel(box.x, box.y, box.w, box.h), 1, true)
 	-- (up to the job strip's rule, Round 57)
-	local to = part:find("box[5.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1) ..
-		";7.5,0.03;", 1, true)
+	local to = part:find("box[" .. grug_jobs._fs_number(box.x + 0.2) .. "," ..
+		grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1) .. ";" ..
+		grug_jobs._fs_number(box.w - 0.4) .. ",0.03;", 1, true)
 	return from and to and part:sub(from, to - 1) or ""
 end
 -- The y of the first label in `part` whose text starts with `text`.
@@ -1189,7 +1190,7 @@ do
 	eq(desc and desc.text, "Hunter's Roast\nRestores 30 HP over 10 s.\nWell fed: +2 Stamina\n" ..
 		"Must be cooked in a furnace to become edible.", "D the cooked dish's text and the note")
 	lacks(desc and desc.text or "", "Inedible", "D not the raw item's own text")
-	has(part, "background9[5.600,2.200;7.500,", "D the description's box at the middle's top")
+	has(part, "textarea[6.8,2.2;12.8,", "D the unframed description at the middle's top")
 	lacks(part, "scrollbar[", "D no scrollbar element in the box (a scroll would send events)")
 	lacks(part, "scroll_container[", "D no scroll container in the box")
 	-- The three areas in order.
@@ -1198,7 +1199,7 @@ do
 	local max_y = label_y(part, "Max: ")
 	local hint_y = label_y(part, "Crafting this will")
 	local quantity_y = tonumber(part:match("field%[[%d%.]+,([%d%.]+);"))
-	local button_y = tonumber(part:match("button%[10%.5,([%d%.]+);2%.6,0%.8;grug_craft_go_%d+;"))
+	local button_y = tonumber(part:match("button%[[%d%.]+,([%d%.]+);2%.6,0%.8;grug_craft_go_%d+;"))
 	check(sub_y and desc and sub_y + 0.2 <= desc.y, "D top: the output above the description")
 	check(desc and ingredients_y and desc.y + desc.h <= ingredients_y - 0.2,
 		"D middle: the description above the ingredients")
@@ -1220,8 +1221,8 @@ do
 	click(chef, {[FIELDS.row .. "1"] = ""})
 	part = box_part(chef.formspec)
 	eq(description_box(part), nil, "D no description when the tooltip is only the name")
-	has(part, grug_core.ui.heading(5.6, 2.35, "Ingredients (have/need)"), "D ... the ingredients move up")
-	has(part, "field[7.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y - 0.8) .. ";",
+	has(part, grug_core.ui.heading(6.8, 2.35, "Ingredients (have/need)"), "D ... the ingredients move up")
+	has(part, "field[8.8," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y - 0.8) .. ";",
 		"D the quantity row stays in the bottom row")
 	-- Gear: the description the job's crafted_output builds, the name line
 	-- dropped; no quantity row.
@@ -1321,17 +1322,16 @@ open(reader)
 click(reader, {[FIELDS.row .. "1"] = ""})
 eq(st_of(reader).selected, long.id, "the long-named recipe chosen")
 fs = reader.formspec
-has(fs, "label[0.9,2.62;A Very Long Decorat..]", "the long name clipped in the list")
+has(fs, "label[0.9,2.6;A Very Long Decorated Cerem..]", "the long name clipped in the list")
 has(fs, "tooltip[grug_craft_row1;A Very Long Decorated Ceremonial Bookshelf of Oak]",
 	"... in full as the row's tooltip")
 lacks(fs, "tooltip[grug_craft_row2;", "no tooltip for a name that fits")
-has(fs, grug_core.ui.heading(6.65, 1.25, "A Very Long Decorated Ceremonial") ..
-	grug_core.ui.heading(6.65, 1.6, "Bookshelf of Oak"),
-	"the wide box wraps the name to two lines")
-has(fs, "label[6.65,2;Basic · Tier 1]", "the area line below it")
+has(fs, grug_core.ui.heading(7.85, 1.4, "A Very Long Decorated Ceremonial Bookshelf of Oak"),
+	"the wide box fits the complete name")
+has(fs, "label[7.85,1.8;Basic · Tier 1]", "the area line below it")
 -- 0.45.1: two members are written out (tools/r451_cu checks the labels).
 has(fs, "Oak Plank or Pine", "a group entry of two members written out")
-has(fs, "tooltip[5.6,2.6;7.5,0.4;Oak Plank or Pine Plank]", "the group's members in a tooltip")
+has(fs, "tooltip[6.8,2.6;12.8,0.4;Oak Plank or Pine Plank]", "the group's members in a tooltip")
 geometry_ok(fs, "long names")
 
 ------------------------------------------------------------------------------

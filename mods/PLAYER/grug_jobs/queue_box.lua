@@ -46,7 +46,7 @@ end
 
 local function build(player, view)
 	local st = view.st
-	local fs = {UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)}
+	local fs = {}
 	fs[#fs + 1] = ("button[%s,%s;2.6,0.6;%s;%s]"):format(n(X), n(HEADER_Y), F.back,
 		esc("◀ Back to recipe"))
 	fs[#fs + 1] = UI.heading(X + 2.8, HEADER_Y + 0.3, "Crafting queue")

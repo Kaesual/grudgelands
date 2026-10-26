@@ -400,7 +400,7 @@ fill(eve, {{"main", 9, "default:cobble 60"}, {BAG, 1, "default:cobble 43"},
 shown = nil
 grug_traders.open(eve, TEST, ORIGIN, "accord")
 check(has("mode_tradein;Trade-in]"), "C a guild vendor shows the Trade-in mode")
-check(has("button[8.2,0.3;1.6,0.8;mode_buy;Buy]") and has("button[9.9,0.3;1.5,0.8;mode_sell;Sell]"),
+check(has(";mode_buy;Buy]") and has(";mode_sell;Sell]"),
 	"C Buy and Sell move left")
 check(has("label[0.6,1.75;Miner's Guild]"), "C opens on Trade-in: Miner's Guild")
 check(not has("Charter of Stone") and not has("Oathdelvers"),
@@ -470,13 +470,34 @@ fill(eve, {{"main", 12, "default:iron_lump 4"}})
 shown = nil
 grug_traders.open(eve, "grug_traders:vendor_general_accord", ORIGIN, "accord")
 check(shown ~= nil and not has("mode_tradein"), "C a vendor without `guild` has no Trade-in")
-check(has("button[10.3,0.3;1.6,0.8;mode_buy;Buy]"), "C its Buy button stays where it was")
+check(has(";mode_buy;Buy]"), "C its Buy mode remains available")
 submit(eve, {mode_tradein = "Trade-in"})
 check(not has("label[0.6,1.75;Miner's Guild]"), "C a forged Trade-in field is ignored")
 local life_plain = grug_guild.lifetime(eve)
 for i = 1, #C.EXCHANGE do submit(eve, {["tradein_" .. i] = "x"}) end
 eq(grug_guild.lifetime(eve), life_plain, "C a forged trade at a plain vendor credits nothing")
 eq(count_of(eve.inv, "default:iron_lump"), 4, "C ...and takes nothing")
+
+-- Requested quantities refer to whole lots and must be affordable in items.
+local quantities = new_player("quantities", "accord")
+quantities.inv:set_stack("main", 9, ItemStack("default:cobble 803"))
+grug_traders.open(quantities, TEST, ORIGIN, "accord")
+check(has("tradein5_" .. COBBLE .. ";5]") and has("tradein10_" .. COBBLE .. ";10]"), "C quantity controls shown")
+submit(quantities, {["tradein5_" .. COBBLE] = "x"})
+eq(count_of(quantities.inv, "default:cobble"), 553, "C five whole lots taken")
+submit(quantities, {["tradein10_" .. COBBLE] = "x"})
+eq(count_of(quantities.inv, "default:cobble"), 53, "C ten whole lots taken")
+submit(quantities, {["tradein5_" .. COBBLE] = "x"})
+eq(count_of(quantities.inv, "default:cobble"), 53, "C unavailable five lots refused")
+submit(quantities, {["tradein1_" .. COBBLE] = "x"})
+eq(count_of(quantities.inv, "default:cobble"), 3, "C one lot keeps remainder")
+eq(grug_guild.lifetime(quantities), 16, "C exact total credited")
+quantities.inv:set_stack("main", 9, ItemStack("default:cobble 503"))
+for _, amount in ipairs({0, -1, 1.5, "5", math.huge, false, 0 / 0}) do
+	local paid = grug_guild.trade_in(quantities, "default:cobble", amount)
+	check(paid == nil, "C invalid quantity refused: " .. tostring(amount))
+	eq(count_of(quantities.inv, "default:cobble"), 503, "C malformed quantity takes nothing")
+end
 
 -- The other faction is refused at the door.
 local fay = new_player("fay", "throng")

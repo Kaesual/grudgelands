@@ -28,13 +28,13 @@ local function furnace_formspec_with(view, pos, player, context)
 	local progress = grug_inventory.furnace_progress
 	local station = grug_inventory.STATION
 	local x, y, pitch = station.x, station.y, station.pitch
-	local box, bottom = grug_inventory.station_box(S("Furnace"), 3 * pitch - 0.25)
+	local box, bottom = grug_inventory.station_box(S("Furnace"), 2 * pitch - 0.25)
 	return grug_inventory.station_formspec(player, box ..
-		("list[%s;src;%.3f,%.3f;1,1;]"):format(loc, x + 2 * pitch, y) ..
-		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(loc, x + 2 * pitch, y + 2 * pitch) ..
-		progress.fire(x + 2 * pitch, y + pitch, 1, 1, view.left, view.total, view.burning) ..
-		progress.arrow(x + 3 * pitch, y + pitch, 1, 1, view.done, view.time, view.cooking) ..
-		("list[%s;dst;%.3f,%.3f;2,2;]"):format(loc, x + 4 * pitch, y + pitch / 2) ..
+		("list[%s;src;%.3f,%.3f;1,1;]"):format(loc, x, y) ..
+		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(loc, x + 3 * pitch, y) ..
+		progress.fire(x + 3 * pitch + 0.15, y + pitch, 0.7, 0.7, view.left, view.total, view.burning) ..
+		progress.arrow(x + 4 * pitch, y + 0.3, 2.25, 0.7, view.done, view.time, view.cooking) ..
+		("list[%s;dst;%.3f,%.3f;2,2;]"):format(loc, x + 6 * pitch, y) ..
 		"listring["..loc..";dst]"..
 		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]"..
@@ -44,7 +44,7 @@ local function furnace_formspec_with(view, pos, player, context)
 		"listring["..loc..";fuel]"..
 		"listring[current_player;grug_inbox]"..
 		"listring[current_player;main]",
-		bottom, context)
+		bottom, context, 5)
 end
 
 -- GRUG PATCH (0.49.1 ANIM): the two public builders draw a still picture

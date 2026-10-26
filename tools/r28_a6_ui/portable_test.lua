@@ -634,7 +634,7 @@ local rows = {
 }
 local trainer_fs = grug_mounts.trainer_formspec(rows, {ok = false, text = "You do not have enough money."})
 formspec_ok(trainer_fs, "trainer")
-has(trainer_fs, "button[7.9,2.80;2.5,0.55;buy_2;Buy 15 silver]", "buy button with price")
+has(trainer_fs, "button[8.9,2.80;2.5,0.55;buy_2;Buy 15 silver]", "buy button with price")
 lacks(trainer_fs, "buy_1", "no button for an owned tier")
 lacks(trainer_fs, "buy_3", "no button below the level")
 lacks(trainer_fs, "buy_4", "no button without the previous tier")
@@ -734,10 +734,10 @@ local context = {page = "grug_inventory:character", grug_character_tab = "stats"
 contexts.smith = context
 local stats_fs = character:get(smith, context)
 formspec_ok(stats_fs, "character stats")
-has(stats_fs, "label[6.90,3.10;Damage reduction: 12.3%]", "Damage reduction label")
+has(stats_fs, "label[10.10,3.10;Damage reduction: 12.3%]", "Damage reduction label")
 lacks(stats_fs, "Own-level", "old label gone")
 has(stats_fs, fs_escape("Armor reduction against an enemy of your level."), "tooltip text")
-has(stats_fs, "tooltip[6.90,2.85;6.15,0.50;", "tooltip covers the label line")
+has(stats_fs, "tooltip[10.10,2.85;9.25,0.50;", "tooltip covers the label line")
 -- Round 45: the overview moved to the Crafting tab (tools/r45_ui).
 lacks(stats_fs, "grug_character_professions", "no Professions mode button")
 lacks(stats_fs, "Weaponsmith — Tier", "no overview on the Character page")

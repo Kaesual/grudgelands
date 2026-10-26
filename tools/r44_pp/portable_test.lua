@@ -385,18 +385,18 @@ eq(out_fs:sub(1, #frame_header), frame_header, "P out of a party: the window's f
 has(out_fs, ";grug_ui_tab_", "P the shared tab buttons")
 has(out_fs, "Party & PvP", "P the tab caption")
 no_inventory(out_fs, "P out of a party")
-has(out_fs, "checkbox[0.20,0.22;grug_party_invites;Allow invitations;true]",
+has(out_fs, "checkbox[0.4,0.35;grug_party_invites;Allow invitations;true]",
 	"P out of a party: the invitations checkbox")
 has(out_fs, ";grug_party_hud;Party HUD;true]", "P out of a party: the HUD checkbox")
 has(out_fs, ";grug_party_health_colors;All green,By class;2;true]",
 	"P out of a party: the health colours dropdown")
-has(out_fs, "textlist[0.20,1.25;6.35,2.00;grug_party_online_list;" ..
+has(out_fs, "textlist[0.40,1.45;9.2,2.00;grug_party_online_list;" ..
 	fs_escape("bob [Lv 12]") .. "," .. fs_escape("cyd [Lv 12] (Invites off)") .. ";1;false]",
 	"P out of a party: online players of the own faction only, sorted")
 lacks(out_fs, "dax", "P out of a party: no player of the other faction")
 has(out_fs, ";grug_party_invite;Invite]", "P out of a party: Invite")
 has(out_fs, ";grug_party_refresh;Refresh]", "P out of a party: Refresh")
-has(out_fs, "textlist[6.85,1.25;6.35,2.00;grug_party_pending;" ..
+has(out_fs, "textlist[10.20,1.45;9.2,2.00;grug_party_pending;" ..
 	fs_escape("bob [Lv 12] (2/10, 50s)") .. "," .. fs_escape("cyd [Lv 11] (1/10, 20s)") ..
 	";1;false]", "P out of a party: the pending invitations")
 has(out_fs, ";grug_party_accept;Accept]", "P out of a party: Accept")
@@ -424,8 +424,8 @@ sfinv.set_player_inventory_formspec(alice, context)
 local in_fs = alice.formspec
 formspec_ok(in_fs, "P in a party")
 no_inventory(in_fs, "P in a party")
-has(in_fs, grug_core.ui.heading(0.3, 4.65, "Current party"), "P in a party: the heading")
-has(in_fs, "table[0.30,5.05;6.10,5.2;grug_party_members;1," ..
+has(in_fs, grug_core.ui.heading(0.4, 4.85, "Current party"), "P in a party: the heading")
+has(in_fs, "table[0.40,5.25;9.2,5.0;grug_party_members;1," ..
 	fs_escape("* alice [Lv 12]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 12]  10/20 HP") ..
 	",0," .. fs_escape("cyd [Lv 11]  Offline") .. ";2]", "P in a party: the member table")
 has(in_fs, ";grug_party_kick;Kick]", "P in a party: Kick for the leader")

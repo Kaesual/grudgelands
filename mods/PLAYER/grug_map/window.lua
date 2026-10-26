@@ -4,18 +4,16 @@
 -- player's max_formspec_size (core.get_player_window_information) with a
 -- fixed fallback. Left the map with its overlay and the quest targets of
 -- the selected quest, right the quest boxes (quest_box.lua); a header row
--- with the zoom, the location, the minimap switch, "Back to inventory" and
--- the close button.
+-- with the zoom, layer selector, location and minimap switch, below shared
+-- inventory navigation and its close button.
 --
 -- The overlay (Round 47 lane ML, the work package's rulings 1-10; until
 -- then Round 44's fixed set) is plain image[] elements with positional
--- tooltips. The player picks ONE marker layer with the row of buttons under
--- the map (layers.lua: quest givers, bosses, trainers, towns and travel,
--- points of interest, PvP, zone names, none; one or two rows, the active
--- one highlighted). Selecting a quest in the list is its own mode: only
--- that quest's targets (targets.lua, each with its objectives' lines as
--- tooltip) and its hand-in NPC, no button highlighted; a layer button
--- deselects the quest. In every mode the player's gold arrow and the
+-- tooltips. The player picks ONE marker layer in the toolbar selector
+-- (layers.lua: quest givers, bosses, trainers, towns and travel, points of
+-- interest, PvP, zone names, none). Selecting a quest is its own mode: only
+-- its targets (targets.lua, with objective tooltips) and hand-in NPC are
+-- shown. Choosing a layer deselects the quest. In every mode the player's gold arrow and the
 -- party's cyan arrows (the member's name as tooltip). Every marker has a
 -- tooltip; the client shows the first rect under the pointer
 -- (guiFormSpecMenu.cpp drawMenu), so they are sent topmost first. The base
@@ -55,15 +53,10 @@ W.PARTY_US = 2000000
 W.QUIET_US = 500000
 local PASS = 0.1
 
--- Layout in real coordinates: the header row, the 9:8 map with its
--- scrollbars, the quest column (at least COLUMN_MIN wide, COLUMN_SHARE of
--- the window, plus whatever the map's aspect leaves), the layer buttons
--- under the horizontal scrollbar (Round 47): BUTTON_TOP below it, one row
--- when every button gets at least BUTTON_MIN units, else two.
+-- Equal-width map and quest columns beneath one toolbar. The 9:8 image
+-- fits and centers at 1x; zoomed artwork uses the full scroll viewport.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
 local COLUMN_SHARE = 0.5
-local BUTTON_H, BUTTON_GAP, BUTTON_TOP = 0.6, 0.1, 0.15
-W.BUTTON_MIN = 1.25
 -- Overlay sizes in formspec units, constant at every zoom (only positions
 -- scale): icons as before Round 44, trainers two thirds at 1x and 2x
 -- (Round 44 ruling 12), arrows, the crosshair; rings at least RING_MIN across.
@@ -107,33 +100,17 @@ function W.window_size(info, header_h)
 	return math.floor(w * 100) / 100, math.floor((h - (header_h or 0)) * 100) / 100
 end
 
--- Where everything sits in a w x h window. The header and the quest column
--- keep Round 44's places (ruling 10): the column stands where the map
--- without the button rows would end, and the map gives up only the height
--- the rows need beyond the window's spare room. `buttons` is {rows,
--- per_row, w, h, gap, y}.
+-- Geometry inside the body, excluding the shared inventory header.
 function W.layout(w, h)
-	local count = #layers.LIST
 	local map_y = PAD + HEADER_H + 0.2
 	local column = (w - 2 * PAD - GAP) * COLUMN_SHARE
-	local avail_w = w - 2 * PAD - BAR - BAR_GAP - GAP - column
-	local function map_width(rows)
-		local reserve = rows > 0 and BUTTON_TOP + rows * BUTTON_H + (rows - 1) * BUTTON_GAP or 0
-		return math.min(avail_w, (h - map_y - PAD - BAR - BAR_GAP - reserve) * 9 / 8)
-	end
-	local rows, per_row = 1, count
-	local map_w = map_width(1)
-	if (map_w - (count - 1) * BUTTON_GAP) / count < W.BUTTON_MIN then
-		rows, per_row = 2, math.ceil(count / 2)
-		map_w = map_width(2)
-	end
-	local map_h = map_w * 8 / 9
-	local column_x = w - PAD - column
-	return {w = w, h = h, map_x = PAD, map_y = map_y, map_w = map_w, map_h = map_h,
-		column = {x = column_x, y = map_y, w = w - PAD - column_x, h = h - PAD - map_y},
-		buttons = {rows = rows, per_row = per_row, h = BUTTON_H, gap = BUTTON_GAP,
-			w = (map_w - (per_row - 1) * BUTTON_GAP) / per_row,
-			y = map_y + map_h + BAR_GAP + BAR + BUTTON_TOP}}
+	local viewport_w = column - BAR - BAR_GAP
+	local viewport_h = h - map_y - PAD - BAR - BAR_GAP
+	local map_w = math.min(viewport_w, viewport_h * 9 / 8)
+	return {w = w, h = h, map_x = PAD, map_y = map_y,
+		map_w = map_w, map_h = map_w * 8 / 9,
+		viewport_w = viewport_w, viewport_h = viewport_h,
+		column = {x = PAD + column + GAP, y = map_y, w = column, h = h - PAD - map_y}}
 end
 
 --
@@ -392,28 +369,25 @@ local function overlay(fs, player, session, layout, quest, info)
 	session.tooltip_count = count
 end
 
--- The layer buttons under the horizontal scrollbar (ruling 1): one or two
--- rows as wide as the map, the active layer in the shared selection style,
--- none in quest mode (ruling 2); each button's tooltip its long name.
-local function layer_buttons(fs, layout, session, quest_mode)
-	local b = layout.buttons
-	local active = not quest_mode and W.layer_of(session).id or nil
-	local others = {}
+-- Stable layer indices in both modes; the additional quest entry comes last.
+local function layer_selector(fs, layout, session, quest_mode)
+	local labels, selected = {}, 1
+	session.layer_ids = {}
+	-- Dropdown values accompany unrelated submissions too. The extra entry
+	-- represents quest mode so choosing the current layer is a real change.
 	for _, layer in ipairs(layers.LIST) do
-		if layer.id ~= active then others[#others + 1] = "grug_map_layer_" .. layer.id end
+		local index = #labels + 1
+		labels[index], session.layer_ids[index] = esc(layer.title), layer.id
+		if not quest_mode and layer.id == W.layer_of(session).id then selected = index end
 	end
-	if active then
-		fs[#fs + 1] = grug_inventory.selected_button_style("grug_map_layer_" .. active, true)
+	if quest_mode then
+		labels[#labels + 1] = "Quest targets"
+		selected = #labels
 	end
-	fs[#fs + 1] = (grug_inventory.selected_button_style("@", false):gsub("^style%[@;",
-		"style[" .. table.concat(others, ",") .. ";", 1))
-	for index, layer in ipairs(layers.LIST) do
-		local row, col = math.floor((index - 1) / b.per_row), (index - 1) % b.per_row
-		local name = "grug_map_layer_" .. layer.id
-		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.2f;%s;%s]"):format(layout.map_x + col * (b.w + b.gap),
-			b.y + row * (b.h + b.gap), b.w, b.h, name, esc(layer.label))
-		fs[#fs + 1] = ("tooltip[%s;%s]"):format(name, esc(layer.title))
-	end
+	session.layer_choice = selected
+	fs[#fs + 1] = ("dropdown[3.15,%.2f;3.3,0.6;grug_map_layer;%s;%d;true]"):
+		format(PAD, table.concat(labels, ","), selected)
+	fs[#fs + 1] = "tooltip[grug_map_layer;Choose a map layer — selecting a layer clears the quest selection.]"
 end
 
 -- A new session's state: zoom 1, the map's origin, the soft lock on the
@@ -438,13 +412,14 @@ function W.formspec(player, session, info)
 	local cy = PAD + HEADER_H / 2
 	local right = w - PAD
 	local minimap = grug_map.minimap.available() and
-		("checkbox[%.2f,%.2f;grug_map_minimap;Show minimap;%s]"):format(right - 7.1, cy,
+		("checkbox[%.2f,%.2f;grug_map_minimap;Show minimap;%s]"):format(right - 3.4, cy,
 			tostring(grug_map.minimap.enabled(player))) or
-		("label[%.2f,%.2f;No minimap available]"):format(right - 7.1, cy)
+		("label[%.2f,%.2f;No minimap available]"):format(right - 3.4, cy)
 	local fs = {
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
 		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + header_h),
+		grug_core.ui.readable_padding(player, w, h + header_h),
 		nav,
 		("container[0,%.3f]"):format(header_h),
 		-- The inventory key closes a form unless the focused element eats it
@@ -458,32 +433,37 @@ function W.formspec(player, session, info)
 		("button[1.0,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD),
 		("label[1.75,%.2f;%dx]"):format(cy, zoom),
 		("button[2.35,%.2f;0.6,0.6;grug_map_zoom_in;+]"):format(PAD),
-		("label[3.3,%.2f;Current: %s]"):format(cy, esc(current_zone(player))),
+		grug_core.ui.prose(6.7, PAD, w - 10.5, 0.65, "Current: " .. current_zone(player), true),
 		minimap,
-		("button[%.2f,%.2f;3.2,0.6;grug_map_back;Back to inventory]"):format(right - 3.95, PAD),
 		("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;horizontal;%.5f]"):format(layout.map_x,
-			layout.map_y, layout.map_w, layout.map_h, SCROLL_X, layout.map_w / 1000),
+			layout.map_y, layout.viewport_w, layout.viewport_h, SCROLL_X,
+			atlas.scroll_factor(layout.map_w, layout.viewport_w, zoom)),
 		-- The inner clipper spans the full scaled width so horizontal scrolling
 		-- cannot expose an empty strip after leaving the first viewport.
-		("scroll_container[0,0;%.3f,%.3f;%s;vertical;%.5f]"):format(mw, layout.map_h,
-			SCROLL_Y, layout.map_h / 1000),
+		("scroll_container[0,0;%.3f,%.3f;%s;vertical;%.5f]"):format(math.max(mw, layout.viewport_w), layout.viewport_h,
+			SCROLL_Y, atlas.scroll_factor(layout.map_h, layout.viewport_h, zoom)),
+		("container[%.3f,%.3f]"):format(math.max(0, (layout.viewport_w - mw) / 2),
+			math.max(0, (layout.viewport_h - mh) / 2)),
 		("image[0,0;%.3f,%.3f;%s]"):format(mw, mh, esc(atlas.view().texture)),
 	}
 	overlay(fs, player, session, layout, quest, info)
-	fs[#fs + 1] = "scroll_container_end[]scroll_container_end[]"
+	fs[#fs + 1] = "container_end[]scroll_container_end[]scroll_container_end[]"
 	-- Scrollbar values are transport state: echoed from the last event.
 	local limit = atlas.scroll_limit(zoom)
-	fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=40;largestep=900;thumbsize=%d;arrows=hide]"):
-		format(limit, math.max(1, math.floor((limit + 1) / zoom)))
+	local function bar_options(viewport, image_extent)
+		local fraction = math.min(1, viewport / image_extent)
+		return ("scrollbaroptions[min=0;max=%d;smallstep=40;largestep=900;thumbsize=%d;arrows=hide]"):
+			format(limit, math.max(1, math.floor((limit + 1) * fraction)))
+	end
+	fs[#fs + 1] = bar_options(layout.viewport_w, mw)
 	fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.3f,%.2f;horizontal;%s;%d]"):format(layout.map_x,
-		layout.map_y + layout.map_h + BAR_GAP, layout.map_w, BAR, SCROLL_X, session.scroll_x or 0)
+		layout.map_y + layout.viewport_h + BAR_GAP, layout.viewport_w, BAR, SCROLL_X, session.scroll_x or 0)
+	fs[#fs + 1] = bar_options(layout.viewport_h, mh)
 	fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.2f,%.3f;vertical;%s;%d]"):format(
-		layout.map_x + layout.map_w + BAR_GAP, layout.map_y, BAR, layout.map_h, SCROLL_Y,
+		layout.map_x + layout.viewport_w + BAR_GAP, layout.map_y, BAR, layout.viewport_h, SCROLL_Y,
 		session.scroll_y or 0)
 	fs[#fs + 1] = SCROLLBAR_DEFAULTS
-	layer_buttons(fs, layout, session, quest ~= nil)
-	fs[#fs + 1] = grug_core.ui.panel(layout.column.x - 0.1, layout.column.y - 0.1,
-		layout.column.w + 0.1, layout.column.h + 0.1)
+	layer_selector(fs, layout, session, quest ~= nil)
 	fs[#fs + 1] = quest_box.content(session, journal, layout.column)
 	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)
@@ -688,7 +668,7 @@ function W.handle_fields(player, fields)
 	-- event alone changes nothing else and sends nothing; it holds every
 	-- send for QUIET_US. The player's own scrolling at 2x-8x ends the soft
 	-- lock (atlas.zoom_view, atlas.scroll_event).
-	if atlas.scroll_event(session, fields[SCROLL_X], fields[SCROLL_Y], session.shown_zoom) then
+	if atlas.scroll_event(session, fields[SCROLL_X], fields[SCROLL_Y], session.shown_zoom, session.layout) then
 		session.quiet_until = core.get_us_time() + W.QUIET_US
 	end
 	if fields.grug_map_back then
@@ -704,18 +684,21 @@ function W.handle_fields(player, fields)
 	if fields.grug_map_zoom_in or fields.grug_map_zoom_out then
 		-- The player cannot walk while the window is open: the position at
 		-- the click is the soft lock's centre.
-		atlas.zoom_view(session, fields.grug_map_zoom_in ~= nil, atlas.view(), player:get_pos())
+		atlas.zoom_view(session, fields.grug_map_zoom_in ~= nil, atlas.view(), player:get_pos(), session.layout)
 		changed = true
 	end
 	-- A layer button (ruling 2): that layer, and the quest deselected.
+	local choice = tonumber(fields.grug_map_layer)
+	local requested = choice and choice ~= session.layer_choice and
+		session.layer_ids and session.layer_ids[choice]
 	for _, layer in ipairs(layers.LIST) do
-		if fields["grug_map_layer_" .. layer.id] then
+		if fields["grug_map_layer_" .. layer.id] or requested == layer.id then
 			if session.layer ~= layer.id or session.quest_selected then
 				session.layer = layer.id
                 -- Names need room on the half-width map. Enter this layer at
                 -- 2x; the normal minus button still restores the whole-world view.
                 if layer.zones and (session.zoom or 1) == 1 then
-                    atlas.zoom_view(session, true, atlas.view(), player:get_pos())
+                    atlas.zoom_view(session, true, atlas.view(), player:get_pos(), session.layout)
                 end
 				quest_box.deselect(session)
 				changed = true

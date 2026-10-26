@@ -36,3 +36,19 @@ subdirectories. Extra scenarios accepted by `ONLY` include `quest_ready`
 (real recipe jobs) and `crown_empty`. These alter disposable test state only.
 Use `SEED=12345` for comparable backgrounds; the initial audit used fresh
 random seeds and is not a performance comparison.
+
+## Atlas polish capture set (2026-10-26)
+
+The implementation audit captures the default 69 states plus
+`craft_enchant_selected`, `craft_upgrade_selected`, `book_read`,
+`vendor_repair`, `quest_ready`, `inventory_full`, `effects_active` and
+`party_member` at all three resolutions. These cover real enchant candidates,
+a selected upgrade target, repair quotes, maximum bags, active status icons
+and the current-party view. `map_zoom2` is also available as a focused probe.
+The party companion exists only in a temporary read view, restored immediately;
+repair uses an authored allied camp socket to pass the real provider checks.
+
+For the scale/contrast series set `GUI_SCALE=1.5 SCENES=bright`. Original PNGs
+remain the evidence; inspection crops and reduced contact sheets are derivatives.
+See `docs/planning/ui-polish-implementation.md` for the exact final set, the two
+correction passes and the desktop/web acceptance limits.

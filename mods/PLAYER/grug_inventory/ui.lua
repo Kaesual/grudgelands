@@ -3,23 +3,14 @@
 -- two inventory views. Plus the shared selection style, plain-text wrapping
 -- and the creative Food category.
 --
--- The frame is formspec_version 6 with real coordinates, the same window as
--- the old legacy size[10.4,11.1] frame: a legacy size of W x H is
--- 3/8 + 5/4 (W - 1) + 1 + 3/8 slot units wide and 3/8 + 15/13 (H - 1) + 1 +
--- 3/8 plus two thirds of a button half-height (15/13 * 0.35) high
--- (guiFormSpecMenu.cpp regenerateGui), 13.5 x 13.673 real body units. The
--- modernization adds the shared navigation header above this body. LAYOUT
--- retains seven full-view rows and the money row (the user, 2026-10-09).
--- Every live page starts its content with real_coordinates[true]. The old
--- default switch before content is not a safe legacy-layout contract: in
--- legacy mode the engine rescales the inherited header-container offset.
--- New fragments must use real coordinates throughout. The legacy constants
--- below only derive the retained body size; Map has its own larger window.
+-- Shared real-coordinate body for every inventory page. Map owns its larger
+-- frame; all other pages use the same 20 x 13.5 body below the navigation.
+-- Slots stay native-size. The legacy constants remain only for consumers
+-- that still name historical coordinates; new fragments use real coordinates.
 grug_inventory.UI = {width = 10.4, height = 11.1, inventory_y = 7.2,
 	content_bottom = 7.0}
 local UI = grug_inventory.UI
-UI.frame_w = 3 / 4 + 5 / 4 * (UI.width - 1) + 1
-UI.frame_h = 3 / 4 + 15 / 13 * (UI.height - 1) + 1 + 15 / 13 * 0.35 * 2 / 3
+UI.frame_w, UI.frame_h = 20, 13.5
 
 -- Shared selection treatment for page-local buttons: the selected role
 -- uses the toolkit's brass-accent texture; other buttons use its normal role.
@@ -120,20 +111,17 @@ local SCROLL_FACTOR = 0.125
 local ROW_STEPS = PITCH / SCROLL_FACTOR
 local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 	"largestep=100;thumbsize=1;arrows=default]"
-grug_inventory.VIEW_ROWS = {full = 7, short = 2, station = 3}
+grug_inventory.VIEW_ROWS = {full = 8, short = 2, station = 4}
 
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 	short = "grug_inv_scroll_short", station = "grug_inv_scroll_station"}
 
--- The boxed layout (Round 45 playtest): one box per area with its label
--- inside, top left above the slots, all boxes on one left edge and equally
--- wide. The Inventory tab, top to bottom: Bags and Potion belt side by side,
--- Inventory (the grid and its scrollbar), the money row (no box: the
--- balance, Withdraw, the Bag of Coins deposit, Sort; pages.lua), Hotbar. The
--- group is centred in the window, top and bottom margins equal; it must fit
--- the window, which keeps its size. Every other tab shows the short Inventory
--- box right above the same Hotbar box, its page content above that
--- (VIEW_GEOMETRY.top). Every number is a box edge or a slot corner.
+-- Full inventory: eight visible rows left, Bags/Potion belt/Money right.
+-- The right stack ends at the inventory's bottom. Every page shares one
+-- centered hotbar; subpages keep two rows directly above it. Stations use
+-- the separate narrow geometry and four rows by default (callers may ask
+-- for four to six), with a native scrollbar for additional bag rows.
+
 do
 	local pad, label_h, gap = 0.12, 0.38, 0.1
 	local box_w = SCROLLBAR_DX + SCROLLBAR_W + 2 * pad
@@ -142,19 +130,13 @@ do
 		return label_h + rows * PITCH - (PITCH - SLOT) + pad
 	end
 	local inventory_h = grid_box_h(grug_inventory.VIEW_ROWS.full)
-	local money_h = SLOT
-	local content_h = slot_box_h + gap + inventory_h + gap + money_h + gap +
-		slot_box_h
-	assert(content_h + 2 * gap <= UI.frame_h,
-		"grug_inventory: the Inventory tab's layout must fit the window")
-	local top_y = (UI.frame_h - content_h) / 2
+	local money_h = inventory_h - 2 * slot_box_h - 2 * gap
+	local top_y = 0.35
 	local box_x = (UI.frame_w - box_w) / 2
-	local inventory_y = top_y + slot_box_h + gap
-	local money_y = inventory_y + inventory_h + gap
-	local hotbar_box_y = money_y + money_h + gap
+	local inventory_y = top_y
+	local money_y = top_y + 2 * (slot_box_h + gap)
+	local hotbar_box_y = UI.frame_h - slot_box_h - 0.25
 	local short_h = grid_box_h(grug_inventory.VIEW_ROWS.short)
-	-- A station form (0.49.1 ruling 6): its own content at the top, the
-	-- station view's two boxes below it, `margin` around everything.
 	local margin = 0.4
 	local station_h = grid_box_h(grug_inventory.VIEW_ROWS.station)
 	grug_inventory.STATION = {
@@ -173,6 +155,7 @@ do
 		pad = pad, label_h = label_h, gap = gap,
 		box_x = box_x, box_w = box_w, x = box_x + pad,
 		top_y = top_y, slot_box_h = slot_box_h,
+		full_x = 1.1, side_x = 12.0, side_w = 6.9,
 		inventory_y = inventory_y, inventory_h = inventory_h,
 		money_y = money_y, money_h = money_h,
 		hotbar_box_y = hotbar_box_y, hotbar_y = hotbar_box_y + label_h,
@@ -265,19 +248,23 @@ end
 -- The formspec part of one inventory view, in real coordinates (it switches
 -- them on itself, so it may follow legacy content). mode: "full", "short" or
 -- "station"; `top` (station only) is the y of its Inventory box.
-function grug_inventory.inventory_view(player, mode, context, top)
-	local visible = grug_inventory.VIEW_ROWS[mode]
+function grug_inventory.inventory_view(player, mode, context, top, visible_rows)
+	local visible = visible_rows or grug_inventory.VIEW_ROWS[mode]
 	assert(visible, "inventory_view: unknown mode " .. tostring(mode))
 	local inv = player:get_inventory()
 	local elements, rows = view_elements(inv)
 	local area_h = visible * PITCH - (PITCH - SLOT)
 	local box_x, box_y, box_h = LAYOUT.box_x, LAYOUT.inventory_y, LAYOUT.inventory_h
 	local hotbar_box_y = LAYOUT.hotbar_box_y
+	local hotbar_box_x = LAYOUT.box_x
+	if mode == "full" then box_x = LAYOUT.full_x end
 	if mode == "short" then
 		box_y, box_h = LAYOUT.short_y, LAYOUT.short_h
 	elseif mode == "station" then
 		local station = grug_inventory.STATION
-		box_x, box_y, box_h = station.box_x, top, station.inventory_h
+		box_x, box_y = station.box_x, top
+		box_h = LAYOUT.label_h + area_h + LAYOUT.pad
+		hotbar_box_x = box_x
 		hotbar_box_y = top + box_h + LAYOUT.gap
 	end
 	local area_y = box_y + LAYOUT.label_h
@@ -288,8 +275,8 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	-- The two boxes, drawn first so the lists lie on them.
 	local fs = {"real_coordinates[true]",
 		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory"),
-		grug_inventory.area_box(box_x, hotbar_box_y, LAYOUT.box_w,
-			LAYOUT.slot_box_h, "Hotbar"),
+		grug_inventory.area_box(hotbar_box_x, hotbar_box_y, LAYOUT.box_w,
+			LAYOUT.slot_box_h, "Active hotbar"),
 	}
 
 	local max = grug_inventory.view_scroll_max(rows, visible)
@@ -322,6 +309,7 @@ function grug_inventory.inventory_view(player, mode, context, top)
 	end
 	fs[#fs + 1] = "scroll_container_end[]"
 
+	view_x = hotbar_box_x + LAYOUT.pad
 	-- The hotbar in its shared panel: the engine's hotbar cell art under each
 	-- slot and the first eight cells of main.
 	for index = 0, 7 do
@@ -420,20 +408,22 @@ end
 function grug_inventory.station_box(label, inner_h)
 	local station = grug_inventory.STATION
 	local h = LAYOUT.label_h + inner_h + LAYOUT.pad
-	return grug_inventory.area_box(station.box_x, station.margin, station.box_w, h,
-		label), station.margin + h
+	return grug_core.ui.heading(station.x, station.margin + LAYOUT.label_h / 2,
+		string.upper(label)), station.margin + h
 end
 
 -- The whole station form: the header, `content` (real coordinates, ending
 -- at `content_h`), the station view below it and the bag rings.
-function grug_inventory.station_formspec(player, content, content_h, context)
+function grug_inventory.station_formspec(player, content, content_h, context, visible_rows)
 	local station = grug_inventory.STATION
 	local top = content_h + LAYOUT.gap
+	local rows = visible_rows or grug_inventory.VIEW_ROWS.station
+	local view_h = LAYOUT.label_h + rows * PITCH - (PITCH - SLOT) + LAYOUT.pad +
+		LAYOUT.gap + LAYOUT.slot_box_h
 	return table.concat({
-		("formspec_version[6]size[%.3f,%.3f]"):format(station.width,
-			top + station.view_h + station.margin),
+		grug_core.ui.frame(station.width, top + view_h + station.margin, nil, nil, player),
 		content,
-		grug_inventory.inventory_view(player, "station", context, top),
+		grug_inventory.inventory_view(player, "station", context, top, rows),
 		bag_rings(player, content),
 	})
 end
@@ -451,7 +441,7 @@ function sfinv.make_formspec(player, context, content, show_inv)
 	context.grug_inv_view = mode
 	-- Body coordinates remain local to this container below the navigation.
 	return table.concat({
-		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h),
+		grug_core.ui.frame(UI.frame_w, UI.frame_h + header_h, nil, nil, player),
 		nav,
 		("container[0,%.3f]"):format(header_h),
 		mode and grug_inventory.inventory_view(player, mode, context) or "",

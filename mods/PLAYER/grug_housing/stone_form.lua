@@ -207,7 +207,7 @@ end
 local function waypoints_formspec(player, session, home, header)
 	local rows = home.known_waypoints(player)
 	local height = 2.6 + 0.7 * math.max(1, #rows)
-	local fs = {theme.frame(10.75, height + TAB_OFFSET), header,
+	local fs = {theme.frame(10.75, height + TAB_OFFSET, nil, nil, player), header,
 		"container[0," .. TAB_OFFSET .. "]",
 		theme.heading(0.4, 0.5, "Travel from your Claim Stone")}
 	for index, row in ipairs(rows) do
@@ -236,7 +236,7 @@ local function fill_recovered(name)
 	for index, entry in ipairs(entries) do
 		keys[index], stacks[index] = entry.key, entry.stack
 	end
-	inv:set_size(RECOVERED, math.max(8, math.ceil(#entries / 8) * 8))
+	inv:set_size(RECOVERED, #entries)
 	inv:set_list(RECOVERED, stacks)
 	slot_keys[name] = keys
 	return #entries
@@ -287,7 +287,7 @@ local function belongings_formspec(player, session, header)
 		station.box_x + station.box_w - 3.1, y)
 	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, RECOVERED)
 	fs[#fs + 1] = "container_end[]"
-	return grug_inventory.station_formspec(player, table.concat(fs), y + 0.8 + TAB_OFFSET, session)
+	return grug_inventory.station_formspec(player, table.concat(fs), y + 0.8 + TAB_OFFSET, session, 3)
 end
 
 local function main_formspec(player, claim, session)
@@ -319,39 +319,40 @@ local function main_formspec(player, claim, session)
 	if session.selected and not session.names[session.selected] then
 		session.selected = nil
 	end
-	fs[#fs + 1] = theme.panel(0.25, 2.85, 10.25, 3.25)
+	fs[#fs + 1] = theme.panel(0.25, 2.85, 5.65, 2.65) .. theme.panel(6.0, 2.85, 4.5, 2.65)
 	fs[#fs + 1] = theme.heading(0.4, 3.0, "Access for other players")
 	if #entries == 0 then
-		fs[#fs + 1] = "textlist[0.4,3.3;5.4,2.65;perm_list;#999999Nobody else has access.;0;false]"
+		fs[#fs + 1] = "textlist[0.4,3.3;5.2,1.15;perm_list;#999999Nobody else has access.;0;false]"
 	else
-		fs[#fs + 1] = ("textlist[0.4,3.3;5.4,2.65;perm_list;%s;%d;false]"):format(
+		fs[#fs + 1] = ("textlist[0.4,3.3;5.2,1.15;perm_list;%s;%d;false]"):format(
 			table.concat(entries, ","), session.selected or 0)
 	end
-	fs[#fs + 1] = ("field[6.1,3.6;4.25,0.7;perm_name;Player name;%s]"):format(
+	fs[#fs + 1] = theme.input_background(6.2, 3.6, 4.05, 0.7, "perm_name")
+	fs[#fs + 1] = ("field[6.2,3.6;4.05,0.7;perm_name;Player name;%s]"):format(
 		ui.esc(session.typed or ""))
 	fs[#fs + 1] = "field_close_on_enter[perm_name;false]"
-	fs[#fs + 1] = "button[6.1,4.45;2.05,0.7;perm_interact;Interact]"
-	fs[#fs + 1] = "button[8.3,4.45;2.05,0.7;perm_everything;Everything]"
-	fs[#fs + 1] = "button[6.1,5.25;4.25,0.7;perm_remove;Remove access]"
+	fs[#fs + 1] = "button[6.2,4.5;1.85,0.65;perm_interact;Interact]"
+	fs[#fs + 1] = "button[8.15,4.5;2.1,0.65;perm_everything;Everything]"
+	fs[#fs + 1] = "button[0.4,4.65;3.2,0.65;perm_remove;Remove access]"
 	fs[#fs + 1] = "tooltip[perm_interact;" ..
 		ui.esc("Doors, gates, chests, furnaces and stations") .. "]"
 	fs[#fs + 1] = "tooltip[perm_everything;Also building and digging]"
 	if session.message then
-		fs[#fs + 1] = ("label[0.4,6.3;%s]"):format(ui.text(session.message,
+		fs[#fs + 1] = ("label[0.4,5.65;%s]"):format(ui.text(session.message,
 			session.message_color))
 	end
-	fs[#fs + 1] = "button[0.4,6.75;3.1,0.8;pick_up;Pick up stone]"
+	fs[#fs + 1] = "button[0.4,5.85;3.1,0.8;pick_up;Pick up stone]"
 	local home = rawget(_G, "grug_home")
 	if home and type(home.set_home_claim) == "function" then
-		fs[#fs + 1] = "button[3.8,6.75;3.1,0.8;set_home;Set as home]"
+		fs[#fs + 1] = "button[3.8,5.85;3.1,0.8;set_home;Set as home]"
 	end
-	fs[#fs + 1] = "button_exit[7.25,6.75;3.1,0.8;close;Close]"
+	fs[#fs + 1] = "button_exit[7.25,5.85;3.1,0.8;close;Close]"
 	fs[#fs + 1] = ("listring[%s;%s]listring[current_player;main]"):format(inv, LIST)
 	-- The player's whole combined bag below (0.49.1 ruling 6); the session
 	-- keeps its scroll position.
 	fs[#fs + 1] = "container_end[]"
-	return grug_inventory.station_formspec(player, table.concat(fs), 6.75 + 0.8 + TAB_OFFSET,
-		session)
+	return grug_inventory.station_formspec(player, table.concat(fs), 5.85 + 0.8 + TAB_OFFSET,
+		session, 2)
 end
 
 local function confirm_formspec(draft)

@@ -11,14 +11,14 @@ local function esc(text)
 	return core.formspec_escape(tostring(text or ""))
 end
 
--- The geometry (D5, d5-geometry.md): the tree tabs share the header row
--- (0.15-0.75) with the points and the respec control; the tab content
--- rectangle is 13 x 5.5 at (0.25, 0.95), drawn at 80 px per unit (1040 x 440
--- art); seven gate rows of node_h with row_gap between them, centred in it;
--- the description strip below it, above the skill row.
-graph.PAGE = {x = 0.25, y = 0.95, w = 13.0, h = 5.5, pad = 0.5, col_gap = 0.3,
-	node_h = 0.6, row_gap = 0.18, line = 0.06, strip_y = 6.5, strip_h = 0.65,
-	tab_w = 2.6, tab_gap = 0.1}
+-- The tree menu sits left of the complete artwork, with points at its foot.
+-- Artwork keeps its original aspect ratio and fills its own area. The hint
+-- strip and unframed native skill row follow below, above the two inventory
+-- rows shared with other pages. Graph nodes and connectors use this one
+-- geometry; no talent coordinates or purchasing rules change.
+graph.PAGE = {x = 5.4, y = 0.25, w = 14.35, h = 6.07, pad = 0.5, col_gap = 0.3,
+	node_h = 0.68, row_gap = 0.18, line = 0.06, strip_y = 6.36, strip_h = 0.6,
+	tab_w = 4.7, tab_gap = 0.1}
 local PLAIN_BACKGROUND = "#101318c8"
 local GATE_COLOR = "#a0a0a0"
 
@@ -201,7 +201,7 @@ function graph.page_content(viewer, view)
 	local tree = view.trees[view.tab]
 	local fs = {
 		"real_coordinates[true]",
-		grug_core.ui.panel(0.2, 0.1, 13.1, 7.1),
+		grug_core.ui.panel(0.25, page.y, 4.9, page.h),
 		-- An invisible button takes the focus at every send, so the read-only
 		-- strip never does (it would eat the inventory key; talents_ui.lua).
 		"set_focus[grug_graph_focus;true]button[0,0;0,0;grug_graph_focus;]",
@@ -209,14 +209,14 @@ function graph.page_content(viewer, view)
 	for index, other in ipairs(view.trees) do
 		local field = "grug_graph_tab_" .. index
 		fs[#fs + 1] = grug_inventory.selected_button_style(field, index == view.tab)
-		fs[#fs + 1] = ("button[%.2f,0.15;%.2f,0.60;%s;%s]"):format(
-			page.x + (index - 1) * (page.tab_w + page.tab_gap), page.tab_w, field,
+		fs[#fs + 1] = ("button[0.35,%.2f;%.2f,0.65;%s;%s]"):format(
+			page.y + 0.15 + (index - 1) * 0.8, page.tab_w, field,
 			esc(("%s (%d)"):format(other.name, graph.tree_points(view.ranks, other.id))))
 		fs[#fs + 1] = ("tooltip[%s;%s]"):format(field,
 			esc(grug_inventory.wrap_text(other.description, 58)))
 	end
 	fs[#fs + 1] = "style_type[label;font_size=*0.8]"
-	fs[#fs + 1] = ("label[5.75,0.45;%s]"):format(esc(view.points_text or ""))
+	fs[#fs + 1] = ("label[0.5,%.2f;%s]"):format(page.y + page.h - 0.3, esc(view.points_text or ""))
 	fs[#fs + 1] = view.header or ""
 	fs[#fs + 1] = "style_type[label;font_size=*1]"
 

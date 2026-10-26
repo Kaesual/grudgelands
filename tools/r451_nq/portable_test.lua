@@ -54,9 +54,9 @@ do
 		register_on_player_receive_fields = function(fn) handler = fn end,
 		register_on_leaveplayer = function() end,
 		register_entity = function() end,
-		explode_textlist_event = function(text)
-			local kind, index = text:match("^(%u+):(%d+)$")
-			return {type = kind, index = tonumber(index)}
+		explode_table_event = function(text)
+			local kind, index = text:match("^(%u+):(%d+):%d+$")
+			return {type = kind, row = tonumber(index)}
 		end,
 	}
 	grug_sounds = {play = function(event) sounds[#sounds + 1] = event end}
@@ -94,7 +94,7 @@ do
 	local entity = {_grug_start = "s", _grug_socket = "1", object = {is_valid = function() return true end,
 		get_pos = function() return {x = 0, y = 0, z = 0} end}}
 	local function on_row()
-		return tonumber(shown:match("textlist%[[^%]]-;quests;[^%]]-;(%d+);true%]"))
+		return tonumber(shown:match("table%[[^%]]-;quests;[^%]]-;(%d+)%]"))
 	end
 	local function shows(id) return shown:find("Text " .. id, 1, true) ~= nil end
 	local function row(id, status) return {id = id, title = "T " .. id, status = status} end
@@ -116,18 +116,18 @@ do
 	eq(#sounds, 1, "Q the first open plays its cue")
 	eq(sounds[1], "npc_quest", "Q ...the quest giver's cue")
 	local focus = shown:find("set_focus[close;true]", 1, true)
-	local close = shown:find("button_exit[13.45,10.55;2,0.55;close;Close]", 1, true)
+	local close = shown:find("button_exit[0.5,9.3;2,0.55;close;Close]", 1, true)
 	check(focus ~= nil and close ~= nil and focus < close, "Q Close holds the focus (set before it)")
 
 	-- A click in the list shows the clicked row, without the open cue.
-	handler(player, "grug_quests:dialogue", {quests = "CHG:1"})
+	handler(player, "grug_quests:dialogue", {quests = "CHG:1:2"})
 	eq(on_row(), 1, "Q a click shows the clicked row")
 	check(shown:find("accept;Accept]", 1, true) ~= nil, "Q ...an available quest with Accept")
 	eq(#sounds, 2, "Q a click plays the page cue only")
 	eq(sounds[2], "quest_page", "Q ...the page cue")
 
 	-- Complete: the quest leaves the list; the next ready quest is preselected.
-	handler(player, "grug_quests:dialogue", {quests = "CHG:3"})
+	handler(player, "grug_quests:dialogue", {quests = "CHG:3:2"})
 	Q.turn_in = function(_, id)
 		for index, r in ipairs(rows) do if r.id == id then table.remove(rows, index) end end
 		return true, "Quest completed."
@@ -146,7 +146,7 @@ do
 	-- A failed Complete stays on its quest.
 	rows = {row("q1", "available"), row("q2", "ready"), row("q3", "ready")}
 	Q.open_npc(player, entity)
-	handler(player, "grug_quests:dialogue", {quests = "CHG:3"})
+	handler(player, "grug_quests:dialogue", {quests = "CHG:3:2"})
 	Q.turn_in = function() return false, "Your coin purse cannot hold the reward." end
 	handler(player, "grug_quests:dialogue", {turnin = "Complete"})
 	eq(on_row(), 3, "Q a failed Complete stays on its quest")

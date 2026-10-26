@@ -32,7 +32,7 @@ local function vessels_shelf_formspec(pos, player, context)
 				x + (i - 1) % 8 * pitch, y + math.floor((i - 1) / 8) * pitch)
 		end
 	end
-	return grug_inventory.station_formspec(player, formspec, bottom, context)
+	return grug_inventory.station_formspec(player, formspec, bottom, context, 6)
 end
 
 local function update_vessels_shelf(pos)

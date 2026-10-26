@@ -215,7 +215,7 @@ items without one:
 - It lists what the player carries in `main`, the bags and the inactive
   hotbar layout, with no marker (`grug_inventory.consume_lists`, the lists
   every consumer counts and takes from; Round 56 ruling 8). A good that
-  sells singly keeps one row per slot with **1** and **All**, at its quality
+  sells singly keeps one row per slot with **1**, **5**, **10** and **All**, at its quality
   factor. A **lot good** gets **one row per item name**, its count summed
   over those lists
   (30 + 30 Cobblestone make a lot of 50), e.g. `Cobblestone x143` ·
@@ -226,7 +226,9 @@ items without one:
 - Hovering a row's item image shows the item tooltip with the stack's own
   description (quality, enchants; a lot row shows its first stack's), as
   the mail attachments do (Round 49).
-- **All** sells as many whole lots as the player carries and leaves the
+- The quantity buttons count items for single goods and whole lots for lot
+  goods; unavailable quantities are not actionable. **All** sells as many
+  whole lots as the player carries and leaves the
   rest: `Sold 100 Cobblestone for 2c. 43 left.` The units are taken with the
   engine's `remove_item`, list by list, only after every check has passed.
 - Security as for every trade action: the row is recomputed server-side on

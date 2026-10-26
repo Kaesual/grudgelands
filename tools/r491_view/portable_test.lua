@@ -8,7 +8,7 @@
 -- fake engine, for players with 0, 1 and 4 bags it checks per form:
 --   L  the lists: formspec_version 6 and the station width; the station's
 --      own lists above the view; main[9..] and every bag's content list in
---      one scroll_container three rows high; the hotbar main[1..8] below it,
+--      one scroll_container with the approved visible rows; the hotbar main[1..8] below it,
 --      outside the scroll area, the only player list outside it;
 --   R  the rings: a station list -> the inbox, main -> the station's list as
 --      before, every bag -> the same list as main (none for an empty slot);
@@ -337,7 +337,9 @@ local function check_form(label, player, fs, station)
 	check(form.container, label .. ": L a scroll container")
 	if not form.container then return form end
 	eq(form.field, SCROLL, label .. ": L the station view's scroll field")
-	eq(form.ch, 3 * PITCH - 0.25, label .. ": L three rows visible")
+	local visible = label:find("furnace", 1, true) and 5 or
+		(label:find("shelf", 1, true) and 6 or label:find("stone", 1, true) and 2 or 4)
+	eq(form.ch, visible * PITCH - 0.25, label .. ": L approved visible rows")
 	-- main[9..] and the bags, in order, inside the scroll area.
 	local seen, slots = {}, {}
 	for _, l in ipairs(form.inner) do
@@ -392,10 +394,10 @@ local function check_form(label, player, fs, station)
 end
 
 -- The scroll range of a player's view: rows beyond three, ten units each.
-local function scroll_max(player)
+local function scroll_max(player, visible)
 	local slots = 24
 	for _, list in ipairs(bag_lists(player)) do slots = slots + player:get_inventory():get_size(list) end
-	return math.max(0, math.ceil(slots / 8) - 3) * 10
+	return math.max(0, math.ceil(slots / 8) - visible) * 10
 end
 
 -- Stand the player beside `pos` (node_formspec and the workspaces check the
@@ -433,7 +435,7 @@ local function node_form_case(label, node, station, bags_key, prepare)
 	eq(last and last.form, NODE_FORM, label .. " " .. bags_key .. ": opens through node_formspec")
 	local fs = last and last.formspec or ""
 	local form = check_form(label .. " " .. bags_key, player, fs, station)
-	local max = scroll_max(player)
+	local max = scroll_max(player, (form.ch + 0.25) / PITCH)
 	eq(form.scroll, max > 0 and 0 or nil, label .. " " .. bags_key ..
 		": S a scrollbar only when the bags need one, at the top")
 	if max > 0 then
@@ -538,9 +540,9 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 	local label = "stone " .. bags_key
 	check_form(label, player, fs, {location = "detached:grug_housing_fuel_" .. name,
 		lists = {"fuel"}, target = "fuel", inbox = false})
-	check(fs:find("button_exit[7.25,6.75;3.1,0.8;close;Close]", 1, true) ~= nil,
+	check(fs:find("button_exit[7.25,5.85;3.1,0.8;close;Close]", 1, true) ~= nil,
 		label .. ": the stone's own content is kept")
-	local max = scroll_max(player)
+	local max = scroll_max(player, 2)
 	if max > 0 then
 		local before = #shown
 		check(submit(player, "grug_housing:stone", {[SCROLL] = "CHG:10", perm_name = "zed"}),
@@ -592,7 +594,7 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 			label .. ": the fire at its fraction")
 		check(fs:find(";grug_furnace_arrow;grug_inventory_furnace_arrow.png;40;500;15]", 1, true),
 			label .. ": the arrow at its fraction")
-		local max = scroll_max(player)
+		local max = scroll_max(player, 5)
 		if max > 0 then
 			local before = #shown
 			check(submit(player, WORKSPACE, {[SCROLL] = "CHG:10"}), label .. ": S the scroll event is handled")

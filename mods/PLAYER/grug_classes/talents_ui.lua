@@ -73,14 +73,14 @@ end
 -- The respec control in the header row, right of the points.
 local function respec_header(player, context)
 	if grug_classes.talent_points_spent(player) <= 0 then
-		return "label[9.90,0.45;" .. esc("No ranks spent") .. "]"
+		return "label[0.50,5.35;" .. esc("No ranks spent") .. "]"
 	elseif context.grug_talent_respec_pending then
-		return "button[9.90,0.15;1.60,0.60;grug_talent_respec_confirm;Confirm]" ..
-			"button[11.60,0.15;1.65,0.60;grug_talent_respec_cancel;Cancel]"
+		return "button[0.50,5.05;2.0,0.60;grug_talent_respec_confirm;Confirm]" ..
+			"button[2.65,5.05;2.0,0.60;grug_talent_respec_cancel;Cancel]"
 	end
 	local price = grug_classes.respec_price(player)
 	local price_text = price == 0 and "Free" or grug_money.format(price)
-	return "button[9.90,0.15;3.35,0.60;grug_talent_respec;" ..
+	return "button[0.50,5.05;4.1,0.60;grug_talent_respec;" ..
 		esc("Respec: " .. price_text) .. "]"
 end
 

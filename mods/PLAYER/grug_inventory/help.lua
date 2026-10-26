@@ -75,7 +75,7 @@ local SECTIONS = {
 		"• Nobody can dig or place blocks in capitals, start towns and the treeless strip around them (only grass and low plants grow there, so you can see where the protection ends). This applies from 100 blocks below the town up to the sky; deeper down the normal rules apply.",
 		"• In the level 1-30 zones only their own faction may dig and build. Zones of level 31 and above, and everything below y -500, are open to both factions.",
 	})},
-	{id = "quests", label = "Quests & Professions", x = 1.3, w = 2.9, text = body({
+	{id = "quests", label = "Story & Craft", tooltip = "Quests & Professions", x = 1.3, w = 2.9, text = body({
 		heading("Quests"),
 		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = needs a higher level. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
 		"• Story quests have violet symbols and their own \"Story\" heading in the quest lists; the rest are side quests you can take in any order.",
@@ -221,12 +221,12 @@ grug_inventory.LINKS = LINKS
 -- All Help sections share the inventory body's real-coordinate bounds.
 -- The text scrolls natively; copyable URL rows keep their actual addresses.
 local BUTTON_Y, BUTTON_H = 0.3, 0.7
-local BODY_X, BODY_Y, BODY_W = 0.45, 1.3, 12.6
-local BODY_H = 11.9
+local BODY_X, BODY_Y, BODY_W = 4.0, 0.55, 15.4
+local BODY_H = 12.4
 local ABOUT_BODY_H = 2.5
-local SOUND_BODY_Y, SOUND_BODY_H = 3.85, 9.35
+local SOUND_BODY_Y, SOUND_BODY_H = 3.1, 9.85
 local LINK_Y, LINK_STEP = 4.0, 1.55
-local LINK_FIELD_W, LINK_BUTTON_X, LINK_BUTTON_W, LINK_H = 9.8, 10.7, 2.1, 0.65
+local LINK_FIELD_W, LINK_BUTTON_X, LINK_BUTTON_W, LINK_H = 12.0, 16.5, 2.7, 0.65
 
 local SECTION_BY_ID = {}
 local BODIES = {}
@@ -282,14 +282,18 @@ local function help_content(player, context)
 	-- inventory key. Forced: unforced, it would not apply when the inventory
 	-- key opens the window.
 	local fs = {"real_coordinates[true]",
-		grug_core.ui.panel(0.2, 1.15, 13.1, 12.3),
+		grug_core.ui.panel(0.2, 0.2, 3.3, 13.0),
+		grug_core.ui.panel(3.7, 0.2, 16.1, 13.0),
 		("set_focus[grug_help_%s;true]"):format(selected)}
-	for _, section in ipairs(SECTIONS) do
+	for index, section in ipairs(SECTIONS) do
 		local field = "grug_help_" .. section.id
 		fs[#fs + 1] = grug_inventory.selected_button_style(field,
 			section.id == selected)
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
-			0.25 + section.x * 1.24, BUTTON_Y, section.w * 1.24 - 0.08, BUTTON_H, field, esc(section.label))
+			0.35, BUTTON_Y + (index - 1) * 0.85, 3.0, BUTTON_H, field, esc(section.label))
+		if section.tooltip then
+			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(section.tooltip))
+		end
 	end
 	if selected == "sound" then fs[#fs + 1] = sound_controls(player) end
 	fs[#fs + 1] = body_of(selected)

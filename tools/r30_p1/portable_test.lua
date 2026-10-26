@@ -280,7 +280,7 @@ dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
 	BOX_COLOR = "#00000040", -- ui.lua's (Round 45 playtest)
-	VIEW_GEOMETRY = {top = 9.1365}, -- the short view's box top (ui.lua)
+	VIEW_GEOMETRY = {top = 8.9}, -- the short view's box top (ui.lua)
 	UI = {width = 10.4, height = 11.1},
 	-- Round 44: quest drops go through grug_inventory.give (main-only here).
 	give = function(player, stack) return player:get_inventory():add_item("main", stack) end,
@@ -810,9 +810,9 @@ do
 	sfinv.contexts.kay = ctx
 	home_left, home_pending, has_home = 0, false, true
 	sfinv.set_player_inventory_formspec(kay, ctx)
-	local button = "button[0.50,8.24;5.75,0.65;grug_character_home;"
+	local button = "button[0.50,8.00;8.85,0.65;grug_character_home;"
 	check(kay.form:find(button .. "Return home (Ready)]", 1, true) and
-		kay.form:find("label[0.50,7.94;Home: Inn]", 1, true),
+		kay.form:find("label[0.50,7.70;Home: Inn]", 1, true),
 		"K the gear box shows Home: Inn and Return home (Ready)")
 	local function second() character_step(1.0) end
 	kay.sends = 0

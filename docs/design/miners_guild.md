@@ -147,8 +147,9 @@ one picture.
   exchanged.
 - **Proposal (the mechanism; built by lane REP):** like the vendor's Sell tab
   for lot goods: one row per exchanged item the player carries in
-  `grug_inventory.consume_lists` (counts summed), "N points per L", a button
-  that trades every whole lot and leaves the rest. No quality factor, wear
+  `grug_inventory.consume_lists` (counts summed), "N points per L", and **1 / 5 / 10 / All**
+  whole-lot choices that leave the remainder. Unavailable quantities cannot
+  be clicked. No quality factor, wear
   ignored. Built as the vendor window's **Trade-in** mode, shown by a vendor
   whose definition (`grug_traders.vendors`) carries `guild = true`; the window
   opens on it and shows the guild, the rank and the balance.
@@ -191,7 +192,8 @@ one picture.
   reputation and the row's use level ("Use from level 21"); a locked row is
   greyed, has no button and says "Reach Reputation Rank N" (its prices
   shown). A purchase that fails (rank, balance, a full bag) spends nothing
-  and says why. Its **Repair** button opens the repair form
+  and says why. Its **Repair** tab stays within the vendor window and uses the same quotes
+  and authorization as the standalone repair form
   ([durability_repair.md](durability_repair.md)). The Miner's Guild
   Exchange (`grug_traders:guild_exchange`, the hall's exchange socket) opens
   on Trade-in, buys like every vendor, and its Buy mode says "The Miner's
@@ -488,7 +490,7 @@ and the GUI checklist ("the winged cloak at rank 10, admin-set") is REP's:
 | Function | Returns |
 |---|---|
 | `grug_guild.trade_in_rows(player)` | rows in catalogue order for every exchanged item carried in `grug_inventory.consume_lists`: `{item, count, lot, points, lots, total, rest}` (`lots = floor(count / lot)`, `total = lots × points`, `rest = count − lots × lot`) |
-| `grug_guild.trade_in(player, item)` | `points, lifetime, balance`, or `nil, err` (`"no_faction"`, `"not_exchanged"`, `"too_few"`): takes every whole lot after every check (as the Sell tab's All), recomputed server-side, then `add(player, total, "trade_in")` |
+| `grug_guild.trade_in(player, item, requested_lots)` | `points, lifetime, balance`, or `nil, err` (`"no_faction"`, `"not_exchanged"`, `"too_few"`): takes the requested positive integer number of whole lots (omitted means All); rejects malformed or unavailable amounts before removal, recomputed server-side, then `add(player, total, "trade_in")` |
 
 ### 10.5 The effect (`effect.lua`, CONSUME)
 

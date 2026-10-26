@@ -112,24 +112,26 @@ local function formspec(session, player)
 	end
 	local shift = #lines > #LINES and 0.6 or 0
 	local UI = grug_core.ui
-	local fs = {UI.frame(12, 7.4 + shift), "set_focus[close;true]", UI.service_header(12, "Housing Steward", "Your place in the world"),
-		UI.panel(0.4, 1.65, 5.5, 3.9), UI.panel(6.1, 1.65, 5.5, 3.9),
-		UI.heading(0.65, 2.0, "YOUR CLAIM"), UI.heading(6.35, 2.0, "KEEP IT FUELLED"),
-		UI.prose(0.65, 2.3, 5, 3, LINES[1] .. "\n\n" .. LINES[2] .. "\n\n" .. LINES[3] .. " " .. LINES[4]),
-		UI.prose(6.35, 2.3, 5, 3, table.concat(LINES, "\n", 5, #LINES))}
-	if shift > 0 then fs[#fs + 1] = UI.prose(0.5, 5.65, 11, 0.6, lines[#lines]) end
-	fs[#fs + 1] = "style_type[label;font_size=*0.85]"
+	local fs = {UI.frame(11.5, 8.6 + shift, nil, nil, player), "set_focus[close;true]",
+		UI.service_header(11.5, "Housing Steward", "Your place in the world"),
+		UI.panel(0.4, 1.6, 10.7, 5.4),
+		UI.heading(0.65, 1.95, "01 · RECEIVE YOUR CLAIM STONE"),
+		UI.prose(0.65, 2.2, 10.2, 0.6, LINES[1]),
+		UI.heading(0.65, 3.0, "02 · PLACE AND ACTIVATE"),
+		UI.prose(0.65, 3.25, 10.2, 1.25, LINES[2] .. "\n" .. LINES[3] .. " " .. LINES[4]),
+		UI.heading(0.65, 4.75, "03 · KEEP IT FUELLED"),
+		UI.prose(0.65, 5.0, 10.2, 1.65, table.concat(LINES, "\n", 5, #LINES))}
+	if shift > 0 then fs[#fs + 1] = UI.prose(0.5, 7.1, 10.5, 0.6, lines[#lines]) end
 	if session.message then
-		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(5.95 + shift, ui.text(session.message,
-			session.message_color))
+		fs[#fs + 1] = UI.prose(0.4, 7.05 + shift, 10.6, 0.6, core.colorize(session.message_color or ui.GREEN, session.message))
 	end
 	local ok, reason = grug_housing.can_receive_stone(player)
 	if ok then
-		fs[#fs + 1] = ("button[0.4,%g;3.4,0.6;receive;Receive Claim Stone]"):format(6.35 + shift)
+		fs[#fs + 1] = ("button[7.7,%g;3.4,0.6;receive;Receive Claim Stone]"):format(7.7 + shift)
 	else
-		fs[#fs + 1] = ("label[0.4,%g;%s]"):format(6.6 + shift, ui.esc(reason))
+		fs[#fs + 1] = UI.prose(3.0, 7.7 + shift, 8.1, 0.65, reason, true)
 	end
-	fs[#fs + 1] = ("button_exit[9.8,%g;1.7,0.6;close;Close]"):format(6.35 + shift)
+	fs[#fs + 1] = ("button_exit[0.4,%g;1.7,0.6;close;Close]"):format(7.7 + shift)
 	return table.concat(fs)
 end
 

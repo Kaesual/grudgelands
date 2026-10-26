@@ -753,15 +753,15 @@ do
 	lacks(fs, "grug_craft_box_enchant", "T no box buttons in Basic")
 	weaponsmith_area(smith)
 	fs = smith.formspec
-	has(fs, "grug_craft_box_enchant;Enchant an item]", "T the enchant button in a learned primary")
-	has(fs, "grug_craft_box_upgrade;Upgrade an item]", "T the upgrade button")
+	has(fs, "grug_craft_box_enchant;Enchant]", "T the enchant button in a learned primary")
+	has(fs, "grug_craft_box_upgrade;Upgrade]", "T the upgrade button")
 	-- Round 45 playtest fix 3: ordinary buttons (the pane and its border),
 	-- not the borderless tab style that read as text; the open box's button
 	-- gold.
 	lacks(fs, "style[grug_craft_box_", "T no style on the closed boxes' buttons")
-	has(fs, "button[0.2,8.45;2.45,0.59;grug_craft_box_enchant;", "T the enchant button's size")
-	has(fs, "button[2.75,8.45;2.45,0.59;grug_craft_box_upgrade;", "T the upgrade button's size")
-	has(fs, "button[0.2,7.85;0.8,0.55;grug_craft_prev;<]", "T the pager above them")
+	has(fs, "button[0.2,8.05;2.95,0.75;grug_craft_box_enchant;", "T the enchant button's size")
+	has(fs, "button[3.25,8.05;2.95,0.75;grug_craft_box_upgrade;", "T the upgrade button's size")
+	has(fs, "button[0.2,7.45;0.8,0.55;grug_craft_prev;<]", "T the pager above them")
 	local sent = smith.sent
 	click(smith, {grug_craft_box_enchant = "Enchant an item"})
 	eq(st_of(smith).box, "enchant", "T the button opens the enchant box")
@@ -936,11 +936,11 @@ do
 	choose(smith, "T3 prefix: +5 Strength")
 	fs = smith.formspec
 	local expected = Q.operation_plan(STR_T3, sword, smith).output
-	has(fs, "tooltip[7.9,1.6;1,1;" .. fs_escape(expected:get_meta():get_string("description")) .. "]",
+	has(fs, "tooltip[9.1,1.6;1,1;" .. fs_escape(expected:get_meta():get_string("description")) .. "]",
 		"E the preview's tooltip is the computed description")
 	local image = expected:get_meta():get_string("inventory_image")
 	check(image ~= "", "E the result has its enchant image")
-	has(fs, "image[7.95,1.65;0.9,0.9;" .. fs_escape(image) .. "]", "E the preview shows it")
+	has(fs, "image[9.15,1.65;0.9,0.9;" .. fs_escape(image) .. "]", "E the preview shows it")
 	has(fs, go(smith, OF.enchant) .. ";Enchant now]", "E Enchant now is enabled")
 	says(fs, "Crafting this will give you a Weaponsmith experience point", "E the XP hint")
 	local crafts_before = J.crafts_in_tier(smith, "weaponsmith")
@@ -1381,12 +1381,12 @@ local function rects(part)
 	return out
 end
 -- (Round 57 layout C: the box spans to the frame's edge.)
-local COLUMNS = {{0.2, 5.2}, {5.4, 13.3}}
+local COLUMNS = {{0.2, 6.2}, {6.6, grug_inventory.UI.frame_w - 0.2}}
 local function geometry_ok(fs, label)
 	local ok = true
 	for _, r in ipairs(rects(content(fs))) do
 		local right, bottom = r.x + r.w, r.y + r.h
-		if r.x < 0 or r.y < 0 or right > 13.5 + 1e-6 or
+		if r.x < 0 or r.y < 0 or right > grug_inventory.UI.frame_w + 1e-6 or
 				bottom > grug_inventory.VIEW_GEOMETRY.top - 0.1 + 0.01 then
 			ok = check(false, ("%s: %s at %.2f,%.2f+%.2f,%.2f leaves the page area"):format(
 				label, r.name, r.x, r.y, r.w, r.h))
@@ -1400,7 +1400,7 @@ local function geometry_ok(fs, label)
 			-- The box's own labels end above its bottom row (the big button,
 			-- the levels row; Round 57), which ends above the job strip.
 			local button_y = grug_jobs.CRAFT_STRIP_Y - 0.1 - grug_jobs.CRAFT_ACTION.h
-			if r.x >= 5.4 and r.name == "label" and r.y < button_y - 1e-6 and
+			if r.x >= grug_jobs.CRAFT_BOX.x and r.name == "label" and r.y < button_y - 1e-6 and
 					r.y + r.h > button_y + 1e-6 then
 				ok = check(false, ("%s: label %q at %.2f runs into the button"):format(label,
 					r.text or "", r.y))
@@ -1418,8 +1418,9 @@ local function box_part(fs)
 	local box = grug_jobs.CRAFT_BOX
 	local from = part:find(grug_core.ui.panel(box.x, box.y, box.w, box.h), 1, true)
 	-- (up to the job strip's rule, Round 57)
-	local to = part:find("box[5.6," .. grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1) ..
-		";7.5,0.03;", 1, true)
+	local to = part:find("box[" .. grug_jobs._fs_number(box.x + 0.2) .. "," ..
+		grug_jobs._fs_number(grug_jobs.CRAFT_STRIP_Y + 0.1) .. ";" ..
+		grug_jobs._fs_number(box.w - 0.4) .. ",0.03;", 1, true)
 	return from and to and part:sub(from, to - 1) or ""
 end
 do

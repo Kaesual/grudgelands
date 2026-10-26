@@ -158,7 +158,7 @@ end
 -- The choice row (Round 57 ruling 15) under the text: item icons with
 -- their tooltips; at the turn-in buttons, the picked one framed, above the
 -- Complete button; in the offer and while active, icons to read only.
-local CHOICE_X, CHOICE_Y, CHOICE_SIZE, CHOICE_STEP = 5.9, 8.65, 0.7, 1.05
+local CHOICE_X, CHOICE_Y, CHOICE_SIZE, CHOICE_STEP = 5.9, 7.55, 0.7, 1.05
 local function choice_row(player, def, ready, picked)
 	local esc, out = core.formspec_escape, {}
 	out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(CHOICE_X, CHOICE_Y - 0.35,
@@ -226,9 +226,26 @@ function Q.open_npc(player, entity, selected, notice, picked)
 		selected = type(selected) == "string" and listed or nil
 	end
 	selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows, listed)
-	local entries, row_of, entry_of = Q.category_list(rows, function(row, indent)
-		return Q.list_entry(row.title, row.status, indent)
-	end)
+	-- A native image/text table keeps full titles and scrolling, with neutral
+	-- text and the same state markers as the map. Story is independent of status.
+	local category_entries, row_of, entry_of = Q.category_list(rows, function(r) return r.title end)
+	local columns = {"image,padding=0,width=1.5"}
+	local icon_of = {}
+	for story_index = 0, 1 do
+		for status_index, status in ipairs(STATUS_ORDER) do
+			local key = (story_index == 1 and "story_" or "") .. status
+			local icon = story_index * #STATUS_ORDER + status_index
+			icon_of[key] = icon
+			columns[1] = columns[1] .. "," .. icon .. "=grug_map_quest_" .. key .. ".png"
+		end
+	end
+	columns[2] = "text,padding=0.4"
+	local entries = {}
+	for index, category in ipairs(category_entries) do
+		local r = row_of[index] and rows[row_of[index]]
+		entries[#entries + 1] = r and tostring(icon_of[(r.story and "story_" or "") .. r.status] or 0) or "0"
+		entries[#entries + 1] = r and esc(r.title) or category:gsub("^#[%x]+", "")
+	end
 	local row = rows[selected]
 	local def = Q.registered_quests[row.id]
 	local active = Q.active_entry(player, row.id)
@@ -255,24 +272,24 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	if chosen then detail = "Chosen:\n" .. table.concat(chosen, "\n") .. "\n\n" .. detail end
 	-- The description is a read-only text (no field name).
 	local UI = grug_core.ui
-	local form = UI.frame(16, 11.5) .. UI.service_header(16, npc.title or id,
+	local form = UI.frame(16, 10.2, nil, nil, player) .. UI.service_header(16, npc.title or id,
 		row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png") ..
-		UI.panel(0.35, 1.6, 5.1, 8.65) .. UI.panel(5.65, 1.6, 10, 8.65) ..
+		UI.panel(0.35, 1.6, 5.1, 7.4) .. UI.panel(5.65, 1.6, 10, 7.4) ..
 		"style_type[textarea;border=false;font_size=*0.85]style_type[textlist;font_size=*0.85]" ..
 		UI.button_style("accept", "selected") .. UI.button_style("turnin", "selected") ..
-		"textlist[0.5,1.8;4.8,7.1;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. ";true]" ..
-		"tooltip[quests;" .. Q.status_tooltip() .. "]" ..
-		"style_type[label;font_size=*0.85]label[0.55,9.25;" .. Q.status_legend({"available", "ready"}) .. "]" ..
-		"label[0.55,9.65;" .. Q.status_legend({"active", "locked"}) .. "]" ..
+		"tableoptions[background=#00000000;border=false;highlight=#b8a46b44]" ..
+		"tablecolumns[" .. table.concat(columns, ";") .. "]" ..
+		"table[0.5,1.8;4.8,6.9;quests;" .. table.concat(entries, ",") .. ";" .. entry_of[selected] .. "]" ..
+		"tooltip[quests;Available: !\nReady to complete: ?\nIn progress: muted ?\nLocked: muted !\nStory: framed marker]" ..
 		UI.prose(5.9, 1.85, 9.5, 0.65, row.title) ..
-		UI.prose(5.9, 2.6, 9.5, 3.25, detail) ..
-		UI.panel(5.8, 5.95, 9.7, 4.15) ..
-		UI.prose(5.95, 6.08, 9.35, choices and 2.1 or 3.8, rewards) ..
+		UI.prose(5.9, 2.6, 9.5, 2.8, detail) ..
+		UI.panel(5.8, 5.5, 9.7, 3.4) ..
+		UI.prose(5.95, 5.63, 9.35, choices and 1.2 or 3.1, rewards) ..
 		(choices and choice_row(player, def, row.status == "ready", picked) or "") ..
-		UI.prose(0.5, 10.4, 10, 0.7, notice or row.reason or "") ..
-		"set_focus[close;true]button_exit[13.45,10.55;2,0.55;close;Close]"
-	if row.status == "available" then form = form .. "button[11.1,10.55;2,0.55;accept;Accept]" end
-	if row.status == "ready" then form = form .. "button[11.1,10.55;2,0.55;turnin;Complete]" end
+		UI.prose(2.8, 9.25, 8, 0.65, notice or row.reason or STATUS_NAMES[row.status][1]) ..
+		"set_focus[close;true]button_exit[0.5,9.3;2,0.55;close;Close]"
+	if row.status == "available" then form = form .. "button[13.45,9.3;2,0.55;accept;Accept]" end
+	if row.status == "ready" then form = form .. "button[13.45,9.3;2,0.55;turnin;Complete]" end
 
 	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected,
 		row_of = row_of, picked = picked}
@@ -291,12 +308,12 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	if fields.quests then
-		local event = core.explode_textlist_event(fields.quests)
-		local index = event.index and session.row_of[event.index]
+		local event = core.explode_table_event(fields.quests)
+		local index = event.row and session.row_of[event.row]
 		if index and session.rows[index] then
 			if index ~= session.selected then grug_sounds.play("quest_page", player) end
 			Q.open_npc(player, session.entity, index)
-		elseif event.index then
+		elseif event.row then
 			-- A category header: the same quest stays shown.
 			Q.open_npc(player, session.entity, session.selected, nil, session.picked)
 		end

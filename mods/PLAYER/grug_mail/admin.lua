@@ -92,9 +92,9 @@ local function say(state, ok, message)
 	state.status, state.status_ok = message, ok
 end
 
-local function status_line(state, y)
+local function status_line(state, y, x)
 	if not state.status then return "" end
-	return ("label[%.2f,%.2f;%s]"):format(X, y, esc(colored(
+	return ("label[%.2f,%.2f;%s]"):format(x or X, y, esc(colored(
 		state.status_ok and COLOR.good or COLOR.bad, state.status)))
 end
 
@@ -167,8 +167,8 @@ end
 -- The inbox view
 --
 
-local LIST_Y, LIST_H = 1.45, 3.75
-local PANEL_Y = 6.15
+local LIST_Y, LIST_H, LIST_W = 1.45, 9.7, 7.5
+local PANEL_Y, PANE_X, PANE_W = 1.15, 8.2, W - 8.5
 
 local function filter_buttons(state, open_count)
 	local fs = {}
@@ -187,8 +187,8 @@ end
 local function ticket_table(fs, rows, selected_id)
 	fs[#fs + 1] = ("tableoptions[background=#101821c0;border=false;highlight=%s;color=%s]")
 		:format(COLOR.row, COLOR.text)
-	fs[#fs + 1] = "tablecolumns[color,span=1;text,width=6;text,width=7;text,width=17;" ..
-		"color,span=1;text,width=5;text,align=right,width=3]"
+	fs[#fs + 1] = "tablecolumns[color,span=1;text,width=3;text,width=4;text,width=9;" ..
+		"color,span=1;text,width=4;text,align=right,width=3]"
 	local cells, selected = {}, -1
 	for index, ticket in ipairs(rows) do
 		local state = M.ticket_state(ticket)
@@ -200,7 +200,7 @@ local function ticket_table(fs, rows, selected_id)
 		if ticket.id == selected_id then selected = index end
 	end
 	fs[#fs + 1] = ("table[%.2f,%.2f;%.2f,%.2f;mail_admin_list;%s;%d]"):format(X, LIST_Y,
-		CONTENT_W, LIST_H, table.concat(cells, ","), selected)
+		LIST_W, LIST_H, table.concat(cells, ","), selected)
 end
 
 local function broadcast_table(fs, rows, selected_id)
@@ -218,61 +218,44 @@ local function broadcast_table(fs, rows, selected_id)
 		if broadcast.id == selected_id then selected = index end
 	end
 	fs[#fs + 1] = ("table[%.2f,%.2f;%.2f,%.2f;mail_admin_list;%s;%d]"):format(X, LIST_Y,
-		CONTENT_W, LIST_H, table.concat(cells, ","), selected)
+		LIST_W, LIST_H, table.concat(cells, ","), selected)
 end
 
 local function ticket_panel(fs, state, ticket)
-	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,3.45;%s]"):format(X, PANEL_Y, CONTENT_W, COLOR.panel)
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]label[%.2f,%.2f;%s]"):format(X + 0.2, PANEL_Y + 0.3,
-		esc(clip(ticket.subject ~= "" and ticket.subject or "(no subject)", 60)),
-		X + CONTENT_W - 2.4, PANEL_Y + 0.3, esc(colored(COLOR.dim, date_time(ticket.time))))
+	local x, w = PANE_X, PANE_W
+	fs[#fs + 1] = grug_core.ui.prose(x, PANEL_Y + 0.1, w, 0.6, ticket.subject ~= "" and ticket.subject or "(no subject)", false, 0.85)
 	local header = grug_mail.admin_header(ticket)
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]label[%.2f,%.2f;%s]"):format(X + 0.2, PANEL_Y + 0.75,
-		esc(colored(COLOR.dim, ticket.topic .. " · " .. header[1])), X + 0.2, PANEL_Y + 1.15,
-		esc(colored(COLOR.dim, header[2])))
-	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,1.8;#0d0e10]textarea[%.2f,%.2f;%.2f,1.8;;;%s]"):format(
-		X + 0.15, PANEL_Y + 1.5, CONTENT_W - 0.3, X + 0.15, PANEL_Y + 1.5, CONTENT_W - 0.3,
-		esc(message_text(ticket)))
+	fs[#fs + 1] = grug_core.ui.prose(x, 1.75, w, 1.4,
+		ticket.topic .. " · " .. date_time(ticket.time) .. "\n" .. table.concat(header, "\n"), false, 0.85)
+	fs[#fs + 1] = grug_core.ui.prose(x, 3.3, w, 4.5, message_text(ticket), false, 0.85)
 	if ticket.state == "open" then
-		fs[#fs + 1] = ("label[%.2f,9.95;%s]"):format(X, esc(colored(COLOR.dim,
-			("Answer · arrives as \"Re: ...\" from the %s in %s's Letters"):format(
-			M.ADMIN_LABEL, ticket.from))))
-		fs[#fs + 1] = ("textarea[%.2f,10.2;%.2f,1.75;mail_admin_answer;;%s]"):format(X,
-			CONTENT_W, esc(state.answer))
-	else
-		fs[#fs + 1] = ("label[%.2f,9.95;%s]"):format(X, esc(colored(COLOR.dim, closed_text(ticket))))
-	end
-	fs[#fs + 1] = status_line(state, 12.25)
-	if ticket.state == "open" then
+		fs[#fs + 1] = ("label[%.2f,8.2;%s]"):format(x, esc("Answer to " .. ticket.from .. " from " .. M.ADMIN_LABEL))
+		fs[#fs + 1] = grug_core.ui.input_background(x, 8.55, w, 2.6, "mail_admin_answer")
+		fs[#fs + 1] = ("textarea[%.2f,8.55;%.2f,2.6;mail_admin_answer;;%s]"):format(x, w, esc(state.answer))
 		local close = serial(state, "close") .. "_" .. ticket.id
 		local answer = serial(state, "answer") .. "_" .. ticket.id
-		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete_%d;Delete]" ..
-			"button[%.2f,12.6;3.2,0.8;%s;Close without answer]" ..
-			"style[%s;bgcolor=#3d5f8a]button[%.2f,12.6;3.4,0.8;%s;Send answer and close]")
-			:format(X + CONTENT_W - 8.4, ticket.id, X + CONTENT_W - 6.7, close, answer,
-				X + CONTENT_W - 3.4, answer)
+		fs[#fs + 1] = ("button[%.2f,12.3;1.6,0.7;mail_admin_delete_%d;Delete]" ..
+			"button[%.2f,12.3;3.2,0.7;%s;Close without answer]" ..
+			"button[%.2f,12.3;3.4,0.7;%s;Send answer and close]"):format(
+			x, ticket.id, x + w - 6.7, close, x + w - 3.4, answer)
 	else
-		fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete_%d;Delete]"):format(
-			X + CONTENT_W - 1.6, ticket.id)
+		fs[#fs + 1] = grug_core.ui.prose(x, 8.2, w, 1.2, closed_text(ticket), false, 0.85)
+		fs[#fs + 1] = ("button[%.2f,12.3;1.6,0.7;mail_admin_delete_%d;Delete]"):format(x + w - 1.6, ticket.id)
 	end
+	fs[#fs + 1] = status_line(state, 11.7, PANE_X)
 end
 
 local function broadcast_panel(fs, state, broadcast)
-	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,3.45;%s]"):format(X, PANEL_Y, CONTENT_W, COLOR.panel)
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]label[%.2f,%.2f;%s]"):format(X + 0.2, PANEL_Y + 0.3,
-		esc(clip(broadcast.subject ~= "" and broadcast.subject or "(no subject)", 60)),
-		X + CONTENT_W - 2.4, PANEL_Y + 0.3, esc(colored(COLOR.dim, date_time(broadcast.time))))
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(X + 0.2, PANEL_Y + 0.75, esc(colored(COLOR.dim,
+	local x, w = PANE_X, PANE_W
+	fs[#fs + 1] = grug_core.ui.prose(x, PANEL_Y + 0.1, w, 0.6, broadcast.subject ~= "" and broadcast.subject or "(no subject)", false, 0.85)
+	fs[#fs + 1] = grug_core.ui.prose(x, 1.8, w, 1.2,
 		("To all players, by %s (only admins see this) · expires %s"):format(
-		tostring(broadcast.by or "?"), date(broadcast.time + M.EXPIRY)))))
-	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,2.2;#0d0e10]textarea[%.2f,%.2f;%.2f,2.2;;;%s]"):format(
-		X + 0.15, PANEL_Y + 1.1, CONTENT_W - 0.3, X + 0.15, PANEL_Y + 1.1, CONTENT_W - 0.3,
-		esc(broadcast.body))
-	fs[#fs + 1] = status_line(state, 12.25)
-	fs[#fs + 1] = ("label[%.2f,13.0;%s]"):format(X, esc(colored(COLOR.dim,
-		"Deleting removes it from every player's Announcements.")))
-	fs[#fs + 1] = ("button[%.2f,12.6;1.6,0.8;mail_admin_delete_%d;Delete]"):format(
-		X + CONTENT_W - 1.6, broadcast.id)
+			tostring(broadcast.by or "?"), date(broadcast.time + M.EXPIRY)), false, 0.85)
+	fs[#fs + 1] = grug_core.ui.prose(x, 3.3, w, 7.5, broadcast.body, false, 0.85)
+	fs[#fs + 1] = status_line(state, 11.7, PANE_X)
+	fs[#fs + 1] = grug_core.ui.prose(x, 12.1, w - 2, 0.9,
+		"Deleting removes it from every player's Announcements.", false, 0.85)
+	fs[#fs + 1] = ("button[%.2f,12.3;1.6,0.7;mail_admin_delete_%d;Delete]"):format(x + w - 1.6, broadcast.id)
 end
 
 -- The list the filter shows, newest first.
@@ -289,6 +272,8 @@ end
 
 local function inbox_view(state, fs)
 	local list = filtered(state)
+	fs[#fs + 1] = grug_core.ui.panel(0.2, 1.05, 7.8, 12.15)
+	fs[#fs + 1] = grug_core.ui.panel(8.1, 1.05, W - 8.3, 12.15)
 	local open_count = 0
 	for _, ticket in ipairs(grug_mail.tickets()) do
 		if ticket.state == "open" then open_count = open_count + 1 end
@@ -299,7 +284,7 @@ local function inbox_view(state, fs)
 	state.page, state.rows = page, rows
 	fs[#fs + 1] = ("label[%.2f,1.2;%s]"):format(X, esc(colored(COLOR.dim, announcements and
 		"Letters to all players, newest first" or
-		"Messages to the admin: topic, sender, subject, state and date, newest first")))
+		"Messages to the admin, newest first")))
 	local selected
 	if announcements then
 		selected = M.find(list, state.selected_broadcast)
@@ -308,8 +293,8 @@ local function inbox_view(state, fs)
 		selected = grug_mail.ticket(state.selected)
 		ticket_table(fs, rows, selected and selected.id)
 	end
-	fs[#fs + 1] = pager(X, 5.35, page, pages)
-	fs[#fs + 1] = ("label[%.2f,5.7;%s]"):format(X + 4.0, esc(colored(COLOR.dim, announcements and
+	fs[#fs + 1] = pager(X, 11.35, page, pages)
+	fs[#fs + 1] = ("label[%.2f,12.5;%s]"):format(X, esc(colored(COLOR.dim, announcements and
 		(#list == 1 and "1 announcement" or ("%d announcements"):format(#list)) or
 		("%d shown · %d open · deleted 30 days after arrival"):format(#list, open_count))))
 	if selected and announcements then
@@ -317,11 +302,11 @@ local function inbox_view(state, fs)
 	elseif selected then
 		ticket_panel(fs, state, selected)
 	else
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(X, PANEL_Y + 0.3, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(PANE_X, PANEL_Y + 0.3, esc(colored(COLOR.dim,
 			#list == 0 and (announcements and "No announcements." or "No messages here.") or
 			(announcements and "Choose an announcement to read it." or
 				"Choose a message to read and answer it."))))
-		fs[#fs + 1] = status_line(state, 12.25)
+		fs[#fs + 1] = status_line(state, 11.7, PANE_X)
 	end
 end
 
@@ -331,50 +316,42 @@ end
 
 local function compose_view(state, fs)
 	local draft = state.compose
-	fs[#fs + 1] = "button[" .. X .. ",0.2;2.8,0.7;mail_admin_back;Back]tooltip[mail_admin_back;Back to admin mail]"
-	fs[#fs + 1] = ("image[%.2f,0.3;0.5,0.5;%s]label[%.2f,0.55;%s]"):format(X + 3.1, BADGE,
-		X + 3.75, esc(colored(COLOR.gold, "New admin letter")))
-	fs[#fs + 1] = ("label[%.2f,1.55;To]"):format(X)
+	local left, left_w, right, right_w = 0.4, 9.2, 10.1, 9.5
+	fs[#fs + 1] = grug_core.ui.panel(0.2, 1.05, 9.6, 12.15)
+	fs[#fs + 1] = grug_core.ui.panel(9.95, 1.05, 9.85, 12.15)
+	fs[#fs + 1] = "button[0.4,0.2;2.2,0.7;mail_admin_back;Back]tooltip[mail_admin_back;Back to admin mail]"
+	fs[#fs + 1] = grug_core.ui.heading(3.0, 0.55, "NEW ADMIN LETTER")
+	fs[#fs + 1] = ("checkbox[%.2f,1.5;mail_admin_all;All players;%s]"):format(left, draft.all and "true" or "false")
+	fs[#fs + 1] = ("label[%.2f,2.2;To]"):format(left)
 	if draft.all then
-		fs[#fs + 1] = ("label[%.2f,1.55;%s]"):format(X + 1.2, esc(colored(COLOR.dim,
-			"Every player, also characters created later")))
+		fs[#fs + 1] = grug_core.ui.prose(left + 1.2, 1.9, left_w - 1.2, 0.9,
+			"Every player, also characters created later", false, 0.85)
 	else
-		fs[#fs + 1] = ("field[%.2f,1.25;6.0,0.65;mail_admin_to;;%s]" ..
-			"field_close_on_enter[mail_admin_to;false]"):format(X + 1.2, esc(draft.to))
+		fs[#fs + 1] = grug_core.ui.input_background(left + 1.2, 1.9, left_w - 1.2, 0.65, "mail_admin_to")
+		fs[#fs + 1] = ("field[%.2f,1.9;%.2f,0.65;mail_admin_to;;%s]field_close_on_enter[mail_admin_to;false]"):
+			format(left + 1.2, left_w - 1.2, esc(draft.to))
 	end
-	fs[#fs + 1] = ("checkbox[%.2f,1.575;mail_admin_all;All players;%s]"):format(X + 7.5,
-		draft.all and "true" or "false")
-	fs[#fs + 1] = ("label[%.2f,2.4;Subject]field[%.2f,2.1;%.2f,0.65;mail_admin_subject;;%s]" ..
-		"field_close_on_enter[mail_admin_subject;false]"):format(X, X + 1.2, CONTENT_W - 1.2,
-		esc(draft.subject))
-	fs[#fs + 1] = ("label[%.2f,3.1;Message]textarea[%.2f,3.35;%.2f,3.6;mail_admin_body;;%s]")
-		:format(X, X, CONTENT_W, esc(draft.body))
-	-- The preview: the row and the banner as the player's mailbox draws them
-	-- (grug_mail window.lua: the unread dot, the shield badge, "Server Admin",
-	-- the subject, the date; the reading pane's banner).
-	fs[#fs + 1] = ("label[%.2f,7.4;%s]"):format(X, esc(colored(COLOR.dim,
-		"Preview: how the letter shows in the player's mailbox (" ..
-		(draft.all and "Announcements" or "Letters") .. ")")))
-	fs[#fs + 1] = ("button[%.2f,7.05;2.8,0.65;mail_admin_preview;Update preview]"):format(
-		X + CONTENT_W - 2.8)
+	fs[#fs + 1] = grug_core.ui.input_background(left, 3.25, left_w, 0.65, "mail_admin_subject")
+	fs[#fs + 1] = ("label[%.2f,2.95;Subject]field[%.2f,3.25;%.2f,0.65;mail_admin_subject;;%s]" ..
+		"field_close_on_enter[mail_admin_subject;false]"):format(left, left, left_w, esc(draft.subject))
+	fs[#fs + 1] = grug_core.ui.input_background(left, 4.6, left_w, 6.5, "mail_admin_body")
+	fs[#fs + 1] = ("label[%.2f,4.3;Message]textarea[%.2f,4.6;%.2f,6.5;mail_admin_body;;%s]"):
+		format(left, left, left_w, esc(draft.body))
+	fs[#fs + 1] = grug_core.ui.heading(right, 1.45, "RECIPIENT PREVIEW")
+	fs[#fs + 1] = ("button[%.2f,1.9;2.8,0.65;mail_admin_preview;Update preview]"):format(right)
+	fs[#fs + 1] = ("label[%.2f,2.22;%s]"):format(right + 3.1, esc("mailbox (" .. (draft.all and "Announcements" or "Letters") .. ")"))
 	local subject = M.clean(draft.subject, M.SUBJECT_MAX, false)
-	fs[#fs + 1] = ("box[%.2f,7.85;%.2f,0.6;%s]label[%.2f,8.15;%s]image[%.2f,7.9;0.5,0.5;%s]" ..
-		"label[%.2f,8.15;%s]label[%.2f,8.15;%s]label[%.2f,8.15;%s]"):format(X, CONTENT_W,
-		COLOR.row, X + 0.15, esc(colored(COLOR.dot, "•")), X + 0.5, BADGE, X + 1.15,
-		esc(M.ADMIN_LABEL), X + 4.0, esc(clip(subject ~= "" and subject or "(no subject)", 50)),
-		X + CONTENT_W - 1.0, esc(colored(COLOR.dim, "today")))
-	fs[#fs + 1] = ("box[%.2f,8.6;%.2f,0.6;%s]image[%.2f,8.65;0.5,0.5;%s]label[%.2f,8.9;%s]")
-		:format(X, CONTENT_W, COLOR.banner, X + 0.1, BADGE, X + 0.75,
-			esc(colored(COLOR.gold, "Sent by the server administration")))
-	fs[#fs + 1] = ("label[%.2f,9.6;%s]"):format(X, esc(colored(COLOR.dim, draft.all and
-		"Stored once: every player finds it under Announcements for 30 days,\n" ..
-		"also characters created after it was sent. Each player's read state is their own." or
-		"Text only, no items. Players can answer; answers land in this tab.\n" ..
-		"Admin letters always arrive, also in a full mailbox and while the player is offline.")))
-	fs[#fs + 1] = status_line(state, 12.25)
-	fs[#fs + 1] = ("button[%.2f,12.6;2.0,0.8;mail_admin_discard;Discard]" ..
-		"style[%s;bgcolor=#3d5f8a]button[%.2f,12.6;3.2,0.8;%s;Send letter]"):format(
-		X + CONTENT_W - 5.3, serial(state, "send"), X + CONTENT_W - 3.2, serial(state, "send"))
+	fs[#fs + 1] = ("image[%.2f,2.9;0.5,0.5;%s]label[%.2f,3.15;%s]"):format(right, BADGE,
+		right + 0.65, esc(colored(COLOR.gold, "Sent by the server administration")))
+	fs[#fs + 1] = ("label[%.2f,3.65;%s]"):format(right, esc("From: " .. M.ADMIN_LABEL))
+	fs[#fs + 1] = grug_core.ui.prose(right, 3.95, right_w, 0.7, subject ~= "" and subject or "(no subject)", false, 0.85)
+	fs[#fs + 1] = grug_core.ui.prose(right, 4.8, right_w, 4.8, draft.body, false, 0.85)
+	fs[#fs + 1] = grug_core.ui.prose(right, 9.9, right_w, 2.0, draft.all and
+		"Stored once: every player finds it under Announcements for 30 days, also characters created after it was sent. Each player's read state is their own." or
+		"Text only, no items. Players can answer; answers land in this tab. Admin letters always arrive, also in a full mailbox and while the player is offline.", false, 0.85)
+	fs[#fs + 1] = status_line(state, 11.7)
+	fs[#fs + 1] = ("button[%.2f,12.3;2.0,0.7;mail_admin_discard;Discard]button[%.2f,12.3;3.2,0.7;%s;Send letter]"):
+		format(left, left + left_w - 3.2, serial(state, "send"))
 end
 
 --
@@ -387,7 +364,6 @@ function grug_mail.admin_formspec(player, context)
 	-- The focus sits on an invisible button at every send (module guide
 	-- "Initial focus"): an edit box or a table would eat the inventory key.
 	local fs = {"real_coordinates[true]", "style_type[label,textarea,table;font_size=*0.85]",
-		grug_core.ui.panel(0.2, 1.1, grug_inventory.UI.frame_w - 0.4, 12.35),
 		"set_focus[mail_admin_focus;true]button[0,0;0,0;mail_admin_focus;]"}
 	if not allowed(player) then
 		fs[#fs + 1] = ("label[%.2f,1.0;%s]"):format(X, esc("Admin Mail needs the " ..

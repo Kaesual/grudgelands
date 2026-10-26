@@ -219,9 +219,9 @@ setup({{"main", 9, "default:cobble 50"}, {"main", 11, "default:cobble 50"},
 check(has("Cobblestone x143"), "A one row Cobblestone x143 over main and a bag")
 local _, cobble_rows = shown:gsub("Cobblestone x", "")
 eq(cobble_rows, 1, "A exactly one Cobblestone row")
-check(has("label[7.4,2.85;1c per 50]"), "A the first row reads 1c per 50")
-check(has("button[11.5,2.50;2.0,0.7;sellall_1;All (2c)]"), "A one button All (2c)")
-check(not has("sell1_1;"), "A no single button on a lot row")
+check(has("label[6.9,2.85;1c per 50]"), "A the first row reads 1c per 50")
+check(has("button[13.0,2.50;2.4,0.6;sellall_1;All (2c)]"), "A one button All (2c)")
+check(has("sell1_1;"), "A one-lot button on a lot row")
 check(has("Gem x2") and has("Gem x3") and has("4c each"), "A a single good keeps one row per slot")
 check(has("sell1_2;1]") and has("sellall_2;All (8c)]") and has("sellall_3;All (12c)]"),
 	"A single rows keep 1 and All")
@@ -252,8 +252,8 @@ eq(money, 0, "C a forged All or 1 sells nothing")
 eq(count_of(inv, "default:sand"), 49, "C nothing removed")
 setup({{"main", 9, "default:sand 60"}})
 click("sell1_1")
-eq(money, 0, "C a forged 1 on a sellable lot row sells nothing")
-eq(count_of(inv, "default:sand"), 60, "C ...and removes nothing")
+eq(money, 1, "C one whole lot sells for one copper")
+eq(count_of(inv, "default:sand"), 10, "C ...and leaves the remainder")
 
 ------------------------------------------------------------------------------
 -- D. A stack moved out between render and click refuses without loss.
@@ -289,6 +289,25 @@ check(has("12c each"), "F a blue gem sells at x3")
 click("sell1_1")
 eq(money, 12, "F one sold for 12c")
 eq(count_of(inv, "t:gem"), 1, "F one left")
+
+-- Explicit quantities preserve whole lots and reject unavailable requests.
+setup({{"main", 9, "default:cobble 550"}})
+check(has("sell5_1;5]") and has("sell10_1;10]"), "G bulk quantities are shown")
+click("sell5_1")
+eq(count_of(inv, "default:cobble"), 300, "G five means five whole lots")
+eq(money, 5, "G five lots pay five copper")
+click("sell10_1")
+eq(count_of(inv, "default:cobble"), 300, "G unavailable ten lots refused")
+click("sell5_1")
+eq(count_of(inv, "default:cobble"), 50, "G another five lots sells")
+setup({{"main", 9, "t:gem 16"}})
+click("sell10_1")
+eq(count_of(inv, "t:gem"), 6, "G ten single goods sell")
+eq(money, 40, "G single goods keep their price")
+click("sell5_1")
+eq(count_of(inv, "t:gem"), 1, "G five single goods sell")
+click("sell5_1")
+eq(count_of(inv, "t:gem"), 1, "G unavailable single goods refused")
 
 ------------------------------------------------------------------------------
 -- H. Each row's image carries its stack's own tooltip.
@@ -350,8 +369,8 @@ do
 	eq(scroll_value(), 15, "I clicking the active tab keeps its position")
 	click("tab_1")
 	eq(scroll_value(), 0, "I changing shelf resets position")
-	handler(player, "grug_traders:trade", {offers_scroll = "VAL:180", buy_18 = "Buy"})
-	eq(scroll_value(), 180, "I lower Gear shelf purchase retains position")
+	handler(player, "grug_traders:trade", {offers_scroll = "VAL:800", buy_18 = "Buy"})
+	eq(scroll_value(), 800, "I lower Gear shelf purchase retains position")
 	-- Stock shrinks between draw and click: existing transaction validation
 	-- still refuses the removed offer and the replacement form clamps scroll.
 	for i = 18, 15, -1 do gear[i] = nil end

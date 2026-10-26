@@ -41,17 +41,16 @@
 -- `repbuy_<catalogue index>` that buys through grug_guild.buy (the rank, the
 -- balance and the room checked again there, nothing spent on a refusal).
 -- A vendor with `repairs = true` (the camp vendor) shows a Repair button
--- that opens grug_repair's form for the socket the vendor stands on
+-- that embeds grug_repair's quote for the socket the vendor stands on
 -- (grug_repair's camp vendor provider re-checks socket, distance and
 -- faction on every action).
 
 local FORMNAME = "grug_traders:trade"
 
 local TRADE_RANGE = 6 -- m; the form closes beyond this
-local GRID_COLS = 2
 local SELL_ROWS = 8 -- rows per page
 
-local FORM_W, FORM_H = 14, 10.2
+local FORM_W, FORM_H = 16, 10.2
 
 -- A lot row below its lot size (sell plan §3.5.3).
 local GREYED = "#8a8a8a"
@@ -59,6 +58,7 @@ local GREYED = "#8a8a8a"
 -- player name -> {vendor, faction, pos, origin, mode, tab, page, offer, rows,
 -- trade_rows, rep_shown, offers_scroll, offers_scroll_max}
 local sessions = {}
+local repair_serial = 0
 
 -- A Miner's Guild vendor (its definition's `guild = true`) shows the
 -- Trade-in mode. grug_guild depends on nothing of this mod, and the window
@@ -78,7 +78,7 @@ end
 local function repairs(vendor, session)
 	local repair = rawget(_G, "grug_repair")
 	return vendor ~= nil and vendor.repairs == true and repair ~= nil and
-		repair.open_camp_vendor ~= nil and session.origin ~= nil
+		repair.camp_vendor_quote ~= nil and session.origin ~= nil
 end
 
 local function esc(text)
@@ -230,27 +230,16 @@ local function header(parts, player, session, vendor, discount)
 		parts[#parts + 1] = "label[5.0,1.2;" .. esc(core.colorize("#7ee081",
 			"Kinship discount: -" .. pct .. "% on every purchase")) .. "]"
 	end
-	local function style(mode)
-		parts[#parts + 1] = grug_core.ui.button_style("mode_" .. mode,
-			session.mode == mode and "selected" or "normal")
+	local modes = {{"buy", "Buy"}, {"sell", "Sell"}}
+	if guild_vendor(vendor) then modes[#modes + 1] = {"tradein", "Trade-in"} end
+	if repairs(vendor, session) then modes[#modes + 1] = {"repair", "Repair"} end
+	for index, mode in ipairs(modes) do
+		local name = mode[1] == "repair" and "repair" or "mode_" .. mode[1]
+		local x = FORM_W - 0.5 - (#modes - index + 1) * 1.85
+		parts[#parts + 1] = grug_core.ui.button_style(name,
+			session.mode == mode[1] and "selected" or "normal")
+		parts[#parts + 1] = ("button[%.2f,0.3;1.75,0.65;%s;%s]"):format(x, name, mode[2])
 	end
-	style("buy")
-	style("sell")
-	if repairs(vendor, session) then
-		-- Opens another window, so it stands apart from the mode buttons.
-		parts[#parts + 1] = "button[5.9,0.3;2.0,0.8;repair;Repair]"
-		parts[#parts + 1] = "tooltip[repair;" .. esc("Repair your equipment for money") .. "]"
-	end
-	if guild_vendor(vendor) then
-		-- Three modes: Buy and Sell move left to make room.
-		style("tradein")
-		parts[#parts + 1] = "button[8.2,0.3;1.6,0.8;mode_buy;Buy]"
-		parts[#parts + 1] = "button[9.9,0.3;1.5,0.8;mode_sell;Sell]"
-		parts[#parts + 1] = "button[11.5,0.3;2.0,0.8;mode_tradein;Trade-in]"
-		return
-	end
-	parts[#parts + 1] = "button[10.3,0.3;1.6,0.8;mode_buy;Buy]"
-	parts[#parts + 1] = "button[12.0,0.3;1.5,0.8;mode_sell;Sell]"
 end
 
 -- The guild lines of the Trade-in mode and the reputation page: the guild,
@@ -282,6 +271,19 @@ local function consumable_keys()
 	return key_of
 end
 
+local function offer_scroll(parts, session, count, step, top)
+	local height = 6.45
+	local maximum = math.ceil(math.max(0, count * step - height) * 100)
+	session.offers_scroll_max = maximum
+	session.offers_scroll = math.max(0, math.min(maximum, session.offers_scroll or 0))
+	if maximum > 0 then
+		local thumb = math.max(1, math.min(maximum, math.floor(height * (maximum + 1) / (count * step) + 0.5)))
+		parts[#parts + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=10;largestep=40;thumbsize=%d]"):format(maximum, thumb)
+		parts[#parts + 1] = ("scrollbar[15.25,%.2f;0.25,6.45;vertical;offers_scroll;%d]"):format(top, session.offers_scroll)
+	end
+	parts[#parts + 1] = ("scroll_container[0.5,%.2f;14.6,6.45;offers_scroll;vertical;0.01]"):format(top)
+end
+
 -- The reputation page (Round 58, the camp vendor's Buy mode): the guild
 -- lines, then one row per tier with its two consumables. An unlocked row's
 -- items are buttons with their price; a locked row is greyed with "Reach
@@ -291,31 +293,32 @@ local function render_reputation(parts, player, session)
 	session.rep_shown = {}
 	if not guild_lines(parts, player) then return end
 	local key_of = consumable_keys()
-	for index, row in ipairs(grug_guild.vendor_rows(player)) do
-		local y = 2.65 + (index - 1) * 1.1
-		parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.06, 13.3, 1.02)
-		local function text(value)
-			return esc(row.unlocked and value or core.colorize(GREYED, value))
-		end
-		for column, item in ipairs(row.items) do
-			local x = 0.65 + (column - 1) * 4.6
-			parts[#parts + 1] = ("item_image[%.2f,%.2f;0.5,0.5;%s]"):format(x, y + 0.17, item.item)
-			local tip = esc(full_desc(item.item) .. "\nPrice: " ..
-				grug_guild.format_points(item.price) .. " reputation")
-			parts[#parts + 1] = ("tooltip[%.2f,%.2f;0.5,0.5;%s]"):format(x, y + 0.17, tip)
-			parts[#parts + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.65, y + 0.2, text(short_desc(item.item)))
-			parts[#parts + 1] = grug_guild.reputation_formspec(x + 0.65, y + 0.62, item.price)
+	local rows = grug_guild.vendor_rows(player)
+	local count = 0
+	for _, row in ipairs(rows) do count = count + #row.items end
+	offer_scroll(parts, session, count, 0.85, 2.65)
+	local index = 0
+	for _, row in ipairs(rows) do
+		for _, item in ipairs(row.items) do
+			local y = index * 0.85
+			index = index + 1
+			local function text(value) return esc(row.unlocked and value or core.colorize(GREYED, value)) end
+			parts[#parts + 1] = ("item_image[0.12,%.2f;0.55,0.55;%s]"):format(y + 0.1, item.item)
+			local tip = esc(full_desc(item.item) .. "\nPrice: " .. grug_guild.format_points(item.price) .. " reputation")
+			parts[#parts + 1] = ("tooltip[0.12,%.2f;0.55,0.55;%s]"):format(y + 0.1, tip)
+			parts[#parts + 1] = ("label[0.85,%.2f;%s]"):format(y + 0.35, text(short_desc(item.item)))
+			parts[#parts + 1] = grug_guild.reputation_formspec(6.7, y + 0.35, item.price)
 			if row.unlocked then
 				local key = key_of[item.item]
 				session.rep_shown[item.item] = true
-				parts[#parts + 1] = ("button[%.2f,%.2f;1.0,0.45;repbuy_%d;Buy]tooltip[repbuy_%d;%s]"):
-					format(x + 3.4, y + 0.38, key, key, tip)
+				parts[#parts + 1] = ("label[9,%.2f;%s]button[13.25,%.2f;1.2,0.55;repbuy_%d;Buy]tooltip[repbuy_%d;%s]"):
+					format(y + 0.35, text(("Use from level %d"):format(item.use_level)), y + 0.08, key, key, tip)
+			else
+				parts[#parts + 1] = ("label[9,%.2f;%s]"):format(y + 0.35, text(("Reach Reputation Rank %d"):format(row.rank)))
 			end
 		end
-		parts[#parts + 1] = ("label[9.9,%.2f;%s]"):format(y + 0.42, row.unlocked and
-			esc(("Use from level %d"):format(row.items[1].use_level)) or
-			text(("Reach Reputation Rank %d"):format(row.rank)))
 	end
+	parts[#parts + 1] = "scroll_container_end[]"
 end
 
 local function render_buy(parts, player, session, vendor, discount)
@@ -350,37 +353,20 @@ local function render_buy(parts, player, session, vendor, discount)
 	session.offer = offer
 	-- A bounded, client-scrolled catalogue: all offers keep their stable
 	-- session indices, with one direct purchase per click.
-	local row_count = math.ceil(#offer / GRID_COLS)
-	local extent = math.max(0, row_count * 0.95 - 6.45)
-	local maximum = math.ceil(extent * 100)
-	session.offers_scroll_max = maximum
-	session.offers_scroll = math.max(0, math.min(maximum, session.offers_scroll or 0))
-	if maximum > 0 then
-		-- The engine sizes the thumb against max + 1, not content height.
-		-- Keep it proportional and smaller than the track on short shelves.
-		local thumb = math.max(1, math.min(maximum,
-			math.floor(6.45 * (maximum + 1) / (row_count * 0.95) + 0.5)))
-		parts[#parts + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=10;largestep=40;thumbsize=%d]"):
-			format(maximum, thumb)
-		parts[#parts + 1] = ("scrollbar[13.35,2.8;0.25,6.45;vertical;offers_scroll;%d]"):
-			format(session.offers_scroll)
-	end
-	parts[#parts + 1] = "scroll_container[0.5,2.8;12.7,6.45;offers_scroll;vertical;0.01]"
+	offer_scroll(parts, session, #offer, 0.85, 2.8)
 	for i, entry in ipairs(offer) do
-		local x = ((i - 1) % GRID_COLS) * 6.4
-		local y = math.floor((i - 1) / GRID_COLS) * 0.95
-		parts[#parts + 1] = ("image[%.2f,%.2f;6.2,0.85;grug_ui_panel.png;6]"):format(x, y)
-		parts[#parts + 1] = ("item_image[%.2f,%.2f;0.55,0.55;%s]"):format(x + 0.12, y + 0.15, entry.item)
-		parts[#parts + 1] = grug_core.ui.prose(x + 0.8, y + 0.06, 4.1, 0.42, short_desc(entry.item))
+		local x, y = 0, (i - 1) * 0.85
+		parts[#parts + 1] = ("item_image[%.2f,%.2f;0.55,0.55;%s]"):format(x + 0.12, y + 0.1, entry.item)
+		parts[#parts + 1] = grug_core.ui.prose(x + 0.85, y + 0.12, 8.1, 0.5, short_desc(entry.item))
 		local price_text = grug_money.format(entry.price)
 		local tip = full_desc(entry.item) .. "\nPrice: " .. price_text
 		if entry.base ~= entry.price then
 			tip = tip .. "\n(normally " .. grug_money.format(entry.base) .. ")"
 		end
 		parts[#parts + 1] = ("label[%.2f,%.2f;%s]button[%.2f,%.2f;1.0,0.5;buy_%d;Buy]"):
-			format(x + 0.8, y + 0.64, esc(core.colorize(grug_core.ui.colors.accent, price_text)), x + 5.05, y + 0.17, i)
+			format(x + 10, y + 0.35, esc(core.colorize(grug_core.ui.colors.accent, price_text)), x + 13.25, y + 0.08, i)
 		parts[#parts + 1] = ("tooltip[buy_%d;%s]tooltip[%.2f,%.2f;0.55,0.55;%s]"):
-			format(i, esc(tip), x + 0.12, y + 0.15, esc(tip))
+			format(i, esc(tip), x + 0.12, y + 0.1, esc(tip))
 	end
 	parts[#parts + 1] = "scroll_container_end[]"
 	if #offer == 0 then
@@ -391,6 +377,21 @@ local function render_buy(parts, player, session, vendor, discount)
 			"The vendor has nothing on this shelf.") .. "]"
 	end
 	return FORM_H
+end
+
+-- A fixed set of quantities, interpreted as whole lots for bulk goods.
+-- Unavailable amounts are text rather than actionable buttons.
+local function quantity_buttons(parts, y, prefix, index, count, total)
+	for n, amount in ipairs({1, 5, 10}) do
+		local x = 10.2 + (n - 1) * 0.9
+		if count >= amount then
+			parts[#parts + 1] = ("button[%.2f,%.2f;0.8,0.6;%s%d_%d;%d]"):format(x, y, prefix, amount, index, amount)
+		else
+			parts[#parts + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.25, y + 0.3, esc(core.colorize(GREYED, tostring(amount))))
+		end
+	end
+	local field = prefix == "tradein" and "tradein_" or "sellall_"
+	parts[#parts + 1] = ("button[13.0,%.2f;2.4,0.6;%s%d;All (%s)]"):format(y, field, index, esc(total))
 end
 
 local function render_sell(parts, player, session)
@@ -416,7 +417,7 @@ local function render_sell(parts, player, session)
 		local row = rows[i]
 		if row then
 			local y = 2.5 + offset * 0.8
-			parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 13.3, 0.76)
+			parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 15.2, 0.76)
 			-- Below its lot size a lot row is greyed and has no button: the
 			-- player learns that the item sells in lots.
 			local short = row.lot and row.count < row.lot
@@ -430,27 +431,23 @@ local function render_sell(parts, player, session)
 				esc(row.stack:get_description()))
 			parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.35,
 				text(short_desc(row.item) .. " x" .. row.count))
-			parts[#parts + 1] = ("label[7.4,%.2f;%s]"):format(y + 0.35, text(rate_text(row)))
+			parts[#parts + 1] = ("label[6.9,%.2f;%s]"):format(y + 0.35, text(rate_text(row)))
 			if short then
 				parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35,
 					text("Need " .. row.lot .. " to sell"))
-			elseif row.lot then
-				parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;sellall_%d;All (%s)]")
-					:format(y, i, esc(grug_money.format(
-						math.floor(row.count / row.lot) * row.copper)))
 			else
-				parts[#parts + 1] = ("button[10.0,%.2f;1.3,0.7;sell1_%d;1]"):format(y, i)
-				parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;sellall_%d;All (%s)]")
-					:format(y, i, esc(grug_money.format(row.count * row.unit)))
+				local count = row.lot and math.floor(row.count / row.lot) or row.count
+				quantity_buttons(parts, y, "sell", i, count,
+					grug_money.format(count * (row.copper or row.unit)))
 			end
 		end
 	end
 	if #rows == 0 then
 		parts[#parts + 1] = "label[0.7,3.0;You carry nothing this vendor wants.]"
 	end
-	parts[#parts + 1] = "button[0.7,8.8;1.2,0.7;sell_prev;<]"
-	parts[#parts + 1] = ("label[2.2,9.15;Page %d / %d]"):format(session.page, pages)
-	parts[#parts + 1] = "button[4.2,8.8;1.2,0.7;sell_next;>]"
+	parts[#parts + 1] = "button[6.4,8.95;0.7,0.6;sell_prev;<]"
+	parts[#parts + 1] = ("label[7.45,9.25;%d / %d]"):format(session.page, pages)
+	parts[#parts + 1] = "button[8.9,8.95;0.7,0.6;sell_next;>]"
 end
 
 -- "1 point each", "1 point per 50".
@@ -482,7 +479,7 @@ local function render_tradein(parts, player, session)
 		local row = rows[i]
 		if row then
 			local y = 2.5 + offset * 0.8
-			parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 13.3, 0.76)
+			parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 15.2, 0.76)
 			local short = row.lots < 1
 			local function text(value)
 				return esc(short and core.colorize(GREYED, value) or value)
@@ -492,15 +489,14 @@ local function render_tradein(parts, player, session)
 				esc(full_desc(row.item)))
 			parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.35,
 				text(short_desc(row.item) .. " x" .. row.count))
-			parts[#parts + 1] = ("label[7.4,%.2f;%s]"):format(y + 0.35,
+			parts[#parts + 1] = ("label[6.9,%.2f;%s]"):format(y + 0.35,
 				text(points_text(row.points, row.lot)))
 			if short then
 				parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35,
 					text("Need " .. row.lot .. " to trade"))
 			else
 				local key = key_of[row.item]
-				parts[#parts + 1] = ("button[11.5,%.2f;2.0,0.7;tradein_%d;All (%s)]")
-					:format(y, key, esc(grug_guild.format_points(row.total)))
+				quantity_buttons(parts, y, "tradein", key, row.lots, grug_guild.format_points(row.total))
 				parts[#parts + 1] = ("tooltip[tradein_%d;%s]"):format(key,
 					esc(("Trade %d %s for %s reputation"):format(row.lots * row.lot,
 						short_desc(row.item), grug_guild.format_points(row.total))))
@@ -511,9 +507,9 @@ local function render_tradein(parts, player, session)
 		parts[#parts + 1] = "label[0.7,3.0;" .. esc("You carry nothing the guild takes.\n" ..
 			"The guild takes raw ores, rough gems, stone and sand.") .. "]"
 	end
-	parts[#parts + 1] = "button[0.7,8.8;1.2,0.7;tradein_prev;<]"
-	parts[#parts + 1] = ("label[2.2,9.15;Page %d / %d]"):format(session.page, pages)
-	parts[#parts + 1] = "button[4.2,8.8;1.2,0.7;tradein_next;>]"
+	parts[#parts + 1] = "button[6.4,8.95;0.7,0.6;tradein_prev;<]"
+	parts[#parts + 1] = ("label[7.45,9.25;%d / %d]"):format(session.page, pages)
+	parts[#parts + 1] = "button[8.9,8.95;0.7,0.6;tradein_next;>]"
 end
 
 local function build(player, session, vendor, status)
@@ -525,7 +521,11 @@ local function build(player, session, vendor, status)
 	local discount = grug_traders.has_discount(player, vendor)
 	header(body, player, session, vendor, discount)
 	local needed
-	if session.mode == "sell" then
+	if session.mode == "repair" and session.repair_quote then
+		local repair_body
+		repair_body, session.page = grug_repair.quote_formspec(session.repair_quote, session.page, FORM_W, 2.5, 8.95, session.repair_prefix)
+		body[#body + 1] = repair_body
+	elseif session.mode == "sell" then
 		render_sell(body, player, session)
 	elseif session.mode == "tradein" then
 		render_tradein(body, player, session)
@@ -536,7 +536,7 @@ local function build(player, session, vendor, status)
 	if status and status ~= "" then
 		body[#body + 1] = ("label[0.5,%.2f;%s]"):format(height - 0.5, esc(status))
 	end
-	return grug_core.ui.frame(FORM_W, height) ..
+	return grug_core.ui.frame(FORM_W, height, nil, nil, player) ..
 		table.concat(body)
 end
 
@@ -635,6 +635,7 @@ local function validate(player)
 	-- The Trade-in mode exists only at a guild vendor.
 	if session.mode == "tradein" and not guild_vendor(vendor) then
 		session.mode = "buy"
+		session.repair_quote = nil
 		session.offers_scroll = 0
 	end
 	-- A stale bracket tab (an unknown id, or one above the player's level)
@@ -703,7 +704,7 @@ end
 -- copper, total count); the money ceiling is checked before anything is
 -- removed, and the units are taken with the engine's remove_item, list by
 -- list, only after every check has passed.
-local function do_sell_lots(player, shown)
+local function do_sell_lots(player, shown, quantity)
 	local fresh
 	for _, row in ipairs(current_rows(player)) do
 		if row.lot and row.item == shown.item then
@@ -716,8 +717,9 @@ local function do_sell_lots(player, shown)
 		show(player, "Your items have changed.")
 		return
 	end
-	local lots = math.floor(fresh.count / fresh.lot)
-	if lots < 1 then
+	local available = math.floor(fresh.count / fresh.lot)
+	local lots = quantity == "all" and available or quantity
+	if lots < 1 or lots > available then
 		show(player)
 		return
 	end
@@ -759,19 +761,14 @@ local function do_sell_lots(player, shown)
 		(fresh.count - sold_lots * fresh.lot) .. " left.")
 end
 
-local function do_sell(player, session, index, sell_all)
+local function do_sell(player, session, index, quantity)
 	local shown = session.rows and session.rows[index]
 	if not shown then
 		show(player)
 		return
 	end
 	if shown.lot then
-		-- A lot row has only "All"; a "1" for it comes from no rendered button.
-		if sell_all then
-			do_sell_lots(player, shown)
-		else
-			show(player)
-		end
+		do_sell_lots(player, shown, quantity)
 		return
 	end
 	local inv = player:get_inventory()
@@ -790,11 +787,8 @@ local function do_sell(player, session, index, sell_all)
 		return
 	end
 	local available = stack:get_count()
-	local count = sell_all and available or 1
-	if count > available then
-		count = available
-	end
-	if count < 1 then
+	local count = quantity == "all" and available or quantity
+	if count < 1 or count > available then
 		show(player)
 		return
 	end
@@ -831,7 +825,7 @@ local REFUSALS = {
 	not_exchanged = "The guild does not take that.",
 	too_few = "Not enough for one lot.",
 }
-local function do_trade_in(player, session, item)
+local function do_trade_in(player, session, item, quantity)
 	local shown
 	for _, row in ipairs(session.trade_rows or {}) do
 		if row.item == item then
@@ -855,18 +849,19 @@ local function do_trade_in(player, session, item)
 		show(player, "Your items have changed.")
 		return
 	end
-	if fresh.lots < 1 then
+	local lots = quantity == "all" and fresh.lots or quantity
+	if lots < 1 or lots > fresh.lots then
 		show(player)
 		return
 	end
-	local points, err = grug_guild.trade_in(player, shown.item)
+	local points, err = grug_guild.trade_in(player, shown.item, lots)
 	if not points then
 		show(player, REFUSALS[err] or "The guild does not take that.")
 		return
 	end
 	grug_sounds.play("vendor_sell", player)
-	show(player, ("Traded %d %s for %s reputation. %d left."):format(fresh.lots * fresh.lot,
-		short_desc(fresh.item), grug_guild.format_points(points), fresh.rest))
+	show(player, ("Traded %d %s for %s reputation. %d left."):format(lots * fresh.lot,
+		short_desc(fresh.item), grug_guild.format_points(points), fresh.count - lots * fresh.lot))
 end
 
 -- A reputation page item (Round 58): only an item the page showed buyable;
@@ -894,16 +889,20 @@ local function do_rep_buy(player, session, row)
 		grug_guild.format_points(row.price)))
 end
 
--- The Repair button: the repair form of the socket the vendor stands on;
--- the vendor window's session ends with it (another window takes over).
-local function do_repair(player, session)
-	local ok, reason = rawget(_G, "grug_repair").open_camp_vendor(player, session.origin.settlement,
-		session.origin.socket)
-	if ok then
-		sessions[player:get_player_name()] = nil
+-- Repair stays in this validated vendor session. The service still owns
+-- its single-use quote and validates the authored socket on every repair.
+local function do_repair(player, session, notice)
+	local quote, reason = grug_repair.camp_vendor_quote(player, session.origin.settlement, session.origin.socket)
+	if quote then
+		repair_serial = repair_serial + 1
+		session.repair_prefix = "quote_" .. repair_serial .. "_"
+		session.mode, session.repair_quote, session.page = "repair", quote, 1
+		session.offers_scroll = 0
+	elseif session.mode == "repair" then
+		close(player, reason)
 		return
 	end
-	show(player, reason or "The repair service is not available here.")
+	show(player, reason or notice)
 end
 
 --
@@ -937,12 +936,14 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.mode_buy then
 		if session.mode ~= "buy" then session.offers_scroll = 0 end
 		session.mode = "buy"
+		session.repair_quote = nil
 		show(player)
 		return true
 	end
 	if fields.mode_sell then
 		if session.mode ~= "sell" then session.offers_scroll = 0 end
 		session.mode = "sell"
+		session.repair_quote = nil
 		session.page = 1
 		show(player)
 		return true
@@ -976,6 +977,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		if fields.mode_tradein then
 			if session.mode ~= "tradein" then session.offers_scroll = 0 end
 			session.mode = "tradein"
+			session.repair_quote = nil
 			session.page = 1
 			show(player)
 			return true
@@ -993,12 +995,43 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		if session.mode == "tradein" then
 			-- By catalogue index, in catalogue order.
 			for index, rate in ipairs(grug_guild.catalog.EXCHANGE) do
+				for _, amount in ipairs({1, 5, 10}) do
+					if fields["tradein" .. amount .. "_" .. index] then
+						do_trade_in(player, session, rate.item, amount)
+						return true
+					end
+				end
 				if fields["tradein_" .. index] then
-					do_trade_in(player, session, rate.item)
+					do_trade_in(player, session, rate.item, "all")
 					return true
 				end
 			end
 		end
+	end
+
+	if session.mode == "repair" then
+		local quote = session.repair_quote
+		if not repairs(vendor, session) or not quote or not grug_repair.provider_permitted(player, quote.provider) then
+			close(player, "The repair service is no longer available.")
+			return true
+		end
+		local prefix = session.repair_prefix
+		local selected, count = nil, fields[prefix .. "all"] and 1 or 0
+		for i = 1, #quote.items do
+			if fields[prefix .. "repair_" .. i] then selected, count = i, count + 1 end
+		end
+		if count > 1 then return true end
+		if count == 1 then
+			local requested = selected and grug_repair.single_quote(quote, selected) or quote
+			local _, reason = grug_repair.apply(player, requested)
+			session.repair_quote = nil
+			do_repair(player, session, reason)
+			core.chat_send_player(name, reason)
+		elseif fields.next or fields.previous then
+			session.page = session.page + (fields.next and 1 or -1)
+			show(player)
+		end
+		return true
 	end
 
 	-- The remaining actions carry an index in the field NAME. They are tested
@@ -1027,23 +1060,19 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			return true
 		end
 	end
-	for i = 1, (session.offer and #session.offer or 0) do
+	for i = 1, (session.mode == "buy" and session.offer and #session.offer or 0) do
 		if fields["buy_" .. i] then
 			do_buy(player, session, vendor, i)
 			return true
 		end
 	end
-	local row_count = session.rows and #session.rows or 0
-	for i = 1, row_count do
-		if fields["sell1_" .. i] then
-			do_sell(player, session, i, false)
-			return true
-		end
-	end
-	for i = 1, row_count do
-		if fields["sellall_" .. i] then
-			do_sell(player, session, i, true)
-			return true
+	local row_count = session.mode == "sell" and session.rows and #session.rows or 0
+	for _, quantity in ipairs({1, 5, 10, "all"}) do
+		for i = 1, row_count do
+			if fields["sell" .. quantity .. "_" .. i] then
+				do_sell(player, session, i, quantity)
+				return true
+			end
 		end
 	end
 	return true

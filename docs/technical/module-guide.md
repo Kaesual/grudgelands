@@ -1751,7 +1751,8 @@ tools](#player-meta-read-by-external-tools).
     Trade-in (`trade.lua`; it opens on it): "Miner's Guild" (never a
     guild's proper name: those belong in texts and on buildings), the rank
     and the balance, and a row per exchanged item from
-    `grug_guild.trade_in_rows`, its button `tradein_<catalogue index>`,
+    `grug_guild.trade_in_rows`, its All button `tradein_<catalogue index>` and quantity buttons
+    `tradein1_`, `tradein5_`, `tradein10_` with the same index,
     traded through `grug_guild.trade_in` after the row is re-checked against
     the one shown. The camp vendor and the
     guild house's exchange counter carry the field. The guild's consumables
@@ -1761,8 +1762,11 @@ tools](#player-meta-read-by-external-tools).
     `repbuy_<index in catalog.CONSUMABLES>` for the rows the rank unlocks
     (`session.rep_shown`, the click's cross-check), bought through
     `grug_guild.buy`. `repairs = true` (the camp vendor) shows a Repair
-    button that ends the window's session and opens
-    `grug_repair.open_camp_vendor` for the socket the vendor stands on
+    mode in the same vendor session. It uses a server-owned repair quote and
+    `grug_repair.quote_formspec`; serial-prefixed actions reject replay after
+    a quote refresh, and every action rechecks the authored provider socket
+    through `grug_repair.can_open_camp_vendor`. The standalone
+    `grug_repair.open_camp_vendor` API remains available for the same socket
     (`grug_traders.open`'s fifth argument `origin = {settlement, socket}`,
     plain strings from the entity's `_grug_start`/`_grug_socket`). The
     Miner's Guild Exchange (`grug_traders:guild_exchange`) takes over each

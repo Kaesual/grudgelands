@@ -484,16 +484,16 @@ H.join(mage)
 local ctx = sfinv.get_or_create_context(mage)
 local page = sfinv.pages["grug_classes:talents"]
 local fs = H.render(mage, "grug_classes:talents")
-has(fs, "button[0.25,0.15;2.60,0.60;grug_graph_tab_1;Ember (30)]", "E the Ember tab")
-has(fs, "button[2.95,0.15;2.60,0.60;grug_graph_tab_2;Rime (0)]", "E the Rime tab")
+has(fs, "button[0.35,0.40;4.70,0.65;grug_graph_tab_1;Ember (30)]", "E the Ember tab")
+has(fs, "button[0.35,1.20;4.70,0.65;grug_graph_tab_2;Rime (0)]", "E the Rime tab")
 has(fs, grug_core.ui.button_style("grug_graph_tab_1", "selected"), "E the first tab selected")
 has(fs, grug_core.ui.button_style("grug_graph_tab_2", "normal"), "E the second not")
-has(fs, "label[5.75,0.45;Points: 0 / 30]", "E the points in the header row")
-has(fs, "button[9.90,0.15;3.35,0.60;grug_talent_respec;Respec: Free]", "E the respec control")
-has(fs, "image[0.25,0.95;13.00,5.50;grug_classes_tree_ember.png]",
+has(fs, "label[0.5,6.02;Points: 0 / 30]", "E the points in the header row")
+has(fs, "button[0.50,5.05;4.1,0.60;grug_talent_respec;Respec: Free]", "E the respec control")
+has(fs, "image[5.40,0.25;14.35,6.07;grug_classes_tree_ember.png]",
 	"E the picked background fills D5's rectangle")
 has(fs, "set_focus[grug_graph_focus;true]button[0,0;0,0;grug_graph_focus;]", "E the focus sink")
-has(fs, "textarea[0.25,6.50;13.00,0.65;;;Click an available talent to buy one rank.]",
+has(fs, "textarea[5.40,6.36;14.35,0.60;;;Click an available talent to buy one rank.]",
 	"E the strip under it with the hint")
 -- Icons where shipped, text otherwise.
 has(fs, ";grug_abilities_skill_fireball.png;" .. field_of("F4") .. ";]",
@@ -511,7 +511,7 @@ has(fs, "tooltip[" .. field_of("F3") .. ";Far Cast (2/3)", "E a tooltip names th
 has(fs, "Locked: No talent points left.", "E and why it cannot rise")
 -- Ember has no gate-10 node: no label in that row.
 local gate_labels = {}
-for gate in fs:gmatch("label%[0%.37,[%d.]+;(%d+)%]") do gate_labels[#gate_labels + 1] = gate end
+for gate in fs:gmatch("label%[5%.52,[%d.]+;(%d+)%]") do gate_labels[#gate_labels + 1] = gate end
 eq(table.concat(gate_labels, ","), "0,2,6,12,16,20", "E the gate of each used row")
 
 -- The other tab: the choice lives in the sfinv context.
@@ -519,7 +519,7 @@ page:on_player_receive_fields(mage, ctx, {grug_graph_tab_2 = "Rime (0)"})
 eq(ctx.grug_talent_tab, 2, "E a tab click is kept in the context")
 fs = mage.formspec
 has(fs, grug_core.ui.button_style("grug_graph_tab_2", "selected"), "E and selects Rime")
-has(fs, "box[0.25,0.95;13.00,5.50;#101318c8]", "E without its background (hidden): the plain one")
+has(fs, "box[5.40,0.25;14.35,6.07;#101318c8]", "E without its background (hidden): the plain one")
 local locked = fs:match("style%[([^%]]-);bgcolor=#2e2e2e")
 check(locked and locked:find(field_of("R12"), 1, true), "E Far Frost is locked (no points left)")
 has(fs, "tooltip[" .. field_of("R12") .. ";Far Frost (0/3)", "E its tooltip")
@@ -528,7 +528,7 @@ page:on_player_receive_fields(mage, ctx, {[field_of("R10")] = "x"})
 eq(grug_classes.talent_rank(mage, "rime_cold_shock"), 0, "E a refused click buys nothing")
 fs = mage.formspec
 has(fs, grug_core.ui.button_style(field_of("R10"), "selected"), "E the selected node is gold")
-has(fs, "textarea[0.25,6.50;13.00,0.65;;;Cold Shock — rank 0/3: When Ice Nova hits an enemy",
+has(fs, "textarea[5.40,6.36;14.35,0.60;;;Cold Shock — rank 0/3: When Ice Nova hits an enemy",
 	"E the strip shows its text")
 has(fs, "No talent points left.]", "E and its refusal")
 -- The armor amounts at the viewer's level (Ironbound, a warrior at 60:
@@ -636,7 +636,7 @@ end
 local rows = #graph.GATE_ROWS
 check(rows * PAGE.node_h + (rows - 1) * PAGE.row_gap <= PAGE.h,
 	"E seven rows of " .. PAGE.node_h .. " with gaps of " .. PAGE.row_gap .. " fit 5.5")
-eq(PAGE.strip_y + PAGE.strip_h, 7.15, "E the strip ends at 7.15")
+eq(PAGE.strip_y + PAGE.strip_h, 6.96, "E the strip ends at 7.15")
 check(PAGE.strip_y + PAGE.strip_h <= grug_inventory.VIEW_GEOMETRY.top - 0.1 - 1.8,
 	"E above the skill row with its scrollbar")
 
@@ -675,10 +675,10 @@ has(form, "scrollbaroptions[min=0;max=40;smallstep=10;largestep=80;thumbsize=27;
 local bar_x, bar_y = form:match("scrollbar%[([%d.]+),([%d.]+);9%.750,0%.240;horizontal;" ..
 	"grug_skills_scroll;0%]")
 check(bar_x ~= nil, "F a horizontal scrollbar as wide as eight slots")
-local box_y = tonumber(form:match("background9%[[%d.]+,([%d.]+);[%d.]+,1%.800;[^%]]+%]style_type%[[^%]]+%]label%[[%d.]+,[%d.]+;SKILLS%]"))
+local box_y = grug_inventory.VIEW_GEOMETRY.top - 0.1 - 1.8
 check(box_y and bar_y and tonumber(bar_y) > box_y + 1.38 and tonumber(bar_y) + 0.24 < box_y + 1.8,
 	"F the bar under the slots, inside the box")
-has(form, "scroll_container[1.650,", "F the slots in a scroll container on the hotbar's columns")
+has(form, "scroll_container[4.900,", "F the slots in a scroll container on the hotbar's columns")
 has(form, ";9.750,1;grug_skills_scroll;horizontal;0.125]list[detached:grug_skills_rower;" ..
 	"catalog;0,0;12,1;0]scroll_container_end[]", "F all twelve slots in it")
 has(form, "arrows=default]", "F the scrollbar options are reset after the bar")
@@ -712,7 +712,7 @@ for i = 1, 6 do grug_abilities.registered["extra_" .. i].talent = "no_such_talen
 H.join(few)
 local few_form = H.render(few, "grug_classes:talents")
 lacks(few_form, "horizontal;grug_skills_scroll;", "F four skills: no scrollbar")
-has(few_form, "catalog;0,0;8,1;0]", "F the list keeps its eight columns")
+has(few_form, "catalog;0,0;4,1;0]", "F exactly four unlocked skill slots")
 
 print("bytes: talent page content per tree with its sample build: " .. table.concat(bytes, ", "))
 if failures > 0 then

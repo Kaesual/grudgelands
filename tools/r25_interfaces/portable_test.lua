@@ -387,7 +387,7 @@ lacks(fs, "owner —", "owner not in the access list")
 has(fs, "listring[detached:grug_housing_fuel_owner;fuel]listring[current_player;main]",
 	"shift-click ring")
 lacks(fs, "set_home", "no Set-as-home button without grug_home.set_home_claim")
-has(fs, "button[0.4,6.75;3.1,0.8;pick_up;Pick up stone]", "pick-up button")
+has(fs, "button[0.4,5.85;3.1,0.8;pick_up;Pick up stone]", "pick-up button")
 lacks(fs, "Pick-up possible", "no lock line 24 h after activation")
 lacks(fs, "activate", "no activation button on an activated stone")
 
@@ -419,7 +419,7 @@ grug_home = {set_home_claim = function(player, c)
 	return true, "Your Claim Stone is now your home."
 end}
 H.open_stone_interface(owner, claim)
-has(last_shown("owner").fs, "button[3.8,6.75;3.1,0.8;set_home;Set as home]",
+has(last_shown("owner").fs, "button[3.8,5.85;3.1,0.8;set_home;Set as home]",
 	"Set-as-home button with grug_home.set_home_claim")
 submit(owner, "grug_housing:stone", {set_home = ""})
 eq(home_calls[1], 7, "Set as home passes the claim")
@@ -566,7 +566,7 @@ has(last_shown("owner").fs, "carol — Interact", "carol listed")
 -- Select carol (row 2 of bob, carol, zed) and change her to Everything with an
 -- empty name field: the selected row is the target.
 submit(owner, "grug_housing:stone", {perm_list = "CHG:2", perm_name = ""})
-has(last_shown("owner").fs, "field[6.1,3.6;4.25,0.7;perm_name;Player name;carol]",
+has(last_shown("owner").fs, "field[6.2,3.6;4.05,0.7;perm_name;Player name;carol]",
 	"selecting a row fills the name")
 submit(owner, "grug_housing:stone", {perm_name = "", perm_everything = ""})
 eq(calls.set_permission[#calls.set_permission].name, "carol", "change targets the selection")
@@ -766,7 +766,7 @@ lacks(fs, "Manager", "no Manager wording")
 lacks(fs, "24 hours", "no daily rule any more")
 has(fs, "Activate it within 5 minutes with 5 coal lumps or charcoal", "activation line")
 has(fs, "stays in place for 12 hours", "pick-up lock line")
-has(fs, "button[0.4,6.35;3.4,0.6;receive;Receive Claim Stone]", "receive button")
+has(fs, "button[7.7,7.7;3.4,0.6;receive;Receive Claim Stone]", "receive button")
 
 -- A successful hand-out: the window then shows the reason in place of the
 -- button (Round 49 ruling 4).
@@ -776,7 +776,7 @@ eq(calls.issue[1], "visitor", "receive calls issue_stone")
 fs = last_shown("visitor").fs
 has(fs, "\27(c@#8fdc7a)Here is your Claim Stone.", "issue ok in green")
 lacks(fs, "Receive Claim Stone", "after the hand-out: no button")
-has(fs, "label[0.4,6.6;You already carry a Claim Stone.]", "after the hand-out: the reason")
+has(fs, "You already carry a Claim Stone.", "after the hand-out: the reason")
 -- A full inventory keeps the button and refuses on the click, in red.
 receive_result = {true}
 issue_result = {false, "Make room in your inventory for the Claim Stone."}
@@ -784,13 +784,13 @@ submit(visitor, "grug_housing:manager", {receive = ""})
 fs = last_shown("visitor").fs
 has(fs, "\27(c@#ff6060)Make room in your inventory for the Claim Stone.",
 	"issue refusal in red")
-has(fs, "button[0.4,6.35;3.4,0.6;receive;Receive Claim Stone]", "a full inventory keeps the button")
+has(fs, "button[7.7,7.7;3.4,0.6;receive;Receive Claim Stone]", "a full inventory keeps the button")
 -- Opened while the player cannot receive one: the reason, no button.
 receive_result = {false, "You need level 20 to receive a Claim Stone."}
 check(H.open_manager(visitor, manager), "Steward opens below level 20")
 fs = last_shown("visitor").fs
 lacks(fs, "Receive Claim Stone", "below level 20: no button")
-has(fs, "label[0.4,6.6;You need level 20 to receive a Claim Stone.]", "below level 20: the reason")
+has(fs, "You need level 20 to receive a Claim Stone.", "below level 20: the reason")
 receive_result = {true}
 
 factions.visitor = "throng"

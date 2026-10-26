@@ -205,6 +205,88 @@ do
 	near_pos(locked, mid, "S a stale 1x echo leaves the lock's view alone")
 end
 
+-- G: fitted artwork inside a differently proportioned viewport. These
+-- assertions project world points through the same transforms as a formspec:
+-- image scaling, centering margin, and native scrollbar displacement. They
+-- check visible positions rather than a particular normalized scroll value.
+do
+ local geometries = {
+  {map_w = 9, map_h = 8, viewport_w = 9, viewport_h = 10},
+  {map_w = 9, map_h = 8, viewport_w = 12, viewport_h = 8},
+  {map_w = 9, map_h = 8, viewport_w = 9, viewport_h = 8},
+ }
+ local point = {x = 700, z = -500}
+ local function projected(state, geometry, pos)
+  local z = state.zoom
+  local fx = (pos.x - view.min_x) / (view.max_x - view.min_x)
+  local fy = (view.max_z - pos.z) / (view.max_z - view.min_z)
+  return fx * geometry.map_w * z + math.max(0, (geometry.viewport_w - geometry.map_w * z) / 2)
+   - state.scroll_x * atlas.scroll_factor(geometry.map_w, geometry.viewport_w, z),
+   fy * geometry.map_h * z + math.max(0, (geometry.viewport_h - geometry.map_h * z) / 2)
+   - state.scroll_y * atlas.scroll_factor(geometry.map_h, geometry.viewport_h, z)
+ end
+ local function world_centre(state, geometry)
+  local x, y = projected(state, geometry, {x = view.min_x, z = view.max_z})
+  return {x = view.min_x + (geometry.viewport_w / 2 - x) / (geometry.map_w * state.zoom) *
+   (view.max_x - view.min_x), z = view.max_z - (geometry.viewport_h / 2 - y) /
+   (geometry.map_h * state.zoom) * (view.max_z - view.min_z)}
+ end
+ local function centered(state, geometry, pos, label)
+  local x, y = projected(state, geometry, pos)
+  check(math.abs(x - geometry.viewport_w / 2) <= 0.012 and
+   math.abs(y - geometry.viewport_h / 2) <= 0.012, label)
+ end
+ for index, geometry in ipairs(geometries) do
+  local tag = "G geometry " .. index
+  local state = opened()
+  centered(state, geometry, {x = 0, z = 0}, tag .. " 1x image centered on both axes")
+  local left, top = projected(state, geometry, {x = view.min_x, z = view.max_z})
+  local right, bottom = projected(state, geometry, {x = view.max_x, z = view.min_z})
+  check(math.abs(left - (geometry.viewport_w - right)) < 1e-9 and
+   math.abs(top - (geometry.viewport_h - bottom)) < 1e-9, tag .. " 1x margins are balanced")
+  check(left >= 0 and top >= 0 and right <= geometry.viewport_w and bottom <= geometry.viewport_h,
+   tag .. " 1x entire map visible")
+  for _, zoom_in in ipairs({true, true, false, true, true}) do
+   atlas.zoom_view(state, zoom_in, view, point, geometry)
+   centered(state, geometry, point, tag .. " soft lock centers player at " .. state.zoom .. "x")
+  end
+  -- Manual pan, then in/out: preserve the world point at the viewport center.
+  state = {zoom = 4, scroll_x = 1200, scroll_y = 1700, follow = false}
+  local anchor = world_centre(state, geometry)
+  atlas.zoom_view(state, true, view, point, geometry)
+  centered(state, geometry, anchor, tag .. " manual pan then 8x preserves visible center")
+  atlas.zoom_view(state, false, view, point, geometry)
+  centered(state, geometry, anchor, tag .. " return to 4x preserves visible center")
+  -- A form still displayed at 2x can echo values while the 4x send is owed.
+  state = {zoom = 2, scroll_x = 300, scroll_y = 400, follow = false}
+  anchor = world_centre(state, geometry)
+  atlas.zoom_view(state, true, view, point, geometry)
+  atlas.scroll_event(state, "VAL:300", "VAL:400", 2, geometry)
+  centered(state, geometry, anchor, tag .. " stale 2x echo preserves world center at 4x")
+  -- Both ends of each scroll range expose the corresponding artwork edge.
+  state = {zoom = 2, scroll_x = 0, scroll_y = 0, follow = false}
+  left, top = projected(state, geometry, {x = view.min_x, z = view.max_z})
+  check(math.abs(left) < 1e-9 and math.abs(top) < 1e-9, tag .. " range start reaches upper-left")
+  state.scroll_x, state.scroll_y = atlas.scroll_limit(2), atlas.scroll_limit(2)
+  right, bottom = projected(state, geometry, {x = view.max_x, z = view.min_z})
+  check(math.abs(right - geometry.viewport_w) < 1e-9 and
+   math.abs(bottom - geometry.viewport_h) < 1e-9, tag .. " range end reaches lower-right")
+  -- Edge follow is clamped but never drifts when zooming in/out/in.
+  local a, b = opened(), opened()
+  atlas.zoom_view(a, true, view, edge, geometry)
+  atlas.zoom_view(a, true, view, edge, geometry)
+  atlas.zoom_view(b, true, view, edge, geometry)
+  atlas.zoom_view(b, true, view, edge, geometry)
+  atlas.zoom_view(b, false, view, edge, geometry)
+  atlas.zoom_view(b, true, view, edge, geometry)
+  check(a.scroll_x == b.scroll_x and a.scroll_y == b.scroll_y,
+   tag .. " edge follow has no in/out/in drift")
+  local px, py = projected(b, geometry, edge)
+  check(px >= 0 and px <= geometry.viewport_w and py >= 0 and py <= geometry.viewport_h,
+   tag .. " clamped player remains visible")
+ end
+end
+
 if #failures > 0 then
 	for _, failure in ipairs(failures) do print("FAIL " .. failure) end
 	error(("R451 MZ PORTABLE FAIL %d of %d checks"):format(#failures, checks), 0)

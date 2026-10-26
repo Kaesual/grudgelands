@@ -10,8 +10,8 @@
 --       item the player carries in grug_inventory.consume_lists (counts
 --       summed over the lists); `lots` = floor(count / lot), `total` =
 --       lots * points, `rest` = count - lots * lot
---   grug_guild.trade_in(player, item) -> points, lifetime, balance | nil, err
---       takes every whole lot of the item (after every check, as the Sell
+--   grug_guild.trade_in(player, item, requested_lots) -> points, lifetime, balance | nil, err
+--       takes the requested whole lots (omitted means All, as the Sell
 --       tab's All) and credits grug_guild.add(player, total, "trade_in");
 --       err "no_faction", "not_exchanged" (no rate or a pending row),
 --       "too_few" (below one lot)
@@ -48,7 +48,7 @@ function grug_guild.trade_in_rows(player)
 	return rows
 end
 
-function grug_guild.trade_in(player, item)
+function grug_guild.trade_in(player, item, requested_lots)
 	if not grug_guild.summary(player) then return nil, "no_faction" end
 	local rate = catalog.exchange_rate(item)
 	if not rate then return nil, "not_exchanged" end
@@ -60,9 +60,15 @@ function grug_guild.trade_in(player, item)
 		end
 	end
 	if not row or row.lots < 1 then return nil, "too_few" end
-	-- Every check has passed: take the whole lots.
+	-- Omitted means All for existing callers. Explicit quantities are whole
+	-- lots; reject malformed or unavailable amounts before removing anything.
+	local wanted_lots = requested_lots
+	if wanted_lots == nil then wanted_lots = row.lots end
+	if type(wanted_lots) ~= "number" or wanted_lots ~= math.floor(wanted_lots) or
+			wanted_lots < 1 or wanted_lots > row.lots then return nil, "too_few" end
+	-- Every check has passed: take the requested whole lots.
 	local inv = player:get_inventory()
-	local wanted = row.lots * rate.lot
+	local wanted = wanted_lots * rate.lot
 	local removed = 0
 	for _, list in ipairs(grug_inventory.consume_lists(inv)) do
 		if removed >= wanted then break end

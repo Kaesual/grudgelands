@@ -72,7 +72,7 @@ end
 -- The window (0.45.1, fix plan row 12), in real coordinates: the title, the
 -- greeting, the status line and one notice (the unlearn question, the last
 -- action's result or the Crafting tab hint, Round 34 and Round 45), then
--- every button in one bottom row of one height, Close on the right. Plain
+-- every button in one bottom row of one height, Close on the left. Plain
 -- labels, one per wrapped line (grug_jobs/overview.lua's way): no edit box,
 -- so the engine's first focus falls on the last button, Close, and the
 -- inventory key closes the window. The greeting keeps room for three lines
@@ -147,18 +147,19 @@ local function trainer_formspec(player, profession, confirming)
 	end
 	-- The row sits 0.35 below the last line's foot (its centre + 0.21).
 	local row_y = y - LINE_STEP + 0.56
-	local x = PAD
+	local x = WIDTH - PAD
 	for _, button in ipairs(buttons) do
-		if button[1] == "grug_jobs_confirm" then
+		x = x - button[3]
+		if button[1] == "grug_jobs_confirm" or button[1] == "grug_jobs_unlearn" then
 			fs[#fs + 1] = grug_core.ui.button_style(button[1], "danger")
 		end
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(x, row_y, button[3],
 			BUTTON_H, button[1], esc(button[2]))
-		x = x + button[3] + BUTTON_GAP
+		x = x - BUTTON_GAP
 	end
 	fs[#fs + 1] = ("button_exit[%.2f,%.2f;%.2f,%.2f;grug_jobs_close;Close]"):format(
-		WIDTH - PAD - CLOSE_W, row_y, CLOSE_W, BUTTON_H)
-	return grug_core.ui.frame(WIDTH, row_y + BUTTON_H + PAD) ..
+		PAD, row_y, CLOSE_W, BUTTON_H)
+	return grug_core.ui.frame(WIDTH, row_y + BUTTON_H + PAD, nil, nil, player) ..
 		table.concat(fs)
 end
 

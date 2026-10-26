@@ -385,7 +385,14 @@ local ada = make_player("ada", "accord", "human")
 local fs = grug_quickbar.formspec(ada)
 has(fs, "formspec_version[6]", "real coordinates")
 has(fs, "position[0.02,0.5]anchor[0,0.5]", "the window sits on the left")
-has(fs, grug_core.ui.title(0.375, 0.45, "Quickbar"), "themed title")
+core.get_player_window_information = function()
+	return {size = {x = 2560, y = 1440}, real_gui_scaling = 1}
+end
+local large_fs = grug_quickbar.formspec(ada)
+check(large_fs:match("^formspec_version%[6%]size%[[^%]]+%]position%[0%.02,0%.5%]anchor%[0,0%.5%]padding%[") ~= nil,
+	"WQHD placement precedes padding so the native parser keeps the left anchor")
+core.get_player_window_information = nil
+has(fs, grug_core.ui.title(0.5, 0.45, "Quickbar"), "themed title")
 has(fs, "Active Hotbar", "hotbar section heading")
 has(fs, "No mounts or boats yet.", "no mount: the empty line")
 eq(count_buttons(fs, "image_button"), 0, "no mount: no mount button")
@@ -394,7 +401,7 @@ eq(count_buttons(fs, "box"), 4, "empty belt: four empty slots drawn")
 lacks(fs, "grug_quickbar_home", "no home: no Return home button")
 has(fs, "Click to use\\; the window closes.", "the hint")
 local w, h = size_of(fs)
-eq(w, 5.5, "four inventory slots wide")
+eq(w, 5.75, "four inventory slots wide")
 check(h and h > 4 and h < 7, "roughly square without a home: " .. tostring(h))
 
 ada.meta["grug_mounts:land_tier"] = 2
@@ -409,34 +416,34 @@ eq(count_buttons(fs, "item_image_button"), 2, "two filled belt slots: two item b
 eq(count_buttons(fs, "image_button") - 2, 4, "four owned tiers: four mount buttons")
 for _, tier in ipairs({1, 2, 5, 6}) do has(fs, ";grug_quickbar_mount_" .. tier .. ";]", "tier " .. tier .. " button") end
 for _, tier in ipairs({3, 4}) do lacks(fs, "grug_quickbar_mount_" .. tier, "tier " .. tier .. " not owned: no button") end
-has(fs, "image_button[0.375,1.300;1,1;grug_mounts_icon_t1_accord.png;grug_quickbar_mount_1;]",
+has(fs, "image_button[0.500,1.300;1,1;grug_mounts_icon_t1_accord.png;grug_quickbar_mount_1;]",
 	"tier 1: the faction's Courser icon in the first slot")
-has(fs, "image_button[1.625,1.300;1,1;grug_mounts_icon_human.png;grug_quickbar_mount_2;]",
+has(fs, "image_button[1.750,1.300;1,1;grug_mounts_icon_human.png;grug_quickbar_mount_2;]",
 	"tier 2: the race mount's icon, one slot pitch (1.25) further")
 has(fs, "grug_mounts_icon_boat.png;grug_quickbar_mount_5", "the Boat's icon")
 has(fs, "grug_mounts_icon_improved_boat.png;grug_quickbar_mount_6", "the Improved Boat's icon")
 has(fs, "tooltip[grug_quickbar_mount_2;Highcourt Charger\nJourneyman Riding — 8 nodes/s]",
 	"tooltip: model, tier and speed")
-has(fs, "item_image_button[0.375,", "belt slot 1 at the left edge")
+has(fs, "item_image_button[0.500,", "belt slot 1 at the left edge")
 has(fs, ";grug_traders:potion_healing_weak 3;grug_quickbar_belt_1;]", "belt 1: the count in the item string")
 has(fs, ";grug_alchemy:elixir_vigor_t1;grug_quickbar_belt_3;]", "belt 3: the elixir")
 lacks(fs, "grug_quickbar_belt_2", "empty belt slot 2: nothing clickable")
 lacks(fs, "grug_quickbar_belt_4", "a non-potion in the belt: nothing clickable")
-has(fs, "label[0.375,", "labels at the padding")
+has(fs, "label[0.500,", "labels at the padding")
 has(fs, "Home: Highcourt Inn", "the home's name")
 has(fs, "grug_quickbar_home;Return home (Ready)]", "Return home with its state")
 lacks(fs, "Click to dismount.", "on foot: no dismount line")
 lacks(fs, "#7ae08a", "on foot: no ridden frame")
 local w2, h2 = size_of(fs)
-eq(w2, 5.5, "width unchanged")
--- Round 50: the A/B switch row and a second hint line add about 1.75.
-check(h2 and h2 > 6 and h2 < 8.5, "one mount row and a home: about square (" .. tostring(h2) .. ")")
+eq(w2, 5.75, "width unchanged")
+-- Section spacing includes the A/B switch, home action and two-line hint.
+check(h2 and h2 > 6 and h2 < 9, "one mount row and a home: compact stacked sections (" .. tostring(h2) .. ")")
 
 -- Five owned tiers: a second row.
 ada.meta["grug_mounts:flight_tier"] = 3
 fs = grug_quickbar.formspec(ada)
 eq(count_buttons(fs, "image_button") - 2, 5, "five owned tiers: five mount buttons")
-has(fs, "image_button[0.375,2.550;1,1;grug_mounts_icon_improved_boat.png;grug_quickbar_mount_6;]",
+has(fs, "image_button[0.500,2.550;1,1;grug_mounts_icon_improved_boat.png;grug_quickbar_mount_6;]",
 	"the fifth button opens a second row")
 local _, h3 = size_of(fs)
 check(h3 and math.abs(h3 - h2 - 1.25) < 1e-6, "the second row adds one slot pitch")
@@ -668,10 +675,10 @@ for tier_id, tier in ipairs(grug_mounts.TIERS) do
 end
 -- The tip in both dialogues.
 local rows = {{id = 1, name = "Apprentice Riding", level = 15, state = "owned"}}
-has(grug_mounts.trainer_formspec(rows, nil), "label[0.4,6.8;Press E to open your mounts.]",
+has(grug_mounts.trainer_formspec(rows, nil), ";Press E to open your mounts.]",
 	"the Riding Trainer's tip")
 has(grug_mounts.trainer_formspec(rows, nil, grug_mounts.SERVICES.shipwright),
-	"label[0.4,6.8;Press E to open your mounts.]", "the Shipwright's tip")
+	";Press E to open your mounts.]", "the Shipwright's tip")
 -- One source per wording: the tip and (0.45.1) the first mount's banner.
 local tip_count, hint_count = 0, 0
 for _, path in ipairs({"catalog.lua", "state.lua", "items.lua", "trainer.lua", "shipwright.lua"}) do

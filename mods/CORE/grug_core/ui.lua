@@ -70,8 +70,27 @@ function UI.button_style(name, role)
 		"bgimg_middle=6;padding=-4,-4,4,4;font_size=*0.85;textcolor=#eeeae1]"):format(core.formspec_escape(name), texture)
 end
 
-function UI.frame(w, h, title, opaque)
-	local fs = ("formspec_version[6]size[%.3f,%.3f]"):format(w, h)
+-- At large desktop resolutions, native slots grow with the screen while
+-- fonts keep their DPI/GUI size. Cap the preferred slot scale with padding,
+-- retaining the client's ordinary fit/shrink behavior when its window resizes.
+-- Engine: GUIFormSpecMenu::getFixedImgsize and calculateImgsize. Padding must
+-- follow size/position/anchor and precede no_prepend or any visible element.
+function UI.readable_padding(player, w, h)
+	if not player or not core.get_player_window_information then return "" end
+	local info = core.get_player_window_information(player:get_player_name())
+	local size = info and info.size
+	local scale = info and info.real_gui_scaling
+	if not size or not scale or scale <= 0 or size.x <= 0 or size.y <= 0 or
+			size.y / scale < 1080 then return "" end
+	local pixels = 0.5555 * 96 * scale
+	local x = math.max(0.05, 0.5 - 0.5 * w * pixels / size.x)
+	local y = math.max(0.05, 0.5 - 0.5 * h * pixels / size.y)
+	return ("padding[%.6f,%.6f]"):format(x, y)
+end
+
+function UI.frame(w, h, title, opaque, player)
+	local fs = ("formspec_version[6]size[%.3f,%.3f]"):format(w, h) ..
+		UI.readable_padding(player, w, h)
 	if opaque then fs = fs .. "no_prepend[]" .. UI.prepend(true) end
 	if title then fs = fs .. UI.title(0.4, 0.45, title) end
 	return fs
@@ -95,4 +114,14 @@ function UI.service_header(w, title, subtitle, icon)
         "style_type[label;font_size=*0.85]" ..
         ("label[1.25,0.97;%s]box[0.4,1.35;%.3f,0.015;#d4b77d40]"):
             format(core.formspec_escape(core.colorize(UI.colors.muted, subtitle or "")), w - 0.8)
+end
+
+-- Native edit boxes cannot style their fill (GUIFormSpecMenu::createTextField).
+-- Draw the desired surface behind a borderless native field; names and input
+-- behavior stay with the caller. The helper never rewrites a finished form.
+function UI.input_background(x, y, w, h, name)
+	return ("box[%.3f,%.3f;%.3f,%.3f;#829c9655]" ..
+		"box[%.3f,%.3f;%.3f,%.3f;#243235]style[%s;border=false;textcolor=#eeeae1]"):
+		format(x, y, w, h, x + 0.015, y + 0.015, w - 0.03, h - 0.03,
+			core.formspec_escape(name))
 end

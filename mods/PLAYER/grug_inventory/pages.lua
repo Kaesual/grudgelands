@@ -75,15 +75,15 @@ end
 
 local CHARACTER_PAGE = "grug_inventory:character"
 local BOX_BOTTOM = grug_inventory.VIEW_GEOMETRY.top - 0.1
-local MODE_BOX = {x = 6.6, y = 0.2, w = 6.7, h = BOX_BOTTOM - 0.2}
-local GEAR_BOX = {x = 0.2, y = 0.2, w = 6.2, h = BOX_BOTTOM - 0.2}
+local MODE_BOX = {x = 9.8, y = 0.2, w = 9.8, h = BOX_BOTTOM - 0.2}
+local GEAR_BOX = {x = 0.2, y = 0.2, w = 9.3, h = BOX_BOTTOM - 0.2}
 -- The mode body's area inside the mode box, below the mode buttons; the
 -- Achievements body is drawn into it by its mod.
-local MODE_AREA = {x = 6.8, y = 1.25, w = 6.3, h = BOX_BOTTOM - 0.15 - 1.25}
+local MODE_AREA = {x = 10.0, y = 1.25, w = 9.3, h = BOX_BOTTOM - 0.15 - 1.25}
 local MODES = {
-	{id = "stats", label = "Stats", x = 6.8, w = 1.2},
-	{id = "effects", label = "Effects", x = 8.1, w = 1.4},
-	{id = "achievements", label = "Achievements", x = 9.6, w = 3.35},
+	{id = "stats", label = "Stats", x = 10.0, w = 2.2},
+	{id = "effects", label = "Effects", x = 12.3, w = 2.2},
+	{id = "achievements", label = "Achievements", x = 14.6, w = 4.6},
 }
 local MODE_Y, MODE_H = 0.35, 0.7
 
@@ -92,13 +92,13 @@ local MODE_Y, MODE_H = 0.35, 0.7
 local SLOT_POS = {
 	grug_head = {0.5, 1.05}, grug_chest = {0.5, 2.4},
 	grug_legs = {0.5, 3.75}, grug_feet = {0.5, 5.1},
-	grug_weapon = {5.05, 1.05}, grug_offhand = {5.05, 2.4},
-	grug_trinket1 = {5.05, 3.75}, grug_trinket2 = {5.05, 5.1},
+	grug_weapon = {8.05, 1.05}, grug_offhand = {8.05, 2.4},
+	grug_trinket1 = {8.05, 3.75}, grug_trinket2 = {8.05, 5.1},
 }
 local QUIVER_POS = {0.5, 6.7}
 local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
 local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.1, BOX_BOTTOM - 0.8
-local MODEL = {x = 1.65, y = 0.95, w = 3.25, h = 5.6}
+local MODEL = {x = 3.0, y = 1.45, w = 3.0, h = 4.7}
 -- The engine provides mouse rotation; no preview timer or separate input.
 local MODEL_VIEW = "0,130"
 
@@ -273,7 +273,7 @@ end
 
 -- The detail column keeps the actual pool/combat values, guild balance,
 -- housing status and Stats-only cloak picker. No illustrative browser stats.
-local STAT_X, STAT_Y, STAT_STEP = 6.9, 1.6, 0.5
+local STAT_X, STAT_Y, STAT_STEP = 10.1, 1.6, 0.5
 local STAT_W = MODE_BOX.x + MODE_BOX.w - 0.25 - STAT_X
 local STAT_CHARS = math.floor(STAT_W / 0.15)
 local CLOAK_Y = BOX_BOTTOM - 1.15
@@ -350,7 +350,7 @@ end
 -- Effects (Round 26): every active effect of the status icon row with its
 -- name, detail and remaining time -- the text the row itself has no room
 -- for. One column in the mode box.
-local EFFECT_X, EFFECT_Y, EFFECT_STEP, EFFECT_ROWS = 6.9, 1.3, 0.95, 8
+local EFFECT_X, EFFECT_Y, EFFECT_STEP, EFFECT_ROWS = 10.1, 1.3, 0.85, 8
 local EFFECT_ICON = 0.8
 local NAME_CHARS, DETAIL_CHARS = 25, 32
 local TIME_COLOR = "#f0c75e"
@@ -392,7 +392,7 @@ local function effects_content(player, context)
 	local effects = grug_core.status_effects(player)
 	context.grug_effects_key = grug_inventory.effects_key(player)
 	if #effects == 0 then
-		return ("textarea[%.2f,1.45;6.1,1.7;;;%s]"):format(EFFECT_X, esc("No active effects. " ..
+		return ("textarea[%.2f,1.45;9.0,1.7;;;%s]"):format(EFFECT_X, esc("No active effects. " ..
 			"Food, elixirs, skills, talents and hostile attacks show up here."))
 	end
 	local fs = {"style_type[label;font_size=*0.85]"}
@@ -402,13 +402,13 @@ local function effects_content(player, context)
 		local effect = effects[index]
 		local y = EFFECT_Y + (index - 1) * EFFECT_STEP
 		local name, time, detail = effect_lines(effect)
-		fs[#fs + 1] = grug_core.ui.panel(EFFECT_X - 0.05, y - 0.02, 6.05, 0.9)
+		fs[#fs + 1] = grug_core.ui.panel(EFFECT_X - 0.05, y - 0.02, 9.0, 0.8)
 		local full_detail = effect.detail or ""
 		if effect.value ~= nil then
 			full_detail = full_detail .. (full_detail ~= "" and ": " or "") ..
 				effect.caption .. " left"
 		end
-		fs[#fs + 1] = ("tooltip[%.2f,%.2f;6.05,0.9;%s]"):format(EFFECT_X, y,
+		fs[#fs + 1] = ("tooltip[%.2f,%.2f;9.0,0.8;%s]"):format(EFFECT_X, y,
 			esc(effect.name .. "\n" .. full_detail .. "\n" .. time))
 		fs[#fs + 1] = ("image[%.2f,%.2f;%.2f,%.2f;%s]"):format(EFFECT_X, y,
 			EFFECT_ICON, EFFECT_ICON, esc(effect.texture))
@@ -543,21 +543,15 @@ end)
 -- The Help page lives in help.lua (dofile'd by init.lua before this file).
 
 --
--- Inventory page (Round 44, spec §3.2, wireframe v1; boxed layout Round 45
--- playtest, ui.lua LAYOUT): the four bag slots and the potion belt in two
--- boxes along the top, the full inventory view below them (main[9..] and
--- every equipped bag as one scrolling grid, the hotbar at the bottom; the
--- view draws its own two boxes), and between the grid and the hotbar the
--- money row: the balance, Withdraw, the Bag of Coins deposit, its automatic
--- deposit checkbox and Sort, on the slot columns. Real coordinates; no
--- listring, so shift-click does nothing here (one inventory has no "other
--- side").
+-- Inventory page: the full eight-column bag grid on the left; Bags,
+-- Potion belt and Money stacked on the right. The common hotbar is centered
+-- under both columns. Native list IDs, deposit, sorting and transfer routes
+-- remain unchanged; no listring because this is one inventory.
 --
 
 local INVENTORY_PAGE = "grug_inventory:inventory"
 local PITCH = 1.25
 -- The money row's buttons span two slot columns and are as tall as a slot.
-local ROW_BUTTON_W = PITCH + 1
 -- Sort ignores clicks for this long after one it ran (spec ruling 5): no
 -- countdown, no resend; the lists the sort changed reach the client on their
 -- own.
@@ -565,12 +559,12 @@ local SORT_COOLDOWN_US = 2500000
 
 local function inventory_content(player)
 	local deposit, deposit_list = grug_money.deposit_location(player)
-	-- The top row: Bags and Potion belt share the boxes' width.
 	local layout = grug_inventory.LAYOUT
-	local half_w = (layout.box_w - layout.gap) / 2
-	local bags_box_x, belt_box_x = layout.box_x, layout.box_x + half_w + layout.gap
+	local half_w = layout.side_w
+	local bags_box_x, belt_box_x = layout.side_x, layout.side_x
 	local bags_x, belt_x = bags_box_x + layout.pad, belt_box_x + layout.pad
 	local slot_y = layout.top_y + layout.label_h
+	local belt_y = slot_y + layout.slot_box_h + layout.gap
 	local fs = {
 		"real_coordinates[true]",
 		-- An invisible button with no action takes the focus at every send
@@ -580,7 +574,7 @@ local function inventory_content(player)
 		"set_focus[grug_inv_focus;true]button[0,0;0,0;grug_inv_focus;]",
 		grug_inventory.area_box(bags_box_x, layout.top_y, half_w, layout.slot_box_h,
 			"Bags"),
-		grug_inventory.area_box(belt_box_x, layout.top_y, half_w, layout.slot_box_h,
+		grug_inventory.area_box(belt_box_x, layout.top_y + layout.slot_box_h + layout.gap, half_w, layout.slot_box_h,
 			"Potion belt"),
 	}
 	for i = 1, grug_inventory.BAG_COUNT do
@@ -592,8 +586,8 @@ local function inventory_content(player)
 		esc("Bag slots — a bag here adds its slots to the inventory below"))
 	local belt = grug_inventory.POTION_BELT_SIZE
 	fs[#fs + 1] = ("list[current_player;%s;%.3f,%.3f;%d,1;]"):format(
-		grug_inventory.POTION_BELT, belt_x, slot_y, belt)
-	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(belt_x, slot_y,
+		grug_inventory.POTION_BELT, belt_x, belt_y, belt)
+	fs[#fs + 1] = ("tooltip[%.3f,%.3f;%.2f,1;%s]"):format(belt_x, belt_y,
 		belt * PITCH - 0.25, esc("Potion belt — potions and elixirs only"))
 	-- The money row (Round 45 playtest; the balance and Withdraw moved here
 	-- from the Character page): "Money" over the balance in columns 1-2
@@ -601,37 +595,22 @@ local function inventory_content(player)
 	-- their y), Withdraw in columns 3-4, the deposit slot in column 5, the
 	-- automatic deposit's checkbox in column 6 (Round 46), Sort in columns
 	-- 7-8, ending with the hotbar's last slot.
-	local row_y, x = layout.money_y, layout.x
-	local compact = grug_core.ui.text_scale(player) < 1
-	if compact then
-		fs[#fs + 1] = ("style[grug_money_withdraw,grug_inv_sort;font_size=*%.3f]"):
-			format(0.85 * grug_core.ui.text_scale(player))
-	end
-	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, row_y + 0.25,
-		esc("Money\n" .. grug_money.format(grug_money.get(player))))
-	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_money_withdraw;Withdraw]"):format(
-		x + 2 * PITCH, row_y, ROW_BUTTON_W)
-	-- The Bag of Coins deposit (Round 34, moved to this page in Round 44): a
-	-- bag put here is credited at once, so the slot is always empty and
-	-- always shows its ghost.
-	local deposit_x = x + 4 * PITCH
-	fs[#fs + 1] = ("list[%s;%s;%.3f,%.3f;1,1;]"):format(deposit, deposit_list,
-		deposit_x, row_y)
-	fs[#fs + 1] = ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
-		:format(deposit_x, row_y)
-	fs[#fs + 1] = ("tooltip[%.3f,%.3f;1,1;%s]"):format(deposit_x, row_y,
+	local row_y, x = layout.money_y, layout.side_x + layout.pad
+	fs[#fs + 1] = grug_inventory.area_box(layout.side_x, row_y,
+		layout.side_w, layout.money_h, "Money")
+	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, row_y + 0.85,
+		esc(grug_money.format(grug_money.get(player))))
+	fs[#fs + 1] = ("button[%.3f,%.3f;2.5,0.65;grug_money_withdraw;Withdraw]"):format(x, row_y + 1.35)
+	local deposit_y = row_y + 2.3
+	fs[#fs + 1] = ("list[%s;%s;%.3f,%.3f;1,1;]"):format(deposit, deposit_list, x, deposit_y)
+	fs[#fs + 1] = ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]"):format(x, deposit_y)
+	fs[#fs + 1] = ("tooltip[%.3f,%.3f;1,1;%s]"):format(x, deposit_y,
 		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
-	-- Round 46: the automatic deposit on pickup, in column 6 (a real-coordinate
-	-- checkbox's y is its middle); its label is short to fit the column, the
-	-- tooltip says it in full.
-	fs[#fs + 1] = ("checkbox[%.3f,%.3f;grug_money_auto_deposit;Auto;%s]"):format(
-		x + 5 * PITCH, row_y + 0.5, tostring(grug_money.auto_deposit(player)))
-	fs[#fs + 1] = ("tooltip[grug_money_auto_deposit;%s]"):format(
-		esc("Deposit coin bags automatically on pickup"))
-	fs[#fs + 1] = ("button[%.3f,%.3f;%.2f,1;grug_inv_sort;Sort]"):format(
-		x + (compact and 7 or 6) * PITCH, row_y, compact and 1 or ROW_BUTTON_W)
-	fs[#fs + 1] = ("tooltip[grug_inv_sort;%s]"):format(esc("Sort the inventory " ..
-		"and the bags. The hotbar stays as it is."))
+	fs[#fs + 1] = ("checkbox[%.3f,%.3f;grug_money_auto_deposit;Auto deposit;%s]"):format(
+		x + 1.3, deposit_y + 0.5, tostring(grug_money.auto_deposit(player)))
+	fs[#fs + 1] = ("button[%.3f,%.3f;4.4,0.65;grug_inv_sort;Sort inventory]"):format(
+		x, row_y + layout.money_h - 0.9)
+	fs[#fs + 1] = "tooltip[grug_inv_sort;Sort the inventory and the bags. The hotbar stays as it is.]"
 	return table.concat(fs)
 end
 

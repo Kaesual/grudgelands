@@ -111,7 +111,7 @@ for _, tree_id in ipairs(graph.tree_ids) do
 	eq(stored(q), stored(p), "A " .. tree_id .. ": the page's clicks store the same")
 	has(q.formspec, ("grug_graph_tab_%d;%s (30)]"):format(tab, tree.name),
 		"A " .. tree_id .. ": its tab shows 30 points")
-	has(q.formspec, "label[5.75,0.45;Points: 0 / 30]",
+	has(q.formspec, "label[0.5,6.02;Points: 0 / 30]",
 		"A " .. tree_id .. ": the header's points")
 	if tab == 1 then page_bytes[#page_bytes + 1] = tree.class .. " " .. #q.formspec end
 end

@@ -193,7 +193,7 @@ local function esc(text) return core.formspec_escape(tostring(text or "")) end
 function grug_money.show_withdraw(player, fields, message)
 	fields = fields or {}
 	local fs = {
-		grug_core.ui.frame(8, 4.3, "Withdraw coins"),
+		grug_core.ui.frame(8, 4.3, "Withdraw coins", nil, player),
 		"style_type[label,field;font_size=*0.85]",
 		grug_core.ui.button_style("grug_money_confirm", "selected"),
 		grug_core.ui.panel(0.2, 0.85, 7.6, 0.65),
@@ -203,6 +203,9 @@ function grug_money.show_withdraw(player, fields, message)
 		"set_focus[grug_money_cancel;false]",
 		"label[0.4,2.65;Withdraw into a Bag of Coins]",
 		("label[0.4,1.18;Balance: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
+		grug_core.ui.input_background(0.4, 1.85, 2.2, 0.65, "grug_money_gold"),
+		grug_core.ui.input_background(2.9, 1.85, 2.2, 0.65, "grug_money_silver"),
+		grug_core.ui.input_background(5.4, 1.85, 2.2, 0.65, "grug_money_copper"),
 		("field[0.4,1.85;2.2,0.65;grug_money_gold;Gold;%s]"):format(esc(fields.grug_money_gold)),
 		("field[2.9,1.85;2.2,0.65;grug_money_silver;Silver;%s]"):format(esc(fields.grug_money_silver)),
 		("field[5.4,1.85;2.2,0.65;grug_money_copper;Copper;%s]"):format(esc(fields.grug_money_copper)),

@@ -106,7 +106,6 @@ local PAD, GAP, ROW_H, BUTTON_H = 0.2, 0.25, 0.45, 0.6
 local LIST_SHARE, LIST_MIN = 0.42, 3.6
 local ABANDON_W, CONFIRM_W, CANCEL_W, BUTTON_GAP = 1.8, 2.6, 1.5, 0.15
 local HUD_W = 2.3 -- the Quest HUD checkbox with its label
-local PANEL = "#00000040"
 
 -- The two boxes for `journal` inside `rect` {x, y, w, h}.
 function M.content(session, journal, rect)
@@ -136,7 +135,7 @@ function M.content(session, journal, rect)
 	end
 	local row_y = y + list_h - PAD - BUTTON_H
 	local fs = {
-		("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, y, w, list_h, PANEL),
+		grug_core.ui.panel(x, y, w, list_h),
 		("label[%.2f,%.2f;Active quests: %d/20]"):format(x + PAD, y + PAD + ROW_H / 2, #journal.quests),
 		("checkbox[%.2f,%.2f;grug_quest_hud;Quest HUD;%s]"):format(right - HUD_W,
 			y + PAD + ROW_H / 2, journal.hud_enabled and "true" or "false"),
@@ -147,7 +146,7 @@ function M.content(session, journal, rect)
 	}
 	local text_y = y + list_h + GAP
 	local text_h = rect.h - list_h - GAP
-	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, text_y, w, text_h, PANEL)
+	fs[#fs + 1] = grug_core.ui.panel(x, text_y, w, text_h)
 	if not quest then
 		fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(x + PAD, text_y + PAD,
 			w - 2 * PAD, text_h - 2 * PAD, #journal.quests == 0 and

@@ -591,12 +591,12 @@ local function rects(part)
 	end
 	return out
 end
-local COLUMNS = {{0.2, 5.2}, {5.4, 13.3}}
+local COLUMNS = {{0.2, 6.2}, {6.6, grug_inventory.UI.frame_w - 0.2}}
 local function geometry_ok(fs, label)
 	local ok = true
 	for _, r in ipairs(rects(content(fs))) do
 		local right, bottom = r.x + r.w, r.y + r.h
-		if r.x < 0 or r.y < 0 or right > 13.5 + 1e-6 or
+		if r.x < 0 or r.y < 0 or right > grug_inventory.UI.frame_w + 1e-6 or
 				bottom > grug_inventory.VIEW_GEOMETRY.top - 0.1 + 0.01 then
 			ok = check(false, ("%s: %s at %.2f,%.2f+%.2f,%.2f leaves the page area"):format(
 				label, r.name, r.x, r.y, r.w, r.h))
@@ -891,14 +891,14 @@ do
 	lacks(fs, F.stop .. ";", "L no stop button while idle")
 	lacks(fs, F.queue .. ";", "L no View Queue while idle")
 	lacks(fs, "list[current_player;grug_craft_out;", "L no output slots while empty")
-	has(fs, "checkbox[" .. J._fs_number(2.75) .. ",2;" .. F.fav_only .. ";Favorites;false]",
+	has(fs, "checkbox[" .. J._fs_number(3.4) .. ",2;" .. F.fav_only .. ";Favorites;false]",
 		"L Favorites only beside Craftable only")
 	geometry_ok(fs, "L idle")
 	click(l, {[F.qty] = "4", [go(l)] = "Craft ×4"})
 	fs = l.formspec
 	check(J.job_state(l) ~= nil, "L the click starts the job")
 	has(fs, go(l) .. ";Queue ×4]", "L Queue ×N while a job runs")
-	has(fs, "animated_image[5.6,", "L the bar in the strip")
+	has(fs, "animated_image[6.8,", "L the bar in the strip")
 	has(fs, stop(l) .. ";■]", "L the small stop button")
 	has(fs, "Hearty Stew ×4", "L one line names the job")
 	has(fs, queue_button(0), "L View Queue [0]")
@@ -906,13 +906,13 @@ do
 	geometry_ok(fs, "L running")
 	-- The strip stays on another recipe, on the overview and on a details box.
 	check(choose(l, 1, plank), "L another recipe")
-	has(l.formspec, "animated_image[5.6,", "L the bar stays on another recipe")
+	has(l.formspec, "animated_image[6.8,", "L the bar stays on another recipe")
 	has(l.formspec, go(l) .. ";Queue ×1]", "L ... and it queues")
 	click(l, {[F.area .. "2"] = "Cooking"})
-	has(l.formspec, "animated_image[5.6,", "L the bar on the overview (no recipe chosen)")
+	has(l.formspec, "animated_image[6.8,", "L the bar on the overview (no recipe chosen)")
 	has(l.formspec, queue_button(0), "L ... and View Queue")
 	lacks(l.formspec, "Recipe details", "L no details button before lane DETAILS")
-	J.register_craft_box("details", {build = function() return "label[5.6,1.5;DETAILS PAGE]" end,
+	J.register_craft_box("details", {build = function() return "label[6.8,1.5;DETAILS PAGE]" end,
 		fields = function() return false end})
 	-- Lane DETAILS: the seam opens the page through details.lua's opener.
 	J.open_recipe_details = function(st) J.open_craft_box(st, "details") end
@@ -920,7 +920,7 @@ do
 	has(l.formspec, F.details .. ";Recipe details]", "L the details seam once a details box exists")
 	click(l, {[F.details] = "Recipe details"})
 	has(l.formspec, "DETAILS PAGE", "L the details box opens")
-	has(l.formspec, "animated_image[5.6,", "L ... with the bar")
+	has(l.formspec, "animated_image[6.8,", "L ... with the bar")
 	has(l.formspec, stop(l) .. ";■]", "L ... the stop button")
 	has(l.formspec, queue_button(0), "L ... and View Queue")
 	-- The queue view.
@@ -936,7 +936,7 @@ do
 	has(fs, "Aspen Wood Planks ×8", "L ... the waiting job's line")
 	has(fs, F.back .. ";" .. core.formspec_escape("◀ Back to recipe") .. "]", "L ... Back to recipe")
 	has(fs, grug_core.ui.button_style(F.queue, "selected"), "L View Queue in the selection colour")
-	has(fs, "animated_image[5.6,", "L the bar under the queue view")
+	has(fs, "animated_image[6.8,", "L the bar under the queue view")
 	geometry_ok(fs, "L the queue view")
 	click(l, {[F.back] = "x"})
 	has(l.formspec, go(l) .. ";Queue ×2]", "L Back returns to the recipe")
@@ -949,7 +949,7 @@ do
 	-- The output slots only while filled.
 	put(l, OUT, 1, "t:stone 3")
 	fs = open(l)
-	has(fs, "list[current_player;grug_craft_out;5.6,", "L the output row while filled")
+	has(fs, "list[current_player;grug_craft_out;6.8,", "L the output row while filled")
 	geometry_ok(fs, "L a full queue and the overflow")
 	click(l, {[F.queue] = "View Queue"})
 	fs = l.formspec
@@ -1109,8 +1109,8 @@ for first = 1, #J.PRIMARY_PROFESSIONS - 1 do
 			right, found = x + width, found + 1
 		end
 		eq(found, 5, "every profession pair shows five tabs")
-		check(right <= 10.61, "profession tabs stay clear of the unchanged tier area")
-		has(fs, "label[10.75,0.45;", "the tier label does not move between profession pairs")
+		check(right <= grug_inventory.UI.frame_w - 2.89, "profession tabs stay clear of the reserved tier area")
+		has(fs, "label[17.25,0.45;", "the tier label does not move between profession pairs")
 	end
 end
 

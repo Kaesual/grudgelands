@@ -139,13 +139,12 @@ local function frame(player, session, counts)
 			0.4 + (index - 1) * ((W - 0.8) / 4), (W - 0.8) / 4 - 0.1, name, esc(caption))
 	end
 	return table.concat({
-		("formspec_version[6]size[%.3f,%.3f]"):format(W, H + 0.95),
+		grug_core.ui.frame(W, H + 0.95, nil, nil, player),
 		-- The focus sits on an invisible button at every send (module guide
 		-- "Initial focus"): an edit box or a table would eat the inventory key.
 		"set_focus[grug_mail_focus;true]button[0,0;0,0;grug_mail_focus;]",
 		table.concat(nav), "container[0,0.95]",
 		"style_type[label,textarea;font_size=*0.85]",
-		grug_core.ui.panel(0.25, 0.95, W - 0.5, H - 1.2),
 		"label[0.4,0.55;", esc(mailbox_text(session)), "]",
 		("label[%.2f,0.55;%s]"):format(W - 3.4, esc(colored(COLOR.dim, "Purse: ") ..
 			grug_money.format(grug_money.get(player)))),
@@ -153,7 +152,7 @@ local function frame(player, session, counts)
 end
 
 -- The four attachment cells of a letter: item images with their tooltip.
-local CELL, CELL_STEP = 0.8, 0.9
+local CELL, CELL_STEP = 1, 1.25
 local function attachment_cells(fs, items, x, y)
 	for index = 1, M.STACKS do
 		local cx = x + (index - 1) * CELL_STEP
@@ -175,7 +174,7 @@ local function clip(text, max)
 	if M.text_length(text) <= max then return text end
 	return M.truncate(text, max - 3) .. "..."
 end
-local FROM_CHARS, SUBJECT_CHARS = 10, 22
+local FROM_CHARS, SUBJECT_CHARS = 14, 30
 
 -- A letter or broadcast list as a table[] of one page: the unread dot, the
 -- badge, subject (with the attachment count) and sender. The selected
@@ -211,8 +210,8 @@ end
 -- Letters and Announcements: the list left, the reading pane right
 --
 
-local LIST_X, LIST_Y, LIST_W, LIST_H = 0.4, 1.45, 6.1, 5.4
-local PANE_X, PANE_W = 6.75, 6.35
+local LIST_X, LIST_Y, LIST_W, LIST_H = 0.5, 1.45, 7.0, 9.8
+local PANE_X, PANE_W = 8.0, W - 8.5
 local BODY_Y = 3.15
 
 local function reading_head(fs, entry, kind)
@@ -225,7 +224,7 @@ local function reading_head(fs, entry, kind)
 			SEAL, PANE_X + 0.75, esc(colored(COLOR.dim, "From a character of the realm")))
 	end
 	fs[#fs + 1] = ("label[%.2f,2.15;%s]"):format(PANE_X, esc(grug_inventory.wrap_text(
-		entry.subject ~= "" and entry.subject or "(no subject)", 34)))
+		entry.subject ~= "" and entry.subject or "(no subject)", 60)))
 	fs[#fs + 1] = ("label[%.2f,2.9;%s]label[%.2f,2.9;%s]"):format(PANE_X,
 		esc(colored(COLOR.dim, "From: ") .. (entry.from or M.ADMIN_LABEL)),
 		PANE_X + PANE_W - 1.0, esc(colored(COLOR.dim, date(entry.time))))
@@ -250,6 +249,7 @@ local function report_dialog(fs, session, letter)
 	for index, reason in ipairs(M.REPORT_REASONS) do reasons[index] = esc(reason) end
 	fs[#fs + 1] = ("label[%.2f,9.3;Reason]dropdown[%.2f,9.0;3.35,0.6;report_reason;%s;%d;true]")
 		:format(PANE_X + 0.2, PANE_X + 1.4, table.concat(reasons, ","), session.report.reason)
+	fs[#fs + 1] = grug_core.ui.input_background(PANE_X + 1.4, 9.75, 3.35, 0.6, "report_note")
 	fs[#fs + 1] = ("label[%.2f,10.05;Note]field[%.2f,9.75;3.35,0.6;report_note;;%s]" ..
 		"field_close_on_enter[report_note;false]"):format(PANE_X + 0.2, PANE_X + 1.4,
 		esc(session.report.note))
@@ -274,6 +274,8 @@ end
 local function letters_tab(player, session, fs)
 	local box = S.box(player:get_player_name())
 	local letters = box.letters
+	fs[#fs + 1] = grug_core.ui.panel(LIST_X - 0.15, 1.0, LIST_W + 0.3, 11.8)
+	fs[#fs + 1] = grug_core.ui.panel(PANE_X - 0.15, 1.0, PANE_W + 0.3, 11.8)
 	local selected = M.find(letters, session.selected.letters)
 	local rows, page, pages = M.page(letters, session.pages.letters)
 	session.pages.letters = page
@@ -283,15 +285,15 @@ local function letters_tab(player, session, fs)
 	fs[#fs + 1] = ("label[%.2f,1.2;%s]"):format(LIST_X, esc(colored(COLOR.dim,
 		"Subject and sender, newest first")))
 	letter_table(fs, "letters", rows, selected and selected.id, LIST_X, LIST_Y, LIST_W, LIST_H)
-	fs[#fs + 1] = pager("letters", LIST_X, 7.05, page, pages)
-	fs[#fs + 1] = ("label[%.2f,8.1;%s]"):format(LIST_X, esc(colored(COLOR.dim,
+	fs[#fs + 1] = pager("letters", LIST_X, 11.45, page, pages)
+	fs[#fs + 1] = ("label[%.2f,12.45;%s]"):format(LIST_X, esc(colored(COLOR.dim,
 		("%d letters · %d unread · %d player letters at most"):format(#letters, unread,
 		M.LETTER_LIMIT))))
 	if #letters == 0 then
-		fs[#fs + 1] = ("label[%.2f,2.15;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,1.5;%s]"):format(PANE_X, esc(colored(COLOR.dim,
 			"Your mailbox is empty.")))
 	elseif not selected then
-		fs[#fs + 1] = ("label[%.2f,2.15;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,1.5;%s]"):format(PANE_X, esc(colored(COLOR.dim,
 			"Choose a letter to read it.")))
 	else
 		reading_head(fs, selected, selected.kind)
@@ -338,6 +340,8 @@ end
 
 local function announcements_tab(player, session, fs)
 	local broadcasts = S.broadcasts()
+	fs[#fs + 1] = grug_core.ui.panel(LIST_X - 0.15, 1.0, LIST_W + 0.3, 11.8)
+	fs[#fs + 1] = grug_core.ui.panel(PANE_X - 0.15, 1.0, PANE_W + 0.3, 11.8)
 	local read = S.read_set(player)
 	local list = {}
 	for index, broadcast in ipairs(broadcasts) do
@@ -353,12 +357,12 @@ local function announcements_tab(player, session, fs)
 		"Letters from the admin to all players")))
 	letter_table(fs, "announcements", rows, selected and selected.id, LIST_X, LIST_Y,
 		LIST_W, LIST_H)
-	fs[#fs + 1] = pager("announcements", LIST_X, 7.05, page, pages)
+	fs[#fs + 1] = pager("announcements", LIST_X, 11.45, page, pages)
 	if #list == 0 then
-		fs[#fs + 1] = ("label[%.2f,2.15;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,1.5;%s]"):format(PANE_X, esc(colored(COLOR.dim,
 			"No announcements.")))
 	elseif not selected then
-		fs[#fs + 1] = ("label[%.2f,2.15;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,1.5;%s]"):format(PANE_X, esc(colored(COLOR.dim,
 			"Choose an announcement to read it.")))
 	else
 		reading_head(fs, selected, "admin")
@@ -410,11 +414,14 @@ local BODY_HINT = "Up to " .. M.thousands(M.BODY_MAX) .. " characters."
 
 local function write_tab(player, session, fs)
 	local draft = session.draft
+	fs[#fs + 1] = grug_core.ui.input_background(1.3, 1.05, 4.2, 0.65, "mail_to")
+	fs[#fs + 1] = grug_core.ui.input_background(7.0, 1.05, 12.6, 0.65, "mail_subject")
+	fs[#fs + 1] = grug_core.ui.input_background(0.4, 2.25, 19.2, 3.0, "mail_body")
 	fs[#fs + 1] = ("label[0.4,1.375;To]field[1.3,1.05;4.2,0.65;mail_to;;%s]" ..
 		"field_close_on_enter[mail_to;false]"):format(esc(draft.to))
-	fs[#fs + 1] = ("label[5.8,1.375;Subject]field[7.0,1.05;6.1,0.65;mail_subject;;%s]" ..
+	fs[#fs + 1] = ("label[5.8,1.375;Subject]field[7.0,1.05;12.6,0.65;mail_subject;;%s]" ..
 		"field_close_on_enter[mail_subject;false]"):format(esc(draft.subject))
-	fs[#fs + 1] = ("label[0.4,2.0;Message]textarea[0.4,2.25;12.7,3.0;mail_body;;%s]")
+	fs[#fs + 1] = ("label[0.4,2.0;Message]textarea[0.4,2.25;19.2,3.0;mail_body;;%s]")
 		:format(esc(draft.body))
 	fs[#fs + 1] = ("label[0.4,5.6;Attachments]label[5.6,5.6;%s]"):format(
 		esc(colored(COLOR.dim, BODY_HINT)))
@@ -431,8 +438,8 @@ local function write_tab(player, session, fs)
 	-- Left of Discard: the refusal of a long letter (fix 0.49.1 ruling 3)
 	-- takes two lines.
 	fs[#fs + 1] = status_line(session, 8.4, 44)
-	fs[#fs + 1] = ("button[8.6,8.0;2.2,0.8;write_discard;Discard]" ..
-		"style[%s;bgcolor=#3d5f8a]button[10.9,8.0;2.2,0.8;%s;Send]"):format(
+	fs[#fs + 1] = ("button[14.8,8.0;2.2,0.8;write_discard;Discard]" ..
+		"style[%s;bgcolor=#3d5f8a]button[17.1,8.0;2.2,0.8;%s;Send]"):format(
 		send_button(session, "write_send"), send_button(session, "write_send"))
 	fs[#fs + 1] = grug_inventory.inventory_view(player, "short", session.inv)
 	fs[#fs + 1] = rings(player)
@@ -464,24 +471,28 @@ local function ticket_table(fs, rows, selected_id, x, y, w, h)
 end
 
 -- The right column of To the admin: the player's own messages.
-local TICKET_X, TICKET_W = 7.0, 6.1
+local TICKET_X, TICKET_W = 10.2, 9.3
 
 local function admin_tab(player, session, fs)
 	local name = player:get_player_name()
 	local draft = session.admin
+	fs[#fs + 1] = grug_core.ui.panel(0.25, 1.0, 9.45, 11.1)
+	fs[#fs + 1] = grug_core.ui.panel(10.0, 1.0, 9.7, 11.1)
+	fs[#fs + 1] = grug_core.ui.input_background(1.6, 4.0, 7.8, 0.6, "admin_subject")
+	fs[#fs + 1] = grug_core.ui.input_background(0.4, 5.2, 9.0, 3.3, "admin_body")
 	local tickets = S.tickets()
 	local own = M.tickets_of(tickets, name)
 	fs[#fs + 1] = ("image[0.4,1.1;0.55,0.55;%s]label[1.1,1.4;%s]"):format(BADGE,
 		esc(colored(COLOR.gold, "Write to the server admin")))
 	fs[#fs + 1] = ("label[0.4,2.0;%s]"):format(esc(colored(COLOR.dim,
-		grug_inventory.wrap_text(ADMIN_HINT, 48))))
+		grug_inventory.wrap_text(ADMIN_HINT, 65))))
 	local topics = {}
 	for index, topic in ipairs(M.TOPICS) do topics[index] = esc(topic) end
-	fs[#fs + 1] = ("label[0.4,3.6;Topic]dropdown[1.6,3.3;5.1,0.6;admin_topic;%s;%d;true]")
+	fs[#fs + 1] = ("label[0.4,3.6;Topic]dropdown[1.6,3.3;7.8,0.6;admin_topic;%s;%d;true]")
 		:format(table.concat(topics, ","), draft.topic)
-	fs[#fs + 1] = ("label[0.4,4.3;Subject]field[1.6,4.0;5.1,0.6;admin_subject;;%s]" ..
+	fs[#fs + 1] = ("label[0.4,4.3;Subject]field[1.6,4.0;7.8,0.6;admin_subject;;%s]" ..
 		"field_close_on_enter[admin_subject;false]"):format(esc(draft.subject))
-	fs[#fs + 1] = ("label[0.4,4.95;Message]textarea[0.4,5.2;6.3,3.3;admin_body;;%s]")
+	fs[#fs + 1] = ("label[0.4,4.95;Message]textarea[0.4,5.2;9.0,3.3;admin_body;;%s]")
 		:format(esc(draft.body))
 	fs[#fs + 1] = ("label[0.4,8.85;%s]label[0.4,9.4;%s]"):format(
 		esc(colored(COLOR.dim, BODY_HINT)), esc(colored(COLOR.dim,
@@ -490,7 +501,7 @@ local function admin_tab(player, session, fs)
 		("You have %d of %d open messages."):format(M.open_tickets(tickets, name),
 		M.OPEN_TICKETS))))
 	fs[#fs + 1] = ("button[0.4,10.75;2.2,0.8;admin_discard;Discard]" ..
-		"style[%s;bgcolor=#3d5f8a]button[4.5,10.75;2.2,0.8;%s;Send (free)]"):format(
+		"style[%s;bgcolor=#3d5f8a]button[7.2,10.75;2.2,0.8;%s;Send (free)]"):format(
 		send_button(session, "admin_send"), send_button(session, "admin_send"))
 
 	local selected = M.find(own, session.selected.tickets)
@@ -498,10 +509,12 @@ local function admin_tab(player, session, fs)
 	session.pages.tickets = page
 	session.rows = rows
 	fs[#fs + 1] = ("label[%.2f,1.4;Your messages to the admin]"):format(TICKET_X)
-	ticket_table(fs, rows, selected and selected.id, TICKET_X, 1.7, TICKET_W, 4.0)
-	fs[#fs + 1] = pager("tickets", TICKET_X, 5.9, page, pages)
+	if #own > 0 then
+		ticket_table(fs, rows, selected and selected.id, TICKET_X, 1.7, TICKET_W, 4.0)
+		fs[#fs + 1] = pager("tickets", TICKET_X, 5.9, page, pages)
+	end
 	if #own == 0 then
-		fs[#fs + 1] = ("label[%.2f,7.0;%s]"):format(TICKET_X, esc(colored(COLOR.dim,
+		fs[#fs + 1] = ("label[%.2f,1.95;%s]"):format(TICKET_X, esc(colored(COLOR.dim,
 			"You have not written to the admin.")))
 	elseif selected then
 		fs[#fs + 1] = ("label[%.2f,7.0;%s]label[%.2f,7.45;%s]"):format(TICKET_X,

@@ -427,7 +427,7 @@ local bo = new_player("bo", "accord", {x = 101, y = 10, z = 101})
 grug_traders.open(bo, CAMP, CAMP_POS, "accord", ORIGIN)
 check(has("label[0.6,1.75;Miner's Guild]") and has("mode_tradein;Trade-in]"),
 	"W the camp vendor opens on Trade-in")
-check(has("button[5.9,0.3;2.0,0.8;repair;Repair]"), "W the camp vendor shows Repair")
+check(has(";repair;Repair]"), "W the camp vendor shows Repair")
 submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
 check(has("Rank 0 of 10") and has("Reach Reputation Rank 1") and has("Reach Reputation Rank 6"),
 	"W rank 0: the page, every row locked")
@@ -517,17 +517,34 @@ if check(GEAR ~= nil, "W a repairable gear item exists") then
 	grug_money.add(bo, 100000)
 	grug_traders.open(bo, CAMP, CAMP_POS, "accord", ORIGIN)
 	submit(bo, "grug_traders:trade", {repair = "Repair"})
-	check(formnames[#formnames]:find("^grug_repair:service:") ~= nil, "W Repair opens the repair form")
-	check(has("The camp vendor repairs your equipment for money."), "W ...with the camp vendor's line")
+	eq(formnames[#formnames], "grug_traders:trade", "W Repair stays in the trader form")
+	check(has(";mode_buy;Buy]") and has(";mode_sell;Sell]") and has(";mode_tradein;Trade-in]"), "W Repair keeps all trader navigation")
+	check(not has("button_exit["), "W embedded Repair has no separate Close")
 	check(has("repair_1;Repair "), "W ...listing the worn item")
 	local money = grug_money.get(bo)
-	submit(bo, formnames[#formnames], {all = "Repair all"})
+	local all_field = assert(shown:match(";(quote_%d+_all);Repair all:"))
+	submit(bo, formnames[#formnames], {[all_field] = "Repair all"})
 	eq(bo.inv:get_stack("main", 9):get_wear(), 0, "W the camp vendor repairs")
 	check(grug_money.get(bo) < money, "W ...for money")
-	-- The trade session ended with the switch: a stale trade click does nothing.
+	-- A stale Buy click cannot buy while the current mode is Repair.
 	local before = count_of(bo.inv, T1.item)
 	submit(bo, "grug_traders:trade", {["repbuy_" .. KEY[T1.item]] = "x"})
-	eq(count_of(bo.inv, T1.item), before, "W the vendor window's session ended at the switch")
+	eq(count_of(bo.inv, T1.item), before, "W wrong-mode Buy is ignored")
+	bo.inv:set_stack("main", 9, worn)
+	local after_repair_money = grug_money.get(bo)
+	submit(bo, "grug_traders:trade", {[all_field] = "Repair all"})
+	eq(bo.inv:get_stack("main", 9):get_wear(), 32768, "W stale quote action cannot repair new wear")
+	eq(grug_money.get(bo), after_repair_money, "W stale quote action spends nothing")
+	submit(bo, "grug_traders:trade", {mode_buy = "Buy"})
+	check(has("repbuy_"), "W Buy returns within the same trader session")
+	submit(bo, "grug_traders:trade", {repair = "Repair"})
+	local fresh_all = assert(shown:match(";(quote_%d+_all);Repair all:"))
+	local old_pos = bo.get_pos
+	bo.get_pos = function() return {x = CAMP_POS.x + 20, y = CAMP_POS.y, z = CAMP_POS.z} end
+	submit(bo, "grug_traders:trade", {[fresh_all] = "Repair all"})
+	eq(bo.inv:get_stack("main", 9):get_wear(), 32768, "W embedded repair refuses leaving trader range")
+	bo.get_pos = old_pos
+
 end
 -- Repair from the button is refused for a window opened without its socket.
 grug_traders.open(bo, CAMP, CAMP_POS, "accord")

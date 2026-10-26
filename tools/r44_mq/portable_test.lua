@@ -818,15 +818,15 @@ do
 	has(map, ";Defeat crumb: 0/1\nDefeat crumb again: 0/2]", "Quest mode: both lines on it")
 	table.remove(journals.ann.quests)
 	registered_quests.q_two = nil
-	-- Outside quest mode the active layer's button is highlighted.
+	-- The single selector shows the current layer; every layer remains available.
 	state.quest_selected = nil
 	form = W.formspec(accord, state, nil)
-	has(form, grug_core.ui.button_style("grug_map_layer_towns", "selected"), "O the active layer's button highlighted")
-	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 1, "O exactly one button highlighted")
-	for _, layer in ipairs(grug_map.layers.LIST) do
-		has(form, ";grug_map_layer_" .. layer.id .. ";" .. layer.label .. "]", "O button " .. layer.label)
-		has(form, "tooltip[grug_map_layer_" .. layer.id .. ";" .. fs_escape(layer.title) .. "]",
-			"O button tooltip " .. layer.title)
+	check(form:match("dropdown%[[^%]]*;grug_map_layer;[^%]]*;4;true%]") ~= nil,
+		"O the current Towns layer is selected")
+	eq(count(form, "dropdown%[[^%]]*;grug_map_layer;"), 1, "O one layer selector")
+	for index, layer in ipairs(grug_map.layers.LIST) do
+		has(form, fs_escape(layer.title), "O layer choice " .. layer.title)
+		eq(state.layer_ids[index], layer.id, "O layer index routes to its stable ID")
 	end
 	local labels = {}
 	for _, layer in ipairs(grug_map.layers.LIST) do labels[#labels + 1] = layer.label end
@@ -1451,9 +1451,18 @@ do
 	eq(count(form, "set_focus%["), 1, "M one focus only")
 	advance(2)
 	fields(accord, {grug_map_zoom_in = "+", grug_map_scroll_x = "VAL:0", grug_map_scroll_y = "VAL:0"})
-	local x, y = atlas.centre_scroll(atlas.view(), accord:get_pos(), 2)
-	check(state.zoom == 2 and state.scroll_x == x and state.scroll_y == y and x > 0 and y > 0,
-		"M zoom in from 1x centres on the player")
+	local function visible_centre()
+		local L, z, v = state.layout, state.zoom, atlas.view()
+		local ox = state.scroll_x * atlas.scroll_factor(L.map_w, L.viewport_w, z)
+		local oy = state.scroll_y * atlas.scroll_factor(L.map_h, L.viewport_h, z)
+		return v.min_x + (ox + L.viewport_w / 2) / (L.map_w * z) * (v.max_x - v.min_x),
+			v.max_z - (oy + L.viewport_h / 2) / (L.map_h * z) * (v.max_z - v.min_z)
+	end
+	local x, y = state.scroll_x, state.scroll_y
+	local cx, cz = visible_centre()
+	check(state.zoom == 2 and math.abs(cx - accord:get_pos().x) < 4 and
+		math.abs(cz - accord:get_pos().z) < 4 and x > 0 and y > 0,
+		"M zoom in from 1x centres on the player in the full viewport")
 	has(shows[#shows].form, (";grug_map_scroll_x;%d]"):format(x), "M the form shows that view")
 	advance(2)
 	local before = sends_to("ann")
@@ -1461,10 +1470,12 @@ do
 	check(not state.follow and state.scroll_x == x + 100, "M the player's scrolling breaks the lock")
 	advance(2)
 	eq(sends_to("ann") - before, 0, "M scrolling still sends nothing")
+	local before_x, before_z = visible_centre()
 	fields(accord, {grug_map_zoom_in = "+", grug_map_scroll_x = "VAL:" .. (x + 100),
 		grug_map_scroll_y = "VAL:" .. y})
-	check(state.zoom == 4 and state.scroll_x == atlas.zoom_scroll(x + 100, 2, 4) and
-		state.scroll_y == atlas.zoom_scroll(y, 2, 4), "M the next zoom keeps the view's centre")
+	cx, cz = visible_centre()
+	check(state.zoom == 4 and math.abs(cx - before_x) < 4 and math.abs(cz - before_z) < 4,
+		"M the next zoom keeps the visible world centre")
 	advance(2)
 	fields(accord, {grug_map_zoom_out = "-"})
 	advance(2)
@@ -1487,8 +1498,7 @@ end
 -- and the baked layer
 -- ---------------------------------------------------------------------------
 do
-	-- The layout: one row at 1920x1080, two at the user's 1035x696 (and at
-	-- 720p), the header and the quest column where Round 44 put them.
+	-- The map gets a complete half-width viewport, with one toolbar selector.
 	local sizes = {
 		{"1920x1080", 1920, 1080, 72, 2},
 		{"1035x696", 1035, 696, 0.5555 * 96, 2},
@@ -1498,20 +1508,33 @@ do
 	for _, size in ipairs(sizes) do
 		local info = {size = {x = size[2], y = size[3]},
 			max_formspec_size = {x = size[2] / size[4], y = size[3] / size[4]}, real_gui_scaling = 1}
-		local w, h = W.window_size(info)
+		local w, h = W.window_size(info, grug_inventory.UI.header_h)
 		local L = W.layout(w, h)
-		local b = L.buttons
 		local label = "L layout " .. size[1]
-		eq(b.rows, size[5], label .. ": button rows")
-		check(b.w >= W.BUTTON_MIN - 1e-9, label .. (": buttons at least %.2f wide (%.2f)"):format(
-			W.BUTTON_MIN, b.w))
-		check(near(b.per_row * b.w + (b.per_row - 1) * b.gap, L.map_w, 1e-6), label ..
-			": the buttons as wide as the map")
-		check(b.y >= L.map_y + L.map_h + 0.35 - 1e-9, label .. ": the buttons under the scrollbar")
-		check(b.y + b.rows * b.h + (b.rows - 1) * b.gap <= h - 0.25 + 1e-9, label ..
-			": the buttons inside the window")
+		check(L.map_w <= L.viewport_w + 1e-9 and L.map_h <= L.viewport_h + 1e-9,
+			label .. ": whole map fits at 1x")
+		check(near(L.map_w / L.map_h, 9 / 8), label .. ": native artwork aspect retained")
+		check(near(L.map_w, L.viewport_w) or near(L.map_h, L.viewport_h),
+			label .. ": fitted map fills at least one axis")
+		check(L.map_w * 2 >= L.viewport_w and L.map_h * 2 >= L.viewport_h,
+			label .. ": 2x fills the complete map column")
+		check(L.map_y + L.viewport_h + 0.35 <= h - 0.25 + 1e-9,
+			label .. ": vertical viewport and scrollbar fit")
         check(near(L.column.w, (w - 0.8) / 2, 1e-9), label .. ": equal map and quest allocations")
         check(near(L.column.x, w / 2 + 0.15, 1e-9), label .. ": divider at the midpoint")
+		local state = W.new_state()
+		state.zoom = 2
+		local form = W.formspec(accord, state, info)
+		local thumbs = {}
+		for thumb, axis in form:gmatch("scrollbaroptions%[min=0;max=1000;smallstep=40;largestep=900;thumbsize=(%d+);arrows=hide%]scrollbar%[[^;]+;[^;]+;(%a+);") do
+			thumbs[axis] = tonumber(thumb) / 1001
+		end
+		local actual = state.layout
+		check(thumbs.horizontal and math.abs(thumbs.horizontal - actual.viewport_w / (2 * actual.map_w)) < 0.0011,
+			label .. ": horizontal thumb represents visible artwork fraction")
+		check(thumbs.vertical and math.abs(thumbs.vertical - actual.viewport_h / (2 * actual.map_h)) < 0.0011,
+			label .. ": vertical thumb represents visible artwork fraction")
+
 
 	end
 
@@ -1523,14 +1546,14 @@ do
 	eq(state.layer, "quests", "L the window opens on Quests")
 	advance(2)
 	local before = sends_to("ann")
-	fields(accord, {grug_map_layer_towns = "Towns"})
+	fields(accord, {grug_map_layer = "4"})
 	eq(state.layer, "towns", "L a button picks its layer")
 	eq(sends_to("ann") - before, 1, "L a layer click sends once")
-	has(shows[#shows].form, grug_core.ui.button_style("grug_map_layer_towns", "selected"), "L the new layer highlighted")
+	eq(state.layer_choice, 4, "L the new layer selected in the dropdown")
 	check(map_part(shows[#shows].form):find("grug_map_capital.png", 1, true) ~= nil, "L its markers shown")
 	advance(2)
 	before = sends_to("ann")
-	fields(accord, {grug_map_layer_towns = "Towns"})
+	fields(accord, {grug_map_layer = "4"})
 	eq(sends_to("ann") - before, 0, "L the active layer's button changes nothing")
 	-- A quest selection is its own mode; a layer button deselects it.
 	advance(2)
@@ -1538,11 +1561,23 @@ do
 	eq(state.quest_selected, "q_kill", "L a quest selected")
 	local form = shows[#shows].form
 	check(not map_part(form):find("grug_map_capital.png", 1, true), "L quest mode hides the layer")
-	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 0, "L no button highlighted in quest mode")
+	has(form, ",Quest targets;9;true]", "L quest mode has its own selector entry")
+	eq(state.layer_choice, 9, "L quest targets selected")
+	for index, layer in ipairs(grug_map.layers.LIST) do
+		eq(state.layer_ids[index], layer.id, "L quest mode retains stable layer indices")
+	end
+	advance(2)
+	local echoed_before = sends_to("ann")
+	fields(accord, {grug_map_layer = "9", grug_map_scroll_x = "CHG:0", grug_map_scroll_y = "VAL:0"})
+	eq(state.quest_selected, "q_kill", "L echoed quest-target selector keeps quest mode")
+	advance(2)
+	eq(sends_to("ann"), echoed_before, "L echoed selector and scrolling send nothing")
+	fields(accord, {grug_map_zoom_in = "+", grug_map_layer = "9"})
+	eq(state.quest_selected, "q_kill", "L zoom with echoed selector keeps quest mode")
 	state.quest_abandon = "q_kill"
 	advance(2)
 	before = sends_to("ann")
-	fields(accord, {grug_map_layer_pois = "POIs"})
+	fields(accord, {grug_map_layer = "5"})
 	check(state.quest_selected == nil and state.quest_abandon == nil, "L a layer click deselects the quest")
 	eq(state.layer, "pois", "L ...and shows that layer")
 	eq(sends_to("ann") - before, 1, "L ...in one send")
@@ -1556,7 +1591,7 @@ do
 	advance(2)
 	fields(accord, {grug_quest_list = "CHG:1"})
 	advance(2)
-	fields(accord, {grug_map_layer_pois = "POIs"})
+	fields(accord, {grug_map_layer = "5"})
 	check(state.quest_selected == nil, "L the last layer's button deselects as well")
 	-- A selected quest that leaves the log: back to the last layer.
 	advance(2)

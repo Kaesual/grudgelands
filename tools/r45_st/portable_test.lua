@@ -287,6 +287,7 @@ local current_mod = "grug_brewing"
 -- The ground of the socket column at p (x, z), from the registry, cached once
 -- it holds sockets; nil off every socket (0.45.1: start_npcs.lua places only
 -- where an NPC has standing room).
+local last_detached
 local ground_of
 local function socket_ground(p)
 	if not ground_of then
@@ -383,7 +384,10 @@ core = {
 	get_player_by_name = function(name) return online[name] end,
 	add_item = function() end,
 	pos_to_string = function(p) return ("(%d,%d,%d)"):format(p.x, p.y, p.z) end,
-	create_detached_inventory = function() return new_inventory() end,
+	create_detached_inventory = function()
+		last_detached = new_inventory()
+		return last_detached
+	end,
 	get_craft_result = function() return {time = 0, item = ItemStack("")}, {items = {}} end,
 	remove_detached_inventory = function() end,
 	compare_block_status = function() return false end,
@@ -696,6 +700,34 @@ do
 	local def = place(pos, "grug_brewing:brewing_stand_active")
 	eq(def.on_timer(pos, 1), false, "S the lit stand's timer stops")
 	eq(nodes[pos_key(pos)], "grug_brewing:brewing_stand", "S ...and the stand goes out")
+end
+
+-- Compatible output growth: old shared and saved personal dual furnaces.
+do
+ local pos = vector.new(0, 10, 3)
+ local player = new_player("growth", {x = 0, y = 10, z = 0})
+ local def, meta = place(pos, "grug_smelting:dual_furnace")
+ local inv = meta:get_inventory()
+ inv:set_size("output", 2)
+ inv:set_stack("output", 1, ItemStack("default:stick 7"))
+ inv:set_stack("output", 2, ItemStack("default:coal_lump 3"))
+ lbms["grug_jobs:workspace_activation"].action(pos, {name = "grug_smelting:dual_furnace"})
+ eq(inv:get_size("output"), 4, "G shared activation grows output to four")
+ eq(inv:get_stack("output", 1):get_count(), 7, "G shared first saved stack survives")
+ eq(inv:get_stack("output", 2):get_count(), 3, "G shared second saved stack survives")
+ check(inv:get_stack("output", 3):is_empty() and inv:get_stack("output", 4):is_empty(),
+  "G additional shared slots start empty")
+ factory.register_public_position("dual_furnace", pos)
+ meta:set_string(PREFIX .. "growth", core.serialize({lists = {
+  input = {"", ""}, fuel = {""}, output = {"default:stick 7", "default:coal_lump 3"}}, process = {}}))
+ check(grug_jobs.workspaces.open(pos, player), "G old personal workspace opens")
+ eq(last_detached:get_size("output"), 4, "G personal restoration grows output to four")
+ eq(last_detached:get_stack("output", 1):get_count(), 7, "G personal first saved stack survives")
+ eq(last_detached:get_stack("output", 2):get_count(), 3, "G personal second saved stack survives")
+ last_detached:set_stack("output", 4, ItemStack("default:stick 9"))
+ check(grug_jobs.workspaces.open(pos, player), "G personal workspace reopens after save")
+ eq(last_detached:get_size("output"), 4, "G personal reopen retains four slots")
+ eq(last_detached:get_stack("output", 4):get_count(), 9, "G fourth output survives save and reopen")
 end
 
 ------------------------------------------------------------------------------

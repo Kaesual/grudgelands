@@ -104,11 +104,12 @@ local function form(player, origin)
  local entries = rules.entries(rows, grug_factions.get_faction(player),
   known_set(player), race_of(player), origin.id)
  entries[#entries + 1] = rules.claim_entry(grug_home.claim_waypoint(player))
- local fs = {grug_core.ui.frame(10, 2.65 + 0.8 * #entries),
-  grug_core.ui.service_header(10, origin.label .. " Waystone", "Discovered destinations")}
+ local fs = {grug_core.ui.frame(10, 2.65 + 0.7 * #entries, nil, nil, player),
+  grug_core.ui.service_header(10, origin.label .. " Waystone", "Discovered destinations"),
+  grug_core.ui.panel(0.2, 1.5, 9.6, 0.7 * #entries)}
  for index, entry in ipairs(entries) do
-  local y = 1.15 + 0.8 * index
-  fs[#fs + 1] = grug_core.ui.panel(0.2, y - 0.35, 9.6, 0.72)
+  local y = 1.15 + 0.7 * index
+  fs[#fs + 1] = ("box[0.4,%.2f;9.2,0.012;#829c9625]"):format(y + 0.35)
   fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, core.formspec_escape(entry.row.label))
   if entry.state == "here" then
    fs[#fs + 1] = ("label[6.8,%.2f;You are here]"):format(y)
@@ -123,7 +124,7 @@ local function form(player, origin)
     core.colorize("#8a8a8a", "Not yet visited"))
   end
  end
- fs[#fs + 1] = ("button_exit[7.9,%.2f;1.7,0.65;close;Close]"):format(1.75 + 0.8 * #entries)
+ fs[#fs + 1] = ("button_exit[7.9,%.2f;1.7,0.65;close;Close]"):format(1.75 + 0.7 * #entries)
  return table.concat(fs)
 end
 

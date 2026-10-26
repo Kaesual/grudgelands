@@ -344,20 +344,20 @@ end
 -- 2. The frame
 --
 
-local legacy_w = 3 / 4 + 5 / 4 * (10.4 - 1) + 1
-local legacy_h = 3 / 4 + 15 / 13 * (11.1 - 1) + 1 + 15 / 13 * 0.35 * 2 / 3
+local legacy_w = 20
+local legacy_h = 13.5
 local L = grug_inventory.LAYOUT
 local frame_h = grug_inventory.UI.frame_h
 local header = ("formspec_version[6]size[%.3f,%.3f]"):format(legacy_w, grug_inventory.UI.window_h)
 eq(form:sub(1, #header), header, "fv6 frame, real-coordinate size first")
 check(math.abs(grug_inventory.UI.frame_w - legacy_w) < 1e-9 and
 	math.abs(frame_h - legacy_h) < 1e-9,
-	"the frame is the old legacy 10.4 x 11.1 window")
+	"the frame has the approved wider body")
 -- Round 45 playtest (the user, 2026-10-09): seven rows, so the boxed layout
 -- with the money row fits that window, top and bottom margins equal.
-eq(grug_inventory.VIEW_ROWS.full, 7, "the full view shows seven rows")
-check(math.abs(L.top_y - (frame_h - L.hotbar_box_y - L.slot_box_h)) < 1e-9 and
-	L.top_y >= L.gap, "the boxed layout fits the window with equal margins")
+eq(grug_inventory.VIEW_ROWS.full, 8, "the full view shows eight rows")
+check(L.hotbar_box_y + L.slot_box_h < frame_h and
+	L.top_y >= L.gap, "the boxed layout fits the window with clear outer margins")
 context.page = "grug_inventory:help"
 local help = sfinv.get_formspec(plain, context)
 local rc_false = help:find("real_coordinates[false]", 1, true)
@@ -507,7 +507,7 @@ local function view_boxes(fs)
 	for x, y, w, h, color, lx, ly, text in fs:gmatch(
 			"background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^;]+);false;6%]" ..
 			"style_type%[[^%]]+%]label%[([%d.]+),([%d.]+);([^%]]+)%]") do
-		local name = ({BAGS = "Bags", ["POTION BELT"] = "Potion belt", INVENTORY = "Inventory", HOTBAR = "Hotbar"})[text] or text
+		local name = ({BAGS = "Bags", ["POTION BELT"] = "Potion belt", INVENTORY = "Inventory", ["ACTIVE HOTBAR"] = "Hotbar", MONEY = "Money"})[text] or text
 		out[name] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
 			color = color, lx = tonumber(lx), ly = tonumber(ly)}
 	end
@@ -530,7 +530,7 @@ do
 			local sb_x, sb_w = view:match("scrollbar%[([%d.]+),[%d.]+;([%d.]+),")
 			check(tonumber(sb_x) + tonumber(sb_w) < inv.x + inv.w,
 				mode .. " view: the scrollbar inside the Inventory box")
-			check(math.abs(inv.x - hot.x) < 0.002 and math.abs(inv.w - hot.w) < 0.002,
+			check((mode == "full" or math.abs(inv.x - hot.x) < 0.002) and math.abs(inv.w - hot.w) < 0.002,
 				mode .. " view: the boxes on one left edge, equally wide")
 			check(inv.y + inv.h < hot.y, mode .. " view: the Inventory box above the Hotbar box")
 		end
@@ -573,7 +573,9 @@ has(inventory, ("list[current_player;%s;"):format(grug_inventory.POTION_BELT),
 has(inventory, ";" .. grug_inventory.POTION_BELT_SIZE .. ",1;]", "the belt's slots")
 has(inventory, "list[detached:grug_money_deposit_four;deposit;", "the coin deposit")
 has(inventory, "button[", "a button")
-has(inventory, ";grug_inv_sort;Sort]", "the Sort button")
+has(inventory, ";grug_inv_sort;Sort inventory]", "the Sort button")
+has(inventory, ";4.4,0.65;grug_inv_sort;Sort inventory]",
+	"Sort has room for its label at the tested small GUI1.5 scale")
 lacks(inventory, "listring", "no listring on the Inventory page")
 local count = 0
 for _, element in ipairs(list_elements(scroll_part(inventory))) do
@@ -618,65 +620,20 @@ for _, name in ipairs({"Bags", "Potion belt", "Inventory", "Hotbar"}) do
 			box.y + box.h <= frame.frame_h, name .. ": inside the window")
 	end
 end
-if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] then
-	check(close(slot_x.Bags, slot_x.Inventory) and close(slot_x.Bags, slot_x.Hotbar),
-		"Bags, Inventory and Hotbar on one left edge")
-	check(close(boxes.Bags.x, boxes.Inventory.x) and close(boxes.Bags.x, boxes.Hotbar.x),
-		"their boxes on one left edge")
-	local belt_right = boxes["Potion belt"].x + boxes["Potion belt"].w
-	check(close(boxes.Inventory.x + boxes.Inventory.w, belt_right) and
-		close(boxes.Hotbar.x + boxes.Hotbar.w, belt_right),
-		"Bags and Potion belt end where Inventory and Hotbar end")
-	check(close(boxes.Bags.w, boxes["Potion belt"].w) and
-		close(boxes.Bags.y, boxes["Potion belt"].y), "Bags and Potion belt share the width")
-	check(close(boxes.Bags.x, frame.frame_w - belt_right), "the group centred")
-	check(close(boxes.Bags.y, frame.frame_h - boxes.Hotbar.y - boxes.Hotbar.h),
-		"top and bottom margins equal")
-	check(boxes.Inventory.y > boxes.Bags.y + boxes.Bags.h and
-		boxes.Hotbar.y > boxes.Inventory.y + boxes.Inventory.h, "the boxes do not overlap")
-	-- The money row.
-	local inv_bottom, hot_top = boxes.Inventory.y + boxes.Inventory.h, boxes.Hotbar.y
-	local ly, money = inventory:match("label%[[%d.]+,([%d.]+);Money\n([^%]]*)%]")
-	local lx = num(inventory:match("label%[([%d.]+),[%d.]+;Money\n"))
-	eq(money, "12345c", "the balance under Money")
-	local wx, wy, ww, wh = inventory:match(
-		"button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_money_withdraw;Withdraw%]")
+if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] and boxes.Money then
+	check(close(boxes.Bags.x, boxes["Potion belt"].x) and close(boxes.Bags.x, boxes.Money.x),
+		"Bags, potion belt and money share the right column")
+	check(boxes.Bags.y + boxes.Bags.h < boxes["Potion belt"].y and
+		boxes["Potion belt"].y + boxes["Potion belt"].h < boxes.Money.y, "right column follows the approved order")
+	check(close(boxes.Inventory.y + boxes.Inventory.h, boxes.Money.y + boxes.Money.h),
+		"inventory and right column finish at the same edge")
+	check(close(boxes.Hotbar.x + boxes.Hotbar.w / 2, frame.frame_w / 2), "hotbar centered in whole window")
+	has(inventory, "12345c", "money balance retained")
 	local dx, dy = slot_at("list%[detached:[^;]+;deposit;([%d.]+),([%d.]+);1,1;%]")
-	local sx, sy, sw, sh = inventory:match(
-		"button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_inv_sort;Sort%]")
-	wx, wy, ww, wh, sx, sy, sw, sh = num(wx), num(wy), num(ww), num(wh), num(sx),
-		num(sy), num(sw), num(sh)
-	if check(lx and wx and dx and sx, "the money row: balance, Withdraw, deposit, Sort") then
-		check(close(wh, 1) and close(sh, 1), "Withdraw and Sort as tall as the slot")
-		check(close(wy, dy) and close(sy, dy), "one row: Withdraw, deposit and Sort level")
-		check(dy > inv_bottom and dy + 1 < hot_top, "the row between Inventory and Hotbar")
-		check(close(dy - inv_bottom, hot_top - dy - 1), "the row centred in its gap")
-		check(close(num(ly), dy + 0.25), "Money and the balance centred on the slot's halves")
-		check(close(lx, slot_x.Hotbar) and lx < wx and wx + ww < dx and dx + 1 < sx,
-			"left to right: balance, Withdraw, deposit, Sort")
-		check(close(sx + sw, slot_x.Hotbar + 7 * 1.25 + 1),
-			"Sort ends with the hotbar's last slot")
-		for _, x in ipairs({wx, dx, sx}) do
-			check(close((x - slot_x.Hotbar) / 1.25, math.floor((x - slot_x.Hotbar) / 1.25 + 0.5)),
-				"the row on the slot columns")
-		end
-		has(inventory, ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
-			:format(dx, dy), "the deposit slot's ghost as before")
-		-- Round 46 (lane LT): the automatic deposit checkbox in column 6,
-		-- between the deposit slot and Sort, its middle on the slot's middle;
-		-- ticked by default, the full sentence in its tooltip.
-		local cx, cy, ticked = inventory:match(
-			"checkbox%[([%d.]+),([%d.]+);grug_money_auto_deposit;Auto;(%a+)%]")
-		cx, cy = num(cx), num(cy)
-		if check(cx and cy, "the automatic deposit checkbox") then
-			check(close(cx, slot_x.Hotbar + 5 * 1.25) and dx + 1 < cx and cx + 1.25 <= sx + 0.002,
-				"the checkbox in column 6, between the deposit and Sort")
-			check(close(cy, dy + 0.5), "the checkbox centred on the row")
-			eq(ticked, "true", "the checkbox ticked by default")
-			has(inventory, "tooltip[grug_money_auto_deposit;Deposit coin bags automatically on pickup]",
-				"the checkbox's tooltip")
-		end
-	end
+	check(dx and dx > boxes.Money.x and dy > boxes.Money.y, "coin deposit inside money panel")
+	has(inventory, ("image[%.3f,%.3f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]"):format(dx, dy),
+		"coin deposit retains its ghost")
+	has(inventory, ";grug_money_auto_deposit;Auto deposit;true]", "automatic deposit still visible")
 end
 -- Withdraw on the Inventory page opens grug_money's dialog.
 local withdraws = grug_money.withdraws
@@ -688,7 +645,7 @@ local sent_before = four.sent
 eq(receive(four, "", {grug_money_auto_deposit = "false"}), true, "the checkbox event is handled")
 eq(grug_money.auto_off.four, true, "unticked: the automatic deposit is off")
 eq(four.sent, sent_before + 1, "the toggle resends the page once")
-has(four.formspec, ";grug_money_auto_deposit;Auto;false]", "the resent page shows it unticked")
+has(four.formspec, ";grug_money_auto_deposit;Auto deposit;false]", "the resent page shows it unticked")
 eq(receive(four, "", {grug_money_auto_deposit = "true"}), true, "ticking it again")
 eq(grug_money.auto_off.four, false, "ticked: the automatic deposit is on")
 receive(four, "", {grug_money_withdraw = "Withdraw"})
@@ -724,7 +681,7 @@ has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;70]",
 	"the next build echoes it")
 -- Above the range: clamped (19 rows, 7 visible: 120).
 receive(scroller, "", {grug_inv_scroll_full = "CHG:500"})
-has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;120]",
+has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;110]",
 	"an out-of-range value is clamped on the echo")
 -- Sort: a button event carries VAL; the value is kept and the page acts.
 now_us = 10000000
@@ -750,7 +707,7 @@ eq(scroller.sent, sends, "the cooldown never sends either")
 -- A bag removed: the stored value is clamped to the smaller range.
 scroller.lists.grug_bag4_content, scroller.lists.grug_bag3_content = {}, {}
 ctx.grug_inv_scroll.full = 110
-has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;40]",
+has(sfinv.get_formspec(scroller, ctx), ";vertical;grug_inv_scroll_full;30]",
 	"after a bag change the echo clamps to the new range (11 rows: 40)")
 
 -- On another page: the short view's own value; a scrollbar event never

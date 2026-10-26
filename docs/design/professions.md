@@ -346,7 +346,10 @@ material/profession repair remains later work
   Alchemy's (`grug_jobs/station_nodes.lua`, `grug_alchemy/recipes.lua`). The
   Armorsmith works at the shared Forge but has no Forge recipe of its own.
 - **Furnaces and dual furnaces** keep their dialog for smelting, alloys and the
-  good dishes' finish. All automatic furnace and dual-furnace completion is
+  good dishes' finish. Both provide four output slots in a 2×2 block; the
+  dual furnace retains two inputs and one fuel slot. Existing two-slot
+  dual-furnace outputs grow without discarding their contents, including
+  restored personal workspaces. All automatic furnace and dual-furnace completion is
   universal and gives no profession progress, and neither does crafting a
   station or an intermediate (§1). The six Hearty dishes that have a raw
   assembly come only from that "Raw X" in a furnace (Round 28 ruling 27);

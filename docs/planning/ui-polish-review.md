@@ -1,7 +1,9 @@
 # UI polish review — 2026-10-25
 
-Status: revision 04 (2026-10-26) after user feedback; browser proposals, not approved implementation.
-Classification: documentation/artifact only; no persistence or runtime change.
+Status: revision 04 (2026-10-26), approved by the user for native implementation;
+see [implementation and verification](ui-polish-implementation.md).
+This document records the browser study; its artifact alone changes no runtime
+or persistence. The linked implementation plan owns subsequent native work.
 
 The user requested a critique of every current UI page, one improved graphical
 layout per page and an explanation of the benefit and limitations, before
