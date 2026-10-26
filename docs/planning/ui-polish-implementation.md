@@ -347,3 +347,19 @@ follow the first targeted render, plus an isolated final mail-hint check.
 Exact forms, raw run logs, contact sheets and the browser comparison are at
 `~/projects/grudgelands-orchestration/ui-readability-2026-10-26/`.
 The worktree is retained; no merge into main and no push.
+
+
+## Character model size adjustment (2026-10-26)
+
+The user's next playtest requested approximately 40% more model height, near
+the height of the four equipment slots. The native model viewport grows from
+3.0×4.7 to 4.2×6.58, centered horizontally between the equipment columns and
+vertically on their midpoint. Rotation, mesh/texture selection, slot geometry
+and input routes are unchanged. This is a compatible presentation-only change.
+Window size caps remain discussion only; no sizing or refresh logic changes.
+
+The existing `r44_ch` fixture passes all 343 checks, with its old model-width
+bound updated to the real equipment-column boundary. Both changed Lua files
+pass the Lua 5.1 parser and all checker sweeps. Native Character captures at
+1035×696, 1600×900 and 2560×1440 are stored in
+`~/projects/grudgelands-orchestration/ui-character-model-2026-10-26/`.

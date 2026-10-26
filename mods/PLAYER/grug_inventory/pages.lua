@@ -98,7 +98,9 @@ local SLOT_POS = {
 local QUIVER_POS = {0.5, 6.7}
 local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
 local HOME_LABEL_Y, HOME_BUTTON_Y = BOX_BOTTOM - 1.1, BOX_BOTTOM - 0.8
-local MODEL = {x = 3.0, y = 1.45, w = 3.0, h = 4.7}
+-- A 40% larger viewport keeps the figure near the equipment columns' height.
+-- Center it between the columns and on their vertical midpoint.
+local MODEL = {x = 2.675, y = 0.285, w = 4.2, h = 6.58}
 -- The engine provides mouse rotation; no preview timer or separate input.
 local MODEL_VIEW = "0,130"
 

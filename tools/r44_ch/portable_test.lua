@@ -132,7 +132,7 @@ check(mx ~= nil, "the model in the Stats mode")
 has(default_fs, "grug_preview;grug_visuals_character.b3d;character.png,blank.png,blank.png,blank.png;",
 	"the preview seam's model and four textures")
 has(default_fs, "label[10.10,1.60;Maximum HP: 120]", "the stats right of the model")
-check(mx and mx + mw <= 6.6, "the model ends left of the stats column")
+check(mx and mx >= 1.5 and mx + mw <= 8.05, "the model stays between the equipment columns")
 -- The cloak label sits over the dropdown at the detail panel's foot; the
 -- hint is the dropdown's tooltip.
 local dd_y = tonumber(default_fs:match("dropdown%[10%.10,([%d.]+);9%.25;grug_cloak;"))
