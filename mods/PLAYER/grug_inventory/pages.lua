@@ -81,10 +81,16 @@ local GEAR_BOX = {x = 0.2, y = 0.2, w = 9.3, h = BOX_BOTTOM - 0.2}
 -- Achievements body is drawn into it by its mod.
 local MODE_AREA = {x = 10.0, y = 1.25, w = 9.3, h = BOX_BOTTOM - 0.15 - 1.25}
 local MODES = {
-	{id = "stats", label = "Stats", x = 10.0, w = 2.2},
-	{id = "effects", label = "Effects", x = 12.3, w = 2.2},
-	{id = "achievements", label = "Achievements", x = 14.6, w = 4.6},
+	{id = "stats", label = "Stats"},
+	{id = "effects", label = "Effects"},
+	{id = "achievements", label = "Achievements"},
 }
+local MODE_PAD, MODE_GAP = 0.2, 0.1
+local MODE_W = (MODE_BOX.w - 2 * MODE_PAD - (#MODES - 1) * MODE_GAP) / #MODES
+for index, mode in ipairs(MODES) do
+	mode.x = MODE_BOX.x + MODE_PAD + (index - 1) * (MODE_W + MODE_GAP)
+	mode.w = MODE_W
+end
 local MODE_Y, MODE_H = 0.35, 0.7
 
 -- Equipment surrounds the model; native list slots retain their size and

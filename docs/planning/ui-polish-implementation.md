@@ -428,3 +428,11 @@ test logs (earlier Full-HD GUI1.5 captures are archived separately). Final
 Desktop/Web interactive acceptance remains with the user, especially keyboard
 row navigation, resizing and first inventory opening. Worktree retained;
 no main merge or push.
+
+### Character sub-tabs — 2026-10-27
+
+User-approved follow-up: Stats, Effects and Achievements now divide the mode
+panel equally, with 0.2-unit outer margins and 0.1-unit gaps. Geometry derives
+from the panel width; labels, font sizes and field routes remain unchanged.
+Compatible presentation-only change. Runtime Lua checks and the existing
+`r44_ch` / `r26_status_icons` fixtures pass.

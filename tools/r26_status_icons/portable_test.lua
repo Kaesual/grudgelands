@@ -549,7 +549,7 @@ check(page:find("No active effects", 1, true) ~= nil, "effects empty state")
 local effects_style = page:match("style%[grug_character_effects;([^%]]+)%]")
 check(effects_style and effects_style:find("textcolor=#d4b77d", 1, true) ~= nil,
     "effects navigation styled selected")
-check(page:find("button[10.00,0.35;2.20,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
+check(page:find("button[10.00,0.35;3.07,0.70;grug_character_stats;Stats]", 1, true) ~= nil,
 	"stats mode button")
 
 -- Several effects: icon with frame, name, time, detail.
