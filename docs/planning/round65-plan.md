@@ -225,19 +225,23 @@ the grey "!" is the **silver "!"** in game (marker value `locked`).
    no grey rows; the hint line cannot be selected.
 2. The cook likewise (two quests and the hint); both givers show the
    yellow "!".
-3. After accepting everything at level 1: the elder shows the silver "!"
-   (its next quest opens at 3); a giver whose next quest is three or more
-   levels away shows no marker. A giver with only the hint still opens its
-   dialog: the hint line, a detail pane "Come back later" with "<giver> has
-   more quests for you at level N.", no Accept.
-4. Accepting the last acceptable quest of a dialog redraws it as the
-   hint-only dialog of item 3 (checked by hand in review; no fixture pins
-   it).
+3. A giver with nothing to accept, hand in or continue (accepted quests it
+   takes back still list as in progress and show the silver "?") shows the
+   silver "!" when its next quest opens one or two levels above you, e.g.
+   the elder after you handed in its two level-1 quests while still below
+   level 3; a giver whose next quest is three or more levels away shows no
+   marker. Such a giver still opens its dialog: the hint line, a detail pane
+   "Come back later" with "<giver> has more quests for you at level N.", no
+   Accept.
+4. When the last row of a dialog goes (handed in, or accepted with its
+   turn-in at another NPC), the dialog redraws as the hint-only dialog of
+   item 3 (checked by hand in review; no fixture pins it).
 5. The capital envoy at about level 17–19: a short list, one hint line, no
    level-60 rows.
 6. A quest two levels above you can be accepted (level 3 accepts a
-   level-5 quest); three levels above cannot (a level-6 quest appears only
-   as the hint's level).
+   level-5 quest); three levels above cannot (a level-6 quest is not
+   listed; at level 3 the hint reads "More quests at level 4.", its
+   acceptance level).
 7. Dialog order: ready first, then new, then in progress; Story on top;
    inside a group by quest level, then title.
 8. Quest HUD: one box per tracked quest, title left, `[Lv N]` right in the
@@ -341,7 +345,9 @@ stated):
 - **QUEST Q1, PvP ruling 15** ("PvP quests from level 40", Round 31): four
   level-41 fortress quests (both factions' entry calls and steel supplies)
   are now accepted at 39. **Recommended:** accept (ruling 3 is uniform).
-  **Alternative:** raise them to level 42 (a data change in a later lane).
+  **Alternative:** raise them to level 42 (a data change in a later lane;
+  `quests.md` and `progression.md` state the opening at 39 and would change
+  with it).
 
 ### Deviations from the plan
 
