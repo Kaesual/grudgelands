@@ -1867,7 +1867,15 @@ tools](#player-meta-read-by-external-tools).
   reward level, the receiver's tooltip), and the dialog's choice tooltips
   are `grug_items.tooltip_text` (the shared helper, also the recipe
   details'). `npc.lua` `Q.category_list` builds the Story category of the
-  dialog and the quest log. Fixture `tools/r57_qsys`.
+  dialog and the quest log. Fixture `tools/r57_qsys`. Round 65:
+  `registry.lua` `Q.acceptance_level(level)` (level − 2, at least 1) derives
+  `def.min_level` (a registration naming one is refused; quest data names
+  only `level`); `Q.npc_quests(player, npc)` returns the listed rows (ready,
+  available, active, sorted by status, level, title) and the hint level (the
+  lowest acceptance level the player's level alone holds back), and
+  `Q.marker_states` gives a giver without rows `locked` only when that level
+  is at most `Q.SOON_LEVELS` (2) above the player's. Fixture
+  `tools/r65_quest`.
   `Q.register_on_turn_in(fn(player, id, def))` fires once per completed
   turn-in, after the state and rewards are stored (grug_achievements'
   `quest:` and `quest_tag:` counters); fixture `tools/r36_e`. Since Round 30 `state.lua` caches each player's decoded
