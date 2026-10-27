@@ -1,0 +1,6 @@
+Current / proposed full-resolution cell; cumulative final-texture RGBA accounting only
+1080 normal         72 -> 216 px | new recipes 1025 / 1025 | cumulative RGBA   20.3 /  182.4 MiB | max recipe  81 / 154 B
+1080 revisit        72 -> 216 px | new recipes    0 /    0 | cumulative RGBA   20.3 /  182.4 MiB | max recipe  81 / 154 B
+1080 flight         72 -> 216 px | new recipes 1025 / 1025 | cumulative RGBA   40.5 /  364.9 MiB | max recipe 135 / 210 B
+720 normal          72 -> 144 px | new recipes    0 / 1025 | cumulative RGBA   40.5 /  445.9 MiB | max recipe  81 / 154 B
+2160 normal         72 -> 468 px | new recipes    0 / 1025 | cumulative RGBA   40.5 / 1302.3 MiB | max recipe  81 / 156 B
