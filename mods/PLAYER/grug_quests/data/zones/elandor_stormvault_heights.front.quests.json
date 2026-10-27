@@ -7,7 +7,6 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 44,
       "level": 45,
       "requires": [],
       "title": "Ground Worth Crossing",
@@ -62,7 +61,6 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_dwarf_capital_envoy",
-      "min_level": 45,
       "level": 45,
       "requires": [],
       "title": "Put the City to Work",
@@ -85,7 +83,6 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 45,
       "level": 47,
       "requires": [
         "cinderline_front_04"
@@ -126,7 +123,6 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 46,
       "level": 48,
       "requires": [
         "archshadow_front_02"
@@ -175,7 +171,6 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r31_accord_warmaster",
-      "min_level": 46,
       "level": 47,
       "requires": [
         "archshadow_front_03"
@@ -204,7 +199,6 @@
       "line": "front",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 48,
       "level": 49,
       "requires": [],
       "title": "Ready for the Repair Crew",
@@ -271,7 +265,6 @@
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 50,
       "level": 51,
       "requires": [],
       "title": "Before the Weight Comes",
@@ -326,7 +319,6 @@
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 51,
       "level": 51,
       "requires": [],
       "title": "Ask About the Roots",
@@ -349,7 +341,6 @@
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 52,
       "level": 53,
       "requires": [],
       "title": "Put Down the Tools",
@@ -383,7 +374,6 @@
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 55,
       "level": 56,
       "requires": [],
       "title": "Braces Before Salvage",
@@ -438,7 +428,6 @@
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 57,
       "level": 59,
       "requires": [
         "accord_main_roll"
@@ -520,7 +509,6 @@
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 57,
       "level": 58,
       "requires": [
         "splitbolt_front_08"
@@ -549,7 +537,6 @@
       "line": "front",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 58,
       "level": 59,
       "requires": [],
       "title": "Party: Nothing Left to Count",

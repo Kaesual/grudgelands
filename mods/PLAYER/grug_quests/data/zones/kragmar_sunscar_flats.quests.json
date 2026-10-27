@@ -30,7 +30,6 @@
       "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
-      "min_level": 4,
       "level": 5,
       "requires": [],
       "title": "Earn Your Breath",
@@ -85,7 +84,6 @@
       "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
-      "min_level": 6,
       "level": 7,
       "requires": [],
       "title": "Mind the Other End",
@@ -140,7 +138,6 @@
       "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
-      "min_level": 8,
       "level": 9,
       "requires": [],
       "title": "The Last Drop Is Ours",
@@ -216,7 +213,6 @@
       "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_steward",
-      "min_level": 9,
       "level": 9,
       "requires": [
         "sunscar_hunt_05"

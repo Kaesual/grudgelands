@@ -7,7 +7,6 @@
       "line": "front",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 41,
       "level": 43,
       "requires": [
         "accord_main_impounded"
@@ -41,7 +40,6 @@
       "line": "front",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 44,
       "level": 45,
       "requires": [
         "cinderline_front_05"
@@ -70,7 +68,6 @@
       "line": "front",
       "giver": "r20_anchor_032_host",
       "turnin": "r20_anchor_032_host",
-      "min_level": 47,
       "level": 49,
       "requires": [
         "accord_main_standard"
@@ -123,7 +120,6 @@
       "line": "front",
       "giver": "r20_anchor_032_host",
       "turnin": "r31_accord_warmaster",
-      "min_level": 40,
       "level": 41,
       "requires": [],
       "title": "A Posting at {name:pvp_fortress_accord}",
@@ -146,7 +142,6 @@
       "line": "front",
       "giver": "r31_accord_warmaster",
       "turnin": "r31_accord_warmaster",
-      "min_level": 40,
       "level": 41,
       "requires": [],
       "title": "The Gate Does Not Salute",
@@ -170,7 +165,6 @@
       "line": "front",
       "giver": "r31_accord_drillmaster",
       "turnin": "r31_accord_drillmaster",
-      "min_level": 40,
       "level": 42,
       "requires": [],
       "title": "Exhibits for the Drill Yard",
@@ -194,7 +188,6 @@
       "line": "front",
       "giver": "r31_accord_outrider",
       "turnin": "r31_accord_outrider",
-      "min_level": 40,
       "level": 42,
       "requires": [],
       "title": "Intelligence with Teeth",
@@ -221,7 +214,6 @@
       "line": "front",
       "giver": "r31_accord_outrider",
       "turnin": "r31_accord_outrider",
-      "min_level": 40,
       "level": 42,
       "requires": [],
       "title": "Blind the {name:pvp_camp_broken_causeway_throng_low}",
@@ -256,7 +248,6 @@
       "line": "front",
       "giver": "r31_accord_outrider",
       "turnin": "r31_accord_outrider",
-      "min_level": 40,
       "level": 42,
       "requires": [
         "ashenward_bastion_picket_broken"
@@ -293,7 +284,6 @@
       "line": "front",
       "giver": "r31_accord_drillmaster",
       "turnin": "r31_accord_drillmaster",
-      "min_level": 47,
       "level": 49,
       "requires": [],
       "title": "Dislodge the {name:pvp_camp_broken_causeway_throng_high}",
@@ -328,7 +318,6 @@
       "line": "front",
       "giver": "r31_accord_drillmaster",
       "turnin": "r31_accord_drillmaster",
-      "min_level": 47,
       "level": 49,
       "requires": [
         "ashenward_bastion_warcamp_broken"
@@ -365,7 +354,6 @@
       "line": "front",
       "giver": "r31_accord_outrider",
       "turnin": "r31_accord_outrider",
-      "min_level": 50,
       "level": 52,
       "requires": [],
       "title": "No Cover for the {name:pvp_camp_skyglass_canopy_throng_low}",
@@ -400,7 +388,6 @@
       "line": "front",
       "giver": "r31_accord_outrider",
       "turnin": "r31_accord_outrider",
-      "min_level": 50,
       "level": 52,
       "requires": [
         "ashenward_bastion_picket_skyglass"
@@ -437,7 +424,6 @@
       "line": "front",
       "giver": "r31_accord_drillmaster",
       "turnin": "r31_accord_drillmaster",
-      "min_level": 57,
       "level": 59,
       "requires": [],
       "title": "Test the {name:pvp_camp_skyglass_canopy_throng_high}",
@@ -472,7 +458,6 @@
       "line": "front",
       "giver": "r31_accord_drillmaster",
       "turnin": "r31_accord_drillmaster",
-      "min_level": 57,
       "level": 59,
       "requires": [
         "ashenward_bastion_warcamp_skyglass"

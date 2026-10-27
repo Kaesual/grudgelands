@@ -48,7 +48,6 @@
     {
       "id": "camp_hunt_t5_low",
       "line": "camp",
-      "min_level": 41,
       "level": 42,
       "requires": [],
       "title": "The Supply Run Bites Back",
@@ -119,7 +118,6 @@
     {
       "id": "camp_hunt_t5_high",
       "line": "camp",
-      "min_level": 48,
       "level": 49,
       "requires": [],
       "title": "Work Under Fire",

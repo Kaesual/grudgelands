@@ -318,21 +318,26 @@ quest("meat", {npc = "elder", prerequisites = {"hunt"},
 quest("logs", {npc = "hunter", objectives = {{type = "item", group = "log", count = 2}}})
 quest("bounty", {npc = "hunter",
 	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
-quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
+-- Round 65: accepted from its level - 2 (3); the grey "!" at levels 1 and 2.
+quest("veteran", {npc = "envoy", level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 local boar = {name = "grug_mobs:boar", description = "Boar", object = {}}
 
 -- ---------------------------------------------------------------------------
 -- K: quest markers
 -- ---------------------------------------------------------------------------
-local priority = {ready = 1, available = 2, active = 3, locked = 4}
--- A full recompute: the most urgent npc_quests row per NPC (no memo).
+local priority = {ready = 1, available = 2, active = 3}
+-- A full recompute: the most urgent npc_quests row per NPC (no memo); without
+-- a row the grey "!" (locked) when the hint level is at most two above the
+-- player's (Round 65 ruling 2).
 local function full(player)
 	local result = {}
 	for _, npc in ipairs({"elder", "hunter", "envoy"}) do
 		local best
-		for _, row in ipairs(Q.npc_quests(player, npc)) do
+		local rows, hint = Q.npc_quests(player, npc)
+		for _, row in ipairs(rows) do
 			if not best or priority[row.status] < priority[best] then best = row.status end
 		end
+		if not best and hint and hint <= (levels[player:get_player_name()] or 1) + 2 then best = "locked" end
 		result[npc] = best
 	end
 	return result

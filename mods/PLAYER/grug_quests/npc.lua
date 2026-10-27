@@ -19,9 +19,11 @@ Q.STATUS_COLORS = {available = "#ffd24a", ready = "#7ee06a", active = "#8fc1ff",
 -- The story accent (Round 57 ruling 13): the "Story" category of the quest
 -- lists and the story markers (the map icons, tools/r57_qsys/render_story_icons.py).
 Q.STORY_COLOR = "#c69cff"
-local STATUS_ORDER = {"available", "ready", "active", "locked"}
+-- Round 65 ruling 1: no list shows a locked quest, so no legend names one
+-- (the grey colour stays the hint line's and the "soon" marker's).
+local STATUS_ORDER = {"available", "ready", "active"}
 local STATUS_NAMES = {available = {"Available", "gold"}, ready = {"Ready to complete", "green"},
-	active = {"In progress", "blue"}, locked = {"Locked", "grey"}}
+	active = {"In progress", "blue"}}
 -- `indent` (a list with categories) sets the title in by two spaces.
 function Q.list_entry(title, status, indent)
 	return Q.STATUS_COLORS[status] .. core.formspec_escape((indent and "  " or "") .. title)
@@ -195,13 +197,56 @@ local function choice_row(player, def, ready, picked)
 	return table.concat(out)
 end
 
+-- The detail pane of the selected row `row` at giver `npc_id`, with the
+-- status line and the buttons; returns it and the kept reward pick.
+local function detail_pane(player, npc_id, row, picked, notice, scale)
+	local UI = grug_core.ui
+	local def = Q.registered_quests[row.id]
+	local active = Q.active_entry(player, row.id)
+	-- The giver's own text where it gives the quest, else the text of the
+	-- variant and giver the player took it from (Round 57); at the turn-in
+	-- the completion paragraph (ruling 14) in its place, when there is one.
+	local at_giver = def.giver_variant[npc_id] ~= nil and not active
+	local source = active or {giver = def.giver_variant[npc_id] and npc_id or nil}
+	local completion = row.status == "ready" and Q.completion_text(def, active)
+	local detail = (completion or Q.quest_text(def, at_giver or (active and active.giver == npc_id), source)) .. "\n\nOBJECTIVES\n"
+	-- One line per objective (ruling 41), with its targets' level range
+	-- (Lane Q0): "Defeat Barrow Piglet × 8 (level 1–2)".
+	for _, objective in ipairs(Q.variant_of(def, source).objectives) do
+		detail = detail .. (objective.description or Q.objective_action(objective)) ..
+			" × " .. objective.count .. Q.objective_levels_text(objective) .. "\n"
+	end
+	local rewards = table.concat(Q.reward_lines(def, player), "\n")
+	local choices = #def.rewards.choices > 0
+	if not (row.status == "ready" and def.rewards.choices[picked or 0]) then picked = nil end
+	-- At the turn-in the picked reward's whole tooltip (item level, stats,
+	-- enchants) is readable without hovering, at the top of the text, where
+	-- it needs no scrolling at the web client's size (Round 57 follow-up).
+	local chosen = picked_lines(player, def, picked)
+	if chosen then detail = "Chosen:\n" .. table.concat(chosen, "\n") .. "\n\n" .. detail end
+	-- The description is a read-only text (no field name).
+	local form =
+		UI.prose(6.5, 1.85, 11.55, 0.85, row.title, false, scale, 1.2 * scale) ..
+		UI.prose(6.5, 2.9, 11.55, choices and 3.95 or 6.1, detail, false, scale, 1.05 * scale) ..
+		("box[6.5,%.2f;11.55,0.02;#d1c09a2b]"):format(choices and 6.95 or 9.15) ..
+		UI.prose(6.5, choices and 7.1 or 9.3, 11.55, choices and 1.2 or 1.25, rewards, false, scale) ..
+		(choices and choice_row(player, def, row.status == "ready", picked) or "") ..
+		UI.prose(3.0, 11.2, 10, 0.7, notice or row.reason or STATUS_NAMES[row.status][1], false, scale) ..
+		"set_focus[close;true]button_exit[0.5,11.25;2.2,0.65;close;Close]"
+	if row.status == "available" then form = form .. "button[15.9,11.25;2.2,0.65;accept;Accept]" end
+	if row.status == "ready" then form = form .. "button[15.9,11.25;2.2,0.65;turnin;Complete]" end
+	return form, picked
+end
+
 -- The narrow categorized list shares the dialog with a separate detail pane;
 -- the selected quest's full title is repeated there. `selected` is the row
 -- to show: an index (a click in the list), a quest id (that quest's row if
 -- it is still listed, else the preselection), {after = quest id} (the
 -- preselection, else that quest's row) or nil (the preselection). `notice`
 -- marks a redraw after Accept or Complete; `picked` the reward chosen at
--- the turn-in (a redraw after a click on a choice).
+-- the turn-in (a redraw after a click on a choice). Below the list one grey
+-- hint line names the level of this giver's next quests (Round 65 ruling
+-- 1); a giver with only the hint opens with it and says when to return.
 function Q.open_npc(player, entity, selected, notice, picked)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
@@ -211,8 +256,8 @@ function Q.open_npc(player, entity, selected, notice, picked)
 		grug_factions.refuse(player, npc.title or id, npc.faction)
 		return true
 	end
-	local rows = Q.npc_quests(player, id)
-	if #rows == 0 then return false end
+	local rows, hint = Q.npc_quests(player, id)
+	if #rows == 0 and not hint then return false end
 	-- The first open of the dialog plays its cue; a redraw (another quest
 	-- chosen, after Accept or Complete) does not.
 	local redraw = selected ~= nil or notice ~= nil
@@ -224,7 +269,8 @@ function Q.open_npc(player, entity, selected, notice, picked)
 		end
 		selected = type(selected) == "string" and listed or nil
 	end
-	selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows, listed)
+	if #rows == 0 then selected = nil
+	else selected = selected and math.min(math.max(selected, 1), #rows) or preselect(rows, listed) end
 	-- State markers and story categories survive the larger two-line rows.
 	local category_entries, row_of = Q.category_list(rows, function(r) return r.title end)
 	local entries = {}
@@ -247,50 +293,32 @@ function Q.open_npc(player, entity, selected, notice, picked)
 	end
 	local row = rows[selected]
 	local previous_row = previous and previous.rows[previous.selected]
-	local reveal_selected = not session._ui_rows or (notice ~= nil and
+	local reveal_selected = not session._ui_rows or (notice ~= nil and row ~= nil and
 		(not previous_row or previous_row.id ~= row.id))
-	local def = Q.registered_quests[row.id]
-	local active = Q.active_entry(player, row.id)
-	-- The giver's own text where it gives the quest, else the text of the
-	-- variant and giver the player took it from (Round 57); at the turn-in
-	-- the completion paragraph (ruling 14) in its place, when there is one.
-	local at_giver = def.giver_variant[id] ~= nil and not active
-	local source = active or {giver = def.giver_variant[id] and id or nil}
-	local completion = row.status == "ready" and Q.completion_text(def, active)
-	local detail = (completion or Q.quest_text(def, at_giver or (active and active.giver == id), source)) .. "\n\nOBJECTIVES\n"
-	-- One line per objective (ruling 41), with its targets' level range
-	-- (Lane Q0): "Defeat Barrow Piglet × 8 (level 1–2)".
-	for _, objective in ipairs(Q.variant_of(def, source).objectives) do
-		detail = detail .. (objective.description or Q.objective_action(objective)) ..
-			" × " .. objective.count .. Q.objective_levels_text(objective) .. "\n"
-	end
-	local rewards = table.concat(Q.reward_lines(def, player), "\n")
-	local choices = #def.rewards.choices > 0
-	if not (row.status == "ready" and def.rewards.choices[picked or 0]) then picked = nil end
-	-- At the turn-in the picked reward's whole tooltip (item level, stats,
-	-- enchants) is readable without hovering, at the top of the text, where
-	-- it needs no scrolling at the web client's size (Round 57 follow-up).
-	local chosen = picked_lines(player, def, picked)
-	if chosen then detail = "Chosen:\n" .. table.concat(chosen, "\n") .. "\n\n" .. detail end
-	-- The description is a read-only text (no field name).
 	local UI = grug_core.ui
 	local scale = UI.text_scale(player)
+	local hint_line = hint and ("More quests at level " .. hint .. ".")
 	local form = UI.frame(18.8, 12.2, nil, nil, player) .. UI.service_header(18.8, npc.title or id,
-		row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png", scale) ..
+		row and row.story and "STORY" or "QUESTS", "grug_ui_icon_map.png", scale) ..
 		UI.panel(0.35, 1.6, 5.6, 9.3) .. UI.panel(6.15, 1.6, 12.3, 9.3) ..
 		"style_type[textarea;border=false]" ..
 		UI.button_style("accept", "selected", scale) .. UI.button_style("turnin", "selected", scale) ..
-		UI.rows(session, {name = "quests", x = 0.5, y = 1.85, w = 5.25, h = 8.8,
+		UI.rows(session, {name = "quests", x = 0.5, y = 1.85, w = 5.25, h = hint and 8.05 or 8.8,
 			rows = entries, scale = scale, reveal_selected = reveal_selected}) ..
-		UI.prose(6.5, 1.85, 11.55, 0.85, row.title, false, scale, 1.2 * scale) ..
-		UI.prose(6.5, 2.9, 11.55, choices and 3.95 or 6.1, detail, false, scale, 1.05 * scale) ..
-		("box[6.5,%.2f;11.55,0.02;#d1c09a2b]"):format(choices and 6.95 or 9.15) ..
-		UI.prose(6.5, choices and 7.1 or 9.3, 11.55, choices and 1.2 or 1.25, rewards, false, scale) ..
-		(choices and choice_row(player, def, row.status == "ready", picked) or "") ..
-		UI.prose(3.0, 11.2, 10, 0.7, notice or row.reason or STATUS_NAMES[row.status][1], false, scale) ..
-		"set_focus[close;true]button_exit[0.5,11.25;2.2,0.65;close;Close]"
-	if row.status == "available" then form = form .. "button[15.9,11.25;2.2,0.65;accept;Accept]" end
-	if row.status == "ready" then form = form .. "button[15.9,11.25;2.2,0.65;turnin;Complete]" end
+		(hint_line and UI.prose(0.5, 9.95, 5.25, 0.7, hint_line, true, scale) or "")
+	if not row then
+		-- Only the hint: when to come back, nothing to accept.
+		form = form .. UI.prose(6.5, 1.85, 11.55, 0.85, "Come back later", false, scale, 1.2 * scale) ..
+			UI.prose(6.5, 2.9, 11.55, 6.1, ("%s has more quests for you at level %d."):format(
+				npc.title or "This quest giver", hint), false, scale, 1.05 * scale) ..
+			UI.prose(3.0, 11.2, 10, 0.7, notice or hint_line, false, scale) ..
+			"set_focus[close;true]button_exit[0.5,11.25;2.2,0.65;close;Close]"
+		picked = nil
+	else
+		local pane
+		pane, picked = detail_pane(player, id, row, picked, notice, scale)
+		form = form .. pane
+	end
 
 	session.picked = picked
 	sessions[name] = session

@@ -113,7 +113,7 @@ return function(api)
 		if grug_quests.registered_quests[PROBE_QUEST] then return end
 		grug_quests.register_quest(PROBE_QUEST, {title = "Probe: Ore for the Lift",
 			description = "A probe quest for the screenshot (never shipped): the giver's " ..
-				"dialog with its title.", rewards = {weight = 1}, min_level = 1,
+				"dialog with its title.", rewards = {weight = 1},
 			variants = {{key = "probe", givers = {FOREMAN, LEADER},
 				objectives = {{type = "item", item = "default:iron_lump", count = 5}}}}})
 	end

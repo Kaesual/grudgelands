@@ -865,6 +865,10 @@ def build():
         quests = shared.get(zone, []) + local_quests(town)
         if town == "ossuary":
             quests.append(rubbings_03())
+        # Round 65 ruling 3: a quest names only its level (accepted from
+        # level - 2); the minimum levels written above are history.
+        for quest in quests:
+            quest.pop("min_level", None)
         out = {"zone": data["zone"], "reworked": True, "identity": data["identity"],
                "hubs": hubs(data["hubs"]), "quests": quests + guild}
         files[path] = json.dumps(out, indent=2, ensure_ascii=False) + "\n"

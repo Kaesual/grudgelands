@@ -176,7 +176,7 @@ do
 		return out
 	end
 	Q.register_quest("r58_campnpc_probe_t3", {title = "Probe", description = "Probe.",
-		rewards = {weight = 1}, min_level = 21, variants = {
+		rewards = {weight = 1}, level = 23, variants = {
 			{key = "accord", giver_roles = roles("accord", 3),
 				objectives = {{type = "item", item = "default:iron_lump", count = 1}}},
 			{key = "throng", giver_roles = roles("throng", 3),

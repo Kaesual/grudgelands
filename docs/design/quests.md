@@ -42,7 +42,16 @@ repeatable switch by Round 57, 2026-10-23
   [world_map.md](world_map.md#quest-targets)).
 - Quest lists (the quest giver's dialog and the quest log) show each quest's
   status as the entry's colour, explained by a legend or the list's tooltip:
-  available gold, ready to complete green, in progress blue, locked grey.
+  available gold, ready to complete green, in progress blue. No list shows
+  a quest the player's level holds back (Round 65 ruling 1): below the
+  giver's list one grey line, never selectable, reads "More quests at
+  level N.", N the lowest acceptance level among the giver's quests that
+  only the level holds back (prerequisites met, not active, not done). A
+  giver with only that line still opens its dialog: the line, a detail pane
+  saying at which level to come back, no Accept; a giver with neither rows
+  nor line does not open. Inside each category the giver's list sorts
+  ready, then acceptable, then in progress, then by quest level and title
+  (Round 65 ruling 5).
   Once a story quest is listed (Round 57 ruling 13), the list has two
   categories: a "Story" header in the story violet above the story quests
   and a "Side quests" header above the others, their titles set in; every
@@ -77,8 +86,11 @@ repeatable switch by Round 57, 2026-10-23
   Use the existing tag visibility/hysteresis loop and distances, not a second
   independent all-players scan.
 - Marker precedence: ready to turn in (yellow question mark), available
-  (yellow exclamation mark), active but incomplete (silver question mark),
-  relevant level-locked quest (silver exclamation mark), otherwise none.
+  (yellow exclamation mark), active but incomplete (silver question mark);
+  with none of these, the silver exclamation mark when the giver's next
+  quest (the hint line's level) opens one or two levels above the player's
+  (Round 65 ruling 2; the marker value `locked`), otherwise none. A level
+  change recomputes the markers.
   Story quests have their own marker (Round 57 ruling 13): the same symbol
   with the ordinary gold/silver glyph and a violet story star, so the
   status still reads on its own. The most urgent status of a giver wins
@@ -130,7 +142,12 @@ repeatable switch by Round 57, 2026-10-23
   mail or in an escrow: it is paid at the turn-in or refused (the mailbox,
   [mail.md](mail.md), carries letters, not quest rewards).
 - Every quest description includes its minimum level and the titles of its
-  prerequisite quests. `min_level` gates accepting; the reward XP is
+  prerequisite quests. **One acceptance rule** (Round 65 ruling 3): a quest
+  is accepted from its quest level − 2, at least 1, every kind alike
+  (story, departures, group, guild, front, system quests); the quest
+  data names only `level` (`grug_quests.acceptance_level`,
+  `r28common.acceptance_level`; a stale `min_level` is an `E-levels` error
+  in both validators). The reward XP is
   `grug_xp.quest_reward(level, weight)`, the authored weight in kill
   equivalents at the quest's reward `level` (`progression.md`); the
   receiver's current level never changes the reward.
@@ -138,7 +155,8 @@ repeatable switch by Round 57, 2026-10-23
   Persist active/completed state and HUD preference across reconnect/restart.
 - Dependent quests remain hidden until every prerequisite has been turned in.
   Acceptance or completed objectives alone do not reveal successors. Once its
-  prerequisites pass, a level-locked quest is visible with its required level.
+  prerequisites pass, a quest the level still holds back is not listed; it
+  counts toward the giver's hint line and the silver "!" (Round 65).
   Quests carry no race or faction gate of their own; the giver's faction
   decides (Round 31, PvP ruling 13): a giver serves only its own faction,
   the faction of its race (a new giver's own race, else its settlement's),
@@ -209,7 +227,8 @@ Round 20 content contract; delivery status belongs in STATUS/BACKLOG.
 Each faction's fortress ([world.md](world.md) §4; Ashenward Bastion in
 Ashenward March, Bannerbreak Warhold in Bannerbreak Mesa) is the hub of its
 PvP quests (pvp-plan rulings 14, 15 and 23). Its three quest givers
-(Warmaster, Drillmaster, Outrider) give, all from level 40, on their line
+(Warmaster, Drillmaster, Outrider) give, all from level 40 (since Round 65
+their level-41 quests open at 39, "Accepted defaults"), on their line
 `front` (the zone's front file):
 
 - **one raid per enemy Battlegrounds camp** (8 per faction): kill the camp's
@@ -221,8 +240,8 @@ PvP quests (pvp-plan rulings 14, 15 and 23). Its three quest givers
 - **ordinary fortress quests**: supplies for the Quartermaster (Warmaster),
   War Trophies from enemy guards (Drillmaster; they drop only to an enemy
   player's kill), and a scouting kill in a Battlegrounds kind (Outrider);
-- **an entry quest** from an outpost of the fortress's zone at level 40, a
-  travel quest to the Warmaster.
+- **an entry quest** from an outpost of the fortress's zone (level 41, open
+  from 39), a travel quest to the Warmaster.
 
 No objective names a player or a General. The front ledger counts these
 quests like every front quest.
@@ -234,9 +253,11 @@ Each faction's main line for levels 41–60 (round36-plan §2.2–§2.8, the
 Warmaster's second line, travel handoffs and turn-ins at the existing
 givers the bible names, and the front climaxes folded in as required
 steps (their texts carry the thread; their other quests stay as they
-were). Chapters open at 41, 46 and 53, each with a quest that requires
-the previous chapter's last turn-in (a Warmaster turn-in); the finale
-"Party: The Collector Comes Due" opens at 60 on the rift boss, and the
+were). Chapters open at 40, 45 and 53 (Round 65: their openers' levels
+42, 47 and 55 minus two; 41, 46 and 53 before), each with a quest that
+requires the previous chapter's last turn-in (a Warmaster turn-in); the
+finale "Party: The Collector Comes Due" (level 60) opens at 58 on the rift
+boss, and the
 last turn-in at the Warmaster carries the bible's last line. Every step a
 chapter names carries the faction's tag; every required step is solo but
 the finale; optional branches (the war commander's "Party:" hunt, the
@@ -250,10 +271,10 @@ Ninepins, Huskell and Chirr among them) each require only spine steps, and
 The Throng's Chirr step follows Huskell's ("The front 41–60").
 
 - **The Throng** ("Our Oaths Are Ours", tag `throng_main`, the
-  Warmaster's line `oaths`): chapter 1 (41) the false requisition at
+  Warmaster's line `oaths`): chapter 1 (40) the false requisition at
   Bannerfall Pocket, Drek Rampbinder's Toll-Taker Senn with his toll-box
   at Causeway Toll Ruin, Orrel Hollowstep's ash slab at Ashen Grave;
-  chapter 2 (46) the pledged standard at West Trench Mouth, Yarra
+  chapter 2 (45) the pledged standard at West Trench Mouth, Yarra
   Standardmender's Ninepins, the Accord Captain's Orders from the Accord's
   high war camp on The Shattered Line, the branded pay buried at Coinpit
   Hollow; chapter 3 (53) the Kiln-Whisper Hexers, Vaska Ashlistener's
@@ -264,11 +285,11 @@ The Throng's Chirr step follows Huskell's ("The front 41–60").
   islands (60, from the Nhal Veyr and Gor Drazhak envoys, free since Round
   62).
 - **The Accord** ("Every Name Accounted For", tag `accord_main`, the
-  Warmaster's line `main`): chapter 1 (41) the impounded pay at Ashen
+  Warmaster's line `main`): chapter 1 (40) the impounded pay at Ashen
   Wheelbreak, Toren Waterbarrel's Coal-Purse Factors, Alna Archsight's
   rubbing at Brandscar Cairn and Toll-Taker Senn with his toll-box at
-  Causeway Toll Ruin (her Senn chain opens at 46, two levels earlier, so
-  chapter 2 can open at 46); chapter 2 (46) the Brandbound Collectors and
+  Causeway Toll Ruin (her Senn step, level 48, opens at 46, so chapter 2,
+  gated at 45, follows it at 46); chapter 2 (45) the Brandbound Collectors and
   the pledged standard at Siege Ramp Foot, Nella Hedgeward's Ninepins, the
   Throng Captain's Orders from the Throng's high war camp on The Shattered
   Line (47), the courier's pay ledger at Courier's Stump; chapter 3 (53)
@@ -532,7 +553,8 @@ Quest content is data, one file per zone, read at load by
   hubs (at most two givers per hub, at most two lines per giver), their givers
   and lines, optionally the file's rework flag (`"reworked": true`, Round 57,
   below), and its quests (format: design frame §4.7: `giver`, `turnin`,
-  `min_level`, reward `level`, `requires` across zones, `objectives`,
+  reward `level` (accepted from `level − 2`, Round 65; no `min_level`),
+  `requires` across zones, `objectives`,
   `quest_drops`, `rewards` with `weight`, optional `copper`, `items` and
   `choices`; Round 57: `variants` in place of `giver` and `turnin`, `texts`,
   `story`, `completion`; the design notes `lesson`, `duration_min`,
@@ -574,12 +596,12 @@ Quest content is data, one file per zone, read at load by
   the atlas checks.
 - Item objectives allocate held items exact items first, then groups; the
   turn-in takes exactly what the progress counted.
-- **Chapter chains** (Round 36): `requires` crosses files, and a quest whose
-  `min_level` is below a prerequisite's opens only at the prerequisite's
-  level, so its shown gate would be wrong: `validate.py` warns
-  (`W-chain-gate`; no shipped quest carries it since Round 46 removed the
-  two bounties that did). The main line's chapter gates (41, 46, 53, 60)
-  follow from it.
+- **Chapter chains** (Round 36): `requires` crosses files. A quest behind
+  an unmet prerequisite is not shown anywhere (list, hint line, marker), so
+  since Round 65 a step may open (its level − 2) below its prerequisite and
+  `validate.py`'s `W-chain-gate` is gone with the second number. The main
+  line's chapter gates are their openers' levels minus two: 40, 45, 53 and
+  58 (41, 46, 53 and 60 before Round 65).
 - **Turn-in hook and tags** (Round 36): `grug_quests.register_on_turn_in(fn)`
   calls `fn(player, quest_id, def)` once per completed turn-in, after the
   state and the rewards are stored; a refused
@@ -864,7 +886,7 @@ Starbough Vale of The Accord; Mournfen, Redtusk Savanna and Raincall Basin
 of The Throng) are reworked on the same rules (round59-plan.md §2, §2a),
 from the story chapter the user picked (every recommendation of the
 chapter draft): every quest is free play, nothing chains, a level-11
-character finds the zone's first quests (minimum level 10) at once,
+character finds the zone's first quests (open from level 9 since Round 65) at once,
 without a departure. The zone's own people give them: the village's
 steward and local, the outpost's scout, the bandit camp's captive (Round
 14 and 15) and the mining camp's foreman (Round 58). Each zone offers 13
@@ -920,7 +942,7 @@ Reach, Whispering Reedlands and Totemwater Reach of The Throng) are
 reworked on the same rules (round60-plan.md §2, §2a), from the story
 chapter the user picked (chapter 2, every recommendation K1–K13 "A",
 with the feasibility check's fixes). A level-21 character finds each
-zone's first quests (minimum level 20) at once; free quests require only a
+zone's first quests (open from level 19 since Round 65) at once; free quests require only a
 level, and only chapter 2's story quests chain. The zone's own people give
 them: the Round 20 hosts (village, outpost, mine) and the mining camp's
 foreman; no new giver.
@@ -1002,7 +1024,7 @@ and Thunderroot Wilds of The Throng) are reworked on the same rules
 ([round61-plan.md](../planning/round61-plan.md) §2, §2a), from the story
 chapter the user picked (chapter 3, every recommendation K1–K13 "A", with
 the feasibility check's fixes). A level-30 character finds each zone's
-first quests (minimum level 30) at once; free quests require only a level,
+first quests (open from level 29 since Round 65) at once; free quests require only a level,
 and only the story quests chain. The Round 20 hosts and the mining camps'
 foremen give them; no new giver. The two contested base files
 (`elandor_ashenward_march`, `kragmar_bannerbreak_mesa`) are flagged whole:
@@ -1118,7 +1140,7 @@ send the player there. 123 quests of reward level 41–60 became 120.
   steps (17 Accord, 14 Throng, the climaxes on Senn, Ninepins, Huskell and
   Chirr among them) are `story` and each requires only spine steps; ids,
   objectives, levels, texts and hand-offs stay, each step gets a completion
-  (the text lane's). The opener at 41 requires nothing, so a character who
+  (the text lane's). The opener (open from 40) requires nothing, so a character who
   skipped the earlier chapters is not locked out; A6 and T5 reach it
   through the free fortress calls. The Throng's Chirr step
   (`kz_front_04`) follows Huskell's (`bw_front_ashveil_04`, K12 A). The war
@@ -1172,7 +1194,7 @@ send the player there. 123 quests of reward level 41–60 became 120.
   Accord's Dur Brannoc and Highcourt bounty pairs as shipped, the Throng's
   new pair at Thorga (`gordrazhak_krait_bounty`, 6 Kraits in the Stormscale
   Scorchlands by day, then the group quest on Last-Offering, K9 A); the
-  four island uses free from 60.
+  four island uses free from 60 (open from 58 since Round 65).
 - **Rewards** per faction and level band (tier 5 at 41–50, tier 6 at
   51–60; the budget per zone and level band, "The rework flag"): six armor
   choices with one enchant (every slot), three weapon choices with prefix

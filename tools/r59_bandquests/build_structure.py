@@ -604,7 +604,7 @@ def local_quests(town, departure):
         row["duration_min"] = q["duration"]
         row["notes"] = "Round 59 BANDQUESTS: free play, a level only."
         rows.append(row)
-    dep = {k: departure[k] for k in ("id", "line", "giver", "turnin", "min_level", "level")}
+    dep = {k: departure[k] for k in ("id", "line", "giver", "turnin", "level")}
     dep.update({"requires": [], "title": PH + "The Case Goes to " + CAPITAL[town],
                 "text": PH + DEPARTURES[town] + TBD,
                 "objectives": departure["objectives"], "rewards": {"weight": departure["rewards"]["weight"]},
@@ -660,6 +660,10 @@ def build():
         departure = next(q for q in data["quests"] if q["id"] == "%s_departure" % town)
         guild = [q for q in data["quests"] if q["id"] in GUILD_IDS]
         quests = shared.get(zone, []) + local_quests(town, departure) + guild
+        # Round 65 ruling 3: a quest names only its level (accepted from
+        # level - 2); the minimum levels written above are history.
+        for quest in quests:
+            quest.pop("min_level", None)
         out = {"zone": data["zone"], "reworked": True, "identity": data["identity"],
                "hubs": hubs(town, data["hubs"]), "quests": quests}
         files[path] = json.dumps(out, indent=2, ensure_ascii=False) + "\n"

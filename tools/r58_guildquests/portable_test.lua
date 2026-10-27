@@ -161,7 +161,8 @@ for id, q in pairs(quests) do
 		end
 		eq(#q.objectives, 1, "S " .. id .. " one objective")
 		eq(q.objectives[1].type, "item", "S " .. id .. " an item objective")
-		eq(q.min_level, (tier - 1) * 10 + 1, "S " .. id .. " min level of its tier")
+		-- Round 65: accepted from the quest level - 2.
+		eq(math.max(1, q.level - 2), (tier - 1) * 10 + 1, "S " .. id .. " opens at the first level of its tier")
 		check(q.story ~= true and #(q.requires or {}) == 0, "S " .. id .. " is free play")
 	end
 end
@@ -556,13 +557,13 @@ for _, faction in ipairs(FACTIONS) do
 				"B " .. row.id .. " lists no T" .. tier .. " follow-up before the gathers")
 		end
 	end
-	-- Under the tier's level the gather quest is listed locked.
+	-- Under the tier's level the gather quest is not listed (Round 65 ruling 1).
 	player_level = 11
 	for _, row in ipairs(foremen) do
 		if row.camp.faction == faction and row.camp.tier == 6 then
 			local offered = offers(row.id)
 			eq(offered.guild_t2_iron, "available", "B a level-11 player is offered T2 at " .. row.id)
-			eq(offered.guild_t6_crystal, "locked", "B a level-11 player sees T6 locked at " .. row.id)
+			eq(offered.guild_t6_crystal, nil, "B a level-11 player is not shown T6 at " .. row.id)
 		end
 	end
 	for capital in pairs(CAPITAL_RACE) do

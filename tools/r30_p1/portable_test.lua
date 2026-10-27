@@ -332,7 +332,8 @@ quest("bounty", {npc = "hunter",
 	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 quest("tusk", {npc = "envoy", objectives = {{type = "item", item = "grug_mobs:tusk", count = 1}},
 	quest_drops = {{item = "grug_mobs:tusk", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, chance = 1}}})
-quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
+-- Round 65: accepted from its level - 2 (3); the grey "!" at levels 1 and 2.
+quest("veteran", {npc = "envoy", level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, names = {{"Boar"}}, name_set = {Boar = true}, count = 1}}})
 
 -- ---------------------------------------------------------------------------
 -- C: the cache never changes under its readers
@@ -376,12 +377,16 @@ local ann = new_player("ann", {x = 100, y = 10, z = -205})
 join(ann)
 verify("join")
 
-local priority = {ready = 1, available = 2, active = 3, locked = 4}
+local priority = {ready = 1, available = 2, active = 3}
+-- Round 65 ruling 2: without a row, the grey "!" (locked) when the hint
+-- level is at most two above the player's.
 local function best_row(player, npc)
 	local best
-	for _, row in ipairs(Q.npc_quests(player, npc)) do
+	local rows, hint = Q.npc_quests(player, npc)
+	for _, row in ipairs(rows) do
 		if not best or priority[row.status] < priority[best] then best = row.status end
 	end
+	if not best and hint and hint <= level + 2 then best = "locked" end
 	return best
 end
 -- marker_states equals the most urgent npc_quests row for every NPC.

@@ -49,7 +49,6 @@
       "id": "guild_t5_report_accord",
       "line": "guild",
       "story": true,
-      "min_level": 41,
       "level": 43,
       "requires": [
         "guild_t5_emberglass",
@@ -143,7 +142,6 @@
       "id": "guild_t5_report_throng",
       "line": "guild",
       "story": true,
-      "min_level": 41,
       "level": 43,
       "requires": [
         "guild_t5_emberglass",
@@ -237,7 +235,6 @@
       "id": "guild_t6_report_accord",
       "line": "guild",
       "story": true,
-      "min_level": 51,
       "level": 53,
       "requires": [
         "guild_t6_crystal",
@@ -297,7 +294,6 @@
       "id": "guild_t6_report_throng",
       "line": "guild",
       "story": true,
-      "min_level": 51,
       "level": 53,
       "requires": [
         "guild_t6_crystal",
@@ -356,7 +352,6 @@
     {
       "id": "camp_hunt_t6_low",
       "line": "camp",
-      "min_level": 51,
       "level": 52,
       "requires": [],
       "title": "The Camp Still Needs Feeding",
@@ -427,7 +422,6 @@
     {
       "id": "camp_hunt_t6_high",
       "line": "camp",
-      "min_level": 58,
       "level": 59,
       "requires": [],
       "title": "One More Shift",

@@ -39,6 +39,9 @@
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 local ROOT = arg and arg[1] or "."
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level). The quest files name no minimum level.
+local function opens(q) return math.max(1, q.level - 2) end
 local json = dofile(ROOT .. "/tools/r28_b4_quests/json.lua")
 local failures, checks = 0, 0
 local function check(ok, label)
@@ -264,7 +267,7 @@ for id, requires in pairs(BRANCHES) do
 	eq(quest and sorted_join(quest.requires), requires, "B " .. id .. ": after its spine step")
 end
 for _, id in ipairs({"accord_main_impounded", "throng_main_01"}) do
-	eq(by_id[id].min_level, 41, "B " .. id .. ": the join at 41")
+	eq(opens(by_id[id]), 40, "B " .. id .. ": the join at 40 (Round 65: level 42 - 2)")
 	eq(#by_id[id].requires, 0, "B " .. id .. ": requires nothing (round62-plan.md §2a point 2)")
 end
 -- Nothing outside the spine and the branches is story at 41-60 but the
@@ -303,7 +306,8 @@ for id, quest in pairs(by_id) do
 	if quest.level >= 41 and not quest.story and not id:find("^camp_") and not id:find("^guild_") then
 		FREE[id] = quest
 		eq(sorted_join(quest.requires), ALLOWED[id] or "", "C " .. id .. ": free, a level only")
-		check(quest.min_level >= 40 and quest.min_level <= quest.level, "C " .. id .. ": its levels")
+		-- Round 65: opens at its level - 2, so from 39.
+		check(opens(quest) >= 39 and opens(quest) <= quest.level, "C " .. id .. ": its levels")
 	end
 end
 for id in pairs(FREE) do
@@ -406,7 +410,7 @@ local function work_at(npc, level)
 		for _, variant in ipairs(quest.variants or {}) do
 			for _, giver in ipairs(variant.givers) do gives = gives or giver == npc end
 		end
-		if gives and #(quest.requires or {}) == 0 and quest.min_level <= level + 1 and
+		if gives and #(quest.requires or {}) == 0 and opens(quest) <= level + 1 and
 				quest.objectives[1].type ~= "talk" then
 			return id
 		end
@@ -419,7 +423,7 @@ for id, who in pairs(DEPARTURES) do
 		eq(quest.objectives[1].npc, NPC[who], "F " .. id .. ": a travel to " .. who)
 		eq(quest.turnin, NPC[who], "F " .. id .. ": turned in there")
 		eq(#quest.requires, 0, "F " .. id .. ": requires nothing")
-		check(work_at(NPC[who], quest.min_level) ~= nil, "F " .. who .. " has free work at once (" .. id .. ")")
+		check(work_at(NPC[who], opens(quest)) ~= nil, "F " .. who .. " has free work at once (" .. id .. ")")
 	end
 end
 check(work_at(NPC.borin, 50) ~= nil and work_at(NPC.nalo, 50) ~= nil, "F Borin and Nalo have work at 50 (F10)")
@@ -444,7 +448,7 @@ for _, row in ipairs(PAIRS) do
 		for _, quest in ipairs({bounty, elite}) do
 			eq(quest.rewards.weight, 0, "G " .. quest.id .. ": coin, no leveling")
 			check((quest.rewards.copper or 0) > 0, "G " .. quest.id .. ": a coin bounty")
-			eq(quest.min_level, 60, "G " .. quest.id .. ": at 60")
+			eq(opens(quest), 58, "G " .. quest.id .. ": at 60, open from 58 (Round 65)")
 		end
 	end
 end
@@ -525,8 +529,9 @@ for id, quest in pairs(by_id) do
 			local row = pattern[faction][tier]
 			if first:find("^grug_alchemy:potion_") then
 				row.potions[#row.potions + 1] = id
-				check(quest.min_level >= (tier == 5 and 41 or 51), "H " .. id .. ": Potion " .. (tier == 5 and "V" or "VI") ..
-					" from its first level")
+				-- Round 65: such a quest opens two levels below its reward level.
+				check(quest.level >= (tier == 5 and 41 or 51), "H " .. id .. ": Potion " .. (tier == 5 and "V" or "VI") ..
+					" from its tier's first reward level")
 			elseif enchants == 1 then
 				local slot = slot_of(first)
 				row.armor[id] = slot

@@ -816,6 +816,10 @@ def read(name):
 
 
 def dump(data):
+    # Round 65 ruling 3: a quest names only its level (accepted from level -
+    # 2); the minimum levels written above are history.
+    for quest in data.get("quests") or []:
+        quest.pop("min_level", None)
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 

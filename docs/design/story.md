@@ -42,10 +42,11 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   premise: it runs through levels 41–60 (§2a), while the 11–30 debt and
   forgery chains only foreshadow it, and it progressively reveals the
   influence behind the front's troubles.
-- **Quests have minimum levels** (core mechanic, WP8): every quest can
-  carry a `min_level`; the main line's chapters open at 41, 46 and 53 and
-  its finale at 60 (its quests' `min_level`, with `requires` on the step
-  before; [quests.md](quests.md) "The main line").
+- **Quests have minimum levels** (core mechanic, WP8): since Round 65
+  every quest is accepted from its level − 2 (at least 1); the main line's
+  chapters open at 40, 45 and 53 and its finale at 58 (its quests' levels
+  42, 47, 55 and 60 minus two, with `requires` on the step before;
+  [quests.md](quests.md) "The main line").
 - Mandatory-quest beats at the front (fight at the contested land front,
   kill enemy war-front guards, the PvP fortress quests; [quests.md](quests.md))
   get framed by this premise:
@@ -89,12 +90,14 @@ threat, beats, objects, cloaks), the quest structure is in
   Ten **corrupted** front creatures share one ember tint.
 - **Shape:** each faction's line runs from its fortress Warmaster
   (Ashenward Bastion, Bannerbreak Warhold) with handoffs to the front's
-  givers; chapters open at **41, 46 and 53**, the finale at **60**; every
+  givers; chapters open at **40, 45 and 53**, the finale (level 60) at
+  **58** (Round 65: a quest opens two levels below its level); every
   step is solo but the finale, and optional "Party:" hunts never block the
   line. Some steps are done **at a place** with a quest object only the
   quest's holders see (breaking a seal, taking a rubbing, burning names off
   a tally-stone). Since Round 62 the line is the story path of 41–60 (every step
-  `story`, with a completion that hands the player on; the opener at 41
+  `story`, with a completion that hands the player on; the opener (open
+  from 40)
   requires no earlier chapter), and its texts carry the guild thread: the
   pay meant for the war-camp workers, Audra Wainholt and Greda Stonehaul at
   the opener, after the proof and at the final ([quests.md](quests.md)

@@ -59,7 +59,6 @@
     {
       "id": "band_steel",
       "line": "steel",
-      "min_level": 23,
       "level": 24,
       "requires": [],
       "title": "Steel for the Work",
@@ -125,7 +124,6 @@
     {
       "id": "band_shore_pinchers",
       "line": "shore",
-      "min_level": 24,
       "level": 25,
       "requires": [],
       "title": "Room for Our Feet",
@@ -206,7 +204,6 @@
       "line": "sleds",
       "giver": "r20_anchor_014_host",
       "turnin": "r20_anchor_014_host",
-      "min_level": 20,
       "level": 21,
       "requires": [],
       "title": "Something Fresh for the Sled Drivers",
@@ -240,7 +237,6 @@
       "line": "sleds",
       "giver": "r20_anchor_014_host",
       "turnin": "r20_anchor_026_host",
-      "min_level": 21,
       "level": 22,
       "requires": [],
       "title": "Hedra Knows the Way Back",
@@ -263,7 +259,6 @@
       "line": "sleds",
       "giver": "r20_anchor_014_host",
       "turnin": "r20_anchor_061_host",
-      "min_level": 22,
       "level": 23,
       "requires": [],
       "title": "Word for Tarncut",
@@ -286,7 +281,6 @@
       "line": "watch",
       "giver": "r20_anchor_026_host",
       "turnin": "r20_anchor_026_host",
-      "min_level": 22,
       "level": 23,
       "requires": [],
       "title": "The Reliable Light",
@@ -342,7 +336,6 @@
       "line": "sleds",
       "giver": "r20_anchor_014_host",
       "turnin": "r20_anchor_014_host",
-      "min_level": 26,
       "level": 27,
       "requires": [],
       "title": "Coal for the Warming Hut",
@@ -395,7 +388,6 @@
       "line": "cutting",
       "giver": "r20_anchor_061_host",
       "turnin": "r20_anchor_061_host",
-      "min_level": 28,
       "level": 29,
       "requires": [],
       "title": "An Explosive Miscalculation",
@@ -477,7 +469,6 @@
       "line": "cutting",
       "giver": "r20_anchor_061_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 29,
       "level": 30,
       "requires": [],
       "title": "Keep Your Head at Splitbolt",
@@ -500,7 +491,6 @@
       "line": "guild",
       "giver": "r58_foreman_mining_camp_frostbarrow_shelf",
       "turnin": "r20_anchor_061_host",
-      "min_level": 24,
       "level": 25,
       "requires": [
         "story_accord_02"
@@ -547,7 +537,6 @@
       "line": "cutting",
       "giver": "r20_anchor_061_host",
       "turnin": "r58_guild_leader_dur_brannoc",
-      "min_level": 29,
       "level": 29,
       "requires": [
         "story_accord_03",
@@ -574,7 +563,6 @@
       "id": "guild_t3_report_accord",
       "line": "guild",
       "story": true,
-      "min_level": 21,
       "level": 23,
       "requires": [
         "guild_t3_anthracite",
@@ -779,7 +767,6 @@
     {
       "id": "camp_hunt_t3",
       "line": "camp",
-      "min_level": 21,
       "level": 22,
       "requires": [],
       "title": "A Load on Every Back",

@@ -21,6 +21,14 @@ function grug_quests.register_npc(id, def)
 	grug_quests.npc_by_socket[key] = id
 	npcs[id] = table.copy(def)
 end
+-- The one acceptance rule (Round 65 ruling 3): a quest is accepted from its
+-- quest level - 2, at least 1, story quests and departures alike. The quest
+-- level is the one source; quest data never names a minimum level
+-- (tools/r28_design/r28common.py acceptance_level computes the same).
+grug_quests.ACCEPT_BELOW = 2
+function grug_quests.acceptance_level(level)
+	return math.max(1, level - grug_quests.ACCEPT_BELOW)
+end
 -- The hold of a "use at a place" objective, in whole seconds.
 grug_quests.USE_HOLD_MIN, grug_quests.USE_HOLD_MAX = 1, 15
 -- A choice of rewards has 2..MAX_CHOICES entries (one row in the dialog).
@@ -103,8 +111,9 @@ function grug_quests.register_quest(id, def)
 	assert(type(def.title) == "string" and type(def.description) == "string")
 	def = table.copy(def)
 	def.id = id
-	def.min_level = def.min_level or 1
-	def.level = def.level or def.min_level
+	-- `min_level` is derived, never given (Round 65 ruling 3).
+	assert(def.min_level == nil, "A quest names its level only; it is accepted from level - 2")
+	def.level = def.level or 1
 	def.prerequisites = def.prerequisites or {}
 	def.rewards = def.rewards or {}
 	def.rewards.copper = def.rewards.copper or 0
@@ -112,7 +121,8 @@ function grug_quests.register_quest(id, def)
 	def.rewards.choices = def.rewards.choices or {}
 	-- Rewards are a weight in kill equivalents at the reward level (ruling 32).
 	assert(type(def.rewards.weight) == "number" and def.rewards.weight >= 0, "Invalid quest reward weight")
-	assert(integer(def.min_level) and def.min_level >= 1 and integer(def.level) and def.level >= 1)
+	assert(integer(def.level) and def.level >= 1)
+	def.min_level = grug_quests.acceptance_level(def.level)
 	assert(integer(def.rewards.copper))
 	-- Round 57 ruling 11: every quest is done exactly once.
 	assert(def.repeatable == nil, "No repeatable quests")

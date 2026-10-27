@@ -119,6 +119,17 @@ def gathering_xp(kind, tier, player_level):
     return round_half_up(GATHER_RATIO[kind] * M(min(reference, player_level)))
 
 
+# The one acceptance rule (Round 65 ruling 3): a quest is accepted from its
+# quest level - 2, at least 1; quest data names no minimum level. The game's
+# grug_quests.acceptance_level (registry.lua) computes the same, and
+# tools/r65_quest/portable_test.lua pins that both agree.
+ACCEPT_BELOW = 2
+
+
+def acceptance_level(level):
+    return max(1, level - ACCEPT_BELOW)
+
+
 def band_of_level(level):
     for band in BANDS:
         if band[0] <= level < band[1]:

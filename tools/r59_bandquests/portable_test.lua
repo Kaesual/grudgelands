@@ -33,6 +33,9 @@
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local ROOT = arg and arg[1] or "."
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level). The quest files name no minimum level.
+local function opens(q) return math.max(1, q.level - 2) end
 local json = dofile(ROOT .. "/tools/r28_b4_quests/json.lua")
 local failures, checks = 0, 0
 local function check(ok, label)
@@ -277,7 +280,7 @@ for id, entry in pairs(by_id) do
 		check(not quest.story, id .. ": free play, no story quest")
 		eq(#(quest.requires or {}), 0, id .. ": requires nothing but a level")
 		eq(#(followers[id] or {}), 0, id .. ": no quest follows it")
-		check(quest.level >= 11 and quest.level <= 20 and quest.min_level <= quest.level,
+		check(quest.level >= 11 and quest.level <= 20 and opens(quest) <= quest.level,
 			id .. ": reward level within the band (" .. tostring(quest.level) .. ")")
 	end
 end
@@ -285,7 +288,7 @@ end
 for _, row in ipairs(ZONES) do
 	local first = 99
 	for _, quest in ipairs(offered[row[1]]) do
-		if quest.min_level < first then first = quest.min_level end
+		if opens(quest) < first then first = opens(quest) end
 	end
 	check(first >= 9 and first <= 10, row[1] .. ": its first quests open at level 9-10 (" .. first .. ")")
 end
@@ -304,7 +307,7 @@ for _, row in ipairs(ZONES) do
 		check(objective.type == "talk" and objective.npc == "r20_" .. race .. "_capital_envoy" and
 			quest.turnin == objective.npc, id .. ": a travel quest to the capital's envoy")
 		eq(quest.giver, race == "undead" and scout(zone) or captive(zone), id .. ": given by the zone's witness side")
-		eq(quest.min_level, 19, id .. ": free from 19")
+		eq(opens(quest), 17, id .. ": free from 17 (Round 65: its level 19 - 2)")
 		eq(#(quest.requires or {}), 0, id .. ": requires nothing")
 	end
 end
@@ -425,7 +428,7 @@ for _, row in ipairs(ZONES) do
 	eq(#potions, 1, zone .. ": one potion choice")
 	local p = potions[1]
 	if p then
-		check(p.level <= 12 and p.min_level <= 10, zone .. ": the potion choice is early (" .. p.id .. ")")
+		check(p.level <= 12 and opens(p) <= 10, zone .. ": the potion choice is early (" .. p.id .. ")")
 		eq(#p.rewards.choices, 2, zone .. ": two potion entries")
 		local set = {}
 		for _, choice in ipairs(p.rewards.choices) do set[choice.item .. " " .. (choice.count or 1)] = true end

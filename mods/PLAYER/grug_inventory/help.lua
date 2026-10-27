@@ -77,9 +77,10 @@ local SECTIONS = {
 	})},
 	{id = "quests", label = "Story & Craft", tooltip = "Quests & Professions", x = 1.3, w = 2.9, text = body({
 		heading("Quests"),
-		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = needs a higher level. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
+		"• Symbols above quest givers: yellow ! = new quest, yellow ? = ready to hand in, silver ? = in progress, silver ! = a new quest in one or two levels. The minimap shows the same symbols; the map (Z) shows a ? only for your active quests.",
 		"• Story quests have violet symbols and their own \"Story\" heading in the quest lists; the rest are side quests you can take in any order.",
 		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, take it to the person with the yellow ? (often the giver) and press Complete.",
+		"• You can accept a quest from two levels below its level. The list shows only quests you can complete, accept or are doing; a grey line below it names the level at which that giver has more for you.",
 		"• Objectives are: bring items (counted from your inventory and bags, taken when you hand in), defeat creatures, or speak with a named person. Everyone nearby who helped with damage or healing gets kill credit; the killing blow is not needed.",
 		"• Your quest log is in the map window (Z or the Map & Quests tab): up to 20 active quests, up to ten tracked on screen. Select a quest to read it and to see its targets on the map where they are known. When the log is full, finish or abandon a quest before you accept a new one.",
 		"• Quest givers wait in start towns, capitals, villages and camps. At level 10 your start town sends you on to your capital.",

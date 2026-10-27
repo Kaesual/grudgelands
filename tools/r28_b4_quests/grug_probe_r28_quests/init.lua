@@ -58,7 +58,7 @@ local SAMPLE = {
 				socket = "lore_shrine/lore_shrine_quest"}, lines = {"probe", "bounties"}}}}},
 		quests = {
 			{id = "probe_supplies", line = "probe", giver = "probe_lore_keeper", turnin = "probe_lore_keeper",
-				min_level = 20, level = 22, title = "Probe Supplies",
+				level = 22, title = "Probe Supplies",
 				text = "Boars and logs for the shrine. The boars carry the stolen purses.",
 				objectives = {
 					{type = "kill", roles = {"boar"}, count = 2},
@@ -68,12 +68,12 @@ local SAMPLE = {
 				quest_drops = {{item = "grug_mobs:stolen_purse", roles = {"boar"}, chance = 1}},
 				rewards = {weight = 3, copper = 7, items = {{item = "mobs:meat_raw", count = 2}}}},
 			{id = "probe_bounty", line = "bounties", giver = "probe_lore_keeper", turnin = "probe_lore_keeper",
-				min_level = 20, level = 22, requires = {"probe_supplies"}, title = "Probe Bounty",
+				level = 22, requires = {"probe_supplies"}, title = "Probe Bounty",
 				text = "Boars again. One more, and we are done.",
 				objectives = {{type = "kill", roles = {"boar"}, count = 1}},
 				rewards = {weight = 1, copper = 1}},
 			{id = "probe_travel", line = "probe", giver = "probe_lore_keeper",
-				turnin = "r20_human_capital_envoy", min_level = 20, level = 22, title = "Probe Travel",
+				turnin = "r20_human_capital_envoy", level = 22, title = "Probe Travel",
 				text = "Walk to the chapel. Mariel expects you.",
 				objectives = {{type = "talk", npc = "r20_human_capital_envoy"}},
 				rewards = {weight = 1, copper = 1}},
@@ -96,7 +96,7 @@ local function sample(Q)
 	broken.data = table.copy(SAMPLE.data)
 	broken.data.hubs = {}
 	broken.data.quests = {{id = "probe_turkey", line = "probe", giver = "r20_human_capital_envoy",
-		turnin = "r20_human_capital_envoy", min_level = 1, level = 1, title = "T", text = "T. T.",
+		turnin = "r20_human_capital_envoy", level = 1, title = "T", text = "T. T.",
 		objectives = {{type = "kill", roles = {"wild_turkey"}, count = 1}}, rewards = {weight = 1}}}
 	local found = Q.validate.world({broken}, {
 		entity = function(name) return core.registered_entities[name] end,
@@ -182,7 +182,7 @@ local function area_checks(Q)
 	local function file(level, role)
 		return {name = "elandor_dawnmere_fields.quests.json", zone = "elandor_dawnmere_fields", front = false,
 			data = {zone = "elandor_dawnmere_fields", quests = {{id = "probe_area", line = "hunt",
-				giver = "r14_human_elder", turnin = "r14_human_elder", min_level = 1, level = level,
+				giver = "r14_human_elder", turnin = "r14_human_elder", level = level,
 				title = "Probe Area", text = "Boars. In the home fields.",
 				objectives = {{type = "kill", roles = {role}, count = 1,
 					area = "elandor_dawnmere_fields/home_fields"}}, rewards = {weight = 1}}}}}
