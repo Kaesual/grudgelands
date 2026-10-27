@@ -104,10 +104,7 @@ BAG_OF_COINS_PALETTE = {
 }
 
 ICONS = [
-    ("mods/PLAYER/grug_map/textures/grug_map_crownbinder.png", CROWNBINDER,
-     CROWNBINDER_PALETTE),
-    ("mods/PLAYER/grug_map/textures/grug_map_decor_merchant.png", DECOR_MERCHANT,
-     DECOR_MERCHANT_PALETTE),
+    # Round 64 owns the two map markers; retain their historical painters.
     ("mods/PLAYER/grug_money/textures/grug_money_bag_of_coins.png", BAG_OF_COINS,
      BAG_OF_COINS_PALETTE),
 ]

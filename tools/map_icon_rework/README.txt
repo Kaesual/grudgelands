@@ -6,7 +6,7 @@ Implementation and acceptance: docs/planning/round64-plan.md
 Decided behavior: docs/design/world_map.md
 
 The user accepted this set for initial integration and authorized Round 64.
-This source package alone does not modify runtime assets or saved worlds.
+Runtime export: python3 tools/r64_map/ship.py (--check validates without writes).
 Classification: compatible. In-game desktop/web acceptance is still pending.
 
 Tracked sources:
@@ -58,5 +58,5 @@ still represent actual quest areas; other icons have no badge backgrounds.
 Prior art validation: independent review, 89 transparent 32px PNGs, all
 44 comparisons and links, directional orientation, Chromium controls/image
 decoding and visual inspection at native size on four backgrounds passed.
-The cleanup preserves every approved icon byte. Placement, shared sizing
-and minimap composition will be implemented and verified under the round plan.
+The cleanup preserves every approved icon byte. Placement, shared sizing and separate minimap markers are integrated in
+Round 64; the plan records technical validation and pending GUI acceptance.

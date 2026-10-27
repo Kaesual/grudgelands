@@ -1,0 +1,42 @@
+Round 64 after; seed 42; 1920x1080; HUD=GUI=1; dt=.09; 60s per pass; 2 party arrows.
+Payload bytes include HUDADD and HUDCHANGE, exclude transport/media.
+All faction quest givers available (visibility upper bound).
+capital 4 centre=0.0,-1500.0 bootstrap_us=18538 adds=31 payload=2570 updates=66/1231B
+pass=1 packets/s=44.79 payload_B/s=622.0 adds=7 add_payload=574 visible_max=19 CPU_us/step=9.04 new_cells=25 RGBA_KiB=506.25
+return adds=0 add_payload=0 updates=27/463B
+pass=2 packets/s=44.46 payload_B/s=610.3 adds=0 add_payload=0 visible_max=19 CPU_us/step=5.18 new_cells=0 RGBA_KiB=0.00
+layout centre radius=200nodes rows=18 pairwise_overlap_pixels=4742->436 max_shift_px=16.00
+capital 8 centre=0.0,-1500.0 bootstrap_us=17611 adds=31 payload=2570 updates=66/1231B
+pass=1 packets/s=64.50 payload_B/s=907.5 adds=7 add_payload=574 visible_max=19 CPU_us/step=15.41 new_cells=51 RGBA_KiB=1032.75
+return adds=0 add_payload=0 updates=33/708B
+pass=2 packets/s=64.20 payload_B/s=896.1 adds=0 add_payload=0 visible_max=19 CPU_us/step=4.09 new_cells=0 RGBA_KiB=0.00
+capital 12 centre=0.0,-1500.0 bootstrap_us=17039 adds=31 payload=2570 updates=66/1271B
+pass=1 packets/s=70.52 payload_B/s=1068.0 adds=7 add_payload=574 visible_max=19 CPU_us/step=18.31 new_cells=76 RGBA_KiB=1539.00
+return adds=0 add_payload=0 updates=32/735B
+pass=2 packets/s=70.24 payload_B/s=1056.8 adds=0 add_payload=0 visible_max=19 CPU_us/step=4.26 new_cells=0 RGBA_KiB=0.00
+camp 4 centre=240.0,-1056.0 bootstrap_us=17194 adds=22 payload=1832 updates=30/620B
+pass=1 packets/s=13.01 payload_B/s=199.3 adds=1 add_payload=82 visible_max=4 CPU_us/step=9.94 new_cells=24 RGBA_KiB=486.00
+return adds=0 add_payload=0 updates=7/173B
+pass=2 packets/s=12.90 payload_B/s=197.0 adds=0 add_payload=0 visible_max=4 CPU_us/step=4.77 new_cells=0 RGBA_KiB=0.00
+layout centre radius=200nodes rows=2 pairwise_overlap_pixels=247->0 max_shift_px=14.42
+camp 8 centre=240.0,-1056.0 bootstrap_us=17895 adds=22 payload=1832 updates=30/620B
+pass=1 packets/s=27.31 payload_B/s=411.9 adds=1 add_payload=82 visible_max=4 CPU_us/step=12.50 new_cells=46 RGBA_KiB=931.50
+return adds=0 add_payload=0 updates=13/275B
+pass=2 packets/s=27.21 payload_B/s=409.8 adds=0 add_payload=0 visible_max=4 CPU_us/step=4.45 new_cells=0 RGBA_KiB=0.00
+camp 12 centre=240.0,-1056.0 bootstrap_us=17147 adds=22 payload=1832 updates=30/660B
+pass=1 packets/s=42.44 payload_B/s=685.6 adds=4 add_payload=328 visible_max=7 CPU_us/step=14.64 new_cells=68 RGBA_KiB=1377.00
+return adds=0 add_payload=0 updates=9/279B
+pass=2 packets/s=42.26 payload_B/s=678.9 adds=0 add_payload=0 visible_max=7 CPU_us/step=7.04 new_cells=0 RGBA_KiB=0.00
+sparse 4 centre=0.0,-3000.0 bootstrap_us=16887 adds=20 payload=1668 updates=22/513B
+pass=1 packets/s=7.91 payload_B/s=140.0 adds=0 add_payload=0 visible_max=1 CPU_us/step=4.75 new_cells=25 RGBA_KiB=506.25
+return adds=0 add_payload=0 updates=5/182B
+pass=2 packets/s=7.91 payload_B/s=140.2 adds=0 add_payload=0 visible_max=1 CPU_us/step=2.60 new_cells=0 RGBA_KiB=0.00
+layout centre radius=200nodes rows=0 pairwise_overlap_pixels=0->0 max_shift_px=0.00
+sparse 8 centre=0.0,-3000.0 bootstrap_us=17296 adds=20 payload=1668 updates=22/513B
+pass=1 packets/s=15.70 payload_B/s=270.9 adds=0 add_payload=0 visible_max=1 CPU_us/step=12.06 new_cells=50 RGBA_KiB=1012.50
+return adds=0 add_payload=0 updates=4/169B
+pass=2 packets/s=15.70 payload_B/s=271.2 adds=0 add_payload=0 visible_max=1 CPU_us/step=6.68 new_cells=0 RGBA_KiB=0.00
+sparse 12 centre=0.0,-3000.0 bootstrap_us=16580 adds=20 payload=1668 updates=22/591B
+pass=1 packets/s=23.11 payload_B/s=457.2 adds=0 add_payload=0 visible_max=1 CPU_us/step=6.54 new_cells=75 RGBA_KiB=1518.75
+return adds=0 add_payload=0 updates=3/234B
+pass=2 packets/s=23.12 payload_B/s=457.7 adds=0 add_payload=0 visible_max=1 CPU_us/step=2.32 new_cells=0 RGBA_KiB=0.00

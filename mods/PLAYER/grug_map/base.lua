@@ -821,10 +821,7 @@ local function render(zones, view, spec, layer, claim, flight)
 	local encoded = core.get_us_time()
 	local mini_total, mini_tiles, mini_icons = 0, nil, 0
 	if mini then
-		if layer then
-			mini_icons = bake.draw(mini_pixels, mini.width, mini.height, view, layer, layer.art,
-				bake.SCALE.mini, false, "_mini").icons
-		end
+		-- Round 64: all minimap icons are separate, shared 32px markers.
 		mini_tiles = M.tiles(mini.width, mini.height, M.MINI_PREFIX)
 		mini_total = encode_tiles(mini_pixels, mini.width, mini_tiles)
 	end

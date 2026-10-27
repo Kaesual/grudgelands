@@ -1037,6 +1037,8 @@ def main():
         print(f"{variant}: 37 RGBA assets, font {assets['font.png'].width}x8, 1440x1860 sheet")
     if args.install:
         for name in sets["A"]:
+            if name.startswith("grug_map_") and name != "grug_map_trainer_cooking.png":
+                continue  # Runtime markers are owned by tools/r64_map/ship.py.
             im = sets[PICKS.get(pick_key(name), DEFAULT_PICK)][name]
             folder = "textures" if name.startswith("grug_map_") else "art"
             output(MAP / folder / name, im)

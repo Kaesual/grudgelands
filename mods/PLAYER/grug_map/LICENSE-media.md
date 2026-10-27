@@ -1,3 +1,19 @@
+# Shared map icons (Round 64)
+
+The 89 marker PNGs listed in
+[approved-icons.json](../../../tools/map_icon_rework/drop01/approved-icons.json)
+are shipped byte-for-byte with the `grug_map_` filename prefix by
+`tools/r64_map/ship.py`. These supersede the historical marker provenance
+below. The art is original to Grudgelands, CC0-1.0: 31 illustrations generated
+with OpenAI Imagegen and 58 authored geometric sprites. Exact prompts and
+source paths: [generation provenance](../../../tools/map_icon_rework/drop01/generated.json).
+The complete [source package](../../../tools/map_icon_rework/README.txt)
+includes editable SVGs and the accepted 32px masters. Full-resolution
+originals are optional local editing material, excluded from Git.
+Post, daytime, music, bezel and unused historical artwork are unchanged.
+
+# Historical provenance (superseded where listed above)
+
 # Atlas direction marker media
 
 `textures/grug_map_heading_{gold,cyan}_00.png` through `_15.png`: original

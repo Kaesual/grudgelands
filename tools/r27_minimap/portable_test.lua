@@ -459,13 +459,13 @@ local sockets = {highcourt = {
 	-- Round 46 (lane RP): the mender on the Cooking socket, its repair icon.
 	{id = "mender", role = "trainer", profession = "cooking", pos = {x = 70, y = 30, z = -1525}},
 	{id = "steward", role = "housing_manager", pos = {x = -25, y = 30, z = -1435}},
-	{id = "riding", role = "riding_trainer", pos = {x = 60, y = 30, z = -1420}},
+	{id = "riding", role = "riding_trainer", pos = {x = 40, y = 30, z = -1500}},
 	{id = "throne", role = "king", pos = {x = 10, y = 30, z = -1480}},
 	{id = "giver", role = "quest", pos = {x = 30, y = 30, z = -1470}},
 	{id = "far_giver", role = "quest", pos = {x = 2000, y = 30, z = 2000}},
 }}
 -- A crowded town far away: 30 trainers, a Steward and a quest giver, more
--- markers than the minimap has slots.
+-- markers than the former fixed pool supported.
 settlements[2] = {key = "crowd", race_id = "human", anchor = {x = -2000, z = -2000}}
 sockets.crowd = {{id = "steward", role = "housing_manager", pos = {x = -2010, y = 30, z = -2010}},
 	{id = "giver", role = "quest", pos = {x = -1990, y = 30, z = -1995}}}
@@ -494,8 +494,7 @@ local NW, NH = base.QUALITY.normal.width, base.QUALITY.normal.height
 local installed = {quality = "normal", width = NW, height = NH,
 	tiles = base.tiles(NW, NH)}
 installed.texture = base.combined_texture(NW, NH, installed.tiles)
--- Round 44: the minimap has its own variant (baked small icons, no names)
--- at every quality.
+-- The minimap keeps its own terrain variant without region names.
 installed.minimap = {quality = "normal", width = NW, height = NH,
 	tiles = base.tiles(NW, NH, base.MINI_PREFIX)}
 atlas.set_base_texture(installed.texture)
@@ -571,8 +570,8 @@ check(map and map.alignment.x == 1 and
 	math.floor(views.normal.pixels * map.scale.x * 1) == frame.drawn, "R map drawn " .. frame.drawn .. " px")
 local compass
 for _, e in ipairs(elements(me)) do if e.def.type == "compass" then compass = e.def end end
-check(compass and compass.text == "grug_map_heading_gold_00.png" and compass.size.x == 24,
-	"R player arrow is a 24 px compass element")
+check(compass and compass.text == "grug_map_heading_gold_00.png" and compass.size.x == 32,
+	"R player arrow is a 32 px compass element")
 local function centre_of_player()
 	local mx, my = screen(map, me)
 	local px, py = V.base_pixel(v, me.pos.x, me.pos.z)
@@ -593,19 +592,50 @@ check(#bezels == 1 and near(screen(bezels[1], me) + frame.diameter, 1920 - 10, 1
 check(#by_text(me, "^grug_map_minimap_mask%.png%^%[multiply:") == 1, "R sea background disc")
 local function has(texture) return #by_text(me, "^" .. texture:gsub("%.", "%%.") .. "$") end
 check(has("grug_map_quest_available.png") == 1, "R near quest giver shown, far one not")
--- Trainers by their profession icon since Round 44; kings and dragons are
--- pixels of the base.
+-- This fixture currently registers only the service/quest/travel providers.
 check(has("grug_map_housing_steward.png") == 1, "R Housing Steward shown")
-check(has("grug_map_trainer_tailor.png") == 1 and has("grug_mounts_icon_human.png") == 1,
+check(has("grug_map_trainer_tailor.png") == 1 and has("grug_map_riding.png") == 1,
 	"R trainers shown (profession icon and riding)")
 check(has("grug_map_innkeeper.png") == 1, "R innkeeper shown (the far inn is not)")
 check(has("grug_map_repair.png") == 1, "R the mender shown with the repair icon (Round 46)")
 check(has("grug_mobs_item_fallen_crown.png") == 0, "R no king marker")
 do
-	local riding = by_text(me, "^grug_mounts_icon_human%.png$")[1]
+	local riding = by_text(me, "^grug_map_riding%.png$")[1]
 	local book = by_text(me, "^grug_map_trainer_tailor%.png$")[1]
-	check(riding and book and near(riding.scale.x * 64, 16) and near(book.scale.x * 16, 16),
-		"R icons drawn 16 px whatever their texture size")
+	check(riding and book and math.floor(riding.scale.x * 32) == 32 and math.floor(book.scale.x * 32) == 32,
+		"R icons drawn 32 px in both views")
+end
+
+-- Both-faction landmarks remain visible even to a neutral viewer; the
+-- rift boss is represented by its clash site, not a second king symbol.
+do
+ local faction = grug_factions.get_faction
+ local landmarks = {
+  {id="a", label="A", kind="capital", texture="grug_map_capital.png", faction="accord",
+   position={x=-75,y=20,z=-1590}},
+  {id="t", label="T", kind="mining_camp", texture="grug_map_mining_camp.png", faction="throng",
+   position={x=-10,y=20,z=-1590}},
+ }
+ atlas.register_marker_provider("settlement",function() return landmarks end)
+ local bosses = {
+  {id="rift",label="Rift",kind="rift_boss",texture="grug_map_king.png",position={x=-60,y=20,z=-1560}}
+ }
+ atlas.register_marker_provider("boss",function() return bosses end)
+ for _, value in ipairs({"accord","throng",""}) do
+  grug_factions.get_faction=function() return value~="" and value or nil end
+  for _,fn in ipairs(quest_changes) do fn(me) end
+  step(5)
+  check(has("grug_map_capital.png")==1 and has("grug_map_mining_camp.png")==1,
+   "R both-faction landmarks visible for " .. value)
+  check(has("grug_map_king.png")==0,"R no duplicate rift-boss marker for " .. value)
+  if value~="accord" then
+   check(has("grug_map_trainer_tailor.png")==0,"R foreign services hidden for " .. value)
+  end
+ end
+ grug_factions.get_faction=faction
+ landmarks, bosses = {}, {}
+ for _,fn in ipairs(quest_changes) do fn(me) end
+ step(5)
 end
 
 -- Still player: nothing is sent.
@@ -959,14 +989,14 @@ do
 	local shown, order = 0, {}
 	for _, e in ipairs(elements(me)) do
 		local t = e.def.text
-		if e.def.type == "image" and e.def.z_index and e.def.z_index > 20 and
+		if e.def.type == "image" and e.def.z_index and e.def.z_index >= 20 and
 				e.def.z_index <= 44 and t ~= "" then
 			shown = shown + 1
 			order[#order + 1] = {z = e.def.z_index, t = t}
 		end
 	end
 	table.sort(order, function(a, b) return a.z < b.z end)
-	check(shown == 24, "S all 24 marker slots used (" .. shown .. ")")
+	check(shown == 32, "S all 32 nearby markers retained (" .. shown .. ")")
 	check(order[#order] and order[#order].t == "grug_map_quest_available.png" and
 		order[#order - 1] and order[#order - 1].t == "grug_map_housing_steward.png",
 		"S the quest giver and the Steward keep a slot and draw on top")

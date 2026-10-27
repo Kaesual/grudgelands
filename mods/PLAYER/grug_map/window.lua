@@ -26,12 +26,13 @@
 -- (the trailing send). In a party the arrows are checked every PARTY_US and
 -- the window is sent only when a member's arrow moved (every 2 s since
 -- Round 47 ruling 8; 5 s before). A layer click is an event like a zoom
--- click. Alone, nothing is
--- sent without an event. A scrollbar move never sends (the client moves the
+-- click. The bounded check also refreshes solo windows after a resize or
+-- GUI/HUD scale change; otherwise a solo window needs an event. A scrollbar move never sends (the client moves the
 -- image and the overlay together; the server keeps the position and echoes
 -- it on the next send) and holds every send for QUIET_US.
 local modpath = core.get_modpath(core.get_current_modname())
 local atlas = grug_map.atlas
+local marker_art = grug_map.markers or dofile(modpath .. "/markers.lua")
 local targets = dofile(modpath .. "/targets.lua")
 local quest_box = dofile(modpath .. "/quest_box.lua")
 local layers = dofile(modpath .. "/layers.lua")
@@ -57,22 +58,13 @@ local PASS = 0.1
 -- fits and centers at 1x; zoomed artwork uses the full scroll viewport.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
 local COLUMN_SHARE = 0.5
--- Overlay sizes in formspec units, constant at every zoom (only positions
--- scale): icons as before Round 44, trainers two thirds at 1x and 2x
--- (Round 44 ruling 12), arrows, the crosshair; rings at least RING_MIN across.
--- RING_MIN (the user, 2026-10-08: a ring clearly visible at zoom 1): the
--- ring texture is 32 px with a 1 px line, so below 32 screen pixels
--- nearest-neighbour scaling drops parts of the line. 0.7 units are about
--- 50 px at 1080p and 37 px at 720p (GUI scale 1, 72 and 53 px per unit),
--- about twice an icon.
-local ICON, TRAINER_SMALL, ARROW, CROSSHAIR, RING_MIN = 0.34, 0.23, 0.42, 0.5, 0.7
--- The former baked icons (settlements, camps, bosses; Round 47): the
--- overlay's size, for the user's pick after the screenshots.
-W.PLACE_ICON = 0.34
+-- Ordinary icons share one 32px HUD-scaled extent across both views.
+-- Area rings keep their geographic extent with a readable minimum.
+local RING_MIN = 0.7
 -- Arrows sit on a grid of ARROW_STEP units (about a screen pixel); the
 -- party check compares these cells, so a move inside one sends nothing.
 local ARROW_STEP = 0.02
-local RING = "grug_map_ring.png^[multiply:#ff8c1a^[opacity:190"
+local RING = "grug_map_ring.png"
 -- A quest marker's texture by its value (grug_quests.marker_states): the
 -- status, and a story quest's own (Round 57, "story_<status>").
 local QUEST_TEXTURE = {}
@@ -250,15 +242,34 @@ function W.quest_targets(player, quest)
 	return targets.targets(index, def, quest.objectives, player:get_pos(), lookup)
 end
 
-local function image(list, sx, sy, size, texture)
-	list[#list + 1] = ("image[%.3f,%.3f;%.3f,%.3f;%s]"):format(sx - size / 2, sy - size / 2,
-		size, size, esc(texture))
+local function image(list, sx, sy, size, texture, px)
+ local extent = math.max(1,math.floor(size*px+0.5))
+ local units = extent/px
+ local safe = (extent+0.125)/px
+ list[#list+1] = ("image[%.6f,%.6f;%.6f,%.6f;%s]"):format(
+  sx-units/2,sy-units/2,safe,safe,esc(texture))
 end
 local function tip(list, sx, sy, size, text)
 	if text and text ~= "" then
 		list[#list + 1] = ("tooltip[%.3f,%.3f;%.3f,%.3f;%s]"):format(sx - size / 2,
 			sy - size / 2, size, size, esc(text))
 	end
+end
+
+-- Visible source-pixel rectangles prevent transparent corners from claiming
+-- a neighboring icon's tooltip. The existing reverse order gives top art
+-- ownership wherever actual silhouettes still overlap.
+local function icon_tip(list, sx, sy, size, texture, text, px)
+ if not text or text == "" then return end
+ local pixels=math.max(1,math.floor(size*px+0.5))
+ local units=pixels/px
+ local rects = marker_art.tip_rectangles(texture,pixels)
+ if not rects then return tip(list,sx,sy,size,text) end
+ for _, rect in ipairs(rects) do
+  list[#list+1] = ("tooltip[%.6f,%.6f;%.6f,%.6f;%s]"):format(
+   sx-units/2+rect.x/px, sy-units/2+rect.y/px,
+   (rect.w-1+0.125)/px, (rect.h-1+0.125)/px, esc(text))
+ end
 end
 
 -- The tooltip of quest targets marking `objectives` (indices into the
@@ -278,6 +289,8 @@ end
 -- arrows and the player's. Every tooltip after the images, topmost first.
 local function overlay(fs, player, session, layout, quest, info)
 	local zoom = session.zoom or 1
+ local pixels, per_unit = marker_art.metrics(info,layout.w,layout.form_h)
+ local ICON, ARROW, CROSSHAIR = pixels/per_unit, pixels/per_unit, pixels/per_unit
 	local view = atlas.view()
 	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
 	local function at(position)
@@ -295,7 +308,7 @@ local function overlay(fs, player, session, layout, quest, info)
 				local sx, sy = at(ring)
 				if sx then
 					local size = math.max(RING_MIN, 2 * targets.ring_radius(ring.size, CELL) * units)
-					image(under, sx, sy, size, RING)
+					image(under, sx, sy, size, RING, per_unit)
 					tip(tips[under], sx, sy, size, objective_lines(quest, ring.objectives))
 					session.target_count = session.target_count + 1
 				end
@@ -303,8 +316,8 @@ local function overlay(fs, player, session, layout, quest, info)
 			for _, spot in ipairs(found.crosshairs) do
 				local sx, sy = at(spot)
 				if sx then
-					image(crosses, sx, sy, CROSSHAIR, "grug_map_crosshair.png")
-					tip(tips[crosses], sx, sy, CROSSHAIR, objective_lines(quest, spot.objectives))
+					image(crosses, sx, sy, CROSSHAIR, "grug_map_crosshair.png", per_unit)
+					icon_tip(tips[crosses], sx, sy, CROSSHAIR, "grug_map_crosshair.png", objective_lines(quest, spot.objectives), per_unit)
 					session.target_count = session.target_count + 1
 				end
 			end
@@ -313,8 +326,8 @@ local function overlay(fs, player, session, layout, quest, info)
 		local sx, sy
 		if mark then sx, sy = at(mark.position) end
 		if sx then
-			image(marks, sx, sy, ICON, QUEST_TEXTURE[mark.status])
-			tip(tips[marks], sx, sy, ICON, mark.title)
+			image(marks, sx, sy, ICON, QUEST_TEXTURE[mark.status], per_unit)
+			icon_tip(tips[marks], sx, sy, ICON, QUEST_TEXTURE[mark.status], mark.title, per_unit)
 		end
 	else
 		local layer = W.layer_of(session)
@@ -329,15 +342,19 @@ local function overlay(fs, player, session, layout, quest, info)
 				end
 			end
 		end
-		for _, marker in ipairs(W.layer_markers(player, layer)) do
+		local current = W.layer_markers(player, layer)
+  local offsets = marker_art.offsets(player, layer.providers, current,
+   mw*per_unit/(view.max_x-view.min_x), mh*per_unit/(view.max_z-view.min_z), pixels)
+  for _, marker in ipairs(current) do
 			local sx, sy = at(marker.position)
 			local texture = marker.kind == "quest" and QUEST_TEXTURE[marker.status] or
 				KIND_TEXTURE[marker.kind] or marker.texture
 			if sx and texture then
-				local size = layers.ORDER[marker.kind] and W.PLACE_ICON or
-					(marker.kind == "trainer" and zoom <= 2 and TRAINER_SMALL) or ICON
-				image(icons, sx, sy, size, texture)
-				tip(tips[icons], sx, sy, size, marker.kind == "quest" and marker.label or marker.detail)
+				local size = ICON
+    local offset = offsets[marker.id]
+    if offset then sx,sy = sx+offset.dx/per_unit, sy+offset.dy/per_unit end
+				image(icons, sx, sy, size, texture, per_unit)
+				icon_tip(tips[icons], sx, sy, size, texture, marker.kind == "quest" and marker.label or marker.detail, per_unit)
 				session.marker_count = session.marker_count + 1
 			end
 		end
@@ -349,9 +366,10 @@ local function overlay(fs, player, session, layout, quest, info)
 		if cx then
 			local tint = marker.kind == "player" and "gold" or "cyan"
 			image(arrows, cx * ARROW_STEP, cy * ARROW_STEP, ARROW,
-				("grug_map_heading_%s_%02d.png"):format(tint, atlas.heading_frame(marker.heading)))
+				("grug_map_heading_%s_%02d.png"):format(tint, atlas.heading_frame(marker.heading)), per_unit)
 			if marker.kind == "party" then
-				tip(tips[arrows], cx * ARROW_STEP, cy * ARROW_STEP, ARROW, marker.label)
+				icon_tip(tips[arrows], cx * ARROW_STEP, cy * ARROW_STEP, ARROW,
+      ("grug_map_heading_cyan_%02d.png"):format(atlas.heading_frame(marker.heading)), marker.label, per_unit)
 			end
 		end
 	end
@@ -405,6 +423,7 @@ function W.formspec(player, session, info)
     local nav, header_h = grug_inventory.navigation(player, session, "grug_map:atlas", width, navigation_layout)
     local w, h = W.window_size(info, header_h)
     local layout = W.layout(w, h)
+    layout.form_h = h + header_h
 	session.layout = layout
 	local zoom = session.zoom or 1
 	local journal = grug_quests.journal(player)
@@ -545,9 +564,18 @@ function W.may_send(session, now)
 	return false
 end
 
+local function window_signature(info)
+ if not info then return "" end
+ local size,max=info.size or {},info.max_formspec_size or {}
+ return table.concat({size.x or 0,size.y or 0,max.x or 0,max.y or 0,
+  info.real_hud_scaling or 1,info.real_gui_scaling or 1},"|")
+end
+
 local function send(player, session, now)
 	local name = player:get_player_name()
-	local form = W.formspec(player, session, core.get_player_window_information(name))
+	local info = core.get_player_window_information(name)
+ local form = W.formspec(player, session, info)
+ session.window_sig = window_signature(info)
 	session.sent, session.pending, session.open = now, false, true
 	session.shown_zoom = session.zoom or 1
 	session.party_sig = W.party_signature(player, session)
@@ -602,7 +630,8 @@ function W.pass(now)
 			if checks < W.CHECKS_PER_PASS then
 				checks = checks + 1
 				session.party_checked = now
-				if W.party_signature(row.player, session) ~= session.party_sig then
+				if W.party_signature(row.player, session) ~= session.party_sig or
+     window_signature(core.get_player_window_information(row.name)) ~= session.window_sig then
 					session.pending = true
 				end
 			end

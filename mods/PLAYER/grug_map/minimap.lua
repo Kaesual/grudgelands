@@ -6,8 +6,7 @@
 -- Housing Steward and the capital services, trainers (their profession's
 -- icon since Round 44), innkeepers, the player's home and discovered
 -- waystones (Round 29). Settlements, points of interest, kings and dragons
--- are baked into the minimap's own base image since Round 44 (base.lua,
--- bake.lua). Under it a line names the player's location (Round 28 M1,
+-- use the same separate 32px markers as the world map (Round 64). Under it a line names the player's location (Round 28 M1,
 -- location.lua), and while a capital's music plays a "Now playing" box under
 -- that line names the track (0.45.1; grug_ambience tells it which).
 --
@@ -70,6 +69,7 @@
 -- version and one mount-table read per step.
 
 local atlas = grug_map.atlas
+local markers = grug_map.markers or dofile(core.get_modpath("grug_map") .. "/markers.lua")
 local layout = grug_core.hud_layout
 local V = dofile(core.get_modpath(core.get_current_modname()) .. "/minimap_view.lua")
 local M = {view = V}
@@ -91,32 +91,16 @@ local SLOW = 5.0
 -- and a new location shows within that time (the client itself reports a
 -- resize 0.2 s after it ends; the location is sampled about once a second).
 local WINDOW = 0.5
-local MARKER_SLOTS, PARTY_SLOTS = 24, 9
+local PARTY_SLOTS = 9
 -- Drawn sizes in HUD pixels (scaled with HUD scaling like every HUD image).
-local ICON, PARTY_ARROW, PLAYER_ARROW = 16, 20, 24
+local ICON, PARTY_ARROW, PLAYER_ARROW = 32, 32, 32
 -- A rim arrow fills RIM_FILL of the bezel ring's width; its chevron spans
 -- RIM_EXTENT of its 32 px texture from tip to back, outline included.
 local RIM_FILL, RIM_EXTENT = 0.85, 21 / 32
 local BEZEL = "grug_map_minimap_bezel.png"
 local BEZEL_PX = 256
--- Kinds shown (ruling 8; kept in Round 44 by the user); settlements, camps,
--- kings and dragons are pixels of the base since Round 44.
-local SHOWN = {quest = true, steward = true, service = true, trainer = true,
-	innkeeper = true, home = true, waypoint = true}
--- By marker value (grug_quests.marker_states): the status, and a story
--- quest's own (Round 57, "story_<status>").
-local QUEST_TEXTURE = {}
-for _, status in ipairs({"available", "locked", "ready", "active"}) do
-	QUEST_TEXTURE[status] = "grug_map_quest_" .. status .. ".png"
-	QUEST_TEXTURE["story_" .. status] = "grug_map_quest_story_" .. status .. ".png"
-end
-local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png",
-	waypoint = "grug_map_waypoint.png"}
--- Which markers keep a slot when more than MARKER_SLOTS are in the circle
--- (the densest capital window holds 15 of these besides home and waystones,
--- Round 44; the mender's marker of Round 46 adds at most one).
-local PRIORITY = {quest = 1, steward = 2, service = 2, home = 3, innkeeper = 4,
-	trainer = 5, waypoint = 6}
+-- Every fixed place and own-faction service is now a separate marker.
+-- The pool grows to the visible roster; all slots stay below the bezel.
 local Z = {background = 10, map = 11, square = 12, marker = 20, bezel = 45, party = 50,
 	player = 60}
 -- Claim mode's colours (the plan's starting values, the user tunes them):
@@ -295,8 +279,7 @@ local BACKGROUND -- the sea disc under the map, set by M.install
 local function create(player, state)
 	local hud = {background = image(player, Z.background, true),
 		map = image(player, Z.map, true), bezel = image(player, Z.bezel, true),
-		square = image(player, Z.square, true), markers = {}, party = {}}
-	for i = 1, MARKER_SLOTS do hud.markers[i] = image(player, Z.marker + i) end
+		square = image(player, Z.square, true), markers = {}, by_marker = {}, party = {}}
 	for i = 1, PARTY_SLOTS do hud.party[i] = image(player, Z.party + i) end
 	-- The player's arrow is a compass element: the client turns it with the
 	-- view every frame, so turning around sends nothing; it stays centred.
@@ -347,22 +330,25 @@ end
 
 -- The markers that do not move by themselves (ruling 8): quest givers with
 -- their state, the Steward, trainers, innkeepers, home and waystones.
-local PROVIDERS = {quest = true, service = true, home = true, waypoint = true}
-local function static_markers(player)
-	local result = {}
-	for _, marker in ipairs(atlas.collect_markers(player, PROVIDERS)) do
-		if SHOWN[marker.kind] then
-			-- A marker's own texture wins over its kind's (the Claim Stone
-			-- waypoint, Round 45 PT9).
-			local texture = marker.kind == "quest" and QUEST_TEXTURE[marker.status] or
-				marker.texture or KIND_TEXTURE[marker.kind]
-			if texture then
-				result[#result + 1] = {x = marker.position.x, z = marker.position.z,
-					texture = texture, kind = marker.kind}
-			end
-		end
-	end
-	return result
+local PROVIDERS = {quest=true, service=true, home=true, waypoint=true,
+ settlement=true, poi=true, boss=true, pvp=true}
+local function static_markers(player, frame)
+ local source = {}
+ for _, marker in ipairs(atlas.collect_markers(player, PROVIDERS)) do
+  -- The clash-site landmark already represents this place on the minimap.
+  if marker.kind ~= "rift_boss" then source[#source+1] = marker end
+ end
+ local size = markers.metrics({real_hud_scaling=frame.hud})
+ local offsets = markers.offsets(player, PROVIDERS, source, frame.f/view.npp, frame.f/view.npp, size)
+ local result = {}
+ for _, marker in ipairs(source) do
+  local texture, offset = markers.texture(marker), offsets[marker.id]
+  if texture then
+   result[#result+1] = {id=marker.id, x=marker.position.x, z=marker.position.z,
+    texture=texture, kind=marker.kind, dx=offset and offset.dx or 0, dy=offset and offset.dy or 0}
+  end
+ end
+ return result
 end
 
 -- What the static markers depend on besides the faction's fixed service and
@@ -371,11 +357,15 @@ end
 local function static_key(player)
 	local _, version = grug_quests.marker_states(player)
 	local home = grug_home.get(player)
-	local parts = {version, home and home.id or "", grug_factions.get_faction(player) or ""}
-	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
+	local function location_key(row)
+  local pos = row and row.pos
+  return row and (row.id .. ":" .. (pos and (pos.x .. ":" .. pos.z) or "")) or ""
+ end
+ local parts = {version, location_key(home), grug_factions.get_faction(player) or ""}
+	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = location_key(row) end
 	-- The Claim Stone waypoint (Round 45 PT9) appears with its activation.
 	local claim = grug_home.claim_waypoint(player)
-	parts[#parts + 1] = claim and claim.id or ""
+	parts[#parts + 1] = location_key(claim)
 	return table.concat(parts, "|")
 end
 
@@ -398,15 +388,6 @@ end
 local function forget_positions(hud)
 	for _, element in ipairs(hud.all) do element.x, element.y = nil, nil end
 end
-
--- Draw order when more markers than slots are in the circle: the most
--- important first, then their usual order.
-local function by_priority(a, b)
-	local pa, pb = PRIORITY[a.marker.kind] or 9, PRIORITY[b.marker.kind] or 9
-	if pa ~= pb then return pa < pb end
-	return a.order < b.order
-end
-local function by_order(a, b) return a.order < b.order end
 
 -- The location line's top (real screen pixels).
 local function location_top(frame)
@@ -579,43 +560,64 @@ end
 
 -- The map element and the markers inside the hole, for the map corner
 -- mx/my. The rows are reused from step to step (`state.rows`), so a draw
--- builds no tables.
+-- reuses marker rows; small wanted/free lists maintain stable HUD ids.
 local function draw_map(player, state, frame, mx, my)
 	local hud = state.hud
 	local changes = show(player, frame, hud.map, state.texture, mx, my,
 		exact(frame.drawn, view.pixels, frame))
-	local limit = frame.hole - ICON / 2 * frame.hud
+	local size = markers.metrics({real_hud_scaling=frame.hud})
+	local limit = frame.hole - size / 2
 	local rows, visible, count = state.rows, state.visible, 0
+ local wanted, free = {}, {}
 	for index, marker in ipairs(state.near) do
 		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
 			marker.x, marker.z)
-		if distance <= limit then
+  x, y = x + marker.dx, y + marker.dy
+  local dx, dy = x-frame.center_x, y-frame.center_y
+  distance = math.sqrt(dx*dx + dy*dy)
+  if distance <= limit then
 			count = count + 1
 			local row = rows[count]
 			if not row then row = {}; rows[count] = row end
 			row.marker, row.x, row.y, row.order = marker, x, y, index
+   wanted[marker.id] = true
 			visible[count] = row
 		end
 	end
 	for i = #visible, count + 1, -1 do visible[i] = nil end
-	if count > MARKER_SLOTS then
-		-- More markers than slots: keep the most important ones (quest givers
-		-- first; party members have slots of their own), then draw the kept
-		-- ones in their usual order.
-		table.sort(visible, by_priority)
-		for i = count, MARKER_SLOTS + 1, -1 do visible[i] = nil end
-		table.sort(visible, by_order)
-		count = MARKER_SLOTS
-	end
-	for i = 1, count do
-		local row = visible[i]
-		local texture = row.marker.texture
-		changes = changes + show(player, frame, hud.markers[i], texture, row.x, row.y,
-			ICON / texture_size(texture))
-	end
-	for i = count + 1, MARKER_SLOTS do
-		changes = changes + show(player, frame, hud.markers[i], "")
-	end
+ -- Stable ids keep their HUD elements while other markers enter/leave.
+ for _, element in ipairs(hud.markers) do
+  if not wanted[element.marker_id] then
+   if element.marker_id then hud.by_marker[element.marker_id] = nil end
+   element.marker_id = nil
+   changes = changes + show(player,frame,element,"")
+   free[#free+1] = element
+  end
+ end
+ for i = 1, count do
+  local row = visible[i]
+  local id, texture = row.marker.id, row.marker.texture
+  local element = hud.by_marker[id]
+  if not element then
+   element = table.remove(free)
+   if not element then
+    element = image(player,Z.marker)
+    hud.markers[#hud.markers+1], hud.all[#hud.all+1] = element, element
+   end
+   element.marker_id, hud.by_marker[id] = id, element
+  end
+  local kind = row.marker.kind
+  local z = kind == "quest" and Z.marker+3 or
+   (kind == "home" or kind == "waypoint") and Z.marker+2 or
+   (kind == "steward" or kind == "service") and Z.marker+1 or Z.marker
+  if element.z ~= z then
+   player:hud_change(element.id,"z_index",z)
+   element.z = z
+   changes = changes + sent(4)
+  end
+  changes = changes + show(player,frame,element,texture,row.x,row.y,
+   exact(size,texture_size(texture),frame))
+ end
 	return changes
 end
 
@@ -647,7 +649,7 @@ local function draw_party(player, state, frame, mx, my, moved)
 		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my, row.x, row.z)
 		if distance <= inside then
 			changes = changes + show(player, frame, hud.party[i], PARTY_TEXTURE[heading(row)],
-				x, y, PARTY_ARROW / 32)
+				x, y, exact(markers.metrics({real_hud_scaling=frame.hud}), 32, frame))
 		else
 			-- On the bezel, above it and its N plate (a party member due
 			-- north matters more than the letter), filling the ring.
@@ -711,20 +713,22 @@ local function update(player, state, slow, window)
 		changes = changes + draw_square(player, state, frame)
 	end
 	if slow then state.party = nil end
-	if slow or not state.static then
+	if slow or not state.static or state.layout_frame ~= frame then
 		local key = static_key(player)
-		if not state.static or key ~= state.static_key then
-			state.static, state.static_key, state.near = static_markers(player), key, nil
+		if not state.static or key ~= state.static_key or state.layout_frame ~= frame then
+			state.static, state.static_key, state.near = static_markers(player, frame), key, nil
+   state.layout_frame = frame
 		end
 	end
 	if not state.near then
 		-- the static markers under the cell's texture, in draw order
 		state.near = {}
 		local size = view.texture
+  local margin = ICON * frame.hud / frame.f
 		for _, marker in ipairs(state.static) do
 			local px, py = V.base_pixel(view, marker.x, marker.z)
-			if px >= state.ox and px <= state.ox + size and
-					py >= state.oy and py <= state.oy + size then
+			if px >= state.ox-margin and px <= state.ox+size+margin and
+     py >= state.oy-margin and py <= state.oy+size+margin then
 				state.near[#state.near + 1] = marker
 			end
 		end

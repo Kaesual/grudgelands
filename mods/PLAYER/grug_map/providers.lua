@@ -27,13 +27,13 @@ local givers, services = {}, {}
 -- faction. Each marker carries its NPC's `faction`; the lists per viewer
 -- faction are built once below, so a marker build only picks one (the key
 -- "" is a player without a faction: none). The kings and the dragons are
--- baked into the base image for everyone since Round 44 (bake.lua).
+-- separate landmarks visible to everyone (layers.lua).
 local givers_for, services_for, giver_by_id = {}, {}, {}
 local function visible(row, faction)
 	return row.faction == nil or row.faction == faction
 end
 -- Trainer icons per profession (Round 44, spec ruling 15) replace the book;
--- Riding keeps the mount icon.
+-- Riding uses the shared map-only horse.
 function grug_map.trainer_icon(profession)
 	return "grug_map_trainer_" .. profession .. ".png"
 end
@@ -76,7 +76,7 @@ core.register_on_mods_loaded(function()
 				label, texture = grug_jobs.MENDER_TITLE, "grug_map_repair.png"
 				kind = "service"
 			elseif socket.role == "riding_trainer" then
-				label, texture = "Riding Trainer", "grug_mounts_icon_" .. settlement.race_id .. ".png"
+				label, texture = "Riding Trainer", "grug_map_riding.png"
 				kind = "trainer"
 			elseif socket.role == "housing_manager" then
 				label, texture = "Housing Steward", "grug_map_housing_steward.png"
@@ -150,7 +150,7 @@ atlas.register_marker_provider("home", function(player)
  -- A Claim Stone travel home (grug_home claim_home.lua) is marked at its stone.
  if selected and selected.claim then
   result[#result + 1] = {id=selected.id, label="Your Claim Stone",
-   detail="Your home: Claim Stone", position=selected.pos, kind="home",
+   detail="Your home: Claim Stone", position=selected.pos, kind="home", personal=true,
    faction=selected.faction}
  end
  return result
@@ -159,7 +159,7 @@ end)
 -- Discovered waystones of the player's own network (Round 29, WP17);
 -- undiscovered ones are not shown, and a marker never unlocks travel. The
 -- owner's activated Claim Stone is a waypoint too (Round 45 PT9), marked
--- with the stone's own look unless it is the travel home, which the home
+-- with its map-only claim icon unless it is the travel home, which the home
 -- marker already shows.
 atlas.register_marker_provider("waypoint", function(player)
  local result = {}
@@ -171,7 +171,16 @@ atlas.register_marker_provider("waypoint", function(player)
  local claim, home = grug_home.claim_waypoint(player), grug_home.get(player)
  if claim and not (home and home.id == claim.id) then
   result[#result + 1] = {id=claim.id, label=claim.label, position=claim.pos,
-   kind="waypoint", texture=claim.texture, faction=claim.faction}
+   kind="waypoint", texture="grug_map_claim.png", faction=claim.faction}
  end
  return result
 end)
+
+-- Stable reservation slots include currently invisible quest states.
+function grug_map.quest_slots(player)
+ local result = {}
+ for _, giver in ipairs(givers_for[faction_of(player)] or {}) do
+  result[#result + 1] = {id="quest:" .. giver.id, kind="quest", position=giver.position}
+ end
+ return result
+end

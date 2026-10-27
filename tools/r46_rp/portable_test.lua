@@ -14,7 +14,7 @@
 --      and the mender's title, of its settlement's faction; the teaching
 --      trainer keeps its trainer icon; a socket of an unknown profession or
 --      one that spawns nothing gets no repair marker; the texture is a
---      16x16 PNG with its LICENSE-media row; the marker row has no tooltip
+--      32x32 PNG with its LICENSE-media row; the marker row has no tooltip
 --      of its own (the window and the minimap draw services without one:
 --      tools/r44_mq, tools/r27_minimap);
 --   H  Help says repairs are made only in towns; the furnace dialog
@@ -214,8 +214,8 @@ local function u32(offset)
 	local a, b, c, d = png:byte(offset, offset + 3)
 	return ((a * 256 + b) * 256 + c) * 256 + d
 end
-check(png:sub(2, 4) == "PNG" and u32(17) == 16 and u32(21) == 16 and png:byte(26) == 6,
-	"M the icon is a 16x16 RGBA PNG")
+check(png:sub(2, 4) == "PNG" and u32(17) == 32 and u32(21) == 32 and png:byte(26) == 6,
+	"M the icon is a 32x32 RGBA PNG")
 local licence = read("mods/PLAYER/grug_map/LICENSE-media.md")
 local row = licence:match("\n(| `textures/grug_map_repair%.png` |[^\n]*)") or ""
 check(row:find("GPT-6 Astra", 1, true) and row:find("AI-assisted", 1, true) and

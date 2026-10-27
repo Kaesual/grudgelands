@@ -60,21 +60,7 @@ def png_bytes(image):
 
 
 def main(argv):
-    check = "--check" in argv
-    stale = []
-    for name, image in icons().items():
-        path = OUT / name
-        if check:
-            from PIL import Image
-            if not path.exists() or Image.open(path).convert("RGBA").tobytes() != image.tobytes():
-                stale.append(name)
-        else:
-            path.write_bytes(png_bytes(image))
-    if check:
-        print("story icons: %s" % ("stale: " + ", ".join(stale) if stale else "current"))
-        return 1 if stale else 0
-    print("story quest icons written to", OUT)
-    return 0
+    raise SystemExit("Retired runtime exporter; use tools/r64_map/ship.py --check")
 
 
 if __name__ == "__main__":

@@ -60,8 +60,7 @@ def render():
 
 
 def main():
-    render().save(OUT, optimize=True)
-    print(OUT.relative_to(ROOT))
+    raise SystemExit("Retired runtime exporter; use tools/r64_map/ship.py")
 
 
 if __name__ == "__main__":

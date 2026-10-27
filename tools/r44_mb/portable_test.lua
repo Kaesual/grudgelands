@@ -309,22 +309,13 @@ end
 -- ---------------------------------------------------------------------------
 do
 	local minimap = read(MAP .. "minimap.lua")
-	local shown = minimap:match("local SHOWN = (%b{})") or ""
-	local kinds = {}
-	for kind in shown:gmatch("(%w+) = true") do kinds[#kinds + 1] = kind end
-	table.sort(kinds)
-	eq(table.concat(kinds, ","), "home,innkeeper,quest,service,steward,trainer,waypoint",
-		"M minimap kinds")
-	local priority = minimap:match("local PRIORITY = (%b{})") or ""
-	check(priority:find("quest = 1", 1, true) and priority:find("steward = 2", 1, true) and
-		priority:find("innkeeper = 4", 1, true), "M quest givers keep a slot first, then the Steward")
-	check(minimap:find("MARKER_SLOTS, PARTY_SLOTS = 24, 9", 1, true), "M 24 marker slots stay")
+ check(not minimap:find("MARKER_SLOTS", 1, true), "M marker pool has no truncation cap")
 	local providers = read(MAP .. "providers.lua")
 	check(providers:find('return "grug_map_trainer_" .. profession .. ".png"', 1, true) and
 		providers:find("texture = grug_map.trainer_icon(socket.profession)", 1, true) and
 		not providers:find("grug_jobs_book.png", 1, true), "M trainers use their profession icon")
-	check(providers:find('"grug_mounts_icon_" .. settlement.race_id .. ".png"', 1, true),
-		"M Riding keeps the mount icon")
+	check(providers:find('"grug_map_riding.png"', 1, true),
+		"M Riding uses the shared horse")
 	local registry = read("/mods/PLAYER/grug_jobs/registry.lua")
 	local block = registry:match("grug_jobs.PROFESSIONS = (%b{})") or ""
 	local professions = 0
@@ -337,8 +328,8 @@ do
 			local a, b, c, d = header:byte(at, at + 3)
 			return ((a * 256 + b) * 256 + c) * 256 + d
 		end
-		check(header and header:sub(2, 4) == "PNG" and u32(17) == 16 and u32(21) == 16,
-			"M grug_map_trainer_" .. id .. ".png is a 16x16 PNG")
+		check(header and header:sub(2, 4) == "PNG" and u32(17) == (id == "cooking" and 16 or 32) and u32(21) == (id == "cooking" and 16 or 32),
+			"M grug_map_trainer_" .. id .. ".png has its expected dimensions")
 	end
 	eq(professions, 8, "M eight professions")
 end

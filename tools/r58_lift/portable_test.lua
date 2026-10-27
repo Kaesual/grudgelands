@@ -110,14 +110,14 @@ eq(type(def.on_rightclick), "function", "A the right-click is grug_guild's")
 local shipped = 0
 for line in read(repo .. "/tools/r58_lift/art/picks.txt"):gmatch("[^\n]+") do
 	local digest, _, target = line:match("^(%x+)%s+(%S+)%s+(%S+)$")
-	if digest then
+	if digest and not target:find("mods/PLAYER/grug_map/", 1, true) then
 		local data = read(repo .. "/" .. target)
 		check(data ~= nil, "A shipped " .. target)
 		eq(common.hex(sha(data)), digest, "A " .. target .. " is the pick")
 		shipped = shipped + 1
 	end
 end
-eq(shipped, 9, "A nine picked files")
+eq(shipped, 7, "A seven retained picks; map icons superseded in Round 64")
 
 -- The reputation icon goes through REP's one seam.
 eq(grug_guild.REPUTATION_ICON, "grug_guild_reputation.png", "A the reputation icon")
