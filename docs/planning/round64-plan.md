@@ -1,7 +1,7 @@
 # Round 64 — shared map icons and stable placement
 
 Planned with the user on 2026-10-27. **Implementation authorized on
-2026-10-27; source cleanup and M0 are in progress.** The user accepted the initial artwork and requested this
+2026-10-27; source cleanup is complete and M0 awaits the composition decision.** The user accepted the initial artwork and requested this
 small round after discussing integration, minimap traffic and overlap.
 Delivery state: [STATUS](../STATUS.md). Target version: **0.64.0** at
 integration, not during planning. Classification: **compatible**; only
@@ -232,3 +232,75 @@ Planning review completed independently on 2026-10-27 with no remaining
 findings. It clarified viewport-independent neighbor groups and immutable
 shared offsets across personal changes. New documentation links and anchors
 resolve. This is a review of the plan, not implementation or GUI acceptance.
+
+
+### M0 feasibility checkpoint — 2026-10-27
+
+The reviewed source cleanup is committed on main as `6bfec5b9`; the
+implementation worktree is `.claude/worktrees/r64-map`. The committed art
+package and both HTML pages total about 2.1 MiB. All 89
+accepted icon hashes are unchanged. The optional originals/revisions remain
+on the workstation, ignored by Git; a clean-copy build without them passes.
+
+The first composition candidate hits the planned memory checkpoint before
+runtime integration. In the pinned engine, each new texture name is cached
+in `src/client/texturesource.cpp:383–429`; `getTextureId` reuses identical
+names, and the textures are removed at `TextureSource` destruction
+(`:205–227`), not when a HUD element stops using them. A server-side cache
+limit cannot release these client textures. Ordinary HUD images draw their
+whole source image with no minimap clipping rectangle
+(`src/client/hud.cpp:488–510`); a reusable large icon atlas cannot simply be
+slid beneath the small round bezel without leaking outside it.
+
+The existing runtime probe's baseline is recorded in
+[baseline.txt](../../tools/r64_map/evidence/baseline.txt): approximately
+350 bytes/s walking and 791 bytes/s riding on its sparse synthetic route.
+This is a LuaJIT stand-in, not live-client traffic or a dense-capital result.
+
+[texture_probe.lua](../../tools/r64_map/texture_probe.lua) uses the actual
+minimap geometry and cell recipe builder with artificial tile names. It
+compares existing 72px cells with a minimal native-resolution composition
+candidate (upscale terrain, then add a 32px icon). It counts unique recipes
+and calculates final-image RGBA storage, **not measured GPU/process memory**.
+Marker layout, the final circular mask after composition, real-world marker
+rosters and traffic savings are not implemented by this probe; none can
+remove the final texture's width/height cost. The artificial recipe lengths
+are diagnostic, not production payload estimates. Receipt:
+[texture-probe.txt](../../tools/r64_map/evidence/texture-probe.txt).
+
+A 9,750-node diagonal traversal at 12 nodes/s with 0.09s steps visits 1,025
+cells. At 1920x1080, final textures grow from 72x72 to 216x216:
+**20.3 MiB becomes 182.4 MiB** of cumulative decoded RGBA storage. Revisiting
+identical cells adds zero textures. Traversing again with the flight overlay
+brings the totals to **40.5 / 364.9 MiB**. Additional passes after resizing
+to 720p and 2160p add no old cell variants but bring the candidate to
+**1,302.3 MiB**. At 2160p each candidate cell is 468x468 (the actual geometry's
+scale step), while an ordinary icon still occupies 32px at HUD scale 1.
+This accounting excludes mipmaps, driver overhead, GUI scaling caches and
+intermediate images; it is not a claim about a particular graphics driver's
+allocation. Marker count and PNG compression do not reduce these dimensions.
+
+The simple candidate therefore trades fewer moving HUD elements for much
+larger session-long client texture storage, particularly on the web target.
+Before building M1–M3, ask the user at the plan's explicit M0 checkpoint:
+
+- Recommended simplification: retain low-resolution terrain cells and draw
+  the new 32px icons as individual HUD elements, including fixed places.
+  This preserves native-size icon quality and avoids the enlarged-cell cost;
+  movement traffic rises with visible icons. Measure dense-capital traffic
+  before delivery; no savings claim is made here.
+- Retain full-resolution composed cells with the measured memory tradeoff.
+  This keeps the requested composition path; a larger implementation to
+  bound client texture lifetime is not silently added.
+
+No runtime asset, game version or saved-world behavior has changed.
+M0 is partial: this is a decision checkpoint, not completed M0–M4 validation.
+The existing baseline and new probe run on LuaJIT; the probe passes the
+plain-5.1 parser and repository Lua sweeps. No full fixture suite, GUI test,
+smoke boot or local game sync is owed for this measurement-only change.
+
+
+Independent read-only review of the M0 probe, engine evidence and accounting
+passed on 2026-10-27. The user has been asked to choose the simpler HUD-icon
+path or retain composed cells with the stated memory cost. Integration is
+pending that decision; neither alternative has been selected implicitly.

@@ -1,0 +1,15 @@
+Captured before runtime changes on main 0cb190ff / 0.63.0:
+luajit tools/r27_minimap/bench_glide.lua . . r64-baseline
+
+== r64-baseline
+walk      12.1 packets/s     350 bytes/s     5.2 us/step
+sprint    18.6 packets/s     549 bytes/s     3.6 us/step
+ride      27.1 packets/s     791 bytes/s     2.7 us/step
+fly       38.4 packets/s    1115 bytes/s     3.9 us/step
+
+Existing LuaJIT stand-in, not a live client capture: 60 seconds per speed,
+0.09 s steps, 1920x1080, HUD/GUI scale 1, grid-distributed sockets,
+two party members, same providers and actual minimap update code.
+Bytes include the fixture's approximate 18-byte packet overhead.
+These sparse-route baseline figures are not a dense-capital result and
+are not evidence of the candidate's traffic savings. Timing is diagnostic.
