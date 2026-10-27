@@ -46,6 +46,9 @@
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 local repo = arg and arg[1] or "."
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level). The quest files name no minimum level.
+local function opens(q) return math.max(1, q.level - 2) end
 local checks, failures = 0, 0
 local function check(ok, label)
 	checks = checks + 1
@@ -242,7 +245,7 @@ do
 		eq(q.giver, envoy("nhal_veyr"), "S T3 is given by Ossa")
 		eq(q.turnin, leader("nhal_veyr"), "S T3 is turned in at Iven")
 		eq(q.line, "envoy", "S T3 is on Ossa's envoy line")
-		eq(q.min_level, 29, "S T3 opens at 29")
+		eq(opens(q), 27, "S T3 opens at 27 (Round 65: level 29 - 2)")
 		local want = {[t2a] = true, ossuary_rubbings_03 = true, nhal_veyr_vigil_03 = true}
 		local n = 0
 		for _, r in ipairs(q.requires or {}) do
@@ -277,7 +280,7 @@ end
 do
 	local q = quests[ALCHEMY]
 	if q then
-		check(q.min_level >= 19 and q.min_level <= 20, "S the Alchemy quest opens at 19-20 (" .. q.min_level .. ")")
+		check(opens(q) >= 17 and opens(q) <= 18, "S the Alchemy quest opens at 17-18 (Round 65: level - 2; " .. opens(q) .. ")")
 		eq(#q.objectives, 1, "S the Alchemy quest has one objective")
 		eq(q.objectives[1].type, "item", "S ... an item")
 		eq(q.objectives[1].item, PRECISION, "S ... an Elixir of Precision I")
@@ -543,7 +546,8 @@ for _, faction in ipairs(FACTIONS) do
 end
 
 -- The shared quests at their givers with nothing done (the player's
--- faction only), and the Alchemy quest at its level: locked a level below,
+-- faction only), and the Alchemy quest at its level: not listed a level
+-- below (Round 65 ruling 1),
 -- turned in only at the envoy it was taken from.
 for id, spec in pairs(SHARED) do
 	local def = Q.registered_quests[id]
@@ -552,12 +556,12 @@ for id, spec in pairs(SHARED) do
 		for _, capital in ipairs(spec.capitals) do giving[capital] = true end
 		for _, faction in ipairs(FACTIONS) do
 			player_faction = faction
-			for _, level in ipairs({def.min_level - 1, def.min_level}) do
+			for _, level in ipairs({opens(def) - 1, opens(def)}) do
 				player_level = level
 				set_state()
 				for _, capital in ipairs(all_capitals) do
 					local mine = giving[capital] and RACE_FACTION[CAPITAL[capital].race] == faction
-					local want = mine and (level == def.min_level and "available" or "locked") or nil
+					local want = mine and level == opens(def) and "available" or nil
 					eq(offers(spec.giver(capital))[id], want, ("B %s at %d from %s's giver (%s)"):format(id, level,
 						capital, faction))
 				end
@@ -588,7 +592,8 @@ do
 	end
 end
 
--- T3: hidden at Ossa until its prerequisites are done; then at 29.
+-- T3: hidden at Ossa until its prerequisites are done; then at 27 (Round 65:
+-- level 29 - 2).
 do
 	player_faction = "throng"
 	local ossa, iven = envoy("nhal_veyr"), leader("nhal_veyr")
@@ -596,16 +601,16 @@ do
 	for missing in pairs(all) do
 		local done = {}
 		for id in pairs(all) do if id ~= missing then done[id] = true end end
-		player_level = 29
+		player_level = 27
 		set_state(done)
 		eq(offers(ossa)[T3], nil, "B T3 hidden at Ossa without " .. missing)
 	end
-	player_level = 28
+	player_level = 26
 	set_state(all)
-	eq(offers(ossa)[T3], "locked", "B T3 locked at 28 with its prerequisites done")
-	player_level = 29
+	eq(offers(ossa)[T3], nil, "B T3 not listed at 26 with its prerequisites done")
+	player_level = 27
 	set_state(all)
-	eq(offers(ossa)[T3], "available", "B T3 offered at Ossa at 29")
+	eq(offers(ossa)[T3], "available", "B T3 offered at Ossa at 27")
 	player_faction = "accord"
 	eq(offers(ossa)[T3], nil, "B T3 is never offered to The Accord")
 	player_faction = "throng"

@@ -46,6 +46,9 @@
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local ROOT = arg and arg[1] or "."
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level). The quest files name no minimum level.
+local function opens(q) return math.max(1, q.level - 2) end
 local json = dofile(ROOT .. "/tools/r28_b4_quests/json.lua")
 local failures, checks = 0, 0
 local function check(ok, label)
@@ -366,8 +369,9 @@ for id, entry in pairs(by_id) do
 		eq(follow, ALLOWED_FOLLOWERS[id] or "", id .. ": its one follow-up at most (" .. follow .. ")")
 	end
 	if not GUILD[id] and not MAIN[id] then
-		check(quest.level >= 31 and quest.level <= 40 and quest.min_level >= 30 and quest.min_level <= quest.level,
-			id .. ": levels within the band (" .. tostring(quest.min_level) .. "/" .. tostring(quest.level) .. ")")
+		-- Round 65: opens at its level - 2, so from 29.
+		check(quest.level >= 31 and quest.level <= 40 and opens(quest) >= 29 and opens(quest) <= quest.level,
+			id .. ": levels within the band (" .. tostring(opens(quest)) .. "/" .. tostring(quest.level) .. ")")
 	end
 end
 -- The chain across files: A4 (Frostbarrow Shelf) and T3 (Nhal Veyr) are
@@ -384,15 +388,15 @@ do
 			"A5: Toren to the Ashenward camp's foreman")
 		eq(a5.quest.objectives[1].object .. "@" .. a5.quest.objectives[1].place, "dispatch_record@broken_load",
 			"A5: the transport record at the broken load")
-		eq(a5.quest.min_level, 34, "A5 at 34")
+		eq(opens(a5.quest), 33, "A5 at 33 (Round 65: level 35 - 2)")
 		eq(t4.file, "kragmar_bannerbreak_mesa", "T4 lives in Bannerbreak Mesa")
 		eq(t4.quest.giver .. ">" .. t4.quest.turnin, NPC.drek .. ">" .. foreman("bannerbreak"),
 			"T4: Drek to the Bannerbreak camp's foreman")
 		eq(t4.quest.objectives[1].object .. "@" .. t4.quest.objectives[1].place, "witness_record@scattered_load",
 			"T4: the handover record at the scattered load")
-		eq(t4.quest.min_level, 35, "T4 at 35")
-		eq(a6.quest.min_level, 39, "A6 at 39")
-		eq(t5.quest.min_level, 40, "T5 at 40 (K1 A)")
+		eq(opens(t4.quest), 34, "T4 at 34 (Round 65: level 36 - 2)")
+		eq(opens(a6.quest), 38, "A6 at 38 (Round 65: level 40 - 2)")
+		eq(opens(t5.quest), 38, "T5 at 38 (K1 A; Round 65: level 40 - 2)")
 		for _, entry in ipairs({a6, t5}) do
 			eq(#entry.quest.objectives, 1, entry.quest.id .. ": one objective")
 			eq(entry.quest.objectives[1].type, "talk", entry.quest.id .. ": a pure travel (K5 A)")
@@ -401,19 +405,20 @@ do
 		eq(a6.quest.objectives[1].npc, NPC.nella, "A6 travels to Nella")
 		eq(t5.quest.objectives[1].npc, NPC.yarra, "T5 travels to Yarra")
 		-- The free prerequisites open below their story step (Rattle at or below T4).
-		check(by_id.ashenward_rations_03.quest.min_level <= a5.quest.min_level, "Scrip's quest opens before A5")
-		check(by_id.bannerbreak_ramp_03.quest.min_level <= t4.quest.min_level and
+		check(opens(by_id.ashenward_rations_03.quest) <= opens(a5.quest), "Scrip's quest opens before A5")
+		check(opens(by_id.bannerbreak_ramp_03.quest) <= opens(t4.quest) and
 			by_id.bannerbreak_ramp_03.quest.level <= 35, "Rattle's quest opens at or below T4, rewards at 35 at most")
-		check(by_id.camp_site_raid.quest.min_level <= a6.quest.min_level, "the raid opens before A6")
+		check(opens(by_id.camp_site_raid.quest) <= opens(a6.quest), "the raid opens before A6")
 	end
 end
--- Every zone's first quests: a level-30/31 character finds quests at once.
+-- Every zone's first quests: a level-29 character finds quests at once (Round
+-- 65: the level-31 quests open at 29).
 for _, row in ipairs(ZONES) do
 	local first = 99
 	for _, quest in ipairs(offered[row[1]]) do
-		if not quest.story and #(quest.requires or {}) == 0 and quest.min_level < first then first = quest.min_level end
+		if not quest.story and #(quest.requires or {}) == 0 and opens(quest) < first then first = opens(quest) end
 	end
-	eq(first, 30, row[1] .. ": its first quests open at level 30")
+	eq(first, 29, row[1] .. ": its first quests open at level 29")
 end
 
 ------------------------------------------------------------------------------
@@ -452,14 +457,15 @@ for id, want in pairs(KEPT) do
 		eq(#entry.quest.objectives, 1, id .. ": one objective")
 	end
 end
--- The departures at 40 (round61-plan.md §2 point 7): every zone ends at a
--- host with front work from 40 (Nella, Drek, Yarra) or carries it itself.
+-- The departures at 40 (round61-plan.md §2 point 7; Round 65: open from 38):
+-- every zone ends at a host with front work from 40 (Nella, Drek, Yarra) or
+-- carries it itself.
 local DEPARTURES = {stormvault_road_last_hedge = NPC.nella, glassroot_road_front = NPC.nella,
 	blackwind_road_red_ramp = NPC.drek, thunderroot_rainchar_04 = NPC.yarra}
 for id, npc in pairs(DEPARTURES) do
 	local q = by_id[id] and by_id[id].quest
 	if check(q ~= nil, id .. ": the departure ships") then
-		eq(q.min_level, 40, id .. ": free from 40")
+		eq(opens(q), 38, id .. ": free from 38 (Round 65: level 40 - 2)")
 		eq(q.objectives[1].npc, npc, id .. ": to a host with front work at 40")
 	end
 end
@@ -494,7 +500,7 @@ for _, row in ipairs(ZONES) do
 	if q then
 		check(not q.story and #(q.requires or {}) == 0, q.id .. ": free, requires nothing")
 		eq(#(followers[q.id] or {}), 0, q.id .. ": required by nothing")
-		check(q.min_level >= 38 and q.level == 39, q.id .. ": at ~39")
+		check(opens(q) >= 37 and q.level == 39, q.id .. ": at ~39 (open from 37, Round 65)")
 		local choices = q.rewards.choices or {}
 		check(#choices >= 2, q.id .. ": a choice as its extra")
 		for _, choice in ipairs(choices) do
@@ -609,11 +615,12 @@ local function stacks_ok(id, quest)
 		end
 	end
 end
--- Potion IV is usable from 31 (grug_alchemy TIER_LEVELS).
+-- Potion IV is usable from 31 (grug_alchemy TIER_LEVELS); a quest paying it
+-- has a reward level of 31 or more (Round 65: it opens two levels earlier).
 for id, entry in pairs(by_id) do
 	for _, choice in ipairs(entry.quest.rewards.choices or {}) do
 		if choice.item == HEALING or choice.item == MANA then
-			check(entry.quest.min_level >= 31, id .. ": Potion IV only from min level 31")
+			check(entry.quest.level >= 31, id .. ": Potion IV only from reward level 31")
 		end
 	end
 end
@@ -634,7 +641,7 @@ for _, row in ipairs(ZONES) do
 			end
 		end
 	end
-	-- The early potion choice (from 31) and the Runner's Packet's, given in
+	-- The early potion choice (from 30, Round 65) and the Runner's Packet's, given in
 	-- all six zones (no armor there: the reward budget).
 	local early = {}
 	for _, quest in ipairs(potions) do
@@ -644,7 +651,7 @@ for _, row in ipairs(ZONES) do
 	eq(#early, 1, zone .. ": one early potion choice")
 	local p = early[1]
 	if p then
-		check(p.min_level == 31, zone .. ": the potion choice is early, from 31 (" .. p.id .. ")")
+		check(opens(p) == 30, zone .. ": the potion choice is early, from 30 (" .. p.id .. ")")
 		local set = {}
 		for _, choice in ipairs(p.rewards.choices) do set[choice.item .. " " .. (choice.count or 1)] = true end
 		check(#p.rewards.choices == 2 and set[HEALING .. " 2"] and set[MANA .. " 2"],

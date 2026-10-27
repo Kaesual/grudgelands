@@ -391,7 +391,10 @@ for faction, zone in pairs(FORT) do
 		local fortress = (givers[quest.giver] or givers[quest.turnin]) and quest.line == "front" and
 			not quest.tags
 		if fortress then
-			check(quest.min_level >= 40, quest.id .. ": a PvP quest starts at 40 or later (ruling 15)")
+			-- Ruling 15 (PvP quests from 40) under Round 65 ruling 3 (accepted
+			-- from the quest level - 2): every PvP quest is of level 41 or
+			-- later, so none opens before 39.
+			check(quest.level >= 41, quest.id .. ": a PvP quest is of level 41 or later (ruling 15, Round 65)")
 			if not givers[quest.giver] then entry = entry + 1 end
 			local area = quest.objectives[1].area
 			local key = area and area:match("/(pvp_camp_.+)$")

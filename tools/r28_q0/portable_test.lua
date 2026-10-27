@@ -670,7 +670,10 @@ do
 	meta["grug_quests:state"] = {active = {}, completed = {band_repairs = true}, tracked = {}, hud = true}
 	eq(status("r15_dwarf_local", "band_repairs"), "none", "band: done once, not offered again")
 	eq(status("r15_orc_local", "band_repairs"), "none", "band: ...nor in Redtusk")
-	eq(status("r15_orc_local", "redtusk_fences"), "locked", "band: a level-14 craft is shown locked at 11")
+	-- Round 65: a quest the level holds back is not listed (accepted from
+	-- its level - 2); the hint line names that level.
+	eq(status("r15_orc_local", "redtusk_fences"), "none", "band: a level-14 craft (from 12) is not listed at 11")
+	eq(Q.status(player, "redtusk_fences"), "locked", "band: ...the level holds it back")
 	for key in pairs(meta) do meta[key] = nil end
 	-- Round 60 (tools/r60_bandquests): a level-21 character is offered the
 	-- band 21-30's first quests at once; the shared steel help taken or done
@@ -684,7 +687,8 @@ do
 			{"r20_dwarf_capital_cook", "band_mire_carp"}}) do
 		eq(status(row[1], row[2]), "available", "band 21-30: " .. row[1] .. " offers " .. row[2] .. " at once")
 	end
-	eq(status("r20_anchor_061_host", "band_steel"), "locked", "band 21-30: the steel help is shown locked at 21")
+	eq(status("r20_anchor_061_host", "band_steel"), "none", "band 21-30: the steel help (from 22) is not listed at 21")
+	eq(Q.status(player, "band_steel"), "locked", "band 21-30: ...the level holds it back")
 	grug_xp.get_level = function() return 29 end
 	eq(status("r20_anchor_061_host", "frostbarrow_cutting_04"), "available", "band 21-30: Nib's quest needs nothing")
 	eq(status("r20_anchor_061_host", "frostbarrow_departure"), "available", "band 21-30: the departure needs nothing")
@@ -710,7 +714,7 @@ do
 			{"r20_anchor_048_host", "border_melons"}, {"r20_anchor_043_host", "bannerbreak_ramp_02"}}) do
 		eq(status(row[1], row[2]), "available", "band 31-40: " .. row[1] .. " offers " .. row[2] .. " at once")
 	end
-	eq(status("r20_anchor_031_host", "border_meal"), "locked", "band 31-40: the Corn is shown locked at 30")
+	eq(status("r20_anchor_031_host", "border_meal"), "available", "band 31-40: the Corn (level 32) is offered from 30")
 	grug_xp.get_level = function() return 38 end
 	check(Q.accept(player, "border_packets", "r20_anchor_028_host"), "band 31-40: the Packet taken at Archshadow Post")
 	eq(status("r20_anchor_032_host", "border_packets"), "none", "band 31-40: ...not offered at Last Hedge")
@@ -728,7 +732,8 @@ do
 	eq(status("r20_anchor_044_host", "bannerbreak_standard_group"), "available",
 		"band 31-40: the optional group quest needs nothing")
 	-- A6 and T5 at the band foremen: hidden without the camp raid, then
-	-- offered at all three of the faction's foremen; T5 opens at 40; a travel
+	-- offered at all three of the faction's foremen; T5 opens at 38 (Round 65:
+	-- its level 40 - 2); a travel
 	-- credited on accept is ready at Nella.
 	local function foreman(zone) return "r58_foreman_mining_camp_" .. zone end
 	local ACCORD = {"stormvault_heights", "ashenward_march", "glassroot_wilds"}
@@ -746,7 +751,7 @@ do
 		eq(status(foreman(zone), "story_accord_06"), "available", "band 31-40: A6 offered at " .. zone .. "'s foreman")
 	end
 	for _, zone in ipairs(THRONG) do
-		eq(status(foreman(zone), "story_throng_06"), "locked", "band 31-40: T5 shown locked at 39 at " .. zone)
+		eq(status(foreman(zone), "story_throng_06"), "available", "band 31-40: T5 offered at 39 at " .. zone)
 	end
 	grug_xp.get_level = function() return 40 end
 	for _, zone in ipairs(THRONG) do

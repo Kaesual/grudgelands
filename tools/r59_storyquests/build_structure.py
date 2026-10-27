@@ -302,6 +302,10 @@ def build():
             if quest["line"] == old_line:
                 quest["line"] = LINE_ENVOY
         data["quests"] = home.get(capital, []) + quests
+        # Round 65 ruling 3: a quest names only its level (accepted from
+        # level - 2); the minimum levels written above are history.
+        for quest in data["quests"]:
+            quest.pop("min_level", None)
         out[path] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
     return out
 

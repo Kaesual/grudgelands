@@ -28,7 +28,6 @@
     {
       "id": "start_dead",
       "line": "hunt",
-      "min_level": 3,
       "level": 4,
       "requires": [],
       "title": "Let Them Rest",
@@ -111,7 +110,6 @@
     {
       "id": "start_crabs",
       "line": "pantry",
-      "min_level": 4,
       "level": 5,
       "requires": [],
       "title": "The Feast Fights Back",
@@ -201,7 +199,6 @@
       "line": "hunt",
       "giver": "r14_dwarf_elder",
       "turnin": "r14_dwarf_elder",
-      "min_level": 4,
       "level": 5,
       "requires": [],
       "title": "A Hard Hat Has Limits",
@@ -256,7 +253,6 @@
       "line": "hunt",
       "giver": "r14_dwarf_elder",
       "turnin": "r14_dwarf_elder",
-      "min_level": 8,
       "level": 9,
       "requires": [],
       "title": "Bracket Doesn't Add Up",
@@ -332,7 +328,6 @@
       "line": "hunt",
       "giver": "r14_dwarf_elder",
       "turnin": "r14_dwarf_steward",
-      "min_level": 9,
       "level": 9,
       "requires": [
         "hearthpine_hunt_05"

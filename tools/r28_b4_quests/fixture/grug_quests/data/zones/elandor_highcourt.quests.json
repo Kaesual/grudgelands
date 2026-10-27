@@ -18,7 +18,6 @@
       "line": "lore",
       "giver": "fx_lore_keeper",
       "turnin": "fx_lore_keeper",
-      "min_level": 20,
       "level": 21,
       "title": "Stones for the Shrine",
       "text": "The lore shrine needs two cobble blocks. Bring them to me.",

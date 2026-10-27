@@ -231,11 +231,17 @@ class Ledger:
             if not ready:
                 self.warn("%s: prerequisite cycle or unreachable quests: %s" % (zone, ", ".join(sorted(pending))))
                 ready = list(pending.values())
-            ready.sort(key=lambda q: (q.get("min_level", 1), q.get("level", 1), index[q.get("id")]))
+            ready.sort(key=lambda q: (self.acceptance(q), q.get("level", 1), index[q.get("id")]))
             pick = ready[0]
             out.append(pick)
             del pending[pick.get("id")]
         return out
+
+    @staticmethod
+    def acceptance(q):
+        """The level a quest is accepted from (Round 65: its level - 2)."""
+        level = q.get("level")
+        return C.acceptance_level(level if isinstance(level, int) else 1)
 
     def quest_band(self, zone, q):
         """A quest counts in the band of its reward level (front quests in
@@ -302,13 +308,13 @@ class Ledger:
 
     def run_quest(self, zone, q, acc):
         qid = q.get("id")
-        min_level = q.get("min_level", 1)
-        if self.level < min_level:
-            need = C.CUMULATIVE[min_level] - self.xp
+        opens = self.acceptance(q)
+        if self.level < opens:
+            need = C.CUMULATIVE[opens] - self.xp
             self.xp += need
             acc["grind"] += need
-            self.warn("%s: player is level %d at min_level %d; %.0f XP of free play first"
-                      % (qid, C.level_of(int(self.xp - need)), min_level, need))
+            self.warn("%s: player is level %d where the quest opens at %d; %.0f XP of free play first"
+                      % (qid, C.level_of(int(self.xp - need)), opens, need))
         acc["minutes"] += q.get("duration_min") or 0
         quest_drops = {d.get("item"): d for d in q.get("quest_drops") or [] if isinstance(d, dict)}
         for obj in q.get("objectives") or []:
@@ -710,7 +716,7 @@ def self_test():
     try:
         shutil.copytree(sample, tmp / "design")
         front_quest = {"id": "sample_front_01", "line": "front", "giver": "r20_human_start_cook",
-                       "turnin": "r20_human_start_cook", "min_level": 1, "level": 1, "requires": [],
+                       "turnin": "r20_human_start_cook", "level": 1, "requires": [],
                        "title": "Front", "text": "Front. Quest.", "objectives": [],
                        "rewards": {"weight": 1}}
         (tmp / "design" / "zones" / "elandor_dawnmere_fields.front.quests.json").write_text(
@@ -773,7 +779,7 @@ def self_test():
         shutil.copytree(sample, tmp / "design")
         qfile = tmp / "design" / "zones" / "elandor_dawnmere_fields.quests.json"
         data = json.loads(qfile.read_text())
-        data["quests"].append({"id": "sample_shared_01", "line": "hunt", "min_level": 1, "level": 2,
+        data["quests"].append({"id": "sample_shared_01", "line": "hunt", "level": 2,
                                "title": "Shared", "text": "Coal. Bring it.",
                                "objectives": [{"type": "item", "item": "default:coal_lump", "count": 2}],
                                "variants": [{"zone": "elandor_dawnmere_fields", "givers": ["r14_human_elder"]},
@@ -799,7 +805,7 @@ def self_test():
         shutil.copytree(sample, tmp / "design")
         qfile = tmp / "design" / "zones" / "elandor_dawnmere_fields.quests.json"
         data = json.loads(qfile.read_text())
-        base = {"line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder", "min_level": 1,
+        base = {"line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
                 "level": 2, "title": "R62", "text": "Round 62. Sample."}
         area = "elandor_dawnmere_fields/meadows"
         data["quests"] = [

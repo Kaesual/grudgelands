@@ -78,7 +78,6 @@
     {
       "id": "border_meal",
       "line": "border",
-      "min_level": 31,
       "level": 32,
       "requires": [],
       "title": "A Meal Before the Road",
@@ -126,7 +125,6 @@
     {
       "id": "border_reserve",
       "line": "border",
-      "min_level": 30,
       "level": 31,
       "requires": [],
       "title": "The Reserve Is for Them",
@@ -202,7 +200,6 @@
       "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 31,
       "level": 32,
       "requires": [],
       "title": "A Barrel Is Not a Drinking Cup",
@@ -255,7 +252,6 @@
       "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 32,
       "level": 33,
       "requires": [],
       "title": "The Account of Quartermaster Scrip",
@@ -323,7 +319,6 @@
       "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 30,
       "level": 31,
       "requires": [],
       "title": "Splitbolt Needs Hands",
@@ -346,7 +341,6 @@
       "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_036_host",
-      "min_level": 30,
       "level": 31,
       "requires": [],
       "title": "The Grown Road",
@@ -369,7 +363,6 @@
       "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_032_host",
-      "min_level": 30,
       "level": 31,
       "requires": [],
       "title": "Who Comes Back to Last Hedge",
@@ -392,7 +385,6 @@
       "line": "border",
       "giver": "r20_anchor_032_host",
       "turnin": "r20_anchor_032_host",
-      "min_level": 38,
       "level": 39,
       "requires": [],
       "title": "Party: The Marshal's Receipts",
@@ -431,7 +423,6 @@
       "line": "border",
       "giver": "r20_anchor_031_host",
       "turnin": "r58_foreman_mining_camp_ashenward_march",
-      "min_level": 34,
       "level": 35,
       "requires": [
         "story_accord_04",
@@ -472,7 +463,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r20_anchor_031_host",
-      "min_level": 41,
       "level": 42,
       "requires": [],
       "story": true,
@@ -512,7 +502,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r20_anchor_032_host",
-      "min_level": 46,
       "level": 47,
       "requires": [
         "accord_main_accounts"
@@ -552,7 +541,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r31_accord_warmaster",
-      "min_level": 47,
       "level": 49,
       "requires": [
         "lasthedge_front_04"
@@ -596,7 +584,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r31_accord_warmaster",
-      "min_level": 47,
       "level": 49,
       "requires": [
         "accord_main_orders"
@@ -628,7 +615,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r20_anchor_027_host",
-      "min_level": 53,
       "level": 55,
       "requires": [
         "accord_main_audit"
@@ -671,7 +657,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r31_accord_warmaster",
-      "min_level": 57,
       "level": 59,
       "requires": [
         "accord_main_orders"
@@ -713,7 +698,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r31_accord_warmaster",
-      "min_level": 60,
       "level": 60,
       "requires": [
         "accord_main_tally"
@@ -747,7 +731,6 @@
       "line": "main",
       "giver": "r31_accord_warmaster",
       "turnin": "r31_accord_warmaster",
-      "min_level": 60,
       "level": 60,
       "requires": [
         "accord_main_collector"
@@ -815,7 +798,6 @@
     {
       "id": "front_potatoes",
       "line": "border",
-      "min_level": 41,
       "level": 42,
       "requires": [],
       "title": "Seed for the Trampled Plots",
@@ -863,7 +845,6 @@
     {
       "id": "front_return_light",
       "line": "border",
-      "min_level": 42,
       "level": 43,
       "requires": [],
       "title": "A Beacon for Tired Eyes",
@@ -932,7 +913,6 @@
     {
       "id": "front_relief_count",
       "line": "border",
-      "min_level": 43,
       "level": 44,
       "requires": [],
       "title": "Who Is Still Out There?",
@@ -972,7 +952,6 @@
     {
       "id": "front_ford_salvage",
       "line": "border",
-      "min_level": 44,
       "level": 45,
       "requires": [],
       "title": "What the Ford Kept",
@@ -1053,7 +1032,6 @@
     {
       "id": "front_salt_stores",
       "line": "border",
-      "min_level": 44,
       "level": 45,
       "requires": [],
       "title": "Salt for the Stores",
@@ -1091,7 +1069,6 @@
     {
       "id": "front_old_wire",
       "line": "border",
-      "min_level": 48,
       "level": 49,
       "requires": [],
       "title": "Cut the Old Wire",
@@ -1160,7 +1137,6 @@
     {
       "id": "front_engine_nine",
       "line": "border",
-      "min_level": 49,
       "level": 50,
       "requires": [],
       "title": "Party: Stop the Grinding",
@@ -1213,7 +1189,6 @@
     {
       "id": "front_beyond_line",
       "line": "border",
-      "min_level": 50,
       "level": 50,
       "requires": [],
       "title": "Work Beyond the Line",

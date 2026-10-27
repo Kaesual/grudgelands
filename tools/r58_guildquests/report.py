@@ -64,7 +64,7 @@ def main():
     camps = C.mining_camps()
 
     print("## Reward table (%d quests)\n" % len(quests))
-    print("| Quest | Kind | Min / reward level | Weight (KE) | XP | Copper | Variants | Givers |")
+    print("| Quest | Kind | Opens / reward level | Weight (KE) | XP | Copper | Variants | Givers |")
     print("|---|---|---|---:|---:|---:|---:|---:|")
     for qid in sorted(quests, key=lambda i: (quests[i]["level"], i)):
         q = quests[qid]
@@ -73,7 +73,7 @@ def main():
         givers = sum(len(v["givers"]) for v in q["variants"])
         roles = all(isinstance(g, dict) for v in q["variants"] for g in v["givers"])
         print("| `%s` | %s | %d / %d | %s | %d | %s | %d | %s |" % (
-            qid, kind, q["min_level"], q["level"], q["rewards"]["weight"],
+            qid, kind, C.acceptance_level(q["level"]), q["level"], q["rewards"]["weight"],
             C.quest_xp(q["rewards"]["weight"], q["level"]), money(copper(q["level"], q["rewards"])),
             len(q["variants"]), "%d roles" % givers if roles else givers))
 
@@ -109,7 +109,7 @@ def main():
           "has no quest file of its own before Round 58.)")
     variants = sum(len(q["variants"]) for q in quests.values())
     print("\nQuests %d, variants %d; per tier: %s" % (len(quests), variants, ", ".join(
-        "T%d %d" % (t, sum(1 for q in quests.values() if (q["min_level"] - 1) // 10 + 1 == t))
+        "T%d %d" % (t, sum(1 for q in quests.values() if (C.acceptance_level(q["level"]) - 1) // 10 + 1 == t))
         for t in range(2, 7))))
     return 0
 

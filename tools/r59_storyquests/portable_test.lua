@@ -38,6 +38,9 @@
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
 local repo = arg and arg[1] or "."
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level). The quest files name no minimum level.
+local function opens(q) return math.max(1, q.level - 2) end
 local checks, failures = 0, 0
 local function check(ok, label)
 	checks = checks + 1
@@ -178,11 +181,11 @@ for _, faction in ipairs(FACTIONS) do
 			check(q.completion == nil or real_text(q.completion), "S " .. q.id .. " a real completion text or none")
 			check(q.rewards.choices == nil or #q.rewards.choices >= 2, "S " .. q.id .. " a real choice or none")
 		end
-		eq(one.min_level, 19, "S " .. one.id .. " opens at 19")
+		eq(opens(one), 17, "S " .. one.id .. " opens at 17 (Round 65: level 19 - 2)")
 		eq(#(one.requires or {}), 0, "S " .. one.id .. " requires nothing")
 		eq(one.line, "envoy", "S " .. one.id .. " is on the envoys' common line")
 		eq(one.objectives[1].type, "talk", "S " .. one.id .. " is a travel quest")
-		eq(two.min_level, 20, "S " .. two.id .. " opens at 20")
+		eq(opens(two), 18, "S " .. two.id .. " opens at 18 (Round 65: level 20 - 2)")
 		eq(table.concat(two.requires or {}, ","), one.id, "S " .. two.id .. " requires " .. one.id)
 		eq(two.line, "guild", "S " .. two.id .. " is on the leaders' line")
 		local use = two.objectives[1]
@@ -438,14 +441,15 @@ end
 for _, faction in ipairs(FACTIONS) do
 	local one, two = "story_" .. faction .. "_01", "story_" .. faction .. "_02"
 	player_faction = faction
-	-- A1/T1: every envoy of the faction at 19 with nothing done; locked at
-	-- 18; no envoy of the other faction.
-	for _, level in ipairs({18, 19}) do
+	-- A1/T1: every envoy of the faction at 17 (Round 65: level 19 - 2) with
+	-- nothing done; not listed at 16 (Round 65 ruling 1); no envoy of the
+	-- other faction.
+	for _, level in ipairs({16, 17}) do
 		player_level = level
 		set_state()
 		for _, capital in ipairs(all_capitals) do
 			local mine = RACE_FACTION[CAPITAL[capital].race] == faction
-			local want = mine and (level == 19 and "available" or "locked") or nil
+			local want = mine and level == 17 and "available" or nil
 			eq(offers(envoy(capital))[one], want, ("B %s at %d from %s's envoy"):format(one, level, capital))
 			eq(offers(leader(capital))[two], nil, ("B %s hidden at %s's leader before %s"):format(two, capital, one))
 		end

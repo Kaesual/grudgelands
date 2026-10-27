@@ -393,8 +393,9 @@ do
 		{id = "q1", title = "Break Ranks at the Shattered Line Throng War Camp", status = "available"},
 		{id = "q2", title = "Bounty: Threads, Across", status = "ready"},
 		{id = "q3", title = "In Progress", status = "active"},
-		{id = "q4", title = "Later", status = "locked", reason = "Requires level 12"},
 	}
+	-- Round 65 ruling 1: the dialog lists no locked quest (the hint line
+	-- names the level instead).
 	for _, row in ipairs(rows) do
 		grug_quests.registered_quests[row.id] = {npc = "giver", turnin_npc = "giver", objectives = {},
 			giver_variant = {giver = "main"}, rewards = {copper = 5, items = {}, choices = {}}}
@@ -418,7 +419,7 @@ do
 	eq(Q.list_entry("Bounty", "ready", true), Q.STATUS_COLORS.ready .. "  Bounty",
 		"Q a listed quest under a category is set in, never marked (R)")
 	local legend = Q.status_legend()
-	for _, status in ipairs({"available", "ready", "active", "locked"}) do
+	for _, status in ipairs({"available", "ready", "active"}) do
 		check(legend:find(Q.STATUS_COLORS[status], 1, true) ~= nil, "Q the legend shows " .. status)
 	end
 	check(not legend:find("(R)", 1, true) and not Q.status_tooltip():find("(R)", 1, true),
@@ -439,7 +440,7 @@ do
 		form:find("grug_map_quest_ready.png", 1, true) ~= nil and
 		not form:find("(R)", 1, true), "Q the ready entry has its state icon, without a repeatable mark")
 	check(form:find("tooltip[quests_row_", 1, true) ~= nil, "Q each quest has a full-title and status tooltip")
-	for _, hint in ipairs({"Available", "Ready to complete", "In progress", "Locked"}) do
+	for _, hint in ipairs({"Available", "Ready to complete", "In progress"}) do
 		check(form:find(hint, 1, true) ~= nil, "Q the status subtitle explains " .. hint)
 	end
 	local description = form:match("(textarea%[[^%]]-;)")

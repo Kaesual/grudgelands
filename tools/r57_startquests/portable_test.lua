@@ -277,8 +277,8 @@ end
 local boars, rats = by_id.start_boars and by_id.start_boars.quest, by_id.start_rats and by_id.start_rats.quest
 check(boars and rats, "the shared boar and rat quests exist")
 if boars and rats then
-	eq(boars.min_level, 1, "the boars are offered at level 1")
-	eq(rats.min_level, 1, "the rats are offered at level 1, with the boars")
+	eq(math.max(1, boars.level - 2), 1, "the boars are offered at level 1 (Round 65: from level - 2)")
+	eq(math.max(1, rats.level - 2), 1, "the rats are offered at level 1, with the boars")
 	eq(#boars.variants, 6, "the boars in every start zone")
 	eq(#rats.variants, 6, "the rats in every start zone")
 	local share = rats.objectives[1].count / boars.objectives[1].count

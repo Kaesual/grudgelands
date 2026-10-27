@@ -66,7 +66,8 @@ local function changed(player)
 	Q.markers_changed(player)
 	for _, callback in ipairs(callbacks) do callback(player) end
 end
--- A level unlocks quests (min_level) without a quest change.
+-- A level unlocks quests (the acceptance level) and moves the "soon" marker
+-- without a quest change.
 grug_xp.register_on_level_change(function(player) Q.markers_changed(player) end)
 -- player name -> {raw, quests}: the item objectives of the active quests,
 -- per raw state (Q.journal_key).
@@ -263,27 +264,44 @@ end
 function Q.active_entry(player, id)
 	return load(player).active[id]
 end
--- One bounded state/holdings snapshot for one NPC viewer.
+-- The dialog's order inside a category (Round 65 ruling 5).
+local ROW_ORDER = {ready = 1, available = 2, active = 3}
+-- One bounded state/holdings snapshot for one NPC viewer: the rows to list
+-- (ready, available and active quests; Round 65 ruling 1 lists no locked
+-- quest) and the hint level, the lowest acceptance level among the quests
+-- here that only the player's level holds back (nil when there is none).
 function Q.npc_quests(player, npc)
 	local state, rows, pass = load(player), {}, {}
+	local hint
 	for id in pairs(Q.quests_by_npc[npc] or {}) do
 		local def = Q.registered_quests[id]
 		local status, reason = status_at(player, npc, def, state, pass)
-		if status then
+		if status == "locked" then
+			hint = math.min(hint or def.min_level, def.min_level)
+		elseif status then
 			rows[#rows + 1] = {id = id, title = def.title, status = status, reason = reason,
-				story = def.story}
+				story = def.story, level = def.level}
 		end
 	end
-	-- Story quests first (the dialog's "Story" category, Round 57), then by id.
+	-- Story quests first (the dialog's "Story" category, Round 57), then
+	-- ready, available, in progress; then the quest level, the title, the id.
 	table.sort(rows, function(a, b)
 		if a.story ~= b.story then return a.story end
+		if a.status ~= b.status then return ROW_ORDER[a.status] < ROW_ORDER[b.status] end
+		if a.level ~= b.level then return a.level < b.level end
+		if a.title ~= b.title then return a.title < b.title end
 		return a.id < b.id
 	end)
-	return rows
+	return rows, hint
 end
+-- How far above the player's level a giver's next quest may open for the
+-- grey "soon" marker (Round 65 ruling 2).
+Q.SOON_LEVELS = 2
 -- The marker of every quest NPC for this player (Round 30, perf review #1):
 -- NPC id -> the most urgent status of its rows in Q.npc_quests (ready, then
--- available, active, locked); NPCs without rows are absent. A story quest
+-- available, active); without one, "locked" (the grey "!", Round 65 ruling
+-- 2) when its next quest opens at most Q.SOON_LEVELS above the player's
+-- level (the hint level of Q.npc_quests); else the NPC is absent. A story quest
 -- (Round 57 ruling 13) of that status makes it the story marker
 -- ("story_ready" ...): the status stays visible on its own, and a ready
 -- side quest still wins over an available story quest. One state load, one
@@ -293,7 +311,7 @@ end
 -- level). Also returns a version that rises whenever the markers differ
 -- from the previous result, for cheap change tests (the Map tab).
 -- Read-only: the table is shared until the next change.
-local MARKER_PRIORITY = {ready = 1, available = 2, active = 3, locked = 4}
+local MARKER_PRIORITY = {ready = 1, available = 2, active = 3}
 Q.MARKER_STATUSES = {"ready", "available", "active", "locked"}
 -- A marker value's status and whether it is a story marker.
 function Q.marker_parts(value)
@@ -309,17 +327,27 @@ function Q.marker_states(player)
 		return memo.states, memo.version
 	end
 	local states, pass = {}, {}
+	pass.level = grug_xp.get_level(player)
+	local soon = pass.level + Q.SOON_LEVELS
 	for npc, ids in pairs(Q.quests_by_npc) do
-		local best, story
+		local best, story, next_level, next_story
 		for id in pairs(ids) do
 			local def = Q.registered_quests[id]
 			local status = status_at(player, npc, def, state, pass)
-			if status and (not best or MARKER_PRIORITY[status] < MARKER_PRIORITY[best]) then
+			if status == "locked" then
+				-- The next quest: the lowest acceptance level (the hint's).
+				if not next_level or def.min_level < next_level then
+					next_level, next_story = def.min_level, def.story
+				elseif def.min_level == next_level and def.story then
+					next_story = true
+				end
+			elseif status and (not best or MARKER_PRIORITY[status] < MARKER_PRIORITY[best]) then
 				best, story = status, def.story
 			elseif status and status == best and def.story then
 				story = true
 			end
 		end
+		if not best and next_level and next_level <= soon then best, story = "locked", next_story end
 		states[npc] = best and (story and "story_" .. best or best) or nil
 	end
 	local same = memo ~= nil

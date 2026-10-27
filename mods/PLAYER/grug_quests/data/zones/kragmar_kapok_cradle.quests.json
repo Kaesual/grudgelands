@@ -30,7 +30,6 @@
       "line": "hunt",
       "giver": "r14_troll_elder",
       "turnin": "r14_troll_elder",
-      "min_level": 4,
       "level": 5,
       "requires": [],
       "title": "No Manners at the Root",
@@ -85,7 +84,6 @@
       "line": "hunt",
       "giver": "r14_troll_elder",
       "turnin": "r14_troll_elder",
-      "min_level": 8,
       "level": 9,
       "requires": [],
       "title": "Luck Stolen Twice",
@@ -161,7 +159,6 @@
       "line": "hunt",
       "giver": "r14_troll_elder",
       "turnin": "r14_troll_steward",
-      "min_level": 9,
       "level": 9,
       "requires": [
         "kapok_hunt_05"

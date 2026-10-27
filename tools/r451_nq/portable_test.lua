@@ -109,8 +109,9 @@ do
 	eq(Q.npc_preselect({row("q1", "active"), row("q2", "locked")}), 1, "Q else the first row")
 
 	-- The first open: the first ready quest, its Complete button, the cue.
+	-- Round 65 ruling 1: no locked rows in the dialog.
 	rows = {row("q1", "available"), row("q2", "active"), row("q3", "ready"), row("q4", "ready"),
-		row("q5", "locked")}
+		row("q5", "active")}
 	eq(Q.open_npc(player, entity), true, "Q the dialog opens")
 	eq(on_row(), 3, "Q the dialog opens on the first ready quest")
 	check(shows("q3"), "Q ...and shows its text")

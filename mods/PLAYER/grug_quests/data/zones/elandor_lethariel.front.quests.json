@@ -7,7 +7,6 @@
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 51,
       "level": 52,
       "requires": [],
       "title": "Room for a Loaded Step",
@@ -62,7 +61,6 @@
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 52,
       "level": 53,
       "requires": [],
       "title": "Enough for Another Cup",
@@ -115,7 +113,6 @@
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 54,
       "level": 55,
       "requires": [],
       "title": "Received in Good Order",
@@ -170,7 +167,6 @@
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 58,
       "level": 59,
       "requires": [],
       "title": "More Than a Lost Watch",
@@ -237,7 +233,6 @@
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 58,
       "level": 59,
       "requires": [
         "splitbolt_front_06"
@@ -308,7 +303,6 @@
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r31_accord_warmaster",
-      "min_level": 58,
       "level": 59,
       "requires": [
         "lethariel_front_04"
@@ -347,7 +341,6 @@
       "line": "front",
       "giver": "r20_elf_capital_envoy",
       "turnin": "r20_elf_capital_envoy",
-      "min_level": 59,
       "level": 59,
       "requires": [],
       "title": "Party: Beneath the Waiting Coils",

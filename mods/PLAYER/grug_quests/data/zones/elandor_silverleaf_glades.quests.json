@@ -28,7 +28,6 @@
     {
       "id": "start_grunters",
       "line": "hunt",
-      "min_level": 7,
       "level": 8,
       "requires": [],
       "title": "Tusks in the Undergrowth",
@@ -115,7 +114,6 @@
       "line": "hunt",
       "giver": "r14_elf_elder",
       "turnin": "r14_elf_elder",
-      "min_level": 8,
       "level": 9,
       "requires": [],
       "title": "A Forest Is Not a Woodpile",
@@ -192,7 +190,6 @@
       "line": "hunt",
       "giver": "r14_elf_elder",
       "turnin": "r14_elf_steward",
-      "min_level": 9,
       "level": 9,
       "requires": [
         "silverleaf_hunt_05"

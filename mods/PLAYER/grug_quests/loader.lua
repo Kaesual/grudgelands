@@ -112,7 +112,7 @@ local function definition(file, quest)
 		title = Q.fill_names(quest.title, file.zone), description = quest.text,
 		texts = quest.texts and table.copy(quest.texts) or nil, completion = quest.completion,
 		story = quest.story == true, variants = variants,
-		min_level = quest.min_level, level = quest.level, prerequisites = quest.requires or {},
+		level = quest.level, prerequisites = quest.requires or {},
 		rewards = {weight = rewards.weight, copper = copper, items = items, choices = choices},
 		zone = file.zone, line = quest.line, source = "zones/" .. file.name, tags = quest.tags,
 	}

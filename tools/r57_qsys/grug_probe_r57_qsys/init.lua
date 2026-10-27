@@ -27,20 +27,20 @@ end
 Q.register_quest("probe_story_road", {title = "The Long Road", story = true, npc = ELDER,
 	description = "The roads beyond Dawnmere are older than the town. Walk them with me, and bring a handful " ..
 		"of earth from the fields.",
-	min_level = 1, level = 2, rewards = {weight = 1}, objectives = dirt(1), zone = "elandor_dawnmere_fields"})
+	level = 2, rewards = {weight = 1}, objectives = dirt(1), zone = "elandor_dawnmere_fields"})
 Q.register_quest("probe_choice_chest", {title = "Wolves at the Fence", npc = ELDER,
 	description = "Something digs under the fence every night. Bring two clods of dirt to fill the holes, " ..
 		"and I will see that you are dressed for the next one.",
 	completion = "The fence holds again. The smith left these for whoever came back in one piece: take " ..
 		"the one that suits you.",
-	min_level = 1, level = 5, objectives = dirt(2), zone = "elandor_dawnmere_fields",
+	level = 5, objectives = dirt(2), zone = "elandor_dawnmere_fields",
 	rewards = {weight = 3, choices = {
 		{item = "grug_gear:chest_cloth_patch", affixes = {{channel = "suffix", stat = "int"}}},
 		{item = "grug_gear:chest_leather_light", affixes = {{channel = "prefix", stat = "dex"}}},
 		{item = "grug_gear:chest_metal_bronze", affixes = {{channel = "prefix", stat = "str"}}}}}})
 Q.register_quest("probe_cook_apples", {title = "Apples for the Pie", npc = COOK,
 	description = "One apple short of a pie. Bring me one, please.",
-	min_level = 1, level = 2, rewards = {weight = 1}, objectives = {{type = "item", item = "default:apple",
+	level = 2, rewards = {weight = 1}, objectives = {{type = "item", item = "default:apple",
 		count = 1}}, zone = "elandor_dawnmere_fields"})
 
 local state = {phase = "wait", clock = 0}

@@ -823,6 +823,10 @@ def build():
         # files are tools/r62_frontquests/build_structure.py's, kept as written.
         front = [q for q in data["quests"] if q.get("level", 0) > 40 and q["id"] not in MAIN_LINE]
         quests = shared.get(zone, []) + local_quests(town) + closing.get(zone, []) + main + guild + front
+        # Round 65 ruling 3: a quest names only its level (accepted from
+        # level - 2); the minimum levels written above are history.
+        for quest in quests:
+            quest.pop("min_level", None)
         out = {"zone": data["zone"], "reworked": True, "identity": data["identity"],
                "hubs": hubs(data["hubs"]), "quests": quests}
         files[path] = json.dumps(out, indent=2, ensure_ascii=False) + "\n"

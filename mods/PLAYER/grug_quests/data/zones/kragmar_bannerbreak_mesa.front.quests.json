@@ -7,7 +7,6 @@
       "line": "front",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_orc_capital_envoy",
-      "min_level": 42,
       "level": 42,
       "requires": [],
       "title": "Tell Thorga What Moves a Ramp",
@@ -30,7 +29,6 @@
       "line": "front",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_043_host",
-      "min_level": 46,
       "level": 48,
       "requires": [
         "throng_main_01"
@@ -78,7 +76,6 @@
       "line": "front",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_040_host",
-      "min_level": 46,
       "level": 48,
       "requires": [
         "bb_front_ramp_04"
@@ -106,7 +103,6 @@
       "line": "front",
       "giver": "r20_anchor_044_host",
       "turnin": "r31_throng_warmaster",
-      "min_level": 46,
       "level": 48,
       "requires": [
         "throng_main_03"
@@ -157,7 +153,6 @@
       "line": "front",
       "giver": "r20_anchor_044_host",
       "turnin": "r31_throng_warmaster",
-      "min_level": 40,
       "level": 41,
       "requires": [],
       "title": "Room Under the Banner",
@@ -180,7 +175,6 @@
       "line": "front",
       "giver": "r31_throng_warmaster",
       "turnin": "r31_throng_warmaster",
-      "min_level": 40,
       "level": 41,
       "requires": [],
       "title": "Nobody Sings About Bolts",
@@ -204,7 +198,6 @@
       "line": "front",
       "giver": "r31_throng_drillmaster",
       "turnin": "r31_throng_drillmaster",
-      "min_level": 40,
       "level": 42,
       "requires": [],
       "title": "Something Solid to Boast About",
@@ -228,7 +221,6 @@
       "line": "front",
       "giver": "r31_throng_outrider",
       "turnin": "r31_throng_outrider",
-      "min_level": 40,
       "level": 42,
       "requires": [],
       "title": "No Toll for the Throng",
@@ -255,7 +247,6 @@
       "line": "front",
       "giver": "r31_throng_outrider",
       "turnin": "r31_throng_outrider",
-      "min_level": 40,
       "level": 42,
       "requires": [],
       "title": "Rattle the Picket Line",
@@ -290,7 +281,6 @@
       "line": "front",
       "giver": "r31_throng_outrider",
       "turnin": "r31_throng_outrider",
-      "min_level": 40,
       "level": 42,
       "requires": [
         "bannerbreak_warhold_picket_shattered"
@@ -327,7 +317,6 @@
       "line": "front",
       "giver": "r31_throng_drillmaster",
       "turnin": "r31_throng_drillmaster",
-      "min_level": 47,
       "level": 49,
       "requires": [],
       "title": "Marching in Their Sleep",
@@ -362,7 +351,6 @@
       "line": "front",
       "giver": "r31_throng_drillmaster",
       "turnin": "r31_throng_drillmaster",
-      "min_level": 47,
       "level": 49,
       "requires": [
         "bannerbreak_warhold_warcamp_shattered"
@@ -399,7 +387,6 @@
       "line": "front",
       "giver": "r31_throng_outrider",
       "turnin": "r31_throng_outrider",
-      "min_level": 50,
       "level": 52,
       "requires": [],
       "title": "Lean on the {name:pvp_camp_gravesalt_escarpment_accord_low}",
@@ -434,7 +421,6 @@
       "line": "front",
       "giver": "r31_throng_outrider",
       "turnin": "r31_throng_outrider",
-      "min_level": 50,
       "level": 52,
       "requires": [
         "bannerbreak_warhold_picket_gravesalt"
@@ -471,7 +457,6 @@
       "line": "front",
       "giver": "r31_throng_drillmaster",
       "turnin": "r31_throng_drillmaster",
-      "min_level": 57,
       "level": 59,
       "requires": [],
       "title": "A Steady Blade at Gravesalt",
@@ -506,7 +491,6 @@
       "line": "front",
       "giver": "r31_throng_drillmaster",
       "turnin": "r31_throng_drillmaster",
-      "min_level": 57,
       "level": 59,
       "requires": [
         "bannerbreak_warhold_warcamp_gravesalt"

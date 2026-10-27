@@ -25,7 +25,7 @@ local REF = "socket:" .. KEY .. "/" .. SOCKET
 local GIVER = "r58_guild_leader_highcourt"
 local FILES = {{name = "elandor_highcourt.quests.json", zone = "elandor_highcourt", front = false,
 	data = {zone = "elandor_highcourt", hubs = {{id = "probe", givers = {{npc = GIVER, lines = {"probe"}}}}},
-		quests = {{id = "r59q_ledger", line = "probe", giver = GIVER, turnin = GIVER, min_level = 1, level = 20,
+		quests = {{id = "r59q_ledger", line = "probe", giver = GIVER, turnin = GIVER, level = 20,
 			title = "r59q_ledger", text = "Probe text. Not shipped.",
 			objectives = {{type = "use", place = REF, object = "courier_ledger", label = "Search the ledger shelf",
 				hold = 3}}, rewards = {weight = 1}}}}}}

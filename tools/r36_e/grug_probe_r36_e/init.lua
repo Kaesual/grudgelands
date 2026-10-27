@@ -27,7 +27,7 @@ local function use(place, label, object)
 	return {type = "use", place = place, object = object, label = label, hold = 3}
 end
 local function quest(id, objective)
-	return {id = id, line = "probe", giver = GIVER, turnin = GIVER, min_level = 1, level = 35,
+	return {id = id, line = "probe", giver = GIVER, turnin = GIVER, level = 35,
 		title = id, text = "Probe text. Not shipped.", objectives = {objective}, rewards = {weight = 1}}
 end
 local FILES = {{name = "elandor_stormvault_heights.quests.json", zone = "elandor_stormvault_heights",

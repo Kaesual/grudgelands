@@ -471,8 +471,8 @@ eq(journal_row(ann, "fx_hunt_01").objectives[1].count, 3, "small boars of the ar
 eq(Q.hud_line(journal_row(ann, "fx_hunt_01"), 400), "Return to Elian Reed", "ready line")
 check(Q.turn_in(ann, "fx_hunt_01"), "turn in Crop Thieves")
 
--- min_level gates accepting; level sets the reward.
-eq(Q.status(ann, "fx_hunt_02"), "locked", "min_level 8 refuses a level-1 player")
+-- The level gates accepting (from level - 2, Round 65) and sets the reward.
+eq(Q.status(ann, "fx_hunt_02"), "locked", "a level-10 quest (accepted from 8) refuses a level-1 player")
 level_of.ann = 8
 check(Q.accept(ann, "fx_hunt_02"), "accept The Chief at level 8")
 Q.credit_kill(ann, mob("confused_bandit_chief", nil, true), AT)

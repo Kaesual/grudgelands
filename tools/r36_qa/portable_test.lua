@@ -3,9 +3,10 @@
 -- docs/planning/round36/story-bible.md).
 -- Checks:
 --   C  the chain: the spine in order, every step requiring the one before;
---      the chapter gates 41, 46, 53 and 60, each chapter's opener and its
---      folded climax requiring the previous chapter's last turn-in; no step
---      opens below a prerequisite (the shown gate is the real one);
+--      the chapter gates 40, 45, 53 and 58 (Round 65: the openers' levels
+--      42, 47, 55 and 60 minus two; 41, 46, 53 and 60 before), each
+--      chapter's opener and its folded climax requiring the previous
+--      chapter's last turn-in;
 --   T  the tag accord_main on every spine quest and on nothing else;
 --   F  the final id accord_main_final: the Warmaster's turn-in, after the
 --      finale, ending with the bible's last line; the finale on the rift
@@ -74,7 +75,10 @@ local SPINE = {
 	{"lethariel_front_04", 3}, {"accord_main_tally", 3},
 	{"accord_main_collector", 4}, {FINAL, 4},
 }
-local GATE = {41, 46, 53, 60}
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level).
+local function opens(q) return math.max(1, q.level - 2) end
+local GATE = {40, 45, 53, 58}
 local OPENER = {"accord_main_impounded", "accord_main_standard", "accord_main_roll", "accord_main_collector"}
 local LAST = {"accord_main_accounts", "accord_main_audit", "accord_main_tally", FINAL}
 -- The bible's folded climaxes and the chapter they carry.
@@ -116,28 +120,30 @@ for index, row in ipairs(SPINE) do
 					"C " .. prev .. " sends the player on to " .. id .. "'s giver " .. q.giver)
 			end
 		end
-		check(q.min_level >= GATE[chapter] and (chapter == 4 or q.min_level <= GATE[chapter + 1]),
-			("C %s opens inside chapter %d (min_level %d)"):format(id, chapter, q.min_level))
+		-- Round 65: archshadow_front_03 (level 48, chapter 1) opens at 46, one
+		-- above chapter 2's gate 45 (both 46 before); levels are authored,
+		-- so the upper bound allows that one level.
+		check(opens(q) >= GATE[chapter] and (chapter == 4 or opens(q) <= GATE[chapter + 1] + 1),
+			("C %s opens inside chapter %d (at %d)"):format(id, chapter, opens(q)))
+		-- Round 65: a step behind an unmet prerequisite is not shown at all,
+		-- so a step may open (level - 2) below its prerequisite; the
+		-- "shown gate" check went with W-chain-gate.
 		for _, req in ipairs(q.requires or {}) do
-			if check(quests[req] ~= nil, "C " .. id .. ": prerequisite " .. req .. " is an Accord quest") then
-				check(quests[req].min_level <= q.min_level,
-					("C %s (min_level %d) opens no lower than %s (%d)"):format(id, q.min_level, req,
-						quests[req].min_level))
-			end
+			check(quests[req] ~= nil, "C " .. id .. ": prerequisite " .. req .. " is an Accord quest")
 		end
 	end
 end
 for chapter, id in ipairs(OPENER) do
 	local q = quests[id]
 	if q then
-		eq(q.min_level, GATE[chapter], "C chapter " .. chapter .. " opens at its gate: " .. id)
+		eq(opens(q), GATE[chapter], "C chapter " .. chapter .. " opens at its gate: " .. id)
 		if chapter > 1 then
 			check(has(q.requires, LAST[chapter - 1]), "C chapter " .. chapter .. "'s opener requires " ..
 				LAST[chapter - 1])
 		end
 	end
 end
-eq(quests.accord_main_impounded and #quests.accord_main_impounded.requires, 0, "C chapter 1 needs nothing before 41")
+eq(quests.accord_main_impounded and #quests.accord_main_impounded.requires, 0, "C chapter 1 needs nothing before 40")
 for id, chapter in pairs(CLIMAX) do
 	check(in_spine[id] == chapter, "C the folded climax " .. id .. " is a step of chapter " .. chapter)
 	if chapter > 1 then
@@ -236,7 +242,7 @@ if check(hunt ~= nil, "B the commander hunt exists") then
 	eq(hunt.objectives[1].roles[1], "commander_throng", "B on the Throng war commander")
 	eq(hunt.objectives[1].area, "front_gravesalt_escarpment/pvp_camp_gravesalt_escarpment_throng_high",
 		"B in his camp")
-	check(hunt.min_level >= 57, "B at his camp's level (the raids there open at 57)")
+	check(opens(hunt) >= 57, "B at his camp's level (the raids there open at 57)")
 	check(has(hunt.requires, "accord_main_orders"), "B after the orders that name him")
 end
 local raid = quests.ashenward_bastion_warcamp_gravesalt

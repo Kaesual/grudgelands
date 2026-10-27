@@ -28,7 +28,6 @@
     {
       "id": "qs_guild_stone",
       "line": "guild",
-      "min_level": 1,
       "level": 3,
       "title": "Stone for the Guild",
       "text": "The guild needs cut stone for its new hall. Bring five pieces of cobble.",

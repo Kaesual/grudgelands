@@ -7,7 +7,6 @@
     {
       "id": "guild_t2_iron",
       "line": "guild",
-      "min_level": 11,
       "level": 13,
       "requires": [],
       "title": "A Promise in Iron",
@@ -81,7 +80,6 @@
     {
       "id": "guild_t2_jade",
       "line": "guild",
-      "min_level": 11,
       "level": 13,
       "requires": [],
       "title": "Four Green Reasons",
@@ -155,7 +153,6 @@
     {
       "id": "guild_t3_anthracite",
       "line": "guild",
-      "min_level": 21,
       "level": 23,
       "requires": [],
       "title": "Keep the Forges Fed",
@@ -221,7 +218,6 @@
     {
       "id": "guild_t3_garnet",
       "line": "guild",
-      "min_level": 21,
       "level": 23,
       "requires": [],
       "title": "A Small Order",
@@ -287,7 +283,6 @@
     {
       "id": "guild_t4_silver",
       "line": "guild",
-      "min_level": 31,
       "level": 33,
       "requires": [],
       "title": "Silver on the Tally",
@@ -345,7 +340,6 @@
     {
       "id": "guild_t4_sapphire",
       "line": "guild",
-      "min_level": 31,
       "level": 33,
       "requires": [],
       "title": "Something Blue in the Dust",
@@ -403,7 +397,6 @@
     {
       "id": "guild_t5_emberglass",
       "line": "guild",
-      "min_level": 41,
       "level": 43,
       "requires": [],
       "title": "The Next Load",
@@ -453,7 +446,6 @@
     {
       "id": "guild_t5_ruby",
       "line": "guild",
-      "min_level": 41,
       "level": 43,
       "requires": [],
       "title": "Mind the Little Bundle",
@@ -503,7 +495,6 @@
     {
       "id": "guild_t6_crystal",
       "line": "guild",
-      "min_level": 51,
       "level": 53,
       "requires": [],
       "title": "A Load Worth Waiting For",
@@ -545,7 +536,6 @@
     {
       "id": "guild_t6_diamond",
       "line": "guild",
-      "min_level": 51,
       "level": 53,
       "requires": [],
       "title": "Four, Counted Twice",

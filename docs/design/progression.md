@@ -158,18 +158,22 @@ Revised 2026-09-23, Round 18:
 
 ## 4. Quest structure & level gates
 
-- Main-questline beats use hard `min_level` gates (`story.md`): each
-  faction's chapters open at 41, 46 and 53 and the finale at 60, each
-  chapter after the previous one's last turn-in (Round 36,
-  [quests.md](quests.md) "The main line").
-- Quest descriptions show their minimum level and named prerequisite quests.
+- One acceptance rule (Round 65): a quest is accepted from its level − 2,
+  at least 1; the quest data names only the level. The main line's
+  chapters open at 40, 45 and 53 and the finale at 58 (their quests'
+  levels minus two; 41, 46, 53 and 60 before), each chapter after the
+  previous one's last turn-in (Round 36, [quests.md](quests.md) "The main
+  line").
+- Quest descriptions show their minimum level (the level − 2) and named
+  prerequisite quests.
 - Quest XP uses the authored reward level rather than the receiver's level
   and does not scale at hand-in. Every quest authors a weight in kill
   equivalents ("XP units and level curve").
 - The final quest at each starting settlement is handed in to the next
   regional giver, so completion and the following regional quest meet at the
   same NPC.
-- PvP quests start at level 40 (Round 31, PvP ruling 15): each faction's
+- PvP quests start at level 40 (Round 31, PvP ruling 15; since Round 65
+  the level-41 entry and supply quests open at 39): each faction's
   fortress gives them (one raid per enemy Battlegrounds camp plus a few
   ordinary fortress quests), and an outpost of the fortress's zone sends a
   level-40 player there ([quests.md](quests.md#pvp-fortress-quests-round-31)).
