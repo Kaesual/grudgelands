@@ -1,0 +1,20 @@
+Grudgelands map icon rework, draft 01 (2026-10-27)
+
+Original illustrative artwork generated for Grudgelands using OpenAI's
+built-in image_gen tool, one generation request per motif. The exact prompts
+and original saved paths are recorded in generated.json. No third-party
+reference images were supplied. Optional original copies are in ../local-originals/sources/ (ignored by Git).
+The approved 32px PNGs are the canonical tracked illustrative assets.
+
+Original navigation, quest punctuation and target SVG artwork is authored
+for this draft by the assistant in tools/map_icon_rework/build.py.
+
+The project dedicates any rights it holds in these original draft images
+to CC0-1.0, consistent with the game's existing map artwork. CC0 legal text:
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Old artwork embedded for comparison keeps its existing licences, documented
+in the relevant mods' LICENSE-media.md. It is not relicensed by this draft.
+
+The Python/CSS/JavaScript tooling follows the repository's GPL-3.0-or-later.
+This is a review-only package. No assets have been shipped to mods/.

@@ -1,0 +1,187 @@
+{
+  "created": "2026-10-27",
+  "status": "Artwork approved by the user for initial integration on 2026-10-27; not shipped",
+  "style": "Refined hand-painted illustrative fantasy cartography UI icon. Subtly three-dimensional with broad clean color planes, crisp very dark brown charcoal contour directly following the silhouette and small warm ivory upper-left highlights. Restrained warm earth palette with deliberate accents. Instantly readable at 32x32 pixels: minimal large features and bold negative spaces. Not pixel art, not photographic, not flat emoji. Genuine alpha transparent background, no painted checkerboard, no ground, floor shadow, ambient glow, text, labels, badge, circle, box, border frame, background panel or pedestal. One centered isolated motif on a square canvas, entirely inside the central 84 percent with even transparent padding.",
+  "illustrative": [
+    {
+      "key": "dragon",
+      "id": "F13",
+      "title": "Drache",
+      "subject": "A bold dark crimson dragon head in strict left-facing profile, long angular snout, clearly open mouth with one ivory fang, two sweeping ivory horns and a simple ochre cheek ridge. Distinctly reptilian, powerful, memorable silhouette. HEAD AND SHORT NECK ONLY, no wings, no body. Red, dark wine, ivory highlights. The jaw and horns are broad enough to survive a 32 pixel export."
+    },
+    {
+      "key": "mining_camp",
+      "id": "F14",
+      "title": "Gilden-Bergbaulager",
+      "subject": "One simple muted dark umber brown work tent behind a prominent bright silver steel pickaxe with a brown handle. Keep the tent shape and pickaxe composition from revision 4; darker fabric improves foreground contrast at 32px. No hoist or extra props."
+    },
+    {
+      "key": "capital",
+      "id": "F02",
+      "title": "Hauptstadt",
+      "subject": "A compact cream limestone castle with three broad towers, blue roofs and one small blue banner; largest central keep, strong symmetrical silhouette. Only two or three dark openings. Majestic capital city symbol, not a detailed scene. No ground."
+    },
+    {
+      "key": "start",
+      "id": "F01",
+      "title": "Startsiedlung",
+      "subject": "One welcoming small warm-ivory cottage with broad terracotta roof, a dark doorway and one small TEAL pennant on a short pole beside the chimney. Two large simple shape masses; a friendly starter settlement symbol. No landscape or ground."
+    },
+    {
+      "key": "bandit",
+      "id": "F07",
+      "title": "Banditenlager",
+      "subject": "A front-facing bandit in a red hood with a broad light warm beige exposed eye area, clearly separated visible eyes and a dark charcoal cloth face veil. Wide hood opening and short hood peak give the face more space; strong red/light/dark contrast at 32px."
+    },
+    {
+      "key": "waypoint",
+      "id": "E07",
+      "title": "Waystone",
+      "subject": "One tall pale gray standing rune stone with a broad upright silhouette, a large simple cyan angular rune cut into its front, angled beveled top, no plinth or ground. Cool blue highlight but no glow spilling outside its silhouette. Few large carved facets, clearly readable at 32px."
+    },
+    {
+      "key": "trainer_weaponsmith",
+      "id": "C01",
+      "title": "Waffenschmied",
+      "subject": "One single broad steel sword pointing upper right diagonally, warm leather hilt lower left, solid brass crossguard. Bright pale blade with a single cool shadow plane. No anvil or second object. Minimal iconic silhouette."
+    },
+    {
+      "key": "trainer_armorsmith",
+      "id": "C02",
+      "title": "Rüstungsschmied",
+      "subject": "One broad neutral steel cuirass viewed from the front, with a single continuous chest plate and central ridge, straight torso sides with slight waist taper, brown shoulder straps and restrained brass trim. No separate breast cups or anatomical shaping; empty armor without head or arms."
+    },
+    {
+      "key": "trainer_alchemist",
+      "id": "C03",
+      "title": "Alchemist",
+      "subject": "One squat round-bottom glass potion bottle with a short neck and large cork, filled with emerald green liquid. A single broad bright reflection and darker green lower plane. No bubbles or decorative stopper, no label or ground."
+    },
+    {
+      "key": "trainer_tailor",
+      "id": "C04",
+      "title": "Schneider",
+      "subject": "One large wooden spool wrapped in rich crimson thread, crossed by a single broad silver sewing needle diagonally. Thread is one smooth band, no tiny lines. Simple sturdy readable two-object silhouette."
+    },
+    {
+      "key": "trainer_leatherworker",
+      "id": "C05",
+      "title": "Lederverarbeiter",
+      "subject": "One stretched warm ochre leather hide seen flat from the front, distinct four short limb lobes and narrow top, a dark caramel shadow and cream edge. No stitching, rack, tools or ornaments. Clearly animal hide, not parchment or book."
+    },
+    {
+      "key": "trainer_woodcarver",
+      "id": "C06",
+      "title": "Holzschnitzer",
+      "subject": "A steel chisel with a brown handle lying diagonally on a solid warm wooden block. No curled shaving or loose shavings; preserve the original tool and block composition."
+    },
+    {
+      "key": "trainer_goldsmith",
+      "id": "C07",
+      "title": "Goldschmied",
+      "subject": "One thick golden finger ring in three-quarter view with one prominent square-cut deep blue gemstone. Bold gold band and two broad gemstone facets. Ring is the object itself, never a frame surrounding another icon. No sparkle outside or tiny ornament."
+    },
+    {
+      "key": "housing_steward",
+      "id": "E01",
+      "title": "Housing Steward",
+      "subject": "A small ivory cottage with a dark teal pitched roof accompanied by ONE oversized brass key diagonally in front at lower right. House plus key are both large and readable, no base plate. Distinct silhouette and minimal door."
+    },
+    {
+      "key": "repair",
+      "id": "E02",
+      "title": "Reparaturdienst",
+      "subject": "A single sturdy blacksmith hammer crossing a compact steel anvil. Brass warm-brown wooden hammer handle, pale steel striking head; broad simple shapes, no sparks, no tools background. Repair service symbol."
+    },
+    {
+      "key": "crownbinder",
+      "id": "E03",
+      "title": "Crownbinder",
+      "subject": "A broad gold three-point crown sitting immediately above a small dark steel anvil, visually one compact emblem. A single crimson jewel in the crown. Crown is large, anvil has clear horn silhouette; no surrounding badge, no flourishes."
+    },
+    {
+      "key": "decor_merchant",
+      "id": "E04",
+      "title": "Decor Merchant",
+      "subject": "One decorative bronze hanging lantern with an arched top loop and warm amber glass, dark teal cap and foot, four simple broad structural parts. Warm light confined to the glass, no aura or glow outside, no chain or wall."
+    },
+    {
+      "key": "innkeeper",
+      "id": "E05",
+      "title": "Gastwirt",
+      "subject": "One broad wooden tankard with a large open handle at right, two bronze bands and a simple cream foam cap. Warm oak, amber highlights, very few shapes. No table, coaster or background."
+    },
+    {
+      "key": "home",
+      "id": "E06",
+      "title": "Heimatort",
+      "subject": "One cozy cream cottage with a rich gold-yellow pitched roof and dark warm doorway, squat compact silhouette, one chimney. No pennant, no key, no landscape. Roof dominates to distinguish the bound home from town markers."
+    },
+    {
+      "key": "claim",
+      "id": "E08",
+      "title": "Claim Stone",
+      "subject": "One squat faceted dark violet obsidian claim stone, tapered octagonal silhouette, with a single luminous lavender diamond rune on the front. Beveled upper-left edge in pale lavender, dark plum sides. Solid simple standing stone, no plinth, no aura or surrounding frame."
+    },
+    {
+      "key": "village",
+      "id": "F03",
+      "title": "Dorf",
+      "subject": "A compact cluster of exactly three overlapping small ivory houses with warm terracotta pitched roofs, one larger at left and two smaller behind and right. Distinct three-roof silhouette and only two simple dark doors. No scenery, no ground."
+    },
+    {
+      "key": "outpost",
+      "id": "F04",
+      "title": "Außenposten",
+      "subject": "One tall wooden watchtower with a broad open lookout platform and small dark teal roof, four sturdy supports implied by two visible front beams, one short ladder. Strong vertical silhouette, minimal cross bracing, no flag or scenery."
+    },
+    {
+      "key": "fortress",
+      "id": "F05",
+      "title": "PvP-Festung",
+      "subject": "A squat dark iron-gray stone fortress gate with TWO broad crenellated towers and a large dark arch in center, one small deep red flag. Blocky strong silhouette, broad lit stone faces, no roof or fine masonry. Clearly defensive and heavier than a capital castle."
+    },
+    {
+      "key": "war_camp",
+      "id": "F06",
+      "title": "Battlegrounds-Lager",
+      "subject": "One compact deep crimson canvas military tent with a dark triangular entrance, two short broad crossed spears visible behind its roof. Two or three main shapes only. Brass spear points, no ground, no badges."
+    },
+    {
+      "key": "mirefolk",
+      "id": "F08",
+      "title": "Mirefolk-Lager",
+      "subject": "A front-facing fish-humanoid HEAD with broad teal-green face, two large amber eyes, a rust-orange dorsal fin crest and short flaring cheek fins. Primitive amphibious swamp-folk, distinct fishlike silhouette, mildly threatening. No shoulders or body, no water or bubbles."
+    },
+    {
+      "key": "mine",
+      "id": "F09",
+      "title": "Mine und Edelsteinlager",
+      "subject": "A compact mine entrance made of three large gray stones with a dark tunnel opening, one small broad steel pickaxe leaning diagonally at right. Three simple arch stones only, warm wooden pick handle; no hill, landscape or ground."
+    },
+    {
+      "key": "clash",
+      "id": "F10",
+      "title": "Kampfplatz",
+      "subject": "Exactly two broad short steel swords crossed in an X, warm brass crossguards and dark red leather grips at the bottom. Strong clean symmetric silhouette with four separated ends. No shield, circle, background or sparks."
+    },
+    {
+      "key": "rare_den",
+      "id": "F11",
+      "title": "Rare-Unterschlupf",
+      "subject": "One large warm amber animal paw print: broad sculpted central pad and exactly four oval toe pads, each with tight dark edge and pale upper-left highlight. Very clear separated shapes, no claws, no circle or shield. Slightly sculpted illustrative symbol, not an animal foot."
+    },
+    {
+      "key": "king",
+      "id": "F12",
+      "title": "König",
+      "subject": "One broad gold royal crown with exactly three prominent points, a ruby in its central band, ivory lit left edges and ochre shadows. No cushion, head, anvil, shield or border; crisp instantly readable three-point silhouette."
+    },
+    {
+      "key": "camp_construction",
+      "id": "F15",
+      "title": "Lager im Bau",
+      "subject": "An unfinished tent frame made of warm timber: two A-shaped end supports joined by one ridgepole, with a small folded ivory canvas hanging over one side only. Open triangular negative space obvious, no complete tent, workers, tools or ground."
+    }
+  ]
+}

@@ -2,6 +2,12 @@
 
 Updated 2026-10-27. This is the delivery pointer, not another game specification.
 
+**In progress: Round 64 — map icons** ([plan](planning/round64-plan.md)).
+Artwork accepted; implementation authorized on 2026-10-27. Source cleanup
+and the minimap feasibility check are in progress.
+This planned compatible presentation change does not alter the delivery or
+pending deployment requirements below.
+
 **0.63.0 / Round 63 is published on main; full GUI acceptance is pending**:
 the approved mining-camp redesign and faction heraldry
 ([plan and GUI checklist](planning/round63-plan.md)), plus the

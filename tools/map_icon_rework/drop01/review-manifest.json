@@ -1,0 +1,222 @@
+{
+  "A01": {
+    "key": "heading_gold_00",
+    "file": "tools/map_icon_rework/drop01/icons/heading_gold_00.png",
+    "sha256": "c79d92f837521abb69b3a94fbefd6c2091fec54a0dd3b50de3070a05fa3a2ba4"
+  },
+  "A02": {
+    "key": "heading_cyan_00",
+    "file": "tools/map_icon_rework/drop01/icons/heading_cyan_00.png",
+    "sha256": "44e0d618c84ce172270e75184e32e1423963674536673e36c9b1aca2cea8a7ea"
+  },
+  "A03": {
+    "key": "rim_cyan_00",
+    "file": "tools/map_icon_rework/drop01/icons/rim_cyan_00.png",
+    "sha256": "994b0a228f57e287c98aa395d7246ff0bf67e50bd4d27b400d52e0fd881f63c0"
+  },
+  "B01": {
+    "key": "quest_available",
+    "file": "tools/map_icon_rework/drop01/icons/quest_available.png",
+    "sha256": "49f7030c1756765d63dd5b987c400898ce41e64d323a820b89942f514a16fa52"
+  },
+  "B02": {
+    "key": "quest_active",
+    "file": "tools/map_icon_rework/drop01/icons/quest_active.png",
+    "sha256": "b29380cb6629390ea7cc6e10d89217de9adcfaefe7664270afa51e609687690e"
+  },
+  "B03": {
+    "key": "quest_ready",
+    "file": "tools/map_icon_rework/drop01/icons/quest_ready.png",
+    "sha256": "0ce1228227dd2ba4d0775c719e39c7aa8810cec162cbd44dd0f2636d73d202db"
+  },
+  "B04": {
+    "key": "quest_locked",
+    "file": "tools/map_icon_rework/drop01/icons/quest_locked.png",
+    "sha256": "b32b4c12d4cc3541cf4555b1f1a3519f5d4036c42ab2f80fdd290d2b9728a559"
+  },
+  "B05": {
+    "key": "quest_story_available",
+    "file": "tools/map_icon_rework/drop01/icons/quest_story_available.png",
+    "sha256": "9468d78290a7501824ad2e8c68737b0646c1d68d0264481b151f8a47b795f0be"
+  },
+  "B06": {
+    "key": "quest_story_active",
+    "file": "tools/map_icon_rework/drop01/icons/quest_story_active.png",
+    "sha256": "9c9d8135838ea2fba2f2ebba1f244e16fd7f4e41eca002a0a5771342bb02e8ef"
+  },
+  "B07": {
+    "key": "quest_story_ready",
+    "file": "tools/map_icon_rework/drop01/icons/quest_story_ready.png",
+    "sha256": "8b70568fb360dfeb23c94c2ed4be2e19c40a2b03d9347d2d52e530141efd3363"
+  },
+  "B08": {
+    "key": "quest_story_locked",
+    "file": "tools/map_icon_rework/drop01/icons/quest_story_locked.png",
+    "sha256": "9fa17f07fbd7670a3d82062b51dffd9c526e8c074272f0e1ab6e1acd2a937612"
+  },
+  "C01": {
+    "key": "trainer_weaponsmith",
+    "file": "tools/map_icon_rework/drop01/icons/trainer_weaponsmith.png",
+    "sha256": "422a2a9418b41120729aa9047d70db58996d5c0505110b89bd9c46d7a99db30c"
+  },
+  "C02": {
+    "key": "trainer_armorsmith",
+    "file": "tools/map_icon_rework/drop01/icons/trainer_armorsmith.png",
+    "sha256": "d6213b5d51c6d9015d2d9cea0286438ab32dc4124948d58919c494c482e675c5"
+  },
+  "C03": {
+    "key": "trainer_alchemist",
+    "file": "tools/map_icon_rework/drop01/icons/trainer_alchemist.png",
+    "sha256": "c39b14c15b2437ac83aebc71c286d4912a513ded69966d5077a06ebb36d96a26"
+  },
+  "C04": {
+    "key": "trainer_tailor",
+    "file": "tools/map_icon_rework/drop01/icons/trainer_tailor.png",
+    "sha256": "c73b19d13ed0fdc58e344ce3acad77de5aa04faaf310c0e8e4285b3cc434221c"
+  },
+  "C05": {
+    "key": "trainer_leatherworker",
+    "file": "tools/map_icon_rework/drop01/icons/trainer_leatherworker.png",
+    "sha256": "be1d8693e904981e37027d5323a226e3cc51062afcb7bb5e2f4170941a190bfc"
+  },
+  "C06": {
+    "key": "trainer_woodcarver",
+    "file": "tools/map_icon_rework/drop01/icons/trainer_woodcarver.png",
+    "sha256": "ee0b5e4c41a9866048821ed36835d9a823b2fe1ff4a8f0334ba90ab62a55c35c"
+  },
+  "C07": {
+    "key": "trainer_goldsmith",
+    "file": "tools/map_icon_rework/drop01/icons/trainer_goldsmith.png",
+    "sha256": "ae9a9ff55350b2a876e699c60cb53cc584abc4197b30d99aac0a83bb67643e8d"
+  },
+  "D01\u2013D06": {
+    "key": "riding",
+    "file": "tools/map_icon_rework/drop01/icons/riding.png",
+    "sha256": "17da8bb43acfe5abccdee91cd833b9517ba21c82bb33c75983094589f65788ac"
+  },
+  "E01": {
+    "key": "housing_steward",
+    "file": "tools/map_icon_rework/drop01/icons/housing_steward.png",
+    "sha256": "5408eb06dfef3248d09ebd5133e535c0d3552da95714de0411d26493923bf35f"
+  },
+  "E02": {
+    "key": "repair",
+    "file": "tools/map_icon_rework/drop01/icons/repair.png",
+    "sha256": "5c91d80cd0fe956e11396a1f8e9c74db151b344e2aaf4999bb243503fa261c5e"
+  },
+  "E03": {
+    "key": "crownbinder",
+    "file": "tools/map_icon_rework/drop01/icons/crownbinder.png",
+    "sha256": "5dda1ffabe650b55e1e735df05b63c4a46949c77b97872824d957db79353ee73"
+  },
+  "E04": {
+    "key": "decor_merchant",
+    "file": "tools/map_icon_rework/drop01/icons/decor_merchant.png",
+    "sha256": "d536c0aa34f88ae518b27745e96744a4d6f414ccfad3ea94e06fcbdd57d38be0"
+  },
+  "E05": {
+    "key": "innkeeper",
+    "file": "tools/map_icon_rework/drop01/icons/innkeeper.png",
+    "sha256": "d13d66b4a7a3102065f545abe2df0677a79633ed58c24bb45cc14bf306a9d080"
+  },
+  "E06": {
+    "key": "home",
+    "file": "tools/map_icon_rework/drop01/icons/home.png",
+    "sha256": "cc0d5fd4be3a41ab5504d0c065ded820c8930450e9091c285baf6f8621388e43"
+  },
+  "E07": {
+    "key": "waypoint",
+    "file": "tools/map_icon_rework/drop01/icons/waypoint.png",
+    "sha256": "b1d7d989e48b02b78b955c78720ec4cdb83561a7a033f0853c15dde2155655ba"
+  },
+  "E08": {
+    "key": "claim",
+    "file": "tools/map_icon_rework/drop01/icons/claim.png",
+    "sha256": "614b296fc75c934a9a398beb13058ce29fb014635795edca1ad85b3d4be68987"
+  },
+  "F01": {
+    "key": "start",
+    "file": "tools/map_icon_rework/drop01/icons/start.png",
+    "sha256": "420cacda354d9843b5ce95dc11b0581dcf7777f55504186edefa6b28477861df"
+  },
+  "F02": {
+    "key": "capital",
+    "file": "tools/map_icon_rework/drop01/icons/capital.png",
+    "sha256": "a210e213bd5b4358843a2bf1eb70ac24619c0d1f34c3f005b8cf3999ab7a6742"
+  },
+  "F03": {
+    "key": "village",
+    "file": "tools/map_icon_rework/drop01/icons/village.png",
+    "sha256": "0e847ff5482bd445bf4bd70737932492d4c61ccb3ca30e4f91c116786ac90b79"
+  },
+  "F04": {
+    "key": "outpost",
+    "file": "tools/map_icon_rework/drop01/icons/outpost.png",
+    "sha256": "ec4c78c09ec4c6d29b8d52c55f3a5be1e8a85d8eec30ee59165640ce8b341c57"
+  },
+  "F05": {
+    "key": "fortress",
+    "file": "tools/map_icon_rework/drop01/icons/fortress.png",
+    "sha256": "ccee6c39461525b72a818075ac0de87fb4144d8d9ab047879c9f5de26eeeac9a"
+  },
+  "F06": {
+    "key": "war_camp",
+    "file": "tools/map_icon_rework/drop01/icons/war_camp.png",
+    "sha256": "e4ae1d7c7afb5d64dc7bd27789239766c52252c61daac2efa1854283bb3c4cf0"
+  },
+  "F07": {
+    "key": "bandit",
+    "file": "tools/map_icon_rework/drop01/icons/bandit.png",
+    "sha256": "0bbb8b0eece724b7c11ca2dd8028ae0e1216aaba826c5fb1167d395eb0aca37e"
+  },
+  "F08": {
+    "key": "mirefolk",
+    "file": "tools/map_icon_rework/drop01/icons/mirefolk.png",
+    "sha256": "43ca2c4db38f3fcf4141dfe0062827b2e72090242372f4ab20a9706ad1d6e9b0"
+  },
+  "F09": {
+    "key": "mine",
+    "file": "tools/map_icon_rework/drop01/icons/mine.png",
+    "sha256": "2352c6c541dfb39dc1b27584d781a7ce3e9e4979f434bf1b2220153552e37e22"
+  },
+  "F10": {
+    "key": "clash",
+    "file": "tools/map_icon_rework/drop01/icons/clash.png",
+    "sha256": "fe5e952a5ba803262fa6a61568cadd2b10d3e378d1ee83e6a3c898818c9edcac"
+  },
+  "F11": {
+    "key": "rare_den",
+    "file": "tools/map_icon_rework/drop01/icons/rare_den.png",
+    "sha256": "cab07bbf060aa770b40b74348db6b520e40f39f1334426cbace1a31939f18fe3"
+  },
+  "F12": {
+    "key": "king",
+    "file": "tools/map_icon_rework/drop01/icons/king.png",
+    "sha256": "ea04c64dd3da5481ed7534a02909e2ddbf98800665d355354024885f669ba78d"
+  },
+  "F13": {
+    "key": "dragon",
+    "file": "tools/map_icon_rework/drop01/icons/dragon.png",
+    "sha256": "ce412920d318cc42203029b1fd99d1155f4454e1a5832e0f445e7ab0ae07d284"
+  },
+  "F14": {
+    "key": "mining_camp",
+    "file": "tools/map_icon_rework/drop01/icons/mining_camp.png",
+    "sha256": "119a2b7699429cf5810c9dc45723d78abfad16e9f6e89658588717ebad18af5e"
+  },
+  "F15": {
+    "key": "camp_construction",
+    "file": "tools/map_icon_rework/drop01/icons/camp_construction.png",
+    "sha256": "3000802fc0157593da955788147efbfbbacf72eed367e8d645c9c476ac0aac89"
+  },
+  "G01": {
+    "key": "crosshair",
+    "file": "tools/map_icon_rework/drop01/icons/crosshair.png",
+    "sha256": "cf91ea770cdbb51223e8450892c737f52411549c2e6e2607eb6ac36a5b4b1b8a"
+  },
+  "G02": {
+    "key": "ring",
+    "file": "tools/map_icon_rework/drop01/icons/ring.png",
+    "sha256": "371bd03ab4e1484c0d2c0ba4d31ebcff5732bf623a637cdf833c001f13c526aa"
+  }
+}

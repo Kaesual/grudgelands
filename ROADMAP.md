@@ -8,6 +8,11 @@ Earlier delivery narratives are preserved in the
 
 ## Next priorities — Deepening the playable game
 
+Next scoped presentation milestone: [Round 64 map icons](docs/planning/round64-plan.md),
+implementing the [approved atlas rules](docs/design/world_map.md#approved-icon-integration-round-64)
+for readable shared symbols and stable placement. Work status is in
+[BACKLOG](BACKLOG.md#round-64--map-icons-planned-2026-10-27).
+
 Direction set by the user on 2026-10-11: the playable foundation needs a
 focused improvement pass to become a rewarding experience throughout.
 These are the next gameplay priorities, alongside the fixes already queued;

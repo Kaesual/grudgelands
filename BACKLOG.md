@@ -6,6 +6,14 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 64 — map icons (planned 2026-10-27)
+
+Implement the approved [atlas icon rules](docs/design/world_map.md#approved-icon-integration-round-64)
+through the [Round 64 plan](docs/planning/round64-plan.md): shared assets and
+display sizes, bounded alpha-aware placement, and fixed minimap icon
+composition with measured traffic/cache costs. Artwork accepted; planning
+complete, implementation not started. Compatible presentation change.
+
 ## UI review follow-ups (2026-10-26)
 
 Requested during [UI polish review](docs/planning/ui-polish-review.md); these

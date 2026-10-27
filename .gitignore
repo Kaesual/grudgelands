@@ -18,3 +18,7 @@ tools/wp40/results/
 # Round 28 generated art originals (~48 MB) live outside git, in the archive
 # recorded in docs/planning/round28/art/manifest.json (originals.archive).
 /docs/planning/round28/art/originals/
+
+# Optional full-resolution map-art originals and rejected drafts; the approved
+# 32px masters and generation provenance are tracked beside this local archive.
+/tools/map_icon_rework/local-originals/

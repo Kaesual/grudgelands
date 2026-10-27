@@ -2,6 +2,41 @@
 
 Decided 2026-09-21; Round 14 user Go.
 
+## Approved icon integration (Round 64)
+
+User decisions, 2026-10-27; **approved target, not implemented yet**.
+The sections below describe the existing runtime until
+[Round 64](../planning/round64-plan.md) reconciles them at delivery.
+
+- Use the accepted [icon set](../planning/map-icon-rework.html) on both
+  world map and minimap, one 32x32 PNG per motif/direction. Preserve the
+  intentional smaller motif fill of the innkeeper. One brown side-view
+  horse replaces the six riding-trainer map motifs. Quest/profession icons
+  have no surrounding circular/square badges. Post, music and daytime art
+  stay as they are; the minimap bezel is retained.
+- Ordinary icons have the same displayed size in both views, independent
+  of world-map zoom. Shared UI scaling may change their common size.
+  Geographic area rings retain their actual extent; exact positional
+  targets and player/party arrows stay on their real anchors.
+- Avoid overlaps of nontransparent icon pixels while allowing transparent
+  areas to overlap. Initial maximum displacement is 16 display pixels at
+  standard scale, scaled with the icons. Anchor proximity takes priority
+  over complete separation: residual overlap in dense groups is accepted.
+  Do not add automatic clusters or hide markers as an overlap remedy.
+- Minimap fixed icons are drawn together with cached map imagery to avoid
+  independent movement updates per icon. They remain visible above flight,
+  claim and other ground overlays. Keep personalized home/innkeeper,
+  discovered-waystone, Claim Stone and quest-state behavior; player/party
+  positions remain live. Preserve existing faction visibility and travel
+  discovery rules.
+- Cache layout per simultaneous marker group and projection/display scale;
+  translating the view must not rearrange its icons. Raster composition
+  uses the computed positions and must preserve the common icon size and
+  readable source art. Exact cache/render mechanics and measured costs
+  belong to the implementation plan, not additional gameplay rules.
+
+## Existing atlas behavior
+
 - A cartographic atlas of the authored world: coasts/regions, roads, zone
   names, settlements and player position. Since Round 44 it is its own
   window, opened by Z and by the Map tab, with the quest log beside it
