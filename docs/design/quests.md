@@ -93,16 +93,34 @@ repeatable switch by Round 57, 2026-10-23
 
 - Track up to ten selected quests on the HUD (Round 24 ruling 23; one
   constant for the tracker, the auto-track on accept and the quest-log
-  notice). Each tracked quest is one HUD line showing only its objective
-  (e.g. "0/4 Bring Raw Meat"), no title; a quest ready to turn in shows
-  "Return to <turn-in NPC>" (a system quest its own line, "System quests"
+  notice). Each tracked quest is one box (Round 65 ruling 4, replacing
+  ruling 23's objective-only line): a semi-transparent panel (the UI
+  theme's dark panel colour at 30 % opacity; the text stays opaque), in its
+  top row the title left aligned in the theme's light text colour, cut with
+  "..." so it never reaches the level label, and the quest level
+  right aligned as "[Lv N]" (`def.level`, the number the quest log shows)
+  in the target frame's difficulty colour relative to the player's level
+  (`grug_xp.con_color`: gray at ten or more levels below, green to yellow
+  to red; it follows a level change); below it the objective line in the
+  quest yellow (e.g. "0/4 Bring Raw Meat"). The boxes are sorted by quest
+  level, ties by title, then id, so easy and hard quests read at a glance.
+  All boxes share one width (the side text width, 38 characters at most)
+  and stand at the right edge, centred on the screen's middle where they
+  fit; as many show as fit between the minimap block (its box, location
+  line and the "Now playing" box while it shows) and the bottom of the
+  screen, or the bottom-centre column where a box would reach over it
+  (the XP row's label, the status icons and the feed); the rest are one
+  line "+N more" (the quest log lists them all). Ten fit at 1920×1080 at
+  GUI scaling 1; 1280×720 shows seven, six with "Now playing"
+  (`grug_core.hud_layout.quest_boxes`, `tools/r65_hud`). A quest ready to
+  turn in shows "Return to <turn-in NPC>" (a system quest its own line, "System quests"
   below; a shared quest the turn-in of the variant the player took, the
   giver it was taken from when that giver is one of them, Round 58: a role
   quest's turn-ins are every foreman of the role). The same NPC carries the
   map's hand-in marker. A
   quest with several objectives shows them on one compact line ("Wood Axe
   0/1, Wood Pickaxe 0/1") and a travel quest reads "Travel to <NPC>". Two
-  quests with identical objectives may read the same. Keep the tab authoritative; do not place the entire journal
+  quests with identical objectives show the same objective line. Keep the tab authoritative; do not place the entire journal
   permanently on screen.
 - Item turn-ins accept already-owned and traded/crafted-by-others items.
   Descriptions say “Bring ...” instead of claiming to verify personal crafting.
@@ -159,8 +177,8 @@ repeatable switch by Round 57, 2026-10-23
 
 Decided 2026-09-21: enlarge quest symbols fivefold while holding their upper
 extent fixed (growth downward). Keep per-viewer states and existing visibility
-hysteresis. The optional quest HUD (up to ten one-line entries) sits at screen
-middle-right, with right-aligned text and edge padding, clear of the top-right
+hysteresis. The optional quest HUD (up to ten boxes since Round 65, "Accepted defaults")
+sits at screen middle-right with edge padding, clear of the top-right
 minimap.
 
 Round 29 replaced the 240 quests of Rounds 14–20 with 491 quests in the

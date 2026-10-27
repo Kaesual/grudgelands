@@ -430,6 +430,8 @@ grug_quests = {MAX_TRACKED = 10, registered_npcs = {elder = {title = "Elder Mare
 core.registered_entities["grug_mobs:small_boar"] = {description = "Small Boar"}
 grug_mobs = {} -- no sub-types here: labels read the entity description
 dofile("mods/PLAYER/grug_quests/labels.lua")
+-- Round 65: the tracker's boxes read the UI theme's colours.
+grug_core.ui = {colors = {text = "#eeeae1", panel = "#0a10115e"}}
 dofile("mods/PLAYER/grug_quests/hud.lua")
 local function quest(id, objectives) return {id = id, objectives = objectives, ready = false} end
 local boar = {type = "kill", mobs = {"grug_mobs:small_boar"}, count = 3, required = 10}

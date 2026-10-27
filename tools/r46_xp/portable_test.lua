@@ -313,7 +313,9 @@ do
 		same_faction = function() return false end}
 	grug_classes = {get_race = function() return "dwarf" end}
 	grug_xp = {get_level = function() return 20 end, quest_reward = function() return 0 end,
-		register_on_level_change = noop}
+		register_on_level_change = noop,
+		-- Round 65: the tracker boxes' level labels (tools/r65_hud checks the colour).
+		con_color = function() return 0xffff55 end}
 	grug_mobs = {register_on_eligible_kill = noop, register_participant_drop_hook = noop}
 	grug_money = {}
 	grug_quests = {}
@@ -354,7 +356,7 @@ do
 		eq(#journal.quests, 1, "D ...and lists the kept quest only")
 		eq(journal.quests[1] and journal.quests[1].id, "copperfell_survey_01", "D ...the survey")
 		eq(table.concat(journal.tracked, ","), "copperfell_survey_01", "D ...and tracks it only")
-		local hud_ok, hud_err = pcall(Q.hud_text, journal, nil)
+		local hud_ok, hud_err = pcall(Q.hud_entries, journal, 20, 38)
 		check(hud_ok, "D the tracker draws: " .. tostring(hud_err))
 	end
 	local markers_ok, states = pcall(Q.marker_states, player)

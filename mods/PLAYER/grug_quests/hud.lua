@@ -27,8 +27,9 @@ local function one_line(text, width)
 	return text:sub(1, cut):gsub("%s+$", "") .. "..."
 end
 
--- One HUD line per tracked quest (Round 24 ruling 23): the objective only,
--- no quest title, or "Return to <turn-in NPC>" once the quest is ready. A
+-- The objective line of a tracked quest's box (Round 24 ruling 23's line;
+-- since Round 65 under the quest's title): the objective, or "Return to
+-- <turn-in NPC>" once the quest is ready. A
 -- travel quest reads "Travel to <NPC>" throughout (Round 28 ruling 39);
 -- several objectives share one compact line, "Wood Axe 0/1, Wood Pickaxe
 -- 0/1" (ruling 41). A shared quest returns to the turn-in of the variant
@@ -52,19 +53,37 @@ function grug_quests.hud_line(quest, width)
 	return one_line(text, width)
 end
 
--- `window` is the player's window information (nil in fixtures).
-function grug_quests.hud_text(journal, window)
-	if not journal.hud_enabled or #journal.quests == 0 then return "" end
-	local by_id, lines = {}, {}
-	local width = grug_core.hud_layout.side_text_width(window)
+-- The tracked quests as the tracker's boxes (Round 65 ruling 4, replacing
+-- Round 24 ruling 23's objective-only lines): the title, cut so the level
+-- label keeps its room; the label "[Lv N]" of the quest level (`def.level`,
+-- the number the quest log shows) in its difficulty colour for a player of
+-- `player_level` (grug_xp.con_color, the target frame's gradient); the
+-- objective line (hud_line). Sorted by quest level, ties by title, then id,
+-- so easy and hard quests read at a glance. `width` is the line width in
+-- characters (hud_layout.side_text_width). Empty while the HUD is off.
+function grug_quests.hud_entries(journal, player_level, width)
+	local entries = {}
+	if not journal.hud_enabled then return entries end
+	local by_id = {}
 	for _, quest in ipairs(journal.quests) do by_id[quest.id] = quest end
 	for _, id in ipairs(journal.tracked) do
 		local quest = by_id[id]
-		if quest and #lines < grug_quests.MAX_TRACKED then
-			lines[#lines + 1] = grug_quests.hud_line(quest, width)
+		if quest and #entries < grug_quests.MAX_TRACKED then
+			local level = grug_quests.registered_quests[id].level
+			local label = ("[Lv %d]"):format(level)
+			entries[#entries + 1] = {id = id, level = level, label = label,
+				color = grug_xp.con_color(level, player_level),
+				title = one_line(quest.title, width - #label - 1),
+				line = grug_quests.hud_line(quest, width),
+				order = plain(quest.title):lower()}
 		end
 	end
-	return table.concat(lines, "\n")
+	table.sort(entries, function(a, b)
+		if a.level ~= b.level then return a.level < b.level end
+		if a.order ~= b.order then return a.order < b.order end
+		return a.id < b.id
+	end)
+	return entries
 end
 
 -- Every objective as "<subject> <count>/<required>", joined by ", "
@@ -115,29 +134,117 @@ local function post_progress(player, journal)
 	end
 end
 
+-- The tracker's look (Round 65 ruling 4, coordinator defaults): the box in
+-- the UI theme's dark panel colour at 30 % opacity (the box only, never the
+-- text), the title in the theme's light text colour, the objective in the
+-- quest yellow. Read from grug_core.ui on first use.
+local OBJECTIVE_COLOR = 0xffe080
+local box_texture, title_color
+local function theme()
+	if not box_texture then
+		local colors = grug_core.ui.colors
+		box_texture = ("[fill:1x1:%s4d"):format(colors.panel:sub(1, 7))
+		title_color = tonumber(colors.text:sub(2, 7), 16)
+	end
+end
+
+-- One HUD element at the tracker's anchor and the values last sent to it:
+-- added with `text`, `number`, the offset x/y and (images) the scale sx/sy
+-- when `e` is nil, else sent only what changed (`hud_change` sends a packet
+-- on every call, hud_layout.lua bar_fill). Text and images are placed by
+-- their top edge, `align` -1 by the right edge and 1 by the left.
+local function put(player, e, kind, align, text, number, x, y, sx, sy)
+	if not e then
+		return {id = player:hud_add({type = kind, text = text, number = number,
+			position = grug_core.hud_layout.anchors.quest_list.position,
+			alignment = {x = align, y = 1}, offset = {x = x, y = y},
+			scale = sx and {x = sx, y = sy}, z_index = kind == "image" and 0 or 1}),
+			text = text, number = number, x = x, y = y, sx = sx, sy = sy}
+	end
+	if e.text ~= text then player:hud_change(e.id, "text", text); e.text = text end
+	if e.number ~= number then player:hud_change(e.id, "number", number); e.number = number end
+	if e.x ~= x or e.y ~= y then
+		player:hud_change(e.id, "offset", {x = x, y = y}); e.x, e.y = x, y
+	end
+	if e.sx ~= sx or e.sy ~= sy then
+		player:hud_change(e.id, "scale", {x = sx, y = sy}); e.sx, e.sy = sx, sy
+	end
+	return e
+end
+
+-- Whether the minimap's "Now playing" box shows (grug_map depends on this
+-- mod, so it is read at run time); the boxes stay clear of it.
+local function now_playing(name)
+	local map = rawget(_G, "grug_map")
+	local minimap = map and map.minimap
+	return minimap and minimap.now_playing and minimap.now_playing(name) or false
+end
+
+-- Lays the boxes out (hud_layout.quest_boxes) and sends what changed:
+-- elements are added or removed only when the box count or the "+N more"
+-- line comes or goes, everything else is a hud_change of a changed value.
+local function draw(player, row)
+	theme()
+	local layout = grug_core.hud_layout
+	local entries = grug_quests.hud_entries(row.journal, row.level,
+		layout.side_text_width(row.window))
+	local g = layout.quest_boxes(row.window, #entries, row.playing)
+	local right = layout.anchors.quest_list.offset.x
+	local left = right - g.width + g.pad
+	for i = 1, g.shown do
+		local entry, top = entries[i], g.tops[i]
+		local box = row.boxes[i] or {}
+		row.boxes[i] = box
+		box.box = put(player, box.box, "image", -1, box_texture, nil, right, top,
+			g.width, g.height)
+		box.title = put(player, box.title, "text", 1, entry.title, title_color, left,
+			top + g.pad)
+		box.label = put(player, box.label, "text", -1, entry.label, entry.color,
+			right - g.pad, top + g.pad)
+		box.line = put(player, box.line, "text", 1, entry.line, OBJECTIVE_COLOR, left,
+			top + g.pad + g.line)
+	end
+	for i = #row.boxes, g.shown + 1, -1 do
+		for _, key in ipairs({"box", "title", "label", "line"}) do
+			player:hud_remove(row.boxes[i][key].id)
+		end
+		row.boxes[i] = nil
+	end
+	if g.more > 0 then
+		row.more = put(player, row.more, "text", -1, ("+%d more"):format(g.more),
+			title_color, right - g.pad, g.more_top)
+	elseif row.more then
+		player:hud_remove(row.more.id)
+		row.more = nil
+	end
+end
+
 -- The journal is built only when its key (Q.journal_key: the raw quest
--- state and the counts of held objective items) changed, and the text only
--- when the journal or the line width did (Round 30, perf review #5).
+-- state and the counts of held objective items) changed, and the boxes
+-- drawn only when the journal, the window (size and scalings) or the "Now
+-- playing" box did (Round 30, perf review #5), or the level (below).
 local function refresh(player)
 	local name = player:get_player_name()
 	local row = huds[name]
 	if not row then return end
 	local raw, held, counts = grug_quests.journal_key(player)
 	local window = core.get_player_window_information(name)
-	local width = grug_core.hud_layout.side_text_width(window)
+	local playing = now_playing(name)
+	local size = window and window.size
+	local key = size and ("%d %d %s %s %s"):format(size.x, size.y, window.real_hud_scaling,
+		window.real_gui_scaling, tostring(playing)) or tostring(playing)
 	local fresh = raw ~= row.raw or held ~= row.held
 	-- Held objective items changed under an unchanged state (picked up,
 	-- dropped, used): an NPC's marker may turn ready or back. A state change
 	-- has told the markers already.
 	if raw == row.raw and held ~= row.held then grug_quests.markers_changed(player) end
-	if not fresh and width == row.width then return end
+	if not fresh and key == row.key then return end
 	if fresh then
 		row.journal, row.raw, row.held = grug_quests.journal(player, counts), raw, held
 		post_progress(player, row.journal)
 	end
-	row.width = width
-	local text = grug_quests.hud_text(row.journal, window)
-	if row.text ~= text then player:hud_change(row.id, "text", text); row.text = text end
+	row.key, row.window, row.playing = key, window, playing
+	draw(player, row)
 end
 
 -- Each player is polled every SLOTS x SLOT_PERIOD = 0.5 s, in one of SLOTS
@@ -148,10 +255,7 @@ local slot_of, joined, accumulator, current_slot = {}, 0, 0, 0
 
 core.register_on_joinplayer(function(player)
 	local name = player:get_player_name()
-	local anchor = grug_core.hud_layout.anchors.quest_list
-	huds[name] = {text = "", id = player:hud_add({type = "text",
-		position = anchor.position, offset = anchor.offset, alignment = anchor.alignment,
-		text = "", number = 0xffe080, z_index = 1})}
+	huds[name] = {boxes = {}, level = grug_xp.get_level(player)}
 	joined = joined + 1
 	slot_of[name] = joined % SLOTS + 1
 	refresh(player)
@@ -161,6 +265,14 @@ core.register_on_leaveplayer(function(player)
 	huds[name], seen[name], slot_of[name] = nil, nil, nil
 end)
 grug_quests.register_on_change(refresh)
+-- The level labels' colours follow the player's level.
+grug_xp.register_on_level_change(function(player, _, level)
+	local row = huds[player:get_player_name()]
+	if row and row.journal and row.level ~= level then
+		row.level = level
+		draw(player, row)
+	end
+end)
 core.register_on_player_inventory_action(function(player) refresh(player) end)
 core.register_globalstep(function(dtime)
 	accumulator = accumulator + dtime

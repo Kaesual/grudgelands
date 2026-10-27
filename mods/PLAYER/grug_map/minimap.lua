@@ -773,6 +773,13 @@ function M.set_now_playing(name, track)
 	end
 end
 
+-- Whether `name`'s "Now playing" box shows: the quest tracker (grug_quests
+-- hud.lua, Round 65) keeps its boxes clear of it.
+function M.now_playing(name)
+	local state = players[name]
+	return state ~= nil and state.playing ~= nil
+end
+
 -- The mail icon (Round 48, the round plan's interface 3.1; grug_mail calls
 -- it on every change of the unread count and at join): `count` unread
 -- letters and broadcasts, 0 hides the icon, 1-9 show the digit, more "9+".

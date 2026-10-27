@@ -167,7 +167,9 @@ grug_factions = {get_faction = function() return faction end, same_faction = fun
 dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return race end}
 grug_xp = {get_level = function() return 60 end, quest_reward = function(_, weight) return weight end,
-	register_on_level_change = function() end}
+	register_on_level_change = function() end,
+	-- Round 65: the tracker boxes' level labels (tools/r65_hud checks the colour).
+	con_color = function() return 0xffff55 end}
 -- Quest texts fill their placeholders (labels.lua); a stand-in region map
 -- names every kind or camp, quest place and clash site (Round 36) by its id
 -- and every direction "nearby" (this test reads item names).
@@ -446,9 +448,10 @@ for _, id in ipairs(ids) do
 	end
 	local journal = Q.journal(player)
 	for _, width in ipairs({38, 400}) do
-		local text = Q.hud_text(journal, nil)
+		local entry = Q.hud_entries(journal, 60, width)[1]
 		local line = Q.hud_line(journal.quests[1], width)
-		check(one_clean_line(line) and one_clean_line(text), "HUD line clean: " .. id .. " " .. ("%q"):format(line))
+		check(one_clean_line(line) and one_clean_line(entry.line) and one_clean_line(entry.title),
+			"HUD line clean: " .. id .. " " .. ("%q"):format(line))
 		if width == 400 and hud_want then
 			eq(line, hud_want, "HUD objective line: " .. id)
 			record("HUD tracker", line)
