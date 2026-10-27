@@ -30,7 +30,6 @@
       "line": "hunt",
       "giver": "r14_undead_elder",
       "turnin": "r14_undead_elder",
-      "min_level": 4,
       "level": 5,
       "requires": [],
       "title": "Flowers for the Wrong Guests",
@@ -85,7 +84,6 @@
       "line": "hunt",
       "giver": "r14_undead_elder",
       "turnin": "r14_undead_elder",
-      "min_level": 8,
       "level": 9,
       "requires": [],
       "title": "Borrow Has Had Long Enough",
@@ -161,7 +159,6 @@
       "line": "hunt",
       "giver": "r14_undead_elder",
       "turnin": "r14_undead_steward",
-      "min_level": 9,
       "level": 9,
       "requires": [
         "stillgrave_hunt_05"

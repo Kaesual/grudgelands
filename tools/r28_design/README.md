@@ -176,8 +176,11 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   no label, kill or item fields on it, or its fields on another kind).
   Recipe `places` (`id`, `name`, `at` `{kind, pick}`) are checked like kind
   leaders (`E-recipe`, `E-recipe-ref`, `E-recipe-key`). Quest `tags` are a
-  list of distinct snake_case names (`E-tags`). `W-chain-gate`: a quest's
-  `min_level` below a prerequisite's (its shown gate would be wrong).
+  list of distinct snake_case names (`E-tags`). A quest names only its
+  `level`; it is accepted from `level − 2`, at least 1 (Round 65,
+  `r28common.acceptance_level`), and a stale `min_level` is an `E-levels`
+  error (`W-level-order` and `W-chain-gate` compared the two numbers and
+  are gone).
 - Leaders: a kill objective or quest drop on a leader role finds the leader
   in the zone's recipe `leaders`, else in any zone's (leader roles are
   unique), and uses its computed level; it names no area (`E-leader-area`),
@@ -306,7 +309,8 @@ python3 tools/r28_design/ledger.py \
   level; on a PvP garrison (Round 31) the garrison's levels and tiers as
   `pvp_garrison.lua`'s `G.slot` places them (`r28common.pvp_pois` reads both
   and fails loudly when it cannot).
-- Walks the route quest by quest (prerequisites first, then by `min_level`)
+- Walks the route quest by quest (prerequisites first, then by acceptance
+  level, `level − 2`)
   with a simulated player and counts real XP: quest rewards
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives
   (`count ×` the kill XP of `r28common.kill_xp`: `M(player level)` times the
@@ -319,7 +323,7 @@ python3 tools/r28_design/ledger.py \
   resolve to their ores; ore 0.05, gem 0.10, fish 0.33 KE at
   `min(10 × tier, player level)`).
   Crafted items, logs and talk objectives give no XP. When the player is below
-  a quest's `min_level`, the missing XP is added as free play and noted.
+  a quest's acceptance level, the missing XP is added as free play and noted.
 - Reports per band: XP needed (and KE), rewards, quest kills, drop kills,
   gathering, questing total and share, reward share and free play. The
   frame's questing and reward-share targets (Ruling 33) are retired (Round

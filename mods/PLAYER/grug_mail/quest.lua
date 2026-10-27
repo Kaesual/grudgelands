@@ -17,7 +17,7 @@ grug_quests.register_quest(QUEST, {
 	turnin_text = "Open a mailbox beside the waystone of a capital or a starting village",
 	title = TEXTS.title,
 	description = TEXTS.description,
-	min_level = 1, level = 1,
+	level = 1,
 	-- A little XP (one kill equivalent at level 1) and 25c: the first letters'
 	-- postage (ruling 17.2).
 	rewards = {weight = 1, copper = 25},

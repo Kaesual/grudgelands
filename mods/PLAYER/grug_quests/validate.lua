@@ -41,6 +41,9 @@ end
 -- several zones, ruling 9; in place of `giver` and `turnin`) and `texts`
 -- (a giver's or a race's own text); the reward `choices` (ruling 15).
 -- `repeatable` is gone (ruling 11): an unknown field like any other.
+-- Round 65 ruling 3: `min_level` is gone too (a quest is accepted from its
+-- level - 2, grug_quests.acceptance_level); it stays in the key set only so
+-- a stale one is reported as such [E-levels].
 V.QUEST_KEYS = key_set({"id", "line", "giver", "turnin", "variants", "min_level", "level", "requires", "title",
 	"text", "texts", "completion", "story", "objectives", "rewards", "quest_drops", "lesson", "duration_min",
 	"optional", "climax", "group", "notes", "tags"})
@@ -563,7 +566,7 @@ function V.structure(files, npcs)
 		else
 			unknown_keys(add, where, quest, V.QUEST_KEYS)
 			local shared = quest.variants ~= nil
-			local required = {"id", "line", "min_level", "level", "title", "text", "objectives", "rewards"}
+			local required = {"id", "line", "level", "title", "text", "objectives", "rewards"}
 			if not shared then
 				table.insert(required, 3, "giver")
 				table.insert(required, 4, "turnin")
@@ -643,7 +646,9 @@ function V.structure(files, npcs)
 				add(where, ("line 'front' belongs to the front file zones/%s.front.quests.json [E-front-line]")
 					:format(file.zone))
 			end
-			if not int(quest.min_level, 1, 60) then add(where, "min_level must be an integer 1..60 [E-levels]") end
+			if quest.min_level ~= nil then
+				add(where, "min_level is gone: a quest is accepted from its level - 2 (Round 65) [E-levels]")
+			end
 			if not int(quest.level, 1, 60) then add(where, "level must be an integer 1..60 [E-levels]") end
 			if quest.requires ~= nil and not list(quest.requires) then
 				add(where, "requires must be a list of quest ids [E-type]")

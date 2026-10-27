@@ -80,7 +80,6 @@
       "line": "border",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_044_host",
-      "min_level": 30,
       "level": 31,
       "requires": [],
       "title": "Yarra Keeps the Names",
@@ -103,7 +102,6 @@
       "line": "border",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_043_host",
-      "min_level": 34,
       "level": 35,
       "requires": [],
       "title": "Rattle's Bad Arithmetic",
@@ -171,7 +169,6 @@
       "line": "border",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_048_host",
-      "min_level": 30,
       "level": 31,
       "requires": [],
       "title": "Word for Thunderstep",
@@ -194,7 +191,6 @@
       "line": "border",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_044_host",
-      "min_level": 37,
       "level": 38,
       "requires": [],
       "title": "A Soldier's Due",
@@ -250,7 +246,6 @@
       "line": "border",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_044_host",
-      "min_level": 38,
       "level": 39,
       "requires": [],
       "title": "Party: The Banner-Eater",
@@ -289,7 +284,6 @@
       "line": "border",
       "giver": "r20_anchor_043_host",
       "turnin": "r58_foreman_mining_camp_bannerbreak_mesa",
-      "min_level": 35,
       "level": 36,
       "requires": [
         "story_throng_04",
@@ -330,7 +324,6 @@
       "line": "oaths",
       "giver": "r31_throng_warmaster",
       "turnin": "r20_anchor_043_host",
-      "min_level": 41,
       "level": 42,
       "requires": [],
       "story": true,
@@ -377,7 +370,6 @@
       "line": "oaths",
       "giver": "r31_throng_warmaster",
       "turnin": "r20_anchor_044_host",
-      "min_level": 46,
       "level": 47,
       "requires": [
         "throng_main_02"
@@ -416,7 +408,6 @@
       "line": "oaths",
       "giver": "r31_throng_warmaster",
       "turnin": "r31_throng_warmaster",
-      "min_level": 47,
       "level": 49,
       "requires": [
         "bb_front_torn_05"
@@ -463,7 +454,6 @@
       "line": "oaths",
       "giver": "r31_throng_warmaster",
       "turnin": "r31_throng_warmaster",
-      "min_level": 48,
       "level": 50,
       "requires": [
         "throng_main_04"
@@ -494,7 +484,6 @@
       "line": "oaths",
       "giver": "r31_throng_warmaster",
       "turnin": "r31_throng_warmaster",
-      "min_level": 57,
       "level": 59,
       "requires": [
         "throng_main_05"
@@ -535,7 +524,6 @@
       "line": "oaths",
       "giver": "r31_throng_warmaster",
       "turnin": "r20_anchor_039_host",
-      "min_level": 53,
       "level": 55,
       "requires": [
         "throng_main_05"
@@ -577,7 +565,6 @@
       "line": "oaths",
       "giver": "r31_throng_warmaster",
       "turnin": "r20_anchor_039_host",
-      "min_level": 60,
       "level": 60,
       "requires": [
         "throng_main_07"

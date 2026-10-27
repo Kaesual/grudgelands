@@ -615,6 +615,10 @@ def build():
         by_id = {q["id"]: q for q in data["quests"]}
         chapter1 = [by_id[qid] for qid in CHAPTER1.get(capital, ())]
         quests = chapter1 + shared.get(zone, []) + local_quests(capital)
+        # Round 65 ruling 3: a quest names only its level (accepted from
+        # level - 2); the minimum levels written above are history.
+        for quest in quests:
+            quest.pop("min_level", None)
         out = {"zone": data["zone"], "reworked": True, "identity": data["identity"],
                "hubs": hubs(capital), "quests": quests}
         files[path] = json.dumps(out, indent=2, ensure_ascii=False) + "\n"

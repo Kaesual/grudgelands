@@ -7,7 +7,6 @@
       "line": "front",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
-      "min_level": 60,
       "level": 60,
       "requires": [],
       "title": "Optional: Beyond the Ink",
@@ -36,7 +35,6 @@
       "line": "front",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
-      "min_level": 60,
       "level": 60,
       "requires": [
         "highcourt_front_01"
@@ -67,7 +65,6 @@
       "line": "front",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
-      "min_level": 60,
       "level": 60,
       "requires": [],
       "title": "Optional: A Chest Overboard",

@@ -28,7 +28,6 @@
     {
       "id": "start_boars",
       "line": "hunt",
-      "min_level": 1,
       "level": 2,
       "requires": [],
       "title": "Eight Snouts Too Many",
@@ -130,7 +129,6 @@
     {
       "id": "start_rats",
       "line": "pantry",
-      "min_level": 1,
       "level": 2,
       "requires": [],
       "title": "The Rats Can Mend It",
@@ -246,7 +244,6 @@
     {
       "id": "start_stone",
       "line": "tools",
-      "min_level": 1,
       "level": 2,
       "requires": [],
       "title": "A Useful Weight",
@@ -320,7 +317,6 @@
     {
       "id": "start_fuel",
       "line": "kitchen",
-      "min_level": 1,
       "level": 2,
       "requires": [],
       "title": "The Fire Eats Too",
@@ -389,7 +385,6 @@
     {
       "id": "start_meat",
       "line": "kitchen",
-      "min_level": 4,
       "level": 5,
       "requires": [],
       "title": "Room at the Table",
@@ -459,7 +454,6 @@
     {
       "id": "start_bars",
       "line": "tools",
-      "min_level": 5,
       "level": 6,
       "requires": [],
       "title": "Metal for the Mending",
@@ -534,7 +528,6 @@
     {
       "id": "start_bronze",
       "line": "tools",
-      "min_level": 7,
       "level": 8,
       "requires": [],
       "title": "A Little Bronze Goes Far",
@@ -604,7 +597,6 @@
     {
       "id": "start_foxes",
       "line": "hunt",
-      "min_level": 4,
       "level": 5,
       "requires": [],
       "title": "Foxes at Our Expense",
@@ -677,7 +669,6 @@
     {
       "id": "start_snappers",
       "line": "hunt",
-      "min_level": 7,
       "level": 8,
       "requires": [],
       "title": "Claws on the Shore",
@@ -752,7 +743,6 @@
       "line": "pantry",
       "giver": "r20_human_start_cook",
       "turnin": "r20_human_start_cook",
-      "min_level": 7,
       "level": 8,
       "requires": [],
       "title": "A Brush and a Better Supper",
@@ -788,7 +778,6 @@
       "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
-      "min_level": 8,
       "level": 9,
       "requires": [],
       "title": "Requisition for One Crumb",
@@ -864,7 +853,6 @@
       "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_steward",
-      "min_level": 9,
       "level": 9,
       "requires": [
         "dawnmere_hunt_05"

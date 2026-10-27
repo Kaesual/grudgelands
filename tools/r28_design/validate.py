@@ -53,10 +53,13 @@ ITEM_KINDS = ("signature", "generic", "quest")
 # Round 57 (the game's validate.lua): `story` (ruling 13), `completion`
 # (ruling 14), `variants` in place of `giver` and `turnin` and `texts`
 # (ruling 9); `repeatable` is gone (ruling 11), an unknown field like any.
+# Round 65 ruling 3: `min_level` is gone as well (a quest is accepted from
+# its level - 2, r28common.acceptance_level); it stays in the key set only
+# so a stale one is reported as such (E-levels).
 QUEST_KEYS = {"id", "line", "giver", "turnin", "variants", "min_level", "level", "requires", "title", "text",
               "texts", "completion", "story", "objectives", "rewards", "quest_drops", "lesson",
               "duration_min", "optional", "climax", "group", "notes", "tags"}
-QUEST_REQUIRED = ("id", "line", "giver", "turnin", "min_level", "level", "title", "text",
+QUEST_REQUIRED = ("id", "line", "giver", "turnin", "level", "title", "text",
                   "objectives", "rewards")
 # The fields of an objective, its rewards and a quest drop. A quest, an
 # objective, its rewards or a quest drop with any other field is an error
@@ -211,7 +214,6 @@ class Validator:
         self.catalog_items = {}
         self.drop_families = {}
         self.quest_ids = {}
-        self.quest_min_level = {}  # quest id -> its min_level (W-chain-gate)
         # Round 36: the places and object kinds of "use at a place" objectives.
         self.clash_sites = C.clash_sites()
         self.use_objects = C.use_objects()
@@ -931,15 +933,16 @@ class Validator:
                 if faction and None not in turnin_factions and faction not in turnin_factions:
                     self.E("E-turnin-faction", file, vpath, "giver %s serves %s, and no turn-in of the variant does"
                            % (name, faction))
-        min_level, level = q.get("min_level"), q.get("level")
-        if not is_int(min_level, 1, C.LEVEL_CAP):
-            self.E("E-levels", file, path + ".min_level", "min_level must be an integer 1..60")
-            min_level = None
+        # Round 65 ruling 3: the quest level is the one source; the
+        # acceptance level is derived (W-level-order and W-chain-gate
+        # compared the two numbers and are gone with the second one).
+        if "min_level" in q:
+            self.E("E-levels", file, path + ".min_level",
+                   "min_level is gone: a quest is accepted from its level - 2 (Round 65)")
+        level = q.get("level")
         if not is_int(level, 1, C.LEVEL_CAP):
             self.E("E-levels", file, path + ".level", "level must be an integer 1..60")
             level = None
-        if min_level and level and level < min_level:
-            self.W("W-level-order", file, path, "reward level %d below min_level %d" % (level, min_level))
         requires = q.get("requires", [])
         if not isinstance(requires, list):
             self.E("E-type", file, path + ".requires", "requires must be a list of quest ids")
@@ -947,11 +950,6 @@ class Validator:
         for req in requires:
             if req not in self.quest_ids:
                 self.E("E-unknown-requires", file, path + ".requires", "unknown quest %r" % req)
-            elif min_level and is_int(self.quest_min_level.get(req), 1) and self.quest_min_level[req] > min_level:
-                # Round 36 (chapter chains): the quest opens only after its
-                # prerequisite, so the gate it shows is the prerequisite's.
-                self.W("W-chain-gate", file, path + ".min_level", "min_level %d is below the min_level %d of "
-                       "its prerequisite %s" % (min_level, self.quest_min_level[req], req))
         tags = q.get("tags")
         if tags is not None and not (isinstance(tags, list) and all(isinstance(t, str) and C.SNAKE.match(t)
                                                                     for t in tags) and len(set(tags)) == len(tags)):
@@ -1730,7 +1728,6 @@ class Validator:
                                    "quest id %s also in %s" % (q["id"], self.quest_ids[q["id"]][0]))
                         else:
                             self.quest_ids[q["id"]] = (zone, path)
-                            self.quest_min_level[q["id"]] = q.get("min_level")
         for zone, data in self.d.spawns.items():
             if not self.only_zones or zone in self.only_zones:
                 self.spawns(zone, data)
@@ -1975,7 +1972,6 @@ def _mutations():
 
     def level_fit(d):
         quest(d, "sample_hunt_01")["level"] = 9
-        quest(d, "sample_hunt_01")["min_level"] = 9
 
     def item_source_area(d):
         quest(d, "sample_pantry_01")["objectives"][0].update(
@@ -2245,7 +2241,6 @@ def _mutations():
 
     def level_containment(d):
         quest(d, "sample_hunt_01")["level"] = 6
-        quest(d, "sample_hunt_01")["min_level"] = 5
 
     def drop_level(d):
         q = quest(d, "sample_tools_03")
@@ -2538,7 +2533,8 @@ def _mutations():
         ("quest tags", Q, text_set("sample_hunt_01", "tags", ["main_line", "chapter_1"]), None),
         ("quest tags not snake_case", Q, text_set("sample_hunt_01", "tags", ["Main Line"]), "E-tags"),
         ("quest tag twice", Q, text_set("sample_hunt_01", "tags", ["a", "a"]), "E-tags"),
-        ("min_level below its prerequisite's", Q, text_set("sample_hunt_04", "min_level", 2), "W-chain-gate"),
+        ("a stale min_level (Round 65: derived from the level)", Q, text_set("sample_hunt_04", "min_level", 2),
+         "E-levels"),
         ("quest place deep in a kind", S, place(), None),
         ("quest place at an unknown kind", S, place(at={"kind": "nowhere", "pick": "farthest_from_roads"}),
          "E-recipe-ref"),
@@ -2567,7 +2563,7 @@ def _front_host(target):
 
 
 def _simple_quest(qid, giver, line, level):
-    return {"id": qid, "line": line, "giver": giver, "turnin": giver, "min_level": level, "level": level,
+    return {"id": qid, "line": line, "giver": giver, "turnin": giver, "level": level,
             "requires": [], "title": "Supplies", "text": "The front needs coal. Dig five lumps and bring them here.",
             "objectives": [{"type": "item", "item": "default:coal_lump", "count": 5}],
             "rewards": {"weight": 1, "copper": 5, "items": []}}

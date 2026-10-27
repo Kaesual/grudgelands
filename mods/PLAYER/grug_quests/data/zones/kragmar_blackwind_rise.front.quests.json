@@ -7,7 +7,6 @@
       "line": "front",
       "giver": "r20_anchor_040_host",
       "turnin": "r31_throng_warmaster",
-      "min_level": 46,
       "level": 47,
       "requires": [
         "bb_front_ramp_05"
@@ -38,7 +37,6 @@
       "line": "front",
       "giver": "r20_anchor_040_host",
       "turnin": "r20_anchor_040_host",
-      "min_level": 48,
       "level": 49,
       "requires": [],
       "title": "A Name on the Strap",
@@ -93,7 +91,6 @@
       "line": "front",
       "giver": "r20_anchor_040_host",
       "turnin": "r20_anchor_040_host",
-      "min_level": 50,
       "level": 50,
       "requires": [],
       "title": "Before It Becomes Salvage",
@@ -160,7 +157,6 @@
       "line": "front",
       "giver": "r20_anchor_040_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 52,
       "level": 52,
       "requires": [],
       "title": "What Reaches Ashveil",
@@ -183,7 +179,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 52,
       "level": 53,
       "requires": [],
       "title": "Keep What Can Be Kept",
@@ -236,7 +231,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_undead_capital_envoy",
-      "min_level": 53,
       "level": 53,
       "requires": [],
       "title": "A Place for Their Belongings",
@@ -259,7 +253,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 54,
       "level": 55,
       "requires": [],
       "title": "Word for the Next Party",
@@ -314,7 +307,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 55,
       "level": 56,
       "requires": [],
       "title": "Until the Names Are Read",
@@ -338,7 +330,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 57,
       "level": 59,
       "requires": [
         "throng_main_06"
@@ -378,7 +369,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 58,
       "level": 60,
       "requires": [],
       "title": "Party: Nobody's Number",
@@ -416,7 +406,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r31_throng_warmaster",
-      "min_level": 57,
       "level": 59,
       "requires": [
         "bw_front_ashveil_04",
@@ -448,7 +437,6 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r31_throng_warmaster",
-      "min_level": 60,
       "level": 60,
       "requires": [
         "throng_main_finale"
