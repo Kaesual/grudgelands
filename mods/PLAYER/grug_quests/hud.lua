@@ -247,6 +247,10 @@ local function refresh(player)
 	draw(player, row)
 end
 
+-- For grug_map: the "Now playing" box came or went (minimap.lua
+-- set_now_playing), so the boxes are laid out again at once.
+grug_quests.hud_refresh = refresh
+
 -- Each player is polled every SLOTS x SLOT_PERIOD = 0.5 s, in one of SLOTS
 -- phases by join order, so many players never refresh in the same step
 -- (the pattern of grug_core/atmosphere_zones.lua).

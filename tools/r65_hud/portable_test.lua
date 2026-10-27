@@ -15,7 +15,8 @@
 --      grug_map's own;
 --   E  the element diff: added and removed only when the box count or the
 --      "+N more" line changes, hud_change only for changed values; a level
---      change recolours the labels only.
+--      change recolours the labels only; grug_map's hud_refresh lays the
+--      boxes out again at once when "Now playing" comes or goes.
 --
 --   luajit tools/r65_hud/portable_test.lua [REPO]
 -- Prints the layout numbers and "R65 HUD PORTABLE PASS checks=<n>" or the
@@ -270,10 +271,12 @@ do
 	local live = {}
 	local player = {name = "ann"}
 	function player:get_player_name() return self.name end
+	local next_id = 0
 	function player:hud_add(def)
 		stats.add = stats.add + 1
-		live[#live + 1] = def
-		return #live
+		next_id = next_id + 1 -- the engine never reuses a live id
+		live[next_id] = def
+		return next_id
 	end
 	function player:hud_change(id, key, value)
 		check(live[id] ~= nil, "E hud_change on a live element")
@@ -372,6 +375,21 @@ do
 	local more
 	for _, def in pairs(live) do if def.text:find("more", 1, true) then more = def.text end end
 	eq(more, ("+%d more"):format(10 - g.shown), "E the \"+N more\" text")
+	-- "Now playing" comes: grug_map calls hud_refresh, the boxes make room
+	-- at once (no poll step here).
+	local playing = false
+	rawset(_G, "grug_map", {minimap = {now_playing = function() return playing end}})
+	reset()
+	playing = true
+	Q.hud_refresh(player)
+	local g2 = layout.quest_boxes(windows.ann, 10, true)
+	check(g2.shown < g.shown, "E (\"Now playing\" costs a box at 1280x720)")
+	eq(stats.remove, 4 * (g.shown - g2.shown), "E \"Now playing\" comes: hud_refresh drops a box at once")
+	reset()
+	playing = false
+	Q.hud_refresh(player)
+	eq(stats.add, 4 * (g.shown - g2.shown), "E ...and it goes: the box is back at once")
+	rawset(_G, "grug_map", nil)
 	reset()
 	windows.ann = window(1920, 1080)
 	for _, fn in ipairs(steps) do for _ = 1, 5 do fn(0.1) end end
