@@ -281,6 +281,7 @@ local function new_player(name)
 	end
 	function p:hud_add(def) self.next_hud = self.next_hud + 1; self.huds[self.next_hud] = deep_copy(def); return self.next_hud end
 	function p:hud_change(id, stat, value) self.huds[id][stat] = value end
+	function p:hud_remove(id) self.huds[id] = nil end -- Round 65: a tracker box goes
 	return p
 end
 
@@ -291,7 +292,10 @@ grug_core = {feed_item = function() end, feed = function() return true end,
 	settlement_socket_settlements = function() return {} end,
 	settlement_sockets_at = function() return {} end,
 	zone_authority_installed = function() return true end,
-	FEED_COLOR = {notice = 0xf0e6c8}}
+	FEED_COLOR = {notice = 0xf0e6c8},
+	-- Round 65: the tracker boxes read the UI theme's colours.
+	ui = {colors = {text = "#eeeae1", panel = "#0a10115e"}},
+}
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 grug_inventory = {BAG_COUNT = 0,
@@ -300,7 +304,9 @@ grug_inventory = {BAG_COUNT = 0,
 grug_factions = {same_faction = function() return false end}
 grug_xp = {get_level = function() return 10 end, add_xp = function() end,
 	quest_reward = function() return 10 end,
-	register_on_level_change = function() end}
+	register_on_level_change = function() end,
+	-- Round 65: the tracker boxes' level labels (tools/r65_hud checks the colour).
+	con_color = function() return 0xffff55 end}
 grug_money = {MAX = 1e9, get = function() return 0 end, add = function() end}
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end}
 grug_quests = {}

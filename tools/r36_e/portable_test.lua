@@ -165,7 +165,17 @@ grug_core = {register_tag_visibility = function() end,
 	end,
 	get_player_faction = function() return nil end,
 	settlement_socket_anchor = function() return nil end,
-	hud_layout = {side_text_width = function() return 400 end, QUEST_WRAP = 400, anchors = {quest_list = {}}},
+	hud_layout = {side_text_width = function() return 400 end, QUEST_WRAP = 400,
+		anchors = {quest_list = {position = {x = 1, y = 0.5}, offset = {x = -20, y = 0}}},
+		-- Round 65: the tracker boxes' layout, every box shown (tools/r65_hud checks it).
+		quest_boxes = function(_, count)
+			local tops = {}
+			for i = 1, count do tops[i] = 52 * i end
+			return {shown = count, more = 0, width = 350, height = 48, pad = 4, line = 20, tops = tops}
+		end},
+	-- ...and read the UI theme's colours.
+	ui = {colors = {text = "#eeeae1", panel = "#0a10115e"}},
+
 	feed_item = function() end,
 	feed = function(player, kind, text, key)
 		fed[#fed + 1] = {name = player:get_player_name(), kind = kind, text = text, key = key}
@@ -179,6 +189,8 @@ local level_of = {}
 grug_xp = {
 	get_level = function(player) return level_of[player:get_player_name()] or 60 end,
 	register_on_level_change = function() end,
+	-- Round 65: the tracker boxes' level labels (tools/r65_hud checks the colour).
+	con_color = function() return 0xffff55 end,
 	quest_reward = function(level, weight) return math.floor(weight * (25 + 5 * level) + 0.5) end,
 	add_xp = function() end,
 }
@@ -294,6 +306,7 @@ local function make_player(name, pos)
 	function p:get_player_control() return {place = self.control.place} end
 	function p:hud_add() return 1 end -- the quest tracker (hud.lua) joins too
 	function p:hud_change() end
+	function p:hud_remove() end
 	function p:get_meta()
 		return {get_string = function(_, k) return meta[k] or "" end, set_string = function(_, k, v) meta[k] = v end,
 			get_int = function(_, k) return tonumber(meta[k]) or 0 end,

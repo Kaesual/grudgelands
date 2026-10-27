@@ -137,7 +137,7 @@ end
 -- The tracker's look (Round 65 ruling 4, coordinator defaults): the box in
 -- the UI theme's dark panel colour at 30 % opacity (the box only, never the
 -- text), the title in the theme's light text colour, the objective in the
--- quest yellow. Read from grug_core.ui on first use.
+-- quest yellow. Read from grug_core.ui when the first box is drawn.
 local OBJECTIVE_COLOR = 0xffe080
 local box_texture, title_color
 local function theme()
@@ -184,10 +184,10 @@ end
 -- elements are added or removed only when the box count or the "+N more"
 -- line comes or goes, everything else is a hud_change of a changed value.
 local function draw(player, row)
-	theme()
 	local layout = grug_core.hud_layout
 	local entries = grug_quests.hud_entries(row.journal, row.level,
 		layout.side_text_width(row.window))
+	if #entries > 0 then theme() end
 	local g = layout.quest_boxes(row.window, #entries, row.playing)
 	local right = layout.anchors.quest_list.offset.x
 	local left = right - g.width + g.pad
