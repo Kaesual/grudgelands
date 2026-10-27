@@ -1,0 +1,30 @@
+Round 64 after; seed 42; 1920x1080; HUD=GUI=1; actual window on fixture engine stand-ins.
+Raw formspec bytes (uncompressed); tooltips include controls; CPU timings diagnostic.
+quests zoom=1 bytes=29567 tooltips=381 CPU_us=3341
+quests zoom=2 bytes=30237 tooltips=381 CPU_us=1579
+quests zoom=4 bytes=30427 tooltips=381 CPU_us=1507
+quests zoom=8 bytes=30462 tooltips=381 CPU_us=1429
+bosses zoom=1 bytes=40243 tooltips=480 CPU_us=1238
+bosses zoom=2 bytes=40639 tooltips=480 CPU_us=642
+bosses zoom=4 bytes=41187 tooltips=480 CPU_us=622
+bosses zoom=8 bytes=41212 tooltips=480 CPU_us=642
+trainers zoom=1 bytes=64463 tooltips=951 CPU_us=23086
+trainers zoom=2 bytes=66120 tooltips=951 CPU_us=14186
+trainers zoom=4 bytes=66450 tooltips=951 CPU_us=6604
+trainers zoom=8 bytes=66450 tooltips=951 CPU_us=3105
+towns zoom=1 bytes=77995 tooltips=1185 CPU_us=2294
+towns zoom=2 bytes=79349 tooltips=1185 CPU_us=1832
+towns zoom=4 bytes=80165 tooltips=1185 CPU_us=2200
+towns zoom=8 bytes=80482 tooltips=1185 CPU_us=1278
+pois zoom=1 bytes=132315 tooltips=1675 CPU_us=2450
+pois zoom=2 bytes=133908 tooltips=1675 CPU_us=1995
+pois zoom=4 bytes=135299 tooltips=1675 CPU_us=1951
+pois zoom=8 bytes=135725 tooltips=1675 CPU_us=2420
+pvp zoom=1 bytes=55823 tooltips=729 CPU_us=1347
+pvp zoom=2 bytes=56400 tooltips=729 CPU_us=1807
+pvp zoom=4 bytes=57304 tooltips=729 CPU_us=962
+pvp zoom=8 bytes=57336 tooltips=729 CPU_us=800
+none zoom=1 bytes=3398 tooltips=3 CPU_us=60
+none zoom=2 bytes=3411 tooltips=3 CPU_us=66
+none zoom=4 bytes=3411 tooltips=3 CPU_us=56
+none zoom=8 bytes=3411 tooltips=3 CPU_us=67

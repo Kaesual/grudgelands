@@ -6,7 +6,7 @@ drop's own script (no source images). The banners and emblems are lane
 HALLS2's. picks.txt lists each file with its SHA-256 and its game path:
   the lift's six faces  -> mods/MAPGEN/grug_mapgen/textures/grug_mapgen_guild_lift_<face>.png
   the reputation icon   -> mods/PLAYER/grug_guild/textures/grug_guild_reputation.png
-  the two map icons     -> mods/PLAYER/grug_map/textures/grug_map_<kind>.png
+  map icons are superseded by tools/r64_map/ship.py (historical picks retained)
 No painter copy: the files are copied unchanged and checked by hash (the
 fixture tools/r58_lift/portable_test.lua checks the same hashes).
 
@@ -27,7 +27,8 @@ def picks():
     for line in (HERE / "picks.txt").read_text(encoding="utf-8").splitlines():
         if line.strip() and not line.startswith("#"):
             digest, source, target = line.split()
-            rows.append((digest, source, target))
+            if not target.startswith("mods/PLAYER/grug_map/"):
+                rows.append((digest, source, target))
     return rows
 
 

@@ -13,7 +13,7 @@
 --   O  (Round 47 lane ML; Round 44's fixed overlay before) one marker layer
 --      at a time (layers.lua): every layer draws its own markers and none
 --      of another's; Quests the own givers by state (locked ones too),
---      Trainers the own trainers (two thirds size at 1x and 2x) and
+--      Trainers the own trainers (32 screen pixels at 1x and 2x) and
 --      services, Towns both factions' settlements and the own innkeepers,
 --      home and waystones, Bosses the kings, the dragon once beside its
 --      arena, the rift boss and the rare den with their levels, POIs and
@@ -635,7 +635,7 @@ end
 local OWN = {
 	quests = {"grug_map_quest_available.png", "grug_map_quest_locked.png"},
 	bosses = {"grug_map_king.png", "grug_map_dragon.png", "grug_map_rare_den.png", "grug_map_clash.png"},
-	trainers = {"grug_map_trainer_tailor.png", "grug_mounts_icon_human.png",
+	trainers = {"grug_map_trainer_tailor.png", "grug_map_riding.png",
 		"grug_map_housing_steward.png", "grug_map_crownbinder.png", "grug_map_repair.png"},
 	towns = {"grug_map_capital.png", "grug_map_start.png", "grug_map_village.png",
 		"grug_map_outpost.png", "grug_map_home.png", "grug_map_innkeeper.png", "grug_map_waypoint.png"},
@@ -675,7 +675,7 @@ do
 	has(map, ";Smith Doran]", "O Quests: a locked giver is shown (§8 default) with its name")
 	lacks(map, "Warlord Gash", "O Quests: no giver of the other faction")
 	lacks(map, "grug_map_quest_ready.png", "O Quests: the other faction's ready giver is not drawn")
-	eq(count(map, "tooltip%["), 2, "O Quests: one tooltip per marker")
+	check(count(map, "tooltip%[") >= 2, "O Quests: silhouette tooltip rectangles")
 	giver_states.elder = "ready"
 	eq(count(layer_form(accord, "quests"), "grug_map_quest_ready%.png"), 1, "O Quests: ready is gold")
 	giver_states.elder = "active"
@@ -684,11 +684,11 @@ do
 	-- Trainers & traders: the own faction's, two thirds at 1x and 2x.
 	map = layer_form(accord, "trainers")
 	local trainer = find_image(images(map), "grug_map_trainer_tailor.png")
-	check(trainer and near(trainer.w, 0.23), "O Trainers: two thirds size at 1x")
+	check(trainer and math.floor(trainer.w*72)==32, "O Trainers: 32 screen pixels at 1x")
 	trainer = find_image(images(layer_form(accord, "trainers", 2)), "grug_map_trainer_tailor.png")
-	check(trainer and near(trainer.w, 0.23), "O Trainers: two thirds at 2x")
+	check(trainer and math.floor(trainer.w*72)==32, "O Trainers: 32 screen pixels at 2x")
 	trainer = find_image(images(layer_form(accord, "trainers", 4)), "grug_map_trainer_tailor.png")
-	check(trainer and near(trainer.w, 0.34), "O Trainers: full size at 4x")
+	check(trainer and math.floor(trainer.w*72)==32, "O Trainers: 32 screen pixels at 4x")
 	for _, text in ipairs({"Tailor Trainer", "Riding Trainer", "Housing Steward", "Crownbinder",
 			"Grudge-Free Repairs"}) do
 		has(map, ";" .. text .. "]", "O Trainers: tooltip " .. text)
@@ -776,7 +776,7 @@ do
 	for _, image in ipairs(images(map)) do
 		if not image.texture:find("heading", 1, true) then drawn[#drawn + 1] = image.texture end
 	end
-	for text in map:gmatch("tooltip%[[^;]*;[^;]*;([^%]]*)%]") do tipped[#tipped + 1] = text end
+	for text in map:gmatch("tooltip%[[^;]*;[^;]*;([^%]]*)%]") do if tipped[#tipped] ~= text then tipped[#tipped + 1] = text end end
 	-- (bake.KINDS: war camps, outposts, villages, ... starts, capitals)
 	eq(tipped[#tipped], "Oakspan Tollhouse", "O the bottom marker's tooltip last (the outpost, drawn first)")
 	check(drawn[2] == "grug_map_outpost.png" and drawn[#drawn - 1] == "grug_map_home.png",
@@ -928,14 +928,14 @@ do
 	local ring_pos = map:find("grug_map_ring.png", 1, true)
 	local cross_pos = map:find("grug_map_crosshair.png", 1, true)
 	check(ring_pos and cross_pos and ring_pos < cross_pos, "T rings drawn under the crosshair")
-	has(map, "grug_map_ring.png^\\[multiply:#ff8c1a^\\[opacity:190", "T ring tinted and semi-transparent")
+	has(map, "grug_map_ring.png", "T approved colored area ring")
 	eq(state.target_count, 3, "T one crosshair and two rings drawn")
 	local ring_sizes = {}
 	for w in map:gmatch("image%[[%d.%-]+,[%d.%-]+;([%d.]+),[%d.]+;grug_map_ring") do
 		ring_sizes[#ring_sizes + 1] = tonumber(w)
 	end
-	check(#ring_sizes == 2 and ring_sizes[1] >= 0.7 - 1e-9 and ring_sizes[2] >= 0.7 - 1e-9,
-		"T rings at least the minimum size (0.7)")
+	check(#ring_sizes == 2 and math.floor(ring_sizes[1]*72)>=50 and math.floor(ring_sizes[2]*72)>=50,
+		"T rings retain the minimum50px screen extent")
 	state.zoom = 8
 	map = map_part(W.formspec(accord, state, nil))
 	local big = tonumber(map:match("image%[[%d.%-]+,[%d.%-]+;([%d.]+),[%d.]+;grug_map_ring"))
@@ -1762,8 +1762,8 @@ do
 	local B = dofile(repo .. "/mods/PLAYER/grug_map/bake.lua")
 	for _, kind in ipairs(B.KINDS) do
 		local shipped = read("mods/PLAYER/grug_map/textures/grug_map_" .. kind .. ".png")
-		local art = read("mods/PLAYER/grug_map/art/baked_" .. kind .. ".png")
-		check(shipped ~= "" and shipped == art, "I grug_map_" .. kind .. ".png is the baked art's copy")
+		local art = read("tools/map_icon_rework/drop01/icons/" .. kind .. ".png")
+		check(shipped ~= "" and shipped == art, "I grug_map_" .. kind .. ".png is the approved art's copy")
 	end
 	has(licence, "textures/grug_map_{start,capital,village,outpost,fortress,war_camp,bandit,mirefolk," ..
 		"mine,clash,rare_den,king,dragon}.png", "I the icons' LICENSE-media row")
@@ -1779,8 +1779,8 @@ do
 	check(#world.items == 0 and world.labels == B.REGION_LABELS, "I the world map's layer: names, no icons")
 	local base = read("mods/PLAYER/grug_map/base.lua")
 	check(base:find("bake.draw(pixels, WIDTH, HEIGHT, view, bake.world_layer(layer)", 1, true) and
-		base:find("bake.draw(mini_pixels, mini.width, mini.height, view, layer, layer.art", 1, true),
-		"I base.lua: the world images get the names only, the minimap the whole layer")
+		not base:find("bake.draw(mini_pixels", 1, true),
+		"I base.lua: the world gets names only, minimap icons stay separate")
 end
 
 -- Shared navigation must cancel an owed map send and survive its deferred
@@ -1814,6 +1814,57 @@ do
 		"NAV suspension closes the visible map and cancels its owed send")
 	eq(sends_to("ann"), before, "NAV suspension opens no inventory page")
 	suspended.ann = nil
+end
+
+-- R64: match client integer geometry, including odd image-size fractions,
+-- HUD/GUI differences, Full-HD viewport ceiling and minimum-form fitting.
+do
+ local M=grug_map.markers
+ local masks=dofile(repo .. "/mods/PLAYER/grug_map/icon_masks.lua")
+ local reports={
+  {size={x=1920,y=1080},max_formspec_size={x=1920/72,y=15},real_hud_scaling=1,real_gui_scaling=1},
+  {size={x=1035,y=696},max_formspec_size={x=1035/53.328,y=696/53.328},real_hud_scaling=1.5,real_gui_scaling=1},
+  {size={x=3840,y=2160},max_formspec_size={x=3840/144,y=15},real_hud_scaling=1,real_gui_scaling=1},
+  {size={x=600,y=400},max_formspec_size={x=600/80,y=400/80},real_hud_scaling=0.75,real_gui_scaling=1.5},
+ }
+ local function trunc(value) return value<0 and math.ceil(value) or math.floor(value) end
+ for _,info in ipairs(reports) do
+  for _,zoom in ipairs({1,2,4,8}) do
+   local state=W.new_state();state.layer="trainers";state.zoom=zoom
+   local form=W.formspec(accord,state,info)
+   local w,h=form:match("size%[([%d.]+),([%d.]+)%]")
+   local virtual=grug_core.ui.window_information and grug_core.ui.window_information(info) or info
+   local size,px=M.metrics(virtual,tonumber(w),tonumber(h))
+   local map=map_part(form)
+   local icon=find_image(images(map),"grug_map_trainer_tailor.png")
+   check(icon and math.floor(icon.w*px)==size and math.floor(icon.h*px)==size,
+    "R64 every zoom draws the exact HUD pixel extent")
+   local mask=M.layout.scale_mask(masks["grug_map_trainer_tailor.png"],size)
+   local checked=0
+   for x,y,rw,rh in map:gmatch("tooltip%[([%d.%-]+),([%d.%-]+);([%d.]+),([%d.]+);Tailor Trainer%]") do
+    local ox,oy=trunc(tonumber(x)*px)-trunc(icon.x*px),trunc(tonumber(y)*px)-trunc(icon.y*px)
+    local width,height=math.floor(tonumber(rw)*px),math.floor(tonumber(rh)*px)
+    check(width>0 and height>0,"R64 no zero-area tooltip")
+    for yy=oy,oy+height do for xx=ox,ox+width do
+     local filled=false
+     for k=1,#(mask[yy+1] or {}),2 do
+      if xx>=mask[yy+1][k] and xx<mask[yy+1][k+1] then filled=true end
+     end
+     check(filled,"R64 client-inclusive tooltip excludes transparent corners")
+    end end
+    checked=checked+1
+   end
+   check(checked>0,"R64 marker has usable hover regions")
+  end
+ end
+ -- A solo open map needs one bounded resend after a window/HUD-scale change.
+ window_info.ann=reports[1];parties.ann=nil
+ W.open(accord);local before=sends_to("ann")
+ window_info.ann=reports[2];advance(2.2)
+ eq(sends_to("ann"),before+1,"R64 resize rebuilds a solo map")
+ before=sends_to("ann");advance(2.2)
+ eq(sends_to("ann"),before,"R64 stable window sends nothing")
+ window_info.ann=nil
 end
 
 if failures > 0 then

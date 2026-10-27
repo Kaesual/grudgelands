@@ -2350,8 +2350,8 @@ tools](#player-meta-read-by-external-tools).
   kind and, since Round 47, to its map window layer, the same for every
   viewer (Round 44 ruling 5 ended Round 31's per-faction hiding). In Rounds
   44–46 settlements, camps, kings and dragons were only baked icons; since
-  Round 47 the world map's image bakes the region names only (the minimap's
-  keeps the icons), and `layers.lua` (loaded by `window.lua`) builds the
+  Round 47 the world map's image bakes the region names only (since Round 64
+  the minimap also uses separate icons), and `layers.lua` (loaded by `window.lua`) builds the
   marker layers: the static rows of settlements, places and bosses once in
   its mods-loaded hook (providers `settlement`, `poi`, `pvp`, `boss`; boss
   levels through `grug_mobs.fixed_level`, the dragons' entities from
@@ -2801,8 +2801,8 @@ tools](#player-meta-read-by-external-tools).
   no activation node, so `r7_anchor_roster.lua` and the zone overlay keep 42
   rows and 36 columns. Classification: `world_protection.settlement_kind`
   (`mining_camp`; a camp under construction `war_camp` with the PvP margin),
-  `grug_map/settlement_icons.lua` (baked: the mine's icon, the war camp's;
-  the map window's markers `MARKER`/`marker(slot)`: the picked
+  `grug_map/settlement_icons.lua` (category: mine or war camp;
+  both maps use `MARKER`/`marker(slot)` for the dedicated
   `grug_map_mining_camp.png`, `grug_map_camp_construction.png`),
   `spawn_policy.protected_spawn_surface` and `roam_avoid` (`mining_camp`),
   `grug_core/settlement_sockets.lua` (role `lift`, vendor kind `camp`),

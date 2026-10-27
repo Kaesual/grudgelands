@@ -9,7 +9,7 @@
 -- steps and its scroll echo are checked by tools/r44_mq.
 -- Checks:
 --   S  the Steward marker has its own kind and texture; the texture is a
---      shipped 16x16 PNG with a LICENSE-media row; no other marker uses it
+--      shipped 32x32 PNG with a LICENSE-media row; no other marker uses it
 --      (since Round 44 the map window draws no Steward, ruling 12; the
 --      minimap does);
 --   Z  zoom steps stop at 8 and 1; the 8x scroll range; zooming keeps the
@@ -144,7 +144,7 @@ local function png_size(path)
 	return u32(17), u32(21)
 end
 local w, h = png_size(repo .. "/mods/PLAYER/grug_map/textures/" .. TEXTURE)
-check(w == 16 and h == 16, "S icon is a 16x16 PNG (" .. tostring(w) .. "x" .. tostring(h) .. ")")
+check(w == 32 and h == 32, "S icon is a 32x32 PNG (" .. tostring(w) .. "x" .. tostring(h) .. ")")
 do
 	local file = io.open(repo .. "/mods/PLAYER/grug_map/LICENSE-media.md", "rb")
 	local text = file and file:read("*a") or ""
@@ -154,7 +154,7 @@ do
 end
 
 -- C (Round 34): the Crownbinder and the Decor Merchant, kind "service" on
--- the Steward's layer, with their own icons (16x16, LICENSE-media row), and
+-- the Steward's layer, with their own icons (32x32, LICENSE-media row), and
 -- the minimap shows the kind.
 do
 	local found, order = {}, {}
@@ -168,7 +168,7 @@ do
 		check(marker.kind == "service" and marker.texture == texture and
 			marker.faction == "accord", "C " .. label .. " marker, kind and faction")
 		local sw, sh = png_size(repo .. "/mods/PLAYER/grug_map/textures/" .. texture)
-		check(sw == 16 and sh == 16, "C " .. texture .. " is a 16x16 PNG")
+		check(sw == 32 and sh == 32, "C " .. texture .. " is a 32x32 PNG")
 		local file = io.open(repo .. "/mods/PLAYER/grug_map/LICENSE-media.md", "rb")
 		local text = file and file:read("*a") or ""
 		if file then file:close() end
@@ -180,10 +180,10 @@ do
 	local file = io.open(repo .. "/mods/PLAYER/grug_map/minimap.lua", "rb")
 	local minimap = file and file:read("*a") or ""
 	if file then file:close() end
-	local shown = minimap:match("local SHOWN = (%b{})") or ""
-	local priority = minimap:match("local PRIORITY = (%b{})") or ""
-	check(shown:find("service = true", 1, true) and priority:find("service = 2", 1, true),
-		"C the minimap shows the services with the Steward's priority")
+	local shown = minimap:match("local PROVIDERS = (%b{})") or ""
+ check(shown:find("service=true",1,true) and
+  minimap:find('(kind == "steward" or kind == "service") and Z.marker+1',1,true),
+  "C the minimap shows services on the Steward's layer")
 end
 
 -- H: hostile camps and settlements (Round 32, Round 44): baked into the

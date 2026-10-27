@@ -4,9 +4,8 @@ Updated 2026-10-27. This is the delivery pointer, not another game specification
 
 **In progress: Round 64 — map icons** ([plan](planning/round64-plan.md)).
 Artwork accepted; implementation authorized on 2026-10-27. The source cleanup is committed.
-The reviewed minimap feasibility checkpoint awaits the user’s choice between
-individual HUD icons and the composed cells’ larger client texture storage
-([evidence and options](planning/round64-plan.md#m0-feasibility-checkpoint--2026-10-27)).
+The user selected separate 32px markers on both maps after the reviewed
+memory checkpoint; terrain resolution stays unchanged. Integration is in progress.
 This planned compatible presentation change does not alter the delivery or
 pending deployment requirements below.
 

@@ -94,7 +94,7 @@ def draw(rows, path):
 def main():
     draw(STONE, MAPGEN / "grug_mapgen_waystone.png")
     draw(TOP, MAPGEN / "grug_mapgen_waystone_top.png")
-    draw(MARKER, MAP / "grug_map_waypoint.png")
+    # Map marker superseded by tools/r64_map/ship.py.
 
 
 if __name__ == "__main__":

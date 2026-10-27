@@ -352,7 +352,7 @@ check(#claim_marks("waypoint") == 0, "C draft, no marker")
 claims.tester.claim.activated_at = clock
 local marks = claim_marks("waypoint")
 check(#marks == 1 and marks[1].label == "Your Claim Stone" and marks[1].kind == "waypoint" and
- marks[1].texture == "claim_stone_look.png", "C activated stone: one waypoint marker in the stone's look")
+ marks[1].texture == "grug_map_claim.png", "C activated stone: one waypoint marker with the map-only claim icon")
 check(home.set_home_claim(player), "C set the stone as the travel home")
 check(#claim_marks("waypoint") == 0 and #claim_marks("home") == 1, "C the home marker alone marks the home stone")
 

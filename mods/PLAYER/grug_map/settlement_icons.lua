@@ -25,15 +25,14 @@ function M.class(slot)
 	return "other"
 end
 
--- The baked icon kind of a settlement of `slot`: its class, or for "other"
+-- The category of a settlement of `slot`: its class, or for "other"
 -- the point of interest (mines and gem camps, clash sites, rare dens, the
 -- dragon arenas); nil for a slot of no known kind (drawn without an icon).
 function M.kind(slot)
 	local class = M.class(slot)
 	if class ~= "other" then return class end
 	if type(slot) ~= "string" then return nil end
-	-- Round 58: a mining camp of the Miner's Guild bakes the mine's icon
-	-- (the map window marks it with its own, M.MARKER)
+	-- Mining camps share the mine category but use their own motif (M.MARKER).
 	if slot == "mine" or slot == "apex_mine" or slot == "mining_camp" then return "mine" end
 	if slot == "dragon" then return "dragon" end
 	if slot:match("^clash_") then return "clash" end
@@ -41,9 +40,8 @@ function M.kind(slot)
 	return nil
 end
 
--- The map window's marker of a slot whose own icon is not baked (Round 58,
--- the picked guild art: the minimap's 6 px image keeps the kind's): a
--- mining camp and a camp under construction. The marker's texture is
+-- Both maps use these dedicated motifs instead of their category default:
+-- a mining camp and a camp under construction. The marker's texture is
 -- grug_map_<marker>.png.
 M.MARKER = {mining_camp = "mining_camp", camp_construction = "camp_construction"}
 function M.marker(slot)

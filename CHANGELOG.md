@@ -12,6 +12,16 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.64.0 — Shared map icons (2026-10-27)
+
+Compatible presentation update; no new reset or migration. The world map
+and minimap share the approved 32px icons, including one brown horse for
+riding trainers. Icons retain their display size at every map zoom and sit
+above minimap ground overlays. Placement considers visible pixels and moves
+icons at most half their width from their anchors; dense groups can still
+overlap. World-map tooltips follow the silhouettes. Terrain resolution stays
+unchanged. Desktop and web GUI acceptance is pending.
+
 ## 0.63.0 — fortified mining outposts and faction banners (2026-10-26)
 
 **Map reset** needed: all 36 completed mining camps use new templates and

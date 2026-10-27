@@ -80,12 +80,12 @@ repeatable switch by Round 57, 2026-10-23
   (yellow exclamation mark), active but incomplete (silver question mark),
   relevant level-locked quest (silver exclamation mark), otherwise none.
   Story quests have their own marker (Round 57 ruling 13): the same symbol
-  in violet, bright where the gold is and muted where the silver is, so the
+  with the ordinary gold/silver glyph and a violet story star, so the
   status still reads on its own. The most urgent status of a giver wins
   first, and a story quest of that status makes it the story marker: a
   ready side quest beats an available story quest. The map window and the
   minimap draw the same values with their own icons
-  (`grug_map_quest_story_<status>.png`, `tools/r57_qsys/render_story_icons.py`).
+  (`grug_map_quest_story_<status>.png`, `tools/r64_map/ship.py`).
 - Quest chains use existing faction story and zone identities. No cross-faction
   cooperative questline is introduced.
 

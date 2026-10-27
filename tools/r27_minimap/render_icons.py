@@ -219,24 +219,7 @@ def bezel():
 
 
 def main():
-    gold, gold_light = (255, 215, 0, 255), (255, 240, 150, 255)
-    grey, grey_light = (192, 192, 192, 255), (228, 228, 228, 255)
-    quest(EXCLAIM, gold, gold_light).save(OUT / "grug_map_quest_available.png")
-    quest(EXCLAIM, grey, grey_light).save(OUT / "grug_map_quest_locked.png")
-    quest(QUESTION, gold, gold_light).save(OUT / "grug_map_quest_ready.png")
-    quest(QUESTION, grey, grey_light).save(OUT / "grug_map_quest_active.png")
-    pixel_icon(INNKEEPER, {"o": OUTLINE, "W": (250, 246, 232, 255), "b": (140, 96, 52, 255),
-                           "y": (238, 176, 48, 255), "Y": (255, 222, 120, 255)}
-               ).save(OUT / "grug_map_innkeeper.png")
-    pixel_icon(HOME, {"o": OUTLINE, "G": (255, 211, 79, 255), "w": (245, 236, 214, 255),
-                      "y": (176, 64, 44, 255)}).save(OUT / "grug_map_home.png")
-    for frame in range(16):
-        arrow = rim_arrow(frame)
-        # never clipped: the texture's border stays (almost) transparent
-        for i in range(32):
-            for x, y in ((i, 0), (i, 31), (0, i), (31, i)):
-                assert arrow.getpixel((x, y))[3] <= 8, ("rim arrow clipped", frame, x, y)
-        arrow.save(OUT / f"grug_map_rim_cyan_{frame:02d}.png")
+    # Round 64 owns all marker PNGs; this tool still owns the bezel.
     art = bezel()
     # the band is opaque (alpha >= 250 of 255) from just outside the hole to
     # BEZEL_OPAQUE
@@ -247,7 +230,7 @@ def main():
             alpha = art.getpixel((min(255, int(x)), min(255, int(y))))[3]
             assert alpha >= 250, ("bezel not opaque", r, a, alpha)
     art.save(OUT / "grug_map_minimap_bezel.png")
-    print("quest=4 innkeeper home rim=16 bezel written to", OUT)
+    print("bezel written to (markers: tools/r64_map/ship.py)", OUT)
 
 
 if __name__ == "__main__":

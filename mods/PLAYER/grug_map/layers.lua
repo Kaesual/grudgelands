@@ -25,8 +25,7 @@
 -- the same for every player: built once at start from the settlement
 -- registry, the boss registries and the world authority, never from live
 -- entities or loaded terrain. Each marker carries its tooltip text in
--- `detail`. The icons are the former baked art (art/baked_<kind>.png,
--- shipped as textures/grug_map_<kind>.png).
+-- `detail`. The approved shared icons ship as textures/grug_map_<kind>.png.
 local modpath = core.get_modpath(core.get_current_modname())
 local atlas = grug_map.atlas
 local icons = dofile(modpath .. "/settlement_icons.lua")

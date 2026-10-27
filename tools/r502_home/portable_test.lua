@@ -458,6 +458,7 @@ rawset(_G, "grug_housing", {STONE_ITEM = "grug_housing:claim_stone", RADIUS = mo
 	claims_in = model.claims_in, claim_set_version = model.claim_set_version})
 rawset(_G, "grug_map", {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua"),
 	location = {text_of = function() return "Somewhere" end}})
+grug_map.quest_slots = function() return {} end
 grug_map.base = B
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 local minimap = grug_map.minimap
