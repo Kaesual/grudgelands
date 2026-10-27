@@ -2,12 +2,16 @@
 
 Updated 2026-10-27. This is the delivery pointer, not another game specification.
 
-**In progress: Round 64 — map icons** ([plan](planning/round64-plan.md)).
-Artwork accepted; implementation authorized on 2026-10-27. The source cleanup is committed.
-The user selected separate 32px markers on both maps after the reviewed
-memory checkpoint; terrain resolution stays unchanged. Integration is in progress.
-This planned compatible presentation change does not alter the delivery or
-pending deployment requirements below.
+**0.64.0 / Round 64 is merged locally and synced to Luanti; not pushed.**
+The shared 32px icon set, separate markers in both maps and bounded
+alpha-aware placement are implemented. Terrain resolution stays unchanged.
+Independent review: MERGE; all 284 portable fixtures pass across the full run
+and its targeted rechecks, release/art gates and the isolated smoke boot pass.
+Runtime commit `3bed24b1`, merge `4b17b639`. The main runtime is byte-identical
+to the reviewed lane. Desktop/web GUI acceptance is pending; costs, residual
+overlap and the checklist are in the [Round 64 completion](planning/round64-plan.md#completion-2026-10-27).
+This compatible update adds no reset or migration and does not change the
+pending production deployment requirements below. Only the user pushes.
 
 **0.63.0 / Round 63 is published on main; full GUI acceptance is pending**:
 the approved mining-camp redesign and faction heraldry

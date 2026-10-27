@@ -177,7 +177,7 @@ Planning does not change `game.conf`, CHANGELOG or upgrade declarations.
 - [x] Changed Lua passes `tools/check_lua.sh`; targeted map, minimap,
   claim/flight and affected art fixtures pass. Use the round workflow's
   full-suite/release gates once at the appropriate integration point.
-- [ ] One isolated final smoke boot; independent review; local sync from
+- [x] One isolated final smoke boot; independent review; local sync from
   reviewed main only. No seed fleet is owed unless scope reaches worldgen.
 
 GUI acceptance belongs to the user on **desktop and web**:
@@ -427,3 +427,19 @@ client responsiveness and the chosen tradeoff remain part of GUI acceptance.
   undeclared-global warning; [receipt](../../tools/r64_map/evidence/smoke.txt).
   GUI acceptance is still pending on desktop and web. No production state was
   changed and nothing was pushed.
+
+
+## Completion (2026-10-27)
+
+Independent runtime and final evidence/documentation review: **MERGE**, no
+open findings; classification **compatible**. Implementation `3bed24b1` was
+merged as `4b17b639` into unchanged main. The reviewed runtime, assets and
+upgrade declaration are byte-identical after integration, so the lane's full
+suite and final isolated smoke are reused under the workflow's no-duplicate-run
+rule. New Markdown links/anchors and `git diff --check` pass.
+
+Local Luanti was synced from reviewed main and its map files/game version
+were verified byte-identical. **Nothing was pushed.** Desktop/web acceptance
+remains the user's [GUI checklist](#5-verification-and-acceptance); in particular,
+check dense marker groups and the larger silhouette-tooltip forms in a party.
+The production version and earlier pending reset/migrations are unchanged.

@@ -12,7 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.63.0, Round 63 mining-camp redesign and the
+**Current state:** 0.64.0, Round 64 shared 32px map icons and bounded
+alpha-aware placement, merged locally and synced to Luanti; **not pushed**.
+Compatible presentation update; desktop/web GUI acceptance pending
+([completion and checklist](docs/planning/round64-plan.md#completion-2026-10-27)).
+Previous: 0.63.0, Round 63 mining-camp redesign and the
 [UI polish](docs/planning/ui-polish-implementation.md), published on main
 with the user's explicit merge-and-push authorization on 2026-10-27
 ([delivery status](docs/STATUS.md)). Local Luanti is synced.
