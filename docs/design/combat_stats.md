@@ -1307,7 +1307,8 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   target first), otherwise from a 20 m ray of its own.
   Relative to the viewer's level L (mobs), a gradient by d = mob level − L
   (Round 46, the green end at −9 since Round 49; one integer RGB colour per
-  level, `con_gradient` in `target_frame.lua`). A mob is gray exactly when its kill would pay the
+  level, `grug_xp.con_gradient`, which the quest HUD's level labels use too
+  since Round 65). A mob is gray exactly when its kill would pay the
   viewer nothing: the frame asks the settlement's own predicate
   `grug_mobs.player_kill_xp` (`levels.lua`), so the two cannot drift:
 

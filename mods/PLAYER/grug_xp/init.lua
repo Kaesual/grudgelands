@@ -32,6 +32,30 @@ function grug_xp.is_gray(mob_level, player_level)
 	return mob_level - player_level <= -grug_xp.GRAY_GAP
 end
 
+-- The difficulty colours (combat_stats.md section 6), shared by the target
+-- frame (grug_mobs target_frame.lua) and the quest HUD's level label
+-- (grug_quests hud.lua, Round 65). One integer RGB colour per level of
+-- d = level - player level: green 0x55ff55 at the last level that still pays
+-- (d = 1 - GRAY_GAP, -9) to yellow 0xffff55 at d = 0 (red rises 85 -> 255),
+-- then to red 0xff5555 at d = +5 (green falls 255 -> 85, 34 per level).
+grug_xp.CON_GRAY = 0xaaaaaa
+
+function grug_xp.con_gradient(d)
+	if d <= 0 then
+		local span = grug_xp.GRAY_GAP - 1
+		local red = 85 + math.floor(170 * math.max(0, d + span) / span + 0.5)
+		return red * 0x10000 + 0xff55
+	end
+	return 0xff0055 + (255 - 34 * math.min(d, 5)) * 0x100
+end
+
+-- A level's colour for a player: gray at the gray line, else the gradient.
+-- The target frame keeps its own gray test (the kill payout's predicate).
+function grug_xp.con_color(level, player_level)
+	if grug_xp.is_gray(level, player_level) then return grug_xp.CON_GRAY end
+	return grug_xp.con_gradient(level - player_level)
+end
+
 -- The factor of d in whole percent (integers, so the game and the ledger
 -- round alike): 0 at d <= -10, 100 - 10|d| for -9..-1, 100 at 0,
 -- 100 + 10d for +1..+5 and 150 above +5.

@@ -554,8 +554,11 @@ do
 	-- Round 46: the frame's gray asks the payout's predicate (any XP here).
 	_G.grug_mobs = {tag_text = function(m) return "mob " .. m.name end,
 		player_kill_xp = function() return 1 end}
-	-- Round 49: the gradient's green end follows grug_xp.GRAY_GAP.
-	_G.grug_xp = {get_level = function() return 5 end, GRAY_GAP = 10}
+	-- Round 49: the gradient's green end follows grug_xp.GRAY_GAP. Round 65:
+	-- the gradient is grug_xp's (its colours are checked in tools/r46_xp and
+	-- tools/r65_hud); this test frames, it does not colour.
+	_G.grug_xp = {get_level = function() return 5 end, GRAY_GAP = 10,
+		con_gradient = function() return 0xffff55 end}
 	_G.grug_factions = {get_faction = function() return "accord" end,
 		display_name = function() return "The Accord" end}
 	local players = {viewer}
