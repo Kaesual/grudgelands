@@ -320,7 +320,7 @@ local V = Q.validate
 local function files_with(place)
 	return {{name = "elandor_highcourt.quests.json", zone = "elandor_highcourt", front = false, data = {
 		zone = "elandor_highcourt", quests = {{id = "r59_cellar", line = "chapter", giver = "r59_leader",
-			turnin = "r59_leader", min_level = 20, level = 20, title = "The Cellar",
+			turnin = "r59_leader", level = 20, title = "The Cellar",
 			text = "Search the cellar. Then come back.",
 			objectives = {{type = "use", place = place, object = "toll_box", label = "Search the cellar",
 				hold = 3}}, rewards = {weight = 1}}}}}}

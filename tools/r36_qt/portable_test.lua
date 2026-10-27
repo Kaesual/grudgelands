@@ -2,12 +2,14 @@
 -- Ours" (round36-plan.md §2.2-§2.8, the story bible
 -- docs/planning/round36/story-bible.md), on the shipped quest files.
 -- Checks:
---   C  the chapters: each opens at its gate (41, 46, 53, 60) with its first
+--   C  the chapters: each opens at its gate (40, 45, 53, 58; Round 65: the
+--      first quests' levels 42, 47, 55, 60 minus two) with its first
 --      quest, every step of it opens no earlier and depends on that first
 --      quest, the first requires the previous chapter's last turn-in, and
 --      each chapter ends with a turn-in at the Warmaster;
---   G  no quest's gate lies below a prerequisite's (validate.py
---      W-chain-gate) on the whole line;
+--   G  every prerequisite on the whole line exists (Round 65: a quest
+--      behind an unmet prerequisite is not shown, so its level - 2 may lie
+--      below its prerequisite's; validate.py W-chain-gate is gone);
 --   T  the tag throng_main on exactly the spine: every quest the final
 --      turn-in requires, directly or not, that the chapters name, and on no
 --      optional branch;
@@ -70,14 +72,17 @@ local FINAL = "throng_main_final"
 local FINALE = "throng_main_finale"
 -- The chapters (bible §2, The Throng): gate, first quest, last turn-in and
 -- every spine step.
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level).
+local function opens(q) return math.max(1, q.level - 2) end
 local CHAPTERS = {
-	{gate = 41, first = "throng_main_01", last = "throng_main_02",
+	{gate = 40, first = "throng_main_01", last = "throng_main_02",
 		steps = {"throng_main_01", "bb_front_ramp_04", "bb_front_ramp_05", "throng_main_02"}},
-	{gate = 46, first = "throng_main_03", last = "throng_main_05",
+	{gate = 45, first = "throng_main_03", last = "throng_main_05",
 		steps = {"throng_main_03", "bb_front_torn_05", "throng_main_04", "throng_main_05"}},
 	{gate = 53, first = "throng_main_06", last = "throng_main_07",
 		steps = {"throng_main_06", "bw_front_ashveil_04", "kz_front_04", "throng_main_07"}},
-	{gate = 60, first = FINALE, last = FINAL, steps = {FINALE, FINAL}},
+	{gate = 58, first = FINALE, last = FINAL, steps = {FINALE, FINAL}},
 }
 local OPTIONAL = {"throng_main_greyvow", "throng_main_island_wreck", "throng_main_island_cairn"}
 
@@ -110,13 +115,13 @@ local chapter_of = {}
 for index, chapter in ipairs(CHAPTERS) do
 	local first = quests[chapter.first]
 	if check(first ~= nil, "C chapter " .. index .. ": " .. chapter.first .. " exists") then
-		eq(first.min_level, chapter.gate, "C chapter " .. index .. " opens at its gate")
+		eq(opens(first), chapter.gate, "C chapter " .. index .. " opens at its gate")
 	end
 	for _, id in ipairs(chapter.steps) do
 		chapter_of[id] = index
 		local q = quests[id]
 		if check(q ~= nil, "C chapter " .. index .. ": " .. id .. " exists") then
-			check(q.min_level >= chapter.gate, "C " .. id .. " opens no earlier than " .. chapter.gate)
+			check(opens(q) >= chapter.gate, "C " .. id .. " opens no earlier than " .. chapter.gate)
 			check(id == chapter.first or closure(id)[chapter.first],
 				"C " .. id .. " depends on " .. chapter.first)
 		end
@@ -148,7 +153,7 @@ for _, id in ipairs({"throng_main_01", "throng_main_03", "throng_main_04", "thro
 end
 
 ------------------------------------------------------------------------------
--- G: no gate below a prerequisite's on the line.
+-- G: every prerequisite on the line exists (Round 65).
 ------------------------------------------------------------------------------
 local line = closure(FINAL)
 line[FINAL] = true
@@ -158,8 +163,7 @@ for id in pairs(line) do
 	local q = quests[id]
 	for _, req in ipairs(q and q.requires or {}) do
 		gated = gated + 1
-		check(quests[req] and q.min_level >= quests[req].min_level,
-			"G " .. id .. " opens no earlier than its prerequisite " .. req)
+		check(quests[req] ~= nil, "G " .. id .. "'s prerequisite " .. req .. " exists")
 	end
 end
 -- Round 62: the spine requires only spine steps and the island uses
@@ -197,7 +201,7 @@ if check(final ~= nil and finale ~= nil, "F the finale and the final turn-in exi
 	local last_line = "His last blow struck the ground. The answering blow came from underneath."
 	check(final.text:sub(-#last_line) == last_line, "F its text ends with the bible's last line")
 	eq(finale.title, "Party: No Claim on Our Dead", "F the finale's title (unique in the game; The Accord keeps the bible's)")
-	check(finale.level >= 58 and finale.level <= 60 and finale.min_level == 60, "F the finale at 60")
+	check(finale.level >= 58 and finale.level <= 60 and opens(finale) == 58, "F the finale at 60, open from 58")
 	local boss = finale.objectives[1]
 	check(#finale.objectives == 1 and boss.type == "kill" and boss.roles[1] == "rift_boss" and
 		#boss.roles == 1 and boss.area == nil, "F the finale kills the rift boss")
@@ -295,7 +299,7 @@ if check(hunt ~= nil, "B the commander hunt exists") then
 	check(target.roles[1] == "commander_accord" and
 		target.area == "front_skyglass_canopy/pvp_camp_skyglass_canopy_accord_high",
 		"B the hunt names the Accord's commander in the Skyglass war camp")
-	check(hunt.optional == true and hunt.group == true and hunt.min_level >= 57,
+	check(hunt.optional == true and hunt.group == true and opens(hunt) >= 57,
 		"B the hunt is optional, Party: and at the camp's level")
 	check(hunt.requires[1] == "throng_main_05", "B the hunt opens with the orders' reading")
 end

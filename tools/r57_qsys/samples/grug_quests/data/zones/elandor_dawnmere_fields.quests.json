@@ -28,7 +28,6 @@
     {
       "id": "qs_crop_thieves",
       "line": "hunt",
-      "min_level": 1,
       "level": 2,
       "title": "Crop Thieves",
       "text": "Piglets are eating the {name:home_fields}. Hunt eight of them by day.",
@@ -84,7 +83,6 @@
     {
       "id": "qs_night_shift",
       "line": "hunt",
-      "min_level": 1,
       "level": 2,
       "title": "The Night Shift",
       "text": "Rats come out after dark in the {name:home_fields}. Kill three of them by night.",
@@ -128,7 +126,6 @@
       "line": "story",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
-      "min_level": 1,
       "level": 2,
       "title": "The Landing",
       "text": "Snappers block the {name:home_shore}. Clear four of them, then we talk.",
@@ -155,7 +152,6 @@
       "requires": [
         "qs_story_landing"
       ],
-      "min_level": 2,
       "level": 3,
       "title": "Word to the Kitchen",
       "text": "Tell the cook what you saw at the shore. She keeps the town's ears.",
@@ -178,7 +174,6 @@
       "requires": [
         "qs_story_word"
       ],
-      "min_level": 4,
       "level": 5,
       "title": "Teeth in the Hills",
       "text": "The cook heard wolves in the {name:mid_fields}. Thin out six of them.",
@@ -201,7 +196,6 @@
       "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
-      "min_level": 4,
       "level": 5,
       "title": "Hill Wolves",
       "text": "Wolves in the {name:mid_fields} grow bold. Hunt eight of them.",
@@ -254,7 +248,6 @@
       "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
-      "min_level": 8,
       "level": 9,
       "title": "The Ridge Bears",
       "text": "Bears rule the {name:far_fields}. Bring down five of them.",
@@ -318,7 +311,6 @@
       "line": "kitchen",
       "giver": "r20_human_start_cook",
       "turnin": "r20_human_start_cook",
-      "min_level": 1,
       "level": 2,
       "title": "Meat for the Pot",
       "text": "Bring me three pieces of raw meat. The pot is empty.",
@@ -341,7 +333,6 @@
       "requires": [
         "qs_free_a"
       ],
-      "min_level": 1,
       "level": 2,
       "title": "Fuel for the Fire",
       "text": "Now bring two logs of any tree. Meat does not cook itself.",

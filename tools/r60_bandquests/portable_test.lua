@@ -38,6 +38,9 @@
 
 grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local ROOT = arg and arg[1] or "."
+-- The level a quest opens at (Round 65 ruling 3: its level - 2, at least 1;
+-- grug_quests.acceptance_level). The quest files name no minimum level.
+local function opens(q) return math.max(1, q.level - 2) end
 local json = dofile(ROOT .. "/tools/r28_b4_quests/json.lua")
 local failures, checks = 0, 0
 local function check(ok, label)
@@ -302,8 +305,9 @@ for id, entry in pairs(by_id) do
 		eq(follow, ALLOWED_FOLLOWERS[id] or "", id .. ": its one follow-up at most (" .. follow .. ")")
 	end
 	if not GUILD[id] then
-		check(quest.level >= 21 and quest.level <= 30 and quest.min_level >= 20 and quest.min_level <= quest.level,
-			id .. ": levels within the band (" .. tostring(quest.min_level) .. "/" .. tostring(quest.level) .. ")")
+		-- Round 65: opens at its level - 2, so from 19.
+		check(quest.level >= 21 and quest.level <= 30 and opens(quest) >= 19 and opens(quest) <= quest.level,
+			id .. ": levels within the band (" .. tostring(opens(quest)) .. "/" .. tostring(quest.level) .. ")")
 	end
 end
 -- A3, A4 and T2a: givers, places and turn-ins of chapter 2 (draft §5).
@@ -322,19 +326,20 @@ do
 		eq(a3.quest.level, 25, "A3 at 24 (reward level 25)")
 		eq(a4.quest.giver .. ">" .. a4.quest.turnin, NPC.kelda .. ">r58_guild_leader_dur_brannoc",
 			"A4: Kelda to Hadrin")
-		eq(a4.quest.min_level, 29, "A4 at 29")
+		eq(opens(a4.quest), 27, "A4 at 27 (Round 65: level 29 - 2)")
 		eq(t2a.quest.giver .. ">" .. t2a.quest.turnin, NPC.rellis .. ">" .. NPC.mereth, "T2a: Rellis to Mereth")
 		eq(t2a.quest.objectives[1].object .. "@" .. t2a.quest.objectives[1].place, "witness_record@claim_rest",
 			"T2a: the witness record at the claim rest")
 	end
 end
--- The band's first quests: a level-21 character finds quests at once.
+-- The band's first quests: a level-19 character finds quests at once (Round
+-- 65: the level-21 quests open at 19).
 for _, row in ipairs(ZONES) do
 	local first = 99
 	for _, quest in ipairs(offered[row[1]]) do
-		if not quest.story and #(quest.requires or {}) == 0 and quest.min_level < first then first = quest.min_level end
+		if not quest.story and #(quest.requires or {}) == 0 and opens(quest) < first then first = opens(quest) end
 	end
-	eq(first, 20, row[1] .. ": its first quests open at level 20")
+	eq(first, 19, row[1] .. ": its first quests open at level 19")
 end
 
 ------------------------------------------------------------------------------
@@ -502,7 +507,7 @@ for _, row in ipairs(ZONES) do
 	eq(#potions, 1, zone .. ": one potion choice")
 	local p = potions[1]
 	if p then
-		check(p.min_level == 20 and p.level >= 21, zone .. ": the potion choice is early, at reward level 21+ (" ..
+		check(opens(p) == 19 and p.level >= 21, zone .. ": the potion choice is early (from 19), at reward level 21+ (" ..
 			p.id .. ")")
 		local set = {}
 		for _, choice in ipairs(p.rewards.choices) do set[choice.item .. " " .. (choice.count or 1)] = true end

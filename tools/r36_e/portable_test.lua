@@ -247,7 +247,7 @@ local function use(place, label, extra)
 	return row
 end
 local function quest(id, objectives, extra)
-	local row = {id = id, line = "main", giver = GIVER, turnin = GIVER, min_level = 31, level = 35,
+	local row = {id = id, line = "main", giver = GIVER, turnin = GIVER, level = 35,
 		title = id, text = "Go there. Come back.", objectives = objectives, rewards = {weight = 2}}
 	for k, v in pairs(extra or {}) do row[k] = v end
 	return row
