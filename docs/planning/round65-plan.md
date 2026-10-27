@@ -2,8 +2,8 @@
 
 Planned with the user on 2026-10-27 after a first play session on the
 reworked quest system. **Started on the user's "go" the same day; Claude coordinates.**
-**Complete on 2026-10-27:** both lanes reviewed and merged locally, not
-pushed; GUI test pending; one user question open
+**Complete on 2026-10-27:** both lanes reviewed and merged, pushed by the
+user the same day; GUI test pending; the PvP question decided (accept)
 ([completion](#completion-2026-10-27)).
 Version: **0.65.0**. Classification: **compatible** (no saved
 state, map data or world generation changes; quest definitions are read at
@@ -300,7 +300,7 @@ on main `6a9db45a`. **0.65.0 is compatible:** quest definitions are read at
 load, the saved quest state (`grug_quests:state`) is read and written as
 before, nothing new is stored; an active quest whose acceptance level moved
 later stays active (only Accept is gated). No reset, no migration step.
-**Push:** not pushed; production is still 0.55.1. **GUI test:** pending; it
+**Push:** pushed by the user on 2026-10-27 (origin/main `8609d4c2`, with 0.64.0); production is still 0.55.1. **GUI test:** pending; it
 joins the joint GUI test of 0.57–0.64 ([checklist](#gui-checklist-desktop-and-web)).
 **Sync:** by the coordinator after each merge.
 
@@ -340,14 +340,12 @@ stated):
   quest HUD refresh, so a box drops at once when "Now playing" appears
   instead of up to 0.5 s later.
 
-**Open user question** (the coordinator updates this after the answer):
+**User decision after the round** (2026-10-27):
 
-- **QUEST Q1, PvP ruling 15** ("PvP quests from level 40", Round 31): four
-  level-41 fortress quests (both factions' entry calls and steel supplies)
-  are now accepted at 39. **Recommended:** accept (ruling 3 is uniform).
-  **Alternative:** raise them to level 42 (a data change in a later lane;
-  `quests.md` and `progression.md` state the opening at 39 and would change
-  with it).
+- **QUEST Q1, PvP ruling 15** ("PvP quests from level 40", Round 31): the
+  four level-41 fortress quests (both factions' entry calls and steel
+  supplies) are accepted at 39, as recommended; ruling 3 stays uniform and
+  no data changes.
 
 ### Deviations from the plan
 

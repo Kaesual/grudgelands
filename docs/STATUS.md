@@ -2,7 +2,7 @@
 
 Updated 2026-10-27. This is the delivery pointer, not another game specification.
 
-**0.65.0 / Round 65 is merged locally; not pushed.** Quest lists without
+**0.65.0 / Round 65 is pushed** (2026-10-27, origin/main `8609d4c2`, with 0.64.0). Quest lists without
 locked rows, one acceptance rule and a boxed quest HUD, from the user's
 first play session on the reworked quests: a quest is accepted from its
 quest level − 2 (`min_level` is gone from quest data; 317 quests open
@@ -15,14 +15,15 @@ colour, objective), sorted by quest level. Lanes QUEST (MERGE) and HUD
 (MERGE, a Low finding fixed, delta review MERGE), merges `c0be940a` and
 `6a9db45a`, then this documentation lane D. **Compatible:** no saved state,
 map or world generation change, no step. All 286 portable fixtures pass.
-**Open user question:** four level-41 fortress quests now open at 39
-against PvP ruling 15 ("from 40"); recommended: accept
+**User decision (2026-10-27):** the four level-41 fortress quests open at
+39 like every other quest (PvP ruling 15's "from 40" yields to the uniform
+rule)
 ([completion, numbers, decisions and GUI checklist](planning/round65-plan.md#completion-2026-10-27);
 [carry-overs](../BACKLOG.md#round-65--quest-lists-and-boxed-quest-hud-gui-acceptance-pending)).
 **The joint GUI test of 0.57–0.64 is still pending; 0.65 joins it.**
-Production is still **0.55.1**; origin/main is 0.63.0. Only the user pushes.
+Production is still **0.55.1**; origin/main is 0.65.0. Only the user pushes.
 
-**0.64.0 / Round 64 is merged locally and synced to Luanti; not pushed.**
+**0.64.0 / Round 64 is pushed** with 0.65.0 (2026-10-27).
 The shared 32px icon set, separate markers in both maps and bounded
 alpha-aware placement are implemented. Terrain resolution stays unchanged.
 Independent review: MERGE; all 284 portable fixtures pass across the full run
@@ -77,8 +78,8 @@ reset) reworks the quests of levels 31–40 and adds chapter 3; 0.61.1
 (compatible) refreshes the vendor, quest-giver and other service windows;
 Round 62 (0.62.0, a map reset) reworks the front 41–60 and gives the main
 line its story layer, which completes the quest rework of levels 11–60,
-and makes every bag four slots larger. None of them is **pushed**; they
-wait for the user's joint GUI test of 0.57 to 0.62, which covers the UI
+and makes every bag four slots larger. They are pushed since
+0.63.0 (2026-10-27) and still wait for the user's joint GUI test of 0.57 to 0.62, which covers the UI
 too ([checklist](planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)).
 Next: that GUI test, then the production deploy with one map reset
 (0.57.0 → 0.62.0; its starting list in the

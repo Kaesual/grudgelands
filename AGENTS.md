@@ -15,12 +15,12 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 **Current state:** 0.65.0, Round 65 quest lists without locked rows
 (acceptance at quest level − 2, one grey hint line, the silver "!" for a
 quest in one or two levels) and a boxed quest HUD sorted by quest level,
-merged locally; **not pushed**. **Compatible**, no step; GUI test pending,
-joining the joint test of 0.57–0.64; one user question open (PvP fortress
-quests at 39)
+**pushed** 2026-10-27 (origin/main `8609d4c2`, with 0.64.0). **Compatible**,
+no step; GUI test pending, joining the joint test of 0.57–0.64; the PvP
+fortress quests open at 39 like every quest (user, 2026-10-27)
 ([completion and checklist](docs/planning/round65-plan.md#completion-2026-10-27)).
 Previous: 0.64.0, Round 64 shared 32px map icons and bounded
-alpha-aware placement, merged locally and synced to Luanti; **not pushed**.
+alpha-aware placement, synced to Luanti; **pushed** with 0.65.0.
 Compatible presentation update; desktop/web GUI acceptance pending
 ([completion and checklist](docs/planning/round64-plan.md#completion-2026-10-27)).
 Previous: 0.63.0, Round 63 mining-camp redesign and the

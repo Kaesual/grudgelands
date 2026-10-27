@@ -261,7 +261,9 @@ combat may follow its target in).
 - **Player kills are never quest objectives** (players may be offline); PvP
   quests target enemy garrisons: guards, captains and the two war
   commanders within a camp's area.
-- **PvP quests start at level 40** ([progression.md](progression.md) §4).
+- **PvP quests start at level 40** ([progression.md](progression.md) §4);
+  since Round 65 the level-41 entry and supply quests open at 39 like every
+  quest (acceptance at quest level − 2; the user, 2026-10-27).
 - Per faction 12 fortress quests: one **solo** raid per enemy camp (8: the
   camp's guards and captain), three ordinary fortress quests and one entry
   quest from an outpost of the fortress's zone

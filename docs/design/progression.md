@@ -173,7 +173,7 @@ Revised 2026-09-23, Round 18:
   regional giver, so completion and the following regional quest meet at the
   same NPC.
 - PvP quests start at level 40 (Round 31, PvP ruling 15; since Round 65
-  the level-41 entry and supply quests open at 39): each faction's
+  the level-41 entry and supply quests open at 39, the user, 2026-10-27): each faction's
   fortress gives them (one raid per enemy Battlegrounds camp plus a few
   ordinary fortress quests), and an outpost of the fortress's zone sends a
   level-40 player there ([quests.md](quests.md#pvp-fortress-quests-round-31)).

@@ -15,9 +15,9 @@ one or two levels, the boxed quest HUD sorted by quest level
 the user's desktop/web [GUI checklist](docs/planning/round65-plan.md#gui-checklist-desktop-and-web),
 joined to the joint GUI test of 0.57–0.64. Carry-overs:
 
-- **Open user question, PvP ruling 15** ("PvP quests from level 40"): four
-  level-41 fortress quests (both entry calls, both steel supplies) now open
-  at 39. Recommended: accept; alternative: raise them to level 42 (data).
+- **Decided, PvP ruling 15** ("PvP quests from level 40"): the four
+  level-41 fortress quests (both entry calls, both steel supplies) open at
+  39 like every quest; the user accepted it on 2026-10-27. Nothing to do.
 - **Stale engine probes** (not gates): `r36_e`, `r59_qsys3` and `r57_qsys`'s
   engine probes had their `min_level` removed; their level-1 stand-ins now meet quests
   that open at 33, 18 and 3. Not rerun; fix when one is next used.
