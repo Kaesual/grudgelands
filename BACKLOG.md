@@ -6,6 +6,36 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 65 — quest lists and boxed quest HUD (GUI acceptance pending)
+
+Delivered in 0.65.0 (compatible): acceptance at quest level − 2, giver
+dialogs without locked rows plus one hint line, the silver "!" for a quest in
+one or two levels, the boxed quest HUD sorted by quest level
+([completion](docs/planning/round65-plan.md#completion-2026-10-27)). Remaining:
+the user's desktop/web [GUI checklist](docs/planning/round65-plan.md#gui-checklist-desktop-and-web),
+joined to the joint GUI test of 0.57–0.64. Carry-overs:
+
+- **Open user question, PvP ruling 15** ("PvP quests from level 40"): four
+  level-41 fortress quests (both entry calls, both steel supplies) now open
+  at 39. Recommended: accept; alternative: raise them to level 42 (data).
+- **Stale engine probes** (not gates): `r36_e`, `r59_qsys3` and `r57_qsys`'s
+  engine probes had their `min_level` removed; their level-1 stand-ins now meet quests
+  that open at 33, 18 and 3. Not rerun; fix when one is next used.
+- **The r27 minimap probe** calls `grug_xp` without declaring it in its
+  `mod.conf` (it works through `grug_map`'s dependency).
+- **`r65_quest` fixture gap:** the hint-only redraw after the last Accept and
+  field events on an empty dialog are verified by hand only.
+- **Title width slack:** the HUD cuts titles at an estimated 9 GUI px per
+  character; the capture shows about 7.4 px, so titles could keep more
+  characters after the look test.
+- **Small windows:** at GUI 1.5 a 1280×720 window shows 0–1 box and
+  "+N more" (kept until the look test); at 800×600 with HUD 1.5 not even
+  "+N more" fits (it sits at the top of the free band without overlap).
+- **Clients without window information** fall back to the 1280×720 layout
+  (seven boxes and "+3 more" with ten tracked); the web client is checked in
+  the GUI test.
+- **Quest description:** still reads "Minimum level: N" (now level − 2).
+
 ## Round 64 — map icons (GUI acceptance pending)
 
 The approved [atlas icon rules](docs/design/world_map.md#approved-icon-integration-round-64)

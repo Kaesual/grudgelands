@@ -12,6 +12,25 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.65.0 — Shorter quest lists and a boxed quest tracker (2026-10-27)
+
+Compatible update; no reset or migration. Quests you already accepted stay
+in your log.
+
+- **Shorter quest lists:** a quest giver lists only quests you can hand in,
+  accept or are doing, ready ones first, with the Story on top. One grey
+  line below them says "More quests at level N." A giver with nothing for
+  you yet still talks to you and tells you when to come back.
+- **Quests two levels above you:** you can accept any quest from two levels
+  below its level.
+- **The silver "!"** above a giver, on the minimap and on the map now means
+  a new quest for you in one or two levels; a giver with nothing else for
+  you whose next quest is further away shows no symbol.
+- **The quest tracker** shows each tracked quest as a see-through box: the
+  title, its level `[Lv N]` coloured by difficulty (grey, green, yellow,
+  red), and the current objective below. The boxes are sorted by level; a
+  small window shows as many as fit and "+N more".
+
 ## 0.64.0 — Shared map icons (2026-10-27)
 
 Compatible presentation update; no new reset or migration. The world map
