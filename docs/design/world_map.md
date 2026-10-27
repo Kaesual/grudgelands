@@ -92,7 +92,8 @@ refreshes.
 
 Round 16 (approved 2026-09-22): authored quest givers have individual icon
 markers with the same per-player ready/available/active/locked precedence as
-world symbols. Since Round 47 the world map shows them in its Quests layer,
+world symbols (`locked`, the grey "!", means "next quest in one or two
+levels" since Round 65). Since Round 47 the world map shows them in its Quests layer,
 the same states as the minimap ([Map window](#map-window)); in Round 44–46
 it showed only a question mark at the hand-in NPC of each active quest.
 Include individual profession/Riding trainers at their
@@ -227,7 +228,7 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
 
   | Button | Long name | Content | Factions | Tooltip |
   |---|---|---|---|---|
-  | Quests | Quest givers | every quest giver by its state, the minimap's set and precedence: gold "?" ready, "!" available, silver "?" active, grey "!" locked | own | the NPC's name |
+  | Quests | Quest givers | every quest giver by its state, the minimap's set and precedence: gold "?" ready, "!" available, silver "?" active, grey "!" locked (next quest in one or two levels) | own | the NPC's name |
   | Bosses | Kings & bosses | the six kings, the two dragons (a dragon arena within 64 nodes of its dragon is one icon), the rift boss at his clash site (the clash icon), the rare dens | both | the name, with the level where the registry has a fixed one ("King of Highcourt (level 65)"); a den its name, "Rare den" and the level at its anchor |
   | Trainers | Trainers & traders | the profession and Riding trainers, the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
   | Towns | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
