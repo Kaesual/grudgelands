@@ -196,6 +196,13 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   one node above the water surface. Under a ceiling lower than the
   camera (the riding bodies stay 1.6 high) the view reaches into the ceiling
   node.
+- **Camera mode** (user decision 2026-10-27): summoning a mount or boat
+  switches the rider to third person and every dismount switches back to
+  first person; the player keeps F7 for the whole ride, so neither view is
+  forced. A forced `set_camera` mode is released to free choice after one
+  second (an immediate release can reach the client in the same frame, which
+  then switches nothing); a tier change ends in third person, and leaving the
+  game sends no switch.
 - A flying mount plays its flight loop whenever it is in the air, hovering
   included; on the ground, idle or moving, it holds one still frame of that
   loop, level and without a wing beat or the wing sound (0.45.1, the user's

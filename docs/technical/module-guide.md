@@ -496,7 +496,11 @@ tools](#player-meta-read-by-external-tools).
   first-person height (the engine puts an attached player's camera at the
   parent's position plus eye height plus eye offset), the eye offsets carry
   the rest; the mount's step only restores the sit pose and the camera if a
-  pose change replaced them (one table read a step).
+  pose change replaced them (one table read a step). grug_mounts also owns
+  the camera mode (2026-10-27): third person on a summon, first on every
+  dismount except leave and shutdown, each forced with `set_camera` and
+  released to `any` after one second; another `set_camera` user must
+  coordinate with it.
   `grug_mounts.dismount` is the shared cleanup path for manual, damage, death, leave, shutdown and external-detach exits and clears the
   runtime-only untimed `mount` status. Mounted players cannot attack. A land
   controller falls at the player's gravity and deals its rider the engine's

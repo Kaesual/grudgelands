@@ -215,6 +215,7 @@ local function make_player(name, faction, race)
 	function player:set_detach() self.parent = nil end
 	function player:get_attach() return self.parent end
 	function player:set_eye_offset() end
+	function player:set_camera() end
 	function player:set_properties(p) self.props = p end
 	function player:get_properties() return {visual_size = {x = 1, y = 1}, hp_max = self.hp_max} end
 	function player:get_look_horizontal() return 0 end

@@ -26,7 +26,11 @@
 --      hulls smaller with their physics kept, the ibex idling without the
 --      head bob;
 --   I. the user's tuned values (follow-up 4) and the bats' still-body ride mesh;
---   J. a boat only at the surface (the top two water nodes), every path.
+--   J. a boat only at the surface (the top two water nodes), every path;
+--   K. the camera (2026-10-27): a summon switches to third person, a dismount
+--      back to first, each released to free choice a second later; a newer
+--      switch (a tier change) supersedes the older release; leaving drops
+--      the pending release.
 --
 --   luajit tools/r451_mc/portable_test.lua [REPO]
 -- Prints "R451 MC PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -81,7 +85,7 @@ local function node_at(pos)
 end
 
 local serial, shown, banners, feed_lines = {}, {}, {}, {}
-local callbacks = {fields = {}}
+local callbacks = {fields = {}, leave = {}}
 local registered_entities = {}
 
 core = {
@@ -109,7 +113,7 @@ core = {
 	register_craftitem = function() end,
 	register_on_player_hpchange = function() end,
 	register_on_dieplayer = function() end,
-	register_on_leaveplayer = function() end,
+	register_on_leaveplayer = function(fn) callbacks.leave[#callbacks.leave + 1] = fn end,
 	register_on_shutdown = function() end,
 	register_on_player_receive_fields = function(fn) callbacks.fields[#callbacks.fields + 1] = fn end,
 	show_formspec = function(name, formname, fs)
@@ -122,6 +126,15 @@ core = {
 	get_player_window_information = function() return nil end,
 	log = function() end,
 }
+-- core.after: queued, run by run_afters (section K).
+local afters = {}
+function core.after(delay, fn) afters[#afters + 1] = {delay = delay, fn = fn} end
+local function run_afters()
+	local due = afters
+	afters = {}
+	for _, entry in ipairs(due) do entry.fn() end
+	return due
+end
 local players = {}
 core.get_player_by_name = function(name) return players[name] end
 
@@ -164,7 +177,8 @@ local function make_player(name, faction, race)
 	local player = {name = name, pos = {x = 0, y = 0.5, z = 0}, hp = 20, meta = {},
 		faction = faction, race = race, look = 0, eye_offset_calls = 0, attaches = 0,
 		props = {visual_size = {x = 1, y = 1}, eye_height = 1.47},
-		eye_first = {x = 0, y = 0, z = 0}, eye_third = {x = 0, y = 0, z = 0}}
+		eye_first = {x = 0, y = 0, z = 0}, eye_third = {x = 0, y = 0, z = 0},
+		cameras = {}}
 	function player:is_player() return true end
 	function player:get_player_name() return self.name end
 	function player:get_pos()
@@ -185,6 +199,7 @@ local function make_player(name, faction, race)
 	end
 	function player:set_properties(p) for k, v in pairs(p) do self.props[k] = v end end
 	function player:get_properties() return copy(self.props) end
+	function player:set_camera(params) self.cameras[#self.cameras + 1] = params.mode end
 	function player:get_look_horizontal() return self.look end
 	function player:get_player_control() return {} end
 	function player:hud_remove() end
@@ -773,6 +788,63 @@ do
 	eq(grug_mounts.active.deep_sailor and grug_mounts.active.deep_sailor.tier, 6, "the sailboat replaced it")
 	grug_mounts.dismount(sailor2, nil, true)
 	clear()
+end
+
+------------------------------------------------------------------------------
+-- K. The camera on mounting and dismounting.
+------------------------------------------------------------------------------
+do
+	local function modes(player) return table.concat(player.cameras, ",") end
+	run_afters()
+	local rider = make_player("camera_rider", "accord", "human")
+	check(grug_mounts.spawn_entity(rider, 2, {x = 0, y = 0.5, z = 0}), "K the summon")
+	eq(modes(rider), "third", "K the summon switches to third person")
+	eq(#afters, 1, "K one release queued")
+	eq(afters[1] and afters[1].delay, 1, "K the release a second later")
+	run_afters()
+	eq(modes(rider), "third,any", "K the release frees the camera")
+	grug_mounts.dismount(rider, "manual", false)
+	eq(modes(rider), "third,any,first", "K the dismount switches to first person")
+	run_afters()
+	eq(modes(rider), "third,any,first,any", "K and frees it again")
+
+	-- A tier change dismounts and mounts in one step: the older release is
+	-- superseded, only the newest one frees the camera.
+	rider.cameras = {}
+	grug_mounts.spawn_entity(rider, 1, {x = 0, y = 0.5, z = 0})
+	check(grug_mounts.toggle(rider, 2), "K the tier change")
+	eq(modes(rider), "third,first,third", "K the tier change ends in third person")
+	eq(#run_afters(), 3, "K three releases queued")
+	eq(modes(rider), "third,first,third,any", "K only the newest release frees it")
+
+	-- Leaving while a release is pending: no camera call, the release dropped.
+	rider.cameras = {}
+	grug_mounts.dismount(rider, "manual", false)
+	grug_mounts.spawn_entity(rider, 2, {x = 0, y = 0.5, z = 0})
+	for _, fn in ipairs(callbacks.leave) do fn(rider) end
+	eq(grug_mounts.active.camera_rider, nil, "K leaving ends the ride")
+	eq(modes(rider), "first,third", "K leaving sends no camera change")
+	run_afters()
+	eq(modes(rider), "first,third", "K leaving drops the pending release")
+
+	-- A hard dismount (damage on a boat, death) switches back too.
+	rider.cameras = {}
+	grug_mounts.spawn_entity(rider, 2, {x = 0, y = 0.5, z = 0})
+	grug_mounts.dismount(rider, nil, true)
+	eq(modes(rider), "third,first", "K a hard dismount switches to first person")
+	run_afters()
+	eq(modes(rider), "third,first,any", "K and frees it again")
+
+	-- Leaving inside the second after a dismount: the release finds no
+	-- player and sends nothing.
+	rider.cameras = {}
+	grug_mounts.spawn_entity(rider, 2, {x = 0, y = 0.5, z = 0})
+	run_afters()
+	grug_mounts.dismount(rider, "manual", false)
+	for _, fn in ipairs(callbacks.leave) do fn(rider) end
+	players.camera_rider = nil
+	run_afters()
+	eq(modes(rider), "third,any,first", "K no release to a player who left")
 end
 
 if failures > 0 then

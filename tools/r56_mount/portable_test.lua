@@ -80,6 +80,7 @@ core = {
 	register_on_player_hpchange = function(fn) callbacks.hp[#callbacks.hp + 1] = fn end,
 	register_on_dieplayer = function(fn) callbacks.die[#callbacks.die + 1] = fn end,
 	register_on_leaveplayer = function() end,
+	after = function() end,
 	register_on_shutdown = function() end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
 	get_player_window_information = function() return nil end,
@@ -148,6 +149,7 @@ local function make_player(name)
 	function player:set_detach() self.parent = nil end
 	function player:get_attach() return self.parent end
 	function player:set_eye_offset() end
+	function player:set_camera() end
 	function player:set_properties() end
 	function player:get_properties() return {hp_max = self.hp_max, visual_size = {x = 1, y = 1}} end
 	function player:get_look_horizontal() return self.look end

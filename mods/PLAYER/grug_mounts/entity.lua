@@ -39,6 +39,12 @@ local WATER_REFUSAL = "Only boats can be summoned in water."
 local LAVA_REFUSAL = "Mounts cannot be summoned in lava."
 local GROUND_REFUSAL = "Stand on solid ground to summon this mount."
 local FALL_TOLERANCE = 14
+-- The camera (2026-10-27): mounting switches the rider to third person,
+-- dismounting back to first; F7 stays free during the ride. The switch is a
+-- forced mode released after this many seconds: a release sent in the same
+-- step can reach the client in the same frame, which then sees only the
+-- release and switches nothing (game.cpp Game::updateCameraMode).
+local CAMERA_RELEASE_DELAY = 1
 -- The warning band (fix 0.53.1: 40 nodes, catalog.lua WARNING_WIDTH).
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, grug_mounts.WARNING_WIDTH}
 local WARNING_DIRECTIONS = {}
@@ -50,6 +56,10 @@ for index = 0, 15 do
 end
 local active = {}
 local activating_players = {}
+-- The latest camera switch per player; a newer one (a tier change dismounts
+-- and mounts in one step) supersedes an older one's release.
+local camera_switches = {}
+local camera_serial = 0
 
 grug_mounts.active = active
 
@@ -181,6 +191,20 @@ local function remove_warning(player, record)
 	end
 end
 
+local function switch_camera(player, mode)
+	local name = player:get_player_name()
+	camera_serial = camera_serial + 1
+	local serial = camera_serial
+	camera_switches[name] = serial
+	player:set_camera({mode = mode})
+	core.after(CAMERA_RELEASE_DELAY, function()
+		if camera_switches[name] ~= serial then return end
+		camera_switches[name] = nil
+		local current = core.get_player_by_name(name)
+		if current then current:set_camera({mode = "any"}) end
+	end)
+end
+
 local function restore_player(player, skip_animation)
 	local name = player:get_player_name()
 	player_api.player_attached[name] = false
@@ -224,8 +248,10 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 	if teardown then
 		player_api.player_attached[name] = nil
 		player:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+		camera_switches[name] = nil
 	else
 		restore_player(player, skip_animation)
+		switch_camera(player, "first")
 	end
 	-- No velocity is subtracted after the detach: an attached player's client
 	-- holds zero velocity (the engine nulls it every step while attached),
@@ -751,6 +777,7 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight",
 		mode = tier.mode, model = model}
 	attach(player, object, model, skip_animation)
+	switch_camera(player, "third")
 	local visual = core.add_entity(pos, VISUAL_NAME,
 		core.serialize({owner = name, tier = tier_id}))
 	if not visual then

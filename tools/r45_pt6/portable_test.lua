@@ -121,6 +121,7 @@ core = {
 	register_on_player_hpchange = function(fn) callbacks.hp[#callbacks.hp + 1] = fn end,
 	register_on_dieplayer = function(fn) callbacks.die[#callbacks.die + 1] = fn end,
 	register_on_leaveplayer = function(fn) callbacks.leave[#callbacks.leave + 1] = fn end,
+	after = function() end,
 	register_on_joinplayer = function(fn) callbacks.join[#callbacks.join + 1] = fn end,
 	register_on_shutdown = function(fn) callbacks.shutdown[#callbacks.shutdown + 1] = fn end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
@@ -182,6 +183,7 @@ local function make_player(name, faction, race)
 	function player:set_detach() self.parent = nil end
 	function player:get_attach() return self.parent end
 	function player:set_eye_offset() end
+	function player:set_camera() end
 	function player:set_properties() end
 	function player:get_properties() return {visual_size = {x = 1, y = 1}} end
 	function player:get_look_horizontal() return self.look end
