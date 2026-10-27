@@ -649,7 +649,9 @@ do
 		same_faction = function() return false end}
 	grug_classes = {get_race = function() return "human" end}
 	grug_xp = {get_level = function() return 60 end, quest_reward = function() return 0 end,
-		register_on_level_change = noop}
+		register_on_level_change = noop,
+		-- Round 65: the tracker boxes' level labels.
+		con_color = function() return 0xffff55 end}
 	grug_mobs = {register_on_eligible_kill = noop, register_participant_drop_hook = noop}
 	grug_money = {}
 	grug_quests = {}
@@ -675,7 +677,7 @@ do
 	if ok then
 		eq(#journal.quests, 1, "E1 ...lists the kept quest only")
 		eq(table.concat(journal.tracked, ","), "kept", "E1 ...and tracks the kept quest only")
-		local hud_ok, hud_err = pcall(Q.hud_text, journal, nil)
+		local hud_ok, hud_err = pcall(Q.hud_entries, journal, 60, 38)
 		check(hud_ok, "E1 the tracker draws: " .. tostring(hud_err))
 	end
 	eq(Q.status and select(2, pcall(Q.status, player, "kept")) ~= nil, true,

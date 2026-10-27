@@ -766,11 +766,23 @@ end
 function M.set_now_playing(name, track)
 	local state = players[name]
 	if not state then return end
+	local shown = state.playing ~= nil
 	state.playing = track
-	local player = state.side_layout and core.get_player_by_name(name)
-	if player then
+	local player = core.get_player_by_name(name)
+	if not player then return end
+	if state.side_layout then
 		M.stats.changes = M.stats.changes + draw_playing(player, state)
 	end
+	-- The quest tracker's boxes make room for the box (or take it back) at
+	-- once when it comes or goes, not at their next 0.5 s poll (Round 65).
+	if shown ~= (track ~= nil) then grug_quests.hud_refresh(player) end
+end
+
+-- Whether `name`'s "Now playing" box shows: the quest tracker (grug_quests
+-- hud.lua, Round 65) keeps its boxes clear of it.
+function M.now_playing(name)
+	local state = players[name]
+	return state ~= nil and state.playing ~= nil
 end
 
 -- The mail icon (Round 48, the round plan's interface 3.1; grug_mail calls

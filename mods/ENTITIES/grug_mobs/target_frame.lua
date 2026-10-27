@@ -47,27 +47,16 @@ local COLOR_RED = 0xff5555
 -- player name -> {id = hud id, text = last text, color = last color}
 local frames = {}
 
--- The mob gradient in integer RGB, one colour per level: green 0x55ff55 at
--- the last level that still pays (d = 1 - grug_xp.GRAY_GAP, -9) to yellow
--- 0xffff55 at d = 0 (red rises 85 -> 255), then to red 0xff5555 at d = +5
--- (green falls 255 -> 85, 34 per level).
-local function con_gradient(d)
-	if d <= 0 then
-		local span = grug_xp.GRAY_GAP - 1
-		local red = 85 + math.floor(170 * math.max(0, d + span) / span + 0.5)
-		return red * 0x10000 + 0xff55
-	end
-	return 0xff0055 + (255 - 34 * math.min(d, 5)) * 0x100
-end
-
 -- Gray exactly when the kill would pay this viewer nothing: the payout's
 -- own predicate (levels.lua), so the frame and the settlement cannot drift.
+-- Otherwise the shared mob gradient (grug_xp.con_gradient, which the quest
+-- HUD's level label uses too).
 local function con_color(mob, player)
 	local player_level = grug_xp.get_level(player)
 	if grug_mobs.player_kill_xp(mob, player, player_level) <= 0 then
 		return COLOR_GRAY
 	end
-	return con_gradient(mob._grug_level - player_level)
+	return grug_xp.con_gradient(mob._grug_level - player_level)
 end
 
 -- The PvP marker of an enemy player and whether the pair can fight, or nil

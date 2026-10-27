@@ -120,8 +120,10 @@ local function report(player)
 	local window = core.get_player_window_information(NAME)
 	log(("window %s"):format(window and (window.size.x .. "x" .. window.size.y ..
 		" hud " .. window.real_hud_scaling) or "none"))
+	-- Round 65: the tracker's boxes (hud_entries; the text it built before).
 	local quest_us = average_us(function()
-		grug_quests.hud_text(grug_quests.journal(player), window)
+		grug_quests.hud_entries(grug_quests.journal(player), grug_xp.get_level(player),
+			grug_core.hud_layout.side_text_width(window))
 	end, 200)
 	local context = sfinv.get_or_create_context(player)
 	local page = sfinv.pages["grug_map:atlas"]

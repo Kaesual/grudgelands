@@ -56,7 +56,8 @@ layout.STATUS_CAPTION_WIDTH = 40
 -- HUD units between the top of the status icon row and the feed's lowest
 -- line (the anchor below uses it, so it is set first).
 layout.FEED_GAP = 6
--- Widest quest-tracker line in characters; each tracked quest is one line.
+-- Widest quest-tracker line in characters (the box's title row and its
+-- objective line; layout.quest_boxes).
 layout.QUEST_WRAP = 38
 layout.BAR_TEXTURE = "grug_core_hud_bar.png"
 
@@ -137,28 +138,15 @@ layout.anchors = {
 		offset = {x = 0, y = layout.rows.skill.top - 4 - layout.STATUS_CAPTION -
 			2 - layout.STATUS_ICON / 2},
 	},
-	-- Vertically centred at the right edge, one line per tracked quest (at
-	-- most grug_quests.MAX_TRACKED = 10). The minimap (grug_map, Round 27;
-	-- layout.minimap_box) is a square of 25% of the window height at the top
-	-- right, offset 10 HUD px from both edges -- the box of the builtin
-	-- minimap it replaces (builtin/game/hud.lua:248-255) -- so its bottom is
-	-- 0.25 H + 10 hud.
-	-- Ten lines of roughly 20 GUI px reach up to 0.5 H - 100 gui, which clears
-	-- it while H >= 400 gui + 40 hud: 440 px at GUI scaling 1, 640 px at 1.5,
-	-- 840 px at 2 (HUD scaling 1). The old worst case (three quests of up to
-	-- four wrapped lines) was twelve lines.
-	-- The location line under the minimap (Round 28 M1, grug_map minimap.lua)
-	-- adds one line of about 20 GUI px plus a 4 HUD px gap below the bezel,
-	-- which is no lower than the box: ten tracked quests then clear it while
-	-- H >= 480 gui + 56 hud (536 px at GUI scaling 1, 776 px at 1.5).
-	-- While a capital's music plays, the "Now playing" box (0.45.1,
-	-- minimap.lua) adds 48 GUI px plus a 4 HUD px gap below that line: ten
-	-- tracked quests clear it while H >= 672 gui + 72 hud (744 px at scale 1),
-	-- nine while H >= 632 gui + 72 hud.
+	-- The quest tracker (Round 65 ruling 4): one box per tracked quest (at
+	-- most grug_quests.MAX_TRACKED = 10) at the right edge, the stack
+	-- centred on the window's middle where it fits. Its boxes, their heights
+	-- and how many fit between the minimap block above and the bottom-centre
+	-- column below are layout.quest_boxes (after minimap_box, which it
+	-- reads); the offsets it returns are from this anchor.
 	quest_list = {
 		position = {x = 1, y = 0.5},
 		offset = {x = -20, y = 0},
-		alignment = {x = -1, y = 0},
 	},
 	party_list = {
 		position = {x = 0, y = 0.5},
@@ -429,7 +417,7 @@ layout.anchors.flight_warning = {position = {x = 0.5, y = 0},
 -- The minimap's box (grug_map, Round 27 ruling 6), in real screen pixels:
 -- the builtin minimap's square of MINIMAP_PERCENT of the window height, its
 -- top-right corner MINIMAP_EDGE HUD px from the top and right edges. The
--- quest list clearance above is computed for exactly this box. `window` is
+-- quest tracker (layout.quest_boxes) stays below exactly this box. `window` is
 -- the player's window information; nil gives a 1280 x 720 window at HUD
 -- scaling 1. Returns {size, center_x, center_y, hud, gui, width, height}
 -- (`gui` sizes the text under the minimap: its location line and, since
@@ -466,4 +454,93 @@ function layout.side_text_width(window)
 	local width = (window.size.x - layout.BAR_WIDTH * hud) / 2 - 32 * hud
 	return math.max(12, math.min(layout.QUEST_WRAP,
 		math.floor(width / (9 * gui))))
+end
+
+-- The quest tracker's boxes (Round 65 ruling 4; grug_quests hud.lua). A box
+-- holds two text lines of QUEST_BOX.line GUI px -- the title row with the
+-- level label, then the objective -- inside QUEST_BOX.pad GUI px of padding
+-- (48 px at GUI scaling 1); boxes stand QUEST_BOX.gap HUD px apart. Its
+-- width is side_text_width's characters at QUEST_BOX.char GUI px each plus
+-- the padding (350 px at 38 characters). Text is sized by GUI scaling and
+-- offsets by HUD scaling, so the geometry is worked out in screen pixels
+-- and returned in HUD units.
+--
+-- The stack stays inside a free band:
+-- * Top: QUEST_BOX.block_gap HUD px below the minimap block -- the
+--   minimap's box (minimap_box; the bezel is never larger), its location
+--   line (LOCATION_GAP HUD px and one line) and, while `playing`, the "Now
+--   playing" box (NOW_PLAYING_GAP HUD px and NOW_PLAYING_HEIGHT GUI px;
+--   grug_map minimap_view.lua V.NOW_PLAYING, pinned by tools/r65_hud).
+--   With the minimap hidden its side row and "Now playing" stay inside
+--   the same box (world_map.md), so the band never needs to know.
+-- * Bottom: QUEST_BOX.margin HUD px above the window's bottom edge, or
+--   above the bottom-centre column where the box reaches over it: the XP
+--   row's label (XP_LABEL_CHARS characters right of the XP bar) where the
+--   box's left edge is left of the label's end, and the feed's top line
+--   where it is left of the status icon row's or the feed's half width.
+-- `count` boxes all show when they fit; otherwise as many as fit together
+-- with one "+N more" line (one line) below them. The stack is centred on
+-- the window's middle (the anchor's y) and pushed down below the band's top
+-- or up from its bottom where needed.
+--
+-- Returns {shown, more, chars, width, height, pad, line, gap, tops[i],
+-- more_top}: `shown` boxes and the `more` count, the characters per line,
+-- the box width and height, its padding and line height, every box's top
+-- and the "+N more" line's top as HUD offsets from the anchor (the boxes'
+-- right edge is the anchor's x).
+layout.QUEST_BOX = {pad = 4, line = 20, gap = 4, block_gap = 8, margin = 20,
+	char = 9}
+layout.LOCATION_GAP = 4
+layout.NOW_PLAYING_GAP = 4
+layout.NOW_PLAYING_HEIGHT = 48
+layout.XP_LABEL_CHARS = 18
+
+function layout.quest_boxes(window, count, playing)
+	local Q = layout.QUEST_BOX
+	local box = layout.minimap_box(window)
+	local hud, gui, height = box.hud, box.gui, box.height
+	local chars = layout.side_text_width(window)
+	local pad, line = math.floor(Q.pad * gui + 0.5), math.ceil(Q.line * gui)
+	local box_h, gap = 2 * pad + 2 * line, Q.gap * hud
+	local width = chars * Q.char * gui + 2 * pad
+	local top = (layout.MINIMAP_EDGE + layout.LOCATION_GAP) * hud + box.size + line
+	if playing then
+		top = top + layout.NOW_PLAYING_GAP * hud +
+			math.ceil(layout.NOW_PLAYING_HEIGHT * gui)
+	end
+	top = top + Q.block_gap * hud
+	-- The box's left edge, in px right of the window's centre.
+	local left = box.width / 2 - (width - layout.anchors.quest_list.offset.x * hud)
+	local bottom = height - Q.margin * hud
+	if left < (layout.XP_WIDTH / 2 + 8) * hud + layout.XP_LABEL_CHARS * Q.char * gui then
+		bottom = height + layout.rows.xp.middle * hud - line / 2 - Q.block_gap * hud
+	end
+	local status = math.max(layout.STATUS_PITCH,
+		math.ceil(layout.STATUS_CAPTION_WIDTH * gui / hud) + 4) * layout.STATUS_LIMIT / 2
+	if left < math.max(status * hud, layout.QUEST_WRAP * Q.char * gui / 2) then
+		bottom = height + layout.feed_line_offset(layout.FEED_LINES, window).y * hud -
+			line / 2 - Q.block_gap * hud
+	end
+	local function span(n, more)
+		return n * (box_h + gap) - gap + (more and gap + line or 0)
+	end
+	local shown = count
+	if span(count, false) > bottom - top then
+		shown = 0
+		while shown < count - 1 and span(shown + 1, true) <= bottom - top do
+			shown = shown + 1
+		end
+	end
+	local more = count - shown
+	local total = span(shown, more > 0)
+	local y = math.max(top, math.min(height / 2 - total / 2, bottom - total))
+	local out = {shown = shown, more = more, chars = chars, width = width / hud,
+		height = box_h / hud, pad = pad / hud, line = line / hud, gap = Q.gap, tops = {}}
+	for i = 1, shown do
+		out.tops[i] = (y + (i - 1) * (box_h + gap) - height / 2) / hud
+	end
+	if more > 0 then
+		out.more_top = (y + shown * (box_h + gap) - height / 2) / hud
+	end
+	return out
 end

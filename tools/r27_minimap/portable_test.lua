@@ -155,7 +155,10 @@ dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 local layout = grug_core.hud_layout
 
 local QUESTS = {}
+-- Round 65: "Now playing" coming or going refreshes the quest tracker at once.
+local hud_refreshes = 0
 rawset(_G, "grug_quests", {registered_npcs = {},
+	hud_refresh = function() hud_refreshes = hud_refreshes + 1 end,
 	marker_states = function() return QUESTS, 1 end,
 	register_on_markers_changed = function(fn) quest_changes[#quest_changes + 1] = fn end})
 local PARTY = {}
@@ -839,13 +842,16 @@ do
 	local idle = me.sent
 	step(WINDOW)
 	check(me.sent == idle and #by_text(me, "^%[fill:") == 0, "P no box while nothing plays")
+	local refreshes = hud_refreshes
 	minimap.set_now_playing("me", feast)
 	placed(feast, "a track: the box, the note and its two lines under the location line (720p)")
+	check(hud_refreshes - refreshes == 1, "P the box coming refreshes the quest tracker once")
 	local sent = me.sent
 	minimap.set_now_playing("me", feast)
 	for _ = 1, 4 do step(WINDOW) end
 	check(me.sent == sent, "P the same track and idle window checks send nothing")
 	minimap.set_now_playing("me", lullaby)
+	check(hud_refreshes - refreshes == 1, "P ...another track does not")
 	check(me.sent - sent <= 6, "P another track: at most position, size and text of three elements")
 	placed(lullaby, "another track is placed again")
 	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
@@ -864,7 +870,9 @@ do
 		"P a hidden minimap keeps the box (in the corner), also for a new track")
 	minimap.set_enabled(me, true)
 	placed(feast, "switching the minimap on shows the box of the playing track")
+	refreshes = hud_refreshes
 	minimap.set_now_playing("me", nil)
+	check(hud_refreshes - refreshes == 1, "P the box going refreshes the quest tracker once")
 	check(#by_text(me, "^%[fill:") == 0 and #by_text(me, "^grug_ambience_note") == 0 and
 		#by_text(me, "Fantasy") == 0, "P no track: the box is hidden")
 	sent = me.sent

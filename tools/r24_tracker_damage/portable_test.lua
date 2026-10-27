@@ -264,7 +264,9 @@ grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 grug_factions = {get_faction = function() return "accord" end, same_faction = function() return false end}
 grug_classes = {get_race = function() return "human" end}
 grug_xp = {get_level = function() return 60 end, quest_reward = function() return 0 end,
-	register_on_level_change = function() end}
+	register_on_level_change = function() end,
+	-- Round 65: the boxes' level labels are coloured (tools/r65_hud checks the colour).
+	con_color = function() return 0xffff55 end}
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end}
 grug_money = {}
 grug_quests = {}
@@ -316,22 +318,28 @@ check(Q.set_tracked(player, "q01", false), "untrack one")
 check(Q.set_tracked(player, "q11", true), "track eleventh after freeing a slot")
 eq(#Q.journal(player).tracked, 10, "still ten tracked")
 
-local text = Q.hud_text(Q.journal(player), nil)
-local lines = {}
-for line in (text .. "\n"):gmatch("(.-)\n") do lines[#lines + 1] = line end
-eq(#lines, 10, "ten HUD lines for ten tracked quests")
-eq(lines[1], "0/4 Bring Raw Meat", "objective-only line")
-check(not text:find("Quest Title", 1, true), "no quest title on the HUD")
+-- Round 65 ruling 4 replaces ruling 23's objective-only line: one box per
+-- tracked quest with its title, level label and objective line.
+local function lines_of(journal)
+	local lines = {}
+	for i, entry in ipairs(Q.hud_entries(journal, 60, 38)) do lines[i] = entry.line end
+	return lines, table.concat(lines, "\n")
+end
+local lines, text = lines_of(Q.journal(player))
+eq(#lines, 10, "ten HUD boxes for ten tracked quests")
+eq(lines[1], "0/4 Bring Raw Meat", "the objective line")
+eq(Q.hud_entries(Q.journal(player), 60, 38)[1].title, "Quest Title Number 10",
+	"the box's title, the first by title at one level (Round 65 ruling 4)")
 eq(lines[1], lines[2], "identical objectives read the same")
 
 -- Ready quest: "Return to <turn-in NPC>"; kill objective line.
 check(Q.set_tracked(player, "q02", false), "free a slot")
 check(Q.accept(player, "hunt"), "accept hunt")
 check(Q.set_tracked(player, "hunt", true), "track hunt")
-text = Q.hud_text(Q.journal(player), nil)
+lines, text = lines_of(Q.journal(player))
 check(text:find("0/3 Defeat Boar", 1, true) ~= nil, "kill objective line")
 held["grug_food:raw_meat"] = 4
-text = Q.hud_text(Q.journal(player), nil)
+lines, text = lines_of(Q.journal(player))
 check(text:find("Return to Brunna Flintbraid", 1, true) ~= nil, "ready line names the giver")
 check(not text:find("Bring Raw Meat", 1, true), "ready quests show no objective")
 local ready = {ready = true, npc = "other", objectives = {}}
@@ -361,7 +369,7 @@ check(not Q.hud_line(planks, 16):find("\27", 1, true), "no escape byte after a c
 -- Hidden HUD or empty log renders nothing.
 local hidden = Q.journal(player)
 hidden.hud_enabled = false
-eq(Q.hud_text(hidden, nil), "", "HUD toggle off")
+eq(#Q.hud_entries(hidden, 60, 38), 0, "HUD toggle off")
 
 print(("%d checks, %d failures"):format(checks, failures))
 if failures > 0 then os.exit(1) end

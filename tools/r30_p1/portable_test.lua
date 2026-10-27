@@ -275,6 +275,8 @@ grug_core = {
 	zone_authority_installed = function() return false end,
 	faction_ids = {"accord", "throng"},
 	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end,
+	-- Round 65: the tracker boxes read the UI theme's colours.
+	ui = {colors = {text = "#eeeae1", panel = "#0a10115e"}},
 }
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
@@ -296,7 +298,9 @@ grug_classes = {get_race = function() return "human" end}
 local level_changes = {}
 grug_xp = {get_level = function() return level end, add_xp = function() end,
 	quest_reward = function() return 10 end,
-	register_on_level_change = function(fn) level_changes[#level_changes + 1] = fn end}
+	register_on_level_change = function(fn) level_changes[#level_changes + 1] = fn end,
+	-- Round 65: the tracker boxes' level labels (tools/r65_hud checks the colour).
+	con_color = function() return 0xffff55 end}
 -- grug_xp's level-up: the level rises, then the callbacks run.
 local function level_up(player, new_level)
 	local old = level

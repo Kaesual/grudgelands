@@ -266,6 +266,8 @@ grug_core = {
 	zone_authority_installed = function() return false end,
 	faction_ids = {"accord", "throng"},
 	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end,
+	-- Round 65: the tracker boxes read the UI theme's colours.
+	ui = {colors = {text = "#eeeae1", panel = "#0a10115e"}},
 }
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
@@ -283,7 +285,9 @@ grug_xp = {get_level = function(p)
 	level_reads = level_reads + 1
 	return levels[p:get_player_name()] or 1
 end, add_xp = function() end, quest_reward = function() return 10 end,
-	register_on_level_change = function(fn) level_changes[#level_changes + 1] = fn end}
+	register_on_level_change = function(fn) level_changes[#level_changes + 1] = fn end,
+	-- Round 65: the tracker boxes' level labels (tools/r65_hud checks the colour).
+	con_color = function() return 0xffff55 end}
 local function level_up(player, new_level)
 	local old = levels[player:get_player_name()] or 1
 	levels[player:get_player_name()] = new_level
@@ -448,8 +452,13 @@ do
 	local reads = list_reads
 	hud_steps(2.0)
 	eq(list_reads - reads, 0, "T kill objectives only: a poll reads no inventory list")
+	-- Round 65: one objective line per tracked quest's box, joined here.
 	local line = function()
-		for _, hud in pairs(cy.huds) do if hud.number == 0xffe080 then return hud.text end end
+		local lines = {}
+		for _, hud in pairs(cy.huds) do
+			if hud.number == 0xffe080 then lines[#lines + 1] = hud.text end
+		end
+		return #lines > 0 and table.concat(lines, "\n") or nil
 	end
 	Q.credit_kill(cy, boar, {x = 0, y = 0, z = 0})
 	check((line() or ""):find("1/2", 1, true) ~= nil, "T ...and the line follows a kill (" .. tostring(line()) .. ")")

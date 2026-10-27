@@ -307,7 +307,13 @@ end
 core.create_detached_inventory = function(_, _, owner) return new_inventory(owner) end
 
 
-local hud_texts = {}
+-- The texts of a player's live HUD elements (Round 65: the tracker is one
+-- box of four elements per tracked quest, so the line is looked up among them).
+local function hud_texts_of(player)
+	local texts = {}
+	for _, text in pairs(player.huds) do texts[#texts + 1] = tostring(text) end
+	return table.concat(texts, "\n")
+end
 local function new_player(name, opts)
 	opts = opts or {}
 	local inv = new_inventory(name)
@@ -323,18 +329,22 @@ local function new_player(name, opts)
 	function player:is_player() return self.online end
 	function player:get_pos() return self.pos end
 	function player:get_hp() return self.hp end
+	local next_id = 0
 	function player:hud_add(def)
-		self.huds[#self.huds + 1] = def.text
-		return #self.huds
+		next_id = next_id + 1
+		self.huds[next_id] = def.text
+		return next_id
 	end
 	function player:hud_change(id, key, value)
-		if key == "text" then self.huds[id] = value; hud_texts[name] = value end
+		if key == "text" then self.huds[id] = value end
 	end
+	function player:hud_remove(id) self.huds[id] = nil end
 	players[name] = player
 	return player
 end
 local function join(player)
 	player.online = true
+	player.huds = {} -- a (re)joining client starts without HUD elements
 	for _, f in ipairs(callbacks.join) do f(player) end
 end
 local function arrive(player)
@@ -362,9 +372,7 @@ grug_core = {
 		local def = core.registered_items[name]
 		return def and def.description or name
 	end,
-	hud_layout = {QUEST_WRAP = 38, side_text_width = function() return 38 end,
-		anchors = {quest_list = {position = {x = 1, y = 0.5}, offset = {x = 0, y = 0},
-			alignment = {x = -1, y = 1}}}},
+	ui = {colors = {text = "#eeeae1", panel = "#0a10115e"}},
 	settlement_socket_settlements = function()
 		return {
 			{key = "dur_brannoc", display_name = "Dur Brannoc", slot = "capital", race_id = "dwarf"},
@@ -378,6 +386,7 @@ grug_core = {
 			{id = "quest_1", role = "quest", pos = QUEST_POS}}
 	end,
 }
+dofile(ROOT .. "/mods/CORE/grug_core/hud_layout.lua")
 grug_classes = {
 	get_class = function(player) return player.class_id end,
 	get_race = function(player) return player.race end,
@@ -387,6 +396,8 @@ local xp_added = {}
 grug_xp = {
 	get_level = function(player) return player.level end,
 	register_on_level_change = function(f) table.insert(callbacks.level, f) end,
+	-- Round 65: the tracker boxes' level labels (tools/r65_hud checks the colour).
+	con_color = function() return 0xffff55 end,
 	quest_reward = function(level, weight) return math.floor(weight * (25 + 5 * level) + 0.5) end,
 	add_xp = function(player, amount, source)
 		xp_added[#xp_added + 1] = {name = player:get_player_name(), amount = amount, source = source}
@@ -591,8 +602,9 @@ do
 	eq(Q.hud_line(row, 100), TURNIN, "T the tracker line is the system text")
 	eq(Q.hud_line(row, 38), "Open a mailbox beside the waystone...",
 		"T cut to the tracker width like every line")
-	eq(hud_texts.Nova, "Open a mailbox beside the waystone...", "T the HUD element shows it")
-	lacks(hud_texts.Nova, "Return to", "T never \"Return to\"")
+	check(("\n" .. hud_texts_of(nova) .. "\n"):find("\nOpen a mailbox beside the waystone...\n", 1, true),
+		"T the HUD element shows it")
+	lacks(hud_texts_of(nova), "Return to", "T never \"Return to\"")
 	local session = {quest_selected = ID}
 	local fs = quest_box.content(session, journal, {x = 0, y = 0, w = 7, h = 12})
 	has(fs, core.formspec_escape(TURNIN .. "."), "T the quest log names the system text")
@@ -640,7 +652,7 @@ do
 	grug_mail.open_mailbox(nova, MAILBOX)
 	eq(#turn_ins, count, "O a second opening turns nothing in")
 	eq(grug_money.get(nova) - before, 25, "O and pays nothing more")
-	lacks(hud_texts.Nova or "", "Open a mailbox", "O the tracker line is gone")
+	lacks(hud_texts_of(nova), "Open a mailbox", "O the tracker line is gone")
 
 	veteran.pos = {x = 101, y = 10, z = 100}
 	grug_money.set(veteran, grug_money.MAX - 10)

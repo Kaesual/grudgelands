@@ -280,7 +280,8 @@ do
 	})
 	rawset(_G, "grug_map", {atlas = {}})
 	rawset(_G, "grug_parties", {register_on_change = function() end})
-	rawset(_G, "grug_quests", {register_on_markers_changed = function() end})
+	rawset(_G, "grug_quests", {register_on_markers_changed = function() end,
+		hud_refresh = function() end}) -- Round 65 (checked in tools/r27_minimap)
 	rawset(_G, "grug_factions", {register_on_faction_chosen = function() end})
 	dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
 	local minimap = grug_map.minimap
