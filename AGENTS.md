@@ -12,7 +12,14 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.64.0, Round 64 shared 32px map icons and bounded
+**Current state:** 0.65.0, Round 65 quest lists without locked rows
+(acceptance at quest level − 2, one grey hint line, the silver "!" for a
+quest in one or two levels) and a boxed quest HUD sorted by quest level,
+merged locally; **not pushed**. **Compatible**, no step; GUI test pending,
+joining the joint test of 0.57–0.64; one user question open (PvP fortress
+quests at 39)
+([completion and checklist](docs/planning/round65-plan.md#completion-2026-10-27)).
+Previous: 0.64.0, Round 64 shared 32px map icons and bounded
 alpha-aware placement, merged locally and synced to Luanti; **not pushed**.
 Compatible presentation update; desktop/web GUI acceptance pending
 ([completion and checklist](docs/planning/round64-plan.md#completion-2026-10-27)).
@@ -162,6 +169,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
 are not recorded as passed. Next: the joint GUI test of 0.57.0 to 0.62.0
 ([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)),
+joined by 0.63.0–0.65.0 (each round plan's checklist),
 then the production deploy with one map reset (0.57.0 → 0.62.0; its
 starting list in the [deploy plan](docs/planning/deploy-plan.md)), the
 armor redesign and unique items ([ROADMAP](ROADMAP.md)).
@@ -684,7 +692,10 @@ The topic rules below name the one path to use; the
   "Shared quests" to "The rework flag"): a task given in several places is
   one quest with one variant per giver zone (several givers or a role,
   texts per giver or race); only story quests (`story`) chain, a free quest
-  needs only a level and has at most one follow-up; rewards may be a
+  needs only a level and has at most one follow-up; since Round 65 every
+  quest is accepted from its quest level − 2 (`grug_quests.acceptance_level`,
+  at least 1; quest data names no `min_level`, both validators refuse one,
+  [quests.md](docs/design/quests.md)); rewards may be a
   `choices` list (equipment with author-fixed enchants at the reward
   level); every quest is done once (`repeatable` is gone). The new rules
   apply to files marked `"reworked": true`, since Round 62 all 48 quest

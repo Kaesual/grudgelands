@@ -96,6 +96,13 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.65.0** tidies the quests: a giver lists only what you can hand in, accept
+or are doing, plus one grey line naming the level of its next quests; you can
+take a quest from two levels below its level; a silver "!" means a giver has
+a new quest for you in one or two levels; and the quest tracker shows each
+tracked quest as a box with its level in a difficulty colour, sorted by level.
+This update is compatible; desktop and web acceptance is pending.
+
 **0.64.0** gives the world map and minimap the same 32px icons, with stable
 sizes at every zoom and modest displacement to reduce overlapping symbols.
 Minimap terrain resolution stays unchanged; icons sit above its overlays.

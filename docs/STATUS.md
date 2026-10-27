@@ -2,6 +2,26 @@
 
 Updated 2026-10-27. This is the delivery pointer, not another game specification.
 
+**0.65.0 / Round 65 is merged locally; not pushed.** Quest lists without
+locked rows, one acceptance rule and a boxed quest HUD, from the user's
+first play session on the reworked quests: a quest is accepted from its
+quest level − 2 (`min_level` is gone from quest data; 317 quests open
+earlier, one later), the giver dialog lists only ready, acceptable and
+in-progress quests sorted by status with one grey hint line "More quests at
+level N." (first-visit rows 632 → 260), the silver "!" shows only when a
+giver's next quest is one or two levels away, and the quest HUD draws one
+transparent box per tracked quest (title, `[Lv N]` in the difficulty
+colour, objective), sorted by quest level. Lanes QUEST (MERGE) and HUD
+(MERGE, a Low finding fixed, delta review MERGE), merges `c0be940a` and
+`6a9db45a`, then this documentation lane D. **Compatible:** no saved state,
+map or world generation change, no step. All 286 portable fixtures pass.
+**Open user question:** four level-41 fortress quests now open at 39
+against PvP ruling 15 ("from 40"); recommended: accept
+([completion, numbers, decisions and GUI checklist](planning/round65-plan.md#completion-2026-10-27);
+[carry-overs](../BACKLOG.md#round-65--quest-lists-and-boxed-quest-hud-gui-acceptance-pending)).
+**The joint GUI test of 0.57–0.64 is still pending; 0.65 joins it.**
+Production is still **0.55.1**; origin/main is 0.63.0. Only the user pushes.
+
 **0.64.0 / Round 64 is merged locally and synced to Luanti; not pushed.**
 The shared 32px icon set, separate markers in both maps and bounded
 alpha-aware placement are implemented. Terrain resolution stays unchanged.
