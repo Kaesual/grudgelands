@@ -174,8 +174,9 @@ Basic lists what the character has held the ingredients of (Round 47,
   new tier adds its recipes. Basic has no profession tier; since Round 47
   (ruling 19) it lists a recipe once the character has held every
   ingredient at least once (a group ingredient when any member was held,
-  whatever the stack's metadata), and sticks and every wooden tool (the
-  pickaxe, axe, shovel and hoe of wood) from the start. A scan of every
+  whatever the stack's metadata), and sticks, every wooden tool (the
+  pickaxe, axe, shovel and hoe of wood) and the fishing rod (Round 66
+  ruling 7) from the start. A scan of every
   list of the character's inventory notices what it holds: at every
   inventory action, dug node or crafted delivery (within half a second),
   every 10 s for anything else (pickups, rewards), at the join and before

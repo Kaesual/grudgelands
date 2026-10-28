@@ -1351,7 +1351,10 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   `allow_put` refuses pairs whose occupied hands exceed two, in both directions,
   with a message explaining the trade. Eligibility: `inventory_equipment.md` §2.
   It is a **refusal**, never an automatic
-  unequip of the other slot.
+  unequip of the other slot; the drag refusal names the shift-click way.
+  Since Round 66 (ruling 1) a shift-click of a two-hander on the Character
+  page swaps both hands in one step, the offhand piece into the inventory
+  when it fits there (`inventory_equipment.md` §1).
 - Consequence, and it is a gameplay rule rather than a technicality:
   **carrying a shield or spellbook costs you the two-handed weapon.**
   Greataxe and staff users choose between the offhand and their weapon. The

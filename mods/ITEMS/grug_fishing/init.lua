@@ -135,33 +135,13 @@ mobs.add_eatable("grug_fishing:cooked_fish", 8)
 --
 -- The recipes
 --
--- The rod is three sticks and two Thread -- the job supply every vendor
--- sells (grug_professions), so it is an early T1 Basics craft (user decision,
--- Round 29) -- in VoxeLibre's own diagonal shape, mirrored so either hand's
--- worth of muscle memory works. Traders buy neither the rod nor the cooked
--- fish (no loot class in grug_traders/prices.lua); the raw band fish are
--- gathered goods and sell by their tier.
+-- The rod is a Basic recipe of the Crafting tab (grug_jobs basic_recipes.lua:
+-- three sticks and two Thread, the job supply every vendor sells), known
+-- from the start (Round 66 ruling 7). Its old crafting-grid recipes went in
+-- Round 66: the grid has size 0 and nothing read them. Traders buy neither
+-- the rod nor the cooked fish (no loot class in grug_traders/prices.lua);
+-- the raw band fish are gathered goods and sell by their tier.
 --
-local STRING_ITEM = "grug_professions:thread"
-
-core.register_craft({
-	output = "grug_fishing:rod",
-	recipe = {
-		{"", "", "default:stick"},
-		{"", "default:stick", STRING_ITEM},
-		{"default:stick", "", STRING_ITEM},
-	},
-})
-
-core.register_craft({
-	output = "grug_fishing:rod",
-	recipe = {
-		{"default:stick", "", ""},
-		{STRING_ITEM, "default:stick", ""},
-		{STRING_ITEM, "", "default:stick"},
-	},
-})
-
 core.register_craft({
 	type = "cooking",
 	output = "grug_fishing:cooked_fish",

@@ -329,7 +329,8 @@ tools](#player-meta-read-by-external-tools).
   space-separated; read once per session, written when it grows; about
   4.7 KB once every ingredient was held). `recipe_known(player, recipe)`
   (true outside Basic and for the starter outputs `HELD_STARTER`: the
-  stick and the four wooden tools), `scan_held(player[, quiet])` (every
+  the stick, the four wooden tools and, since Round 66, the fishing rod),
+  `scan_held(player[, quiet])` (every
   list; returns the recipes it unlocked and feeds
   "New recipe: X" / "New recipes: X and N more", resends an open page
   unless quiet; the first scan of a character without the key is silent).
