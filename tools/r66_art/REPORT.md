@@ -1,64 +1,63 @@
 # Round 66 ART — priest symbols
 
-Delivered on `r66-art`. **Pass 3 recommendation: Hammer C + Book E.**
-Both choices await the user. Open [the local preview](preview/index.html)
+Delivered on `r66-art`. **Hammer C is picked; Book G is recommended.**
+The book choice awaits the user. Open [the local preview](preview/index.html)
 or the [contact sheet](preview/contact-sheet.png).
 
-## Pass 3 — shaped hammers and inclined books (2026-10-28)
+## Pass 4 — thick hardcover tomes (2026-10-28)
 
-The user retained Hammer A's head-down side view but requested a more
-interesting silhouette. The user preferred the broad, quiet open Book C
-and requested backward tilt: the upper edge recedes, the spread is
-foreshortened, and the far edge is narrower than the near edge. This pass
-supersedes the earlier hammer pick and book recommendation.
+The user picked Hammer C for Smite and Final Word. The user preferred
+Book F's stronger backward tilt but found the binding bent, requesting a
+thick open hardcover with visible rigid boards, a substantial page block
+and a straight central spine. Smite's preview size increases from 5 to 7.
+These instructions supersede the pass-3 recommendation and the round
+plan's earlier Smite size default for this preview and the FX handoff.
 
-| Texture | Idea | Recommendation |
+| Texture | Idea | Status |
 |---|---|---|
-| [Hammer C](candidates/smite_hammer_c.png) | A broad crowned head with flared striking faces, a diamond seal, three grip rings and a diamond pommel. | Recommended: the shaped ends remain distinct at small sizes and give the fall weight. |
-| [Hammer D](candidates/smite_hammer_d.png) | A broad chamfered face opposes a tapered ivory beak, beneath a wrapped grip and faceted pommel. | Alternative: a visibly asymmetric war hammer with a lighter back. |
-| [Book E](candidates/censure_book_e.png) | The quiet spread tilts moderately backward, keeping broad blank pages and the central fold. | Recommended: the inclination is visible while more page area remains at 16 px. |
-| [Book F](candidates/censure_book_f.png) | The same spread leans farther away, with a shorter depth and stronger convergence toward the top. | Alternative: the more reclined lectern pose. |
+| [Hammer C](candidates/smite_hammer_c.png) | Crowned head, flared striking faces, diamond seal and ringed grip. | Picked; candidate and preview copy remain byte-identical to pass 3. |
+| [Book G](candidates/censure_book_g.png) | Thick square gold boards beneath a broad ivory page block, with a firm straight spine. | Recommended: the substantial board edge makes the hardcover construction clearest. |
+| [Book H](candidates/censure_book_h.png) | A deeper page block on slimmer gold boards with clipped outer corners. | Alternative: more page depth, less board weight, the same reclined pose. |
 
-Both hammers keep a vertical handle above a horizontal head; no diagonal
-rotation or trail suggests a different fall. Their outline carries the
-identity. The grip, pale seal and face accents are secondary details that
-can disappear when additive light saturates.
+Both books preserve F's perspective projection: far scale 0.56, far y 25,
+near y 48, a 23-pixel projected reference depth. Each page is now a straight
+quadrilateral. The covers and page block have distinct top, side and near
+faces; the boards protrude around the page edges. G has 4 pixels of page
+block depth and 2.5 pixels of board depth; H has 6 and 1.25 respectively,
+measured as vertical extrusion in the source sprite. The near board edges
+are straight, with parallel lower edges. A narrow luminous strip runs
+straight through the middle, flanked by translucent hinge channels;
+there is no curved lower lip or splayed foot at the spine.
 
-The books reuse the preferred spread's geometry through a perspective
-projection, then mirror its left half about the exact image centre. Far
-edge scale is 0.74 for E and 0.56 for F; the projected depth is 31 and 23
-pixels respectively. The outer edges converge upward, the pages remain
-blank, and the shallow central fold stays open above the joined binding.
-There is no sideways rotation or asymmetric page lift.
-
-All four candidates are **64 × 64 RGBA PNGs**. White, ivory and pale gold
-form opaque cores, with a small gold accent, bright antialiased edges,
-fully transparent borders and a tight halo. Transparency defines gaps;
-there is no dark outline. The source size leaves room for the shaped
-hammer heads and book folds at the larger effect sizes while preserving
-simple silhouettes at 16 px.
+All three textures are **64 × 64 RGBA PNGs**, in white, ivory and pale
+gold with a small gold accent. Bright source RGB, opaque page cores,
+translucent cut faces and transparent gaps separate the volumes under
+additive light. The borders are transparent and the halo stays tight.
+The pages have no text or markings; two light divisions on the cut face
+suggest stacked leaves. The 64 px source gives the larger fall room for
+the board and page thickness while retaining a simple small silhouette.
 
 ### Preview and retired candidates
 
-Each candidate has an idea sentence, enlarged hero and 16/32/64 px views
-on night, cave, snow, sky and sand, with plain alpha and additive light
-side by side. The top recommendation is C/E. All four pairings, C/E,
-C/F, D/E and D/F, appear in context beside the established figure one
-node wide and two nodes tall. Each pairing shows its hammer for Smite
-and Final Word and its book for Censure.
+The top recommendation distinguishes the picked Hammer C from the open
+book choice. Hammer C occupies a compact section; a native HTML disclosure
+opens its unchanged 16/32/64 px ground comparisons. Each book shows the
+same enlarged hero, 16/32/64 px samples and night/cave/snow/sky/sand rows,
+plain alpha and additive light side by side.
 
-The existing catalogue conversion stays at one size unit = 0.1 node
-(`tools/r52_pfx/template.html`): sprite squares of 0.5 / 1.2 / 1.6 nodes
-for sizes 5 / 12 / 16. Transparent margins make the visible objects
-smaller. The page uses `plus-lighter` with a labelled `screen` fallback;
-all assets are local, with no download links, scripts or external requests.
-The contact sheet and [media ledger](LICENSE-media.md) show the four new
-candidates only.
+Two context strips pair Hammer C with G and H. Each shows **Smite 7,
+Final Word 12, Censure 16**, beside the established figure one node wide
+and two nodes tall. The catalogue preview conversion remains one size
+unit = 0.1 node (`tools/r52_pfx/template.html`): sprite squares of
+0.7 / 1.2 / 1.6 nodes, or 44.8 / 76.8 / 102.4 CSS px. Transparent margins
+make the visible objects smaller. The page uses `plus-lighter` with a
+labelled `screen` fallback. There are no download links, scripts or
+external requests.
 
-Superseded Hammer A/B and Book C/D PNGs are removed from `candidates/`
-and `preview/`, and their candidates are removed from the generator,
-page template, generated page and contact sheet. None is retained as an
-archival output; their original images and reports remain in git history.
+Hammer D and Book E/F are removed from `candidates/`, `preview/`, the
+generator, page template, generated page and contact sheet. Their images
+remain in git history only. The [media ledger](LICENSE-media.md) records
+the three current textures and their matching preview copies.
 
 ### Generation and verification
 
@@ -69,32 +68,35 @@ python3 tools/r66_art/generate.py
 python3 tools/r66_art/generate.py --check
 ```
 
-Python 3, Pillow and numpy remain the dependencies. The generator writes
-ten outputs: four candidates, four byte-identical preview copies, the
-page and contact sheet. `--check` regenerates in memory and compares all
-ten byte for byte. Both modes check dimensions, RGBA, transparent borders
-and exact book symmetry, and reject unexpected generated PNGs.
+Dependencies remain Python 3, Pillow and numpy. Eight outputs are written:
+three candidates, three identical preview copies, the page and contact
+sheet. `--check` regenerates in memory and compares every output byte for
+byte. Both modes verify RGBA dimensions, transparent borders and exact
+book symmetry, and reject unexpected generated PNGs.
 
 Completed checks:
 
-- `generate.py --check`: all ten outputs match, with no retired PNGs.
-- Pixel audit: all four candidates have opaque cores, transparent borders
-  and RGB at least (245, 218, 155) wherever alpha is nonzero; every preview
-  copy matches its candidate byte for byte.
-- Both books are exactly mirror-symmetric. At alpha >= 200, the span two
-  rows below the first solid row versus four rows above the last is
-  38/48 px for E and 30/46 px for F, confirming a narrower upper edge.
-- HTML audit: 138 image instances with alt text and integer dimensions,
-  20 ground rows, four context pairings; all local paths and fragments
-  resolve, with no downloads, scripts, remote resources or template tokens.
+- `generate.py --check`: all eight outputs match; no retired PNGs remain.
+- Hammer C candidate matches the pass-3 git blob byte for byte; its preview
+  copy matches too. SHA-256:
+  `c76a35ea6d3221ab8ab51cb0aade0c24dcbc0b7491425bffa00ba64acc06b77d`.
+- Pixel audit: all three images have opaque cores, fully transparent
+  borders and RGB at least (245, 218, 155) wherever alpha is nonzero;
+  both books are exactly mirror-symmetric.
+- HTML audit: 101 image instances, 15 ground rows, two context pairings;
+  image dimensions, alt text, local paths and anchors are valid. Context
+  sizes are 7/12/16 in both strips; no downloads, remote resources,
+  scripts, unresolved template tokens or retired candidates.
 - Visual inspection of the contact sheet and native 16/32/64 px raster
-  composites, plain and additive on all five grounds.
-- Python source parses with the Python 3.9 grammar; `git diff --check`
-  passes. No file under `mods/` changed.
+  composites, plain and additive, on all five grounds. The temporary
+  inspection composite was removed after inspection.
+- Python source parses with Python 3.9 grammar; `git diff --check` passes.
+  No file under `mods/` changed.
 
-Bright additive light washes the interior tones toward white. At 16 px,
-the book gutter and the small hammer accents lose contrast on snow; the
-preview shows this limit. Engine tint, fall timing and combat readability
+At 16 px the outer spread and central division do most of the work; the
+fine page divisions are secondary. On near-white additive grounds,
+interior tones, spine and board separation lose contrast. The preview
+shows this limitation. Engine tint, fall timing and combat readability
 still require the user's desktop/web acceptance after FX integration.
 No browser, game, server or Lua fixture was run for this art-only pass.
 
@@ -102,14 +104,14 @@ No browser, game, server or Lua fixture was run for this art-only pass.
 
 **Upgrade classification: compatible.** Development art and preview only;
 no runtime behavior, saved state, world generation, version declaration
-or migration changes. The user's hammer and book choices and the
-coordinator's independent review precede FX integration. FX copies the
-picked candidates into the owning mod and records their runtime media
-provenance. This implementer launched no agents and performed no merge,
-push or Luanti sync.
+or migration changes. The coordinator's independent review and the user's
+book pick precede FX integration. FX uses Hammer C at Smite size 7 and
+Final Word size 12, then the picked book at Censure size 16, and records
+the runtime media provenance. This implementer launched no agents and
+performed no merge, push or Luanti sync.
 
 Art, generator and preview commit:
-`c71c23c7be3fca84e43865179f5cf0f4fe60427f`.
+`ed47576ead9e35dc38667bc62161ddac630e0391`.
 The following documentation commit contains this report and the requested
 [final report](../../last.md). Its literal hash is returned in the delivery
 message; resolve it without a self-referential hash in its own contents:
@@ -119,17 +121,26 @@ git log -1 --format=%H -- last.md
 git status --porcelain
 ```
 
-The handoff status output is empty. Both pass-3 commit messages end with
+The handoff status output is empty. Both pass-4 commit messages end with
 `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
 
 GUI checklist after FX integration, on desktop and web:
 
-1. Read the selected small hammer during repeated Smite hits and its ring
-   at impact; confirm a straight, head-first fall.
-2. Read the same larger hammer inside Final Word's white column.
-3. Read the selected inclined open book during Censure's 6 m fall after
-   the warning ring, at ordinary combat distance on dark and bright
-   terrain; check the central fold, tint, timing and impact.
+1. Read Hammer C at size 7 during repeated Smite hits, with its ring at
+   impact; confirm the straight, head-first fall and comfortable size.
+2. Read the same hammer at size 12 inside Final Word's white column.
+3. Read the picked thick open book at size 16 during Censure's 6 m fall
+   after its warning ring; check the straight spine, hardcover thickness,
+   tint, timing and impact on dark and bright terrain.
+
+## Pass 3 — historical receipt
+
+Art commit `c71c23c7be3fca84e43865179f5cf0f4fe60427f`, report commit
+`1a318911d9b49745e8d94e030115b32fa5ae5e88`. Pass 3 offered shaped
+Hammer C/D and inclined Book E/F, recommending C/E. The user subsequently
+picked Hammer C and preferred F's stronger tilt. Pass 4 preserves those
+choices and replaces both book candidates with thick hardcover versions.
+The full pass-3 report and superseded images remain in those commits.
 
 ## Pass 2 — historical receipt
 
@@ -150,5 +161,5 @@ original report remain in git history.
 
 ## Blockers / questions
 
-None for this delivery. The user chooses Hammer C/D and Book E/F before
-FX integration; C/E is the artist's recommendation, not an accepted pick.
+None for this delivery. The user chooses Book G or H before FX integration;
+G is the artist's recommendation, not an accepted pick. Hammer C is picked.
