@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
-"""Ship accepted 32px masters and nonzero-alpha row spans. --check writes nothing."""
+"""Ship accepted 32px masters and nonzero-alpha row spans. --check writes nothing.
+
+Round 66: also the camps' faction variants, recoloured by palette from the
+accepted masters (tools/r66_map/recolor.py); a variant keeps its master's
+alpha and therefore its mask, and --check compares their pixels."""
 from pathlib import Path
 import hashlib
 import json
+import io
 import sys
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'tools/map_icon_rework/drop01'
 TARGET = ROOT / 'mods/PLAYER/grug_map'
+sys.path.insert(0, str(ROOT / 'tools/r66_map'))
+import recolor  # noqa: E402
 
 
 def main():
@@ -25,6 +32,11 @@ def main():
             alpha = image.convert('RGBA').getchannel('A')
             masks['grug_map_' + name] = [[alpha.getpixel((x, y)) > 0 for x in range(32)] for y in range(32)]
         outputs[TARGET / 'textures' / ('grug_map_' + name)] = data
+    derived = {}
+    for name, (master, image) in sorted(recolor.variants().items()):
+        assert master in approved, master
+        masks['grug_map_' + name] = masks['grug_map_' + master]
+        derived[TARGET / 'textures' / ('grug_map_' + name)] = image
     for key, names in [('quest', [n for n in masks if n.startswith('grug_map_quest_')]),
                        ('home', ['grug_map_home.png', 'grug_map_innkeeper.png'])]:
         masks[key] = [[any(masks[n][y][x] for n in names) for x in range(32)] for y in range(32)]
@@ -47,7 +59,16 @@ def main():
             assert path.read_bytes() == data, path
         else:
             path.write_bytes(data)
-    print(f'{len(approved)} accepted PNGs and alpha masks: ' + ('checked' if check else 'shipped'))
+    for path, image in derived.items():
+        if check:
+            with Image.open(path) as shipped:
+                assert shipped.mode == 'RGBA' and shipped.tobytes() == image.tobytes(), path
+        else:
+            buffer = io.BytesIO()
+            image.save(buffer, 'PNG', optimize=True)
+            path.write_bytes(buffer.getvalue())
+    print(f'{len(approved)} accepted PNGs, {len(derived)} faction variants and alpha masks: ' +
+          ('checked' if check else 'shipped'))
 
 
 if __name__ == '__main__':
