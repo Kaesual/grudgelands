@@ -1,43 +1,51 @@
-# Round 66 ART — pass 2 delivery
+# Round 66 ART — pass 3 delivery
 
-**Hammer A is picked and byte-identical. Book C is recommended.**
+**Recommendation: Hammer C + Book E.** Both choices await the user.
 [Preview](tools/r66_art/preview/index.html) ·
 [Contact sheet](tools/r66_art/preview/contact-sheet.png) ·
 [Detailed report](tools/r66_art/REPORT.md)
 
-Delivered two symmetric, frontal open books for Censure:
+Four new 64 × 64 RGBA candidates:
 
-- `censure_book_c.png`: broad, flat ivory pages; the clearest open-book
-  silhouette at 16 px.
-- `censure_book_d.png`: taller, gently lifted pages with a curved spread.
+- `smite_hammer_c.png`: crowned broad head with flared striking faces,
+  a diamond seal, ringed grip and diamond pommel.
+- `smite_hammer_d.png`: asymmetric war hammer with a broad face, tapered
+  ivory beak, wrapped grip and faceted pommel.
+- `censure_book_e.png`: the preferred calm open spread tilted moderately
+  backward, with a narrower far edge and clear central fold.
+- `censure_book_f.png`: the same spread with stronger tilt and shorter
+  projected depth, like a book on a low lectern.
 
-Both are 64 × 64 RGBA with bright white/ivory/pale-gold pixels, transparent
-borders, a tight halo and blank pages. Exact pixel symmetry is checked.
-The rejected Book A/B files and active references are removed. Hammer B
-is retained unchanged as pass-1 provenance outside the active preview.
+Both hammers keep the head-down side view and straight shaft. Both books
+are exactly symmetric. All textures use bright white/ivory/pale gold,
+opaque cores, transparent borders and a tight halo, with no dark outline
+or lettering. Superseded Hammer A/B and Book C/D files and active
+references are removed; their history remains in git.
 
-The preview marks Hammer A as picked in a compact section, keeps all
-16/32/64 px views on five grounds in plain and additive treatments, and
-shows Hammer A with each book at the three planned effect sizes. There
-are no download links. The contact sheet and media ledger are updated.
+The preview includes all four choices at 16/32/64 px, five grounds,
+plain/additive treatments and all four hammer/book context pairings at
+the established game sizes. It has a recommendation at the top, one idea
+sentence per variant and no download links. Contact sheet and media
+ledger are updated.
 
 Verification passed:
 
 - `python3 tools/r66_art/generate.py --check`: all ten outputs match.
-- Hammer A candidate and preview bytes equal pass 1; all PNG geometry,
-  alpha, bright-pixel and preview-copy checks pass.
-- All 101 HTML image instances and local links checked; no rejected book
-  references, remote resources, scripts or download links.
-- Visual inspection at native 16/32/64 px on all five grounds, plain and
-  additive; Python 3.9 grammar and `git diff --check` pass.
+- Pixel checks: RGBA, size, opaque core, transparent borders, bright RGB,
+  identical preview copies, exact book symmetry and narrowing upper edges.
+- HTML audit: 138 images, 20 ground rows, four context pairings; all local
+  references resolve, no retired candidates, downloads or remote resources.
+- Visual inspection at native 16/32/64 px, plain and additive on all five
+  grounds; Python 3.9 grammar and `git diff --check` pass.
 
-**Compatible**, art-only delivery. Nothing under `mods/` changed; no game
-or browser run, merge, push or sync. The user's Book C/D pick and the
-coordinator's independent review precede FX integration. Desktop and web
-GUI checks are listed in the detailed report.
+**Compatible**, development art only. Nothing under `mods/` changed;
+no game or browser run, merge, push or sync. Near-white grounds reduce
+additive contrast, especially the 16 px book gutter and hammer accents.
+The user's picks and coordinator's independent review precede FX
+integration; the report contains the desktop/web GUI checklist.
 
-Art commit: `9d18530f43822ebaee4533d9b8765598f07eceee`.
-The final delivery commit contains this report; its literal hash is
+Art commit: `c71c23c7be3fca84e43865179f5cf0f4fe60427f`.
+The final documentation commit contains this report; its literal hash is
 returned in the final message. Resolve it and verify the empty status:
 
 ```sh
@@ -45,5 +53,5 @@ git log -1 --format=%H -- last.md
 git status --porcelain
 ```
 
-Both pass-2 commits end with
+Both pass-3 commits end with
 `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
