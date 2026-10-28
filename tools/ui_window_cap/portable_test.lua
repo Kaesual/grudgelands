@@ -1,4 +1,6 @@
 -- Exact viewport cap against the native fitting equations (LuaJIT).
+-- Round 66 (ruling 4): the ceiling is min(H, max(1080, 2/3 H)) high and 1920
+-- scaled by the same factor wide (at most W); tools/r66_ui tests the text.
 local root = arg[1] or "."
 local checks = 0
 local function check(ok, message)
@@ -31,6 +33,10 @@ local function fitted(w, h, gui, density, fw, fh, padding, legacy)
 	if legacy then fw, fh = 1.25 * (0.5 + fw), 15 / 13 * (0.85 + fh) end
 	return math.min(preferred(available_w, available_h, gui, density), available_w / fw, available_h / fh)
 end
+local function ceiling(w, h)
+	local vh = math.min(h, math.max(1080, h * 2 / 3))
+	return math.min(w, 1920 * math.max(1, vh / 1080)), vh
+end
 for _, dimensions in ipairs({{1035,696},{1920,1080},{2560,1440},{3840,2160},{3440,1080},{1200,1600}}) do
 	for _, scale in ipairs({{1,1},{1.5,1},{1,2},{1.5,2}}) do
 		local w,h,gui,density = dimensions[1],dimensions[2],scale[1],scale[2]
@@ -39,11 +45,13 @@ for _, dimensions in ipairs({{1035,696},{1920,1080},{2560,1440},{3840,2160},{344
 		local padding = UI.window_padding(player)
 		for _, form in ipairs({{20,15},{18.8,12.2},{10,3},{11,20},{8,4,true}}) do
 			local actual = fitted(w,h,gui,density,form[1],form[2],padding,form[3])
-			local reference = fitted(math.min(w,1920),math.min(h,1080),gui,density,form[1],form[2],"",form[3])
+			local cw, ch = ceiling(w, h)
+			local reference = fitted(cw,ch,gui,density,form[1],form[2],"",form[3])
 			near(actual,reference,"native frame equals capped reference",0.002)
 		end
 		local virtual = UI.window_information(report)
-		local expected = information(math.min(w,1920),math.min(h,1080),gui,density)
+		local cw, ch = ceiling(w, h)
+		local expected = information(cw,ch,gui,density)
 		near(virtual.max_formspec_size.x,expected.max_formspec_size.x,"responsive width")
 		near(virtual.max_formspec_size.y,expected.max_formspec_size.y,"responsive height")
 		check(snapshot.size.x == w and snapshot.size.y == h,"report is not mutated")
@@ -51,7 +59,7 @@ for _, dimensions in ipairs({{1035,696},{1920,1080},{2560,1440},{3840,2160},{344
 		local map_padding = UI.window_padding(nil,0,report)
 		near(fitted(w,h,gui,density,virtual.max_formspec_size.x*.85,
 			virtual.max_formspec_size.y*.85,map_padding),
-			fitted(math.min(w,1920),math.min(h,1080),gui,density,expected.max_formspec_size.x*.85,
+			fitted(cw,ch,gui,density,expected.max_formspec_size.x*.85,
 			expected.max_formspec_size.y*.85,"padding[0,0]"),"map native cap",0.002)
 		if w <= 1920 and h <= 1080 then check(padding == "","small and Full-HD forms stay byte-identical") end
 	end
