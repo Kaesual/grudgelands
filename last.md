@@ -1,46 +1,54 @@
-# Round 66 ART — pass 4 delivery
+# Round 66 ART — pass 5 delivery
 
-**Hammer C is picked; Book G is recommended.** The book choice is open.
+**Six bowed-page books I–N are ready. Book L is recommended; Hammer C
+remains picked and byte-identical.**
 [Preview](tools/r66_art/preview/index.html) ·
 [Contact sheet](tools/r66_art/preview/contact-sheet.png) ·
 [Detailed report](tools/r66_art/REPORT.md)
 
-Two new 64 × 64 RGBA hardcover tomes keep Book F's backward tilt and
-symmetric front view, with a straight central spine, rigid cover boards
-and a visible page block:
+The six 64 × 64 RGBA variants preserve the chosen backward tilt and
+hardcover construction. Each page half rises out of a narrow straight
+gutter, crowns above layered edges and rolls down toward the outer side.
+The rigid gold cover boards are thin.
 
-- `censure_book_g.png`: thick square gold boards, broad ivory page block;
-  recommended for the clear hardcover edge.
-- `censure_book_h.png`: deeper page block, slimmer gold boards with clipped
-  outer corners.
+- **I/J:** gentle arch, moderate page block and square boards.
+- **K/L:** higher arch, deeper page block and clipped boards.
+- **M/N:** broader rounded crown, medium page block and square boards.
 
-`smite_hammer_c.png` and its preview copy remain byte-identical to pass 3.
-Hammer D and Book E/F are removed from all active art outputs and their
-generation code; git history retains them.
+I/K/M have blank pages. J/L/N add four quiet curved lines per half, drawn
+on the page's own surface, without letters or readable text. L is the
+recommendation for its clear domes and restrained writing; the user's
+book choice is open.
 
-The preview marks Hammer C as picked in a compact section with expandable
-ground comparisons. The books retain the 16/32/64 px, five-ground,
-plain/additive views. Both context strips use **Smite 7, Final Word 12,
-Censure 16**. Recommendation, contact sheet and media ledger are updated;
-there are no download links.
+Book G/H are removed from all active art outputs and generation code;
+git history retains them. The reference image was viewed for orientation
+only and is not in the repository or preview. The scratch inspection
+image was removed.
+
+Hammer C stays compact and marked picked. All six books have the full
+16/32/64 px, five-ground, plain/additive comparisons and individual
+context strips at **Smite 7, Final Word 12, Censure 16**. The page has no
+download links. Recommendation, contact sheet, media ledger and tools
+index are updated.
 
 Verification passed:
 
-- `python3 tools/r66_art/generate.py --check`: all eight outputs match.
+- `python3 tools/r66_art/generate.py --check`: all 16 outputs match.
 - Byte identity of Hammer C against pass 3; RGBA dimensions, bright RGB,
   opaque cores, transparent borders, matching copies and exact symmetry.
-- HTML audit: 101 images, 15 ground rows, two context strips at 7/12/16;
-  all references resolve, with no retired candidates, scripts or downloads.
+- HTML audit: 237 image instances, 35 ground rows, six context strips at
+  7/12/16; valid local references, with no retired art, scripts or downloads.
 - Visual inspection at native 16/32/64 px, plain and additive, on all five
-  grounds; Python 3.9 grammar and `git diff --check` pass.
+  grounds; writing blends away at 16 px. Python 3.9 grammar, documentation
+  links and `git diff --check` pass.
 
-**Compatible**, development art only. Nothing under `mods/` changed;
-no game, browser, server, merge, push or sync. Additive light on near-white
-ground reduces the spine and board contrast. The user's book pick and
-coordinator's independent review precede FX integration; the report
-contains the desktop/web GUI checklist.
+**Compatible**, development art only. Nothing under `mods/` changed.
+No browser, game, server, merge, push or sync. Near-white additive ground
+reduces interior contrast. The user's book pick and the coordinator's
+independent review precede FX integration; the report contains the
+remaining desktop/web GUI checklist.
 
-Art commit: `ed47576ead9e35dc38667bc62161ddac630e0391`.
+Art commit: `8822f0c5e98bc9f7ff62e8c0ce12d33ca6a2838c`.
 The final documentation commit contains this report; its literal hash is
 returned in the final message. Resolve it and verify the empty status:
 
@@ -49,5 +57,5 @@ git log -1 --format=%H -- last.md
 git status --porcelain
 ```
 
-Both pass-4 commits end with
+Both pass-5 commits end with
 `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
