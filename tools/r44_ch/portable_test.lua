@@ -383,7 +383,9 @@ eq(H.get(war, "main", 2), "grug_gear:head_metal", "the old helmet takes the sour
 H.put(war, "grug_bag1_content", 3, "grug_gear:chest_leather")
 eq(shift(war, "grug_bag1_content", 3), "grug_shift", "a bag's list rings to the routing list")
 eq(H.get(war, "grug_chest", 1), "grug_gear:chest_leather", "from a bag into Chest")
--- Hands: sword, shield, then a two-handed axe against the shield.
+-- Hands: sword, shield, then a two-handed axe over the shield. Since Round 66
+-- (ruling 1) that shift-click swaps both hands instead of refusing
+-- (tools/r66_equip covers the swap); a drag still refuses with a reason.
 H.put(war, "main", 11, "grug_gear:sword_bronze")
 H.put(war, "main", 12, "grug_gear:shield_bronze")
 H.put(war, "main", 13, "grug_gear:greataxe_bronze")
@@ -393,8 +395,13 @@ eq(H.get(war, "grug_weapon", 1), "grug_gear:sword_bronze", "warrior: sword into 
 eq(H.get(war, "grug_offhand", 1), "grug_gear:shield_bronze", "warrior: shield into Shield")
 H.tick()
 shift(war, "main", 13)
-eq(H.get(war, "main", 13), "grug_gear:greataxe_bronze", "a two-handed axe beside a shield stays")
-eq(H.get(war, "grug_weapon", 1), "grug_gear:sword_bronze", "... and the sword stays")
+eq(H.get(war, "grug_weapon", 1), "grug_gear:greataxe_bronze", "a two-handed axe swaps both hands")
+eq(H.get(war, "main", 13), "grug_gear:sword_bronze", "... the sword takes its cell")
+eq(H.get(war, "grug_offhand", 1), "", "... the shield leaves the offhand")
+eq(H.get(war, "main", 9), "grug_gear:shield_bronze", "... into main[9], the give order")
+H.tick()
+H.move(war, "main", 9, "grug_offhand", 1)
+eq(H.get(war, "grug_offhand", 1), "", "a shield dragged beside the axe stays out")
 check(feeds_with("is two-handed") > 0, "the two-handed refusal explains itself")
 -- Anything that is no equipment stays, silently.
 local feed_count = #H.feed

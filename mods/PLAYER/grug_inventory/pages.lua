@@ -203,6 +203,55 @@ local function home_text(player)
 	return label and ("Return home: %s (%s)"):format(label, state) or nil
 end
 
+-- The blocked offhand (Round 66 ruling 2): the equipped two-hander, or nil.
+-- Its image is the stack's own (enchant colours, cracks) or the item's, and
+-- BLOCKED_DIM takes it further down than a ghost's one multiply.
+local BLOCKED_DIM = "^[multiply:#666666^[opacity:140"
+local function blocking_weapon(inv)
+	local weapon = inv:get_stack("grug_weapon", 1)
+	if not weapon:is_empty() and grug_inventory.hands_of(weapon) >= 2 then
+		return weapon
+	end
+	return nil
+end
+local function item_image(stack)
+	local image = stack:get_meta():get_string("inventory_image")
+	if image == "" then
+		local def = core.registered_items[stack:get_name()]
+		image = def and type(def.inventory_image) == "string" and def.inventory_image or ""
+	end
+	return image ~= "" and image or "grug_inventory_ghost_offhand.png"
+end
+
+-- The equip notice (Round 66): the open window covers the message feed, so
+-- an equip refusal (equipment.lua, after its throttle) also shows on the
+-- page, in place of the gear box's heading, for NOTICE_US. Runtime context
+-- only; the poll below clears it.
+local NOTICE_US = 6000000
+local NOTICE_COLOR = "#f0e6c8" -- the feed's notice colour (grug_core.FEED_COLOR)
+
+local function equip_notice(context)
+	local notice = context.grug_equip_notice
+	return notice and core.get_us_time() < notice.expires and notice.text or nil
+end
+
+function grug_inventory.show_equip_notice(player, text)
+	local context = sfinv.contexts[player:get_player_name()]
+	if not context or context.page ~= CHARACTER_PAGE then return end
+	context.grug_equip_notice = {text = text, expires = core.get_us_time() + NOTICE_US}
+	sfinv.set_player_inventory_formspec(player, context)
+end
+
+-- A read-only textarea wraps the line to the box at the font's own line
+-- height (a multi-line label would space its lines half a slot apart).
+local function notice_content(player, text)
+	return ("box[%.2f,%.2f;%.2f,0.75;#0a1017e6]"):format(GEAR_BOX.x + 0.1,
+		GEAR_BOX.y + 0.1, GEAR_BOX.w - 0.2) ..
+		grug_core.ui.prose(GEAR_BOX.x + 0.2, GEAR_BOX.y + 0.12, GEAR_BOX.w - 0.4, 0.7,
+			core.colorize(NOTICE_COLOR, text), false, grug_core.ui.text_growth(player),
+			0.9 * grug_core.ui.text_scale(player))
+end
+
 -- The gear box: the slots with their names, tooltips and ghosts, the
 -- quiver, Return home. The shift-click ring sends every drawn list to the
 -- routing list (equipment.lua SHIFT_LIST), which moves gear between the
@@ -212,9 +261,11 @@ local function gear_content(player, context)
 	local class_id = grug_classes.get_class(player)
 	local route = ("listring[current_player;%s]"):format(grug_inventory.SHIFT_LIST)
 	local growth = grug_core.ui.text_growth(player)
+	local notice = equip_notice(context)
 	local fs = {
 		grug_core.ui.panel(GEAR_BOX.x, GEAR_BOX.y, GEAR_BOX.w, GEAR_BOX.h),
-		grug_core.ui.heading(0.5, 0.6, "Equipment", growth),
+		-- The notice is drawn last instead, over the model's top edge.
+		notice and "" or grug_core.ui.heading(0.5, 0.6, "Equipment", growth),
 	}
 	local mesh, textures = preview_model(player)
 	fs[#fs + 1] = ("model[%.2f,%.2f;%.2f,%.2f;grug_preview;%s;%s;%s]"):format(
@@ -247,6 +298,11 @@ local function gear_content(player, context)
 			if slot.list == "grug_weapon" then
 				tip = tip .. " — equip here, then use a combat skill from the hotbar"
 			end
+			local empty = inv:get_stack(slot.list, 1):is_empty()
+			local blocking = empty and slot.list == "grug_offhand" and blocking_weapon(inv)
+			if blocking then
+				tip = "Blocked: " .. grug_inventory.piece_name(blocking) .. " is two-handed"
+			end
 			fs[#fs + 1] = ("tooltip[%.2f,%.2f;1,1;%s]"):format(pos[1], pos[2], esc(tip))
 			-- The ghost is drawn AFTER the list[] and only for empty slots,
 			-- never before it to fake a transparent cell: listcolors[] is
@@ -255,8 +311,12 @@ local function gear_content(player, context)
 			-- too (inventory_equipment.md §1). One inventory read per slot per
 			-- formspec build; the build is a rare event — it happens on
 			-- navigation and on the refresh hooks below, never in a step or on
-			-- a hover.
-			if inv:get_stack(slot.list, 1):is_empty() then
+			-- a hover. A blocked offhand shows the two-hander instead, dimmed
+			-- further than a ghost (Round 66 ruling 2).
+			if blocking then
+				fs[#fs + 1] = ("image[%.2f,%.2f;1,1;%s]"):format(pos[1], pos[2],
+					esc(item_image(blocking) .. BLOCKED_DIM))
+			elseif empty then
 				fs[#fs + 1] = ("image[%.2f,%.2f;1,1;%s]"):format(pos[1], pos[2],
 					grug_inventory.slot_ghost(class_id, slot.list) or
 					GHOST_TEXTURE[slot.list])
@@ -278,6 +338,7 @@ local function gear_content(player, context)
 			x, HOME_BUTTON_Y, GEAR_BOX.x + GEAR_BOX.w - 0.15 - x,
 			esc(("Return home (%s)"):format(state)))
 	end
+	if notice then fs[#fs + 1] = notice_content(player, notice) end
 	return table.concat(fs)
 end
 
@@ -532,8 +593,8 @@ sfinv.register_page(CHARACTER_PAGE, {
 -- effect came or went, a shield value moved, or a coarse remaining time
 -- ticked: whole minutes, so about once a minute), and in every mode when the
 -- Return home text changed: once a minute of a running cooldown, when an
--- arrival starts or ends, and once when it becomes Ready. Nothing is re-sent
--- for other pages.
+-- arrival starts or ends, and once when it becomes Ready; and once when an
+-- equip notice ran out (Round 66). Nothing is re-sent for other pages.
 local effects_elapsed = 0
 core.register_globalstep(function(dtime)
 	effects_elapsed = effects_elapsed + dtime
@@ -541,7 +602,12 @@ core.register_globalstep(function(dtime)
 	effects_elapsed = effects_elapsed % 1
 	for _, player in ipairs(core.get_connected_players()) do
 		local context = sfinv.contexts[player:get_player_name()]
-		if context and context.page == CHARACTER_PAGE then
+		if context and context.grug_equip_notice and not equip_notice(context) then
+			context.grug_equip_notice = nil
+			if context.page == CHARACTER_PAGE then
+				sfinv.set_player_inventory_formspec(player, context)
+			end
+		elseif context and context.page == CHARACTER_PAGE then
 			if (selected_mode(context) == "effects" and
 					grug_inventory.effects_key(player) ~= context.grug_effects_key) or
 					home_text(player) ~= context.grug_home_text then

@@ -118,6 +118,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   of gear goes into its slot — an empty slot of its kind first, else it
   swaps with the equipped piece, which takes the source cell — under the
   drag's equip rules and refusal lines; arrows go into a Scout's quiver.
+  A two-hander shift-clicked over an occupied offhand swaps both hands
+  (Round 66 ruling 1): the old weapon takes the two-hander's cell as above,
+  the offhand piece goes into the inventory in the give order; nothing
+  moves, with one "No room in your inventory for …" line, unless it fits
+  there (the source cell counted as the swap leaves it). One
+  equipment-change notification for both hands (the list nil).
   From an equipment slot or the quiver the item goes into the inventory in
   the give order (`main[9..]`, the bags, the hotbar last), or stays with a
   feed line when it does not fit. Anything else does not move.
@@ -467,7 +473,25 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - Enforced in the **same `allow_put`** as the armor rank,
     as a **refusal with a message-feed line that says why** (throttled — the
     allow callback fires repeatedly while a stack is dragged) — never by
-    clearing the other slot. Two-handers also carry ", two-handed" in their
+    clearing the other slot. The drag refusal of a two-hander names the way
+    that works: "<Staff> is two-handed: take <Spellbook> out first, or
+    shift-click the <Staff> to swap both." The Character page's shift-click
+    is the one place both hands change in one step (§1, Round 66 ruling 1):
+    it is the game's own move, not an allow callback.
+  - **The blocked offhand** (Round 66 ruling 2): while a two-hander is
+    equipped, the empty offhand slot on the Character page shows that
+    weapon's image, dimmed further than a ghost (one multiply and a lower
+    opacity), with the tooltip "Blocked: <Two-hander> is two-handed"
+    (Warrior's Battle Axe, Mage's and Priest's Staff; the Scout has no
+    two-hander).
+  - **The refusal on the page** (Round 66): the open inventory window
+    covers the message feed, so every equip refusal the throttle lets
+    through (armor class, level, hand slot, two-handed rule, no room) also
+    shows on the Character page for 6 s, in place of the gear box's
+    "Equipment" heading, and the page is re-sent when it runs out. A
+    re-send during a drag moves no item: the client's selection names a
+    list and a cell, never a held copy, and the server applies or refuses
+    every move. Two-handers also carry ", two-handed" in their
     generated stat line, so the trade is readable before the refusal ever
     fires. Rationale: the consequence is a gameplay rule, not a
     technicality — carrying a shield or spellbook costs you the
@@ -663,8 +687,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   profession-free recipes (tools, blocks, planks, torches, dyes, bolts,
   leather grades, graded wood, arrows, …); gear (weapons, armour, offhands,
   trinkets) and bags are recipes of their profession. Basic lists a recipe
-  once every ingredient was held, sticks and the wooden tools from the start
-  (Round 47 ruling 19, [professions.md](professions.md) §1.2); a profession
+  once every ingredient was held, sticks, the wooden tools and the fishing
+  rod from the start (Round 47 ruling 19, Round 66 ruling 7,
+  [professions.md](professions.md) §1.2); a profession
   area shows its recipes up to the player's profession tier (capped by the
   level band; the user, 2026-10-09, playtest fix PT3).
   The player's engine `craft`
@@ -834,7 +859,8 @@ them.
   once a second); and since Round 32 the personal notices: potion and food
   refusals (level, potion cooldown, full health, no mana pool, not
   poisoned), equip refusals (armor class, weapon level, hand slot,
-  two-handed rule), the class-change unequip notices, the starter-weapon
+  two-handed rule, no room; also shown on the Character page, §2), the
+  class-change unequip notices, the starter-weapon
   line at class choice, the raw-weapon hint, mount notices (dismount
   reason, flight-boundary warning, summon refusal, a mount not bound to
   this character), talent points earned or

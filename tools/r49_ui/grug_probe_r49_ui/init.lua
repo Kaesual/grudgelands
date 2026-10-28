@@ -73,7 +73,7 @@ local SHOTS = {
 		local session = grug_mail.session(NAME)
 		session.draft = {to = "Brakka", subject = "Ingots for the forge",
 			body = "Here are the ingots and some apples.\n\nSee you at the forge."}
-		mail_fields(player, {grug_mail_tab = "3"})
+		mail_fields(player, {grug_mail_tab = "4"})
 	end},
 	{name = "W2_write_sent", run = function(player)
 		local session = grug_mail.session(NAME)

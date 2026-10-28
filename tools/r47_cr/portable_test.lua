@@ -7,8 +7,8 @@
 -- (basic_recipes.lua through register_basic_catalog; stand-in items for its
 -- names, the groups' members set here) and the REAL basic_unlock.lua under a
 -- stub engine with player meta, inventories and the globalstep. Checks:
---   T  the starter set: sticks and every wooden tool are known from the
---      start, nothing else of Basic; profession recipes are not its
+--   T  the starter set: sticks, every wooden tool and (Round 66) the
+--      fishing rod are known from the start, nothing else of Basic; profession recipes are not its
 --      business (always true);
 --   F  the first scan: a character without the key (a new one, or an
 --      existing one at its first login after the update) is scanned at its
@@ -243,11 +243,12 @@ do
 	local p = new_player("t1")
 	join(p)
 	local known, n = known_outputs(p)
+	-- The fishing rod joined the set in Round 66 (ruling 7).
 	for _, name in ipairs({"default:stick", "grug_materials:pick_wood", "grug_materials:axe_wood",
-			"grug_materials:shovel_wood", "grug_farming:hoe"}) do
+			"grug_materials:shovel_wood", "grug_farming:hoe", "grug_fishing:rod"}) do
 		check(known[name], "T " .. name .. " is known from the start")
 	end
-	eq(n, 5, "T nothing else of Basic (" .. #basic .. " recipes)")
+	eq(n, 6, "T nothing else of Basic (" .. #basic .. " recipes)")
 	check(not known["default:torch"], "T the torch is not")
 	check(J.recipe_known(p, stew), "T a profession recipe is not the unlock's business")
 	eq(#lines_of("t1"), 0, "T no feed line for an empty inventory")
@@ -270,7 +271,7 @@ do
 	check(not known["default:chest"], "F not the chest (no planks held)")
 	eq(#lines_of("f1"), 0, "F the first scan is silent")
 	eq(#refreshes, 0, "F ... and resends nothing")
-	check(n > 5, "F more than the starter set (" .. n .. ")")
+	check(n > 6, "F more than the starter set (" .. n .. ")")
 	local stored = old.meta.fields[J.HELD_KEY]
 	eq(stored, "1 default:coal_lump default:cobble default:stick default:tree " ..
 		"group:coal group:stick group:stone", "F the stored set: the format word, the tokens sorted")

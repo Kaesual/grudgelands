@@ -328,8 +328,9 @@ tools](#player-meta-read-by-external-tools).
   sorted tokens a Basic recipe names, item names and `group:<name>`,
   space-separated; read once per session, written when it grows; about
   4.7 KB once every ingredient was held). `recipe_known(player, recipe)`
-  (true outside Basic and for the starter outputs `HELD_STARTER`: the
-  stick and the four wooden tools), `scan_held(player[, quiet])` (every
+  (true outside Basic and for the starter outputs `HELD_STARTER`:
+  the stick, the four wooden tools and, since Round 66, the fishing rod),
+  `scan_held(player[, quiet])` (every
   list; returns the recipes it unlocked and feeds
   "New recipe: X" / "New recipes: X and N more", resends an open page
   unless quiet; the first scan of a character without the key is silent).
@@ -2005,7 +2006,10 @@ tools](#player-meta-read-by-external-tools).
 - **Storage:** offline player meta cannot be written (`ObjectRef:get_meta`
   needs a live object, `l_object.cpp` `l_get_meta`), so mail lives in the
   mod's storage, `core.serialize`, each key read and written whole:
-  `box:<name>` (a player's letters, newest first), `tickets` (the admin
+  `box:<name>` (a player's letters, newest first), `sent:<name>` (the
+  text copies of a player's sent letters, newest first, at most
+  `model.SENT_LIMIT` 50; Round 66; kept apart from the box, which every
+  inbox access reads whole; a missing key is an empty list), `tickets` (the admin
   inbox, every player's messages), `broadcasts`, `factions` (the recipient
   index: lower-case name → `{name, faction}`, written at
   `grug_factions.register_on_faction_chosen` and at every join) and
@@ -2017,7 +2021,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_core.map_reset.clear` ([upgrade contract](upgrade-contract.md) §3.2).
   Stored attachments are item strings (`ItemStack:to_string()`), so item
   meta survives; a future item-removal step scans them and the list
-  `grug_mail_out` (upgrade contract §1).
+  `grug_mail_out` (upgrade contract §1). Sent copies hold display names
+  only, never item strings, so no item step touches them.
 - **The API** (the contract lanes ADMIN, QUEST and BAGS build on):
   - `send_letter(player, to_name, subject, body)` — player mail: a
     created character of the sender's faction (the index), never the
@@ -2026,8 +2031,11 @@ tools](#player-meta-read-by-external-tools).
     and the slots leave with it in one `grug_money.take_with_inventory`
     call (Round 49: no quote). A body over `model.BODY_MAX` (4,000
     characters after cleaning) is refused before anything is taken, never
-    cut (0.49.1; `model.check_body`). Returns ok, message ("Letter sent to
-    X. Postage paid: 65c.").
+    cut (0.49.1; `model.check_body`). The sender keeps a text copy in
+    `sent:<name>` (Round 66; `model.sent_copy`, `model.keep_sent`).
+    Returns ok, message ("Letter sent to X. Postage paid: 65c.").
+  - `sent(name)` and `delete_sent(player, id)` (Round 66) — the sent
+    copies (a fresh table) and deleting one by its letter's id.
   - `send_system(to_name, kind, from_label, subject, body[, stacks])` —
     `kind` "admin" (always shown from "Server Admin", whatever the label) or
     "npc"; always delivered (no limit, faction or postage), to an indexed
