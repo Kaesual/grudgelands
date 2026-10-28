@@ -1,6 +1,34 @@
 # Project status
 
-Updated 2026-10-27. This is the delivery pointer, not another game specification.
+Updated 2026-10-28. This is the delivery pointer, not another game specification.
+
+**0.66.0 / Round 66 is merged locally; not pushed.** Polish from the
+user's notes after playing 0.65.0: shift-clicking a two-hander swaps both
+hands (the offhand piece goes to the bag; drag and drop still refuses, now
+naming the shift-click), the blocked offhand shows the dimmed two-hander,
+equip refusals show for 6 s on the Character page, the fishing rod is a
+Basic recipe from the start; a read-only Sent tab in the mailbox (text
+copies with attachment names, 50 kept, 30 days); the form viewport grows to
+two thirds of tall screens and form text grows with it (4K: window 45 % →
+60 % of the height, text ×1.333; 2560×1440 and below byte-identical); map
+and minimap markers sized by the drawn map (16–32 px; a 2400×1080 phone
+80 → 32–33 px); Accord war camps blue and camp-site cloth in faction colour;
+faction-coloured creation buttons; a hammer for Smite and Final Word and a
+book for Censure (GPT-6 Astra's art, the user's picks Hammer C and Book Q
+after six passes). Lanes MAIL, EQUIP, UI, MAP and FX each reviewed MERGE
+with no fix rounds, ART checked by the coordinator; merges `3ed99644`,
+`dae8ccd1`, `14f08b05`, `607545bf`, `65e74a4d`, `ef368b95`, then this
+documentation lane D. **Compatible:** one new mod storage key
+`sent:<name>` (missing reads as empty), three map and two particle
+textures, the map cache key unchanged, no step. All 291 portable fixtures
+pass. **Open for the user:** desktop HUD scaling above 1 now only caps the
+markers (1080p at HUD 2: 64 → 32 px), and the first-look defaults (notice,
+dim level, button strengths, symbol sizes and timing)
+([completion, numbers, decisions and GUI checklist](planning/round66-plan.md#completion-2026-10-28);
+[carry-overs](../BACKLOG.md#round-66--polish-gui-acceptance-pending)).
+**The joint GUI test of 0.57–0.65 is still pending; 0.66 joins it.**
+Production is still **0.55.1**; origin/main is `7a68e871` (0.65.0 and its
+status note). Only the user pushes.
 
 **0.65.0 / Round 65 is pushed** (2026-10-27, origin/main `8609d4c2`, with 0.64.0). Quest lists without
 locked rows, one acceptance rule and a boxed quest HUD, from the user's

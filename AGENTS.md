@@ -12,7 +12,16 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.65.0, Round 65 quest lists without locked rows
+**Current state:** 0.66.0, Round 66 polish (the two-handed shift-click
+swap and blocked offhand, the fishing rod from the start, a Sent tab in the
+mailbox, the viewport and text growing on tall screens, markers sized by
+the drawn map, camps in faction colour, faction-coloured creation buttons,
+hammer and book for the priest), merged locally; **not pushed**.
+**Compatible**, no step (one new mail storage key, `sent:<name>`); GUI test
+pending, joining the joint test of 0.57–0.65; one user question open
+(desktop HUD scaling above 1 only caps the markers)
+([completion and checklist](docs/planning/round66-plan.md#completion-2026-10-28)).
+Previous: 0.65.0, Round 65 quest lists without locked rows
 (acceptance at quest level − 2, one grey hint line, the silver "!" for a
 quest in one or two levels) and a boxed quest HUD sorted by quest level,
 **pushed** 2026-10-27 (origin/main `8609d4c2`, with 0.64.0). **Compatible**,
@@ -169,7 +178,7 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
 41, 43–45, 48, 49 and 51 and of 0.45.1, 0.49.1, 0.50.0, 0.50.1 and 0.52.1
 are not recorded as passed. Next: the joint GUI test of 0.57.0 to 0.62.0
 ([checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-60-61-62-the-ui-and-0611)),
-joined by 0.63.0–0.65.0 (each round plan's checklist),
+joined by 0.63.0–0.66.0 (each round plan's checklist),
 then the production deploy with one map reset (0.57.0 → 0.62.0; its
 starting list in the [deploy plan](docs/planning/deploy-plan.md)), the
 armor redesign and unique items ([ROADMAP](ROADMAP.md)).

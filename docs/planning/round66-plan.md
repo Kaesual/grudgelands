@@ -2,8 +2,13 @@
 
 Planned with the user on 2026-10-28 from their notes after playing 0.65.0.
 **Started on the user's "go" on 2026-10-28; Claude coordinates.**
-Version: **0.66.0**. Expected classification: **compatible** (see §7; each
-lane states its own).
+**Complete on 2026-10-28:** all six lanes merged (five independent reviews
+MERGE, no fix rounds; the art study checked by the coordinator); **not
+pushed**; GUI test pending, joining the joint test of 0.57–0.65
+([completion](#completion-2026-10-28)).
+Version: **0.66.0**. Classification: **compatible** (one new mod storage
+key for sent letters, read as empty when missing; new textures; the map
+cache key unchanged; no step). Delivery state: [STATUS](../STATUS.md).
 
 ## Why
 
@@ -272,29 +277,85 @@ Fixtures cover at least:
 Round end on main: the gates of the round workflow §3, `check_upgrade.py`,
 sync to Luanti.
 
-### GUI checklist (draft; lane D refines it)
+### GUI checklist (desktop and web)
 
-1. Priest/Mage with Staff, Spellbook in the inventory: the offhand slot
-   shows the dimmed Staff and the "Blocked" tooltip.
-2. Dragging the Spellbook onto it: refused, and the reason is readable
-   with the page open.
-3. Wand + Spellbook equipped, shift-click a Staff: Staff in Weapon, Wand
-   where the Staff was, Spellbook in the bag. With a full inventory: nothing
-   moves, one line. Warrior: the same with Battle Axe and Shield.
-4. New character: the Fishing Rod is in the Basics list at once.
-5. Send a letter with two attachments: it appears under Sent with its
-   text and the attachment names; nothing can be taken; Delete removes it.
-6. On the 4K screen: the inventory window fills about two thirds of the
-   height; text in proportion; nothing clipped. On 1080p: unchanged.
-7. Phone (web client or Android): map and minimap markers no longer cover
-   the map; still readable.
-8. War camps: Accord blue, Throng red, on map and minimap; construction
-   camps with the cloth in faction colour.
-9. Create Character: both faction buttons subdued in their colours at the
-   start, neither looks chosen; the chosen one strong; hover and focus do
-   not look like a choice.
-10. Smite, Censure, Final Word: the symbols fall and land with the hit;
-    readable on snow and in the dark; Smite once a second not annoying.
+Refined by lane D from the lanes' excerpts and the reviewers' notes. Each
+item on the desktop client and on the web client. Items marked *look* ask
+for the user's verdict on a first-look default.
+
+1. **Blocked offhand.** Mage or Priest with a Staff: the empty offhand slot
+   shows the Staff dimmed (darker than an empty slot's ghost image) and its
+   tooltip reads "Blocked: Staff is two-handed". Warrior with a Battle
+   Axe: the same; the Scout has no two-hander. *Look:* the dim level.
+2. **The refusal is readable with the page open.** Drag a Staff onto Weapon
+   while a Spellbook is equipped: refused, and "Staff is two-handed: take
+   Spellbook out first, or shift-click the Staff to swap both." shows for
+   about 6 s in a strip at the top of the Equipment box (in place of its
+   heading). Drag the Spellbook onto the blocked offhand: refused with
+   "Staff is two-handed: equip a one-handed weapon to carry Spellbook
+   too." Nothing is lost or doubled. *Look:* the 6 s and the place.
+3. **Shift-click swap.** Wand and Spellbook equipped, shift-click a Staff in
+   the bag: Staff in Weapon, Wand in the Staff's cell, Spellbook in the
+   bag. With a full inventory: nothing moves and one line "No room in your
+   inventory for Spellbook." With an empty Weapon slot and a full bag: the
+   Spellbook takes the Staff's cell. Warrior: the same with Battle Axe,
+   Sword and Shield. Shift-clicking a Spellbook while a Staff is equipped
+   stays refused.
+4. **Fishing rod.** A new character's Crafting → Basic lists the Fishing
+   Rod at once, before any Thread was held; an existing character's too.
+5. **Sent letters.** Mail a letter with two attachments: the second tab
+   "Sent" lists "To <name> · date · 2 attachments"; opening it shows
+   "To: <name>", the text, "Postage paid: …" and both item names, with no
+   Take all, Reply or Report, and nothing can be taken. Delete removes the
+   copy at once, without a dialog. Letters to the admin do not appear
+   there. (One copy reads "1 sent letters", like "1 letters"; backlog.)
+6. **Mail tab bar:** all five captions readable and unclipped, the
+   underline under the active tab, at 1024×600, on a phone and at 4K.
+7. **4K** (3840×2160, GUI scale 1): the inventory window fills about 60 %
+   of the height (the viewport is two thirds, the window 90 % of it); tabs,
+   labels, headings and buttons keep their 1080p proportion to the slots;
+   nothing clipped in Crafting, Character stats, Mail, a quest giver, a
+   vendor, Help, the Claim Stone, a chest and the map window. Expected to
+   stay at the client font: item counts, tooltips, checkbox and dropdown
+   captions, the welcome window, the vendored sign, book and mob dialogs.
+   Known cosmetic notes: a textarea or prose block after the first one in a
+   window may fall back to the client font; the map's quest titles wrap a
+   little early. At 1920×1080 and 2560×1440: unchanged.
+8. **Create Character:** both faction buttons subdued in blue and red at
+   the start, neither looks chosen (also after Tab); hover a little
+   brighter; the chosen one full colour with bold text, the other stays
+   subdued; switching swaps them. *Look:* the strengths (38 / 50 / 62 /
+   100 %).
+9. **Map markers on small screens:** on a phone (web or Android, for
+   example 2400×1080 at scale 2.5) and in a 1280×720 window, markers in the
+   map window and the minimap keep the share of the map they have at
+   1080p (about 32 px on the phone, 21 px at 1280×720), never below 16 px,
+   and stay readable. 1920×1080 at HUD scale 1: unchanged (32 px). After a
+   resize an open map is redrawn within about 2 s.
+10. **Desktop HUD scaling above 1** (MAP question 1, open for the user):
+    at 1920×1080 with HUD scale 2 the markers drop from 64 to 32 px in both
+    maps, since HUD scaling now only caps them (the server cannot tell it
+    from a phone's density); at 4K with HUD 2 the window draws 43 px and
+    the minimap 64. Say whether 32 px at 1080p and HUD 2 is fine.
+11. **Camps:** in the PvP layer and on the minimap, Accord war camps are
+    blue and Throng ones red, with the same tent; camp sites under
+    construction hang cloth in their faction's colour; fortresses are
+    unchanged. Check the blue tent on dark sea (low contrast in the
+    preview) and on snow.
+12. **Smite** on a mob, once a second: a small hammer falls head first in
+    about 0.15 s, then the gold ring springs out at the feet. Not annoying?
+    *Look:* size 7.
+13. **Final Word:** the large hammer falls inside the white column and lands
+    with it, then the ring bursts. The hammer is visible only during its
+    fall (about 0.1 s, six frames). *Look:* enough, or should it rest on
+    the ground for about 0.15 s (one more particle)?
+14. **Censure:** the gold warning ring, then the book (Book Q) falls and
+    lands at 0.75 s, then the impact ring. The book sinks into the ground
+    for its last two frames or so; say whether that shows.
+15. **All three symbols** on grass, on snow and at night: they read by day
+    and at night; snow and bright sky wash them to near-white (additive
+    light). With the particle scale setting at 1.5 or more, two symbols
+    draw on one spot (brighter). Web: no frame drops at Smite's rate.
 
 ## 7. Orchestration notes
 
@@ -319,3 +380,167 @@ sync to Luanti.
   CHANGELOG.
 - **Decided during the round:** the user's art pick (between ART and FX);
   the coordinator defaults of §2 after the first in-game look.
+
+## Completion (2026-10-28)
+
+All six lanes are merged on main. MAIL, EQUIP, UI, MAP and FX were each
+reviewed independently (Opus): all MERGE, no fix rounds. The art study ART
+(tools only) was checked by the coordinator (`generate.py --check`); its
+two shipped textures were reviewed inside FX's review. This lane D (the
+version, the declaration, this section, the GUI checklist, the status
+owners) follows on main `ef368b95`. **0.66.0 is compatible:** MAIL adds one
+mod storage key per sender, `sent:<name>` (a missing key reads as an empty
+list, an empty list removes it; the inbox, ticket and broadcast formats are
+unchanged); MAP adds three textures and leaves the map cache key unchanged
+(`base.lua`, `bake.lua`, `baked_art.lua` untouched), so a 0.65.0 world
+reuses its cached map; EQUIP's starter list is read at runtime and the
+equip notice lives in the page context only; UI and FX touch no saved
+state. No reset, no migration step. **Push:** not pushed; production is
+still 0.55.1; origin/main is `7a68e871` (0.65.0 and its status note).
+**GUI test:** pending; it joins the joint GUI test of 0.57–0.65
+([checklist](#gui-checklist-desktop-and-web)). **Sync:** by the coordinator
+after each merge.
+
+### Lanes
+
+Main's first-parent commits from the plan `5e50b4f4` (lane tip in
+brackets), in merge order:
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| MAIL | `3ed99644` (`d71ec561`; `25e94c3c`, `8b7a52bd`) | A successful `send_letter` writes a text copy (recipient, date, subject, text, postage, attachment names such as "Iron Ingot x12", never item strings) under `sent:<name>`; `M.SENT_LIMIT` 50 (the oldest dropped silently), 30-day expiry through `M.prune`; `grug_mail.sent` / `delete_sent`. The tab bar is one caption list, Sent the second of five tabs, each tab as wide as its caption plus room for " (99)". The Sent pane: "To:", the text, "Postage paid:", the names, Delete (no dialog). Admin, NPC and broadcast letters get no copy. `mail.md`, Help, `module-guide.md`, `upgrade-contract.md`; fixture `tools/r66_mail` | MERGE, no findings |
+| EQUIP | `dae8ccd1` (`c9a6a047`, main merged in; `ad3e4bd4`, `c36ca3d6`) | `equip_by_shift` swaps both hands for a two-hander after a `fits()` check, with one `equipment_changed(player, nil)`; "No room in your inventory for <piece>." otherwise. The blocked offhand draws the two-hander's image `^[multiply:#666666^[opacity:140` with "Blocked: <name> is two-handed". Every equip refusal also shows for 6 s on the Character page in place of the "Equipment" heading (the capture showed the feed covered by the page); the drag refusal names the shift-click. `grug_fishing:rod` in the Basic `STARTER` set; the grid recipes in `grug_fishing` removed. `r44_ch`, `r47_cr` follow; fixture `tools/r66_equip` | MERGE (one nit: a doubled word in `module-guide.md`, fixed by the coordinator in `4376cfd1`) |
+| UI | `14f08b05` (`6e376088`; `a6d2934e` … `181b4662`, main merged in `9d75d498`, follow-ups `374c0c5e`, `a61973c3`, `b05ad7cf`) | `ui_window.lua`: the viewport ceiling `min(H, max(1080, ⅔·H))`, width `1920·k ≤ W`, `form_growth`; `grug_core.ui.text_growth`, `text_scale` × growth, `font_size(factor, growth)`; the form code of 23 files (the inventory pages and the service windows) passes the growth, Help's hypertext gets a `<global size>` prefix, the Claim Stone window and the vendored chest, furnace, bookshelf and vessels-shelf labels follow (`GRUG PATCH`, VENDOR.md). The creation faction buttons have their own `[fill` style in the faction colour (subdued 38 %, hover 50 %, pressed 62 %, chosen 100 % with bold text; focus = normal). `ui-presentation.md`, `world.md`; fixture `tools/r66_ui` (and `bytes.lua`); `r35_c`, `ui_window_cap` follow | MERGE, no findings (backlog notes) |
+| MAP | `607545bf` (`5e9d651f`; `a01613a8`, `5728f76e`, `05aeb3fe`, main merged in `a1f52ca8`) | `markers.lua` `M.fit`: `round(32 · drawn / reference)` clamped to [16, 32 · HUD scale], in the map window (against the 1080p map) and the minimap (against the 1080p hole, 198 px); arrows and margins follow. Accord war camp blue, construction-camp cloth blue or red, chosen by the slot's or the race's faction (`settlement_icons.M.faction`); three new 32 px textures via `tools/r64_map/ship.py` and `tools/r66_map/recolor.py`. The map window's body text grows with the viewport. `world_map.md`, `ui-presentation.md`; fixture `tools/r66_map`; `r44_mq`, `r58_lift` follow | MERGE, no findings (question 1 open for the user) |
+| ART | `65e74a4d` (`62775589`; six passes `358aff53` … `83dbc9bc`) | GPT-6 Astra's art study in `tools/r66_art/`: generator, candidates, preview, licence rows, `REPORT.md`; picks recorded | coordinator check (`generate.py --check`) |
+| FX | `ef368b95` (`f41d247d`; `ffcd5b84` … `6d142444`) | `grug_core_fx_hammer.png` (Hammer C) and `grug_core_fx_book.png` (Book Q); `particle_effects.lua` `hammer()`: Smite a size-7 hammer from 3.2 m in 0.15 s (the beam gone, the ring after 0.15 s), Final Word a size-12 hammer down its column (column 26 → 25), Censure the size-16 book in place of the seal (delay and fall unchanged). `tools/r52_pfx/effects.py` and its data; `r541_glow` follows; `combat_stats.md`; fixture `tools/r66_fx` | MERGE (Low: the book's licence row; fixed at the book swap in `f41d247d`) |
+| D | this section | version 0.66.0, the declaration, this completion, the GUI checklist, STATUS, AGENTS, BACKLOG, README, CHANGELOG | independent review |
+
+Main has **291** portable fixtures (5 new: `r66_mail`, `r66_equip`,
+`r66_ui`, `r66_map`, `r66_fx`). `mods/` against 0.65.0 (measured, `git
+diff 7a68e871 ef368b95 -- mods`): 55 files, +985 −288 lines: 48 Lua files
+(four of them vendored), five PNGs and two media ledgers.
+
+### Decisions during the round
+
+**The user:** the rulings of §2 (1–9), unchanged. **The art picks** (six
+ART passes, previews on one private page):
+
+1. Hammers A/B and closed books A/B: **Hammer A**; both books rejected,
+   the user wants an open book, symmetric, front view.
+2. Open books C/D: the open book wanted, tilted back; Hammer A too plain,
+   redraw its shape.
+3. Hammers C/D and tilted books E/F: **Hammer C**; F's tilt, but a
+   straight, hard spine. Smite's hammer a bit small: size **5 → 7**.
+4. Hardcover books G/H: shape and perspective settled; the pages should bow
+   upward.
+5. Bowed pages I–N, blank or with stylised writing that follows the page:
+   **J** the favourite; a subtler dome and slightly wider pages.
+6. J refined in three steps O/P/Q: **Book Q** (dome −24 %, width +7.5 %).
+
+**The coordinator** (answers to lane questions and reviews; each built as
+stated; the *look* items are on the GUI checklist):
+
+- MAP Q1: HUD scaling above 1 only caps the markers (1920×1080 at HUD 2:
+  64 → 32 px). Kept as ruled; **open for the user** at the GUI test
+  (checklist item 10).
+- EQUIP: shift-clicking a Spellbook over an equipped Staff stays refused
+  (ruling 1 covers the two-hander; a swap would leave the character
+  bare-handed).
+- First-look defaults: the equip notice's 6 s and its place, the blocked
+  offhand's dim level, the faction buttons' 38 / 50 / 62 / 100 %.
+- MAIL: tab widths by caption length instead of five equal tabs (equal
+  fifths clip "Announcements (99)" at 1024×600); accepted deviation.
+- UI follow-ups after EQUIP and MAIL merged: Help's body growth, the Claim
+  Stone window, the vendored chest, furnace and shelf labels with `GRUG
+  PATCH` markers; the map window's body text moved to MAP; the vendored
+  sign, book and mob dialogs went to the backlog.
+- FX: Smite's ring waits for the hammer (`after = 0.15`); Final Word's
+  column 26 → 25 keeps the effect at 46 particles; the hammer is visible
+  only while it falls, pending the user's look (checklist item 13).
+- Small fixes by the coordinator: the doubled word in `module-guide.md`
+  (`4376cfd1`); a stray run report (`last.md`) dropped from ART
+  (`62775589`); the Book Q swap into FX and its licence row (`f41d247d`).
+
+### Deviations from the plan
+
+- **Merge order:** MAIL merged before EQUIP (EQUIP was still running);
+  EQUIP merged main before its review.
+- **"Both baked minimap sizes"** (§4 MAP): refuted. Nothing bakes icons
+  since Round 64; both maps draw camps from the 32 px marker textures, so
+  three new 32 px textures replace the planned baked variants and the
+  baked art stays unchanged (now dead art; backlog).
+- **The chest, furnace and shelf labels** were vendored code, patched with
+  `GRUG PATCH` markers and VENDOR.md entries.
+- **What the text growth covers** (§4 UI): every grug form, Help's body,
+  the Claim Stone window, the vendored box labels and the map window's
+  body. It cannot reach checkbox and dropdown captions, item counts and
+  tooltips (client font); the welcome window and the vendored sign, book
+  and mob dialogs are not converted.
+- **ART's review:** a coordinator check instead of an independent review;
+  the shipped textures were reviewed in FX's review.
+- **§7 start state:** origin already held `7a68e871` (pushed on
+  2026-10-27), not one commit behind it.
+
+### Numbers worth keeping
+
+From the lanes' reports (measured there unless marked).
+
+- **MAIL, the sent list at its cap** (50 copies of 4,000 characters with
+  four names each, the engine's serializer): **203 KB** plain text,
+  **593 KB** worst case (three-byte characters); a full inbox is 204 KB.
+  Storage time per send: empty inbox 0.02 → 0.20 ms; a 49-letter inbox
+  and a full sent list 0.99 → 1.40 ms. The widest caption's share of its
+  tab: 42 % at 1080p and at 4K, worst 74 % at 800×600 (four equal tabs
+  before: 93 %).
+- **UI, viewport and text** (density 1; the window is 90 % of the
+  viewport's height):
+
+  | Screen | GUI | Viewport | text_scale | Growth | Window / height |
+  |---|---|---|---|---|---|
+  | 1280×720 | 1 | 1280×720 | 1.000 | 1 | 90 % |
+  | 1920×1080 | 1 | 1920×1080 | 1.000 | 1 | 90 % |
+  | 2560×1440 | 1 | 1920×1080 | 1.000 | 1 | 68 % |
+  | 3840×2160 | 1 | 2560×1440 | 1.333 | 1.333 | **60 %** (was 45 %) |
+  | 2400×1080 phone | 2.5 | 1920×1080 | 0.400 | 1 | 90 % |
+  | 1080×2400 portrait | 2.5 | 1080×1600 | 0.400 | 1 | 30 % (width-bound) |
+
+  The byte proof: every inventory-page and map-window string at 1280×720,
+  1920×1080 and 2560×1440 (GUI 1 / 1.5 / 2, density 1 / 2) is identical
+  to before; every 4K string differs.
+- **MAP, marker size** (px; map window and minimap, before → after):
+
+  | Profile | Map px | Window | Minimap hole px | Minimap |
+  |---|---|---|---|---|
+  | 1920×1080 | 762 | 32 → 32 | 198 | 32 → 32 |
+  | 1280×720 | 496 | 32 → 21 | 132 | 32 → 21 |
+  | 2560×1440 | 762 | 32 → 32 | 297 | 32 → 32 |
+  | 3840×2160 (after UI) | 1016 | 32 → 32 | 429 | 32 → 32 |
+  | 3840×2160, HUD 2 (after UI) | 1016 | 64 → 43 | 429 | 64 → 64 |
+  | 1920×1080, HUD 2 | 762 | 64 → 32 | 198 | 64 → 32 |
+  | phone 2400×1080 × 2.5 | 783 | 80 → 33 | 198 | 80 → 32 |
+
+- **FX, particles per occurrence:** Smite 13 → **9**, Final Word 46 → 46
+  (column 26 → 25), Censure fall 1 → 1, its warning and impact rings
+  20 / 32 unchanged. Bytes per occurrence (`effects.py`'s cost model, an
+  estimate, not the wire): Smite 497 → 418, Final Word 1 399 → 1 527; the
+  50-player fight 21.1 → 20.8 KB/s per receiver.
+
+### Checks
+
+- MAIL: full run 287/0, smoke boot PASS (a copy through the real mod
+  storage). Review: `r66_mail` (61 checks) and `r48_mail` PASS;
+  `measure.lua` and `caption_widths.py` reproduced.
+- EQUIP: full run 287/0, smoke boot and capture (E0–E3). Review: full run
+  after the main merge 288/0.
+- UI: full run after the main merge 289/0, smoke boot, 1080p and 4K
+  captures. Review: six fixtures PASS, the byte proof rerun.
+- MAP: full run after the main merge 290/0; phone and 4K capture boots
+  clean. Review: six fixtures PASS, the byte proof on three trees.
+- FX: full run 289/0, capture boot (nine views). Review: `r66_fx`,
+  `r53_hooks`, `r541_glow`, `r40_px` PASS; `check_limits.lua` 62 cards.
+- Main: `check_fresh_server.py` PASS after each merge; after FX `r66_fx`,
+  `r53_hooks`, `r541_glow` PASS. This lane: `check_upgrade.py`,
+  `check_fresh_server.py`, `r37_dc` and `r43_gs` (the version, the
+  changelog, the README and CHANGELOG links, the declaration), the link
+  check of the touched documents.
