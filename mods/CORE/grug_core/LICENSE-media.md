@@ -19,6 +19,24 @@
   python3 -c 'from PIL import Image; im = Image.new("RGBA", (8, 8)); im.putdata([(255, 255, 255, (lambda d: 255 if d < 1.6 else 225 if d < 2.6 else 140 if d < 3.3 else 50 if d < 4 else 0)(((x + 0.5 - 4) ** 2 + (y + 0.5 - 4) ** 2) ** 0.5)) for y in range(8) for x in range(8)]); im.save("mods/CORE/grug_core/textures/grug_core_mote.png", optimize=True)'
   ```
 
+- `grug_core_fx_hammer.png`: 64×64 RGBA hammer, the particle symbol of the
+  priest's Smite and Final Word (`grug_core/particle_effects.lua`). Original
+  art authored as polygon and line geometry by **GPT-6 Astra** for
+  Grudgelands on 2026-10-28, no imported assets or reference images;
+  **CC0-1.0**. Source: the Round 66 ART package `tools/r66_art/`
+  (`candidates/smite_hammer_c.png`, the user's pick; generator
+  `generate.py`, GPL-3.0-or-later; provenance in its `LICENSE-media.md`).
+  Modifications: none (copied byte for byte, renamed).
+
+- `grug_core_fx_book.png`: 64×64 RGBA book, the particle symbol of the
+  priest's Censure (`grug_core/particle_effects.lua`). Original art authored
+  as polygon and line geometry by **GPT-6 Astra** for Grudgelands on
+  2026-10-28, no imported assets or reference images; **CC0-1.0**. Source:
+  the Round 66 ART package `tools/r66_art/` (`candidates/censure_book_f.png`,
+  a stand-in until the user's final book pick replaces this file under the
+  same name; generator `generate.py`, GPL-3.0-or-later; provenance in its
+  `LICENSE-media.md`). Modifications: none (copied byte for byte, renamed).
+
 ## Round 26 status icons and frames — CC0
 
 The 27 status emblems below were generated for Grudgelands on 2026-09-29
