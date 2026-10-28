@@ -103,11 +103,10 @@ ceiling's size with the same client settings; it does not force GUI scale 1
 or impose the same dimensions on every dialog. For a viewport within the
 ceiling the regular frame is unchanged. Text grows with the ceiling
 (`text_growth`); controls the engine draws in the client font cannot follow:
-checkbox and dropdown captions, item counts, tooltips and hypertext bodies
-(Help, the welcome window). Explicit sizes not yet passed the growth stay at
-the client font as well: the vendored sign, book and mob dialogs, the box
-labels of chests, furnaces and shelves, and the Claim Stone window's buttons
-and headings.
+checkbox and dropdown captions, item counts, tooltips and the welcome
+window's hypertext (Help's hypertext body gets a `<global size>` by the
+growth). The vendored sign, book and mob dialogs keep their explicit sizes at
+the client font as well.
 Padding must follow `position[]` and `anchor[]` and precede `no_prepend[]`;
 Quickbar therefore adds it after its existing left anchor.
 
