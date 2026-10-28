@@ -28,7 +28,9 @@ local function furnace_formspec_with(view, pos, player, context)
 	local progress = grug_inventory.furnace_progress
 	local station = grug_inventory.STATION
 	local x, y, pitch = station.x, station.y, station.pitch
-	local box, bottom = grug_inventory.station_box(S("Furnace"), 2 * pitch - 0.25)
+	-- GRUG PATCH (Round 66 UI): the box label grows with the form text.
+	local box, bottom = grug_inventory.station_box(S("Furnace"), 2 * pitch - 0.25,
+		grug_core.ui.text_growth(player))
 	return grug_inventory.station_formspec(player, box ..
 		("list[%s;src;%.3f,%.3f;1,1;]"):format(loc, x, y) ..
 		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(loc, x + 3 * pitch, y) ..

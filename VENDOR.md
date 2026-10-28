@@ -808,7 +808,9 @@ update:
   columns, no `main` lists and no `default.get_hotbar_bg`; the inbox rings
   of Round 45 PT5 stay. The furnace builders take `player` and the session
   `context` after `pos`; the shelves' empty-slot pictures follow the slot
-  positions.
+  positions. Round 66 (lane UI): the four `station_box` calls pass
+  `grug_core.ui.text_growth(player)`, so the box label grows with the form
+  text on a grown viewport ceiling (one more marker at each call).
 - `default/node_formspec.lua` (its whole-file marker): each session has a
   `context` table, passed to the builder as `build(pos, player, context)`;
   a submission's bag-view scroll value is kept in it through
