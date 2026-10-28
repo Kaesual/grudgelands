@@ -107,8 +107,9 @@ local LIST_SHARE, LIST_MIN = 0.42, 3.6
 local ABANDON_W, CONFIRM_W, CANCEL_W, BUTTON_GAP = 1.8, 2.6, 1.5, 0.15
 local HUD_W = 2.3 -- the Quest HUD checkbox with its label
 
--- The two boxes for `journal` inside `rect` {x, y, w, h}.
-function M.content(session, journal, rect)
+-- The two boxes for `journal` inside `rect` {x, y, w, h}; `growth` (nil: 1)
+-- is the window's text growth (Round 66 ruling 4) for the list's rows.
+function M.content(session, journal, rect, growth)
 	local quest = M.selected(journal, session)
 	local x, y, w = rect.x, rect.y, rect.w
 	local list_h = math.max(LIST_MIN, rect.h * LIST_SHARE)
@@ -152,7 +153,7 @@ function M.content(session, journal, rect)
 			y = y + PAD + ROW_H + 0.1, w = w - 2 * PAD,
 			h = row_y - (y + PAD + ROW_H + 0.1) - 0.15,
 			-- The responsive map already budgets for the native GUI font.
-			rows = rows, scale = 1}),
+			rows = rows, scale = growth or 1}),
 	}
 	local text_y = y + list_h + GAP
 	local text_h = rect.h - list_h - GAP

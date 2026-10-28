@@ -44,8 +44,30 @@ end
 -- a mining camp and a camp under construction. The marker's texture is
 -- grug_map_<marker>.png.
 M.MARKER = {mining_camp = "mining_camp", camp_construction = "camp_construction"}
-function M.marker(slot)
-	return M.MARKER[slot] or M.kind(slot)
+
+-- Round 66 ruling 8: a camp's icon in its faction's colour, the same symbol
+-- (recoloured by palette, tools/r66_map/recolor.py). The war camp art is the
+-- Throng's red; the Accord's is blue. A camp under construction hangs cloth
+-- of its faction's colour on the scaffold. A camp never changes faction.
+M.FACTION_MARKER = {
+	war_camp = {accord = "war_camp_accord"},
+	camp_construction = {accord = "camp_construction_accord",
+		throng = "camp_construction_throng"},
+}
+
+-- The faction of a settlement of `slot`: a war camp's slot names it
+-- (pvp_<faction>_<band>), otherwise `faction` (the one of its race), or nil.
+function M.faction(slot, faction)
+	return type(slot) == "string" and slot:match("^pvp_(%a+)_%a+$") or faction
+end
+
+-- The marker of a settlement of `slot`, in its faction's variant where one
+-- exists (`faction`: the one of its race, or nil).
+function M.marker(slot, faction)
+	local marker = M.MARKER[slot] or M.kind(slot)
+	local variants = marker and M.FACTION_MARKER[marker]
+	local owner = M.faction(slot, faction)
+	return variants and owner and variants[owner] or marker
 end
 
 -- The map window's layer of each kind (Round 47, the work package's §3):

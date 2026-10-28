@@ -233,7 +233,7 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   | Trainers | Trainers & traders | the profession and Riding trainers, the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
   | Towns | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
   | POIs | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the brown tent and bright pickaxe icon `grug_map_mining_camp.png`), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
-  | PvP | PvP | the two fortresses and the war camps (with the camps under construction, Round 58, the construction-camp icon `grug_map_camp_construction.png`) | both | the name |
+  | PvP | PvP | the two fortresses and the war camps in their faction's colour (Round 66 ruling 8: the Throng's red `grug_map_war_camp.png`, the Accord's blue `grug_map_war_camp_accord.png`, the same symbol; the faction from the slot `pvp_<faction>_<band>`), with the camps under construction (Round 58, the scaffold icon; since Round 66 its cloth in the faction's colour, `grug_map_camp_construction_<faction>.png`, the faction of the camp's race) | both | the name |
   | Zones | Zones | every zone's name and level band as text | — | — |
   | None | No markers | only the arrows | — | — |
 
@@ -246,11 +246,22 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   the settlement registry, the king sockets, `grug_mobs.dragon_map_markers`
   and the rift's site, never from live entities.
 - **Icons:** one approved 32×32 PNG per motif/direction, exported by
-  `tools/r64_map/ship.py` with alpha masks and exact source hashes. Both
-  renderers use `grug_map/markers.lua`: displayed extent is the rounded
-  product of 32 and the effective HUD scale, independent of GUI scale,
-  terrain quality and world-map zoom. The world map converts that extent
-  using the client's integer formspec pixel size, including window fit.
+  `tools/r64_map/ship.py` with alpha masks and exact source hashes; the
+  camps' faction variants (Round 66) are recoloured by palette from their
+  masters (`tools/r66_map/recolor.py`, the faction colours of
+  `grug_core.factions`) and shipped by the same tool with their masters'
+  masks. Both renderers use `grug_map/markers.lua`. **Marker size**
+  (Round 66 ruling 5): a marker keeps the share of its map that it has on a
+  1920×1080 desktop at HUD and GUI scale 1, where it is 32 px:
+  `round(32 × drawn / reference)`, never above the rounded product of 32
+  and the effective HUD scale (the size before Round 66), never below
+  16 px. The map window measures the map's drawn width at zoom 1 (its
+  `map_w` in formspec units times the client's integer pixel size, from the
+  same capped window information the window is laid out with) against the
+  same layout on the 1920×1080 reference; without window information it
+  keeps the HUD-scaled size. Independent of GUI scale, terrain quality and
+  world-map zoom. The world map converts that extent using the client's
+  integer formspec pixel size, including window fit.
   Layout uses the complete simultaneous roster at the current projection,
   stable IDs, nonzero-alpha spans and two bounded improvement passes.
   Quest slots reserve the union of their status silhouettes; home/innkeeper
@@ -591,8 +602,14 @@ drawn from the base image above. The gliding version (approved in playtest,
   givers, Housing Steward, capital services, mender, profession and Riding
   trainers, innkeepers, home and discovered waystones/Claim Stone. The clash
   landmark represents the rift site; there is no duplicate rift-boss icon.
-  Ordinary markers use the same 32px/HUD-scale size and bounded placement
-  as the world map. The minimap solves its combined roster independently
+  Ordinary markers use the same size rule and bounded placement as the
+  world map, measured against the minimap's own hole (its drawn map) on
+  the 1920×1080 reference; the player's and the party's arrows inside the
+  hole take the same size. The box is a quarter of the window height in
+  real pixels whatever the HUD scaling, so before Round 66 the HUD-scaled
+  markers outgrew it on a high-density screen (a 2400×1080 phone at
+  scaling 2.5: the desktop's 270 px box, 80 px markers; now 32 px).
+  The minimap solves its combined roster independently
   of the world map's selected layer and projection, then crops to the view.
   Quest state changes and home/innkeeper substitution preserve shared offsets.
   Icons glide with the terrain and are culled near the circular edge; the

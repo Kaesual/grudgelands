@@ -58,7 +58,8 @@ local PASS = 0.1
 -- fits and centers at 1x; zoomed artwork uses the full scroll viewport.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
 local COLUMN_SHARE = 0.5
--- Ordinary icons share one 32px HUD-scaled extent across both views.
+-- Ordinary icons share one extent across both views (markers.lua: 32px
+-- HUD-scaled at most, since Round 66 fitted to the drawn map).
 -- Area rings keep their geographic extent with a readable minimum.
 local RING_MIN = 0.7
 -- Arrows sit on a grid of ARROW_STEP units (about a screen pixel); the
@@ -104,6 +105,27 @@ function W.layout(w, h)
 		map_w = map_w, map_h = map_w * 8 / 9,
 		viewport_w = viewport_w, viewport_h = viewport_h,
 		column = {x = PAD + column + GAP, y = map_y, w = column, h = h - PAD - map_y}}
+end
+
+-- The map's drawn pixel width on the reference desktop (1920x1080, HUD and
+-- GUI scale 1: layers.REFERENCE) below a navigation header of `header_h`
+-- units: the extent at which markers have their full M.SIZE (Round 66
+-- ruling 5). The header's height is the only input, so a 1080p desktop is
+-- unchanged with either header.
+local reference_px, reference_count = {}, 0
+function W.reference_map_px(header_h)
+	header_h = header_h or grug_inventory.UI.header_h
+	local known = reference_px[header_h]
+	if known then return known end
+	-- a header has one or two heights; the bound only guards the table
+	if reference_count >= 8 then reference_px, reference_count = {}, 0 end
+	reference_count = reference_count + 1
+	local info = layers.REFERENCE
+	local w, h = W.window_size(info, header_h)
+	local _, per_unit = marker_art.metrics(info, w, h + header_h)
+	known = W.layout(w, h).map_w * per_unit
+	reference_px[header_h] = known
+	return known
 end
 
 --
@@ -287,9 +309,14 @@ end
 -- mode the target rings, the hand-in NPC's question mark and the
 -- crosshairs, else the layer's markers or zone labels; then the party's
 -- arrows and the player's. Every tooltip after the images, topmost first.
-local function overlay(fs, player, session, layout, quest, info)
+local function overlay(fs, player, session, layout, quest, info, growth)
 	local zoom = session.zoom or 1
  local pixels, per_unit = marker_art.metrics(info,layout.w,layout.form_h)
+	-- Round 66 ruling 5: sized by the map's drawn pixels (zoom 1) where the
+	-- client reported its window; without a report today's HUD size.
+	if type(info) == "table" and info.size then
+		pixels = marker_art.fit(pixels, layout.map_w * per_unit, W.reference_map_px(layout.header_h))
+	end
  local ICON, ARROW, CROSSHAIR = pixels/per_unit, pixels/per_unit, pixels/per_unit
 	local view = atlas.view()
 	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
@@ -332,7 +359,7 @@ local function overlay(fs, player, session, layout, quest, info)
 	else
 		local layer = W.layer_of(session)
 		if layer.zones then
-			local metrics = layers.zone_labels.metrics(info, session.zoom)
+			local metrics = layers.zone_labels.metrics(info, session.zoom, growth)
 			for _, zone in ipairs(layers.zones) do
 				local sx, sy = at(zone)
 				if sx then
@@ -423,7 +450,7 @@ function W.formspec(player, session, info)
     local nav, header_h = grug_inventory.navigation(player, session, "grug_map:atlas", width, navigation_layout)
     local w, h = W.window_size(info, header_h)
     local layout = W.layout(w, h)
-    layout.form_h = h + header_h
+    layout.form_h, layout.header_h = h + header_h, header_h
 	session.layout = layout
 	local zoom = session.zoom or 1
 	local journal = grug_quests.journal(player)
@@ -431,6 +458,13 @@ function W.formspec(player, session, info)
 	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
 	local cy = PAD + HEADER_H / 2
 	local right = w - PAD
+	-- Round 66 ruling 4: on a grown viewport ceiling the body text (the
+	-- "Current:" line, the zone labels, the quest rows and texts) grows as
+	-- this form does, like the shared header; exactly 1 on screens up to
+	-- 1620 px high, whose bytes stay as they were. From the raw report.
+	local growth = grug_core.ui.text_growth and
+		grug_core.ui.text_growth(player, w, h + header_h, info) or 1
+	local grown = growth ~= 1 and growth or nil
 	local minimap = grug_map.minimap.available() and
 		("checkbox[%.2f,%.2f;grug_map_minimap;Show minimap;%s]"):format(right - 3.4, cy,
 			tostring(grug_map.minimap.enabled(player))) or
@@ -453,7 +487,8 @@ function W.formspec(player, session, info)
 		("button[1.0,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD),
 		("label[1.75,%.2f;%dx]"):format(cy, zoom),
 		("button[2.35,%.2f;0.6,0.6;grug_map_zoom_in;+]"):format(PAD),
-		grug_core.ui.prose(6.7, PAD, w - 10.5, 0.65, "Current: " .. current_zone(player), true),
+		grug_core.ui.prose(6.7, PAD, w - 10.5, 0.65, "Current: " .. current_zone(player), true,
+			grown, grown),
 		minimap,
 		("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;horizontal;%.5f]"):format(layout.map_x,
 			layout.map_y, layout.viewport_w, layout.viewport_h, SCROLL_X,
@@ -467,7 +502,7 @@ function W.formspec(player, session, info)
 		("image[0,0;%.3f,%.3f;%s]"):format(mw, mh, esc(atlas.view().texture)),
 	}
 	overlay(fs, player, session, layout, quest,
-		grug_core.ui.window_information and grug_core.ui.window_information(info) or info)
+		grug_core.ui.window_information and grug_core.ui.window_information(info) or info, grown)
 	fs[#fs + 1] = "container_end[]scroll_container_end[]scroll_container_end[]"
 	-- Scrollbar values are transport state: echoed from the last event.
 	local limit = atlas.scroll_limit(zoom)
@@ -485,7 +520,7 @@ function W.formspec(player, session, info)
 		session.scroll_y or 0)
 	fs[#fs + 1] = SCROLLBAR_DEFAULTS
 	layer_selector(fs, layout, session, quest ~= nil)
-	fs[#fs + 1] = quest_box.content(session, journal, layout.column)
+	fs[#fs + 1] = quest_box.content(session, journal, layout.column, grown)
 	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)
 end

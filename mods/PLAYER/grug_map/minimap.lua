@@ -6,7 +6,8 @@
 -- Housing Steward and the capital services, trainers (their profession's
 -- icon since Round 44), innkeepers, the player's home and discovered
 -- waystones (Round 29). Settlements, points of interest, kings and dragons
--- use the same separate 32px markers as the world map (Round 64). Under it a line names the player's location (Round 28 M1,
+-- use the same separate markers as the world map (Round 64; sized by the
+-- drawn minimap since Round 66, marker_px below). Under it a line names the player's location (Round 28 M1,
 -- location.lua), and while a capital's music plays a "Now playing" box under
 -- that line names the track (0.45.1; grug_ambience tells it which).
 --
@@ -92,7 +93,8 @@ local SLOW = 5.0
 -- resize 0.2 s after it ends; the location is sampled about once a second).
 local WINDOW = 0.5
 local PARTY_SLOTS = 9
--- Drawn sizes in HUD pixels (scaled with HUD scaling like every HUD image).
+-- Drawn sizes in HUD pixels (scaled with HUD scaling like every HUD image);
+-- the markers and arrows inside the hole at most, see marker_px.
 local ICON, PARTY_ARROW, PLAYER_ARROW = 32, 32, 32
 -- A rim arrow fills RIM_FILL of the bezel ring's width; its chevron spans
 -- RIM_EXTENT of its 32 px texture from tip to back, outline included.
@@ -124,6 +126,25 @@ local PLAYING_BOX_COLOR = "#3434344d"
 local PLAYING_ICON = "grug_ambience_note.png"
 
 local base, view -- set by M.install
+
+-- Round 66 ruling 5: the markers and the arrows inside the hole keep the
+-- share of the hole they have on a 1920x1080 desktop at HUD scale 1 (32 px
+-- there), never above 32 x HUD scaling, never below markers.MIN. The box is
+-- a quarter of the window's height in real pixels whatever the HUD scaling
+-- (hud_layout.minimap_box), so HUD-scaled markers alone outgrow it on a
+-- high-density screen. Kept on the frame (a new one per window change).
+local REFERENCE_WINDOW = {size = {x = 1920, y = 1080}, real_hud_scaling = 1,
+	real_gui_scaling = 1}
+local reference_hole -- for `view`, reset by M.install
+local function marker_px(frame)
+	if not frame.marker then
+		reference_hole = reference_hole or V.frame(view, layout.minimap_box(REFERENCE_WINDOW)).hole
+		frame.marker = markers.fit(markers.metrics({real_hud_scaling = frame.hud}),
+			frame.hole, reference_hole)
+	end
+	return frame.marker
+end
+M.marker_px = marker_px
 -- The claims (set by M.install when grug_housing is there): the Claim
 -- Stone's item name and the claim's radius. Claim mode needs the overlays
 -- too: their tiles by faction and the red.
@@ -338,7 +359,7 @@ local function static_markers(player, frame)
   -- The clash-site landmark already represents this place on the minimap.
   if marker.kind ~= "rift_boss" then source[#source+1] = marker end
  end
- local size = markers.metrics({real_hud_scaling=frame.hud})
+ local size = marker_px(frame)
  local offsets = markers.offsets(player, PROVIDERS, source, frame.f/view.npp, frame.f/view.npp, size)
  local result = {}
  for _, marker in ipairs(source) do
@@ -477,7 +498,7 @@ local function update_window(player, state)
 		-- The arrow sits at the centre; the compass element's size is in raw
 		-- pixels.
 		local x, y = frame.arrow_x, frame.arrow_y
-		local arrow = math.floor(PLAYER_ARROW * frame.hud + 0.5)
+		local arrow = math.floor(PLAYER_ARROW * marker_px(frame) / markers.SIZE + 0.5)
 		local element = hud.player
 		if element.x ~= x or element.y ~= y then
 			player:hud_change(element.id, "position", {x = x / frame.width, y = y / frame.height})
@@ -565,7 +586,7 @@ local function draw_map(player, state, frame, mx, my)
 	local hud = state.hud
 	local changes = show(player, frame, hud.map, state.texture, mx, my,
 		exact(frame.drawn, view.pixels, frame))
-	local size = markers.metrics({real_hud_scaling=frame.hud})
+	local size = marker_px(frame)
 	local limit = frame.hole - size / 2
 	local rows, visible, count = state.rows, state.visible, 0
  local wanted, free = {}, {}
@@ -643,13 +664,14 @@ local function draw_party(player, state, frame, mx, my, moved)
 	state.party_shown = slot
 	M.stats.party = M.stats.party + 1
 	local hud, hud_px, changes = state.hud, frame.hud, 0
-	local inside = frame.hole - PARTY_ARROW / 2 * hud_px
+	local arrow = PARTY_ARROW * marker_px(frame) / markers.SIZE
+	local inside = frame.hole - arrow / 2
 	for i = 1, slot do
 		local row = members[i]
 		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my, row.x, row.z)
 		if distance <= inside then
 			changes = changes + show(player, frame, hud.party[i], PARTY_TEXTURE[heading(row)],
-				x, y, exact(markers.metrics({real_hud_scaling=frame.hud}), 32, frame))
+				x, y, exact(arrow, 32, frame))
 		else
 			-- On the bezel, above it and its N plate (a party member due
 			-- north matters more than the letter), filling the ring.
@@ -724,7 +746,7 @@ local function update(player, state, slow, window)
 		-- the static markers under the cell's texture, in draw order
 		state.near = {}
 		local size = view.texture
-  local margin = ICON * frame.hud / frame.f
+  local margin = ICON * marker_px(frame) / markers.SIZE / frame.f
 		for _, marker in ipairs(state.static) do
 			local px, py = V.base_pixel(view, marker.x, marker.z)
 			if px >= state.ox-margin and px <= state.ox+size+margin and
@@ -834,6 +856,7 @@ function M.install(installed)
 		return
 	end
 	base, view, M.mask = mini, candidate, grug_map.base.MASK
+	reference_hole = nil
 	-- the sea disc beyond the base: the open sea's colour (base.lua)
 	BACKGROUND = M.mask .. "^[multiply:" .. grug_map.base.OPEN_SEA_HEX
 	-- The claims' frames need grug_housing; claim mode the overlays

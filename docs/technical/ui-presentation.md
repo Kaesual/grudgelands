@@ -85,8 +85,12 @@ Mailbox retains eight-row pages and the quest log retains its existing limit.
 The responsive Map retains native text scale 1 for rows and surrounding labels;
 its geometry already incorporates the GUI scale, so inventory-fit compensation
 must not leak into its typography. On a grown ceiling its shared navigation
-header and the labels after it follow `text_growth`; the rows and zone labels
-keep the client font. Other native tables, including Admin Mail,
+header and the labels after it follow `text_growth`, and so does its body
+(Round 66 lane MAP): the "Current:" line, the quest rows (`rows` scale) and
+texts and the zone labels (font and box) grow by the map form's own
+`text_growth`, taken from the raw window report; up to a 1620 px high screen
+the growth is 1 and the form's bytes are unchanged (`tools/r66_ui/bytes.lua
+map`). Other native tables, including Admin Mail,
 keep their own existing behavior.
 
 Native frame fitting remains enabled, with a viewport ceiling

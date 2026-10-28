@@ -1,4 +1,5 @@
--- Shared 32px marker sizes, silhouette tooltips and cached displacement.
+-- Shared marker sizes (32px at 1080p; since Round 66 fitted to the map),
+-- silhouette tooltips and cached displacement.
 -- Only layout is cached; visibility/textures always come from current state.
 local path = core.get_modpath("grug_map")
 local L = dofile(path .. "/icon_layout.lua")
@@ -23,6 +24,17 @@ function M.metrics(info, form_w, form_h)
  -- max_formspec_size is reported as float32; compensate only its small
  -- round-trip error before matching the client's integer imgsize.
  return math.max(1, math.floor(M.SIZE * hud + 0.5)), math.max(1,math.floor(px+0.0001))
+end
+-- Round 66 ruling 5: a marker keeps the share of its map that it has on a
+-- 1920x1080 desktop at HUD and GUI scale 1 (there M.SIZE). `cap` is
+-- metrics' HUD-scaled size, `drawn` the map's drawn pixel extent, `reference`
+-- the same map's extent on that desktop; the result never exceeds the cap
+-- and never goes below M.MIN (unless the cap does).
+M.MIN = 16
+function M.fit(cap, drawn, reference)
+ if not (drawn and reference and drawn > 0 and reference > 0) then return cap end
+ local size = math.floor(M.SIZE * drawn / reference + 0.5 + 1e-6)
+ return math.min(cap, math.max(M.MIN, size))
 end
 function M.texture(marker)
  if marker.kind == "quest" then return "grug_map_quest_" .. marker.status .. ".png" end
