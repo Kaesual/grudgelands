@@ -14,10 +14,15 @@
 --    faction, race, class, pos = {x, y, z},
 --    report = {letter_id, from, time, subject, body, items, reason, note}}
 -- A broadcast: {id, subject, body, time, by}.
+-- A sent copy (Round 66 ruling 3), the sender's text copy of a player
+-- letter, in its own list, newest first:
+--   {id (the letter's), to, subject, body, time, postage (copper),
+--    attachments = {display names, "Iron Ingot x12"}}
 
 local M = {}
 
 M.LETTER_LIMIT = 50       -- player letters per mailbox (ruling 7)
+M.SENT_LIMIT = 50         -- sent copies kept per player (Round 66)
 M.OPEN_TICKETS = 5        -- open messages to the admin per player
 M.PAGE_SIZE = 8           -- rows per list page (§3.2)
 M.SUBJECT_MAX = 60        -- characters (§3.3)
@@ -225,6 +230,24 @@ end
 function M.deliver(box, letter)
 	table.insert(box.letters, 1, letter)
 	return letter
+end
+
+-- A sent letter's text copy for its sender (Round 66 ruling 3): the text,
+-- the postage paid and the attachments as names, never item strings, so
+-- nothing in it can be taken. No read receipt: nothing of the recipient's.
+function M.sent_copy(id, to, subject, body, postage, names, now)
+	local attachments = {}
+	for _, name in ipairs(names or {}) do attachments[#attachments + 1] = name end
+	return {id = id, to = to, subject = subject, body = body, time = now,
+		postage = postage, attachments = attachments}
+end
+
+-- A new sent copy, newest first; beyond M.SENT_LIMIT the oldest go
+-- silently (never a refusal).
+function M.keep_sent(list, copy)
+	table.insert(list, 1, copy)
+	for index = #list, M.SENT_LIMIT + 1, -1 do list[index] = nil end
+	return copy
 end
 
 -- Opening a letter marks it read (ruling 12). True when it changed.
