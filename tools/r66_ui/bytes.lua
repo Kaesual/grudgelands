@@ -13,11 +13,9 @@
 -- 3840x2160 is printed as well and is expected to differ.
 local here = (arg and arg[0] or ""):match("^(.*)/[^/]*$") or "."
 local repo, part = arg and arg[1] or ".", arg and arg[2] or "pages"
-local bit = require("bit")
-
 local function hash(text)
 	local h = 5381
-	for i = 1, #text do h = bit.band(bit.bxor(h * 33, text:byte(i)), 0x7fffffff) end
+	for i = 1, #text do h = (h * 33 + text:byte(i)) % 2147483647 end
 	return ("%08x"):format(h)
 end
 local function information(w, h, gui, density)
