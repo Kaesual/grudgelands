@@ -1,6 +1,7 @@
 -- The mailbox window (mail plan §3.1-§3.9): one formspec (v6, real
--- coordinates, the inventory window's size) with four tabs: Letters,
--- Announcements (the broadcasts), Write and To the admin. Opened by the
+-- coordinates, the inventory window's size) with five tabs: Letters, Sent
+-- (the sender's text copies, Round 66), Announcements (the broadcasts),
+-- Write and To the admin. Opened by the
 -- mailbox node's right-click (lane WORLD's grug_mapgen:mailbox calls
 -- grug_mail.open_mailbox). Every action re-checks that the node at the
 -- opening position is still a mailbox and the player stands within RANGE
@@ -23,8 +24,29 @@ local RANGE = 6
 -- The mailbox node (lane WORLD, grug_mapgen/world_nodes.lua).
 grug_mail.MAILBOX_NODE = "grug_mapgen:mailbox"
 local ATTACH = grug_mail.ATTACH_LIST
-local TABS = {"letters", "announcements", "write", "admin"}
-local TAB_INDEX = {letters = 1, announcements = 2, write = 3, admin = 4}
+-- The tab bar, in its order. The buttons are named by their place
+-- ("grug_mail_tab_<n>") and share the bar by caption length like the
+-- inventory's navigation (navigation.lua caption_weight), with room for a
+-- two-digit count where a caption carries one (`count`, "Letters (2)").
+-- The shares are fixed, so a count never moves a tab.
+local TABS = {
+	{id = "letters", caption = "Letters", count = "letters"},
+	{id = "sent", caption = "Sent"},
+	{id = "announcements", caption = "Announcements", count = "announcements"},
+	{id = "write", caption = "Write"},
+	{id = "admin", caption = "To the admin"},
+}
+do
+	local total, x, bar = 0, 0.4, W - 0.8
+	for _, tab in ipairs(TABS) do
+		tab.weight = #tab.caption + 3.5 + (tab.count and #" (99)" or 0)
+		total = total + tab.weight
+	end
+	for _, tab in ipairs(TABS) do
+		tab.x, tab.w = x, bar * tab.weight / total - 0.1
+		x = x + bar * tab.weight / total
+	end
+end
 local BADGE = "grug_mail_admin_badge.png"
 local SEAL = "grug_mail_npc_seal.png"
 
@@ -95,7 +117,7 @@ local function new_session(pos)
 	serial = serial + 1
 	return {formname = FORM_PREFIX .. serial, pos = vector.new(pos),
 		label = grug_mail.mailbox_label(pos), tab = "letters",
-		pages = {letters = 1, announcements = 1, tickets = 1}, selected = {},
+		pages = {letters = 1, sent = 1, announcements = 1, tickets = 1}, selected = {},
 		draft = {to = "", subject = "", body = ""},
 		admin = {topic = 1, subject = "", body = ""},
 		report = {reason = 1, note = ""}, inv = {}, draw = 0}
@@ -126,19 +148,16 @@ end
 
 local function frame(player, session, counts)
 	local scale = grug_core.ui.text_scale(player)
-	local captions = {
-		counts.letters > 0 and ("Letters (" .. counts.letters .. ")") or "Letters",
-		counts.announcements > 0 and ("Announcements (" .. counts.announcements .. ")") or
-			"Announcements",
-		"Write", "To the admin"}
 	local nav = {}
-	for index, caption in ipairs(captions) do
+	for index, tab in ipairs(TABS) do
+		local count = tab.count and counts[tab.count] or 0
+		local caption = count > 0 and (tab.caption .. " (" .. count .. ")") or tab.caption
 		local name = "grug_mail_tab_" .. index
-		nav[#nav + 1] = grug_core.ui.navigation_style(name, index == TAB_INDEX[session.tab],
-			0.4 + (index - 1) * ((W - 0.8) / 4), 0.2, (W - 0.8) / 4 - 0.1, 0.6)
+		nav[#nav + 1] = grug_core.ui.navigation_style(name, tab.id == session.tab,
+			tab.x, 0.2, tab.w, 0.6)
 		nav[#nav + 1] = ("style[%s;font_size=*%.3f]"):format(name, 1.1 * scale)
-		nav[#nav + 1] = ("button[%.3f,0.2;%.3f,0.6;%s;%s]"):format(
-			0.4 + (index - 1) * ((W - 0.8) / 4), (W - 0.8) / 4 - 0.1, name, esc(caption))
+		nav[#nav + 1] = ("button[%.3f,0.2;%.3f,0.6;%s;%s]"):format(tab.x, tab.w, name,
+			esc(caption))
 	end
 	return table.concat({
 		grug_core.ui.frame(W, H + 0.95, nil, nil, player),
@@ -210,6 +229,7 @@ local LIST_X, LIST_Y, LIST_W, LIST_H = 0.5, 1.45, 7.8, 9.8
 local PANE_X, PANE_W = 8.8, W - 9.3
 local BODY_Y = 3.15
 
+-- `kind` "sent" names the recipient instead of the sender.
 local function reading_head(fs, entry, kind)
 	if kind == "admin" then
 		fs[#fs + 1] = ("box[%.2f,1.2;%.2f,0.6;%s]image[%.2f,1.25;0.5,0.5;%s]" ..
@@ -221,8 +241,9 @@ local function reading_head(fs, entry, kind)
 	end
 	fs[#fs + 1] = ("label[%.2f,2.15;%s]"):format(PANE_X, esc(grug_inventory.wrap_text(
 		entry.subject ~= "" and entry.subject or "(no subject)", 60)))
-	fs[#fs + 1] = ("label[%.2f,2.9;%s]label[%.2f,2.9;%s]"):format(PANE_X,
-		esc(colored(COLOR.dim, "From: ") .. (entry.from or M.ADMIN_LABEL)),
+	local who = kind == "sent" and (colored(COLOR.dim, "To: ") .. entry.to) or
+		(colored(COLOR.dim, "From: ") .. (entry.from or M.ADMIN_LABEL))
+	fs[#fs + 1] = ("label[%.2f,2.9;%s]label[%.2f,2.9;%s]"):format(PANE_X, esc(who),
 		PANE_X + PANE_W - 1.0, esc(colored(COLOR.dim, date(entry.time))))
 end
 
@@ -332,6 +353,77 @@ local function letters_tab(player, session, fs)
 	fs[#fs + 1] = status_line(session, 12.75)
 	fs[#fs + 1] = ("label[0.4,13.25;%s]"):format(esc(colored(COLOR.dim,
 		"Letters are deleted 30 days after they arrive, attachments too.")))
+end
+
+--
+-- Sent (Round 66 ruling 3): the text copies of the player's own letters.
+-- The attachments are names only: nothing can be taken, nothing answered.
+--
+
+local function attachment_count(names)
+	local count = #names
+	if count == 0 then return "" end
+	return count .. (count == 1 and " attachment" or " attachments")
+end
+
+local function sent_rows(fs, session, rows, selected_id)
+	local entries = {}
+	for index, row in ipairs(rows) do
+		local subject = row.subject ~= "" and row.subject or "(no subject)"
+		local attachments = attachment_count(row.attachments)
+		local line = "To " .. row.to .. " · " .. date(row.time) ..
+			(attachments ~= "" and (" · " .. attachments) or "")
+		entries[index] = {title = subject, subtitle = line, selected = row.id == selected_id,
+			tooltip = subject .. "\n" .. line}
+	end
+	fs[#fs + 1] = grug_core.ui.rows(session, {name = "sent", rows = entries,
+		x = LIST_X, y = LIST_Y, w = LIST_W, h = LIST_H, scale = fs.text_scale})
+end
+
+local function sent_tab(player, session, fs)
+	local sent = S.sent(player:get_player_name())
+	fs[#fs + 1] = grug_core.ui.panel(LIST_X - 0.15, 1.0, LIST_W + 0.3, 11.8)
+	fs[#fs + 1] = grug_core.ui.panel(PANE_X - 0.15, 1.0, PANE_W + 0.3, 11.8)
+	local selected = M.find(sent, session.selected.sent)
+	local rows, page, pages = M.page(sent, session.pages.sent)
+	session.pages.sent = page
+	session.rows = rows
+	fs[#fs + 1] = ("label[%.2f,1.2;%s]"):format(LIST_X, esc(colored(COLOR.dim,
+		"Subject and recipient, newest first")))
+	sent_rows(fs, session, rows, selected and selected.id)
+	fs[#fs + 1] = pager("sent", LIST_X, 11.45, page, pages)
+	fs[#fs + 1] = ("label[%.2f,12.45;%s]"):format(LIST_X, esc(colored(COLOR.dim,
+		("%d sent letters · the last %d are kept"):format(#sent, M.SENT_LIMIT))))
+	if #sent == 0 then
+		fs[#fs + 1] = ("label[%.2f,1.5;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+			"You have not sent any letters.")))
+	elseif not selected then
+		fs[#fs + 1] = ("label[%.2f,1.5;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+			"Choose a letter to read it.")))
+	else
+		reading_head(fs, selected, "sent")
+		reading_body(fs, selected, 4.3)
+		fs[#fs + 1] = ("label[%.2f,7.8;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+			"Postage paid: ") .. grug_money.format(selected.postage or 0)))
+		local names = selected.attachments
+		if #names == 0 then
+			fs[#fs + 1] = ("label[%.2f,8.3;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+				"Attachments: none")))
+		else
+			fs[#fs + 1] = ("label[%.2f,8.3;%s]"):format(PANE_X, esc(colored(COLOR.dim,
+				"Attachments, sent with the letter:")))
+			-- Never cut: a name may carry the engine's translation markup.
+			for index, name in ipairs(names) do
+				fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(PANE_X + 0.3,
+					8.3 + 0.42 * index, esc("• " .. name))
+			end
+		end
+		fs[#fs + 1] = ("button[%.2f,11.45;1.55,0.75;sent_delete_%d;Delete]"):format(
+			PANE_X + PANE_W - 1.55, selected.id)
+	end
+	fs[#fs + 1] = status_line(session, 12.75)
+	fs[#fs + 1] = ("label[0.4,13.25;%s]"):format(esc(colored(COLOR.dim,
+		"Copies of your letters. They are deleted after 30 days.")))
 end
 
 local function announcements_tab(player, session, fs)
@@ -542,8 +634,8 @@ end
 -- Show
 --
 
-local TAB_BUILDERS = {letters = letters_tab, announcements = announcements_tab,
-	write = write_tab, admin = admin_tab}
+local TAB_BUILDERS = {letters = letters_tab, sent = sent_tab,
+	announcements = announcements_tab, write = write_tab, admin = admin_tab}
 
 local function counts_of(player)
 	local name = player:get_player_name()
@@ -689,6 +781,21 @@ local function letters_event(player, session, fields)
 	end
 end
 
+-- Delete carries the copy's id like the letters' Delete; no confirmation:
+-- a copy holds nothing of value.
+local function sent_event(player, session, fields)
+	if page_turn(session, fields, "sent", "sent") then return end
+	local id = session.selected.sent
+	if id and fields["sent_delete_" .. id] then
+		say(session, grug_mail.delete_sent(player, id))
+		session.selected.sent = nil
+		return
+	end
+	local row = grug_core.ui.rows_event(session, "sent", fields)
+	local entry = row and session.rows and session.rows[row]
+	if entry then session.selected.sent = entry.id end
+end
+
 local function announcements_event(player, session, fields)
 	if page_turn(session, fields, "announcements", "announcements") then return end
 	local broadcast = M.find(S.broadcasts(), session.selected.announcements)
@@ -748,8 +855,8 @@ local function admin_event(player, session, fields)
 	end
 end
 
-local TAB_EVENTS = {letters = letters_event, announcements = announcements_event,
-	write = write_event, admin = admin_event}
+local TAB_EVENTS = {letters = letters_event, sent = sent_event,
+	announcements = announcements_event, write = write_event, admin = admin_event}
 
 -- The short inventory view's scrollbar (grug_inventory ui.lua): the value
 -- of every event is kept; a pure scroll event ends here without a resend.
@@ -775,6 +882,7 @@ local function has_action(fields)
     for field in pairs(fields) do
         if ACTIONS[field] or field:match("^grug_mail_tab_%d+$") or
                 field:match("^letters_row_%d+$") or field:match("^announcements_row_%d+$") or
+                field:match("^sent_row_%d+$") or field:match("^sent_delete_%d+$") or
                 field:match("_prev$") or field:match("_next$") or
                 field:match("_send_%d+$") or field:match("^delete_%d+$") or
                 field:match("_confirm_%d+$") or field:match("^ticket_delete_%d+$") then
@@ -824,8 +932,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	for index = 1, #TABS do
 		if fields["grug_mail_tab_" .. index] then tab = index; break end
 	end
-	if tab and TABS[tab] and TABS[tab] ~= session.tab then
-		session.tab, session.dialog = TABS[tab], nil
+	if tab and TABS[tab] and TABS[tab].id ~= session.tab then
+		session.tab, session.dialog = TABS[tab].id, nil
 		grug_core.ui.rows_reset(session, session.tab)
 	else
 		TAB_EVENTS[session.tab](player, session, fields)

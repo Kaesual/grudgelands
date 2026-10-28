@@ -21,8 +21,9 @@ letters (lane QUEST). Seams and storage: the
   stands beside a waystone the map already shows.
 - A mailbox is named after its settlement ("Mailbox in Dur Brannoc"): the
   settlement whose waystone stands within 16 nodes.
-- Right-clicking it opens one window with four tabs: **Letters**,
-  **Announcements**, **Write** and **To the admin**. The tab captions carry
+- Right-clicking it opens one window with five tabs: **Letters**,
+  **Sent** (since Round 66, §3), **Announcements**, **Write** and **To the
+  admin**. The tab captions carry
   the unread count ("Letters (2)"). Every action checks again that the
   mailbox still stands and the player is alive within 6 nodes of it;
   otherwise the window closes. The window's header names the mailbox and
@@ -102,8 +103,19 @@ letters (lane QUEST). Seams and storage: the
   apply to letters, replies, messages to the admin and the admin's answers,
   letters and announcements (§6). Letters written by the game (NPC, level,
   quest, Lost and Found) are cut at the limit as a safety net.
-- Letters to other players vanish for the sender once sent: there is no
-  sent folder.
+- **Sent** (Round 66): every letter a player sends to another player
+  leaves a text copy in the sender's Sent tab: recipient, date, subject,
+  text, the postage paid and the attachments as names and counts ("Iron
+  Ingot x12"), never as items, so nothing in it can be taken. There is no
+  read receipt and nothing about the recipient's mailbox. The list works
+  like Letters (newest first, 8 a page, recipient, date and attachment
+  count); a copy opens with "To: …", the postage and the attachment list.
+  Its one action is **Delete**, without a confirmation (nothing of value is
+  lost); no Reply, Report or Take all. At most **50** copies are kept: the
+  oldest is dropped silently when a new letter goes out, never a refusal.
+  Copies are deleted **30 days** after sending, like letters. Messages to
+  the admin are not copied (To the admin lists them), nor are the admin's
+  letters and announcements.
 
 ## 4. Messages to the admin
 
