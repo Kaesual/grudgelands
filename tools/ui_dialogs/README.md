@@ -32,7 +32,8 @@ cleanup targets only its own temporary paths and Xvfb process.
 
 `gallery.py CAPTURE_ROOT` writes an offline `index.html` over resolution
 subdirectories. Extra scenarios accepted by `ONLY` include `quest_ready`
-(a real offered kill quest credited through the quest API), `craft_busy`
+(a real offered kill quest credited through the quest API), `creation_start`
+(the creation window before any choice; Round 66), `craft_busy`
 (real recipe jobs) and `crown_empty`. These alter disposable test state only.
 Use `SEED=12345` for comparable backgrounds; the initial audit used fresh
 random seeds and is not a performance comparison.
