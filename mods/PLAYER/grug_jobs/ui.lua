@@ -328,6 +328,7 @@ end
 grug_jobs._wrapped_labels = wrapped_labels
 
 local function list_content(fs, player, st, tab, counts, picks)
+	local growth = UI.text_growth(player)
 	local rows = list_rows(player, st, tab, counts, picks)
 	local pages = math.max(1, math.ceil(#rows / PER_PAGE))
 	st.page = math.max(1, math.min(pages, st.page))
@@ -370,7 +371,7 @@ local function list_content(fs, player, st, tab, counts, picks)
 			n(LIST_X + 0.7), n(y + ROW_H / 2), esc(shown),
 			n(LIST_X + LIST_W - 0.75), n(y + ROW_H / 2),
 			esc(crafts > 0 and count or core.colorize(DIM, count)))
-		fs[#fs + 1] = "style_type[label;font_size=*1]"
+		fs[#fs + 1] = "style_type[label;font_size=" .. UI.font_size(1, growth) .. "]"
 		-- The click target over the row (the old book's overlay pattern); a
 		-- clipped name in full as its tooltip.
 		fs[#fs + 1] = ("image_button[%s,%s;%s,%s;blank.png;%s%d;;false;false]"):format(
@@ -388,7 +389,7 @@ local function list_content(fs, player, st, tab, counts, picks)
 		n(LIST_X), n(PAGER_Y), n(PAGER_H), F.prev,
 		n(LIST_X + 1.6), n(PAGER_Y + PAGER_H / 2), ("Page %d of %d"):format(st.page, pages),
 		n(LIST_X + LIST_W - 0.8), n(PAGER_Y), n(PAGER_H), F.next)
-	fs[#fs + 1] = "style_type[label;font_size=*1]"
+	fs[#fs + 1] = "style_type[label;font_size=" .. UI.font_size(1, growth) .. "]"
 end
 
 --
@@ -436,7 +437,7 @@ end
 -- animation, ruling 1) and "View Queue [N]" (N the waiting jobs) at the
 -- right, in the selection colour while the queue view is open; while idle
 -- "No job running".
-local function job_strip(fs, st, job, waiting)
+local function job_strip(fs, st, job, waiting, growth)
 	local x, right = BOX.x + 0.2, BOX.x + BOX.w - 0.2
 	fs[#fs + 1] = ("box[%s,%s;%s,0.03;%s]"):format(n(x), n(STRIP_Y + 0.1), n(right - x),
 		RULE_COLOR)
@@ -449,14 +450,14 @@ local function job_strip(fs, st, job, waiting)
 	local bar_w = queue_x - 0.3 - STOP_W - 0.1 - x
 	fs[#fs + 1] = grug_jobs.progress_bar(x, STRIP_Y + 0.35, bar_w, 0.3, job, grug_jobs.now())
 	local stop = grug_jobs.stop_field(job)
-	fs[#fs + 1] = UI.button_style(stop, "danger")
+	fs[#fs + 1] = UI.button_style(stop, "danger", growth)
 	fs[#fs + 1] = ("button[%s,%s;%s,0.5;%s;■]tooltip[%s;%s]"):format(n(x + bar_w + 0.1),
 		n(STRIP_Y + 0.25), n(STOP_W), stop, stop,
 		esc("Stop this job: what it has not made comes back."))
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(x), n(STRIP_Y + 0.95),
 		esc(clip_chars(job_label(job), math.floor((bar_w + STOP_W + 0.1) * CHARS_PER_UNIT))))
 	if st.box == "queue" then
-		fs[#fs + 1] = grug_inventory.selected_button_style(F.queue, true)
+		fs[#fs + 1] = grug_inventory.selected_button_style(F.queue, true, growth)
 	end
 	fs[#fs + 1] = ("button[%s,%s;%s,0.85;%s;%s]"):format(n(queue_x), n(STRIP_Y + 0.3),
 		n(QUEUE_W), F.queue, esc("View Queue [" .. #waiting .. "]"))
@@ -513,7 +514,7 @@ function grug_jobs.action_button(view, field, label, enabled, style)
 	local geometry = ("%s,%s;%s,%s"):format(n(BOX.x + BOX.w - 0.2 - ACTION.w),
 		n(view.bottom - ACTION.h), n(ACTION.w), n(ACTION.h))
 	if enabled then
-		return UI.button_style(field .. "_" .. view.serial, "selected") ..
+		return UI.button_style(field .. "_" .. view.serial, "selected", view.growth) ..
 			(style or "") .. ("button[%s;%s_%d;%s]"):format(geometry, field, view.serial,
 			esc(label))
 	end
@@ -579,6 +580,7 @@ end
 local BOX_BUTTON_Y = PAGER_Y + PAGER_H + 0.05
 local BOX_BUTTON_H = BOX.y + BOX.h - BOX_BUTTON_Y
 local function box_buttons(fs, player, st, tab)
+	local growth = UI.text_growth(player)
 	local shown = {}
 	for _, name in ipairs(box_order) do
 		local button = boxes[name].button
@@ -589,7 +591,7 @@ local function box_buttons(fs, player, st, tab)
 	for index, name in ipairs(shown) do
 		local field = F.box .. name
 		fs[#fs + 1] = UI.navigation_style(field, st.box == name,
-			LIST_X + (index - 1) * (w + 0.1), BOX_BUTTON_Y, w, BOX_BUTTON_H)
+			LIST_X + (index - 1) * (w + 0.1), BOX_BUTTON_Y, w, BOX_BUTTON_H, false, growth)
 		fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;%s]"):format(n(LIST_X + (index - 1) * (w + 0.1)),
 			n(BOX_BUTTON_Y), n(w), n(BOX_BUTTON_H), field, esc(boxes[name].button.label))
 		if boxes[name].button.tooltip then
@@ -642,7 +644,8 @@ function grug_jobs.crafting_page_content(player, context)
 		fs[#fs + 1] = ("box[%s,%s;2.45,0.12;#111a24b0]box[%s,%s;%s,0.12;#d4b77d]"):format(
 			n(x + 0.05), n(TAB_Y + 0.5), n(x + 0.05), n(TAB_Y + 0.5), n(2.45 * fill))
 	end
-	fs[#fs + 1] = "style_type[label;font_size=*1]"
+	local growth = UI.text_growth(player)
+	fs[#fs + 1] = "style_type[label;font_size=" .. UI.font_size(1, growth) .. "]"
 	local recipe = st.selected and grug_jobs.recipe(st.selected) or nil
 	list_content(fs, player, st, tab, counts, grug_jobs.crafting_picks(st, recipe, counts))
 	box_buttons(fs, player, st, tab)
@@ -654,10 +657,10 @@ function grug_jobs.crafting_page_content(player, context)
 	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.9 * UI.text_scale(player))
 	fs[#fs + 1] = UI.panel(BOX.x, BOX.y, BOX.w, BOX.h)
 	fs[#fs + 1] = box.build(player, {st = st, tab = tab, job = job, counts = counts,
-		recipe = recipe, queue = waiting, bottom = bottom - 0.1, serial = st.serial,
+		recipe = recipe, queue = waiting, bottom = bottom - 0.1, serial = st.serial, growth = growth,
 		full = job ~= nil and 1 + #waiting >= grug_jobs.QUEUE_MAX})
 	if overflow then overflow_row(fs, player, bottom) end
-	job_strip(fs, st, job, waiting)
+	job_strip(fs, st, job, waiting, growth)
 	return table.concat(fs)
 end
 

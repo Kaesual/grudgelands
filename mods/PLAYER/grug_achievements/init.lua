@@ -475,6 +475,7 @@ function grug_achievements.character_achievements_formspec(player, context, area
 	context.grug_achievements_page = page
 	local fs = {}
 	local font_scale = grug_core.ui.text_scale(player)
+	local growth = grug_core.ui.text_growth(player)
 	local first = (page - 1) * PER_PAGE
 	for slot = 1, PER_PAGE do
 		local ach = list[first + slot]
@@ -500,7 +501,7 @@ function grug_achievements.character_achievements_formspec(player, context, area
 		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.6, y + 0.62,
 			core.formspec_escape(core.colorize("#a9aea4",
 				clip(text, math.min(TEXT_CHARS, math.floor((area.w - 0.6) / 0.15))))))
-		fs[#fs + 1] = "style_type[label;font=normal;font_size=*1]"
+		fs[#fs + 1] = "style_type[label;font=normal;font_size=" .. grug_core.ui.font_size(1, growth) .. "]"
 	end
 	if pages > 1 then
 		local right, y = area.x + area.w, area.y + area.h - PAGER_H

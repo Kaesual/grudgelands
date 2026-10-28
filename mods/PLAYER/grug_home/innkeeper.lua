@@ -13,11 +13,12 @@ end
 local function form(player,row)
  local home = grug_home.get(player)
  local UI = grug_core.ui
- return UI.frame(9, 4.7, nil, nil, player) .. "set_focus[close;true]" .. UI.service_header(9, row.label .. " Innkeeper", "A place to return to") ..
-  UI.panel(0.4, 1.6, 8.2, 1.9) .. UI.heading(0.65, 1.92, "YOUR HOME") ..
+ local growth = UI.text_growth(player, 9, 4.7)
+ return UI.frame(9, 4.7, nil, nil, player) .. "set_focus[close;true]" .. UI.service_header(9, row.label .. " Innkeeper", "A place to return to", nil, growth) ..
+  UI.panel(0.4, 1.6, 8.2, 1.9) .. UI.heading(0.65, 1.92, "YOUR HOME", growth) ..
   UI.prose(0.65, 2.2, 7.7, 1.0, (home and home.label or "No home set") .. "\n" ..
-   (home and home.id == row.id and "This is your home." or "Set " .. row.label .. " as your home.")) ..
-  (home and home.id == row.id and "" or UI.button_style("bind", "selected") ..
+   (home and home.id == row.id and "This is your home." or "Set " .. row.label .. " as your home."), false, growth) ..
+  (home and home.id == row.id and "" or UI.button_style("bind", "selected", growth) ..
    "button[0.4,3.8;3,0.6;bind;Set home here]") ..
   "button_exit[6.9,3.8;1.7,0.6;close;Close]"
 end

@@ -194,8 +194,9 @@ function grug_money.show_withdraw(player, fields, message)
 	fields = fields or {}
 	local fs = {
 		grug_core.ui.frame(8, 4.3, "Withdraw coins", nil, player),
-		"style_type[label,field;font_size=*0.85]",
-		grug_core.ui.button_style("grug_money_confirm", "selected"),
+		"style_type[label,field;font_size=" ..
+			grug_core.ui.font_size(0.85, grug_core.ui.text_growth(player, 8, 4.3)) .. "]",
+		grug_core.ui.button_style("grug_money_confirm", "selected", grug_core.ui.text_growth(player, 8, 4.3)),
 		grug_core.ui.panel(0.2, 0.85, 7.6, 0.65),
 		-- Cancel takes the focus when the dialog opens (0.45.1): otherwise the
 		-- engine focuses the Gold field, which eats the inventory key. Not

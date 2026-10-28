@@ -49,7 +49,8 @@ local function build(player, view)
 	local fs = {}
 	fs[#fs + 1] = ("button[%s,%s;2.6,0.6;%s;%s]"):format(n(X), n(HEADER_Y), F.back,
 		esc("◀ Back to recipe"))
-	fs[#fs + 1] = UI.heading(X + 2.8, HEADER_Y + 0.3, "Crafting queue")
+	local growth = UI.text_growth(player)
+	fs[#fs + 1] = UI.heading(X + 2.8, HEADER_Y + 0.3, "Crafting queue", growth)
 	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.8 * UI.text_scale(player))
 	local used = (view.job and 1 or 0) + #view.queue
 	local slots = used .. " of " .. grug_jobs.QUEUE_MAX .. " slots"
@@ -74,7 +75,7 @@ local function build(player, view)
 		fs[#fs + 1] = ("label[%s,%s;%s]label[%s,%s;%s]"):format(n(X + 1.2), n(y + 0.18),
 			esc(clip(text, math.floor((W - 2.1) * CHARS))), n(X + 1.2), n(y + 0.43),
 			esc(core.colorize(DIM, area_of(job))))
-		fs[#fs + 1] = UI.button_style(F.unqueue .. job.id, "danger")
+		fs[#fs + 1] = UI.button_style(F.unqueue .. job.id, "danger", growth)
 		fs[#fs + 1] = ("button[%s,%s;0.45,0.45;%s%s;✕]tooltip[%s%s;%s]"):format(
 			n(X + W - 0.75), n(y + (row_h - 0.45) / 2), F.unqueue, job.id, F.unqueue, job.id,
 			esc("Cancel this job: its ingredients come back."))
@@ -88,8 +89,8 @@ local function build(player, view)
 	-- Keep the textarea unnamed/read-only. A widget color survives soft wraps;
 	-- inline color escapes do not. A refusal colors the whole note block.
 	local note = (st.note and (st.note .. "\n\n") or "") .. QUEUE_NOTE
-	fs[#fs + 1] = ("style_type[textarea;font_size=*0.8;textcolor=%s]textarea[%s,%s;%s,%s;;;%s]" ..
-		"style_type[textarea;textcolor=%s]"):format(st.note and NOTE or DIM,
+	fs[#fs + 1] = ("style_type[textarea;font_size=%s;textcolor=%s]textarea[%s,%s;%s,%s;;;%s]" ..
+		"style_type[textarea;textcolor=%s]"):format(UI.font_size(0.8, growth), st.note and NOTE or DIM,
 		n(X), n(y + 0.1), n(W), n(math.max(0.5, view.bottom - y - 0.1)), esc(note), UI.colors.text)
 	return table.concat(fs)
 end

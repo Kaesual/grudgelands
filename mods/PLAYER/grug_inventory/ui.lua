@@ -14,8 +14,9 @@ UI.frame_w, UI.frame_h = 20, 13.5
 
 -- Shared selection treatment for page-local buttons: the selected role
 -- uses the toolkit's brass-accent texture; other buttons use its normal role.
-function grug_inventory.selected_button_style(fieldname, selected)
-	return grug_core.ui.button_style(fieldname, selected and "selected" or "normal")
+-- `scale`: the text scale (grug_core.ui.text_growth), default 1.
+function grug_inventory.selected_button_style(fieldname, selected, scale)
+	return grug_core.ui.button_style(fieldname, selected and "selected" or "normal", scale)
 end
 
 function grug_inventory.wrap_text(value, width)
@@ -171,9 +172,10 @@ grug_inventory.VIEW_GEOMETRY = {x = LAYOUT.x, width = VIEW_W,
 	hotbar_y = LAYOUT.hotbar_y, top = LAYOUT.short_y}
 
 -- A boxed area's background and its label, top left above the slots.
-function grug_inventory.area_box(x, y, w, h, label, label_h)
+-- `scale`: the label's text scale (grug_core.ui.text_growth), default 1.
+function grug_inventory.area_box(x, y, w, h, label, label_h, scale)
 	return grug_core.ui.panel(x, y, w, h) ..
-		grug_core.ui.heading(x + LAYOUT.pad, y + (label_h or LAYOUT.label_h) / 2, string.upper(label))
+		grug_core.ui.heading(x + LAYOUT.pad, y + (label_h or LAYOUT.label_h) / 2, string.upper(label), scale)
 end
 
 -- The scroll area's list[] elements and its row count. main[9..] and the
@@ -226,18 +228,19 @@ local SWITCH_GAP, SWITCH_W, SWITCH_H = 0.08, 0.45, 0.47
 
 -- Match page-local buttons: selected for the shown layout, normal for the
 -- other layout. Both sit on the same shared panel as the native slots.
-local function switch_style(field, shown)
-	return grug_core.ui.button_style(field, shown and "selected" or "normal")
+local function switch_style(field, shown, scale)
+	return grug_core.ui.button_style(field, shown and "selected" or "normal", scale)
 end
 
 -- The two buttons in real coordinates, `w` x `h` each: "A" at (x, y), "B"
 -- `dx`, `dy` further.
 function grug_inventory.hotbar_switch(player, x, y, w, h, dx, dy)
 	local shown = grug_inventory.active_hotbar(player)
+	local growth = grug_core.ui.text_growth(player)
 	local fs = {}
 	for index, layout in ipairs({"A", "B"}) do
 		local field = grug_inventory.HOTBAR_FIELDS[layout]
-		fs[#fs + 1] = switch_style(field, layout == shown)
+		fs[#fs + 1] = switch_style(field, layout == shown, growth)
 		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.3f;%s;%s]tooltip[%s;%s]"):format(
 			x + (index - 1) * dx, y + (index - 1) * dy, w, h, field, layout, field,
 			layout == shown and "Hotbar " .. layout .. " is shown" or
@@ -275,10 +278,11 @@ function grug_inventory.inventory_view(player, mode, context, top, visible_rows)
 	local scrollbar_x = view_x + SCROLLBAR_DX
 	local field = grug_inventory.SCROLL_FIELDS[mode]
 	-- The two boxes, drawn first so the lists lie on them.
+	local growth = grug_core.ui.text_growth(player)
 	local fs = {"real_coordinates[true]",
-		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory", label_h),
+		grug_inventory.area_box(box_x, box_y, LAYOUT.box_w, box_h, "Inventory", label_h, growth),
 		grug_inventory.area_box(hotbar_box_x, hotbar_box_y, LAYOUT.box_w,
-			LAYOUT.slot_box_h, "Active hotbar"),
+			LAYOUT.slot_box_h, "Active hotbar", nil, growth),
 	}
 
 	local max = grug_inventory.view_scroll_max(rows, visible)
@@ -406,12 +410,12 @@ end
 
 -- A labelled box across the form's top holding `inner_h` of content below
 -- its label (slot rows start at STATION.y); returns the box and its bottom
--- edge.
-function grug_inventory.station_box(label, inner_h)
+-- edge. `scale`: the label's text scale (grug_core.ui.text_growth).
+function grug_inventory.station_box(label, inner_h, scale)
 	local station = grug_inventory.STATION
 	local h = LAYOUT.label_h + inner_h + LAYOUT.pad
 	return grug_inventory.area_box(station.box_x, station.margin,
-		station.box_w, h, label), station.margin + h
+		station.box_w, h, label, nil, scale), station.margin + h
 end
 
 -- The whole station form: the header, `content` (real coordinates, ending

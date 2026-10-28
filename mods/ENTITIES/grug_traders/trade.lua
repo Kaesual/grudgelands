@@ -221,8 +221,8 @@ end
 --
 
 local function header(parts, player, session, vendor, discount)
-	parts[#parts + 1] = grug_core.ui.title(0.5, 0.6, vendor.nametag) ..
-		"style_type[label;font_size=*0.85]"
+	parts[#parts + 1] = grug_core.ui.title(0.5, 0.6, vendor.nametag, parts.growth, parts.growth) ..
+		"style_type[label;font_size=" .. grug_core.ui.font_size(0.85, parts.growth) .. "]"
 	parts[#parts + 1] = "label[0.5,1.2;Your money: " ..
 		esc(grug_money.format(grug_money.get(player))) .. "]"
 	if discount then
@@ -237,7 +237,7 @@ local function header(parts, player, session, vendor, discount)
 		local name = mode[1] == "repair" and "repair" or "mode_" .. mode[1]
 		local x = FORM_W - 0.5 - (#modes - index + 1) * 1.85
 		parts[#parts + 1] = grug_core.ui.navigation_style(name,
-			session.mode == mode[1], x, 0.3, 1.75, 0.65)
+			session.mode == mode[1], x, 0.3, 1.75, 0.65, false, parts.growth)
 		parts[#parts + 1] = ("button[%.2f,0.3;1.75,0.65;%s;%s]"):format(x, name, mode[2])
 	end
 end
@@ -344,7 +344,7 @@ local function render_buy(parts, player, session, vendor, discount)
 	for i, tab in ipairs(tabs) do
 		local x = 0.5 + (i - 1) * 1.75
 		parts[#parts + 1] = grug_core.ui.navigation_style("tab_" .. tab.id,
-			session.tab == tab.id, x, 1.9, 1.65, 0.7)
+			session.tab == tab.id, x, 1.9, 1.65, 0.7, false, parts.growth)
 		parts[#parts + 1] = ("button[%.2f,1.9;1.65,0.7;tab_%s;%s]"):format(
 			x, tab.id, esc(tab.label))
 	end
@@ -357,7 +357,7 @@ local function render_buy(parts, player, session, vendor, discount)
 	for i, entry in ipairs(offer) do
 		local x, y = 0, (i - 1) * 0.85
 		parts[#parts + 1] = ("item_image[%.2f,%.2f;0.55,0.55;%s]"):format(x + 0.12, y + 0.1, entry.item)
-		parts[#parts + 1] = grug_core.ui.prose(x + 0.85, y + 0.12, 8.1, 0.5, short_desc(entry.item))
+		parts[#parts + 1] = grug_core.ui.prose(x + 0.85, y + 0.12, 8.1, 0.5, short_desc(entry.item), false, parts.growth)
 		local price_text = grug_money.format(entry.price)
 		local tip = full_desc(entry.item) .. "\nPrice: " .. price_text
 		if entry.base ~= entry.price then
@@ -514,8 +514,9 @@ end
 
 local function build(player, session, vendor, status)
 	-- The body is rendered FIRST because the buy grid decides the window
-	-- height; size[] is prepended afterwards.
-	local body = {}
+	-- height; size[] is prepended afterwards. Its text grows as the base
+	-- height's form does (grug_core.ui.text_growth).
+	local body = {growth = grug_core.ui.text_growth(player, FORM_W, FORM_H)}
 	-- Once per render, for the header label AND every offer row (see
 	-- current_offer).
 	local discount = grug_traders.has_discount(player, vendor)

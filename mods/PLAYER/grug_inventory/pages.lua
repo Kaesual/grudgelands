@@ -211,9 +211,10 @@ local function gear_content(player, context)
 	local inv = player:get_inventory()
 	local class_id = grug_classes.get_class(player)
 	local route = ("listring[current_player;%s]"):format(grug_inventory.SHIFT_LIST)
+	local growth = grug_core.ui.text_growth(player)
 	local fs = {
 		grug_core.ui.panel(GEAR_BOX.x, GEAR_BOX.y, GEAR_BOX.w, GEAR_BOX.h),
-		grug_core.ui.heading(0.5, 0.6, "Equipment"),
+		grug_core.ui.heading(0.5, 0.6, "Equipment", growth),
 	}
 	local mesh, textures = preview_model(player)
 	fs[#fs + 1] = ("model[%.2f,%.2f;%.2f,%.2f;grug_preview;%s;%s;%s]"):format(
@@ -233,8 +234,9 @@ local function gear_content(player, context)
 			fs[#fs + 1] = ("list[current_player;%s;%.2f,%.2f;1,1;]"):format(
 				slot.list, pos[1], pos[2])
 			local name = grug_inventory.slot_label(class_id, slot.list) or slot.label
-			fs[#fs + 1] = ("style_type[label;font_size=*0.75]label[%.2f,%.2f;%s]" ..
-				"style_type[label;font_size=]"):format(pos[1], pos[2] + 1.16, esc(name == "Caster offhand" and "Offhand" or name))
+			fs[#fs + 1] = ("style_type[label;font_size=%s]label[%.2f,%.2f;%s]" ..
+				"style_type[label;font_size=%s]"):format(grug_core.ui.font_size(0.75, growth), pos[1], pos[2] + 1.16,
+				esc(name == "Caster offhand" and "Offhand" or name), grug_core.ui.font_size(nil, growth))
 			-- The area tooltip repeats the slot's name over the cell. It shows
 			-- on EMPTY slots only, which is what we want — a slot with an item in
 			-- it should describe the item: guiFormSpecMenu.cpp:3672-3682 runs the
@@ -403,7 +405,8 @@ local function effects_content(player, context)
 		return ("textarea[%.2f,1.45;9.0,1.7;;;%s]"):format(EFFECT_X, esc("No active effects. " ..
 			"Food, elixirs, skills, talents and hostile attacks show up here."))
 	end
-	local fs = {"style_type[label;font_size=*0.85]"}
+	local growth = grug_core.ui.text_growth(player)
+	local fs = {"style_type[label;font_size=" .. grug_core.ui.font_size(0.85, growth) .. "]"}
 	-- A full box keeps its last row for the "more" line.
 	local shown = #effects > EFFECT_ROWS and EFFECT_ROWS - 1 or #effects
 	for index = 1, shown do
@@ -432,7 +435,7 @@ local function effects_content(player, context)
 			EFFECT_Y + shown * EFFECT_STEP + 0.4,
 			esc(("... and %d more"):format(#effects - shown)))
 	end
-	fs[#fs + 1] = "style_type[label;font_size=]"
+	fs[#fs + 1] = "style_type[label;font_size=" .. grug_core.ui.font_size(nil, growth) .. "]"
 	return table.concat(fs)
 end
 
@@ -573,6 +576,7 @@ local function inventory_content(player)
 	local bags_x, belt_x = bags_box_x + layout.pad, belt_box_x + layout.pad
 	local slot_y = layout.top_y + layout.label_h
 	local belt_y = slot_y + layout.slot_box_h + layout.gap
+	local growth = grug_core.ui.text_growth(player)
 	local fs = {
 		"real_coordinates[true]",
 		-- An invisible button with no action takes the focus at every send
@@ -581,9 +585,9 @@ local function inventory_content(player)
 		-- unforced, it would not apply when the inventory key opens the window.
 		"set_focus[grug_inv_focus;true]button[0,0;0,0;grug_inv_focus;]",
 		grug_inventory.area_box(bags_box_x, layout.top_y, half_w, layout.slot_box_h,
-			"Bags"),
+			"Bags", nil, growth),
 		grug_inventory.area_box(belt_box_x, layout.top_y + layout.slot_box_h + layout.gap, half_w, layout.slot_box_h,
-			"Potion belt"),
+			"Potion belt", nil, growth),
 	}
 	for i = 1, grug_inventory.BAG_COUNT do
 		fs[#fs + 1] = ("list[current_player;%s;%.3f,%.3f;1,1;]"):format(
@@ -601,7 +605,7 @@ local function inventory_content(player)
 	-- the inventory heading on the left.
 	local row_y, x = layout.money_y, layout.side_x + layout.pad
 	fs[#fs + 1] = grug_inventory.area_box(layout.side_x, row_y,
-		layout.side_w, layout.money_h, "Money")
+		layout.side_w, layout.money_h, "Money", nil, growth)
 	fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, row_y + 0.85,
 		esc(grug_money.format(grug_money.get(player))))
 	fs[#fs + 1] = ("button[%.3f,%.3f;2.5,0.65;grug_money_withdraw;Withdraw]"):format(x, row_y + 1.35)

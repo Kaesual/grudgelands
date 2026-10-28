@@ -61,9 +61,11 @@ function grug_jobs.professions_formspec(rows, area, player)
 	local last_y = area.y + area.h - 0.25
 	local fs = {}
 	local font_scale = player and UI.text_scale(player) or 1
+	local growth = UI.text_growth(player)
 	local function line(y, text)
 		fs[#fs + 1] = ("style_type[label;font_size=*%.3f]label[%.2f,%.2f;%s]" ..
-			"style_type[label;font_size=*1]"):format(0.8 * font_scale, area.x, y, esc(text))
+			"style_type[label;font_size=%s]"):format(0.8 * font_scale, area.x, y, esc(text),
+			UI.font_size(1, growth))
 	end
 	-- One label per wrapped line; returns the y below the last one.
 	local function lines(y, text, color)
@@ -104,7 +106,7 @@ function grug_jobs.professions_formspec(rows, area, player)
 			lines(y, "More on the area tabs above.")
 			return table.concat(fs)
 		end
-		fs[#fs + 1] = UI.heading(area.x, y, ("%s — Tier %d"):format(row.name, row.tier))
+		fs[#fs + 1] = UI.heading(area.x, y, ("%s — Tier %d"):format(row.name, row.tier), growth)
 		y = lines(y + LINE_STEP, progress)
 		if note then y = lines(y, note, NOTE_COLOR) end
 		y = y + ROW_GAP
