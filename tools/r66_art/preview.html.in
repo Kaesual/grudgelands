@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hammer and inclined book · Round 66 pass 3 · Grudgelands</title>
+<title>Hardcover tomes · Round 66 pass 4 · Grudgelands</title>
 <style>
 :root { color-scheme: dark; --bg:#101a24; --panel:#192631; --ink:#f5efdf; --muted:#b4c1ca; --gold:#e8ca89; --line:#34424d; }
 * { box-sizing:border-box; }
@@ -37,6 +37,11 @@ p { margin:8px 0 14px; }
 .candidate { min-width:0; background:var(--panel); border:1px solid var(--line); padding:20px; }
 .candidate-head { display:flex; align-items:center; gap:16px; min-height:166px; margin-bottom:16px; }
 .candidate-head p { font-size:13px; color:var(--muted); }
+.picked .candidate-head { min-height:100px; margin-bottom:0; }
+.picked .hero-sprite { height:104px; width:104px; }
+.picked .hero-sprite img { width:96px; height:96px; }
+.picked-views summary { cursor:pointer; color:var(--gold); font-size:13px; padding:10px 0 4px; }
+.picked-views .views { max-width:820px; margin:18px auto 0; }
 .candidate-head .eyebrow { color:var(--gold); font-size:11px; }
 .hero-sprite { flex:none; width:128px; height:144px; display:grid; place-items:center; }
 .table-head, .surface-row { display:grid; grid-template-columns:46px 1fr 1fr; gap:6px; }
@@ -84,14 +89,14 @@ code { color:var(--ink); font-size:.92em; }
 </style>
 </head>
 <body><main>
-<nav><strong>Grudgelands / Art study 66 / Pass 3</strong><div><a href="#hammers">Hammers</a><a href="#books">Inclined books</a><a href="#scale">In context</a></div></nav>
+<nav><strong>Grudgelands / Art study 66 / Pass 4</strong><div><a href="#hammer">Picked hammer</a><a href="#books">Hardcover tomes</a><a href="#scale">In context</a></div></nav>
 <div class="intro">
-<div><p class="eyebrow">Priest · Smite / Final Word / Censure</p><h1>Weight &amp; light.</h1><p class="intro-copy">Two shaped hammer heads descend beneath straight grips. Two broad, quiet books lean away from the viewer, their open pages tapering toward the far edge.</p></div>
-<aside class="recommendation"><p class="eyebrow">Artist's recommendation · Hammer C + Book E</p><h2>A crowned head. A calm spread.</h2><p>C's flared faces give the small hammer a strong outline, while E keeps enough page depth to read clearly at 16 px. D offers an asymmetric beaked head; F leans farther back. Both choices remain open.</p><div class="pair"><a href="#smite_hammer_c"><img src="smite_hammer_c.png" width="64" height="64" alt="Recommended hammer C">Hammer C</a><a href="#censure_book_e"><img src="censure_book_e.png" width="64" height="64" alt="Recommended book E">Book E</a></div></aside>
+<div><p class="eyebrow">Priest · Smite / Final Word / Censure</p><h1>Weight &amp; light.</h1><p class="intro-copy">Two thick hardcover tomes keep the chosen backward tilt: broad open pages, solid boards and a straight spine. Hammer C is picked for Smite and Final Word.</p></div>
+<aside class="recommendation"><p class="eyebrow">Hammer C picked · Book G recommended</p><h2>A firm spine. Substantial boards.</h2><p>G's square gold boards give the open tome a clear, solid base. H offers a deeper page block and slimmer, clipped boards. Both keep the same reclined pose and blank pages; the book choice is open.</p><div class="pair"><a href="#smite_hammer_c"><img src="smite_hammer_c.png" width="64" height="64" alt="Picked hammer C">Hammer C</a><a href="#censure_book_g"><img src="censure_book_g.png" width="64" height="64" alt="Recommended book G">Book G</a></div></aside>
 </div>
-<div class="notes"><strong>Read at 100% browser zoom.</strong> Each ground is shown in plain alpha and additive light, at actual 16, 32 and 64 CSS px. White, ivory and pale gold; bright edges, transparent gaps, a tight light halo. All four textures are 64 × 64 RGBA.<br><strong>Bright-ground limit:</strong> additive light cannot darken snow. Near-white ground washes out the interior tones; the tests below deliberately show that loss. These are browser approximations, with no game tint applied.<span class="blend-fallback">This browser uses screen blending as the fallback; it does not support plus-lighter.</span></div>
-<section id="hammers"><div class="section-head"><h2>01 / Hammers with character</h2><p>Side view · Head down · Smite small · Final Word large</p></div><div class="candidates">@@HAMMERS@@</div></section>
-<section id="books"><div class="section-head"><h2>02 / Censure's inclined book</h2><p>Front view · Top edge recedes · Symmetric spread · No lettering</p></div><div class="candidates">@@BOOKS@@</div></section>
-<section id="scale"><div class="section-head"><h2>03 / Beside a figure</h2><p>Static size study · Additive light</p></div><p class="intro-copy">One node is 64 CSS px. Each figure is one node wide and two tall. The three sprite squares use the planned particle sizes 5 / 12 / 16; transparent margins make the visible objects smaller.</p><div class="contexts">@@CONTEXT@@</div><p class="notes">Scale follows the existing effect catalogue preview: one size unit = 0.1 node. These are stills, not a timing or impact simulation. The existing rings and Final Word's column will be combined with the picked symbols by the FX lane; desktop and web acceptance follows in game.</p></section>
-<footer><p><strong>Why 64 px?</strong> Both symbols keep simple shapes for the 16 px view; 64 px gives the larger falls smooth edges and room for the shaped heads, open pages and central fold.</p><p>Original geometry drawn for Grudgelands by GPT-6 Astra. Candidate art: CC0-1.0. Generated locally with Python, Pillow and numpy. No external assets or requests. <a href="contact-sheet.png">Open the contact sheet</a>.</p></footer>
+<div class="notes"><strong>Read at 100% browser zoom.</strong> Each ground is shown in plain alpha and additive light, at actual 16, 32 and 64 CSS px. White, ivory and pale gold; bright edges, transparent gaps, a tight light halo. All three textures are 64 × 64 RGBA.<br><strong>Bright-ground limit:</strong> additive light cannot darken snow. Near-white ground washes out the interior tones; the tests below deliberately show that loss. These are browser approximations, with no game tint applied.<span class="blend-fallback">This browser uses screen blending as the fallback; it does not support plus-lighter.</span></div>
+<section id="hammer"><div class="section-head"><h2>01 / Hammer C · Picked</h2><p>Unchanged art · Smite size 7 · Final Word size 12</p></div>@@HAMMERS@@</section>
+<section id="books"><div class="section-head"><h2>02 / Censure's hardcover tome</h2><p>Reclined front view · Rigid boards · Straight spine · No lettering</p></div><div class="candidates">@@BOOKS@@</div></section>
+<section id="scale"><div class="section-head"><h2>03 / Beside a figure</h2><p>Static size study · Additive light</p></div><p class="intro-copy">One node is 64 CSS px. Each figure is one node wide and two tall. The three sprite squares use the particle sizes 7 / 12 / 16; transparent margins make the visible objects smaller.</p><div class="contexts">@@CONTEXT@@</div><p class="notes">Scale follows the existing effect catalogue preview: one size unit = 0.1 node. These are stills, not a timing or impact simulation. The existing rings and Final Word's column will be combined with the picked symbols by the FX lane; desktop and web acceptance follows in game.</p></section>
+<footer><p><strong>Why 64 px?</strong> Both symbols keep simple shapes for the 16 px view; 64 px gives the larger falls smooth edges and room for the shaped head, rigid covers and thick page blocks.</p><p>Original geometry drawn for Grudgelands by GPT-6 Astra. Candidate art: CC0-1.0. Generated locally with Python, Pillow and numpy. No external assets or requests. <a href="contact-sheet.png">Open the contact sheet</a>.</p></footer>
 </main></body></html>

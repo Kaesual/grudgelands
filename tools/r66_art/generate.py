@@ -29,11 +29,11 @@ SURFACES = (
 )
 CANDIDATES = (
     ("smite_hammer_c", "Hammer C", "Crowned mallet", "Flared striking faces, a diamond seal and a ringed grip give the broad descending head a ceremonial weight."),
-    ("smite_hammer_d", "Hammer D", "Beaked war hammer", "A broad chamfered face balances a tapered ivory beak beneath a wrapped grip and a faceted pommel."),
-    ("censure_book_e", "Book E", "Inclined folio", "The broad, quiet spread leans gently away, with a narrower far edge and a clear central fold."),
-    ("censure_book_f", "Book F", "Reclining folio", "A stronger backward tilt shortens the pages and draws the far edge inward, like an open book resting on a low lectern."),
+    ("censure_book_g", "Book G", "Gilded boards", "Thick, square gold boards hold a broad ivory page block around a straight, firm central spine."),
+    ("censure_book_h", "Book H", "Deep folio", "A deeper page block rests on slimmer gold boards, with clipped outer corners and the same straight spine."),
 )
-RECOMMENDED = ('smite_hammer_c', 'censure_book_e')
+PICKED = 'smite_hammer_c'
+RECOMMENDED = 'censure_book_g'
 
 
 class Drawing:
@@ -92,30 +92,6 @@ def hammer_c():
     return d.finish()
 
 
-def hammer_d():
-    d = Drawing()
-    d.polygon([(29, 10), (35, 10), (35, 38), (29, 38)], IVORY)
-    d.polygon([(29, 5), (35, 5), (38, 8), (36, 13), (28, 13), (26, 8)], GOLD)
-    d.polygon([(29, 6), (35, 6), (36, 8), (34, 11), (30, 11), (28, 8)], WHITE)
-    for y in (16, 22, 28):
-        d.polygon([(29, y), (35, y+2), (35, y+4), (29, y+2)], GOLD)
-    d.line([(30, 14), (30, 33)], WHITE, 1)
-    d.polygon([(27, 33), (37, 33), (37, 37), (27, 37)], WHITE)
-    # One broad striking face opposed by a short tapered counter-peen.
-    d.polygon([(9, 35), (13, 31), (20, 31), (23, 36), (38, 36),
-               (47, 39), (55, 46), (55, 49), (45, 46), (38, 48),
-               (23, 49), (20, 55), (13, 55), (9, 51)], GOLD)
-    d.polygon([(20, 36), (24, 38), (37, 38), (43, 41), (44, 45),
-               (37, 46), (23, 47), (20, 50)], IVORY)
-    d.polygon([(10, 36), (14, 33), (17, 33), (17, 53), (14, 53), (10, 50)], WHITE)
-    d.polygon([(37, 37), (46, 40), (54, 47), (45, 44), (38, 46)], WHITE)
-    d.line([(23, 37), (36, 37)], WHITE, 1.5)
-    d.line([(23, 48), (37, 47)], WHITE, 1)
-    d.polygon([(29, 38), (34, 38), (34, 47), (29, 47)], GOLD)
-    d.line([(30, 39), (30, 46)], WHITE, 1)
-    return d.finish()
-
-
 def finish_book(d):
     """Mirror authored left-page geometry about the exact centre of the sprite."""
     half = d.image.crop((0, 0, SIZE*SCALE//2, SIZE*SCALE))
@@ -123,39 +99,75 @@ def finish_book(d):
     return d.finish()
 
 
-def tilted_book(far_scale, far_y, near_y):
-    """Project the calm open folio onto a plane leaning away from the viewer.
+def hardcover_book(page_depth, board_depth, clipped):
+    """Extrude the spread and rigid boards in the chosen reclining projection.
 
-    Far-edge scale controls perspective convergence; the reduced vertical
-    extent gives foreshortening. Keep the same blank leaves and shallow fold.
+    The page plane keeps the previous chosen tilt: far scale 0.56, far y 25,
+    near y 48. Every long edge is straight. The centre is a parallel strip,
+    with no curved lip or flared toe at the bottom of the spine.
     """
     d = Drawing()
 
-    def project(points):
+    def project(points, drop=0):
         out = []
         for x, y in points:
             t = (y-15)/37
-            scale = far_scale / (1-(1-far_scale)*t)
-            out.append((32+(x-32)*scale, far_y+(near_y-far_y)*t*scale))
+            scale = 0.56 / (1-0.44*t)
+            out.append((32+(x-32)*scale, 25+23*t*scale+drop))
         return out
 
-    # The two cover halves join below the transparent central gutter.
-    d.polygon(project([(7, 16), (20, 16), (30, 20), (30, 48),
-                       (32, 50), (32, 52), (20, 48), (7, 48)]), GOLD)
-    d.polygon(project([(9, 15), (20, 15), (30, 19), (30, 47),
-                       (20, 44), (9, 44)]), IVORY)
-    d.line(project([(10, 16), (20, 16), (28.5, 19.5)]), WHITE, 1)
-    d.line(project([(10, 17), (10, 43)]), WHITE, 1.25)
-    d.line(project([(10, 46), (20, 46), (29, 49)]), WHITE, 1)
+    def shifted(points, dy):
+        return [(x, y+dy) for x, y in points]
+
+    # Straight quadrilateral leaves; a slight dip toward the central hinge
+    # makes two open halves, without the earlier bent lower page contour.
+    page = project([(9, 15), (29.5, 19), (29.5, 47), (9, 44)])
+    top_outer, top_inner, near_inner, near_outer = page
+    if clipped:
+        board = project([(6, 14), (30.5, 18), (30.5, 50),
+                         (7.5, 47), (6, 45.5)], page_depth)
+    else:
+        board = project([(5.5, 13), (30.5, 18), (30.5, 50), (5.5, 47)], page_depth)
+
+    # A real slab: gold board top plus its parallel lower edge. Opacity
+    # separates volumes in additive light; all source RGB stays luminous.
+    d.polygon(shifted(board, board_depth), (*GOLD[:3], 190))
+    d.polygon(board, GOLD)
+    near_edge = board[2:]
+    d.polygon(near_edge + list(reversed(shifted(near_edge, board_depth))),
+              (*GOLD[:3], 190))
+    d.line(shifted(near_edge, board_depth), IVORY, 0.8)
+
+    # Page block: outer side and near cut face share the same extrusion.
+    d.polygon(shifted(page, page_depth), IVORY)
+    d.polygon([top_outer, near_outer, *reversed(shifted([top_outer, near_outer], page_depth))],
+              (*IVORY[:3], 210))
+    d.polygon([near_outer, near_inner, *reversed(shifted([near_outer, near_inner], page_depth))],
+              (*IVORY[:3], 215))
+    # Two broad leaf divisions on the cut face, never markings on the page.
+    for fraction in (0.38, 0.73):
+        d.line(shifted([near_outer, near_inner], page_depth*fraction), WHITE, 0.55)
+    d.polygon(page, IVORY)
+    d.line([top_outer, top_inner], WHITE, 0.85)
+    d.line([top_outer, near_outer], WHITE, 1)
+    d.line([near_outer, near_inner], WHITE, 1)
+
+    # Keep a constant-width central spine: straight from head to foot, not
+    # a projected wedge. Narrow translucent hinge channels flank its core.
+    head = top_inner[1]
+    foot = near_inner[1] + page_depth + board_depth
+    d.polygon([(30.5, head), (32, head), (32, foot), (30.5, foot)],
+              (*GOLD[:3], 95))
+    d.polygon([(31.5, head), (32, head), (32, foot), (31.5, foot)], WHITE)
     return finish_book(d)
 
 
-def book_e():
-    return tilted_book(far_scale=0.74, far_y=19, near_y=50)
+def book_g():
+    return hardcover_book(page_depth=4, board_depth=2.5, clipped=False)
 
 
-def book_f():
-    return tilted_book(far_scale=0.56, far_y=25, near_y=48)
+def book_h():
+    return hardcover_book(page_depth=6, board_depth=1.25, clipped=True)
 
 
 def png_bytes(im):
@@ -174,19 +186,21 @@ def samples(name, blend):
         '<div class="sample">'+img(name, s)+f'<span>{s} px</span></div>' for s in (16, 32, 64)) + '</div>'
 
 
-def card(candidate):
+def card(candidate, compact=False):
     name, label, title, idea = candidate
-    badge = ' · Recommended' if name in RECOMMENDED else ''
+    badge = ' · Picked' if name == PICKED else ' · Recommended' if name == RECOMMENDED else ''
     rows = ''.join(f'<div class="surface-row"><div class="surface-label">{label_bg}</div>'
                    f'<div class="surface {key}">{samples(name, "plain")}</div>'
                    f'<div class="surface {key}">{samples(name, "add")}</div></div>'
                    for key, label_bg, _ in SURFACES)
-    return f"""<article class="candidate" id="{name}">
+    views = '<div class="views"><div class="table-head"><span>Ground</span><span>Plain alpha</span><span>Additive light</span></div>'+rows+'</div>'
+    if compact:
+        views = '<details class="picked-views"><summary>Compare on five grounds · 16 / 32 / 64 px</summary>'+views+'</details>'
+    return f"""<article class="candidate{' picked' if compact else ''}" id="{name}">
     <header class="candidate-head"><div class="hero-sprite add">{img(name, 128)}</div>
     <div><p class="eyebrow">{label}{badge}</p>
     <h3>{title}</h3><p>{idea}</p></div></header>
-    <div class="views"><div class="table-head"><span>Ground</span><span>Plain alpha</span><span>Additive light</span></div>
-    {rows}</div></article>"""
+    {views}</article>"""
 
 
 def figure():
@@ -198,7 +212,7 @@ def context(hammer, book):
     # tools/r52_pfx/template.html uses the same conversion. One node = 64 CSS px.
     cells = []
     for title, name, units, note in (
-        ('Smite', f'smite_hammer_{hammer}', 5, '3.2 m fall · about 0.15 s'),
+        ('Smite', f'smite_hammer_{hammer}', 7, '3.2 m fall · about 0.15 s'),
         ('Final Word', f'smite_hammer_{hammer}', 12, 'Same hammer · white column'),
         ('Censure', f'censure_book_{book}', 16, '6 m fall · 0.75 s warning'),
     ):
@@ -208,39 +222,55 @@ def context(hammer, book):
                      f'<div class="scene"><div class="symbol add">{sprite}</div>{figure()}'
                      '<div class="ruler">1 node</div></div>'
                      f'<p class="size-note">Size {units} · sprite square {units/10:g} nodes</p></div>')
-    badge = ' · recommended pair' if (hammer, book) == ('c', 'e') else ''
+    badge = ' · recommended pair' if (hammer, book) == ('c', 'g') else ''
     return f'<article class="context-card"><h3>Hammer {hammer.upper()} + Book {book.upper()}{badge}</h3><div class="scale-strip">'+''.join(cells)+'</div></article>'
+
+
+def add_strip(sheet, image, x, y):
+    icon = np.asarray(image).astype(np.float64)
+    for j, (_, _, colour) in enumerate(SURFACES):
+        bg = np.array(tuple(bytes.fromhex(colour[1:])), dtype=np.float64)
+        rgb = np.rint(np.minimum(255, bg + icon[:, :, :3]*icon[:, :, 3:4]/255)).astype(np.uint8)
+        sheet.paste(Image.fromarray(rgb), (x+j*102, y))
 
 
 def overview(images):
     """A static contact sheet for inspection without a browser."""
-    sheet = Image.new("RGB", (1120, 750), '#111a24')
+    sheet = Image.new("RGB", (1120, 640), '#111a24')
     draw = ImageDraw.Draw(sheet)
     font = ImageFont.load_default(size=18)
     small = ImageFont.load_default(size=13)
-    draw.text((28, 22), 'ROUND 66 / PASS 3     Recommended: Hammer C + Book E', font=font, fill='#f8ead1')
-    for i, (name, label, title, _) in enumerate(CANDIDATES):
-        x, y = 24 + (i % 2)*552, 66 + (i//2)*338
+    draw.text((28, 22), 'ROUND 66 / PASS 4     Hammer C picked / Book G recommended', font=font, fill='#f8ead1')
+    name, label, title, _ = CANDIDATES[0]
+    draw.rectangle((24, 66, 1104, 266), fill='#1e2a36')
+    draw.text((40, 78), label+' / '+title+' / PICKED', font=font, fill='#f8ead1')
+    icon = images[name].resize((128, 128), Image.Resampling.NEAREST)
+    sheet.paste(icon, (40, 118), icon)
+    for j, size in enumerate((16, 32, 64)):
+        icon = images[name].resize((size, size), Image.Resampling.LANCZOS)
+        sheet.paste(icon, (232+j*90-size//2, 169-size//2), icon)
+        draw.text((216+j*90, 215), str(size)+' px', font=small, fill='#c1cbd4')
+    draw.text((580, 106), 'ADD / night     cave           snow           sky             sand', font=small, fill='#c1cbd4')
+    add_strip(sheet, images[name], 582, 138)
+    draw.text((580, 224), 'Smite 7 / Final Word 12 / unchanged texture', font=small, fill='#c1cbd4')
+    for i, (name, label, title, _) in enumerate(CANDIDATES[1:]):
+        x, y = 24+i*552, 288
         draw.rectangle((x, y, x+528, y+318), fill='#1e2a36')
-        badge = ' / RECOMMENDED' if name in RECOMMENDED else ''
+        badge = ' / RECOMMENDED' if name == RECOMMENDED else ''
         draw.text((x+16, y+12), label+' / '+title+badge, font=font, fill='#f8ead1')
-        sheet.paste(images[name].resize((160, 160), Image.Resampling.NEAREST), (x+10, y+53),
-                    images[name].resize((160, 160), Image.Resampling.NEAREST))
+        icon = images[name].resize((160, 160), Image.Resampling.NEAREST)
+        sheet.paste(icon, (x+10, y+53), icon)
         for j, size in enumerate((16, 32, 64)):
             icon = images[name].resize((size, size), Image.Resampling.LANCZOS)
             sheet.paste(icon, (x+208+j*90-size//2, y+100-size//2), icon)
             draw.text((x+192+j*90, y+145), str(size)+' px', font=small, fill='#c1cbd4')
         draw.text((x+16, y+220), 'ADD / night     cave           snow           sky             sand', font=small, fill='#c1cbd4')
-        icon = np.asarray(images[name]).astype(np.float64)
-        for j, (_, _, colour) in enumerate(SURFACES):
-            bg = np.array(tuple(bytes.fromhex(colour[1:])), dtype=np.float64)
-            rgb = np.rint(np.minimum(255, bg + icon[:, :, :3]*icon[:, :, 3:4]/255)).astype(np.uint8)
-            sheet.paste(Image.fromarray(rgb), (x+18+j*102, y+242))
+        add_strip(sheet, images[name], x+18, y+242)
     return sheet
 
 
 def build():
-    images = dict(zip((c[0] for c in CANDIDATES), (hammer_c(), hammer_d(), book_e(), book_f())))
+    images = dict(zip((c[0] for c in CANDIDATES), (hammer_c(), book_g(), book_h())))
     outputs = {}
     for name, im in images.items():
         assert im.mode == 'RGBA' and im.size == (64, 64)
@@ -252,9 +282,9 @@ def build():
         outputs[f'candidates/{name}.png'] = data
         outputs[f'preview/{name}.png'] = data
     template = (ROOT / 'preview.html.in').read_text()
-    template = template.replace('@@HAMMERS@@', ''.join(card(c) for c in CANDIDATES[:2]))
-    template = template.replace('@@BOOKS@@', ''.join(card(c) for c in CANDIDATES[2:]))
-    template = template.replace('@@CONTEXT@@', ''.join(context(h, b) for h in ('c', 'd') for b in ('e', 'f')))
+    template = template.replace('@@HAMMERS@@', card(CANDIDATES[0], compact=True))
+    template = template.replace('@@BOOKS@@', ''.join(card(c) for c in CANDIDATES[1:]))
+    template = template.replace('@@CONTEXT@@', ''.join(context('c', b) for b in ('g', 'h')))
     outputs['preview/index.html'] = template.encode()
     outputs['preview/contact-sheet.png'] = png_bytes(overview(images))
     return outputs
@@ -282,7 +312,7 @@ def main():
             path.write_bytes(data)
     if stale:
         raise SystemExit('Stale or missing outputs: '+', '.join(stale))
-    print(('Checked' if args.check else 'Wrote')+f' {len(outputs)} files: four 64x64 RGBA candidates, preview copies, page and contact sheet.')
+    print(('Checked' if args.check else 'Wrote')+f' {len(outputs)} files: three 64x64 RGBA candidates, preview copies, page and contact sheet.')
 
 
 if __name__ == '__main__':
