@@ -328,7 +328,7 @@ tools](#player-meta-read-by-external-tools).
   sorted tokens a Basic recipe names, item names and `group:<name>`,
   space-separated; read once per session, written when it grows; about
   4.7 KB once every ingredient was held). `recipe_known(player, recipe)`
-  (true outside Basic and for the starter outputs `HELD_STARTER`: the
+  (true outside Basic and for the starter outputs `HELD_STARTER`:
   the stick, the four wooden tools and, since Round 66, the fishing rod),
   `scan_held(player[, quiet])` (every
   list; returns the recipes it unlocked and feeds
