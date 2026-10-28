@@ -31,11 +31,12 @@
 - `grug_core_fx_book.png`: 64×64 RGBA book, the particle symbol of the
   priest's Censure (`grug_core/particle_effects.lua`). Original art authored
   as polygon and line geometry by **GPT-6 Astra** for Grudgelands on
-  2026-10-28, no imported assets or reference images; **CC0-1.0**. Source:
-  the Round 66 ART package `tools/r66_art/` (`candidates/censure_book_f.png`,
-  a stand-in until the user's final book pick replaces this file under the
-  same name; generator `generate.py`, GPL-3.0-or-later; provenance in its
-  `LICENSE-media.md`). Modifications: none (copied byte for byte, renamed).
+  2026-10-28, no imported assets (a photo-illustration the user supplied
+  served as orientation only; nothing of it is copied or shipped);
+  **CC0-1.0**. Source: the Round 66 ART package `tools/r66_art/`
+  (`candidates/censure_book_q.png`, the user's pick; generator
+  `generate.py`, GPL-3.0-or-later; provenance in its `LICENSE-media.md`).
+  Modifications: none (copied byte for byte, renamed).
 
 ## Round 26 status icons and frames — CC0
 
