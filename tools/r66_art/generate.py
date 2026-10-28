@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 from io import BytesIO
+from math import cos, pi, sin
 from pathlib import Path
 
 import numpy as np
@@ -29,11 +30,15 @@ SURFACES = (
 )
 CANDIDATES = (
     ("smite_hammer_c", "Hammer C", "Crowned mallet", "Flared striking faces, a diamond seal and a ringed grip give the broad descending head a ceremonial weight."),
-    ("censure_book_g", "Book G", "Gilded boards", "Thick, square gold boards hold a broad ivory page block around a straight, firm central spine."),
-    ("censure_book_h", "Book H", "Deep folio", "A deeper page block rests on slimmer gold boards, with clipped outer corners and the same straight spine."),
+    ("censure_book_i", "Book I", "Gentle arch · blank", "A gentle page dome, a moderate layered block and thin square gold boards keep the spread calm and open."),
+    ("censure_book_j", "Book J", "Gentle arch · written", "I's quiet square-board folio carries four fine curved writing lines on each page, with generous blank margins."),
+    ("censure_book_k", "Book K", "High arch · blank", "Fuller domes rise above a deeper layered page block and slim clipped gold boards, leaving the pages blank."),
+    ("censure_book_l", "Book L", "High arch · written", "K's high page domes carry four restrained lines that bend over each crest, making the curved surface easy to read."),
+    ("censure_book_m", "Book M", "Broad crown · blank", "A broad rounded crown rolls down more steeply at the page edges above a medium-depth block and square boards."),
+    ("censure_book_n", "Book N", "Broad crown · written", "M's broad page crowns carry four softly curved lines, balancing a wide luminous surface with a little writing."),
 )
 PICKED = 'smite_hammer_c'
-RECOMMENDED = 'censure_book_g'
+RECOMMENDED = 'censure_book_l'
 
 
 class Drawing:
@@ -99,12 +104,12 @@ def finish_book(d):
     return d.finish()
 
 
-def hardcover_book(page_depth, board_depth, clipped):
-    """Extrude the spread and rigid boards in the chosen reclining projection.
+def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=False):
+    """Bow the leaves above rigid boards in the chosen reclining projection.
 
-    The page plane keeps the previous chosen tilt: far scale 0.56, far y 25,
-    near y 48. Every long edge is straight. The centre is a parallel strip,
-    with no curved lip or flared toe at the bottom of the spine.
+    Preserve pass 4's projection (far scale 0.56, far y 25, near y 48).
+    Only paper bows: a smooth cross-section rises out of a straight gutter
+    and rolls down to the fore edge. Lower leaves settle onto flat boards.
     """
     d = Drawing()
 
@@ -119,15 +124,35 @@ def hardcover_book(page_depth, board_depth, clipped):
     def shifted(points, dy):
         return [(x, y+dy) for x, y in points]
 
-    # Straight quadrilateral leaves; a slight dip toward the central hinge
-    # makes two open halves, without the earlier bent lower page contour.
-    page = project([(9, 15), (29.5, 19), (29.5, 47), (9, 44)])
-    top_outer, top_inner, near_inner, near_outer = page
+    def arch(u):
+        # The broad crown has rounder shoulders, with the same crest height.
+        return sin(pi*u) * (1 + (0.4*cos(pi*u)**2 if broad else 0))
+
+    def leaf(u, v, layer=0):
+        # u: gutter -> fore edge; v: far -> near; layer: top -> bottom.
+        # The hinge is a constant-width channel, not a perspective wedge.
+        y = (19-4*u)*(1-v) + (47-3*u)*v
+        t = (y-15)/37
+        scale = 0.56 / (1-0.44*t)
+        x = 31.65*(1-u) + (32-23*scale)*u
+        bow = dome*arch(u)*scale*(1-layer)
+        return (x, 25+23*t*scale + page_depth*layer - bow)
+
+    steps = 96
+    across = [i/steps for i in range(steps+1)]
+
+    def cut(layer):
+        return [leaf(u, 1, layer) for u in across]
+
+    far = [leaf(u, 0) for u in across]
+    near = cut(0)
+    top_inner, top_outer = far[0], far[-1]
+    near_inner, near_outer = near[0], near[-1]
     if clipped:
-        board = project([(6, 14), (30.5, 18), (30.5, 50),
+        board = project([(6, 14), (31.75, 18), (31.75, 50),
                          (7.5, 47), (6, 45.5)], page_depth)
     else:
-        board = project([(5.5, 13), (30.5, 18), (30.5, 50), (5.5, 47)], page_depth)
+        board = project([(5.5, 13), (31.75, 18), (31.75, 50), (5.5, 47)], page_depth)
 
     # A real slab: gold board top plus its parallel lower edge. Opacity
     # separates volumes in additive light; all source RGB stays luminous.
@@ -138,36 +163,71 @@ def hardcover_book(page_depth, board_depth, clipped):
               (*GOLD[:3], 190))
     d.line(shifted(near_edge, board_depth), IVORY, 0.8)
 
-    # Page block: outer side and near cut face share the same extrusion.
-    d.polygon(shifted(page, page_depth), IVORY)
-    d.polygon([top_outer, near_outer, *reversed(shifted([top_outer, near_outer], page_depth))],
-              (*IVORY[:3], 210))
-    d.polygon([near_outer, near_inner, *reversed(shifted([near_outer, near_inner], page_depth))],
-              (*IVORY[:3], 215))
-    # Two broad leaf divisions on the cut face, never markings on the page.
-    for fraction in (0.38, 0.73):
-        d.line(shifted([near_outer, near_inner], page_depth*fraction), WHITE, 0.55)
-    d.polygon(page, IVORY)
-    d.line([top_outer, top_inner], WHITE, 0.85)
-    d.line([top_outer, near_outer], WHITE, 1)
-    d.line([near_outer, near_inner], WHITE, 1)
+    # Luminous cut faces. Their reduced opacity preserves paper layering
+    # under additive light without painting any dark outline or shadow.
+    d.polygon([top_outer, near_outer, leaf(1, 1, 1), leaf(1, 0, 1)],
+              (*IVORY[:3], 165))
+    d.polygon(near + list(reversed(cut(1))), (*IVORY[:3], 175))
+    for fraction in (0.18, 0.36, 0.54, 0.72, 0.9):
+        d.line(cut(fraction), (*WHITE[:3], 235), 0.4)
+        d.line([leaf(1, 0, fraction), leaf(1, 1, fraction)],
+               (*WHITE[:3], 225), 0.4)
 
-    # Keep a constant-width central spine: straight from head to foot, not
-    # a projected wedge. Narrow translucent hinge channels flank its core.
-    head = top_inner[1]
-    foot = near_inner[1] + page_depth + board_depth
-    d.polygon([(30.5, head), (32, head), (32, foot), (30.5, foot)],
-              (*GOLD[:3], 95))
-    d.polygon([(31.5, head), (32, head), (32, foot), (31.5, foot)], WHITE)
+    # Page surface with a broad crest highlight, following the dome.
+    # Adjacent ruled strips form one continuous surface.
+    for i in range(steps):
+        u0, u1 = across[i:i+2]
+        u = (u0+u1)/2
+        crest = arch(u)
+        slope = cos(pi*u)
+        tone = (255, round(235+20*crest), round(196+53*crest))
+        alpha = round(212+43*crest-18*max(0, slope))
+        d.polygon([leaf(u0, 0), leaf(u1, 0), leaf(u1, 1), leaf(u0, 1)],
+                  (*tone, alpha))
+    d.line(far, WHITE, 0.6)
+    d.line([top_outer, near_outer], WHITE, 0.65)
+    d.line(near, WHITE, 0.65)
+
+    if writing:
+        # Constant-v strokes lie on the very same curved surface as the page.
+        # Four long marks, no glyphs or tiny dashes. A quiet pale-gold stroke
+        # replaces surface pixels at slightly lower opacity for additive light;
+        # subpixel width lets it blend away when the icon is reduced to 16 px.
+        for v, stop in ((0.25, 0.81), (0.41, 0.77), (0.57, 0.81), (0.73, 0.62)):
+            line = [leaf(0.20+(stop-0.20)*i/48, v) for i in range(49)]
+            d.line(line, (255, 237, 200, 190), 0.45)
+
+    # Less than one source pixel wide; the centre stays straight even as
+    # the page contours curve up on either side. No wide binding band.
+    d.polygon([(31.65, top_inner[1]), (32, top_inner[1]),
+               (32, near_inner[1]+page_depth+board_depth),
+               (31.65, near_inner[1]+page_depth+board_depth)],
+              (*GOLD[:3], 115))
     return finish_book(d)
 
 
-def book_g():
-    return hardcover_book(page_depth=4, board_depth=2.5, clipped=False)
+def book_i():
+    return hardcover_book(page_depth=4.5, board_depth=0.9, dome=5, clipped=False)
 
 
-def book_h():
-    return hardcover_book(page_depth=6, board_depth=1.25, clipped=True)
+def book_j():
+    return hardcover_book(page_depth=4.5, board_depth=0.9, dome=5, clipped=False, writing=True)
+
+
+def book_k():
+    return hardcover_book(page_depth=6, board_depth=1, dome=7.5, clipped=True)
+
+
+def book_l():
+    return hardcover_book(page_depth=6, board_depth=1, dome=7.5, clipped=True, writing=True)
+
+
+def book_m():
+    return hardcover_book(page_depth=5.2, board_depth=0.9, dome=6.2, clipped=False, broad=True)
+
+
+def book_n():
+    return hardcover_book(page_depth=5.2, board_depth=0.9, dome=6.2, clipped=False, broad=True, writing=True)
 
 
 def png_bytes(im):
@@ -222,7 +282,7 @@ def context(hammer, book):
                      f'<div class="scene"><div class="symbol add">{sprite}</div>{figure()}'
                      '<div class="ruler">1 node</div></div>'
                      f'<p class="size-note">Size {units} · sprite square {units/10:g} nodes</p></div>')
-    badge = ' · recommended pair' if (hammer, book) == ('c', 'g') else ''
+    badge = ' · recommended pair' if f'censure_book_{book}' == RECOMMENDED else ''
     return f'<article class="context-card"><h3>Hammer {hammer.upper()} + Book {book.upper()}{badge}</h3><div class="scale-strip">'+''.join(cells)+'</div></article>'
 
 
@@ -236,11 +296,13 @@ def add_strip(sheet, image, x, y):
 
 def overview(images):
     """A static contact sheet for inspection without a browser."""
-    sheet = Image.new("RGB", (1120, 640), '#111a24')
+    book_rows = (len(CANDIDATES[1:])+1)//2
+    sheet = Image.new("RGB", (1120, 304+book_rows*338), '#111a24')
     draw = ImageDraw.Draw(sheet)
     font = ImageFont.load_default(size=18)
     small = ImageFont.load_default(size=13)
-    draw.text((28, 22), 'ROUND 66 / PASS 4     Hammer C picked / Book G recommended', font=font, fill='#f8ead1')
+    recommended_label = next(c[1] for c in CANDIDATES if c[0] == RECOMMENDED)
+    draw.text((28, 22), f'ROUND 66 / PASS 5     Hammer C picked / {recommended_label} recommended', font=font, fill='#f8ead1')
     name, label, title, _ = CANDIDATES[0]
     draw.rectangle((24, 66, 1104, 266), fill='#1e2a36')
     draw.text((40, 78), label+' / '+title+' / PICKED', font=font, fill='#f8ead1')
@@ -254,10 +316,11 @@ def overview(images):
     add_strip(sheet, images[name], 582, 138)
     draw.text((580, 224), 'Smite 7 / Final Word 12 / unchanged texture', font=small, fill='#c1cbd4')
     for i, (name, label, title, _) in enumerate(CANDIDATES[1:]):
-        x, y = 24+i*552, 288
+        x, y = 24+(i % 2)*552, 288+(i//2)*338
         draw.rectangle((x, y, x+528, y+318), fill='#1e2a36')
-        badge = ' / RECOMMENDED' if name == RECOMMENDED else ''
-        draw.text((x+16, y+12), label+' / '+title+badge, font=font, fill='#f8ead1')
+        draw.text((x+16, y+12), label+' / '+title, font=font, fill='#f8ead1')
+        if name == RECOMMENDED:
+            draw.text((x+16, y+35), 'RECOMMENDED', font=small, fill='#e8ca89')
         icon = images[name].resize((160, 160), Image.Resampling.NEAREST)
         sheet.paste(icon, (x+10, y+53), icon)
         for j, size in enumerate((16, 32, 64)):
@@ -270,7 +333,8 @@ def overview(images):
 
 
 def build():
-    images = dict(zip((c[0] for c in CANDIDATES), (hammer_c(), book_g(), book_h())))
+    images = dict(zip((c[0] for c in CANDIDATES),
+                      (hammer_c(), book_i(), book_j(), book_k(), book_l(), book_m(), book_n())))
     outputs = {}
     for name, im in images.items():
         assert im.mode == 'RGBA' and im.size == (64, 64)
@@ -284,7 +348,7 @@ def build():
     template = (ROOT / 'preview.html.in').read_text()
     template = template.replace('@@HAMMERS@@', card(CANDIDATES[0], compact=True))
     template = template.replace('@@BOOKS@@', ''.join(card(c) for c in CANDIDATES[1:]))
-    template = template.replace('@@CONTEXT@@', ''.join(context('c', b) for b in ('g', 'h')))
+    template = template.replace('@@CONTEXT@@', ''.join(context('c', c[0].rsplit('_', 1)[1]) for c in CANDIDATES[1:]))
     outputs['preview/index.html'] = template.encode()
     outputs['preview/contact-sheet.png'] = png_bytes(overview(images))
     return outputs
@@ -312,7 +376,7 @@ def main():
             path.write_bytes(data)
     if stale:
         raise SystemExit('Stale or missing outputs: '+', '.join(stale))
-    print(('Checked' if args.check else 'Wrote')+f' {len(outputs)} files: three 64x64 RGBA candidates, preview copies, page and contact sheet.')
+    print(('Checked' if args.check else 'Wrote')+f' {len(outputs)} files: {len(CANDIDATES)} 64x64 RGBA candidates, preview copies, page and contact sheet.')
 
 
 if __name__ == '__main__':
