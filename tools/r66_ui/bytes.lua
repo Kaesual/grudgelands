@@ -47,11 +47,21 @@ if part == "pages" then
 		detail = "+2% HP/5s", remaining_us = 600000000}}
 	local scout = H.player("scout", "scout", {32, 32, 32, 32})
 	H.put(scout, "grug_weapon", 1, "grug_gear:bow_bronze")
+	-- Since Round 66 EQUIP: a blocked offhand (a Mage's Staff) and the equip
+	-- notice in place of the gear box heading (absent before: same bytes as
+	-- an unblocked page then).
+	local mage = H.player("mage", "mage", {8})
+	H.put(mage, "grug_weapon", 1, "grug_gear:staff_bronze")
 	each_profile(function(tag, info)
-		H.window_info.scout = info
+		H.window_info.scout, H.window_info.mage = info, info
 		for _, mode in ipairs({"stats", "effects", "achievements"}) do
 			line(tag, "character " .. mode, H.page(scout, mode))
 		end
+		line(tag, "character blocked", H.page(mage, "stats"))
+		sfinv.get_or_create_context(mage).grug_equip_notice = {expires = math.huge,
+			text = "Staff is two-handed: take Spellbook out first."}
+		line(tag, "character notice", H.page(mage, "stats"))
+		sfinv.get_or_create_context(mage).grug_equip_notice = nil
 		local context = sfinv.get_or_create_context(scout)
 		context.page = "grug_inventory:inventory"
 		local ok, form = pcall(sfinv.get_formspec, scout, context)
