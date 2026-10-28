@@ -161,6 +161,7 @@ local SECTIONS = {
 		"• A letter or a message to the admin holds up to 4,000 characters. A longer one is not sent: shorten it and send it again.",
 		"• A mailbox holds 50 letters from players; a full one takes no more until its owner deletes some. Letters from the admin and from the people of the realm always arrive.",
 		"• Every letter is deleted 30 days after it arrives, its attachments too: take them out with Take all.",
+		"• The Sent tab keeps a copy of each letter you send to a player, with the postage and the names of its attachments (the items went with the letter). It keeps your last 50 letters for 30 days.",
 		"• The letter icon beside the minimap shows how many letters and announcements you have not read yet. Announcements are letters from the admin to all players.",
 		"",
 		heading("Writing to the admin"),

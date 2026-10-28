@@ -258,7 +258,7 @@ written in `register_on_mods_loaded`, after every clear.
 | `grug_core` `reset_world` | — | the world record itself |
 | `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up or destruction |
 | `grug_parties` `parties`, `grug_repair` `item_serial` | — | not map-bound; the serial is a monotonic counter |
-| `grug_mail` (Round 48): `box:<name>`, `tickets`, `broadcasts`, `factions`, `next_id` | — | not map-bound: letters, attachments, tickets and announcements survive a map reset; `next_id` is a monotonic counter |
+| `grug_mail` (Round 48): `box:<name>`, `sent:<name>` (Round 66), `tickets`, `broadcasts`, `factions`, `next_id` | — | not map-bound: letters, attachments, sent copies, tickets and announcements survive a map reset; `next_id` is a monotonic counter |
 
 The world-folder caches (world layouts, region maps, the world-map tiles and
 zone grid) derive from the seed and the code and stay valid. The settlement

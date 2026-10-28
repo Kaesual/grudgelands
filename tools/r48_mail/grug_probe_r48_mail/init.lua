@@ -121,7 +121,7 @@ local SHOTS = {
 		mail_fields(player, {letters = "CHG:" .. row_of("Time for a mount") .. ":5"})
 	end},
 	{name = "A1_announcements", run = function(player)
-		mail_fields(player, {grug_mail_tab = "2"})
+		mail_fields(player, {grug_mail_tab = "3"})
 		mail_fields(player, {announcements = "CHG:1:5"})
 	end},
 	{name = "W1_write", run = function(player)
@@ -132,7 +132,7 @@ local SHOTS = {
 		session.draft = {to = "Brakka", subject = "Re: Your axe, as promised",
 			body = "Thanks, the axe is great! Here are the ingots back.\n\n" ..
 			"> Here is the bronze axe I owed you."}
-		mail_fields(player, {grug_mail_tab = "3"})
+		mail_fields(player, {grug_mail_tab = "4"})
 	end},
 	{name = "W2_write_refused", run = function(player)
 		mail_fields(player, {mail_to = "Grommash", mail_subject = "Hi", mail_body = "Hello",
@@ -151,7 +151,7 @@ local SHOTS = {
 		local session = grug_mail.session(NAME)
 		session.admin = {topic = 2, subject = "Waystone in Dawnmere does nothing",
 			body = "When I right-click the waystone next to the inn nothing happens."}
-		mail_fields(player, {grug_mail_tab = "4"})
+		mail_fields(player, {grug_mail_tab = "5"})
 		mail_fields(player, {tickets = "CHG:2:1"})
 	end},
 	{name = "T2_admin_too_long", run = function(player)

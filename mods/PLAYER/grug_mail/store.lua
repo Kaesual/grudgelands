@@ -2,6 +2,9 @@
 -- Offline player meta cannot be written (ObjectRef:get_meta needs a live
 -- object), so every mailbox lives here, read and written whole:
 --   box:<name>    one player's mailbox (model.lua)
+--   sent:<name>   one player's sent letters, text copies only (Round 66;
+--                 kept apart from the box, which every inbox access reads
+--                 whole; a missing key is an empty list)
 --   tickets       the admin inbox, every player's messages to the admin
 --   broadcasts    the "All players" letters, stored once
 --   factions      the recipient index: lower-case name -> {name, faction}
@@ -52,6 +55,19 @@ end
 
 function S.save_box(name, box)
 	save("box:" .. name, box)
+end
+
+-- A player's sent copies, newest first, expired ones removed (and the
+-- removal saved).
+function S.sent(name)
+	local sent = load("sent:" .. name) or {}
+	if M.prune(sent, now()) > 0 then S.save_sent(name, sent) end
+	return sent
+end
+
+-- An empty list removes the key.
+function S.save_sent(name, sent)
+	storage:set_string("sent:" .. name, #sent > 0 and core.serialize(sent) or "")
 end
 
 function S.tickets()

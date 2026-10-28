@@ -76,6 +76,18 @@ local function item_list(items)
 	return #names > 0 and table.concat(names, ", ") or "none"
 end
 
+-- The attachments as a reader sees them ("Iron Ingot x12"): the frozen copy
+-- of a report and the sender's sent copy hold these names, never items.
+local function item_names(items)
+	local names = {}
+	for _, item in ipairs(items or {}) do
+		local stack = ItemStack(item)
+		names[#names + 1] = (stack:get_short_description() or stack:get_name()) ..
+			(stack:get_count() > 1 and (" x" .. stack:get_count()) or "")
+	end
+	return names
+end
+
 -- A typed recipient of player mail (§3.8): a created character of the
 -- sender's faction, never the sender. Other faction and unknown names get
 -- the same answer.
@@ -113,8 +125,8 @@ end
 -- attachment slots leave in one grug_money.take_with_inventory transaction.
 -- The postage counts the slots as they are at this call (Round 49 ruling 1:
 -- no quote, the result names the amount paid). A text over M.BODY_MAX is
--- refused before anything is taken (fix 0.49.1 ruling 3). Returns ok,
--- message.
+-- refused before anything is taken (fix 0.49.1 ruling 3). The sender keeps
+-- a text copy in their sent list (Round 66). Returns ok, message.
 function grug_mail.send_letter(player, to_name, subject, body)
 	if not is_player(player) then return false, "Only a player can send letters." end
 	local name = player:get_player_name()
@@ -149,6 +161,11 @@ function grug_mail.send_letter(player, to_name, subject, body)
 	S.save_box(recipient, box)
 	log(("letter #%d from %s to %s, postage %dc, attachments: %s"):format(
 		letter.id, name, recipient, postage, item_list(items)))
+	-- The sender's text copy (Round 66 ruling 3), under its own key.
+	local sent = S.sent(name)
+	M.keep_sent(sent, M.sent_copy(letter.id, recipient, subject, body, postage,
+		item_names(items), letter.time))
+	S.save_sent(name, sent)
 	notice(recipient, name)
 	return true, ("Letter sent to %s. Postage paid: %s."):format(recipient,
 		grug_money.format(postage))
@@ -255,6 +272,25 @@ function grug_mail.delete_letter(player, id)
 	end
 	grug_mail.refresh_count(name)
 	return true, "Letter deleted."
+end
+
+--
+-- Sent letters (Round 66 ruling 3): text copies, read-only
+--
+
+-- The player's sent copies, newest first (a fresh table; writing to it
+-- stores nothing).
+function grug_mail.sent(name)
+	return S.sent(name)
+end
+
+-- Deleting a sent copy loses nothing of value: no confirmation, no log.
+function grug_mail.delete_sent(player, id)
+	local name = player:get_player_name()
+	local sent = S.sent(name)
+	if not M.remove(sent, id) then return false, "That letter is gone." end
+	S.save_sent(name, sent)
+	return true, "Sent letter deleted."
 end
 
 -- Closing the window without sending (§3.9): each attachment slot goes back
@@ -388,14 +424,9 @@ function grug_mail.report_letter(player, id, reason, note, mailbox)
 	local tickets = S.tickets()
 	ok, refusal = M.can_open_ticket(tickets, name)
 	if not ok then return false, refusal end
-	local names = {}
-	for _, item in ipairs(letter.items or {}) do
-		local stack = ItemStack(item)
-		names[#names + 1] = (stack:get_short_description() or stack:get_name()) ..
-			(stack:get_count() > 1 and (" x" .. stack:get_count()) or "")
-	end
 	local ticket = M.report_ticket(S.next_id(), name, letter, reason,
-		M.clean(note, M.NOTE_MAX, false), names, header(player, mailbox), S.now())
+		M.clean(note, M.NOTE_MAX, false), item_names(letter.items), header(player, mailbox),
+		S.now())
 	letter.reported = true
 	S.save_box(name, box)
 	table.insert(tickets, 1, ticket)
