@@ -228,7 +228,6 @@ end
 -- page, in place of the gear box's heading, for NOTICE_US. Runtime context
 -- only; the poll below clears it.
 local NOTICE_US = 6000000
-local NOTICE_CHARS = 62
 local NOTICE_COLOR = "#f0e6c8" -- the feed's notice colour (grug_core.FEED_COLOR)
 
 local function equip_notice(context)
@@ -243,13 +242,14 @@ function grug_inventory.show_equip_notice(player, text)
 	sfinv.set_player_inventory_formspec(player, context)
 end
 
-local function notice_content(text)
+-- A read-only textarea wraps the line to the box at the font's own line
+-- height (a multi-line label would space its lines half a slot apart).
+local function notice_content(player, text)
 	return ("box[%.2f,%.2f;%.2f,0.75;#0a1017e6]"):format(GEAR_BOX.x + 0.1,
 		GEAR_BOX.y + 0.1, GEAR_BOX.w - 0.2) ..
-		"style_type[label;font_size=*0.9]" ..
-		("label[%.2f,%.2f;%s]"):format(0.4, GEAR_BOX.y + 0.5,
-			esc(core.colorize(NOTICE_COLOR, grug_inventory.wrap_text(text, NOTICE_CHARS)))) ..
-		"style_type[label;font_size=]"
+		grug_core.ui.prose(GEAR_BOX.x + 0.2, GEAR_BOX.y + 0.12, GEAR_BOX.w - 0.4, 0.7,
+			core.colorize(NOTICE_COLOR, text), false, 1,
+			0.9 * grug_core.ui.text_scale(player))
 end
 
 -- The gear box: the slots with their names, tooltips and ghosts, the
@@ -336,7 +336,7 @@ local function gear_content(player, context)
 			x, HOME_BUTTON_Y, GEAR_BOX.x + GEAR_BOX.w - 0.15 - x,
 			esc(("Return home (%s)"):format(state)))
 	end
-	if notice then fs[#fs + 1] = notice_content(notice) end
+	if notice then fs[#fs + 1] = notice_content(player, notice) end
 	return table.concat(fs)
 end
 
