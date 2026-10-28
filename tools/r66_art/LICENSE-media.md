@@ -11,29 +11,25 @@ The original candidate images and their preview copies are dedicated under
 |---|---|---|---|---|
 | `candidates/smite_hammer_c.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | None |
 | `preview/smite_hammer_c.png` | GPT-6 Astra | [Candidate](candidates/smite_hammer_c.png) | CC0-1.0 | Byte-identical preview copy |
-| `candidates/censure_book_i.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | None |
-| `preview/censure_book_i.png` | GPT-6 Astra | [Candidate](candidates/censure_book_i.png) | CC0-1.0 | Byte-identical preview copy |
 | `candidates/censure_book_j.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | None |
 | `preview/censure_book_j.png` | GPT-6 Astra | [Candidate](candidates/censure_book_j.png) | CC0-1.0 | Byte-identical preview copy |
-| `candidates/censure_book_k.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | None |
-| `preview/censure_book_k.png` | GPT-6 Astra | [Candidate](candidates/censure_book_k.png) | CC0-1.0 | Byte-identical preview copy |
-| `candidates/censure_book_l.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | None |
-| `preview/censure_book_l.png` | GPT-6 Astra | [Candidate](candidates/censure_book_l.png) | CC0-1.0 | Byte-identical preview copy |
-| `candidates/censure_book_m.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | None |
-| `preview/censure_book_m.png` | GPT-6 Astra | [Candidate](candidates/censure_book_m.png) | CC0-1.0 | Byte-identical preview copy |
-| `candidates/censure_book_n.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | None |
-| `preview/censure_book_n.png` | GPT-6 Astra | [Candidate](candidates/censure_book_n.png) | CC0-1.0 | Byte-identical preview copy |
+| `candidates/censure_book_o.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | Refined from Book J; flatter dome and wider pages |
+| `preview/censure_book_o.png` | GPT-6 Astra | [Candidate](candidates/censure_book_o.png) | CC0-1.0 | Byte-identical preview copy |
+| `candidates/censure_book_p.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | Refined from Book J; flatter dome and wider pages |
+| `preview/censure_book_p.png` | GPT-6 Astra | [Candidate](candidates/censure_book_p.png) | CC0-1.0 | Byte-identical preview copy |
+| `candidates/censure_book_q.png` | GPT-6 Astra | Original geometry in [generate.py](generate.py) | CC0-1.0 | Refined from Book J; flatter dome and wider pages |
+| `preview/censure_book_q.png` | GPT-6 Astra | [Candidate](candidates/censure_book_q.png) | CC0-1.0 | Byte-identical preview copy |
 | `preview/contact-sheet.png` | GPT-6 Astra | [generate.py](generate.py), original candidates above | CC0-1.0 (original art and layout) | Scaling and additive composites |
 
 The contact sheet's labels are rendered with Pillow's bundled default
 font (`ImageFont.load_default`); no font file is copied into this package.
 The HTML page uses local system fonts.
 
-Pass 5 retains the picked Hammer C byte-identically and introduces
-bowed-page hardcover Book I–N: gentle arches (I/J), high arches (K/L)
-and broad crowns (M/N), each paired without and with abstract curved
-line-writing. Superseded candidates and their provenance remain in git
-history only.
+Pass 6 retains the picked Hammer C and the user's favourite Book J
+byte-identically. Book O/P/Q refine J in three small steps of flatter dome
+and wider pages, preserving the tilt, thin square boards, layered page
+edges, narrow straight gutter and four curved lines per page. Superseded
+candidates and their provenance remain in git history only.
 
 When the user's choices ship, the FX lane records their runtime filenames
 in the owning mod's media ledger.

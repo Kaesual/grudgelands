@@ -30,15 +30,14 @@ SURFACES = (
 )
 CANDIDATES = (
     ("smite_hammer_c", "Hammer C", "Crowned mallet", "Flared striking faces, a diamond seal and a ringed grip give the broad descending head a ceremonial weight."),
-    ("censure_book_i", "Book I", "Gentle arch · blank", "A gentle page dome, a moderate layered block and thin square gold boards keep the spread calm and open."),
-    ("censure_book_j", "Book J", "Gentle arch · written", "I's quiet square-board folio carries four fine curved writing lines on each page, with generous blank margins."),
-    ("censure_book_k", "Book K", "High arch · blank", "Fuller domes rise above a deeper layered page block and slim clipped gold boards, leaving the pages blank."),
-    ("censure_book_l", "Book L", "High arch · written", "K's high page domes carry four restrained lines that bend over each crest, making the curved surface easy to read."),
-    ("censure_book_m", "Book M", "Broad crown · blank", "A broad rounded crown rolls down more steeply at the page edges above a medium-depth block and square boards."),
-    ("censure_book_n", "Book N", "Broad crown · written", "M's broad page crowns carry four softly curved lines, balancing a wide luminous surface with a little writing."),
+    ("censure_book_j", "Book J", "J, pass 5", "The user's favourite, unchanged for comparison: gently bowed pages, square gold boards and four curved writing lines per page."),
+    ("censure_book_o", "Book O", "The lightest touch", "A slightly lower dome and a trace more width keep this refinement closest to J."),
+    ("censure_book_p", "Book P", "A calmer spread", "A gently flattened dome and a little more width give the pages room while keeping their upward bow clear."),
+    ("censure_book_q", "Book Q", "A little broader", "The flattest and widest of these close refinements still rises softly from the straight gutter."),
 )
 PICKED = 'smite_hammer_c'
-RECOMMENDED = 'censure_book_l'
+REFERENCE = 'censure_book_j'
+RECOMMENDED = 'censure_book_p'
 
 
 class Drawing:
@@ -104,7 +103,7 @@ def finish_book(d):
     return d.finish()
 
 
-def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=False):
+def hardcover_book(dome, page_width=1.0):
     """Bow the leaves above rigid boards in the chosen reclining projection.
 
     Preserve pass 4's projection (far scale 0.56, far y 25, near y 48).
@@ -112,6 +111,7 @@ def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=
     and rolls down to the fore edge. Lower leaves settle onto flat boards.
     """
     d = Drawing()
+    page_depth, board_depth = 4.5, 0.9
 
     def project(points, drop=0):
         out = []
@@ -125,8 +125,7 @@ def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=
         return [(x, y+dy) for x, y in points]
 
     def arch(u):
-        # The broad crown has rounder shoulders, with the same crest height.
-        return sin(pi*u) * (1 + (0.4*cos(pi*u)**2 if broad else 0))
+        return sin(pi*u)
 
     def leaf(u, v, layer=0):
         # u: gutter -> fore edge; v: far -> near; layer: top -> bottom.
@@ -134,7 +133,7 @@ def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=
         y = (19-4*u)*(1-v) + (47-3*u)*v
         t = (y-15)/37
         scale = 0.56 / (1-0.44*t)
-        x = 31.65*(1-u) + (32-23*scale)*u
+        x = 31.65*(1-u) + (32-23*page_width*scale)*u
         bow = dome*arch(u)*scale*(1-layer)
         return (x, 25+23*t*scale + page_depth*layer - bow)
 
@@ -148,11 +147,9 @@ def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=
     near = cut(0)
     top_inner, top_outer = far[0], far[-1]
     near_inner, near_outer = near[0], near[-1]
-    if clipped:
-        board = project([(6, 14), (31.75, 18), (31.75, 50),
-                         (7.5, 47), (6, 45.5)], page_depth)
-    else:
-        board = project([(5.5, 13), (31.75, 18), (31.75, 50), (5.5, 47)], page_depth)
+    # Widen the outer boards with the pages, keeping the hinge untouched.
+    outer = 32-26.5*page_width
+    board = project([(outer, 13), (31.75, 18), (31.75, 50), (outer, 47)], page_depth)
 
     # A real slab: gold board top plus its parallel lower edge. Opacity
     # separates volumes in additive light; all source RGB stays luminous.
@@ -188,14 +185,13 @@ def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=
     d.line([top_outer, near_outer], WHITE, 0.65)
     d.line(near, WHITE, 0.65)
 
-    if writing:
-        # Constant-v strokes lie on the very same curved surface as the page.
-        # Four long marks, no glyphs or tiny dashes. A quiet pale-gold stroke
-        # replaces surface pixels at slightly lower opacity for additive light;
-        # subpixel width lets it blend away when the icon is reduced to 16 px.
-        for v, stop in ((0.25, 0.81), (0.41, 0.77), (0.57, 0.81), (0.73, 0.62)):
-            line = [leaf(0.20+(stop-0.20)*i/48, v) for i in range(49)]
-            d.line(line, (255, 237, 200, 190), 0.45)
+    # Constant-v strokes lie on the very same curved surface as the page.
+    # Four long marks, no glyphs or tiny dashes. A quiet pale-gold stroke
+    # replaces surface pixels at slightly lower opacity for additive light;
+    # subpixel width lets it blend away when the icon is reduced to 16 px.
+    for v, stop in ((0.25, 0.81), (0.41, 0.77), (0.57, 0.81), (0.73, 0.62)):
+        line = [leaf(0.20+(stop-0.20)*i/48, v) for i in range(49)]
+        d.line(line, (255, 237, 200, 190), 0.45)
 
     # Less than one source pixel wide; the centre stays straight even as
     # the page contours curve up on either side. No wide binding band.
@@ -206,28 +202,20 @@ def hardcover_book(page_depth, board_depth, dome, clipped, writing=False, broad=
     return finish_book(d)
 
 
-def book_i():
-    return hardcover_book(page_depth=4.5, board_depth=0.9, dome=5, clipped=False)
-
-
 def book_j():
-    return hardcover_book(page_depth=4.5, board_depth=0.9, dome=5, clipped=False, writing=True)
+    return hardcover_book(dome=5)
 
 
-def book_k():
-    return hardcover_book(page_depth=6, board_depth=1, dome=7.5, clipped=True)
+def book_o():
+    return hardcover_book(dome=4.6, page_width=1.025)
 
 
-def book_l():
-    return hardcover_book(page_depth=6, board_depth=1, dome=7.5, clipped=True, writing=True)
+def book_p():
+    return hardcover_book(dome=4.2, page_width=1.05)
 
 
-def book_m():
-    return hardcover_book(page_depth=5.2, board_depth=0.9, dome=6.2, clipped=False, broad=True)
-
-
-def book_n():
-    return hardcover_book(page_depth=5.2, board_depth=0.9, dome=6.2, clipped=False, broad=True, writing=True)
+def book_q():
+    return hardcover_book(dome=3.8, page_width=1.075)
 
 
 def png_bytes(im):
@@ -248,7 +236,8 @@ def samples(name, blend):
 
 def card(candidate, compact=False):
     name, label, title, idea = candidate
-    badge = ' · Picked' if name == PICKED else ' · Recommended' if name == RECOMMENDED else ''
+    badge = (' · Picked' if name == PICKED else ' · Reference' if name == REFERENCE
+             else ' · Recommended' if name == RECOMMENDED else '')
     rows = ''.join(f'<div class="surface-row"><div class="surface-label">{label_bg}</div>'
                    f'<div class="surface {key}">{samples(name, "plain")}</div>'
                    f'<div class="surface {key}">{samples(name, "add")}</div></div>'
@@ -286,25 +275,24 @@ def context(hammer, book):
     return f'<article class="context-card"><h3>Hammer {hammer.upper()} + Book {book.upper()}{badge}</h3><div class="scale-strip">'+''.join(cells)+'</div></article>'
 
 
-def add_strip(sheet, image, x, y):
+def add_strip(sheet, image, x, y, spacing=102):
     icon = np.asarray(image).astype(np.float64)
     for j, (_, _, colour) in enumerate(SURFACES):
         bg = np.array(tuple(bytes.fromhex(colour[1:])), dtype=np.float64)
         rgb = np.rint(np.minimum(255, bg + icon[:, :, :3]*icon[:, :, 3:4]/255)).astype(np.uint8)
-        sheet.paste(Image.fromarray(rgb), (x+j*102, y))
+        sheet.paste(Image.fromarray(rgb), (x+j*spacing, y))
 
 
 def overview(images):
     """A static contact sheet for inspection without a browser."""
-    book_rows = (len(CANDIDATES[1:])+1)//2
-    sheet = Image.new("RGB", (1120, 304+book_rows*338), '#111a24')
+    sheet = Image.new("RGB", (1448, 724), '#111a24')
     draw = ImageDraw.Draw(sheet)
     font = ImageFont.load_default(size=18)
     small = ImageFont.load_default(size=13)
     recommended_label = next(c[1] for c in CANDIDATES if c[0] == RECOMMENDED)
-    draw.text((28, 22), f'ROUND 66 / PASS 5     Hammer C picked / {recommended_label} recommended', font=font, fill='#f8ead1')
+    draw.text((28, 22), f'ROUND 66 / PASS 6     Hammer C picked / {recommended_label} recommended / J, pass 5 reference', font=font, fill='#f8ead1')
     name, label, title, _ = CANDIDATES[0]
-    draw.rectangle((24, 66, 1104, 266), fill='#1e2a36')
+    draw.rectangle((24, 66, 1424, 266), fill='#1e2a36')
     draw.text((40, 78), label+' / '+title+' / PICKED', font=font, fill='#f8ead1')
     icon = images[name].resize((128, 128), Image.Resampling.NEAREST)
     sheet.paste(icon, (40, 118), icon)
@@ -316,25 +304,27 @@ def overview(images):
     add_strip(sheet, images[name], 582, 138)
     draw.text((580, 224), 'Smite 7 / Final Word 12 / unchanged texture', font=small, fill='#c1cbd4')
     for i, (name, label, title, _) in enumerate(CANDIDATES[1:]):
-        x, y = 24+(i % 2)*552, 288+(i//2)*338
-        draw.rectangle((x, y, x+528, y+318), fill='#1e2a36')
+        x, y = 24+i*356, 288
+        draw.rectangle((x, y, x+332, y+410), fill='#1e2a36')
         draw.text((x+16, y+12), label+' / '+title, font=font, fill='#f8ead1')
         if name == RECOMMENDED:
             draw.text((x+16, y+35), 'RECOMMENDED', font=small, fill='#e8ca89')
+        elif name == REFERENCE:
+            draw.text((x+16, y+35), 'REFERENCE / UNCHANGED', font=small, fill='#e8ca89')
         icon = images[name].resize((160, 160), Image.Resampling.NEAREST)
-        sheet.paste(icon, (x+10, y+53), icon)
+        sheet.paste(icon, (x+86, y+46), icon)
         for j, size in enumerate((16, 32, 64)):
             icon = images[name].resize((size, size), Image.Resampling.LANCZOS)
-            sheet.paste(icon, (x+208+j*90-size//2, y+100-size//2), icon)
-            draw.text((x+192+j*90, y+145), str(size)+' px', font=small, fill='#c1cbd4')
-        draw.text((x+16, y+220), 'ADD / night     cave           snow           sky             sand', font=small, fill='#c1cbd4')
-        add_strip(sheet, images[name], x+18, y+242)
+            sheet.paste(icon, (x+76+j*90-size//2, y+240-size//2), icon)
+            draw.text((x+60+j*90, y+282), str(size)+' px', font=small, fill='#c1cbd4')
+        draw.text((x+16, y+317), 'ADD / night    cave     snow     sky      sand', font=small, fill='#c1cbd4')
+        add_strip(sheet, images[name].resize((52, 52), Image.Resampling.LANCZOS), x+16, y+343, spacing=62)
     return sheet
 
 
 def build():
     images = dict(zip((c[0] for c in CANDIDATES),
-                      (hammer_c(), book_i(), book_j(), book_k(), book_l(), book_m(), book_n())))
+                      (hammer_c(), book_j(), book_o(), book_p(), book_q())))
     outputs = {}
     for name, im in images.items():
         assert im.mode == 'RGBA' and im.size == (64, 64)
@@ -348,7 +338,7 @@ def build():
     template = (ROOT / 'preview.html.in').read_text()
     template = template.replace('@@HAMMERS@@', card(CANDIDATES[0], compact=True))
     template = template.replace('@@BOOKS@@', ''.join(card(c) for c in CANDIDATES[1:]))
-    template = template.replace('@@CONTEXT@@', ''.join(context('c', c[0].rsplit('_', 1)[1]) for c in CANDIDATES[1:]))
+    template = template.replace('@@CONTEXT@@', ''.join(context('c', c[0].rsplit('_', 1)[1]) for c in CANDIDATES[2:]))
     outputs['preview/index.html'] = template.encode()
     outputs['preview/contact-sheet.png'] = png_bytes(overview(images))
     return outputs
