@@ -12,6 +12,31 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.66.0 — Two-handed swap, sent letters and bigger windows on 4K (2026-10-28)
+
+Compatible update; no reset or migration.
+
+- **Two-handed weapons:** shift-clicking a two-hander while you hold
+  something in the offhand equips it and puts the offhand piece into your
+  bag (it needs one free slot; otherwise nothing moves and you are told).
+  The empty offhand shows the two-hander, dimmed, while it blocks the slot.
+  Dragging still refuses, and the reason now shows on the Character page
+  itself, telling you to shift-click instead.
+- **The fishing rod** is a Basic recipe you know from the start.
+- **Sent letters:** a new "Sent" tab in the mailbox keeps a copy of each
+  letter you send, with its text and the names of its attachments, for
+  30 days (the last 50). Nothing can be taken from a copy.
+- **4K screens:** windows use up to two thirds of the screen height and
+  their text grows with them. Smaller screens look as before.
+- **Map icons on small screens** (phones, small windows) shrink with the
+  map, in the map window and on the minimap, so they no longer cover it.
+- **War camps** of The Accord are blue, The Throng's stay red; camps under
+  construction hang cloth in their faction's colour.
+- **Character creation:** both faction buttons wear their faction's colour,
+  subdued until you choose; the chosen one is bright.
+- **Priest:** Smite drops a small hammer onto the target, Final Word a
+  large one down its column of light, and Censure a falling book.
+
 ## 0.65.0 — Shorter quest lists and a boxed quest tracker (2026-10-27)
 
 Compatible update; no reset or migration. Quests you already accepted stay

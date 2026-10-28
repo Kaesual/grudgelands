@@ -6,6 +6,64 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 66 — polish (GUI acceptance pending)
+
+Delivered in 0.66.0 (compatible): the two-handed shift-click swap, the
+blocked offhand and the refusal on the Character page, the fishing rod from
+the start, the Sent tab, the grown viewport and text on tall screens, the
+faction-coloured creation buttons, markers sized by the drawn map, camps in
+faction colour, hammer and book for the priest
+([completion](docs/planning/round66-plan.md#completion-2026-10-28)).
+Remaining: the user's desktop/web
+[GUI checklist](docs/planning/round66-plan.md#gui-checklist-desktop-and-web),
+joined to the joint GUI test of 0.57–0.65. Carry-overs:
+
+- **Open user question (MAP Q1):** desktop HUD scaling above 1 now only caps
+  the markers (1920×1080 at HUD 2: 64 → 32 px in both maps); the server
+  cannot tell it from a phone's density. Kept as ruled until the GUI test.
+- **First-look defaults** to tune after the GUI test: the equip notice's
+  6 s and place, the blocked offhand's dim level, the creation buttons'
+  38 / 50 / 62 / 100 %, Smite's size 7, the symbols visible only while
+  they fall (Final Word's hammer about 0.1 s; a resting particle would
+  cost one more).
+- **EQUIP:** `equip_by_shift` drops a `give()` leftover at the feet with
+  `core.add_item`; unreachable today (`fits()` runs just before with the
+  same order). If it ever becomes reachable, write the offhand piece back
+  into `grug_offhand` instead.
+- **Leftover grid recipes:** other mods still register crafting-grid
+  recipes although the grid has size 0 (EQUIP named `grug_trees`,
+  `grug_materials` and the mobs); remove each where nothing reads it.
+- **UI, raw window reports:** `window_padding` caps again when it is given
+  a derived report, and `window_information(derived, true)` returns the
+  grown report; every caller passes the raw report today. A one-line guard
+  or comment would make that safe.
+- **UI, 4K cosmetics:** the Quickbar's switch, the Claim Stone's tabs and
+  Belongings and Help use the inventory window's growth inside forms of
+  other sizes (the same 1.333 in every measured case); `UI.prose` calls
+  without a growth reset later textareas to the client font; the map's
+  quest titles wrap a little early (`rows` wraps by its scale; mail too).
+- **UI, not growing:** the vendored sign, book and mob dialogs and the
+  welcome window; checkbox and dropdown captions, item counts and tooltips
+  keep the client font (engine).
+- **MAP, cache churn:** fitted sizes take any integer from 16 to 32 × HUD,
+  so `mask_of` (8 sizes) and the solve cache (24 keys) may rebuild for many
+  players with odd windows. Measure if it shows; raise the limit.
+- **MAP, `r44_mq`:** one marker-size check computes its expectation with
+  `M.fit` itself; `r66_map` pins the real numbers.
+- **MAP, dead baked icon art:** `art/baked_*`, the icons in `baked_art.lua`
+  and `B.items` in the cache key are unused since Round 64; removing them
+  re-renders every map once.
+- **MAP, the minimap box** stays 25 % of the window height, small on
+  phones (not part of ruling 5).
+- **MAIL:** the count line reads "1 sent letters" (like "1 letters" on the
+  Letters tab); stored attachment and report names keep the engine's
+  translation markup (forms show them right, logs raw).
+- **FX:** `tools/r52_pfx/page/` has been stale since 0.54.1 (`build_page.py
+  --check` fails; its preview draws textured particles as motes); with the
+  particle scale at 1.5 or more two symbols draw on one spot (brighter, as
+  the seal and comet before); the book lands centred on its anchor and
+  sinks about 0.44 m into the ground for its last two frames.
+
 ## Round 65 — quest lists and boxed quest HUD (GUI acceptance pending)
 
 Delivered in 0.65.0 (compatible): acceptance at quest level − 2, giver

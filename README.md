@@ -96,6 +96,14 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.66.0** polishes what the last play session found: shift-clicking a
+two-handed weapon swaps both hands and the blocked offhand shows why; the
+fishing rod can be crafted from the start; the mailbox keeps your sent
+letters; windows and their text grow on 4K screens; map icons shrink with
+the map on small screens; Accord war camps are blue; and the priest's Smite,
+Final Word and Censure drop a hammer or a book. This update is compatible;
+desktop and web acceptance is pending.
+
 **0.65.0** tidies the quests: a giver lists only what you can hand in, accept
 or are doing, plus one grey line naming the level of its next quests; you can
 take a quest from two levels below its level; a silver "!" means a giver has
