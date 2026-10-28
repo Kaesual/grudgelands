@@ -196,3 +196,8 @@ None for this delivery. The user chooses the degree of refinement from
 O/P/Q before FX integration; P is recommended. J is the favourite from
 pass 5 and remains the reference. Hammer C is picked. Independent review
 remains with the coordinator.
+
+## User picks (2026-10-28)
+
+Hammer C (Smite size 7, Final Word size 12) and Book Q (Censure size 16). Lane FX ships both as
+`grug_core_fx_hammer.png` and `grug_core_fx_book.png` in `mods/CORE/grug_core/textures/`.
