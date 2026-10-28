@@ -14,15 +14,31 @@ out of the prepend and explicitly requests the opaque variant.
 - `styles()` returns control defaults without a background or send.
 - `text_scale(player)` compensates dense fixed-layout summaries when the client
   shrinks the form but retains GUI-scaled fonts. It uses available height /
-  inventory window height, capped at 1 and floored by 1 / real GUI scaling;
-  display density alone must not halve text. It reads window information at
-  build time only; no polling or saved setting.
+  inventory window height on the Full-HD ceiling, capped at 1 and floored by
+  1 / real GUI scaling (display density alone must not halve text), times
+  `text_growth(player)`. It reads window information at build time only; no
+  polling or saved setting.
+- `text_growth(player, w, h)` (Round 66) is how much larger a `w` by `h` form
+  (default the inventory window) is drawn under the grown viewport ceiling
+  than under the Full-HD one, from the engine's fitting equations
+  (`form_growth(info, w, h)` in `ui_window.lua`). Form text is multiplied by
+  it, so text keeps its 1080p proportion to the slots: font pixels follow
+  only GUI scaling and display density (`fontengine.cpp` `getFontSize`,
+  `StyleSpec.h` `*` sizes), slot pixels follow the viewport. It is exactly 1
+  on screens up to 1620 px high, where every form string stays as before,
+  and also where the form does not grow (a width-bound portrait window, the
+  fixed image-size floor on a high-density display).
+- `font_size(factor, growth)` returns a `font_size` value for a literal size:
+  at growth 1 the literal itself (`*0.85`, `*1`, empty for the client
+  default), otherwise `factor * growth`. Forms write their literal sizes and
+  resets through it.
 - `prepend(opaque)` returns background, defaults and existing click styles.
 - `panel(x, y, w, h)` returns a nine-slice panel in the caller's coordinate mode.
   Emit it outside scroll containers: the engine parents backgrounds to the
   form, so a panel inside a scroll container would neither scroll nor clip.
 - `heading(x, y, text, scale)` escapes an existing heading and scopes its gold, small
-  bold style; `title(x, y, text, scale)` scopes a larger normal title (optional scale).
+  bold style; `title(x, y, text, scale, reset)` scopes a larger normal title
+  (optional scale) and restores labels to `reset` (default 1).
 - `prose(x, y, w, h, text, muted, restore_font_scale, font_scale)` emits
   escaped, read-only body text at the normal client font by default. An
   explicit body scale can distinguish a title or reading text; otherwise it
@@ -37,7 +53,9 @@ out of the prepend and explicitly requests the opaque variant.
   `danger`). Names are single fields, not comma-separated selector lists.
 - `frame(w, h, title, opaque, player)` opens a version-6 real-coordinate form;
   optional title at 0.4,0.45. The player supplies the current viewport report
-  for the Full-HD cap. It does not offset content or close a container.
+  for the viewport ceiling. On a grown ceiling the frame also scopes the
+  native text defaults (`fonts`) and its title to the form's `text_growth`.
+  It does not offset content or close a container.
 
 `fonts(scale)` scopes native control text sizes within a form. Party, quests
 and Mail pass the existing `text_scale(player)` through scoped heading, button,
@@ -66,27 +84,46 @@ globalstep or saved state. It emits more formspec elements per rendered row;
 Mailbox retains eight-row pages and the quest log retains its existing limit.
 The responsive Map retains native text scale 1 for rows and surrounding labels;
 its geometry already incorporates the GUI scale, so inventory-fit compensation
-must not leak into its typography. Other native tables, including Admin Mail,
+must not leak into its typography. On a grown ceiling its shared navigation
+header and the labels after it follow `text_growth`; the rows and zone labels
+keep the client font. Other native tables, including Admin Mail,
 keep their own existing behavior.
 
-Native frame fitting remains enabled, with a Full-HD viewport ceiling
+Native frame fitting remains enabled, with a viewport ceiling
 (`grug_core/ui_window.lua`). On each existing rebuild, `window_padding(player,
-base, info)` limits the available viewport to `min(width, 1920)` by
-`min(height, 1080)`, retaining the ordinary 5% padding (Map uses 0%). The
-engine then applies its usual DPI, GUI-scale and form-size calculation. This
-reproduces that same window's Full-HD rendering with the same client settings;
-it does not force GUI scale 1 or impose the same dimensions on every dialog.
-For an actual Full-HD or smaller viewport the regular frame is unchanged.
+base, info)` limits the available viewport to a height of
+`min(H, max(1080, 2/3 H))` and a width of `1920 · k` (at most W), `k` being
+that height over 1080 (Round 66 ruling 4; Full HD before), retaining the
+ordinary 5% padding (Map uses 0%). Up to a 1620 px high screen this is the
+Full-HD ceiling, unchanged; a 3840×2160 screen lays out like 2560×1440 and
+the inventory window fills about 60 % of its height (90 % at 1080p, 68 % at
+1440p). The engine then applies its usual DPI, GUI-scale and form-size
+calculation. This reproduces that same window's rendering on a screen of the
+ceiling's size with the same client settings; it does not force GUI scale 1
+or impose the same dimensions on every dialog. For a viewport within the
+ceiling the regular frame is unchanged. Text grows with the ceiling
+(`text_growth`); controls the engine draws in the client font cannot follow:
+checkbox and dropdown captions, item counts, tooltips and hypertext bodies
+(Help, the welcome window). Explicit sizes not yet passed the growth stay at
+the client font as well: the vendored sign, book and mob dialogs, the box
+labels of chests, furnaces and shelves, and the Claim Stone window's buttons
+and headings.
 Padding must follow `position[]` and `anchor[]` and precede `no_prepend[]`;
 Quickbar therefore adds it after its existing left anchor.
 
-`window_information(info)` derives the matching virtual viewport and maximum
-formspec size for responsive layouts and fitted typography. Map uses it both
-for its body budget and zone-label metrics. The derivation retains the native
-fixed image-size floor (`0.5555 * 96 * real_gui_scaling`); density is never
-assumed to equal the GUI setting. The fixture `tools/ui_window_cap` compares
-native fitting equations on small, Full-HD, WQHD, 4K, ultrawide and portrait
-windows, GUI 1/1.5, density 1/2, real/legacy forms and resize rebuilds.
+`window_information(info, full_hd)` derives the matching virtual viewport and
+maximum formspec size for responsive layouts and fitted typography (with
+`full_hd`, the Full-HD-capped one that text sizes are measured against). A
+derived report is marked `capped` and passes through unchanged, since the
+ceiling follows the screen height. Map uses it both for its body budget and
+zone-label metrics. The derivation retains the native fixed image-size floor
+(`0.5555 * 96 * real_gui_scaling`); density is never assumed to equal the GUI
+setting. The fixture `tools/ui_window_cap` compares native fitting equations
+on small, Full-HD, WQHD, 4K, ultrawide and portrait windows, GUI 1/1.5,
+density 1/2, real/legacy forms and resize rebuilds; `tools/r66_ui` checks the
+grown ceiling, the text proportion and that every result up to 1620 px screen
+height equals 0.65.0's (`bytes.lua` compares the inventory pages' and the map
+window's strings with an older tree).
 
 Reports can be absent at join and lag a resize. An absent report leaves native
 fitting uncapped; a later existing rebuild applies the latest known cap.
