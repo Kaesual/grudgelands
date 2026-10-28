@@ -1,43 +1,59 @@
 # Round 66 ART — priest symbols
 
-Delivered on `r66-art`, based on `5e50b4f48a01e1a121786d551a2d1ee73c10b15d`.
-**Recommendation: Hammer A + Book A.** The user may pick each independently.
+Delivered on `r66-art`. **Hammer A is picked; Book C is recommended.**
 Open [the local preview](preview/index.html) or the
 [contact sheet](preview/contact-sheet.png).
 
-## Proposals
+## Pass 2 — an open book for Censure (2026-10-28)
 
-| Texture | Idea | Recommendation |
+The user picked Hammer A for Smite and Final Word and rejected both
+side-view books. Censure now has two symmetric open-book proposals facing
+the viewer, with the spine in the middle and both pages fully visible.
+The frontal pose suits the camera-facing sprite throughout its 6 m fall.
+
+| Texture | Idea | Status |
 |---|---|---|
-| [Hammer A](candidates/smite_hammer_a.png) | Broad flat head, straight narrow handle, restrained bevels; head points down. | Recommended: the simplest silhouette at 16 px, suitable for the once-per-second Smite and the larger Final Word. |
-| [Hammer B](candidates/smite_hammer_b.png) | Stepped end caps and a shorter grip; head points down. | A more ceremonial alternative with a wider head and stronger edge shaping. |
-| [Book A](candidates/censure_book_a.png) | Closed thick folio in an oblique side view, lower edge first; page block between gold covers. | Recommended: the compact closed volume reads most consistently at small sizes. |
-| [Book B](candidates/censure_book_b.png) | Side view of a closing volume, with a lifted cover and one fanned leaf. | More movement in the silhouette; its transparent opening survives additive blending. |
+| [Hammer A](candidates/smite_hammer_a.png) | Broad flat head, straight narrow handle, head down. | Picked, byte-identical to pass 1. |
+| [Book C](candidates/censure_book_c.png) | Broad, flat ivory spread with a shallow central fold and a restrained gold cover edge. | Recommended: the quieter shape reads most clearly as an open book at 16 px. |
+| [Book D](candidates/censure_book_d.png) | Taller white pages with a gentle, symmetric lift and visible lower page edges. | Alternative with more curvature in the spread. |
 
-All four candidates are **64 × 64 RGBA PNGs**. At 16 px they keep the broad
-object shape; 64 px gives the large effects smoother edges and enough room
-for the page block. The three authored tones are white, ivory and pale
-gold, with antialiasing and a tight alpha halo. There are no dark outlines,
-letters, flames or trails. Transparent page divisions carry the book's
-structure without relying on dark ink. All border pixels are transparent.
+Both books are **64 × 64 RGBA PNGs**, exactly mirror-symmetric about the
+centre of the image. They use bright white, ivory and pale gold, opaque
+cores, transparent borders and a tight light halo. The central gutter
+uses transparency, not dark ink. Pages are blank: no letters, text-like
+strokes, flames or trails. The 64 px source leaves room for the central
+fold and smooth edges at Censure's larger size while retaining simple
+shapes at 16 px.
 
-The preview shows every candidate at 16, 32 and 64 CSS px on night, cave,
-snow, sky and sand, with plain alpha beside CSS `plus-lighter` addition
-(`screen` fallback, labelled when active). Two context strips show the
-planned Smite / Final Word / Censure sizes 5 / 12 / 16 beside figures one
-node wide and two nodes tall. This follows the existing catalogue's
-`size * 0.1` node conversion in `tools/r52_pfx/template.html:356`.
-The page is static, uses relative local image paths and needs no server,
-network access or JavaScript. Preview PNGs are byte-identical to candidates.
+The rejected Book A/B PNGs are removed from `candidates/` and `preview/`,
+and their geometry and references are removed from the generator, page
+and contact sheet. Their pass-1 versions remain in git history. Hammer B
+remains byte-identical and reproducible in the package as pass-1
+provenance, but is absent from the active page and contact sheet.
 
-**Bright-ground observation:** addition washes the interior tones toward
-white on snow, sky and sand. The silhouette remains visible against the
-selected backgrounds, but pure white ground cannot gain contrast from
-white additive light. The page shows that limitation directly. The
-browser study is untinted and does not claim engine rendering, column
-occlusion, tint, fall timing or GUI acceptance.
+### Preview
 
-## Generation and verification
+The recommendation is at the top. Hammer A has one compact **Picked**
+section with its unchanged hero, 16/32/64 px views, five grounds and
+plain/additive treatments. The two books have the same views on night,
+cave, snow, sky and sand. The context strips both use Hammer A for Smite
+and Final Word, with Book C or D for Censure, beside the original figure
+one node wide and two nodes tall.
+
+The sprite squares keep the pass-1 sizes of 0.5 / 1.2 / 1.6 nodes, from
+the existing catalogue's preview conversion (size units 5 / 12 / 16;
+`tools/r52_pfx/template.html`). Transparent margins make the visible
+objects smaller than those squares. No fall, timing or column simulation
+was added. The page uses CSS `plus-lighter`, with the existing labelled
+`screen` fallback. All image paths are local; **there are no download
+links**, scripts or external requests.
+
+Additive light still washes the interior tones toward white on bright
+ground. At 16 px the centre division also loses contrast on snow. The
+preview exposes this directly; tint, timing and the final engine look
+remain part of the user's desktop/web check after FX integration.
+
+### Generation and verification
 
 From the repository root:
 
@@ -46,83 +62,79 @@ python3 tools/r66_art/generate.py
 python3 tools/r66_art/generate.py --check
 ```
 
-The first command writes four candidates, four preview copies, the HTML
-page and a contact sheet. The second regenerates in memory and compares
-all ten outputs byte for byte without writing. Drawing is authored in
-`generate.py`; page presentation is in `preview.html.in`. Dependencies:
-Python 3, Pillow and numpy. Verified with Pillow 12.3.0 and numpy 2.4.6;
-the Python source also parses with the Python 3.9 grammar.
+The generator writes ten outputs: four candidates (including archived
+Hammer B), four identical preview copies, the HTML page and the contact
+sheet. `--check` regenerates in memory and compares every output byte for
+byte. Both modes also check the books' exact symmetry and reject
+unexpected PNGs left in the generated directories. Drawing is authored
+in `generate.py`; layout is in `preview.html.in`. Dependencies remain
+Python 3, Pillow and numpy.
 
 Completed checks:
 
-- `generate.py --check`: all ten generated outputs match.
-- Image inspection: all four candidates are 64 × 64 RGBA PNGs with opaque
-  cores, transparent borders, bright RGB on every visible pixel and
-  byte-identical preview copies.
-- Local HTML audit: all 132 image instances have alt text and valid integer
-  dimensions; every image, download and fragment link resolves; no remote
-  resources, scripts or unexpanded template tokens.
-- Visual inspection of the contact sheet at large and native 16/32/64 px,
-  including additive composites on all five grounds. The book B leaf was
-  refined to make the closing pose read more clearly as paper.
-- `git diff --check`: clean.
+- `generate.py --check`: all ten outputs match; no retired PNGs remain.
+- Both Hammer A files equal the pass-1 bytes at
+  `4374dc8eb4dec8f354dde80cc4306df96a1a3437`. Their SHA-256 is
+  `9b845bdb31a73327daf94e034ab040f0f815cb0ad290660be170b890892dfe9b`.
+- All four generated candidates: 64 × 64 RGBA, opaque cores, fully
+  transparent borders, bright RGB on every visible pixel, byte-identical
+  preview copies. Both new books have exact horizontal pixel symmetry.
+- HTML audit: 101 image instances with alt text and integer dimensions,
+  15 ground rows, all local paths and fragments resolve; no downloads,
+  scripts, remote resources, rejected books or unexpanded template tokens.
+  Both context strips use the picked Hammer A.
+- Visual inspection of the contact sheet and both books at native
+  16/32/64 px, plain and simulated additive on all five grounds.
+- Python source parses with the Python 3.9 grammar; `git diff --check`
+  passes. Nothing under `mods/` changed.
 
-No game server, Lua fixtures or runtime tools were run, as requested for
-this art-only lane. No files under `mods/` changed. Browser layout and
-in-game acceptance remain for the user; the page markup and links were
-checked without a browser run.
+No game, server, Lua fixtures or browser was run. Page markup and the
+raster composites were checked; browser layout and in-game acceptance
+remain with the user.
 
-## Handoff
+### Handoff and receipt
 
-**Upgrade classification: compatible.** This package adds development
-art and a preview only; no runtime behavior, world generation, saved state,
-version declaration or migration changes.
-
-The base-code claims are confirmed in
-`mods/CORE/grug_core/particle_effects.lua`: `lit()` sets additive blending
-and glow 14 (lines 24–29); Smite is five motes plus eight ring particles
-(lines 478–487); Censure is one size-16 mote from a default 6 m in the
-0.75 s warning window (lines 494–504); Final Word is a column and a ring
-(lines 509–515). Particle textures and animation integration belong to FX.
-The uninitialized engine reference submodule was not modified; this lane
-uses the existing catalogue's preview scale, not a new engine claim.
-The open depth and expansion TODOs do not block this work.
-
-The FX lane copies only the two picked candidates into the owning mod,
-uses the same hammer for Smite and Final Word, applies the chosen tint,
-additive blend and glow 14, and keeps the existing rings and column.
-Media provenance is in [LICENSE-media.md](LICENSE-media.md); the FX lane
-adds the picked runtime filenames to the owning mod's media ledger.
-
-Independent review remains with the coordinator under the round workflow;
-this implementer did not launch agents. The user's picks are pending.
+**Upgrade classification: compatible.** Development art and preview only;
+no runtime behavior, world generation, saved state, version declaration or
+migration changes. The [media ledger](LICENSE-media.md) records the new
+CC0 candidates. FX copies the picked Hammer A and the user's eventual
+Book C/D choice to the owning mod and records their runtime provenance.
+The book choice is still pending. Independent review stays with the
+coordinator before integration; this implementer did not launch agents.
 No merge, push or Luanti sync was performed.
 
-GUI checklist after FX integration, on desktop and web:
-
-1. Read Smite's head-down hammer during repeated hits at ordinary combat
-   distance, including the gold ring at impact.
-2. Read the larger same hammer inside Final Word's white column.
-3. Read Censure's book after the warning ring, on dark terrain and bright
-   snow/sky/sand; check fall and impact timing and the applied tint.
-
-## Commit receipt
-
-Final art, generator and preview commit:
-`358aff5339e6cbfa17ffd93307fe7e663e186554`.
-A separate report-only commit follows. Resolve that final commit with:
+Art, generator and preview commit:
+`9d18530f43822ebaee4533d9b8765598f07eceee`.
+The following report commit contains this file and the requested
+[final report](../../last.md). Its final hash is returned in the delivery
+message and can be resolved without a self-referential hash in this file:
 
 ```sh
-git log -1 --format=%H -- tools/r66_art/REPORT.md
+git log -1 --format=%H -- last.md
 git status --porcelain
 ```
 
-The final status output is empty. The runner's `last.md` records the full
-final branch commit hash after this report is committed; a tracked report
-cannot embed its own resulting commit hash. Both commit messages end with
+The handoff status output is empty. Both pass-2 commit messages end with
 `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
+
+GUI checklist after FX integration, on desktop and web:
+
+1. Read the picked small Hammer A during repeated Smite hits and its ring
+   at impact.
+2. Read the same larger hammer inside Final Word's white column.
+3. Read the chosen frontal open book during Censure's 6 m fall after the
+   warning ring, at ordinary combat distance on dark and bright terrain;
+   check the applied tint, timing and impact.
+
+## Pass 1 — historical receipt
+
+Art commit `358aff5339e6cbfa17ffd93307fe7e663e186554`, report commit
+`4374dc8eb4dec8f354dde80cc4306df96a1a3437`. Pass 1 offered Hammer A/B and
+two side-view books with an A/A recommendation. The user's pass-2 ruling
+supersedes that recommendation: Hammer A picked, both books rejected.
+The original report and removed images remain in those commits.
 
 ## Blockers / questions
 
-None for the art delivery. The user chooses Hammer A/B and Book A/B before
-FX integration; recommendation A/A is a proposal, not an accepted pick.
+None for this delivery. The user chooses Book C or D before FX integration;
+Book C is the artist's recommendation, not an accepted pick.
