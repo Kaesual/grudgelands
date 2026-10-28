@@ -1,8 +1,7 @@
 # Round 66 ART — priest symbols
 
-Delivered on `r66-art`. **Hammer C is picked; J is the user's favourite;
-Book P is the recommended refinement.** The user chooses the final degree
-from O/P/Q. Open [the local preview](preview/index.html) or the
+Delivered on `r66-art`. **The user picked Hammer C and Book Q** (the
+largest of the three refinements of J; see "User picks" at the end). Open [the local preview](preview/index.html) or the
 [contact sheet](preview/contact-sheet.png).
 
 ## Pass 6 — Book J, refined (2026-10-28)
