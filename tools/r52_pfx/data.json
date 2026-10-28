@@ -9398,23 +9398,23 @@
    "class": "priest",
    "context": [],
    "cost": {
-    "check_us": 0.13,
+    "check_us": 0.09,
     "dg": 2,
-    "i1": 2.97785,
-    "i2": 33.95982225,
-    "life": 0.22906538461538462,
-    "lua_us": 7.8,
-    "marginal": 267,
-    "particles": 13,
-    "peak": 13.0,
-    "rx_us": 12.9285,
+    "i1": 2.3036000000000003,
+    "i2": 16.863016000000002,
+    "life": 0.2559555555555556,
+    "lua_us": 5.3999999999999995,
+    "marginal": 188,
+    "particles": 9,
+    "peak": 8.0,
+    "rx_us": 11.344,
     "single_events": 1,
-    "singles": 13,
+    "singles": 9,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 497,
-    "zstd_us": 9.0285
+    "wire": 418,
+    "zstd_us": 8.644
    },
    "dynamic": "",
    "family": "reckoning",
@@ -9425,22 +9425,21 @@
    "hook": "Smite's cast (kits_priest.lua:61)",
    "id": "smite_hit",
    "key": "pfx.smite.hit",
-   "look": "Eine kleine, harmlosere Final Word: ein kurzer Lichtstrahl schießt aus 3 m Höhe auf das Ziel, unten springt ein kleiner goldener Ring auf (etwa 1 m statt 2 m). 13 einzelne Partikel, kein Spawner: Smite ist der Grundangriff (überarbeitet am 21.10.).",
+   "look": "Eine kleine, harmlosere Final Word: ein Hammer fällt aus 3 m Höhe senkrecht, mit dem Kopf voran, in 0,15 s auf das Ziel, dann springt unten ein kleiner goldener Ring auf (etwa 1 m statt 2 m). 9 einzelne Partikel, kein Spawner: Smite ist der Grundangriff (überarbeitet am 21.10., Hammer seit Runde 66).",
    "lua": [
     {
      "at": "target",
      "blend": "add",
-     "color": "#fff0a8",
      "exp": [
-      0.16,
-      0.18
+      0.15,
+      0.15
      ],
+     "fade": false,
      "glow": 14,
      "kind": "single",
-     "mote": true,
-     "n": 5,
+     "n": 1,
      "shape": [
-      "line",
+      "box",
       [
        0,
        3.2,
@@ -9448,28 +9447,30 @@
       ],
       [
        0,
-       1.6,
+       3.2,
        0
       ]
      ],
      "size": [
-      3,
-      3.5
+      7,
+      7
      ],
+     "tex": "grug_core_fx_hammer.png",
      "vel": [
       [
        0,
-       -9,
+       -18.467,
        0
       ],
       [
        0,
-       -9,
+       -18.467,
        0
       ]
      ]
     },
     {
+     "after": 0.15,
      "at": "target",
      "blend": "add",
      "color": "#ffb800",
@@ -9501,12 +9502,12 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(5, {at = \"target\", blend = \"add\", color = \"#fff0a8\", exp = {0.16, 0.18}, glow = 14, mote = true, shape = {\"line\", {0, 3.2, 0}, {0, 1.6, 0}}, size = {3, 3.5}, vel = {{0, -9, 0}, {0, -9, 0}}}),\n\tsingle(8, {at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.25, 0.3}, glow = 14, mote = true, radial = {3, 3.5}, shape = {\"disc\", {0, 0.15, 0}, 0.3, true}, size = {2.5, 2.5}}),\n}",
+   "lua_text": "{\n\tsingle(1, {at = \"target\", blend = \"add\", exp = {0.15, 0.15}, fade = false, glow = 14, shape = {\"box\", {0, 3.2, 0}, {0, 3.2, 0}}, size = {7, 7}, tex = \"grug_core_fx_hammer.png\", vel = {{0, -18.467, 0}, {0, -18.467, 0}}}),\n\tsingle(8, {after = 0.15, at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.25, 0.3}, glow = 14, mote = true, radial = {3, 3.5}, shape = {\"disc\", {0, 0.15, 0}, 0.3, true}, size = {2.5, 2.5}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 42,
    "name": "Smite",
-   "note": "Der alte Lichtfall wandert vergrößert zu Final Word.",
+   "note": "Der alte Lichtfall wandert vergrößert zu Final Word. Runde 66: der Hammer ersetzt den Strahl aus fünf Punkten; der Ring folgt nach dem Fall (after, ein Server-Schritt Körnung).",
    "per_use": 1.0,
    "rate": 0.097743,
    "sample": {},
@@ -9520,23 +9521,23 @@
      "after": 0,
      "attract": null,
      "blend": "add",
-     "color": "#fff0a8",
+     "color": "#ffffff",
      "delay": 0.0,
      "engine": null,
      "exp": [
-      0.16,
-      0.18
+      0.15,
+      0.15
      ],
-     "fade": true,
+     "fade": false,
      "glow": 14,
      "kind": "single",
-     "mote": true,
-     "n": 5,
+     "mote": false,
+     "n": 1,
      "pull": null,
      "radial": null,
      "reach": null,
      "shape": [
-      "line",
+      "box",
       [
        6.0,
        3.2,
@@ -9544,26 +9545,26 @@
       ],
       [
        6.0,
-       1.6,
+       3.2,
        0.0
       ]
      ],
      "size": [
-      3,
-      3.5
+      7,
+      7
      ],
      "tex": "smoke",
-     "texture": "grug_core_mote.png^[multiply:#fff0a8",
+     "texture": "grug_core_fx_hammer.png",
      "time": 0,
      "vel": [
       [
        0,
-       -9,
+       -18.467,
        0
       ],
       [
        0,
-       -9,
+       -18.467,
        0
       ]
      ]
@@ -9574,11 +9575,11 @@
       0,
       0
      ],
-     "after": 0,
+     "after": 0.15,
      "attract": null,
      "blend": "add",
      "color": "#ffb800",
-     "delay": 0.0,
+     "delay": 0.15,
      "engine": null,
      "exp": [
       0.25,
@@ -9628,9 +9629,9 @@
    ],
    "skill": "smite",
    "sprite": {
-    "name": "Funke",
+    "name": "Hammer",
     "stand_in": "spark",
-    "text": "der vierzackige Funke, golden"
+    "text": "grug_core_fx_hammer.png (Runde 66, Elfenbein und Gold), Größe 7"
    },
    "status": "new",
    "t0": 0.0,
@@ -10038,7 +10039,7 @@
        "after": 0.25,
        "attract": null,
        "blend": "add",
-       "color": "#fff0a8",
+       "color": "#ffffff",
        "delay": 0.25,
        "engine": null,
        "exp": [
@@ -10048,7 +10049,7 @@
        "fade": false,
        "glow": 14,
        "kind": "single",
-       "mote": true,
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -10071,7 +10072,7 @@
         16
        ],
        "tex": "smoke",
-       "texture": "grug_core_mote.png^[multiply:#fff0a8",
+       "texture": "grug_core_fx_book.png",
        "time": 0,
        "vel": [
         [
@@ -10312,17 +10313,17 @@
     "i2": 0.5,
     "life": 0.5,
     "lua_us": 0.6,
-    "marginal": 21,
+    "marginal": 6,
     "particles": 1,
     "peak": 1.0,
-    "rx_us": 4.2945,
+    "rx_us": 4.287,
     "single_events": 1,
     "singles": 1,
     "spawner_dg": 0,
     "spawner_wire": 0,
     "spawners": 0,
-    "wire": 136,
-    "zstd_us": 3.9945
+    "wire": 121,
+    "zstd_us": 3.987
    },
    "dynamic": "height = area.fall_height, time = the delay: it falls at CENSURE_FALL_SPEED for min(time, height / speed) and starts after the rest of the delay",
    "family": "reckoning",
@@ -10333,13 +10334,12 @@
    "hook": "area.delayed spec.fall = \"censure_fall\"",
    "id": "censure_fall",
    "key": "pfx.censure.fall",
-   "look": "Ein großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf. Es erscheint etwas später und fällt mit 12 m/s, ohne zu verblassen (überarbeitet am 21.10.).",
+   "look": "Ein großes Buch fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf. Es erscheint etwas später und fällt mit 12 m/s, ohne zu verblassen (überarbeitet am 21.10., Buch seit Runde 66).",
    "lua": [
     {
      "after": 0.25,
      "at": "target",
      "blend": "add",
-     "color": "#fff0a8",
      "exp": [
       0.5,
       0.5
@@ -10347,7 +10347,6 @@
      "fade": false,
      "glow": 14,
      "kind": "single",
-     "mote": true,
      "n": 1,
      "shape": [
       "box",
@@ -10366,6 +10365,7 @@
       16,
       16
      ],
+     "tex": "grug_core_fx_book.png",
      "vel": [
       [
        0,
@@ -10380,7 +10380,7 @@
      ]
     }
    ],
-   "lua_text": "{\n\tsingle(1, {after = 0.25, at = \"target\", blend = \"add\", color = \"#fff0a8\", exp = {0.5, 0.5}, fade = false, glow = 14, mote = true, shape = {\"box\", {0, 6, 0}, {0, 6, 0}}, size = {16, 16}, vel = {{0, -12, 0}, {0, -12, 0}}}),\n}",
+   "lua_text": "{\n\tsingle(1, {after = 0.25, at = \"target\", blend = \"add\", exp = {0.5, 0.5}, fade = false, glow = 14, shape = {\"box\", {0, 6, 0}, {0, 6, 0}}, size = {16, 16}, tex = \"grug_core_fx_book.png\", vel = {{0, -12, 0}, {0, -12, 0}}}),\n}",
    "marker": {
     "at": "target",
     "radius": 3
@@ -10406,7 +10406,7 @@
      "after": 0.25,
      "attract": null,
      "blend": "add",
-     "color": "#fff0a8",
+     "color": "#ffffff",
      "delay": 0.25,
      "engine": null,
      "exp": [
@@ -10416,7 +10416,7 @@
      "fade": false,
      "glow": 14,
      "kind": "single",
-     "mote": true,
+     "mote": false,
      "n": 1,
      "pull": null,
      "radial": null,
@@ -10439,7 +10439,7 @@
       16
      ],
      "tex": "smoke",
-     "texture": "grug_core_mote.png^[multiply:#fff0a8",
+     "texture": "grug_core_fx_book.png",
      "time": 0,
      "vel": [
       [
@@ -10457,9 +10457,9 @@
    ],
    "skill": "censure",
    "sprite": {
-    "name": "Siegel",
+    "name": "Buch",
     "stand_in": "seal",
-    "text": "Ein rundes Siegel mit Strahlenkranz (16×16, Gold auf Weiß) für dieses eine große Partikel; bis dahin ein großer leuchtender Punkt."
+    "text": "grug_core_fx_book.png (Runde 66, Elfenbein und Gold), Größe 16; vorher ein großer leuchtender Punkt."
    },
    "status": "new",
    "t0": 0.0,
@@ -10552,7 +10552,7 @@
        "after": 0.25,
        "attract": null,
        "blend": "add",
-       "color": "#fff0a8",
+       "color": "#ffffff",
        "delay": 0.25,
        "engine": null,
        "exp": [
@@ -10562,7 +10562,7 @@
        "fade": false,
        "glow": 14,
        "kind": "single",
-       "mote": true,
+       "mote": false,
        "n": 1,
        "pull": null,
        "radial": null,
@@ -10585,7 +10585,7 @@
         16
        ],
        "tex": "smoke",
-       "texture": "grug_core_mote.png^[multiply:#fff0a8",
+       "texture": "grug_core_fx_book.png",
        "time": 0,
        "vel": [
         [
@@ -10757,23 +10757,23 @@
    "class": "priest",
    "context": [],
    "cost": {
-    "check_us": 0.0,
-    "dg": 4,
-    "i1": 12.42075,
-    "i2": 492.08608375000006,
-    "life": 0.2700163043478261,
-    "lua_us": 4.14,
-    "marginal": 0,
+    "check_us": 0.01,
+    "dg": 5,
+    "i1": 12.272375,
+    "i2": 478.0481421875,
+    "life": 0.2667907608695652,
+    "lua_us": 4.739999999999999,
+    "marginal": 13,
     "particles": 46,
     "peak": 46.0,
-    "rx_us": 6.0,
-    "single_events": 0,
-    "singles": 0,
+    "rx_us": 10.288,
+    "single_events": 1,
+    "singles": 1,
     "spawner_dg": 4,
     "spawner_wire": 1399,
     "spawners": 2,
-    "wire": 1399,
-    "zstd_us": 0.0
+    "wire": 1527,
+    "zstd_us": 3.988
    },
    "dynamic": "",
    "family": "reckoning",
@@ -10784,7 +10784,7 @@
    "hook": "Final Word's cast (kits_priest.lua, new def)",
    "id": "final_word",
    "key": "pfx.final_word.hit",
-   "look": "Eine Lichtsäule schlägt aus 7 m senkrecht auf das Ziel, ein goldener Ring springt am Boden auseinander.",
+   "look": "Eine Lichtsäule schlägt aus 7 m senkrecht auf das Ziel, in ihr fällt der große Hammer mit (0,1 s), ein goldener Ring springt am Boden auseinander.",
    "lua": [
     {
      "at": "target",
@@ -10797,7 +10797,7 @@
      "glow": 14,
      "kind": "spawner",
      "mote": true,
-     "n": 26,
+     "n": 25,
      "shape": [
       "line",
       [
@@ -10848,9 +10848,51 @@
       3
      ],
      "time": 0.05
+    },
+    {
+     "at": "target",
+     "blend": "add",
+     "exp": [
+      0.1,
+      0.1
+     ],
+     "fade": false,
+     "glow": 14,
+     "kind": "single",
+     "n": 1,
+     "shape": [
+      "box",
+      [
+       0,
+       7,
+       0
+      ],
+      [
+       0,
+       7,
+       0
+      ]
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "tex": "grug_core_fx_hammer.png",
+     "vel": [
+      [
+       0,
+       -63.2,
+       0
+      ],
+      [
+       0,
+       -63.2,
+       0
+      ]
+     ]
     }
    ],
-   "lua_text": "{\n\tspawner(26, 0.1, {at = \"target\", blend = \"add\", color = \"#fff0a8\", exp = {0.2, 0.3}, glow = 14, mote = true, shape = {\"line\", {0, 7, 0}, {0, 0.2, 0}}, size = {4, 5}}),\n\tspawner(20, 0.05, {at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.25, 0.35}, glow = 14, mote = true, radial = {5, 6}, shape = {\"disc\", {0, 0.15, 0}, 0.4, true}, size = {2.5, 3}}),\n}",
+   "lua_text": "{\n\tspawner(25, 0.1, {at = \"target\", blend = \"add\", color = \"#fff0a8\", exp = {0.2, 0.3}, glow = 14, mote = true, shape = {\"line\", {0, 7, 0}, {0, 0.2, 0}}, size = {4, 5}}),\n\tspawner(20, 0.05, {at = \"target\", blend = \"add\", color = \"#ffb800\", exp = {0.25, 0.35}, glow = 14, mote = true, radial = {5, 6}, shape = {\"disc\", {0, 0.15, 0}, 0.4, true}, size = {2.5, 3}}),\n\tsingle(1, {at = \"target\", blend = \"add\", exp = {0.1, 0.1}, fade = false, glow = 14, shape = {\"box\", {0, 7, 0}, {0, 7, 0}}, size = {12, 12}, tex = \"grug_core_fx_hammer.png\", vel = {{0, -63.2, 0}, {0, -63.2, 0}}}),\n}",
    "marker": null,
    "moment": "hit",
    "n": 48,
@@ -10895,7 +10937,7 @@
      "glow": 14,
      "kind": "spawner",
      "mote": true,
-     "n": 26,
+     "n": 25,
      "pull": null,
      "radial": null,
      "reach": null,
@@ -11010,6 +11052,63 @@
       [
        0,
        0,
+       0
+      ]
+     ]
+    },
+    {
+     "acc": [
+      0,
+      0,
+      0
+     ],
+     "after": 0,
+     "attract": null,
+     "blend": "add",
+     "color": "#ffffff",
+     "delay": 0.0,
+     "engine": null,
+     "exp": [
+      0.1,
+      0.1
+     ],
+     "fade": false,
+     "glow": 14,
+     "kind": "single",
+     "mote": false,
+     "n": 1,
+     "pull": null,
+     "radial": null,
+     "reach": null,
+     "shape": [
+      "box",
+      [
+       6.0,
+       7.0,
+       0.0
+      ],
+      [
+       6.0,
+       7.0,
+       0.0
+      ]
+     ],
+     "size": [
+      12,
+      12
+     ],
+     "tex": "smoke",
+     "texture": "grug_core_fx_hammer.png",
+     "time": 0,
+     "vel": [
+      [
+       0,
+       -63.2,
+       0
+      ],
+      [
+       0,
+       -63.2,
        0
       ]
      ]
@@ -14240,8 +14339,8 @@
  },
  "dominant": [
   {
-   "alive": 14.55,
-   "bytes": 2428.9,
+   "alive": 11.26,
+   "bytes": 2042.8,
    "key": "pfx.smite.hit"
   },
   {
@@ -14307,11 +14406,6 @@
    "key": "pfx.broadstroke.swing"
   },
   {
-   "alive": 14.55,
-   "bytes": 2428.9,
-   "key": "pfx.smite.hit"
-  },
-  {
    "alive": 12.52,
    "bytes": 833.8,
    "key": "pfx.charge.dash"
@@ -14325,6 +14419,11 @@
    "alive": 11.7,
    "bytes": 694.8,
    "key": "pfx.true_draw.trail"
+  },
+  {
+   "alive": 11.26,
+   "bytes": 2042.8,
+   "key": "pfx.smite.hit"
   },
   {
    "alive": 10.42,
@@ -14524,110 +14623,110 @@
  },
  "scenarios": {
   "20@0.5": {
-   "bytes": 7659.441,
+   "bytes": 7581.453,
    "datagrams": 25.985,
-   "mean": 60.457,
-   "out_bytes": 153188.811,
+   "mean": 59.795,
+   "out_bytes": 151629.055,
    "packets": 18.548,
-   "peak": 134.812,
-   "server_us": 2825.043,
-   "single_bytes": 2616.372,
+   "peak": 133.633,
+   "server_us": 2760.423,
+   "single_bytes": 2538.384,
    "spawner_bytes": 5043.069,
-   "started": 133.41
+   "started": 129.5
   },
   "20@1.0": {
-   "bytes": 8998.034,
+   "bytes": 8842.059,
    "datagrams": 25.985,
-   "mean": 120.914,
-   "out_bytes": 179960.686,
+   "mean": 119.59,
+   "out_bytes": 176841.174,
    "packets": 18.548,
-   "peak": 269.623,
-   "server_us": 2825.043,
-   "single_bytes": 3954.965,
+   "peak": 267.266,
+   "server_us": 2760.423,
+   "single_bytes": 3798.99,
    "spawner_bytes": 5043.069,
-   "started": 266.819
+   "started": 259.0
   },
   "20@1.0 uncut": {
-   "bytes": 13994.724,
-   "datagrams": 42.274,
-   "mean": 177.134,
-   "out_bytes": 279894.476,
-   "packets": 26.541,
-   "peak": 367.936,
-   "server_us": 2622.288,
-   "single_bytes": 3151.041,
+   "bytes": 13997.973,
+   "datagrams": 42.316,
+   "mean": 177.128,
+   "out_bytes": 279959.462,
+   "packets": 26.583,
+   "peak": 367.916,
+   "server_us": 2625.873,
+   "single_bytes": 3154.29,
    "spawner_bytes": 10843.683,
    "started": 398.091
   },
   "50@0.5": {
-   "bytes": 17231.935,
+   "bytes": 17036.965,
    "datagrams": 48.296,
-   "mean": 151.142,
-   "out_bytes": 861596.733,
+   "mean": 149.487,
+   "out_bytes": 851848.26,
    "packets": 29.703,
-   "peak": 268.708,
-   "server_us": 17325.179,
-   "single_bytes": 4624.262,
+   "peak": 266.236,
+   "server_us": 16938.805,
+   "single_bytes": 4429.293,
    "spawner_bytes": 12607.673,
-   "started": 333.524
+   "started": 323.75
   },
   "50@1.0": {
-   "bytes": 21145.086,
+   "bytes": 20755.147,
    "datagrams": 59.407,
-   "mean": 302.285,
-   "out_bytes": 1057254.285,
+   "mean": 298.974,
+   "out_bytes": 1037757.34,
    "packets": 29.703,
-   "peak": 537.415,
-   "server_us": 17325.179,
-   "single_bytes": 8537.413,
+   "peak": 532.472,
+   "server_us": 16938.805,
+   "single_bytes": 8147.474,
    "spawner_bytes": 12607.673,
-   "started": 667.049
+   "started": 647.5
   },
   "50@1.0 uncut": {
-   "bytes": 33723.891,
+   "bytes": 33720.037,
    "datagrams": 100.887,
-   "mean": 442.834,
-   "out_bytes": 1686194.537,
+   "mean": 442.819,
+   "out_bytes": 1686001.835,
    "packets": 50.444,
-   "peak": 744.519,
-   "server_us": 16068.197,
-   "single_bytes": 6614.683,
+   "peak": 744.482,
+   "server_us": 16090.511,
+   "single_bytes": 6610.829,
    "spawner_bytes": 27109.208,
    "started": 995.227
   },
   "5@0.5": {
-   "bytes": 2008.973,
-   "datagrams": 7.315,
-   "mean": 15.114,
-   "out_bytes": 10044.865,
-   "packets": 5.455,
-   "peak": 52.292,
-   "server_us": 193.132,
-   "single_bytes": 748.206,
+   "bytes": 1990.674,
+   "datagrams": 7.325,
+   "mean": 14.949,
+   "out_bytes": 9953.369,
+   "packets": 5.466,
+   "peak": 51.868,
+   "server_us": 188.218,
+   "single_bytes": 729.906,
    "spawner_bytes": 1260.767,
-   "started": 33.352
+   "started": 32.375
   },
   "5@1.0": {
-   "bytes": 2343.621,
-   "datagrams": 7.315,
-   "mean": 30.228,
-   "out_bytes": 11718.107,
-   "packets": 5.455,
-   "peak": 104.583,
-   "server_us": 193.132,
-   "single_bytes": 1082.854,
+   "bytes": 2305.825,
+   "datagrams": 7.325,
+   "mean": 29.897,
+   "out_bytes": 11529.126,
+   "packets": 5.466,
+   "peak": 103.736,
+   "server_us": 188.218,
+   "single_bytes": 1045.058,
    "spawner_bytes": 1260.767,
-   "started": 66.705
+   "started": 64.75
   },
   "5@1.0 uncut": {
-   "bytes": 3498.681,
-   "datagrams": 10.569,
-   "mean": 44.283,
-   "out_bytes": 17493.405,
-   "packets": 6.635,
-   "peak": 139.685,
-   "server_us": 179.948,
-   "single_bytes": 787.76,
+   "bytes": 3499.493,
+   "datagrams": 10.579,
+   "mean": 44.282,
+   "out_bytes": 17497.466,
+   "packets": 6.646,
+   "peak": 139.676,
+   "server_us": 180.177,
+   "single_bytes": 788.572,
    "spawner_bytes": 2710.921,
    "started": 99.523
   }

@@ -1586,10 +1586,22 @@ shows a single-colour particle effect, built from the accepted catalogue
   their dust, smoke, wind, webs, leaves and splashes stay plain, and the
   material textures (blood, rock, bubbles, opaque snow, the rift spawn's smoke, dust
   and wind) keep their look.
-- **Smite** (2026-10-21) is a small Final Word: a short beam of five motes
-  shoots down from 3.2 m onto the target and a gold ring of eight springs
-  out to about 1 m (Final Word: a 7 m column and a ring of 20 to about 2 m).
-- **Falls** (2026-10-21): Meteor's comet and Censure's seal appear late in
+- **Smite** (2026-10-21) is a small Final Word: a hammer falls from 3.2 m
+  onto the target and a gold ring of eight springs out to about 1 m as it
+  lands (Final Word: a 7 m column with a large hammer inside it and a ring of
+  20 to about 2 m).
+- **The priest's symbols** (Round 66, the user's picks of 2026-10-28): the
+  skill effects' only symbol textures, ivory and gold
+  (`grug_core_fx_hammer.png`, `grug_core_fx_book.png`), so they take no
+  tint; each is one single particle, lit like every skill light (added,
+  glow 14), falling straight down without fading. Smite's hammer (size 7)
+  falls head first in 0.15 s, its head landing at the target's feet, and
+  the ring follows the fall; Final Word's hammer (size 12) falls with the
+  column in its 0.1 s; Censure's book (size 16) replaced the falling seal
+  with the same timing. The damage stays instant (Censure's after its
+  delay, as before). Smite plays 9 particles (13 with the old beam), Final
+  Word 46, Censure's fall 1.
+- **Falls** (2026-10-21): Meteor's comet and Censure's book appear late in
   the delay and fall at 14 and 12 m/s, landing with the impact; neither fades
   on the way down. A low ceiling shortens the fall, never the delay.
 - **Budget:** at most 76 particles per occurrence (Fire Rain's impact,

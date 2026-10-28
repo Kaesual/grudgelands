@@ -25,8 +25,9 @@
 --      late (after + life = the delay), fall at 14 and 12 m/s (slower only
 --      when the delay is shorter than the fall), do not fade and land on the
 --      anchor;
---   S  smite_hit is a small Final Word: a beam of single particles shooting
---      down and a ring, lower, fewer and narrower than Final Word's;
+--   S  smite_hit is a small Final Word: a falling hammer of single particles
+--      (Round 66: the hammer replaced the beam, tools/r66_fx) and a ring,
+--      lower, fewer and narrower than Final Word's;
 --   T  grug_core_mote.png ships as an 8 x 8 PNG with its licence entry.
 -- Prints "R541 GLOW PORTABLE PASS checks=<n>" or the failures (exit 1).
 
@@ -297,9 +298,10 @@ do
 		eq(e.kind, "single", "S Smite plays single particles (the basic attack)")
 		n = n + e.n
 	end
-	eq(n, 13, "S Smite: 13 particles")
+	-- Round 66: one hammer particle instead of the five-mote beam (13 -> 9).
+	eq(n, 9, "S Smite: 9 particles")
 	local beam, ring = smite[1], smite[2]
-	eq(beam.shape[1], "line", "S the beam is a line")
+	eq(beam.tex, "grug_core_fx_hammer.png", "S the beam is the hammer")
 	check(beam.vel[1][2] < 0, "S the beam shoots down")
 	check(beam.shape[2][2] < word[1].shape[2][2], "S the beam starts lower than Final Word's column")
 	check(beam.shape[3][2] + beam.vel[1][2] * beam.exp[2] > -0.1, "S the beam stops at the ground")
