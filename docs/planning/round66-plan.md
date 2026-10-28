@@ -385,8 +385,10 @@ for the user's verdict on a first-look default.
 
 All six lanes are merged on main. MAIL, EQUIP, UI, MAP and FX were each
 reviewed independently (Opus): all MERGE, no fix rounds. The art study ART
-(tools only) was checked by the coordinator (`generate.py --check`); its
-two shipped textures were reviewed inside FX's review. This lane D (the
+(tools only) was checked by the coordinator (`generate.py --check`); FX's
+review checked the shipped hammer and the book's integration with the
+stand-in book (Book F), which the coordinator then replaced by the picked
+Book Q. This lane D (the
 version, the declaration, this section, the GUI checklist, the status
 owners) follows on main `ef368b95`. **0.66.0 is compatible:** MAIL adds one
 mod storage key per sender, `sent:<name>` (a missing key reads as an empty
@@ -478,7 +480,8 @@ stated; the *look* items are on the GUI checklist):
   tooltips (client font); the welcome window and the vendored sign, book
   and mob dialogs are not converted.
 - **ART's review:** a coordinator check instead of an independent review;
-  the shipped textures were reviewed in FX's review.
+  FX's review covered the shipped hammer and the book's integration (with
+  the stand-in Book F; Book Q swapped in afterwards by the coordinator).
 - **§7 start state:** origin already held `7a68e871` (pushed on
   2026-10-27), not one commit behind it.
 
@@ -541,6 +544,7 @@ From the lanes' reports (measured there unless marked).
   `r53_hooks`, `r541_glow`, `r40_px` PASS; `check_limits.lua` 62 cards.
 - Main: `check_fresh_server.py` PASS after each merge; after FX `r66_fx`,
   `r53_hooks`, `r541_glow` PASS. This lane: `check_upgrade.py`,
-  `check_fresh_server.py`, `r37_dc` and `r43_gs` (the version, the
-  changelog, the README and CHANGELOG links, the declaration), the link
-  check of the touched documents.
+  `check_fresh_server.py`; `r37_dc`, `r41_up` and `r43_gs` (they pin the
+  version, the changelog, the README and CHANGELOG links and the
+  declaration); the link and anchor check of the touched documents; the
+  full run once, 291/0.
