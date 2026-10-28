@@ -38,11 +38,21 @@ function Z.text(name, band)
 	return (band and band ~= "") and (name .. " " .. band) or name
 end
 
+-- A font_size value: `factor` times the form's text `growth` (Round 66
+-- ruling 4), at growth 1 the literal itself, as grug_core.ui.font_size
+-- writes it (this file stays free of engine and grug_core calls).
+local function font_value(factor, growth)
+	if not growth or growth == 1 then return ("*%g"):format(factor) end
+	return ("*%.3f"):format(factor * growth)
+end
+
 -- The text metrics {char, line} in formspec units for a client window
 -- information table (core.get_player_window_information) or nil: the
 -- client's pixels per unit are its size over max_formspec_size; without
--- them a 1920x1080 window at GUI scale 1 (72 px per unit).
-function Z.metrics(info, zoom)
+-- them a 1920x1080 window at GUI scale 1 (72 px per unit). `growth` (nil:
+-- 1) is the map window's text growth on a grown viewport ceiling: the font
+-- grows by it, and so do the boxes.
+function Z.metrics(info, zoom, growth)
 	local px, scale = 72, 1
 	local size, max = type(info) == "table" and info.size, type(info) == "table" and
 		info.max_formspec_size
@@ -55,8 +65,9 @@ function Z.metrics(info, zoom)
 		scale = info.real_gui_scaling
 	end
 	local font_scale = (zoom or 1) >= 2 and Z.ZOOM_FONT_SCALE or Z.FONT_SCALE
-	local font = Z.FONT_PX * scale * font_scale
-	return {char = font * Z.CHAR_EM / px, line = font * Z.LINE_EM / px, font_scale = font_scale}
+	local font = Z.FONT_PX * scale * font_scale * (growth or 1)
+	return {char = font * Z.CHAR_EM / px, line = font * Z.LINE_EM / px, font_scale = font_scale,
+		font = font_value(font_scale, growth), body = font_value(1, growth)}
 end
 
 -- The UTF-8 characters of `text` (the en dash counts once).
@@ -82,10 +93,11 @@ function Z.elements(list, sx, sy, name, band, metrics, esc, max_w, max_h)
 	if max_w then x0 = math.max(0, math.min(max_w - box.w, x0)) end
 	if max_h then y0 = math.max(0, math.min(max_h - box.h, y0)) end
 	list[#list + 1] = ("box[%.3f,%.3f;%.3f,%.3f;%s]"):format(x0, y0, box.w, box.h, Z.BOX)
-	list[#list + 1] = ("style_type[label;font_size=*%.2f]"):format(metrics.font_scale)
+	list[#list + 1] = ("style_type[label;font_size=%s]"):format(metrics.font or
+		("*%.2f"):format(metrics.font_scale))
 	list[#list + 1] = ("label[%.3f,%.3f;%s]"):format(x0 + Z.PAD_X,
 		y0 + Z.PAD_Y + metrics.line / 2, esc(Z.text(name, band)))
-	list[#list + 1] = "style_type[label;font_size=*1]"
+	list[#list + 1] = "style_type[label;font_size=" .. (metrics.body or "*1") .. "]"
 	return box
 end
 

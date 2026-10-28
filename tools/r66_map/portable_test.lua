@@ -126,9 +126,18 @@ do
 		navigation_layout = function() return {} end,
 		navigation = function() return "", 1.5 end}))
 	grug_inventory.UI = {header_h = 1.5}
-	grug_core.ui.prose = function() return "" end
+	local seen = {}
+	grug_core.ui.prose = function(_, _, _, _, _, _, restore, font)
+		seen.prose = {restore, font}
+		return ""
+	end
 	grug_core.ui.panel = function() return "" end
-	grug_core.ui.rows = function() return "" end
+	grug_core.ui.rows = function(_, spec) seen.rows = spec.scale return "" end
+	-- grug_core.ui.text_growth (ui.lua) with the report given: the form's
+	-- growth (ui_window.lua form_growth, loaded above).
+	grug_core.ui.text_growth = function(_, fw, fh, info)
+		return info and grug_core.ui.form_growth(info, fw, fh) or 1
+	end
 	grug_quests.category_list = function() return {}, {} end
 	grug_map.minimap = {available = function() return false end}
 	grug_map.atlas.collect_markers = function(_, only)
@@ -156,7 +165,8 @@ do
 		local w, h = form:match("image%[[%d.%-]+,[%d.%-]+;([%d.]+),([%d.]+);grug_map_trainer_tailor%.png%]")
 		return tonumber(w), form
 	end
-	for _, name in ipairs({"1920x1080", "1280x720", "phone 2400x1080 density 2.5"}) do
+	for _, name in ipairs({"1920x1080", "1280x720", "3840x2160", "3840x2160 HUD 2",
+			"phone 2400x1080 density 2.5"}) do
 		local row = by[name]
 		local icon, form = drawn_icon(row.info)
 		local fw, fh = (form or ""):match("size%[([%d.]+),([%d.]+)%]")
@@ -168,6 +178,40 @@ do
 	end
 	local icon = drawn_icon(nil)
 	check(icon and math.floor(icon * 72) == 32, "W no window information: 32 px")
+
+	-- G  the body text grows with the form on a grown ceiling (ruling 4):
+	-- the "Current:" line, the quest rows and the zone labels; at 1080p
+	-- the literals stay.
+	grug_map.layers.zones = {{id = "z", name = "Dawnmere Fields", band = "1–10", x = 0, z = 0}}
+	local function zones(info)
+		local state = W.new_state()
+		state.layer = "zones"
+		seen.prose, seen.rows = nil, nil
+		return W.formspec(player, state, info)
+	end
+	local form = zones(by["1920x1080"].info)
+	check(seen.prose[1] == nil and seen.prose[2] == nil and seen.rows == 1 and
+		form:find("style_type[label;font_size=*0.65]", 1, true) and
+		form:find("style_type[label;font_size=*1]", 1, true), "G 1920x1080: literal sizes")
+	local four = by["3840x2160"].info
+	local fw, fh = zones(four):match("size%[([%d.]+),([%d.]+)%]")
+	local growth = grug_core.ui.form_growth(four, tonumber(fw), tonumber(fh))
+	form = zones(four)
+	check(growth > 1.3 and growth < 1.4, ("G 3840x2160: the map window grows %.3f"):format(growth))
+	check(seen.prose[1] == growth and seen.prose[2] == growth and seen.rows == growth,
+		"G 3840x2160: the Current line and the quest rows grow")
+	check(form:find(("style_type[label;font_size=*%.3f]"):format(0.65 * growth), 1, true) and
+		form:find(("style_type[label;font_size=*%.3f]"):format(growth), 1, true),
+		"G 3840x2160: zone labels grow and restore the grown body size")
+	-- the label boxes keep their 1080p size in units (text and units both grow)
+	local Z = grug_map.layers.zone_labels
+	local wide = Z.box("Dawnmere Fields", "1–10", Z.metrics(grug_core.ui.window_information(four), 1, growth))
+	local base = Z.box("Dawnmere Fields", "1–10", Z.metrics(grug_core.ui.window_information(
+		by["1920x1080"].info), 1))
+	check(math.abs(wide.w - base.w) < 0.02 and math.abs(wide.h - base.h) < 0.02,
+		("G zone label box %.3f x %.3f units at 4K, %.3f x %.3f at 1080p"):format(wide.w, wide.h,
+			base.w, base.h))
+	print(("G 3840x2160 map window text growth %.3f"):format(growth))
 end
 
 -- ---------------------------------------------------------------------------
