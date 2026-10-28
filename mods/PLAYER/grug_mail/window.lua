@@ -412,9 +412,10 @@ local function sent_tab(player, session, fs)
 		else
 			fs[#fs + 1] = ("label[%.2f,8.3;%s]"):format(PANE_X, esc(colored(COLOR.dim,
 				"Attachments, sent with the letter:")))
+			-- Never cut: a name may carry the engine's translation markup.
 			for index, name in ipairs(names) do
 				fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(PANE_X + 0.3,
-					8.3 + 0.42 * index, esc("• " .. clip(name, 48)))
+					8.3 + 0.42 * index, esc("• " .. name))
 			end
 		end
 		fs[#fs + 1] = ("button[%.2f,11.45;1.55,0.75;sent_delete_%d;Delete]"):format(
