@@ -18,7 +18,9 @@ local function vessels_shelf_formspec(pos, player, context)
 	local loc = default.node_formspec.location(pos)
 	local station = grug_inventory.STATION
 	local x, y, pitch = station.x, station.y, station.pitch
-	local box, bottom = grug_inventory.station_box(S("Vessels Shelf"), 2 * pitch - 0.25)
+	-- GRUG PATCH (Round 66 UI): the box label grows with the form text.
+	local box, bottom = grug_inventory.station_box(S("Vessels Shelf"), 2 * pitch - 0.25,
+		grug_core.ui.text_growth(player))
 	local formspec = box ..
 		("list[%s;vessels;%.3f,%.3f;8,2;]"):format(loc, x, y) ..
 		"listring[" .. loc .. ";vessels]" ..

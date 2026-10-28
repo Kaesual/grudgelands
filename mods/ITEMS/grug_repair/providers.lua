@@ -130,7 +130,7 @@ local function form(session, player)
 	local greeting = mender and grug_jobs.GREETINGS and grug_jobs.GREETINGS.mender
 	local width, top = 16, 2.2
 	local fs = {"", grug_core.ui.service_header(width, mender and grug_jobs.MENDER_TITLE or
-		"Equipment repairs", "Restore your equipment")}
+		"Equipment repairs", "Restore your equipment", nil, grug_core.ui.text_growth(player, width, 10))}
 	local info_y = 1.55
 	if greeting then
 		for piece in (grug_inventory.wrap_text(greeting, 67) .. "\n"):gmatch("(.-)\n") do

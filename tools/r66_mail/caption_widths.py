@@ -6,8 +6,9 @@
 For a few screen profiles this reproduces the engine's form fitting
 (guiFormSpecMenu.cpp calculateImgsize / getImgsize, clientdynamicinfo.cpp
 calculateMaxFSSize) with the game's Full-HD viewport cap
-(grug_core/ui_window.lua window_padding, window_information) and text scale
-(grug_core/ui.lua text_scale), then measures each tab caption in the
+(grug_core/ui_window.lua window_padding, window_information; since Round 66
+lane UI the ceiling grows to two thirds of a screen over 1620 px high) and
+text scale (grug_core/ui.lua text_scale, with its text growth), then measures each tab caption in the
 engine's default font (fonts/Arimo-Regular.ttf of LUANTI_SOURCE, default
 reference_projects/luanti) at the tab's size (16 px x 1.1 x text scale x
 GUI scaling x density, fontengine.cpp) against the tab button's width in
@@ -29,7 +30,13 @@ FONT = os.path.join(LUANTI, "fonts", "Arimo-Regular.ttf")
 
 FORM_W, FORM_H = 20, 13.5 + 0.95      # the mailbox window (window.lua frame)
 WINDOW_H = 13.5 + 1.5                 # grug_inventory UI.window_h (text_scale)
-CAP_W, CAP_H = 1920, 1080             # ui_window.lua
+CAP_W, CAP_H = 1920, 1080             # ui_window.lua (the Full-HD ceiling)
+
+
+def ceiling(width, height):
+    """ui_window.lua: min(H, max(1080, 2/3 H)) high, 1920 * k wide."""
+    vh = min(height, max(CAP_H, height * 2 / 3))
+    return min(width, CAP_W * max(1, vh / CAP_H)), vh
 # caption, base caption, counted (window.lua TABS)
 TABS = [("Letters (99)", "Letters", True), ("Sent", "Sent", False),
         ("Announcements (99)", "Announcements", True), ("Write", "Write", False),
@@ -66,8 +73,8 @@ def get_imgsize(avail_w, avail_h, density, gui):
     return max(prefer, fixed)
 
 
-def fit(width, height, density, gui):
-    vw, vh = min(width, CAP_W), min(height, CAP_H)
+def fit(width, height, density, gui, full_hd=False):
+    vw, vh = (min(width, CAP_W), min(height, CAP_H)) if full_hd else ceiling(width, height)
     if (vw, vh) == (width, height):
         pad_x = pad_y = 0.05
     else:
@@ -83,8 +90,24 @@ def fit(width, height, density, gui):
     if (vw, vh) != (width, height):
         virtual = max(0.5555 * 96 * rgs, preferred * min(vw, vh) / min(width, height))
         max_y = vh / virtual
+    if not full_hd:
+        # text_scale: the fit on the Full-HD ceiling times the text growth
+        # (the inventory window's, which the mailbox window shares).
+        _, scale, _ = fit(width, height, density, gui, True)
+        _, _, grown = fit_inventory(width, height, density, gui)
+        return imgsize, scale * grown, rgs
     scale = max(1 / max(1, rgs), min(1, max_y / WINDOW_H))
     return imgsize, scale, rgs
+
+
+def fit_inventory(width, height, density, gui):
+    """The inventory window's (20 x WINDOW_H) growth, grown / Full-HD ceiling."""
+    def size(vw, vh):
+        preferred = get_imgsize(vw, vh, density, gui)
+        return min(max(0.5555 * 96 * density * gui, 0.9 * preferred),
+                   0.9 * vw / 20, 0.9 * vh / WINDOW_H)
+    grown, full = size(*ceiling(width, height)), size(min(width, CAP_W), min(height, CAP_H))
+    return grown, full, grown / full if ceiling(width, height) != (min(width, CAP_W), min(height, CAP_H)) else 1
 
 
 def main():

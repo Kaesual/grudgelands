@@ -298,7 +298,15 @@ local function help_content(player, context)
 		end
 	end
 	if selected == "sound" then fs[#fs + 1] = sound_controls(player) end
-	fs[#fs + 1] = body_of(selected)
+	-- hypertext[] has its own absolute default size (16, scaled like the
+	-- client font): on a grown viewport ceiling it grows with the form text.
+	local growth = grug_core.ui.text_growth(player)
+	local body = body_of(selected)
+	if growth ~= 1 then
+		body = body:gsub("^(hypertext%[[^;]*;[^;]*;;)",
+			("%%1<global size=%d>"):format(math.floor(16 * growth + 0.5)), 1)
+	end
+	fs[#fs + 1] = body
 	return table.concat(fs)
 end
 

@@ -565,6 +565,7 @@ end
 local function build(player, view)
 	local fs = {
 		("style_type[label;font_size=*%.3f]"):format(0.9 * UI.text_scale(player))}
+	local growth = UI.text_growth(player)
 	local page = current(view.st)
 	if page and page.kind == "group" then
 		group_page(fs, player, view, page)
@@ -573,7 +574,7 @@ local function build(player, view)
 	elseif page then
 		recipe_page(fs, player, view, page)
 	end
-	fs[#fs + 1] = "style_type[label;font_size=*1]"
+	fs[#fs + 1] = "style_type[label;font_size=" .. UI.font_size(1, growth) .. "]"
 	return table.concat(fs)
 end
 

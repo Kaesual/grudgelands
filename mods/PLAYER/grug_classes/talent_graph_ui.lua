@@ -216,10 +216,11 @@ function graph.page_content(viewer, view)
 		fs[#fs + 1] = ("tooltip[%s;%s]"):format(field,
 			esc(grug_inventory.wrap_text(other.description, 58)))
 	end
-	fs[#fs + 1] = "style_type[label;font_size=*0.8]"
+	local growth = grug_core.ui.text_growth(viewer)
+	fs[#fs + 1] = "style_type[label;font_size=" .. grug_core.ui.font_size(0.8, growth) .. "]"
 	fs[#fs + 1] = ("label[0.5,%.2f;%s]"):format(page.y + page.h - 0.3, esc(view.points_text or ""))
 	fs[#fs + 1] = view.header or ""
-	fs[#fs + 1] = "style_type[label;font_size=*1]"
+	fs[#fs + 1] = "style_type[label;font_size=" .. grug_core.ui.font_size(1, growth) .. "]"
 
 	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(0.85 * grug_core.ui.text_scale(viewer))
 	local background = graph.background_texture(tree)
@@ -255,16 +256,17 @@ function graph.page_content(viewer, view)
 		local fields = by_state[state]
 		if fields then
 			fs[#fs + 1] = state == "selected"
-				and grug_inventory.selected_button_style(fields[1], true)
+				and grug_inventory.selected_button_style(fields[1], true, growth)
 				or ("style[%s;%s]"):format(table.concat(fields, ","),
 					grug_classes.TALENT_NODE_STYLES[state])
 		end
 	end
 	fs[#fs + 1] = table.concat(parts)
 	fs[#fs + 1] = grug_core.ui.panel(page.x, page.strip_y, page.w, page.strip_h)
-	fs[#fs + 1] = ("style_type[label;font_size=*1]style_type[textarea;font_size=*%.3f]"):format(0.8 * grug_core.ui.text_scale(viewer))
+	fs[#fs + 1] = ("style_type[label;font_size=%s]style_type[textarea;font_size=*%.3f]"):format(
+		grug_core.ui.font_size(1, growth), 0.8 * grug_core.ui.text_scale(viewer))
 	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(page.x, page.strip_y,
 		page.w, page.strip_h, esc(strip_text(viewer, view)))
-	fs[#fs + 1] = "style_type[textarea;font_size=*1]"
+	fs[#fs + 1] = "style_type[textarea;font_size=" .. grug_core.ui.font_size(1, growth) .. "]"
 	return table.concat(fs)
 end

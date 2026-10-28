@@ -12,8 +12,9 @@ local S = default.get_translator
 function default.chest.get_chest_formspec(pos, player, context)
 	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
 	local station = grug_inventory.STATION
+	-- GRUG PATCH (Round 66 UI): the box label grows with the form text.
 	local box, bottom = grug_inventory.station_box(S("Chest"),
-		4 * station.pitch - 0.25)
+		4 * station.pitch - 0.25, grug_core.ui.text_growth(player))
 	return grug_inventory.station_formspec(player, box ..
 		("list[nodemeta:%s;main;%.3f,%.3f;8,4;]"):format(spos, station.x, station.y) ..
 		"listring[nodemeta:" .. spos .. ";main]" ..

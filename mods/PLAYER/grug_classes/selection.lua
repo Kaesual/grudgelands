@@ -257,30 +257,52 @@ local SIDE_X = 3.8 -- the right part
 local ROW_Y = 2.5 -- race and class buttons
 local LOOK_Y = 4.7
 local CREATE_X, CREATE_Y, CREATE_W, CREATE_H = 11.0, 9.4, 3.6, 0.8
--- A chosen race or class; a chosen faction keeps its own colour and the other
--- one is dimmed.
 local HINT_COLOUR = "#b8b0a0"
-
-local function dimmed(colour)
-	local r, g, b = colour:match("^#(%x%x)(%x%x)(%x%x)")
-	if not r then
-		return colour
-	end
-	return ("#%02x%02x%02x"):format(math.floor(tonumber(r, 16) * 0.4),
-		math.floor(tonumber(g, 16) * 0.4), math.floor(tonumber(b, 16) * 0.4))
-end
+-- The faction buttons (Round 66 ruling 9) wear their faction's colour as a
+-- fill of this strength (alpha over the dark window): subdued while not
+-- chosen, a little brighter under the mouse, full once chosen.
+local FACTION_SUBDUED, FACTION_HOVER, FACTION_PRESSED = 0.38, 0.5, 0.62
 
 local function one_line(text)
 	return (text or ""):gsub("\n", " ")
 end
 
+local function faction_fill(colour, strength)
+	return esc(("[fill:16x16:%s%02x"):format(colour, math.floor(255 * strength + 0.5)))
+end
+
+-- Its own style instead of the navigation one: no underline, and the focus
+-- looks like the normal state. A fresh window focuses its last button
+-- (guiFormSpecMenu.cpp setInitialFocus), the Throng's, and the shared focus
+-- look must not read as a choice. Hover still shows on a focused button:
+-- the hovered state applies after the focused one (StyleSpec.h
+-- getStyleFromStatePropagation).
+local function faction_style(field, colour, chosen, scale)
+	local name = esc(field)
+	local normal = faction_fill(colour, chosen and 1 or FACTION_SUBDUED)
+	local hover = chosen and normal or faction_fill(colour, FACTION_HOVER)
+	local pressed = chosen and normal or faction_fill(colour, FACTION_PRESSED)
+	local text = chosen and "#ffffff" or grug_core.ui.colors.text
+	return ("style[%s;border=false;bgcolor=#ffffff;bgimg=%s;bgimg_middle=6;" ..
+		"padding=-6,-6,6,6;font_size=*%.3f;textcolor=%s;content_offset=0,0]" ..
+		"style[%s:focused;bgimg=%s;textcolor=%s]" ..
+		"style[%s:hovered;bgimg=%s;textcolor=%s]" ..
+		"style[%s:pressed;bgimg=%s;textcolor=%s]"):format(name, normal, scale or 1, text,
+		name, normal, text, name, hover, text, name, pressed, text)
+end
+
+-- `fs.growth` is the window's text growth (grug_core.ui.text_growth).
 local function button(fs, x, y, w, h, field, label, tooltip, bgcolor, chosen)
-	fs[#fs + 1] = grug_core.ui.button_style(field, chosen and "selected" or "normal")
-	if field:match("^faction_") or field:match("^race_") or field:match("^class_") then
-        fs[#fs + 1] = grug_core.ui.navigation_style(field, chosen, x, y, w, h,
-            field:match("^race_") ~= nil)
-	elseif bgcolor then
-		fs[#fs + 1] = ("style[%s;bgcolor=%s]"):format(field, bgcolor)
+	if field:match("^faction_") then
+		fs[#fs + 1] = faction_style(field, bgcolor, chosen, fs.growth)
+	else
+		fs[#fs + 1] = grug_core.ui.button_style(field, chosen and "selected" or "normal", fs.growth)
+		if field:match("^race_") or field:match("^class_") then
+			fs[#fs + 1] = grug_core.ui.navigation_style(field, chosen, x, y, w, h,
+				field:match("^race_") ~= nil, fs.growth)
+		elseif bgcolor then
+			fs[#fs + 1] = ("style[%s;bgcolor=%s]"):format(field, bgcolor)
+		end
 	end
 	if chosen then fs[#fs + 1] = ("style[%s;font=bold]"):format(field) end
 	fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(x, y, w, h, field,
@@ -329,16 +351,19 @@ local function draft_ready(draft)
 end
 
 local function create_formspec(draft, player)
+	local growth = grug_core.ui.text_growth(player, WIDTH, HEIGHT)
 	local fs = {
 		"formspec_version[6]",
 		("size[%s,%s]"):format(WIDTH, HEIGHT),
 		(grug_core.ui.window_padding and grug_core.ui.window_padding(player) or ""),
-		DARK_BACKGROUND,
-		grug_core.ui.title(0.4, 0.45, "Create your character"),
-		"style_type[label,textarea;font_size=*0.85]style_type[textarea;border=false]",
+		DARK_BACKGROUND, growth ~= 1 and grug_core.ui.fonts(growth) or "",
+		grug_core.ui.title(0.4, 0.45, "Create your character", growth, growth),
+		"style_type[label,textarea;font_size=" .. grug_core.ui.font_size(0.85, growth) ..
+			"]style_type[textarea;border=false]",
 		grug_core.ui.panel(0.25, 1.95, 3.3, 8.35),
 		grug_core.ui.panel(3.65, 1.95, 11.1, 2.5),
 		grug_core.ui.panel(3.65, 4.55, 11.1, 4.8),
+		growth = growth,
 	}
 	if draft.faction then
 		-- The chosen faction's button takes the focus at every send (0.45.1):
@@ -350,14 +375,9 @@ local function create_formspec(draft, player)
 	end
 	local faction_w = (RIGHT_EDGE - LEFT - 0.2) / #grug_core.faction_ids
 	for index, id in ipairs(grug_core.faction_ids) do
-		local def = grug_core.factions[id]
-		local colour = def.color
-		if draft.faction and draft.faction ~= id then
-			colour = dimmed(colour)
-		end
 		button(fs, LEFT + (index - 1) * (faction_w + 0.2), 0.85, faction_w, 0.9,
 			"faction_" .. id, grug_factions.display_name(id), faction_tooltip(id),
-			colour, draft.faction == id)
+			grug_core.factions[id].color, draft.faction == id)
 	end
 	if not draft.faction then
 		fs[#fs + 1] = ("label[%.2f,2.4;%s]"):format(LEFT, esc(core.colorize(HINT_COLOUR,
@@ -367,7 +387,7 @@ local function create_formspec(draft, player)
 
 	-- The race column with the chosen race's description under it.
 	local races = grug_classes.race_ids[draft.faction] or {}
-	fs[#fs + 1] = grug_core.ui.heading(LEFT, 2.2, "RACE")
+	fs[#fs + 1] = grug_core.ui.heading(LEFT, 2.2, "RACE", growth)
 	for index, id in ipairs(races) do
 		local def = grug_classes.registered_races[id]
 		button(fs, LEFT, ROW_Y + (index - 1) * 0.9, RACE_W, 0.8, "race_" .. id,
@@ -389,7 +409,7 @@ local function create_formspec(draft, player)
 	-- The class row, the chosen class's description in one line under it.
 	local classes = grug_classes.class_ids
 	local class_w = (RIGHT_EDGE - SIDE_X - (#classes - 1) * 0.2) / #classes
-	fs[#fs + 1] = grug_core.ui.heading(SIDE_X, 2.2, "CLASS")
+	fs[#fs + 1] = grug_core.ui.heading(SIDE_X, 2.2, "CLASS", growth)
 	for index, id in ipairs(classes) do
 		local def = grug_classes.registered_classes[id]
 		button(fs, SIDE_X + (index - 1) * (class_w + 0.2), ROW_Y, class_w, 0.8,
@@ -416,11 +436,13 @@ local function loading_formspec(status, failed, player)
 		local minutes = math.ceil(status.eta_seconds / 60)
 		eta = ("Time remaining: %dh %02dm"):format(math.floor(minutes / 60), minutes % 60)
 	end
+	local growth = grug_core.ui.text_growth(player, 10.4, 4.2)
 	local parts = {
 		"formspec_version[6]", "size[10.4,4.2]",
 		(grug_core.ui.window_padding and grug_core.ui.window_padding(player) or ""), DARK_BACKGROUND,
+		growth ~= 1 and grug_core.ui.fonts(growth) or "",
 		grug_core.ui.panel(0.4, 0.35, 9.6, 3.45),
-		"style_type[label;font_size=*0.85]",
+		"style_type[label;font_size=" .. grug_core.ui.font_size(0.85, growth) .. "]",
 		"label[0.6,0.7;" .. core.formspec_escape(
 			("Preparing %s: %d%%"):format(scope, math.floor(status.percent))) .. "]",
 	}

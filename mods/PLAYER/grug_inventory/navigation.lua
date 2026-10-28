@@ -52,12 +52,13 @@ function grug_inventory.navigation(player, context, selected, width, layout)
         or ("grug_ui_icon_emblem.png^[multiply:" .. accent)
     local faction_name = faction and grug_factions.display_name and grug_factions.display_name(faction) or ""
     local text_scale = grug_core.ui.text_scale(player)
+    local growth = grug_core.ui.text_growth(player)
     local level = grug_xp and grug_xp.get_level and grug_xp.get_level(player)
     -- Text navigation stays unboxed on hover and press. Keyboard focus has
     -- its own visible fill; the active page keeps its underline.
     local fs = {"real_coordinates[true]",
         "image[0.28,0.17;0.46,0.55;" .. esc(emblem) .. "]",
-        grug_core.ui.title(0.95, 0.28, "GRUDGELANDS", text_scale),
+        grug_core.ui.title(0.95, 0.28, "GRUDGELANDS", text_scale, growth),
         ("style_type[label;font_size=*%.3f]"):format(0.65 * text_scale),
         ("label[0.95,0.62;%s]"):format(esc(core.colorize(accent, string.upper(faction_name)))),
         ("style_type[label;font_size=*%.3f]"):format(0.85 * text_scale),
@@ -65,8 +66,9 @@ function grug_inventory.navigation(player, context, selected, width, layout)
         ("style_type[label;font_size=*%.3f]"):format(0.65 * text_scale),
         ("label[%.3f,0.61;%s]"):format(width - 4.1,
             esc(core.colorize(grug_core.ui.colors.muted, level and ("Level " .. level) or ""))),
-        "style_type[label;font_size=*1]",
-        "style[grug_ui_close;bgimg=grug_ui_clear.png;bgimg_middle=6;padding=-6,-6,6,6;font_size=*1.1]",
+        "style_type[label;font_size=" .. grug_core.ui.font_size(1, growth) .. "]",
+        "style[grug_ui_close;bgimg=grug_ui_clear.png;bgimg_middle=6;padding=-6,-6,6,6;font_size=" ..
+            grug_core.ui.font_size(1.1, growth) .. "]",
         ("button_exit[%.3f,0.14;0.45,0.5;grug_ui_close;×]"):format(width - 0.75),
         ("box[0.25,0.80;%.3f,0.015;#d1c09a2b]"):format(width - 0.5)}
     -- Translation markup is not visible text and must not inflate widths.

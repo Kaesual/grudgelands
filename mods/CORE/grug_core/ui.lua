@@ -18,21 +18,55 @@ function UI.styles()
 	})
 end
 
+local function window_report(player)
+    return player and core.get_player_window_information and
+        core.get_player_window_information(player:get_player_name()) or nil
+end
+
+-- The inventory window, the reference form of text_scale and text_growth.
+local function inventory_size()
+    local inventory = rawget(_G, "grug_inventory") and grug_inventory.UI or {}
+    return inventory.frame_w or 20, inventory.window_h
+end
+
+-- Form text growth on a screen whose viewport ceiling grew (ui_window.lua,
+-- Round 66 ruling 4): text grows as much as a fw x fh form does (default the
+-- inventory window), so it keeps its 1080p proportion to the slots. Exactly
+-- 1 on screens up to 1620 px high: their forms stay byte-identical.
+function UI.text_growth(player, fw, fh, info)
+    if not UI.form_growth then return 1 end
+    local w, h = inventory_size()
+    info = info or window_report(player)
+    return info and UI.form_growth(info, fw or w, fh or h) or 1
+end
+
 -- Dense summaries must still fit when a fixed inventory form is shrunk by
 -- the client but its user-scaled fonts are not. No polling or saved setting.
+-- The fit is measured on the Full-HD ceiling; text_growth scales it up.
 function UI.text_scale(player)
     if not player then return 1 end
-    local info = core.get_player_window_information and
-        core.get_player_window_information(player:get_player_name())
-    if UI.window_information then info = UI.window_information(info) end
+    local report = window_report(player)
+    local info = report
+    if UI.window_information then info = UI.window_information(report, true) end
     if info and info.max_formspec_size then
         -- real_gui_scaling includes display density, not just the GUI setting.
         -- Compensate actual form shrink, bounded by the tested small-window scale.
         local rgs = math.max(1, info.real_gui_scaling or 1)
         local form_h = grug_inventory.UI.window_h
-        return math.max(1 / rgs, math.min(1, info.max_formspec_size.y / form_h))
+        return math.max(1 / rgs, math.min(1, info.max_formspec_size.y / form_h)) *
+            UI.text_growth(player, nil, nil, report)
     end
     return 1
+end
+
+-- A font_size value for a literal size: `factor` (nil: the client default)
+-- times a form's text growth. At growth 1 it is the literal itself ("*0.85",
+-- "*1", "" for the default), so forms that do not grow keep their bytes.
+function UI.font_size(factor, growth)
+    if not growth or growth == 1 then
+        return factor and ("*%g"):format(factor) or ""
+    end
+    return ("*%.3f"):format((factor or 1) * growth)
 end
 
 -- Scope supported native controls to the fitted text size. Checkboxes and
@@ -63,11 +97,13 @@ function UI.heading(x, y, text, scale)
         ("style_type[label;font=normal;font_size=*%.3f]"):format(scale)
 end
 
-function UI.title(x, y, text, scale)
+-- `reset` is the label size restored afterwards (default 1; a grown form
+-- passes its text growth).
+function UI.title(x, y, text, scale, reset)
     return ("style_type[label;font=normal;font_size=*%.3f]"):format(1.1 * (scale or 1)) ..
         ("label[%.3f,%.3f;%s]"):format(x, y,
             core.formspec_escape(core.colorize(UI.colors.text, text))) ..
-        "style_type[label;font_size=*1]"
+        "style_type[label;font_size=" .. UI.font_size(1, reset) .. "]"
 end
 
 -- Role styles apply to specific existing fields. Set normal explicitly when
@@ -104,11 +140,14 @@ function UI.navigation_style(name, selected, x, y, w, h, vertical, scale)
 end
 
 -- Native fitting within the capped viewport; no delayed corrective send.
+-- On a grown ceiling the form's text defaults grow with it (text_growth).
 function UI.frame(w, h, title, opaque, player)
+	local growth = UI.text_growth(player, w, h)
 	local fs = ("formspec_version[6]size[%.3f,%.3f]"):format(w, h) ..
 		(UI.window_padding and UI.window_padding(player) or "")
 	if opaque then fs = fs .. "no_prepend[]" .. UI.prepend(true) end
-	if title then fs = fs .. UI.title(0.4, 0.45, title) end
+	if growth ~= 1 then fs = fs .. UI.fonts(growth) end
+	if title then fs = fs .. UI.title(0.4, 0.45, title, growth, growth) end
 	return fs
 end
 

@@ -127,12 +127,13 @@ local function catalog_row(player, y, context)
 	local visible = grug_inventory.HOTBAR_SIZE
 	local location = "detached:" .. core.formspec_escape(inv_name(player:get_player_name()))
 	local slots_y = y + layout.label_h
+	local growth = grug_core.ui.text_growth(player)
 	local fs = {
-		grug_core.ui.heading(layout.x, y + layout.label_h / 2, "SKILLS"),
+		grug_core.ui.heading(layout.x, y + layout.label_h / 2, "SKILLS", growth),
 		("style_type[label;font_size=*%.3f]label[%.3f,%.3f;%s]" ..
-			"style_type[label;font_size=]"):format(0.75 * grug_core.ui.text_scale(player), layout.x + HINT_DX,
+			"style_type[label;font_size=%s]"):format(0.75 * grug_core.ui.text_scale(player), layout.x + HINT_DX,
 			y + layout.label_h / 2, core.formspec_escape(
-				"Drag to hotbar; back to remove.")),
+				"Drag to hotbar; back to remove."), grug_core.ui.font_size(nil, growth)),
 	}
 	local max = math.max(0, #rows - visible) * SLOT_STEPS
 	if max > 0 then

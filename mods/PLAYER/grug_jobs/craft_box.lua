@@ -355,8 +355,8 @@ end
 -- grey ☆ when not.
 local function star(fs, player, recipe)
 	local on = grug_jobs.is_favorite(player, recipe.id)
-	fs[#fs + 1] = ("style[%s;textcolor=%s;font_size=*1.4]button[%s,%s;%s,%s;%s;%s]" ..
-		"tooltip[%s;%s]"):format(F.fav, on and STAR_ON or STAR_OFF,
+	fs[#fs + 1] = ("style[%s;textcolor=%s;font_size=%s]button[%s,%s;%s,%s;%s;%s]" ..
+		"tooltip[%s;%s]"):format(F.fav, on and STAR_ON or STAR_OFF, UI.font_size(1.4, UI.text_growth(player)),
 		n(BOX.x + BOX.w - 0.2 - STAR.w), n(BOX.y + 0.2), n(STAR.w), n(STAR.h), F.fav,
 		on and "★" or "☆", F.fav, on and "Remove from favorites" or "Add to favorites")
 end
@@ -405,7 +405,7 @@ local function build(player, view)
 	fs[#fs + 1] = ("item_image[%s,%s;0.9,0.9;%s]"):format(n(X), n(BOX.y + 0.2),
 		esc(recipe.output))
 	for _, piece in ipairs(name) do
-		fs[#fs + 1] = UI.heading(X + 1.05, y, piece)
+		fs[#fs + 1] = UI.heading(X + 1.05, y, piece, view.growth)
 		y = y + 0.35
 	end
 	fs[#fs + 1] = ("label[%s,%s;%s]"):format(n(X + 1.05), n(y + 0.05), esc(sub))
@@ -454,7 +454,7 @@ local function build(player, view)
 			y = top + height + 0.25
 		end
 	end
-	fs[#fs + 1] = UI.heading(X, y, "Ingredients (have/need)")
+	fs[#fs + 1] = UI.heading(X, y, "Ingredients (have/need)", view.growth)
 	-- The seam of the recipe details page (Round 57, lane DETAILS registers
 	-- the "details" box).
 	if grug_jobs.has_craft_box("details") then

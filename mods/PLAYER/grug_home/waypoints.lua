@@ -105,7 +105,8 @@ local function form(player, origin)
   known_set(player), race_of(player), origin.id)
  entries[#entries + 1] = rules.claim_entry(grug_home.claim_waypoint(player))
  local fs = {grug_core.ui.frame(10, 2.65 + 0.7 * #entries, nil, nil, player),
-  grug_core.ui.service_header(10, origin.label .. " Waystone", "Discovered destinations"),
+  grug_core.ui.service_header(10, origin.label .. " Waystone", "Discovered destinations", nil,
+   grug_core.ui.text_growth(player, 10, 2.65 + 0.7 * #entries)),
   grug_core.ui.panel(0.2, 1.5, 9.6, 0.7 * #entries)}
  for index, entry in ipairs(entries) do
   local y = 1.15 + 0.7 * index
