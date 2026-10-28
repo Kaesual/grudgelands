@@ -1835,6 +1835,10 @@ do
    local w,h=form:match("size%[([%d.]+),([%d.]+)%]")
    local virtual=grug_core.ui.window_information and grug_core.ui.window_information(info) or info
    local size,px=M.metrics(virtual,tonumber(w),tonumber(h))
+   -- Round 66 ruling 5: the extent is fitted to the drawn map (markers.fit)
+   local header=grug_inventory.UI.header_h
+   local bw,bh=window_size(info,header)
+   size=M.fit(size,W.layout(bw,bh).map_w*px,W.reference_map_px(header))
    local map=map_part(form)
    local icon=find_image(images(map),"grug_map_trainer_tailor.png")
    check(icon and math.floor(icon.w*px)==size and math.floor(icon.h*px)==size,

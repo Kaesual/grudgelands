@@ -58,7 +58,8 @@ local PASS = 0.1
 -- fits and centers at 1x; zoomed artwork uses the full scroll viewport.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
 local COLUMN_SHARE = 0.5
--- Ordinary icons share one 32px HUD-scaled extent across both views.
+-- Ordinary icons share one extent across both views (markers.lua: 32px
+-- HUD-scaled at most, since Round 66 fitted to the drawn map).
 -- Area rings keep their geographic extent with a readable minimum.
 local RING_MIN = 0.7
 -- Arrows sit on a grid of ARROW_STEP units (about a screen pixel); the
@@ -104,6 +105,27 @@ function W.layout(w, h)
 		map_w = map_w, map_h = map_w * 8 / 9,
 		viewport_w = viewport_w, viewport_h = viewport_h,
 		column = {x = PAD + column + GAP, y = map_y, w = column, h = h - PAD - map_y}}
+end
+
+-- The map's drawn pixel width on the reference desktop (1920x1080, HUD and
+-- GUI scale 1: layers.REFERENCE) below a navigation header of `header_h`
+-- units: the extent at which markers have their full M.SIZE (Round 66
+-- ruling 5). The header's height is the only input, so a 1080p desktop is
+-- unchanged with either header.
+local reference_px, reference_count = {}, 0
+function W.reference_map_px(header_h)
+	header_h = header_h or grug_inventory.UI.header_h
+	local known = reference_px[header_h]
+	if known then return known end
+	-- a header has one or two heights; the bound only guards the table
+	if reference_count >= 8 then reference_px, reference_count = {}, 0 end
+	reference_count = reference_count + 1
+	local info = layers.REFERENCE
+	local w, h = W.window_size(info, header_h)
+	local _, per_unit = marker_art.metrics(info, w, h + header_h)
+	known = W.layout(w, h).map_w * per_unit
+	reference_px[header_h] = known
+	return known
 end
 
 --
@@ -290,6 +312,11 @@ end
 local function overlay(fs, player, session, layout, quest, info)
 	local zoom = session.zoom or 1
  local pixels, per_unit = marker_art.metrics(info,layout.w,layout.form_h)
+	-- Round 66 ruling 5: sized by the map's drawn pixels (zoom 1) where the
+	-- client reported its window; without a report today's HUD size.
+	if type(info) == "table" and info.size then
+		pixels = marker_art.fit(pixels, layout.map_w * per_unit, W.reference_map_px(layout.header_h))
+	end
  local ICON, ARROW, CROSSHAIR = pixels/per_unit, pixels/per_unit, pixels/per_unit
 	local view = atlas.view()
 	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
@@ -423,7 +450,7 @@ function W.formspec(player, session, info)
     local nav, header_h = grug_inventory.navigation(player, session, "grug_map:atlas", width, navigation_layout)
     local w, h = W.window_size(info, header_h)
     local layout = W.layout(w, h)
-    layout.form_h = h + header_h
+    layout.form_h, layout.header_h = h + header_h, header_h
 	session.layout = layout
 	local zoom = session.zoom or 1
 	local journal = grug_quests.journal(player)

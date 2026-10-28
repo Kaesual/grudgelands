@@ -118,9 +118,10 @@ local function build_rows()
 					((ok and type(level) == "number") and (", level " .. level) or "")
 			end
 			local list = rows[provider]
+			local faction = icons.faction(row.slot, faction_of_race[row.race_id])
 			list[#list + 1] = {id = row.key, label = name, detail = detail, kind = kind,
-				texture = texture(icons.marker(row.slot)), position = row.anchor,
-				faction = faction_of_race[row.race_id]}
+				texture = texture(icons.marker(row.slot, faction)), position = row.anchor,
+				faction = faction}
 		end
 		for _, socket in ipairs(grug_core.settlement_sockets_at(row.key)) do
 			if socket.role == "king" and socket.spawn ~= false then

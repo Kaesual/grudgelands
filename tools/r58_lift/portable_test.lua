@@ -132,12 +132,14 @@ do
 	eq(icons.kind("mining_camp"), "mine", "A the minimap bakes a mining camp as a mine")
 	eq(icons.kind("camp_construction"), "war_camp", "A the minimap bakes a camp under construction as a war camp")
 	eq(icons.marker("mine"), "mine", "A other slots keep their kind's marker")
-	eq(icons.marker("pvp_accord_low"), "war_camp", "A a war camp keeps its marker")
+	-- (Round 66 ruling 8: an Accord camp has its blue variant; tools/r66_map)
+	eq(icons.marker("pvp_throng_low"), "war_camp", "A a war camp keeps its marker")
 	for _, marker in ipairs({"mining_camp", "camp_construction"}) do
 		check(read(repo .. "/mods/PLAYER/grug_map/textures/grug_map_" .. marker .. ".png") ~= nil,
 			"A grug_map_" .. marker .. ".png shipped")
 	end
-	check(read(repo .. "/mods/PLAYER/grug_map/layers.lua"):find("texture(icons.marker(row.slot))",
+	-- (Round 66: the marker by the camp's faction)
+	check(read(repo .. "/mods/PLAYER/grug_map/layers.lua"):find("texture(icons.marker(row.slot, faction))",
 		1, true) ~= nil, "A the window's settlement rows draw the marker")
 end
 

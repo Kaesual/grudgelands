@@ -12,6 +12,14 @@ includes editable SVGs and the accepted 32px masters. Full-resolution
 originals are optional local editing material, excluded from Git.
 Post, daytime, music, bezel and unused historical artwork are unchanged.
 
+Round 66: `textures/grug_map_war_camp_accord.png`,
+`textures/grug_map_camp_construction_accord.png` and
+`textures/grug_map_camp_construction_throng.png` are palette recolours of the
+approved `war_camp.png` and `camp_construction.png` masters (the canvas, the
+scaffold's cloth) in the factions' colours, alpha unchanged, made by
+`tools/r66_map/recolor.py` and shipped by `tools/r64_map/ship.py`; CC0-1.0
+like their masters.
+
 # Historical provenance (superseded where listed above)
 
 # Atlas direction marker media
