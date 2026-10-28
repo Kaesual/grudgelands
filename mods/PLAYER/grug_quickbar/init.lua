@@ -45,13 +45,16 @@ end
 
 -- The window for `player`: pure apart from the reads, for the fixture.
 function grug_quickbar.formspec(player)
-	local fs = {}
+	-- The text grows as a window of the usual height does (text_growth).
+	local growth = grug_core.ui.text_growth(player, WIDTH, 9)
+	local fs = {growth ~= 1 and grug_core.ui.fonts(growth) or ""}
 	local y = 0.45
-	fs[#fs + 1] = grug_core.ui.title(PAD, y, "Quickbar") .. "style_type[label;font_size=*0.85]"
+	fs[#fs + 1] = grug_core.ui.title(PAD, y, "Quickbar", growth, growth) ..
+		"style_type[label;font_size=" .. grug_core.ui.font_size(0.85, growth) .. "]"
 	y = y + 0.55
 	local section_y, section_index = y, #fs + 1
 	fs[section_index] = ""
-	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Mounts and boats")
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Mounts and boats", growth)
 	y = y + 0.3
 	local tiers = grug_mounts.owned_tier_ids(player)
 	local active = grug_mounts.active[player:get_player_name()]
@@ -93,7 +96,7 @@ function grug_quickbar.formspec(player)
 	y = y + 0.65
 	section_y, section_index = y, #fs + 1
 	fs[section_index] = ""
-	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Potion belt")
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Potion belt", growth)
 	y = y + 0.3
 	local inv = player:get_inventory()
 	for index = 1, grug_inventory.POTION_BELT_SIZE do
@@ -114,17 +117,17 @@ function grug_quickbar.formspec(player)
 	y = y + 0.65
 	section_y, section_index = y, #fs + 1
 	fs[section_index] = ""
-	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Active Hotbar")
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Active Hotbar", growth)
 	y = y + 0.3
 	fs[#fs + 1] = grug_inventory.hotbar_switch(player, PAD, y, SLOT, 0.6, PITCH, 0)
 	y = y + 0.6
 	fs[section_index] = grug_core.ui.panel(0.2, section_y - 0.2, WIDTH - 0.4, y - section_y + 0.4)
-	fs[#fs + 1] = "style_type[label;font_size=*0.85]"
+	fs[#fs + 1] = "style_type[label;font_size=" .. grug_core.ui.font_size(0.85, growth) .. "]"
 	local home_label, home_state = grug_inventory.home_state(player)
 	if home_label then
 		y = y + 0.65
 		fs[#fs + 1] = grug_core.ui.panel(0.2, y - 0.2, WIDTH - 0.4, 1.3)
-		fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Home: " .. home_label)
+		fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Home: " .. home_label, growth)
 		y = y + 0.3
 		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.6;grug_quickbar_home;%s]"):format(PAD, y,
 			WIDTH - PAD * 2, esc(("Return home (%s)"):format(home_state)))

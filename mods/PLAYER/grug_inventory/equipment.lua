@@ -279,6 +279,17 @@ local function claim_warn(player, reason)
 	return name
 end
 
+-- One equip refusal the throttle let through: a feed line, and the same text
+-- on the Character page (grug_inventory.show_equip_notice, pages.lua), because
+-- the open inventory window covers the feed (Round 66) and every refusal
+-- comes from that page.
+local function refuse(player, reason, text)
+	grug_core.feed(player, "notice", text, "equip:" .. reason)
+	if grug_inventory.show_equip_notice then
+		grug_inventory.show_equip_notice(player, text)
+	end
+end
+
 -- First line of an item's description, i.e. the display name without the item
 -- level and stat lines grug_gear appends. Used by the refusals below and by
 -- the class-change unequip at the bottom.
@@ -287,6 +298,8 @@ local function piece_name(stack)
 	local desc = (def and def.description) or stack:get_name()
 	return (desc:gsub("\n.*", ""))
 end
+-- The Character page's blocked offhand names the two-hander the same way.
+grug_inventory.piece_name = piece_name
 
 -- The message text is the class name plus the armor class, and a character's
 -- class cannot change inside one throttle window -- so the rank alone is a
@@ -297,10 +310,9 @@ local function warn_armor_class(player, rank)
 		return
 	end
 	local class_def = grug_classes.get_class_def(player)
-	grug_core.feed(player, "notice",
+	refuse(player, reason,
 		"A " .. (class_def and class_def.name or "character without a class") ..
-		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor.",
-		"equip:" .. reason)
+		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor.")
 end
 
 local function warn_item_level(player, stack, label, required, current)
@@ -308,9 +320,8 @@ local function warn_item_level(player, stack, label, required, current)
 	if not claim_warn(player, reason) then
 		return
 	end
-	grug_core.feed(player, "notice", piece_name(stack) .. " requires level " ..
-		required .. " for the " .. label .. " slot; you are level " .. current .. ".",
-		"equip:" .. reason)
+	refuse(player, reason, piece_name(stack) .. " requires level " ..
+		required .. " for the " .. label .. " slot; you are level " .. current .. ".")
 end
 
 -- An item the hand slot does not take. Silent for anything that is not hand
@@ -338,7 +349,7 @@ local function warn_hand_item(player, list, stack)
 	else
 		msg = "Your class cannot equip " .. piece_name(stack) .. " there."
 	end
-	grug_core.feed(player, "notice", msg, "equip:" .. reason)
+	refuse(player, reason, msg)
 end
 
 --
@@ -358,6 +369,11 @@ end
 -- move a player's shield out from under them. The allow callback refuses
 -- before anything moves, and refusing is the only shape that can explain
 -- itself at the moment the player asks for the thing.
+--
+-- The one exception is the Character page's shift-click (Round 66 ruling 1):
+-- equip_by_shift below is not an allow callback but our own server-side
+-- move, so a two-hander shift-clicked over an occupied offhand swaps both
+-- hands in one step there; a drag still refuses and names that way.
 --
 
 -- Hand count of an item. Anything that does not declare `_grug_hands` is
@@ -380,11 +396,12 @@ end
 -- The stack in the OTHER hand slot AS THIS ACTION WOULD LEAVE IT. A move whose
 -- source is that slot empties it, and refusing against a stack the same action
 -- is about to remove is how "my staff can never leave the offhand" bugs are
--- built.
+-- built. `info.clears_other_hand` is the shift-click swap's own mark: that
+-- move empties the other hand itself (equip_by_shift).
 local function other_hand_stack(inventory, other_list, action, info)
 	local stack = inventory:get_stack(other_list, 1)
-	if stack:is_empty() then
-		return stack
+	if stack:is_empty() or info.clears_other_hand then
+		return ItemStack("")
 	end
 	if action == "move" and info.from_list == other_list and
 			info.from_index == 1 and (info.count or 0) >= stack:get_count() then
@@ -413,18 +430,17 @@ local function allow_hands(player, inventory, to_list, stack, action, info)
 		and ("hands:incoming:" .. stack:get_name() .. ":" .. other:get_name())
 		or ("hands:held:" .. other:get_name() .. ":" .. stack:get_name())
 	if claim_warn(player, reason) then
-		local label = grug_inventory.slot_label(grug_classes.get_class(player),
-			other_list) or "other hand"
 		local msg
-		-- Short enough for one feed line.
+		-- The incoming refusal names the way that works (Round 66 §2): the
+		-- shift-click swap.
 		if incoming_2h then
 			msg = piece_name(stack) .. " is two-handed: take " .. piece_name(other) ..
-				" out of the " .. label .. " slot first."
+				" out first, or shift-click the " .. piece_name(stack) .. " to swap both."
 		else
 			msg = piece_name(other) .. " is two-handed: equip a one-handed weapon" ..
 				" to carry " .. piece_name(stack) .. " too."
 		end
-		grug_core.feed(player, "notice", msg, "equip:" .. reason)
+		refuse(player, reason, msg)
 	end
 	return false
 end
@@ -492,7 +508,10 @@ end
 --   * From `main` (hotbar included) or a bag: a piece of gear goes into its
 --     slot -- an empty slot of its kind first, else it swaps with the
 --     equipped piece, which takes the source cell as a drag onto the slot
---     would leave it; arrows go into a Scout's quiver.
+--     would leave it; arrows go into a Scout's quiver. A two-hander over an
+--     occupied offhand swaps both hands (Round 66 ruling 1): the offhand
+--     piece goes into the inventory in the give order, after the check that
+--     it fits there once the weapon swap is done; otherwise nothing moves.
 --   * From an equipment slot or the quiver: into the inventory in the give
 --     order (main[9..], the bags, the hotbar last), or refused with a feed
 --     line when it does not fit.
@@ -509,8 +528,8 @@ end
 local function warn_no_room(player, stack)
 	local reason = "room:" .. stack:get_name()
 	if claim_warn(player, reason) then
-		grug_core.feed(player, "notice", "No room in your inventory for " ..
-			piece_name(stack) .. ".", "equip:" .. reason)
+		refuse(player, reason, "No room in your inventory for " ..
+			piece_name(stack) .. ".")
 	end
 end
 
@@ -542,6 +561,12 @@ local function equip_by_shift(player, inventory, from_list, from_index)
 			"grug_equip_weapon") > 0 and WEAPON_LIST or OFFHAND_LIST, piece)
 		return
 	end
+	-- A two-hander takes the offhand piece out with it (ruling 1), so the
+	-- two-handed rule does not refuse it here.
+	local offhand = ItemStack("")
+	if grug_inventory.hands_of(piece) >= 2 then
+		offhand = inventory:get_stack(OFFHAND_LIST, 1)
+	end
 	-- Empty slots first, then a swap, each in slot order; the first slot the
 	-- rules allow.
 	local target
@@ -550,29 +575,56 @@ local function equip_by_shift(player, inventory, from_list, from_index)
 			if not target and inventory:get_stack(list, 1):is_empty() == (pass == 1) and
 					equip_allowed(player, inventory, list, piece, "move", {
 						from_list = from_list, from_index = from_index, to_list = list,
-						to_index = 1, count = 1}) then
+						to_index = 1, count = 1,
+						clears_other_hand = list == WEAPON_LIST and not offhand:is_empty()}) then
 				target = list
 			end
 		end
 	end
 	if not target then return end
+	if target ~= WEAPON_LIST then offhand = ItemStack("") end
 	local old = inventory:get_stack(target, 1)
 	source:take_item(1)
-	local give_old = false
+	-- What goes into the inventory, in this order: the old piece when the
+	-- source cell keeps part of a stack, then the offhand piece.
+	local out = {}
 	if not old:is_empty() then
 		if source:is_empty() then
 			source = old -- the swap: the old piece takes the source cell
-		elseif grug_inventory.fits(player, {old}) then
-			give_old = true -- a stack of several: the old piece goes elsewhere
 		else
-			warn_no_room(player, old)
+			out[#out + 1] = old -- a stack of several: the old piece goes elsewhere
+		end
+	end
+	if not offhand:is_empty() then out[#out + 1] = offhand end
+	-- Nothing moves unless all of it fits, counted with the source cell as
+	-- the swap leaves it (taken by the old piece, or freed); the line names
+	-- the first piece without room.
+	local after = inventory:get_list(from_list)
+	after[from_index] = source
+	for count = 1, #out do
+		if not grug_inventory.fits(player, {unpack(out, 1, count)}, {[from_list] = after}) then
+			warn_no_room(player, out[count])
 			return
 		end
 	end
 	inventory:set_stack(from_list, from_index, source)
 	inventory:set_stack(target, 1, piece)
-	if give_old then grug_inventory.give(player, old) end
-	grug_inventory.equipment_changed(player, target)
+	if not offhand:is_empty() then
+		inventory:set_stack(OFFHAND_LIST, 1, ItemStack(""))
+	end
+	for _, stack in ipairs(out) do
+		-- fits() said it all goes; a leftover would only follow a callback
+		-- that changed the inventory in between, and then it lands at the
+		-- player's feet rather than in a second hand.
+		local leftover = grug_inventory.give(player, stack)
+		if not leftover:is_empty() then
+			core.add_item(player:get_pos(), leftover)
+		end
+	end
+	-- One notification. Both hands changed in the swap: nil, the notifier's
+	-- "more than one list", so every consumer reads the final state, as the
+	-- two separate moves would have left it.
+	grug_inventory.equipment_changed(player, offhand:is_empty() and target or nil)
 	grug_sounds.play("equip", player)
 end
 

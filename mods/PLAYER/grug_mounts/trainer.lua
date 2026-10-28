@@ -56,7 +56,8 @@ function grug_mounts.trainer_formspec(rows, notice, service, player)
 	service = service or SERVICES.riding_trainer
 	local bottom = 2 + #rows * 1.1 + 0.65
 	local fs = {grug_core.ui.frame(12, bottom + 1.0, nil, nil, player),
-		grug_core.ui.service_header(12, service.title, service.subtitle)}
+		grug_core.ui.service_header(12, service.title, service.subtitle, nil,
+			grug_core.ui.text_growth(player, 12, bottom + 1.0))}
 	for index, row in ipairs(rows) do
 		local y = 2.0 + (index - 1) * 1.1
 		fs[#fs + 1] = grug_core.ui.panel(0.25, y - 0.35, 11.5, 1.0)

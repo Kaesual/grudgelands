@@ -112,24 +112,25 @@ local function formspec(session, player)
 	end
 	local shift = #lines > #LINES and 0.6 or 0
 	local UI = grug_core.ui
+	local g = UI.text_growth(player, 11.5, 8.6 + shift)
 	local fs = {UI.frame(11.5, 8.6 + shift, nil, nil, player), "set_focus[close;true]",
-		UI.service_header(11.5, "Housing Steward", "Your place in the world"),
+		UI.service_header(11.5, "Housing Steward", "Your place in the world", nil, g),
 		UI.panel(0.4, 1.6, 10.7, 5.4),
-		UI.heading(0.65, 1.95, "01 · RECEIVE YOUR CLAIM STONE"),
-		UI.prose(0.65, 2.2, 10.2, 0.6, LINES[1]),
-		UI.heading(0.65, 3.0, "02 · PLACE AND ACTIVATE"),
-		UI.prose(0.65, 3.25, 10.2, 1.25, LINES[2] .. "\n" .. LINES[3] .. " " .. LINES[4]),
-		UI.heading(0.65, 4.75, "03 · KEEP IT FUELLED"),
-		UI.prose(0.65, 5.0, 10.2, 1.65, table.concat(LINES, "\n", 5, #LINES))}
-	if shift > 0 then fs[#fs + 1] = UI.prose(0.5, 7.1, 10.5, 0.6, lines[#lines]) end
+		UI.heading(0.65, 1.95, "01 · RECEIVE YOUR CLAIM STONE", g),
+		UI.prose(0.65, 2.2, 10.2, 0.6, LINES[1], false, g),
+		UI.heading(0.65, 3.0, "02 · PLACE AND ACTIVATE", g),
+		UI.prose(0.65, 3.25, 10.2, 1.25, LINES[2] .. "\n" .. LINES[3] .. " " .. LINES[4], false, g),
+		UI.heading(0.65, 4.75, "03 · KEEP IT FUELLED", g),
+		UI.prose(0.65, 5.0, 10.2, 1.65, table.concat(LINES, "\n", 5, #LINES), false, g)}
+	if shift > 0 then fs[#fs + 1] = UI.prose(0.5, 7.1, 10.5, 0.6, lines[#lines], false, g) end
 	if session.message then
-		fs[#fs + 1] = UI.prose(0.4, 7.05 + shift, 10.6, 0.6, core.colorize(session.message_color or ui.GREEN, session.message))
+		fs[#fs + 1] = UI.prose(0.4, 7.05 + shift, 10.6, 0.6, core.colorize(session.message_color or ui.GREEN, session.message), false, g)
 	end
 	local ok, reason = grug_housing.can_receive_stone(player)
 	if ok then
 		fs[#fs + 1] = ("button[7.7,%g;3.4,0.6;receive;Receive Claim Stone]"):format(7.7 + shift)
 	else
-		fs[#fs + 1] = UI.prose(3.0, 7.7 + shift, 8.1, 0.65, reason, true)
+		fs[#fs + 1] = UI.prose(3.0, 7.7 + shift, 8.1, 0.65, reason, true, g)
 	end
 	fs[#fs + 1] = ("button_exit[0.4,%g;1.7,0.6;close;Close]"):format(7.7 + shift)
 	return table.concat(fs)

@@ -108,8 +108,10 @@ local function trainer_formspec(player, profession, confirming)
 	elseif known then
 		text = crafting_hint(profession)
 	end
+	-- Text growth as for the form's typical height (grug_core.ui.text_growth).
+	local growth = grug_core.ui.text_growth(player, WIDTH, 6)
 	local fs = {grug_core.ui.service_header(WIDTH, definition.name .. " Trainer",
-		definition.class == "primary" and "Primary profession" or "Additional profession")}
+		definition.class == "primary" and "Primary profession" or "Additional profession", nil, growth)}
 	-- `y` is the centre of the next line (real-coordinate labels are centred
 	-- on their y); a block takes at least `reserved` lines.
 	local y = 1.8
@@ -151,7 +153,7 @@ local function trainer_formspec(player, profession, confirming)
 	for _, button in ipairs(buttons) do
 		x = x - button[3]
 		if button[1] == "grug_jobs_confirm" or button[1] == "grug_jobs_unlearn" then
-			fs[#fs + 1] = grug_core.ui.button_style(button[1], "danger")
+			fs[#fs + 1] = grug_core.ui.button_style(button[1], "danger", growth)
 		end
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(x, row_y, button[3],
 			BUTTON_H, button[1], esc(button[2]))

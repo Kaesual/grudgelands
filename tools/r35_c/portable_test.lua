@@ -460,8 +460,11 @@ check(not has(form, "model["), "B no model before a race")
 check(has(form, "Choose your race to see your character"), "B hint before a race")
 check(not has(form, "class_mage"), "B no class row before a race")
 check(not has(form, "create_character"), "B Create inactive before a race")
-check(has(form, grug_core.ui.button_style("faction_accord", "selected")), "B the chosen faction is highlighted")
-check(has(form, grug_core.ui.button_style("faction_throng", "normal")), "B the other faction is dimmed")
+-- Round 66 ruling 9: the faction buttons wear their own colour (tools/r66_ui).
+check(has(form, "fill:16x16:#3f6fceff") and has(form, "style[faction_accord;font=bold]"),
+	"B the chosen faction is highlighted")
+check(has(form, "fill:16x16:#c41e3a61") and not has(form, "style[faction_throng;font=bold]"),
+	"B the other faction is dimmed")
 
 -- A race of the other faction is refused.
 submit(a, "", {race_orc = "Orc"})

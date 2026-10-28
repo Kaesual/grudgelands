@@ -1,7 +1,8 @@
 -- Basic recipe unlock (Round 47 lane CR; round47-plan.md ruling 19). A Basic
 -- recipe is listed once the character has held every ingredient at least
 -- once; a group ingredient counts when any member was held. The starter set
--- (sticks and every wooden tool) is known from the start. Profession areas
+-- (sticks, every wooden tool and, since Round 66 ruling 7, the fishing rod)
+-- is known from the start. Profession areas
 -- keep their tier rule (ui.lua).
 --
 -- The held set: player meta HELD_KEY, the format word "1", then the tokens
@@ -57,9 +58,10 @@ local HELD_KEY = "grug_jobs:held"
 local UNLOCKED_KEY = "grug_jobs:basic_unlocked"
 local FORMAT = "1"
 local SLOTS, SLOT_PERIOD, SWEEP = 5, 0.1, 10
--- Sticks and every wooden tool (ruling 19), by output.
+-- Sticks and every wooden tool (ruling 19) and the fishing rod (Round 66
+-- ruling 7), by output.
 local STARTER = {"default:stick", "grug_materials:pick_wood", "grug_materials:axe_wood",
-	"grug_materials:shovel_wood", "grug_farming:hoe"}
+	"grug_materials:shovel_wood", "grug_farming:hoe", "grug_fishing:rod"}
 
 grug_jobs.HELD_KEY = HELD_KEY
 grug_jobs.HELD_STARTER = STARTER

@@ -102,7 +102,8 @@ local dialogs, serial = {}, 0
 local function form(found, player)
 	local count = #found.levels
 	local fs = {grug_core.ui.frame(10, 2.65 + 0.8 * count, nil, nil, player),
-		grug_core.ui.service_header(10, grug_guild.catalog.UI_NAME .. " Lift", found.camp.label or found.camp.id)}
+		grug_core.ui.service_header(10, grug_guild.catalog.UI_NAME .. " Lift", found.camp.label or found.camp.id, nil,
+			grug_core.ui.text_growth(player, 10, 2.65 + 0.8 * count))}
 	for index, entry in ipairs(found.levels) do
 		local y = 1.15 + 0.8 * index
 		fs[#fs + 1] = grug_core.ui.panel(0.2, y - 0.35, 9.6, 0.72)

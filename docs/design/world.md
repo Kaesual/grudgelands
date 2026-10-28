@@ -1032,7 +1032,11 @@ territory.
   ([character_visuals.md](character_visuals.md) §1.1) with a preview the
   player turns with the mouse, and "Create character" at the bottom right,
   active once faction, race and class are chosen. The choices are
-  highlighted and every button has a tooltip. Before a faction is chosen
+  highlighted and every button has a tooltip. The two faction buttons wear
+  their faction's colour (The Accord blue, The Throng red): both subdued
+  until one is chosen, then the chosen one at full strength in bold and the
+  other still subdued; hover brightens a little, and keyboard focus looks like
+  the normal state, so it never reads as a choice (Round 66). Before a faction is chosen
   everything below it is empty with a hint; before a race is chosen no model
   is drawn. Every class is open to every race. Changing the faction clears
   race and look (the class stays); changing the race rolls a new random

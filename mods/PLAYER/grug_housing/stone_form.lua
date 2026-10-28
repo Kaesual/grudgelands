@@ -111,8 +111,9 @@ end
 -- R26 rulings 8-9: the draft's own form (redrawn every second while open).
 local function draft_formspec(claim, session, player)
 	local need = grug_housing.ACTIVATION_LUMPS
+	local growth = theme.text_growth(player, 10.75, 4.9)
 	local fs = {theme.frame(10.75, 4.9, "Your Claim Stone (draft, not active)", nil, player),
-		theme.button_style("activate", "selected"), theme.button_style("pick_up", "danger")}
+		theme.button_style("activate", "selected", growth), theme.button_style("pick_up", "danger", growth)}
 	fs[#fs + 1] = ("label[0.4,1.05;%s]"):format(ui.text(
 		"It protects nothing yet and crumbles in " ..
 		countdown(grug_housing.draft_remaining(claim)) ..
@@ -140,7 +141,7 @@ local function fuel_section(fs, claim, inv)
 		(grug_housing.remaining_seconds(claim) or 0) or 0
 	local lumps = ui.lumps(left)
 	fs[#fs + 1] = theme.panel(0.25, 0.2, 10.25, 2.6)
-	fs[#fs + 1] = theme.heading(0.4, 0.5, "Your Claim Stone")
+	fs[#fs + 1] = theme.heading(0.4, 0.5, "Your Claim Stone", fs.growth)
 	fs[#fs + 1] = "label[0.4,1.1;Fuel: coal lumps, charcoal or anthracite]"
 	fs[#fs + 1] = ("list[%s;%s;0.4,1.4;1,1;]"):format(inv, LIST)
 	if lumps > 0 then
@@ -157,7 +158,7 @@ local function fuel_section(fs, claim, inv)
 			"No fuel: anyone can access your home right now", ui.RED))
 	end
 	fs[#fs + 1] = grug_core.ui.prose(1.7, 1.95, 8.2, 0.65,
-		"Lump: 7 h 16 min · Anthracite: 10 h 54 min\nUp to about 30 days.", true)
+		"Lump: 7 h 16 min · Anthracite: 10 h 54 min\nUp to about 30 days.", true, fs.growth)
 	local wait = grug_housing.pickup_wait(claim) or 0
 	if wait > 0 then
 		fs[#fs + 1] = "label[1.7,2.6;" .. ui.esc("Pick-up possible in " ..
@@ -192,10 +193,11 @@ local function tabs(player, session)
 		if id == session.tab then selected = index end
 	end
 	session.tab = ids[selected]
+	local growth = theme.text_growth(player)
 	local fs = {}
 	for index, label in ipairs(labels) do
 		local field = "stone_tab_" .. index
-		fs[#fs + 1] = theme.button_style(field, index == selected and "selected" or "normal")
+		fs[#fs + 1] = theme.button_style(field, index == selected and "selected" or "normal", growth)
 		fs[#fs + 1] = ("button[%.2f,0.15;3.3,0.6;%s;%s]"):format(
 			0.4 + (index - 1) * 3.4, field, ui.esc(label))
 	end
@@ -209,7 +211,8 @@ local function waypoints_formspec(player, session, home, header)
 	local height = 2.6 + 0.7 * math.max(1, #rows)
 	local fs = {theme.frame(10.75, height + TAB_OFFSET, nil, nil, player), header,
 		"container[0," .. TAB_OFFSET .. "]",
-		theme.heading(0.4, 0.5, "Travel from your Claim Stone")}
+		theme.heading(0.4, 0.5, "Travel from your Claim Stone",
+			theme.text_growth(player, 10.75, height + TAB_OFFSET))}
 	for index, row in ipairs(rows) do
 		local y = 0.6 + 0.7 * index
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, ui.esc(row.label))
@@ -256,7 +259,8 @@ local function belongings_formspec(player, session, header)
 	local rows = math.max(1, math.ceil(count / 8))
 	local visible = math.min(rows, VISIBLE_ROWS)
 	local area_h = visible * pitch - (pitch - 1)
-	local box, bottom = grug_inventory.station_box("Belongings from the old map", area_h)
+	local box, bottom = grug_inventory.station_box("Belongings from the old map", area_h,
+		theme.text_growth(player))
 	local inv = "detached:" .. recovered_name(name)
 	local width = grug_inventory.VIEW_GEOMETRY.width
 	local fs = {header, "container[0," .. TAB_OFFSET .. "]", box}
@@ -305,8 +309,11 @@ local function main_formspec(player, claim, session)
 	-- Close takes the focus at every send (0.45.1): otherwise the engine
 	-- focuses the name field, which eats the inventory key, also after a tab
 	-- switch; the field gets it when the player clicks into it.
+	-- `fs.growth`: the text growth (grug_core.ui.text_growth), also for fuel_section.
+	local growth = theme.text_growth(player)
 	local fs = {"set_focus[close;true]", header, "container[0," .. TAB_OFFSET .. "]",
-		theme.button_style("pick_up", "danger"), theme.button_style("perm_remove", "danger")}
+		theme.button_style("pick_up", "danger", growth), theme.button_style("perm_remove", "danger", growth),
+		growth = growth}
 	fuel_section(fs, claim, inv)
 
 	local rows = access_rows(claim)
@@ -320,7 +327,7 @@ local function main_formspec(player, claim, session)
 		session.selected = nil
 	end
 	fs[#fs + 1] = theme.panel(0.25, 2.85, 5.65, 2.65) .. theme.panel(6.0, 2.85, 4.5, 2.65)
-	fs[#fs + 1] = theme.heading(0.4, 3.0, "Access for other players")
+	fs[#fs + 1] = theme.heading(0.4, 3.0, "Access for other players", growth)
 	if #entries == 0 then
 		fs[#fs + 1] = "textlist[0.4,3.3;5.2,1.15;perm_list;#999999Nobody else has access.;0;false]"
 	else
@@ -363,7 +370,7 @@ local function confirm_formspec(draft, player)
 		"label[0.4,1.6;" .. ui.esc(("You can place it again at once; activation " ..
 			"costs %d lumps again."):format(grug_housing.ACTIVATION_LUMPS)) .. "]")
 	return theme.frame(10.75, 3.9, "Pick up your Claim Stone?", nil, player) ..
-		theme.button_style("confirm_pick_up", "danger") .. lines ..
+		theme.button_style("confirm_pick_up", "danger", theme.text_growth(player, 10.75, 3.9)) .. lines ..
 		"button[0.4,2.6;4.2,0.8;confirm_pick_up;Pick up]" ..
 		"button[4.9,2.6;4.2,0.8;cancel_pick_up;Cancel]"
 end

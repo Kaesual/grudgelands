@@ -162,14 +162,15 @@ local function formspec(ctx, player)
 	local pitch, top = station.pitch, station.y
 	local function column(index) return station.x + index * pitch end
 	local lists_y = top + 1.65
-	local box, bottom = grug_inventory.station_box(title, 3.95)
 	local UI = grug_core.ui
-	local content = box .. UI.heading(column(0), top + 0.2, mode) ..
+	local growth = UI.text_growth(player)
+	local box, bottom = grug_inventory.station_box(title, 3.95, growth)
+	local content = box .. UI.heading(column(0), top + 0.2, mode, growth) ..
 		("textarea[%.3f,%.3f;%.3f,0.8;;;%s]"):format(column(0), top + 0.45,
 			station.box_w - 0.25, core.formspec_escape(explanation)) ..
-		UI.heading(column(0), lists_y - 0.25, "Input") ..
-		UI.heading(column(3), lists_y - 0.25, "Fuel") ..
-		UI.heading(column(6), lists_y - 0.25, "Finished output") ..
+		UI.heading(column(0), lists_y - 0.25, "Input", growth) ..
+		UI.heading(column(3), lists_y - 0.25, "Fuel", growth) ..
+		UI.heading(column(6), lists_y - 0.25, "Finished output", growth) ..
 		("list[%s;%s;%.3f,%.3f;%d,1;]"):format(location, source, column(0), lists_y, width) ..
 		("list[%s;fuel;%.3f,%.3f;1,1;]"):format(location, column(3), lists_y) ..
 		("list[%s;%s;%.3f,%.3f;2,%d;]"):format(location, output, column(6), lists_y, rows) ..

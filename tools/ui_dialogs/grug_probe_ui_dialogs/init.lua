@@ -309,6 +309,7 @@ local function show(player, kind)
   if kind == "mail_delete" then session.dialog="delete" end
   form(grug_mail.window_formspec(player,session))
  elseif kind == "creation" then form(C.creation({faction="accord",race="human",class="warrior",look=grug_visuals.get_look(player)}, player))
+ elseif kind == "creation_start" then form(C.creation({}, player))
  elseif kind == "preparing" then form(C.preparing({mode="full",percent=63,eta_seconds=480,ready=false},nil,player))
  elseif kind == "welcome" then form(grug_inventory.welcome_formspec(player))
  elseif kind == "quickbar" then
