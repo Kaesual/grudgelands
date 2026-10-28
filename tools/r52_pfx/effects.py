@@ -43,6 +43,10 @@ SMOKE = "default_item_smoke.png^[multiply:"
 MOTE = "grug_core_mote.png^[multiply:"
 FIRE = "mobs_fire_particle.png"
 BLOOD = "mobs_blood.png"
+# The priest's symbols (Round 66, the user's picks of 2026-10-28): ivory and
+# gold textures, so they carry no tint.
+HAMMER = "grug_core_fx_hammer.png"
+BOOK = "grug_core_fx_book.png"
 TARGET = [6.0, 0.0, 0.0]
 MELEE = [1.8, 0.0, 0.0]
 
@@ -144,6 +148,20 @@ def P(n, **kw):
     d = {"kind": "single", "n": n}
     d.update(kw)
     return d
+
+
+def _hammer(size, top, foot, fall):
+    """The hammer of Smite and Final Word (particle_effects.lua hammer()):
+    one particle falling straight down head first from `top` for `fall`
+    seconds, the face of its head (HAMMER_FACE m per size unit under the
+    centre) landing at `foot`; no fade."""
+    speed = round((top - foot - HAMMER_FACE * size) / fall, 3)
+    return P(1, at="target", tex=HAMMER, fade=False, shape=["box", [0, top, 0], [0, top, 0]],
+             vel=[[0, -speed, 0], [0, -speed, 0]], exp=[fall, fall], size=[size, size], glow=14)
+
+
+HAMMER_FACE = 0.04
+SMITE_FALL = 0.15
 
 
 def recolor(emitters, color):
@@ -729,18 +747,19 @@ card("haven", "tick", "new", id="haven_tick",
      note="Zwei statt Mends drei, damit beide Heilungen über Zeit auf einem Spieler unterscheidbar bleiben.")
 # ---- Priest · Reckoning --------------------------------------------------
 card("smite", "hit", "new", id="smite_hit",
-     look="Eine kleine, harmlosere Final Word: ein kurzer Lichtstrahl schießt aus 3 m Höhe auf das Ziel, unten "
-          "springt ein kleiner goldener Ring auf (etwa 1 m statt 2 m). 13 einzelne Partikel, kein Spawner: Smite "
-          "ist der Grundangriff (überarbeitet am 21.10.).",
-     emitters=[P(5, at="target", color=K["white"], shape=["line", [0, 3.2, 0], [0, 1.6, 0]],
-                 vel=[[0, -9, 0], [0, -9, 0]], exp=[0.16, 0.18], size=[3, 3.5], glow=14),
+     look="Eine kleine, harmlosere Final Word: ein Hammer fällt aus 3 m Höhe senkrecht, mit dem Kopf voran, in "
+          "0,15 s auf das Ziel, dann springt unten ein kleiner goldener Ring auf (etwa 1 m statt 2 m). 9 einzelne "
+          "Partikel, kein Spawner: Smite ist der Grundangriff (überarbeitet am 21.10., Hammer seit Runde 66).",
+     emitters=[_hammer(7, 3.2, 0.15, SMITE_FALL),
                P(8, at="target", color=K["gold"], shape=["disc", [0, 0.15, 0], 0.3, True],
-                 radial=[3, 3.5], exp=[0.25, 0.3], size=[2.5, 2.5], glow=14)],
+                 radial=[3, 3.5], exp=[0.25, 0.3], size=[2.5, 2.5], glow=14, after=SMITE_FALL)],
      hook="Smite's cast (kits_priest.lua:61)",
      today="der Runde-40-Lichtfall: 24 fallende Punkte und ein 12er-Blitzring, zwei Spawner (bei 2 s "
            "Abklingzeit angenommen; jetzt ist Smite der Grundangriff, einmal pro Sekunde)", today_id="smite",
-     note="Der alte Lichtfall wandert vergrößert zu Final Word.",
-     sprite={"name": "Funke", "stand_in": "spark", "text": "der vierzackige Funke, golden"})
+     note="Der alte Lichtfall wandert vergrößert zu Final Word. Runde 66: der Hammer ersetzt den Strahl aus fünf "
+          "Punkten; der Ring folgt nach dem Fall (after, ein Server-Schritt Körnung).",
+     sprite={"name": "Hammer", "stand_in": "spark",
+             "text": "grug_core_fx_hammer.png (Runde 66, Elfenbein und Gold), Größe 7"})
 card("rebuke", "hit", "new", id="rebuke",
      look="Ein goldener Splitter zuckt aus der Hand des Priesters ins Ziel: eine Spur, die in 0,08 s von der "
           "Hand zum Gegner wandert und sofort erlischt.",
@@ -763,17 +782,17 @@ card("censure", "warning", "new", id="censure_warning",
      hook="area.delayed spec.warning = \"censure_warning\"", context=["pfx.censure.fall"],
      marker={"radius": 3, "at": "target"})
 card("censure", "fall", "new", id="censure_fall",
-     look="Ein großes Siegel aus Licht fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf. Es "
-          "erscheint etwas später und fällt mit 12 m/s, ohne zu verblassen (überarbeitet am 21.10.).",
-     emitters=lambda f: _seal(f, K["white"]),
+     look="Ein großes Buch fällt senkrecht und schlägt genau mit dem Ende der Verzögerung auf. Es erscheint "
+          "etwas später und fällt mit 12 m/s, ohne zu verblassen (überarbeitet am 21.10., Buch seit Runde 66).",
+     emitters=lambda f: _seal(f),
      sample={"reach": 3, "time": 0.75, "height": 6}, target=[8, 0, 0],
      dynamic="height = area.fall_height, time = the delay: it falls at CENSURE_FALL_SPEED for "
              "min(time, height / speed) and starts after the rest of the delay",
      hook="area.delayed spec.fall = \"censure_fall\"", context=["pfx.censure.warning"],
      marker={"radius": 3, "at": "target"},
-     sprite={"name": "Siegel", "stand_in": "seal",
-             "text": "Ein rundes Siegel mit Strahlenkranz (16×16, Gold auf Weiß) für dieses eine große Partikel; "
-                     "bis dahin ein großer leuchtender Punkt."})
+     sprite={"name": "Buch", "stand_in": "seal",
+             "text": "grug_core_fx_book.png (Runde 66, Elfenbein und Gold), Größe 16; vorher ein großer "
+                     "leuchtender Punkt."})
 card("censure", "impact", "new", id="censure_impact",
      look="Ein harter Goldring schnappt bis an den 3-m-Rand.",
      emitters=[P(32, at="target", color=K["gold"], shape=["disc", [0, 0.2, 0], 0.3, True], radial="reach",
@@ -782,11 +801,13 @@ card("censure", "impact", "new", id="censure_impact",
      dynamic="reach = the radius", hook="area.delayed spec.burst = \"censure_impact\"",
      marker={"radius": 3, "at": "target"})
 card("final_word", "hit", "new", id="final_word",
-     look="Eine Lichtsäule schlägt aus 7 m senkrecht auf das Ziel, ein goldener Ring springt am Boden auseinander.",
-     emitters=[S(26, 0.1, at="target", color=K["white"], shape=["line", [0, 7, 0], [0, 0.2, 0]],
+     look="Eine Lichtsäule schlägt aus 7 m senkrecht auf das Ziel, in ihr fällt der große Hammer mit (0,1 s), ein "
+          "goldener Ring springt am Boden auseinander.",
+     emitters=[S(25, 0.1, at="target", color=K["white"], shape=["line", [0, 7, 0], [0, 0.2, 0]],
                  exp=[0.2, 0.3], size=[4, 5], glow=14),
                S(20, 0.05, at="target", color=K["gold"], shape=["disc", [0, 0.15, 0], 0.4, True],
-                 radial=[5, 6], exp=[0.25, 0.35], size=[2.5, 3], glow=14)],
+                 radial=[5, 6], exp=[0.25, 0.35], size=[2.5, 3], glow=14),
+               _hammer(12, 7, 0.2, 0.1)],
      hook="Final Word's cast (kits_priest.lua, new def)",
      today="Smites heutiger Lichtfall (dieses Muster, größer)", today_id="smite")
 # ---- Scout · Quarry ------------------------------------------------------
@@ -921,12 +942,12 @@ def _comet(f, tex, sizes, speed):
     return out
 
 
-def _seal(f, color):
-    """Censure's one large seal: straight down at CENSURE_FALL_SPEED, late
-    enough to land with the delay; no fade."""
+def _seal(f):
+    """Censure's book (a seal of light before Round 66): straight down at
+    CENSURE_FALL_SPEED, late enough to land with the delay; no fade."""
     h = f["height"]
     fall, after = _fall_time(f, CENSURE_FALL_SPEED)
-    return [P(1, at="target", color=color, fade=False, after=after, shape=["box", [0, h, 0], [0, h, 0]],
+    return [P(1, at="target", tex=BOOK, fade=False, after=after, shape=["box", [0, h, 0], [0, h, 0]],
               vel=[[0, -h / fall, 0], [0, -h / fall, 0]], exp=[fall, fall], size=[16, 16], glow=14)]
 
 

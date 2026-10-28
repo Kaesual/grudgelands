@@ -2,7 +2,8 @@
 -- as emitters for grug_core.particles.play (particles.lua explains the
 -- fields). The player-skill effects are the accepted V3 catalogue
 -- (tools/r40_v3/effects.py, round40-plan.md §2.15): counts, times, shapes,
--- colours and sizes as the user took them, single colour, no art sprite.
+-- colours and sizes as the user took them, single colour, no art sprite
+-- (Round 66 gave the priest's Smite, Censure and Final Word their symbols).
 -- Counts are before grug_particle_scale. Where the build differs from the
 -- catalogue, the line says so (and effects.py carries the same numbers).
 
@@ -475,15 +476,38 @@ register("haven_tick", {
 		vel = {{0, 1, 0}, {0, 1.5, 0}}, exp = {0.6, 0.8}, size = {2, 2.5}})),
 })
 
--- Priest, Reckoning. Smite as the basic attack, a small Final Word (the
--- user, 2026-10-21): a short beam of five motes shoots down from 3.2 m onto
--- the target and a small gold ring of eight springs out at its feet (about
--- 1 m). Single particles, no spawner: it plays about once a second.
+-- Priest, Reckoning. The priest's symbols (Round 66, the user's picks of
+-- 2026-10-28): a hammer for Smite and Final Word, a book for Censure. Both
+-- textures are ivory and gold already, so they carry no tint (a textured
+-- emitter ignores `color`, particles.lua texture()); lit() adds them with
+-- glow 14 like every skill light.
+local HAMMER = "grug_core_fx_hammer.png"
+local BOOK = "grug_core_fx_book.png"
+
+-- The hammer falls straight down head first (the texture draws the head at
+-- the bottom): one particle from `top` metres over the target's feet that
+-- lands after `fall` seconds with the face of its head at `foot`. The face
+-- sits HAMMER_FACE metres per size unit under the particle's centre (the
+-- texture's lowest row, 26 of 64 pixels under the middle; size 1 = 0.1 m).
+-- No fade, so the hammer lands whole; it vanishes as it lands.
+local HAMMER_FACE = 0.04
+local function hammer(size, top, foot, fall)
+	local speed = round3((top - foot - HAMMER_FACE * size) / fall)
+	return single(1, lit({at = "target", tex = HAMMER, fade = false,
+		shape = {"box", {0, top, 0}, {0, top, 0}}, vel = {{0, -speed, 0}, {0, -speed, 0}},
+		exp = {fall, fall}, size = {size, size}}))
+end
+
+-- Smite, the basic attack, a small Final Word (the user, 2026-10-21; the
+-- hammer since Round 66): the hammer (size 7) falls from 3.2 m onto the
+-- target in 0.15 s, then a small gold ring of eight springs out at its feet
+-- (about 1 m; `after` the fall, one server step of granularity). The damage
+-- stays instant. Single particles, no spawner: it plays about once a second.
+local SMITE_FALL = 0.15
 register("smite_hit", {
-	single(5, lit({at = "target", color = "#fff0a8", shape = {"line", {0, 3.2, 0}, {0, 1.6, 0}},
-		vel = {{0, -9, 0}, {0, -9, 0}}, exp = {0.16, 0.18}, size = {3, 3.5}})),
+	hammer(7, 3.2, 0.15, SMITE_FALL),
 	single(8, lit({at = "target", color = "#ffb800", shape = {"disc", {0, 0.15, 0}, 0.3, true},
-		radial = {3, 3.5}, exp = {0.25, 0.3}, size = {2.5, 2.5}})),
+		radial = {3, 3.5}, exp = {0.25, 0.3}, size = {2.5, 2.5}, after = SMITE_FALL})),
 })
 -- Rebuke: a gold line from the priest's hand (frame.from) to the target's
 -- body (frame.to).
@@ -491,13 +515,14 @@ register("rebuke", {
 	spawner(14, 0.08, lit({color = "#ffb800", shape = {"line", "frame"},
 		vel = {{-0.2, -0.2, -0.2}, {0.2, 0.2, 0.2}}, exp = {0.12, 0.18}, size = {2, 3}})),
 })
--- Censure: a gold warning ring, one large seal falling from frame.height
--- in the delay, a gold ring to the radius.
+-- Censure: a gold warning ring, the book (size 16; a falling seal of light
+-- before Round 66) falling from frame.height in the delay, a gold ring to
+-- the radius.
 register("censure_warning", warning_ring("#ffb800"), {reach = 3, time = 0.75})
 register("censure_fall", function(frame)
 	local height, life = frame.height or 6, frame.time or 0.75
 	local fall, after = fall_time(height, life, CENSURE_FALL_SPEED)
-	return {single(1, lit({at = "target", color = "#fff0a8", fade = false, after = after,
+	return {single(1, lit({at = "target", tex = BOOK, fade = false, after = after,
 		shape = {"box", {0, height, 0}, {0, height, 0}},
 		vel = {{0, -height / fall, 0}, {0, -height / fall, 0}}, exp = {fall, fall},
 		size = {16, 16}}))}
@@ -506,12 +531,16 @@ register("censure_impact", {
 	single(32, lit({at = "target", color = "#ffb800", shape = {"disc", {0, 0.2, 0}, 0.3, true},
 		radial = "reach", exp = {0.3, 0.3}, size = {3, 3}})),
 })
--- Final Word: a white column falls onto the target, a gold ring bursts.
+-- Final Word: a white column falls onto the target with the hammer (size
+-- 12) inside it, both from 7 m in the column's 0.1 s, and a gold ring bursts.
+-- The column gave one of its 26 motes to the hammer (Round 66), so the
+-- effect keeps its 46 particles.
 register("final_word", {
-	spawner(26, 0.1, lit({at = "target", color = "#fff0a8", shape = {"line", {0, 7, 0}, {0, 0.2, 0}},
+	spawner(25, 0.1, lit({at = "target", color = "#fff0a8", shape = {"line", {0, 7, 0}, {0, 0.2, 0}},
 		exp = {0.2, 0.3}, size = {4, 5}})),
 	spawner(20, 0.05, lit({at = "target", color = "#ffb800", shape = {"disc", {0, 0.15, 0}, 0.4, true},
 		radial = {5, 6}, exp = {0.25, 0.35}, size = {2.5, 3}})),
+	hammer(12, 7, 0.2, 0.1),
 })
 
 -- Scout, Quarry. Split Shot: a few splinters along frame.from (the struck
