@@ -28,13 +28,12 @@ SURFACES = (
     ("sand", "Sand", "#d5bb86"),
 )
 CANDIDATES = (
-    ("smite_hammer_a", "Hammer A", "Square mallet", "A broad, flat striking head and a straight handle make the smallest hit unmistakable."),
-    ("smite_hammer_b", "Hammer B", "Stepped hammer", "Raised end caps and a shorter grip give the descending hammer a more ceremonial silhouette."),
-    ("censure_book_c", "Book C", "Open folio", "A broad, flat spread faces the viewer, with two quiet ivory pages and a clear central fold."),
-    ("censure_book_d", "Book D", "Lifted pages", "Two gently bowed pages rise symmetrically from the spine, giving the open book a taller silhouette."),
+    ("smite_hammer_c", "Hammer C", "Crowned mallet", "Flared striking faces, a diamond seal and a ringed grip give the broad descending head a ceremonial weight."),
+    ("smite_hammer_d", "Hammer D", "Beaked war hammer", "A broad chamfered face balances a tapered ivory beak beneath a wrapped grip and a faceted pommel."),
+    ("censure_book_e", "Book E", "Inclined folio", "The broad, quiet spread leans gently away, with a narrower far edge and a clear central fold."),
+    ("censure_book_f", "Book F", "Reclining folio", "A stronger backward tilt shortens the pages and draws the far edge inward, like an open book resting on a low lectern."),
 )
-# Hammer B remains reproducible as pass-1 provenance, outside the active choice.
-DISPLAYED = (CANDIDATES[0], *CANDIDATES[2:])
+RECOMMENDED = ('smite_hammer_c', 'censure_book_e')
 
 
 class Drawing:
@@ -64,30 +63,56 @@ class Drawing:
         return Image.fromarray(data)
 
 
-def hammer_a():
+def hammer_c():
     d = Drawing()
-    d.polygon([(29, 9), (35, 9), (37, 12), (35, 16), (35, 38), (29, 38), (29, 16), (27, 12)], GOLD)
-    d.polygon([(30, 12), (33, 12), (33, 38), (30, 38)], WHITE)
-    d.polygon([(27, 31), (37, 31), (37, 37), (27, 37)], IVORY)
-    d.polygon([(12, 36), (16, 33), (48, 33), (52, 36), (52, 49), (48, 53), (16, 53), (12, 49)], GOLD)
-    d.polygon([(16, 37), (48, 37), (48, 49), (16, 49)], IVORY)
-    d.polygon([(16, 33), (48, 33), (48, 37), (16, 37)], WHITE)
-    d.line([(16, 50), (48, 50)], WHITE, 2)
-    d.line([(14, 37), (14, 47)], WHITE, 1.5)
-    d.line([(50, 37), (50, 47)], WHITE, 1.5)
+    # Straight shaft, diamond pommel, three broad grip rings.
+    d.polygon([(29, 11), (35, 11), (35, 35), (29, 35)], IVORY)
+    d.line([(31, 13), (31, 33)], WHITE, 2)
+    d.polygon([(32, 5), (37, 10), (32, 15), (27, 10)], GOLD)
+    d.polygon([(32, 6), (35, 10), (32, 12), (29, 10)], WHITE)
+    for y in (17, 23, 29):
+        d.polygon([(28, y), (36, y), (36, y+2), (28, y+2)], GOLD)
+        d.line([(28, y), (35, y)], WHITE, 0.75)
+    d.polygon([(28, 32), (36, 32), (39, 38), (25, 38)], GOLD)
+    d.polygon([(30, 33), (34, 33), (36, 38), (28, 38)], WHITE)
+    # Flared end faces and a lower central keel are silhouette features;
+    # the pale inlaid seal is secondary and may wash out in additive light.
+    d.polygon([(9, 35), (12, 32), (19, 32), (22, 37), (42, 37),
+               (45, 32), (52, 32), (55, 35), (55, 51), (51, 55),
+               (44, 55), (41, 51), (35, 51), (32, 54), (29, 51),
+               (23, 51), (20, 55), (13, 55), (9, 51)], GOLD)
+    d.polygon([(19, 36), (23, 39), (41, 39), (45, 36), (45, 50),
+               (35, 50), (32, 52), (29, 50), (19, 50)], IVORY)
+    d.polygon([(10, 36), (13, 34), (17, 34), (17, 52), (14, 52), (10, 49)], WHITE)
+    d.polygon([(47, 34), (51, 34), (54, 36), (54, 49), (50, 52), (47, 52)], WHITE)
+    d.line([(22, 38), (42, 38)], WHITE, 1.5)
+    d.line([(23, 50), (29, 50), (32, 52), (35, 50), (41, 50)], WHITE, 1)
+    d.polygon([(32, 39), (37, 44), (32, 49), (27, 44)], GOLD)
+    d.polygon([(32, 41), (34, 44), (32, 47), (30, 44)], WHITE)
     return d.finish()
 
 
-def hammer_b():
+def hammer_d():
     d = Drawing()
-    d.polygon([(28, 10), (36, 10), (38, 14), (35, 17), (35, 35), (29, 35), (29, 17), (26, 14)], GOLD)
-    d.line([(31, 13), (31, 34)], WHITE, 3)
-    d.polygon([(26, 29), (38, 29), (40, 36), (24, 36)], IVORY)
-    d.polygon([(10, 34), (19, 34), (19, 38), (45, 38), (45, 34), (54, 34), (54, 49), (48, 54), (16, 54), (10, 49)], GOLD)
-    d.polygon([(20, 39), (44, 39), (44, 48), (20, 48)], WHITE)
-    d.polygon([(12, 35), (17, 35), (17, 50), (14, 48), (12, 48)], IVORY)
-    d.polygon([(47, 35), (52, 35), (52, 48), (49, 50), (47, 50)], IVORY)
-    d.line([(19, 51), (45, 51)], WHITE, 2)
+    d.polygon([(29, 10), (35, 10), (35, 38), (29, 38)], IVORY)
+    d.polygon([(29, 5), (35, 5), (38, 8), (36, 13), (28, 13), (26, 8)], GOLD)
+    d.polygon([(29, 6), (35, 6), (36, 8), (34, 11), (30, 11), (28, 8)], WHITE)
+    for y in (16, 22, 28):
+        d.polygon([(29, y), (35, y+2), (35, y+4), (29, y+2)], GOLD)
+    d.line([(30, 14), (30, 33)], WHITE, 1)
+    d.polygon([(27, 33), (37, 33), (37, 37), (27, 37)], WHITE)
+    # One broad striking face opposed by a short tapered counter-peen.
+    d.polygon([(9, 35), (13, 31), (20, 31), (23, 36), (38, 36),
+               (47, 39), (55, 46), (55, 49), (45, 46), (38, 48),
+               (23, 49), (20, 55), (13, 55), (9, 51)], GOLD)
+    d.polygon([(20, 36), (24, 38), (37, 38), (43, 41), (44, 45),
+               (37, 46), (23, 47), (20, 50)], IVORY)
+    d.polygon([(10, 36), (14, 33), (17, 33), (17, 53), (14, 53), (10, 50)], WHITE)
+    d.polygon([(37, 37), (46, 40), (54, 47), (45, 44), (38, 46)], WHITE)
+    d.line([(23, 37), (36, 37)], WHITE, 1.5)
+    d.line([(23, 48), (37, 47)], WHITE, 1)
+    d.polygon([(29, 38), (34, 38), (34, 47), (29, 47)], GOLD)
+    d.line([(30, 39), (30, 46)], WHITE, 1)
     return d.finish()
 
 
@@ -98,31 +123,39 @@ def finish_book(d):
     return d.finish()
 
 
-def book_c():
+def tilted_book(far_scale, far_y, near_y):
+    """Project the calm open folio onto a plane leaning away from the viewer.
+
+    Far-edge scale controls perspective convergence; the reduced vertical
+    extent gives foreshortening. Keep the same blank leaves and shallow fold.
+    """
     d = Drawing()
-    # Frontal spread: level outer edges, a shallow V at the central binding.
-    d.polygon([(7, 16), (20, 16), (30, 20), (30, 48), (32, 50),
-               (32, 52), (20, 48), (7, 48)], GOLD)
-    d.polygon([(9, 15), (20, 15), (30, 19), (30, 47), (20, 44), (9, 44)], IVORY)
-    d.line([(10, 16), (20, 16), (28.5, 19.5)], WHITE, 1.5)
-    d.line([(10, 17), (10, 43)], WHITE, 1.5)
-    d.line([(10, 46), (20, 46), (29, 49)], WHITE, 1)
-    # The transparent gutter defines the spine even when additive tones saturate.
-    # Blank pages: no lettering or small marks competing with the silhouette.
+
+    def project(points):
+        out = []
+        for x, y in points:
+            t = (y-15)/37
+            scale = far_scale / (1-(1-far_scale)*t)
+            out.append((32+(x-32)*scale, far_y+(near_y-far_y)*t*scale))
+        return out
+
+    # The two cover halves join below the transparent central gutter.
+    d.polygon(project([(7, 16), (20, 16), (30, 20), (30, 48),
+                       (32, 50), (32, 52), (20, 48), (7, 48)]), GOLD)
+    d.polygon(project([(9, 15), (20, 15), (30, 19), (30, 47),
+                       (20, 44), (9, 44)]), IVORY)
+    d.line(project([(10, 16), (20, 16), (28.5, 19.5)]), WHITE, 1)
+    d.line(project([(10, 17), (10, 43)]), WHITE, 1.25)
+    d.line(project([(10, 46), (20, 46), (29, 49)]), WHITE, 1)
     return finish_book(d)
 
 
-def book_d():
-    d = Drawing()
-    # Taller curved spread, still frontal: both leaves lift by the same amount.
-    d.polygon([(7, 17), (16, 14), (24, 16), (30, 21), (30, 49),
-               (32, 51), (32, 54), (24, 50), (15, 48), (7, 50)], GOLD)
-    d.polygon([(8, 16), (15, 13), (22, 14), (27, 17), (30, 21),
-               (30, 50), (26, 47), (22, 45), (15, 44), (8, 47)], IVORY)
-    d.polygon([(9, 13), (15, 10), (22, 11), (27, 14), (30, 18),
-               (30, 47), (27, 44), (22, 41), (15, 40), (9, 43)], WHITE)
-    d.line([(9, 48), (15, 46), (22, 47), (28, 50)], WHITE, 1)
-    return finish_book(d)
+def book_e():
+    return tilted_book(far_scale=0.74, far_y=19, near_y=50)
+
+
+def book_f():
+    return tilted_book(far_scale=0.56, far_y=25, near_y=48)
 
 
 def png_bytes(im):
@@ -143,12 +176,12 @@ def samples(name, blend):
 
 def card(candidate):
     name, label, title, idea = candidate
-    badge = ' · Picked' if name == 'smite_hammer_a' else ' · Recommended' if name == 'censure_book_c' else ''
+    badge = ' · Recommended' if name in RECOMMENDED else ''
     rows = ''.join(f'<div class="surface-row"><div class="surface-label">{label_bg}</div>'
                    f'<div class="surface {key}">{samples(name, "plain")}</div>'
                    f'<div class="surface {key}">{samples(name, "add")}</div></div>'
                    for key, label_bg, _ in SURFACES)
-    return f"""<article class="candidate{' picked-card' if name == 'smite_hammer_a' else ''}" id="{name}">
+    return f"""<article class="candidate" id="{name}">
     <header class="candidate-head"><div class="hero-sprite add">{img(name, 128)}</div>
     <div><p class="eyebrow">{label}{badge}</p>
     <h3>{title}</h3><p>{idea}</p></div></header>
@@ -160,14 +193,14 @@ def figure():
     return '<div class="figure" aria-label="Schematic figure, one node wide and two nodes tall"><i class="head"></i><i class="body"></i><i class="arms"></i><i class="legs"></i></div>'
 
 
-def context(variant):
+def context(hammer, book):
     # Reuse the established catalogue preview scale: size * 0.1 node.
     # tools/r52_pfx/template.html uses the same conversion. One node = 64 CSS px.
     cells = []
     for title, name, units, note in (
-        ('Smite', 'smite_hammer_a', 5, '3.2 m fall · about 0.15 s'),
-        ('Final Word', 'smite_hammer_a', 12, 'Same hammer · white column'),
-        ('Censure', f'censure_book_{variant}', 16, '6 m fall · 0.75 s warning'),
+        ('Smite', f'smite_hammer_{hammer}', 5, '3.2 m fall · about 0.15 s'),
+        ('Final Word', f'smite_hammer_{hammer}', 12, 'Same hammer · white column'),
+        ('Censure', f'censure_book_{book}', 16, '6 m fall · 0.75 s warning'),
     ):
         side = units * 0.1 * 64
         sprite = img(name, SIZE, f'style="width:{side:g}px;height:{side:g}px"')
@@ -175,7 +208,8 @@ def context(variant):
                      f'<div class="scene"><div class="symbol add">{sprite}</div>{figure()}'
                      '<div class="ruler">1 node</div></div>'
                      f'<p class="size-note">Size {units} · sprite square {units/10:g} nodes</p></div>')
-    return f'<article class="context-card"><h3>Picked Hammer A + Book {variant.upper()}{" · recommended" if variant == "c" else " · alternative"}</h3><div class="scale-strip">'+''.join(cells)+'</div></article>'
+    badge = ' · recommended pair' if (hammer, book) == ('c', 'e') else ''
+    return f'<article class="context-card"><h3>Hammer {hammer.upper()} + Book {book.upper()}{badge}</h3><div class="scale-strip">'+''.join(cells)+'</div></article>'
 
 
 def overview(images):
@@ -184,18 +218,11 @@ def overview(images):
     draw = ImageDraw.Draw(sheet)
     font = ImageFont.load_default(size=18)
     small = ImageFont.load_default(size=13)
-    draw.text((28, 22), 'ROUND 66 / PASS 2     Picked: Hammer A     Recommended: Book C', font=font, fill='#f8ead1')
-    draw.text((600, 100), 'CENSURE / AN OPEN BOOK', font=font, fill='#f8ead1')
-    for j, line in enumerate(('Two symmetric spreads, facing the viewer.',
-                              'C / Broad and flat. Recommended at 16 px.',
-                              'D / Taller, with gently lifted pages.',
-                              'Blank ivory pages, a clear central spine.',
-                              'Hammer A stays byte-identical to pass 1.')):
-        draw.text((600, 145+j*30), line, font=small, fill='#c1cbd4')
-    for i, (name, label, title, _) in zip((0, 2, 3), DISPLAYED):
+    draw.text((28, 22), 'ROUND 66 / PASS 3     Recommended: Hammer C + Book E', font=font, fill='#f8ead1')
+    for i, (name, label, title, _) in enumerate(CANDIDATES):
         x, y = 24 + (i % 2)*552, 66 + (i//2)*338
         draw.rectangle((x, y, x+528, y+318), fill='#1e2a36')
-        badge = ' / PICKED' if i == 0 else ' / RECOMMENDED' if i == 2 else ''
+        badge = ' / RECOMMENDED' if name in RECOMMENDED else ''
         draw.text((x+16, y+12), label+' / '+title+badge, font=font, fill='#f8ead1')
         sheet.paste(images[name].resize((160, 160), Image.Resampling.NEAREST), (x+10, y+53),
                     images[name].resize((160, 160), Image.Resampling.NEAREST))
@@ -213,7 +240,7 @@ def overview(images):
 
 
 def build():
-    images = dict(zip((c[0] for c in CANDIDATES), (hammer_a(), hammer_b(), book_c(), book_d())))
+    images = dict(zip((c[0] for c in CANDIDATES), (hammer_c(), hammer_d(), book_e(), book_f())))
     outputs = {}
     for name, im in images.items():
         assert im.mode == 'RGBA' and im.size == (64, 64)
@@ -225,9 +252,9 @@ def build():
         outputs[f'candidates/{name}.png'] = data
         outputs[f'preview/{name}.png'] = data
     template = (ROOT / 'preview.html.in').read_text()
-    template = template.replace('@@HAMMERS@@', card(CANDIDATES[0]))
+    template = template.replace('@@HAMMERS@@', ''.join(card(c) for c in CANDIDATES[:2]))
     template = template.replace('@@BOOKS@@', ''.join(card(c) for c in CANDIDATES[2:]))
-    template = template.replace('@@CONTEXT@@', context('c')+context('d'))
+    template = template.replace('@@CONTEXT@@', ''.join(context(h, b) for h in ('c', 'd') for b in ('e', 'f')))
     outputs['preview/index.html'] = template.encode()
     outputs['preview/contact-sheet.png'] = png_bytes(overview(images))
     return outputs
