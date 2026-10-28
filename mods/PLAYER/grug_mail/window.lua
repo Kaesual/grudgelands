@@ -24,9 +24,11 @@ local RANGE = 6
 -- The mailbox node (lane WORLD, grug_mapgen/world_nodes.lua).
 grug_mail.MAILBOX_NODE = "grug_mapgen:mailbox"
 local ATTACH = grug_mail.ATTACH_LIST
--- The tab bar, in its order: the tab buttons are named by their place
--- ("grug_mail_tab_<n>") and share the bar's width equally. `count` names
--- the unread count a caption carries ("Letters (2)").
+-- The tab bar, in its order. The buttons are named by their place
+-- ("grug_mail_tab_<n>") and share the bar by caption length like the
+-- inventory's navigation (navigation.lua caption_weight), with room for a
+-- two-digit count where a caption carries one (`count`, "Letters (2)").
+-- The shares are fixed, so a count never moves a tab.
 local TABS = {
 	{id = "letters", caption = "Letters", count = "letters"},
 	{id = "sent", caption = "Sent"},
@@ -34,6 +36,17 @@ local TABS = {
 	{id = "write", caption = "Write"},
 	{id = "admin", caption = "To the admin"},
 }
+do
+	local total, x, bar = 0, 0.4, W - 0.8
+	for _, tab in ipairs(TABS) do
+		tab.weight = #tab.caption + 3.5 + (tab.count and #" (99)" or 0)
+		total = total + tab.weight
+	end
+	for _, tab in ipairs(TABS) do
+		tab.x, tab.w = x, bar * tab.weight / total - 0.1
+		x = x + bar * tab.weight / total
+	end
+end
 local BADGE = "grug_mail_admin_badge.png"
 local SEAL = "grug_mail_npc_seal.png"
 
@@ -135,15 +148,15 @@ end
 
 local function frame(player, session, counts)
 	local scale = grug_core.ui.text_scale(player)
-	local nav, step = {}, (W - 0.8) / #TABS
+	local nav = {}
 	for index, tab in ipairs(TABS) do
 		local count = tab.count and counts[tab.count] or 0
 		local caption = count > 0 and (tab.caption .. " (" .. count .. ")") or tab.caption
-		local name, x = "grug_mail_tab_" .. index, 0.4 + (index - 1) * step
+		local name = "grug_mail_tab_" .. index
 		nav[#nav + 1] = grug_core.ui.navigation_style(name, tab.id == session.tab,
-			x, 0.2, step - 0.1, 0.6)
+			tab.x, 0.2, tab.w, 0.6)
 		nav[#nav + 1] = ("style[%s;font_size=*%.3f]"):format(name, 1.1 * scale)
-		nav[#nav + 1] = ("button[%.3f,0.2;%.3f,0.6;%s;%s]"):format(x, step - 0.1, name,
+		nav[#nav + 1] = ("button[%.3f,0.2;%.3f,0.6;%s;%s]"):format(tab.x, tab.w, name,
 			esc(caption))
 	end
 	return table.concat({

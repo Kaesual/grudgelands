@@ -17,7 +17,8 @@
 --      are unchanged; refused letters, admin and NPC letters, messages to
 --      the admin and announcements write no copy; the 51st send drops the
 --      oldest copy and still succeeds; delete; expiry;
---   D  the window: five tab buttons sharing the bar, the second opens Sent;
+--   D  the window: five tab buttons sharing the bar by caption weight, the
+--      second opens Sent;
 --      the list (recipient, date, attachment count), the reading pane (To:,
 --      postage, attachment names as text), no Take all, Reply or Report, no
 --      item image; Delete without a dialog; the empty list; a second page.
@@ -396,15 +397,22 @@ local function form() return formspecs.Alice.text end
 do
 	check(grug_mail.open_mailbox(alice, MAILBOX), "D the window opens")
 	local session = grug_mail.session("Alice")
-	-- Five buttons share the bar: (20 - 0.8) / 5 = 3.84 a place, 3.74 wide.
-	local captions = {"Letters", "Sent", "Announcements", "Write", "To the admin"}
-	for index, caption in ipairs(captions) do
-		local x = 0.4 + (index - 1) * 3.84
-		check(has(form(), ("button[%.3f,0.2;3.740,0.6;grug_mail_tab_%d;"):format(x, index)),
-			"D tab " .. index .. " is drawn at its fifth of the bar")
-		check(has(form(), ";grug_mail_tab_" .. index .. ";" .. caption), "D tab " .. index ..
-			" reads " .. caption)
+	-- Five buttons share the bar 0.4..19.5 by caption weight (length + 3.5,
+	-- + 5 for " (99)" on a counted caption), 0.1 apart; the widths are those
+	-- tools/r66_mail/caption_widths.py measures.
+	local bar = {{"Letters", 0.400, 4.245}, {"Sent", 4.745, 2.002},
+		{"Announcements", 6.847, 5.926}, {"Write", 12.873, 2.282},
+		{"To the admin", 15.255, 4.245}}
+	for index, tab in ipairs(bar) do
+		check(has(form(), ("button[%.3f,0.2;%.3f,0.6;grug_mail_tab_%d;%s]"):format(tab[2],
+			tab[3], index, tab[1])), "D tab " .. index .. " reads " .. tab[1] .. " at its share")
+		local after = bar[index + 1]
+		if after then
+			check(math.abs(tab[2] + tab[3] + 0.1 - after[2]) < 0.002,
+				"D tab " .. index .. " ends 0.1 before the next")
+		end
 	end
+	check(math.abs(bar[5][2] + bar[5][3] - 19.5) < 0.002, "D the bar ends at 19.5 as before")
 	check(not has(form(), "grug_mail_tab_6"), "D five tabs, no more")
 	fields(alice, {grug_mail_tab_2 = true})
 	eq(session.tab, "sent", "D the second tab opens Sent")
