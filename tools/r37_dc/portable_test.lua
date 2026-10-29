@@ -123,6 +123,9 @@ local SETTINGS = {
 	"grug_mob_damage_scale (Non-player attack damage multiplier) float 1.5 0 10",
 	"grug_particle_scale (Particle amount scale) float 1.0 0 2",
 	"grug_tree_regrowth (Regrow trees from saplings) bool true",
+	-- 0.66.1: the [GRUG-PERF] lines (grug_perf/init.lua).
+	"grug_perf_monitor (Log performance numbers every minute) bool true",
+	"grug_perf_profile_minutes (Save the engine profile every N minutes) int 0 0 1440",
 	"grug_reset_world (Map reset counter, set by the hosting platform) int 0 0",
 }
 local INTERNALS = {"grug_", "globalstep", "observer", "set_lighting", "set_atmosphere",

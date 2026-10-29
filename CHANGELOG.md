@@ -12,6 +12,23 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.66.1 — performance numbers in the server log (2026-10-29)
+
+For server admins. **Compatible:** no map reset and no migration step.
+
+- **Performance lines:** once a minute the server writes a `[GRUG-PERF]`
+  line to its log with the step times, lag spikes, players and their ping,
+  active objects, the minimap's cost and the memory in use, and a short
+  line whenever a server step takes longer than 250 ms (at most one every
+  10 seconds). The hosting platform's performance view reads them. On by
+  default and cheap; the setting **`grug_perf_monitor`** turns it off.
+- **Periodic profiles for lag hunting:** with the engine's profiler on
+  (`profiler.load`), the new setting **`grug_perf_profile_minutes`** saves
+  the engine's detailed profile (which mod took how much time) as a JSON
+  file into the world folder every that many minutes, and the log names
+  each file. Off by default; the profiler itself costs up to about 0.6 ms
+  per server step, so switch it on for an event or a test, then off again.
+
 ## 0.66.0 — Two-handed swap, sent letters and bigger windows on 4K (2026-10-28)
 
 Compatible update; no reset or migration.

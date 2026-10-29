@@ -12,7 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.66.0, Round 66 polish (the two-handed shift-click
+**Current state:** 0.66.1, the `[GRUG-PERF]` performance lines for the
+hosting platform (`grug_perf`; **compatible**, no step; on branch
+`r661-perf`, review pending; [STATUS](docs/STATUS.md)), on 0.66.0.
+Previous: 0.66.0, Round 66 polish (the two-handed shift-click
 swap and blocked offhand, the fishing rod from the start, a Sent tab in the
 mailbox, the viewport and text growing on tall screens, markers sized by
 the drawn map, camps in faction colour, faction-coloured creation buttons,
@@ -916,3 +919,10 @@ The topic rules below name the one path to use; the
   `[GRUG-SEVERE]` and a red chat message to every player once per key; the
   mapgen environment loads the same file by `dofile` and its chat part
   reaches the main thread through gen_notify.
+- The game's performance numbers go to the server log as `[GRUG-PERF]`
+  lines (action level, one JSON object; `grug_perf`, 0.66.1): a `minute`
+  line, `spike` lines and, with the engine profiler on, `profile_saved`.
+  The hosting platform parses them: the line format is a fixed contract
+  (fields may be added, never renamed, removed or reinterpreted), owned by
+  the [module guide](docs/technical/module-guide.md#performance-log-lines);
+  the monitor's per-step work stays constant (nothing per player or object).

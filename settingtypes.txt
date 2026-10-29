@@ -113,6 +113,31 @@ grug_particle_scale (Particle amount scale) float 1.0 0 2
 #    and wild resource plants renew regardless of this switch.
 grug_tree_regrowth (Regrow trees from saplings) bool true
 
+[Server performance]
+
+#    Write the server's performance numbers to the server log as
+#    [GRUG-PERF] lines: once a minute the step times, lag spikes, players
+#    and their ping, active objects and memory, and a short line whenever a
+#    server step takes longer than 250 ms (at most one every 10 seconds).
+#    The hosting platform's performance view reads these lines. It is cheap
+#    (well under a microsecond per server step, plus about a tenth of a
+#    millisecond once a minute), so leave it on; turn it off only if you do
+#    not want the lines in the log. Read when the server starts; restart
+#    after a change.
+grug_perf_monitor (Log performance numbers every minute) bool true
+
+#    For investigating a lag problem, not for everyday use. Every this many
+#    minutes, save the engine's detailed profile (which mod's code took how
+#    much time) as a JSON file into the world folder, then start counting
+#    afresh; the log names each file in a [GRUG-PERF] line. 0 turns it off.
+#    It works only while the engine's profiler is switched on (the setting
+#    profiler.load), and that profiler is what costs: it times every callback
+#    of every mod, measured at up to about 0.6 ms more per server step in a
+#    busy capital (up to a third more server CPU). Switch both on for an
+#    event or a test session, then off again. Read when the server starts;
+#    restart after a change.
+grug_perf_profile_minutes (Save the engine profile every N minutes) int 0 0 1440
+
 [Hosting platform]
 
 #    Owned by the hosting platform; never change it by hand. The platform
