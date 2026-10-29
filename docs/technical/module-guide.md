@@ -26,7 +26,8 @@ tier-rock gating](#materials-and-tier-rock-gating), [Traders and
 money](#traders-and-money), [Quests](#quests), [Parties](#parties),
 [Mail](#mail), [Housing](#housing), [Travel](#travel), [Atlas](#atlas),
 [Preparation](#preparation), [World version and
-migrations](#world-version-and-migrations), [Fishing](#fishing), [Mapgen and
+migrations](#world-version-and-migrations), [Performance log
+lines](#performance-log-lines), [Fishing](#fishing), [Mapgen and
 biomes](#mapgen-and-biomes), [World atlas rules](#world-atlas-rules),
 [Sound](#sound), [UI and formspecs](#ui-and-formspecs), [Player model and
 skins](#player-model-and-skins), [Looks and enchant
@@ -2461,6 +2462,96 @@ tools](#player-meta-read-by-external-tools).
   `tools/r47_ms/run.sh` for 0.47.0, `tools/r48_bags/run.sh` for 0.48.0,
   `tools/r53_ms/run.sh` for 0.53.0: unit tests and an end-to-end run from a
   world of the previous release).
+
+## Performance log lines
+
+- **0.66.1** (`grug_perf`, a CORE mod): the game's performance numbers for
+  the hosting platform, written to the server log as `[GRUG-PERF]` lines
+  (the platform's log shipper reads them, like `[GRUG-SEVERE]`). **The line
+  format is a fixed contract (v1):** fields may be added, never renamed,
+  removed or reinterpreted; a new field gets a row below and a fixture
+  check.
+- **The format.** `core.log("action", ...)`; the message starts with exactly
+  `[GRUG-PERF] ` (one space) followed by one JSON object and nothing else.
+  Every number is finite and ≥ 0; integer fields are written as integers
+  (`minimap_us` and `minimap_bytes` may exceed 2^31, the others fit in 32
+  bits); `profiler` is a real boolean; the three round-trip fields are absent
+  (never `null`) without measured players; the whole line stays under 4096
+  bytes (a minute line is about 400). Numbers are rounded to one decimal
+  (0.1 ms, 0.1 s). A line that breaks a rule is stored as plain text by the
+  parser and the dashboard silently gets nothing, so `grug_perf/lines.lua`
+  writes 0 for any value that is not a finite number ≥ 0. The parser keeps
+  at most 2 `minute`, 12 `spike` and 2 `profile_saved` lines per log minute;
+  the game writes at most one `minute` per 60 s, one `spike` per 10 s and
+  one `profile_saved` per interval (≥ 1 minute).
+- **`kind = "minute"`**, once per 60 s of server steps (times in ms unless
+  the name says otherwise):
+
+  | Field | Type | Meaning |
+  | --- | --- | --- |
+  | `v` | int | `1` |
+  | `kind` | string | `"minute"` |
+  | `span_s` | number | seconds the line covers (about 60; the sum of its steps' intervals) |
+  | `steps` | int | server steps in the span |
+  | `step_p50`, `step_p95`, `step_max` | number | step interval (nearest rank) |
+  | `spikes` | int | steps over the spike threshold |
+  | `spike_ms` | number | the threshold in force (250) |
+  | `max_lag` | number | `core.get_server_max_lag()` at the end of the span |
+  | `players` | int | players online at the end of the span |
+  | `objects` | int | active objects, players included (`core.object_refs`) |
+  | `luaentities` | int | active Lua entities (`core.luaentities`) |
+  | `rtt_p50`, `rtt_max` | number | the players' average round trip (`avg_rtt` of `core.get_player_information`), median (nearest rank) and maximum; absent without players |
+  | `jitter_max` | number | the players' average jitter (`avg_jitter`), maximum; absent without players |
+  | `minimap_us` | int | Lua microseconds the minimap spent in the span (`grug_map.minimap.stats.us`) |
+  | `minimap_changes` | int | HUD changes the minimap sent in the span |
+  | `minimap_bytes` | int | estimated wire bytes of those changes |
+  | `lua_kb` | int | `collectgarbage("count")` |
+  | `profiler` | bool | whether `profiler.load` is on |
+
+  The minimap fields are the difference of grug_map's cumulative counters
+  since the last line (the first line counts from the load); 0 without
+  grug_map, which knows nothing of this mod (`grug_perf` reads its table
+  with `rawget`; `optional_depends` only orders the load).
+- **`kind = "spike"`**: `v`, `kind`, `step_ms` (the long step), `players`,
+  `objects`, `luaentities`. A step over 250 ms (`monitor.SPIKE_MS`) writes
+  one, at most one per 10 s; the spikes in between still count in the
+  minute's `spikes`.
+- **`kind = "profile_saved"`**: `v`, `kind`, `file`, the base name of the
+  saved profile, matching `^profile-\d{8}T\d{6}\.json$` (the engine's name
+  for a JSON save without a filter, written into the world folder).
+- **What a step interval is:** the `dtime` a globalstep receives. The engine
+  measures each server step whole with its own clock, unclamped and
+  unsmoothed, and passes it on unchanged (Luanti 5.17
+  `src/server.cpp:136-170`, `:152`; `src/serverenvironment.cpp:1073`;
+  `src/script/cpp_api/s_env.cpp:134-143`), so a long step arrives whole in
+  the next step's `dtime` and the monitor needs no clock call. The interval
+  includes the server's wait for the next step (`dedicated_server_step`,
+  0.09 s by default), so an idle server's p50 is about 90 ms; a step that
+  overruns it shows as a longer interval.
+- **The settings** (`settingtypes.txt` "Server performance", read at load; a
+  change needs a restart): `grug_perf_monitor` (bool, default **true**) and
+  `grug_perf_profile_minutes` (int, default **0** = off; acts only while the
+  engine's `profiler.load` is true).
+- **The monitor's cost rule:** per step one recorded interval and a few
+  counts (`grug_perf/monitor.lua` `new`: no clock call, nothing per player or
+  object, no allocation once the sample array has grown to a minute's
+  steps); once a minute it sorts the minute's samples and walks the
+  connected players and the object tables (`grug_perf.census`). With the
+  setting off the mod registers no globalstep. Measured costs: the
+  [0.66.1 entry in STATUS](../STATUS.md).
+- **The periodic profile save:** every N minutes `grug_perf` calls the
+  engine's own `/profiler` command definition
+  (`core.registered_chatcommands.profiler.func`, registered by
+  `builtin/profiler/init.lua:25-50` before any mod loads) with `save json`
+  and then `reset`, finds the file by the save's second (the engine names it
+  by `os.date("%Y%m%dT%H%M%S")`, `builtin/profiler/reporter.lua:226-268`;
+  never from the translated chat reply) and logs `profile_saved`. A failed
+  save warns once until a save works again. With `profiler.report_path`
+  set, the files land in that subfolder (a warning at load says so).
+- Pure parts: `lines.lua` (the contract's fields, rounding, the builder) and
+  `monitor.lua` (the recorder, the summary, the file detection), tested with
+  `init.lua` on a stub engine by `tools/r661_perf/portable_test.lua`; the
+  measuring probe is `tools/r661_perf/run.sh`.
 
 ## Fishing
 

@@ -1,6 +1,6 @@
 # Project status
 
-Updated 2026-10-28. This is the delivery pointer, not another game specification.
+Updated 2026-10-29. This is the delivery pointer, not another game specification.
 
 **0.66.0 / Round 66 is merged locally; not pushed.** Polish from the
 user's notes after playing 0.65.0: shift-clicking a two-hander swaps both
@@ -29,6 +29,35 @@ dim level, button strengths, symbol sizes and timing)
 **The joint GUI test of 0.57–0.65 is still pending; 0.66 joins it.**
 Production is still **0.55.1**; origin/main is `7a68e871` (0.65.0 and its
 status note). Only the user pushes.
+
+**0.66.1 / lane PERF is built on branch `r661-perf`** (2026-10-29, on
+0.66.0; **compatible**, no step: nothing saved is read or written; review
+and merge pending; not pushed). The hosting platform's performance
+dashboard reads the game's own numbers: the new CORE mod `grug_perf` writes
+`[GRUG-PERF]` lines (contract v1 in the [module
+guide](technical/module-guide.md#performance-log-lines)): a `minute` line
+(step interval p50/p95/max from the globalstep `dtime`, which the engine
+leaves unclamped, spikes over 250 ms, max lag, players with round trip and
+jitter, objects, entities, the minimap's cost, the Lua heap, the profiler
+flag), `spike` lines (at most one per 10 s) and, with `profiler.load` and
+the new setting `grug_perf_profile_minutes` (0 = off), a JSON profile saved
+through the engine's own `/profiler` command every N minutes with a
+`profile_saved` line. The monitor is on by default (`grug_perf_monitor`).
+**Measured** (seed 42, Dur Brannoc forceloaded without players, 469 active
+entities, 120 s windows, 4 boots; numbers are comparisons): the recorder
+costs 2.3 ns per step (LuaJIT, the real code), timed in place with its two
+clock calls 0.5–0.8 µs per call; once a minute the summary takes about
+83 µs, the census 3–4 µs (no players) and the line 1.1 µs. The engine
+profiler: Server thread CPU 2.40 s (off) against 2.45 s and 3.17 s (on)
+per 120 s, about 1.8 ms per step off, so up to about 0.6 ms more per step;
+its own estimate is 0.5–0.9 µs per instrumented call and 8–32 µs per step
+for its sampler; step intervals unchanged (p50 90.5 ms, p95 91 ms). New
+fixture `tools/r661_perf`, probe `tools/r661_perf/run.sh`.
+**GUI/admin checklist:** the two settings in the hosting UI and the main
+menu ("Server performance"); a server log shows a `minute` line about a
+minute after the start; with `profiler.load = true` and
+`grug_perf_profile_minutes = 1`, a `profile-*.json` in the world folder and
+a `profile_saved` line each minute.
 
 **0.65.0 / Round 65 is pushed** (2026-10-27, origin/main `8609d4c2`, with 0.64.0). Quest lists without
 locked rows, one acceptance rule and a boxed quest HUD, from the user's

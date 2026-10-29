@@ -102,7 +102,9 @@ fishing rod can be crafted from the start; the mailbox keeps your sent
 letters; windows and their text grow on 4K screens; map icons shrink with
 the map on small screens; Accord war camps are blue; and the priest's Smite,
 Final Word and Censure drop a hammer or a book. This update is compatible;
-desktop and web acceptance is pending.
+desktop and web acceptance is pending. 0.66.1 writes the server's
+performance numbers to its log once a minute for the hosting platform and
+can save the engine's profile periodically for admins hunting lag.
 
 **0.65.0** tidies the quests: a giver lists only what you can hand in, accept
 or are doing, plus one grey line naming the level of its next quests; you can
