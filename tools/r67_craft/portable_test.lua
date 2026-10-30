@@ -262,7 +262,8 @@ local star_x = page:match("button%[([%d%.]+),[%d%.]+;0%.6,0%.6;" .. CF.fav .. ";
 local details_x, details_w = page:match("button%[([%d%.]+),[%d%.]+;([%d%.]+),0%.6;" .. CF.details .. ";Details%]")
 check(star_x and details_x and tonumber(details_x) + tonumber(details_w) <= tonumber(star_x) + 0.001,
 	"B Details sits left of the star (" .. tostring(details_x) .. ", " .. tostring(star_x) .. ")")
-has(page, core.formspec_escape("grug_map_quest_available.png^[transformFY"), "B ... with its info icon")
+has(page, core.formspec_escape("grug_ui_icon_help.png^[multiply:" .. grug_core.ui.colors.accent),
+	"B ... with its info icon (the UI help icon, tinted)")
 lacks(page, "Recipe details]", "B the old Recipe details button is gone")
 click({[CF.details] = "Details"})
 check(st.box == "details", "B Details opens the details page")

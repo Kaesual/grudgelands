@@ -77,10 +77,11 @@ local X = BOX.x + 0.2
 local W = BOX.w - 0.4
 local ACTION = grug_jobs.CRAFT_ACTION
 -- The favourite star at the top right, "Details" left of it with its info
--- icon (a placeholder from a shipped texture: the quest "!" upside down).
+-- icon: the shipped UI help icon (a circled "?"), tinted in the accent
+-- colour like the navigation's emblem.
 local STAR = {w = 0.6, h = 0.6}
 local DETAILS = {w = 1.9, h = 0.6, icon = 0.36}
-local INFO_ICON = "grug_map_quest_available.png^[transformFY"
+local INFO_ICON = "grug_ui_icon_help.png^[multiply:" .. UI.colors.accent
 -- The variant switch's buttons.
 local SWITCH_W = 0.5
 -- The middle area's first label (its centre) below the top area.
