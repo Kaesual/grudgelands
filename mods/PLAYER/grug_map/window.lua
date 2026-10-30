@@ -2,19 +2,24 @@
 -- docs/design/world_map.md "Map window"): its own formspec, opened by Z
 -- (grug_keys' zoom edge) and by the Map tab, sized to FRACTION of the
 -- player's max_formspec_size (core.get_player_window_information) with a
--- fixed fallback. Left the map with its overlay and the quest targets of
--- the selected quest, right the quest boxes (quest_box.lua); a header row
--- with the zoom, layer selector, location and minimap switch, below shared
--- inventory navigation and its close button.
+-- fixed fallback; since Round 67 (ruling 18) of the real window, not the
+-- capped viewport of grug_core.ui.window_information. Left the map with
+-- its overlay and the quest targets of the selected quest (MAP_SHARE of
+-- the width), right the quest boxes (quest_box.lua); a header row with the
+-- zoom, location and minimap switch, the layer buttons above the map, all
+-- below the shared inventory navigation and its close button.
 --
 -- The overlay (Round 47 lane ML, the work package's rulings 1-10; until
 -- then Round 44's fixed set) is plain image[] elements with positional
--- tooltips. The player picks ONE marker layer in the toolbar selector
--- (layers.lua: quest givers, bosses, trainers, towns and travel, points of
--- interest, PvP, zone names, none). Selecting a quest is its own mode: only
--- its targets (targets.lua, with objective tooltips) and hand-in NPC are
--- shown. Choosing a layer deselects the quest. In every mode the player's gold arrow and the
--- party's cyan arrows (the member's name as tooltip). Every marker has a
+-- tooltips. The player picks ONE marker layer with the flat buttons above
+-- the map (Round 67 ruling 22; layers.lua: quest givers, bosses, services,
+-- travel, places, PvP, zone names, none; one or two rows, the active one
+-- marked). Selecting a quest is its own mode: only its targets
+-- (targets.lua, with objective tooltips) and hand-in NPC are shown, no
+-- button marked. Choosing a layer deselects the quest. Every marker sits at
+-- its anchor (Round 67 rulings 20 and 21: overlaps are allowed), drawn by
+-- importance (markers.rank). In every mode the player's gold arrow and the
+-- party's cyan arrows (the member's name as tooltip) on top. Every marker has a
 -- tooltip; the client shows the first rect under the pointer
 -- (guiFormSpecMenu.cpp drawMenu), so they are sent topmost first. The base
 -- image carries only the region names (bake.lua). NPC layers show the own
@@ -24,8 +29,9 @@
 -- quest change sends the window again, at most once per SEND_GAP_US per
 -- player; an event inside that gap is owed and goes out when the gap ends
 -- (the trailing send). In a party the arrows are checked every PARTY_US and
--- the window is sent only when a member's arrow moved (every 2 s since
--- Round 47 ruling 8; 5 s before). A layer click is an event like a zoom
+-- the window is sent only when a member's arrow moved (every 1 s since
+-- Round 67, as no dropdown can be closed by it any more; 2 s since Round 47
+-- ruling 8; 5 s before). A layer click is an event like a zoom
 -- click. The bounded check also refreshes solo windows after a resize or
 -- GUI/HUD scale change; otherwise a solo window needs an event. A scrollbar move never sends (the client moves the
 -- image and the overlay together; the server keeps the position and echoes
@@ -40,26 +46,33 @@ local layers = dofile(modpath .. "/layers.lua")
 local W = {}
 grug_map.window = W
 W.FORMNAME = "grug_map:window"
--- 80-90 % of the largest formspec the client shows unshrunk (ruling 10);
--- the fallback for clients that do not report it (before 5.7); a floor
--- under which the layout would not fit (the client shrinks a form larger
--- than its screen itself).
-W.FRACTION = 0.85
+-- About 90 % of the largest formspec the client shows unshrunk (Round 67
+-- ruling 18; 85 % of the capped viewport before); the fallback for clients
+-- that do not report it (before 5.7); a floor under which the layout would
+-- not fit (the client shrinks a form larger than its screen itself).
+W.FRACTION = 0.9
 W.FALLBACK = {x = 20, y = 12}
 W.MIN = {x = 16, y = 10}
 W.SEND_GAP_US = 1000000
-W.PARTY_US = 2000000
+W.PARTY_US = 1000000
 -- A scrollbar move holds every send for QUIET_US (the old Map tab's rule):
 -- a form rebuilt while the player drags the scrollbar would break the drag.
 W.QUIET_US = 500000
 local PASS = 0.1
 
--- Equal-width map and quest columns beneath one toolbar. The 9:8 image
--- fits and centers at 1x; zoomed artwork uses the full scroll viewport.
+-- The map takes MAP_SHARE of the width (Round 67 coordinator default; equal
+-- columns before), the quest column the rest but at least COLUMN_MIN (the
+-- room its boxes were tested in); the layer buttons above the map (one row
+-- when every button gets at least BUTTON_MIN units, else two), the quest
+-- column beside them. The 9:8 image fits and centers at 1x; zoomed artwork
+-- uses the full scroll viewport.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
-local COLUMN_SHARE = 0.5
--- Ordinary icons share one extent across both views (markers.lua: 32px
--- HUD-scaled at most, since Round 66 fitted to the drawn map).
+local MAP_SHARE, COLUMN_MIN = 0.62, 6.5
+local BUTTON_H, BUTTON_GAP, BUTTON_BELOW = 0.6, 0.1, 0.15
+W.BUTTON_MIN = 1.25
+-- Ordinary icons share one extent across both views (markers.lua: 21px
+-- HUD-scaled at most since Round 67, since Round 66 fitted to the drawn
+-- map); the arrows scale alike from markers.ARROW.
 -- Area rings keep their geographic extent with a readable minimum.
 local RING_MIN = 0.7
 -- Arrows sit on a grid of ARROW_STEP units (about a screen pixel); the
@@ -81,9 +94,9 @@ local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
 end
 
--- The window's size {w, h} for a window information table (or nil).
+-- The window's size {w, h} for a window information table (or nil): the
+-- client's own report, never the capped viewport (Round 67 ruling 18).
 function W.window_size(info, header_h)
-	if grug_core.ui.window_information then info = grug_core.ui.window_information(info) end
 	local max = type(info) == "table" and info.max_formspec_size
 	local w, h = W.FALLBACK.x, W.FALLBACK.y
 	if type(max) == "table" and type(max.x) == "number" and type(max.y) == "number" and
@@ -95,16 +108,27 @@ function W.window_size(info, header_h)
 end
 
 -- Geometry inside the body, excluding the shared inventory header.
+-- `buttons` is {rows, per_row, x, y, w, h, gap}.
 function W.layout(w, h)
-	local map_y = PAD + HEADER_H + 0.2
-	local column = (w - 2 * PAD - GAP) * COLUMN_SHARE
-	local viewport_w = column - BAR - BAR_GAP
+	local count = #layers.LIST
+	local top = PAD + HEADER_H + 0.2
+	local width = w - 2 * PAD - GAP
+	local share = math.min(width * MAP_SHARE, width - COLUMN_MIN)
+	local viewport_w = share - BAR - BAR_GAP
+	local rows, per_row = 1, count
+	if (viewport_w - (count - 1) * BUTTON_GAP) / count < W.BUTTON_MIN then
+		rows, per_row = 2, math.ceil(count / 2)
+	end
+	local map_y = top + rows * BUTTON_H + (rows - 1) * BUTTON_GAP + BUTTON_BELOW
 	local viewport_h = h - map_y - PAD - BAR - BAR_GAP
 	local map_w = math.min(viewport_w, viewport_h * 9 / 8)
+	local column_x = PAD + share + GAP
 	return {w = w, h = h, map_x = PAD, map_y = map_y,
 		map_w = map_w, map_h = map_w * 8 / 9,
 		viewport_w = viewport_w, viewport_h = viewport_h,
-		column = {x = PAD + column + GAP, y = map_y, w = column, h = h - PAD - map_y}}
+		column = {x = column_x, y = top, w = w - PAD - column_x, h = h - PAD - top},
+		buttons = {rows = rows, per_row = per_row, x = PAD, y = top, h = BUTTON_H,
+			gap = BUTTON_GAP, w = (viewport_w - (per_row - 1) * BUTTON_GAP) / per_row}}
 end
 
 -- The map's drawn pixel width on the reference desktop (1920x1080, HUD and
@@ -192,15 +216,17 @@ end
 
 -- The markers of a layer from its providers (each NPC of the own faction
 -- only, providers.lua; settlements and places of both, layers.lua), in draw
--- order: the former baked kinds first in the baked layer's order, then the
--- rest in atlas.collect_markers' order. Zones and None have none.
+-- order (bottom to top): the former baked kinds first in the baked layer's
+-- order, then the rest by importance (markers.rank, Round 67: quest givers
+-- by their state, the story marker over the plain one), ties in
+-- atlas.collect_markers' order. Zones and None have none.
 function W.layer_markers(player, layer)
 	if not layer.providers then return {} end
 	local rows = atlas.collect_markers(player, layer.providers)
 	local keyed = {}
 	for index, marker in ipairs(rows) do
-		keyed[index] = {marker = marker, rank = layers.ORDER[marker.kind] or math.huge,
-			index = index}
+		keyed[index] = {marker = marker, index = index,
+			rank = (layers.ORDER[marker.kind] or 100) + marker_art.rank(marker)}
 	end
 	table.sort(keyed, function(a, b)
 		if a.rank ~= b.rank then return a.rank < b.rank end
@@ -317,7 +343,8 @@ local function overlay(fs, player, session, layout, quest, info, growth)
 	if type(info) == "table" and info.size then
 		pixels = marker_art.fit(pixels, layout.map_w * per_unit, W.reference_map_px(layout.header_h))
 	end
- local ICON, ARROW, CROSSHAIR = pixels/per_unit, pixels/per_unit, pixels/per_unit
+ local ICON, CROSSHAIR = pixels/per_unit, pixels/per_unit
+	local ARROW = marker_art.arrow(pixels) / per_unit
 	local view = atlas.view()
 	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
 	local function at(position)
@@ -369,17 +396,12 @@ local function overlay(fs, player, session, layout, quest, info, growth)
 				end
 			end
 		end
-		local current = W.layer_markers(player, layer)
-  local offsets = marker_art.offsets(player, layer.providers, current,
-   mw*per_unit/(view.max_x-view.min_x), mh*per_unit/(view.max_z-view.min_z), pixels)
-  for _, marker in ipairs(current) do
+		for _, marker in ipairs(W.layer_markers(player, layer)) do
 			local sx, sy = at(marker.position)
 			local texture = marker.kind == "quest" and QUEST_TEXTURE[marker.status] or
 				KIND_TEXTURE[marker.kind] or marker.texture
 			if sx and texture then
 				local size = ICON
-    local offset = offsets[marker.id]
-    if offset then sx,sy = sx+offset.dx/per_unit, sy+offset.dy/per_unit end
 				image(icons, sx, sy, size, texture, per_unit)
 				icon_tip(tips[icons], sx, sy, size, texture, marker.kind == "quest" and marker.label or marker.detail, per_unit)
 				session.marker_count = session.marker_count + 1
@@ -415,25 +437,39 @@ local function overlay(fs, player, session, layout, quest, info, growth)
 	session.tooltip_count = count
 end
 
--- Stable layer indices in both modes; the additional quest entry comes last.
-local function layer_selector(fs, layout, session, quest_mode)
-	local labels, selected = {}, 1
-	session.layer_ids = {}
-	-- Dropdown values accompany unrelated submissions too. The extra entry
-	-- represents quest mode so choosing the current layer is a real change.
+-- The layer buttons above the map (Round 67 ruling 22; a dropdown in the
+-- toolbar since 0.63.0, Round 47's row under the map before): one or two
+-- rows as wide as the map's viewport, flat (the toolkit's navigation
+-- style), the active layer marked by its accent edge, none in quest mode;
+-- each button's tooltip its long name. `growth` (nil: 1) is the window's
+-- text growth.
+local function layer_buttons(fs, layout, session, quest_mode, growth)
+	local b = layout.buttons
+	local active = not quest_mode and W.layer_of(session).id or nil
+	-- The unmarked buttons share one set of styles (style[] takes several
+	-- selectors, each with its state): the form goes out on every party
+	-- check, and eight separate sets would add about 3 KB to each send.
+	local others = {}
 	for _, layer in ipairs(layers.LIST) do
-		local index = #labels + 1
-		labels[index], session.layer_ids[index] = esc(layer.title), layer.id
-		if not quest_mode and layer.id == W.layer_of(session).id then selected = index end
+		if layer.id ~= active then others[#others + 1] = "grug_map_layer_" .. layer.id end
 	end
-	if quest_mode then
-		labels[#labels + 1] = "Quest targets"
-		selected = #labels
+	fs[#fs + 1] = (grug_core.ui.navigation_style("@", false, 0, 0, 0, 0, false, growth):gsub(
+		"%[@(:?%a*);", function(state)
+			local selectors = {}
+			for i, name in ipairs(others) do selectors[i] = name .. state end
+			return "[" .. table.concat(selectors, ",") .. ";"
+		end))
+	for index, layer in ipairs(layers.LIST) do
+		local row, col = math.floor((index - 1) / b.per_row), (index - 1) % b.per_row
+		local x, y = b.x + col * (b.w + b.gap), b.y + row * (b.h + b.gap)
+		local name = "grug_map_layer_" .. layer.id
+		if layer.id == active then
+			fs[#fs + 1] = grug_core.ui.navigation_style(name, true, x, y, b.w, b.h, false, growth)
+		end
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.2f;%s;%s]"):format(x, y, b.w, b.h, name,
+			esc(layer.label))
+		fs[#fs + 1] = ("tooltip[%s;%s]"):format(name, esc(layer.title))
 	end
-	session.layer_choice = selected
-	fs[#fs + 1] = ("dropdown[3.15,%.2f;3.3,0.6;grug_map_layer;%s;%d;true]"):
-		format(PAD, table.concat(labels, ","), selected)
-	fs[#fs + 1] = "tooltip[grug_map_layer;Choose a map layer — selecting a layer clears the quest selection.]"
 end
 
 -- A new session's state: zoom 1, the map's origin, the soft lock on the
@@ -472,8 +508,8 @@ function W.formspec(player, session, info)
 	local fs = {
 		-- max_formspec_size assumes no padding (lua_api.md); the default 0.05
 		-- would shrink the form to about 76 % of the screen.
-		("formspec_version[6]size[%.2f,%.2f]"):format(w, h + header_h) ..
-			(grug_core.ui.window_padding and grug_core.ui.window_padding(nil, 0, info) or "padding[0,0]"),
+		-- Round 67 ruling 18: no viewport cap, so no padding stands in for one.
+		("formspec_version[6]size[%.2f,%.2f]padding[0,0]"):format(w, h + header_h),
 		nav,
 		("container[0,%.3f]"):format(header_h),
 		-- The inventory key closes a form unless the focused element eats it
@@ -487,7 +523,7 @@ function W.formspec(player, session, info)
 		("button[1.0,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD),
 		("label[1.75,%.2f;%dx]"):format(cy, zoom),
 		("button[2.35,%.2f;0.6,0.6;grug_map_zoom_in;+]"):format(PAD),
-		grug_core.ui.prose(6.7, PAD, w - 10.5, 0.65, "Current: " .. current_zone(player), true,
+		grug_core.ui.prose(3.15, PAD, w - 6.95, 0.65, "Current: " .. current_zone(player), true,
 			grown, grown),
 		minimap,
 		("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;horizontal;%.5f]"):format(layout.map_x,
@@ -501,8 +537,7 @@ function W.formspec(player, session, info)
 			math.max(0, (layout.viewport_h - mh) / 2)),
 		("image[0,0;%.3f,%.3f;%s]"):format(mw, mh, esc(atlas.view().texture)),
 	}
-	overlay(fs, player, session, layout, quest,
-		grug_core.ui.window_information and grug_core.ui.window_information(info) or info, grown)
+	overlay(fs, player, session, layout, quest, info, grown)
 	fs[#fs + 1] = "container_end[]scroll_container_end[]scroll_container_end[]"
 	-- Scrollbar values are transport state: echoed from the last event.
 	local limit = atlas.scroll_limit(zoom)
@@ -519,8 +554,9 @@ function W.formspec(player, session, info)
 		layout.map_x + layout.viewport_w + BAR_GAP, layout.map_y, BAR, layout.viewport_h, SCROLL_Y,
 		session.scroll_y or 0)
 	fs[#fs + 1] = SCROLLBAR_DEFAULTS
-	layer_selector(fs, layout, session, quest ~= nil)
-	fs[#fs + 1] = quest_box.content(session, journal, layout.column, grown)
+	layer_buttons(fs, layout, session, quest ~= nil, grown)
+	fs[#fs + 1] = quest_box.content(session, journal, layout.column, grown,
+		grug_xp.get_level(player))
 	fs[#fs + 1] = "container_end[]"
 	return table.concat(fs)
 end
@@ -754,14 +790,11 @@ function W.handle_fields(player, fields)
 		changed = true
 	end
 	-- A layer button (ruling 2): that layer, and the quest deselected.
-	local choice = tonumber(fields.grug_map_layer)
-	local requested = choice and choice ~= session.layer_choice and
-		session.layer_ids and session.layer_ids[choice]
 	for _, layer in ipairs(layers.LIST) do
-		if fields["grug_map_layer_" .. layer.id] or requested == layer.id then
+		if fields["grug_map_layer_" .. layer.id] then
 			if session.layer ~= layer.id or session.quest_selected then
 				session.layer = layer.id
-                -- Names need room on the half-width map. Enter this layer at
+                -- Names need room on the map. Enter this layer at
                 -- 2x; the normal minus button still restores the whole-world view.
                 if layer.zones and (session.zoom or 1) == 1 then
                     atlas.zoom_view(session, true, atlas.view(), player:get_pos(), session.layout)

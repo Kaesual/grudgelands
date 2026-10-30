@@ -1,7 +1,9 @@
 -- The map window's marker layers (Round 47 lane ML, the work package
 -- docs/planning/round47-map-layers.md; docs/design/world_map.md "Map
--- window"). The player picks one layer at a time with the buttons under the
--- map (window.lua); the player's and the party's arrows show in every one.
+-- window"). The player picks one layer at a time with the buttons above the
+-- map (window.lua, Round 67); the player's and the party's arrows show in
+-- every one. The button labels since Round 67 (short): Quests, Bosses,
+-- Services, Travel, Places, PvP, Zones, None.
 --
 --   Quests    the own faction's quest givers by their state (the "quest"
 --             provider, the minimap's precedence: ready, available, active,
@@ -37,15 +39,16 @@ grug_map.layers = L
 L.zone_labels = zone_labels
 
 -- Button order (the work package's §8 default: as in its table); the label
--- is the button's text, the title its tooltip.
+-- is the button's text (Round 67 coordinator default), the title its
+-- tooltip. The ids stay (the buttons' fields grug_map_layer_<id>).
 L.LIST = {
 	{id = "quests", label = "Quests", title = "Quest givers", providers = {quest = true}},
 	{id = "bosses", label = "Bosses", title = "Kings & bosses", providers = {boss = true}},
-	{id = "trainers", label = "Trainers", title = "Trainers & traders",
+	{id = "trainers", label = "Services", title = "Trainers & traders",
 		providers = {service = true}},
-	{id = "towns", label = "Towns", title = "Settlements & travel",
+	{id = "towns", label = "Travel", title = "Settlements & travel",
 		providers = {settlement = true, home = true, waypoint = true}},
-	{id = "pois", label = "POIs", title = "Points of interest", providers = {poi = true}},
+	{id = "pois", label = "Places", title = "Points of interest", providers = {poi = true}},
 	{id = "pvp", label = "PvP", title = "PvP", providers = {pvp = true}},
 	{id = "zones", label = "Zones", title = "Zones", zones = true},
 	{id = "none", label = "None", title = "No markers"},

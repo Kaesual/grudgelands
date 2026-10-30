@@ -1,13 +1,14 @@
--- Shared marker sizes (32px at 1080p; since Round 66 fitted to the map),
--- silhouette tooltips and cached displacement.
--- Only layout is cached; visibility/textures always come from current state.
+-- Shared marker sizes (21px at 1080p since Round 67, 32 before; since
+-- Round 66 fitted to the map), the draw order by importance and the
+-- silhouette tooltips. Since Round 67 (rulings 20 and 21) every marker sits
+-- at its anchor: overlaps are allowed, nothing is displaced.
 local path = core.get_modpath("grug_map")
 local L = dofile(path .. "/icon_layout.lua")
 local masks = dofile(path .. "/icon_masks.lua")
-local M = {SIZE=32, layout=L}
+-- ARROW: the player's and the party's arrows at the reference, today's
+-- size; they scale with the markers (ARROW / SIZE of a marker's size).
+local M = {SIZE=21, ARROW=32, layout=L}
 grug_map.markers = M
-local cache, order = {}, {}
-local CACHE_LIMIT = 24
 local scaled, scale_order = {}, {}
 
 function M.metrics(info, form_w, form_h)
@@ -29,12 +30,17 @@ end
 -- 1920x1080 desktop at HUD and GUI scale 1 (there M.SIZE). `cap` is
 -- metrics' HUD-scaled size, `drawn` the map's drawn pixel extent, `reference`
 -- the same map's extent on that desktop; the result never exceeds the cap
--- and never goes below M.MIN (unless the cap does).
-M.MIN = 16
+-- and never goes below M.MIN (unless the cap does). Round 67: 11 (16 before,
+-- scaled with M.SIZE).
+M.MIN = 11
 function M.fit(cap, drawn, reference)
  if not (drawn and reference and drawn > 0 and reference > 0) then return cap end
  local size = math.floor(M.SIZE * drawn / reference + 0.5 + 1e-6)
  return math.min(cap, math.max(M.MIN, size))
+end
+-- An arrow's size for a marker size: ARROW at the reference, scaled alike.
+function M.arrow(size)
+ return math.max(1, math.floor(size * M.ARROW / M.SIZE + 0.5))
 end
 function M.texture(marker)
  if marker.kind == "quest" then return "grug_map_quest_" .. marker.status .. ".png" end
@@ -43,11 +49,25 @@ function M.texture(marker)
   return "grug_map_" .. marker.kind .. ".png"
  end
 end
-local function mask_name(marker)
- if marker.kind == "quest" then return "quest" end
- if marker.kind == "home" or marker.kind == "innkeeper" then return "home" end
- return M.texture(marker)
+
+-- Importance (Round 67 coordinator default "draw order by importance"),
+-- bottom to top: places, bosses and every other kind (0), trainers and
+-- services (1), innkeepers, the home and waystones (2), quest givers (3 and
+-- up: a locked "!" lowest, then in progress, available, ready, a story
+-- marker above the plain one of its status). The minimap's z-index and the
+-- map window's draw order both read it; the arrows stay above every marker.
+local KIND_RANK = {trainer = 1, steward = 1, service = 1, home = 2, innkeeper = 2,
+ waypoint = 2}
+local QUEST_RANK = {locked = 0, active = 2, available = 4, ready = 6}
+function M.rank(marker)
+ if marker.kind == "quest" then
+  local status = tostring(marker.status or "")
+  local plain = status:match("^story_(.+)$")
+  return 3 + (QUEST_RANK[plain or status] or 0) + (plain and 1 or 0)
+ end
+ return KIND_RANK[marker.kind] or 0
 end
+
 local function mask_of(name, size)
  if not scaled[size] then
   if #scale_order >= 8 then scaled[table.remove(scale_order,1)] = nil end
@@ -64,57 +84,5 @@ function M.tip_rectangles(texture,size)
  local bucket=scaled[size]
  if not bucket[key] then bucket[key]=L.hit_rectangles(mask) end
  return bucket[key]
-end
-local function memo(key, build)
- if cache[key] then return cache[key] end
- local value = build()
- if #order >= CACHE_LIMIT then cache[table.remove(order,1)] = nil end
- order[#order+1], cache[key] = key, value
- return value
-end
-
--- Markers outside the world bounds are harmless to the stable solve; the
--- renderer clips them. Each view uses its own projection, no camera offset.
-function M.offsets(player, providers, markers, sx, sy, size)
- local shared, personal = {}, {}
- local function project(marker)
-  local name = mask_name(marker)
-  if not name or not masks[name] then return end
-  return {id=marker.id, x=marker.position.x*sx, y=-marker.position.z*sy,
-   mask=mask_of(name,size), name=name}
- end
- for _, marker in ipairs(markers) do
-  if marker.kind ~= "quest" then
-   local row = project(marker)
-   if row then
-    local list = (marker.personal or marker.kind == "waypoint") and personal or shared
-    list[#list+1] = row
-   end
-  end
- end
- if providers and providers.quest then
-  for _, marker in ipairs(grug_map.quest_slots(player)) do shared[#shared+1] = project(marker) end
- end
- local function signature(rows)
-  table.sort(rows, function(a,b) return a.id < b.id end)
-  local parts = {tostring(size)}
-  for _, row in ipairs(rows) do
-   parts[#parts+1] = ("%s/%d/%d/%s"):format(row.id, math.floor(row.x+0.5), math.floor(row.y+0.5), row.name)
-  end
-  return table.concat(parts, "|")
- end
- -- The complete projected roster and mask names identify world, faction,
- -- projection and simultaneous set. Art is immutable for this process.
- local key = signature(shared)
- local fixed = memo(key, function() return L.solve(shared,size,math.floor(size/2)) end)
- local result = {}
- for _, row in ipairs(fixed) do result[row.id] = row end
- if #personal > 0 then
-  local own = memo(key .. "#personal#" .. signature(personal), function()
-   return L.solve(personal,size,math.floor(size/2),fixed)
-  end)
-  for _, row in ipairs(own) do result[row.id] = row end
- end
- return result
 end
 return M

@@ -175,12 +175,3 @@ atlas.register_marker_provider("waypoint", function(player)
  end
  return result
 end)
-
--- Stable reservation slots include currently invisible quest states.
-function grug_map.quest_slots(player)
- local result = {}
- for _, giver in ipairs(givers_for[faction_of(player)] or {}) do
-  result[#result + 1] = {id="quest:" .. giver.id, kind="quest", position=giver.position}
- end
- return result
-end

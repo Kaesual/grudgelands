@@ -187,7 +187,8 @@ for pass=1,2 do
   print(("return adds=%d add_payload=%d updates=%d/%dB"):format(traffic.adds,traffic.add_bytes,traffic.packets,traffic.bytes))
  end
 end
-if grug_map.markers and speed==4 then
+-- (markers.offsets left with Round 67: the overlap figures need a Round 64-66 tree)
+if grug_map.markers and grug_map.markers.offsets and speed==4 then
  local providers={quest=true,service=true,home=true,waypoint=true,settlement=true,poi=true,boss=true,pvp=true}
  local source={}
  for _,r in ipairs(grug_map.atlas.collect_markers(me,providers)) do
