@@ -532,7 +532,6 @@ eq(vertical(grug_mounts.active.ada.object:get_luaentity(), {jump = true}), 8,
 grug_mounts.dismount(ada, "manual", true)
 
 if failures > 0 then
-	print(("R67 WORLD PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R67 WORLD PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R67 WORLD PORTABLE PASS checks=%d"):format(checks))
