@@ -250,6 +250,8 @@ local C = default.containers
 local NODE_FORM = default.node_formspec.formname
 local F = C.FIELDS
 local SCROLL = grug_inventory.SCROLL_FIELDS.container
+-- The Upgrade button's field names its target tier (the fix round).
+local UP2, UP3 = C.upgrade_field(2), C.upgrade_field(3)
 
 -- Items: planks, the bars, books and bottles, a few sortable goods.
 local function item(name, def)
@@ -593,14 +595,16 @@ do
 	eq(core.get_node(pos).name, "default:chest_open", "U the lid is open")
 	-- Without the bars: refused.
 	give(a, "main", 9, "grug_materials:steel_bar 5")
-	submit(a, "default:chest", {[F.upgrade] = "", [SCROLL] = "VAL:0"})
+	submit(a, "default:chest", {[UP2] = "", [SCROLL] = "VAL:0"})
 	eq(core.get_node(pos).name, "default:chest_open", "U refused with 5 bars")
 	eq(feed[#feed] and feed[#feed].text, "The upgrade needs 8 × Steel Bar.", "U ...and says why")
 	eq(count(a, "grug_materials:steel_bar"), 5, "U ...nothing taken")
 	-- With 9 bars across main and a bag: 8 taken.
 	give(a, "grug_bag1_content", 2, "grug_materials:steel_bar 4")
 	local before = #shown
-	submit(a, "default:chest", {[F.upgrade] = ""})
+	check(has(last_shown("upa").formspec, "button[") and has(last_shown("upa").formspec, UP2 .. ";]"),
+		"U the button names the next tier")
+	submit(a, "default:chest", {[UP2] = ""})
 	eq(core.get_node(pos).name, "default:chest_steel_open", "U the open chest's tier swapped")
 	eq(core.get_node(pos).param2, 2, "U ...facing kept")
 	eq(count(a, "grug_materials:steel_bar"), 1, "U 8 Steel Bars charged")
@@ -611,9 +615,17 @@ do
 	eq(default.chest.open_chests.upb.swap, "default:chest_steel", "U the second viewer follows")
 	eq(#shown - before, 2, "U both viewers get the new form")
 	eq(select(2, list_element(last_shown("upb").formspec, "main")), 8, "U ...with 64 slots")
-	-- The second step keeps a viewer's scroll position.
+	-- A repeated submit (a double click, or the second viewer's old form)
+	-- with Abyssal Steel Bars at hand: the stale target is ignored.
 	give(a, "main", 10, "grug_materials:abyssal_steel_bar 8")
-	submit(a, "default:chest", {[F.upgrade] = "", [SCROLL] = "VAL:30"})
+	give(b, "main", 10, "grug_materials:abyssal_steel_bar 8")
+	submit(a, "default:chest", {[UP2] = ""})
+	submit(b, "default:chest", {[UP2] = ""})
+	eq(core.get_node(pos).name, "default:chest_steel_open", "U a repeated submit upgrades nothing")
+	eq(count(a, "grug_materials:abyssal_steel_bar") .. "/" .. count(a, "grug_materials:steel_bar") ..
+		"/" .. count(b, "grug_materials:abyssal_steel_bar"), "8/1/8", "U ...and charges nothing")
+	-- The second step keeps a viewer's scroll position.
+	submit(a, "default:chest", {[UP3] = "", [SCROLL] = "VAL:30"})
 	eq(core.get_node(pos).name, "default:chest_abyssal_open", "U the next tier with Abyssal Steel Bars")
 	eq(count(a, "grug_materials:abyssal_steel_bar"), 0, "U 8 Abyssal Steel Bars charged")
 	eq(count(a, "grug_materials:steel_bar"), 1, "U ...no Steel Bars")
@@ -621,8 +633,9 @@ do
 	eq(container_scroll(last_shown("upa").formspec), 30, "U the upgrader's scroll position kept")
 	-- The last tier: no upgrade.
 	check(not has(last_shown("upa").formspec, F.upgrade), "U no Upgrade at the last tier")
-	submit(a, "default:chest", {[F.upgrade] = ""})
-	eq(core.get_node(pos).name, "default:chest_abyssal_open", "U ...and its field changes nothing")
+	submit(a, "default:chest", {[UP3] = ""})
+	submit(a, "default:chest", {[C.upgrade_field(4)] = ""})
+	eq(core.get_node(pos).name, "default:chest_abyssal_open", "U ...and its fields change nothing")
 	-- Closing: the lid lands on the new tier.
 	close_chest(b)
 	eq(core.get_node(pos).name, "default:chest_abyssal_open", "U open while one viewer stays")
@@ -635,13 +648,13 @@ do
 	default.can_interact_with_node = function() return true end
 	give(other, "main", 9, "grug_materials:steel_bar 8")
 	open_chest(locked, other)
-	submit(other, "default:chest", {[F.upgrade] = ""})
+	submit(other, "default:chest", {[UP2] = ""})
 	eq(core.get_node(locked).name, "default:chest_locked_open", "U a non-owner cannot upgrade")
 	eq(count(other, "grug_materials:steel_bar"), 8, "U ...and pays nothing")
 	close_chest(other)
 	give(owner, "main", 9, "grug_materials:steel_bar 8")
 	open_chest(locked, owner)
-	submit(owner, "default:chest", {[F.upgrade] = ""})
+	submit(owner, "default:chest", {[UP2] = ""})
 	eq(core.get_node(locked).name, "default:chest_locked_steel_open", "U the owner can")
 	eq(meta_at(locked):get_string("owner"), "upowner", "U ...the owner stays")
 	close_chest(owner)
@@ -652,7 +665,7 @@ do
 	local inside = place("default:chest", {x = 4, y = 1, z = 1004})
 	give(helper, "main", 9, "grug_materials:steel_bar 8")
 	open_chest(inside, helper)
-	submit(helper, "default:chest", {[F.upgrade] = ""})
+	submit(helper, "default:chest", {[UP2] = ""})
 	eq(core.get_node(inside).name, "default:chest_open", "U interact only: refused")
 	close_chest(helper)
 
@@ -663,7 +676,7 @@ do
 	near(reader, shelf)
 	registered_nodes["default:bookshelf"].on_rightclick(shelf, core.get_node(shelf), reader, ItemStack(""))
 	give(reader, "main", 9, "grug_materials:steel_bar 8")
-	submit(reader, NODE_FORM, {[F.upgrade] = ""})
+	submit(reader, NODE_FORM, {[UP2] = ""})
 	eq(core.get_node(shelf).name, "default:bookshelf_steel", "U the bookshelf's tier")
 	eq(stacks(shelf, "books")[2], "default:book 3 0", "U ...its books stay")
 	local last = last_shown("reader")

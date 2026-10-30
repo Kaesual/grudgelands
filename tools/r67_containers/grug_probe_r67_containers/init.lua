@@ -73,7 +73,7 @@ nodes_checks = function()
 	-- set_size on a real node, so the stand-in player may build there.
 	local is_protected = core.is_protected
 	core.is_protected = function() return false end
-	local ok, why = C.upgrade(chest, fake)
+	local ok, why = C.upgrade(chest, fake, 2)
 	core.is_protected = is_protected
 	local node = core.get_node(chest)
 	out("upgrade", ok and node.name == "default:chest_steel" and node.param2 == 3 and

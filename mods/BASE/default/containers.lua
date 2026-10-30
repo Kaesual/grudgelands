@@ -201,13 +201,21 @@ function api.next_tier(entry)
 	return families[entry.base][entry.tier + 1], tier
 end
 
--- Upgrades the container at `pos` for `player`: true, or false and the
--- reason for the player. Open forms follow (chests.lua retarget,
--- node_formspec retarget and refresh) at their kept scroll position.
-function api.upgrade(pos, player)
+-- The Upgrade button's field names the tier it upgrades to, so a repeated
+-- submit (a double click, a slow connection, a second viewer's form sent
+-- before the upgrade's re-show) cannot charge for the tier after it.
+function api.upgrade_field(tier)
+	return FIELDS.upgrade .. "_" .. tier
+end
+
+-- Upgrades the container at `pos` for `player` to tier `to` (the next tier
+-- only): true, or false and the reason for the player (nil for a stale
+-- `to`). Open forms follow (chests.lua retarget, node_formspec retarget
+-- and refresh) at their kept scroll position.
+function api.upgrade(pos, player, to)
 	local node = core.get_node(pos)
 	local entry = nodes[node.name]
-	if not entry then return false end
+	if not entry or to ~= entry.tier + 1 then return false end
 	local target, tier = api.next_tier(entry)
 	if not target then return false end
 	if not api.may_edit(pos, player, entry) then
@@ -245,7 +253,7 @@ end
 
 -- The action row at y: the label (an editable field with Save for whoever
 -- may edit it, else the label as text), Sort and Upgrade, right-aligned.
-local function action_row(pos, player, entry, y, growth)
+local function action_row(pos, player, entry, y)
 	local station = grug_inventory.STATION
 	local x = station.x
 	local right = station.box_x + station.box_w - (station.x - station.box_x)
@@ -257,7 +265,7 @@ local function action_row(pos, player, entry, y, growth)
 	if target and edit then
 		local text_y = y + BUTTON_H / 2
 		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,%.3f;%s;]"):format(upgrade_x, y,
-			UPGRADE_W, BUTTON_H, FIELDS.upgrade)
+			UPGRADE_W, BUTTON_H, api.upgrade_field(entry.tier + 1))
 		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(upgrade_x + 0.2, text_y,
 			esc(S("Upgrade")))
 		fs[#fs + 1] = ("item_image[%.3f,%.3f;0.45,0.45;%s]"):format(
@@ -265,7 +273,7 @@ local function action_row(pos, player, entry, y, growth)
 		fs[#fs + 1] = ("label[%.3f,%.3f;×%d]"):format(upgrade_x + UPGRADE_W - 0.5,
 			text_y, api.UPGRADE_BARS)
 		local def = core.registered_nodes[target]
-		fs[#fs + 1] = ("tooltip[%s;%s]"):format(FIELDS.upgrade, esc(S(
+		fs[#fs + 1] = ("tooltip[%s;%s]"):format(api.upgrade_field(entry.tier + 1), esc(S(
 			"Upgrade to @1 (@2 slots) for @3 × @4. The contents stay.",
 			def and def.description or target, tier.slots, api.UPGRADE_BARS,
 			bar_name(tier.bar))))
@@ -322,7 +330,7 @@ function api.form(pos, player, context, slot_image)
 			slot_image and inv:get_list(entry.list) or nil),
 		"listring[" .. location .. ";" .. entry.list .. "]listring[current_player;grug_inbox]" ..
 			"listring[current_player;main]",
-		action_row(pos, player, entry, station.y + list_h + ROW_GAP, growth),
+		action_row(pos, player, entry, station.y + list_h + ROW_GAP),
 	}), bottom
 end
 
@@ -357,12 +365,14 @@ function api.receive(pos, player, fields, context)
 		end
 		return true
 	end
-	if fields[FIELDS.upgrade] then
-		local ok, why = api.upgrade(pos, player)
-		if not ok and why then
-			grug_core.feed(player, "notice", why, "container_upgrade")
+	for tier = 2, #api.TIERS do
+		if fields[api.upgrade_field(tier)] then
+			local ok, why = api.upgrade(pos, player, tier)
+			if not ok and why then
+				grug_core.feed(player, "notice", why, "container_upgrade")
+			end
+			return true
 		end
-		return true
 	end
 	return false
 end

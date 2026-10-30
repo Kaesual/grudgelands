@@ -642,15 +642,17 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - **Storage containers** (Round 67 rulings 27–33,
   `default/containers.lua`): chests, locked chests, bookshelves and
   vessels shelves come in three tiers on the same models, only the
-  textures differ:
+  textures differ (names: Chest, Steel-Reinforced Chest, Abyssal Chest;
+  Locked Chest, Locked Steel-Reinforced Chest, Locked Abyssal Chest;
+  Bookshelf, Steel-Reinforced Bookshelf, …):
 
-  | Tier | Slots | Recipe (on top of the wooden one) |
+  | Tier | Slots | Recipe (on top of the base one) |
   |---|---|---|
-  | Wooden (Chest, Locked Chest, Bookshelf, Vessels Shelf) | 32 | — |
+  | Base (Chest, Locked Chest, Bookshelf, Vessels Shelf) | 32 | — |
   | Steel-Reinforced (T3) | 64 | 8 Steel Bars |
   | Abyssal (T6) | 96 | 8 Steel Bars and 8 Abyssal Steel Bars |
 
-  The wooden recipes: Chest 8 planks; Locked Chest 8 planks and 1 Iron
+  The base recipes: Chest 8 planks; Locked Chest 8 planks and 1 Iron
   Bar (the chest + Iron Bar recipe is gone); Bookshelf 6 planks and 3
   books; Vessels Shelf 6 planks and 3 vessels. The shelves have 32 slots
   from Round 67 on; one made before (16 slots) grows to 32 the first time
