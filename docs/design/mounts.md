@@ -170,7 +170,10 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
 - A/D strafe relative to the camera on both ground and flying mounts. Forward
   and sideways movement use full tier speed; reverse alone retains 35%.
   Horizontal diagonals are normalized to prevent a speed bonus. Flight ascent
-  and descent retain their existing controls and speed.
+  (jump) and descent (sneak) run at the tier's **vertical speed**, a field of
+  each flying tier in the catalogue (`vertical_speed`, Round 67 ruling 24),
+  equal to its horizontal speed by default: **8** nodes/s for Expert and
+  **12** for Master (0.6× before, 4.8 and 7.2).
 - **A mount is therefore an entity the player is attached to.** The player calls
   `player:set_attach(mount_entity, ...)`
   (`reference_projects/luanti/doc/lua_api.md:8948`); while attached the
@@ -372,9 +375,16 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
 
 ### 3.2 Flight start and ceiling
 
-- A flying mount cannot take off while the player is below
-  `grug_zones.terrain_height_at(x,z)`. This is the underground rule; it is
-  independent of node names and cave shape.
+- **Flight is allowed underground** (Round 67 ruling 23; the take-off rule
+  below the terrain height is gone). The no-fly zones stay columns (x/z,
+  §4) at every depth, below enemy territory too.
+- **A flyer needs room**: it is summoned only where its collision box (the
+  flyer body, 1.8 wide and 1.65 high) fits at the rider's position, on the
+  surface as underground; a node box at most half a node above the feet (a
+  slab, a stair's step, snow) is footing, everything else walkable in the
+  box refuses the summon ("There is not enough room here for a flying
+  mount."). Ground mounts keep their rule (the rider on solid ground; they
+  fit 1-wide tunnels and doorways).
 - The flight ceiling is exactly **y = 600** in every zone. Upward input stops
   there and any integration overshoot is clamped back to y = 600.
 - Geographic hard dismounts in mid-air have no glide, slow descent or grace:

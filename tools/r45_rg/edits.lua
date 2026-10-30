@@ -5,8 +5,9 @@
 -- signature (gen_basic_recipes.lua signature_of: "token*n" sorted, joined
 -- by "+") and gives its new count, asserting the old one (`was`), or
 -- `removed = true` to drop it (asserting `was` too); a row that no grid
--- route made is `added` with its ingredient list.
-return {
+-- route made is `added` with its ingredient list. The file is Lua: a loop
+-- may add a family of edits.
+local edits = {
 	-- Round 46 ruling 4: 10 torches per coal or charcoal (4 per coal before);
 	-- the coal supply is solved by torches, not by more coal. One recipe for
 	-- both (lane ID, the user's request of 2026-10-12): the coal row goes,
@@ -75,6 +76,13 @@ return {
 	{output = "dye:yellow", count = 2, added = {{item = "grug_gathering:sunleaf", n = 1}}},
 	{output = "dye:red", count = 2, added = {{item = "default:apple", n = 1}}},
 	{output = "dye:cyan", count = 2, added = {{item = "grug_gathering:marshbloom", n = 1}}},
+	-- Round 67 ruling 12: bush stems drop one plank of their wood when dug
+	-- (default/nodes.lua), so the stem-to-plank rows go.
+	{output = "default:wood", signature = "default:bush_stem*1", was = 1, removed = true},
+	{output = "default:acacia_wood", signature = "default:acacia_bush_stem*1", was = 1,
+		removed = true},
+	{output = "default:pine_wood", signature = "default:pine_bush_stem*1", was = 1,
+		removed = true},
 	-- Round 67 lane CONTAINERS (rulings 29 and 31, the locked-chest default):
 	-- one recipe per container and tier. The locked chest is the open
 	-- chest's ingredients plus 1 Iron Bar (the "chest + Iron Bar" row goes);
@@ -107,3 +115,32 @@ return {
 		{group = "wood", n = 6}, {group = "vessel", n = 3},
 		{item = "grug_materials:steel_bar", n = 8}, {item = "grug_materials:abyssal_steel_bar", n = 8}}},
 }
+
+-- Round 67 ruling 13: the metal rods leave the game (their items and the
+-- rod variants of sword, dagger and greataxe go in grug_professions); four
+-- rods from two bars of each metal.
+for _, metal in ipairs({"bronze", "iron", "steel", "silversteel", "embersteel",
+		"abyssal_steel"}) do
+	edits[#edits + 1] = {output = "grug_professions:metal_rod_" .. metal,
+		signature = "grug_materials:" .. metal .. "_bar*2", was = 4, removed = true}
+end
+
+-- Round 67 ruling 11: stairs and slabs are end products. The family's
+-- routes back to the block (3 blocks from 4 stairs, 1 from 2 slabs) go for
+-- every stairs material; gen_basic_recipes.lua asserts that each material
+-- of the family lists both here, and registry.lua makes only the four
+-- forward shapes.
+for _, sub in ipairs({"acacia_wood", "aspen_wood", "brick", "cobble", "desert_cobble",
+		"desert_sandstone", "desert_sandstone_block", "desert_sandstone_brick",
+		"desert_stone", "desert_stone_block", "desert_stonebrick", "glass", "ice",
+		"junglewood", "mossycobble", "obsidian", "obsidian_block", "obsidian_glass",
+		"obsidianbrick", "pine_wood", "sandstone", "sandstone_block", "sandstonebrick",
+		"snowblock", "stone", "stone_block", "stonebrick", "wood"}) do
+	local block = "default:" .. sub
+	edits[#edits + 1] = {output = block, signature = "stairs:stair_" .. sub .. "*4",
+		was = 3, removed = true}
+	edits[#edits + 1] = {output = block, signature = "stairs:slab_" .. sub .. "*2",
+		was = 1, removed = true}
+end
+
+return edits

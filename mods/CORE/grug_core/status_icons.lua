@@ -262,3 +262,19 @@ function icons.class_icon(class_id)
 	end
 	return ""
 end
+
+-- The race icon for the Social tab's player list (Round 67 ruling 7): the
+-- user's pick of lane ART's set A (grug_classes/textures, beside the class
+-- icons).
+icons.RACE_ICONS = {
+	human = "grug_race_human.png",
+	dwarf = "grug_race_dwarf.png",
+	elf = "grug_race_elf.png",
+	orc = "grug_race_orc.png",
+	troll = "grug_race_troll.png",
+	undead = "grug_race_undead.png",
+}
+
+function icons.race_icon(race_id)
+	return icons.RACE_ICONS[race_id] or ""
+end

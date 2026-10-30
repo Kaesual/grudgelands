@@ -188,6 +188,9 @@ local function new_world(modpath)
 		get_objects_inside_radius = function() return w.objects end,
 		is_player = function(o) return type(o) == "table" and o.is_player_stub == true end,
 		get_gametime = function() return 1000 end,
+		-- Round 67: the tier scale re-checks the room (room.lua): open air.
+		registered_nodes = {air = {walkable = false}},
+		get_node_or_nil = function() return {name = "air"} end,
 	}
 	for _, id in ipairs(EXISTING_ITEMS) do core.registered_items[id] = {description = id} end
 	_G.vector = {new = function(x, y, z) return {x = x, y = y, z = z} end}
@@ -225,6 +228,7 @@ local function new_world(modpath)
 		real_dofile(dir .. "names.lua")
 		_G.dofile = real_dofile
 	end
+	dofile(dir .. "room.lua")
 	dofile(dir .. "levels.lua")
 	dofile(dir .. "aggro.lua")
 	dofile(dir .. "verbs.lua")
@@ -272,6 +276,8 @@ local function spawn(w, name, x, staticdata)
 		textures = nil}
 	local obj = {props = props, pos = {x = x or 10, y = 5, z = 0}}
 	function obj:get_pos() return self.pos end
+	-- Round 67: a rescale keeps the feet (levels.lua apply_tier_visuals).
+	function obj:set_pos(p) self.pos = p end
 	function obj:get_properties() return self.props end
 	function obj:set_properties(p) for k, v in pairs(p) do self.props[k] = v end end
 	function obj:set_armor_groups() end

@@ -181,8 +181,14 @@ do
 	local minimap = file and file:read("*a") or ""
 	if file then file:close() end
 	local shown = minimap:match("local PROVIDERS = (%b{})") or ""
+ -- (Round 67: the z-index is the importance, markers.rank, which ranks
+ -- services with the Steward)
+ local file2 = io.open(repo .. "/mods/PLAYER/grug_map/markers.lua", "rb")
+ local markers = file2 and file2:read("*a") or ""
+ if file2 then file2:close() end
  check(shown:find("service=true",1,true) and
-  minimap:find('(kind == "steward" or kind == "service") and Z.marker+1',1,true),
+  minimap:find("local z = Z.marker + row.marker.rank",1,true) and
+  markers:find("steward = 1, service = 1",1,true),
   "C the minimap shows services on the Steward's layer")
 end
 

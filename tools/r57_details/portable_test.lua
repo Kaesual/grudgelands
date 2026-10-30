@@ -244,7 +244,9 @@ local failed = {}
 for _, line in ipairs(game.failures) do failed[#failed + 1] = line:match("^[^:]+") end
 eq(table.concat(failed, " "), "mods/PLAYER/grug_quests/loader.lua mods/PLAYER/grug_home/init.lua",
 	"R the harness skips only the files that want the world (the quest loader, grug_home)")
-check(#grug_jobs.recipes > 600, "R the real recipe registry is loaded (" .. #grug_jobs.recipes .. " recipes)")
+-- Round 67 removed 83 records (the stairs' routes back, the stem planks, the
+-- metal rods and their weapon variants).
+check(#grug_jobs.recipes > 500, "R the real recipe registry is loaded (" .. #grug_jobs.recipes .. " recipes)")
 
 local tables = grug_mobs.drop_tables()
 local families = 0
@@ -575,8 +577,9 @@ local function click_page(fields_)
 end
 local DF = grug_jobs.CRAFT_FIELDS
 local page = page_of()
-check(page:find(DF.details .. ";Recipe details]", 1, true) ~= nil, "P the recipe box has Recipe details")
-click_page({[DF.details] = "Recipe details"})
+-- Round 67 ruling 15: the button reads "Details" (with an info icon).
+check(page:find(DF.details .. ";Details]", 1, true) ~= nil, "P the recipe box has Recipe details")
+click_page({[DF.details] = "Details"})
 page = page_of()
 check(context.grug_craft.box == "details" and page:find("Recipe details:", 1, true) ~= nil and
 	page:find("Linen Scrap ×2", 1, true) ~= nil, "P Recipe details opens the details page on the recipe")
@@ -595,10 +598,10 @@ check(page:find("Linen Scrap ×1", 1, true) ~= nil and page:find("No job running
 click_page({grug_craft_dback = "◀ Back"})
 click_page({grug_craft_dback = "◀ Back"})
 page = page_of()
-check(context.grug_craft.box ~= "details" and page:find(DF.details .. ";Recipe details]", 1, true) ~= nil,
+check(context.grug_craft.box ~= "details" and page:find(DF.details .. ";Details]", 1, true) ~= nil,
 	"P ◀ Back twice returns to the recipe box")
 -- Opening it again starts a fresh stack on the recipe.
-click_page({[DF.details] = "Recipe details"})
+click_page({[DF.details] = "Details"})
 eq(#context.grug_craft.details.pages, 1, "P a new opening starts a fresh page stack")
 
 -- The enchant and upgrade boxes' Details (operation_box.lua): a Weaponsmith

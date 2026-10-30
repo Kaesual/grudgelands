@@ -37,8 +37,9 @@ function grug_mounts.flight_rule(faction, water, id)
 	if faction ~= "accord" and faction ~= "throng" then
 		return false, "enemy"
 	end
-	-- Zone ownership is horizontal.  Altitude is handled independently by the
-	-- underground takeoff and y=600 ceiling rules (entity.lua).
+	-- Zone ownership is horizontal, below the surface too (Round 67 ruling
+	-- 23: flight underground). Altitude is only the y=600 ceiling rule
+	-- (entity.lua).
 	local rule = id and zone_rule(id)
 	if rule and rule.island then
 		return false, "island"

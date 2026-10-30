@@ -301,9 +301,12 @@ is retired). Earlier measured timings:
 [`wp26-implementation.md`](../research/wp26-implementation.md).
 
 Round 21 furnace rules: both furnaces accept
-only logs (15s), mined coal (80s), charcoal (80s), Anthracite (120s,
-Round 47 ruling 11), cactus (15s) and every leaves node (2s, five per
-10-second smelt; Round 48, sell-fuel-daytime-plan ruling 1) as fuel;
+only logs (15s), mined coal (40s), charcoal (40s), Anthracite (60s,
+Round 47 ruling 11; Round 67 ruling 17 halved coal, charcoal and
+Anthracite from 80/80/120 s, so one coal smelts four bars), cactus (15s)
+and every leaves node (2s, five per 10-second smelt; Round 48,
+sell-fuel-daytime-plan ruling 1) as fuel (`grug_jobs/automatic.lua`
+`FURNACE_FUELS`; the engine's fuel recipes are not read);
 saplings and papyrus are no fuel, and the Claim Stone's upkeep stays coal,
 charcoal and Anthracite ([housing.md](housing.md)). One log cooks into
 one distinct charcoal item in 10s. New fuel ignites only with a valid recipe
@@ -319,6 +322,14 @@ coal before), light 12; the vendor torch stays 1c. Charcoal is in the coal
 group with the coal lump, so the recipe takes either (the crafting box
 chooses which, [inventory_equipment.md](inventory_equipment.md) §1), and
 Black Dye takes charcoal too.
+
+**One recipe per output where it can be** (Round 67 rulings 10–13):
+stairs and slabs are end products (no recipe turns them back into their
+block), a dug bush stem drops one plank of its wood (no stem-to-plank
+recipe) and the metal rods are gone (below). The outputs that keep several
+recipes, seven of the dyes and Glass Fragments (and the Locked Chest
+until its tier rework), show one row in the Crafting list with a variant
+switch ([inventory_equipment.md](inventory_equipment.md) §1).
 
 **Dyes** are Basic recipes, and every one of the 15 is reachable from
 what anyone gathers (Round 57 ruling 29). Six come from one raw item each
@@ -410,14 +421,15 @@ from `grug_gear`. Consequences, all binding:
   rebuild (an equipment or level change). The leather material of that
   grade stays *Scaled Hide* (§3.4).
 - **Everyone can craft the base items of every material tier** — tools,
-  weapons, armor. This is the deliberate "Minecraft feel", and it is what
+  weapons, armor. This is the deliberate block-crafting feel, and it is what
   makes mining and smelting worth doing for a player with no crafting
   profession at all.
   Four wood sticks use the familiar two-plank vertical recipe; the old
-  one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick, with a same-tier
-  metal rod accepted in the handle slot. Pickaxes, axes, shovels and the
-  hoes use their canonical Minecraft shapes; axes and hoes
-  accept both mirrored orientations. The exact non-Minecraft shapes are dagger = one
+  one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick (the
+  same-tier metal rod the handle slot also took left the game in Round 67,
+  ruling 13; a migration step refunded held rods as bars, two rods for one). Pickaxes, axes, shovels and the
+  hoes use their familiar grid shapes; axes and hoes
+  accept both mirrored orientations. The project's own shapes are dagger = one
   material over one handle; greataxe = five material units symmetrically around
   two vertical handles. Wands and staves use ordinary sticks, matching metal
   bars and the approved mob component; bows use sticks, metal and Thread.
@@ -816,7 +828,8 @@ six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
 
 **The Weaponsmith makes and enchants** physical weapons at the Forge: swords
 (two bars and a handle), daggers (one bar and a handle) and battle axes (five
-bars and two handles), a handle being a stick or a metal rod. Gathering tools
+bars and two handles), a handle being a stick (the metal rods are gone since
+Round 67). Gathering tools
 have no combat enchants; picks (three bars, two sticks) stay Basic.
 **The Armorsmith makes and enchants** metal armor (the canonical 5/8/7/4
 head/chest/legs/feet bars) and shields (six planks and a bar) at the Forge.

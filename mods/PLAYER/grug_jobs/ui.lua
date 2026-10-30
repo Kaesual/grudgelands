@@ -6,7 +6,9 @@
 --   top     the area tabs (Basic, Cooking, the two primary slots, Alchemy)
 --           and the selected area's tier progress;
 --   left    the recipe list: search, "Craftable only" and "Favorites only",
---           10 rows per page (icon, name, ×N), "Page x of y";
+--           10 rows per page (icon, name, ×N), "Page x of y"; one row per
+--           output (Round 67 ruling 10), the craft box switches between the
+--           output's recipes;
 --   right   one wide box: the crafting box (craft_box.lua; replaceable,
 --           lane EU adds the enchant and upgrade boxes, queue_box.lua the
 --           queue view); the professions overview while no recipe is
@@ -90,6 +92,8 @@ local F = {
 	fav = "grug_craft_fav", fav_only = "grug_craft_fav_only",
 	queue = "grug_craft_queue", back = "grug_craft_back", unqueue = "grug_craft_unqueue_",
 	details = "grug_craft_details",
+	-- Round 67: the variant switch of an output with several recipes.
+	variant_prev = "grug_craft_vprev", variant_next = "grug_craft_vnext",
 }
 grug_jobs.CRAFT_FIELDS = F
 
@@ -224,15 +228,26 @@ end
 grug_jobs.recipe_label = label_of
 
 --
--- Favourites (Round 57 ruling 7): the recipe ids a player bookmarked, in
--- player meta FAVORITES_KEY as one core.serialize'd sorted list ("" for
--- none); read once per session. An id no recipe has any more is kept until
--- the next change writes the list, and never shown.
+-- Favourites (Round 57 ruling 7; Round 67: they belong to the output, not
+-- to one of its recipes): the outputs a player bookmarked, in player meta
+-- FAVORITES_KEY as one core.serialize'd sorted list ("" for none); read once
+-- per session. A recipe id stored before Round 67 reads as its output (the
+-- next change writes the output); an entry that names neither a recipe nor
+-- an item any more is kept until then, and never shown.
 --
 
 local FAVORITES_KEY = "grug_jobs:favorites"
 grug_jobs.FAVORITES_KEY = FAVORITES_KEY
 local favorite_sets = {}
+
+-- The output a favourite entry or an API argument names: a recipe id's
+-- output (a removed recipe's id too: its output is the part before "|",
+-- default_id's format), else the value itself (an item name).
+local function favorite_key(value)
+	local recipe = grug_jobs.recipe(value)
+	if recipe then return recipe.output end
+	return type(value) == "string" and value:match("^([^|]+)|") or value
+end
 
 local function favorites_of(player)
 	local name = player:get_player_name()
@@ -241,26 +256,29 @@ local function favorites_of(player)
 	set = {}
 	local text = player:get_meta():get_string(FAVORITES_KEY)
 	local list = text ~= "" and core.deserialize(text) or nil
-	for _, id in ipairs(type(list) == "table" and list or {}) do
-		if type(id) == "string" then set[id] = true end
+	for _, entry in ipairs(type(list) == "table" and list or {}) do
+		if type(entry) == "string" then set[favorite_key(entry)] = true end
 	end
 	favorite_sets[name] = set
 	return set
 end
 
-function grug_jobs.is_favorite(player, recipe_id)
-	return favorites_of(player)[recipe_id] == true
+-- `what` is a recipe id or an output item name.
+function grug_jobs.is_favorite(player, what)
+	return favorites_of(player)[favorite_key(what)] == true
 end
 
--- Bookmarks the recipe or removes the bookmark; returns whether it is one now.
-function grug_jobs.toggle_favorite(player, recipe_id)
+-- Bookmarks the output (of a recipe id or an item name) or removes the
+-- bookmark; returns whether it is one now.
+function grug_jobs.toggle_favorite(player, what)
 	local set = favorites_of(player)
-	set[recipe_id] = not set[recipe_id] or nil
+	local key = favorite_key(what)
+	set[key] = not set[key] or nil
 	local list = {}
-	for id in pairs(set) do list[#list + 1] = id end
+	for entry in pairs(set) do list[#list + 1] = entry end
 	table.sort(list)
 	player:get_meta():set_string(FAVORITES_KEY, #list > 0 and core.serialize(list) or "")
-	return set[recipe_id] == true
+	return set[key] == true
 end
 
 core.register_on_leaveplayer(function(player)
@@ -273,33 +291,83 @@ local function crafts_of(st, counts, recipe, picks)
 		recipe.id == st.selected and picks or nil)
 end
 
--- {recipe, n} rows of the tab (n filled for every row when "Craftable only"
--- needs it, else later for the shown page only).
+-- Whether the list shows `recipe` to the player: a profession area up to
+-- the player's tier there, Basic by basic_unlock.lua's rule (absent in
+-- harnesses that load no basic_unlock.lua).
+local function listed(player, recipe, level)
+	if recipe.area == "basic" then
+		return not grug_jobs.recipe_known or grug_jobs.recipe_known(player, recipe)
+	end
+	return recipe.tier <= level
+end
+
+-- The recipes of `recipe`'s output in its area that the list shows the
+-- player, in the area's order (the variants the craft box switches
+-- between; Round 67 ruling 10). A recipe the list would not show (chosen on
+-- a details page) stands alone.
+function grug_jobs.recipe_variants(player, recipe)
+	local level = recipe.area ~= "basic" and grug_jobs.profession_level(player, recipe.area) or nil
+	local variants, found = {}, false
+	for _, other in ipairs(grug_jobs.recipes_in_area(recipe.area)) do
+		if other.output == recipe.output and listed(player, other, level) then
+			variants[#variants + 1] = other
+			if other == recipe then found = true end
+		end
+	end
+	return found and variants or {recipe}
+end
+
+-- The variant a row shows: the chosen recipe when it is one of them, else
+-- the first the player can craft now, else the first (Round 67 default).
+local function shown_variant(st, counts, picks, variants)
+	if #variants == 1 then return variants[1] end
+	for _, recipe in ipairs(variants) do
+		if recipe.id == st.selected then return recipe end
+	end
+	for _, recipe in ipairs(variants) do
+		if crafts_of(st, counts, recipe, picks) > 0 then return recipe end
+	end
+	return variants[1]
+end
+
+-- {output, recipe, n} rows of the tab, one per output (Round 67 ruling 10)
+-- at its first recipe's place in the area's order; `recipe` is the variant
+-- the row shows (and opens), `n` filled for every row when "Craftable only"
+-- needs it, else later for the shown page only. Count and "Craftable only"
+-- both follow that variant: by default the first the inventory makes, so an
+-- output any of whose recipes it makes stays; a variant the player chose
+-- counts as itself.
 local function list_rows(player, st, tab, counts, picks)
 	local rows = {}
 	if not tab.learned then return rows end
 	local query = st.search:lower()
 	local level = tab.area ~= "basic" and grug_jobs.profession_level(player, tab.area) or nil
-	-- basic_unlock.lua's rule (absent in harnesses that load no basic_unlock.lua).
-	local known = tab.area == "basic" and grug_jobs.recipe_known
 	-- "Favorites only" (both filters on: the craftable favourites).
 	local favorites = st.fav_only and favorites_of(player)
+	local by_output = {}
 	for _, recipe in ipairs(grug_jobs.recipes_in_area(tab.area)) do
 		label_of(recipe.output)
-		if (not level or recipe.tier <= level) and (not known or known(player, recipe)) and
-				(not favorites or favorites[recipe.id]) and
+		if listed(player, recipe, level) and
+				(not favorites or favorites[recipe.output]) and
 				(query == "" or lowered[recipe.output]:find(query, 1, true)) then
-			if st.only then
-				local crafts = crafts_of(st, counts, recipe, picks)
-				if crafts > 0 then
-					rows[#rows + 1] = {recipe = recipe, n = crafts}
-				end
-			else
-				rows[#rows + 1] = {recipe = recipe}
+			local row = by_output[recipe.output]
+			if not row then
+				row = {output = recipe.output, variants = {}}
+				by_output[recipe.output] = row
+				rows[#rows + 1] = row
 			end
+			row.variants[#row.variants + 1] = recipe
 		end
 	end
-	return rows
+	local kept = st.only and {} or rows
+	for _, row in ipairs(rows) do
+		row.recipe = shown_variant(st, counts, picks, row.variants)
+		if st.only then
+			row.n = crafts_of(st, counts, row.recipe, picks)
+			if row.n > 0 then kept[#kept + 1] = row end
+		end
+	end
+	return kept
 end
 
 local function empty_text(tab, searching, favorites)
@@ -351,6 +419,7 @@ local function list_content(fs, player, st, tab, counts, picks)
 	-- The panel includes search and pagination; native recipe click targets remain.
 	fs[#fs + 1] = UI.panel(LIST_X - 0.1, BOX.y, LIST_W + 0.2, BOX.h)
 	st.rows = {}
+	local chosen = st.selected and grug_jobs.recipe(st.selected)
 	local first = (st.page - 1) * PER_PAGE
 	for index = 1, math.min(PER_PAGE, #rows - first) do
 		local row = rows[first + index]
@@ -358,7 +427,7 @@ local function list_content(fs, player, st, tab, counts, picks)
 		local crafts = row.n or crafts_of(st, counts, recipe, picks)
 		local y = ROW_Y + (index - 1) * ROW_H
 		st.rows[index] = recipe.id
-		if recipe.id == st.selected then
+		if chosen and chosen.output == row.output then
 			fs[#fs + 1] = ("box[%s,%s;%s,%s;%s]"):format(n(LIST_X), n(y), n(LIST_W),
 				n(ROW_H), SELECTED_ROW)
 		end

@@ -40,7 +40,7 @@ local BODY_LINES = {
 	point("Use your skills.", "Drag skills from the Talents & Skills tab onto your hotbar, " ..
 		"select one and left-click."),
 	point("Press E and Z.", "E opens your mounts and potions, Z the map with your quests."),
-	point("Team up.", "Invite friends of your faction on the Party & PvP tab and adventure together."),
+	point("Team up.", "Invite friends of your faction on the Social tab and adventure together."),
 	colored(MUTED_COLOR, "Everything else is explained on the Help tab of your inventory (I)."),
 }
 

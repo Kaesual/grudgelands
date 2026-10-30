@@ -16,13 +16,16 @@ local captions = {
     ["grug_inventory:inventory"] = {"Inventory", "inventory"},
     ["grug_inventory:character"] = {"Character", "character"},
     ["sfinv:crafting"] = {"Crafting", "crafting"},
-    ["grug_parties:group"] = {"Party", "party"},
+    ["grug_parties:group"] = {"Social", "party"},
     ["grug_map:atlas"] = {"Map & Quests", "map"},
     ["grug_inventory:help"] = {"Help", "help"},
     ["grug_mail:admin"] = {"Admin Mail", "mail"},
 }
 
-function grug_inventory.navigation_layout(player, context, width, info)
+-- `selected` (optional) is the page being drawn: the Creative category row
+-- shows only on a creative:* page (Round 67 ruling 9), so every other page
+-- keeps the one-row header. The map window passes none.
+function grug_inventory.navigation_layout(player, context, width, info, selected)
     local ids, titles, primary, categories = {}, {}, {}, {}
     for _, page in ipairs(sfinv.pages_unordered) do
         if visible(player, context, page.name) then
@@ -32,7 +35,8 @@ function grug_inventory.navigation_layout(player, context, width, info)
         end
     end
     if #categories > 0 then primary[#primary + 1] = categories[1] end
-    local show_categories = #categories > 0
+    local show_categories = #categories > 0 and type(selected) == "string" and
+        selected:match("^creative:") ~= nil
     return {ids = ids, titles = titles, primary = primary, categories = categories,
         per_row = #primary, height = UI.header_h + (show_categories and 0.54 or 0),
         show_categories = show_categories}
@@ -40,7 +44,7 @@ end
 
 function grug_inventory.navigation(player, context, selected, width, layout)
     width = width or UI.frame_w
-    layout = layout or grug_inventory.navigation_layout(player, context, width)
+    layout = layout or grug_inventory.navigation_layout(player, context, width, nil, selected)
     local ids, titles = layout.ids, layout.titles
     context.grug_ui_nav = ids
     context.grug_ui_creative = layout.categories[1] and ids[layout.categories[1]] or nil

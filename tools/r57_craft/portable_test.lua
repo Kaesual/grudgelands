@@ -886,7 +886,8 @@ do
 	put(l, "main", 11, "t:log 20")
 	check(choose(l, 2, stew), "L the stew chosen")
 	local fs = l.formspec
-	has(fs, go(l) .. ";Craft ×1]", "L Craft ×N while idle")
+	-- Round 67 ruling 14: the button reads plain "Craft" / "Queue".
+	has(fs, go(l) .. ";Craft]", "L Craft ×N while idle")
 	has(fs, "No job running", "L the idle strip")
 	lacks(fs, F.stop .. ";", "L no stop button while idle")
 	lacks(fs, F.queue .. ";", "L no View Queue while idle")
@@ -897,7 +898,7 @@ do
 	click(l, {[F.qty] = "4", [go(l)] = "Craft ×4"})
 	fs = l.formspec
 	check(J.job_state(l) ~= nil, "L the click starts the job")
-	has(fs, go(l) .. ";Queue ×4]", "L Queue ×N while a job runs")
+	has(fs, go(l) .. ";Queue]", "L Queue ×N while a job runs")
 	has(fs, "animated_image[6.8,", "L the bar in the strip")
 	has(fs, stop(l) .. ";■]", "L the small stop button")
 	has(fs, "Hearty Stew ×4", "L one line names the job")
@@ -907,18 +908,19 @@ do
 	-- The strip stays on another recipe, on the overview and on a details box.
 	check(choose(l, 1, plank), "L another recipe")
 	has(l.formspec, "animated_image[6.8,", "L the bar stays on another recipe")
-	has(l.formspec, go(l) .. ";Queue ×1]", "L ... and it queues")
+	has(l.formspec, go(l) .. ";Queue]", "L ... and it queues")
 	click(l, {[F.area .. "2"] = "Cooking"})
 	has(l.formspec, "animated_image[6.8,", "L the bar on the overview (no recipe chosen)")
 	has(l.formspec, queue_button(0), "L ... and View Queue")
-	lacks(l.formspec, "Recipe details", "L no details button before lane DETAILS")
+	lacks(l.formspec, F.details .. ";", "L no details button before lane DETAILS")
 	J.register_craft_box("details", {build = function() return "label[6.8,1.5;DETAILS PAGE]" end,
 		fields = function() return false end})
 	-- Lane DETAILS: the seam opens the page through details.lua's opener.
 	J.open_recipe_details = function(st) J.open_craft_box(st, "details") end
 	check(choose(l, 1, plank), "L the planks again")
-	has(l.formspec, F.details .. ";Recipe details]", "L the details seam once a details box exists")
-	click(l, {[F.details] = "Recipe details"})
+	-- Round 67 ruling 15: "Details" (with its info icon) by the star.
+	has(l.formspec, F.details .. ";Details]", "L the details seam once a details box exists")
+	click(l, {[F.details] = "Details"})
 	has(l.formspec, "DETAILS PAGE", "L the details box opens")
 	has(l.formspec, "animated_image[6.8,", "L ... with the bar")
 	has(l.formspec, stop(l) .. ";■]", "L ... the stop button")
@@ -939,12 +941,12 @@ do
 	has(fs, "animated_image[6.8,", "L the bar under the queue view")
 	geometry_ok(fs, "L the queue view")
 	click(l, {[F.back] = "x"})
-	has(l.formspec, go(l) .. ";Queue ×2]", "L Back returns to the recipe")
+	has(l.formspec, go(l) .. ";Queue]", "L Back returns to the recipe")
 	-- Full: the button greys with the message.
 	for _ = 1, 3 do click(l, {[F.qty] = "1", [go(l)] = "Queue ×1"}) end
 	eq(#J.queue_state(l), 4, "L the queue is full")
 	fs = l.formspec
-	has(fs, F.recheck .. ";Queue ×1]", "L a full queue greys the button")
+	has(fs, F.recheck .. ";Queue]", "L a full queue greys the button")
 	has(fs, "The crafting queue is full", "L ... with the message")
 	-- The output slots only while filled.
 	put(l, OUT, 1, "t:stone 3")
@@ -1003,7 +1005,8 @@ do
 	click(v, {[F.fav] = "☆"})
 	has(v.formspec, F.fav .. ";★]", "V a click marks it")
 	check(J.is_favorite(v, plank.id), "V ... as a favourite")
-	has(raw(v, J.FAVORITES_KEY), plank.id, "V saved in player meta")
+	-- Round 67: a favourite belongs to the output, saved by its name.
+	has(raw(v, J.FAVORITES_KEY), plank.output, "V saved in player meta")
 	check(choose(v, 1, thread), "V the thread chosen")
 	click(v, {[F.fav] = "☆"})
 	-- The bolt is listed (linen held) but not craftable without thread.

@@ -708,7 +708,10 @@ Normal tier at level L:
   disengagement (Round 19 follow-up).
 - **Readability rules for mobs** (decided 2026-08-06, shipped with WP6):
   elites/rares signal via **scale + tint** — elite `visual_size` ×1.4
-  (Round 28 ruling 9; model, collision and selection box scale together),
+  (Round 28 ruling 9; model, collision and selection box scale together;
+  since Round 67 only where the scaled body fits where the mob stands, its
+  feet kept on the ground, otherwise it keeps its base size and only the
+  tint and prefix mark it; `grug_mobs/room.lua` `tier_scale`),
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
   violet `#a64dff:90`, nametag prefix `★ ` (kings, royal guards and Generals
   carry no tint since Round 54: they read by size, crown and royal colours;
@@ -1098,6 +1101,18 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   stages decide (`mobs/grug_nav.lua`, `mobs/grug_obstacle.lua`,
   `grug_mobs/aggro.lua` `give_up_target`, `grug_mobs/patrol.lua`
   `walk_fixed`).
+- **A mob stuck in the rock leaves** (Round 67 ruling 26). A mob counts as
+  stuck when its current (scaled) collision box overlaps the collision
+  boxes of walkable nodes, not just its origin; a node box whose top is at
+  most half a node above the body's bottom (snow layers, a slab, a stair's
+  lower step) is footing, never stuck, and faces that only touch do not
+  count. A mob stuck when it gives a target up is removed quietly (no drops,
+  XP or credit) once no player is within **32 nodes**: on its next step,
+  or on the first once-a-second check after the last player left. Until
+  then the give-up runs as above, and a mob that moved free is let go.
+  Mobs bound to something else stay (the dawn list, `biomes_mobs.md`:
+  NPCs, rares, bosses and their adds, camp posts, patrols, leaders)
+  (`grug_mobs/room.lua`).
   *Rationale, because the defect was invisible on paper*: the following
   pre-patch coordinates refer to commit `77261837` (2026-09-15). Vendored mobs_redo
   zeroed the mob's velocity as soon as the target was inside `reach`
@@ -1265,7 +1280,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 
 ## 6. Player and mob nameplates & con colors
 
-- Every mob carries a nametag: `<Name> [Lv X] HP/maxHP`, updated on damage.
+- Every mob except a critter carries a nametag: `<Name> [Lv X] HP/maxHP`,
+  updated on damage (Round 67 ruling 25: no tag on critters, nor on the
+  plain citizens of a settlement, `settlements.md`).
   The exact level is readable to each viewer independently within nametag
   range.
 - Nametag and Target Frame HP use one compact formatter: values below 1000 are
@@ -1284,7 +1301,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   **`Thomas [Lv 5] 35/60`**. It updates immediately when HP or level changes
   and writes no property when the text is unchanged. The numbers remain plain
   integers. A player never sees their own tag carrier.
-- Implementation: every tagged mob, peaceful NPC, vendor and player owns one
+- Implementation: every tagged mob, tagged NPC, vendor and player owns one
   invisible, non-pointable, non-physical, unsaved child entity. The parent's
   nametag stays empty (non-players) or alpha-zero (players). The child carries
   the text, inherits the parent's nametag height, and uses the engine's managed

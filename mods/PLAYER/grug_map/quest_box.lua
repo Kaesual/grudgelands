@@ -98,32 +98,34 @@ local function level_line(quest)
 	return "Level " .. def.level .. (name and (" · " .. name) or "")
 end
 
--- Geometry inside the column (real coordinates): the list box takes
--- LIST_SHARE of the column's height (at least LIST_MIN), the text box the
--- rest below a GAP. Labels and checkboxes are placed by their vertical
--- centre, buttons by their top.
+-- Geometry inside the column (real coordinates): the text box below is
+-- TEXT_H high (the title, the level line, about two lines of the text,
+-- which scrolls, and the status line), the list box takes the rest above
+-- it, at least LIST_MIN (Round 67: about eight compact rows at 1920x1080;
+-- 42 % of the column before). Labels and checkboxes are placed by their
+-- vertical centre, buttons by their top.
 local PAD, GAP, ROW_H, BUTTON_H = 0.2, 0.25, 0.45, 0.6
-local LIST_SHARE, LIST_MIN = 0.42, 3.6
+local TEXT_H, LIST_MIN = 2.75, 3.6
 local ABANDON_W, CONFIRM_W, CANCEL_W, BUTTON_GAP = 1.8, 2.6, 1.5, 0.15
 local HUD_W = 2.3 -- the Quest HUD checkbox with its label
 
 -- The two boxes for `journal` inside `rect` {x, y, w, h}; `growth` (nil: 1)
--- is the window's text growth (Round 66 ruling 4) for the list's rows.
-function M.content(session, journal, rect, growth)
+-- is the window's text growth (Round 66 ruling 4) for the list's rows;
+-- `player_level` (nil: no colour) colours each row's level label.
+function M.content(session, journal, rect, growth, player_level)
 	local quest = M.selected(journal, session)
 	local x, y, w = rect.x, rect.y, rect.w
-	local list_h = math.max(LIST_MIN, rect.h * LIST_SHARE)
+	local list_h = math.max(LIST_MIN, rect.h - GAP - TEXT_H)
 	local right = x + w - PAD
 	-- The list with its "Story" category (Round 57 ruling 13): story quests
-	-- first under their header, the others under "Side quests". State
-	-- markers and subtitles keep the title neutral and readable.
+	-- first under their header, the others under "Side quests", each group
+	-- by quest level (grug_quests.sort_quests, the quest HUD's order; Round
+	-- 67 ruling 19). One compact line per quest (Round 67): the state
+	-- marker, the title and "[Lv N]" in its difficulty colour like the HUD;
+	-- the state and the tracking in the tooltip.
 	local ordered = {}
-	for _, row in ipairs(journal.quests) do
-		if row.story then ordered[#ordered + 1] = row end
-	end
-	for _, row in ipairs(journal.quests) do
-		if not row.story then ordered[#ordered + 1] = row end
-	end
+	for index, row in ipairs(journal.quests) do ordered[index] = row end
+	grug_quests.sort_quests(ordered)
 	local categories, row_of = grug_quests.category_list(ordered, function(row) return row.title end)
 	local rows = {}
 	session.quest_rows = {}
@@ -134,7 +136,12 @@ function M.content(session, journal, rect, growth)
 			session.quest_rows[entry] = row.id
 			local status = row.ready and "Ready to complete" or "In progress"
 			local subtitle = status .. (tracked(journal, row.id) and " · Tracked" or "")
-			rows[entry] = {title = row.title, subtitle = subtitle,
+			local def = grug_quests.registered_quests[row.id]
+			local level = def and def.level
+			rows[entry] = {title = row.title,
+				badge = level and ("[Lv %d]"):format(level) or nil,
+				badge_color = level and player_level and
+					("#%06x"):format(grug_xp.con_color(level, player_level)) or nil,
 				icon = "grug_map_quest_" .. (row.story and "story_" or "") ..
 					(row.ready and "ready" or "active") .. ".png",
 				tooltip = row.title .. "\n" .. subtitle .. "\n" .. level_line(row),
@@ -153,7 +160,7 @@ function M.content(session, journal, rect, growth)
 			y = y + PAD + ROW_H + 0.1, w = w - 2 * PAD,
 			h = row_y - (y + PAD + ROW_H + 0.1) - 0.15,
 			-- The responsive map already budgets for the native GUI font.
-			rows = rows, scale = growth or 1}),
+			rows = rows, scale = growth or 1, compact = true}),
 	}
 	local text_y = y + list_h + GAP
 	local text_h = rect.h - list_h - GAP

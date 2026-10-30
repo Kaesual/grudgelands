@@ -605,6 +605,9 @@ eq(set_pages[1], "grug_inventory:character", "tab switch rebuilds the page")
 grug_factions = {get_faction = function() return "accord" end}
 grug_parties = {
 	register_on_change = function() end,
+	-- Round 67: the Social tab's player list (tools/r67_social checks it).
+	register_on_roster_change = function() end,
+	is_online = function() return false end,
 	invitations_enabled = function() return true end,
 	hud_enabled = function() return true end,
 	health_color_mode = function() return "by_class" end,
@@ -616,6 +619,7 @@ grug_parties = {
 	}} end,
 }
 core.register_on_mods_loaded = function() end
+function alice:get_meta() return {get_string = function() return "" end} end
 dofile("mods/PLAYER/grug_parties/ui.lua")
 local group = pages["grug_parties:group"]
 local group_context = {}

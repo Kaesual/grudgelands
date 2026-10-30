@@ -1,20 +1,24 @@
--- Round 44 lane PP portable test: the Party & PvP tab, Help without an
--- inventory and the texts that name tabs and keys. Loads the REAL vendored
--- sfinv (mods/BASE/sfinv/api.lua), grug_inventory's ui.lua (the frame and
--- the tab order), help.lua and welcome.lua, grug_parties/ui.lua and
--- grug_pvp/page.lua (with view.lua) under a minimal `core` stub and checks:
---   T. the tab table: one "Party & PvP" entry (grug_parties:group), no PvP
---      page of its own;
+-- Round 44 lane PP portable test: the Party & PvP tab (the Social tab since
+-- Round 67), Help without an inventory and the texts that name tabs and
+-- keys. Loads the REAL vendored sfinv (mods/BASE/sfinv/api.lua),
+-- grug_inventory's ui.lua (the frame and the tab order), help.lua and
+-- welcome.lua, grug_parties/ui.lua and grug_pvp/page.lua (with view.lua)
+-- under a minimal `core` stub and checks:
+--   T. the tab table: one "Social" entry (grug_parties:group), no PvP page
+--      of its own;
 --   P. the page out of a party and in one (as leader and as member): the
---      party section (settings, online same-faction players, pending
---      invitations, the member table and its buttons) and the PvP section
---      beside it (state, the flag button, the statistics); no inventory view;
---      every element inside the window, party cards stacked left of PvP;
+--      settings, the party box (pending invitations or the member table and
+--      its buttons) with the PvP section (state, the flag button, the
+--      statistics) below it on the left and the online players' list at
+--      full height on the right (Round 67 ruling 4a; its rows, order and
+--      buttons: tools/r67_social); no inventory view; every element inside
+--      the window, no controls overlapping;
 --   B. every party and PvP field still handled: each button, checkbox,
---      dropdown, textlist and table event reaches its grug_parties or
---      grug_pvp call; the flag button re-sends the page once;
+--      dropdown, textlist and table event and a row's Invite reaches its
+--      grug_parties or grug_pvp call; the flag button re-sends the page once;
 --   S. the PvP 1 s check: an open tab re-sent only when the section's text
---      changed, another page asked nothing; grug_pvp changes re-send at once;
+--      changed, through the Social tab's 2 s limiter (Round 67), another
+--      page asked nothing; grug_pvp changes re-send at the step's end;
 --   H. Help without an inventory view, its bodies inside the window; Help
 --      and the welcome window name the new tabs, E, Z and the aux1 notes;
 --   X. no player-facing string in mods/ (Lua string literals outside
@@ -110,7 +114,23 @@ end
 -- Stubs
 --
 
-local mods_loaded, receive_handlers, steps = {}, {}, {}
+local mods_loaded, receive_handlers, steps, after_jobs = {}, {}, {}, {}
+local now_us = 1000000000
+-- Runs the core.after jobs due by now_us (grug_parties' coalesced sends).
+local function run_after()
+	local ran = true
+	while ran do
+		ran = false
+		for index, job in ipairs(after_jobs) do
+			if job.at <= now_us then
+				table.remove(after_jobs, index)
+				job.fn(unpack(job.args))
+				ran = true
+				break
+			end
+		end
+	end
+end
 local modname = "grug_inventory"
 local players = {}
 core = {
@@ -128,6 +148,10 @@ core = {
 	log = function() end,
 	get_game_info = function() return {path = repo} end,
 	show_formspec = function() end,
+	get_us_time = function() return now_us end,
+	after = function(delay, fn, ...)
+		after_jobs[#after_jobs + 1] = {at = now_us + delay * 1000000, fn = fn, args = {...}}
+	end,
 	get_player_by_name = function(name) return players[name] end,
 	get_connected_players = function()
 		local list = {}
@@ -153,6 +177,7 @@ grug_inventory = {BAG_COUNT = 4, content_list = function(i) return "grug_bag" ..
 grug_core = {status_icons = {
 	CLASSES = {"warrior", "mage", "priest", "scout"},
 	class_icon = function(id) return "grug_class_" .. id .. ".png" end,
+	race_icon = function(id) return "grug_race_" .. id .. ".png" end,
 }}
 local factions = {alice = "accord", bob = "accord", cyd = "accord", dax = "throng"}
 grug_factions = {
@@ -161,7 +186,9 @@ grug_factions = {
 }
 grug_xp = {get_level = function() return 12 end}
 grug_classes = {register_on_arrival = function() end,
-	get_race_def = function() return nil end, get_class_def = function() return nil end}
+	get_race_def = function() return nil end, get_class_def = function() return nil end,
+	get_class = function() return "mage" end, get_race = function() return "human" end,
+	registered_classes = {mage = {name = "Mage"}}, registered_races = {human = {name = "Human"}}}
 
 -- grug_parties: the state the page reads and a log of the calls it makes.
 local party_calls, party_view, pending_rows = {}, nil, {}
@@ -199,6 +226,19 @@ grug_parties = {
 		return true, "ok"
 	end,
 	register_on_change = function(fn) party_change = fn end,
+	register_on_roster_change = function() end,
+	is_online = function(name) return players[name] ~= nil end,
+	-- The stub's rule: same faction, invitations on, not in alice's party.
+	can_invite = function(inviter, recipient)
+		if not players[recipient] or recipient == "cyd" then return false end
+		for _, member in ipairs(party_view and party_view.members or {}) do
+			if member.name == recipient or member.name == inviter and
+					party_view.leader ~= inviter then
+				return false
+			end
+		end
+		return factions[inviter] == factions[recipient]
+	end,
 }
 
 -- grug_pvp: state and stats per player, flag_now counted.
@@ -221,8 +261,12 @@ grug_pvp = {
 grug_sounds = {play = function() pvp_calls.sounds = pvp_calls.sounds + 1 end}
 
 local function make_player(name)
-	local player = {sent = 0}
+	local player = {sent = 0, meta = {}}
 	function player.get_player_name() return name end
+	function player.get_meta()
+		return {get_string = function(_, key) return player.meta[key] or "" end,
+			set_string = function(_, key, value) player.meta[key] = value end}
+	end
 	function player.set_inventory_formspec(_, fs)
 		player.sent = player.sent + 1
 		player.formspec = fs
@@ -259,10 +303,10 @@ for _, name in ipairs(grug_inventory.TAB_ORDER) do
 	if name == PAGE then in_table = in_table + 1 end
 	if name == "grug_pvp:pvp" then pvp_in_table = true end
 end
-eq(in_table, 1, "T Party & PvP has one entry in TAB_ORDER")
+eq(in_table, 1, "T Social has one entry in TAB_ORDER")
 check(not pvp_in_table, "T no separate PvP entry in TAB_ORDER")
 check(sfinv.pages["grug_pvp:pvp"] == nil, "T no PvP page of its own")
-eq(sfinv.pages[PAGE] and sfinv.pages[PAGE].title, "Party & PvP", "T the tab's title")
+eq(sfinv.pages[PAGE] and sfinv.pages[PAGE].title, "Social", "T the tab's title")
 eq(grug_parties.PAGE, PAGE, "T grug_parties names its page")
 check(type(grug_parties.pvp_section) == "table", "T grug_pvp installs its section")
 local mod_conf = assert(io.open(repo .. "/mods/PLAYER/grug_pvp/mod.conf")):read("*a")
@@ -295,14 +339,15 @@ local function geometry(fs, label)
 		local f = fields_of(element.args)
 		local pos = f[1] and numbers(f[1])
 		local size = f[2] and numbers(f[2])
-		if element.name == "container" then
+		if element.name == "container" or element.name == "scroll_container" then
 			stack[#stack + 1] = {ox, oy}
 			ox, oy = ox + pos[1], oy + pos[2]
-		elseif element.name == "container_end" then
+		elseif element.name == "container_end" or element.name == "scroll_container_end" then
 			local origin = table.remove(stack)
 			ox, oy = origin[1], origin[2]
 		end
-		if real and pos and pos[1] and pos[2] and element.name ~= "tabheader" and element.name ~= "container" then
+		if real and pos and pos[1] and pos[2] and element.name ~= "tabheader" and
+				element.name ~= "container" and element.name ~= "scroll_container" then
 			local x, y, w, h
 			if element.name == "label" then
 				local text = f[2]:gsub("\27%(c@#%x+%)", ""):gsub("\\(.)", "%1")
@@ -329,7 +374,7 @@ local function overlap(a, b)
 end
 local function no_inventory(fs, label)
 	lacks(fs, "list[current_player;main", label .. ": no inventory view")
-	lacks(fs, "scroll_container[", label .. ": no scroll area")
+	lacks(fs, "list[current_player;grug_bag", label .. ": no bag view")
 end
 local function pvp_section(fs, label)
 	has(fs, "PvP status", label .. ": the PvP heading")
@@ -341,35 +386,38 @@ local function pvp_section(fs, label)
 	has(fs, "There is no early unflag.", label .. ": the flag rule")
 end
 
--- Party cards stack left of a full-height PvP card. Controls must not collide, including
--- container offsets; decorative background panels deliberately enclose them.
+-- Round 67 ruling 4a: the party box and the PvP card stacked on the left,
+-- the online players' list at full height on the right. Controls must not
+-- collide, including container offsets; decorative panels, row boxes,
+-- tooltip areas and the scroll area deliberately enclose them.
 local function layout(rects, label)
-	local roster, flag, online, pending, current_heading, pvp_heading
+	local flag, list_heading, party_heading, pvp_heading, box_control
 	for _, rect in ipairs(rects) do
-		if rect.kind == "table" then roster = rect end
 		if rect.kind == "button" and rect.text == "grug_pvp_flag" then flag = rect end
-		if rect.kind == "textlist" and rect.text == "grug_party_online_list" then online = rect end
-		if rect.kind == "textlist" and rect.text == "grug_party_pending" then pending = rect end
-		if rect.kind == "label" and rect.text == "Current party" then current_heading = rect end
+		if rect.kind == "label" and rect.text:match("^Online Players") then list_heading = rect end
+		if rect.kind == "label" and (rect.text:match("^Current Party") or
+				rect.text:match("Pending Invitation")) then
+			party_heading = rect
+		end
 		if rect.kind == "label" and rect.text == "PvP status" then pvp_heading = rect end
+		if rect.kind == "table" or rect.kind == "textlist" then box_control = rect end
 	end
-	check(flag and flag.x >= 12, label .. ": PvP lives in the right card")
-	check(current_heading and pvp_heading and math.abs(current_heading.y - pvp_heading.y) < 0.01,
-		label .. ": current party and PvP start at the same height")
-	if online and pending then
-		check(online.x == pending.x and online.y + online.h < pending.y,
-			label .. ": online players and invitations stack in the left column")
+	check(flag and flag.x + flag.w < 10, label .. ": PvP lives in the left column")
+	check(party_heading and pvp_heading and party_heading.x == pvp_heading.x and
+		party_heading.y + 5 < pvp_heading.y, label .. ": the party box, then PvP below it")
+	check(list_heading and list_heading.x > 10 and party_heading and
+		list_heading.y < party_heading.y, label .. ": the online list on the right, from the top")
+	if box_control then
+		check(box_control.x + box_control.w < 10 and box_control.y + box_control.h < pvp_heading.y,
+			label .. ": the party box's list stays in its box")
 	end
-	if roster then
-		check(roster.x + roster.w < flag.x, label .. ": party stays left of PvP")
-		check(not online or roster.y + roster.h < online.y, label .. ": current party precedes online players")
-	end
+	local skip = {background9 = true, box = true, tooltip = true}
 	local clash = false
 	for i, a in ipairs(rects) do
 		for j = i + 1, #rects do
 			local b = rects[j]
-			if a.y >= 0.85 + HEADER_H and b.y >= 0.85 + HEADER_H and a.kind ~= "background9" and
-					b.kind ~= "background9" and overlap(a, b) then
+			if a.y >= 0.85 + HEADER_H and b.y >= 0.85 + HEADER_H and not skip[a.kind] and
+					not skip[b.kind] and overlap(a, b) then
 				clash = true
 				print("  overlap: " .. tostring(a.text) .. " / " .. tostring(b.text))
 			end
@@ -394,32 +442,39 @@ formspec_ok(out_fs, "P out of a party")
 local frame_header = ("formspec_version[6]size[%.3f,%.3f]"):format(FRAME_W, FRAME_H)
 eq(out_fs:sub(1, #frame_header), frame_header, "P out of a party: the window's frame")
 has(out_fs, ";grug_ui_tab_", "P the shared tab buttons")
-has(out_fs, "Party & PvP", "P the tab caption")
+has(out_fs, ";Social]", "P the tab caption")
 no_inventory(out_fs, "P out of a party")
 has(out_fs, "checkbox[0.4,0.35;grug_party_invites;Invitations;true]",
 	"P out of a party: the invitations checkbox")
 has(out_fs, ";grug_party_hud;Party HUD;true]", "P out of a party: the HUD checkbox")
 has(out_fs, ";grug_party_health_colors;All green,By class;2;true]",
 	"P out of a party: the health colours dropdown")
-has(out_fs, "textlist[0.50,6.05;11.0,1.60;grug_party_online_list;" ..
-	fs_escape("bob [Lv 12]") .. "," .. fs_escape("cyd [Lv 12] (Invites off)") .. ";1;true]",
-	"P out of a party: online players of the own faction only, sorted")
-lacks(out_fs, "dax", "P out of a party: no player of the other faction")
-has(out_fs, ";grug_party_invite;Invite]", "P out of a party: Invite")
-has(out_fs, ";grug_party_refresh;Refresh]", "P out of a party: Refresh")
-has(out_fs, "textlist[0.50,9.65;11.0,1.60;grug_party_pending;" ..
+has(out_fs, "Online Players (4)", "P out of a party: every online player, both factions")
+local function order(fs)
+	local names = {}
+	for name in fs:gmatch("label%[0%.65,[%d.]+;([^%]]*)%]") do names[#names + 1] = name end
+	return table.concat(names, ",")
+end
+eq(order(out_fs), "alice (you),bob,cyd,dax", "P the list: own faction first, by name")
+has(out_fs, ";grug_social_inv_bob;Invite]", "P out of a party: Invite on an eligible row")
+lacks(out_fs, ";grug_social_inv_cyd;", "P no Invite for invitations off")
+lacks(out_fs, ";grug_social_inv_dax;", "P no Invite for an enemy")
+lacks(out_fs, "grug_party_refresh", "P no Refresh: the list refreshes itself")
+has(out_fs, grug_core.ui.heading(0.5, 1.2, "2 Pending Invitations"),
+	"P out of a party: the box counts the invitations")
+has(out_fs, "textlist[0.50,1.60;9.1,3.3;grug_party_pending;" ..
 	fs_escape("bob [Lv 12] (2/10, 50s)") .. "," .. fs_escape("cyd [Lv 11] (1/10, 20s)") ..
 	";1;true]", "P out of a party: the pending invitations")
 has(out_fs, ";grug_party_accept;Accept]", "P out of a party: Accept")
 has(out_fs, ";grug_party_decline;Decline]", "P out of a party: Decline")
-has(out_fs, "You are not in a party.", "P out of a party: the hint")
+lacks(out_fs, "You are not in a party.", "P invitations instead of the hint")
 lacks(out_fs, "grug_party_members", "P out of a party: no member table")
 lacks(out_fs, ";grug_party_leave;", "P out of a party: no Leave")
 pvp_section(out_fs, "P out of a party")
 has(out_fs, "Flagged: Contested Territory", "P the PvP headline")
 has(out_fs, "In PvP combat", "P the PvP combat line")
-has(out_fs, "label[6.30,9.05;9]", "P a counter value (guards 9, fourth row)")
-has(out_fs, "label[6.30,9.70;1]", "P a counter value (captains 1, second column)")
+has(out_fs, "label[9.00,2.80;9]", "P a counter value (guards 9, fourth row)")
+has(out_fs, "label[9.00,3.40;1]", "P a counter value (captains 1, fifth row)")
 layout(geometry(out_fs, "P out of a party"), "P out of a party")
 local bytes_out = #out_fs
 
@@ -435,16 +490,16 @@ sfinv.set_player_inventory_formspec(alice, context)
 local in_fs = alice.formspec
 formspec_ok(in_fs, "P in a party")
 no_inventory(in_fs, "P in a party")
-has(in_fs, grug_core.ui.heading(0.5, 1.2, "Current party"), "P in a party: the heading")
-has(in_fs, "table[0.50,1.60;11.0,2.45;grug_party_members;1," ..
+has(in_fs, grug_core.ui.heading(0.5, 1.2, "Current Party (3/10)"), "P in a party: the heading")
+has(in_fs, "table[0.50,1.60;9.1,3.3;grug_party_members;1," ..
 	fs_escape("* alice [Lv 12]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 12]  10/20 HP") ..
 	",0," .. fs_escape("cyd [Lv 11]  Offline") .. ";2]", "P in a party: the member table")
 has(in_fs, ";grug_party_kick;Kick]", "P in a party: Kick for the leader")
 has(in_fs, ";grug_party_transfer;Make leader]", "P in a party: Make leader for the leader")
 has(in_fs, ";grug_party_leave;Leave]", "P in a party: Leave")
 has(in_fs, "Success: invite done.", "P in a party: the notice")
-has(in_fs, ";grug_party_invite;Invite]", "P in a party: Invite stays")
-has(in_fs, ";grug_party_accept;Accept]", "P in a party: Accept stays")
+lacks(in_fs, ";grug_party_accept;", "P in a party: the box shows the party, no invitations")
+has(in_fs, "grug_social_fav_dax", "P in a party: the list stays")
 pvp_section(in_fs, "P in a party")
 layout(geometry(in_fs, "P in a party"), "P in a party")
 local bytes_in = #in_fs
@@ -464,19 +519,16 @@ lacks(bob.formspec, "In PvP combat", "P no combat line when safe")
 pvp_section(bob.formspec, "P safe")
 layout(geometry(bob.formspec, "P safe"), "P safe")
 
--- Empty lists are explicit top-aligned copy, never selectable dummy rows.
+-- No invitation: the count and a hint, never a selectable dummy row.
 local saved_pending = pending_rows
 pending_rows = {}
 local bob_context = sfinv.get_or_create_context(bob)
-bob_context.grug_party_online_rows = {}
 sfinv.set_player_inventory_formspec(bob, bob_context)
-has(bob.formspec, "No other same-faction players are online.", "P empty online roster hint")
-has(bob.formspec, "No pending invitations.", "P empty invitation hint")
-lacks(bob.formspec, ";grug_party_online_list;", "P no selectable empty online row")
+has(bob.formspec, grug_core.ui.heading(0.5, 1.2, "0 Pending Invitations"), "P no invitation: the count")
+has(bob.formspec, "You are not in a party.", "P no invitation: the hint")
 lacks(bob.formspec, ";grug_party_pending;", "P no selectable empty invitation row")
-layout(geometry(bob.formspec, "P empty lists"), "P empty lists")
+layout(geometry(bob.formspec, "P no invitations"), "P no invitations")
 pending_rows = saved_pending
-bob_context.grug_party_online_rows = nil
 
 
 --
@@ -488,10 +540,8 @@ local function submit(player, fields)
 end
 local function last_call() return party_calls[#party_calls] end
 context.grug_party_member = "bob"
-submit(alice, {grug_party_online_list = "CHG:2"})
-eq(context.grug_party_online, "cyd", "B the online list selects a player")
-submit(alice, {grug_party_invite = "Invite"})
-eq(last_call(), "invite:cyd", "B Invite invites the selected player")
+submit(alice, {grug_social_inv_cyd = "Invite"})
+eq(last_call(), "invite:cyd", "B a row's Invite invites its player")
 submit(alice, {grug_party_pending = "CHG:2"})
 eq(context.grug_party_inviter, "cyd", "B the invitation list selects an inviter")
 submit(alice, {grug_party_accept = "Accept"})
@@ -521,12 +571,9 @@ do
 	submit(alice, {quit = "true"})
 	eq(alice.sent, before_sends, "B Escape likewise does not rebuild the party page")
 end
-players.dax = nil
 local sent = alice.sent
-submit(alice, {grug_party_refresh = "Refresh"})
-eq(alice.sent, sent + 1, "B Refresh re-sends the page")
-eq(#context.grug_party_online_rows, 2, "B Refresh rebuilds the roster")
-players.dax = dax
+check(submit(alice, {grug_social_focus = ""}), "B the focus button is handled")
+eq(alice.sent, sent, "B ...and does nothing")
 -- The PvP flag button: flag_now, its sound, one send, no party call.
 local calls = #party_calls
 pvp_state.alice = {flagged = false}
@@ -539,31 +586,42 @@ has(alice.formspec, "Flagged for 60 s", "B the re-sent page shows the flag")
 eq(#party_calls, calls, "B the flag button calls nothing of the party")
 -- A party change re-sends the open page.
 sent = alice.sent
-party_change("alice", "members")
-eq(alice.sent, sent + 1, "B a party change re-sends the open page")
+now_us = now_us + 3000000 -- past the 2 s gap since the last send
+party_change("alice", "invitation")
+run_after()
+eq(alice.sent, sent + 1, "B an invitation change re-sends the open page")
 
 --
 -- S. The PvP 1 s check
 --
 
+-- Server steps of 0.1 s: the clock moves, then the globalsteps and the due
+-- core.after jobs (the Social tab's limiter) run.
 local function step(seconds)
 	local t = 0
 	while t < seconds - 1e-9 do
 		t = t + 0.1
+		now_us = now_us + 100000
 		for _, fn in ipairs(steps) do fn(0.1) end
+		run_after()
 	end
 end
 sfinv.contexts.bob, sfinv.contexts.cyd, sfinv.contexts.dax = nil, nil, nil
-step(1) -- align the accumulator
+step(3) -- align the accumulator, past the limiter's gap
 sent = alice.sent
 step(3)
 eq(alice.sent, sent, "S an unchanged open tab is not re-sent")
 pvp_state.alice.seconds_left = 59
 step(1)
 eq(alice.sent, sent + 1, "S a countdown second re-sends once")
+-- Since Round 67 the countdown goes through the Social tab's limiter: at
+-- most one send per 2 s, so it steps by 2 s.
 pvp_stats.alice.kills = 5
 step(1)
-eq(alice.sent, sent + 2, "S a new counter value re-sends")
+eq(alice.sent, sent + 1, "S a change 1 s after a send is owed")
+pvp_state.alice.seconds_left = 58
+step(1)
+eq(alice.sent, sent + 2, "S ...and goes out 2 s after the last send, once")
 context.page = "grug_inventory:help"
 pvp_state.alice.seconds_left = 30
 local before_state = pvp_calls.state
@@ -571,10 +629,13 @@ step(3)
 eq(alice.sent, sent + 2, "S another page gets nothing")
 eq(pvp_calls.state, before_state, "S another page asks grug_pvp nothing")
 for _, fn in ipairs(pvp_change) do fn(alice, {}) end
+step(3)
 eq(alice.sent, sent + 2, "S a change on another page re-sends nothing")
 context.page = PAGE
 for _, fn in ipairs(pvp_change) do fn(alice, {}) end
-eq(alice.sent, sent + 3, "S a change on the open tab re-sends at once")
+eq(alice.sent, sent + 2, "S a change on the open tab waits for the step's end")
+run_after()
+eq(alice.sent, sent + 3, "S ...and then re-sends, the gap being over")
 local ok = pcall(pvp_change[1], make_player("newcomer"), {flagged = false})
 check(ok, "S a join-time change without a context does nothing")
 
@@ -604,7 +665,7 @@ for _, section in ipairs({"start", "quests", "basics", "formulas", "about", "sou
 	no_inventory(fs, "H Help " .. section)
 end
 local help_text = assert(io.open(repo .. "/mods/PLAYER/grug_inventory/help.lua")):read("*a")
-for _, part in ipairs({"Talents & Skills tab", "Party & PvP tab", "Inventory tab",
+for _, part in ipairs({"Talents & Skills tab", "Social tab", "Inventory tab",
 		"potion belt", "E opens the quickbar", "Z opens the map", "Aux1 and Zoom keys",
 		"Aux1 key for climbing/descending", "sink in water", "climb down ladders",
 		"Toggle Aux1 key", "every second press of E", "quest log is in the map window",
@@ -615,7 +676,7 @@ local shown
 core.show_formspec = function(_, _, form) shown = form end
 grug_inventory.welcome_formspec(alice)
 shown = grug_inventory.welcome_formspec(alice):gsub("\\(.)", "%1")
-for _, part in ipairs({"Talents & Skills tab", "Party & PvP tab", "Press E and Z.",
+for _, part in ipairs({"Talents & Skills tab", "Social tab", "Press E and Z.",
 		"E opens your mounts and potions", "Z the map"}) do
 	has(shown, part, "H the welcome window names " .. part)
 end
@@ -655,12 +716,13 @@ end
 local BANNED = {
 	"Bags tab", "Quests tab", "Skills tab", "Talents tab", "Party tab", "PvP tab",
 	"Bags page", "Quests page", "Skills page", "Talents page", "Party page", "PvP page",
-	"Inventory > ", "Open Party to",
+	"Inventory > ", "Open Party to", "Party & PvP",
 }
--- "Talents & Skills tab", "Party & PvP tab" and "Map & Quests tab" (0.45.1)
--- contain banned phrases; they are the new names.
-local ALLOWED = {"Talents & Skills tab", "Talents & Skills page", "Party & PvP tab",
-	"Party & PvP page", "Map & Quests tab", "Map & Quests page"}
+-- "Talents & Skills tab" and "Map & Quests tab" (0.45.1) contain banned
+-- phrases; they are the new names. "Party & PvP" is the Social tab since
+-- Round 67.
+local ALLOWED = {"Talents & Skills tab", "Talents & Skills page", "Map & Quests tab",
+	"Map & Quests page"}
 local function offending(text)
 	for _, allowed in ipairs(ALLOWED) do
 		text = text:gsub(allowed:gsub("%p", "%%%0"), "")
@@ -713,7 +775,7 @@ lua_strings([[	-- "Open the Skills tab"]], probe)
 eq(#probe, 0, "X the scan skips comments")
 check(offending("Open the Talents & Skills tab.") == nil, "X the new names pass")
 
-print(("Party & PvP page bytes (no inventory): out of a party %d, in a party of 3 " ..
+print(("Social page bytes (no inventory, 4 players listed): out of a party %d, in a party of 3 " ..
 	"as leader %d"):format(bytes_out, bytes_in))
 print(("%d checks, %d failures"):format(checks, failures))
 if failures > 0 then

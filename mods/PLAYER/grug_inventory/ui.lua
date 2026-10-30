@@ -41,7 +41,7 @@ end
 -- Tab order (spec ruling 1): one table, not the mods' load order. Pages
 -- missing from it (creative's tabs for creative players) follow in their
 -- registration order. grug_classes:talents is "Talents & Skills";
--- "Party & PvP" is grug_parties's page; the quest log lives in the map
+-- "Social" is grug_parties's page; the quest log lives in the map
 -- window (Round 44 MQ), so the map's tab reads "Map & Quests" and comes
 -- before Help (0.45.1 fix plan row 10). "Admin Mail" (grug_mail, Round 48)
 -- follows Help and shows only with the mail_admin privilege.

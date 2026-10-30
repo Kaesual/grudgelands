@@ -1,0 +1,25 @@
+PASS  setup   the 0.66.1 commit 9fcf8093 exported (its game and launcher)
+PASS  setup   boot S (0.66.1): a new world, both characters joined, were built and left
+PASS  setup   0.66.1 saved smith's rods in main, the other hotbar and the overflow, and sleeper's in main
+PASS  setup   0.66.1 saved the running and the waiting job with rods in `consumed`
+PASS  setup   0.66.1 saved the letter and the three Claim Stone entries with rods
+PASS  guard   boot R (0.67.0): the 0.66.1 world without the tool is refused, naming the step 0.67.0 and the command line
+PASS  guard   the refused start wrote nothing
+PASS  tool    --check: world 0.66.1, due [0.67.0], nothing written
+PASS  tool    migrate: start, step_start, step_done, done; exit 0
+PASS  tool    step 0.67.0: two inventories, two job keys, four storage rows, no marker
+PASS  step    smith's inventory: each rod stack in place as ceil(N / 2) bars (iron 5 -> 3, abyssal steel 1 -> 1, steel 2 -> 1, embersteel 4 -> 2), the rest as it was
+PASS  step    sleeper's inventory: bronze rods 3 -> 2 bars
+PASS  step    the jobs' consumed stacks: iron rod 1 -> 1 bar, steel rods 3 -> 2 bars; every other field kept
+PASS  step    storage: the rod entry (9 -> 5 bars), the uncleaned chest's lists, the content key and the letter hold bars
+PASS  step    storage: nothing else changed (the cleaned chest's entry, other keys)
+PASS  step    the record is 0.67.0
+PASS  step    nothing else changed: the characters' item and job rows, the four storage rows and the record
+PASS  tool    --check after: world 0.67.0, nothing due
+PASS  boot    boot A (0.67.0): starts from 0.67.0, rods unregistered; smith joined and left
+PASS  boot    after the join: no rod in any list, both jobs done (job and queue empty)
+PASS  boot    the jobs gave their consumed stacks back as bars and the overflow drained: iron 6, steel 4, embersteel 2, abyssal steel 1 in all
+PASS  boot    the game reads the Claim Stone entries, the packed contents and the letter with bars and no rod
+PASS  boot    saved after boot A: sleeper (offline) keeps its migrated inventory
+
+23 checks, 0 failed
