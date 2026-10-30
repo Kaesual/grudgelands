@@ -12,14 +12,17 @@
 -- client reports it (clientdynamicinfo.cpp calculateMaxFSSize). Checks:
 --   S  the window size at 1280x720, 1920x1080 and 3840x2160: about 90 % of
 --      the screen in both directions from the client's own report (no
---      viewport cap, padding[0,0]); the map about 62 % of the width;
+--      viewport cap, padding[0,0]); the map as large as the height allows,
+--      at most 62 % of the width, the quest column beside it with no empty
+--      band; the quest rows visible (with both group headings);
 --   M  markers at their anchors (no displacement left: no markers.offsets,
 --      no solve, no reserved quest slots; two markers on one anchor drawn
 --      on the same spot), 21 px at the reference (11 px floor), the arrows
 --      32 px on top, the draw order by importance (markers.rank, the
 --      minimap's z-index too);
 --   B  the layer buttons: flat, one marked, none in quest mode, the short
---      labels in order, one row at 1920x1080 and two at 1035x696, the
+--      labels in order, in the one row above the map at 1920x1080, a row of
+--      their own at 1035x696 and on the phone, two at the floor at GUI 3, the
 --      handler's grug_map_layer_<id> fields;
 --   Q  the quest list: compact one-line rows with "[Lv N]" in the
 --      difficulty colour; the Story and Side groups each by level; the HUD
@@ -231,9 +234,16 @@ for _, p in ipairs(PROFILES) do
 		check(near(px_w / info.size.x, 0.9, 0.006) and near(px_h / info.size.y, 0.9, 0.006),
 			("S %s: about 90 %% of the screen (%.3f x %.3f)"):format(name, px_w / info.size.x,
 				px_h / info.size.y))
-		check(near(L.viewport_w + 0.35, (fw - 0.8) * 0.62, 1e-6) and
-			near(L.column.w, (fw - 0.8) * 0.38, 1e-6), "S " .. name .. ": the map takes 62 % of the width")
 	end
+	-- Round 67 follow-up: the 9:8 map as high as the body allows (or at its
+	-- 62 % cap), the quest column right after its scrollbar.
+	local cap = math.min((fw - 0.8) * 0.62, fw - 0.8 - 6.5) - 0.35
+	check((near(L.map_h, L.viewport_h, 1e-6) or near(L.map_w, cap, 1e-6)) and
+		near(L.viewport_w, L.map_w, 1e-9) and near(L.column.x, 0.25 + L.map_w + 0.35 + 0.3, 1e-6),
+		"S " .. name .. ": the map height-bound or at 62 %, the column without an empty band")
+	-- The quest rows the list shows (with the Story and Side headings).
+	local list_h = tonumber(form:match("scroll_container%[[%d.]+,[%d.]+;[%d.]+,([%d.]+);grug_quest_list_scroll"))
+	table_rows[#table_rows].rows = list_h and math.floor((list_h - 1.1) / 0.6 + 1e-6) or -1
 end
 -- The phone: the 16 x 10 floor is taller than its screen; the client
 -- shrinks it to the full height (as before).
@@ -347,10 +357,19 @@ do
 	eq(table.concat(labels, ","), "Quests,Bosses,Services,Travel,Places,PvP,Zones,None",
 		"B the short labels in order")
 	local b = state.layout.buttons
-	eq(b.rows, 1, "B one row at 1920x1080")
-	check(near(b.y + b.h + 0.15, state.layout.map_y), "B the row right above the map")
-	local _, small = render("towns", client(1035, 696))
-	eq(small.layout.buttons.rows, 2, "B two rows at 1035x696")
+	check(b.inline and b.rows == 1 and near(b.y, 0.25) and near(state.layout.map_y, 1.05) and
+		near(b.x + 8 * b.w + 7 * b.gap, 0.25 + state.layout.map_w + 0.35, 1e-6),
+		"B 1920x1080: the buttons in the one row above the map, right of the zoom")
+	check(form:find("button[0.25,0.25;0.6,0.6;grug_map_zoom_out;-]", 1, true) and
+		state.layout.location.x > state.layout.column.x - 1e-9, "B the zoom left, the location over the column")
+	for _, p in ipairs({{"1035x696", client(1035, 696)}, {"phone", client(2400, 1080, 2.5)}}) do
+		local _, small = render("towns", p[2])
+		local sb = small.layout.buttons
+		check(not sb.inline and sb.rows == 1 and near(small.layout.map_y, 1.7) and
+			near(small.layout.column.y, 1.7), "B " .. p[1] .. ": the buttons in a row of their own")
+	end
+	local _, floor = render("towns", client(1280, 720, 1, 3))
+	eq(floor.layout.buttons.rows, 2, "B two rows at the floor at GUI scale 3")
 	form = render("towns", client(1920, 1080), "a_high")
 	eq(count(form, MARKED), 0, "B quest mode marks no button")
 	-- The handler: a button field picks its layer and deselects the quest.
@@ -442,13 +461,16 @@ end
 -- ---------------------------------------------------------------------------
 eq(W.PARTY_US, 1000000, "P the party check every 1 s (2 s before)")
 
-print(("%-30s %-10s %-9s %-10s %7s %7s | %6s %6s"):format("profile", "window", "share", "before",
-	"map px", "before", "marker", "before"))
+print(("%-30s %-10s %-9s %-10s %7s %7s | %6s %6s | %4s"):format("profile", "window", "share",
+	"before", "map px", "before", "marker", "before", "rows"))
 for _, row in ipairs(table_rows) do
 	local before = BEFORE[row.name]
-	print(("%-30s %-10s %-9s %-10s %7.0f %7d | %6d %6d"):format(row.name, row.window, row.share,
-		before.window, row.map, before.map, row.marker, before.marker))
+	print(("%-30s %-10s %-9s %-10s %7.0f %7d | %6d %6d | %4d"):format(row.name, row.window, row.share,
+		before.window, row.map, before.map, row.marker, before.marker, row.rows))
 end
+local by_name = {}
+for _, row in ipairs(table_rows) do by_name[row.name] = row end
+check(by_name["1920x1080"].rows >= 8, "S at least 8 quest rows with both headings at 1920x1080")
 
 if #failures > 0 then
 	for _, label in ipairs(failures) do print("FAIL " .. label) end

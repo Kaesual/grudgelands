@@ -977,7 +977,8 @@ do
 	local L = state.layout
 	local view = grug_map.atlas.view()
 	local expect = 2 * targets.ring_radius(9, 32) * L.map_w * 8 / (view.max_x - view.min_x)
-	check(big and near(big, expect, 0.002), ("T ring scales with the region and zoom (%.3f vs %.3f)"):format(
+	-- (the image snaps to whole pixels: within a pixel and a half at 72)
+	check(big and near(big, expect, 1.5 / 72), ("T ring scales with the region and zoom (%.3f vs %.3f)"):format(
 		big or -1, expect))
 end
 
@@ -1016,7 +1017,7 @@ do
 	eq(sends_to("ann"), 1, "R still owed before the second is over")
 	advance(0.3)
 	eq(sends_to("ann"), 2, "R one trailing send for both clicks")
-	has(shows[#shows].form, "label[1.75,0.55;4x]", "R the trailing send shows the latest state")
+	has(shows[#shows].form, "label[0.97,0.55;4x]", "R the trailing send shows the latest state")
 	-- A click after the gap: at once.
 	advance(2)
 	fields(accord, {grug_map_zoom_out = "-", grug_map_scroll_x = "VAL:1500", grug_map_scroll_y = "VAL:1500"})
@@ -1578,19 +1579,21 @@ end
 -- and the baked layer
 -- ---------------------------------------------------------------------------
 do
-	-- The map gets about 62 % of the width (Round 67), with the layer
-	-- buttons above it in one or two rows.
+	-- Round 67: the map as large as the height allows (at most 62 % of the
+	-- width), the quest column right after it; the layer buttons in the one
+	-- row above the map where they fit beside the zoom (true), else in a row
+	-- of their own (false).
 	local sizes = {
-		{"1920x1080", 1920, 1080, 72, 1},
-		{"1035x696", 1035, 696, 0.5555 * 96, 2},
-		{"1280x720", 1280, 720, 0.5555 * 96, 1},
-		{"2560x1440", 2560, 1440, 96, 1},
+		{"1920x1080", 1920, 1080, 72, true},
+		{"1035x696", 1035, 696, 0.5555 * 96, false},
+		{"1280x720", 1280, 720, 0.5555 * 96, false},
+		{"2560x1440", 2560, 1440, 96, true},
 	}
 	for _, size in ipairs(sizes) do
 		local info = {size = {x = size[2], y = size[3]},
 			max_formspec_size = {x = size[2] / size[4], y = size[3] / size[4]}, real_gui_scaling = 1}
 		local w, h = W.window_size(info, grug_inventory.UI.header_h)
-		local L = W.layout(w, h)
+		local L = W.layout_for(info, grug_inventory.UI.header_h)
 		local label = "L layout " .. size[1]
 		check(L.map_w <= L.viewport_w + 1e-9 and L.map_h <= L.viewport_h + 1e-9,
 			label .. ": whole map fits at 1x")
@@ -1601,16 +1604,19 @@ do
 			label .. ": 2x fills the complete map column")
 		check(L.map_y + L.viewport_h + 0.35 <= h - 0.25 + 1e-9,
 			label .. ": vertical viewport and scrollbar fit")
-		local column = math.max(6.5, (w - 0.8) * 0.38)
-		check(near(L.viewport_w + 0.35, w - 0.8 - column, 1e-9) and near(L.column.w, column, 1e-9),
-			label .. (": map 62 %%, quest column 38 %% but at least 6.5 (%.2f)"):format(L.column.w))
+		local cap = math.min((w - 0.8) * 0.62, w - 0.8 - 6.5) - 0.35
+		check((near(L.map_h, L.viewport_h, 1e-9) or near(L.map_w, cap, 1e-9)) and
+			near(L.column.x, 0.25 + L.map_w + 0.35 + 0.3, 1e-9) and L.column.w >= 6.5 - 1e-9,
+			label .. (": map height-bound or at 62 %%, the quest column after it (%.2f)"):format(L.column.w))
 		local b = L.buttons
-		eq(b.rows, size[5], label .. ": layer button rows")
-		check(b.w >= W.BUTTON_MIN - 1e-9 and near(b.per_row * b.w + (b.per_row - 1) * b.gap, L.viewport_w, 1e-9),
-			label .. ": the buttons as wide as the map's viewport")
-		check(near(b.y + b.rows * b.h + (b.rows - 1) * b.gap + 0.15, L.map_y, 1e-9) and
-			near(L.column.y, b.y, 1e-9) and L.column.x > L.map_x + L.viewport_w + 0.35 - 1e-9,
-			label .. ": the buttons above the map, the quest column beside them")
+		eq(b.inline, size[5], label .. ": the layer buttons beside the zoom")
+		local right = b.inline and 0.25 + L.map_w + 0.35 or w - 0.25
+		check(b.rows == 1 and b.w >= W.BUTTON_MIN - 1e-9 and
+			near(b.x + b.per_row * b.w + (b.per_row - 1) * b.gap, right, 1e-9),
+			label .. ": one row as wide as the map (beside the zoom) or the window")
+		check(((b.inline and near(b.y, 0.25) and near(L.map_y, 1.05)) or
+			(not b.inline and near(b.y + b.h + 0.15, L.map_y, 1e-9))) and near(L.column.y, L.map_y, 1e-9),
+			label .. ": the buttons above the map, the quest column beside the map")
 		local state = W.new_state()
 		state.zoom = 2
 		local form = W.formspec(accord, state, info)
@@ -1890,8 +1896,7 @@ do
    local size,px=M.metrics(virtual,tonumber(w),tonumber(h))
    -- Round 66 ruling 5: the extent is fitted to the drawn map (markers.fit)
    local header=grug_inventory.UI.header_h
-   local bw,bh=window_size(info,header)
-   size=M.fit(size,W.layout(bw,bh).map_w*px,W.reference_map_px(header))
+   size=M.fit(size,W.layout_for(info,header).map_w*px,W.reference_map_px(header))
    local map=map_part(form)
    local icon=find_image(images(map),"grug_map_trainer_tailor.png")
    check(icon and math.floor(icon.w*px)==size and math.floor(icon.h*px)==size,

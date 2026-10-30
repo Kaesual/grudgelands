@@ -92,7 +92,7 @@ local function window_px(raw)
 	local width = W.window_size(raw)
 	local header = 1.5
 	local w, h = W.window_size(raw, header)
-	local L = W.layout(w, h)
+	local L = W.layout_for(raw, header, grug_core.ui.form_growth(raw, w, h + header))
 	local cap, per_unit = M.metrics(info, w, h + header)
 	local drawn = L.map_w * per_unit
 	return cap, M.fit(cap, drawn, W.reference_map_px(header)), drawn, width
@@ -109,7 +109,7 @@ local PROFILES = {
 }
 local rows = {}
 local reference = W.reference_map_px(1.5)
-check(math.abs(reference - 10.8 * 72) < 0.5, ("W reference map %.1f px (10.8 units at 72)"):
+check(math.abs(reference - 11.64 * 72) < 0.5, ("W reference map %.1f px (11.64 units at 72)"):
 	format(reference))
 for _, p in ipairs(PROFILES) do
 	local info = client(p[2], p[3], p[4], p[5], p[6])

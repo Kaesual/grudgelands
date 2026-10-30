@@ -242,22 +242,27 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   ceiling rule gives it (`grug_core.ui.text_growth`), so on a screen above
   1620 px height it grows less than the window does.
 - **Layout** (dialog review, 2026-10-25; Round 67): shared inventory
-  navigation above the map controls (the zoom, the location line and the
-  minimap switch), the layer buttons above the map. The map takes about
-  62 % of the body's usable width, the quest column the rest but at least
-  6.5 units (equal halves before Round 67). The map keeps its 9:8 aspect
-  ratio and native scrollbars; at 1× it is bound by the height, so it is
-  centred in its wider viewport and the width shows when zoomed. The quest
-  column starts beside the layer buttons. Zoom, minimap settings, quest
-  selection and HUD controls keep their existing owners and field routes.
+  navigation, then one row above the map: the zoom on the left, the eight
+  layer buttons beside it over the map, the location line and the minimap
+  switch over the quest column. Where the buttons there would be narrower
+  than their text (about 68 screen pixels at GUI scale 1, growing with the
+  GUI scaling and the text growth: 1280×720, small windows, the phone) they
+  take a row of their own across the window under the zoom row, two rows of
+  four where even that is too narrow. The map keeps its 9:8 aspect ratio
+  and native scrollbars and is as large as the body's height allows, at
+  most 62 % of the usable width; the quest column takes the rest, at least
+  6.5 units (equal halves before Round 67), so no empty band stands beside
+  a height-bound map. Zoom, minimap settings, quest selection and HUD
+  controls keep their existing owners and field routes. The scrollbars stay
+  at 1× too: the horizontal one holds the keyboard focus that lets the
+  inventory key close the window (Opening).
 - **Marker layers** (Round 47, the user's rulings of 2026-10-13, the
   [work package](../planning/round47-map-layers.md); until then Round 44's
   fixed overlay of ruling 12): the player picks **one** layer at a time
   with the buttons. Since Round 67 (ruling 22; a dropdown in the header
   from 0.63.0 to 0.66.1, Round 47's buttons under the map before) they are
-  flat buttons above the map in the toolkit's navigation style, one row as
-  wide as the map's viewport when every button gets at least 1.25 units,
-  else two rows; the active one is marked by the accent (its text and an
+  flat buttons above the map in the toolkit's navigation style (Layout);
+  the active one is marked by the accent (its text and an
   edge under it), none in quest mode; each button's tooltip is its long
   name, its label the short one. A new session starts on Quests; the
   chosen layer is kept between openings until the player leaves (not
@@ -303,8 +308,10 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   32 px where the markers are 21 and scale alike. Independent of GUI scale,
   terrain quality and world-map zoom. The world map converts that extent
   using the client's integer formspec pixel size, including window fit.
-  Round 67 sizes: 1280×720 13 px (21 before), 1920×1080 21 (32), 2560×1440
-  and 3840×2160 21 (32), a 2400×1080 phone at density 2.5 18 (33).
+  Round 67 sizes (marker px, map px; before in brackets): 1280×720 12, 498
+  (21, 496), 1920×1080 21, 838 (32, 762), 2560×1440 21, 1118 (32, 762),
+  3840×2160 21, 1677 (32, 1016), a 2400×1080 phone at density 2.5 19, 753
+  (33, 783).
 - **Quest mode** (Round 47 ruling 2): a quest selected in the list shows
   only its targets ([Quest targets](#quest-targets)) and its hand-in NPC
   (silver "?" in progress, gold when ready; the NPC's name as tooltip), and
@@ -358,8 +365,11 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   box is recreated by every send (`guiFormSpecMenu.cpp`), so a long text
   scrolled down jumps back to the top when a party member's move sends the
   window (accepted, Round 47 ruling 9); the list keeps its scroll. Since
-  Round 67 (ruling 19) the list box takes half the column's height and
-  has one compact line (0.6 units) per quest: its state marker, the title
+  Round 67 (ruling 19) the text box keeps 2.75 units (the title, the level
+  line, about two lines of the text, which scrolls, and the status line)
+  and the list box takes the rest of the column, so at 1920×1080 it shows
+  eight quests with both group headings (1280×720: four, the phone: one).
+  It has one compact line (0.6 units) per quest: its state marker, the title
   (cut with "…", whole in the tooltip) and "[Lv N]" in the difficulty
   colour like the quest HUD (`grug_core.ui.rows` with `compact`), in the
   Story and Side quests groups, each sorted by quest level, ties by title,

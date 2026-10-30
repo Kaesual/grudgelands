@@ -98,12 +98,14 @@ local function level_line(quest)
 	return "Level " .. def.level .. (name and (" · " .. name) or "")
 end
 
--- Geometry inside the column (real coordinates): the list box takes
--- LIST_SHARE of the column's height (at least LIST_MIN; 0.42 before Round
--- 67's compact rows), the text box the rest below a GAP. Labels and
--- checkboxes are placed by their vertical centre, buttons by their top.
+-- Geometry inside the column (real coordinates): the text box below is
+-- TEXT_H high (the title, the level line, about two lines of the text,
+-- which scrolls, and the status line), the list box takes the rest above
+-- it, at least LIST_MIN (Round 67: about eight compact rows at 1920x1080;
+-- 42 % of the column before). Labels and checkboxes are placed by their
+-- vertical centre, buttons by their top.
 local PAD, GAP, ROW_H, BUTTON_H = 0.2, 0.25, 0.45, 0.6
-local LIST_SHARE, LIST_MIN = 0.5, 3.6
+local TEXT_H, LIST_MIN = 2.75, 3.6
 local ABANDON_W, CONFIRM_W, CANCEL_W, BUTTON_GAP = 1.8, 2.6, 1.5, 0.15
 local HUD_W = 2.3 -- the Quest HUD checkbox with its label
 
@@ -113,7 +115,7 @@ local HUD_W = 2.3 -- the Quest HUD checkbox with its label
 function M.content(session, journal, rect, growth, player_level)
 	local quest = M.selected(journal, session)
 	local x, y, w = rect.x, rect.y, rect.w
-	local list_h = math.max(LIST_MIN, rect.h * LIST_SHARE)
+	local list_h = math.max(LIST_MIN, rect.h - GAP - TEXT_H)
 	local right = x + w - PAD
 	-- The list with its "Story" category (Round 57 ruling 13): story quests
 	-- first under their header, the others under "Side quests", each group

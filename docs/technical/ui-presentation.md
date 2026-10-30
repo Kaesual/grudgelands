@@ -202,9 +202,11 @@ scroll without changing list capacity or inventory routes.
 The map reserves the same header **inside** its responsive whole-window
 budget. `window_size(info, header_h)` optionally returns the remaining body;
 without the second argument it retains the whole-window result. The existing
-minimum-size floor remains. The map viewport takes about 62 % of the body
-(Round 67; two equal columns before), the quest-list/detail panels the rest,
-the flat layer buttons above the map (a dropdown from 0.63.0 to 0.66.1).
+minimum-size floor remains. The 9:8 map is as large as the body's height
+allows, at most 62 % of its width (Round 67; two equal columns before), the
+quest-list/detail panels the rest; the flat layer buttons share one row
+above the map with the zoom, or take a row of their own where they would be
+narrower than their text (`W.button_min`; a dropdown from 0.63.0 to 0.66.1).
 At 1× the undistorted map is centered within its viewport; enlarged zooms use
 the available viewport. Scroll factors and thumb sizes account for the actual
 image extent on each axis. The map

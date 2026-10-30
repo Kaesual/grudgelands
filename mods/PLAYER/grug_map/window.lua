@@ -60,16 +60,24 @@ W.PARTY_US = 1000000
 W.QUIET_US = 500000
 local PASS = 0.1
 
--- The map takes MAP_SHARE of the width (Round 67 coordinator default; equal
--- columns before), the quest column the rest but at least COLUMN_MIN (the
--- room its boxes were tested in); the layer buttons above the map (one row
--- when every button gets at least BUTTON_MIN units, else two), the quest
--- column beside them. The 9:8 image fits and centers at 1x; zoomed artwork
--- uses the full scroll viewport.
+-- The layout (Round 67): one row above the map holds the zoom, the eight
+-- layer buttons and, over the quest column, the location line and the
+-- minimap switch. Where the buttons there would be narrower than their
+-- text (W.button_min) they take a row of their own across the window (two
+-- rows of four where even that is too narrow). The 9:8 map is as large as
+-- the height allows, at most MAP_SHARE of the width (equal columns before
+-- Round 67); the quest column takes the rest, at least COLUMN_MIN (the room
+-- its boxes were tested in), so no empty band stands beside a height-bound
+-- map. The 9:8 image fits at 1x; zoomed artwork uses the scroll viewport.
 local PAD, HEADER_H, GAP, BAR, BAR_GAP = 0.25, 0.6, 0.3, 0.3, 0.05
 local MAP_SHARE, COLUMN_MIN = 0.62, 6.5
-local BUTTON_H, BUTTON_GAP, BUTTON_BELOW = 0.6, 0.1, 0.15
-W.BUTTON_MIN = 1.25
+-- ZOOM_END: where the zoom controls end and the inline buttons begin.
+local ZOOM_END, BUTTON_H, BUTTON_GAP, ROW_GAP, BELOW = 2.3, 0.6, 0.05, 0.1, 0.2
+-- A layer button's least width in screen pixels at GUI scale 1 and text
+-- growth 1: its longest label ("Services", about 61 px in the 16 px
+-- client font) with a little room; W.BUTTON_MIN is that at 72 px a unit.
+W.BUTTON_TEXT_PX = 68
+W.BUTTON_MIN = W.BUTTON_TEXT_PX / 72
 -- Ordinary icons share one extent across both views (markers.lua: 21px
 -- HUD-scaled at most since Round 67, since Round 66 fitted to the drawn
 -- map); the arrows scale alike from markers.ARROW.
@@ -107,28 +115,66 @@ function W.window_size(info, header_h)
 	return math.floor(w * 100) / 100, math.floor((h - (header_h or 0)) * 100) / 100
 end
 
--- Geometry inside the body, excluding the shared inventory header.
--- `buttons` is {rows, per_row, x, y, w, h, gap}.
-function W.layout(w, h)
+-- A layer button's least width in units for a window information table
+-- (or nil: the 1080p desktop) and a form of form_w x form_h units drawn
+-- with text growth `growth`: the client font grows with the GUI scaling
+-- (and display density) and the growth, the unit with the form's pixels.
+function W.button_min(info, form_w, form_h, growth)
+	if type(info) ~= "table" or type(info.size) ~= "table" then return W.BUTTON_MIN end
+	local _, per_unit = marker_art.metrics(info, form_w, form_h)
+	local scaling = type(info.real_gui_scaling) == "number" and info.real_gui_scaling > 0 and
+		info.real_gui_scaling or 1
+	return W.BUTTON_TEXT_PX * scaling * (growth or 1) / per_unit
+end
+
+-- Geometry inside the body, excluding the shared inventory header, for
+-- buttons at least `button_min` units wide (nil: W.BUTTON_MIN). `buttons`
+-- is {rows, per_row, x, y, w, h, gap, row_gap, inline}; `location` the
+-- location line's {x, w}.
+function W.layout(w, h, button_min)
+	button_min = button_min or W.BUTTON_MIN
 	local count = #layers.LIST
-	local top = PAD + HEADER_H + 0.2
 	local width = w - 2 * PAD - GAP
-	local share = math.min(width * MAP_SHARE, width - COLUMN_MIN)
-	local viewport_w = share - BAR - BAR_GAP
-	local rows, per_row = 1, count
-	if (viewport_w - (count - 1) * BUTTON_GAP) / count < W.BUTTON_MIN then
-		rows, per_row = 2, math.ceil(count / 2)
+	local cap = math.min(width * MAP_SHARE, width - COLUMN_MIN) - BAR - BAR_GAP
+	local function map_at(map_y)
+		local viewport_h = h - map_y - PAD - BAR - BAR_GAP
+		return math.min(cap, viewport_h * 9 / 8), viewport_h
 	end
-	local map_y = top + rows * BUTTON_H + (rows - 1) * BUTTON_GAP + BUTTON_BELOW
-	local viewport_h = h - map_y - PAD - BAR - BAR_GAP
-	local map_w = math.min(viewport_w, viewport_h * 9 / 8)
-	local column_x = PAD + share + GAP
+	local map_y = PAD + HEADER_H + BELOW
+	local map_w, viewport_h = map_at(map_y)
+	local inline_w = PAD + map_w + BAR + BAR_GAP - ZOOM_END
+	local buttons
+	if (inline_w - (count - 1) * BUTTON_GAP) / count >= button_min then
+		buttons = {rows = 1, per_row = count, x = ZOOM_END, y = PAD, inline = true,
+			w = (inline_w - (count - 1) * BUTTON_GAP) / count}
+	else
+		local row_w = w - 2 * PAD
+		local rows, per_row = 1, count
+		if (row_w - (count - 1) * BUTTON_GAP) / count < button_min then
+			rows, per_row = 2, math.ceil(count / 2)
+		end
+		local y = PAD + HEADER_H + ROW_GAP
+		map_y = y + rows * BUTTON_H + (rows - 1) * ROW_GAP + 0.15
+		map_w, viewport_h = map_at(map_y)
+		buttons = {rows = rows, per_row = per_row, x = PAD, y = y, inline = false,
+			w = (row_w - (per_row - 1) * BUTTON_GAP) / per_row}
+	end
+	buttons.h, buttons.gap, buttons.row_gap = BUTTON_H, BUTTON_GAP, ROW_GAP
+	local column_x = PAD + map_w + BAR + BAR_GAP + GAP
+	local location_x = buttons.inline and column_x or ZOOM_END
 	return {w = w, h = h, map_x = PAD, map_y = map_y,
 		map_w = map_w, map_h = map_w * 8 / 9,
-		viewport_w = viewport_w, viewport_h = viewport_h,
-		column = {x = column_x, y = top, w = w - PAD - column_x, h = h - PAD - top},
-		buttons = {rows = rows, per_row = per_row, x = PAD, y = top, h = BUTTON_H,
-			gap = BUTTON_GAP, w = (viewport_w - (per_row - 1) * BUTTON_GAP) / per_row}}
+		viewport_w = map_w, viewport_h = viewport_h,
+		column = {x = column_x, y = map_y, w = w - PAD - column_x, h = h - PAD - map_y},
+		buttons = buttons,
+		location = {x = location_x, w = w - PAD - 3.55 - location_x}}
+end
+
+-- The layout of the window for a window information table (or nil) below
+-- a navigation header of `header_h` units, with text growth `growth`.
+function W.layout_for(info, header_h, growth)
+	local w, h = W.window_size(info, header_h)
+	return W.layout(w, h, W.button_min(info, w, h + header_h, growth))
 end
 
 -- The map's drawn pixel width on the reference desktop (1920x1080, HUD and
@@ -147,7 +193,7 @@ function W.reference_map_px(header_h)
 	local info = layers.REFERENCE
 	local w, h = W.window_size(info, header_h)
 	local _, per_unit = marker_art.metrics(info, w, h + header_h)
-	known = W.layout(w, h).map_w * per_unit
+	known = W.layout_for(info, header_h).map_w * per_unit
 	reference_px[header_h] = known
 	return known
 end
@@ -461,7 +507,7 @@ local function layer_buttons(fs, layout, session, quest_mode, growth)
 		end))
 	for index, layer in ipairs(layers.LIST) do
 		local row, col = math.floor((index - 1) / b.per_row), (index - 1) % b.per_row
-		local x, y = b.x + col * (b.w + b.gap), b.y + row * (b.h + b.gap)
+		local x, y = b.x + col * (b.w + b.gap), b.y + row * (b.h + b.row_gap)
 		local name = "grug_map_layer_" .. layer.id
 		if layer.id == active then
 			fs[#fs + 1] = grug_core.ui.navigation_style(name, true, x, y, b.w, b.h, false, growth)
@@ -485,15 +531,6 @@ function W.formspec(player, session, info)
     local navigation_layout = grug_inventory.navigation_layout(player, session, width, info)
     local nav, header_h = grug_inventory.navigation(player, session, "grug_map:atlas", width, navigation_layout)
     local w, h = W.window_size(info, header_h)
-    local layout = W.layout(w, h)
-    layout.form_h, layout.header_h = h + header_h, header_h
-	session.layout = layout
-	local zoom = session.zoom or 1
-	local journal = grug_quests.journal(player)
-	local quest = quest_box.selected(journal, session)
-	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
-	local cy = PAD + HEADER_H / 2
-	local right = w - PAD
 	-- Round 66 ruling 4: on a grown viewport ceiling the body text (the
 	-- "Current:" line, the zone labels, the quest rows and texts) grows as
 	-- this form does, like the shared header; exactly 1 on screens up to
@@ -501,6 +538,15 @@ function W.formspec(player, session, info)
 	local growth = grug_core.ui.text_growth and
 		grug_core.ui.text_growth(player, w, h + header_h, info) or 1
 	local grown = growth ~= 1 and growth or nil
+	local layout = W.layout(w, h, W.button_min(info, w, h + header_h, growth))
+	layout.form_h, layout.header_h = h + header_h, header_h
+	session.layout = layout
+	local zoom = session.zoom or 1
+	local journal = grug_quests.journal(player)
+	local quest = quest_box.selected(journal, session)
+	local mw, mh = layout.map_w * zoom, layout.map_h * zoom
+	local cy = PAD + HEADER_H / 2
+	local right = w - PAD
 	local minimap = grug_map.minimap.available() and
 		("checkbox[%.2f,%.2f;grug_map_minimap;Show minimap;%s]"):format(right - 3.4, cy,
 			tostring(grug_map.minimap.enabled(player))) or
@@ -519,12 +565,13 @@ function W.formspec(player, session, info)
 		-- on every send: a resend never leaves the focus in the quest list.
 		-- A focused scrollbar keeps only the arrow keys (they scroll the map).
 		("set_focus[%s;true]"):format(SCROLL_X),
-		("label[%.2f,%.2f;Map]"):format(PAD, cy),
-		("button[1.0,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD),
-		("label[1.75,%.2f;%dx]"):format(cy, zoom),
-		("button[2.35,%.2f;0.6,0.6;grug_map_zoom_in;+]"):format(PAD),
-		grug_core.ui.prose(3.15, PAD, w - 6.95, 0.65, "Current: " .. current_zone(player), true,
-			grown, grown),
+		-- The zoom on the left of the one row above the map (Round 67; the
+		-- "Map" label before it went: the tab names the window).
+		("button[%.2f,%.2f;0.6,0.6;grug_map_zoom_out;-]"):format(PAD, PAD),
+		("label[%.2f,%.2f;%dx]"):format(PAD + 0.72, cy, zoom),
+		("button[%.2f,%.2f;0.6,0.6;grug_map_zoom_in;+]"):format(PAD + 1.25, PAD),
+		grug_core.ui.prose(layout.location.x, PAD, layout.location.w, 0.65,
+			"Current: " .. current_zone(player), true, grown, grown),
 		minimap,
 		("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;horizontal;%.5f]"):format(layout.map_x,
 			layout.map_y, layout.viewport_w, layout.viewport_h, SCROLL_X,
