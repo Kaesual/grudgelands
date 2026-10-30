@@ -421,18 +421,30 @@ end
 -- in a plain string field. The central carrier pass owns lifecycle and
 -- observers; mobs_redo's own `update_tag` calls refresh only the child text.
 --
-local function install_nametag(self, text)
+-- Round 67 ruling 25 (levels.lua grug_mobs.wants_nametag): a plain citizen,
+-- a resident on an `idle` or `work` socket, carries no tag; its name stays
+-- its `description`. The first placement activates the entity before
+-- `install` writes the socket role, so the retag after it removes the
+-- carrier that activation made; a reload knows the role from the start.
+local function show_nametag(self, text)
 	self._grug_tag_want = text
+	if grug_mobs.wants_nametag(self) then
+		grug_mobs.set_plain_tag(self, text)
+	else
+		grug_mobs.remove_tag_carrier(self)
+	end
+end
+
+local function install_nametag(self, text)
 	-- The entity's own name follows its tag (Round 31): `description` is what
 	-- every other reader of a mob's name takes (the infotext mobs_redo builds,
 	-- probes, the census), and it is a plain field, so it rides in
 	-- staticdata. Without it a titled quest giver -- a fortress's Warmaster --
 	-- still called itself its race's "Village Elder" everywhere but the tag.
 	self.description = text
-	grug_mobs.set_plain_tag(self, text)
+	show_nametag(self, text)
 	self.update_tag = function(other)
-		other._grug_tag_want = text
-		grug_mobs.set_plain_tag(other, text)
+		show_nametag(other, text)
 	end
 end
 

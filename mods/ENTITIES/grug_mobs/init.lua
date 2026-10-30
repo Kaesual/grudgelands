@@ -386,6 +386,11 @@ function mobs:spawn_abm_check(pos, node, name)
 	if grug_mobs.claim_refuses_spawn(name, {x = pos.x, y = pos.y + 1, z = pos.z}) then
 		return true
 	end
+	-- Round 67 ruling 26 (room.lua): a mob wider than one node needs room for
+	-- its whole body, not only the one node column mobs_redo tests.
+	if grug_mobs.spawn_room_refused(name, pos) then
+		return true
+	end
 end
 
 --
@@ -851,7 +856,10 @@ function grug_mobs.register_mob(name, def)
 		if old_tag_after_activate then
 			old_tag_after_activate(self, staticdata, mob_def, dtime)
 		end
-		grug_mobs.ensure_tag_carrier(self)
+		-- Round 67 ruling 25: no nametag on a critter (levels.lua).
+		if grug_mobs.wants_nametag(self) then
+			grug_mobs.ensure_tag_carrier(self)
+		end
 	end
 
 	grug_mobs.install_flight_nudge(def)
@@ -867,6 +875,11 @@ function grug_mobs.register_mob(name, def)
 		grug_mobs.leash_tick(self, dtime)
 		-- A night mob by day leaves (dawn.lua); one field test for the rest.
 		if grug_mobs.dawn_tick(self, dtime) then
+			return false
+		end
+		-- A mob flagged stuck after a give-up leaves once nobody watches
+		-- (room.lua); one field test for the rest.
+		if grug_mobs.stuck_tick(self, dtime) then
 			return false
 		end
 
@@ -1032,6 +1045,8 @@ dofile(modpath .. "/density.lua")
 grug_mobs.install_spawn_clock_wrapper()
 -- Round 30: retired and merged spawn ABMs; before any mob file adds a row.
 dofile(modpath .. "/spawn_abms.lua")
+-- Round 67: room for a body (wide spawns, the tier scale, stuck mobs).
+dofile(modpath .. "/room.lua")
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/dawn.lua")

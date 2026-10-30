@@ -223,6 +223,11 @@ grug_classes = {
 	register_on_race_chosen = function() end,
 }
 
+-- Round 67: a flyer's summon tests the room for its body (grug_mobs
+-- room.lua); every walkable node of this world is a full cube.
+core.get_node_boxes = function() return {{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}} end
+grug_mobs = {}
+dofile(ROOT .. "/mods/ENTITIES/grug_mobs/room.lua")
 dofile(ROOT .. "/mods/CORE/grug_sounds/init.lua")
 grug_mounts = {}
 dofile(ROOT .. "/mods/PLAYER/grug_mounts/catalog.lua")
@@ -602,7 +607,6 @@ check(grug_mounts.mount(ada, 1), "L on the ground the horse comes")
 grug_mounts.dismount(ada, "manual", false)
 
 if failures > 0 then
-	print(("R45 PT6 PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R45 PT6 PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R45 PT6 PORTABLE PASS checks=%d"):format(checks))

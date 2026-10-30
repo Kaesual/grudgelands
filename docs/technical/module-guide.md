@@ -1170,6 +1170,11 @@ tools](#player-meta-read-by-external-tools).
     are non-pointable, non-physical and unsaved. Unsaved Lua entities never
     enter the engine's static-object count used by mobs_redo `aoc`; do not
     compensate or otherwise modify that spawn-budget comparison for carriers.
+    Since Round 67 (ruling 25) `grug_mobs.wants_nametag` (levels.lua)
+    decides who gets one: no carrier for a critter (`_grug_disposition`) or
+    a settlement resident on an `idle`/`work` socket (`_grug_socket_role`);
+    `update_tag`, the shared `after_activate` and the settlement NPCs'
+    `install_nametag` ask it. Fixture `tools/r67_world`.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
@@ -1501,6 +1506,21 @@ tools](#player-meta-read-by-external-tools).
   before); one field test per step, a check every `DAWN_INTERVAL` (1 s) per
   night mob. Camp members (their tag's unit is a camp) and every mob without
   the clock stay. Fixture and engine probe `tools/r35_e`.
+
+## Room for a body
+
+- **One collision-box test (Round 67 WORLD):** `grug_mobs/room.lua`
+  `grug_mobs.box_blocked(pos, box)`: a walkable node's real collision boxes
+  (`core.get_node_boxes`) overlapping the box shrunk by 0.05 per side,
+  boxes up to half a node above its bottom counted as footing; unknown and
+  unloaded nodes solid. Its users: `spawn_room_refused` (a mob wider than one
+  node, from `mobs:spawn_abm_check`, init.lua), `tier_scale` (levels.lua
+  `apply_tier_visuals`; the applied scale is the saved `_grug_visual_scale`
+  and the feet are kept), the stuck cleanup (`give_up_stuck` from aggro.lua
+  `give_up_target` flags; `stuck_tick` from the `do_custom` wrapper after
+  `dawn_tick` removes once nobody is within `grug_mobs.STUCK_WATCH` (32)
+  nodes; `grug_mobs.mob_bound`, dawn.lua's list, stays) and the flying
+  mount's summon (grug_mounts entity.lua). Fixture `tools/r67_world`.
 
 ## Flier clips
 
