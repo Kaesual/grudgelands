@@ -277,7 +277,8 @@ local function run(mod, files, seed)
 	end
 end
 
-run("default", {"functions.lua", "trees.lua", "nodes.lua", "tools.lua",
+-- Round 67: containers.lua before nodes.lua, as default/init.lua loads it.
+run("default", {"functions.lua", "containers.lua", "trees.lua", "nodes.lua", "tools.lua",
 	"craftitems.lua", "torch.lua"}, {get_translator = function(s) return s end, LIGHT_MAX = 14,
 	get_hotbar_bg = function() return "" end, gui_survival_form = ""})
 run("grug_trees", {"init.lua"})

@@ -656,7 +656,48 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   everything out into smaller target bag sizes
   (`grug_inventory.sort(player, sizes)`, Round 48): what does not fit is the
   end of the order and is handed back to the caller, never a soulbound or
-  bound item; only the migration step 0.48.0 uses it.
+  bound item; only the migration step 0.48.0 uses it. The same order sorts
+  a chest's whole list (Round 67 ruling 27, `grug_inventory.sort_list`;
+  storage containers below).
+- **Storage containers** (Round 67 rulings 27–33,
+  `default/containers.lua`): chests, locked chests, bookshelves and
+  vessels shelves come in three tiers on the same models, only the
+  textures differ (names: Chest, Steel-Reinforced Chest, Abyssal Chest;
+  Locked Chest, Locked Steel-Reinforced Chest, Locked Abyssal Chest;
+  Bookshelf, Steel-Reinforced Bookshelf, …):
+
+  | Tier | Slots | Recipe (on top of the base one) |
+  |---|---|---|
+  | Base (Chest, Locked Chest, Bookshelf, Vessels Shelf) | 32 | — |
+  | Steel-Reinforced (T3) | 64 | 8 Steel Bars |
+  | Abyssal (T6) | 96 | 8 Steel Bars and 8 Abyssal Steel Bars |
+
+  The base recipes: Chest 8 planks; Locked Chest 8 planks and 1 Iron
+  Bar (the chest + Iron Bar recipe is gone); Bookshelf 6 planks and 3
+  books; Vessels Shelf 6 planks and 3 vessels. The shelves have 32 slots
+  from Round 67 on; one made before (16 slots) grows to 32 the first time
+  it is opened, its items kept. A container drops its own tier.
+  - **The form:** the container's box shows its list 8 wide, four rows at
+    a time; more rows scroll inside the box like the inventory views (the
+    position survives the resend after a sort, a label or an upgrade).
+    Drag and drop and shift-click work as before. Below the list one row:
+    on chests a **label** field with **Save** (Enter saves too) and
+    **Sort**; on every container below Abyssal **Upgrade ⟨bar⟩×8**.
+  - **Sort:** the chest's whole list in the inventory's order (above),
+    with the Inventory tab's cooldown; not on shelves.
+  - **Label:** chests only, at most 40 characters, shown as hover text: the
+    label on the first line, the chest's name on the second. Who may edit
+    it follows the claim rules for building ([housing](housing.md) §6.1):
+    in the open world anyone; in a claim the owner and the Everything
+    level (a draft or inactive claim protects nothing). Whoever may not
+    edit it sees the label as text.
+  - **Upgrade:** charges 8 Steel Bars (to Steel-Reinforced) or 8 Abyssal
+    Steel Bars (to Abyssal) from the carried lists and the inactive hotbar
+    layout, then turns the container into the next tier in place: contents,
+    label, owner and facing stay, the list grows. An open chest stays open,
+    and its lid closes on the new tier for every viewer. The same right as
+    the label.
+  - **Locked chests:** only the owner may label, sort or upgrade one.
 - **The bag change of 0.48.0** (Round 48, the migration step 0.48.0,
   [upgrade contract](../technical/upgrade-contract.md) §5.8): at each
   existing character's first join, `main[9..]` and the bags were sorted

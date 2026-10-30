@@ -2511,36 +2511,23 @@ core.register_node("default:lava_flowing", {
 -- GRUG PATCH (0.49.1 VIEW): built per viewer, below the shelf the player's
 -- whole combined bag (grug_inventory.station_formspec, real coordinates);
 -- `context` is the node_formspec session's.
+-- GRUG PATCH (Round 67 CONTAINERS): three tiers (default/containers.lua) of
+-- 32, 64 and 96 slots; the box, the scrolling list and the Upgrade come
+-- from there. A shelf made before Round 67 (16 slots) grows to 32 when it
+-- is opened.
 local function bookshelf_formspec(pos, player, context)
-	local loc = default.node_formspec.location(pos)
-	local station = grug_inventory.STATION
-	local x, y, pitch = station.x, station.y, station.pitch
-	-- GRUG PATCH (Round 66 UI): the box label grows with the form text.
-	local box, bottom = grug_inventory.station_box(S("Bookshelf"), 2 * pitch - 0.25,
-		grug_core.ui.text_growth(player))
-	local formspec = box ..
-		("list[%s;books;%.3f,%.3f;8,2;]"):format(loc, x, y) ..
-		"listring[" .. loc .. ";books]" ..
-		"listring[current_player;grug_inbox]" ..
-		"listring[current_player;main]"
-	local invlist = core.get_meta(pos):get_inventory():get_list("books")
-	-- Inventory slots overlay
-	for i = 1, 16 do
-		if not invlist or not invlist[i] or invlist[i]:is_empty() then
-			formspec = formspec .. ("image[%.3f,%.3f;1,1;default_bookshelf_slot.png]"):format(
-				x + (i - 1) % 8 * pitch, y + math.floor((i - 1) / 8) * pitch)
-		end
-	end
-	return grug_inventory.station_formspec(player, formspec, bottom, context, 6)
+	local content, bottom = default.containers.form(pos, player, context,
+		"default_bookshelf_slot.png")
+	return grug_inventory.station_formspec(player, content, bottom, context, 4)
 end
 
 local function update_bookshelf(pos)
 	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
-	local invlist = inv:get_list("books")
+	local invlist = inv:get_list("books") or {}
 
 	local n_written, n_empty = 0, 0
-	for i = 1, 16 do
+	for i = 1, #invlist do
 		local stack = invlist[i]
 		if not stack:is_empty() then
 			local metatable = stack:get_meta():to_table() or {}
@@ -2551,66 +2538,78 @@ local function update_bookshelf(pos)
 			end
 		end
 	end
+	local def = core.registered_nodes[core.get_node(pos).name]
+	local title = def and def.description or S("Bookshelf")
 	if n_written + n_empty == 0 then
-		meta:set_string("infotext", S("Empty Bookshelf"))
+		meta:set_string("infotext", S("Empty @1", title))
 	else
-		meta:set_string("infotext", S("Bookshelf (@1 written, @2 empty books)", n_written, n_empty))
+		meta:set_string("infotext", S("@1 (@2 written, @3 empty books)", title, n_written, n_empty))
 	end
 	default.node_formspec.refresh(pos)
 end
 
-local default_bookshelf_def = {
-	description = S("Bookshelf"),
-	tiles = {"default_wood.png", "default_wood.png", "default_wood.png",
-		"default_wood.png", "default_bookshelf.png", "default_bookshelf.png"},
-	paramtype2 = "facedir",
-	is_ground_content = false,
-	groups = {choppy = 3, oddly_breakable_by_hand = 2, flammable = 3},
-	sounds = default.node_sound_wood_defaults(),
+for tier, info in ipairs(default.containers.TIERS) do
+	local name = default.containers.tier_name("default:bookshelf", tier)
+	local side = tier == 1 and "default_wood.png" or "default_shelf" .. info.suffix .. "_side.png"
+	local front = "default_bookshelf" .. info.suffix .. ".png"
+	default.containers.register(name, {base = "default:bookshelf", tier = tier,
+		list = "books", kind = "shelf", refresh = update_bookshelf})
+	local default_bookshelf_def = {
+		description = S(default.containers.description("Bookshelf", tier)),
+		tiles = {side, side, side, side, front, front},
+		paramtype2 = "facedir",
+		is_ground_content = false,
+		groups = {choppy = 3, oddly_breakable_by_hand = 2, flammable = 3},
+		sounds = default.node_sound_wood_defaults(),
 
-	on_construct = function(pos)
-		local meta = core.get_meta(pos)
-		local inv = meta:get_inventory()
-		inv:set_size("books", 8 * 2)
-		update_bookshelf(pos)
-	end,
-	on_rightclick = function(pos, node, clicker, itemstack)
-		default.node_formspec.show(clicker, pos, bookshelf_formspec)
-		return itemstack
-	end,
-	-- Close open viewers of a dug or replaced shelf.
-	after_destruct = function(pos)
-		default.node_formspec.refresh(pos)
-	end,
-	can_dig = function(pos,player)
-		local inv = core.get_meta(pos):get_inventory()
-		return inv:is_empty("books")
-	end,
-	allow_metadata_inventory_put = function(pos, listname, index, stack)
-		if core.get_item_group(stack:get_name(), "book") ~= 0 then
-			return stack:get_count()
-		end
-		return 0
-	end,
-	on_metadata_inventory_put = function(pos)
-		update_bookshelf(pos)
-	end,
-	on_metadata_inventory_take = function(pos)
-		update_bookshelf(pos)
-	end,
-	on_metadata_inventory_move = function(pos)
-		update_bookshelf(pos)
-	end,
-	on_blast = function(pos)
-		local drops = {}
-		default.get_inventory_drops(pos, "books", drops)
-		drops[#drops+1] = "default:bookshelf"
-		core.remove_node(pos)
-		return drops
-	end,
-}
-default.set_inventory_action_loggers(default_bookshelf_def, "bookshelf")
-core.register_node("default:bookshelf", default_bookshelf_def)
+		on_construct = function(pos)
+			local meta = core.get_meta(pos)
+			local inv = meta:get_inventory()
+			inv:set_size("books", info.slots)
+			update_bookshelf(pos)
+		end,
+		on_rightclick = function(pos, node, clicker, itemstack)
+			default.containers.ensure_size(pos)
+			default.node_formspec.show(clicker, pos, bookshelf_formspec)
+			return itemstack
+		end,
+		on_receive_fields = function(pos, formname, fields, sender)
+			default.containers.receive(pos, sender, fields)
+		end,
+		-- Close open viewers of a dug or replaced shelf.
+		after_destruct = function(pos)
+			default.node_formspec.refresh(pos)
+		end,
+		can_dig = function(pos,player)
+			local inv = core.get_meta(pos):get_inventory()
+			return inv:is_empty("books")
+		end,
+		allow_metadata_inventory_put = function(pos, listname, index, stack)
+			if core.get_item_group(stack:get_name(), "book") ~= 0 then
+				return stack:get_count()
+			end
+			return 0
+		end,
+		on_metadata_inventory_put = function(pos)
+			update_bookshelf(pos)
+		end,
+		on_metadata_inventory_take = function(pos)
+			update_bookshelf(pos)
+		end,
+		on_metadata_inventory_move = function(pos)
+			update_bookshelf(pos)
+		end,
+		on_blast = function(pos)
+			local drops = {}
+			default.get_inventory_drops(pos, "books", drops)
+			drops[#drops+1] = name
+			core.remove_node(pos)
+			return drops
+		end,
+	}
+	default.set_inventory_action_loggers(default_bookshelf_def, "bookshelf")
+	core.register_node(name, default_bookshelf_def)
+end
 
 -- GRUG PATCH (UI modernization): the runtime theme is loaded by the time
 -- the sign opens; no reverse dependency from default to grug_core. Save

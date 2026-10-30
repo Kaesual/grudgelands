@@ -198,9 +198,12 @@ adds legacy padding (`guiFormSpecMenu.cpp`, `getElementBasePos` versus
 `getRealCoordinateBasePos`). A standalone legacy form must keep its own
 explicit coordinate contract. Full/short views show eight/two rows with native 1-unit slots and 1.25 pitch.
 The centered hotbar is shared across inventory tabs. Station callers can pass
-an optional fifth `visible_rows` argument: chests four, shelves six, furnaces
+an optional fifth `visible_rows` argument: chests and shelves four, furnaces
 five, Claim Stone management two and recovery three. Remaining bag contents
-scroll without changing list capacity or inventory routes.
+scroll without changing list capacity or inventory routes. A storage
+container's own list (Round 67, `default/containers.lua`) shows four rows
+in its box through `grug_inventory.station_list`; more rows scroll with the
+same scrollbar, whose value `keep_scroll` keeps as the mode `container`.
 The map reserves the same header **inside** its responsive whole-window
 budget. `window_size(info, header_h)` optionally returns the remaining body;
 without the second argument it retains the whole-window result. The existing

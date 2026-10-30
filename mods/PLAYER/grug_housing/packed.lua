@@ -48,12 +48,22 @@ P.CHEST = "default:chest"
 -- node does not have, into additional packed chests (D6); a node not listed
 -- here, nor dropping one that is (an open chest, a lit furnace), is packed
 -- into chests whole.
+-- Round 67 (CONTAINERS): the three tiers of chests, locked chests and
+-- shelves (default/containers.lua), the shelves from 16 to 32 slots.
 P.CONTAINER_LISTS = {
 	["default:chest"] = {main = 32},
+	["default:chest_steel"] = {main = 64},
+	["default:chest_abyssal"] = {main = 96},
 	["default:chest_locked"] = {main = 32},
+	["default:chest_locked_steel"] = {main = 64},
+	["default:chest_locked_abyssal"] = {main = 96},
 	["default:furnace"] = {src = 1, fuel = 1, dst = 4},
-	["default:bookshelf"] = {books = 16},
-	["vessels:shelf"] = {vessels = 16},
+	["default:bookshelf"] = {books = 32},
+	["default:bookshelf_steel"] = {books = 64},
+	["default:bookshelf_abyssal"] = {books = 96},
+	["vessels:shelf"] = {vessels = 32},
+	["vessels:shelf_steel"] = {vessels = 64},
+	["vessels:shelf_abyssal"] = {vessels = 96},
 }
 
 -- How many content lines the tooltip names before "and N more".

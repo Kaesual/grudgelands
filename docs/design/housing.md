@@ -270,8 +270,8 @@ Each name has one of two levels:
 
 | Level | Allows |
 |---|---|
-| **Interact** | doors, trapdoors, gates, chests, furnaces and stations |
-| **Everything** | Interact plus building and digging; harvesting counts as digging |
+| **Interact** | doors, trapdoors, gates, chests, furnaces and stations; sorting a chest |
+| **Everything** | Interact plus building and digging; harvesting counts as digging; a chest's label and every container's upgrade |
 
 The owner has every right. Everyone else has none inside an active claim.
 Enemy-faction players still cannot build in home territory, whatever their
@@ -294,6 +294,11 @@ only when digging and placing; §6.3 covers the rest.
   show their form; taking and putting are refused.
 - A short exception list exists, for example reading signs. Its exact content
   is an implementation detail.
+- A chest's label and a container's upgrade (Round 67,
+  [inventory](inventory_equipment.md) "Storage containers") ask the
+  building check, as writing a sign does: the owner and Everything may, a
+  draft or inactive claim protects nothing. A locked chest answers only its
+  owner, inside a claim or not.
 - The protection hint shows the claim reason: **"Home of <owner> –
   protected"**.
 - Claim protection covers digging, placing and interaction only. Protection

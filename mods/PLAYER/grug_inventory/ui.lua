@@ -115,7 +115,9 @@ local SCROLLBAR_DEFAULTS = "scrollbaroptions[min=0;max=1000;smallstep=10;" ..
 grug_inventory.VIEW_ROWS = {full = 8, short = 2, station = 4}
 
 grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
-	short = "grug_inv_scroll_short", station = "grug_inv_scroll_station"}
+	short = "grug_inv_scroll_short", station = "grug_inv_scroll_station",
+	-- A container's own list above the station view (station_list below).
+	container = "grug_inv_scroll_container"}
 
 -- Full inventory: eight visible rows left, Bags/Potion belt/Money right.
 -- The right stack ends at the inventory's bottom. Every page shares one
@@ -249,6 +251,40 @@ function grug_inventory.hotbar_switch(player, x, y, w, h, dx, dy)
 	return table.concat(fs)
 end
 
+-- The scrollbar of `rows` content rows shown `visible` at a time (none when
+-- they fit) right of an 8-wide grid at (x, y), and the scroll_container's
+-- opening element; the scroll value is `mode`'s in `context`
+-- (keep_scroll). The caller adds the lists and scroll_container_end[].
+local function scroll_area(mode, context, x, y, rows, visible)
+	local field = grug_inventory.SCROLL_FIELDS[mode]
+	local area_h = visible * PITCH - (PITCH - SLOT)
+	local fs = {}
+	local max = grug_inventory.view_scroll_max(rows, visible)
+	if max > 0 then
+		local stored = context and context.grug_inv_scroll and
+			context.grug_inv_scroll[mode] or 0
+		local value = math.max(0, math.min(max, math.floor(stored)))
+		-- The engine draws the thumb as thumbsize / (max - min + 1) of the
+		-- track (CGUIScrollBar::setPosRaw with the page size
+		-- guiFormSpecMenu.cpp parseScrollBar sets), so the visible share of
+		-- the rows is visible / rows of max + 1. A thumbsize of a page's steps
+		-- filled the whole track whenever max was below it: no handle to grab.
+		local thumb = math.max(1, math.floor(visible * (max + 1) / rows + 0.5))
+		fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=%d;largestep=%d;" ..
+			"thumbsize=%d;arrows=hide]"):format(max, ROW_STEPS,
+			visible * ROW_STEPS, thumb)
+		fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.2f,%.3f;vertical;%s;%d]"):format(
+			x + SCROLLBAR_DX, y, SCROLLBAR_W, area_h, field, value)
+		-- scrollbaroptions[] applies to every later scrollbar[], page content
+		-- included: back to the engine's defaults (guiFormSpecMenu.h
+		-- parserData::scrollbar_options).
+		fs[#fs + 1] = SCROLLBAR_DEFAULTS
+	end
+	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;vertical;%.3f]"):format(
+		x, y, VIEW_W, area_h, field, SCROLL_FACTOR)
+	return table.concat(fs)
+end
+
 -- The formspec part of one inventory view, in real coordinates (it switches
 -- them on itself, so it may follow legacy content). mode: "full", "short" or
 -- "station"; `top` (station only) is the y of its Inventory box.
@@ -275,8 +311,6 @@ function grug_inventory.inventory_view(player, mode, context, top, visible_rows)
 	local area_y = box_y + label_h
 	local hotbar_y = hotbar_box_y + LAYOUT.label_h
 	local view_x = box_x + LAYOUT.pad
-	local scrollbar_x = view_x + SCROLLBAR_DX
-	local field = grug_inventory.SCROLL_FIELDS[mode]
 	-- The two boxes, drawn first so the lists lie on them.
 	local growth = grug_core.ui.text_growth(player)
 	local fs = {"real_coordinates[true]",
@@ -285,29 +319,7 @@ function grug_inventory.inventory_view(player, mode, context, top, visible_rows)
 			LAYOUT.slot_box_h, "Active hotbar", nil, growth),
 	}
 
-	local max = grug_inventory.view_scroll_max(rows, visible)
-	if max > 0 then
-		local stored = context and context.grug_inv_scroll and
-			context.grug_inv_scroll[mode] or 0
-		local value = math.max(0, math.min(max, math.floor(stored)))
-		-- The engine draws the thumb as thumbsize / (max - min + 1) of the
-		-- track (CGUIScrollBar::setPosRaw with the page size
-		-- guiFormSpecMenu.cpp parseScrollBar sets), so the visible share of
-		-- the rows is visible / rows of max + 1. A thumbsize of a page's steps
-		-- filled the whole track whenever max was below it: no handle to grab.
-		local thumb = math.max(1, math.floor(visible * (max + 1) / rows + 0.5))
-		fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=%d;largestep=%d;" ..
-			"thumbsize=%d;arrows=hide]"):format(max, ROW_STEPS,
-			visible * ROW_STEPS, thumb)
-		fs[#fs + 1] = ("scrollbar[%.3f,%.3f;%.2f,%.3f;vertical;%s;%d]"):format(
-			scrollbar_x, area_y, SCROLLBAR_W, area_h, field, value)
-		-- scrollbaroptions[] applies to every later scrollbar[], page content
-		-- included: back to the engine's defaults (guiFormSpecMenu.h
-		-- parserData::scrollbar_options).
-		fs[#fs + 1] = SCROLLBAR_DEFAULTS
-	end
-	fs[#fs + 1] = ("scroll_container[%.3f,%.3f;%.3f,%.3f;%s;vertical;%.3f]"):format(
-		view_x, area_y, VIEW_W, area_h, field, SCROLL_FACTOR)
+	fs[#fs + 1] = scroll_area(mode, context, view_x, area_y, rows, visible)
 	for _, element in ipairs(elements) do
 		fs[#fs + 1] = ("list[current_player;%s;%.3f,%.3f;%d,%d;%d]"):format(
 			element.list, element.col * PITCH, element.row * PITCH, element.w,
@@ -416,6 +428,29 @@ function grug_inventory.station_box(label, inner_h, scale)
 	local h = LAYOUT.label_h + inner_h + LAYOUT.pad
 	return grug_inventory.area_box(station.box_x, station.margin,
 		station.box_w, h, label, nil, scale), station.margin + h
+end
+
+-- A container's own list in its station_box (Round 67 ruling 32): 8 wide
+-- in the view's columns from the box's first slot row, `visible` rows of
+-- it; more rows scroll inside the box like the view below (the same
+-- scrollbar; keep_scroll keeps its value in `context` as the mode
+-- "container", so a resend after a sort, a label or an upgrade keeps it).
+-- `slot_image` (optional) is drawn on each empty slot of `stacks`, the
+-- list's stacks (the shelves' slot pictures).
+function grug_inventory.station_list(location, list, size, visible, context, slot_image, stacks)
+	local station = grug_inventory.STATION
+	local rows = math.ceil(size / 8)
+	local fs = {scroll_area("container", context, station.x, station.y, rows, visible),
+		("list[%s;%s;0,0;8,%d;]"):format(location, list, rows)}
+	for index = 1, slot_image and size or 0 do
+		local stack = stacks and stacks[index]
+		if not stack or stack:is_empty() then
+			fs[#fs + 1] = ("image[%.3f,%.3f;1,1;%s]"):format((index - 1) % 8 * PITCH,
+				math.floor((index - 1) / 8) * PITCH, slot_image)
+		end
+	end
+	fs[#fs + 1] = "scroll_container_end[]"
+	return table.concat(fs)
 end
 
 -- The whole station form: the header, `content` (real coordinates, ending

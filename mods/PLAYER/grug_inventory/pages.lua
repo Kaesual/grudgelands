@@ -631,8 +631,9 @@ local PITCH = 1.25
 -- The money row's buttons span two slot columns and are as tall as a slot.
 -- Sort ignores clicks for this long after one it ran (spec ruling 5): no
 -- countdown, no resend; the lists the sort changed reach the client on their
--- own.
-local SORT_COOLDOWN_US = 2500000
+-- own. The chests' Sort button (default/containers.lua) shares it.
+grug_inventory.SORT_COOLDOWN_US = 2500000
+local SORT_COOLDOWN_US = grug_inventory.SORT_COOLDOWN_US
 
 local function inventory_content(player)
 	local deposit, deposit_list = grug_money.deposit_location(player)

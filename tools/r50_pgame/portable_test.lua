@@ -492,6 +492,9 @@ function grug_inventory.give(player, stack)
 	end
 	return stack
 end
+-- Round 67: the container tiers (default/containers.lua) before the chests
+-- that register them.
+dofile(ROOT .. "/mods/BASE/default/containers.lua")
 dofile(ROOT .. "/mods/BASE/default/chests.lua")
 
 -- The furnace, the bookshelf and the vessels shelf: stand-ins with the list
@@ -508,15 +511,48 @@ local function source_sizes(path, anchor)
 	end
 	return sizes
 end
+-- Round 67: the chests of every tier through their real on_construct; the
+-- shelves set their list to their tier's slots (the source's set_size reads
+-- default.containers.TIERS, checked below), stand-ins here.
+local function construct_sizes(name)
+	local pos = {x = -9000, y = -9000, z = -9000}
+	core.registered_nodes[name].on_construct(pos)
+	local sizes = {}
+	for list, stacks in pairs(core.get_meta(pos).get_inventory():get_lists()) do
+		sizes[list] = #stacks
+	end
+	metas[hash(pos)] = nil
+	return sizes
+end
+local function shelf_sizes(path, anchor, list)
+	local text = read(path)
+	local from = assert(text:find(anchor, 1, true), "anchor " .. anchor)
+	assert(text:find('inv:set_size("' .. list .. '", info.slots)', from, true),
+		path .. ": the shelf's list takes its tier's slots")
+	local out = {}
+	for tier, info in ipairs(default.containers.TIERS) do
+		out[default.containers.tier_name(anchor:match('"([^"]+)"'), tier)] = {[list] = info.slots}
+	end
+	return out
+end
 local VENDORED = {
-	["default:chest"] = source_sizes("mods/BASE/default/chests.lua"),
-	["default:chest_locked"] = source_sizes("mods/BASE/default/chests.lua"),
 	["default:furnace"] = source_sizes("mods/BASE/default/furnace.lua",
 		'core.register_node("default:furnace",'),
-	["default:bookshelf"] = source_sizes("mods/BASE/default/nodes.lua",
-		"local default_bookshelf_def = {"),
-	["vessels:shelf"] = source_sizes("mods/BASE/vessels/init.lua", "local vessels_shelf_def = {"),
 }
+for _, base in ipairs({"default:chest", "default:chest_locked"}) do
+	for tier = 1, #default.containers.TIERS do
+		local name = default.containers.tier_name(base, tier)
+		VENDORED[name] = construct_sizes(name)
+	end
+end
+for name, sizes in pairs(shelf_sizes("mods/BASE/default/nodes.lua",
+		'tier_name("default:bookshelf"', "books")) do
+	VENDORED[name] = sizes
+end
+for name, sizes in pairs(shelf_sizes("mods/BASE/vessels/init.lua",
+		'tier_name("vessels:shelf"', "vessels")) do
+	VENDORED[name] = sizes
+end
 local puts = {}
 local function stand_in(name, def)
 	def.description = def.description

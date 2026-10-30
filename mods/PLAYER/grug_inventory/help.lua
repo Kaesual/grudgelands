@@ -141,6 +141,7 @@ local SECTIONS = {
 		"",
 		heading("Bags, food and repair"),
 		"• The Inventory tab holds up to four bags of 8 to 20 slots; their slots follow your inventory's as one list. New items fill your inventory and bags before the hotbar. Sort orders everything but the hotbar. Vendors sell a Small Bag; Tailors and Leatherworkers make bags of every size.",
+		"• The Chest, Locked Chest, Bookshelf and Vessels Shelf (32 slots each) come in two more tiers: Steel-Reinforced (64) and Abyssal (96), such as the Steel-Reinforced Chest or the Locked Abyssal Chest. Upgrade turns one into the next tier in place for 8 Steel Bars or 8 Abyssal Steel Bars, its contents kept. A chest has Sort, which orders it like your inventory, and a label you see when you point at it. In another player's claim the label and the upgrade need the Everything permission; a locked chest answers only its owner.",
 		"• The potion belt on the Inventory tab holds four potions or elixirs; drink them from the quickbar (E).",
 		"• Eat food out of combat for a five-minute buff: instant healing, regeneration and sometimes extra stats. Only one food buff is active at a time.",
 		"• Gear wears out with use and stops working when broken. Repairs are made in towns and at the Miner's Guild's mining camps: every profession trainer of your faction repairs it for money, and so does @MENDER@ in every start town and capital (the hammer and anvil on the map), and so does the Camp Vendor of every mining camp.",

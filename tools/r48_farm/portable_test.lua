@@ -235,6 +235,8 @@ real_dofile(repo .. "/mods/CORE/grug_core/node_rightclick.lua")
 default = {LIGHT_MAX = 14, get_translator = function(text) return text end}
 real_dofile(repo .. "/mods/BASE/default/functions.lua")
 real_dofile(repo .. "/mods/BASE/default/trees.lua")
+-- Round 67: the container tiers the bookshelf registers with.
+real_dofile(repo .. "/mods/BASE/default/containers.lua")
 real_dofile(repo .. "/mods/BASE/default/nodes.lua")
 -- default/nodes.lua registers sand, dirt, papyrus, cactus and the saplings.
 check(registered_nodes["default:cactus"] and registered_nodes["default:papyrus"],
