@@ -1936,7 +1936,20 @@ tools](#player-meta-read-by-external-tools).
   player without a party through `grug_parties.in_party` (membership only,
   no view built) and recomputes the row layout only on a window change
   (fixture `tools/r32_f4`). Current geometry and offline presentation:
-  [parties.md](../design/parties.md).
+  [parties.md](../design/parties.md). Since Round 67 the same poll draws
+  the invitation box for a player without a party who holds invitations
+  (`grug_parties.newest_invitation`, a read of the session table; geometry
+  `hud_layout.invite_box`). The Social tab (`ui.lua`) keeps one shared
+  roster of the online players, dropped at every
+  `register_on_roster_change` event (`init.lua` raises it on join, leave,
+  faction, class, race and level changes and on every party event but
+  invitations); each viewer whose current sfinv page is Social is asked
+  once per server step (`core.after(0)`) and sent at most once per
+  `SEND_GAP_US` (2 s), the owed send by one `core.after`; a scrollbar move
+  holds sends for `QUIET_US` (0.5 s). The coalescing state lives in the
+  sfinv context; every build counts as a send. Favourites are player meta
+  `grug_parties:favorites` (a serialised sorted name list). Fixture
+  `tools/r67_social`.
 
 ## Miner's Guild
 
@@ -3315,9 +3328,9 @@ tools](#player-meta-read-by-external-tools).
   last button (`guiFormSpecMenu.cpp` `setInitialFocus`); edit boxes include
   every `textarea[]`, a read-only one too, and an edit box or a table eats
   letter keys. So a window with an edit box or a table names a harmless button in
-  `set_focus[<name>;true]`, placed before that button (Party & PvP: Refresh;
-  Talents & Skills, Inventory and the mailbox window: an invisible
-  zero-size button with no action; Character: the selected mode's button, never Return home; Help: the
+  `set_focus[<name>;true]`, placed before that button (Talents & Skills,
+  Inventory, Social and the mailbox window: an invisible zero-size button
+  with no action; Character: the selected mode's button, never Return home; Help: the
   open sub-page's button; Claim Stone and Crownbinder: Close; the creation
   window: the chosen faction). Forced, because an unforced `set_focus` only
   applies when the window shows a new form name, and the inventory key opens
