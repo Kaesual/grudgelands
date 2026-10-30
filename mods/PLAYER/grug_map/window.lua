@@ -110,6 +110,10 @@ function W.window_size(info, header_h)
 	if type(max) == "table" and type(max.x) == "number" and type(max.y) == "number" and
 			max.x > 0 and max.y > 0 then
 		w, h = max.x * W.FRACTION, max.y * W.FRACTION
+		-- A height raised to the floor makes the client shrink the form to
+		-- the screen's height; the width keeps its FRACTION of the screen at
+		-- that shrunk scale (a 2400x1080 phone: 20 x 10, not 16.2 x 10).
+		if h < W.MIN.y then w = math.max(w, W.FRACTION * W.MIN.y * max.x / max.y) end
 	end
 	w, h = math.max(W.MIN.x, w), math.max(W.MIN.y, h)
 	return math.floor(w * 100) / 100, math.floor((h - (header_h or 0)) * 100) / 100

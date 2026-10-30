@@ -248,6 +248,13 @@ end
 -- The phone: the 16 x 10 floor is taller than its screen; the client
 -- shrinks it to the full height (as before).
 check(table_rows[5].window:match("x(%d+)$") == "1080", "S the phone: fitted to the screen's height")
+-- ...and keeps 90 % of the width at that shrunk scale (ruling 18 on every
+-- resolution; 16.2 x 10 units, 73 % wide, before the review's fix).
+check(table_rows[5].window == "2160x1080", "S the phone: 90 % of the width (" .. table_rows[5].window .. ")")
+do
+	local w, h = W.window_size(client(2400, 1080, 2.5))
+	check(near(w, 20, 0.011) and near(h, 10, 0.011), ("S the phone: 20 x 10 units (%.2f x %.2f)"):format(w, h))
+end
 -- Text keeps today's growth rule (ui.lua text_growth over the window).
 do
 	local info = client(3840, 2160)

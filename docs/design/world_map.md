@@ -238,7 +238,10 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   apply to it (85 % of the capped viewport before). The shared navigation
   header is included in that height budget. Clients without window
   information use the fallback in `grug_map/window.lua`; a minimum body
-  size (16 × 10 units) remains client-scalable. Text keeps the growth the
+  size (16 × 10 units) remains client-scalable. Where the height is raised
+  to that floor (a phone), the client shrinks the form to the screen's
+  height and the width keeps 90 % of the screen at that scale (a 2400×1080
+  phone at density 2.5: 20 × 10 units, 2160 × 1080 px). Text keeps the growth the
   ceiling rule gives it (`grug_core.ui.text_growth`), so on a screen above
   1620 px height it grows less than the window does.
 - **Layout** (dialog review, 2026-10-25; Round 67): shared inventory
