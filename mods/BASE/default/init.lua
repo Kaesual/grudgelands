@@ -67,6 +67,9 @@ local default_path = minetest.get_modpath("default")
 dofile(default_path.."/functions.lua")
 -- GRUG PATCH: node UIs open server-side, never from a meta formspec.
 dofile(default_path.."/node_formspec.lua")
+-- GRUG PATCH (Round 67 CONTAINERS): the containers' tiers, labels, sort and
+-- upgrade, before the nodes that register them.
+dofile(default_path.."/containers.lua")
 dofile(default_path.."/trees.lua")
 dofile(default_path.."/nodes.lua")
 dofile(default_path.."/chests.lua")

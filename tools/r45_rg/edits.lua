@@ -75,4 +75,35 @@ return {
 	{output = "dye:yellow", count = 2, added = {{item = "grug_gathering:sunleaf", n = 1}}},
 	{output = "dye:red", count = 2, added = {{item = "default:apple", n = 1}}},
 	{output = "dye:cyan", count = 2, added = {{item = "grug_gathering:marshbloom", n = 1}}},
+	-- Round 67 lane CONTAINERS (rulings 29 and 31, the locked-chest default):
+	-- one recipe per container and tier. The locked chest is the open
+	-- chest's ingredients plus 1 Iron Bar (the "chest + Iron Bar" row goes);
+	-- Steel-Reinforced adds 8 Steel Bars to the wooden tier's recipe,
+	-- Abyssal 8 more Abyssal Steel Bars; the shelves follow the same pattern
+	-- from their own base recipe.
+	{output = "default:chest_locked", signature = "default:chest*1+grug_materials:iron_bar*1",
+		was = 1, removed = true},
+	{output = "default:chest_steel", count = 1, added = {
+		{group = "wood", n = 8}, {item = "grug_materials:steel_bar", n = 8}}},
+	{output = "default:chest_abyssal", count = 1, added = {
+		{group = "wood", n = 8}, {item = "grug_materials:steel_bar", n = 8},
+		{item = "grug_materials:abyssal_steel_bar", n = 8}}},
+	{output = "default:chest_locked_steel", count = 1, added = {
+		{group = "wood", n = 8}, {item = "grug_materials:steel_bar", n = 8},
+		{item = "grug_materials:iron_bar", n = 1}}},
+	{output = "default:chest_locked_abyssal", count = 1, added = {
+		{group = "wood", n = 8}, {item = "grug_materials:steel_bar", n = 8},
+		{item = "grug_materials:abyssal_steel_bar", n = 8}, {item = "grug_materials:iron_bar", n = 1}}},
+	{output = "default:bookshelf_steel", count = 1, added = {
+		{group = "wood", n = 6}, {item = "default:book", n = 3},
+		{item = "grug_materials:steel_bar", n = 8}}},
+	{output = "default:bookshelf_abyssal", count = 1, added = {
+		{group = "wood", n = 6}, {item = "default:book", n = 3},
+		{item = "grug_materials:steel_bar", n = 8}, {item = "grug_materials:abyssal_steel_bar", n = 8}}},
+	{output = "vessels:shelf_steel", count = 1, added = {
+		{group = "wood", n = 6}, {group = "vessel", n = 3},
+		{item = "grug_materials:steel_bar", n = 8}}},
+	{output = "vessels:shelf_abyssal", count = 1, added = {
+		{group = "wood", n = 6}, {group = "vessel", n = 3},
+		{item = "grug_materials:steel_bar", n = 8}, {item = "grug_materials:abyssal_steel_bar", n = 8}}},
 }

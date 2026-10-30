@@ -194,9 +194,10 @@ default = setmetatable({
 	return noop
 end})
 dofile(repo .. "/mods/BASE/default/node_formspec.lua")
+-- Round 67: the container tiers before the containers that register them.
+dofile(repo .. "/mods/BASE/default/containers.lua")
 dofile(repo .. "/mods/BASE/default/furnace.lua")
 dofile(repo .. "/mods/BASE/default/chests.lua")
-dofile(repo .. "/mods/BASE/vessels/init.lua")
 
 -- nodes.lua registers every default node; only the bookshelf is used, the
 -- rest loads through permissive stubs.
@@ -210,6 +211,7 @@ do
 	check(ok, "default/nodes.lua loads (" .. tostring(err) .. ")")
 	core.get_mapgen_setting = real_get_mapgen_setting
 end
+dofile(repo .. "/mods/BASE/vessels/init.lua")
 
 -- The Claim Stone form (grug_housing/stone_form.lua) with its ui helpers and
 -- a placed, active claim.
@@ -239,6 +241,9 @@ dofile(repo .. "/mods/PLAYER/grug_housing/stone_form.lua")(stone_ui)
 -- The profession workspaces (grug_jobs/workspaces.lua) with a stand-in for
 -- the automatic process (its own fixtures test it).
 grug_core.interaction_protected = function() return false end
+-- Round 67: the containers' action row asks who may sort, label and upgrade.
+grug_core.interaction_guarded = function() return false end
+core.is_protected = function() return false end
 local public = {}
 grug_jobs = {
 	station_info = function(station)
@@ -337,8 +342,10 @@ local function check_form(label, player, fs, station)
 	check(form.container, label .. ": L a scroll container")
 	if not form.container then return form end
 	eq(form.field, SCROLL, label .. ": L the station view's scroll field")
+	-- Round 67 ruling 32: the shelves show four rows of their own, like the
+	-- chests, so their bag view is four rows too (six before).
 	local visible = label:find("furnace", 1, true) and 5 or
-		(label:find("shelf", 1, true) and 6 or label:find("stone", 1, true) and 2 or 4)
+		(label:find("stone", 1, true) and 2 or 4)
 	eq(form.ch, visible * PITCH - 0.25, label .. ": L approved visible rows")
 	-- main[9..] and the bags, in order, inside the scroll area.
 	local seen, slots = {}, {}
@@ -473,11 +480,12 @@ for _, bags_key in ipairs({"none", "one", "four"}) do
 	local shelf = node_form_case("bookshelf", "default:bookshelf",
 		{lists = {"books"}, target = "books"}, bags_key)
 	local _, empties = shelf:gsub("default_bookshelf_slot%.png", "")
-	eq(empties, 16, "bookshelf " .. bags_key .. ": an empty slot picture per empty slot")
+	-- Round 67: 32 slots (16 before).
+	eq(empties, 32, "bookshelf " .. bags_key .. ": an empty slot picture per empty slot")
 	local vessels = node_form_case("vessels shelf", "vessels:shelf",
 		{lists = {"vessels"}, target = "vessels"}, bags_key)
 	local _, vessel_empties = vessels:gsub("vessels_shelf_slot%.png", "")
-	eq(vessel_empties, 16, "vessels shelf " .. bags_key .. ": an empty slot picture per empty slot")
+	eq(vessel_empties, 32, "vessels shelf " .. bags_key .. ": an empty slot picture per empty slot")
 end
 
 -- A modelled shift-click from a bag at the bookshelf: into the shelf.
@@ -507,7 +515,7 @@ do
 	check(not a:find("grug_bag1_content", 1, true), "V a viewer without bags gets no bag list")
 	check(b:find("grug_bag4_content", 1, true) ~= nil, "V a viewer with four bags gets all four")
 	local _, empties = a:gsub("default_bookshelf_slot%.png", "")
-	eq(empties, 15, "V the refresh shows the new book to both viewers")
+	eq(empties, 31, "V the refresh shows the new book to both viewers")
 end
 
 --

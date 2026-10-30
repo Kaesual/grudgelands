@@ -9,18 +9,12 @@ local S = default.get_translator
 -- whole combined bag (grug_inventory.station_formspec, real coordinates).
 -- GRUG PATCH (Round 50 HOTBAR): `context` (optional) keeps the bag view's
 -- scroll position; only the view's hotbar switch re-shows the open form.
+-- GRUG PATCH (Round 67 CONTAINERS): the chest's box, list and action row
+-- (label, Sort, Upgrade) come from default/containers.lua; its list
+-- scrolls beyond four rows.
 function default.chest.get_chest_formspec(pos, player, context)
-	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
-	local station = grug_inventory.STATION
-	-- GRUG PATCH (Round 66 UI): the box label grows with the form text.
-	local box, bottom = grug_inventory.station_box(S("Chest"),
-		4 * station.pitch - 0.25, grug_core.ui.text_growth(player))
-	return grug_inventory.station_formspec(player, box ..
-		("list[nodemeta:%s;main;%.3f,%.3f;8,4;]"):format(spos, station.x, station.y) ..
-		"listring[nodemeta:" .. spos .. ";main]" ..
-		"listring[current_player;grug_inbox]" ..
-		"listring[current_player;main]",
-		bottom, context, 4)
+	local content, bottom = default.containers.form(pos, player, context)
+	return grug_inventory.station_formspec(player, content, bottom, context, 4)
 end
 
 function default.chest.chest_lid_obstructed(pos)
@@ -80,15 +74,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	-- GRUG PATCH (Round 50 HOTBAR): the bag view's scroll value of every
 	-- event, and the hotbar switch, which shows the chest form again while
 	-- the chest is still there.
+	-- GRUG PATCH (Round 67 CONTAINERS): the action row's fields (label,
+	-- Sort, Upgrade; default/containers.lua) while the chest is there.
 	local open = default.chest.open_chests[pn]
 	if open and not fields.quit then
-		grug_inventory.keep_scroll(open.context, fields)
+		local pure = grug_inventory.keep_scroll(open.context, fields)
 		local node = core.get_node(open.pos).name
-		if grug_inventory.hotbar_switch_fields(player, fields) and
-				(node == open.swap or node == open.swap .. "_open") then
+		if pure or not (node == open.swap or node == open.swap .. "_open") then
+			return
+		end
+		if grug_inventory.hotbar_switch_fields(player, fields) then
 			core.show_formspec(pn, "default:chest",
 				default.chest.get_chest_formspec(open.pos, player, open.context))
+			return
 		end
+		default.containers.receive(open.pos, player, fields, open.context)
 		return
 	end
 
@@ -101,6 +101,23 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	return true
 end)
 
+-- GRUG PATCH (Round 67 CONTAINERS): an upgrade swapped the chest at `pos`
+-- to the tier `name` (default/containers.lua): every viewer's remembered
+-- node follows, so closing the lid lands on the new tier, and each viewer's
+-- form shows the grown list at its kept scroll position.
+function default.chest.retarget(pos, name)
+	for pn, open in pairs(default.chest.open_chests) do
+		if vector.equals(open.pos, pos) then
+			open.swap = name
+			local player = core.get_player_by_name(pn)
+			if player then
+				core.show_formspec(pn, "default:chest",
+					default.chest.get_chest_formspec(open.pos, player, open.context))
+			end
+		end
+	end
+end
+
 minetest.register_on_leaveplayer(function(player)
 	local pn = player:get_player_name()
 	if default.chest.open_chests[pn] then
@@ -108,6 +125,10 @@ minetest.register_on_leaveplayer(function(player)
 	end
 end)
 
+-- GRUG PATCH (Round 67 CONTAINERS): `d._grug_container` = {base, tier}
+-- registers the chest and its open variant as a container tier
+-- (default/containers.lua): the list has the tier's slots, the hover text
+-- carries the label.
 function default.chest.register_chest(prefixed_name, d)
 	local name = prefixed_name:sub(1,1) == ':' and prefixed_name:sub(2,-1) or prefixed_name
 	local def = table.copy(d)
@@ -117,19 +138,25 @@ function default.chest.register_chest(prefixed_name, d)
 	def.paramtype2 = "facedir"
 	-- GRUG PATCH: no pre-release mapblock-format conversion flags.
 	def.is_ground_content = false
+	local container = def._grug_container or {base = name, tier = 1}
+	def._grug_container = nil
+	local slots = default.containers.TIERS[container.tier].slots
+	default.containers.register(name, {base = container.base, tier = container.tier,
+		list = "main", kind = def.protected and "locked" or "chest",
+		open = name .. "_open", refresh = default.containers.update_infotext})
 
 	if def.protected then
 		def.on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("infotext", S("Locked Chest"))
+			meta:set_string("infotext", def.description)
 			meta:set_string("owner", "")
 			local inv = meta:get_inventory()
-			inv:set_size("main", 8*4)
+			inv:set_size("main", slots)
 		end
 		def.after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("owner", placer:get_player_name() or "")
-			meta:set_string("infotext", S("Locked Chest (owned by @1)", meta:get_string("owner")))
+			default.containers.update_infotext(pos)
 		end
 		def.can_dig = function(pos,player)
 			local meta = minetest.get_meta(pos);
@@ -229,9 +256,9 @@ function default.chest.register_chest(prefixed_name, d)
 	else
 		def.on_construct = function(pos)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("infotext", S("Chest"))
+			meta:set_string("infotext", def.description)
 			local inv = meta:get_inventory()
-			inv:set_size("main", 8*4)
+			inv:set_size("main", slots)
 		end
 		def.can_dig = function(pos,player)
 			local meta = minetest.get_meta(pos);
@@ -318,38 +345,48 @@ function default.chest.register_chest(prefixed_name, d)
 	})
 end
 
-default.chest.register_chest("default:chest", {
-	description = S("Chest"),
-	tiles = {
-		"default_chest_top.png",
-		"default_chest_top.png",
-		"default_chest_side.png",
-		"default_chest_side.png",
-		"default_chest_front.png",
-		"default_chest_inside.png"
-	},
-	sounds = default.node_sound_wood_defaults(),
-	sound_open = "default_chest_open",
-	sound_close = "default_chest_close",
-	groups = {choppy = 2, oddly_breakable_by_hand = 2},
-})
+-- GRUG PATCH (Round 67 CONTAINERS): every chest and locked chest in the
+-- three tiers of default/containers.lua, on the same model; a tier above
+-- the first has its own textures (default_chest_<tier>_*.png).
+for tier, info in ipairs(default.containers.TIERS) do
+	local function tile(part)
+		return "default_chest" .. info.suffix .. "_" .. part .. ".png"
+	end
+	default.chest.register_chest(default.containers.tier_name("default:chest", tier), {
+		description = S(default.containers.description("Chest", tier)),
+		tiles = {
+			tile("top"),
+			tile("top"),
+			tile("side"),
+			tile("side"),
+			tile("front"),
+			tile("inside")
+		},
+		sounds = default.node_sound_wood_defaults(),
+		sound_open = "default_chest_open",
+		sound_close = "default_chest_close",
+		groups = {choppy = 2, oddly_breakable_by_hand = 2},
+		_grug_container = {base = "default:chest", tier = tier},
+	})
 
-default.chest.register_chest("default:chest_locked", {
-	description = S("Locked Chest"),
-	tiles = {
-		"default_chest_top.png",
-		"default_chest_top.png",
-		"default_chest_side.png",
-		"default_chest_side.png",
-		"default_chest_lock.png",
-		"default_chest_inside.png"
-	},
-	sounds = default.node_sound_wood_defaults(),
-	sound_open = "default_chest_open",
-	sound_close = "default_chest_close",
-	groups = {choppy = 2, oddly_breakable_by_hand = 2},
-	protected = true,
-})
+	default.chest.register_chest(default.containers.tier_name("default:chest_locked", tier), {
+		description = S(default.containers.description("Chest", tier, "Locked")),
+		tiles = {
+			tile("top"),
+			tile("top"),
+			tile("side"),
+			tile("side"),
+			tile("lock"),
+			tile("inside")
+		},
+		sounds = default.node_sound_wood_defaults(),
+		sound_open = "default_chest_open",
+		sound_close = "default_chest_close",
+		groups = {choppy = 2, oddly_breakable_by_hand = 2},
+		protected = true,
+		_grug_container = {base = "default:chest_locked", tier = tier},
+	})
+end
 
 minetest.register_craft({
 	output = "default:chest",

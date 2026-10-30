@@ -89,6 +89,14 @@ function api.refresh(pos)
 	end
 end
 
+-- The node at `pos` was swapped to `name` on purpose (a container's upgrade,
+-- default/containers.lua, Round 67): the open forms there stay valid for it.
+function api.retarget(pos, name)
+	for _, session in pairs(sessions) do
+		if vector.equals(session.pos, pos) then session.names[name] = true end
+	end
+end
+
 -- The open node of `name`, or nil (used by probes and diagnostics).
 function api.session_pos(name)
 	local session = sessions[name]

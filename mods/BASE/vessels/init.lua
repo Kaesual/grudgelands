@@ -14,101 +14,100 @@ local S = minetest.get_translator("vessels")
 -- GRUG PATCH (0.49.1 VIEW): built per viewer, below the shelf the player's
 -- whole combined bag (grug_inventory.station_formspec, real coordinates);
 -- `context` is the node_formspec session's.
+-- GRUG PATCH (Round 67 CONTAINERS): three tiers (default/containers.lua) of
+-- 32, 64 and 96 slots; the box, the scrolling list and the Upgrade come
+-- from there. A shelf made before Round 67 (16 slots) grows to 32 when it
+-- is opened.
 local function vessels_shelf_formspec(pos, player, context)
-	local loc = default.node_formspec.location(pos)
-	local station = grug_inventory.STATION
-	local x, y, pitch = station.x, station.y, station.pitch
-	-- GRUG PATCH (Round 66 UI): the box label grows with the form text.
-	local box, bottom = grug_inventory.station_box(S("Vessels Shelf"), 2 * pitch - 0.25,
-		grug_core.ui.text_growth(player))
-	local formspec = box ..
-		("list[%s;vessels;%.3f,%.3f;8,2;]"):format(loc, x, y) ..
-		"listring[" .. loc .. ";vessels]" ..
-		"listring[current_player;grug_inbox]" ..
-		"listring[current_player;main]"
-	local invlist = core.get_meta(pos):get_inventory():get_list("vessels")
-	-- Inventory slots overlay
-	for i = 1, 16 do
-		if not invlist or not invlist[i] or invlist[i]:is_empty() then
-			formspec = formspec .. ("image[%.3f,%.3f;1,1;vessels_shelf_slot.png]"):format(
-				x + (i - 1) % 8 * pitch, y + math.floor((i - 1) / 8) * pitch)
-		end
-	end
-	return grug_inventory.station_formspec(player, formspec, bottom, context, 6)
+	local content, bottom = default.containers.form(pos, player, context,
+		"vessels_shelf_slot.png")
+	return grug_inventory.station_formspec(player, content, bottom, context, 4)
 end
 
 local function update_vessels_shelf(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
-	local invlist = inv:get_list("vessels")
+	local invlist = inv:get_list("vessels") or {}
 
 	local n_items = 0
-	for i = 1, 16 do
-		local stack = invlist and invlist[i]
-		if stack and not stack:is_empty() then
+	for i = 1, #invlist do
+		local stack = invlist[i]
+		if not stack:is_empty() then
 			n_items = n_items + stack:get_count()
 		end
 	end
+	local def = minetest.registered_nodes[minetest.get_node(pos).name]
+	local title = def and def.description or S("Vessels Shelf")
 	if n_items == 0 then
-		meta:set_string("infotext", S("Empty Vessels Shelf"))
+		meta:set_string("infotext", S("Empty @1", title))
 	else
-		meta:set_string("infotext", S("Vessels Shelf (@1 items)", n_items))
+		meta:set_string("infotext", S("@1 (@2 items)", title, n_items))
 	end
 	default.node_formspec.refresh(pos)
 end
 
-local vessels_shelf_def = {
-	description = S("Vessels Shelf"),
-	tiles = {"default_wood.png", "default_wood.png", "default_wood.png",
-		"default_wood.png", "vessels_shelf.png", "vessels_shelf.png"},
-	paramtype2 = "facedir",
-	is_ground_content = false,
-	groups = {choppy = 3, oddly_breakable_by_hand = 2, flammable = 3},
-	sounds = default.node_sound_wood_defaults(),
+for tier, info in ipairs(default.containers.TIERS) do
+	local name = default.containers.tier_name("vessels:shelf", tier)
+	local side = tier == 1 and "default_wood.png" or "default_shelf" .. info.suffix .. "_side.png"
+	local front = "vessels_shelf" .. info.suffix .. ".png"
+	default.containers.register(name, {base = "vessels:shelf", tier = tier,
+		list = "vessels", kind = "shelf", refresh = update_vessels_shelf})
+	local vessels_shelf_def = {
+		description = S(default.containers.description("Vessels Shelf", tier)),
+		tiles = {side, side, side, side, front, front},
+		paramtype2 = "facedir",
+		is_ground_content = false,
+		groups = {choppy = 3, oddly_breakable_by_hand = 2, flammable = 3},
+		sounds = default.node_sound_wood_defaults(),
 
-	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
-		update_vessels_shelf(pos)
-		local inv = meta:get_inventory()
-		inv:set_size("vessels", 8 * 2)
-	end,
-	on_rightclick = function(pos, node, clicker, itemstack)
-		default.node_formspec.show(clicker, pos, vessels_shelf_formspec)
-		return itemstack
-	end,
-	-- Close open viewers of a dug or replaced shelf.
-	after_destruct = function(pos)
-		default.node_formspec.refresh(pos)
-	end,
-	can_dig = function(pos,player)
-		local inv = minetest.get_meta(pos):get_inventory()
-		return inv:is_empty("vessels")
-	end,
-	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
-		if minetest.get_item_group(stack:get_name(), "vessel") ~= 0 then
-			return stack:get_count()
-		end
-		return 0
-	end,
-	on_blast = function(pos)
-		local drops = {}
-		default.get_inventory_drops(pos, "vessels", drops)
-		drops[#drops + 1] = "vessels:shelf"
-		minetest.remove_node(pos)
-		return drops
-	end,
-	on_metadata_inventory_put = function(pos)
-		update_vessels_shelf(pos)
-	end,
-	on_metadata_inventory_take = function(pos)
-		update_vessels_shelf(pos)
-	end,
-	on_metadata_inventory_move = function(pos)
-		update_vessels_shelf(pos)
-	end,
-}
-default.set_inventory_action_loggers(vessels_shelf_def, "vessels shelf")
-minetest.register_node("vessels:shelf", vessels_shelf_def)
+		on_construct = function(pos)
+			local meta = minetest.get_meta(pos)
+			local inv = meta:get_inventory()
+			inv:set_size("vessels", info.slots)
+			update_vessels_shelf(pos)
+		end,
+		on_rightclick = function(pos, node, clicker, itemstack)
+			default.containers.ensure_size(pos)
+			default.node_formspec.show(clicker, pos, vessels_shelf_formspec)
+			return itemstack
+		end,
+		on_receive_fields = function(pos, formname, fields, sender)
+			default.containers.receive(pos, sender, fields)
+		end,
+		-- Close open viewers of a dug or replaced shelf.
+		after_destruct = function(pos)
+			default.node_formspec.refresh(pos)
+		end,
+		can_dig = function(pos,player)
+			local inv = minetest.get_meta(pos):get_inventory()
+			return inv:is_empty("vessels")
+		end,
+		allow_metadata_inventory_put = function(pos, listname, index, stack, player)
+			if minetest.get_item_group(stack:get_name(), "vessel") ~= 0 then
+				return stack:get_count()
+			end
+			return 0
+		end,
+		on_blast = function(pos)
+			local drops = {}
+			default.get_inventory_drops(pos, "vessels", drops)
+			drops[#drops + 1] = name
+			minetest.remove_node(pos)
+			return drops
+		end,
+		on_metadata_inventory_put = function(pos)
+			update_vessels_shelf(pos)
+		end,
+		on_metadata_inventory_take = function(pos)
+			update_vessels_shelf(pos)
+		end,
+		on_metadata_inventory_move = function(pos)
+			update_vessels_shelf(pos)
+		end,
+	}
+	default.set_inventory_action_loggers(vessels_shelf_def, "vessels shelf")
+	minetest.register_node(name, vessels_shelf_def)
+end
 
 minetest.register_craft({
 	output = "vessels:shelf",
