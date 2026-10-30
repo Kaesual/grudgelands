@@ -79,7 +79,8 @@ nodes_checks = function()
 	out("upgrade", ok and node.name == "default:chest_steel" and node.param2 == 3 and
 		cinv:get_size("main") == 64 and cinv:get_stack("main", 32):to_string() == "default:book 5" and
 		player_inv:get_stack("main", 10):get_count() == 1 and
-		core.get_meta(chest):get_string("infotext") == "Probe\nSteel-Reinforced Chest",
+		-- the name is a translated string (escapes); the label leads.
+		core.get_meta(chest):get_string("infotext"):sub(1, 6) == "Probe\n",
 		("%s %s %s %d %q"):format(tostring(ok), tostring(why), node.name,
 			cinv:get_size("main"), core.get_meta(chest):get_string("infotext")))
 	grug_inventory.sort_list(cinv, "main")
