@@ -836,8 +836,8 @@ has(fs, "field_close_on_enter[grug_craft_qty;false]", "Q Enter keeps the window 
 has(fs, "grug_craft_max;Max]", "Q the Max button")
 says(fs, "Crafting this will give you a Cooking experience point", "Q the XP hint")
 has(fs, "(c@#7ae08a)Crafting this", "Q ... in green")
--- Round 57 layout C: the big button names the quantity.
-has(fs, go(cook) .. ";Craft ×1]", "Q Craft ×N")
+-- Round 57 layout C; Round 67 ruling 14: the big button reads plain "Craft".
+has(fs, go(cook) .. ";Craft]", "Q Craft ×N")
 geometry_ok(fs, "Q a stackable recipe")
 -- Enter recalculates, never starts.
 click(cook, {[FIELDS.qty] = "5", key_enter_field = FIELDS.qty, key_enter = "true"})
@@ -872,7 +872,7 @@ fs = cook.formspec
 -- stop button, one line, View Queue); the big button queues.
 has(fs, "Hearty Stew " .. fs_escape("×") .. "12", "J the job's line")
 has(fs, stop(cook) .. ";■]", "J the small stop button")
-has(fs, go(cook) .. ";Queue ×12]", "J Craft ×N turned into Queue ×N")
+has(fs, go(cook) .. ";Queue]", "J Craft ×N turned into Queue ×N")
 has(fs, "grug_craft_queue;" .. fs_escape("View Queue [0]") .. "]", "J View Queue")
 lacks(fs, "Crafting…", "J no indicator (one line below the bar)")
 -- 12 s job: 1.5 x 12 s / 96 frames = 187.5 -> 188 ms; elapsed 0 -> frame 1.
@@ -919,7 +919,7 @@ run_timers()
 eq(J.job_state(cook), nil, "J the job ended")
 eq(cook.sent, sent + 1, "J the end sends the page once")
 has(cook.formspec, "No job running", "J idle after the end")
-has(cook.formspec, go(cook) .. ";Craft ×1]", "J Queue ×N turned back into Craft ×N")
+has(cook.formspec, go(cook) .. ";Craft]", "J Queue ×N turned back into Craft ×N")
 eq(cook.inv:get_stack("main", 10):get_count(), 12, "J the stews in the inventory (R47)")
 check(cook.inv:is_empty(OUT), "J ... not in the output list")
 eq(feed_lines[#feed_lines], "Hearty Stew ×12 is ready", "J the feed line")
@@ -1080,7 +1080,7 @@ has(fs, "(c@#ff9f5a)Requires: Forge nearby", "S ... as a warning")
 has(fs, "style[grug_craft_recheck,grug_craft_recheck:hovered,grug_craft_recheck:pressed;" ..
 	"bgimg=grug_ui_button.png;bgcolor=#2a2a2a;textcolor=#808080;border=false]",
 	"S unavailable button keeps the same image and tint in every pointer state")
-has(fs, "grug_craft_recheck;Craft ×1]", "S ... and disabled (it cannot start)")
+has(fs, "grug_craft_recheck;Craft]", "S ... and disabled (it cannot start)")
 lacks(fs, "grug_craft_go_", "S no live Craft now")
 lacks(fs, "field[8.8,", "S no quantity field for a non-stackable output")
 says(fs, "Crafting this will not give you a Weaponsmith experience point",
@@ -1093,7 +1093,7 @@ eq(J.job_state(smith), nil, "S the disabled button never starts")
 eq(smith.sent, sent + 1, "S ... a click rebuilds the page")
 nodes[#nodes + 1] = {name = "t:forge", pos = {x = 3, y = 12, z = 0}}
 click(smith, {[FIELDS.recheck] = "Craft now"})
-has(smith.formspec, go(smith) .. ";Craft ×1]", "S with the forge within 4 nodes: enabled")
+has(smith.formspec, go(smith) .. ";Craft]", "S with the forge within 4 nodes: enabled")
 lacks(smith.formspec, "Requires: Forge", "S no hint")
 click(smith, {[FIELDS.row .. "2"] = ""})
 says(smith.formspec, "Crafting this will give you a Weaponsmith experience point",
@@ -1115,7 +1115,7 @@ eq(st_of(novice).selected, nil, "S the hidden T2 axe has no row to click (PT3)")
 st_of(novice).selected = axe.id
 open(novice)
 says(novice.formspec, "Weaponsmith tier 2 required.", "S the tier gate named")
-has(novice.formspec, "grug_craft_recheck;Craft ×1]", "S ... and the button disabled")
+has(novice.formspec, "grug_craft_recheck;Craft]", "S ... and the button disabled")
 lacks(novice.formspec, "experience point", "S no XP hint for a tier above the profession")
 
 ------------------------------------------------------------------------------
