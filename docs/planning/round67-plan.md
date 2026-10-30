@@ -663,9 +663,11 @@ for the user's verdict on a first-look default.
     work both ways; Sort, label and Upgrade keep the scroll position.
 29. **Shelves and art:** an old 16-slot bookshelf or vessels shelf shows 32
     slots when opened, its items kept. The Steel-Reinforced and Abyssal
-    textures (set A) on the chest (the open lid's inside too), the locked
-    chest, the bookshelf and the vessels shelf; a dug container drops its
-    own tier.
+    textures (Steel A strapped wood, Abyssal B metal plating) on the chest
+    (the open lid's inside too), the locked chest, the bookshelf and the
+    vessels shelf; a dug container drops its own tier. *Look:* the base tier
+    is named "Chest" / "Locked Chest" (ruling 29 said "Wooden Chest"; kept by
+    the coordinator) — rename?
 
 ## 7. Orchestration notes
 
@@ -745,7 +747,7 @@ brackets), in merge order:
 | WORLD | `bf0ecde0` (`e2335627`; `2a087b9a` … `2ead589f`) | `grug_mobs/room.lua`: one collision-box test (real node boxes, boxes up to 0.5 above the feet are footing, unknown or unloaded counts as solid) used for the spawn of mobs wider than one node (`mobs:spawn_abm_check`), the elite and rare scale (kept at the current size when the scaled body has no room; the feet kept, so scaled spiders no longer sink) and the stuck cleanup (a mob that gives up stuck is removed once no player is within 32 nodes). `grug_mobs.wants_nametag`: none for `critter` and the roles `idle` and `work`. `grug_mounts`: the underground refusal gone, a flyer needs room for its body (the bottom clamped to the feet after the review), `vertical_speed` per tier (8 and 12, defaulting to the horizontal speed). `mounts.md`, `settlements.md`, `biomes_mobs.md`, `combat_stats.md`, `module-guide.md`; fixture `tools/r67_world`, engine probe `tools/r67_world/run.sh` | MERGE AFTER FIXES (Minor: the flyer refused beside a slab or a stair's lower step); fix `e2335627`, delta review MERGE |
 | SOCIAL | `a7a0f162` (`7230cc48`; `04056c40` … `04908762`, follow-ups `c52f9748`) | The Social tab (`grug_parties/ui.lua` rewritten): the settings row, one party box (pending invitations with the count heading, or "Current Party"), the PvP section below, Online Players at full height (rows 0.54 units, faction, name, class, race, level, the star and Invite by player name); the roster event, `can_invite`, `newest_invitation`, `is_online`; refresh only for viewers on the Social page, at most one send per 2 s, held 0.5 s after a scroll; a forming party clears both players' incoming invitations, a joining member's and a demoted leader's sent ones (`clear_sent`); expiry and decline tell the inviter; the switches Party HUD and Health colours raise the local reason `"display"`. `hud.lua`: the invitation box at the party anchor (`hud_layout.invite_box`), polled by the existing 0.5 s HUD poll. `grug_pvp/page.lua` sends through `social_resend` (the 2 s limiter). Race icons `grug_classes/textures/grug_race_*.png` (set A) and `status_icons.race_icon`. `parties.md`, `pvp.md`, `inventory_equipment.md`, `mod-map.md`, `module-guide.md`; fixture `tools/r67_social`; nine fixtures follow the rename and the page | MERGE AFTER FIXES (Minor: a decline did not tell the inviter; the coordinator added the demoted leader's invitations, the local display switches and old comments); fix `7230cc48`, delta review MERGE |
 | CRAFT | `502f3ef0` (`e19c94ee`; `b023a553` … `9265bfb1`, `7d5366bf`, fixes `4f719301`, `576c98ca`, main merged in) | `navigation_layout(..., selected)`: the Creative row only on `creative:*` pages. One row per output with "Recipe i/n ◀ ▶" (opens on the first craftable variant; favourites by output, old recipe ids read as their output). Removed through `tools/r45_rg/edits.lua` and the generator: 56 stairs and slab back-routes, the 3 stem recipes (the stems drop one plank, `GRUG PATCH` in `default/nodes.lua`), the six metal rods with their 6 recipes, 18 weapon variants and price groups. Plain "Craft"/"Queue", the muted "×N per craft", "Details" with the tinted help icon left of the star; "Craftable only" follows the shown variant. Help → Materials (`grug_jobs.source_lines` behind a search). `FURNACE_FUELS` coal and charcoal 40 s, anthracite 60 s. Step `v0_67_0`, `migrations.lua`, `game.conf` 0.67.0, `upgrade.json` migrate. `items_crafting.md`, `inventory_equipment.md`, `professions.md`, `economy.md`, `ui-presentation.md`, `upgrade-contract.md`, `module-guide.md`; fixture `tools/r67_craft` and the step test `tools/r67_craft/run.sh` | MERGE AFTER FIXES (Medium: `r53_ms/e2e.py` pinned 0.53.0 as the last step; Low: favourites of removed recipe ids; the coordinator added "Craftable only" ×0 and a game reference in `items_crafting.md`); fixes `4f719301`, `576c98ca`, delta review MERGE |
-| CONTAINERS | `3e8f90c1` (`b7a8cbe0`; `357af854` … `f1517a19`, fix `b6485df8`, main merged in `50dd4e7b`) | New vendored `default/containers.lua`: twelve tier nodes (chest, locked chest, bookshelf, vessels shelf × base, Steel-Reinforced, Abyssal; open chests' `_open` nodes too) with 32 / 64 / 96 slots, direct recipes (+8 Steel Bars, +8 Abyssal Steel Bars; locked: +1 Iron Bar), drops by tier; the label (`grug_label`, 40 characters, rights by `core.is_protected`, the owner on locked chests; hover "label\nname"); Sort through `grug_inventory.sort_slots` / `sort_list` (the player's sort byte-identical); Upgrade (8 bars, `swap_node`, `set_size`, viewers retargeted, the field naming the target tier); 4 rows of 8 in a scroll container (`grug_inventory/ui.lua` `station_list`) with the scroll kept across a resend; shelves grow 16 → 32 when opened. Sixteen tier textures (set A) with licence rows; VENDOR.md; `inventory_equipment.md`, `housing.md`, `ui-presentation.md`; fixture `tools/r67_containers` and an engine probe | MERGE AFTER FIXES (Medium: a repeated Upgrade submit charged the next tier); fix `b6485df8`, delta review MERGE |
+| CONTAINERS | `3e8f90c1` (`b7a8cbe0`; `357af854` … `f1517a19`, fix `b6485df8`, main merged in `50dd4e7b`) | New vendored `default/containers.lua`: twelve tier nodes (chest, locked chest, bookshelf, vessels shelf × base, Steel-Reinforced, Abyssal; open chests' `_open` nodes too) with 32 / 64 / 96 slots, direct recipes (+8 Steel Bars, +8 Abyssal Steel Bars; locked: +1 Iron Bar), drops by tier; the label (`grug_label`, 40 characters, rights by `core.is_protected`, the owner on locked chests; hover "label\nname"); Sort through `grug_inventory.sort_slots` / `sort_list` (the player's sort byte-identical); Upgrade (8 bars, `swap_node`, `set_size`, viewers retargeted, the field naming the target tier); 4 rows of 8 in a scroll container (`grug_inventory/ui.lua` `station_list`) with the scroll kept across a resend; shelves grow 16 → 32 when opened. Sixteen tier textures (Steel A; Abyssal A, swapped to B in `fde3073c`) with licence rows; VENDOR.md; `inventory_equipment.md`, `housing.md`, `ui-presentation.md`; fixture `tools/r67_containers` and an engine probe | MERGE AFTER FIXES (Medium: a repeated Upgrade submit charged the next tier); fix `b6485df8`, delta review MERGE |
 | ART | `b1f6314e` (`2f580376`; `5e3f7633` … `29c3da35`) | GPT-6 Astra's study in `tools/r67_art/`: 44 candidates (six race icons A/B at 64 px, the Steel-Reinforced and Abyssal textures A/B, eight per tier and variant), generator, offline preview, licence rows, `REPORT.md`; the user's pick recorded | coordinator check (`generate.py --check`, 134 files) |
 | D | this section | the completion, the GUI checklist, the Help line, STATUS, AGENTS, BACKLOG, README, CHANGELOG (the version and declaration were set by CRAFT) | independent review |
 
@@ -764,8 +766,10 @@ mods`): 75 files, +2594 −936 lines: 50 Lua files (six of them vendored),
   4a), Q3 (a) the Story and Side groups stay, each by level, and the quest
   HUD story first too (rulings 19 and 19a).
 - **Art pick:** race icons **A** (coloured frontal heads), Steel-Reinforced
-  **A** and Abyssal **A** (strapped wood for both tiers; Astra had
-  recommended Abyssal B, the plated case).
+  **A** (strapped wood) and Abyssal **B** (metal plating). The user first
+  picked Abyssal A and switched to B, Astra's recommendation, after the
+  lanes merged; the coordinator swapped the eight abyssal textures and
+  their licence rows (`fde3073c`).
 - **WORLD Q1:** underground Giant Spider and Giant Rat spawns drop to about
   a tenth of the floor spots; accepted as proposed, to look at first and
   tune later.
@@ -793,6 +797,10 @@ stated):
 
 ### Deviations from the plan
 
+- **Base tier name:** ruling 29 says "Wooden Chest"; the coordinator kept
+  the existing names "Chest" and "Locked Chest" (the higher tiers are
+  "Steel-Reinforced …" and "Abyssal …"); GUI checklist item 29 asks the
+  user.
 - **Merge order:** MAP before WORLD and SOCIAL before CRAFT (plan: WORLD,
   MAP, CRAFT, SOCIAL); the files were independent, CRAFT merged main
   before its merge.
@@ -826,13 +834,13 @@ From the lanes' reports (measured there unless marked).
   Bytes per send with a party of five (fixture): no layer or Quests 10.5 →
   12.4 KB, Trainers 19.1 → 17.6 KB, Towns 20.7 → 18.6 KB. The engine logs
   41 KB per send on the Quests layer (61 markers, 335 tooltips) and 58 KB
-  on Travel; the party check at 1 s doubles the sends of an open map in a
+  on Travel at 2×; the party check at 1 s doubles the sends of an open map in a
   moving party (up to 60 a minute).
 - **WORLD** (seed 42, a cave at −400, −2550, y −112 to −49): floor spots
   for Giant Spider and Giant Rat 2683 by the one-column check → 281 with
   room (10.5 %), Spiderling 2683 → 2683; two 60 s windows: 7 wide spawns
   (2 stuck 3 s later) → 0; the stuck cleanup 2 flagged, 2 removed.
-  Nametag carriers: 1124 fewer over the 144 settlements (Highcourt alone
+  Nametag carriers: up to 1124 fewer over the 144 settlements (Highcourt alone
   165); 0 of the 1124 idle or work sockets holds a quest giver.
 - **SOCIAL, tab body without the PvP section** (fixture): 1 / 10 / 50
   players 1,998 / 6,749 / 27,988 bytes; the full page with 33 rows in the

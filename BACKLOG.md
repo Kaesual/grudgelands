@@ -21,6 +21,10 @@ Remaining: the user's desktop/web
 [GUI checklist](docs/planning/round67-plan.md#gui-checklist-desktop-and-web),
 joined to the joint GUI test of 0.57–0.66. Carry-overs:
 
+- **Deploy note (D review):** the 0.67.0 CHANGELOG's host instructions follow
+  the 0.53.0 form (no `--map-reset`); the production world (0.55.1) crosses
+  the map resets of 0.58–0.63, so its update uses the `--map-reset`
+  procedure of the upgrade contract.
 - **First-look defaults** to tune after the GUI test: underground Giant
   Spider and Giant Rat density (about a tenth of the old floor spots; raise
   the cave rows' chance if too sparse), markers of 12 px at 1280×720, the
@@ -87,7 +91,7 @@ Remaining: the user's desktop/web
 joined to the joint GUI test of 0.57–0.65. Carry-overs:
 
 - **Open user question (MAP Q1):** desktop HUD scaling above 1 now only caps
-  the markers (1920×1080 at HUD 2: 64 → 32 px in both maps); the server
+  the markers (1920×1080 at HUD 2: 42 → 21 px in both maps since 0.67.0); the server
   cannot tell it from a phone's density. Kept as ruled until the GUI test.
 - **First-look defaults** to tune after the GUI test: the equip notice's
   6 s and place, the blocked offhand's dim level, the creation buttons'
@@ -113,8 +117,9 @@ joined to the joint GUI test of 0.57–0.65. Carry-overs:
 - **UI, not growing:** the vendored sign, book and mob dialogs and the
   welcome window; checkbox and dropdown captions, item counts and tooltips
   keep the client font (engine).
-- **MAP, cache churn:** **done in 0.67.0**, Round 67 removed the
-  displacement solve with `mask_of` and its caches.
+- **MAP, cache churn:** half done in 0.67.0: the solve cache is gone;
+  `mask_of` (8 sizes, now 11–21 × HUD) still caches the tooltip
+  rectangles; measure if it shows.
 - **MAP, `r44_mq`:** one marker-size check computes its expectation with
   `M.fit` itself; `r66_map` pins the real numbers.
 - **MAP, dead baked icon art:** `art/baked_*`, the icons in `baked_art.lua`

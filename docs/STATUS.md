@@ -13,7 +13,7 @@ and about two thirds of their size (21 px at 1080p), flat layer buttons,
 the 1 s party check, a compact quest list and quest HUD both story first,
 then by level; flying underground with a room check and the vertical
 flight speed per tier (8 and 12); nametags only on NPCs with a function
-and on mobs that are fought (1124 carriers fewer); wide mobs spawn and
+and on mobs that are fought (up to 1124 carriers fewer); wide mobs spawn and
 scale only where their box fits, and a stuck one is removed when nobody
 watches; one crafting row per output with a variant switch, the stairs
 and stem back-recipes and the metal rods removed (676 → 593 recipe
@@ -23,7 +23,7 @@ only on Creative pages; chests with Sort and a label, and chests, locked
 chests, bookshelves and vessels shelves in three tiers (32 / 64 / 96 slots,
 direct recipes and an Upgrade button, scrolling lists; shelves grow from
 16 to 32). Race icons and tier textures by GPT-6 Astra (the user's pick:
-race A, Steel A, Abyssal A). Lanes MAP (MERGE), WORLD, SOCIAL, CRAFT and
+race A, Steel A, Abyssal B; Abyssal switched from A after the merges). Lanes MAP (MERGE), WORLD, SOCIAL, CRAFT and
 CONTAINERS (MERGE after one fix round each, delta reviews MERGE), ART
 checked by the coordinator; merges `adffe004`, `bf0ecde0`, `a7a0f162`,
 `502f3ef0`, `3e8f90c1`, `b1f6314e`, then this documentation lane D.
