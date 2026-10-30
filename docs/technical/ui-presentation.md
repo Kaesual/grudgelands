@@ -75,6 +75,10 @@ and returns a click index plus whether this was a scroll change. Owners retain
 all id mapping, permissions and action validation. `rows_reset` clears transient
 scroll on page/giver changes; redraws clamp it to the current range. Explicit
 `reveal_selected` brings initial/automatic giver selections into view.
+The option `compact` (Round 67, the map window's quest list) makes every row
+one line of 0.6 units: a smaller icon, the title cut with "…", no secondary
+line and the row's `badge` text (in `badge_color`) in a right-hand column as
+wide as the longest badge; rows without it keep their bytes.
 
 These are native buttons: mouse selection and Tab/Shift-Tab focus with Enter
 activation replace table/textlist arrow-key selection. Scrolling is client-side;
@@ -90,15 +94,17 @@ header and the labels after it follow `text_growth`, and so does its body
 texts and the zone labels (font and box) grow by the map form's own
 `text_growth`, taken from the raw window report; up to a 1620 px high screen
 the growth is 1 and the form's bytes are unchanged (`tools/r66_ui/bytes.lua
-map`). Other native tables, including Admin Mail,
-keep their own existing behavior.
+map`). Since Round 67 (ruling 18) the map window itself is no longer
+capped: it takes 90 % of the client's own `max_formspec_size` with
+`padding[0,0]`, while its text keeps the growth above. Other native tables,
+including Admin Mail, keep their own existing behavior.
 
 Native frame fitting remains enabled, with a viewport ceiling
 (`grug_core/ui_window.lua`). On each existing rebuild, `window_padding(player,
 base, info)` limits the available viewport to a height of
 `min(H, max(1080, 2/3 H))` and a width of `1920 · k` (at most W), `k` being
 that height over 1080 (Round 66 ruling 4; Full HD before), retaining the
-ordinary 5% padding (Map uses 0%). Up to a 1620 px high screen this is the
+ordinary 5% padding (Map uses 0% and, since Round 67, no ceiling). Up to a 1620 px high screen this is the
 Full-HD ceiling, unchanged; a 3840×2160 screen lays out like 2560×1440 and
 the inventory window fills about 60 % of its height (90 % at 1080p, 68 % at
 1440p). The engine then applies its usual DPI, GUI-scale and form-size
@@ -118,8 +124,9 @@ Quickbar therefore adds it after its existing left anchor.
 maximum formspec size for responsive layouts and fitted typography (with
 `full_hd`, the Full-HD-capped one that text sizes are measured against). A
 derived report is marked `capped` and passes through unchanged, since the
-ceiling follows the screen height. Map uses it both for its body budget and
-zone-label metrics. The derivation retains the native fixed image-size floor
+ceiling follows the screen height. Map used it for its body budget and
+zone-label metrics until Round 67; it now reads the client's own report.
+The derivation retains the native fixed image-size floor
 (`0.5555 * 96 * real_gui_scaling`); density is never assumed to equal the GUI
 setting. The fixture `tools/ui_window_cap` compares native fitting equations
 on small, Full-HD, WQHD, 4K, ultrawide and portrait windows, GUI 1/1.5,
@@ -195,11 +202,12 @@ scroll without changing list capacity or inventory routes.
 The map reserves the same header **inside** its responsive whole-window
 budget. `window_size(info, header_h)` optionally returns the remaining body;
 without the second argument it retains the whole-window result. The existing
-minimum-size floor remains. Two equal columns hold the map viewport and separate quest-list/detail panels.
+minimum-size floor remains. The map viewport takes about 62 % of the body
+(Round 67; two equal columns before), the quest-list/detail panels the rest,
+the flat layer buttons above the map (a dropdown from 0.63.0 to 0.66.1).
 At 1× the undistorted map is centered within its viewport; enlarged zooms use
 the available viewport. Scroll factors and thumb sizes account for the actual
-image extent on each axis. Layer dropdown indices stay stable across quest
-selection; unchanged dropdown echoes do not clear that selection. The map
+image extent on each axis. The map
 session keeps a separate tab mapping; switching to an allowed inventory
 tab cancels pending map sends before sfinv displays the target. The deferred
 home reset cannot overwrite that target, and the existing shown-form backstop,
