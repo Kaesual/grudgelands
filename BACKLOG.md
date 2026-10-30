@@ -6,6 +6,24 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## 0.66.1 — performance log lines (carry-overs)
+
+Delivered in 0.66.1 (compatible): `grug_perf`, the `[GRUG-PERF]` minute,
+spike and `profile_saved` lines and the settings `grug_perf_monitor` and
+`grug_perf_profile_minutes`
+([module guide](docs/technical/module-guide.md#performance-log-lines)).
+Review notes (no severity):
+
+- **Silent profile setting:** with `grug_perf_profile_minutes` above 0 but
+  the engine's `profiler.load` off, the periodic save does nothing without
+  a word (`mods/CORE/grug_perf/init.lua`). The setting's description says
+  so; one info line at load would help an admin who set only one of the
+  two.
+- **Spike rounding:** a spike line can show `step_ms` 250 for a 250.04 ms
+  step (counted correctly as a spike, rounded to 0.1 ms for the line).
+- **Minute callback errors:** an error inside the once-a-minute summary
+  would surface as a globalstep error. Every call in it is safe today.
+
 ## Round 66 — polish (GUI acceptance pending)
 
 Delivered in 0.66.0 (compatible): the two-handed shift-click swap, the
