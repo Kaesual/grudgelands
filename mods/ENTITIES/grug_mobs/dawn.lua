@@ -47,6 +47,8 @@ local function bound(ent)
 		or ent._grug_royal_king ~= nil or ent._grug_leader ~= nil
 		or ent._grug_tier == "rare" or ent._grug_tier == "boss"
 end
+-- Also the stuck cleanup's list of mobs that stay (room.lua, Round 67).
+grug_mobs.mob_bound = bound
 
 -- In a fight: a target (mobs_redo `attack`), the attack or runaway state, an
 -- engagement with a player (grug_core) or the evade run home after a fight.

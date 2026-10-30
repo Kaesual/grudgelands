@@ -588,7 +588,11 @@ end
 local GAVE_UP_NODES = 8
 local GAVE_UP_SECONDS = 15
 
+-- Round 67 ruling 26: a mob whose body is stuck in walkable nodes at this
+-- point is flagged and removed once nobody watches (room.lua give_up_stuck,
+-- stuck_tick).
 function grug_mobs.give_up_target(self)
+	grug_mobs.give_up_stuck(self)
 	local target = self.attack
 	local pos = target and target:get_pos()
 	self.temp = self.temp or {}
