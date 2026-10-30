@@ -8,14 +8,18 @@ automatic.sizes = {
 	dual_furnace = {input = 2, fuel = 1, output = 4},
 }
 
--- Seconds of flame per item in both furnaces; wood burns 15 s and leaves
--- 2 s (below). Round 47 ruling 11: Anthracite 120 s. Round 48 (sell plan
--- ruling 1, §3.1): cactus burns like a log, every leaves node briefly (five
--- per 10-second smelt); saplings and papyrus stay no fuel.
+-- Seconds of flame per item in both furnaces; every log (group tree) burns
+-- 15 s and every leaves node 2 s (below). Round 67 ruling 17: Coal and
+-- Charcoal 40 s, Anthracite 60 s (half the Round 47 times: one Coal smelts
+-- four bars, one Anthracite six). Round 48 (sell plan ruling 1, §3.1):
+-- cactus burns like a log, every leaves node briefly (five per 10-second
+-- smelt); saplings and papyrus stay no fuel. Only this table and the two
+-- groups count: the engine's fuel recipes are not read. The Claim Stone's
+-- fuel is its own (grug_housing).
 local FURNACE_FUELS = {
-	["default:coal_lump"] = 80,
-	["grug_smelting:charcoal"] = 80,
-	["grug_materials:anthracite"] = 120,
+	["default:coal_lump"] = 40,
+	["grug_smelting:charcoal"] = 40,
+	["grug_materials:anthracite"] = 60,
 	["default:cactus"] = 15,
 }
 
