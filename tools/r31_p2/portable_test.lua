@@ -230,9 +230,9 @@ do
 		end,
 	})
 	-- grug_parties owns the page, draws the section from TOP down and sends
-	-- it (social_resend: at once unless the player list is being scrolled).
-	rawset(_G, "grug_parties", {PAGE = PAGE, social_resend = function(player, context)
-		sfinv.set_player_inventory_formspec(player, context)
+	-- it (social_resend: its 2 s limiter, tools/r44_pp; at once here).
+	rawset(_G, "grug_parties", {PAGE = PAGE, social_resend = function(player)
+		sfinv.set_player_inventory_formspec(player, sfinv.contexts[player:get_player_name()])
 	end})
 	rawset(_G, "sfinv", {
 		pages = {}, pages_unordered = {}, contexts = {},

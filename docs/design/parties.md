@@ -50,8 +50,9 @@ Accepted defaults:
 - Invitations are short-lived (120 seconds), session-only, and require an
   online inviter/recipient to send/accept. A player in a party cannot be
   invited and holds no invitations: when a party forms, the pending
-  invitations of both the joining player and the inviter are cleared
-  (Round 67). Invitations never go through the
+  invitations of both the joining player and the inviter are cleared, and
+  so are the ones the joining player had sent (a member cannot invite);
+  the inviter, who leads, keeps the ones it sent (Round 67). Invitations never go through the
   mail ([mail.md](mail.md)); leaving the server expires that player's
   invitations but **never** their membership.
 - Limit pending incoming invitations to ten so many different senders cannot
@@ -119,7 +120,7 @@ Right, at full height: the **Online Players** list.
   open), at most one every 2 s: changes in one server step make one send,
   a change inside the 2 s goes out when they end. A send waits 0.5 s after
   a scrollbar move, and the scroll position survives a resend. The PvP
-  section's countdown still re-sends once a second while it runs.
+  section's countdown goes through the same limit, so it steps by 2 s.
 
 ## Party health colors
 

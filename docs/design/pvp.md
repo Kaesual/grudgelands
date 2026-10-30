@@ -130,7 +130,10 @@ eligibility and flag".
   | Enemy generals killed | the two fortress Generals |
   | Enemy kings killed | the six kings |
 
-  The open tab is re-sent once a second only while its text changes.
+  The open tab is re-sent only while its text changes, checked once a
+  second and since Round 67 at most once per 2 s (the Social tab's limit,
+  [parties.md](parties.md)), so a countdown steps by 2 s; the player's own
+  press re-sends at once.
 - **Status icons** ([inventory_equipment.md](inventory_equipment.md)):
   `pvp_contested` ("Contested Territory" or "Enemy Territory", untimed)
   while the location flags the player; `pvp_tagged` ("PvP flagged") with

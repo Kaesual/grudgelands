@@ -1946,7 +1946,8 @@ tools](#player-meta-read-by-external-tools).
   invitations); each viewer whose current sfinv page is Social is asked
   once per server step (`core.after(0)`) and sent at most once per
   `SEND_GAP_US` (2 s), the owed send by one `core.after`; a scrollbar move
-  holds sends for `QUIET_US` (0.5 s). The coalescing state lives in the
+  holds sends for `QUIET_US` (0.5 s); the PvP section's countdown goes
+  through the same limiter (`grug_parties.social_resend`). The coalescing state lives in the
   sfinv context; every build counts as a send. Favourites are player meta
   `grug_parties:favorites` (a serialised sorted name list). Fixture
   `tools/r67_social`.

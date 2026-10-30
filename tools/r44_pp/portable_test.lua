@@ -17,7 +17,8 @@
 --      dropdown, textlist and table event and a row's Invite reaches its
 --      grug_parties or grug_pvp call; the flag button re-sends the page once;
 --   S. the PvP 1 s check: an open tab re-sent only when the section's text
---      changed, another page asked nothing; grug_pvp changes re-send at once;
+--      changed, through the Social tab's 2 s limiter (Round 67), another
+--      page asked nothing; grug_pvp changes re-send at the step's end;
 --   H. Help without an inventory view, its bodies inside the window; Help
 --      and the welcome window name the new tabs, E, Z and the aux1 notes;
 --   X. no player-facing string in mods/ (Lua string literals outside
@@ -594,24 +595,33 @@ eq(alice.sent, sent + 1, "B an invitation change re-sends the open page")
 -- S. The PvP 1 s check
 --
 
+-- Server steps of 0.1 s: the clock moves, then the globalsteps and the due
+-- core.after jobs (the Social tab's limiter) run.
 local function step(seconds)
 	local t = 0
 	while t < seconds - 1e-9 do
 		t = t + 0.1
+		now_us = now_us + 100000
 		for _, fn in ipairs(steps) do fn(0.1) end
+		run_after()
 	end
 end
 sfinv.contexts.bob, sfinv.contexts.cyd, sfinv.contexts.dax = nil, nil, nil
-step(1) -- align the accumulator
+step(3) -- align the accumulator, past the limiter's gap
 sent = alice.sent
 step(3)
 eq(alice.sent, sent, "S an unchanged open tab is not re-sent")
 pvp_state.alice.seconds_left = 59
 step(1)
 eq(alice.sent, sent + 1, "S a countdown second re-sends once")
+-- Since Round 67 the countdown goes through the Social tab's limiter: at
+-- most one send per 2 s, so it steps by 2 s.
 pvp_stats.alice.kills = 5
 step(1)
-eq(alice.sent, sent + 2, "S a new counter value re-sends")
+eq(alice.sent, sent + 1, "S a change 1 s after a send is owed")
+pvp_state.alice.seconds_left = 58
+step(1)
+eq(alice.sent, sent + 2, "S ...and goes out 2 s after the last send, once")
 context.page = "grug_inventory:help"
 pvp_state.alice.seconds_left = 30
 local before_state = pvp_calls.state
@@ -619,10 +629,13 @@ step(3)
 eq(alice.sent, sent + 2, "S another page gets nothing")
 eq(pvp_calls.state, before_state, "S another page asks grug_pvp nothing")
 for _, fn in ipairs(pvp_change) do fn(alice, {}) end
+step(3)
 eq(alice.sent, sent + 2, "S a change on another page re-sends nothing")
 context.page = PAGE
 for _, fn in ipairs(pvp_change) do fn(alice, {}) end
-eq(alice.sent, sent + 3, "S a change on the open tab re-sends at once")
+eq(alice.sent, sent + 2, "S a change on the open tab waits for the step's end")
+run_after()
+eq(alice.sent, sent + 3, "S ...and then re-sends, the gap being over")
 local ok = pcall(pvp_change[1], make_player("newcomer"), {flagged = false})
 check(ok, "S a join-time change without a context does nothing")
 

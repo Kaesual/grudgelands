@@ -10,9 +10,10 @@
 -- Real coordinates, in a card below the party box (Round 67 ruling 4a):
 -- state and button left, statistics right. While the tab is the player's
 -- page the section's text is compared once a second and the page re-sent
--- only when it changed, so a countdown costs one send per second and a
--- quiet tab none; a state change re-sends it at once. A send waits while
--- the player drags the player list's scrollbar (grug_parties.social_resend).
+-- only when it changed, through the Social tab's limiter
+-- (grug_parties.social_resend: at most one send per 2 s, none while the
+-- player drags the list's scrollbar), so a countdown steps by 2 s and a
+-- quiet tab costs nothing. The player's own press re-sends at once.
 
 local V = dofile(core.get_modpath(core.get_current_modname()) .. "/view.lua")
 local FLAG_FIELD = "grug_pvp_flag"
@@ -57,13 +58,17 @@ local function section(player, context, y)
 end
 
 -- Re-sends the page when the player has it open and the section's text
--- changed.
-local function refresh(player)
+-- changed: at once for the player's own press, else through the limiter.
+local function refresh(player, now)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == grug_parties.PAGE and
 			V.page_key(grug_pvp.state(player), grug_pvp.stats(player)) ~=
 			context.grug_pvp_key then
-		grug_parties.social_resend(player, context)
+		if now then
+			sfinv.set_player_inventory_formspec(player, context)
+		else
+			grug_parties.social_resend(player)
+		end
 	end
 end
 
@@ -75,12 +80,12 @@ grug_parties.pvp_section = {
 		-- The only PvP sound: the player's own press (user, Round 34);
 		-- automatic flag changes stay silent.
 		if grug_pvp.flag_now(player) then grug_sounds.play("pvp_on", player) end
-		refresh(player)
+		refresh(player, true)
 		return true
 	end,
 }
 
-grug_pvp.register_on_change(refresh)
+grug_pvp.register_on_change(function(player) refresh(player) end)
 
 local elapsed = 0
 core.register_globalstep(function(dtime)

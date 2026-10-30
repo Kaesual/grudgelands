@@ -21,7 +21,8 @@
 --   H  the HUD box: shown with the inviter and the seconds, "+N more",
 --      seconds kept current by the poll, independent of the Party HUD
 --      switch, hidden on expiry, decline and accept; a party forming clears
---      the inviter's own invitations too.
+--      the inviter's own invitations too, and the ones the joining member
+--      had sent.
 --   F  favourites in player meta: the star toggles, an offline name cannot
 --      be added, the order follows.
 --   C  the coalesced refresh: a burst in one step gives one send, a change
@@ -413,8 +414,10 @@ check(alice.sent > alice_sends and invite_button(alice.formspec, "bob"),
 submit(alice, {grug_social_inv_bob = "Invite"})
 step(1.1)
 grug_parties.invite(zed, "alice")
+grug_parties.invite(bob, "anna")
 step(0.6)
 check(hud_count(alice) > 0, "H alice holds zed's invitation")
+has(hud_texts(anna), "bob has invited you", "H anna holds bob's invitation")
 fs = resend(bob)
 submit(bob, {grug_party_accept = "Accept"})
 fs = bob.formspec
@@ -425,6 +428,8 @@ lacks(hud_texts(bob), "has invited you", "H accepted: the joiner's box goes")
 step(0.6)
 lacks(hud_texts(alice), "has invited you", "H a party forming clears the inviter's invitations too")
 eq(#grug_parties.pending(alice), 0, "H ...in the store as well")
+lacks(hud_texts(anna), "has invited you", "H a member's sent invitations go from their boxes")
+eq(#grug_parties.pending(anna), 0, "H ...and from the store")
 
 --
 -- I. With a party: leader, member, full party

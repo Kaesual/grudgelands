@@ -297,9 +297,20 @@ function grug_parties.accept(player, inviter)
 	group.levels[name] = grug_xp.get_level(player)
 	membership[name] = id
 	-- A party member holds no invitations (Round 67 ruling 4): when a party
-	-- forms, the inviter's go as well as the joining player's.
+	-- forms, the inviter's go as well as the joining player's. The joining
+	-- player is a member, not the leader, so the invitations it sent could no
+	-- longer be accepted: they go too, from their recipients' boxes. The
+	-- inviter, who leads, keeps the ones it sent.
 	incoming[name], incoming[inviter] = nil, nil
+	local recipients = {}
+	for recipient, list in pairs(incoming) do
+		if list[name] then
+			list[name], recipients[recipient] = nil, true
+			if not next(list) then incoming[recipient] = nil end
+		end
+	end
 	persist()
+	emit(recipients, "invitation")
 	emit(affected(group), "membership")
 	return true, "Joined the party."
 end

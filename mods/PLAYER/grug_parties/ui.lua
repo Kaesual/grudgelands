@@ -11,8 +11,8 @@
 -- (grug_parties.register_on_roster_change) or of the viewer's own
 -- invitations re-sends the page, only to players whose current page this
 -- is, at most once per SEND_GAP_US: changes in one server step make one
--- send, a change inside the gap is owed and goes out when it ends. Every
--- build counts as a send (the PvP section's countdown and the player's own
+-- send, a change inside the gap is owed and goes out when it ends; the PvP
+-- section's countdown too. Every build counts as a send (the player's own
 -- clicks re-send at once). A scrollbar move holds every send for QUIET_US
 -- (the map window's rule): a form rebuilt while the player drags the
 -- scrollbar would break the drag. The client does not keep the scroll
@@ -415,14 +415,10 @@ grug_parties.register_on_roster_change(function()
 	end
 end)
 
--- For the PvP section's countdown (grug_pvp/page.lua): re-sends the open
--- page now, or owes it while the player drags the scrollbar.
-function grug_parties.social_resend(player, context)
-	if core.get_us_time() < send_state(context).quiet then
-		request(player:get_player_name())
-		return
-	end
-	sfinv.set_player_inventory_formspec(player, context)
+-- For the PvP section (grug_pvp/page.lua): its countdown and state changes
+-- go through the same limiter, so the countdown may step by 2 s.
+function grug_parties.social_resend(player)
+	request(player:get_player_name())
 end
 
 -- The scrollbar's value from every event of the inventory form (CHG for its

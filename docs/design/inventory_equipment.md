@@ -985,8 +985,8 @@ is gone. Since Round 31 a PvP tab
 (since Round 44 the PvP section of the Party & PvP tab, the Social tab since
 Round 67, `grug_pvp/page.lua`) holds the "Flag me for PvP"
 button, the current state (safe, or flagged with the reason and the seconds
-left; PvP combat) and the PvP statistics; it is re-sent once a second only
-while its text changes.
+left; PvP combat) and the PvP statistics; it is re-sent only while its text
+changes, checked once a second and since Round 67 at most once per 2 s.
 Party rows show name and HP only, with explicit offline state. HUD allocation
 uses the shared layout authority so party, quest and transient notices do not
 overlap existing combat bars, target information or status effects.
