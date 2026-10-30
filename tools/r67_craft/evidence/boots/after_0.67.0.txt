@@ -1,0 +1,11 @@
+launcher: staged probe: grug_probe_r67_craft
+seconds: 18, exit 0
+joins: ['smith logged in (protocol 52), stayed 4.0 s']
+--- log lines
+ACTION[Main]: [grug_core] world version 0.67.0, game 0.67.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38087.
+ACTION[Server]: smith [127.0.0.1] joins game. List of players: smith
+ACTION[Server]: [r67_craft_probe] joined smith
+ACTION[Server]: [r67_craft_probe] left smith
+ACTION[Server]: smith leaves game. List of players: 
+ACTION[Server]: [r67_craft_probe] observations written: every planned character left
