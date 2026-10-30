@@ -7,7 +7,8 @@
 -- icon since Round 44), innkeepers, the player's home and discovered
 -- waystones (Round 29). Settlements, points of interest, kings and dragons
 -- use the same separate markers as the world map (Round 64; sized by the
--- drawn minimap since Round 66, marker_px below). Under it a line names the player's location (Round 28 M1,
+-- drawn minimap since Round 66, marker_px below; since Round 67 at their
+-- anchors, never displaced, stacked by importance, markers.rank). Under it a line names the player's location (Round 28 M1,
 -- location.lua), and while a capital's music plays a "Now playing" box under
 -- that line names the track (0.45.1; grug_ambience tells it which).
 --
@@ -93,9 +94,10 @@ local SLOW = 5.0
 -- resize 0.2 s after it ends; the location is sampled about once a second).
 local WINDOW = 0.5
 local PARTY_SLOTS = 9
--- Drawn sizes in HUD pixels (scaled with HUD scaling like every HUD image);
+-- The arrows' drawn size in HUD pixels at the reference (scaled with HUD
+-- scaling like every HUD image; markers.ARROW, the markers' markers.SIZE);
 -- the markers and arrows inside the hole at most, see marker_px.
-local ICON, PARTY_ARROW, PLAYER_ARROW = 32, 32, 32
+local PARTY_ARROW, PLAYER_ARROW = markers.ARROW, markers.ARROW
 -- A rim arrow fills RIM_FILL of the bezel ring's width; its chevron spans
 -- RIM_EXTENT of its 32 px texture from tip to back, outline included.
 local RIM_FILL, RIM_EXTENT = 0.85, 21 / 32
@@ -128,8 +130,9 @@ local PLAYING_ICON = "grug_ambience_note.png"
 local base, view -- set by M.install
 
 -- Round 66 ruling 5: the markers and the arrows inside the hole keep the
--- share of the hole they have on a 1920x1080 desktop at HUD scale 1 (32 px
--- there), never above 32 x HUD scaling, never below markers.MIN. The box is
+-- share of the hole they have on a 1920x1080 desktop at HUD scale 1 (21 px
+-- there since Round 67, the arrows 32), never above that x HUD scaling,
+-- never below markers.MIN. The box is
 -- a quarter of the window's height in real pixels whatever the HUD scaling
 -- (hud_layout.minimap_box), so HUD-scaled markers alone outgrow it on a
 -- high-density screen. Kept on the frame (a new one per window change).
@@ -353,20 +356,16 @@ end
 -- their state, the Steward, trainers, innkeepers, home and waystones.
 local PROVIDERS = {quest=true, service=true, home=true, waypoint=true,
  settlement=true, poi=true, boss=true, pvp=true}
-local function static_markers(player, frame)
- local source = {}
+-- Each at its anchor (Round 67 ruling 20: overlaps are allowed), with its
+-- importance (markers.rank) for the z-index.
+local function static_markers(player)
+ local result = {}
  for _, marker in ipairs(atlas.collect_markers(player, PROVIDERS)) do
   -- The clash-site landmark already represents this place on the minimap.
-  if marker.kind ~= "rift_boss" then source[#source+1] = marker end
- end
- local size = marker_px(frame)
- local offsets = markers.offsets(player, PROVIDERS, source, frame.f/view.npp, frame.f/view.npp, size)
- local result = {}
- for _, marker in ipairs(source) do
-  local texture, offset = markers.texture(marker), offsets[marker.id]
+  local texture = marker.kind ~= "rift_boss" and markers.texture(marker)
   if texture then
    result[#result+1] = {id=marker.id, x=marker.position.x, z=marker.position.z,
-    texture=texture, kind=marker.kind, dx=offset and offset.dx or 0, dy=offset and offset.dy or 0}
+    texture=texture, kind=marker.kind, rank=markers.rank(marker)}
   end
  end
  return result
@@ -593,10 +592,7 @@ local function draw_map(player, state, frame, mx, my)
 	for index, marker in ipairs(state.near) do
 		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
 			marker.x, marker.z)
-  x, y = x + marker.dx, y + marker.dy
-  local dx, dy = x-frame.center_x, y-frame.center_y
-  distance = math.sqrt(dx*dx + dy*dy)
-  if distance <= limit then
+		if distance <= limit then
 			count = count + 1
 			local row = rows[count]
 			if not row then row = {}; rows[count] = row end
@@ -627,10 +623,8 @@ local function draw_map(player, state, frame, mx, my)
    end
    element.marker_id, hud.by_marker[id] = id, element
   end
-  local kind = row.marker.kind
-  local z = kind == "quest" and Z.marker+3 or
-   (kind == "home" or kind == "waypoint") and Z.marker+2 or
-   (kind == "steward" or kind == "service") and Z.marker+1 or Z.marker
+  -- by importance (markers.rank: 0 to 10), all under the bezel
+  local z = Z.marker + row.marker.rank
   if element.z ~= z then
    player:hud_change(element.id,"z_index",z)
    element.z = z
@@ -735,18 +729,19 @@ local function update(player, state, slow, window)
 		changes = changes + draw_square(player, state, frame)
 	end
 	if slow then state.party = nil end
-	if slow or not state.static or state.layout_frame ~= frame then
+	if slow or not state.static then
 		local key = static_key(player)
-		if not state.static or key ~= state.static_key or state.layout_frame ~= frame then
-			state.static, state.static_key, state.near = static_markers(player, frame), key, nil
-   state.layout_frame = frame
+		if not state.static or key ~= state.static_key then
+			state.static, state.static_key, state.near = static_markers(player), key, nil
 		end
 	end
+	-- Another frame draws the markers at another size: the margin below.
+	if state.near_frame ~= frame then state.near, state.near_frame = nil, frame end
 	if not state.near then
 		-- the static markers under the cell's texture, in draw order
 		state.near = {}
 		local size = view.texture
-  local margin = ICON * marker_px(frame) / markers.SIZE / frame.f
+		local margin = marker_px(frame) / frame.f
 		for _, marker in ipairs(state.static) do
 			local px, py = V.base_pixel(view, marker.x, marker.z)
 			if px >= state.ox-margin and px <= state.ox+size+margin and

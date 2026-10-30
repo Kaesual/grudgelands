@@ -24,6 +24,26 @@ local function lines(text, width)
     return first, table.concat(chars, "", split + 1, last) .. (last < #chars and "…" or "")
 end
 
+-- The compact variant (Round 67 ruling 19, the map window's quest list):
+-- `spec.compact` makes every row one line of COMPACT_H units, the title cut
+-- with "…" (whole in the tooltip), a smaller icon, no subtitle and the
+-- row's `badge` text (e.g. "[Lv 12]", in `badge_color`) in a column at the
+-- right edge, as wide as the longest badge needs. Rows without it keep
+-- their form byte for byte.
+local COMPACT_H, BADGE_CHAR = 0.6, 0.13
+
+-- The badge column's width for compact rows (0 without badges).
+local function badge_width(spec, scale)
+    local longest = 0
+    for _, row in ipairs(spec.rows) do
+        if row.badge and not row.header then
+            local _, extra = tostring(row.badge):gsub("[\128-\191]", "")
+            longest = math.max(longest, #tostring(row.badge) - extra)
+        end
+    end
+    return longest > 0 and (longest * BADGE_CHAR * math.max(1, scale) + 0.16) or 0
+end
+
 function UI.rows_reset(state, name)
     if state._ui_rows then state._ui_rows[name] = nil end
 end
@@ -34,12 +54,20 @@ function UI.rows(state, spec)
     state._ui_rows[spec.name] = saved
     local scale, width = spec.scale or 1, spec.w - 0.28
     local rows, height = {}, 0
+    local badge_w = spec.compact and badge_width(spec, scale) or 0
     for index, row in ipairs(spec.rows) do
-        local text_x = row.icon and 0.68 or 0.16
+        local text_x = row.icon and (spec.compact and 0.56 or 0.68) or 0.16
         local first, second = lines(row.title, math.max(8,
-            math.floor((width - text_x - 0.16) / (0.17 * math.max(1, scale)))))
-        local h = row.header and 0.55 or math.max(spec.row_h or 1.25,
-            second and 1.55 or 1.25)
+            math.floor((width - text_x - 0.16 - badge_w) / (0.17 * math.max(1, scale)))))
+        local h
+        if row.header then
+            h = 0.55
+        elseif spec.compact then
+            h = COMPACT_H
+            if second then first, second = first:gsub(" $", "") .. "…", nil end
+        else
+            h = math.max(spec.row_h or 1.25, second and 1.55 or 1.25)
+        end
         rows[index] = {row = row, y = height, h = h, first = first, second = second, x = text_x}
         height = height + h
     end
@@ -82,15 +110,23 @@ function UI.rows(state, spec)
             if row.selected then
                 fs[#fs + 1] = ("box[0,%.3f;0.035,%.3f;%s]"):format(y, item.h - 0.06, UI.colors.accent)
             end
-            if row.icon then
+            if row.icon and spec.compact then
+                fs[#fs + 1] = ("image[0.12,%.3f;0.36,0.36;%s]"):format(y + 0.09, esc(row.icon))
+            elseif row.icon then
                 fs[#fs + 1] = ("image[0.12,%.3f;0.42,0.42;%s]"):format(y + 0.2, esc(row.icon))
             end
             fs[#fs + 1] = ("style_type[label;font=normal;font_size=*%.3f]label[%.3f,%.3f;%s]"):
-                format(scale, item.x, y + 0.32, esc(item.first))
+                format(scale, item.x, y + (spec.compact and (item.h - 0.06) / 2 or 0.32), esc(item.first))
+            if spec.compact and row.badge then
+                local badge = tostring(row.badge)
+                fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(width - badge_w + 0.08,
+                    y + (item.h - 0.06) / 2,
+                    esc(row.badge_color and core.colorize(row.badge_color, badge) or badge))
+            end
             if item.second then
                 fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(item.x, y + 0.69, esc(item.second))
             end
-            if row.subtitle then
+            if row.subtitle and not spec.compact then
                 local subtitle, continuation = lines(row.subtitle, math.max(8,
                     math.floor((width - item.x - 0.16) / (0.15 * math.max(1, scale)))))
                 fs[#fs + 1] = ("style_type[label;font_size=*%.3f]label[%.3f,%.3f;%s]"):

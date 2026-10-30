@@ -21,7 +21,10 @@
 --   C  the camps' icons: war camps by the slot's faction, construction
 --      camps by their race's faction, fortresses unchanged, every variant
 --      shipped with its master's mask.
--- Prints the size table and "R66 MAP PORTABLE PASS checks=<n>".
+-- Prints the size table and "R66 MAP PORTABLE PASS checks=<n>". Round 67
+-- updated the pinned sizes (markers 21 px at the reference, 32 before; the
+-- floor 11, 16 before) and measures the map window on the client's own
+-- report (ruling 18: no viewport cap for it).
 local repo = arg[1] or "."
 local MAP = repo .. "/mods/PLAYER/grug_map"
 local checks, failures = 0, {}
@@ -48,6 +51,7 @@ dofile(repo .. "/mods/CORE/grug_core/ui_window.lua")
 local layout = grug_core.hud_layout
 rawset(_G, "grug_quests", lax({}))
 rawset(_G, "grug_keys", lax({}))
+rawset(_G, "grug_xp", lax({}))
 rawset(_G, "grug_inventory", lax({UI = {header_h = 1.5}}))
 rawset(_G, "grug_map", {atlas = lax({view = function()
 	return {min_x = -4050, max_x = 4050, min_z = -3600, max_z = 3600}
@@ -69,25 +73,26 @@ end
 -- ---------------------------------------------------------------------------
 -- F  the rule
 -- ---------------------------------------------------------------------------
-check(M.fit(32, 700, 700) == 32, "F the reference extent gives 32")
-check(M.fit(32, 1400, 700) == 32, "F never above the cap")
-check(M.fit(64, 1400, 700) == 64, "F a larger map at HUD 2 reaches the cap")
-check(M.fit(80, 350, 700) == 16, "F half the map: 16")
-check(M.fit(80, 100, 700) == 16, "F never below 16")
-check(M.fit(12, 100, 700) == 12, "F a cap under the floor stays (today's size)")
-check(M.fit(32, nil, 700) == 32 and M.fit(32, 0, 700) == 32, "F no extent: the cap")
-check(M.fit(80, 525, 700) == 24, "F three quarters: 24")
+check(M.SIZE == 21 and M.MIN == 11, "F Round 67: 21 px at the reference, the floor 11")
+check(M.fit(21, 700, 700) == 21, "F the reference extent gives 21")
+check(M.fit(21, 1400, 700) == 21, "F never above the cap")
+check(M.fit(42, 1400, 700) == 42, "F a larger map at HUD 2 reaches the cap")
+check(M.fit(80, 350, 700) == 11, "F half the map: 11")
+check(M.fit(80, 100, 700) == 11, "F never below 11")
+check(M.fit(8, 100, 700) == 8, "F a cap under the floor stays (today's size)")
+check(M.fit(21, nil, 700) == 21 and M.fit(21, 0, 700) == 21, "F no extent: the cap")
+check(M.fit(80, 525, 700) == 16, "F three quarters: 16")
 
 -- ---------------------------------------------------------------------------
 -- W  the map window
 -- ---------------------------------------------------------------------------
 -- The window's marker size and map extent, as W.formspec's overlay sees them.
 local function window_px(raw)
-	local info = grug_core.ui.window_information(raw)
+	local info = raw
 	local width = W.window_size(raw)
 	local header = 1.5
 	local w, h = W.window_size(raw, header)
-	local L = W.layout(w, h)
+	local L = W.layout_for(raw, header, grug_core.ui.form_growth(raw, w, h + header))
 	local cap, per_unit = M.metrics(info, w, h + header)
 	local drawn = L.map_w * per_unit
 	return cap, M.fit(cap, drawn, W.reference_map_px(header)), drawn, width
@@ -104,7 +109,7 @@ local PROFILES = {
 }
 local rows = {}
 local reference = W.reference_map_px(1.5)
-check(math.abs(reference - 10.58 * 72) < 0.5, ("W reference map %.1f px (10.58 units at 72)"):
+check(math.abs(reference - 11.64 * 72) < 0.5, ("W reference map %.1f px (11.64 units at 72)"):
 	format(reference))
 for _, p in ipairs(PROFILES) do
 	local info = client(p[2], p[3], p[4], p[5], p[6])
@@ -112,12 +117,12 @@ for _, p in ipairs(PROFILES) do
 	local box = layout.minimap_box(info)
 	local mini = {box = box.size, hud = box.hud}
 	rows[#rows + 1] = {name = p[1], info = info, map = drawn, before = cap, after = size, mini = mini}
-	check(size <= cap and (size >= 16 or cap < 16), "W " .. p[1] .. ": inside cap and floor")
+	check(size <= cap and (size >= M.MIN or cap < M.MIN), "W " .. p[1] .. ": inside cap and floor")
 end
 local by = {}
 for _, row in ipairs(rows) do by[row.name] = row end
-check(by["1920x1080"].after == 32 and by["1920x1080"].before == 32, "W 1920x1080 unchanged (32)")
-check(by["1280x720"].after < 32 and by["1280x720"].after >= 16, "W 1280x720 smaller")
+check(by["1920x1080"].after == 21 and by["1920x1080"].before == 21, "W 1920x1080 at the reference (21)")
+check(by["1280x720"].after < 21 and by["1280x720"].after >= M.MIN, "W 1280x720 smaller")
 check(by["phone 2400x1080 density 2.5"].after < by["phone 2400x1080 density 2.5"].before / 2,
 	"W the phone's markers well under the HUD-scaled size")
 -- W.formspec draws that size: the trainers layer's icon extent.
@@ -132,6 +137,7 @@ do
 		return ""
 	end
 	grug_core.ui.panel = function() return "" end
+	grug_core.ui.navigation_style = function() return "" end
 	grug_core.ui.rows = function(_, spec) seen.rows = spec.scale return "" end
 	-- grug_core.ui.text_growth (ui.lua) with the report given: the form's
 	-- growth (ui_window.lua form_growth, loaded above).
@@ -170,14 +176,13 @@ do
 		local row = by[name]
 		local icon, form = drawn_icon(row.info)
 		local fw, fh = (form or ""):match("size%[([%d.]+),([%d.]+)%]")
-		local _, per_unit = M.metrics(grug_core.ui.window_information(row.info), tonumber(fw),
-			tonumber(fh))
+		local _, per_unit = M.metrics(row.info, tonumber(fw), tonumber(fh))
 		check(icon and math.floor(icon * per_unit) == row.after,
 			("W %s: W.formspec draws %s px (wanted %d)"):format(name,
 				icon and tostring(math.floor(icon * per_unit)) or tostring(form), row.after))
 	end
 	local icon = drawn_icon(nil)
-	check(icon and math.floor(icon * 72) == 32, "W no window information: 32 px")
+	check(icon and math.floor(icon * 72) == M.SIZE, "W no window information: 21 px")
 
 	-- G  the body text grows with the form on a grown ceiling (ruling 4):
 	-- the "Current:" line, the quest rows and the zone labels; at 1080p
@@ -203,14 +208,15 @@ do
 	check(form:find(("style_type[label;font_size=*%.3f]"):format(0.65 * growth), 1, true) and
 		form:find(("style_type[label;font_size=*%.3f]"):format(growth), 1, true),
 		"G 3840x2160: zone labels grow and restore the grown body size")
-	-- the label boxes keep their 1080p size in units (text and units both grow)
+	-- the label boxes in the window's own units (Round 67: the client's
+	-- report, 144 px a unit at 4K, 72 at 1080p): the text grows by the growth
+	-- in pixels, so its box (padding aside) does too
 	local Z = grug_map.layers.zone_labels
-	local wide = Z.box("Dawnmere Fields", "1–10", Z.metrics(grug_core.ui.window_information(four), 1, growth))
-	local base = Z.box("Dawnmere Fields", "1–10", Z.metrics(grug_core.ui.window_information(
-		by["1920x1080"].info), 1))
-	check(math.abs(wide.w - base.w) < 0.02 and math.abs(wide.h - base.h) < 0.02,
-		("G zone label box %.3f x %.3f units at 4K, %.3f x %.3f at 1080p"):format(wide.w, wide.h,
-			base.w, base.h))
+	local wide = Z.box("Dawnmere Fields", "1–10", Z.metrics(four, 1, growth))
+	local base = Z.box("Dawnmere Fields", "1–10", Z.metrics(by["1920x1080"].info, 1))
+	local wide_px, base_px = (wide.w - 2 * Z.PAD_X) * 144, (base.w - 2 * Z.PAD_X) * 72
+	check(math.abs(wide_px - base_px * growth) < 0.5,
+		("G zone label text %.1f px at 4K, %.1f px at 1080p"):format(wide_px, base_px))
 	print(("G 3840x2160 map window text growth %.3f"):format(growth))
 end
 
@@ -231,11 +237,11 @@ do
 		row.mini.after = M.fit(cap, frame.hole, ref.hole)
 		check(row.mini.after <= cap, "M " .. row.name .. ": inside the cap")
 	end
-	check(by["1920x1080"].mini.after == 32, "M 1920x1080 unchanged (32)")
+	check(by["1920x1080"].mini.after == 21, "M 1920x1080 at the reference (21)")
 	local phone = by["phone 2400x1080 density 2.5"].mini
-	check(phone.box == by["1920x1080"].mini.box and phone.before == 80 and phone.after == 32,
-		"M the phone's box is the desktop's (" .. phone.box .. " px): 32 px, not 80")
-	check(by["1280x720"].mini.after < 32, "M 1280x720 smaller")
+	check(phone.box == by["1920x1080"].mini.box and phone.before == 53 and phone.after == 21,
+		"M the phone's box is the desktop's (" .. phone.box .. " px): 21 px, not 53")
+	check(by["1280x720"].mini.after < 21, "M 1280x720 smaller")
 	-- minimap.lua's marker_px is this rule (the source names it)
 	local file = assert(io.open(MAP .. "/minimap.lua", "rb"))
 	local source = file:read("*a")

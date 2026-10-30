@@ -7,13 +7,14 @@
 --      while held, not on release, not on a player's first step), zoom and
 --      aux1 apart, one control read per player per step; zoom_fov 72 on
 --      joining;
---   S  the window size: FRACTION of max_formspec_size, the fixed fallback
+--   S  the window size: FRACTION of max_formspec_size (Round 67: 90 % of the
+--      client's own report, 85 % of the capped viewport before), the fixed fallback
 --      without it, the floor; the layout inside the window (9:8 map, the
 --      quest column at least 6.5 wide, scrollbars beside the map);
 --   O  (Round 47 lane ML; Round 44's fixed overlay before) one marker layer
 --      at a time (layers.lua): every layer draws its own markers and none
 --      of another's; Quests the own givers by state (locked ones too),
---      Trainers the own trainers (32 screen pixels at 1x and 2x) and
+--      Trainers the own trainers (markers.SIZE screen pixels at 1x and 2x) and
 --      services, Towns both factions' settlements and the own innkeepers,
 --      home and waystones, Bosses the kings, the dragon once beside its
 --      arena, the rift boss and the rare den with their levels, POIs and
@@ -52,10 +53,10 @@
 --      centres on the player, the player's scrolling breaks the lock, 1x
 --      restores it; the map's scrollbar is focused (set before it) so the
 --      inventory key closes the window; a click on the selected quest sends;
---   L  (Round 47) the layer buttons: one row at 1920x1080 and 2560x1440,
---      two at 1035x696 and 1280x720, as wide as the map, under its
---      scrollbar, the quest column at its Round 44 place, the map at
---      1035x696 at its size; a click picks a layer in one send, the active
+--   L  (Round 47; above the map since Round 67) the layer buttons: one row
+--      at 1920x1080, 1280x720 and 2560x1440, two at 1035x696, as wide as
+--      the map's viewport, above it, the quest column beside them, the map
+--      taking about 62 %; a click picks a layer in one send, the active
 --      one sends nothing, any layer button deselects the quest (list, text
 --      box, Abandon), a quest leaving the log falls back to the layer, the
 --      layer survives an opening but not leaving the game; the static rows
@@ -230,6 +231,20 @@ end
 -- The game stubs for grug_map
 -- ---------------------------------------------------------------------------
 local journals = {}
+-- Round 67: the quest list's compact rows (0.6 units) need more quests than
+-- the scene's five to scroll; padded journal rows after the scene's own.
+local function pad_journal(p, count)
+	local journal = journals[p.name]
+	local saved = journal.quests
+	journal.quests = {}
+	for i, row in ipairs(saved) do journal.quests[i] = row end
+	for i = 1, count do
+		journal.quests[#journal.quests + 1] = {id = "q_pad" .. i, title = "Pad " .. i,
+			description = "", objectives = {}, ready = false, npc = "elder",
+			rewards = {copper = 0, items = {}}, reward_xp = 0}
+	end
+	return function() journal.quests = saved end
+end
 local function journal_of(p)
 	return journals[p.name] or {quests = {}, tracked = {}, hud_enabled = true}
 end
@@ -278,6 +293,9 @@ rawset(_G, "grug_quests", {
 		return entries, row_of, entry_of
 	end,
 	status_tooltip = function() return "legend" end,
+	-- Round 67: the list's order (hud.lua; r67_map checks the real one);
+	-- the scene keeps the journal's own order.
+	sort_quests = function() end,
 	objective_action = function(o) return (o.type == "kill" and "Defeat " or "Bring ") .. (o.what or "x") end,
 	objective_levels_text = function() return "" end,
 	set_hud_enabled = function(p, on)
@@ -483,6 +501,9 @@ rawset(_G, "sfinv", {
 	make_formspec = function(_, _, content) return content end,
 })
 rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1, frame_h = 13.673}})
+-- Round 67: the quest rows' level labels in their difficulty colour.
+rawset(_G, "grug_xp", {get_level = function() return 5 end,
+	con_color = function() return 0xffffff end})
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
 dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
@@ -539,7 +560,7 @@ local field_handler = on_fields[#on_fields]
 -- ---------------------------------------------------------------------------
 do
 	local w, h = W.window_size({max_formspec_size = {x = 1920 / 72, y = 1080 / 72}})
-	check(near(w, 22.66, 0.011) and near(h, 12.75, 0.011), ("S 85 %% of 26.67x15 (%.2fx%.2f)"):format(w, h))
+	check(near(w, 24, 0.011) and near(h, 13.5, 0.011), ("S 90 %% of 26.67x15 (%.2fx%.2f)"):format(w, h))
 	w, h = W.window_size(nil)
 	check(w == 20 and h == 12, "S fallback without window information")
 	w, h = W.window_size({size = {x = 800, y = 600}})
@@ -547,11 +568,16 @@ do
 	w, h = W.window_size({max_formspec_size = {x = 12, y = 8}})
 	check(w == 16 and h == 10, "S the floor 16x10")
 	w, h = W.window_size({max_formspec_size = {x = 20, y = 15}}) -- 4:3
-	check(near(w, 17, 0.011) and near(h, 12.75, 0.011), "S 4:3 screen")
+	check(near(w, 18, 0.011) and near(h, 13.5, 0.011), "S 4:3 screen")
 	-- 1280x720 at GUI scale 1: the fixed image size (0.5555 in, 53.3 px)
 	-- wins over 720/15, so max_formspec_size is 24 x 13.5.
 	w, h = W.window_size({max_formspec_size = {x = 1280 / (0.5555 * 96), y = 720 / (0.5555 * 96)}})
-	check(near(w, 20.4, 0.011) and near(h, 11.47, 0.011), ("S 720p (%.2fx%.2f)"):format(w, h))
+	check(near(w, 21.6, 0.011) and near(h, 12.15, 0.011), ("S 720p (%.2fx%.2f)"):format(w, h))
+	-- Round 67 ruling 18: the client's own report, never the capped viewport
+	-- (4K: 26.67 x 15 units at 144 px, 90 % of the screen)
+	w, h = W.window_size({size = {x = 3840, y = 2160}, max_formspec_size = {x = 3840 / 144, y = 15},
+		real_gui_scaling = 1})
+	check(near(w, 24, 0.011) and near(h, 13.5, 0.011), ("S 4K: 90 %% of the screen (%.2fx%.2f)"):format(w, h))
     -- The shared header belongs inside the whole-window height budget.
     local info = {max_formspec_size = {x = 1035 / 53.33, y = 696 / 53.33}}
     for _, header in ipairs({1.5, 2.04, 3.12}) do
@@ -572,8 +598,8 @@ do
 		-- scale 1.5 on 1080p), so the map there is 7.76 wide (8.35 before).
 		check(L.map_w >= 7.25 - 1e-9, label .. (": map at least 7.25 wide (%.2f)"):format(L.map_w))
 	end
-	local L = W.layout(22.66, 12.75)
-	print(("R44 MQ window 1920x1080 (GUI scale 1): 22.66x12.75, map %.2fx%.2f, column %.2f"):format(
+	local L = W.layout(24, 13.5)
+	print(("R44 MQ window 1920x1080 (GUI scale 1): 24x13.5, map %.2fx%.2f, column %.2f"):format(
 		L.map_w, L.map_h, L.column.w))
 end
 
@@ -684,11 +710,13 @@ do
 	-- Trainers & traders: the own faction's, two thirds at 1x and 2x.
 	map = layer_form(accord, "trainers")
 	local trainer = find_image(images(map), "grug_map_trainer_tailor.png")
-	check(trainer and math.floor(trainer.w*72)==32, "O Trainers: 32 screen pixels at 1x")
+	-- (Round 67: markers.SIZE, 21 px; 32 before)
+	local SIZE = grug_map.markers.SIZE
+	check(trainer and math.floor(trainer.w*72)==SIZE, "O Trainers: markers.SIZE screen pixels at 1x")
 	trainer = find_image(images(layer_form(accord, "trainers", 2)), "grug_map_trainer_tailor.png")
-	check(trainer and math.floor(trainer.w*72)==32, "O Trainers: 32 screen pixels at 2x")
+	check(trainer and math.floor(trainer.w*72)==SIZE, "O Trainers: markers.SIZE screen pixels at 2x")
 	trainer = find_image(images(layer_form(accord, "trainers", 4)), "grug_map_trainer_tailor.png")
-	check(trainer and math.floor(trainer.w*72)==32, "O Trainers: 32 screen pixels at 4x")
+	check(trainer and math.floor(trainer.w*72)==SIZE, "O Trainers: markers.SIZE screen pixels at 4x")
 	for _, text in ipairs({"Tailor Trainer", "Riding Trainer", "Housing Steward", "Crownbinder",
 			"Grudge-Free Repairs"}) do
 		has(map, ";" .. text .. "]", "O Trainers: tooltip " .. text)
@@ -804,7 +832,7 @@ do
 	has(map, ";Elder Maren]", "Quest mode: the hand-in NPC's name")
 	has(map, ";Defeat q_kill1: 3/7]", "Quest mode: a ring's tooltip is its objective's line")
 	has(map, ";Defeat q_kill2: 0/1]", "Quest mode: the crosshair's tooltip")
-	eq(count(form, "style%[grug_map_layer_[^;]+;[^%]]*grug_ui_selected%.png"), 0, "Quest mode: no layer button highlighted")
+	eq(count(form, "style%[grug_map_layer_[^;:]+;[^%]]*textcolor=#d4b77d;"), 0, "Quest mode: no layer button marked")
 	-- Two objectives on one crosshair share it, one line each.
 	journals.ann.quests[#journals.ann.quests + 1] = {id = "q_two", title = "Two", description = "",
 		objectives = {{type = "kill", count = 0, required = 1, what = "crumb"},
@@ -819,20 +847,27 @@ do
 	has(map, ";Defeat crumb: 0/1\nDefeat crumb again: 0/2]", "Quest mode: both lines on it")
 	table.remove(journals.ann.quests)
 	registered_quests.q_two = nil
-	-- The single selector shows the current layer; every layer remains available.
+	-- Round 67 ruling 22: a flat button per layer (the dropdown is gone), the
+	-- current one marked by the accent (text and edge), its title as tooltip.
 	state.quest_selected = nil
 	form = W.formspec(accord, state, nil)
-	check(form:match("dropdown%[[^%]]*;grug_map_layer;[^%]]*;4;true%]") ~= nil,
-		"O the current Towns layer is selected")
-	eq(count(form, "dropdown%[[^%]]*;grug_map_layer;"), 1, "O one layer selector")
-	for index, layer in ipairs(grug_map.layers.LIST) do
-		has(form, fs_escape(layer.title), "O layer choice " .. layer.title)
-		eq(state.layer_ids[index], layer.id, "O layer index routes to its stable ID")
+	eq(count(form, "dropdown%["), 0, "O no layer dropdown")
+	eq(count(form, "style%[grug_map_layer_[^;:]+;[^%]]*textcolor=#d4b77d;"), 1, "O one button marked")
+	has(form, "style[grug_map_layer_towns;border=false;bgcolor=#ffffff;bgimg=grug_ui_clear.png;",
+		"O the flat (clear) navigation style")
+	check(form:find("style%[grug_map_layer_towns;[^%]]*textcolor=#d4b77d;") ~= nil,
+		"O the current Towns layer is marked")
+	local order = {}
+	for id, label in form:gmatch("button%[[^;]+;[^;]+;grug_map_layer_(%a+);([^%]]*)%]") do
+		order[#order + 1] = id .. "=" .. label
 	end
-	local labels = {}
-	for _, layer in ipairs(grug_map.layers.LIST) do labels[#labels + 1] = layer.label end
-	eq(table.concat(labels, ","), "Quests,Bosses,Trainers,Towns,POIs,PvP,Zones,None",
-		"O button order as in the work package's table (§8 default)")
+	eq(table.concat(order, ","), "quests=Quests,bosses=Bosses,trainers=Services,towns=Travel," ..
+		"pois=Places,pvp=PvP,zones=Zones,none=None",
+		"O button order as in the work package's table, the short labels (Round 67 default)")
+	for _, layer in ipairs(grug_map.layers.LIST) do
+		has(form, "tooltip[grug_map_layer_" .. layer.id .. ";" .. fs_escape(layer.title) .. "]",
+			"O layer tooltip " .. layer.title)
+	end
 	giver_states.elder, giver_states.smith = nil, nil
 end
 
@@ -942,7 +977,8 @@ do
 	local L = state.layout
 	local view = grug_map.atlas.view()
 	local expect = 2 * targets.ring_radius(9, 32) * L.map_w * 8 / (view.max_x - view.min_x)
-	check(big and near(big, expect, 0.002), ("T ring scales with the region and zoom (%.3f vs %.3f)"):format(
+	-- (the image snaps to whole pixels: within a pixel and a half at 72)
+	check(big and near(big, expect, 1.5 / 72), ("T ring scales with the region and zoom (%.3f vs %.3f)"):format(
 		big or -1, expect))
 end
 
@@ -981,7 +1017,7 @@ do
 	eq(sends_to("ann"), 1, "R still owed before the second is over")
 	advance(0.3)
 	eq(sends_to("ann"), 2, "R one trailing send for both clicks")
-	has(shows[#shows].form, "label[1.75,0.55;4x]", "R the trailing send shows the latest state")
+	has(shows[#shows].form, "label[0.97,0.55;4x]", "R the trailing send shows the latest state")
 	-- A click after the gap: at once.
 	advance(2)
 	fields(accord, {grug_map_zoom_out = "-", grug_map_scroll_x = "VAL:1500", grug_map_scroll_y = "VAL:1500"})
@@ -1026,9 +1062,11 @@ do
 		end
 	end
 	local party_moving = sends_to("ann") - before
-	check(party_moving >= 28 and party_moving <= 30, "R party moving: about 30 sends a minute (" ..
+	-- (Round 67: every 1 s, as no dropdown can close any more; here bounded
+	-- by the walking arrow's cell changes at 2x, about 46 a minute)
+	check(party_moving >= 40 and party_moving <= 60, "R party moving: at most 60 sends a minute (" ..
 		party_moving .. ")")
-	check(min_gap >= 2e6 - 1, "R party sends at least 2 s apart")
+	check(min_gap >= 1e6 - 1, "R party sends at least 1 s apart")
 	-- In a party, standing still: nothing (after the check that sends the
 	-- last step).
 	advance(2.1)
@@ -1138,6 +1176,7 @@ do
 	fields(accord, {quit = "true"})
 	-- The scroll pause: a scrollbar move holds every send for 0.5 s; a
 	-- quest change owed meanwhile goes out once the pause is over.
+	local unpad = pad_journal(accord, 10)
 	W.open(accord)
 	advance(2)
 	before = sends_to("ann")
@@ -1198,6 +1237,7 @@ do
 	eq(sends_to("ann") - before, 1, "R party refresh sends once the quest-list drag ends")
 	has(shows[#shows].form, ";grug_quest_list_scroll;125]", "R party refresh preserves list scroll")
 	parties.ann, parties.cara, players.cara = nil, nil, nil
+	unpad()
 	shown.ann = nil
 	fields(accord, {quit = "true"})
 	-- Opens are refused while the inventory belongs to character creation
@@ -1221,7 +1261,7 @@ do
 	window_info.ann = {max_formspec_size = {x = 1920 / 72, y = 1080 / 72}}
 	advance(2)
 	fields(accord, {grug_map_zoom_in = "+"})
-	has(shows[#shows].form, "size[22.66,12.75]", "R the size from max_formspec_size")
+	has(shows[#shows].form, "size[24.00,13.50]", "R the size from max_formspec_size")
 end
 
 -- ---------------------------------------------------------------------------
@@ -1287,7 +1327,7 @@ do
 	check(r.builds <= 2, "B 12 windows: at most two pass sends per pass (" .. r.builds .. ")")
 	check(r.checks <= 8, "B 12 windows: at most eight party checks per pass (" .. r.checks .. ")")
 	-- Round 47: the party check every 2 s (5 s before: about 12 a minute).
-	check(r.least >= 2 - 1e-6, ("B 12 windows: party sends at least 2 s apart (%.2f)"):format(r.least))
+	check(r.least >= 1 - 1e-6, ("B 12 windows: party sends at least 1 s apart (%.2f)"):format(r.least))
 	check(r.most <= 2.3 + 1e-6, ("B 12 windows: none waits much past 2 s (%.2f)"):format(r.most))
 	check(r.fewest >= 27, "B 12 windows: each about 30 sends a minute (" .. r.fewest .. ")")
 	r = budget_run(60, 60)
@@ -1336,10 +1376,13 @@ do
 	has(form, "Level 4 · Dawnmere Fields", "Q the level and zone line")
 	lacks(form, "Ready to return", "Q no ready line while in progress")
 	-- Scrolling stays local while retaining the offset for the next action.
+	local unpad = pad_journal(accord, 10)
+	W.formspec(accord, state, nil)
 	local before_scroll = #shows
 	fields(accord, {grug_quest_list_scroll = "CHG:125"})
 	eq(#shows, before_scroll, "Q scrolling the quest list does not resend the map")
 	eq(state._ui_rows.grug_quest_list.scroll, 125, "Q scroll offset remembered")
+	unpad()
 	-- The list selects; the targets follow.
 	advance(2)
 	fields(accord, {grug_quest_list_row_2 = "true"})
@@ -1536,18 +1579,21 @@ end
 -- and the baked layer
 -- ---------------------------------------------------------------------------
 do
-	-- The map gets a complete half-width viewport, with one toolbar selector.
+	-- Round 67: the map as large as the height allows (at most 62 % of the
+	-- width), the quest column right after it; the layer buttons in the one
+	-- row above the map where they fit beside the zoom (true), else in a row
+	-- of their own (false).
 	local sizes = {
-		{"1920x1080", 1920, 1080, 72, 2},
-		{"1035x696", 1035, 696, 0.5555 * 96, 2},
-		{"1280x720", 1280, 720, 0.5555 * 96, 2},
-		{"2560x1440", 2560, 1440, 96, 2},
+		{"1920x1080", 1920, 1080, 72, true},
+		{"1035x696", 1035, 696, 0.5555 * 96, false},
+		{"1280x720", 1280, 720, 0.5555 * 96, false},
+		{"2560x1440", 2560, 1440, 96, true},
 	}
 	for _, size in ipairs(sizes) do
 		local info = {size = {x = size[2], y = size[3]},
 			max_formspec_size = {x = size[2] / size[4], y = size[3] / size[4]}, real_gui_scaling = 1}
 		local w, h = W.window_size(info, grug_inventory.UI.header_h)
-		local L = W.layout(w, h)
+		local L = W.layout_for(info, grug_inventory.UI.header_h)
 		local label = "L layout " .. size[1]
 		check(L.map_w <= L.viewport_w + 1e-9 and L.map_h <= L.viewport_h + 1e-9,
 			label .. ": whole map fits at 1x")
@@ -1558,8 +1604,19 @@ do
 			label .. ": 2x fills the complete map column")
 		check(L.map_y + L.viewport_h + 0.35 <= h - 0.25 + 1e-9,
 			label .. ": vertical viewport and scrollbar fit")
-        check(near(L.column.w, (w - 0.8) / 2, 1e-9), label .. ": equal map and quest allocations")
-        check(near(L.column.x, w / 2 + 0.15, 1e-9), label .. ": divider at the midpoint")
+		local cap = math.min((w - 0.8) * 0.62, w - 0.8 - 6.5) - 0.35
+		check((near(L.map_h, L.viewport_h, 1e-9) or near(L.map_w, cap, 1e-9)) and
+			near(L.column.x, 0.25 + L.map_w + 0.35 + 0.3, 1e-9) and L.column.w >= 6.5 - 1e-9,
+			label .. (": map height-bound or at 62 %%, the quest column after it (%.2f)"):format(L.column.w))
+		local b = L.buttons
+		eq(b.inline, size[5], label .. ": the layer buttons beside the zoom")
+		local right = b.inline and 0.25 + L.map_w + 0.35 or w - 0.25
+		check(b.rows == 1 and b.w >= W.BUTTON_MIN - 1e-9 and
+			near(b.x + b.per_row * b.w + (b.per_row - 1) * b.gap, right, 1e-9),
+			label .. ": one row as wide as the map (beside the zoom) or the window")
+		check(((b.inline and near(b.y, 0.25) and near(L.map_y, 1.05)) or
+			(not b.inline and near(b.y + b.h + 0.15, L.map_y, 1e-9))) and near(L.column.y, L.map_y, 1e-9),
+			label .. ": the buttons above the map, the quest column beside the map")
 		local state = W.new_state()
 		state.zoom = 2
 		local form = W.formspec(accord, state, info)
@@ -1584,14 +1641,15 @@ do
 	eq(state.layer, "quests", "L the window opens on Quests")
 	advance(2)
 	local before = sends_to("ann")
-	fields(accord, {grug_map_layer = "4"})
+	fields(accord, {grug_map_layer_towns = "Travel"})
 	eq(state.layer, "towns", "L a button picks its layer")
 	eq(sends_to("ann") - before, 1, "L a layer click sends once")
-	eq(state.layer_choice, 4, "L the new layer selected in the dropdown")
+	check(shows[#shows].form:find("style%[grug_map_layer_towns;[^%]]*textcolor=#d4b77d;") ~= nil,
+		"L the new layer's button marked")
 	check(map_part(shows[#shows].form):find("grug_map_capital.png", 1, true) ~= nil, "L its markers shown")
 	advance(2)
 	before = sends_to("ann")
-	fields(accord, {grug_map_layer = "4"})
+	fields(accord, {grug_map_layer_towns = "Travel"})
 	eq(sends_to("ann") - before, 0, "L the active layer's button changes nothing")
 	-- A quest selection is its own mode; a layer button deselects it.
 	advance(2)
@@ -1599,23 +1657,22 @@ do
 	eq(state.quest_selected, "q_kill", "L a quest selected")
 	local form = shows[#shows].form
 	check(not map_part(form):find("grug_map_capital.png", 1, true), "L quest mode hides the layer")
-	has(form, ",Quest targets;9;true]", "L quest mode has its own selector entry")
-	eq(state.layer_choice, 9, "L quest targets selected")
-	for index, layer in ipairs(grug_map.layers.LIST) do
-		eq(state.layer_ids[index], layer.id, "L quest mode retains stable layer indices")
-	end
+	eq(count(form, "style%[grug_map_layer_[^;:]+;[^%]]*textcolor=#d4b77d;"), 0,
+		"L quest mode marks no layer button")
+	-- (Round 67: buttons send no value with other events, unlike the
+	-- dropdown; scrolling and zoom keep quest mode)
 	advance(2)
 	local echoed_before = sends_to("ann")
-	fields(accord, {grug_map_layer = "9", grug_map_scroll_x = "CHG:0", grug_map_scroll_y = "VAL:0"})
-	eq(state.quest_selected, "q_kill", "L echoed quest-target selector keeps quest mode")
+	fields(accord, {grug_map_scroll_x = "CHG:0", grug_map_scroll_y = "VAL:0"})
+	eq(state.quest_selected, "q_kill", "L scrolling keeps quest mode")
 	advance(2)
-	eq(sends_to("ann"), echoed_before, "L echoed selector and scrolling send nothing")
-	fields(accord, {grug_map_zoom_in = "+", grug_map_layer = "9"})
-	eq(state.quest_selected, "q_kill", "L zoom with echoed selector keeps quest mode")
+	eq(sends_to("ann"), echoed_before, "L scrolling sends nothing")
+	fields(accord, {grug_map_zoom_in = "+"})
+	eq(state.quest_selected, "q_kill", "L zoom keeps quest mode")
 	state.quest_abandon = "q_kill"
 	advance(2)
 	before = sends_to("ann")
-	fields(accord, {grug_map_layer = "5"})
+	fields(accord, {grug_map_layer_pois = "Places"})
 	check(state.quest_selected == nil and state.quest_abandon == nil, "L a layer click deselects the quest")
 	eq(state.layer, "pois", "L ...and shows that layer")
 	eq(sends_to("ann") - before, 1, "L ...in one send")
@@ -1629,7 +1686,7 @@ do
 	advance(2)
 	fields(accord, {grug_quest_list_row_1 = "true"})
 	advance(2)
-	fields(accord, {grug_map_layer = "5"})
+	fields(accord, {grug_map_layer_pois = "Places"})
 	check(state.quest_selected == nil, "L the last layer's button deselects as well")
 	-- A selected quest that leaves the log: back to the last layer.
 	advance(2)
@@ -1817,7 +1874,8 @@ do
 end
 
 -- R64: match client integer geometry, including odd image-size fractions,
--- HUD/GUI differences, Full-HD viewport ceiling and minimum-form fitting.
+-- HUD/GUI differences and minimum-form fitting (the Full-HD viewport
+-- ceiling no longer applies to this window since Round 67).
 do
  local M=grug_map.markers
  local masks=dofile(repo .. "/mods/PLAYER/grug_map/icon_masks.lua")
@@ -1833,12 +1891,12 @@ do
    local state=W.new_state();state.layer="trainers";state.zoom=zoom
    local form=W.formspec(accord,state,info)
    local w,h=form:match("size%[([%d.]+),([%d.]+)%]")
-   local virtual=grug_core.ui.window_information and grug_core.ui.window_information(info) or info
+   -- (Round 67 ruling 18: the window's own report, never the capped one)
+   local virtual=info
    local size,px=M.metrics(virtual,tonumber(w),tonumber(h))
    -- Round 66 ruling 5: the extent is fitted to the drawn map (markers.fit)
    local header=grug_inventory.UI.header_h
-   local bw,bh=window_size(info,header)
-   size=M.fit(size,W.layout(bw,bh).map_w*px,W.reference_map_px(header))
+   size=M.fit(size,W.layout_for(info,header).map_w*px,W.reference_map_px(header))
    local map=map_part(form)
    local icon=find_image(images(map),"grug_map_trainer_tailor.png")
    check(icon and math.floor(icon.w*px)==size and math.floor(icon.h*px)==size,

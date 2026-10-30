@@ -39,7 +39,11 @@ repeatable switch by Round 57, 2026-10-23
   reward line, separated by an empty line each, and where to hand it in.
   Selecting a quest marks its targets on the map (leader, talk NPC and use
   place crosshairs, rings around the nearest spawn regions;
-  [world_map.md](world_map.md#quest-targets)).
+  [world_map.md](world_map.md#quest-targets)). Since Round 67 (ruling 19)
+  the list has one compact line per quest (its state marker, the title and
+  "[Lv N]" in the difficulty colour, like the tracker; the state and
+  tracking in the row's tooltip), its Story and Side quests groups each
+  sorted by quest level, ties by title, then id: the tracker's order.
 - Quest lists (the quest giver's dialog and the quest log) show each quest's
   status as the entry's colour, explained by a legend or the list's tooltip:
   available gold, ready to complete green, in progress blue. No list shows
@@ -114,8 +118,10 @@ repeatable switch by Round 57, 2026-10-23
   in the target frame's difficulty colour relative to the player's level
   (`grug_xp.con_color`: gray at ten or more levels below, green to yellow
   to red; it follows a level change); below it the objective line in the
-  quest yellow (e.g. "0/4 Bring Raw Meat"). The boxes are sorted by quest
-  level, ties by title, then id, so easy and hard quests read at a glance.
+  quest yellow (e.g. "0/4 Bring Raw Meat"). The boxes follow the quest
+  log's order (Round 67 ruling 19a, one shared sort, `grug_quests.sort_quests`):
+  story quests on top, each group by quest level, ties by title, then id,
+  without group headings, so easy and hard quests read at a glance.
   All boxes share one width (the side text width, 38 characters at most)
   and stand at the right edge, centred on the screen's middle where they
   fit; as many show as fit between the minimap block (its box, location
