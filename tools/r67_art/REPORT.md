@@ -177,3 +177,9 @@ After integration, the user's desktop **and** web GUI check should cover:
    dark recess and the join at the lid/body cut.
 5. Rotate both shelf types to check the matching side/top and the
    visibility of books and vessels.
+
+## The user's pick (2026-10-30)
+
+**Race A (coloured heads), Steel A and Abyssal A (strapped timber).** The
+lanes SOCIAL (race icons) and CONTAINERS (tier textures) copy the picked
+`*_a.png` candidates into the game under their final names.
