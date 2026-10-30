@@ -301,7 +301,7 @@ dofile(repo .. "/mods/PLAYER/grug_inventory/ui.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/navigation.lua")
 stub_page("grug_inventory:help", "Help", true)
 dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
-stub_page("grug_parties:group", "Party & PvP", false)
+stub_page("grug_parties:group", "Social", false)
 stub_page("creative:all", "All", true, {is_in_nav = function() return false end})
 for _, fn in ipairs(mods_loaded) do fn() end
 local receive = receive_handlers[1]

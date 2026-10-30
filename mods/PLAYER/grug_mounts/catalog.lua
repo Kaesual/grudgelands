@@ -23,6 +23,8 @@ grug_mounts.SUMMON_HINT = "Press E to summon your mount"
 -- `item` is the tier's retired inventory item (items.lua; Round 44: mounts
 -- live in the quickbar, no item is handed out); `icon` is the tier's
 -- picture when no model applies (the item's image, the quickbar fallback).
+-- `vertical_speed` (flying tiers, Round 67 ruling 24): how fast the mount
+-- climbs and sinks, in nodes/s; without it the horizontal `speed`.
 
 grug_mounts.TIERS = {
 	[1] = {id = 1, key = "apprentice", name = "Apprentice Riding",
@@ -32,10 +34,10 @@ grug_mounts.TIERS = {
 		level = 30, mode = "land", speed = 8,
 		item = "grug_mounts:journeyman_mount", icon = "grug_mounts_icon_human.png"},
 	[3] = {id = 3, key = "expert", name = "Expert Riding",
-		level = 45, mode = "flight", speed = 8,
+		level = 45, mode = "flight", speed = 8, vertical_speed = 8,
 		item = "grug_mounts:expert_mount", icon = "grug_mounts_icon_expert_accord.png"},
 	[4] = {id = 4, key = "master", name = "Master Riding",
-		level = 60, mode = "flight", speed = 12,
+		level = 60, mode = "flight", speed = 12, vertical_speed = 12,
 		item = "grug_mounts:master_mount", icon = "grug_mounts_icon_master_accord.png"},
 	-- Boats are water mounts (docs/design/boats.md): the same purchase record,
 	-- quickbar button and ephemeral entity, sold by the Shipwright.
@@ -267,9 +269,10 @@ grug_mounts.MODELS = {
 --   * Tiers 3 and 4 share one flyer body, 1.8 wide and 1.65 high: the
 --     Expert flyers' size (they fitted two-by-two openings before and still
 --     do); the Master flyers (2.3 wide) shrink to it, so they now fit every
---     opening an Expert flyer fits. Bottom -0.1 as before. Nothing else reads
---     the size: the flight ceiling, the warning band, take-off and the
---     dismount spot all work on the mount's position.
+--     opening an Expert flyer fits. Bottom -0.1 as before. Besides the
+--     engine, only the flyer's summon reads the size (Round 67: it needs
+--     room for the box, entity.lua); the flight ceiling, the warning band
+--     and the dismount spot all work on the mount's position.
 grug_mounts.RACE_MOUNTS = {"human", "dwarf", "elf", "orc", "undead", "troll"}
 local LAND_BODY = {-0.7, -0.01, -0.7, 0.7, 1.59, 0.7}
 local FLYER_BODY = {-0.9, -0.1, -0.9, 0.9, 1.55, 0.9}

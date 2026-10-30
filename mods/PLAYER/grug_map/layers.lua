@@ -1,7 +1,9 @@
 -- The map window's marker layers (Round 47 lane ML, the work package
 -- docs/planning/round47-map-layers.md; docs/design/world_map.md "Map
--- window"). The player picks one layer at a time with the buttons under the
--- map (window.lua); the player's and the party's arrows show in every one.
+-- window"). The player picks one layer at a time with the buttons above the
+-- map (window.lua, Round 67); the player's and the party's arrows show in
+-- every one. The button labels since Round 67 (short): Quests, Bosses,
+-- Services, Travel, Places, PvP, Zones, None.
 --
 --   Quests    the own faction's quest givers by their state (the "quest"
 --             provider, the minimap's precedence: ready, available, active,
@@ -37,15 +39,16 @@ grug_map.layers = L
 L.zone_labels = zone_labels
 
 -- Button order (the work package's §8 default: as in its table); the label
--- is the button's text, the title its tooltip.
+-- is the button's text (Round 67 coordinator default), the title its
+-- tooltip. The ids stay (the buttons' fields grug_map_layer_<id>).
 L.LIST = {
 	{id = "quests", label = "Quests", title = "Quest givers", providers = {quest = true}},
 	{id = "bosses", label = "Bosses", title = "Kings & bosses", providers = {boss = true}},
-	{id = "trainers", label = "Trainers", title = "Trainers & traders",
+	{id = "trainers", label = "Services", title = "Trainers & traders",
 		providers = {service = true}},
-	{id = "towns", label = "Towns", title = "Settlements & travel",
+	{id = "towns", label = "Travel", title = "Settlements & travel",
 		providers = {settlement = true, home = true, waypoint = true}},
-	{id = "pois", label = "POIs", title = "Points of interest", providers = {poi = true}},
+	{id = "pois", label = "Places", title = "Points of interest", providers = {poi = true}},
 	{id = "pvp", label = "PvP", title = "PvP", providers = {pvp = true}},
 	{id = "zones", label = "Zones", title = "Zones", zones = true},
 	{id = "none", label = "None", title = "No markers"},
@@ -165,7 +168,7 @@ local function place_zones()
 	local started = core.get_us_time()
 	local view = atlas.view()
 	local W = grug_map.window
-	local layout = W.layout(W.window_size(L.SMALL, grug_inventory.UI.header_h))
+	local layout = W.layout_for(L.SMALL, grug_inventory.UI.header_h)
 	local nodes = (view.max_x - view.min_x) / layout.map_w
 	local metrics = zone_labels.metrics(L.SMALL)
 	-- The baked region names, drawn at normal (bake.SCALE) over the normal
@@ -208,7 +211,7 @@ local function place_zones()
 			placed[#placed + 1] = {x = point.x, z = point.z, rx = row.rx, rz = row.rz}
 		end
 	end
-	local reference_layout = W.layout(W.window_size(L.REFERENCE, grug_inventory.UI.header_h))
+	local reference_layout = W.layout_for(L.REFERENCE, grug_inventory.UI.header_h)
 	local reference_nodes = (view.max_x - view.min_x) / reference_layout.map_w
 	local reference_metrics = zone_labels.metrics(L.REFERENCE)
 	for index, zone in ipairs(L.zones) do
@@ -217,7 +220,7 @@ local function place_zones()
 	end
 	local overlapping, on_names = zone_labels.overlaps(placed, names)
 	-- The same labels' boxes at 1x on the small window.
-	local small_layout = W.layout(W.window_size(L.SMALL, grug_inventory.UI.header_h))
+	local small_layout = W.layout_for(L.SMALL, grug_inventory.UI.header_h)
 	local small_nodes = (view.max_x - view.min_x) / small_layout.map_w
 	local small_metrics = zone_labels.metrics(L.SMALL)
 	local small = {}

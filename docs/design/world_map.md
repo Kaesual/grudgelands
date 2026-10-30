@@ -22,6 +22,9 @@ the pending desktop/web GUI checklist: [Round 64](../planning/round64-plan.md).
   standard scale, scaled with the icons. Anchor proximity takes priority
   over complete separation: residual overlap in dense groups is accepted.
   Do not add automatic clusters or hide markers as an overlap remedy.
+  **Superseded by Round 67** (rulings 20 and 21, 2026-10-30): no
+  displacement at all; every marker sits at its anchor and overlaps are
+  allowed (see [Markers at their anchors](#markers-at-their-anchors-round-67)).
 - Both views use separate markers; the user accepted additional minimap
   position updates after the M0 memory comparison. Terrain resolution stays
   unchanged; no map icons are baked into terrain. Markers remain above flight,
@@ -34,6 +37,29 @@ the pending desktop/web GUI checklist: [Round 64](../planning/round64-plan.md).
   use the computed positions and must preserve the common icon size and
   readable source art. Exact cache/render mechanics and measured costs
   belong to the implementation plan, not additional gameplay rules.
+  (The layout and its cache left with Round 67.)
+
+## Markers at their anchors (Round 67)
+
+User rulings 20 and 21 of 2026-10-30 (the playtest of 2026-10-28: markers
+moved for neighbours the player could not see), implemented in 0.67.0:
+
+- Markers are about two thirds of their Round 64 size (21 px at the
+  reference instead of 32, the floor 11 px instead of 16; the size rule of
+  Round 66 is unchanged) and overlaps are allowed: the displacement solve,
+  its reserved quest-giver slots and its cache are gone, in the map window
+  and on the minimap.
+- Markers draw by importance, bottom to top (the minimap's layers of
+  before, extended by the quest states): places, bosses, trainers and
+  innkeepers, then the Steward and the services, the home and waystones,
+  then quest givers by their state (a silver "!" of a quest in one or two levels lowest, then in
+  progress, available, ready; a story marker above the plain one of its
+  status) (`grug_map/markers.lua` `rank`; the minimap's z-index and the map
+  window's draw order). The map window keeps the baked layer's order for
+  the place kinds below that.
+- The player's and the party's arrows always stand at their true position
+  and on top of every marker; they keep their 32 px at the reference and
+  scale with the markers.
 
 ## Atlas behavior
 
@@ -109,8 +135,9 @@ Round 46 also Grudge-Free Repairs, the mender of every start town and capital
 (a hammer over an anvil; the repairing profession trainers keep their own
 icons). NPC markers do not query live
 entities, load terrain, reveal health or indicate respawn state. NPC and
-player tooltips contain only the name. Ordinary markers use the bounded alpha-aware placement above; exact targets
-and player/party arrows retain their anchors. No automatic clustering is used. Map markers confer no remote interaction or travel.
+player tooltips contain only the name. Ordinary markers sit at their anchors
+(Round 67; Round 64's bounded alpha-aware placement before), as do exact
+targets and player/party arrows. No automatic clustering is used. Map markers confer no remote interaction or travel.
 
 Round 31 (PvP ruling 13): **the NPC's faction decides who sees its
 marker.** Each NPC marker carries its NPC's faction (the race's; a quest
@@ -167,7 +194,7 @@ drag-to-pan or animation. Never distort/crop the full overview: the map is
 9:8 at every window size. Renderer and marker projection use the same world
 bounds. Markers retain constant UI dimensions: only positions scale with
 zoom; clipping and scroll translate image and markers together. No
-clustered markers; ordinary icons use the bounded placement above. Native scrolling never sends the form; the
+clustered markers; ordinary icons sit at their anchors (Round 67). Native scrolling never sends the form; the
 server keeps the scroll values from every event (read at the zoom of the
 form they come from; ignored while the soft lock holds, when the server
 owns the view) and echoes them on the next send, so a send does not move
@@ -204,45 +231,66 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   which scroll the map), and a click on the selected quest sends the
   window too. A click into the quest text keeps the focus there until the
   next send.
-- **Size:** 85 % of the client's `max_formspec_size`, read when rendering,
-  with `padding[0,0]`. The shared navigation header is included in that
-  height budget. Clients without window information use the fallback in
-  `grug_map/window.lua`; a minimum body size remains client-scalable.
-- **Layout (dialog review, 2026-10-25):** shared inventory navigation above
-  the map controls. The body allocates half its usable width to the map and
-  half to the quest column. The map keeps its 9:8 aspect ratio and native
-  scrollbars; available height may leave some horizontal space between the
-  image and the quest column. Layer buttons remain beneath the horizontal
-  scrollbar, in one row when all eight fit and otherwise two rows. The map
-  remains larger than regular inventory tabs. Zoom, minimap settings, quest
-  selection and HUD controls keep their existing owners and field routes.
+- **Size** (Round 67 ruling 18): 90 % of the client's own
+  `max_formspec_size` in both directions, read when rendering, with
+  `padding[0,0]`, on every resolution: the viewport ceiling of the other
+  windows ([ui-presentation.md](../technical/ui-presentation.md)) does not
+  apply to it (85 % of the capped viewport before). The shared navigation
+  header is included in that height budget. Clients without window
+  information use the fallback in `grug_map/window.lua`; a minimum body
+  size (16 × 10 units) remains client-scalable. Where the height is raised
+  to that floor (a phone), the client shrinks the form to the screen's
+  height and the width keeps 90 % of the screen at that scale (a 2400×1080
+  phone at density 2.5: 20 × 10 units, 2160 × 1080 px). Text keeps the growth the
+  ceiling rule gives it (`grug_core.ui.text_growth`), so on a screen above
+  1620 px height it grows less than the window does.
+- **Layout** (dialog review, 2026-10-25; Round 67): shared inventory
+  navigation, then one row above the map: the zoom on the left, the eight
+  layer buttons beside it over the map, the location line and the minimap
+  switch over the quest column. Where the buttons there would be narrower
+  than their text (about 68 screen pixels at GUI scale 1, growing with the
+  GUI scaling and the text growth: 1280×720, small windows, the phone) they
+  take a row of their own across the window under the zoom row, two rows of
+  four where even that is too narrow. The map keeps its 9:8 aspect ratio
+  and native scrollbars and is as large as the body's height allows, at
+  most 62 % of the usable width; the quest column takes the rest, at least
+  6.5 units (equal halves before Round 67), so no empty band stands beside
+  a height-bound map. Zoom, minimap settings, quest selection and HUD
+  controls keep their existing owners and field routes. The scrollbars stay
+  at 1× too: the horizontal one holds the keyboard focus that lets the
+  inventory key close the window (Opening).
 - **Marker layers** (Round 47, the user's rulings of 2026-10-13, the
   [work package](../planning/round47-map-layers.md); until then Round 44's
   fixed overlay of ruling 12): the player picks **one** layer at a time
-  with the buttons; the active one is highlighted in the shared selection
-  style (a gold tint and a border), each button's tooltip is its long
-  name. A new session starts on Quests; the chosen layer is kept between
-  openings until the player leaves (not stored). Buttons, not a dropdown:
-  every send recreates a dropdown and closes an open list, and opening it
-  sends no event the server could wait for.
+  with the buttons. Since Round 67 (ruling 22; a dropdown in the header
+  from 0.63.0 to 0.66.1, Round 47's buttons under the map before) they are
+  flat buttons above the map in the toolkit's navigation style (Layout);
+  the active one is marked by the accent (its text and an
+  edge under it), none in quest mode; each button's tooltip is its long
+  name, its label the short one. A new session starts on Quests; the
+  chosen layer is kept between openings until the player leaves (not
+  stored). Buttons, not a dropdown: every send recreates a dropdown and
+  closes an open list, and opening it sends no event the server could wait
+  for.
 
   | Button | Long name | Content | Factions | Tooltip |
   |---|---|---|---|---|
   | Quests | Quest givers | every quest giver by its state, the minimap's set and precedence: gold "?" ready, "!" available, silver "?" active, silver "!" locked (next quest in one or two levels) | own | the NPC's name |
   | Bosses | Kings & bosses | the six kings, the two dragons (a dragon arena within 64 nodes of its dragon is one icon), the rift boss at his clash site (the clash icon), the rare dens | both | the name, with the level where the registry has a fixed one ("King of Highcourt (level 65)"); a den its name, "Rare den" and the level at its anchor |
-  | Trainers | Trainers & traders | the profession and Riding trainers, the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
-  | Towns | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
-  | POIs | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the brown tent and bright pickaxe icon `grug_map_mining_camp.png`), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
+  | Services | Trainers & traders | the profession and Riding trainers, the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
+  | Travel | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
+  | Places | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the brown tent and bright pickaxe icon `grug_map_mining_camp.png`), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
   | PvP | PvP | the two fortresses and the war camps in their faction's colour (Round 66 ruling 8: the Throng's red `grug_map_war_camp.png`, the Accord's blue `grug_map_war_camp_accord.png`, the same symbol; the faction from the slot `pvp_<faction>_<band>`), with the camps under construction (Round 58, the scaffold icon; since Round 66 its cloth in the faction's colour, `grug_map_camp_construction_<faction>.png`, the faction of the camp's race) | both | the name |
   | Zones | Zones | every zone's name and level band as text | — | — |
   | None | No markers | only the arrows | — | — |
 
   Generals, captains and the other leaders stay unmarked outside a selected
-  quest's crosshairs. Markers use bounded alpha-aware displacement without clustering; within a
-  layer the former baked kinds draw in the baked layer's order (war camps,
-  outposts, villages, mines, clash sites, rare dens, camps, fortresses,
-  starts, capitals, kings with the rift boss, dragons), the NPCs and travel
-  above them. Settlements, places and bosses are built once at start from
+  quest's crosshairs. Markers sit at their anchors without clustering
+  (Round 67); within a layer the former baked kinds draw in the baked
+  layer's order (war camps, outposts, villages, mines, clash sites, rare
+  dens, camps, fortresses, starts, capitals, kings with the rift boss,
+  dragons), the NPCs and travel above them by importance (quest givers by
+  their state, [Markers at their anchors](#markers-at-their-anchors-round-67)). Settlements, places and bosses are built once at start from
   the settlement registry, the king sockets, `grug_mobs.dragon_map_markers`
   and the rift's site, never from live entities.
 - **Icons:** one approved 32×32 PNG per motif/direction, exported by
@@ -252,22 +300,21 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   `grug_core.factions`) and shipped by the same tool with their masters'
   masks. Both renderers use `grug_map/markers.lua`. **Marker size**
   (Round 66 ruling 5): a marker keeps the share of its map that it has on a
-  1920×1080 desktop at HUD and GUI scale 1, where it is 32 px:
-  `round(32 × drawn / reference)`, never above the rounded product of 32
-  and the effective HUD scale (the size before Round 66), never below
-  16 px. The map window measures the map's drawn width at zoom 1 (its
+  1920×1080 desktop at HUD and GUI scale 1, where it is 21 px since Round
+  67 (32 before): `round(21 × drawn / reference)`, never above the rounded
+  product of 21 and the effective HUD scale, never below 11 px (16 before
+  Round 67). The map window measures the map's drawn width at zoom 1 (its
   `map_w` in formspec units times the client's integer pixel size, from the
-  same capped window information the window is laid out with) against the
-  same layout on the 1920×1080 reference; without window information it
-  keeps the HUD-scaled size. Independent of GUI scale, terrain quality and
-  world-map zoom. The world map converts that extent using the client's
-  integer formspec pixel size, including window fit.
-  Layout uses the complete simultaneous roster at the current projection,
-  stable IDs, nonzero-alpha spans and two bounded improvement passes.
-  Quest slots reserve the union of their status silhouettes; home/innkeeper
-  slots reserve both variants. Personal waystones and claims are placed
-  against fixed offsets without rearranging shared markers. The 24-entry
-  placement cache is process-local and reproducible after eviction.
+  same window information the window is laid out with, the client's own
+  since Round 67) against the same layout on the 1920×1080 reference;
+  without window information it keeps the HUD-scaled size. The arrows are
+  32 px where the markers are 21 and scale alike. Independent of GUI scale,
+  terrain quality and world-map zoom. The world map converts that extent
+  using the client's integer formspec pixel size, including window fit.
+  Round 67 sizes (marker px, map px; before in brackets): 1280×720 12, 498
+  (21, 496), 1920×1080 21, 838 (32, 762), 2560×1440 21, 1118 (32, 762),
+  3840×2160 21, 1677 (32, 1016), a 2400×1080 phone at density 2.5 19, 753
+  (33, 783).
 - **Quest mode** (Round 47 ruling 2): a quest selected in the list shows
   only its targets ([Quest targets](#quest-targets)) and its hand-in NPC
   (silver "?" in progress, gold when ready; the NPC's name as tooltip), and
@@ -307,7 +354,8 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   46 overlapping pairs and 6 over a region name. The two-line candidate
   before the 2026-10-13 pick had 3 and 0, then 79 and 16 respectively.
   Placement took 0.13 s at startup, the grid 0.12 s of it. Those are the
-  original comparison figures, not measurements of today's half-width map.
+  original comparison figures, not measurements of today's map (62 % of
+  the window's width since Round 67).
 - **Quest boxes** (ruling 14, the quest log of [quests.md](quests.md)):
   the list box (the active count, the Quest HUD switch, the list, Track on
   HUD and Abandon with its confirmation) and below it the selected quest's
@@ -319,7 +367,17 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   Track on HUD and Abandon are hidden as with no selection. The quest text
   box is recreated by every send (`guiFormSpecMenu.cpp`), so a long text
   scrolled down jumps back to the top when a party member's move sends the
-  window (accepted, Round 47 ruling 9); the list keeps its scroll.
+  window (accepted, Round 47 ruling 9); the list keeps its scroll. Since
+  Round 67 (ruling 19) the text box keeps 2.75 units (the title, the level
+  line, about two lines of the text, which scrolls, and the status line)
+  and the list box takes the rest of the column, so at 1920×1080 it shows
+  eight quests with both group headings (1280×720: four, the phone: one).
+  It has one compact line (0.6 units) per quest: its state marker, the title
+  (cut with "…", whole in the tooltip) and "[Lv N]" in the difficulty
+  colour like the quest HUD (`grug_core.ui.rows` with `compact`), in the
+  Story and Side quests groups, each sorted by quest level, ties by title,
+  then id (`grug_quests.sort_quests`, the HUD's order;
+  [quests.md](quests.md)).
 
 ### Quest targets
 
@@ -362,12 +420,13 @@ quest boxes), a quest selection or a quest change (`grug_quests.register_on_mark
 accept, kill credit, abandon, held objective items, a level) sends the
 window again, at most once a second per player; an event inside that
 second is owed and goes out when it ends (one trailing send). In a party
-the arrows are compared every 2 s (Round 47 ruling 8; 5 s before), counted
+the arrows are compared every second (Round 67, as no dropdown can be
+closed by a send any more; 2 s from Round 47 ruling 8, 5 s before), counted
 from the later of the last check and the last send, and the window is sent
 only when a member's arrow (the viewer's included) moved to another grid
 cell (0.02 units: about 12 nodes at 1x on a 1920×1080 window, so a walking
 member moves an arrow about every 3 s there and every check at 2x and
-more). The same bounded 2 s pass checks window information for solo players
+more). The same bounded 1 s pass checks window information for solo players
 as well: a resize or GUI/HUD scale change resends the form. Without an event
 or window change, a solo player's arrow shows where they stood at the last send. A scrollbar move sends nothing and holds every
 send for 0.5 s after it (the old Map tab's rule: a form rebuilt during a
@@ -404,6 +463,17 @@ member moving about an arrow cell per check 30 (12 with Round 44's 5 s
 check); in a party standing still 0; 60 party windows walking together at
 least 19 each, the pass budget holding them about 3 s apart; before Round
 44, the open Map tab's 2 s poll sent a walking viewer up to 30.
+
+Round 67 (the `tools/r44_mq` scene with a party of five, `tools/r67_map/bytes.lua`,
+the same at 1920×1080 and 3840×2160; before → after): no markers 10.5 →
+12.4 KB (the eight flat buttons with their tooltips and one shared set of
+styles replace the dropdown; 76 tooltip rectangles, the four party
+arrows'), Trainers 19.1 → 17.6 KB (214 → 158 rectangles at the smaller
+size), Towns 20.7 → 18.6 KB (234 → 169). At the 1 s check a walking
+party sends at most 60 a minute instead of 30, so at most about 0.74–1.1 MB
+a minute instead of 0.32–0.62 MB for such a viewer; standing still sends
+nothing. The fixture's walking party member went from 30 to 47 sends a
+minute.
 
 ## Baked layer
 
@@ -602,24 +672,25 @@ drawn from the base image above. The gliding version (approved in playtest,
   givers, Housing Steward, capital services, mender, profession and Riding
   trainers, innkeepers, home and discovered waystones/Claim Stone. The clash
   landmark represents the rift site; there is no duplicate rift-boss icon.
-  Ordinary markers use the same size rule and bounded placement as the
-  world map, measured against the minimap's own hole (its drawn map) on
-  the 1920×1080 reference; the player's and the party's arrows inside the
-  hole take the same size. The box is a quarter of the window height in
-  real pixels whatever the HUD scaling, so before Round 66 the HUD-scaled
-  markers outgrew it on a high-density screen (a 2400×1080 phone at
-  scaling 2.5: the desktop's 270 px box, 80 px markers; now 32 px).
-  The minimap solves its combined roster independently
-  of the world map's selected layer and projection, then crops to the view.
-  Quest state changes and home/innkeeper substitution preserve shared offsets.
+  Ordinary markers use the same size rule as the world map (21 px at the
+  reference since Round 67), measured against the minimap's own hole (its
+  drawn map) on the 1920×1080 reference; the player's and the party's
+  arrows inside the hole scale alike from 32 px. The box is a quarter of
+  the window height in real pixels whatever the HUD scaling, so before
+  Round 66 the HUD-scaled markers outgrew it on a high-density screen (a
+  2400×1080 phone at scaling 2.5: the desktop's 270 px box, 80 px markers;
+  32 px in Round 66, 21 px since Round 67). Every marker stands at its
+  anchor (Round 67, no displacement).
   Icons glide with the terrain and are culled near the circular edge; the
   bezel covers the remaining corner overhang. Stable marker IDs retain
   their HUD elements. A reusable pool grows to the maximum simultaneously
   visible count, with no 24-marker cutoff and no automatic clustering.
   Landmarks draw above ground overlays (including the green claim square),
   mender/Steward/capital services above that base layer, home/waypoints above
-  those and quests above travel. Trainers and innkeepers share the landmark layer;
-  all remain below the bezel. Player/party arrows keep exact anchors.
+  those and quests above travel, by their state since Round 67
+  (`markers.rank`). Trainers and innkeepers share the landmark layer; all
+  remain below the bezel.
+  Player/party arrows keep exact anchors.
 - **Party members** (online, same party) have nine slots of their own: a cyan
   heading arrow that glides with the map inside the hole, or a cyan arrow on
   the bezel pointing toward them (16 directions) when they are outside it.

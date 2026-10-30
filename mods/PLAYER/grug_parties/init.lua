@@ -5,7 +5,7 @@ local state = saved == "" and {next_id = 0, groups = {}} or core.deserialize(sav
 assert(type(state) == "table" and type(state.groups) == "table"
 	and type(state.next_id) == "number", "[grug_parties] Invalid party storage")
 local membership, incoming, last_send, connected = {}, {}, {}, {}
-local callbacks = {}
+local callbacks, roster_callbacks = {}, {}
 local INVITES = "grug_parties:invites_off"
 local HUD = "grug_parties:hud_off"
 local HEALTH_COLORS = "grug_parties:health_colors"
@@ -50,6 +50,12 @@ local function group_of(name)
 	local id = membership[name]
 	return id and state.groups[id], id
 end
+-- Something every player's row on the Social tab shows changed (Round 67
+-- ruling 8): who is online, a faction, class, race or level, a party, a
+-- leader or the invitation switch.
+local function roster_changed()
+	for _, callback in ipairs(roster_callbacks) do callback() end
+end
 local function emit(names, reason)
 	-- Existing invitation rows show the inviter's current party context.
 	if reason == "membership" or reason == "leadership" then
@@ -64,6 +70,9 @@ local function emit(names, reason)
 	for name in pairs(names) do
 		for _, callback in ipairs(callbacks) do callback(name, reason) end
 	end
+	-- "display" (the Party HUD switch, the health colours) changes only the
+	-- player's own HUD; the invitation switch ("preferences") changes rows.
+	if reason ~= "invitation" and reason ~= "display" then roster_changed() end
 end
 local function affected(group, extra)
 	local names = {}
@@ -73,16 +82,33 @@ local function affected(group, extra)
 	end
 	return names
 end
-local function prune(name, time)
+-- Drops the expired invitations of `name`; `inviters` (optional) collects
+-- whose invitations expired (their invite buttons come back).
+local function prune(name, time, inviters)
 	local list = incoming[name]
 	local changed = false
 	if list then
 		for inviter, expiry in pairs(list) do
-			if expiry <= time then list[inviter], changed = nil, true end
+			if expiry <= time then
+				list[inviter], changed = nil, true
+				if inviters then inviters[inviter] = true end
+			end
 		end
 		if not next(list) then incoming[name] = nil end
 	end
 	return changed
+end
+-- Drops the invitations `name` sent (it can no longer invite: a member, a
+-- leader no more); returns their recipients.
+local function clear_sent(name)
+	local recipients = {}
+	for recipient, list in pairs(incoming) do
+		if list[name] then
+			list[name], recipients[recipient] = nil, true
+			if not next(list) then incoming[recipient] = nil end
+		end
+	end
+	return recipients
 end
 local function clear_invitations(name)
 	local changed = {[name] = true}
@@ -117,6 +143,16 @@ function grug_parties.register_on_change(callback)
 	assert(type(callback) == "function")
 	callbacks[#callbacks + 1] = callback
 end
+-- callback() after a change of the Social tab's player list (above); the
+-- callback coalesces.
+function grug_parties.register_on_roster_change(callback)
+	assert(type(callback) == "function")
+	roster_callbacks[#roster_callbacks + 1] = callback
+end
+-- Whether `name` is online for the parties: joined and not leaving.
+function grug_parties.is_online(name)
+	return connected[name] == true
+end
 function grug_parties.view(player)
 	local group, id = group_of(name_of(player))
 	if not group then return nil end
@@ -150,6 +186,26 @@ function grug_parties.pending(player)
 	table.sort(result, function(a, b) return a.inviter < b.inviter end)
 	return result
 end
+-- The invitation box of the HUD (Round 67 ruling 2): the newest pending
+-- invitation of `player` that has not expired, as {inviter, seconds (left,
+-- rounded up), more (how many others wait)}, or nil. Reads only; the 1 s
+-- pass below prunes.
+function grug_parties.newest_invitation(player)
+	local list = incoming[name_of(player)]
+	if not list then return nil end
+	local time, best, best_expiry, count = now(), nil, nil, 0
+	for inviter, expiry in pairs(list) do
+		if expiry > time then
+			count = count + 1
+			if not best_expiry or expiry > best_expiry or
+					(expiry == best_expiry and inviter < best) then
+				best, best_expiry = inviter, expiry
+			end
+		end
+	end
+	if not best then return nil end
+	return {inviter = best, seconds = math.ceil(best_expiry - time), more = count - 1}
+end
 function grug_parties.invitations_enabled(player)
 	return player:get_meta():get_int(INVITES) == 0
 end
@@ -172,7 +228,7 @@ function grug_parties.set_hud_enabled(player, enabled)
 	local name = actor(player)
 	if not name or type(enabled) ~= "boolean" then return false, "Invalid player or preference." end
 	player:get_meta():set_int(HUD, enabled and 0 or 1)
-	emit({[name] = true}, "preferences")
+	emit({[name] = true}, "display")
 	return true, enabled and "Party HUD enabled." or "Party HUD disabled."
 end
 function grug_parties.set_health_color_mode(player, mode)
@@ -184,7 +240,7 @@ function grug_parties.set_health_color_mode(player, mode)
 		return true, "Health colors unchanged."
 	end
 	player:get_meta():set_string(HEALTH_COLORS, mode)
-	emit({[name] = true}, "preferences")
+	emit({[name] = true}, "display")
 	return true, mode == "by_class" and "Class health colors enabled."
 		or "All-green health colors enabled."
 end
@@ -206,6 +262,15 @@ local function eligible(inviter, recipient)
 	end
 	return true, faction
 end
+-- Whether `inviter` may invite `recipient` now (the Social tab's invite
+-- button, Round 67 ruling 6): eligible and not already invited by them.
+-- grug_parties.invite decides again at the click.
+function grug_parties.can_invite(inviter, recipient)
+	inviter, recipient = name_of(inviter), name_of(recipient)
+	local list = incoming[recipient]
+	if list and list[inviter] and list[inviter] > now() then return false end
+	return (eligible(inviter, recipient))
+end
 function grug_parties.invite(player, recipient)
 	local name = actor(player)
 	if not name or type(recipient) ~= "string" then return false, "Invalid invitation." end
@@ -222,7 +287,8 @@ function grug_parties.invite(player, recipient)
 	last_send[name] = time
 	list[name] = time + 120
 	incoming[recipient] = list
-	core.chat_send_player(recipient, name .. " invited you to a party. Open Party & PvP to respond.")
+	core.chat_send_player(recipient, name .. " has invited you to join their party. " ..
+		"Open the Social tab to answer.")
 	emit({[recipient] = true}, "invitation")
 	return true, "Invitation sent."
 end
@@ -244,8 +310,15 @@ function grug_parties.accept(player, inviter)
 	group.members[#group.members + 1] = name
 	group.levels[name] = grug_xp.get_level(player)
 	membership[name] = id
-	incoming[name] = nil
+	-- A party member holds no invitations (Round 67 ruling 4): when a party
+	-- forms, the inviter's go as well as the joining player's. The joining
+	-- player is a member, not the leader, so the invitations it sent could no
+	-- longer be accepted: they go too, from their recipients' boxes. The
+	-- inviter, who leads, keeps the ones it sent.
+	incoming[name], incoming[inviter] = nil, nil
+	local recipients = clear_sent(name)
 	persist()
+	emit(recipients, "invitation")
 	emit(affected(group), "membership")
 	return true, "Joined the party."
 end
@@ -257,7 +330,8 @@ function grug_parties.decline(player, inviter)
 	if not list or not list[inviter] then return false, "Invitation expired or unavailable." end
 	list[inviter] = nil
 	if not next(list) then incoming[name] = nil end
-	emit({[name] = true}, "invitation")
+	-- The inviter's Invite button for this player comes back.
+	emit({[name] = true, [inviter] = true}, "invitation")
 	return true, "Invitation declined."
 end
 function grug_parties.leave(player)
@@ -290,6 +364,8 @@ function grug_parties.transfer_leader(player, target)
 	if not group then return false, message end
 	group.leader = target
 	persist()
+	-- The old leader may no longer invite: the invitations it sent go.
+	emit(clear_sent(name_of(player)), "invitation")
 	emit(affected(group), "leadership")
 	return true, "Leadership transferred."
 end
@@ -300,6 +376,7 @@ local function faction_changed(player)
 		local changed = remove_member(name)
 		emit(changed, "membership")
 	end
+	roster_changed()
 end
 local function remember_level(player)
 	local name = player:get_player_name()
@@ -340,19 +417,23 @@ if grug_classes then
 	grug_classes.register_on_class_chosen(function(player)
 		local group = group_of(player:get_player_name())
 		if group then emit(affected(group), "class") end
+		roster_changed()
 	end)
+	grug_classes.register_on_race_chosen(roster_changed)
 end
 local elapsed = 0
 core.register_globalstep(function(dtime)
 	elapsed = elapsed + dtime
 	if elapsed < 1 then return end
 	elapsed = 0
+	-- An expiry tells the recipient (its list and HUD box) and the inviter
+	-- (its invite button on the Social tab).
 	local time, changed = now(), {}
 	for name, sent in pairs(last_send) do
 		if time - sent >= 1 then last_send[name] = nil end
 	end
 	for name in pairs(incoming) do
-		if prune(name, time) then changed[name] = true end
+		if prune(name, time, changed) then changed[name] = true end
 	end
 	emit(changed, "invitation")
 end)

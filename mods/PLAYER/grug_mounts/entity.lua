@@ -38,6 +38,7 @@ local LAVA_DISMOUNT = "Mounts cannot enter lava."
 local WATER_REFUSAL = "Only boats can be summoned in water."
 local LAVA_REFUSAL = "Mounts cannot be summoned in lava."
 local GROUND_REFUSAL = "Stand on solid ground to summon this mount."
+local FLYER_ROOM_REFUSAL = "There is not enough room here for a flying mount."
 local FALL_TOLERANCE = 14
 -- The camera (2026-10-27): mounting switches the rider to third person,
 -- dismounting back to first; F7 stays free during the ride. The switch is a
@@ -499,8 +500,9 @@ local function flight_step(self, control, yaw)
 	local tier = grug_mounts.TIERS[self._grug_tier]
 	local input_x, input_z, input_scale = horizontal_input(control, yaw)
 	local vertical = 0
-	if control.jump then vertical = tier.speed * 0.6
-	elseif control.sneak then vertical = -tier.speed * 0.6 end
+	local climb = tier.vertical_speed or tier.speed
+	if control.jump then vertical = climb
+	elseif control.sneak then vertical = -climb end
 	local pos = self.object:get_pos()
 	if pos.y >= grug_mounts.FLIGHT_CEILING and vertical > 0 then vertical = 0 end
 	if pos.y > grug_mounts.FLIGHT_CEILING then
@@ -835,12 +837,21 @@ local function summon_position(player, tier_id)
 	if tier.mode == "flight" then
 		local legal = grug_mounts.flight_state(player, pos)
 		if not legal then return nil, "Flying mounts are forbidden here." end
-		local surface = grug_zones.terrain_height_at(pos.x, pos.z)
-		if type(surface) ~= "number" or pos.y < surface then
-			return nil, "Flying mounts cannot take off underground."
-		end
 		if pos.y > grug_mounts.FLIGHT_CEILING then
 			return nil, "The flight ceiling is y = " .. grug_mounts.FLIGHT_CEILING .. "."
+		end
+		-- Round 67 ruling 23: a flyer may be summoned underground too, but
+		-- only where its body fits at the rider's feet (grug_mobs room.lua;
+		-- a slab, a stair's lower step or snow beside or under the feet is
+		-- footing). The body is tested from the feet up: the flyer's box
+		-- reaches 0.1 below its origin, which would leave only 0.4 of
+		-- footing. A ground mount keeps the rule above: it fits 1-wide
+		-- tunnels and doorways.
+		local model = grug_mounts.model_for(player, tier_id)
+		local b = model and model.collisionbox
+		if b and grug_mobs.box_blocked(pos,
+				{b[1], math.max(b[2], 0), b[3], b[4], b[5], b[6]}) then
+			return nil, FLYER_ROOM_REFUSAL
 		end
 	end
 	return pos

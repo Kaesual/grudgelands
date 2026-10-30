@@ -327,6 +327,36 @@ function layout.party_icon_size(window)
 		layout.PARTY_BAR_HEIGHT
 end
 
+-- The party invitation box (Round 67 ruling 2; grug_parties hud.lua) at
+-- the party list's anchor, which it never shares with the party rows (a
+-- player in a party holds no invitations): the icon left, `lines` text
+-- lines of INVITE_BOX.line GUI px right of it, inside INVITE_BOX.pad GUI px
+-- of padding, centred on the anchor's height like the rows. The text column
+-- is side_text_width's characters wide (QUEST_BOX.char GUI px each). Text
+-- is sized by GUI scaling and offsets by HUD scaling, so the geometry is
+-- worked out in screen pixels and returned in HUD units: {chars, width,
+-- height, x, top, icon_x, icon_y, icon (its HUD px), text_x, tops[i]}.
+layout.INVITE_BOX = {pad = 6, line = 20, icon = 32, gap = 8}
+
+function layout.invite_box(window, lines)
+	local I = layout.INVITE_BOX
+	local hud, gui = scales(window)
+	local anchor = layout.anchors.party_list.offset
+	local chars = layout.side_text_width(window)
+	local pad, line = math.floor(I.pad * gui + 0.5), math.ceil(I.line * gui)
+	local icon, gap = I.icon * hud, I.gap * hud
+	local width = 2 * pad + icon + gap + chars * layout.QUEST_BOX.char * gui
+	local height = 2 * pad + math.max(icon, lines * line)
+	local top = anchor.y - height / hud / 2
+	local out = {chars = chars, width = width / hud, height = height / hud,
+		x = anchor.x, top = top, icon_x = anchor.x + pad / hud, icon_y = top + pad / hud,
+		icon = I.icon, text_x = anchor.x + (pad + icon + gap) / hud, tops = {}}
+	for i = 1, lines do
+		out.tops[i] = top + (pad + (i - 1) * line) / hud
+	end
+	return out
+end
+
 -- Slot `index` of `count` shown statuses, centred on the row anchor:
 -- the icon's centre and the top of its caption, both as HUD offsets.
 -- Captions are text, sized by GUI scaling: their line height and width are

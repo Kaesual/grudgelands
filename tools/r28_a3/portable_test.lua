@@ -107,6 +107,11 @@ _G.grug_obstacle = dofile(ROOT .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
 assert(loadstring(scale_src))()
 
 dofile(ROOT .. "/mods/CORE/grug_core/tag_carrier.lua")
+-- Round 67: the tier scale re-checks the room (room.lua); this world is
+-- open air.
+core.registered_nodes = {air = {walkable = false}}
+core.get_node_or_nil = function() return {name = "air"} end
+dofile(ROOT .. "/mods/ENTITIES/grug_mobs/room.lua")
 dofile(ROOT .. "/mods/ENTITIES/grug_mobs/levels.lua")
 dofile(ROOT .. "/mods/ENTITIES/grug_mobs/npc_doors.lua")
 dofile(ROOT .. "/mods/ENTITIES/grug_mobs/patrol.lua")

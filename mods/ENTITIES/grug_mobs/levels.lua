@@ -179,7 +179,7 @@ end
 -- that property update, and a later observer receives the carrier's current
 -- property when the object is first sent.
 local function update_tag(self)
-	if not self.object then
+	if not self.object or not grug_mobs.wants_nametag(self) then
 		return
 	end
 	local text = grug_mobs.tag_text(self)
@@ -190,6 +190,22 @@ local function update_tag(self)
 	grug_core.set_tag_carrier_text(grug_mobs.ensure_tag_carrier(self), text)
 end
 grug_mobs.update_tag = update_tag
+
+--
+-- WHO CARRIES A NAMETAG (Round 67 ruling 25): only what a player deals with.
+-- Every hostile and neutral mob, guard, king, vendor, trainer, service and
+-- quest giver keeps its tag; a critter (disposition `critter`) and a plain
+-- settlement citizen (socket role `idle` or `work`, start_npcs.lua) carry
+-- none. Nothing else hangs on the tag: the target frame prints tag_text, a
+-- critter has no health bar, and the quest marker rides only on a quest
+-- giver's carrier (grug_quests npc.lua).
+--
+local UNTAGGED_ROLES = {idle = true, work = true}
+
+function grug_mobs.wants_nametag(self)
+	return self._grug_disposition ~= "critter" and
+		not UNTAGGED_ROLES[self._grug_socket_role]
+end
 
 --
 -- THE SAME TEXT PATH FOR A PEACEFUL NPC.
@@ -303,6 +319,14 @@ end
 -- relative to the scale already in place — mobs:scale_mob(..., true)
 -- overwrites base_size/base_colbox/base_selbox, which persist in
 -- staticdata, so applying the same factor twice would double the mob.
+--
+-- Round 67 ruling 26: the scale re-checks the room (room.lua tier_scale). A
+-- body that would not fit where the mob stands keeps the size it has, and
+-- `_grug_visual_scale` (a plain field, saved with the mob) records the scale
+-- actually applied; a mob saved before it carries its tier's scale. The
+-- feet stay where they are: scale_mob scales the box around the origin, so a
+-- body reaching below its origin (spider, golem) would otherwise grow into
+-- the ground.
 local function apply_tier_visuals(self)
 	local tier = self._grug_tier or "normal"
 	local applied = self._grug_visual_tier or "normal"
@@ -310,13 +334,22 @@ local function apply_tier_visuals(self)
 		self._grug_visual_tier = tier
 		return
 	end
-	local factor = tier_def(tier).scale / tier_def(applied).scale
+	local current = self._grug_visual_scale or tier_def(applied).scale
+	local scale = grug_mobs.tier_scale(self, current, tier_def(tier).scale)
+	local factor = scale / current
 	if factor ~= 1 then
+		local box = self.base_colbox
+		local pos = self.object:get_pos()
 		mobs:scale_mob(self, factor, factor, true)
+		if pos and box and box[2] ~= 0 then
+			pos.y = pos.y + box[2] * (1 - factor)
+			self.object:set_pos(pos)
+		end
 		-- The nametag carrier copied the old box when it was made; the tag
 		-- has to ride on the rescaled top (the HP bar follows on its own).
 		grug_core.sync_tag_carrier_box(self.object)
 	end
+	self._grug_visual_scale = scale
 	if self._grug_base_texture == nil then
 		self._grug_base_texture = self.base_texture
 	end

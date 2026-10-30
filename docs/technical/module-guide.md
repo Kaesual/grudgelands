@@ -1170,6 +1170,11 @@ tools](#player-meta-read-by-external-tools).
     are non-pointable, non-physical and unsaved. Unsaved Lua entities never
     enter the engine's static-object count used by mobs_redo `aoc`; do not
     compensate or otherwise modify that spawn-budget comparison for carriers.
+    Since Round 67 (ruling 25) `grug_mobs.wants_nametag` (levels.lua)
+    decides who gets one: no carrier for a critter (`_grug_disposition`) or
+    a settlement resident on an `idle`/`work` socket (`_grug_socket_role`);
+    `update_tag`, the shared `after_activate` and the settlement NPCs'
+    `install_nametag` ask it. Fixture `tools/r67_world`.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
@@ -1501,6 +1506,21 @@ tools](#player-meta-read-by-external-tools).
   before); one field test per step, a check every `DAWN_INTERVAL` (1 s) per
   night mob. Camp members (their tag's unit is a camp) and every mob without
   the clock stay. Fixture and engine probe `tools/r35_e`.
+
+## Room for a body
+
+- **One collision-box test (Round 67 WORLD):** `grug_mobs/room.lua`
+  `grug_mobs.box_blocked(pos, box)`: a walkable node's real collision boxes
+  (`core.get_node_boxes`) overlapping the box shrunk by 0.05 per side,
+  boxes up to half a node above its bottom counted as footing; unknown and
+  unloaded nodes solid. Its users: `spawn_room_refused` (a mob wider than one
+  node, from `mobs:spawn_abm_check`, init.lua), `tier_scale` (levels.lua
+  `apply_tier_visuals`; the applied scale is the saved `_grug_visual_scale`
+  and the feet are kept), the stuck cleanup (`give_up_stuck` from aggro.lua
+  `give_up_target` flags; `stuck_tick` from the `do_custom` wrapper after
+  `dawn_tick` removes once nobody is within `grug_mobs.STUCK_WATCH` (32)
+  nodes; `grug_mobs.mob_bound`, dawn.lua's list, stays) and the flying
+  mount's summon (grug_mounts entity.lua). Fixture `tools/r67_world`.
 
 ## Flier clips
 
@@ -1936,7 +1956,22 @@ tools](#player-meta-read-by-external-tools).
   player without a party through `grug_parties.in_party` (membership only,
   no view built) and recomputes the row layout only on a window change
   (fixture `tools/r32_f4`). Current geometry and offline presentation:
-  [parties.md](../design/parties.md).
+  [parties.md](../design/parties.md). Since Round 67 the same poll draws
+  the invitation box for a player without a party who holds invitations
+  (`grug_parties.newest_invitation`, a read of the session table; geometry
+  `hud_layout.invite_box`). The Social tab (`ui.lua`) keeps one shared
+  roster of the online players, dropped at every
+  `register_on_roster_change` event (`init.lua` raises it on join, leave,
+  faction, class, race and level changes and on every party event but
+  invitations and the reason `display`, the Party HUD switch and the health
+  colours); each viewer whose current sfinv page is Social is asked
+  once per server step (`core.after(0)`) and sent at most once per
+  `SEND_GAP_US` (2 s), the owed send by one `core.after`; a scrollbar move
+  holds sends for `QUIET_US` (0.5 s); the PvP section's countdown goes
+  through the same limiter (`grug_parties.social_resend`). The coalescing state lives in the
+  sfinv context; every build counts as a send. Favourites are player meta
+  `grug_parties:favorites` (a serialised sorted name list). Fixture
+  `tools/r67_social`.
 
 ## Miner's Guild
 
@@ -3318,9 +3353,9 @@ tools](#player-meta-read-by-external-tools).
   last button (`guiFormSpecMenu.cpp` `setInitialFocus`); edit boxes include
   every `textarea[]`, a read-only one too, and an edit box or a table eats
   letter keys. So a window with an edit box or a table names a harmless button in
-  `set_focus[<name>;true]`, placed before that button (Party & PvP: Refresh;
-  Talents & Skills, Inventory and the mailbox window: an invisible
-  zero-size button with no action; Character: the selected mode's button, never Return home; Help: the
+  `set_focus[<name>;true]`, placed before that button (Talents & Skills,
+  Inventory, Social and the mailbox window: an invisible zero-size button
+  with no action; Character: the selected mode's button, never Return home; Help: the
   open sub-page's button; Claim Stone and Crownbinder: Close; the creation
   window: the chosen faction). Forced, because an unforced `set_focus` only
   applies when the window shows a new form name, and the inventory key opens

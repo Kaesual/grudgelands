@@ -1,15 +1,19 @@
--- The PvP section of the Party & PvP tab (pvp-plan.md ruling 16; Round 31
--- lane P2; one tab with the party since Round 44, spec §3.8): the "Flag me
--- for PvP" button, the current state (safe, or flagged with its reason and
--- the seconds left; PvP combat) and the statistics, nothing else (no rank,
--- titles or rewards). Texts: view.lua. The page itself is grug_parties's
--- (grug_parties/ui.lua); this file installs the section there
--- (grug_parties.pvp_section) and keeps it current.
+-- The PvP section of the Social tab (pvp-plan.md ruling 16; Round 31 lane
+-- P2; one tab with the party since Round 44, spec §3.8; the Social tab since
+-- Round 67): the "Flag me for PvP" button, the current state (safe, or
+-- flagged with its reason and the seconds left; PvP combat) and the
+-- statistics, nothing else (no rank, titles or rewards). Texts: view.lua.
+-- The page itself is grug_parties's (grug_parties/ui.lua); this file
+-- installs the section there (grug_parties.pvp_section) and keeps it
+-- current.
 --
--- Real coordinates, in the right-hand card positioned by the party page. While the tab is the player's page the section's text is
--- compared once a second and the page re-sent only when it changed, so a
--- countdown costs one send per second and a quiet tab none; a state change
--- re-sends it at once.
+-- Real coordinates, in a card below the party box (Round 67 ruling 4a):
+-- state and button left, statistics right. While the tab is the player's
+-- page the section's text is compared once a second and the page re-sent
+-- only when it changed, through the Social tab's limiter
+-- (grug_parties.social_resend: at most one send per 2 s, none while the
+-- player drags the list's scrollbar), so a countdown steps by 2 s and a
+-- quiet tab costs nothing. The player's own press re-sends at once.
 
 local V = dofile(core.get_modpath(core.get_current_modname()) .. "/view.lua")
 local FLAG_FIELD = "grug_pvp_flag"
@@ -21,8 +25,10 @@ local function label(x, y, text)
 	return ("label[%.2f,%.2f;%s]"):format(x, y, esc(text))
 end
 
--- A full-height card beside the party column. The caller supplies a container;
--- all status texts, statistics and refresh keys still come from view.lua.
+-- The card's size; the caller supplies a container. All status texts,
+-- statistics and refresh keys still come from view.lua.
+local CARD_W, CARD_H = 9.7, 6.35
+local STATS_X, VALUE_X = 5.4, 9.0
 local function section(player, context, y)
 	local state, stats = grug_pvp.state(player), grug_pvp.stats(player)
 	local scale = grug_core.ui.text_scale(player)
@@ -33,32 +39,36 @@ local function section(player, context, y)
 		detail = detail .. "\n" .. core.colorize(V.COLOR_COMBAT, lines.combat)
 	end
 	local fs = {grug_core.ui.fonts(scale),
-		grug_core.ui.panel(0, y, 7.5, 12.35),
-		grug_core.ui.heading(0.4, y + 0.35, "PvP status", scale),
-		label(0.4, y + 1.05, core.colorize(lines.color, lines.headline)),
-		grug_core.ui.prose(0.4, y + 1.5, 6.7, 1.3, detail, false, scale),
-		grug_core.ui.prose(0.4, y + 2.9, 6.7, 2.2,
+		grug_core.ui.panel(0, y, CARD_W, CARD_H),
+		grug_core.ui.heading(0.3, y + 0.35, "PvP status", scale),
+		label(0.3, y + 1.0, core.colorize(lines.color, lines.headline)),
+		grug_core.ui.prose(0.3, y + 1.3, 4.8, 1.75, detail, false, scale),
+		grug_core.ui.prose(0.3, y + 3.1, 4.8, 1.95,
 			"Flags you for 60 s; pressing it again restarts the 60 s.\n" ..
 			"PvP needs both players flagged. There is no early unflag.", true, scale),
 		grug_core.ui.button_style(FLAG_FIELD, "danger", scale),
-		("button[0.4,%.2f;6.7,0.75;%s;Flag me for PvP]"):format(y + 5.3, FLAG_FIELD),
-		grug_core.ui.heading(0.4, y + 6.4, "Statistics", scale),
+		("button[0.3,%.2f;4.8,0.75;%s;Flag me for PvP]"):format(y + 5.3, FLAG_FIELD),
+		grug_core.ui.heading(STATS_X, y + 0.35, "Statistics", scale),
 	}
 	for index, row in ipairs(V.stats_rows(stats)) do
-		local row_y = y + 7.1 + (index - 1) * 0.65
-		fs[#fs + 1] = label(0.4, row_y, row[1]) .. label(6.3, row_y, row[2])
+		local row_y = y + 1.0 + (index - 1) * 0.6
+		fs[#fs + 1] = label(STATS_X, row_y, row[1]) .. label(VALUE_X, row_y, row[2])
 	end
 	return table.concat(fs)
 end
 
 -- Re-sends the page when the player has it open and the section's text
--- changed.
-local function refresh(player)
+-- changed: at once for the player's own press, else through the limiter.
+local function refresh(player, now)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == grug_parties.PAGE and
 			V.page_key(grug_pvp.state(player), grug_pvp.stats(player)) ~=
 			context.grug_pvp_key then
-		sfinv.set_player_inventory_formspec(player, context)
+		if now then
+			sfinv.set_player_inventory_formspec(player, context)
+		else
+			grug_parties.social_resend(player)
+		end
 	end
 end
 
@@ -70,12 +80,12 @@ grug_parties.pvp_section = {
 		-- The only PvP sound: the player's own press (user, Round 34);
 		-- automatic flag changes stay silent.
 		if grug_pvp.flag_now(player) then grug_sounds.play("pvp_on", player) end
-		refresh(player)
+		refresh(player, true)
 		return true
 	end,
 }
 
-grug_pvp.register_on_change(refresh)
+grug_pvp.register_on_change(function(player) refresh(player) end)
 
 local elapsed = 0
 core.register_globalstep(function(dtime)

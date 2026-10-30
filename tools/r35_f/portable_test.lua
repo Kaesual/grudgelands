@@ -480,11 +480,11 @@ do
 	check(ui:find("tooltip = row.title", 1, true) ~= nil, "Q the quest log has full-title tooltips")
 	check(not ui:find("[Repeatable]", 1, true) and not ui:find("[Ready]", 1, true),
 		"Q the quest log has no [Repeatable] or [Ready] text")
-	-- The real window geometry is exercised by r44_mq; the column now owns
-	-- half the available body instead of the former minimum-width rule.
+	-- The real window geometry is exercised by r44_mq; since Round 67 the
+	-- map takes about 62 % of the body and the quest column the rest.
 	local share = tonumber(read(ROOT .. "/mods/PLAYER/grug_map/window.lua"):match(
-		"\nlocal COLUMN_SHARE = ([%d.]+)"))
-	eq(share, 0.5, "Q the quest column shares the body equally with the map")
+		"\nlocal MAP_SHARE, COLUMN_MIN = ([%d.]+),"))
+	eq(share, 0.62, "Q the map takes 62 % of the body, the quest column the rest")
 end
 
 if failures > 0 then

@@ -53,36 +53,55 @@ function grug_quests.hud_line(quest, width)
 	return one_line(text, width)
 end
 
+-- The one quest order of the map window's quest list (grug_map
+-- quest_box.lua, inside its Story and Side groups) and the tracker's boxes
+-- (Round 67 rulings 19 and 19a), so the two cannot drift apart: story
+-- quests first (the journal row's `story`, the list's story test), then by
+-- quest level (`def.level`), ties by title (plain, lower case), then id.
+-- Sorts journal rows (each with `id`, `title`, `story`) in place.
+function grug_quests.sort_quests(rows)
+	local keys = {}
+	for _, row in ipairs(rows) do
+		local def = grug_quests.registered_quests[row.id]
+		keys[row] = {story = row.story and true or false, level = def and def.level or 0,
+			title = plain(row.title or ""):lower()}
+	end
+	table.sort(rows, function(a, b)
+		local ka, kb = keys[a], keys[b]
+		if ka.story ~= kb.story then return ka.story end
+		if ka.level ~= kb.level then return ka.level < kb.level end
+		if ka.title ~= kb.title then return ka.title < kb.title end
+		return a.id < b.id
+	end)
+end
+
 -- The tracked quests as the tracker's boxes (Round 65 ruling 4, replacing
 -- Round 24 ruling 23's objective-only lines): the title, cut so the level
 -- label keeps its room; the label "[Lv N]" of the quest level (`def.level`,
 -- the number the quest log shows) in its difficulty colour for a player of
 -- `player_level` (grug_xp.con_color, the target frame's gradient); the
--- objective line (hud_line). Sorted by quest level, ties by title, then id,
--- so easy and hard quests read at a glance. `width` is the line width in
--- characters (hud_layout.side_text_width). Empty while the HUD is off.
+-- objective line (hud_line). In the quest list's order (sort_quests; Round
+-- 67 ruling 19a: story quests on top, each group by quest level, ties by
+-- title, then id; no group headings), so easy and hard quests read at a
+-- glance. `width` is the line width in characters
+-- (hud_layout.side_text_width). Empty while the HUD is off.
 function grug_quests.hud_entries(journal, player_level, width)
 	local entries = {}
 	if not journal.hud_enabled then return entries end
-	local by_id = {}
+	local by_id, tracked = {}, {}
 	for _, quest in ipairs(journal.quests) do by_id[quest.id] = quest end
 	for _, id in ipairs(journal.tracked) do
-		local quest = by_id[id]
-		if quest and #entries < grug_quests.MAX_TRACKED then
-			local level = grug_quests.registered_quests[id].level
-			local label = ("[Lv %d]"):format(level)
-			entries[#entries + 1] = {id = id, level = level, label = label,
-				color = grug_xp.con_color(level, player_level),
-				title = one_line(quest.title, width - #label - 1),
-				line = grug_quests.hud_line(quest, width),
-				order = plain(quest.title):lower()}
-		end
+		if by_id[id] and #tracked < grug_quests.MAX_TRACKED then tracked[#tracked + 1] = by_id[id] end
 	end
-	table.sort(entries, function(a, b)
-		if a.level ~= b.level then return a.level < b.level end
-		if a.order ~= b.order then return a.order < b.order end
-		return a.id < b.id
-	end)
+	grug_quests.sort_quests(tracked)
+	for _, quest in ipairs(tracked) do
+		local level = grug_quests.registered_quests[quest.id].level
+		local label = ("[Lv %d]"):format(level)
+		entries[#entries + 1] = {id = quest.id, level = level, label = label,
+			color = grug_xp.con_color(level, player_level),
+			title = one_line(quest.title, width - #label - 1),
+			line = grug_quests.hud_line(quest, width)}
+	end
 	return entries
 end
 

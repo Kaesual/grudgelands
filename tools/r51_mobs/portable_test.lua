@@ -375,6 +375,9 @@ for _, file in ipairs({"tortoise", "frog", "stingray", "shark", "goby"}) do
 end
 dofile(ROOT .. "/" .. MOBS .. "/subtypes.lua")
 dofile(ROOT .. "/" .. MOBS .. "/aggro.lua")
+-- Round 67: the give-up first flags a stuck mob (room.lua); no swimmer here
+-- is stuck in walkable nodes.
+grug_mobs.give_up_stuck = function() return false end
 
 local BASES = {
 	tortoise = {disposition = "neutral", swimmer = false, type = "animal"},

@@ -129,6 +129,8 @@ grug_parties.in_party = function(player)
 	return membership[name] ~= nil
 end
 grug_parties.hud_enabled = function() return true end
+-- Round 67: nobody here holds an invitation (tools/r67_social checks the box).
+grug_parties.newest_invitation = function() return nil end
 grug_parties.health_color_mode = function() return "by_class" end
 grug_parties.register_on_change = function(fn) on_change = fn end
 local before_steps = #steps
