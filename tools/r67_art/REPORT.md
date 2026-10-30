@@ -1,8 +1,8 @@
 # Round 67 ART — race icons and container tier textures
 
 Delivered on `r67-art`, from `9fcf8093a24f1642186c62261b5b291071151369`.
-**Proposals ready for the user's pick: Race A, Steel A and Abyssal B are
-recommended.** No choice has been treated as accepted.
+**Picked by the user (2026-10-30): Race A, Steel A and Abyssal B** — the
+recommended set (see "The user's pick" below).
 
 Open the [offline preview](preview/index.html). Quick overviews:
 [race contact sheet](preview/race_contact.png) and
@@ -180,6 +180,8 @@ After integration, the user's desktop **and** web GUI check should cover:
 
 ## The user's pick (2026-10-30)
 
-**Race A (coloured heads), Steel A and Abyssal A (strapped timber).** The
-lanes SOCIAL (race icons) and CONTAINERS (tier textures) copy the picked
-`*_a.png` candidates into the game under their final names.
+**Race A (coloured heads), Steel A (strapped timber) and Abyssal B (metal
+plating).** The user first picked Abyssal A and changed it to B after the
+lanes merged (the coordinator swapped the eight abyssal textures and their
+licence rows). The game carries the picked candidates under their final
+names.
