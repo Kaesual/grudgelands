@@ -12,6 +12,65 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.67.0 — the Social tab, a bigger map, simpler crafting and chests in three tiers (2026-10-30)
+
+Fixes and wishes from the group play session. **Migration** needed: the
+server's host runs the migration tool once on the stopped world (last
+point). No map reset, no new world.
+
+- **Social tab** (was "Party & PvP"): one box shows your party, or the
+  invitations you hold while you are in none. Beside it, **Online Players**
+  lists everyone online, both factions, with faction, class, race and
+  level; star a player to keep them at the top of your faction's group,
+  and invite with the button on their row. The list updates itself.
+- **Invitations are hard to miss:** a box on screen names who invited you,
+  counts down and tells you to answer in the Social tab ("+N more" if
+  several are waiting).
+- **Map window:** about 90 % of the screen, with the map as large as fits.
+  Markers stay exactly where they belong and are about a third smaller;
+  your own and your party's arrows are always on top. A row of buttons
+  above the map picks the layer. The quest list has one short line per
+  quest, story quests first, each group by level; the quest boxes on
+  screen follow the same order.
+- **Flying:** flying mounts can be summoned and flown underground where
+  their body fits (the no-fly zones still apply there), and climb and sink
+  as fast as they fly forward.
+- **Fewer names overhead:** plain townsfolk and small animals no longer
+  carry a nametag; quest givers, vendors, trainers, guards and every
+  creature you fight keep theirs.
+- **Spiders** and other wide creatures appear only where they fit and no
+  longer get stuck in cave walls; one that does is removed when nobody is
+  near.
+- **Crafting:** one row per item; where an item has several recipes,
+  "Recipe 1/2" with arrows switches between them. Stairs and slabs no
+  longer turn back into blocks, bush stems drop a plank when dug, and the
+  metal rods are gone (swords, daggers and greataxes use a stick). The
+  button reads plain "Craft", with "×N per craft" beside it where one craft
+  makes several; "Details" sits by the star. The Creative category tabs
+  show only on Creative pages.
+- **Help → Materials:** search any material by name and see where it
+  comes from.
+- **Furnace fuel:** coal and charcoal burn 40 s, anthracite 60 s (half as
+  long); one coal smelts four bars.
+- **Chests:** a Sort button, and a label anyone may write in the open
+  world (in someone else's claim only with its "Everything" right; a
+  locked chest only its owner), shown when you point at the chest.
+- **Steel-Reinforced and Abyssal** chests, locked chests, bookshelves and
+  vessels shelves hold 64 and 96 slots. Craft them directly or press
+  Upgrade on the one you have (8 Steel Bars, then 8 Abyssal Steel Bars);
+  the contents stay. Bookshelves and vessels shelves now hold 32 at the
+  base tier; old ones grow when opened. Long contents scroll.
+- **For the server's host:** stop the server, back the world up, run
+  `python3 tools/migrate.py --world <world directory>` from the new
+  version's checkout and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#1-four-outcomes)).
+  The tool turns every metal rod a character holds (bags, crafting jobs,
+  Claim Stone belongings and mail included) into bars of its metal, one
+  bar for two rods, rounded up. Rods left in chests in the world stay
+  unknown items. An older world moves to 0.67.0 in one update, crossing
+  every map reset and step in between.
+
 ## 0.66.1 — performance numbers in the server log (2026-10-29)
 
 For server admins. **Compatible:** no map reset and no migration step.

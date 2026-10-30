@@ -96,6 +96,17 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.67.0** answers the group play session: the Social tab lists every
+online player with favourites and an invite button, and invitations show
+on screen; the map window fills about 90 % of the screen with smaller
+markers that stay in place; flying mounts fly underground and climb
+faster; plain townsfolk and critters lose their nametags and spiders no
+longer stick in rock; crafting has one row per item, fewer recipes, no
+metal rods and a Materials help page; fuel burns half as long; and chests
+get Sort, labels and Steel-Reinforced and Abyssal tiers with 64 and 96
+slots. The server's host runs the migration tool once (metal rods become
+bars); desktop and web acceptance is pending.
+
 **0.66.0** polishes what the last play session found: shift-clicking a
 two-handed weapon swaps both hands and the blocked offhand shows why; the
 fishing rod can be crafted from the start; the mailbox keeps your sent

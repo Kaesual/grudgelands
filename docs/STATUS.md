@@ -1,6 +1,45 @@
 # Project status
 
-Updated 2026-10-29. This is the delivery pointer, not another game specification.
+Updated 2026-10-30. This is the delivery pointer, not another game specification.
+
+**0.67.0 / Round 67 is merged locally; not pushed.** The group play
+session's notes (2026-10-28): the "Party & PvP" tab is now **Social** (one
+party box with the pending invitations or the current party, the PvP
+section below it, an Online Players table of both factions with faction,
+class, race and level icons, favourites and an Invite button, refreshed on
+change at most once per 2 s per viewer) and an invitation box on the HUD;
+the map window at 90 % of the screen with the markers at their true place
+and about two thirds of their size (21 px at 1080p), flat layer buttons,
+the 1 s party check, a compact quest list and quest HUD both story first,
+then by level; flying underground with a room check and the vertical
+flight speed per tier (8 and 12); nametags only on NPCs with a function
+and on mobs that are fought (1124 carriers fewer); wide mobs spawn and
+scale only where their box fits, and a stuck one is removed when nobody
+watches; one crafting row per output with a variant switch, the stairs
+and stem back-recipes and the metal rods removed (676 → 593 recipe
+records), the plain Craft button with "×N per craft", Details by the star,
+a Help → Materials page, coal 40 s and anthracite 60 s, the Creative row
+only on Creative pages; chests with Sort and a label, and chests, locked
+chests, bookshelves and vessels shelves in three tiers (32 / 64 / 96 slots,
+direct recipes and an Upgrade button, scrolling lists; shelves grow from
+16 to 32). Race icons and tier textures by GPT-6 Astra (the user's pick:
+race A, Steel A, Abyssal A). Lanes MAP (MERGE), WORLD, SOCIAL, CRAFT and
+CONTAINERS (MERGE after one fix round each, delta reviews MERGE), ART
+checked by the coordinator; merges `adffe004`, `bf0ecde0`, `a7a0f162`,
+`502f3ef0`, `3e8f90c1`, `b1f6314e`, then this documentation lane D.
+**Migrate:** step 0.67.0 turns every metal rod a character holds
+(inventories of offline characters, craft jobs, Claim Stone belongings,
+mail) into bars, two rods to one bar rounded up; rods in chests on the map
+stay unknown items (accepted). Everything else is compatible (new keys
+`grug_parties:favorites`, `grug_label` and the mob field
+`_grug_visual_scale`; shelves grow lazily). All 297 portable fixtures
+pass. **Accepted by the user for the first look:** underground Giant
+Spiders and Giant Rats spawn on about a tenth of the floor spots they had
+([completion, numbers, decisions and GUI checklist](planning/round67-plan.md#completion-2026-10-30);
+[carry-overs](../BACKLOG.md#round-67--playtest-feedback-gui-acceptance-pending)).
+**The joint GUI test of 0.57–0.66 is still pending; 0.67 joins it.**
+Production is still **0.55.1**; origin/main is `7a68e871` (0.65.0 and its
+status note). Only the user pushes.
 
 **0.66.0 / Round 66 is merged locally; not pushed.** Polish from the
 user's notes after playing 0.65.0: shift-clicking a two-hander swaps both
@@ -30,9 +69,10 @@ dim level, button strengths, symbol sizes and timing)
 Production is still **0.55.1**; origin/main is `7a68e871` (0.65.0 and its
 status note). Only the user pushes.
 
-**0.66.1 / lane PERF is built on branch `r661-perf`** (2026-10-29, on
+**0.66.1 / lane PERF is merged locally** (2026-10-29, main `667b3d05`, on
 0.66.0; **compatible**, no step: nothing saved is read or written; review
-and merge pending; not pushed). The hosting platform's performance
+MERGE, its notes in the [BACKLOG](../BACKLOG.md#0661--performance-log-lines-carry-overs);
+not pushed). The hosting platform's performance
 dashboard reads the game's own numbers: the new CORE mod `grug_perf` writes
 `[GRUG-PERF]` lines (contract v1 in the [module
 guide](technical/module-guide.md#performance-log-lines)): a `minute` line
