@@ -158,10 +158,12 @@ comparison. Native inventory slots and scrollbars stay native.
 `grug_inventory/navigation.lua` renders the allowed sfinv pages as text buttons
 with caption-weighted widths and an active underline. Admin Mail stays in the
 primary row. Creative has one primary entry and a separate category row,
-reserved on every tab while the player has that privilege. Full titles remain
+drawn only while a Creative page is open (Round 67 ruling 9; every other page
+keeps the one-row header). Full titles remain
 in tooltips; permissions are never replaced by hidden navigation.
-`navigation_layout(player, context, width, info)` returns the visible pages
-and required height; `navigation` optionally accepts that layout and returns
+`navigation_layout(player, context, width, info[, selected])` returns the
+visible pages and required height, the category row only when `selected` is
+a `creative:*` page (the map window passes none); `navigation` optionally accepts that layout and returns
 the fragment and height. It keeps the rendered id mapping in its context and
 revalidates permission at input time. It chains the existing `handle_scroll`
 hook; ordinary actions still reach their page, pure inventory scrolling sends

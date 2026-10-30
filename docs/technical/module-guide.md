@@ -2410,8 +2410,8 @@ tools](#player-meta-read-by-external-tools).
   fn(player, marker)}` for a step's online work. A new step adds its version
   here and, when it leaves online work, its handlers (in this file, above the
   registry: the guard collects them at load) and their fixture. The
-  declared steps are 0.44.0, 0.45.0, 0.47.0, 0.48.0 and 0.53.0; every one
-  but 0.44.0 leaves a character handler, run at the character's next join
+  declared steps are 0.44.0, 0.45.0, 0.47.0, 0.48.0, 0.53.0 and 0.67.0;
+  every one but 0.44.0 and 0.67.0 leaves a character handler, run at the character's next join
   before every other join callback. 0.45.0's hands craft-grid and
   `craftresult` leftovers over (give helper, output area, feet), refreshes
   first-tier weapons' capabilities and rebuilds gear tooltips (fixture
@@ -2452,7 +2452,10 @@ tools](#player-meta-read-by-external-tools).
   `grug_classes:untouchable_ready`, removes the retired skills
   `grug_abilities:{cinderfall,glacial_ward,pinning_shot}` from `main`,
   `grug_hotbar_store` and the bags, writes an inventory only when it
-  changed and marks every character, [upgrade contract](upgrade-contract.md)
+  changed and marks every character; `v0_67_0.py` refunds every metal rod
+  as ceil(N / 2) bars of its metal in the inventories, the jobs' `consumed`
+  stacks, `grug_housing`'s `recovered:*` and `packed:*` keys and
+  `grug_mail`'s mailboxes, offline only, [upgrade contract](upgrade-contract.md)
   §5.8). Python 3.13, standard library; `psycopg` 3 imported only for
   PostgreSQL. Unit tests: `tools/r43_mt/test_migrate.py` (the container run
   `tools/r43_mt/container_test.sh`; against a copy of the declaration with
@@ -2460,8 +2463,8 @@ tools](#player-meta-read-by-external-tools).
   `tools/r43_it/run.sh` (the mechanism) and each step's own test
   (`tools/r44_ms/run.sh` for 0.44.0, `tools/r45_ms/run.sh` for 0.45.0,
   `tools/r47_ms/run.sh` for 0.47.0, `tools/r48_bags/run.sh` for 0.48.0,
-  `tools/r53_ms/run.sh` for 0.53.0: unit tests and an end-to-end run from a
-  world of the previous release).
+  `tools/r53_ms/run.sh` for 0.53.0, `tools/r67_craft/run.sh` for 0.67.0:
+  unit tests and an end-to-end run from a world of the previous release).
 
 ## Performance log lines
 

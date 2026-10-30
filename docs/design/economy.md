@@ -205,8 +205,8 @@ items without one:
   profession-station recipe whose inputs are all priced, over the combined
   table of both passes in milli-copper, a `group:` input by its cheapest
   priced member, and a consumed crafted good at its material value before
-  the halving (two slabs back into a block, or a block back into its nine
-  gems, gain nothing a player did not put in). Goods a vendor sells are
+  the halving (a block back into its nine gems gains nothing a player did
+  not put in). Goods a vendor sells are
   capped by their cheapest such recipe, so 100 arrows from one bar sell for
   nothing.
 

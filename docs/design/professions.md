@@ -161,7 +161,9 @@ Basic lists what the character has held the ingredients of (Round 47,
   stairs, slabs, planks, torches, dyes, bolts, leather grades, graded wood,
   storage blocks, arrows and every other profession-free recipe
   (`grug_jobs/basic_recipes.lua`, converted from the engine's grid recipes
-  in Round 45; stairs, slabs and walls are made per material by a loop).
+  in Round 45; stairs, slabs and walls are made per material by a loop;
+  since Round 67 stairs and slabs are end products, with no recipe back to
+  their block).
 - **Gear only from professions** (spec §2.23, §2.34): every weapon, armour
   piece, offhand and trinket is a recipe of its family's owner (§2) with the
   ingredients the universal grid used, the profession tier equal to the item's
@@ -190,7 +192,7 @@ Basic lists what the character has held the ingredients of (Round 47,
   Bolt, then Thread): for each ingredient the Basic recipes that make it
   (for a group ingredient, those of every member), then theirs. A step that
   turns a product back into its own ingredient never counts (a block from
-  its stairs or bars, sand from sandstone: a Basic recipe X ← Y is left out
+  its bars, sand from sandstone: a Basic recipe X ← Y is left out
   when another makes Y from X). The tier unlocks at a learn (tier 1), at a
   tier advance and at `/prof` (tiers 1..N), with the scan's feed line; a
   character already past a tier catches up silently at its join. The
@@ -223,7 +225,7 @@ Basic lists what the character has held the ingredients of (Round 47,
   job (quantity × duration).
   - **The queue** (Round 57 rulings 3–4): at most **5 jobs** per player,
     the running one included; crafts, enchants and upgrades alike. A job
-    accepted while one runs waits ("Queue ×N"); a sixth is refused with
+    accepted while one runs waits (the button reads "Queue"); a sixth is refused with
     "The crafting queue is full (5 jobs)." and nothing is taken. Its checks
     (below) run when it is queued and its ingredients (and an enchant's or
     upgrade's target item) are taken then, so a waiting job starts without

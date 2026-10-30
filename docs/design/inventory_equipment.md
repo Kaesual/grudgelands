@@ -21,7 +21,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   Character · Talents & Skills · Crafting · Party & PvP · Map & Quests ·
   Help (0.45.1; before, Help came before Map) · Admin Mail (Round 48, only
   with the `mail_admin` privilege, [mail](mail.md) §6). The quest log is in
-  the map window. Creative's tabs, for creative players, follow the table.
+  the map window. Creative's tabs, for creative players, follow the table:
+  one Creative entry in the row, and its category row only while a Creative
+  page is open (Round 67 ruling 9).
 - **Inventory views** (`grug_inventory.inventory_view(player, mode,
   context)`): `main[9..]`, then each equipped bag's content list in slot
   order, as one continuous 8-wide grid in a scroll area: each bag starts in
@@ -140,11 +142,18 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   catalogue retain separate areas; combat statistics belong to Character.
   Available/locked controls retain their sizes and wrapped tooltips. Clicking an available
   talent buys one rank immediately. Respec retains confirmation and its price.
-- Help is a short player guide in six sub-pages chosen by buttons at its top
+- Help is a short player guide in eight sub-pages chosen by buttons at its top
   (the selection lives in the sfinv context; Start is the default): **Start**
   (first steps, levels and zones, capitals, protected ground), **Quests &
   Professions**, **Basics** (ores by depth and pick tier, smelting, recipe
   discovery, skills, bags, food, repair, riding, home travel, death, parties),
+  **Materials** (Round 67 ruling 16: a search field with × and Search,
+  the paged list of every item that has a source in the source index or is
+  a recipe ingredient, 20 rows a page with "Page x of y" and the count
+  found; a click on a row shows its icon, name and "Where it comes from",
+  the source lines of the recipe details pages, in a read-only text area
+  that scrolls on the client; the state lives in the sfinv context),
+  **Mail** (Round 48: mailboxes, postage, limits, writing to the admin),
   **Formulas** (the general pool/attribute/armor/mana formulas and the
   B/C/G/T/S legend), **About** (Discord, GitHub issues and repository,
   support link) and **Sound** (music and ambience on/off and volume per
@@ -193,19 +202,23 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   empty list with how to learn it.
   - **Left, the list** (`professions.md` §1.2): the area's recipes up to
     the player's profession tier there (Basic: all), ordered by tier, then
-    name; 10 rows per page with "Page x of y"; a row is
+    name; **one row per output** (Round 67 ruling 10) at its first recipe's
+    place; 10 rows per page with "Page x of y"; a row is
     the output's icon, its name (a clipped name shows in full as its
     tooltip) and **×N**, the crafts the ingredients allow by the job's rule
     (stacks without metadata only), counted in one pass over the inventory
-    per build. **Search** (the button or Enter) filters by the output's name
+    per build, for the recipe the row shows: the chosen one, else the first
+    the inventory makes now, else the first; a click opens that recipe. **Search** (the button or Enter) filters by the output's name
     on the server, at most once a second (a quicker request is ignored
     without a resend); **×** between the field and Search (0.45.1) empties
     the field and shows the whole list from page 1 at once, outside that
-    limit; **Craftable only** keeps the rows with ×N ≥ 1 and **Favorites
-    only** beside it the recipes marked with the star (Round 57; both on:
+    limit; **Craftable only** keeps the outputs one of whose recipes the
+    inventory makes and **Favorites
+    only** beside it the outputs marked with the star (Round 57; both on:
     the craftable favourites; an area without one says how to mark one).
-    The favourites are saved per character (player meta
-    `grug_jobs:favorites`). The tab opens
+    The favourites belong to the output (Round 67), saved per character
+    (player meta `grug_jobs:favorites`, the output names; a recipe id saved
+    before reads as its output). The tab opens
     with no text field focused, so "i" closes it (0.45.1): every build
     sets the focus to Search (`set_focus[…;true]`), except the answer to
     Enter in a text field, which leaves the focus there; closing the
@@ -213,8 +226,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **Right, the crafting box** in three stacked areas (Round 45 playtest
     fix 3), above the job strip. **Top:** the chosen recipe's output (its
     name in up to two lines, area, tier, "makes N") and at the top right
-    the favourite **star** (★ gold when marked, ☆ grey when not; a click
-    toggles it). **Middle:** the made item's description
+    **Details** with an info icon (Round 67 ruling 15; it opens the recipe
+    details page below) left of the favourite **star** (★ gold when marked,
+    ☆ grey when not; a click toggles it). **Middle:** the made item's description
     as its tooltip reads, without the name line and without colours, in a
     read-only text area that scrolls when long (a scroll sends nothing) and
     takes the room the rest leaves; left out when the tooltip is only the
@@ -222,8 +236,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     the job makes (Common, no enchants, the tier's base item level, stats,
     requirement); a raw dish shows the cooked dish of its furnace recipe and
     "Must be cooked in a furnace to become edible."; anything else its own
-    description. Below it "Ingredients (have/need)" (with **Recipe
-    details** at its right, which opens the recipe details page below), the
+    description. Below it "Ingredients (have/need)" (with the
+    **variant switch** "Recipe i/n ◀ ▶" at its right when several recipes
+    the list shows make the output, Round 67 ruling 10: ◀ and ▶ step
+    through them and wrap round), the
     ingredients with icons and have/need for the
     field's quantity, "Max: N" ("(inventory room)" when the room limits it), the
     warnings, the note of the last refused action and the XP hint:
@@ -240,13 +256,15 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (Round 46, the user's request), a **dropdown** replaces its name:
     "Automatic" (the first matching stacks in the take order), then each
     carried kind with its count. The choice drives Max, the list's ×N of
-    the recipe, **Craft ×N** and the take; it is page state only (never
+    the recipe, **Craft** and the take; it is page state only (never
     saved), choosing another recipe starts it on Automatic, and a chosen
     kind no longer carried, or a group left with one kind, falls back to
     Automatic on the next build. **Bottom:** one row: the **quantity row**
     "Quantity [−][field][+] [Max]" (stackable outputs only, default 1) and,
-    right-aligned beside it, the big button **Craft ×N** (N the field's
-    quantity), which reads **Queue ×N** while a job runs. A missing station
+    right-aligned beside it, the big button **Craft**, which reads **Queue**
+    while a job runs (Round 67 ruling 14: no count; the field says it), with
+    the fixed muted hint "×N per craft" left of it for a recipe that makes
+    more than one. A missing station
     reads "Requires: <station> nearby", a missing profession tier its reason
     and a full queue "The crafting queue is full (5 jobs)."; each draws the
     button greyed, and a click on it only rebuilds the page (checking the
@@ -296,7 +314,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     (the give helper, then the overflow; with no room anywhere it stays in
     the slot).
   - **The quantity field** (spec §4.3): Enter recalculates and never starts;
-    Craft ×N above the maximum lowers the field to it with the job's note
+    Craft above the maximum lowers the field to it with the job's note
     ("Not enough ingredients — quantity reduced to N") and starts nothing;
     the field echoes the last value the server knows on every resend.
     **−** lowers it by one only above 1 (from a value above the maximum
