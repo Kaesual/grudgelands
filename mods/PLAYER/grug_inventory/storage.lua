@@ -330,35 +330,16 @@ local function guarded(stack)
 		core.get_item_group(name, "grug_bound_skill") > 0
 end
 
--- Sort the player's main[9..] and bags; true when any slot changed. Writes
--- only the slots that change, so at most the five lists are resent once.
---
--- `sizes` (optional; the migration step 0.48.0, grug_core/migrations.lua)
--- maps a bag's content list to a smaller target size: the sort then lays
--- every stack of main[9..] and the bags, the cells beyond the targets
--- included, out into main[9..] and each bag's first `size` cells. What does
--- not fit is the end of the order (the rest category, low tiers last),
--- except guarded stacks, which take their cells first; those leftovers fill
--- the cells beyond the targets, in order, and are returned as a second
--- value, a list of {list, index, stack}. The caller takes them out and then
--- shrinks the lists; this function never calls set_size. A size above a
--- list's current one counts as the current one. Without `sizes` (the Sort
--- button) the targets are the current sizes and nothing is left over.
-function grug_inventory.sort(player, sizes)
-	local inv = player and player:get_inventory()
-	if not inv then return false, {} end
-	local slots, beyond, entries = {}, {}, {}
-	for _, slot in ipairs(ordered_slots(inv)) do
-		if not (slot.list == "main" and slot.index <= HOTBAR) then
-			local size = sizes and sizes[slot.list]
-			if size and slot.index > size then
-				beyond[#beyond + 1] = slot
-			else
-				slots[#slots + 1] = slot
-			end
-		end
-	end
-	local cells, rest = cells_of(inv, slots), cells_of(inv, beyond)
+-- Sort the cells `slots` (an array of {list, index}) of any inventory as
+-- one sequence in the order above; true when any slot changed. Writes only
+-- the slots that change, so each list is resent at most once. `beyond`
+-- (optional) are further cells that are emptied first and take what does
+-- not fit into `slots` (grug_inventory.sort's `sizes` below); the leftovers
+-- placed there are returned as a second value, a list of {list, index,
+-- stack}.
+function grug_inventory.sort_slots(inv, slots, beyond)
+	local entries = {}
+	local cells, rest = cells_of(inv, slots), cells_of(inv, beyond or {})
 	local position = 0
 	for _, group in ipairs({cells, rest}) do
 		for _, cell in ipairs(group) do
@@ -415,6 +396,45 @@ function grug_inventory.sort(player, sizes)
 		end
 	end
 	return changed, left
+end
+
+-- Sort a node's list (a chest, Round 67 ruling 27): every slot of `list`
+-- as one sequence, sorted like the player's inventory.
+function grug_inventory.sort_list(inv, list)
+	local slots = {}
+	for index = 1, inv:get_size(list) do slots[index] = {list = list, index = index} end
+	return grug_inventory.sort_slots(inv, slots)
+end
+
+-- Sort the player's main[9..] and bags (sort_slots); true when any slot
+-- changed, so at most the five lists are resent once.
+--
+-- `sizes` (optional; the migration step 0.48.0, grug_core/migrations.lua)
+-- maps a bag's content list to a smaller target size: the sort then lays
+-- every stack of main[9..] and the bags, the cells beyond the targets
+-- included, out into main[9..] and each bag's first `size` cells. What does
+-- not fit is the end of the order (the rest category, low tiers last),
+-- except guarded stacks, which take their cells first; those leftovers fill
+-- the cells beyond the targets, in order, and are returned as a second
+-- value, a list of {list, index, stack}. The caller takes them out and then
+-- shrinks the lists; this function never calls set_size. A size above a
+-- list's current one counts as the current one. Without `sizes` (the Sort
+-- button) the targets are the current sizes and nothing is left over.
+function grug_inventory.sort(player, sizes)
+	local inv = player and player:get_inventory()
+	if not inv then return false, {} end
+	local slots, beyond = {}, {}
+	for _, slot in ipairs(ordered_slots(inv)) do
+		if not (slot.list == "main" and slot.index <= HOTBAR) then
+			local size = sizes and sizes[slot.list]
+			if size and slot.index > size then
+				beyond[#beyond + 1] = slot
+			else
+				slots[#slots + 1] = slot
+			end
+		end
+	end
+	return grug_inventory.sort_slots(inv, slots, beyond)
 end
 
 --
