@@ -166,3 +166,24 @@ copies and checks them).
 | `textures/grug_classes_talent_long_reach.png` | `drop-01/talent__reckoning_long_reach_v3.png` | talent:reckoning_long_reach pass 1 v3 | 7563 | `084bcb42dd1144f5ee934f31b269425b81473826ff46005cf066e2fd3e756e00` |
 | `textures/grug_classes_talent_shake_loose.png` | `drop-01/talent__veil_shake_loose_v1.png` | talent:veil_shake_loose pass 1 v1 | 7743 | `d3c95edbe74eeddaf66c30cd396db2c27ca4a768a32a9dec14fd05be22a83c67` |
 | `textures/grug_classes_talent_travel_worn.png` | `drop-01/talent__veil_travel_worn_v1.png` | talent:veil_travel_worn pass 1 v1 | 8153 | `11c89c58dbd7fd206598f4648511238518bb3815544bb2e58435483780adb6fc` |
+
+## Round 67 race icons — CC0
+
+The six race icons of the Social tab's player list
+(`grug_core.status_icons.RACE_ICONS`): the user's pick of set A (coloured
+heads) from Round 67 lane ART, original 32 px pixel drawings exported at
+64 × 64 RGBA with nearest-neighbour sampling, authored for Grudgelands by
+GPT-6 Astra on 2026-10-30 and drawn entirely by `tools/r67_art/generate.py`
+(Pillow and numpy; no source image pixels, external images or fonts). The
+project dedicates any rights it holds in them to **CC0-1.0**, to the extent
+such rights exist. Each file is a byte-identical renamed copy of its
+candidate; provenance: `tools/r67_art/LICENSE-media.md`.
+
+| Local file | Source (`tools/r67_art/`) | Bytes | SHA-256 |
+|---|---|---:|---|
+| `textures/grug_race_human.png` | `candidates/race_human_a.png` | 596 | `7cdc10b82b9088ff38f4426fc615f664bf646b87e3f3d397e5c54b4a2c532952` |
+| `textures/grug_race_dwarf.png` | `candidates/race_dwarf_a.png` | 642 | `1db0936676dcee56f0b2689498f98c0d3c0fcdfe64de1e1a939c34c9a2018be8` |
+| `textures/grug_race_elf.png` | `candidates/race_elf_a.png` | 699 | `3fa02c3bcc689641066e8a806ba0f4e2c97d310b1bc24c3a302d260944fc628b` |
+| `textures/grug_race_orc.png` | `candidates/race_orc_a.png` | 661 | `c91a812d5c7a92b769d5d3dfe51ab1e8c72fae7977a4c44d8c9eabf0c2867bb6` |
+| `textures/grug_race_troll.png` | `candidates/race_troll_a.png` | 739 | `d05649c29f5ba7be506250e4177229fd22a08282b78e1451129a552ed3011254` |
+| `textures/grug_race_undead.png` | `candidates/race_undead_a.png` | 599 | `183780fcab073e93121e3c48b60e32eab8ff722b409ace7058dfc9cda469c2e6` |

@@ -9,7 +9,8 @@
 -- globalsteps; factions, classes, races and levels are stubs. Checks:
 --   S  the player list's order: own faction, then the other, then players
 --      without a faction; favourites first, then by name (case-insensitive);
---      the own row marked "(you)" without star or button; the race icons.
+--      the own row marked "(you)" without star or button; the race icons
+--      (one shipped file per race).
 --   I  the invite button: shown for an eligible same-faction player of a
 --      viewer without a party and of a leader; never for an enemy, a player
 --      in a party, one with invitations off, one already invited, the own
@@ -305,9 +306,14 @@ has(fs, "image[5.10,0.06;0.42,0.42;" .. core.formspec_escape(grug_core.status_ic
 has(fs, "label[5.7,0.27;Lv 12]", "S the level")
 local races = 0
 for _, id in ipairs({"human", "dwarf", "elf", "orc", "troll", "undead"}) do
-	if grug_core.status_icons.race_icon(id) ~= "" then races = races + 1 end
+	local file = io.open(repo .. "/mods/PLAYER/grug_classes/textures/" ..
+		grug_core.status_icons.race_icon(id), "rb")
+	if file then
+		file:close()
+		races = races + 1
+	end
 end
-eq(races, 6, "S one race icon per race")
+eq(races, 6, "S one race icon per race, shipped beside the class icons")
 eq(grug_core.status_icons.race_icon("nobody"), "", "S no icon for an unknown race")
 
 --
