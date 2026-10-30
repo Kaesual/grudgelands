@@ -94,6 +94,11 @@ def name_of(text):
     return ItemStack.parse(text).name if text else ""
 
 
+# Hotbar skills the 0.53.0 kits lock for the probe's fresh Warrior (a talent
+# unlocks them), which the game's own join removes (not the step's doing).
+LOCKED_SINCE_0_53 = {"grug_abilities:taunt"}
+
+
 def offenders(inv):
     """(list, 1-based slot, item) of every stack the 0.44.0 rules forbid."""
     out = []
@@ -364,7 +369,10 @@ def scenario(run):
         # loaded check above compares every stack in full.
         if e["item"].startswith(STEP.SKILL_PREFIX):
             text = (settled.get(e["list"]) or [""] * e["slot"])[e["slot"] - 1]
-            ok = name_of(text) == e["item"]
+            # Since 0.53.0 Taunt is a talent unlock: the game's join
+            # (normalize_kit) takes it off a fresh Warrior's hotbar.
+            ok = name_of(text) == e["item"] or (
+                e["item"] in LOCKED_SINCE_0_53 and text == "")
         else:
             y = ItemStack.parse(got44[e["list"]][e["slot"] - 1])
             ok = held[(y.name, y.wear)] >= y.count
