@@ -16,6 +16,7 @@ function Meta:get_int(key) return math.floor(tonumber(self.fields[key]) or 0) en
 function Meta:get_string(key) return self.fields[key] or "" end
 function Meta:set_int(key, value) self.fields[key] = tostring(value) end
 function Meta:set_string(key, value) self.fields[key] = value ~= "" and value or nil end
+function Meta:to_table() return {fields = self.fields} end
 local function meta_string(fields)
 	local keys = {}
 	for key in pairs(fields) do keys[#keys + 1] = key end

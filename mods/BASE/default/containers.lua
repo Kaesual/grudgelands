@@ -223,10 +223,11 @@ function api.upgrade(pos, player)
 	core.get_meta(pos):get_inventory():set_size(entry.list, tier.slots)
 	core.log("action", ("%s upgrades %s to %s at %s"):format(player:get_player_name(),
 		node.name, name, core.pos_to_string(pos)))
+	-- The open forms first: a shelf's hover text update refreshes them.
+	default.node_formspec.retarget(pos, name)
 	local upgraded = nodes[name]
 	if upgraded and upgraded.refresh then upgraded.refresh(pos) end
 	if default.chest and default.chest.retarget then default.chest.retarget(pos, target) end
-	default.node_formspec.retarget(pos, name)
 	default.node_formspec.refresh(pos)
 	return true
 end
