@@ -395,4 +395,4 @@ print(("bytes: Help Materials page: whole list %d, a material chosen %d"):format
 
 print(("R67 CRAFT PORTABLE %s checks=%d failures=%d"):format(failures == 0 and "PASS" or "FAIL",
 	checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then error("R67 CRAFT PORTABLE FAIL") end
