@@ -1690,6 +1690,9 @@ end
 
 core.register_node("default:bush_stem", {
 	description = S("Bush Stem"),
+	-- GRUG PATCH: dug, a bush stem drops one plank of its wood (Round 67
+	-- ruling 12; the stem-to-plank recipe is gone).
+	drop = "default:wood",
 	drawtype = "plantlike",
 	visual_scale = 1.41,
 	tiles = {"default_bush_stem.png"},
@@ -1837,6 +1840,9 @@ core.register_node("default:blueberry_bush_sapling", {
 
 core.register_node("default:acacia_bush_stem", {
 	description = S("Acacia Bush Stem"),
+	-- GRUG PATCH: dug, a bush stem drops one plank of its wood (Round 67
+	-- ruling 12; the stem-to-plank recipe is gone).
+	drop = "default:acacia_wood",
 	drawtype = "plantlike",
 	visual_scale = 1.41,
 	tiles = {"default_acacia_bush_stem.png"},
@@ -1907,6 +1913,9 @@ core.register_node("default:acacia_bush_sapling", {
 
 core.register_node("default:pine_bush_stem", {
 	description = S("Pine Bush Stem"),
+	-- GRUG PATCH: dug, a bush stem drops one plank of its wood (Round 67
+	-- ruling 12; the stem-to-plank recipe is gone).
+	drop = "default:pine_wood",
 	drawtype = "plantlike",
 	visual_scale = 1.41,
 	tiles = {"default_pine_bush_stem.png"},

@@ -332,7 +332,8 @@ end
 
 -- Registers the Basic catalog (basic_recipes.lua, which init.lua loads) and
 -- its loop-made families as the vendored stairs and walls loops registered
--- them.
+-- them, without the stairs' routes back to the block (Round 67 ruling 11:
+-- stairs and slabs are end products).
 function grug_jobs.register_basic_catalog(data)
 	for _, row in ipairs(data.recipes) do
 		grug_jobs.register_recipe({area = "basic", output = row.output,
@@ -349,8 +350,6 @@ function grug_jobs.register_basic_catalog(data)
 		add("stairs:stair_inner_" .. sub, 7, block, 6)
 		add("stairs:stair_outer_" .. sub, 6, block, 4)
 		add(slab, 6, block, 3)
-		add(block, 3, stair, 4)
-		add(block, 1, slab, 2)
 	end
 	for _, row in ipairs(data.walls) do add(row[1], 6, row[2], 6) end
 end

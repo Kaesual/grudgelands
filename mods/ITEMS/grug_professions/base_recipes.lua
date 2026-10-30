@@ -3,8 +3,9 @@
 -- (grug_professions.FAMILY_OWNERS), with the ingredients the universal
 -- crafting grid used (counted from its shapes), the profession tier equal to
 -- the item's tier, the profession's station nearby and 3 s per item. Tools,
--- metal rods, arrows, sticks and the hoe stay Basic recipes
--- (grug_jobs/basic_recipes.lua).
+-- arrows, sticks and the hoe stay Basic recipes
+-- (grug_jobs/basic_recipes.lua). A weapon's handle is sticks only: the metal
+-- rods and their weapon variants left the game in Round 67 (ruling 13).
 
 local G = "grug_gear:"
 local M = "grug_materials:"
@@ -53,20 +54,12 @@ local function group(name, n) return {group = name, n = n} end
 for tier = 1, #tiers do
 	local row = tiers[tier]
 	local bar = row.bar
-	local rod = C .. "metal_rod_" .. row.metal
-	grug_professions.register_item(rod, grug_gear.MATERIALS[tier].metal.name ..
-		" Rod", "default_steel_ingot.png^[transformR90^[resize:8x16^[colorize:" ..
-		grug_gear.BRACKET_TINT[tier] .. ":90", {grug_metal_rod = tier})
 
-	-- A handle is two sticks, or one metal rod per stick.
 	local sword, dagger, greataxe = G .. "sword_" .. row.metal,
 		G .. "dagger_" .. row.metal, G .. "greataxe_" .. row.metal
 	gear(sword, tier, {item(bar, 2), group("stick", 1)})
-	gear(sword, tier, {item(bar, 2), item(rod, 1)})
 	gear(dagger, tier, {item(bar, 1), group("stick", 1)})
-	gear(dagger, tier, {item(bar, 1), item(rod, 1)})
 	gear(greataxe, tier, {item(bar, 5), group("stick", 2)})
-	gear(greataxe, tier, {item(bar, 5), item(rod, 2)})
 	local occult = occult_components[tier]
 	gear(G .. "wand_" .. row.metal, tier,
 		{item(occult, 1), item(bar, 1), group("stick", 1)})

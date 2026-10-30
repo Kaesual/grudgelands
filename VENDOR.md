@@ -766,6 +766,17 @@ Reapply after an upstream update:
   (`after_dig_node` → `default.dig_up`); the large cactus seedling's timer
   takes the cactus ground and plant light.
 
+## Round 67 CRAFT — bush stems drop a plank (2026-10-30)
+
+Round 67 ruling 12: the stem-to-plank recipes are gone, so a dug bush stem
+gives the plank itself.
+
+- `default/nodes.lua` (three markers): `default:bush_stem`,
+  `default:acacia_bush_stem` and `default:pine_bush_stem` get `drop` one
+  plank of their wood (`default:wood`, `default:acacia_wood`,
+  `default:pine_wood`). The nodes stay registered (mapgen, town hedges and
+  held stems keep working); their fuel rows are unchanged.
+
 ## Round 45 PT5 — the shift-click inbox (2026-10-09)
 
 A listring sends a shift-click into exactly one list, and a full `main`

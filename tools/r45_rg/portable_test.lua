@@ -19,14 +19,16 @@
 --      with the same output, count and ingredients (counted from the slots;
 --      the dye tokens resolved to their one item) -- in Basic, in the
 --      gear's profession or in the profession that registered it -- except
---      the dropped written-book copy and the Cooking and Alchemy routes
+--      the dropped written-book copy, the routes edits.lua removes, the rod
+--      variants of sword, dagger and greataxe (Round 67 ruling 13: the
+--      metal rods left the game) and the Cooking and Alchemy routes
 --      (tools/r28_b5_prof and tools/r33_c5); no Basic record lacks a route;
 --      the old profession registry's bench recipes keep their ingredients;
 --      basic_recipes.lua is current with its generator (--check);
 --   G  gear in its profession (spec §2.23, §2.34): every weapon, armour piece
 --      and offhand of the catalog is a record of the family's owner, at the
 --      tier of its bracket, with the owner's station and 3 s; arrows, tools,
---      rods, sticks and the hoe stay Basic; trinkets are the Goldsmith's;
+--      sticks and the hoe stay Basic; trinkets are the Goldsmith's;
 --   D  durations (spec §2.30) and stations (§2.27): Basic 1 s without a
 --      station or XP, gear 3 s, bags 3 s with XP, intermediates 1 s without
 --      XP, station nodes 1 s without XP or a station; every profession
@@ -365,7 +367,12 @@ for _, route in ipairs(corpus.engine) do
 				key = route.output .. "|" .. signature_of(tokens) .. "|" .. edited_count[key]
 			end
 			local recipe = by_key[key]
-			if removed_routes[key] then
+			-- Round 67 ruling 13: a weapon route with a metal rod handle.
+			local rod = false
+			for _, token in ipairs(tokens) do
+				if token:match("^grug_professions:metal_rod_") then rod = true end
+			end
+			if removed_routes[key] or rod then
 				check(recipe == nil, "C the removed route " .. key .. " has no record")
 				dropped = dropped + 1
 			elseif check(recipe ~= nil, "C " .. key .. " has its record") then
@@ -431,9 +438,11 @@ for output, gear in pairs(corpus.gear) do
 				recipe.area, tostring(recipe.tier), tostring(recipe.station), recipe.time))
 	end
 end
-eq(gear_records, 132, "G 132 gear records (138 grid routes, the mirrored bows merged)")
+-- Round 67 ruling 13: 18 rod variants of sword, dagger and greataxe went.
+eq(gear_records, 114, "G 114 gear records (120 grid routes without the rod " ..
+	"variants, the mirrored bows merged)")
 for _, output in ipairs({"grug_gear:arrow", "grug_materials:pick_bronze",
-		"grug_materials:axe_steel", "grug_professions:metal_rod_iron", "default:stick",
+		"grug_materials:axe_steel", "default:stick",
 		"grug_farming:hoe", "grug_professions:bolt_patch", "grug_mobs:light_leather",
 		"grug_artisans:seasoned_wood", "grug_professions:thread"}) do
 	local list_for = J.recipes_for_output(output)

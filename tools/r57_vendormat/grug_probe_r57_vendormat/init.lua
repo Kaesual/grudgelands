@@ -31,7 +31,7 @@ local FOUR = {"mobs:leather", "grug_mobs:light_leather", "grug_mobs:linen_scrap"
 	"grug_materials:bronze_bar"}
 
 local MATERIAL_GROUPS = {"grug_leather_grade", "grug_tailor_bolt",
-	"grug_tailor_bundle", "grug_metal_rod"}
+	"grug_tailor_bundle"}
 local NAME_PATTERNS = {"leather", "linen", "cloth", "silk", "pelt", "hide",
 	"_bar$", "lump", "ingot", "_ore$", "stone_with_", "^wool:"}
 -- The ruling keeps these (Thread is a job supply; the wools are bed decor).
