@@ -52,7 +52,8 @@ Accepted defaults:
   invited and holds no invitations: when a party forms, the pending
   invitations of both the joining player and the inviter are cleared, and
   so are the ones the joining player had sent (a member cannot invite);
-  the inviter, who leads, keeps the ones it sent (Round 67). Invitations never go through the
+  the inviter, who leads, keeps the ones it sent. A leader who hands the
+  lead over loses the invitations it sent the same way (Round 67). Invitations never go through the
   mail ([mail.md](mail.md)); leaving the server expires that player's
   invitations but **never** their membership.
 - Limit pending incoming invitations to ten so many different senders cannot

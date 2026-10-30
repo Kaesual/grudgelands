@@ -409,6 +409,15 @@ has(bob.formspec, grug_core.ui.heading(0.5, 1.2, "0 Pending Invitations"), "B no
 has(bob.formspec, "Invite a player of your faction with the Invite button", "B the empty box's hint")
 check(alice.sent > alice_sends and invite_button(alice.formspec, "bob"),
 	"C an expiry re-sends the inviter: its Invite button is back")
+-- Decline: the same for the inviter.
+submit(alice, {grug_social_inv_anna = "Invite"})
+check(not invite_button(alice.formspec, "anna"), "C invited: no button")
+step(2.1)
+alice_sends = alice.sent
+grug_parties.decline(anna, "alice")
+step(0.2)
+check(alice.sent > alice_sends and invite_button(alice.formspec, "anna"),
+	"C a decline re-sends the inviter: its Invite button is back")
 
 -- Accept: a party forms; the inviter's own invitations go too.
 submit(alice, {grug_social_inv_bob = "Invite"})
@@ -460,6 +469,14 @@ check(not invite_button(fs, "anna") and not invite_button(fs, "zed"), "I a full 
 grug_parties.leave(extra[8])
 fs = resend(alice)
 check(invite_button(fs, "anna"), "I one place free: Invite is back")
+-- A leader no more cannot invite: a transfer clears the invitations it sent.
+step(1.1)
+grug_parties.invite(alice, "anna")
+eq(#grug_parties.pending(anna), 1, "I the leader's invitation is pending")
+grug_parties.transfer_leader(alice, "bob")
+eq(#grug_parties.pending(anna), 0, "I a transfer clears the old leader's sent invitations")
+step(0.6)
+lacks(hud_texts(anna), "has invited you", "I ...and their HUD box")
 
 --
 -- C. The coalesced refresh
@@ -496,6 +513,19 @@ eq(sends(anna), a0 + 2, "C ...and sent once the gap ends")
 lacks(anna.formspec, "x1", "C ...without the player who left")
 step(3)
 eq(sends(anna), a0 + 2, "C a quiet tab sends nothing")
+-- Only the invitation switch changes rows; the Party HUD switch and the
+-- health colours do not.
+grug_parties.set_hud_enabled(zed, false)
+grug_parties.set_health_color_mode(zed, "all_green")
+step(3)
+eq(sends(anna), a0 + 2, "C another player's HUD switch and colours send nothing")
+grug_parties.set_invitations_enabled(zed, false)
+step(0.2)
+eq(sends(anna), a0 + 3, "C another player's invitation switch re-sends the list")
+grug_parties.set_invitations_enabled(zed, true)
+grug_parties.set_hud_enabled(zed, true)
+step(4) -- the switch back is owed until the gap ends, then 2 s quiet
+eq(sends(anna), a0 + 4, "C ...and back once the gap ends")
 -- Scrolling: kept, echoed, no send, and it holds sends.
 local context = sfinv.contexts.anna
 local before = sends(anna)

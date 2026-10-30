@@ -1943,7 +1943,8 @@ tools](#player-meta-read-by-external-tools).
   roster of the online players, dropped at every
   `register_on_roster_change` event (`init.lua` raises it on join, leave,
   faction, class, race and level changes and on every party event but
-  invitations); each viewer whose current sfinv page is Social is asked
+  invitations and the reason `display`, the Party HUD switch and the health
+  colours); each viewer whose current sfinv page is Social is asked
   once per server step (`core.after(0)`) and sent at most once per
   `SEND_GAP_US` (2 s), the owed send by one `core.after`; a scrollbar move
   holds sends for `QUIET_US` (0.5 s); the PvP section's countdown goes

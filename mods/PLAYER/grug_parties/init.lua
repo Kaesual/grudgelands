@@ -70,7 +70,9 @@ local function emit(names, reason)
 	for name in pairs(names) do
 		for _, callback in ipairs(callbacks) do callback(name, reason) end
 	end
-	if reason ~= "invitation" then roster_changed() end
+	-- "display" (the Party HUD switch, the health colours) changes only the
+	-- player's own HUD; the invitation switch ("preferences") changes rows.
+	if reason ~= "invitation" and reason ~= "display" then roster_changed() end
 end
 local function affected(group, extra)
 	local names = {}
@@ -95,6 +97,18 @@ local function prune(name, time, inviters)
 		if not next(list) then incoming[name] = nil end
 	end
 	return changed
+end
+-- Drops the invitations `name` sent (it can no longer invite: a member, a
+-- leader no more); returns their recipients.
+local function clear_sent(name)
+	local recipients = {}
+	for recipient, list in pairs(incoming) do
+		if list[name] then
+			list[name], recipients[recipient] = nil, true
+			if not next(list) then incoming[recipient] = nil end
+		end
+	end
+	return recipients
 end
 local function clear_invitations(name)
 	local changed = {[name] = true}
@@ -214,7 +228,7 @@ function grug_parties.set_hud_enabled(player, enabled)
 	local name = actor(player)
 	if not name or type(enabled) ~= "boolean" then return false, "Invalid player or preference." end
 	player:get_meta():set_int(HUD, enabled and 0 or 1)
-	emit({[name] = true}, "preferences")
+	emit({[name] = true}, "display")
 	return true, enabled and "Party HUD enabled." or "Party HUD disabled."
 end
 function grug_parties.set_health_color_mode(player, mode)
@@ -226,7 +240,7 @@ function grug_parties.set_health_color_mode(player, mode)
 		return true, "Health colors unchanged."
 	end
 	player:get_meta():set_string(HEALTH_COLORS, mode)
-	emit({[name] = true}, "preferences")
+	emit({[name] = true}, "display")
 	return true, mode == "by_class" and "Class health colors enabled."
 		or "All-green health colors enabled."
 end
@@ -302,13 +316,7 @@ function grug_parties.accept(player, inviter)
 	-- longer be accepted: they go too, from their recipients' boxes. The
 	-- inviter, who leads, keeps the ones it sent.
 	incoming[name], incoming[inviter] = nil, nil
-	local recipients = {}
-	for recipient, list in pairs(incoming) do
-		if list[name] then
-			list[name], recipients[recipient] = nil, true
-			if not next(list) then incoming[recipient] = nil end
-		end
-	end
+	local recipients = clear_sent(name)
 	persist()
 	emit(recipients, "invitation")
 	emit(affected(group), "membership")
@@ -322,7 +330,8 @@ function grug_parties.decline(player, inviter)
 	if not list or not list[inviter] then return false, "Invitation expired or unavailable." end
 	list[inviter] = nil
 	if not next(list) then incoming[name] = nil end
-	emit({[name] = true}, "invitation")
+	-- The inviter's Invite button for this player comes back.
+	emit({[name] = true, [inviter] = true}, "invitation")
 	return true, "Invitation declined."
 end
 function grug_parties.leave(player)
@@ -355,6 +364,8 @@ function grug_parties.transfer_leader(player, target)
 	if not group then return false, message end
 	group.leader = target
 	persist()
+	-- The old leader may no longer invite: the invitations it sent go.
+	emit(clear_sent(name_of(player)), "invitation")
 	emit(affected(group), "leadership")
 	return true, "Leadership transferred."
 end
