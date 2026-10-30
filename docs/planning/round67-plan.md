@@ -1,9 +1,15 @@
 # Round 67 — playtest feedback: social tab, map window, crafting, containers, world fixes
 
 Planned with the user on 2026-10-30 from the notes of the group playtest of
-2026-10-28. **Draft; starts on the user's "go".** Claude coordinates.
-Version: **0.67.0**. Expected classification: **migrate** (the metal rods
-are removed items, §7).
+2026-10-28. **Started on the user's "go" on 2026-10-30; Claude
+coordinates.** **Complete on 2026-10-30:** all six lanes merged (five
+independent reviews: MAP MERGE, WORLD, SOCIAL, CRAFT and CONTAINERS MERGE
+after one fix round each, every delta review MERGE; the art study checked
+by the coordinator); **not pushed**; GUI test pending, joining the joint
+test of 0.57–0.66 ([completion](#completion-2026-10-30)).
+Version: **0.67.0**. Classification: **migrate** (step 0.67.0: the metal
+rods are removed items and become bars; every other lane compatible).
+Delivery state: [STATUS](../STATUS.md).
 
 ## Why
 
@@ -525,7 +531,141 @@ Round end on main: the gates of the round workflow §3,
 
 ### GUI checklist (desktop and web)
 
-Written by lane D from the merged lanes.
+Refined by lane D from the lanes' excerpts and the reviewers' notes. Each
+item on the desktop client and on the web client. Items marked *look* ask
+for the user's verdict on a first-look default.
+
+**Social**
+
+1. **The tab** is called "Social" in the tab bar, its title, Help, the
+   welcome text and the invite chat line. Left: the settings row
+   (Invitations, Party HUD, Health colors), the party box, the PvP section
+   below it; right: Online Players at full height (about 20 rows at
+   1920×1080).
+2. **Inviting:** A invites B from B's row. A's Invite button goes; B gets
+   the chat line and the HUD box at the party HUD's place ("<name> has
+   invited you…", the seconds left, "Open Social to answer"); B's party
+   box reads "1 Pending Invitation". A third player invites B: the box adds
+   "+1 more". With the Party HUD switched off the box still shows. (At
+   1920 px "party." may wrap onto a line of its own; cosmetic.)
+3. **Answering:** B accepts: B's box switches to "Current Party (2/10)" at
+   once and both HUD boxes go. A decline or the 120 s expiry: the box goes
+   and A's Invite button comes back at once.
+4. **No Invite button** for an enemy, a player in a party, a player with
+   invitations off, one already invited, the own row ("(you)"), a party
+   member, or when the viewer's party is full; a member who does not lead
+   sees none.
+5. **Favourites:** a star turns gold, the row moves to the top of its
+   faction's group, and the stars survive a relog. Players still in
+   character creation are listed last, without icons or buttons.
+6. **Live list:** joins, leaves and level changes update the list while it
+   is scrolled, without a jump and without breaking a scrollbar drag; a
+   burst arrives as one update (at most one per 2 s). Flagged for PvP with
+   the tab open, the countdown steps by 2 s. *Look:* the Health colors
+   dropdown closes when such an update arrives while it is open; say
+   whether that is a nuisance in a busy hour or a PvP countdown.
+7. **Icons:** faction, class and race icons (the picked set A) with the
+   word as tooltip; the web client shows the star glyph and the race
+   icons.
+
+**Map**
+
+8. **Z at 1920×1080:** the window takes about 90 % of the screen; one
+   control row: the zoom (−, 1x, +) left, the eight layer buttons over the
+   map, the location line and "Show minimap" over the quest column; the
+   map about 838 px; about eight quest rows with both headings; no empty
+   bands beside the map.
+9. **Other screens:** at 1280×720, at 1035×696 and on a phone (2400×1080
+   at density 2.5) the layer buttons take a row of their own; on the
+   phone the window is 90 % wide and shows about one quest row (as
+   0.66.1). At 2560×1440 and 4K the map grows (1118 and 1677 px).
+   Labels fit, nothing is clipped. *Look:* above 1620 px the text grows
+   by the old rule while the window grows more, so it looks smaller
+   relative to the window.
+10. **Layer buttons:** the active one is underlined, none while a quest is
+    selected; a click switches the layer and clears the quest selection.
+11. **Markers:** about two thirds of their old size (21 px at 1920×1080,
+    19 px on the phone, **12 px at 1280×720**: still readable?), never
+    shifted, in the map window and on the minimap; neighbours may overlap;
+    a quest "?" over a "!" over a silver one; the player and party arrows
+    (32 px) at their true place and on top.
+12. **In a moving party** the arrows follow about every second (was 2 s)
+    and the buttons stay usable (a click may wait up to a second). Each
+    send is about 41 KB on the Quests layer, so an open map in a moving
+    party costs about 40–60 KB/s, twice 0.66's; say if the web client
+    shows it.
+13. **Quest order:** one line per quest with `[Lv N]` in the difficulty
+    colour, Story then Side, each by quest level; the row tooltip names
+    the full title and the state. The quest boxes on screen follow the
+    same order (story first, no headings), as Help now says.
+
+**World**
+
+14. **Flyer summon** (Expert or Master flying mount): in a cave room it
+    works; in a 1-wide tunnel or a doorway, underground or on the surface,
+    "There is not enough room here for a flying mount." (a horse comes
+    there); beside a slab, a stair's lower step or snow it works. In a
+    2-wide tunnel only with the player near the seam of the two columns
+    (backlog).
+15. **No-fly zones** refuse below enemy territory as on its surface. Jump
+    and sneak on a flyer climb and sink as fast as forward flight.
+16. **Nametags:** no name over plain townsfolk; trainers, vendors, the
+    innkeeper, quest givers (with their "!") and guards keep theirs.
+    Rabbits, birds and bats carry none; pointing at one still fills the
+    target frame.
+17. **Caves:** spiders and giant rats appear only in wider caves, never
+    half inside a wall; elite and rare ones not in the rock. *Look:*
+    underground Giant Spiders and Giant Rats became rarer (about a tenth
+    of the floor spots at the measured cave); the user accepted that for
+    the first look.
+
+**Crafting**
+
+18. **Creative tabs:** a creative player sees the category row only on the
+    Creative pages; every other tab and the map window keep the one-row
+    header.
+19. **Variants:** in Basic, search "brown" holding Red and Green Dye: one
+    row, opening on "Recipe 2/2"; ◀ and ▶ switch and wrap; the star is
+    gold on both variants. "Craftable only": the row counts its shown
+    variant (never ×0 while one variant is craftable); a chosen variant
+    that cannot be crafted leaves the filtered list.
+20. **Craft box:** "Craft" and "Queue" without a count; "×4 per craft"
+    beside planks, nothing for a furnace; a typed quantity is used;
+    "Details" with the help icon left of the star opens the details page.
+21. **Removed recipes:** digging a bush stem gives one plank; no stairs or
+    slab turns back into a block; no metal rod anywhere; one recipe for
+    each sword, dagger and greataxe. A favourite set on a rod weapon in
+    0.66 shows on the weapon.
+22. **Help → Materials:** search (for example "iron bar": one hit with its
+    furnace and drop lines), page, choose (the text scrolls), ×.
+23. **Fuel:** one coal smelts four bars (40 s), anthracite burns 60 s.
+24. **The migration** on a copy of a 0.66 world: rods in bags, crafting
+    jobs, the Claim Stone's belongings and letters are bars (two rods, one
+    bar, rounded up); a rod in a chest on the map is an unknown item.
+
+**Containers**
+
+25. **Sort** on every chest tier orders like the inventory's Sort; a second
+    click within 2.5 s is ignored; no Sort on shelves; on a locked chest
+    only for its owner.
+26. **Label:** anyone in the open world; in the own claim; in a foreign
+    claim with the "Everything" right yes, with Interact only no (the label
+    shows as text); in a draft claim yes; on a locked chest only the
+    owner. Pointing at the chest shows the label above its name. Typing
+    "E" in the field does not close the form. A wide 40-character label
+    shown as text may run under the Sort button.
+27. **Upgrade** an open chest while a second player views it: both forms
+    grow, the lid closes on the new tier, contents and label stay, 8 bars
+    are taken; without the bars a refusal line; a repeated click charges
+    nothing. The second viewer's unsaved label text resets when the
+    upgrade re-shows the form.
+28. **Scrolling:** a 96-slot chest scrolls; drag and drop and shift-click
+    work both ways; Sort, label and Upgrade keep the scroll position.
+29. **Shelves and art:** an old 16-slot bookshelf or vessels shelf shows 32
+    slots when opened, its items kept. The Steel-Reinforced and Abyssal
+    textures (set A) on the chest (the open lid's inside too), the locked
+    chest, the bookshelf and the vessels shelf; a dug container drops its
+    own tier.
 
 ## 7. Orchestration notes
 
@@ -565,3 +705,171 @@ Written by lane D from the merged lanes.
   STATUS, the AGENTS pointer, BACKLOG, README, CHANGELOG.
 - **Decided during the round:** the user's art pick, and the coordinator
   defaults of §2 after the first in-game look.
+
+## Completion (2026-10-30)
+
+All six lanes are merged on main. MAP, WORLD, SOCIAL, CRAFT and CONTAINERS
+were each reviewed independently (Opus): MAP MERGE (two Low findings: the
+phone width, fixed by the lane; the Help line, fixed by this lane D); WORLD,
+SOCIAL, CRAFT and CONTAINERS MERGE AFTER FIXES, each with one fix round and
+a delta review MERGE. The art study ART (tools only) was checked by the
+coordinator (`generate.py --check`); its picked files were copied into
+SOCIAL and CONTAINERS, whose reviews checked them byte for byte. This lane
+D (the completion, the GUI checklist, the status owners and the Help line)
+follows on main `b1f6314e`. **0.67.0 is migrate:** CRAFT's step 0.67.0
+(`tools/migration/steps/v0_67_0.py`) refunds the metal rods as bars
+(ceil(N / 2) of their metal) in every character's inventory lists (offline
+characters, bags and overflow included), the `consumed` stacks of the
+running and waiting craft jobs, `grug_housing`'s `recovered:*` and
+`packed:*` entries and `grug_mail`'s attachments; rods in chests on the map
+stay unknown items (accepted: a step never reads the map). Every other
+lane is compatible: MAP and ART write no saved state; WORLD adds the mob
+field `_grug_visual_scale` (missing on old mobs: the tier's scale); SOCIAL
+adds the player meta `grug_parties:favorites` (missing: no favourites);
+CONTAINERS adds the node meta `grug_label` and grows shelves from 16 to
+32 slots lazily when opened (never shrinking); the bush stems stay
+registered. No map reset. **Push:** not pushed; production is still
+0.55.1; origin/main is `7a68e871` (0.65.0 and its status note). **GUI
+test:** pending; it joins the joint GUI test of 0.57–0.66
+([checklist](#gui-checklist-desktop-and-web)). **Sync:** by the
+coordinator after each merge.
+
+### Lanes
+
+Main's first-parent commits from the plan `9fcf8093` (lane tip in
+brackets), in merge order:
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| MAP | `adffe004` (`53272fb9`; `558b98f5`, follow-up `c4ba9865`) | `grug_map/window.lua`: the window sized from the client's own window report at 90 % (not the capped viewport), the 9:8 map as high as the window allows and at most 62 % of the width, the quest column the rest (at least 6.5 units); one control row (zoom, the eight flat layer buttons Quests, Bosses, Services, Travel, Places, PvP, Zones, None, the location line), the buttons on a row of their own where each would be narrower than `W.button_min`; the dropdown gone (the handler fields `grug_map_layer_<id>` kept); `PARTY_US` 2 → 1 s. `markers.lua` `SIZE` 32 → 21, `MIN` 16 → 11, `ARROW` 32, `rank` for the draw order; the displacement solve, the offsets and their caches and `providers.quest_slots` removed (map window and minimap; `icon_layout.lua` keeps the tooltip geometry). `grug_core.ui.rows` gains a `compact` option (other rows byte-identical); `grug_quests.sort_quests` (story, level, title, id) orders the quest list and the HUD. `world_map.md`, `quests.md`, `ui-presentation.md`; fixture `tools/r67_map` (and `bytes.lua`, a capture); `r35_f`, `r44_mq`, `r64_map`, `r66_map`, `r26_map`, `r27_minimap` follow | MERGE (Low: the phone at 73 % width, fixed in `53272fb9`; Low: the Help line, fixed here) |
+| WORLD | `bf0ecde0` (`e2335627`; `2a087b9a` … `2ead589f`) | `grug_mobs/room.lua`: one collision-box test (real node boxes, boxes up to 0.5 above the feet are footing, unknown or unloaded counts as solid) used for the spawn of mobs wider than one node (`mobs:spawn_abm_check`), the elite and rare scale (kept at the current size when the scaled body has no room; the feet kept, so scaled spiders no longer sink) and the stuck cleanup (a mob that gives up stuck is removed once no player is within 32 nodes). `grug_mobs.wants_nametag`: none for `critter` and the roles `idle` and `work`. `grug_mounts`: the underground refusal gone, a flyer needs room for its body (the bottom clamped to the feet after the review), `vertical_speed` per tier (8 and 12, defaulting to the horizontal speed). `mounts.md`, `settlements.md`, `biomes_mobs.md`, `combat_stats.md`, `module-guide.md`; fixture `tools/r67_world`, engine probe `tools/r67_world/run.sh` | MERGE AFTER FIXES (Minor: the flyer refused beside a slab or a stair's lower step); fix `e2335627`, delta review MERGE |
+| SOCIAL | `a7a0f162` (`7230cc48`; `04056c40` … `04908762`, follow-ups `c52f9748`) | The Social tab (`grug_parties/ui.lua` rewritten): the settings row, one party box (pending invitations with the count heading, or "Current Party"), the PvP section below, Online Players at full height (rows 0.54 units, faction, name, class, race, level, the star and Invite by player name); the roster event, `can_invite`, `newest_invitation`, `is_online`; refresh only for viewers on the Social page, at most one send per 2 s, held 0.5 s after a scroll; a forming party clears both players' incoming invitations, a joining member's and a demoted leader's sent ones (`clear_sent`); expiry and decline tell the inviter; the switches Party HUD and Health colours raise the local reason `"display"`. `hud.lua`: the invitation box at the party anchor (`hud_layout.invite_box`), polled by the existing 0.5 s HUD poll. `grug_pvp/page.lua` sends through `social_resend` (the 2 s limiter). Race icons `grug_classes/textures/grug_race_*.png` (set A) and `status_icons.race_icon`. `parties.md`, `pvp.md`, `inventory_equipment.md`, `mod-map.md`, `module-guide.md`; fixture `tools/r67_social`; nine fixtures follow the rename and the page | MERGE AFTER FIXES (Minor: a decline did not tell the inviter; the coordinator added the demoted leader's invitations, the local display switches and old comments); fix `7230cc48`, delta review MERGE |
+| CRAFT | `502f3ef0` (`e19c94ee`; `b023a553` … `9265bfb1`, `7d5366bf`, fixes `4f719301`, `576c98ca`, main merged in) | `navigation_layout(..., selected)`: the Creative row only on `creative:*` pages. One row per output with "Recipe i/n ◀ ▶" (opens on the first craftable variant; favourites by output, old recipe ids read as their output). Removed through `tools/r45_rg/edits.lua` and the generator: 56 stairs and slab back-routes, the 3 stem recipes (the stems drop one plank, `GRUG PATCH` in `default/nodes.lua`), the six metal rods with their 6 recipes, 18 weapon variants and price groups. Plain "Craft"/"Queue", the muted "×N per craft", "Details" with the tinted help icon left of the star; "Craftable only" follows the shown variant. Help → Materials (`grug_jobs.source_lines` behind a search). `FURNACE_FUELS` coal and charcoal 40 s, anthracite 60 s. Step `v0_67_0`, `migrations.lua`, `game.conf` 0.67.0, `upgrade.json` migrate. `items_crafting.md`, `inventory_equipment.md`, `professions.md`, `economy.md`, `ui-presentation.md`, `upgrade-contract.md`, `module-guide.md`; fixture `tools/r67_craft` and the step test `tools/r67_craft/run.sh` | MERGE AFTER FIXES (Medium: `r53_ms/e2e.py` pinned 0.53.0 as the last step; Low: favourites of removed recipe ids; the coordinator added "Craftable only" ×0 and a game reference in `items_crafting.md`); fixes `4f719301`, `576c98ca`, delta review MERGE |
+| CONTAINERS | `3e8f90c1` (`b7a8cbe0`; `357af854` … `f1517a19`, fix `b6485df8`, main merged in `50dd4e7b`) | New vendored `default/containers.lua`: twelve tier nodes (chest, locked chest, bookshelf, vessels shelf × base, Steel-Reinforced, Abyssal; open chests' `_open` nodes too) with 32 / 64 / 96 slots, direct recipes (+8 Steel Bars, +8 Abyssal Steel Bars; locked: +1 Iron Bar), drops by tier; the label (`grug_label`, 40 characters, rights by `core.is_protected`, the owner on locked chests; hover "label\nname"); Sort through `grug_inventory.sort_slots` / `sort_list` (the player's sort byte-identical); Upgrade (8 bars, `swap_node`, `set_size`, viewers retargeted, the field naming the target tier); 4 rows of 8 in a scroll container (`grug_inventory/ui.lua` `station_list`) with the scroll kept across a resend; shelves grow 16 → 32 when opened. Sixteen tier textures (set A) with licence rows; VENDOR.md; `inventory_equipment.md`, `housing.md`, `ui-presentation.md`; fixture `tools/r67_containers` and an engine probe | MERGE AFTER FIXES (Medium: a repeated Upgrade submit charged the next tier); fix `b6485df8`, delta review MERGE |
+| ART | `b1f6314e` (`2f580376`; `5e3f7633` … `29c3da35`) | GPT-6 Astra's study in `tools/r67_art/`: 44 candidates (six race icons A/B at 64 px, the Steel-Reinforced and Abyssal textures A/B, eight per tier and variant), generator, offline preview, licence rows, `REPORT.md`; the user's pick recorded | coordinator check (`generate.py --check`, 134 files) |
+| D | this section | the completion, the GUI checklist, the Help line, STATUS, AGENTS, BACKLOG, README, CHANGELOG (the version and declaration were set by CRAFT) | independent review |
+
+Main has **297** portable fixtures (5 new: `r67_map`, `r67_world`,
+`r67_social`, `r67_craft`, `r67_containers`; 0.66.1 added `r661_perf`).
+`mods/` against the plan commit (measured, `git diff 9fcf8093 b1f6314e --
+mods`): 75 files, +2594 −936 lines: 50 Lua files (six of them vendored),
+22 PNGs (six race icons, sixteen tier textures) and three media ledgers.
+
+### Decisions during the round
+
+**The user:**
+
+- Before the start (2026-10-30): Q1 one party box without sub-tabs
+  (ruling 4), Q2 the PvP section under the party box on the left (ruling
+  4a), Q3 (a) the Story and Side groups stay, each by level, and the quest
+  HUD story first too (rulings 19 and 19a).
+- **Art pick:** race icons **A** (coloured frontal heads), Steel-Reinforced
+  **A** and Abyssal **A** (strapped wood for both tiers; Astra had
+  recommended Abyssal B, the plated case).
+- **WORLD Q1:** underground Giant Spider and Giant Rat spawns drop to about
+  a tenth of the floor spots; accepted as proposed, to look at first and
+  tune later.
+
+**The coordinator** (answers to lane questions and reviews; each built as
+stated):
+
+- **MAP:** one control row with the layer buttons beside the zoom (their
+  own row where too narrow); the spare width at 1× goes to the quest
+  column; the list shows at least eight rows at 1080p; arrows stay 32 px;
+  text keeps today's growth rule; the scrollbars at 1× stay (the
+  horizontal one holds the focus that lets "i" close the window); the
+  party check at 1 s, with the bytes note (checklist item 12).
+- **WORLD:** its own `room.lua` box test instead of `mobs:can_spawn` (see
+  the deviations); the stuck cleanup's watch range 32 nodes; a stuck mob
+  still heals on giving up while a player watches (today's behaviour).
+- **CRAFT:** Details uses the shipped `grug_ui_icon_help.png` tinted in the
+  accent colour; Materials lists every item with a source (806); the
+  variant switch lists the variants the list shows.
+- **SOCIAL:** players in character creation are listed last; the box shows
+  the newest invitation; a joining member's sent invitations are cleared;
+  the PvP countdown goes through the 2 s limiter.
+- **CONTAINERS:** the base names stay "Chest" and "Locked Chest" (no
+  "Wooden" prefix; Help and the design doc say "base tier").
+
+### Deviations from the plan
+
+- **Merge order:** MAP before WORLD and SOCIAL before CRAFT (plan: WORLD,
+  MAP, CRAFT, SOCIAL); the files were independent, CRAFT merged main
+  before its merge.
+- **WORLD's spawn check** is its own collision-box test, not
+  `mobs:can_spawn`: for even widths (bear 1.4, rat 1.28) `can_spawn` tests
+  an offset centre that a wrapper cannot move the spawn to, so it would
+  test the wrong columns; one geometry now serves spawn, scale and stuck.
+  The review accepted it with the engine evidence.
+- **"Expiry raises no event"** (§2, invitation box): refuted by SOCIAL;
+  the 1 s prune pass emits `"invitation"` to the recipient. The box needs
+  no own timer (the existing 0.5 s HUD poll); the inviter is now told too.
+- **CONTAINERS' pinned sizes:** `recovered.lua` and the `r50_pgame` probe
+  read `CONTAINER_LISTS` and pin no sizes; refuted, unchanged.
+- **The Help line** on the quest HUD order (MAP review) was fixed by this
+  lane, not at the merge.
+
+### Numbers worth keeping
+
+From the lanes' reports (measured there unless marked).
+
+- **MAP, window, map and markers** (px; v0.66.1 → 0.67.0):
+
+  | Profile | Window | Map | Markers | Quest rows (both headings) |
+  |---|---|---|---|---|
+  | 1280×720 | 1081×607 → 1144×643 | 496 → 498 | 21 → 12 | 4 |
+  | 1920×1080 | 1631×918 → 1728×972 | 762 → 838 | 32 → 21 | 8 |
+  | 2560×1440 | 1631×918 → 2304×1296 | 762 → 1118 | 32 → 21 | 8 |
+  | 3840×2160 | 2175×1224 → 3456×1944 | 1016 → 1677 | 32 → 21 | 8 |
+  | phone 2400×1080 × 2.5 | 1728×1080 → 2160×1080 | 783 → 753 | 33 → 19 | 1 |
+
+  Bytes per send with a party of five (fixture): no layer or Quests 10.5 →
+  12.4 KB, Trainers 19.1 → 17.6 KB, Towns 20.7 → 18.6 KB. The engine logs
+  41 KB per send on the Quests layer (61 markers, 335 tooltips) and 58 KB
+  on Travel; the party check at 1 s doubles the sends of an open map in a
+  moving party (up to 60 a minute).
+- **WORLD** (seed 42, a cave at −400, −2550, y −112 to −49): floor spots
+  for Giant Spider and Giant Rat 2683 by the one-column check → 281 with
+  room (10.5 %), Spiderling 2683 → 2683; two 60 s windows: 7 wide spawns
+  (2 stuck 3 s later) → 0; the stuck cleanup 2 flagged, 2 removed.
+  Nametag carriers: 1124 fewer over the 144 settlements (Highcourt alone
+  165); 0 of the 1124 idle or work sockets holds a quest giver.
+- **SOCIAL, tab body without the PvP section** (fixture): 1 / 10 / 50
+  players 1,998 / 6,749 / 27,988 bytes; the full page with 33 rows in the
+  engine 22,295 bytes (50 rows about 32 kB, estimated). The same four
+  players: 5,281 → 6,461 bytes out of a party, 5,635 → 6,789 in one. No
+  new globalstep.
+- **CRAFT:** recipe records 676 → 593 (the catalog's rows 237 after
+  CONTAINERS); outputs keeping several recipes: seven dyes (2 or 3 each),
+  glass fragments 2. Materials: 806 items; "iron bar" 1 hit, "planks" 7,
+  "dye" 15; the page 11,642 bytes (the list) and 8,794 (a material
+  chosen). Every declared step's end-to-end test after the step:
+  `r53_ms` 29/29, `r47_ms` 21/21, `r48_bags` 25/25, `r44_ms` 32/32 and
+  `r45_ms` 64/64 (the last two after pins of later rounds' game behaviour
+  were updated); `r67_craft/run.sh` unit 3/3 and end to end 23/23; the
+  container test 38 OK.
+- **CONTAINERS, chest form** (four 20-slot bags): 32 slots 2,762 → 3,715
+  bytes, 64 slots 3,977, 96 slots 3,685 (no Upgrade row).
+
+### Checks
+
+- MAP: full run 291/293 before two pin fixes, both then PASS; smoke boot
+  PASS; captures at 1920×1080. Review: 21 fixtures PASS.
+- WORLD: full run 292 + 1 fixed (`r51_mobs`' stub); smoke boot and two
+  probe runs PASS; fix round `r67_world` (86 checks), `r56_mount`,
+  `r531_flight`. Review: eight fixtures PASS, a scratch harness on the real
+  `room.lua`.
+- SOCIAL: full run 293/0; two smoke boots and a capture boot. Fix round:
+  `r67_social` (97 checks) and five fixtures. Review: six fixtures PASS.
+- CRAFT: after the main merge, full run 295/296 (only `r37_dc`, waiting
+  for this CHANGELOG entry); `check_upgrade.py`, `gen_basic_recipes.lua
+  --check`, `income.py --check` PASS; smoke boot PASS. Review: nine
+  fixtures PASS.
+- CONTAINERS: after the main merge, full run 296/297 (only `r37_dc`);
+  smoke boot with the probe PASS (39 checks). Review: eight fixtures PASS.
+- Main: `check_fresh_server.py` PASS after each merge. This lane:
+  `check_upgrade.py`, `check_fresh_server.py`; `r37_dc` (the CHANGELOG's
+  newest entry, the Help version line), `r41_up`, `r42_dr` and `r43_gs`
+  (the declaration, the README and CHANGELOG links); the Help fixtures for
+  the changed line; the link and anchor check of the touched documents;
+  the full run once.

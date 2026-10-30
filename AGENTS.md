@@ -12,9 +12,20 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.66.1, the `[GRUG-PERF]` performance lines for the
-hosting platform (`grug_perf`; **compatible**, no step; on branch
-`r661-perf`, review pending; [STATUS](docs/STATUS.md)), on 0.66.0.
+**Current state:** 0.67.0, Round 67 from the group play session (the
+Social tab with an online players table, favourites and an invitation box
+on the HUD; the map window at 90 % with markers in place and smaller, flat
+layer buttons, quest list and HUD story first; flight underground and the
+vertical speed per tier; nametags only where they serve; wide mobs with
+room; one crafting row per output, the metal rods and back-recipes
+removed, a Materials help page, half fuel; chests with Sort, labels and
+three tiers with Upgrade), merged locally; **not pushed**. **Migrate**:
+step 0.67.0 refunds the metal rods as bars; GUI test pending, joining the
+joint test of 0.57–0.66
+([completion and checklist](docs/planning/round67-plan.md#completion-2026-10-30)).
+Previous: 0.66.1, the `[GRUG-PERF]` performance lines for the hosting
+platform (`grug_perf`; **compatible**, no step; merged locally, not
+pushed; [STATUS](docs/STATUS.md)), on 0.66.0.
 Previous: 0.66.0, Round 66 polish (the two-handed shift-click
 swap and blocked offhand, the fishing rod from the start, a Sent tab in the
 mailbox, the viewport and text growing on tall screens, markers sized by
