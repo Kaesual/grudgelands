@@ -35,7 +35,7 @@
 -- make it (its item, or any member of its group), then theirs, each once.
 -- A step that turns a product back into its own ingredient is never a
 -- source: a Basic recipe X <- Y is left out when another Basic recipe makes
--- Y from X (block and stairs, block and bars, sand and sandstone), so only
+-- Y from X (block and bars, sand and sandstone), so only
 -- the one-way chains count. The unlocked set: player meta UNLOCKED_KEY in
 -- the held set's format (the format word "1", then the sorted recipe ids,
 -- space-separated); an id no recipe has any more is never shown. It grows

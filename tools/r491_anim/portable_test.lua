@@ -5,7 +5,7 @@
 -- grug_inventory/furnace_progress.lua, default/node_formspec.lua,
 -- default/furnace.lua, grug_jobs/automatic.lua and grug_jobs/workspaces.lua
 -- under a small fake engine (cooking: test:ore 10 s, test:meat 3 s; fuel:
--- test:log 15 s, test:leaves 2 s, coal 80 s):
+-- test:log 15 s, test:leaves 2 s, coal 40 s since Round 67):
 --   A  the helper: the frame start at given fractions, the frame length
 --      over the duration, the buffer's minimum length, the still pictures;
 --      the strips' sizes match the helper's frame counts;
@@ -238,7 +238,7 @@ core.remove_detached_inventory = function(name) detached[name] = nil end
 
 -- Cooking and fuel recipes.
 local COOK = {["test:ore"] = {"test:bar", 10}, ["test:meat"] = {"test:steak", 3}}
-local FUEL = {["test:log"] = 15, ["test:leaves"] = 2, ["default:coal_lump"] = 80}
+local FUEL = {["test:log"] = 15, ["test:leaves"] = 2, ["default:coal_lump"] = 40}
 core.registered_items["test:log"] = {groups = {tree = 1}}
 core.registered_items["test:leaves"] = {groups = {leaves = 1}}
 core.registered_items["test:junk"] = {stack_max = 99}
@@ -697,13 +697,14 @@ end
 
 -- The output full after one bar (shared): held at 10 s, no re-send while
 -- the coal burns on; the bars taken at 20 s: it cooks again (re-sent at the
--- next pass).
+-- next pass). Round 67 ruling 17: a lump burns 40 s, so a second lump and a
+-- fourth ore keep the fire going past the first lump's end at 40 s.
 do
 	local prepare = function(inv)
 		inv:set_stack("dst", 1, "test:bar 98")
 		for i = 2, 4 do inv:set_stack("dst", i, "test:junk 99") end
 	end
-	ws_case("output full", FURNACE, {{"fuel", "default:coal_lump 1"}, {"src", "test:ore 3"}}, 40,
+	ws_case("output full", FURNACE, {{"fuel", "default:coal_lump 2"}, {"src", "test:ore 4"}}, 40,
 		{1, 10, 21, 30, 40}, prepare, function(second, inv, put, player, pos)
 			if second == 20 then
 				inv:set_stack("dst", 1, "")
@@ -716,10 +717,10 @@ do
 end
 
 -- The dual furnace (shared): ore + tin, 10 s each; the coal burns on after
--- the inputs are used up, its end re-sent at 80 s.
+-- the inputs are used up, its end re-sent at 40 s (Round 67 ruling 17).
 do
 	local inputs = {{"fuel", "default:coal_lump 1"}, {"input", "test:ore 2"}, {"input", "test:tin 2", 2}}
-	local inv = ws_case("dual furnace", DUAL, inputs, 85, {1, 10, 20, 80})
+	local inv = ws_case("dual furnace", DUAL, inputs, 85, {1, 10, 20, 40})
 	same_lists("W dual furnace", inv, reference("dual_furnace", automatic.sizes.dual_furnace,
 		inputs, 85), {"input", "fuel", "output"})
 	eq(inv:get_stack("output", 1):to_string(), "test:alloy 4", "W dual furnace: two alloys of two")

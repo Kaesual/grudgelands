@@ -130,9 +130,10 @@ grug_gear.MATERIALS = {
 		leather = {key = "nightscale", name = "Nightscale"}},
 }
 
--- Six bracket colours, published for the profession recipes' metal rods
--- (grug_professions/base_recipes.lua), which colour one shared image per tier
--- with them. Neither weapons nor armour use it: every weapon family ships one
+-- Six bracket colours. Their one user, the metal rods of
+-- grug_professions/base_recipes.lua, left the game in Round 67 (ruling 13);
+-- the table stays until a later clean-up (BACKLOG). Neither weapons nor
+-- armour use it: every weapon family ships one
 -- sprite per material (`tools/wp13/gen_weapon_ladder.py`), and the armour art
 -- carries each tier's palette (Round 54, docs/technical/armor-format.md), as
 -- do the shield and spellbook icons (Round 55, offhand_image below).

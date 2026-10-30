@@ -1,8 +1,10 @@
--- Help page: a short player guide in seven sub-pages, selected by buttons at
--- the top of the page. Every sub-page is static text, so each one is built
+-- Help page: a short player guide in eight sub-pages, selected by buttons at
+-- the top of the page. Every text sub-page is static, so each one is built
 -- once at load time; opening the page only concatenates the button row. The
 -- Sound sub-page adds the music and ambience controls of grug_ambience
--- (Round 34) above its text, built per player.
+-- (Round 34) above its text, built per player. The Materials sub-page
+-- (Round 67 ruling 16) is built per player: a search over the materials,
+-- a paged result list and the chosen one's source lines (grug_jobs).
 --
 -- No inventory view (spec §3.1): the page has the whole window. Legacy
 -- coordinates were replaced with explicit real coordinates; the text area
@@ -124,8 +126,8 @@ local SECTIONS = {
 		"• Smelt ore into bars in a Furnace. Alloys need a Dual Furnace: Bronze = Copper + Tin, Steel = Iron + Anthracite, Silversteel = Steel + Silver, Embersteel = Steel + Emberglass, Abyssal Steel = Steel + Abyssal Crystal.",
 		"",
 		heading("Crafting"),
-		"• The Crafting tab has an area for Basic recipes, Cooking, each of your primary professions and Alchemy. Basic lists a recipe once you have held each of its ingredients (sticks, the wooden tools and the Fishing Rod from the start), and says New recipe when one joins; a profession area shows the recipes up to your tier in it, and each new tier adds its recipes. Search the list, turn its pages or tick Craftable only; ×N says how many times the items in your inventory and bags make a recipe. The star at the top right of a recipe marks it as a favorite, and Favorites only lists your favorites.",
-		"• Choose a recipe, set the quantity (or press Max) and press Craft. A craft starts when all it makes fits into your inventory. The ingredients are taken at once and the job runs on its own, with the window closed and while you are offline too; each item goes into your inventory as it is done. What no longer fits waits in the Overflow slots and moves in by itself when there is room. The stop button beside the bar gives back the ingredients of the items not yet made when your inventory has room.",
+		"• The Crafting tab has an area for Basic recipes, Cooking, each of your primary professions and Alchemy. Basic lists a recipe once you have held each of its ingredients (sticks, the wooden tools and the Fishing Rod from the start), and says New recipe when one joins; a profession area shows the recipes up to your tier in it, and each new tier adds its recipes. Search the list, turn its pages or tick Craftable only; ×N says how many times the items in your inventory and bags make a recipe. Each item has one row: where several recipes make it, Recipe 1/2 with ◀ and ▶ in its box switches between them. The star at the top right marks the item as a favorite, and Favorites only lists your favorites; Details beside the star shows where each ingredient comes from. The Materials page of this Help finds any material by name.",
+		"• Choose a recipe, set the quantity (or press Max) and press Craft; beside the button, ×N per craft says how many items one craft makes. A craft starts when all it makes fits into your inventory. The ingredients are taken at once and the job runs on its own, with the window closed and while you are offline too; each item goes into your inventory as it is done. What no longer fits waits in the Overflow slots and moves in by itself when there is room. The stop button beside the bar gives back the ingredients of the items not yet made when your inventory has room.",
 		"• While a job runs, Queue adds the next one: up to 5 jobs in all, crafts, enchants and upgrades alike, which run one after the other, while you are offline too. Their ingredients are taken when you queue them; View Queue lists them, and ✕ cancels one and gives its ingredients back. Recipes, enchants and upgrades of the six primary professions and Alchemy need their station within 4 blocks when you start or queue them: a Forge, Tanning Rack, Tailor Bench, Carving Bench, Jeweller's Bench or Brewing Stand; Cooking needs none. These stations open no window; furnaces and dual furnaces still do.",
 		"",
 		heading("Skills and combat"),
@@ -152,6 +154,8 @@ local SECTIONS = {
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
 		"• The Social tab lists every online player of both factions: mark favourites with the star and invite players of your faction to a party of up to 10 with Invite. An invitation shows at the left of the screen until it expires after 2 minutes; answer it on the Social tab. The tab also holds the Flag me for PvP button.",
 	})},
+	-- Round 67 ruling 16: built per player (materials_content below).
+	{id = "materials", label = "Materials", text = ""},
 	-- Round 48 (mail plan §3.21): the mailboxes, postage, the limits and the
 	-- way to the admin.
 	{id = "mail", label = "Mail", x = 5.5, w = 1.1, text = body({
@@ -269,6 +273,175 @@ local function body_of(id)
 	return text
 end
 
+--
+-- The Materials sub-page (Round 67 ruling 16): every item that has a source
+-- in grug_jobs' source index (sources.lua) or is an ingredient of a recipe
+-- (a group ingredient's members), searched by name. A click on a result
+-- shows its icon, name and source lines (grug_jobs.source_lines, the lines
+-- of the recipe details pages) in a read-only text area that scrolls on the
+-- client. grug_jobs loads after this mod: the list is built at the first
+-- build that finds it. The state (typed text, search, page, choice) lives
+-- in the sfinv context, never in player meta.
+--
+
+local MAT = {search = "grug_help_mat_search", find = "grug_help_mat_find",
+	clear = "grug_help_mat_clear", prev = "grug_help_mat_prev",
+	next = "grug_help_mat_next", row = "grug_help_mat_row_"}
+local MAT_ROWS, MAT_ROW_H, MAT_CHARS = 20, 0.5, 40
+local MAT_LIST_X, MAT_LIST_Y, MAT_LIST_W = 4.0, 2.0, 7.0
+local MAT_INFO_X, MAT_INFO_W = 11.4, 8.0
+local MAT_SELECTED = "#bba06235"
+local materials -- {name, label, lower}, sorted by label, built once
+
+local function material_list(jobs)
+	if materials then return materials end
+	local index = jobs.item_sources()
+	local names = {}
+	for name in pairs(index.by_item) do names[name] = true end
+	for _, recipe in ipairs(jobs.recipes) do
+		for _, entry in ipairs(recipe.ingredients) do
+			if entry.item then
+				names[entry.item] = true
+			else
+				for _, member in ipairs(index.members(entry.group)) do names[member] = true end
+			end
+		end
+	end
+	materials = {}
+	for name in pairs(names) do
+		if core.registered_items[name] then
+			local label = grug_core.item_name(name)
+			materials[#materials + 1] = {name = name, label = label, lower = label:lower()}
+		end
+	end
+	table.sort(materials, function(a, b)
+		if a.label ~= b.label then return a.label < b.label end
+		return a.name < b.name
+	end)
+	return materials
+end
+grug_inventory.help_materials = material_list
+
+local function material_state(context)
+	local st = context.grug_help_mat
+	if not st then
+		st = {typed = "", query = "", page = 1, rows = {}}
+		context.grug_help_mat = st
+	end
+	return st
+end
+
+-- The results of the applied search: every material whose name holds it.
+local function material_results(jobs, query)
+	local list = material_list(jobs)
+	if query == "" then return list end
+	local found, needle = {}, query:lower()
+	for _, entry in ipairs(list) do
+		if entry.lower:find(needle, 1, true) then found[#found + 1] = entry end
+	end
+	return found
+end
+grug_inventory.help_material_results = material_results
+
+local function materials_content(player, context)
+	local jobs = rawget(_G, "grug_jobs")
+	if not (jobs and jobs.item_sources and jobs.source_lines) then
+		return ("label[%.2f,%.2f;%s]"):format(BODY_X, 1.0, esc("The crafting mod is not loaded."))
+	end
+	local st = material_state(context)
+	local results = material_results(jobs, st.query)
+	local pages = math.max(1, math.ceil(#results / MAT_ROWS))
+	st.page = math.max(1, math.min(pages, st.page))
+	local scale = grug_core.ui.text_scale(player)
+	local fs = {("style_type[label;font_size=*%.3f]"):format(0.9 * scale),
+		("label[%.2f,%.2f;%s]"):format(BODY_X, 0.85, esc(core.colorize(HEADING_COLOR,
+			"Search a material by name, then choose it to see where it comes from."))),
+		grug_core.ui.input_background(BODY_X, 1.2, 5.0, 0.6, MAT.search),
+		("field[%.2f,%.2f;5.0,0.6;%s;;%s]field_close_on_enter[%s;false]"):format(
+			BODY_X, 1.2, MAT.search, esc(st.typed), MAT.search),
+		("button[%.2f,%.2f;0.5,0.6;%s;×]button[%.2f,%.2f;1.4,0.6;%s;Search]"):format(
+			BODY_X + 5.1, 1.2, MAT.clear, BODY_X + 5.7, 1.2, MAT.find),
+		("label[%.2f,%.2f;%s]"):format(BODY_X + 7.4, 1.5, esc(core.colorize(
+			grug_core.ui.colors.muted, #results .. (#results == 1 and " material" or " materials"))))}
+	st.rows = {}
+	local first = (st.page - 1) * MAT_ROWS
+	for index = 1, math.min(MAT_ROWS, #results - first) do
+		local entry = results[first + index]
+		local y = MAT_LIST_Y + (index - 1) * MAT_ROW_H
+		st.rows[index] = entry.name
+		if entry.name == st.selected then
+			fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;%s]"):format(MAT_LIST_X, y, MAT_LIST_W,
+				MAT_ROW_H, MAT_SELECTED)
+		end
+		local label = entry.label
+		if #label > MAT_CHARS then label = label:sub(1, MAT_CHARS - 2) .. ".." end
+		fs[#fs + 1] = ("item_image[%.2f,%.2f;0.42,0.42;%s]label[%.2f,%.2f;%s]" ..
+			"image_button[%.2f,%.2f;%.2f,%.2f;blank.png;%s%d;;false;false]"):format(
+			MAT_LIST_X + 0.1, y + 0.04, esc(entry.name), MAT_LIST_X + 0.7, y + MAT_ROW_H / 2,
+			esc(label), MAT_LIST_X, y, MAT_LIST_W, MAT_ROW_H, MAT.row, index)
+	end
+	if #results == 0 then
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(MAT_LIST_X + 0.15, MAT_LIST_Y + 0.35,
+			esc("No material matches."))
+	end
+	local pager_y = MAT_LIST_Y + MAT_ROWS * MAT_ROW_H + 0.15
+	fs[#fs + 1] = ("button[%.2f,%.2f;0.8,0.55;%s;<]label[%.2f,%.2f;%s]" ..
+		"button[%.2f,%.2f;0.8,0.55;%s;>]"):format(MAT_LIST_X, pager_y, MAT.prev,
+		MAT_LIST_X + 2.3, pager_y + 0.27, esc(("Page %d of %d"):format(st.page, pages)),
+		MAT_LIST_X + MAT_LIST_W - 0.8, pager_y, MAT.next)
+	local chosen = st.selected and core.registered_items[st.selected] and st.selected
+	if chosen then
+		fs[#fs + 1] = ("item_image[%.2f,%.2f;1.0,1.0;%s]"):format(MAT_INFO_X, MAT_LIST_Y,
+			esc(chosen))
+		fs[#fs + 1] = grug_core.ui.heading(MAT_INFO_X + 1.2, MAT_LIST_Y + 0.5,
+			grug_core.item_name(chosen), grug_core.ui.text_growth(player))
+		fs[#fs + 1] = grug_core.ui.heading(MAT_INFO_X, MAT_LIST_Y + 1.5, "Where it comes from",
+			grug_core.ui.text_growth(player))
+		local lines = {}
+		for i, line in ipairs(jobs.source_lines(chosen)) do lines[i] = "• " .. line end
+		fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(MAT_INFO_X, MAT_LIST_Y + 1.9,
+			MAT_INFO_W, pager_y + 0.55 - MAT_LIST_Y - 1.9, esc(table.concat(lines, "\n\n")))
+	else
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(MAT_INFO_X, MAT_LIST_Y + 0.35,
+			esc(core.colorize(grug_core.ui.colors.muted, "Choose a material from the list.")))
+	end
+	fs[#fs + 1] = "style_type[label;font_size=" ..
+		grug_core.ui.font_size(1, grug_core.ui.text_growth(player)) .. "]"
+	return table.concat(fs)
+end
+
+-- A field value without control characters, trimmed and cut to `limit`
+-- characters (cut first: a client may send a huge field).
+local function clean_field(value, limit)
+	local text = tostring(value):sub(1, 4 * limit):gsub("[%c]", "")
+	return (text:match("^%s*(.-)%s*$") or ""):sub(1, limit)
+end
+
+-- The Materials sub-page's events; true when one was handled.
+local function materials_fields(context, fields)
+	local st = material_state(context)
+	if fields[MAT.search] then st.typed = clean_field(fields[MAT.search], 40) end
+	if fields[MAT.clear] then
+		st.typed, st.query, st.page = "", "", 1
+		return true
+	end
+	if fields[MAT.find] or fields.key_enter_field == MAT.search then
+		st.query, st.page = st.typed, 1
+		return true
+	end
+	if fields[MAT.prev] then st.page = st.page - 1 return true end
+	if fields[MAT.next] then st.page = st.page + 1 return true end
+	for index = 1, MAT_ROWS do
+		if fields[MAT.row .. index] and st.rows[index] then
+			st.selected = st.rows[index]
+			return true
+		end
+	end
+	return false
+end
+grug_inventory._help_materials_fields = materials_fields
+grug_inventory._help_materials_content = materials_content
+
 -- The Sound sub-page's controls: grug_ambience builds them per player.
 local function sound_controls(player)
 	local ambience = rawget(_G, "grug_ambience")
@@ -300,6 +473,10 @@ local function help_content(player, context)
 	if selected == "sound" then fs[#fs + 1] = sound_controls(player) end
 	-- hypertext[] has its own absolute default size (16, scaled like the
 	-- client font): on a grown viewport ceiling it grows with the form text.
+	if selected == "materials" then
+		fs[#fs + 1] = materials_content(player, context)
+		return table.concat(fs)
+	end
 	local growth = grug_core.ui.text_growth(player)
 	local body = body_of(selected)
 	if growth ~= 1 then
@@ -322,6 +499,10 @@ sfinv.register_page(PAGE, {
 				sfinv.set_page(player, PAGE)
 				return true
 			end
+		end
+		if context.grug_help_section == "materials" and materials_fields(context, fields) then
+			sfinv.set_page(player, PAGE)
+			return true
 		end
 		local ambience = rawget(_G, "grug_ambience")
 		if context.grug_help_section == "sound" and ambience and

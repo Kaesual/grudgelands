@@ -271,7 +271,9 @@ for _, step in ipairs(input.steps) do
 	end
 end
 eq(unpack_copper, "unpack", "R Copper Bars from the block: rule unpack")
-eq(cut_cobble, "cut_back", "R Cobblestone from its stair: rule cut_back")
+-- Round 67 ruling 11: no route from stairs back to a block in the real
+-- catalog any more (the synthetic stair loop above keeps the rule's test).
+eq(cut_cobble, nil, "R no Cobblestone from its stair (Round 67)")
 local finite = true
 for id, info in pairs(real.steps) do
 	if info.depth == math.huge then finite = false print("  infinite: " .. id) end

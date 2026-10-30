@@ -69,8 +69,7 @@ local TIERS = {["grug_materials:emberglass_shard"] = 4}
 -- Processed goods: the leather/bolt/wood/setting ladders, by group; bars come
 -- from grug_materials.PROCESSED_MATERIALS.
 local PROCESSED_GROUPS = {"grug_leather_grade", "grug_tailor_bolt",
-	"grug_tailor_bundle", "grug_wood_grade", "grug_jewellery_setting",
-	"grug_metal_rod"}
+	"grug_tailor_bundle", "grug_wood_grade", "grug_jewellery_setting"}
 
 -- Free world materials of the first pass: anyone digs or chops them without
 -- limit, so the first pass pays nothing for them and counts them 0 in a
@@ -126,7 +125,7 @@ local NEVER_GROUPS = {"grug_soulbound", "grug_bound_skill", "grug_rare_trophy"}
 
 -- Groups whose rating is the item's tier.
 local TIER_GROUPS = {"grug_leather_grade", "grug_tailor_bolt", "grug_wood_grade",
-	"grug_jewellery_setting", "grug_metal_rod"}
+	"grug_jewellery_setting"}
 
 local catalogue -- id -> {kind, tier}
 local resources -- raw/cut item -> resource row

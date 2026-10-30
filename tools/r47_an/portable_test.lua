@@ -11,7 +11,7 @@
 --   B. Steel = Iron Bar + Anthracite and nothing else (no Coal, no
 --      Charcoal), every alloy 10 s as a bar, and the startup audit passing
 --      (and failing when Anthracite joins the coal group);
---   C. furnace fuel: Coal and Charcoal 80 s, Anthracite 120 s, wood 15 s;
+--   C. furnace fuel: Coal and Charcoal 40 s, Anthracite 60 s (Round 67), wood 15 s;
 --      Round 48 (FUEL): cactus 15 s, three leaf kinds 2 s, a sapling,
 --      papyrus and the Coal Block still 0;
 --   D. the Claim Stone (ruling 12): the cap in time (99 lumps' worth),
@@ -226,11 +226,13 @@ groups_of["grug_materials:anthracite"] = {}
 -- ---------------------------------------------------------------------------
 local automatic = dofile(repo .. "/mods/PLAYER/grug_jobs/automatic.lua")
 for _, station in ipairs({"furnace", "dual_furnace"}) do
-	eq(automatic.fuel_time(station, ItemStack("default:coal_lump")), 80, "C " .. station .. " Coal 80 s")
-	eq(automatic.fuel_time(station, ItemStack("grug_smelting:charcoal")), 80,
-		"C " .. station .. " Charcoal 80 s")
-	eq(automatic.fuel_time(station, ItemStack("grug_materials:anthracite")), 120,
-		"C " .. station .. " Anthracite 120 s (ruling 11)")
+	-- Round 67 ruling 17: half the fuel times (Coal and Charcoal 80 -> 40 s,
+	-- Anthracite 120 -> 60 s).
+	eq(automatic.fuel_time(station, ItemStack("default:coal_lump")), 40, "C " .. station .. " Coal 40 s")
+	eq(automatic.fuel_time(station, ItemStack("grug_smelting:charcoal")), 40,
+		"C " .. station .. " Charcoal 40 s")
+	eq(automatic.fuel_time(station, ItemStack("grug_materials:anthracite")), 60,
+		"C " .. station .. " Anthracite 60 s (ruling 11, halved in Round 67)")
 	eq(automatic.fuel_time(station, ItemStack("default:tree")), 15, "C " .. station .. " a log 15 s")
 	eq(automatic.fuel_time(station, ItemStack("default:coalblock")), 0, "C " .. station .. " no Coal Block")
 end

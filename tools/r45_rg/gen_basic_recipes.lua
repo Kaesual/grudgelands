@@ -18,7 +18,8 @@
 --   dropped     a route the ingredient-list model cannot express (DROPPED);
 --   family      a loop-made route (stairs, slabs, walls): one row per
 --               material, registry.lua makes the routes as the vendored loops
---               did;
+--               did, except the stairs' routes back to the block (Round 67
+--               ruling 11: removed by edits.lua, asserted below);
 --   basic       everything else: one ingredient list, the slot items counted
 --               in the order they first appear; a multi-group token
 --               ("group:dye,color_red") with exactly one member becomes that
@@ -150,7 +151,7 @@ for _, sub in ipairs(subs) do
 		end
 		if #rows == #wanted then
 			for _, row in ipairs(rows) do row.family = true end
-			stairs[#stairs + 1] = {sub, item}
+			stairs[#stairs + 1] = {sub, item, back = {rows[5], rows[6]}}
 		end
 	end
 end
@@ -185,9 +186,19 @@ for _, edit in ipairs(dofile(root .. "/tools/r45_rg/edits.lua")) do
 	end
 end
 
+-- Round 67 ruling 11: every stairs material's two routes back to the block
+-- are removed by edits.lua (registry.lua makes only the forward shapes).
+for _, row in ipairs(stairs) do
+	assert(row.back[1].removed and row.back[2].removed,
+		"edits.lua keeps a route back to " .. row[2] .. " (Round 67 ruling 11)")
+end
+
 local basic = {}
+counts.back = 0
 for _, row in ipairs(plain) do
-	if row.family then counts.family = counts.family + 1
+	if row.family then
+		if row.removed then counts.back = counts.back + 1
+		else counts.family = counts.family + 1 end
 	elseif not row.removed then basic[#basic + 1] = row end
 end
 counts.basic = #basic
@@ -219,8 +230,8 @@ for _, row in ipairs(basic) do
 end
 lines[#lines + 1] = "\t},"
 lines[#lines + 1] = "\t-- {subname, block}: 8 stairs and 7 inner stairs from 6 blocks, 6 outer"
-lines[#lines + 1] = "\t-- stairs from 4, 6 slabs from 3, back to 3 blocks from 4 stairs and to"
-lines[#lines + 1] = "\t-- 1 block from 2 slabs."
+lines[#lines + 1] = "\t-- stairs from 4, 6 slabs from 3; no route back to the block (Round 67"
+lines[#lines + 1] = "\t-- ruling 11: stairs and slabs are end products)."
 lines[#lines + 1] = "\tstairs = {"
 for _, row in ipairs(stairs) do
 	lines[#lines + 1] = ("\t\t{%s, %s},"):format(quote(row[1]), quote(row[2]))
@@ -237,9 +248,10 @@ local text = table.concat(lines, "\n") .. "\n"
 
 if mode == "report" then
 	print(("engine grid routes %d: profession %d, gear %d, dropped %d, " ..
-		"mirrored duplicates %d, loop-made %d (%d stair materials, %d walls), " ..
-		"basic rows %d"):format(counts.engine, counts.profession, counts.gear,
-		counts.dropped, counts.merged, counts.family, #stairs, #walls, counts.basic))
+		"mirrored duplicates %d, loop-made %d (%d stair materials, %d walls; " ..
+		"%d routes back to the block removed), basic rows %d"):format(counts.engine,
+		counts.profession, counts.gear, counts.dropped, counts.merged, counts.family,
+		#stairs, #walls, counts.back, counts.basic))
 	local tokens = {}
 	for token, item in pairs(resolved) do tokens[#tokens + 1] = token .. " -> " .. item end
 	table.sort(tokens)

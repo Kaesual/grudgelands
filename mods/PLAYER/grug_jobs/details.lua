@@ -27,7 +27,7 @@
 --
 -- Item tooltips: grug_items.tooltip_text (grug_quality's one helper) and the
 -- item's source lines. "Open ▶" never goes to an exact inverse recipe (bars
--- from their block, planks from stairs). Every text is clipped or wrapped to its column (the
+-- from their block, sand from sandstone). Every text is clipped or wrapped to its column (the
 -- window is the same on desktop and web).
 
 local UI = grug_core.ui
@@ -291,7 +291,7 @@ grug_jobs.details_knows = knows
 
 -- Whether `recipe` (which makes `item`) is the exact inverse of a recipe
 -- of `item`: its one ingredient is made only from `item` (a block unpacked
--- into bars, planks from stairs). It is no real source: Open ▶ never goes
+-- into bars, sand from sandstone). It is no real source: Open ▶ never goes
 -- there.
 local function inverse(recipe, item)
 	local entry = recipe.ingredients[1]

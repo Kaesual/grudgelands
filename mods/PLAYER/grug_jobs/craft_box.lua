@@ -3,18 +3,25 @@
 -- grug_jobs.CRAFT_BOX by ui.lua in three stacked areas, above the job strip
 -- (ui.lua draws the bar, the stop button and View Queue under every box):
 --   top     the chosen recipe's output: icon, name, area, tier, "makes N",
---           and the favourite star at the top right (Round 57 ruling 7: ★
---           marked, ☆ not; a click toggles it);
+--           and at the top right "Details" with an info icon (Round 67
+--           ruling 15; it opens details.lua's page on this recipe) left of
+--           the favourite star (Round 57 ruling 7: ★ marked, ☆ not; a click
+--           toggles it; the favourite belongs to the output);
 --   middle  the item's description (what its tooltip says, scrolling when
---           long), "Ingredients (have/need)" (with "Recipe details" at its
---           right, which opens details.lua's page on this recipe), the
---           ingredients with have/need, the maximum, the warnings (the
---           profession gate, "Requires: <station> nearby", a full queue),
---           the note of the last refused action and the XP hint;
+--           long), "Ingredients (have/need)" (with the variant switch
+--           "Recipe i/n ◀ ▶" at its right when the output has several
+--           recipes the list shows, Round 67 ruling 10), the ingredients
+--           with have/need, the maximum, the warnings (the profession gate,
+--           "Requires: <station> nearby", a full queue), the note of the last
+--           refused action and the XP hint;
 --   bottom  the quantity row "Quantity [−][field][+] [Max]" (stackable
 --           outputs only, default 1) and, right-aligned in the same row, the
---           big button: "Craft ×N" while nothing runs, "Queue ×N" while a job
---           runs (ruling 1).
+--           big button: "Craft" while nothing runs, "Queue" while a job runs
+--           (Round 67 ruling 14), with the fixed hint "×N per craft" left of
+--           it for a recipe that makes more than one.
+-- The variant switch steps through the output's recipes (wrapping round);
+-- a row click opens the first the player can craft now, else the first
+-- (ui.lua shown_variant).
 -- Without a chosen recipe the box shows the professions overview
 -- (overview.lua): every known profession's tier, progress and the level cap
 -- note.
@@ -69,8 +76,14 @@ local label_of = grug_jobs.recipe_label
 local X = BOX.x + 0.2
 local W = BOX.w - 0.4
 local ACTION = grug_jobs.CRAFT_ACTION
--- The favourite star at the top right.
+-- The favourite star at the top right, "Details" left of it with its info
+-- icon: the shipped UI help icon (a circled "?"), tinted in the accent
+-- colour like the navigation's emblem.
 local STAR = {w = 0.6, h = 0.6}
+local DETAILS = {w = 1.9, h = 0.6, icon = 0.36}
+local INFO_ICON = "grug_ui_icon_help.png^[multiply:" .. UI.colors.accent
+-- The variant switch's buttons.
+local SWITCH_W = 0.5
 -- The middle area's first label (its centre) below the top area.
 local MIDDLE_Y = BOX.y + 1.4
 local INGREDIENT_ROWS, INGREDIENT_STEP = 5, 0.45
@@ -351,14 +364,48 @@ local function ingredient_rows(fs, recipe, counts, quantity, y, choice)
 	return y
 end
 
--- The star (ruling 7): a text button, gold ★ when the recipe is a favourite,
--- grey ☆ when not.
+-- The star (ruling 7): a text button, gold ★ when the output is a
+-- favourite, grey ☆ when not.
 local function star(fs, player, recipe)
 	local on = grug_jobs.is_favorite(player, recipe.id)
 	fs[#fs + 1] = ("style[%s;textcolor=%s;font_size=%s]button[%s,%s;%s,%s;%s;%s]" ..
 		"tooltip[%s;%s]"):format(F.fav, on and STAR_ON or STAR_OFF, UI.font_size(1.4, UI.text_growth(player)),
 		n(BOX.x + BOX.w - 0.2 - STAR.w), n(BOX.y + 0.2), n(STAR.w), n(STAR.h), F.fav,
 		on and "★" or "☆", F.fav, on and "Remove from favorites" or "Add to favorites")
+end
+
+-- "Details" left of the star (Round 67 ruling 15): the seam of the recipe
+-- details page (Round 57 lane DETAILS registers the "details" box). The
+-- icon is drawn over the button's left end (an image lets clicks through);
+-- the label stays centred clear of it. Returns the width it takes.
+local function details_button(fs)
+	if not grug_jobs.has_craft_box("details") then return 0 end
+	local x = BOX.x + BOX.w - 0.2 - STAR.w - 0.1 - DETAILS.w
+	local y = BOX.y + 0.2
+	fs[#fs + 1] = ("button[%s,%s;%s,%s;%s;Details]image[%s,%s;%s,%s;%s]" ..
+		"tooltip[%s;Where the ingredients come from]"):format(n(x), n(y), n(DETAILS.w),
+		n(DETAILS.h), F.details, n(x + 0.15), n(y + (DETAILS.h - DETAILS.icon) / 2),
+		n(DETAILS.icon), n(DETAILS.icon), esc(INFO_ICON), F.details)
+	return DETAILS.w + 0.1
+end
+
+-- The variant switch at the right of the ingredients heading: "Recipe i/n"
+-- with ◀ and ▶, only for an output with several recipes the list shows.
+local function variant_switch(fs, player, recipe, y)
+	local variants = grug_jobs.recipe_variants(player, recipe)
+	if #variants < 2 then return end
+	local at = 1
+	for index, other in ipairs(variants) do
+		if other == recipe then at = index end
+	end
+	local right = X + W
+	local text = ("Recipe %d/%d"):format(at, #variants)
+	fs[#fs + 1] = ("label[%s,%s;%s]button[%s,%s;%s,0.5;%s;◀]button[%s,%s;%s,0.5;%s;▶]" ..
+		"tooltip[%s;Previous recipe]tooltip[%s;Next recipe]"):format(
+		n(right - 2 * SWITCH_W - 0.15 - #text / CHARS - 0.1), n(y), esc(text),
+		n(right - 2 * SWITCH_W - 0.05), n(y - 0.25), n(SWITCH_W), F.variant_prev,
+		n(right - SWITCH_W), n(y - 0.25), n(SWITCH_W), F.variant_next,
+		F.variant_prev, F.variant_next)
 end
 
 local function build(player, view)
@@ -392,9 +439,10 @@ local function build(player, view)
 	local sub = area_name(recipe) .. " · Tier " .. recipe.tier
 	if recipe.count > 1 then sub = sub .. " · makes " .. recipe.count end
 	star(fs, player, recipe)
-	-- The name in up to two lines beside the icon (left of the star), then
-	-- the area line.
-	local width = math.floor((W - 1.05 - STAR.w - 0.1) * CHARS)
+	local details_w = details_button(fs)
+	-- The name in up to two lines beside the icon (left of Details and the
+	-- star), then the area line.
+	local width = math.floor((W - 1.05 - STAR.w - 0.1 - details_w) * CHARS)
 	local name = {}
 	for piece in (grug_inventory.wrap_text(label_of(recipe.output), width) ..
 			"\n"):gmatch("(.-)\n") do
@@ -455,12 +503,7 @@ local function build(player, view)
 		end
 	end
 	fs[#fs + 1] = UI.heading(X, y, "Ingredients (have/need)", view.growth)
-	-- The seam of the recipe details page (Round 57, lane DETAILS registers
-	-- the "details" box).
-	if grug_jobs.has_craft_box("details") then
-		fs[#fs + 1] = ("button[%s,%s;2.2,0.5;%s;Recipe details]"):format(n(X + W - 2.2),
-			n(y - 0.25), F.details)
-	end
+	variant_switch(fs, player, recipe, y)
 	st.pick_serial = (st.pick_serial or 0) + 1
 	local choice = {picks = picks, serial = st.pick_serial, rows = {}}
 	y = ingredient_rows(fs, recipe, view.counts, quantity, y + 0.25, choice)
@@ -482,9 +525,16 @@ local function build(player, view)
 			n(X + 2), n(quantity_y), F.qty, esc(st.qty), F.qty,
 			n(X + 3), n(quantity_y), F.plus, n(X + 3.65), n(quantity_y), F.max)
 	end
-	-- "Craft ×N" while nothing runs, "Queue ×N" while a job runs (ruling 1).
-	fs[#fs + 1] = grug_jobs.action_button(view, F.go,
-		(job and "Queue ×" or "Craft ×") .. quantity, enabled)
+	-- "Craft" while nothing runs, "Queue" while a job runs (Round 67 ruling
+	-- 14: no count; the hint left of it says what one craft makes).
+	if recipe.count > 1 then
+		local hint = "×" .. recipe.count .. " per craft"
+		local chars = select(2, hint:gsub("[^\128-\191]", ""))
+		fs[#fs + 1] = ("label[%s,%s;%s]"):format(
+			n(BOX.x + BOX.w - 0.2 - ACTION.w - 0.2 - chars / CHARS),
+			n(view.bottom - ACTION.h / 2), esc(core.colorize(UI.colors.muted, hint)))
+	end
+	fs[#fs + 1] = grug_jobs.action_button(view, F.go, job and "Queue" or "Craft", enabled)
 	return table.concat(fs)
 end
 
@@ -498,6 +548,16 @@ local function fields(player, st, fields)
 	end
 	if fields[F.details] and grug_jobs.has_craft_box("details") then
 		grug_jobs.open_recipe_details(st, {kind = "recipe", id = recipe.id})
+		return true
+	end
+	if fields[F.variant_prev] or fields[F.variant_next] then
+		local variants = grug_jobs.recipe_variants(player, recipe)
+		for index, other in ipairs(variants) do
+			if other == recipe then
+				local step = fields[F.variant_next] and 1 or -1
+				st.selected = variants[(index - 1 + step) % #variants + 1].id
+			end
+		end
 		return true
 	end
 	-- A dropdown whose value differs from the built one was changed (only

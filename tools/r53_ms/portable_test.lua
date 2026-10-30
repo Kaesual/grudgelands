@@ -62,9 +62,11 @@ dofile(ROOT .. "/mods/CORE/grug_core/migrations.lua")
 local registry = grug_core.migrations
 
 -- A. The registry.
-local versions = registry.versions
-eq(versions[#versions], "0.53.0", "A 0.53.0 is the last declared step")
-eq(versions[#versions - 1], "0.48.0", "A after 0.48.0")
+-- Round 67 lists 0.67.0 after it: 0.53.0 is listed, right after 0.48.0.
+local listed = {}
+for index, version in ipairs(registry.versions) do listed[version] = index end
+check(listed["0.53.0"] ~= nil, "A 0.53.0 is a declared step")
+eq(listed["0.48.0"] and listed["0.48.0"] + 1, listed["0.53.0"], "A after 0.48.0")
 local handler = registry.handlers["0.53.0"]
 check(handler and type(handler.character) == "function" and handler.world == nil,
 	"A 0.53.0 has a character handler and no world handler")

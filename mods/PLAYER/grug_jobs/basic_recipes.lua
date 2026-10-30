@@ -8,7 +8,6 @@ return {
 	recipes = {
 		{output = "beds:bed_bottom", count = 1, ingredients = {{item = "wool:white", n = 3}, {group = "wood", n = 3}}},
 		{output = "beds:fancy_bed_bottom", count = 1, ingredients = {{group = "stick", n = 1}, {item = "wool:white", n = 3}, {group = "wood", n = 3}}},
-		{output = "default:acacia_wood", count = 1, ingredients = {{item = "default:acacia_bush_stem", n = 1}}},
 		{output = "default:acacia_wood", count = 4, ingredients = {{item = "default:acacia_tree", n = 1}}},
 		{output = "default:aspen_wood", count = 4, ingredients = {{item = "default:aspen_tree", n = 1}}},
 		{output = "default:book", count = 1, ingredients = {{item = "default:paper", n = 3}}},
@@ -48,7 +47,6 @@ return {
 		{output = "default:obsidian_shard", count = 9, ingredients = {{item = "default:obsidian", n = 1}}},
 		{output = "default:obsidianbrick", count = 4, ingredients = {{item = "default:obsidian", n = 4}}},
 		{output = "default:paper", count = 1, ingredients = {{item = "default:papyrus", n = 3}}},
-		{output = "default:pine_wood", count = 1, ingredients = {{item = "default:pine_bush_stem", n = 1}}},
 		{output = "default:pine_wood", count = 4, ingredients = {{item = "default:pine_tree", n = 1}}},
 		{output = "default:sand", count = 4, ingredients = {{item = "default:sandstone", n = 1}}},
 		{output = "default:sandstone", count = 1, ingredients = {{item = "default:sand", n = 4}}},
@@ -61,7 +59,6 @@ return {
 		{output = "default:stone_block", count = 9, ingredients = {{item = "default:stone", n = 9}}},
 		{output = "default:stonebrick", count = 4, ingredients = {{item = "default:stone", n = 4}}},
 		{output = "default:torch", count = 10, ingredients = {{group = "coal", n = 1}, {group = "stick", n = 1}}},
-		{output = "default:wood", count = 1, ingredients = {{item = "default:bush_stem", n = 1}}},
 		{output = "default:wood", count = 4, ingredients = {{item = "default:tree", n = 1}}},
 		{output = "doors:door_glass", count = 1, ingredients = {{item = "default:glass", n = 6}}},
 		{output = "doors:door_obsidian_glass", count = 1, ingredients = {{item = "default:obsidian_glass", n = 6}}},
@@ -204,12 +201,6 @@ return {
 		{output = "grug_professions:bolt_stormweave", count = 1, ingredients = {{item = "grug_mobs:spider_silk", n = 1}, {item = "grug_gathering:stormkelp", n = 1}, {item = "grug_professions:thread", n = 1}}},
 		{output = "grug_professions:bolt_woven", count = 1, ingredients = {{item = "grug_mobs:linen_cloth", n = 2}, {item = "grug_professions:thread", n = 1}}},
 		{output = "grug_professions:cured_leather", count = 1, ingredients = {{item = "grug_mobs:light_leather", n = 1}, {item = "grug_professions:thread", n = 1}}},
-		{output = "grug_professions:metal_rod_abyssal_steel", count = 4, ingredients = {{item = "grug_materials:abyssal_steel_bar", n = 2}}},
-		{output = "grug_professions:metal_rod_bronze", count = 4, ingredients = {{item = "grug_materials:bronze_bar", n = 2}}},
-		{output = "grug_professions:metal_rod_embersteel", count = 4, ingredients = {{item = "grug_materials:embersteel_bar", n = 2}}},
-		{output = "grug_professions:metal_rod_iron", count = 4, ingredients = {{item = "grug_materials:iron_bar", n = 2}}},
-		{output = "grug_professions:metal_rod_silversteel", count = 4, ingredients = {{item = "grug_materials:silversteel_bar", n = 2}}},
-		{output = "grug_professions:metal_rod_steel", count = 4, ingredients = {{item = "grug_materials:steel_bar", n = 2}}},
 		{output = "grug_professions:nightscale_leather", count = 1, ingredients = {{item = "grug_mobs:scaled_hide", n = 1}, {item = "grug_mobs:sleek_pelt", n = 1}}},
 		{output = "grug_professions:sleek_leather", count = 1, ingredients = {{item = "grug_mobs:sleek_pelt", n = 1}, {item = "grug_professions:thread", n = 1}}},
 		{output = "grug_professions:thread", count = 2, ingredients = {{item = "grug_mobs:linen_scrap", n = 1}}},
@@ -247,8 +238,8 @@ return {
 		{output = "xpanes:trapdoor_steel_bar", count = 1, ingredients = {{item = "xpanes:bar_flat", n = 4}}},
 	},
 	-- {subname, block}: 8 stairs and 7 inner stairs from 6 blocks, 6 outer
-	-- stairs from 4, 6 slabs from 3, back to 3 blocks from 4 stairs and to
-	-- 1 block from 2 slabs.
+	-- stairs from 4, 6 slabs from 3; no route back to the block (Round 67
+	-- ruling 11: stairs and slabs are end products).
 	stairs = {
 		{"acacia_wood", "default:acacia_wood"},
 		{"aspen_wood", "default:aspen_wood"},

@@ -1,0 +1,237 @@
+{
+ "finish": "every planned character left",
+ "game": "0.66.1",
+ "joins": [
+  {
+   "build": null,
+   "built_ok": true,
+   "loaded": {
+    "job": "",
+    "lists": {
+     "grug_craft_out": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "queue": ""
+   },
+   "name": "smith",
+   "settled": {
+    "job": "return {quantity=1,recipe=\"grug_gear:sword_iron|grug_materials:iron_bar*2+grug_professions:metal_rod_iron*1\",consumed={\"grug_materials:iron_bar 2\",\"grug_professions:metal_rod_iron 1\"},start=1793383170,finish=1793383173,kind=\"recipe\"}",
+    "lists": {
+     "grug_craft_out": [
+      "grug_professions:metal_rod_embersteel 4",
+      "",
+      "",
+      ""
+     ],
+     "grug_hotbar_store": [
+      "",
+      "grug_professions:metal_rod_steel 2",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "grug_professions:metal_rod_iron 5",
+      "grug_professions:metal_rod_abyssal_steel",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "queue": "return {{quantity=1,recipe=\"grug_gear:dagger_steel|grug_materials:steel_bar*1+grug_professions:metal_rod_steel*1\",consumed={\"grug_materials:steel_bar 1\",\"grug_professions:metal_rod_steel 3\"},id=1,kind=\"recipe\",duration=3}}"
+   },
+   "stores": {
+    "letters": [
+     {
+      "items": [
+       "grug_professions:metal_rod_silversteel 5",
+       "default:apple 2"
+      ],
+      "subject": "Rods"
+     }
+    ],
+    "packed": null,
+    "recovered": null
+   }
+  },
+  {
+   "build": null,
+   "built_ok": true,
+   "loaded": {
+    "job": "",
+    "lists": {
+     "grug_craft_out": null,
+     "grug_hotbar_store": null,
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "queue": ""
+   },
+   "name": "sleeper",
+   "settled": {
+    "job": "",
+    "lists": {
+     "grug_craft_out": [
+      "",
+      "",
+      "",
+      ""
+     ],
+     "grug_hotbar_store": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "main": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "grug_professions:metal_rod_bronze 3",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "queue": ""
+   },
+   "stores": {
+    "letters": null,
+    "packed": null,
+    "recovered": null
+   }
+  }
+ ],
+ "leaves": 2,
+ "load": {
+  "from": "0.66.1",
+  "new_world": true
+ },
+ "phase": "setup_0.66.1",
+ "rods_registered": true
+}

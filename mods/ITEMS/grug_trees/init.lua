@@ -310,8 +310,9 @@ core.register_craft({
 	recipe = {{"grug_trees:gravewood_tree"}}
 })
 
--- Planks are covered by default's `group:wood` fuel recipe; the logs are
--- not, so they need own entries (values as for aspen / apple logs).
+-- The engine's fuel rows of the two logs (values as for aspen / apple
+-- logs). The furnaces do not read them: they burn every log 15 s by its
+-- tree group (grug_jobs/automatic.lua FURNACE_FUELS).
 core.register_craft({
 	type = "fuel",
 	recipe = "grug_trees:silverwood_tree",

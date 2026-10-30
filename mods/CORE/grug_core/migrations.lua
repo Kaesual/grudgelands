@@ -270,6 +270,7 @@ grug_core.migrations = {
 		"0.47.0", -- gathering tools' stored capabilities rebuilt; a join part
 		"0.48.0", -- bags halved, what no longer fits mailed; a join part
 		"0.53.0", -- talents reset, talent windows and retired skills gone; a join part
+		"0.67.0", -- metal rods refunded as bars in every store; offline only
 	},
 	-- Online work, only for a step that leaves some:
 	--   handlers["x.y.z"] = {

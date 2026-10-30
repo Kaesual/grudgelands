@@ -1,0 +1,30 @@
+--- before
++++ after
+@@ -5,5 +5,5 @@
+-'item' | 'sleeper' | '0:8' | 'grug_professions:metal_rod_bronze 3'
+-'item' | 'smith' | '0:8' | 'grug_professions:metal_rod_iron 5'
+-'item' | 'smith' | '0:9' | 'grug_professions:metal_rod_abyssal_steel'
+-'item' | 'smith' | '20:0' | 'grug_professions:metal_rod_embersteel 4'
+-'item' | 'smith' | '3:1' | 'grug_professions:metal_rod_steel 2'
++'item' | 'sleeper' | '0:8' | 'grug_materials:bronze_bar 2'
++'item' | 'smith' | '0:8' | 'grug_materials:iron_bar 3'
++'item' | 'smith' | '0:9' | 'grug_materials:abyssal_steel_bar'
++'item' | 'smith' | '20:0' | 'grug_materials:embersteel_bar 2'
++'item' | 'smith' | '3:1' | 'grug_materials:steel_bar'
+@@ -14,2 +14,2 @@
+-'meta' | 'smith' | 'grug_jobs:job' | 'return {quantity=1,recipe="grug_gear:sword_iron|grug_materials:iron_bar*2+grug_...(235)
+-'meta' | 'smith' | 'grug_jobs:queue' | 'return {{quantity=1,recipe="grug_gear:dagger_steel|grug_materials:steel_bar*1+g...(224)
++'meta' | 'smith' | 'grug_jobs:job' | 'return {quantity=1,recipe="grug_gear:sword_iron|grug_materials:iron_bar*2+grug_...(225)
++'meta' | 'smith' | 'grug_jobs:queue' | 'return {{quantity=1,recipe="grug_gear:dagger_steel|grug_materials:steel_bar*1+g...(216)
+@@ -21,4 +21,4 @@
+-'storage' | 'grug_core' | 'world_version' | '0.66.1'
+-'storage' | 'grug_housing' | 'packed:smith:1:3' | 'return {main={"grug_professions:metal_rod_bronze 1",[5]="default:torch 10"}}'
+-'storage' | 'grug_housing' | 'recovered:smith:1:1' | 'grug_professions:metal_rod_iron 9'
+-'storage' | 'grug_housing' | 'recovered:smith:1:2' | 'grug_housing:packed_container 1 0 "\\u0001seq\\u00021\\u0003lists\\u0002return ...(203)
++'storage' | 'grug_core' | 'world_version' | '0.67.0'
++'storage' | 'grug_housing' | 'packed:smith:1:3' | 'return {main={"grug_materials:bronze_bar",[5]="default:torch 10"}}'
++'storage' | 'grug_housing' | 'recovered:smith:1:1' | 'grug_materials:iron_bar 5'
++'storage' | 'grug_housing' | 'recovered:smith:1:2' | 'grug_housing:packed_container 1 0 "\\u0001seq\\u00021\\u0003lists\\u0002return ...(195)
+@@ -26 +26 @@
+-'storage' | 'grug_mail' | 'box:smith' | 'return {letters={{id=1,body="Rods for the step.",kind="npc",reported=false,time...(203)
++'storage' | 'grug_mail' | 'box:smith' | 'return {letters={{id=1,body="Rods for the step.",kind="npc",reported=false,time...(195)
