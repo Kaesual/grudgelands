@@ -413,6 +413,12 @@ dofile(mobs_dir .. "/bosses.lua")
 local carrier_text = {}
 grug_mobs.noncombatant = function(def) return def end
 grug_mobs.set_plain_tag = function(self, text) carrier_text[self] = text end
+-- Round 67 ruling 25: levels.lua's tag rule for socket NPCs (tested in
+-- tools/r67_world): no tag on an idle or work citizen.
+grug_mobs.wants_nametag = function(self)
+	return self._grug_socket_role ~= "idle" and self._grug_socket_role ~= "work"
+end
+grug_mobs.remove_tag_carrier = function() end
 function mobs:register_mob(name, def) core.registered_entities[name] = def end
 dofile(mobs_dir .. "/start_villagers.lua")
 -- Only start_npcs.lua's and rift.lua's passes run below (not the dragon clock).

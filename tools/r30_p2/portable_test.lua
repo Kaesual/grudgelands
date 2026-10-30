@@ -491,7 +491,9 @@ do
 	local block = src:match("\n(local GAVE_UP_NODES = %d+.-\nfunction grug_mobs.gave_up_on%(self, player%).-\nend\n)")
 	check(block ~= nil, "F give_up_target block found")
 	local resets = 0
-	local env = {grug_mobs = {leash_reset = function() resets = resets + 1 end},
+	-- Round 67: the give-up first flags a stuck mob (room.lua); none here.
+	local env = {grug_mobs = {leash_reset = function() resets = resets + 1 end,
+		give_up_stuck = function() return false end},
 		grug_core = {mono_time = function() return 0 end},
 		core = {is_player = function(o) return o.player == true end}}
 	local chunk = assert(loadstring(block))
