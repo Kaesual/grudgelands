@@ -18,7 +18,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   inside the header's container. Inventory capacity is unchanged.
 - **Tabs, in this fixed order** (one table, `grug_inventory.TAB_ORDER`, not
   the mods' load order): **Inventory** (the homepage, what "i" opens) ·
-  Character · Talents & Skills · Crafting · Party & PvP · Map & Quests ·
+  Character · Talents & Skills · Crafting · Social (Party & PvP until
+  Round 67) · Map & Quests ·
   Help (0.45.1; before, Help came before Map) · Admin Mail (Round 48, only
   with the `mail_admin` privilege, [mail](mail.md) §6). The quest log is in
   the map window. Creative's tabs, for creative players, follow the table.
@@ -43,7 +44,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   place in every tab, so it does not jump on a tab switch; page content
   ends above the short Inventory box (`VIEW_GEOMETRY.top`). The scrollbar's
   thumb shows the visible share of the rows, so it can be dragged. A page asks the frame for its view and never draws `main`
-  itself; Help and Party & PvP show **no** view (Round 44 lane PP): their
+  itself; Help and Social show **no** view (Round 44 lane PP): their
   content has the whole window. The scroll position is kept per view and sent back with every
   rebuild (the client forgets it on a resend), so equipping a bag, sorting
   or a station form's re-show (a burning furnace's) keeps the place; a pure
@@ -823,7 +824,8 @@ the Round 19 top-centre text list:
   the Stats mode since the Round 45 playtest, which merged the two;
   [character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
-  list and in the Party & PvP tab's "Current party" table (`parties.md`).
+  list, in the Social tab's "Current Party" table and on each row of its
+  online players' list, with the race icon beside it (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
   keep using the one central registry rather than per-consumer status
   stores. Art provenance: `tools/r26_icons/` and the `LICENSE-media.md` files
@@ -980,10 +982,11 @@ Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
 our own minimap, default on (`world_map.md`). Since Round 44 the quest log
 and that switch live in the map window (Z or the Map & Quests tab); the Quests tab
 is gone. Since Round 31 a PvP tab
-(since Round 44 the PvP section of the Party & PvP tab, `grug_pvp/page.lua`) holds the "Flag me for PvP"
+(since Round 44 the PvP section of the Party & PvP tab, the Social tab since
+Round 67, `grug_pvp/page.lua`) holds the "Flag me for PvP"
 button, the current state (safe, or flagged with the reason and the seconds
-left; PvP combat) and the PvP statistics; it is re-sent once a second only
-while its text changes.
+left; PvP combat) and the PvP statistics; it is re-sent only while its text
+changes, checked once a second and since Round 67 at most once per 2 s.
 Party rows show name and HP only, with explicit offline state. HUD allocation
 uses the shared layout authority so party, quest and transient notices do not
 overlap existing combat bars, target information or status effects.

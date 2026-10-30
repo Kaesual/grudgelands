@@ -11,7 +11,7 @@
 --    tabheader click re-running the order, a kept name.
 -- I. The inventory pages, built by the REAL vendored sfinv, grug_inventory's
 --    frame (tools/r44_ts/harness.lua) and the pages' own files: Talents &
---    Skills (talents_ui.lua with grug_skills), Party & PvP (grug_parties/
+--    Skills (talents_ui.lua with grug_skills), Social (grug_parties/
 --    ui.lua and grug_pvp/page.lua, out of a party, in one, with a notice)
 --    and Help (help.lua, every sub-page). Each focuses a harmless button
 --    when opened and after a tab click; without its set_focus the engine
@@ -134,7 +134,7 @@ sfinv.pages["grug_classes:talents"]:on_player_receive_fields(fresh,
 	sfinv.get_or_create_context(fresh), {grug_graph_tab_2 = "x"})
 harmless(fresh.formspec, "button:grug_graph_focus", "I Talents, second tab", {tab = TABS})
 
--- Party & PvP and Help on the same stub world, with their neighbours stubbed.
+-- Social and Help on the same stub world, with their neighbours stubbed.
 local function load_mod(mod, path, file)
 	local get_modpath, get_modname = core.get_modpath, core.get_current_modname
 	core.get_modpath = function() return repo .. "/mods/" .. path end
@@ -154,6 +154,9 @@ local party, pending = nil, {}
 grug_parties = {
 	view = function() return party end,
 	pending = function() return pending end,
+	-- Round 67: the Social tab's player list (tools/r67_social checks it).
+	register_on_roster_change = function() end,
+	is_online = function() return false end,
 	invitations_enabled = function() return true end,
 	hud_enabled = function() return true end,
 	health_color_mode = function() return "by_class" end,
@@ -176,7 +179,7 @@ connected = {ana, bo}
 local PARTY = "grug_parties:group"
 local fs = H.render(ana, PARTY)
 check(fs:find("You are not in a party.", 1, true) ~= nil, "I Party out: the hint textarea")
-harmless(fs, "button:grug_party_refresh", "I Party out of a party", {tab = TABS})
+harmless(fs, "button:grug_social_focus", "I Party out of a party", {tab = TABS})
 party = {leader = "ana", members = {
 	{name = "ana", class = "scout", level = 30, online = true, hp = 20, hp_max = 20},
 	{name = "bo", class = "mage", level = 28, online = true, hp = 18, hp_max = 20}}}
@@ -186,11 +189,11 @@ check(fs:find("table[", 1, true) ~= nil and
 	fs:find("You are not in a party.", 1, true) == nil and
 	fs:find("There is no early unflag.", 1, true) ~= nil,
 	"I Party in a party: member table and PvP rules replace the empty-party hint")
-harmless(fs, "button:grug_party_refresh", "I Party in a party", {tab = TABS})
+harmless(fs, "button:grug_social_focus", "I Party in a party", {tab = TABS})
 sfinv.get_or_create_context(ana).grug_party_notice = "Refused: no."
 fs = H.render(ana, PARTY)
 check(fs:find("Refused: no.", 1, true) ~= nil, "I Party with a notice: the notice textarea")
-harmless(fs, "button:grug_party_refresh", "I Party with a notice", {tab = TABS})
+harmless(fs, "button:grug_social_focus", "I Party with a notice", {tab = TABS})
 
 local HELP = "grug_inventory:help"
 local hctx = sfinv.get_or_create_context(ana)

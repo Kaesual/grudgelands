@@ -1,7 +1,7 @@
 -- The Admin Mail tab (Round 48 lane ADMIN; mail plan §4.2, rulings 3, 5, 6,
 -- 10, 11, 18, defaults §3.6, §3.14, §3.15; docs/design/mail.md §6): the
 -- privilege `mail_admin` and an inventory tab after Help, shown only with
--- it, without the player inventory (like Party & PvP). Two views:
+-- it, without the player inventory (like the Social tab). Two views:
 --   inbox    the shared admin inbox (filters Open, All and the sent
 --            Announcements), paginated; the selected message with the
 --            sender's header, answering ("Re: <subject>" as an admin letter

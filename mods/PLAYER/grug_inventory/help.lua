@@ -150,7 +150,7 @@ local SECTIONS = {
 		"• Set your home at an innkeeper in a start town or capital of your faction. The Character page and the quickbar (E) have Return home (every 30 minutes, not in combat).",
 		"• When the map is reset, the containers of your claim wait in the Belongings tab of your Claim Stone once you place and activate one: empty ones as plain items, the others as packed containers; take them out (packed ones cannot be dropped, stored, mailed or sold) and place one to unpack it with all its contents.",
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
-		"• The Party & PvP tab makes a party of up to 10 players of your faction and holds the Flag me for PvP button.",
+		"• The Social tab lists every online player of both factions: mark favourites with the star and invite players of your faction to a party of up to 10 with Invite. An invitation shows at the left of the screen until it expires after 2 minutes; answer it on the Social tab. The tab also holds the Flag me for PvP button.",
 	})},
 	-- Round 48 (mail plan §3.21): the mailboxes, postage, the limits and the
 	-- way to the admin.

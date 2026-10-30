@@ -64,12 +64,96 @@ local function layout_key(window, count)
 	return ("%d %s %s %s"):format(count, tostring(window.size and window.size.x),
 		tostring(window.real_hud_scaling), tostring(window.real_gui_scaling))
 end
+-- The invitation box (Round 67 ruling 2 and its default): while the player
+-- holds invitations and is in no party, whatever the Party HUD switch says,
+-- at the party list's anchor (hud_layout.invite_box). The newest invitation
+-- (grug_parties.newest_invitation) with its seconds left, the note to
+-- answer on the Social tab and "+N more"; the poll below keeps the seconds
+-- current and hides it on expiry, a change (accept, decline, a new
+-- invitation) redraws it at once. Its elements are added or removed only
+-- when the line count or the window changes; otherwise a changed line is a
+-- hud_change.
+local INVITE_ICON = "grug_ui_icon_party.png^[multiply:#d4b77d"
+local INVITE_NOTE, INVITE_MORE = 0xd4b77d, 0xa9aea4
+local invite_texture, invite_text
+local function wrap(text, chars)
+	local lines, line = {}, ""
+	for word in text:gmatch("%S+") do
+		if line ~= "" and #line + 1 + #word > chars then
+			lines[#lines + 1], line = line, word
+		else
+			line = line == "" and word or line .. " " .. word
+		end
+	end
+	lines[#lines + 1] = line
+	return lines
+end
+local function invite_lines(info, chars)
+	local lines = wrap(info.inviter .. " has invited you to join their party.", chars)
+	local colors = {}
+	for i = 1, #lines do colors[i] = invite_text end
+	lines[#lines + 1], colors[#lines + 1] =
+		("Open Social to answer (%d s)"):format(info.seconds), INVITE_NOTE
+	if info.more > 0 then
+		lines[#lines + 1], colors[#lines + 1] = ("+%d more"):format(info.more), INVITE_MORE
+	end
+	return lines, colors
+end
+local function remove_invite(player, record)
+	local box = record.invite
+	if not box then return end
+	player:hud_remove(box.box)
+	player:hud_remove(box.icon)
+	for _, line in ipairs(box.lines) do player:hud_remove(line.id) end
+	record.invite = nil
+end
+local function draw_invite(player, record, info)
+	if not info then return remove_invite(player, record) end
+	if not invite_texture then
+		local colors = grug_core.ui.colors
+		invite_texture = ("[fill:1x1:%s99"):format(colors.panel:sub(1, 7))
+		invite_text = tonumber(colors.text:sub(2, 7), 16)
+	end
+	local layout = grug_core.hud_layout
+	local window = core.get_player_window_information(player:get_player_name())
+	local lines, colors = invite_lines(info, layout.side_text_width(window))
+	local key = layout_key(window, #lines)
+	local box = record.invite
+	if box and box.key ~= key then remove_invite(player, record); box = nil end
+	if not box then
+		local g = layout.invite_box(window, #lines)
+		local position = layout.anchors.party_list.position
+		box = {key = key, lines = {},
+			box = player:hud_add({type = "image", position = position,
+				offset = {x = g.x, y = g.top}, alignment = {x = 1, y = 1},
+				scale = {x = g.width, y = g.height}, text = invite_texture, z_index = 0}),
+			icon = player:hud_add({type = "image", position = position,
+				offset = {x = g.icon_x, y = g.icon_y}, alignment = {x = 1, y = 1},
+				scale = {x = g.icon / 32, y = g.icon / 32}, text = INVITE_ICON, z_index = 1})}
+		for i, top in ipairs(g.tops) do
+			box.lines[i] = {text = lines[i], id = player:hud_add({type = "text",
+				position = position, offset = {x = g.text_x, y = top},
+				alignment = {x = 1, y = 1}, text = lines[i], number = colors[i], z_index = 1})}
+		end
+		record.invite = box
+		return
+	end
+	for i, line in ipairs(box.lines) do
+		if line.text ~= lines[i] then
+			player:hud_change(line.id, "text", lines[i])
+			line.text = lines[i]
+		end
+	end
+end
+
 local function refresh(player)
 	local name = player:get_player_name()
 	local record = huds[name]
 	if not record then return end
+	local in_party = grug_parties.in_party(name)
+	draw_invite(player, record, not in_party and grug_parties.newest_invitation(name) or nil)
 	-- Most players have no party: no rows to keep and nothing to read.
-	if #record.rows == 0 and not grug_parties.in_party(name) then return end
+	if #record.rows == 0 and not in_party then return end
 	local view = grug_parties.hud_enabled(player) and grug_parties.view(player)
 	if not view then remove_rows(player,record,0); record.layout = nil; return end
 	local count = #view.members
