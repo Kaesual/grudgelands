@@ -237,7 +237,7 @@ end
 stub_page("grug_inventory:inventory", "Inventory")
 stub_page("grug_inventory:help", "Help")
 dofile(ROOT .. "/mods/PLAYER/grug_mail/init.lua")
-stub_page("grug_parties:group", "Party & PvP")
+stub_page("grug_parties:group", "Social")
 for _, f in ipairs(callbacks.mods_loaded) do f() end
 
 local function new_player(name, faction, race, class, level)

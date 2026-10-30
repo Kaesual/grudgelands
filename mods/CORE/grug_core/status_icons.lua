@@ -262,3 +262,19 @@ function icons.class_icon(class_id)
 	end
 	return ""
 end
+
+-- The race icon for the Social tab's player list (Round 67 ruling 7).
+-- Placeholders until lane ART's pick: the emblem tinted per race; the swap
+-- is one line per race.
+icons.RACE_ICONS = {
+	human = "grug_ui_icon_emblem.png^[multiply:#e0c890",
+	dwarf = "grug_ui_icon_emblem.png^[multiply:#c08048",
+	elf = "grug_ui_icon_emblem.png^[multiply:#80d070",
+	orc = "grug_ui_icon_emblem.png^[multiply:#d06040",
+	troll = "grug_ui_icon_emblem.png^[multiply:#50b0c0",
+	undead = "grug_ui_icon_emblem.png^[multiply:#a090d0",
+}
+
+function icons.race_icon(race_id)
+	return icons.RACE_ICONS[race_id] or ""
+end

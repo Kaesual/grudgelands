@@ -14,7 +14,7 @@
 --      untimed contested icon with its territory label, the tagged icon with
 --      the countdown caption for button and contact, no icon for a timer at
 --      0; labels and details fit the Effects tab's clip widths;
---   P  the PvP section of the Party & PvP tab (Round 44; the page itself:
+--   P  the PvP section of the Social tab (Round 44, Round 67; the page itself:
 --      tools/r44_pp): button, headline, detail, combat line and all seven
 --      counters; every element inside the window below the section's top;
 --      the button flags and re-sends; the 1 s poll re-sends only while the
@@ -206,7 +206,7 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- P: page.lua, the PvP section of the Party & PvP tab
+-- P: page.lua, the PvP section of the Social tab
 -- ---------------------------------------------------------------------------
 do
 	local steps, loaded, pages, sends = {}, {}, {}, {}
@@ -229,8 +229,11 @@ do
 			return list
 		end,
 	})
-	-- grug_parties owns the page and draws the section from TOP down.
-	rawset(_G, "grug_parties", {PAGE = PAGE})
+	-- grug_parties owns the page, draws the section from TOP down and sends
+	-- it (social_resend: at once unless the player list is being scrolled).
+	rawset(_G, "grug_parties", {PAGE = PAGE, social_resend = function(player, context)
+		sfinv.set_player_inventory_formspec(player, context)
+	end})
 	rawset(_G, "sfinv", {
 		pages = {}, pages_unordered = {}, contexts = {},
 		register_page = function(name)
@@ -259,7 +262,7 @@ do
 		generals = 0, kings = 1}
 	local form = section.get(bob, context, TOP)
 	check(not form:find("list[", 1, true), "P the section carries no inventory")
-	check(form:find("button[0.4,5.80;6.7,0.75;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
+	check(form:find("button[0.3,5.80;4.8,0.75;grug_pvp_flag;Flag me for PvP]", 1, true) ~= nil,
 		"P the Flag me for PvP button")
 	check(form:find("Flagged for 12 s", 1, true) ~= nil, "P the headline with seconds")
 	check(form:find("PvP contact", 1, true) ~= nil, "P the reason line")
@@ -271,28 +274,31 @@ do
 	check(not form:find("rank", 1, true) and not form:find("title", 1, true),
 		"P statistics only: no rank or titles")
 	-- Geometry (real coordinates): every element from TOP down and inside the
-	-- 7.5 x 12.35 card, a label at about 0.15 units a character (the web
-	-- build; generous) and 0.2 below its middle.
+	-- 9.7 x 6.35 card below the party box (Round 67), a label at about 0.15
+	-- units a character (the web build; generous) and 0.2 below its middle.
 	local inside = true
 	for kind, args in form:gmatch("([%w_]+)%[([^%]]*)%]") do
 		local x, y, rest = args:match("^([%d.]+),([%d.]+);(.*)$")
 		x, y = tonumber(x), tonumber(y)
 		if kind == "label" and x then
 			local text = rest:gsub("\27%(c@#%x+%)", "")
-			if y < TOP or y + 0.2 > TOP + 12.35 or x + #text * 0.15 > 7.5 then
+			if y < TOP or y + 0.2 > TOP + 6.35 or x + #text * 0.15 > 9.7 then
 				inside = false
 				print("outside: " .. args)
 			end
 		elseif (kind == "button" or kind == "textarea" or kind == "background9") and x then
 			local w, h = rest:match("^([%d.]+),([%d.]+);")
-			if y < TOP or y + tonumber(h) > TOP + 12.35 or x + tonumber(w) > 7.5 then inside = false end
+			if y < TOP or y + tonumber(h) > TOP + 6.35 or x + tonumber(w) > 9.7 then inside = false end
 		end
 	end
 	check(inside, "P every element inside the card, under the section's top")
-	-- Stats labels do not run into their values.
+	-- Stats labels do not run into their values (labels at 5.4, values at
+	-- 9.0), and the statistics column starts right of the state column.
 	local longest = 0
 	for _, row in ipairs(V.STATS) do longest = math.max(longest, #row[2]) end
-	check(longest * 0.15 < 5.05, "P counter labels end before their values")
+	check(longest * 0.15 < 3.6, "P counter labels end before their values")
+	check(form:find("label[5.40,1.50;Player kills]", 1, true) ~= nil,
+		"P the statistics stand right of the state")
 
 	-- The button.
 	sends = {}

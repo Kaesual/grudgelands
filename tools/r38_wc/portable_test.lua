@@ -79,7 +79,7 @@ check(plain:find("Thorvin, Dwarf Warrior of The Accord", 1, true) ~= nil,
 	"W the player's line")
 for _, word in ipairs({"Welcome to Grudgelands", "Explore.", "Level up.", "Do quests.",
 		"Use your skills.", "Press E and Z.", "Team up.", "Talents & Skills tab",
-		"Party & PvP tab", "Help tab", "open source",
+		"Social tab", "Help tab", "open source",
 		"buy me a coffee"}) do
 	check(plain:find(word, 1, true) ~= nil, "W the text names " .. word)
 end
