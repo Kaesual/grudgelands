@@ -508,6 +508,24 @@ fill(-4, 50, -4, 4, 50, 4, "slab")
 ok, message = summon(ada, 4, {x = 0, y = 50, z = 0})
 check(ok, "M a flyer on slabs: " .. tostring(message))
 local flyer = grug_mounts.active.ada.object:get_luaentity()
+-- A slab or a stair's lower step one node beside the feet is footing too
+-- (the stair diagonal, so the body reaches only its lower front step).
+for _, beside in ipairs({{"slab", 0}, {"stair", 1}}) do
+	local other = make_player("beside_" .. beside[1])
+	clear()
+	fill(-4, 49, -4, 4, 49, 4, "stone")
+	set(1, 50, beside[2], beside[1])
+	beside = beside[1]
+	ok, message = summon(other, 3, {x = 0, y = 49.5, z = 0})
+	check(ok, "M a flyer beside a " .. beside .. ": " .. tostring(message))
+	grug_mounts.dismount(other, "manual", true)
+end
+-- A full node beside the feet is no footing.
+local walled = make_player("walled")
+set(1, 50, 0, "stone")
+ok, message = summon(walled, 3, {x = 0, y = 49.5, z = 0})
+check(not ok and message == "There is not enough room here for a flying mount.",
+	"M no flyer with a full node beside the feet: " .. tostring(message))
 
 -- V: the climb and sink speed.
 eq(grug_mounts.TIERS[3].vertical_speed, 8, "V Expert climbs at 8")

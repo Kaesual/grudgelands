@@ -842,10 +842,15 @@ local function summon_position(player, tier_id)
 		end
 		-- Round 67 ruling 23: a flyer may be summoned underground too, but
 		-- only where its body fits at the rider's feet (grug_mobs room.lua;
-		-- a slab or snow under the feet is footing). A ground mount keeps
-		-- the rule above: it fits 1-wide tunnels and doorways.
+		-- a slab, a stair's lower step or snow beside or under the feet is
+		-- footing). The body is tested from the feet up: the flyer's box
+		-- reaches 0.1 below its origin, which would leave only 0.4 of
+		-- footing. A ground mount keeps the rule above: it fits 1-wide
+		-- tunnels and doorways.
 		local model = grug_mounts.model_for(player, tier_id)
-		if model and grug_mobs.box_blocked(pos, model.collisionbox) then
+		local b = model and model.collisionbox
+		if b and grug_mobs.box_blocked(pos,
+				{b[1], math.max(b[2], 0), b[3], b[4], b[5], b[6]}) then
 			return nil, FLYER_ROOM_REFUSAL
 		end
 	end
