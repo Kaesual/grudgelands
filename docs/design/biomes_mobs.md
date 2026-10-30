@@ -565,6 +565,8 @@ with a use, not content:
   implemented as a **`critter` tier** in the level engine, not as a
   hand-set stat in a def.
 - **0 XP.** Critters are food-bearing scenery, never an XP farm.
+- **No nametag** (Round 67 ruling 25): scenery needs no name over its
+  head; the target frame still names a critter that is looked at.
 - **They drop FOOD only** — meat, nothing else. No leather, no feather, no
   crafting ingredient of any kind. Rationale: a food item is a welcome
   snack on the road but never a farm target, so a player with a full larder
@@ -922,7 +924,16 @@ own):
   start footprint and never below level **5**; the same floor refuses an
   elite family (Stone and Mesa Golem) underground below level 5. A def-elite
   stays as it is; a caller with its own spawn rule (the depth pulse, §4.1)
-  passes `skip_elite`. **Two cave-only critters since 2026-08-08** (§3.0 —
+  passes `skip_elite`;
+- **room for a wide body** (Round 67 ruling 26): a mob wider than one node
+  (the Giant Spider at 2.1, the bear, the bog ooze …) spawns from a row only
+  where its whole collision box fits on the matched node, not just the one
+  node column mobs_redo tests; an elite or rare scale needs the same room
+  where the mob stands, otherwise it keeps its base size; a mob stuck in
+  the rock after a give-up leaves once nobody watches (`combat_stats.md`
+  §4, `grug_mobs/room.lua`).
+
+**Two cave-only critters since 2026-08-08** (§3.0 —
 before them every single thing that moved underground wanted the player
 dead): **Cave Bat** (flier, `mobs_mc_bat`, no retint) and **Cave
 Crawler** (`mobs_mc_silverfish`, no retint). Both are `critter`-tier, so

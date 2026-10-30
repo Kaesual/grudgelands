@@ -594,9 +594,14 @@ want lived-in settlements without paying for it in server load"):
   and leather armour.
   The six starts keep their single race vendor.
 - **A peaceful NPC's nametag is culled like a guard's** (per-viewer mechanism
-  adopted 2026-09-18). Villagers, elders and vendors use the same independent
-  25 m show / 30 m hide carrier gate as combat families. A nearby player no
-  longer exposes settlement names to a different, distant player.
+  adopted 2026-09-18). Elders, vendors, trainers and service NPCs use the
+  same independent 25 m show / 30 m hide carrier gate as combat families. A
+  nearby player no longer exposes settlement names to a different, distant
+  player.
+- **Only NPCs with a function carry a nametag** (Round 67 ruling 25): quest
+  givers, vendors, trainers, services, guards and kings. The plain citizens,
+  the residents on `idle` and `work` sockets, carry none; their name stays
+  their entity's description (`grug_mobs` `wants_nametag`).
 
 ### The Miner's Guild houses
 
