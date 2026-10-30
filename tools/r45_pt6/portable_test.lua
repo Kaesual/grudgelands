@@ -607,7 +607,6 @@ check(grug_mounts.mount(ada, 1), "L on the ground the horse comes")
 grug_mounts.dismount(ada, "manual", false)
 
 if failures > 0 then
-	print(("R45 PT6 PORTABLE FAIL failures=%d checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R45 PT6 PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
 end
 print(("R45 PT6 PORTABLE PASS checks=%d"):format(checks))
