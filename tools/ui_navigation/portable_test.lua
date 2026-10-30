@@ -53,14 +53,15 @@ local function fields(data) for _, f in ipairs(receive) do f(player, "", data) e
 sfinv.set_page(player, ids[1])
 local ctx = sfinv.get_or_create_context(player)
 assert(#ctx.grug_ui_nav == 13)
-assert(player.fs:find('grug_ui_tab_13', 1, true))
+-- Round 67 ruling 9: the category row only while a Creative page is open.
+assert(not player.fs:find('grug_ui_tab_13', 1, true))
 assert(not player.fs:find('tabheader[', 1, true))
 local buttons = 0
 for _, y, _, h in player.fs:gmatch('button%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_ui_tab_%d+;') do
 	assert(tonumber(y) + tonumber(h) < ctx.grug_ui_header_h, "navigation must fit above body")
 	buttons = buttons + 1
 end
-assert(buttons == 13, "eight regular pages and five creative categories retain stable IDs")
+assert(buttons == 8, "eight regular pages retain stable IDs; no category row here (Round 67)")
 assert(player.fs:find(";grug_ui_creative;Creative]", 1, true), "Creative primary entry has its own style target")
 assert(player.fs:find(";Creative]", 1, true))
 assert(not player.fs:find("grug_ui_icon_inventory.png", 1, true), "primary navigation is text-only")
@@ -101,7 +102,8 @@ admin = false
 local fs = sfinv.get_formspec(player, ctx)
 assert(ctx.page == ids[1] and #ctx.grug_ui_nav == 7)
 assert(ctx.grug_ui_header_h == 1.5, 'ordinary pages use one compact row')
-assert(fs:match('size%[([^%]]+)%]') ~= size, 'revoked extra pages no longer reserve a second row')
+-- Round 67 ruling 9: an ordinary page never reserves the category row.
+assert(fs:match('size%[([^%]]+)%]') == size, 'an ordinary page keeps the one-row frame')
 suspended = true
 before = builds
 fields({grug_ui_tab_3 = "true"})
@@ -147,11 +149,21 @@ assert(grug_core.ui.text_scale(nil) == 1, "presentation callers may omit player"
 admin, creative = true, true
 sfinv.set_page(player, ids[1])
 local scaled_size = player.fs:match('size%[([^%]]+)%]')
-assert(#ctx.grug_ui_nav == 13 and ctx.grug_ui_header_h > 2)
+-- Round 67 ruling 9: the ordinary pages share one frame without the
+-- category row, the Creative pages a taller one with it.
+assert(#ctx.grug_ui_nav == 13 and ctx.grug_ui_header_h == 1.5)
+local creative_size
 for i = 1, 13 do
     fields({['grug_ui_tab_' .. i] = 'true'})
-    assert(player.fs:match('size%[([^%]]+)%]') == scaled_size)
-    assert(player.fs:find('grug_ui_tab_13', 1, true))
+    if i <= 8 then
+        assert(player.fs:match('size%[([^%]]+)%]') == scaled_size)
+        assert(not player.fs:find('grug_ui_tab_13', 1, true))
+    else
+        creative_size = creative_size or player.fs:match('size%[([^%]]+)%]')
+        assert(creative_size ~= scaled_size and ctx.grug_ui_header_h > 2)
+        assert(player.fs:match('size%[([^%]]+)%]') == creative_size)
+        assert(player.fs:find('grug_ui_tab_13', 1, true))
+    end
 end
 -- Creative titles carry translation markup; invisible bytes must not steal
 -- width from the adjacent Admin Mail tab.

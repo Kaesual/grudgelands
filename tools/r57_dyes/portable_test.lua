@@ -16,8 +16,8 @@
 --      (the base wool vendors sell; no mob drops wool), the dye and wool
 --      recipes make all 15 dyes and all 15 wools;
 --   O  nothing else changed: the dye rows are exactly the six plain sources
---      and the 19 vendored mixes, and the catalog has 239 rows (ALLOY's 235
---      and these four).
+--      and the 19 vendored mixes, and the catalog has 230 rows (ALLOY's 235
+--      and these four, less Round 67's nine).
 -- Prints "R57 DYES PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -162,7 +162,8 @@ for _, recipe in ipairs(J.recipes) do
 	end
 end
 eq(seen, 25, "O 25 dye rows")
-eq(#catalog.recipes, 239, "O the catalog has 239 rows")
+-- Round 67 rulings 12-13: the three stem planks and the six rods went.
+eq(#catalog.recipes, 230, "O the catalog has 230 rows")
 
 if failures > 0 then
 	error(("R57 DYES PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)
