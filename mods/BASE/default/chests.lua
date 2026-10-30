@@ -78,17 +78,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	-- Sort, Upgrade; default/containers.lua) while the chest is there.
 	local open = default.chest.open_chests[pn]
 	if open and not fields.quit then
-		local pure = grug_inventory.keep_scroll(open.context, fields)
+		if grug_inventory.keep_scroll(open.context, fields) then return end
 		local node = core.get_node(open.pos).name
-		if pure or not (node == open.swap or node == open.swap .. "_open") then
-			return
-		end
+		local here = node == open.swap or node == open.swap .. "_open"
 		if grug_inventory.hotbar_switch_fields(player, fields) then
-			core.show_formspec(pn, "default:chest",
-				default.chest.get_chest_formspec(open.pos, player, open.context))
+			if here then
+				core.show_formspec(pn, "default:chest",
+					default.chest.get_chest_formspec(open.pos, player, open.context))
+			end
 			return
 		end
-		default.containers.receive(open.pos, player, fields, open.context)
+		if here then default.containers.receive(open.pos, player, fields, open.context) end
 		return
 	end
 

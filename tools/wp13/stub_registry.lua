@@ -37,7 +37,8 @@ M.SOURCES = {
 		seed_table = {get_translator = identity, LIGHT_MAX = 14,
 			get_hotbar_bg = function() return "" end,
 			gui_survival_form = ""}, files = {
-		"functions.lua", "trees.lua", "nodes.lua", "chests.lua",
+		-- Round 67: containers.lua before the nodes, as init.lua loads it.
+		"functions.lua", "containers.lua", "trees.lua", "nodes.lua", "chests.lua",
 		"furnace.lua", "torch.lua"}},
 	{mod = "stairs", path = "mods/BASE/stairs", files = {"init.lua"}},
 	{mod = "doors", path = "mods/BASE/doors", files = {"init.lua"}},

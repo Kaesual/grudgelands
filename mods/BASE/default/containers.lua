@@ -320,9 +320,8 @@ function api.form(pos, player, context, slot_image)
 		grug_inventory.station_list(location, entry.list, inv:get_size(entry.list),
 			api.VISIBLE_ROWS, context, slot_image,
 			slot_image and inv:get_list(entry.list) or nil),
-		"listring[" .. location .. ";" .. entry.list .. "]",
-		"listring[current_player;grug_inbox]",
-		"listring[current_player;main]",
+		"listring[" .. location .. ";" .. entry.list .. "]listring[current_player;grug_inbox]" ..
+			"listring[current_player;main]",
 		action_row(pos, player, entry, station.y + list_h + ROW_GAP, growth),
 	}), bottom
 end

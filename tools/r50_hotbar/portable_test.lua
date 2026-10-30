@@ -946,6 +946,8 @@ do
 	core.register_node = function(name, def) registered_nodes[name] = def end
 	core.after = function(_, fn, ...) return fn(...) end
 	core.sound_play = noop
+	-- Round 67: the container tiers the chests register with.
+	dofile(repo .. "/mods/BASE/default/containers.lua")
 	dofile(repo .. "/mods/BASE/default/chests.lua")
 	core.register_node = register_node
 	local p = player("u_chest", "warrior", {16, 16})
@@ -953,8 +955,13 @@ do
 	nodes[key(pos)] = "default:chest"
 	core.get_meta = function()
 		return {get_string = function() return "" end, set_string = noop,
-			get_inventory = function() return {set_size = noop} end}
+			-- Round 67: the container form reads the list's size.
+			get_inventory = function() return {set_size = noop,
+				get_size = function() return 32 end} end}
 	end
+	core.is_protected = core.is_protected or function() return false end
+	grug_core.interaction_guarded = grug_core.interaction_guarded or
+		function() return false end
 	local def = registered_nodes["default:chest"]
 	def.on_rightclick(pos, {name = "default:chest", param2 = 0}, p)
 	eq(last_shown("u_chest") and last_shown("u_chest").form, "default:chest", "U the chest opens")

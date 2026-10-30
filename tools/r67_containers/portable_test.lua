@@ -702,6 +702,8 @@ do
 	end
 end
 
-print(("R67 CONTAINERS PORTABLE %s checks=%d failures=%d"):format(
-	failures == 0 and "PASS" or "FAIL", checks, failures))
-os.exit(failures == 0 and 0 or 1)
+if failures > 0 then
+	print(("R67 CONTAINERS PORTABLE FAIL %d of %d checks"):format(failures, checks))
+	error("R67 CONTAINERS portable fixture failed")
+end
+print(("R67 CONTAINERS PORTABLE PASS checks=%d"):format(checks))

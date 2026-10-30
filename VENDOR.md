@@ -917,10 +917,10 @@ Steel-Reinforced (64) and Abyssal (96). Reapply after an upstream update:
   keeps the open sessions at `pos` valid for the upgraded node.
 - Textures: `default_chest_{steel,abyssal}_{top,side,front,lock,inside}.png`,
   `default_bookshelf_{steel,abyssal}.png`, `default_shelf_{steel,abyssal}_side.png`
-  and `vessels/textures/vessels_shelf_{steel,abyssal}.png` are placeholders
-  tinted from the vendored originals (CC BY-SA 3.0, as their sources) by
-  `tools/r67_containers/make_placeholders.py` until the art lane's files
-  replace them.
+  and `vessels/textures/vessels_shelf_{steel,abyssal}.png` are the art
+  lane's picked originals (`tools/r67_art`, CC0-1.0), recorded in each
+  mod's new `LICENSE-media.md` (the vendored media keep `README.txt` and
+  `license.txt`).
 
 ## Fresh-server cleanup — 2026-09-13
 

@@ -382,11 +382,11 @@ local function check_rings(path, expected)
 	end
 	eq(found, expected, path .. ": ring entries checked")
 end
-check_rings("mods/BASE/default/chests.lua", 1)
+-- Round 67: the chests', bookshelves' and vessels shelves' one ring text
+-- moved to default/containers.lua (api.form).
+check_rings("mods/BASE/default/containers.lua", 1)
 -- 0.49.1 VIEW: the active and the idle furnace form share one ring text.
 check_rings("mods/BASE/default/furnace.lua", 3)
-check_rings("mods/BASE/default/nodes.lua", 1)
-check_rings("mods/BASE/vessels/init.lua", 1)
 check_rings("mods/BASE/creative/inventory.lua", 1)
 check_rings("mods/PLAYER/grug_jobs/workspaces.lua", 1)
 check_rings("mods/PLAYER/grug_jobs/operation_box.lua", 2)
