@@ -51,13 +51,14 @@ function M.texture(marker)
 end
 
 -- Importance (Round 67 coordinator default "draw order by importance"),
--- bottom to top: places, bosses and every other kind (0), trainers and
--- services (1), innkeepers, the home and waystones (2), quest givers (3 and
--- up: a locked "!" lowest, then in progress, available, ready, a story
--- marker above the plain one of its status). The minimap's z-index and the
--- map window's draw order both read it; the arrows stay above every marker.
-local KIND_RANK = {trainer = 1, steward = 1, service = 1, home = 2, innkeeper = 2,
- waypoint = 2}
+-- bottom to top, the minimap's layers before Round 67: places, bosses,
+-- trainers, innkeepers and every other kind (0), the Steward and the
+-- services (1, above the trainer books beside them), the home and waystones
+-- (2), quest givers (3 and up: a locked "!" lowest, then in progress,
+-- available, ready, a story marker above the plain one of its status). The
+-- minimap's z-index and the map window's draw order both read it; the
+-- arrows stay above every marker.
+local KIND_RANK = {steward = 1, service = 1, home = 2, waypoint = 2}
 local QUEST_RANK = {locked = 0, active = 2, available = 4, ready = 6}
 function M.rank(marker)
  if marker.kind == "quest" then

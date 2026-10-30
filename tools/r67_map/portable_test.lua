@@ -268,10 +268,13 @@ do
 	eq(M.SIZE, 21, "M markers 21 px at the reference (32 before)")
 	eq(M.MIN, 11, "M the floor 11 px (16 before)")
 	eq(M.arrow(21), 32, "M the arrows keep 32 px at the reference")
-	-- Importance: places and bosses < services < travel < quest givers by
-	-- state, story over plain.
+	-- Importance: places, bosses, trainers and innkeepers < the Steward and
+	-- services < the home and waystones < quest givers by state, story over
+	-- plain.
 	local function rank(kind, status) return M.rank({kind = kind, status = status}) end
-	check(rank("capital") < rank("trainer") and rank("trainer") < rank("waypoint") and
+	check(rank("capital") == rank("trainer") and rank("trainer") == rank("innkeeper") and
+		rank("trainer") < rank("service") and rank("service") == rank("steward") and
+		rank("service") < rank("waypoint") and rank("waypoint") == rank("home") and
 		rank("waypoint") < rank("quest", "locked"), "M rank: places, services, travel, quests")
 	check(rank("quest", "locked") < rank("quest", "active") and
 		rank("quest", "active") < rank("quest", "available") and

@@ -605,8 +605,9 @@ check(has("grug_mobs_item_fallen_crown.png") == 0, "R no king marker")
 do
 	local riding = by_text(me, "^grug_map_riding%.png$")[1]
 	local book = by_text(me, "^grug_map_trainer_tailor%.png$")[1]
-	check(riding and book and math.floor(riding.scale.x * 32) == 32 and math.floor(book.scale.x * 32) == 32,
-		"R icons drawn 32 px in both views")
+	-- (Round 67: 21 px at the reference, markers.SIZE; 32 before)
+	check(riding and book and math.floor(riding.scale.x * 32 + 1e-6) == 21 and
+		math.floor(book.scale.x * 32 + 1e-6) == 21, "R icons drawn 21 px in both views")
 end
 
 -- Both-faction landmarks remain visible even to a neutral viewer; the

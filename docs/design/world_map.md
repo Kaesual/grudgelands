@@ -49,9 +49,10 @@ moved for neighbours the player could not see), implemented in 0.67.0:
   Round 66 is unchanged) and overlaps are allowed: the displacement solve,
   its reserved quest-giver slots and its cache are gone, in the map window
   and on the minimap.
-- Markers draw by importance, bottom to top: places and bosses, trainers
-  and services, innkeepers, the home and waystones, then quest givers by
-  their state (a silver "!" of a quest in one or two levels lowest, then in
+- Markers draw by importance, bottom to top (the minimap's layers of
+  before, extended by the quest states): places, bosses, trainers and
+  innkeepers, then the Steward and the services, the home and waystones,
+  then quest givers by their state (a silver "!" of a quest in one or two levels lowest, then in
   progress, available, ready; a story marker above the plain one of its
   status) (`grug_map/markers.lua` `rank`; the minimap's z-index and the map
   window's draw order). The map window keeps the baked layer's order for
@@ -672,9 +673,10 @@ drawn from the base image above. The gliding version (approved in playtest,
   their HUD elements. A reusable pool grows to the maximum simultaneously
   visible count, with no 24-marker cutoff and no automatic clustering.
   Landmarks draw above ground overlays (including the green claim square),
-  trainers, the mender, the Steward and the capital services above that base
-  layer, innkeepers, home and waypoints above those and quests above travel,
-  by their state (Round 67, `markers.rank`); all remain below the bezel.
+  mender/Steward/capital services above that base layer, home/waypoints above
+  those and quests above travel, by their state since Round 67
+  (`markers.rank`). Trainers and innkeepers share the landmark layer; all
+  remain below the bezel.
   Player/party arrows keep exact anchors.
 - **Party members** (online, same party) have nine slots of their own: a cyan
   heading arrow that glides with the map inside the hole, or a cyan arrow on
