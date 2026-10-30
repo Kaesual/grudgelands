@@ -241,10 +241,12 @@ grug_jobs.FAVORITES_KEY = FAVORITES_KEY
 local favorite_sets = {}
 
 -- The output a favourite entry or an API argument names: a recipe id's
--- output, else the value itself (an item name).
+-- output (a removed recipe's id too: its output is the part before "|",
+-- default_id's format), else the value itself (an item name).
 local function favorite_key(value)
 	local recipe = grug_jobs.recipe(value)
-	return recipe and recipe.output or value
+	if recipe then return recipe.output end
+	return type(value) == "string" and value:match("^([^|]+)|") or value
 end
 
 local function favorites_of(player)
@@ -330,9 +332,11 @@ end
 
 -- {output, recipe, n} rows of the tab, one per output (Round 67 ruling 10)
 -- at its first recipe's place in the area's order; `recipe` is the variant
--- the row shows, `n` filled for every row when "Craftable only" needs it,
--- else later for the shown page only. "Craftable only" keeps an output any
--- of whose recipes the inventory makes.
+-- the row shows (and opens), `n` filled for every row when "Craftable only"
+-- needs it, else later for the shown page only. Count and "Craftable only"
+-- both follow that variant: by default the first the inventory makes, so an
+-- output any of whose recipes it makes stays; a variant the player chose
+-- counts as itself.
 local function list_rows(player, st, tab, counts, picks)
 	local rows = {}
 	if not tab.learned then return rows end
@@ -359,14 +363,8 @@ local function list_rows(player, st, tab, counts, picks)
 	for _, row in ipairs(rows) do
 		row.recipe = shown_variant(st, counts, picks, row.variants)
 		if st.only then
-			local any = false
-			for _, recipe in ipairs(row.variants) do
-				if crafts_of(st, counts, recipe, picks) > 0 then any = true end
-			end
-			if any then
-				row.n = crafts_of(st, counts, row.recipe, picks)
-				kept[#kept + 1] = row
-			end
+			row.n = crafts_of(st, counts, row.recipe, picks)
+			if row.n > 0 then kept[#kept + 1] = row end
 		end
 	end
 	return kept

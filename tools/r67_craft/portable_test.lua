@@ -13,8 +13,9 @@
 --      default): a search for Brown Dye shows one row; it opens on the
 --      variant the inventory can make (the second), the switch reads
 --      "Recipe 2/2" and steps both ways, wrapping round; an output with one
---      recipe has no switch; "Craftable only" keeps the output when any
---      variant is craftable;
+--      recipe has no switch; under "Craftable only" a row's count and
+--      craftability follow the variant it shows (by default the first
+--      craftable one; a chosen variant as itself);
 --   B  the craft box (rulings 14, 15): plain "Craft", "×2 per craft" left of
 --      it (none for a recipe making one), "Details" with its info icon left
 --      of the star, which opens the details page;
@@ -246,11 +247,24 @@ eq(again, 1, "L the list still has one Brown row")
 check(page:find(("box[0.2,2.35;6,0.5;"), 1, true) ~= nil, "L the row stays selected on the other variant")
 click({[CF.variant_prev] = "◀"})
 eq(st.selected, ordered[2].id, "L ◀ steps back (wrapping round)")
--- "Craftable only": the output stays while a variant is craftable.
+-- "Craftable only": count and craftability follow the variant the row
+-- shows (the review of Round 67: never a ×0 row beside a craftable sibling).
 click({[CF.only] = "true"})
 page = page_of()
 local _, only_rows = page:gsub(CF.row .. "%d+;", "")
-eq(only_rows, 1, "L Craftable only keeps Brown Dye (its second variant)")
+eq(only_rows, 1, "L Craftable only keeps Brown Dye on its chosen, craftable variant")
+has(page, "×4]", "L ... with its count (×4)")
+st.selected = nil
+page = page_of()
+_, only_rows = page:gsub(CF.row .. "%d+;", "")
+eq(only_rows, 1, "L nothing chosen: the row opens on the craftable variant and stays")
+eq(st.rows[1], ordered[2].id, "L ... which is the second")
+lacks(page, "×0", "L ... no ×0 row")
+st.selected = ordered[1].id
+page = page_of()
+_, only_rows = page:gsub(CF.row .. "%d+;", "")
+eq(only_rows, 0, "L a chosen variant the inventory cannot make leaves Craftable only")
+st.selected = ordered[2].id
 click({[CF.only] = "false"})
 
 -- B: the craft box.
@@ -295,13 +309,17 @@ click({[CF.fav] = "★"})
 check(not grug_jobs.is_favorite(P, "dye:brown"), "V a second click unmarks the output")
 eq(P.meta[grug_jobs.FAVORITES_KEY], "", "V ... and empties the meta")
 local Q = player_named("legacy")
-Q.meta[grug_jobs.FAVORITES_KEY] = core.serialize({ordered[1].id, "t:gone|x*1"})
+Q.meta[grug_jobs.FAVORITES_KEY] = core.serialize({ordered[1].id, "t:gone|x*1",
+	"grug_gear:sword_iron|grug_materials:iron_bar*2+grug_professions:metal_rod_iron*1"})
 check(grug_jobs.is_favorite(Q, "dye:brown") and grug_jobs.is_favorite(Q, ordered[2].id),
 	"V a stored recipe id (before Round 67) reads as its output")
+check(grug_jobs.is_favorite(Q, "grug_gear:sword_iron") and
+	grug_jobs.is_favorite(Q, grug_jobs.recipes_for_output("grug_gear:sword_iron")[1].id),
+	"V a removed recipe's id (the rod sword) reads as its output too")
 grug_jobs.toggle_favorite(Q, planks[1].id)
 local saved = core.deserialize(Q.meta[grug_jobs.FAVORITES_KEY])
-eq(table.concat(saved, " "), "default:wood dye:brown t:gone|x*1",
-	"V the next change writes outputs (an unknown entry kept)")
+eq(table.concat(saved, " "), "default:wood dye:brown grug_gear:sword_iron t:gone",
+	"V the next change writes outputs (an unknown one by its id's output part)")
 
 ------------------------------------------------------------------------------
 -- F: furnace fuel.

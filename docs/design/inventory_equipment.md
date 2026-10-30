@@ -212,8 +212,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     on the server, at most once a second (a quicker request is ignored
     without a resend); **×** between the field and Search (0.45.1) empties
     the field and shows the whole list from page 1 at once, outside that
-    limit; **Craftable only** keeps the outputs one of whose recipes the
-    inventory makes and **Favorites
+    limit; **Craftable only** keeps the rows whose shown recipe the
+    inventory makes (by default the first it makes; a recipe the player
+    chose counts as itself) and **Favorites
     only** beside it the outputs marked with the star (Round 57; both on:
     the craftable favourites; an area without one says how to mark one).
     The favourites belong to the output (Round 67), saved per character

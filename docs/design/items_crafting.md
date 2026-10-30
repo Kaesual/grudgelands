@@ -421,15 +421,15 @@ from `grug_gear`. Consequences, all binding:
   rebuild (an equipment or level change). The leather material of that
   grade stays *Scaled Hide* (§3.4).
 - **Everyone can craft the base items of every material tier** — tools,
-  weapons, armor. This is the deliberate "Minecraft feel", and it is what
+  weapons, armor. This is the deliberate block-crafting feel, and it is what
   makes mining and smelting worth doing for a player with no crafting
   profession at all.
   Four wood sticks use the familiar two-plank vertical recipe; the old
   one-plank shortcut is removed. Base swords use two same-tier bars over a wood stick (the
   same-tier metal rod the handle slot also took left the game in Round 67,
   ruling 13; a migration step refunded held rods as bars, two rods for one). Pickaxes, axes, shovels and the
-  hoes use their canonical Minecraft shapes; axes and hoes
-  accept both mirrored orientations. The exact non-Minecraft shapes are dagger = one
+  hoes use their familiar grid shapes; axes and hoes
+  accept both mirrored orientations. The project's own shapes are dagger = one
   material over one handle; greataxe = five material units symmetrically around
   two vertical handles. Wands and staves use ordinary sticks, matching metal
   bars and the approved mob component; bows use sticks, metal and Thread.
