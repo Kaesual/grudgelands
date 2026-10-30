@@ -84,7 +84,7 @@ local SECTIONS = {
 		"• Right-click a quest giver, choose a quest from the list and press Accept. When it is done, take it to the person with the yellow ? (often the giver) and press Complete.",
 		"• You can accept a quest from two levels below its level. The list shows only quests you can complete, accept or are doing; a grey line below it names the level at which that giver has more for you.",
 		"• Objectives are: bring items (counted from your inventory and bags, taken when you hand in), defeat creatures, or speak with a named person. Everyone nearby who helped with damage or healing gets kill credit; the killing blow is not needed.",
-		"• Your quest log is in the map window (Z or the Map & Quests tab): up to 20 active quests, up to ten tracked on screen as boxes sorted by quest level (a small window shows \"+N more\"). Select a quest to read it and to see its targets on the map where they are known. When the log is full, finish or abandon a quest before you accept a new one.",
+		"• Your quest log is in the map window (Z or the Map & Quests tab): up to 20 active quests, up to ten tracked on screen as boxes, story quests first and each group sorted by quest level, like the list (a small window shows \"+N more\"). Select a quest to read it and to see its targets on the map where they are known. When the log is full, finish or abandon a quest before you accept a new one.",
 		"• Quest givers wait in start towns, capitals, villages and camps. At level 10 your start town sends you on to your capital.",
 		"",
 		heading("Professions"),
