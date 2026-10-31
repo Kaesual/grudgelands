@@ -380,6 +380,8 @@ if core.get_modpath("stairs") then
 				source = "stairs:" .. shape.source .. material.source,
 				target = "grug_materials:" .. shape.target .. material.target,
 				description = material.name .. " " .. shape.label,
+				-- The shape wears its canonical block's face (Round 68).
+				tiles_from = "grug_materials:" .. material.target,
 			}
 		end
 	end

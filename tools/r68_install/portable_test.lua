@@ -13,7 +13,12 @@
 --      `default_*_ingot.png`, `default_diamond.png` or `default_*_block.png`;
 --   K  what keeps its look: the Silver lump, Emberglass and its block,
 --      Anthracite and every ore tile;
---   G  an unknown bar material still fails loudly at registration.
+--   G  an unknown bar material still fails loudly at registration;
+--   S  (follow-up STAIRS) with the vendored stairs mod and
+--      grug_materials/derivatives.lua loaded too: each of the 20 metal
+--      stairs, inner/outer stairs and slabs draws its source block's face
+--      with the vendored tile settings and nothing else changed, the Iron
+--      Sign and Iron Ladder keep theirs, a missing source block fails.
 -- Prints "R68 INSTALL PORTABLE PASS checks=<n>" or raises.
 local repo = assert(arg and arg[1], "usage: luajit portable_test.lua REPO")
 local checks, failures = 0, 0
@@ -189,6 +194,117 @@ local broken, err = load_game(function(M)
 end)
 check(broken == nil and tostring(err):find("missing processed visual for pewter", 1, true),
 	"G an unknown bar material fails: " .. tostring(err))
+
+-- ---------------------------------------------------------------------------
+-- S. The metal stairs and slabs wear their block's face (follow-up STAIRS)
+-- ---------------------------------------------------------------------------
+local function deep_copy(value)
+	if type(value) ~= "table" then return value end
+	local copy = {}
+	for k, v in pairs(value) do copy[k] = deep_copy(v) end
+	return copy
+end
+local function same(a, b)
+	if type(a) ~= "table" or type(b) ~= "table" then return a == b end
+	for k, v in pairs(a) do if not same(v, b[k]) then return false end end
+	for k in pairs(b) do if a[k] == nil then return false end end
+	return true
+end
+
+-- The real vendored stairs/init.lua, then registry.lua (which now sees the
+-- stairs mod), ores.lua and derivatives.lua, in the game's load order.
+local function load_stairs(edit_materials)
+	local nodes = {}
+	core = {
+		registered_nodes = nodes, registered_items = nodes,
+		get_modpath = function(name) return name == "stairs" and "stairs" or nil end,
+		get_translator = function() return function(text) return text end end,
+		register_node = function(name, def)
+			name = name:gsub("^:", "")
+			def.name = name
+			nodes[name] = def
+		end,
+		register_craftitem = function(name, def) def.name = name end,
+		register_craft = function() end,
+		get_craft_result = function() return {time = 0} end,
+		log = function() end,
+	}
+	minetest = core
+	table.copy = deep_copy
+	default = setmetatable({LIGHT_MAX = 14, register_mesepost = function() end},
+		{__index = function() return function() return {} end end})
+	dofile(repo .. "/mods/BASE/stairs/init.lua")
+	-- The two non-stair sources, as small stand-ins.
+	core.register_node("default:sign_wall_steel", {tiles = {"default_sign_steel.png"}})
+	core.register_node("default:ladder_steel", {tiles = {"default_ladder_steel.png"}})
+	grug_materials = {}
+	dofile(repo .. "/mods/ITEMS/grug_materials/registry.lua")
+	grug_materials.resource_ore_description = function(resource)
+		return resource.name .. " Ore"
+	end
+	assert(loadstring(read("mods/ITEMS/grug_materials/mining.lua"):match(
+		"(function grug_materials%.set_gate_groups.-\nend)")))()
+	local vendored = deep_copy(nodes)
+	dofile(repo .. "/mods/ITEMS/grug_materials/ores.lua")
+	if edit_materials then edit_materials(grug_materials) end
+	local ok, err = pcall(dofile, repo .. "/mods/ITEMS/grug_materials/derivatives.lua")
+	if not ok then return nil, err end
+	return nodes, vendored
+end
+
+local snodes, vendored = assert(load_stairs())
+local METAL_SOURCES = {iron = "steelblock", tin = "tinblock", copper = "copperblock",
+	bronze = "bronzeblock", gold = "goldblock"}
+-- Keys derivatives.lua sets on purpose (unchanged by this follow-up).
+local OWN_KEYS = {name = true, description = true, is_ground_content = true,
+	groups = true, drop = true, on_place = true, tiles = true}
+local shaped = 0
+for _, metal in ipairs({"iron", "tin", "copper", "bronze", "gold"}) do
+	local face = "grug_materials_" .. metal .. "_block.png"
+	eq(snodes["grug_materials:" .. metal .. "_block"].tiles[1], face,
+		"S " .. metal .. " block draws " .. face)
+	for _, shape in ipairs({"stair_", "stair_inner_", "stair_outer_", "slab_"}) do
+		local id = "grug_materials:" .. shape .. metal .. "_block"
+		local def = snodes[id]
+		local source = vendored["stairs:" .. shape .. METAL_SOURCES[metal]]
+		if check(def ~= nil and source ~= nil, "S " .. id .. " registered from its vendored shape") then
+			shaped = shaped + 1
+			eq(#def.tiles, #source.tiles, "S " .. id .. " keeps its tile count")
+			for i, tile in ipairs(def.tiles) do
+				eq(tile.name, face, "S " .. id .. " tile " .. i .. " is its block's face")
+				check(not tile.name:find("default_[%w_]*block%.png"),
+					"S " .. id .. " tile " .. i .. " names no default_*block.png")
+				local rest, before = deep_copy(tile), deep_copy(source.tiles[i])
+				rest.name, before.name = nil, nil
+				check(same(rest, before) and tile.align_style == "world" and
+					tile.backface_culling == true,
+					"S " .. id .. " tile " .. i .. " keeps world alignment and culling")
+			end
+			local others = true
+			for key in pairs(source) do
+				if not OWN_KEYS[key] and not same(def[key], source[key]) then
+					others = false
+					print("     differs: " .. key)
+				end
+			end
+			check(others, "S " .. id .. " shape, sounds and the rest unchanged")
+		end
+	end
+end
+eq(shaped, 20, "S twenty metal stairs and slabs")
+eq(snodes["grug_materials:iron_sign_wall"].tiles[1], "default_sign_steel.png",
+	"S Iron Sign keeps its tiles")
+eq(snodes["grug_materials:iron_ladder"].tiles[1], "default_ladder_steel.png",
+	"S Iron Ladder keeps its tiles")
+
+local no_block, block_err = load_stairs(function(M)
+	for _, derivative in ipairs(M.STORAGE_DERIVATIVES) do
+		if derivative.tiles_from then derivative.tiles_from = "grug_materials:pewter_block" end
+	end
+end)
+check(no_block == nil and tostring(block_err):find(
+	"missing derivative tiles grug_materials:pewter_block", 1, true),
+	"S a missing source block fails: " .. tostring(block_err))
 
 if failures > 0 then
 	error(("R68 INSTALL PORTABLE FAIL %d of %d checks"):format(failures, checks))
