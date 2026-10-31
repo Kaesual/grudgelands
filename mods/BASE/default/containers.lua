@@ -33,7 +33,7 @@ api.TIERS = {
 api.UPGRADE_BARS = 8
 api.VISIBLE_ROWS = 4
 -- The label (ruling 28 and the coordinator default): node meta, at most this
--- many characters, shown as the first line of the hover text.
+-- many characters, shown on the chest's front (grug_text, Round 68).
 api.LABEL_KEY = "grug_label"
 api.LABEL_MAX = 40
 
@@ -138,8 +138,9 @@ function api.clean_label(text)
 	return text
 end
 
--- A chest's hover text: the label on the first line, then its name (a
--- locked chest's with its owner); the label also shows on the front.
+-- A chest's hover text: its name (a locked chest's with its owner).
+-- GRUG PATCH (Round 68 follow-up, the user 2026-10-31): the label shows only
+-- on the chest's front (grug_text), not in the hover text.
 function api.update_infotext(pos)
 	local entry = nodes[core.get_node(pos).name]
 	if not entry then return end
@@ -150,8 +151,6 @@ function api.update_infotext(pos)
 	if entry.kind == "locked" and owner ~= "" then
 		text = S("@1 (owned by @2)", text, owner)
 	end
-	local label = meta:get_string(api.LABEL_KEY)
-	if label ~= "" then text = label .. "\n" .. text end
 	meta:set_string("infotext", text)
 	-- GRUG PATCH (Round 68 TEXT): the label on the chest's front follows
 	-- (grug_text, at run time only like grug_core): a save, a clear and

@@ -2676,14 +2676,9 @@ local function register_sign(material, desc, def)
 			end
 			text = text:gsub("[%z\1-\8\11-\31\127]", "") -- strip naughty control characters (keeps \t and \n)
 			default.log_player_action(sender, ("wrote %q to the sign at"):format(text), pos)
-			local meta = core.get_meta(pos)
-			meta:set_string("text", text)
-
-			if #text > 0 then
-				meta:set_string("infotext", S('"@1"', text))
-			else
-				meta:set_string("infotext", '')
-			end
+			-- GRUG PATCH (Round 68 follow-up, the user 2026-10-31): no hover
+			-- text; the text shows on the board (grug_text).
+			core.get_meta(pos):set_string("text", text)
 		end,
 	})
 end

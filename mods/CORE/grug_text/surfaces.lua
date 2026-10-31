@@ -9,7 +9,8 @@ local INK = grug_text.INK
 -- centre towards the wall (default/nodes.lua `register_sign`: wall_side
 -- -0.5 .. -0.4375), the text just in front of it in every wallmounted
 -- orientation. Writing goes through the sign's own form handler (meta
--- `text`, core.is_protected); the text follows it, the hover text stays.
+-- `text`, core.is_protected); the text follows it. No hover text repeats it
+-- (the user, 2026-10-31).
 --
 
 -- The ink of each sign, one value each: dark on the wooden board and on
@@ -21,9 +22,14 @@ local SIGN_INK = {
 
 local SIGN = {lines = 4, chars = 15, offset = {x = 0, y = 0, z = 7 / 16 - 1 / 64}}
 
+-- The nodes whose hover text once repeated their text (see the LBM below).
+local written = {}
+local chests = {}
+
 for name, ink in pairs(SIGN_INK) do
 	local def = core.registered_nodes[name]
 	if def then
+		written[#written + 1] = name
 		local receive = def.on_receive_fields
 		core.override_item(name, {
 			on_receive_fields = function(pos, formname, fields, sender)
@@ -67,5 +73,38 @@ for tier = 1, #default.containers.TIERS do
 		surface.ink = CHEST_INK[tier]
 		grug_text.register(name, surface)
 		grug_text.register(name .. "_open", surface)
+		for _, chest in ipairs({name, name .. "_open"}) do
+			written[#written + 1] = chest
+			chests[chest] = true
+		end
 	end
 end
+
+--
+-- No hover text (the user, 2026-10-31): a sign's text and a chest's label
+-- show only on the surface. Before, a written sign kept its text in its
+-- infotext and a labelled chest its label as the infotext's first line.
+-- The first load of such a block after this LBM came drops them: once per
+-- block (`run_at_every_load = false`), as blocks saved later never carry
+-- them. Only text a player wrote has them, and a block a player wrote in was
+-- active, so it has the timestamp the engine compares (lua_api.md, LBM
+-- definition).
+--
+
+core.register_lbm({
+	label = "Drop the hover text of signs and chest labels",
+	name = "grug_text:drop_hover_text",
+	nodenames = written,
+	run_at_every_load = false,
+	action = function(pos, node)
+		local meta = core.get_meta(pos)
+		if chests[node.name] then
+			-- A chest's hover text stays its name (and owner).
+			if meta:get_string(default.containers.LABEL_KEY) ~= "" then
+				default.containers.update_infotext(pos)
+			end
+		elseif meta:get_string("infotext") ~= "" then
+			meta:set_string("infotext", "")
+		end
+	end,
+})

@@ -128,7 +128,7 @@ end)
 -- GRUG PATCH (Round 67 CONTAINERS): `d._grug_container` = {base, tier}
 -- registers the chest and its open variant as a container tier
 -- (default/containers.lua): the list has the tier's slots, the hover text
--- carries the label.
+-- names the tier (the label shows on the front, Round 68).
 function default.chest.register_chest(prefixed_name, d)
 	local name = prefixed_name:sub(1,1) == ':' and prefixed_name:sub(2,-1) or prefixed_name
 	local def = table.copy(d)
