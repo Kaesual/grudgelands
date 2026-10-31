@@ -26,6 +26,7 @@ the game shows each model mirrored (see `init.lua`).
 | `models/grug_signs_waypost.obj` | `waypost_b.obj`, unchanged | CC0-1.0 |
 | `textures/grug_signs_waypost.png` | `waypost_wood_b.png`, unchanged | CC0-1.0 |
 | `textures/grug_signs_waypost_inv.png` | `waypost_wood_b_inv.png`, unchanged | CC0-1.0 |
-| `models/grug_signs_notice_board.obj` | `notice_board_b.obj`, unchanged | CC0-1.0 |
+| `models/grug_signs_notice_board_main.obj` | `notice_board_b_left.obj`, unchanged (the board's node) | CC0-1.0 |
+| `models/grug_signs_notice_board_part.obj` | `notice_board_b_right.obj`, unchanged (the part's node) | CC0-1.0 |
 | `textures/grug_signs_notice_board.png` | `notice_board_wood_b.png`, unchanged | CC0-1.0 |
 | `textures/grug_signs_notice_board_inv.png` | `notice_board_wood_b_inv.png`, unchanged | CC0-1.0 |
