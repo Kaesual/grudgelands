@@ -19,9 +19,9 @@ layer buttons, quest list and HUD story first; flight underground and the
 vertical speed per tier; nametags only where they serve; wide mobs with
 room; one crafting row per output, the metal rods and back-recipes
 removed, a Materials help page, half fuel; chests with Sort, labels and
-three tiers with Upgrade), merged locally; **not pushed**. **Migrate**:
-step 0.67.0 refunds the metal rods as bars; GUI test pending, joining the
-joint test of 0.57–0.66. Production runs **0.65.0** (user, 2026-10-31), so
+three tiers with Upgrade; faction heraldry hart and boar), GUI-accepted by the user on 2026-10-31 (the whole Round 67 checklist);
+**pushed** up to `b73086ec`, the heraldry follow-up local. **Migrate**:
+step 0.67.0 refunds the metal rods as bars. Production runs **0.65.0** (user, 2026-10-31), so
 its update to 0.67.0 crosses no map reset: only the 0.67.0 step
 ([completion and checklist](docs/planning/round67-plan.md#completion-2026-10-30)).
 Previous: 0.66.1, the `[GRUG-PERF]` performance lines for the hosting

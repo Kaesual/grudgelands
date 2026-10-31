@@ -6,7 +6,7 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
-## Round 67 — playtest feedback (GUI acceptance pending)
+## Round 67 — playtest feedback (GUI accepted)
 
 Delivered in 0.67.0 (**migrate**: step 0.67.0 refunds the metal rods as
 bars): the Social tab with the online players table, favourites and the
@@ -21,6 +21,10 @@ Remaining: the user's desktop/web
 [GUI checklist](docs/planning/round67-plan.md#gui-checklist-desktop-and-web),
 joined to the joint GUI test of 0.57–0.66. Carry-overs:
 
+- **Wayposts in world generation (the user, 2026-10-31):** wayposts
+  (arrow signs with readable town names) start as player-placed nodes; with
+  the next change that needs a map reset anyway, the mapgen places them at
+  road junctions pointing to the settlements.
 - **Deploy note:** production runs 0.65.0 (user, 2026-10-31); its update
   to 0.67.0 crosses no map reset (the last is 0.63.0), so the CHANGELOG's
   host instructions (the migration tool without `--map-reset`) apply as

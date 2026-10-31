@@ -5,8 +5,8 @@ Planned with the user on 2026-10-30 from the notes of the group playtest of
 coordinates.** **Complete on 2026-10-30:** all six lanes merged (five
 independent reviews: MAP MERGE, WORLD, SOCIAL, CRAFT and CONTAINERS MERGE
 after one fix round each, every delta review MERGE; the art study checked
-by the coordinator); **not pushed**; GUI test pending, joining the joint
-test of 0.57–0.66 ([completion](#completion-2026-10-30)).
+by the coordinator); **GUI-accepted by the user on 2026-10-31 (the whole Round 67 checklist)**; pushed up to `b73086ec`, the heraldry follow-up
+after it ([completion](#completion-2026-10-30)).
 Version: **0.67.0**. Classification: **migrate** (step 0.67.0: the metal
 rods are removed items and become bars; every other lane compatible).
 Delivery state: [STATUS](../STATUS.md).

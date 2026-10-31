@@ -2,7 +2,7 @@
 
 Updated 2026-10-30. This is the delivery pointer, not another game specification.
 
-**0.67.0 / Round 67 is merged locally; not pushed.** The group play
+**0.67.0 / Round 67 is GUI-accepted by the user on 2026-10-31 (the whole Round 67 checklist); pushed up to `b73086ec` (2026-10-31), the heraldry follow-up after it waits for the next push.** The group play
 session's notes (2026-10-28): the "Party & PvP" tab is now **Social** (one
 party box with the pending invitations or the current party, the PvP
 section below it, an Online Players table of both factions with faction,
@@ -38,12 +38,12 @@ stay unknown items (accepted). Everything else is compatible (new keys
 pass. **Accepted by the user for the first look:** underground Giant
 Spiders and Giant Rats spawn on about a tenth of the floor spots they had
 ([completion, numbers, decisions and GUI checklist](planning/round67-plan.md#completion-2026-10-30);
-[carry-overs](../BACKLOG.md#round-67--playtest-feedback-gui-acceptance-pending)).
-**The joint GUI test of 0.57–0.66 is still pending; 0.67 joins it.**
+[carry-overs](../BACKLOG.md#round-67--playtest-feedback-gui-accepted)).
+**The joint GUI test of 0.57–0.66 is still pending** (0.67 is accepted on its own).
 Production runs **0.65.0** (user, 2026-10-31; the older "0.55.1" lines
 below are history); updating it to 0.67.0 crosses no map reset (the last
-is 0.63.0) and runs only the 0.67.0 step. origin/main is `7a68e871` (0.65.0
-and its status note). Only the user pushes.
+is 0.63.0) and runs only the 0.67.0 step. origin/main is `b73086ec` (0.67.0
+without the heraldry follow-up). Only the user pushes.
 
 **0.66.0 / Round 66 is merged locally; not pushed.** Polish from the
 user's notes after playing 0.65.0: shift-clicking a two-hander swaps both
