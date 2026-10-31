@@ -42,7 +42,15 @@ IDEAS = {
     "notice_board_a": "An open framed board on two posts leaves the community notices in plain view.",
     "notice_board_b": "A small pitched timber cap shelters the board and marks a shared meeting place.",
 }
-RECOMMENDED = {"sign_standing": "a", "waypost": "b", "notice_board": "b"}
+PICKED = {"sign_standing": "a", "waypost": "b", "notice_board": "b"}
+SCENE_SCALE = 169
+WALL_PALETTES = {
+    "wood": {"panel": "#B68357", "rim_top": "#7F5A3C",
+             "rim_bottom": "#764E31", "edge": "#7F5A3C"},
+    "iron": {"panel": "#AAAAAA", "rim_top": "#B5B5B5",
+             "rim_bottom": "#858585", "edge": "#787878"},
+}
+WALL_INK = "#2B1E14"
 
 
 def unit(v):
@@ -370,7 +378,7 @@ def create(kind, variant, waypost_front=False):
     return mesh, spec
 
 
-def letter_texture(lines, columns, rows):
+def letter_texture(lines, columns, rows, colour=INK):
     # Same bitmap pixel scale on every surface. The seven-pixel advance
     # leaves 0.735 node for 14 characters and 1.575 nodes for 30. Actual
     # glyph images keep their original size and alpha; no font smoothing.
@@ -383,7 +391,7 @@ def letter_texture(lines, columns, rows):
         for ch in line:
             box = CHARMAP[ch]["box"]
             glyph = FONT.crop(box)
-            ink = Image.new("RGBA", glyph.size, INK)
+            ink = Image.new("RGBA", glyph.size, colour)
             ink.putalpha(glyph.getchannel("A"))
             im.alpha_composite(ink, (x, row * LINE_ADVANCE))
             x += CHAR_ADVANCE
@@ -394,7 +402,8 @@ def text_faces(spec, lines=None):
     faces = []
     for area in spec["text_areas"]:
         im = letter_texture(lines or spec["preview_text"]["lines"],
-                            area["characters_per_line"], area["lines"])
+                            area["characters_per_line"], area["lines"],
+                            spec["preview_text"].get("ink", INK))
         center, right, up = [np.array(area[k]) for k in ("center", "right", "up")]
         width, height = im.width * FONT_PIXEL, im.height * FONT_PIXEL
         if width > area["width"] + 1e-8 or height > area["height"] + 1e-8:
@@ -472,56 +481,152 @@ def inventory(mesh, spec, yaw):
     return render(mesh.faces, (16,16), yaw, 8, 14/extent, target, (0,0,0,0))
 
 
-def references():
-    folder = ROOT / "mods/BASE/default/textures"
-    wall = Mesh("wall_reference")
-    wall.box([-0.4375,-0.3125,-0.03125,0.4375,0.3125,0.03125])
-    source = Image.open(folder / "default_sign_wall_wood.png").convert("RGBA")
+def wall_candidates():
+    textures = {}
+    for material, palette in WALL_PALETTES.items():
+        # Original pixels, drawn from scratch. Keep the nodebox tile layout:
+        # front [1:15, 3:13], calm interior [1:15, 4:12], thin edges on row 15.
+        im = Image.new("RGBA", (16, 16))
+        d = ImageDraw.Draw(im)
+        d.rectangle((0, 0, 15, 15), outline=palette["edge"])
+        d.rectangle((0, 3, 15, 12), fill=palette["edge"])
+        d.rectangle((1, 4, 14, 11), fill=palette["panel"])
+        d.line((1, 3, 14, 3), fill=palette["rim_top"])
+        d.line((1, 12, 14, 12), fill=palette["rim_bottom"])
+        textures[material] = im
+        for directory in ("candidates", "preview"):
+            png(f"{directory}/sign_wall_{material}.png", im)
+    return textures
+
+
+def wall_mesh(texture):
+    wall = Mesh("wall_sign")
+    # Actual nodebox against +Z (wallmounted 4), before centring for display.
+    # UVs include the engine's tile rotations for wallmounted -> facedir 8;
+    # all four thin edges read row 15, not a stretched front-face patch.
+    wall.box([-0.4375,-0.3125,0.4375,0.4375,0.3125,0.5])
     for f in wall.faces:
-        f.texture = source
-        if abs(f.normal[2]) > 0.9:
-            # Nodebox mapping crops the full node's 16px tile to 14 x 10px.
-            f.uv = np.column_stack((f.xyz[:,0]+0.5, 0.5-f.xyz[:,1]))
+        f.texture = texture.copy()
+        f.texture.putalpha(255)  # The runtime node uses opaque texture alpha.
+        x, y, z = f.xyz.T
+        if f.normal[2] < -0.9:
+            uv = (x+0.5, 0.5-y)
+        elif f.normal[2] > 0.9:
+            uv = (x+0.5, y+0.5)
+        elif f.normal[1] > 0.9:
+            uv = (0.5-x, z+0.5)
+        elif f.normal[1] < -0.9:
+            uv = (x+0.5, z+0.5)
+        elif f.normal[0] > 0.9:
+            uv = (y+0.5, z+0.5)
         else:
-            f.uv = np.array([[0.1,0.1],[0.1,0.9],[0.9,0.9],[0.9,0.1]])
+            uv = (0.5-y, z+0.5)
+        f.uv = np.column_stack(uv)
+        f.xyz[:, 2] -= 0.46875
+    return wall
+
+
+def wall_spec():
+    return {"model": "wall_sign", "text_areas": [
+        text_area([0,0,-0.03425], 0.8125, 0.5, 4, 15)],
+        "preview_text": {"lines": STANDING_TEXT, "ink": WALL_INK}}
+
+
+def chest_reference():
+    folder = ROOT / "mods/BASE/default/textures"
     chest = Mesh("chest_reference")
     chest.box([-0.5,-0.5,-0.5,0.5,0.5,0.5])
     for f in chest.faces:
         name = "front" if f.normal[2] < -0.9 else "top" if abs(f.normal[1]) > 0.9 else "side"
         f.texture = Image.open(folder / f"default_chest_{name}.png").convert("RGBA")
         f.uv = np.array([[0,1],[0,0],[1,0],[1,1]])
-    return wall, chest
+    return chest
 
 
 def caption(im, text, xy, fill=(222,222,207,255), size=16):
     ImageDraw.Draw(im).text(xy, text, font=ImageFont.load_default(size=size), fill=fill)
 
 
-def scene(package, variant, waypost_front):
-    wall, chest = references()
+def scene(package, variant, waypost_front, walls):
+    wall, chest = wall_mesh(walls["wood"]), chest_reference()
     faces = place(chest.faces, (-2.9, 0, 0))
-    wall_spec = {"model": "reference", "text_areas": [text_area([0,0,-0.03425],0.8125,0.5,4,15)],
-                 "preview_text": {"lines": STANDING_TEXT}}
-    faces += place(wall.faces + text_faces(wall_spec), (-1.6,0.1875,0))
+    faces += place(wall.faces + text_faces(wall_spec()), (-1.6,0.1875,0))
     for kind, x in (("sign_standing", -0.3), ("waypost", 1), ("notice_board", 2.45)):
         mesh, spec = package[f"{kind}_{variant}"]
         yaw = -90 if kind == "waypost" and not waypost_front else 0
         faces += place(mesh.faces + text_faces(spec), (x,0,0), yaw)
-    im = render(faces, (1500,450), 0, 0, 169, (0.55,0.35,0))
+    im = render(faces, (1500,450), 0, 0, SCENE_SCALE, (0.55,0.35,0))
     d = ImageDraw.Draw(im)
-    ground = int(450/2 + (0.35+0.5)*169)
+    ground = int(450/2 + (0.35+0.5)*SCENE_SCALE)
     d.line((30,ground,1470,ground), fill=(107,112,101,255))
     for x in range(-4, 6):
-        sx = int(750 + (x-0.55)*169)
+        sx = int(750 + (x-0.55)*SCENE_SCALE)
         d.line((sx,ground,sx,ground+8), fill=(107,112,101,255))
     caption(im, "Shared scale: one grid interval = one node", (35,18), size=18)
-    labels = [(-2.9,"Existing chest"),(-1.6,"Existing wall sign"),(-0.3,"Standing sign"),
+    labels = [(-2.9,"Existing chest"),(-1.6,"New wall texture"),(-0.3,"Standing sign"),
               (1,"Waypost"),(2.95,"Notice board")]
     for x, label in labels:
-        sx = 750 + (x-0.55)*169
+        sx = 750 + (x-0.55)*SCENE_SCALE
         width = d.textbbox((0,0),label,font=ImageFont.load_default(size=15))[2]
         caption(im,label,(sx-width/2,ground+25),size=15)
     return im
+
+
+def wall_comparison(package, walls):
+    # Original, preview-only masonry. These small wall sections make the
+    # attachment visible while preserving the scale of the family strips.
+    masonry = Image.new("RGBA", (18, 18), (77, 83, 84, 255))
+    d = ImageDraw.Draw(masonry)
+    for row in range(3):
+        for col in range(-1, 3):
+            x, y = col*9+(row % 2)*4, row*6
+            d.rectangle((x+1,y+1,x+8,y+5), fill=(98+row*2,104+row*2,103+row*2,255))
+    backing = Mesh("preview_wall")
+    backing.box([-0.5625,-0.5,0.03125,0.5625,0.625,0.1875])
+    for f in backing.faces:
+        f.texture = masonry
+        f.uv = np.array([[0,1],[0,0],[1,0],[1,1]])
+    faces, labels = [], []
+    for x, material, old in ((-3,"wood",True),(-1.5,"wood",False),
+                              (0,"iron",True),(1.5,"iron",False)):
+        texture = (Image.open(HERE / f"inputs/wall_{material}_before.png").convert("RGBA")
+                   if old else walls[material])
+        faces += place(backing.faces, (x,0,0))
+        faces += place(wall_mesh(texture).faces + text_faces(wall_spec()), (x,0.1875,0))
+        labels.append((x, f"{material.title()} / {'old' if old else 'new'}"))
+    mesh, spec = package["sign_standing_a"]
+    faces += place(mesh.faces + text_faces(spec), (3,0,0))
+    labels.append((3, "Standing A / picked"))
+    im = render(faces, (1500,450), 0, 0, SCENE_SCALE, (0,0.35,0))
+    d = ImageDraw.Draw(im)
+    ground = int(225+(0.35+0.5)*SCENE_SCALE)
+    d.line((35,ground,1465,ground), fill=(107,112,101,255))
+    caption(im, "Same text, font and ink #2B1E14 on every board / 169 px per node", (35,18), size=18)
+    for x, label in labels:
+        width = d.textbbox((0,0),label,font=ImageFont.load_default(size=16))[2]
+        caption(im, label, (750+x*SCENE_SCALE-width/2,ground+25))
+    return im
+
+
+def wall_section():
+    cards = []
+    for material, palette in WALL_PALETTES.items():
+        cards.append(f'''<article class="candidate"><h3>{material.title()} wall sign</h3>
+<p>Even {"warm timber" if material == "wood" else "light grey iron"} writing surface, with the familiar narrow rim.</p>
+<img src="sign_wall_{material}.png" width="128" height="128" alt="New {material} wall texture at eight times its original size">
+<p>16 × 16 px · board <code>{palette['panel']}</code> · ink <code>{WALL_INK}</code></p>
+<a href="../candidates/sign_wall_{material}.png">Candidate PNG</a></article>''')
+    return '''<section id="wall"><div class="section-head"><span>04</span><h2>Calm wall signs</h2></div>
+<p class="note">Old and new boards on a wall, with the picked standing sign A alongside.
+Every board uses the same four lines, bitmap glyphs and dark ink <code>#2B1E14</code>.
+The light iron board also needs this dark ink. The same ink on both old and new textures
+isolates the surface change; this is an offline comparison, not a before/after engine capture.</p>
+<div class="scale"><img src="wall_comparison.png" alt="Old and new wood and iron wall signs with identical text, beside standing sign A, all at 169 pixels per node"></div>
+<div class="variants">''' + "".join(cards) + '''</div>
+<p class="note">The front occupies columns 1–14 and rows 3–12 (zero-based) of each tile;
+rows 4–11 are completely flat colour. Rows 3 and 12 retain the narrow top and bottom rim.
+After the engine's wallmounted tile rotations, all four thin edges read row 15.
+Inventory and wield icons keep their existing artwork and colours.</p></section>'''
 
 
 def page(package):
@@ -532,11 +637,11 @@ def page(package):
         for v in "ab":
             name = f"{kind}_{v}"
             mesh, spec = package[name]
-            picked = v == RECOMMENDED[kind]
+            picked = v == PICKED[kind]
             views = "".join(f'<figure><img src="{name}_{view}.png" alt="{title} {v.upper()}, {label}"><figcaption>{label}</figcaption></figure>'
                             for view,label in (("front","Front · sample text"),("angle","Three-quarter view"),("back","Rear · correct reading side" if kind=="waypost" else "Rear · construction")))
             variants.append(f'''<article class="candidate{' recommended' if picked else ''}">
-<div class="card-head"><span class="badge">{v.upper()}</span><h3>{title} {v.upper()}</h3>{'<span class="pick">Recommended</span>' if picked else ''}</div>
+<div class="card-head"><span class="badge">{v.upper()}</span><h3>{title} {v.upper()}</h3>{'<span class="pick">Picked</span>' if picked else ''}</div>
 <p>{IDEAS[name]}</p><div class="views">{views}</div>
 <div class="asset-row"><div class="icons"><figure><img src="{name}_inv.png" width="16" height="16" alt="16 pixel inventory icon"><figcaption>16 px</figcaption></figure><figure><img src="{name}_inv.png" width="32" height="32" alt="32 pixel inventory icon"><figcaption>32 px</figcaption></figure></div>
 <p class="metrics">{spec['vertices']} vertices · {spec['faces']} triangles<br>64 × 64 atlas · one material<br>{spec['text_areas'][0]['lines']} lines × {spec['text_areas'][0]['characters_per_line']} characters</p>
@@ -551,18 +656,18 @@ def page(package):
         cards.append(f'<section id="{kind}"><div class="section-head"><span>0{len(cards)+1}</span><h2>{title}</h2></div><div class="variants">{"".join(variants)}</div>{extra}</section>')
     html = '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Grudgelands · Round 68 sign workshop</title><style>
 :root{color-scheme:dark;--bg:#141a1e;--panel:#1d2327;--line:#394044;--ink:#e6e3d7;--muted:#b0b8b7;--accent:#dbb47a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,sans-serif}main{max-width:1480px;margin:auto;padding:50px 32px 80px}header{padding:20px 0 38px;border-bottom:1px solid var(--line)}.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}h1{font:500 clamp(40px,5vw,70px)/1.08 Georgia,serif;max-width:850px;margin:18px 0}h2{font:400 34px/1.2 Georgia,serif;margin:0}h3{font-size:20px;margin:0}.intro{color:var(--muted);max-width:860px;font-size:18px}.recommendations{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px 0}.recommendations div{border-left:3px solid var(--accent);padding:0 18px}.recommendations b{display:block;color:var(--accent);font-size:18px}.recommendations p{margin:6px 0;color:var(--muted);font-size:14px}a{color:var(--accent);text-underline-offset:4px}nav{display:flex;gap:22px;flex-wrap:wrap;font-size:14px}section{margin-top:48px;scroll-margin-top:24px}.section-head{display:flex;gap:20px;align-items:center;margin-bottom:22px}.section-head>span{font-size:12px;color:var(--accent)}.variants{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.candidate{min-width:0;border:1px solid var(--line);background:var(--panel);padding:22px}.recommended{border-color:#8e7756}.card-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.badge{border:1px solid var(--accent);color:var(--accent);width:30px;height:30px;line-height:28px;text-align:center}.pick{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-left:auto}.candidate>p{font-size:14px;color:var(--muted);min-height:45px}.views{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.views figure:first-child{grid-column:1/-1}.views figure:first-child img{max-height:340px}.views figure:nth-child(n+2){grid-column:span 1}.views{grid-template-columns:repeat(2,minmax(0,1fr))}figure{margin:0;text-align:center}img{image-rendering:pixelated;max-width:100%;object-fit:contain;vertical-align:middle}.views img{width:100%;height:auto}figcaption{color:var(--muted);font-size:11px;margin:5px 0 12px}.asset-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);margin-top:16px;padding-top:18px}.icons{display:flex;align-items:end;gap:18px;min-width:82px}.metrics{color:var(--muted);font-size:12px;margin:0}.downloads{display:flex;gap:12px;font-size:12px;flex-wrap:wrap}details{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}summary{cursor:pointer;color:var(--muted);font-size:12px}.atlas{margin-top:16px;width:512px;max-width:none}.candidate details{overflow:auto}.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;background:var(--panel)}.pair img{max-height:620px}.note{font-size:13px;color:var(--muted);max-width:1050px}.scale{background:var(--panel);margin:20px 0;padding:15px;overflow-x:auto}.scale img{width:1500px;max-width:none}.scale h3{font-size:15px;color:var(--accent);margin:0 10px}.technical{background:var(--panel);padding:24px;border:1px solid var(--line);font-size:14px;color:var(--muted)}footer{margin-top:40px;font-size:12px;color:var(--muted)}@media(max-width:850px){main{padding:25px 16px}.variants,.recommendations{grid-template-columns:1fr}.pair{grid-template-columns:1fr}.candidate{padding:16px}}
-</style></head><body><main><header><div class="eyebrow">Grudgelands / Round 68 / Art proposals</div><h1>A place for directions.<br>A place for the village.</h1><p class="intro">Three wooden signs, two shapes each. Quiet writing surfaces, warm timber and the same pixel lettering as the existing wall sign. These are candidates for your pick.</p>
+</style></head><body><main><header><div class="eyebrow">Grudgelands / Round 68 / Art picks and wall signs</div><h1>A place for directions.<br>A place for the village.</h1><p class="intro">Three wooden signs, two shapes each. Quiet writing surfaces, warm timber and the same pixel lettering as the existing wall sign. Picked by the user: standing sign A, waypost B and notice board B. Two calm wall textures complete the set.</p>
 <div class="recommendations"><div><b>Standing sign · A</b><p>The plain board belongs beside the existing wall sign and stays clear at inventory size.</p></div><div><b>Waypost · B</b><p>The broader carved arrow reads as a direction marker from either side.</p></div><div><b>Notice board · B</b><p>The small roof gives a public board its own silhouette without crowding the notices.</p></div></div>
-<nav><a href="#sign_standing">Standing sign</a><a href="#waypost">Waypost</a><a href="#notice_board">Notice board</a><a href="#scale">Scale comparison</a><a href="#handoff">Technical handoff</a></nav></header>'''
-    html += "".join(cards)
-    html += '''<section id="scale"><div class="section-head"><span>04</span><h2>One scale, familiar neighbours</h2></div><p class="note">All five objects share one camera and one scale. The wall sign uses its existing 0.875 × 0.625-node board and texture; the chest is a one-node cube with its existing wooden textures. Lettering is a separate preview plane on every sign. The comparison strips scroll horizontally on narrow screens.</p>'''
+<nav><a href="#wall">New wall textures</a><a href="#sign_standing">Standing sign</a><a href="#waypost">Waypost</a><a href="#notice_board">Notice board</a><a href="#scale">Scale comparison</a><a href="#handoff">Technical handoff</a></nav></header>'''
+    html += "".join(cards) + wall_section()
+    html += '''<section id="scale"><div class="section-head"><span>05</span><h2>One scale, familiar neighbours</h2></div><p class="note">All five objects share one camera and one scale. The wall sign uses its existing 0.875 × 0.625-node board with the new calm wood texture; the chest is a one-node cube with its existing wooden textures. Lettering is a separate preview plane on every sign. The comparison strips scroll horizontally on narrow screens.</p>'''
     for v in "ab":
-        html += f'<div class="scale"><h3>Variant {v.upper()} family</h3><img src="scale_{v}.png" alt="Variant {v.upper()} signs beside the existing wall sign and wooden chest at the same scale"></div>'
-    html += '''</section><section id="handoff"><div class="section-head"><span>05</span><h2>Ready for the sign lane</h2></div><div class="technical"><p>Every candidate has one OBJ, one MTL, one 64 × 64 texture atlas, a 16 × 16 inventory icon and a JSON text-area specification. Each model uses one texture slot, <code>wood</code>. A wood texel spans 1/16 node; the atlas stores multiple face patches rather than stretching 64 pixels over a node.</p><p>The sample font keeps its original glyph pixels: 0.0075 node per pixel, 0.105 node line spacing, identical on all surfaces. Sample text is separate from the model and its texture. Preview characters use a seven-pixel advance; the receiving text module owns wrapping and fit.</p><p>Each JSON records the writing-plane centre, size, outward normal, reading-right vector, suggested selection/collision boxes and the model bounds. The waypost records its arrow direction and both reading sides. The boxes are model-local; the integration lane handles rotation.</p><p>Offline software projections, not engine captures. Desktop and web appearance, lighting and filtering remain part of the user's in-game review after integration.</p><p><a href="../REPORT.md">Art report</a> · <a href="../LICENSE-media.md">Media provenance</a></p></div></section><footer>Original candidate art: CC0-1.0. Generator: GPL-3.0-or-later. Preview font and existing comparison textures retain their credited licences. No external resources or scripts.</footer></main></body></html>'''
+        html += f'<div class="scale"><h3>Variant {v.upper()} family</h3><img src="scale_{v}.png" alt="Variant {v.upper()} signs beside the new wood wall texture and existing wooden chest at the same scale"></div>'
+    html += '''</section><section id="handoff"><div class="section-head"><span>06</span><h2>Ready for the sign lane</h2></div><div class="technical"><p>Each of the six model candidates has one OBJ, one MTL, one 64 × 64 texture atlas, a 16 × 16 inventory icon and a JSON text-area specification. Each model uses one texture slot, <code>wood</code>. A wood texel spans 1/16 node; the atlas stores multiple face patches rather than stretching 64 pixels over a node.</p><p>The sample font keeps its original glyph pixels: 0.0075 node per pixel, 0.105 node line spacing, identical on all surfaces. Sample text is separate from the model and its texture. Preview characters use a seven-pixel advance; the receiving text module owns wrapping and fit.</p><p>Each JSON records the writing-plane centre, size, outward normal, reading-right vector, suggested selection/collision boxes and the model bounds. The waypost records its arrow direction and both reading sides. The boxes are model-local; the integration lane handles rotation.</p><p>Offline software projections, not engine captures. Desktop and web appearance, lighting and filtering remain part of the user's in-game review after integration.</p><p><a href="../REPORT.md">Art report</a> · <a href="../LICENSE-media.md">Media provenance</a></p></div></section><footer>Original candidate art: CC0-1.0. Generator: GPL-3.0-or-later. Preview font and existing comparison textures retain their credited licences. No external resources or scripts.</footer></main></body></html>'''
     OUTPUTS["preview/index.html"] = html.encode()
 
 
-def validate(package):
+def validate(package, walls):
     for name, (mesh, spec) in package.items():
         assert len(spec["texture_slots"]) == 1
         for face in mesh.faces:
@@ -624,6 +729,27 @@ def validate(package):
         assert np.array(im)[:,:,3].sum()>255*16
         assert np.array(mesh.atlas.image)[:,:,3].min()==255
         assert OUTPUTS[f"candidates/{name}.png"] == OUTPUTS[f"preview/{name}.png"]
+    for material, texture in walls.items():
+        assert texture.size == (16,16) and texture.mode == "RGBA"
+        # A full 15-character line and all four rows must stay on calm paint.
+        pixels = np.asarray(texture)
+        assert np.all(pixels[4:12,1:15] == pixels[4,1])
+        spec = wall_spec()
+        for face in text_faces(spec, ["W"*15]*4):
+            x, y, _ = face.xyz.T
+            uv = np.column_stack((x+0.5, 0.5-y))*16
+            assert (uv.min(0) >= [1,4]).all() and (uv.max(0) <= [15,12]).all()
+        for face in wall_mesh(texture).faces:
+            # Verify actual texel footprints of all six faces, not just the
+            # front. The rear is concealed by the wall but keeps the same crop.
+            uv = face.uv*16
+            if abs(face.normal[2]) > 0.9:
+                lo, hi = [1,3], [15,13]
+            else:
+                lo, hi = ([1,15],[15,16]) if abs(face.normal[1]) > 0.9 else ([3,15],[13,16])
+            assert np.allclose(uv.min(0),lo) and np.allclose(uv.max(0),hi)
+        assert pixels[3:13,1:15,3].min() == 255 and pixels[15,:,3].min() == 255
+        assert OUTPUTS[f"candidates/sign_wall_{material}.png"] == OUTPUTS[f"preview/sign_wall_{material}.png"]
     class Links(HTMLParser):
         def handle_starttag(self, tag, attrs):
             for key, value in attrs:
@@ -637,6 +763,7 @@ def validate(package):
 
 def build(waypost_front=False):
     package = {}
+    walls = wall_candidates()
     for kind in ("sign_standing", "waypost", "notice_board"):
         for v in "ab":
             mesh, spec = create(kind,v,waypost_front)
@@ -660,7 +787,8 @@ def build(waypost_front=False):
                 yaw -= 90
             faces += place(mesh.faces+text_faces(spec,[text]), (0,i,0), yaw)
         png(f"preview/stack_{v}.png",render(faces,(520,680),0,10,180,(0,1,0)))
-        png(f"preview/scale_{v}.png",scene(package,v,waypost_front))
+        png(f"preview/scale_{v}.png",scene(package,v,waypost_front,walls))
+    png("preview/wall_comparison.png", wall_comparison(package,walls))
     # A compact image makes all six silhouettes reviewable without a browser.
     contact = Image.new("RGBA",(1440,960),BG)
     for row,kind in enumerate(("sign_standing","waypost","notice_board")):
@@ -670,14 +798,25 @@ def build(waypost_front=False):
             im.thumbnail((620,280),Image.Resampling.NEAREST)
             contact.paste(im,(col*720+(720-im.width)//2,row*320+30))
             caption(contact, f"{kind.replace('_',' ').title()} {v.upper()}"+
-                    ("  /  recommended" if RECOMMENDED[kind]==v else ""),
+                    ("  /  picked" if PICKED[kind]==v else ""),
                     (col*720+28,row*320+10),size=19)
     png("preview/contact.png",contact)
     page(package)
-    validate(package)
-    write_json("manifest.json",{name:{"vertices":spec["vertices"],"triangles":spec["faces"],
+    validate(package, walls)
+    manifest = {name:{"vertices":spec["vertices"],"triangles":spec["faces"],
                                    "bounds":spec["bounds"],"texture_size":spec["texture_size"]}
-                                 for name,(_,spec) in package.items()})
+                                 for name,(_,spec) in package.items()}
+    for material, palette in WALL_PALETTES.items():
+        manifest[f"sign_wall_{material}"] = {
+            "texture": f"sign_wall_{material}.png", "texture_size": [16,16],
+            "replaces": "default_sign_wall_" + ("steel" if material == "iron" else "wood") + ".png",
+            "palette": palette, "ink": WALL_INK, "inventory_icon": "unchanged",
+            "pixel_rectangles": {"convention": "zero-based, upper bounds exclusive",
+                                 "front": [1,3,15,13], "calm_text_area": [1,4,15,12],
+                                 "long_edges": [1,15,15,16], "short_edges": [3,15,13,16]},
+            "license": "CC0-1.0",
+        }
+    write_json("manifest.json",manifest)
 
 
 def main():
@@ -698,8 +837,8 @@ def main():
             path.write_bytes(data)
     if failures:
         raise SystemExit("\n".join(failures))
-    print(f"{'Checked' if args.check else 'Wrote'} {len(OUTPUTS)} outputs: six meshes, atlases, icons, specs and offline previews.")
-    print("Verified: UV density, outward normals, backed text rectangles, binary-alpha icons and local page links.")
+    print(f"{'Checked' if args.check else 'Wrote'} {len(OUTPUTS)} outputs: six meshes, atlases, icons, specs, two wall textures and offline previews.")
+    print("Verified: UV density, outward normals, backed text rectangles, binary-alpha icons, calm wall text areas, wall UV footprints and local page links.")
 
 
 if __name__ == "__main__":

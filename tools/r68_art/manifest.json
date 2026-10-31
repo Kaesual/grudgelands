@@ -94,5 +94,93 @@
       64,
       64
     ]
+  },
+  "sign_wall_wood": {
+    "texture": "sign_wall_wood.png",
+    "texture_size": [
+      16,
+      16
+    ],
+    "replaces": "default_sign_wall_wood.png",
+    "palette": {
+      "panel": "#B68357",
+      "rim_top": "#7F5A3C",
+      "rim_bottom": "#764E31",
+      "edge": "#7F5A3C"
+    },
+    "ink": "#2B1E14",
+    "inventory_icon": "unchanged",
+    "pixel_rectangles": {
+      "convention": "zero-based, upper bounds exclusive",
+      "front": [
+        1,
+        3,
+        15,
+        13
+      ],
+      "calm_text_area": [
+        1,
+        4,
+        15,
+        12
+      ],
+      "long_edges": [
+        1,
+        15,
+        15,
+        16
+      ],
+      "short_edges": [
+        3,
+        15,
+        13,
+        16
+      ]
+    },
+    "license": "CC0-1.0"
+  },
+  "sign_wall_iron": {
+    "texture": "sign_wall_iron.png",
+    "texture_size": [
+      16,
+      16
+    ],
+    "replaces": "default_sign_wall_steel.png",
+    "palette": {
+      "panel": "#AAAAAA",
+      "rim_top": "#B5B5B5",
+      "rim_bottom": "#858585",
+      "edge": "#787878"
+    },
+    "ink": "#2B1E14",
+    "inventory_icon": "unchanged",
+    "pixel_rectangles": {
+      "convention": "zero-based, upper bounds exclusive",
+      "front": [
+        1,
+        3,
+        15,
+        13
+      ],
+      "calm_text_area": [
+        1,
+        4,
+        15,
+        12
+      ],
+      "long_edges": [
+        1,
+        15,
+        15,
+        16
+      ],
+      "short_edges": [
+        3,
+        15,
+        13,
+        16
+      ]
+    },
+    "license": "CC0-1.0"
   }
 }
