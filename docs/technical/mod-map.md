@@ -82,6 +82,7 @@ mobs_redo fork publishes `mobs`.
 | `grug_farming` | Crops, buckets, hoes, habitat renewal of wild plants and trees | none | [farming.md](../design/farming.md) |
 | `grug_fishing` | The fishing rod, bobber and catch tables | none | [items_crafting.md](../design/items_crafting.md) |
 | `grug_decor` | The decorative building kit | `register_shapes` | [settlements.md](../design/settlements.md) |
+| `grug_signs` | The standing sign, the waypost and the two-node notice board (Round 68): placement, rotation, the forms, their text surfaces on `grug_text` | `write`, `partner`, `NODES` | [module guide](module-guide.md#text-in-the-world) |
 
 ## MAPGEN and BASE
 
