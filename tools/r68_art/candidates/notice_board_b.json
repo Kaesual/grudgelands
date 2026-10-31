@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "model": "notice_board_b.obj",
+  "units": "nodes",
+  "origin": "Centre of the left node, as seen from the front (-Z); second node at +X.",
+  "front_normal": [
+    0,
+    0,
+    -1
+  ],
+  "texture_slots": [
+    {
+      "slot": 1,
+      "group": "wood",
+      "material": "wood",
+      "texture": "notice_board_b.png"
+    }
+  ],
+  "texture_size": [
+    64,
+    64
+  ],
+  "texels_per_node": 16,
+  "inventory_image": "notice_board_b_inv.png",
+  "vertices": 56,
+  "faces": 108,
+  "face_type": "triangles",
+  "bounds": [
+    -0.5,
+    -0.5,
+    -0.25,
+    1.5,
+    1.1875,
+    0.25
+  ],
+  "text_areas": [
+    {
+      "center": [
+        0.5,
+        0.5,
+        -0.0655
+      ],
+      "width": 1.75,
+      "height": 0.875,
+      "normal": [
+        0,
+        0,
+        -1
+      ],
+      "right": [
+        1,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "lines": 7,
+      "characters_per_line": 30,
+      "surface_offset": 0.003
+    }
+  ],
+  "preview_text": {
+    "font_pixel_node_size": 0.0075,
+    "glyph_height_px": 12,
+    "character_advance_px": 7,
+    "line_advance_px": 14,
+    "ink": "#2b1e14",
+    "lines": [
+      "ASHFORD NOTICE BOARD",
+      "Market opens at sunrise",
+      "Fresh bread at the square",
+      "Miners meet by the old well",
+      "Bring a lantern after dusk",
+      "Leave parcels with the clerk",
+      "All travellers are welcome"
+    ],
+    "scale_to_fit": false
+  },
+  "selection_box": {
+    "type": "fixed",
+    "fixed": [
+      [
+        -0.4375,
+        -0.5,
+        0,
+        -0.3125,
+        0,
+        0.125
+      ],
+      [
+        1.3125,
+        -0.5,
+        0,
+        1.4375,
+        0,
+        0.125
+      ],
+      [
+        -0.5,
+        0,
+        -0.125,
+        1.5,
+        1,
+        0.125
+      ],
+      [
+        -0.5,
+        1,
+        -0.25,
+        1.5,
+        1.1875,
+        0.25
+      ]
+    ]
+  },
+  "collision_box": {
+    "type": "fixed",
+    "fixed": [
+      [
+        -0.4375,
+        -0.5,
+        0,
+        -0.3125,
+        0,
+        0.125
+      ],
+      [
+        1.3125,
+        -0.5,
+        0,
+        1.4375,
+        0,
+        0.125
+      ],
+      [
+        -0.5,
+        0,
+        -0.125,
+        1.5,
+        1,
+        0.125
+      ],
+      [
+        -0.5,
+        1,
+        -0.25,
+        1.5,
+        1.1875,
+        0.25
+      ]
+    ]
+  },
+  "box_convention": "Unrotated model-local boxes; integration owns rotated selection and collision.",
+  "suggested_walkable": true,
+  "license": "CC0-1.0",
+  "occupied_nodes": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ]
+  ],
+  "height_from_ground": 1.6875,
+  "placement_clearance": "Upper board/roof rises above the base node; check headroom over both nodes."
+}

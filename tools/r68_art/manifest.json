@@ -1,0 +1,98 @@
+{
+  "sign_standing_a": {
+    "vertices": 16,
+    "triangles": 24,
+    "bounds": [
+      -0.4375,
+      -0.5,
+      -0.09375,
+      0.4375,
+      0.5,
+      0.09375
+    ],
+    "texture_size": [
+      64,
+      64
+    ]
+  },
+  "sign_standing_b": {
+    "vertices": 36,
+    "triangles": 72,
+    "bounds": [
+      -0.46875,
+      -0.5,
+      -0.15625,
+      0.46875,
+      0.5,
+      0.09375
+    ],
+    "texture_size": [
+      64,
+      64
+    ]
+  },
+  "waypost_a": {
+    "vertices": 106,
+    "triangles": 156,
+    "bounds": [
+      -0.0625,
+      -0.5,
+      -0.5,
+      0.0625,
+      0.5,
+      0.5
+    ],
+    "texture_size": [
+      64,
+      64
+    ]
+  },
+  "waypost_b": {
+    "vertices": 110,
+    "triangles": 164,
+    "bounds": [
+      -0.0625,
+      -0.5,
+      -0.5,
+      0.0625,
+      0.5,
+      0.5
+    ],
+    "texture_size": [
+      64,
+      64
+    ]
+  },
+  "notice_board_a": {
+    "vertices": 44,
+    "triangles": 84,
+    "bounds": [
+      -0.5,
+      -0.5,
+      -0.125,
+      1.5,
+      1.0,
+      0.125
+    ],
+    "texture_size": [
+      64,
+      64
+    ]
+  },
+  "notice_board_b": {
+    "vertices": 56,
+    "triangles": 108,
+    "bounds": [
+      -0.5,
+      -0.5,
+      -0.25,
+      1.5,
+      1.1875,
+      0.25
+    ],
+    "texture_size": [
+      64,
+      64
+    ]
+  }
+}
