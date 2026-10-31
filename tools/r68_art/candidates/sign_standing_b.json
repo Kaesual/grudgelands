@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "model": "sign_standing_b.obj",
+  "units": "nodes",
+  "origin": "Centre of the placed node; ground at y = -0.5.",
+  "front_normal": [
+    0,
+    0,
+    -1
+  ],
+  "texture_slots": [
+    {
+      "slot": 1,
+      "group": "wood",
+      "material": "wood",
+      "texture": "sign_standing_b.png"
+    }
+  ],
+  "texture_size": [
+    64,
+    64
+  ],
+  "texels_per_node": 16,
+  "inventory_image": "sign_standing_b_inv.png",
+  "vertices": 36,
+  "faces": 72,
+  "face_type": "triangles",
+  "bounds": [
+    -0.46875,
+    -0.5,
+    -0.15625,
+    0.46875,
+    0.5,
+    0.09375
+  ],
+  "text_areas": [
+    {
+      "center": [
+        0,
+        0.1875,
+        -0.128
+      ],
+      "width": 0.8125,
+      "height": 0.5,
+      "normal": [
+        0,
+        0,
+        -1
+      ],
+      "right": [
+        1,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "lines": 4,
+      "characters_per_line": 15,
+      "surface_offset": 0.003
+    }
+  ],
+  "preview_text": {
+    "font_pixel_node_size": 0.0075,
+    "glyph_height_px": 12,
+    "character_advance_px": 7,
+    "line_advance_px": 14,
+    "ink": "#2b1e14",
+    "lines": [
+      "Welcome to",
+      "Ashford",
+      "Rest a while",
+      "Travel safely"
+    ],
+    "scale_to_fit": false
+  },
+  "selection_box": {
+    "type": "fixed",
+    "fixed": [
+      [
+        -0.09375,
+        -0.5,
+        -0.03125,
+        0.09375,
+        -0.125,
+        0.09375
+      ],
+      [
+        -0.46875,
+        -0.125,
+        -0.15625,
+        0.46875,
+        0.5,
+        -0.03125
+      ]
+    ]
+  },
+  "collision_box": {
+    "type": "fixed",
+    "fixed": [
+      [
+        -0.09375,
+        -0.5,
+        -0.03125,
+        0.09375,
+        -0.125,
+        0.09375
+      ],
+      [
+        -0.46875,
+        -0.125,
+        -0.15625,
+        0.46875,
+        0.5,
+        -0.03125
+      ]
+    ]
+  },
+  "box_convention": "Unrotated model-local boxes; integration owns rotated selection and collision.",
+  "suggested_walkable": false,
+  "license": "CC0-1.0"
+}

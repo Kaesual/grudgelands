@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "model": "waypost_a.obj",
+  "units": "nodes",
+  "origin": "Centre of the placed node; ground at y = -0.5.",
+  "front_normal": [
+    -1.0,
+    0.0,
+    0.0
+  ],
+  "texture_slots": [
+    {
+      "slot": 1,
+      "group": "wood",
+      "material": "wood",
+      "texture": "waypost_a.png"
+    }
+  ],
+  "texture_size": [
+    64,
+    64
+  ],
+  "texels_per_node": 16,
+  "inventory_image": "waypost_a_inv.png",
+  "vertices": 106,
+  "faces": 156,
+  "face_type": "triangles",
+  "bounds": [
+    -0.0625,
+    -0.5,
+    -0.5,
+    0.0625,
+    0.5,
+    0.5
+  ],
+  "text_areas": [
+    {
+      "center": [
+        -0.0655,
+        0.25,
+        0.09375
+      ],
+      "width": 0.75,
+      "height": 0.14,
+      "normal": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "right": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "up": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "lines": 1,
+      "characters_per_line": 14,
+      "surface_offset": 0.003
+    },
+    {
+      "center": [
+        0.0655,
+        0.25,
+        0.09375
+      ],
+      "width": 0.75,
+      "height": 0.14,
+      "normal": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "right": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "up": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "lines": 1,
+      "characters_per_line": 14,
+      "surface_offset": 0.003
+    }
+  ],
+  "preview_text": {
+    "font_pixel_node_size": 0.0075,
+    "glyph_height_px": 12,
+    "character_advance_px": 7,
+    "line_advance_px": 14,
+    "ink": "#2b1e14",
+    "lines": [
+      "Eastmarch"
+    ],
+    "scale_to_fit": false
+  },
+  "selection_box": {
+    "type": "fixed",
+    "fixed": [
+      [
+        -0.0625,
+        -0.5,
+        -0.0625,
+        0.0625,
+        0.5,
+        0.0625
+      ],
+      [
+        -0.0625,
+        0.125,
+        -0.5,
+        0.0625,
+        0.375,
+        0.5
+      ]
+    ]
+  },
+  "collision_box": {
+    "type": "fixed",
+    "fixed": [
+      [
+        -0.0625,
+        -0.5,
+        -0.0625,
+        0.0625,
+        0.5,
+        0.0625
+      ],
+      [
+        -0.0625,
+        0.125,
+        -0.5,
+        0.0625,
+        0.375,
+        0.5
+      ]
+    ]
+  },
+  "box_convention": "Unrotated model-local boxes; integration owns rotated selection and collision.",
+  "suggested_walkable": false,
+  "license": "CC0-1.0",
+  "arrow_direction": [
+    0,
+    0,
+    -1
+  ],
+  "stack": {
+    "translation": [
+      0,
+      1,
+      0
+    ],
+    "post_axis": [
+      0,
+      1,
+      0
+    ],
+    "post_radius": 0.0625,
+    "post_sides": 24,
+    "post_bottom": -0.5,
+    "post_top": 0.5,
+    "arrow_y_min": 0.125,
+    "arrow_y_max": 0.375,
+    "vertical_clearance": 0.75,
+    "max_rotated_profile_difference": 0.000534696,
+    "note": "Flush end planes, identical post colour, no collars; sub-texel round faceting."
+  }
+}
