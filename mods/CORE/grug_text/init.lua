@@ -62,9 +62,10 @@ local layout = dofile(modpath .. "/layout.lua")
 grug_text.layout = layout
 grug_text.charmap = layout.load_charmap(modpath .. "/characters.tsv")
 
--- The plan's inks (Round 68 coordinator default): dark ink on wood and on
--- the light iron board, light ink on the dark metal chest fronts.
-grug_text.INK = {dark = "#2a1b0e", iron = "#1c1c22", light = "#ece4cc"}
+-- The inks: dark on the wooden and the light grey iron boards (lane ART's
+-- value for both wall signs) and the Wooden chest, light on the dark metal
+-- chest fronts (Round 68 coordinator default).
+grug_text.INK = {dark = "#2b1e14", light = "#ece4cc"}
 
 local ENTITY = "grug_text:text"
 local UP = vector.new(0, 1, 0)

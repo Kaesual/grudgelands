@@ -427,7 +427,7 @@ do
 	eq(#first, 1, "L writing makes one entity")
 	local obj = first[1]
 	check(obj.props.textures[1]:find("^%[combine:128x64:") ~= nil and
-		obj.props.textures[1]:find(T.INK.dark, 1, true) ~= nil, "L the dark ink on wood")
+		obj.props.textures[1]:find("#2b1e14", 1, true) ~= nil, "L the dark ink on wood")
 	eq(obj.props.textures[2], "blank.png", "L one face only")
 	eq(obj.props.visual_size.x .. "x" .. obj.props.visual_size.y, "1x0.5", "L the sign's size")
 	eq(obj.props.static_save, false, "L not saved")
@@ -475,7 +475,7 @@ do
 	local pos = V(200, 0, 0)
 	core.set_node(pos, {name = "grug_materials:iron_sign_wall", param2 = 4})
 	write(pos, "Iron")
-	check(live(pos)[1].props.textures[1]:find(T.INK.iron, 1, true) ~= nil, "L the iron sign's ink")
+	check(live(pos)[1].props.textures[1]:find("#2b1e14", 1, true) ~= nil, "L the iron sign's dark ink")
 end
 do
 	local api = default.containers

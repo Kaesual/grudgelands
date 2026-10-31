@@ -12,11 +12,11 @@ local INK = grug_text.INK
 -- `text`, core.is_protected); the text follows it, the hover text stays.
 --
 
--- The ink of each sign, one value each (lane ART's board art may change
--- them): dark on the wooden board, dark on the light grey iron board.
+-- The ink of each sign, one value each: dark on the wooden board and on
+-- the light grey iron board (lane ART's #2B1E14 for both).
 local SIGN_INK = {
 	["default:sign_wall_wood"] = INK.dark,
-	["grug_materials:iron_sign_wall"] = INK.iron,
+	["grug_materials:iron_sign_wall"] = INK.dark,
 }
 
 local SIGN = {lines = 4, chars = 15, offset = {x = 0, y = 0, z = 7 / 16 - 1 / 64}}

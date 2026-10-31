@@ -949,6 +949,10 @@ update:
   swap needs no call: the label sits on the part of the front that the
   lid does not move. Digging is handled by `grug_text` (it wraps the
   registered chests' `after_destruct`).
+- Textures: `default_sign_wall_wood.png` and `default_sign_wall_steel.png`
+  are replaced by lane ART's picked boards with a calm writing field
+  (`tools/r68_art`, CC0-1.0, recorded in `default/LICENSE-media.md`); an
+  upstream update must not bring the old ones back.
 
 ## Fresh-server cleanup — 2026-09-13
 
