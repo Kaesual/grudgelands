@@ -32,12 +32,19 @@ joined to the joint GUI test of 0.57–0.66. Carry-overs:
   own line (fits ruling 4); `grug_text.register` wraps `after_destruct` at
   call time, so a node's callbacks must be defined before it.
 - **SIGNS:** nothing reserves the notice board's roof space after
-  placement; the engine's hover text shows only 6 of a board's 7 lines; a
+  placement; a
   board can straddle a claim border, as a bed can (digging either half
   removes both); the `notice_board_part` item can be placed through
   `/give` (a no-op `on_place` would close it); `placer:get_look_dir()` has
   no non-player guard; the Help line sits under "Bags, food and repair"
   (Help has no building section).
+- **No-hover-text follow-up:** three engine probes outside the portable run
+  still expect the old hover text and need updating the next time they run
+  (`tools/r67_containers/grug_probe_r67_containers/init.lua` ~83,
+  `tools/pt_fixes/lane_f/grug_probe_node_formspec/init.lua` ~295,
+  `tools/r68_signs/grug_probe_r68_signs/init.lua` ~46-50); the one-time
+  LBMs that clear old hover text were checked against the engine code, not
+  booted on an old world (GUI checklist item 13).
 
 ## Round 67 — playtest feedback (GUI accepted)
 
