@@ -4,7 +4,8 @@
 Open the [offline preview](preview/index.html), the
 [300 px drawing board](preview/heads.png) or the
 [usage contact sheet](preview/contact.png). All six heads are new frontal
-proposals. The user has selected the animal direction, not these final files.
+proposals. **Picked by the user (2026-10-31): H1 + K1** (see "The user's
+pick" at the end).
 
 ## Pass 4 — frontal heads, 2026-10-31
 
@@ -208,3 +209,12 @@ the user's **desktop and web** GUI checklist is:
 Both Pass 4 commit messages end with
 `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
 No runner-owned `last.md` is added to the branch.
+
+## The user's pick (2026-10-31)
+
+**H1 + K1** (Pass 4, the painted pair). The coordinator copied
+`emblem_accord_1.png` / `emblem_throng_1.png` to
+`mods/PLAYER/grug_inventory/textures/grug_inventory_faction_{accord,throng}.png`
+and `banner_accord_1.png` / `banner_throng_1.png` to
+`mods/MAPGEN/grug_mapgen/textures/grug_mapgen_faction_banner_{accord,throng}.png`;
+`tools/r63_camp_art/build.py` no longer generates those four files.
