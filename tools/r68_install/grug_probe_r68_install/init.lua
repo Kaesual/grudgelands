@@ -202,7 +202,9 @@ core.register_globalstep(function(dtime)
 			local images = {}
 			for _, name in ipairs(row) do
 				local def = core.registered_items[name]
-				images[#images + 1] = def and (def.tiles and def.tiles[1] or def.inventory_image) or "?"
+				local image = def and (def.tiles and def.tiles[1] or def.inventory_image) or "?"
+				-- Stairs and slabs carry tile tables (name, alignment).
+				images[#images + 1] = type(image) == "table" and image.name or image
 			end
 			log(("row %d: %s"):format(i, table.concat(images, " ")))
 		end
