@@ -279,9 +279,9 @@ own final commit hash; resolve it with
 
 ## Blockers / questions
 
-The user's A/B picks are recorded above. Independent coordinator review
-and the user's look at the new wall textures remain open.
-This implementer did not launch a reviewer or claim review acceptance.
+The user's A/B picks are recorded above. The coordinator checked both
+passes and published the preview; the user approved the new wall
+textures on 2026-10-31, and lanes TEXT and SIGNS shipped the picks.
 
 After integration, the user's **desktop and web** GUI check should cover:
 

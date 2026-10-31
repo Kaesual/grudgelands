@@ -38,9 +38,6 @@ joined to the joint GUI test of 0.57–0.66. Carry-overs:
   `/give` (a no-op `on_place` would close it); `placer:get_look_dir()` has
   no non-player guard; the Help line sits under "Bags, food and repair"
   (Help has no building section).
-- **ART:** the closing section of `tools/r68_art/REPORT.md` still names the
-  coordinator's review and the user's look at the wall textures as open
-  (both done: the user approved the boards).
 
 ## Round 67 — playtest feedback (GUI accepted)
 

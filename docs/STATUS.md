@@ -20,7 +20,8 @@ round, ART checked by the coordinator; merges `5c482606`, `48a23459`,
 text is already in node meta (`text`, `grug_label`), the entities are not
 saved (two-boot LBM proof), the new nodes keep `text` and `infotext`.
 299 portable fixtures (two new); before this lane only `r37_dc` failed
-(waiting for the CHANGELOG entry), the round-end run on main follows. **The
+(waiting for the CHANGELOG entry); the round-end run on main: 298 of 299
+before lane D, `r37_dc` passing after it. **The
 user's answers:** chest labels stay as they are (three lines, no plate);
 the 431 glyph files stay, the web join time goes into the checklist
 ([completion, numbers, decisions and GUI checklist](planning/round68-plan.md#completion-2026-10-31);
