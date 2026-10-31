@@ -2,7 +2,7 @@
 
 ## Original candidates
 
-All 94 PNG files in `candidates/` are original pixel drawings authored for
+All 120 PNG files in `candidates/` are original pixel drawings authored for
 Grudgelands by **GPT-6 Astra on 2026-10-31**. They are drawn entirely by
 [art.py](art.py), called by [generate.py](generate.py), using Python, Pillow
 and numpy. No source sprite pixels, external images, fonts or generated
@@ -21,6 +21,12 @@ The project dedicates any rights it holds in these original assets to
 | `gems_{a,b}/{rough,cut}_*.png` | 24 | Transparent 16 × 16 RGBA gems: six rough specimens and six distinct polished cuts per variant. |
 | `gems_{a,b}/{quartz,abyssal_crystal}.png` | 4 | Transparent 16 × 16 RGBA raw minerals, with no cut counterparts. |
 | `gems_{a,b}/*_block.png` | 14 | Opaque 16 × 16 RGBA gem/crystal faces: A broad facets, B stepped slabs. |
+| `gems_{c,d}/cut_*.png` | 12 | Transparent 16 × 16 RGBA regular cuts: C a clipped step family, D distinct classic silhouettes. |
+| `gems_{c,d}/*_block.png` | 14 | Opaque 16 × 16 RGBA faces: C parallel bevels, D broad crown planes. Both Abyssal Crystal blocks are byte-identical to A. |
+
+C/D reuse A’s six rough gems, Quartz and Abyssal Crystal unchanged from
+`gems_a/`; these eight files are not duplicated or rescaled. All original
+A/B candidate files remain byte-identical to pass 1.
 
 The block textures are opaque because they cover solid node faces; the
 item icons have transparent backgrounds. Candidate coordinates use only
