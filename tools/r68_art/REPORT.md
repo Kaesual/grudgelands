@@ -265,6 +265,13 @@ trailer. Changes are confined to `tools/r68_art/` and one line in
 
 ## Pass-2 commit receipt
 
+**Complete pass-2 art and preview commit:**
+`52586b103f8b01282cccc7e91d77766466c51d4d`. At that checkpoint,
+**`git status --porcelain` was empty** and `git diff --check` passed.
+`python3 tools/r68_art/generate.py --check` verified all 72 outputs;
+the input, pick-mark, scope and unchanged-model checks also passed.
+This receipt is the following documentation-only commit.
+
 The final commit hash and clean-tree check are included in the final
 handoff saved by the runner as `last.md`. This report cannot embed its
 own final commit hash; resolve it with
