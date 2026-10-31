@@ -11,10 +11,14 @@
 -- and a 3 x 3 patch each of Garnet, Ruby, Iron, Steel, Silversteel and
 -- Gold, built in the air 30 nodes above the arrival point (stone floor,
 -- noon).
+-- Scene "stairs" (r68install_scene, follow-up STAIRS) instead: S1-S3, each
+-- of the five metal blocks with its stair, inner stair, outer stair and
+-- slab beside it, one row per metal.
 
 local P = "[r68install] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r68install_settle") or "") or 3
+local SCENE = core.settings:get("r68install_scene") or "icons"
 local M, A = "grug_materials:", "grug_artisans:"
 
 local METALS = {"copper", "tin", "bronze", "iron", "steel", "silver", "silversteel",
@@ -142,6 +146,34 @@ local SHOTS = {
 	{name = "W2_walls_angle", run = function(p) view(p, 1, -0.6, -2.5, 50, 6) end},
 	{name = "W3_repeated_patches", run = function(p) view(p, 30.5, -0.3, -5.5, 0, 4) end},
 }
+
+-- Scene "stairs": rows at z = 2, 4, ..., 10 (Iron, Tin, Copper, Bronze,
+-- Gold), x = 0 block, 1 stair, 2 inner stair, 3 outer stair, 4 slab; the
+-- stairs face the camera (param2 0 puts the high step at +z).
+local STAIR_METALS = {"iron", "tin", "copper", "bronze", "gold"}
+local STAIR_ROW = {"%s_block", "stair_%s_block", "stair_inner_%s_block",
+	"stair_outer_%s_block", "slab_%s_block"}
+if SCENE == "stairs" then
+	ROWS = {}
+	for i, metal in ipairs(STAIR_METALS) do
+		ROWS[i] = {}
+		for _, pattern in ipairs(STAIR_ROW) do
+			table.insert(ROWS[i], M .. pattern:format(metal))
+		end
+	end
+	total = #STAIR_METALS * #STAIR_ROW
+	build = function()
+		for x = -4, 12 do for z = -8, 14 do set(x, -1, z, "default:stone") end end
+		for i, row in ipairs(ROWS) do
+			for x, name in ipairs(row) do set(x - 1, 0, 2 * i, name) end
+		end
+	end
+	SHOTS = {
+		{name = "S1_metal_stairs_above", run = function(p) view(p, 2, 3.5, -3, 0, 38) end},
+		{name = "S2_metal_stairs_angle", run = function(p) view(p, -3.5, 1.5, -2, 35, 22) end},
+		{name = "S3_iron_and_tin_close", run = function(p) view(p, 2, 0.6, -0.6, 0, 30) end},
+	}
+end
 
 core.register_globalstep(function(dtime)
 	state.clock = state.clock + dtime
