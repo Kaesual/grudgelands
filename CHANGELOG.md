@@ -38,6 +38,9 @@ and drop their old pointing text when their area loads.
 - Anyone may read every sign; in another player's claim writing needs the
   Everything permission. A new sign whose ground is dug away drops as an
   item.
+- **New icons** for the metal bars, the goldsmith's settings, the gems
+  (rough and cut) and their storage blocks: Garnet and Ruby are now easy to
+  tell apart, and so are a rough and a cut gem.
 
 ## 0.67.0 — the Social tab, a bigger map, simpler crafting and chests in three tiers (2026-10-30)
 
