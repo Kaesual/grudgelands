@@ -958,7 +958,8 @@ update:
   (`surfaces.lua`).
 - Textures: `default_sign_wall_wood.png` and `default_sign_wall_steel.png`
   are replaced by lane ART's picked boards with a calm writing field
-  (`tools/r68_art`, CC0-1.0, recorded in `default/LICENSE-media.md`); an
+  (`tools/r68_art`, CC0-1.0, recorded in `default/LICENSE-media.md`; the
+  wooden one from pass 3's wood set B, the user's pick); an
   upstream update must not bring the old ones back.
 
 ## Fresh-server cleanup — 2026-09-13
