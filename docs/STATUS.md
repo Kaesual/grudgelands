@@ -23,7 +23,9 @@ only on Creative pages; chests with Sort and a label, and chests, locked
 chests, bookshelves and vessels shelves in three tiers (32 / 64 / 96 slots,
 direct recipes and an Upgrade button, scrolling lists; shelves grow from
 16 to 32). Race icons and tier textures by GPT-6 Astra (the user's pick:
-race A, Steel A, Abyssal B; Abyssal switched from A after the merges). Lanes MAP (MERGE), WORLD, SOCIAL, CRAFT and
+race A, Steel A, Abyssal B; Abyssal switched from A after the merges);
+new faction heraldry after the merges (hart and boar, Astra's pass 4, H1 + K1;
+merge `6106379e`). Lanes MAP (MERGE), WORLD, SOCIAL, CRAFT and
 CONTAINERS (MERGE after one fix round each, delta reviews MERGE), ART
 checked by the coordinator; merges `adffe004`, `bf0ecde0`, `a7a0f162`,
 `502f3ef0`, `3e8f90c1`, `b1f6314e`, then this documentation lane D.

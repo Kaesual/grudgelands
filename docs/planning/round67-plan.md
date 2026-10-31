@@ -669,6 +669,10 @@ for the user's verdict on a first-look default.
     vessels shelf; a dug container drops its own tier. *Look:* the base tier
     is named "Chest" / "Locked Chest" (ruling 29 said "Wooden Chest"; kept by
     the coordinator) — rename?
+30. **Faction heraldry** (follow-up): the hart's head (The Accord) and the
+    boar's head (The Throng) in the inventory header, the Social list's
+    faction column and on the mining camps' banners; readable at the list's
+    size?
 
 ## 7. Orchestration notes
 
@@ -882,3 +886,22 @@ From the lanes' reports (measured there unless marked).
   (the declaration, the README and CHANGELOG links); the Help fixtures for
   the changed line; the link and anchor check of the touched documents;
   the full run once.
+
+### Follow-ups after the merges (2026-10-31)
+
+- **Abyssal B** (`fde3073c`): the user switched the abyssal tier to the
+  metal-plated variant; eight textures and their licence rows swapped.
+- **Markers at 0.8** (`b73086ec`): after a first look at two thirds the
+  user chose 0.8 of the old size: 26 px at the reference, floor 13 (15 px
+  at 1280×720, 23 px on the phone); pins in `r67_map`, `r66_map`,
+  `r27_minimap` and `world_map.md` follow.
+- **Production is 0.65.0** (`85bbbe65`, the user): its update to 0.67.0
+  crosses no map reset and runs only the 0.67.0 step.
+- **Faction heraldry** (`dcdff4d4`, study merged `6106379e`): GPT-6 Astra
+  in four passes (`tools/r67_emblem/`: pass 1 flat modern marks in the
+  faction colours, rejected as too modern and too loud; pass 2 muted
+  heraldry in the old banner colours, pair Hart & Boar chosen; pass 3 three
+  harts and three boars, the frontal heads chosen; pass 4 three frontal
+  pairs) → **H1 + K1**, the painted hart's and boar's heads. They replace
+  the inventory emblems and the camp banner cloth; `tools/r63_camp_art`
+  no longer generates those four files. GUI checklist item 30.

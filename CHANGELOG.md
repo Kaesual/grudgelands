@@ -18,6 +18,9 @@ Fixes and wishes from the group play session. **Migration** needed: the
 server's host runs the migration tool once on the stopped world (last
 point). No map reset, no new world.
 
+- **New faction heraldry:** a hart's head for The Accord and a boar's head
+  for The Throng, on weathered blue and wine-red shields, in the inventory
+  header, the Social list and on the camp banners.
 - **Social tab** (was "Party & PvP"): one box shows your party, or the
   invitations you hold while you are in none. Beside it, **Online Players**
   lists everyone online, both factions, with faction, class, race and
@@ -27,7 +30,7 @@ point). No map reset, no new world.
   counts down and tells you to answer in the Social tab ("+N more" if
   several are waiting).
 - **Map window:** about 90 % of the screen, with the map as large as fits.
-  Markers stay exactly where they belong and are about a third smaller;
+  Markers stay exactly where they belong and are a fifth smaller;
   your own and your party's arrows are always on top. A row of buttons
   above the map picks the layer. The quest list has one short line per
   quest, story quests first, each group by level; the quest boxes on
