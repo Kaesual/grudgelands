@@ -47,12 +47,13 @@ local setting_sources = {
 }
 for item, tier in pairs(setting_sources) do A.register_ingredient(item, tier) end
 
+-- Each Setting draws its own stored image (Round 68 ICONS, the user's pick
+-- B of 2026-10-31).
 for tier = 1, #settings do
 	local row = settings[tier]
 	row.item = A.register_item(C .. "setting_" .. row.key, row.name,
-		"default_gold_ingot.png^[colorize:#" ..
-			({"b7a289", "8c8c86", "6f7781", "ddb64d", "9e633e", "59436f"})[tier] ..
-			":100", {grug_profession_material = 1, grug_jewellery_setting = tier})
+		"grug_artisans_setting_" .. row.key .. ".png",
+		{grug_profession_material = 1, grug_jewellery_setting = tier})
 	A.register_ingredient(row.item, tier)
 	A.register_recipe("goldsmith", {tier = tier, output = row.item,
 		ingredients = grug_jobs.ingredient_list(row.inputs), material = true,

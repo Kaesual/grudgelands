@@ -24,6 +24,10 @@ from art import GEMS, METALS, SETTINGS, candidates
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 VERSIONS = ('old', 'a', 'b', 'c', 'd', 'final')
+# The two Lua files as they stood before the icons were installed (main
+# dbd880f4): the "Current" comparison and INSTALL.md's citations stay that
+# snapshot now that the game names the picked files.
+PRE_INSTALL = HERE/'pre_install'
 
 
 def versions_for(group, archive=True):
@@ -82,7 +86,7 @@ def label(key):
 
 
 def current_icons():
-    """Read the real texture expressions, without executing any Lua.
+    """Read the pre-install texture expressions, without executing any Lua.
 
     Engine transcription checked at pinned local reference:
     src/client/imagesource.cpp:486-519, 830-846;
@@ -90,8 +94,8 @@ def current_icons():
     brighten truncates (127.5 + 0.5 * channel). Transparent pixels stay
     transparent. All source icon alpha values are binary.
     """
-    ores = (ROOT/'mods/ITEMS/grug_materials/ores.lua').read_text()
-    goldsmith = (ROOT/'mods/ITEMS/grug_artisans/goldsmith.lua').read_text()
+    ores = (PRE_INSTALL/'ores.lua.txt').read_text()
+    goldsmith = (PRE_INSTALL/'goldsmith.lua.txt').read_text()
     processed = ores.split('local PROCESSED_VISUALS = {',1)[1].split('\n}',1)[0]
     items = ores.split('local ITEM_VISUALS = {',1)[1].split('\n}',1)[0]
     expressions = {}
@@ -442,8 +446,8 @@ def install_notes(provenance):
     """Resolve the current expressions and line citations without executing Lua."""
     ores_path = 'mods/ITEMS/grug_materials/ores.lua'
     gold_path = 'mods/ITEMS/grug_artisans/goldsmith.lua'
-    ores = (ROOT/ores_path).read_text().splitlines()
-    gold = (ROOT/gold_path).read_text().splitlines()
+    ores = (PRE_INSTALL/'ores.lua.txt').read_text().splitlines()
+    gold = (PRE_INSTALL/'goldsmith.lua.txt').read_text().splitlines()
     registry = (ROOT/'mods/ITEMS/grug_materials/registry.lua').read_text()
 
     def cite(path, lines, needle):
