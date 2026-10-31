@@ -5,7 +5,9 @@ acceptance; started on the user's "go" the same day. Claude coordinates.
 **Complete on 2026-10-31:** all three lanes merged (TEXT and SIGNS each
 reviewed MERGE without a fix round; the art study ART checked by the
 coordinator); after the merges the user dropped the hover text
-([follow-up](#follow-up-after-the-merges-2026-10-31)); GUI test pending,
+([follow-up](#follow-up-after-the-merges-2026-10-31)) and picked wood set B
+with the notice board in two halves
+([follow-up](#follow-up-wood-set-b-and-the-board-in-two-halves-2026-10-31)); GUI test pending,
 not pushed ([completion](#completion-2026-10-31)).
 Version: **0.68.0**. Classification: **compatible** (new nodes; the text
 of existing signs and chest labels is already in node metadata; the text
@@ -171,7 +173,8 @@ for the user's verdict on a first-look default.
    rewrite, clear and dig. The text stands on the board in dark ink, 4
    lines of 15 characters, wrapped at spaces, a word longer than a line
    broken inside, what does not fit cut off; pointing at the sign shows
-   no hover text (the user, 2026-10-31). Digging leaves no text behind. *Look:* the calm boards (ART pass 2) and the
+   no hover text (the user, 2026-10-31). Digging leaves no text behind. *Look:* the calm boards (ART pass 2; the
+   wooden one in wood set B, [follow-up](#follow-up-wood-set-b-and-the-board-in-two-halves-2026-10-31)) and the
    glyph size.
 2. **Wall signs on the floor and the ceiling:** the text lies on the
    board; it reads upright only for a reader facing +z (north), from the
@@ -204,16 +207,18 @@ for the user's verdict on a first-look default.
 8. **Notice Board:** the left half goes where you point, the board to
    your right; it turns in four steps; 7 lines of 30 characters. Pointing
    at either half shows no hover text. Selection and
-   collision on both halves; it is walkable. *Look:* four steps instead of
-   free rotation.
+   collision on both halves; it is walkable. Digging either half shows the
+   cracks on that half; the two halves join without a seam, front, back
+   and at an angle, at all four turns. *Look:* four steps instead of
+   free rotation; the warm wood (set B) beside a wooden chest and planks.
 9. **Refused board:** next to a block, under a low ceiling (the two nodes
    above must be free) or over a gap (solid ground under both halves): a
    notice says why; reaching into someone else's claim: the claim's
    refusal. Nothing is placed and the item stays in the hand.
 10. **Digging and support:** digging either half of the board removes both,
     drops one Notice Board and leaves no text; dig the node under a
-    standing sign, a waypost or a board: it drops as an item and its text
-    goes.
+    standing sign, a waypost or either half of a board: it drops as an item
+    (one Notice Board, no half left standing) and its text goes.
 11. **Writing:** each form is sized to its sign (a text box, a single field
     on the waypost); write, rewrite, newlines, clear; a text over 512
     bytes is refused with a notice.
@@ -409,3 +414,14 @@ Remove this HUD text." This overrides ruling 1's "The hover text stays".
   and chests), `r68_signs` (no hover text, the LBM on a sign and the
   board's part), `r67_containers` (its label checks).
 - GUI checklist items 1, 4, 8 and 13 changed accordingly.
+
+### Follow-up: wood set B and the board in two halves (2026-10-31)
+
+The user picked ART's wood set B (warm heartwood) for every sign, its icon
+and the wooden wall sign (copied byte for byte), and each notice board node
+now draws its own half of the model (ART pass 4), so digging either half
+shows cracks; the halves rejoin into the one-piece model at all four turns
+(fixture `r68_signs`, headless front/angle capture). Losing the ground under
+either half no longer drops two boards (the partner's neighbours are checked
+from `after_destruct`). Still compatible: the part keeps its name, only its
+drawtype changes. GUI checklist items 1, 8 and 10 changed accordingly.
