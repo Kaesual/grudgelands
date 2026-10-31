@@ -115,7 +115,7 @@ source manifest, JSON and Markdown measurements, and the comparison-media
 notice. It rejects unexpected files in generated directories and checks
 size, RGBA mode, binary item alpha, full block opacity and matching edges.
 
-Checks completed before independent review:
+Verification completed:
 
 - `generate.py --check`: **PASS**, all 177 outputs reproduce byte for byte.
 - All 94 original candidates verified against pass-1 git blob hashes.
@@ -128,7 +128,17 @@ Checks completed before independent review:
   walls visually inspected. The page is a software preview, not a client
   capture; browser and actual client acceptance remain the user’s.
 
-Independent review and final commit receipt follow after the content commit.
+- `git diff --check`: **PASS**; `git diff 00713f9e -- mods`: **empty**.
+
+**Independent review: PASS, no findings**, native Sol reviewer
+`icons_pass2_review`, fresh context under the project’s art review policy.
+Reviewed delta: `00713f9e..f81ece3c35680ed5d8e62836b03ee37e8410dfe7`.
+The reviewer inspected the art sheets, confirmed all preserved files and
+C/D reuse mappings (including settings B in the shared family), reproduced
+all 177 outputs, audited the offline HTML, and independently recalculated
+all **875 pairwise and 30 rough/cut ΔE values from the PNGs**. All agreed.
+This approves proposal delivery; it does not replace the user’s visual
+selection or desktop/web acceptance.
 
 The current-image reconstruction and engine colour conversion are unchanged
 from pass 1. [current_sources.json](current_sources.json) records each
@@ -153,11 +163,18 @@ the shipped harvest tier is 5).
 
 ## Commit receipt
 
-Pass-1 tip: `00713f9e`; branch `r68-icons`. This pass uses small commits
-ending with `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
-The reviewed content hash and clean-tree receipt will be recorded after
-committing it. The final branch-tip hash belongs in the runner’s `last.md`
-and final response: a committed file cannot contain its own commit hash.
+- Pass-1 tip: `00713f9e`; branch `r68-icons`.
+- New cut/block art: `d9143d4f`.
+- Final independently reviewed art, generator, preview and report content:
+  **`f81ece3c35680ed5d8e62836b03ee37e8410dfe7`**.
+- At that reviewed content commit, `git status --porcelain` returned
+  **empty**, also confirmed by the reviewer.
+- This receipt is a documentation-only commit after the reviewed content.
+  The final branch-tip hash and final clean-tree check are emitted in the
+  runner’s `last.md`/final response after committing this receipt; a
+  committed file cannot contain its own containing commit’s hash.
+- Every pass-2 commit ends with
+  `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
 
 The following tables are copied from the generated measurement summary.
 All pairwise values are in [measurements.json](measurements.json).
