@@ -2,7 +2,7 @@
 
 ## Original candidates
 
-All 120 PNG files in `candidates/` are original pixel drawings authored for
+All 141 PNG files in `candidates/` are original pixel drawings authored for
 Grudgelands by **GPT-6 Astra on 2026-10-31**. They are drawn entirely by
 [art.py](art.py), called by [generate.py](generate.py), using Python, Pillow
 and numpy. No source sprite pixels, external images, fonts or generated
@@ -23,10 +23,18 @@ The project dedicates any rights it holds in these original assets to
 | `gems_{a,b}/*_block.png` | 14 | Opaque 16 × 16 RGBA gem/crystal faces: A broad facets, B stepped slabs. |
 | `gems_{c,d}/cut_*.png` | 12 | Transparent 16 × 16 RGBA regular cuts: C a clipped step family, D distinct classic silhouettes. |
 | `gems_{c,d}/*_block.png` | 14 | Opaque 16 × 16 RGBA faces: C parallel bevels, D broad crown planes. Both Abyssal Crystal blocks are byte-identical to A. |
+| `gems_final/rough_*.png` | 6 | A's natural forms redrawn larger on the 16 px grid, preserving the colour ramps, fracture cues and upper-left light. |
+| `gems_final/{quartz,abyssal_crystal}.png` | 2 | A's two-prism Quartz and three-pronged Abyssal Crystal cluster redrawn at the same larger specimen scale. |
+| `gems_final/cut_*.png` | 6 | Byte-identical copies of the picked D cuts. |
+| `gems_final/*_block.png` | 7 | Byte-identical copies of the picked D blocks, including the unchanged A-origin Abyssal Crystal face. |
 
 C/D reuse A’s six rough gems, Quartz and Abyssal Crystal unchanged from
 `gems_a/`; these eight files are not duplicated or rescaled. All original
 A/B candidate files remain byte-identical to pass 1.
+Pass 3 keeps all 120 A/B/C/D candidate files byte-identical to pass 2;
+only `gems_final/` adds assets. [INSTALL.md](INSTALL.md) lists the 47 picked
+files across bars A, settings B and final gems, with the owning mods'
+required licence rows.
 
 The block textures are opaque because they cover solid node faces; the
 item icons have transparent backgrounds. Candidate coordinates use only

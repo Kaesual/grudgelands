@@ -23,18 +23,24 @@ from art import GEMS, METALS, SETTINGS, candidates
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-VERSIONS = ('old', 'a', 'b', 'c', 'd')
+VERSIONS = ('old', 'a', 'b', 'c', 'd', 'final')
 
 
 def versions_for(group, archive=True):
     if group in ('gems','gem_blocks'):
-        return VERSIONS if archive else ('old','a','c','d')
+        return VERSIONS if archive else ('old','d','final')
     return ('old','a','b')
 
 
 def version_label(group, v):
     if v == 'old':
         return 'Current'
+    if group in ('gems','gem_blocks'):
+        if v == 'final':
+            return 'Final · Picked D blocks' if group == 'gem_blocks' else 'Final · Picked D + larger rough'
+        if v == 'd':
+            return 'D · Picked, pass 2' if group == 'gem_blocks' else 'D · Pass 2, small rough'
+        return v.upper()+' · Earlier variant'
     picked = (group in ('bars','metal_blocks') and v == 'a') or (group == 'settings' and v == 'b')
     suffix = ' · Picked' if picked else ' · Reference' if group in ('gems','gem_blocks') and v == 'a' else ''
     return v.upper()+suffix
@@ -54,9 +60,9 @@ IDEAS = {
     'settings': ('A · Loose bezels', 'An empty open socket, with copper or gold trim where the recipe calls for it.',
                  'B · Ring blanks', 'An empty prong crown above a hollow ring shank, ready for a separate stone.',
                  'B', 'Picked by the user: the open prong crown and hollow ring shank make the setting recognisable.'),
-    'gems': ('C · Ordered steps', 'A consistent family of symmetric clipped step cuts, with wide tables and parallel rims.',
-             'D · Classic silhouettes', 'Oval citrine, square jade, round garnet, cushion sapphire, pear ruby and a brilliant diamond.',
-             'D', 'The different classic shapes separate the six stones and the rough/cut states; the broad brilliant diamond leads the group.'),
+    'gems': ('D · Pass 2', 'Picked classic cuts and matching blocks, alongside A’s smaller rough specimens.',
+             'Final · Pass 3', 'The same D cuts and blocks, with eight larger raw specimens redrawn on the pixel grid.',
+             'D', 'Picked by the user: cut gems D and blocks D, including the unchanged Abyssal Crystal block. All groups are decided.'),
 }
 METHOD = ('CIE76 ΔE: sRGB → linear RGB → CIE XYZ D65 → Lab; compute the Euclidean '
           'distance at each matching pixel and average only where BOTH alpha values are 255. '
@@ -181,10 +187,10 @@ def summary(data):
         for v, rows in versions.items():
             for row in rows[:3]:
                 lines.append(f'| {TITLES[group]} | {v.upper()} | {label(row["first"])} / {label(row["second"])} | {number(row["delta_e"])} | {row["shared_opaque_pixels"]} |')
-    lines += ['', '## Rough versus cut', '', '| Gem | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE |', '|---|---:|---:|---:|---:|---:|']
+    lines += ['', '## Rough versus cut', '', '| Gem | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE | Final ΔE |', '|---|---:|---:|---:|---:|---:|---:|']
     for i,k in enumerate(GEMS):
         lines.append('| '+label(k)+' | '+' | '.join(number(data['rough_cut'][v][i]['delta_e']) for v in VERSIONS)+' |')
-    lines += ['', '## Known weak pairs, before and after', '', '| Pair | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE |', '|---|---:|---:|---:|---:|---:|']
+    lines += ['', '## Known weak pairs, before and after', '', '| Pair | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE | Final ΔE |', '|---|---:|---:|---:|---:|---:|---:|']
     for a,b in [('tin_bar','steel_bar'),('silver_bar','silversteel_bar'),('iron_bar','silversteel_bar'),
                 ('copper_bar','bronze_bar'),('rough_garnet','rough_ruby'),('cut_garnet','cut_ruby'),('quartz','cut_diamond')]:
         group = 'bars' if a.endswith('_bar') else 'gems'
@@ -280,15 +286,15 @@ th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}th{
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.metrics h3{margin-top:20px}details{margin:16px 0}summary{cursor:pointer;color:var(--gold)}.foot{font-size:12px;color:var(--muted)}
 @media(max-width:800px){main{padding:25px 16px}.cards,.metrics,.ideas{grid-template-columns:1fr}h1{font-size:36px}.samples{gap:8px}}
 </style><main><div class="eyebrow">Grudgelands / Round 68 / Art proposals</div>
-<h1>Picked metals.<br>Clearer polished stones.</h1>
-<p class="muted">Pass 2: bars A and settings B are picked. Gems A remain the preferred rough/mineral family; the cut-gem rework C/D is ready for selection. Start with the native inventory strips, then compare the larger samples. Nothing on this page is installed in the game.</p><div class="cards">''']
+<h1>The picked family.<br>Raw stones with weight.</h1>
+<p class="muted">Pass 3 · All groups decided: bars and metal blocks A; settings B; cut gems and gem blocks D, with the Abyssal Crystal block as it is. The final gem folder adds larger rough gems, Quartz and Abyssal Crystal in the same shapes, colours and upper-left light. Nothing on this page is installed in the game.</p><div class="cards">''']
     for group, (a,ad,b,bd,pick,why) in IDEAS.items():
-        decision = 'Recommendation: D · pick pending' if group == 'gems' else 'Picked: '+pick
+        decision = 'Picked: '+pick
         page.append(f'<article class="card"><h3>{TITLES[group]}</h3><p class="pick">{decision}</p><p>{why}</p><p><b>{a}</b> — {ad}<br><b>{b}</b> — {bd}</p></article>')
-    page.append('</div><nav><a href="#family">Picked family + C/D</a>'+''.join(f'<a href="#{g}">{TITLES[g]}</a>' for g in GROUPS)+'<a href="#measurements">Measurements</a><a href="#credits">Credits</a></nav>')
+    page.append('</div><nav><a href="#family">Picked family</a>'+''.join(f'<a href="#{g}">{TITLES[g]}</a>' for g in GROUPS)+'<a href="#measurements">Measurements</a><a href="#credits">Credits</a></nav>')
     page.append('<p class="foot">All item samples have transparent backgrounds; solid node textures are opaque RGBA. Light comes from the upper left. One screen pixel per source pixel at 16 px when browser zoom is 100%; device pixel density may differ.</p>')
-    page.append('<section id="family"><h2>The final family, together</h2><p>Picked bars A + picked settings B + A rough gems/minerals with C or D cuts. Each uninterrupted inventory strip contains 10 bars, 6 empty settings, then the 14 gem/mineral items. Scroll horizontally on smaller screens. C/D are proposals, not picks.</p>')
-    for v in ('c','d'):
+    page.append('<section id="family"><h2>The final family, together</h2><p>Picked bars A + picked settings B + final gems: larger rough specimens and unchanged D cuts. Each uninterrupted inventory strip contains 10 bars, 6 empty settings, then the 14 gem/mineral items. Scroll horizontally on smaller screens.</p>')
+    for v in ('final',):
         family = dict(sets[v])
         family.update({k:sets['b'][k] for k in GROUPS['settings']})
         page.append('<div class="inventory"><h3>A bars · B settings · '+v.upper()+' gems</h3><div class="scroll">')
@@ -309,7 +315,7 @@ th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}th{
             page.append('<p class="muted">T1 Tin · T2 Iron · T3 Copper-inlaid Steel · T4 Gold · T5 Gold-filigreed Embersteel · T6 Gold-filigreed Abyssal Steel. The centre is empty in every proposal.</p>')
             page.append('<details><summary>Unchanged shipped trinkets · T1–T6 metal context</summary><div class="strip">'+''.join('<span class="sample">'+image_tag(Image.open(ROOT/'mods/ITEMS/grug_gear/textures'/f'grug_gear_trinket_battlebeat_t{i}.png').convert('RGBA'),48,f'Shipped T{i} trinket')+f'<small>T{i}</small></span>' for i in range(1,7))+'</div><p class="foot">The stones belong to the finished trinkets, not to the proposed empty mounts.</p></details>')
         if group == 'gems':
-            page.append('<p class="callout">Rework ready for selection: C and D replace A’s irregular cut proposals. A remains reference, not a final gem pick. All six rough gems, Quartz and Abyssal Crystal are byte-identical to A and are not scaled. The Abyssal Crystal block also stays A in both new variants.</p>')
+            page.append('<p class="callout">Picked: D cuts and D blocks. Compare current icons, pass 2 D with the small rough specimens, and the final group. Only the six rough gems, Quartz and Abyssal Crystal were redrawn larger; their palettes, natural forms and lighting stay A. Every D cut and block is byte-identical in the final folder. A/B/C/D stay available for the record.</p>')
         for v in versions:
             page.append(f'<div class="inventory"><h3>{version_label(group,v)} · whole group</h3><div class="scroll">'+strip(sets,v,GROUPS[group],16)+strip(sets,v,GROUPS[group],32)+'</div></div>')
         page.append('<div class="scroll"><table class="comparison '+('gemcomparison' if group=='gems' else '')+'">'+comparison_heading(group,versions))
@@ -326,22 +332,25 @@ th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}th{
             page.append(f'<tr><td><b>{label(k)}</b></td>'+''.join('<td>'+samples(sets[v][k],label(k))+'</td>' for v in versions)+'</tr>')
         page.append('</tbody></table></div>')
         if group == 'gems':
-            page.append('<div class="callout"><h3>Garnet beside Ruby</h3><p>Warm, dark garnet and vivid crimson ruby: square versus elongated steps in C; round versus pear in D. A is the earlier reference. Read left to right: rough garnet, rough ruby, cut garnet, cut ruby.</p>')
+            page.append('<div class="callout"><h3>Garnet beside Ruby</h3><p>Warm, dark garnet and vivid crimson ruby; the picked D cuts are round versus pear. Final enlarges the irregular rough specimens and preserves these D cuts exactly. Read left to right: rough garnet, rough ruby, cut garnet, cut ruby.</p>')
             for v in versions:
                 page.append('<b>'+v.upper()+'</b><div class="scroll">'+strip(sets,v,['rough_garnet','rough_ruby','cut_garnet','cut_ruby'],16)+strip(sets,v,['rough_garnet','rough_ruby','cut_garnet','cut_ruby'],32)+'</div>')
             page.append('</div><p class="foot">Abyssal Crystal stays a raw mineral. Its block follows the crystal palette; it is not a cut gem and gains no cut item. The current registry places it at harvest tier 5, although the brief called it T6; these proposals change no tiers.</p>')
         if group == 'gems':
-            page.append('<details><summary>Earlier variants · B (not selected)</summary><p>Pass 1 B: broken host rock and stepped cuts. Kept intact for the record.</p><div class="scroll">'+strip(sets,'b',GROUPS['gems'],16)+strip(sets,'b',GROUPS['gems'],32)+'<table>')
-            for k in GEMS:
-                page.append('<tr><td>'+label(k)+'</td><td>'+gem_samples(sets,'b',k)+'</td></tr>')
-            for k in ('quartz','abyssal_crystal'):
-                page.append('<tr><td>'+label(k)+'</td><td>'+samples(sets['b'][k],label(k))+'</td></tr>')
-            page.append('</table></div></details>')
+            for v, idea in (('a','Original natural specimens and irregular cuts.'),
+                            ('b','Broken host rock and stepped cuts.'),
+                            ('c','Ordered, symmetric step cuts with A’s original raw specimens.')):
+                page.append('<details><summary>Earlier variant '+v.upper()+' (not selected)</summary><p>'+idea+' Kept intact for the record.</p><div class="scroll">'+strip(sets,v,GROUPS['gems'],16)+strip(sets,v,GROUPS['gems'],32)+'<table>')
+                for k in GEMS:
+                    page.append('<tr><td>'+label(k)+'</td><td>'+gem_samples(sets,v,k)+'</td></tr>')
+                for k in ('quartz','abyssal_crystal'):
+                    page.append('<tr><td>'+label(k)+'</td><td>'+samples(sets[v][k],label(k))+'</td></tr>')
+                page.append('</table></div></details>')
         page.append('</section>')
     for group in ('metal_blocks','gem_blocks'):
         versions = versions_for(group,archive=False)
         page.append(f'<section id="{group}"><h2>{TITLES[group]}</h2>')
-        page.append('<p class="muted">'+('Picked: A, quiet solid cast faces with bars A. B remains an earlier alternative of two offset courses.' if group=='metal_blocks' else 'C: broad parallel step bevels. D: four calm crown planes around a wide table. Each is a continuous solid material with matching tile edges; pick with its cut-gem set. A is reference. The Abyssal Crystal block is A in both C and D.')+'</p>')
+        page.append('<p class="muted">'+('Picked: A, quiet solid cast faces with bars A. B remains an earlier alternative of two offset courses.' if group=='metal_blocks' else 'Picked: D, four calm crown planes around a wide table, with matching tile edges. Final copies all seven D blocks byte for byte. The Abyssal Crystal block remains the original A face in both D and Final.')+'</p>')
         for v in versions:
             mixed = wall(None,[sets[v][k] for k in GROUPS[group]])
             page.append('<div class="inventory"><h3>'+version_label(group,v)+' · all blocks</h3><div class="scroll">'+strip(sets,v,GROUPS[group],16)+strip(sets,v,GROUPS[group],32)+image_tag(mixed,mixed.width*3,'Mixed block wall '+v)+'</div></div>')
@@ -353,12 +362,13 @@ th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}th{
             page.append('<tr><td>'+label(k)+'</td>'+''.join('<td>'+image_tag(wall(sets[v][k]),240,label(k)+' wall '+v)+'</td>' for v in versions)+'</tr>')
         page.append('</tbody></table></div>')
         if group == 'gem_blocks':
-            page.append('<details><summary>Earlier variants · B block walls</summary><div class="scroll">')
-            mixed = wall(None,[sets['b'][k] for k in GROUPS[group]])
-            page.append(image_tag(mixed,mixed.width*3,'B mixed gem wall')+'<table>')
-            for k in GROUPS[group]:
-                page.append('<tr><td>'+label(k)+'</td><td>'+samples(sets['b'][k],label(k))+'</td><td>'+image_tag(wall(sets['b'][k]),240,label(k)+' B wall')+'</td></tr>')
-            page.append('</table></div></details>')
+            for v in ('a','b','c'):
+                page.append('<details><summary>Earlier variant '+v.upper()+' block walls</summary><div class="scroll">')
+                mixed = wall(None,[sets[v][k] for k in GROUPS[group]])
+                page.append(image_tag(mixed,mixed.width*3,v.upper()+' mixed gem wall')+'<table>')
+                for k in GROUPS[group]:
+                    page.append('<tr><td>'+label(k)+'</td><td>'+samples(sets[v][k],label(k))+'</td><td>'+image_tag(wall(sets[v][k]),240,label(k)+' '+v.upper()+' wall')+'</td></tr>')
+                page.append('</table></div></details>')
         page.append('</section>')
     page.append('<section id="measurements"><h2>Distinctness, with limits</h2><p>'+METHOD+'</p><p class="muted">OLD uses the shipped texture expressions and engine rounding, including the cut-gem brighten modifier. Each scope is measured separately; the gem scope includes all 14 rough, cut and mineral items.</p>')
     for group in GROUPS:
@@ -368,11 +378,12 @@ th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}th{
             page.append('<div><h3>'+v.upper()+' · closest three</h3>'+pair_table(rows[:3])+f'<details><summary>All {len(rows)} pairs</summary>'+pair_table(rows)+'</details></div>')
         page.append('</div>')
         if group in ('gems','gem_blocks'):
-            page.append('<details><summary>Earlier B measurements</summary>'+pair_table(data['pairs'][group]['b'])+'</details>')
-    page.append('<h3>Rough versus cut · every gem</h3><table class="numbers"><tr><th>Gem</th><th>Old ΔE / N</th><th>A ΔE / N</th><th>B ΔE / N</th><th>C ΔE / N</th><th>D ΔE / N</th></tr>')
+            for v in ('a','b','c'):
+                page.append('<details><summary>Earlier '+v.upper()+' measurements</summary>'+pair_table(data['pairs'][group][v])+'</details>')
+    page.append('<h3>Rough versus cut · every gem</h3><table class="numbers"><tr><th>Gem</th><th>Old ΔE / N</th><th>A ΔE / N</th><th>B ΔE / N</th><th>C ΔE / N</th><th>D ΔE / N</th><th>Final ΔE / N</th></tr>')
     for i,k in enumerate(GEMS):
         page.append('<tr><td>'+label(k)+'</td>'+''.join('<td>'+number(data['rough_cut'][v][i]['delta_e'])+' / '+str(data['rough_cut'][v][i]['shared_opaque_pixels'])+'</td>' for v in VERSIONS)+'</tr>')
-    page.append('</table></section><section id="credits"><h2>Provenance &amp; delivery</h2><p>Original candidates: GPT-6 Astra, 2026-10-31; CC0-1.0 to the extent rights exist. All 120 candidate PNGs are coordinate drawings from Python, Pillow and numpy. Generator code: GPL-3.0-or-later. Shipped gear palettes informed the colour ramps; no source pixels enter a candidate.</p><p>Current comparison images retain CC BY-SA 3.0: BlockMen (gold ingot, diamond and the credited iron/steel ingot), Gambit (copper and bronze ingots), kilbith (tin ingot and metal blocks). Source records: mods/BASE/default/README.txt and license.txt. Modifications: the game’s own colour and brighten modifiers, nearest-neighbour enlargement, and shaded wall layouts. These comparison derivatives are CC BY-SA 3.0 and are not candidate assets.</p><p class="foot">CC BY-SA 3.0: Attribution-ShareAlike 3.0 Unported. Credit the named authors and mark modifications; adaptations remain under the same licence. Full vendored notice is included in comparison-license.txt beside this page. See tools/r68_icons/LICENSE-media.md for source paths and candidate coverage.</p><p class="foot">Review at 100% browser zoom on desktop and web target screens. The user picked bars/metal blocks A and settings B. The gem decision is C or D with A’s rough gems/minerals and the matching gem blocks; D is recommended. A/B are preserved for the record. No runtime, saved state, recipes or version declaration changes. Classification: compatible proposal assets only.</p></section></main></html>')
+    page.append('</table></section><section id="credits"><h2>Provenance &amp; delivery</h2><p>Original candidates: GPT-6 Astra, 2026-10-31; CC0-1.0 to the extent rights exist. All 141 candidate PNGs are coordinate drawings from Python, Pillow and numpy. Generator code: GPL-3.0-or-later. Shipped gear palettes informed the colour ramps; no source pixels enter a candidate.</p><p>Current comparison images retain CC BY-SA 3.0: BlockMen (gold ingot, diamond and the credited iron/steel ingot), Gambit (copper and bronze ingots), kilbith (tin ingot and metal blocks). Source records: mods/BASE/default/README.txt and license.txt. Modifications: the game’s own colour and brighten modifiers, nearest-neighbour enlargement, and shaded wall layouts. These comparison derivatives are CC BY-SA 3.0 and are not candidate assets.</p><p class="foot">CC BY-SA 3.0: Attribution-ShareAlike 3.0 Unported. Credit the named authors and mark modifications; adaptations remain under the same licence. Full vendored notice is included in comparison-license.txt beside this page. See tools/r68_icons/LICENSE-media.md for source paths and candidate coverage.</p><p class="foot">Review at 100% browser zoom on desktop and web target screens. All picks are final: bars/metal blocks A, settings B, cuts/blocks D. The final gem group combines D with the eight larger raw specimens. A/B/C/D are preserved for the record. No runtime, saved state, recipes or version declaration changes. Classification: compatible proposal assets only.</p></section></main></html>')
     return '\n'.join(page)
 
 
@@ -399,11 +410,11 @@ def contact_sheet(sets, group):
 def family_sheet(sets):
     """Native and double-size rows, in exactly the shared HTML strip order."""
     keys = GROUPS['bars']+GROUPS['settings']+GROUPS['gems']
-    out = Image.new('RGB',(len(keys)*42+32,290),'#18232b')
+    out = Image.new('RGB',(len(keys)*42+32,145),'#18232b')
     d = ImageDraw.Draw(out)
-    for row,v in enumerate(('c','d')):
+    for row,v in enumerate(('final',)):
         y=12+row*142
-        d.text((16,y),'Picked bars A / settings B / '+v.upper()+' gems (A rough + minerals) / 16 and 32 px',fill='#e9e5da')
+        d.text((16,y),'Picked bars A / settings B / '+v.upper()+' gems (larger rough + D cuts) / 16 and 32 px',fill='#e9e5da')
         for col,k in enumerate(keys):
             im=sets['b' if k in GROUPS['settings'] else v][k]
             for size,dy in ((16,30),(32,62)):
@@ -415,11 +426,11 @@ def family_sheet(sets):
 
 
 def block_sheet(sets):
-    out = Image.new('RGB',(1210,360),'#18232b')
+    out = Image.new('RGB',(1210,185),'#18232b')
     d = ImageDraw.Draw(out)
-    for row,v in enumerate(('c','d')):
+    for row,v in enumerate(('final',)):
         y=12+row*175
-        d.text((16,y),v.upper()+' gem blocks / 4 x 3 walls / Abyssal Crystal = A',fill='#e9e5da')
+        d.text((16,y),v.upper()+' gem blocks = picked D / 4 x 3 walls / Abyssal Crystal = A',fill='#e9e5da')
         for col,k in enumerate(GROUPS['gem_blocks']):
             im=wall(sets[v][k]).resize((160,128),Image.Resampling.NEAREST)
             out.paste(im,(16+col*170,y+20),im)
@@ -427,14 +438,127 @@ def block_sheet(sets):
     return out
 
 
+def install_notes(provenance):
+    """Resolve the current expressions and line citations without executing Lua."""
+    ores_path = 'mods/ITEMS/grug_materials/ores.lua'
+    gold_path = 'mods/ITEMS/grug_artisans/goldsmith.lua'
+    ores = (ROOT/ores_path).read_text().splitlines()
+    gold = (ROOT/gold_path).read_text().splitlines()
+    registry = (ROOT/'mods/ITEMS/grug_materials/registry.lua').read_text()
+
+    def cite(path, lines, needle):
+        matches = [i for i,line in enumerate(lines,1) if needle in line]
+        assert len(matches)==1, (path,needle,matches)
+        return f'[{Path(path).name}:{matches[0]}](../../{path}#L{matches[0]})'
+
+    lines = ['# Round 68 ICONS — installation handoff', '',
+             '**Picked by the user on 2026-10-31:** bars and metal blocks A,',
+             'settings B, cut gems and gem blocks D (Abyssal Crystal block unchanged).',
+             '`gems_final/` combines D with the eight larger pass-3 raw specimens.', '',
+             '**Compatible presentation change; no migration or map reset.** This',
+             'art lane installs nothing. The later installation lane copies the',
+             '47 picked PNGs below byte for byte, adds the mod prefix shown below,',
+             'and changes the corresponding inventory image or all-six-face tile.',
+             'All files are 16 × 16 RGBA: 30 transparent items and 17 opaque faces.', '',
+             'Copy all 21 files from `candidates/gems_final/` as one gem group,',
+             'all 20 from `candidates/bars_a/`, and all 6 from `candidates/settings_b/`.',
+             'Keep A/B/C/D here as the art record; do not ship the comparison images.', '',
+             'The destination column is relative to `mods/ITEMS/`. The current',
+             'expression column is fully expanded from the Lua data; citations name',
+             'both the data and the registration that consumes it. Check these',
+             'against the installation branch if its source lines have moved.', '',
+             '| Picked candidate (relative to this directory) | Item or node id | Destination | Current image expression replaced | Source and use |',
+             '|---|---|---|---|---|']
+    for group,variant in (('bars','a'),('metal_blocks','a'),('settings','b'),('gems','final'),('gem_blocks','final')):
+        for key in GROUPS[group]:
+            mod = 'grug_artisans' if group=='settings' else 'grug_materials'
+            folder = 'bars_a' if group in ('bars','metal_blocks') else 'settings_b' if group=='settings' else 'gems_final'
+            candidate = f'candidates/{folder}/{key}.png'
+            dest = f'{mod}/textures/{mod}_{key}.png'
+            expr = provenance[key]['expression']
+            if group=='settings':
+                stem = key.removeprefix('setting_')
+                refs = [cite(gold_path,gold,'key = "'+stem+'"'),
+                        cite(gold_path,gold,'"default_gold_ingot.png^[colorize:#"'),
+                        cite(gold_path,gold,'({"b7a289"')]
+            else:
+                assert '"'+mod+':'+key+'"' in registry, key
+                if group in ('bars','metal_blocks'):
+                    refs = [cite(ores_path,ores,'"'+expr+'"'),
+                            cite(ores_path,ores,'tiles = {visual[2]}' if group=='metal_blocks' else 'inventory_image = visual[1]')]
+                else:
+                    stem = key.removeprefix('rough_').removeprefix('cut_').removesuffix('_block')
+                    use = 'tiles = {item_texture(resource.key)}' if key.endswith('_block') else 'inventory_image = item_texture(resource.key)'
+                    use += ' .. "^[brighten"' if key.startswith('cut_') else ',' if not key.endswith('_block') else ''
+                    refs = [cite(ores_path,ores,stem+' = {"default_diamond.png"'),cite(ores_path,ores,use)]
+            lines.append(f'| [{candidate}]({candidate}) | `{mod}:{key}` | `{dest}` | `{expr}` | '+', '.join(refs)+' |')
+    lines += ['', '## Registration details', '',
+              '- Use the new files directly: do not retain `colorize` or `brighten`',
+              '  on a replacement. Each candidate already contains its final colours.',
+              '- Raw, cut and block images must resolve separately. Today the cut',
+              '  image appends `brighten` to the raw expression, and the gem block',
+              '  tiles that raw expression. D supplies dedicated cuts and opaque faces.',
+              '- Leave ore overlays and natural-node tiles alone. Only the item and',
+              '  storage-block registrations in the table are covered by these picks.',
+              '- Existing ids, tiers, recipes, drops, prices and saved state remain',
+              '  unchanged; Abyssal Crystal remains a raw mineral with no cut item.', '',
+              '## Licence rows for the shipped files', '',
+              'Add the following inventory rows to each owning mod’s',
+              '`LICENSE-media.md` (create that file for `grug_artisans`, which has',
+              'none in this worktree). Expand the sets using the exact destination',
+              'filenames in the table above. All are original coordinate drawings',
+              'by **GPT-6 Astra, 2026-10-31**, dedicated by the project to **CC0-1.0**,',
+              'to the extent rights exist. The PNG copies have no modifications;',
+              'only their filenames gain the owning mod’s prefix.', '',
+              '| Owning mod / shipped files (under textures/) | Count | Art source | Author and licence |',
+              '|---|---:|---|---|',
+              '| `grug_materials`: `grug_materials_<metal>_bar.png` (10 metals above) | 10 | `tools/r68_icons/candidates/bars_a/*_bar.png` | GPT-6 Astra — CC0-1.0 |',
+              '| `grug_materials`: `grug_materials_<metal>_block.png` (10 metals above) | 10 | `tools/r68_icons/candidates/bars_a/*_block.png` | GPT-6 Astra — CC0-1.0 |',
+              '| `grug_materials`: `grug_materials_rough_<gem>.png` (six gems above) | 6 | `tools/r68_icons/candidates/gems_final/rough_*.png`, pass-3 redraws | GPT-6 Astra — CC0-1.0 |',
+              '| `grug_materials`: `grug_materials_cut_<gem>.png` (six gems above) | 6 | `tools/r68_icons/candidates/gems_final/cut_*.png`, unchanged D | GPT-6 Astra — CC0-1.0 |',
+              '| `grug_materials`: `grug_materials_quartz.png`, `grug_materials_abyssal_crystal.png` | 2 | `tools/r68_icons/candidates/gems_final/{quartz,abyssal_crystal}.png`, pass-3 redraws | GPT-6 Astra — CC0-1.0 |',
+              '| `grug_materials`: `grug_materials_<gem>_block.png` (six gems), `grug_materials_abyssal_crystal_block.png` | 7 | `tools/r68_icons/candidates/gems_final/*_block.png`, unchanged D (crystal originally A) | GPT-6 Astra — CC0-1.0 |',
+              '| `grug_artisans`: `grug_artisans_setting_<key>.png` (six keys above) | 6 | `tools/r68_icons/candidates/settings_b/setting_*.png` | GPT-6 Astra — CC0-1.0 |', '',
+              'The source ledger is [LICENSE-media.md](LICENSE-media.md); the generator',
+              'and drawing code remain GPL-3.0-or-later. In the materials ledger,',
+              'update the stored-file count (36 + 41 = 77) and replace only the',
+              'runtime-attribution descriptions for these 41 selected images.',
+              'Keep the existing attribution for unchanged ore overlays, Emberglass,',
+              'tool sprites and other registrations. The old comparison derivatives',
+              'here retain CC BY-SA 3.0 and are never copied into the game.', '',
+              '## Verification and client checklist', '',
+              'Before copying: `python3 tools/r68_icons/generate.py --check`.',
+              'After copying, compare each shipped PNG byte for byte with the table’s',
+              'candidate, then run the installation lane’s required Lua/art checks.',
+              'The generator currently reconstructs the pre-installation expressions;',
+              'if those expressions change, preserve this comparison source snapshot',
+              'when adapting the generator for the installation commit.', '',
+              'User GUI check on **desktop and web**: read the shared 16/32 px family;',
+              'compare rough/cut for each gem, Garnet/Ruby and Quartz/Diamond; inspect',
+              'a repeated wall and mixed row of the metal and gem blocks. The offline',
+              'page is a software study, not a client capture or GUI acceptance.', '']
+    return '\n'.join(lines)
+
+
 def build():
     proposed = candidates()
+    final = proposed['gems_final']
+    assert set(final)==set(GROUPS['gems']+GROUPS['gem_blocks'])
+    for key,im in proposed['gems_d'].items():
+        assert png(final[key])==png(im), key
+    for key in [*('rough_'+k for k in GEMS),'quartz','abyssal_crystal']:
+        previous = np.asarray(proposed['gems_a'][key])
+        larger = np.asarray(final[key])
+        assert np.count_nonzero(larger[:,:,3]) > np.count_nonzero(previous[:,:,3]), key
+        # The redraw uses exactly the original raw specimen's palette.
+        colours = lambda a: {tuple(p) for p in a[a[:,:,3]==255]}
+        assert colours(larger)==colours(previous), key
     old,provenance = current_icons()
     sets = {'old':old}
     outputs = {}
-    for v in ('a','b','c','d'):
-        sets[v] = dict(sets['a']) if v in ('c','d') else {}
-        for group in (('gems',) if v in ('c','d') else ('bars','settings','gems')):
+    for v in VERSIONS[1:]:
+        sets[v] = dict(sets['a']) if v in ('c','d','final') else {}
+        for group in (('gems',) if v in ('c','d','final') else ('bars','settings','gems')):
             for key,im in proposed[group+'_'+v].items():
                 assert im.mode=='RGBA' and im.size==(16,16)
                 alpha = np.asarray(im)[:,:,3]
@@ -448,13 +572,14 @@ def build():
                 sets[v][key] = im
                 outputs[f'candidates/{group}_{v}/{key}.png'] = png(im)
         assert set(sets[v])==set(old)
-    assert len([k for k in outputs if k.startswith('candidates/')])==120
+    assert len([k for k in outputs if k.startswith('candidates/')])==141
     for k,im in old.items():
         outputs['preview/current/'+k+'.png'] = png(im)
     data = measurements(sets)
     outputs['measurements.json'] = (json.dumps(data,indent=2)+'\n').encode()
     outputs['MEASUREMENTS.md'] = summary(data).encode()
     outputs['current_sources.json'] = (json.dumps(provenance,indent=2,sort_keys=True)+'\n').encode()
+    outputs['INSTALL.md'] = install_notes(provenance).encode()
     outputs['preview/index.html'] = preview(sets,data).encode()
     notice = (ROOT/'mods/BASE/default/license.txt').read_text()
     notice = notice.split('Licenses of media (textures, models and sounds)',1)[1]
@@ -492,7 +617,7 @@ def main():
     if errors:
         print('FAIL: '+'\n'.join(errors),file=sys.stderr)
         return 1
-    print(('PASS: verified ' if args.check else 'Wrote ')+f'{len(outputs)} reproducible outputs; 120 candidate PNGs, 47 current comparisons; no game assets changed.')
+    print(('PASS: verified ' if args.check else 'Wrote ')+f'{len(outputs)} reproducible outputs; 141 candidate PNGs, 47 current comparisons; no game assets changed.')
     return 0
 
 

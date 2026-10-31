@@ -3837,6 +3837,554 @@
           "delta_e": 100.7178,
           "shared_opaque_pixels": 95
         }
+      ],
+      "final": [
+        {
+          "first": "rough_garnet",
+          "second": "cut_garnet",
+          "delta_e": 9.4663,
+          "shared_opaque_pixels": 147
+        },
+        {
+          "first": "rough_jade",
+          "second": "cut_jade",
+          "delta_e": 12.9337,
+          "shared_opaque_pixels": 142
+        },
+        {
+          "first": "rough_ruby",
+          "second": "cut_ruby",
+          "delta_e": 16.0593,
+          "shared_opaque_pixels": 116
+        },
+        {
+          "first": "rough_sapphire",
+          "second": "cut_sapphire",
+          "delta_e": 17.136,
+          "shared_opaque_pixels": 132
+        },
+        {
+          "first": "rough_citrine",
+          "second": "cut_citrine",
+          "delta_e": 17.3925,
+          "shared_opaque_pixels": 125
+        },
+        {
+          "first": "rough_diamond",
+          "second": "cut_diamond",
+          "delta_e": 24.8816,
+          "shared_opaque_pixels": 111
+        },
+        {
+          "first": "rough_sapphire",
+          "second": "abyssal_crystal",
+          "delta_e": 30.6748,
+          "shared_opaque_pixels": 129
+        },
+        {
+          "first": "cut_garnet",
+          "second": "rough_ruby",
+          "delta_e": 31.3605,
+          "shared_opaque_pixels": 124
+        },
+        {
+          "first": "rough_garnet",
+          "second": "cut_ruby",
+          "delta_e": 31.6562,
+          "shared_opaque_pixels": 133
+        },
+        {
+          "first": "rough_garnet",
+          "second": "rough_ruby",
+          "delta_e": 32.0132,
+          "shared_opaque_pixels": 117
+        },
+        {
+          "first": "cut_sapphire",
+          "second": "abyssal_crystal",
+          "delta_e": 33.0832,
+          "shared_opaque_pixels": 141
+        },
+        {
+          "first": "cut_garnet",
+          "second": "cut_ruby",
+          "delta_e": 33.1063,
+          "shared_opaque_pixels": 132
+        },
+        {
+          "first": "cut_diamond",
+          "second": "quartz",
+          "delta_e": 33.7659,
+          "shared_opaque_pixels": 121
+        },
+        {
+          "first": "rough_diamond",
+          "second": "quartz",
+          "delta_e": 33.7802,
+          "shared_opaque_pixels": 137
+        },
+        {
+          "first": "rough_jade",
+          "second": "rough_diamond",
+          "delta_e": 43.1365,
+          "shared_opaque_pixels": 132
+        },
+        {
+          "first": "cut_jade",
+          "second": "quartz",
+          "delta_e": 44.6027,
+          "shared_opaque_pixels": 164
+        },
+        {
+          "first": "cut_jade",
+          "second": "rough_diamond",
+          "delta_e": 44.9461,
+          "shared_opaque_pixels": 142
+        },
+        {
+          "first": "cut_jade",
+          "second": "cut_diamond",
+          "delta_e": 45.8529,
+          "shared_opaque_pixels": 134
+        },
+        {
+          "first": "rough_garnet",
+          "second": "abyssal_crystal",
+          "delta_e": 46.4317,
+          "shared_opaque_pixels": 146
+        },
+        {
+          "first": "rough_sapphire",
+          "second": "rough_diamond",
+          "delta_e": 47.5981,
+          "shared_opaque_pixels": 131
+        },
+        {
+          "first": "rough_jade",
+          "second": "quartz",
+          "delta_e": 47.6459,
+          "shared_opaque_pixels": 140
+        },
+        {
+          "first": "rough_citrine",
+          "second": "cut_garnet",
+          "delta_e": 47.9838,
+          "shared_opaque_pixels": 138
+        },
+        {
+          "first": "rough_citrine",
+          "second": "rough_garnet",
+          "delta_e": 48.3173,
+          "shared_opaque_pixels": 133
+        },
+        {
+          "first": "cut_sapphire",
+          "second": "rough_diamond",
+          "delta_e": 48.6428,
+          "shared_opaque_pixels": 137
+        },
+        {
+          "first": "cut_garnet",
+          "second": "abyssal_crystal",
+          "delta_e": 50.1318,
+          "shared_opaque_pixels": 141
+        },
+        {
+          "first": "cut_citrine",
+          "second": "rough_garnet",
+          "delta_e": 50.2801,
+          "shared_opaque_pixels": 147
+        },
+        {
+          "first": "cut_citrine",
+          "second": "cut_garnet",
+          "delta_e": 51.236,
+          "shared_opaque_pixels": 140
+        },
+        {
+          "first": "rough_jade",
+          "second": "cut_diamond",
+          "delta_e": 52.4149,
+          "shared_opaque_pixels": 111
+        },
+        {
+          "first": "cut_ruby",
+          "second": "abyssal_crystal",
+          "delta_e": 52.5279,
+          "shared_opaque_pixels": 131
+        },
+        {
+          "first": "cut_sapphire",
+          "second": "cut_diamond",
+          "delta_e": 54.1759,
+          "shared_opaque_pixels": 126
+        },
+        {
+          "first": "rough_diamond",
+          "second": "abyssal_crystal",
+          "delta_e": 54.8751,
+          "shared_opaque_pixels": 134
+        },
+        {
+          "first": "rough_garnet",
+          "second": "rough_diamond",
+          "delta_e": 55.3943,
+          "shared_opaque_pixels": 143
+        },
+        {
+          "first": "rough_ruby",
+          "second": "abyssal_crystal",
+          "delta_e": 57.4131,
+          "shared_opaque_pixels": 112
+        },
+        {
+          "first": "cut_citrine",
+          "second": "rough_jade",
+          "delta_e": 57.62,
+          "shared_opaque_pixels": 142
+        },
+        {
+          "first": "cut_citrine",
+          "second": "cut_jade",
+          "delta_e": 58.1698,
+          "shared_opaque_pixels": 148
+        },
+        {
+          "first": "rough_citrine",
+          "second": "cut_jade",
+          "delta_e": 58.3585,
+          "shared_opaque_pixels": 143
+        },
+        {
+          "first": "rough_citrine",
+          "second": "rough_jade",
+          "delta_e": 58.5823,
+          "shared_opaque_pixels": 125
+        },
+        {
+          "first": "rough_garnet",
+          "second": "quartz",
+          "delta_e": 59.1336,
+          "shared_opaque_pixels": 149
+        },
+        {
+          "first": "rough_jade",
+          "second": "rough_garnet",
+          "delta_e": 59.3047,
+          "shared_opaque_pixels": 143
+        },
+        {
+          "first": "cut_garnet",
+          "second": "rough_diamond",
+          "delta_e": 59.5297,
+          "shared_opaque_pixels": 137
+        },
+        {
+          "first": "cut_garnet",
+          "second": "quartz",
+          "delta_e": 59.534,
+          "shared_opaque_pixels": 146
+        },
+        {
+          "first": "rough_sapphire",
+          "second": "cut_diamond",
+          "delta_e": 59.5459,
+          "shared_opaque_pixels": 112
+        },
+        {
+          "first": "rough_garnet",
+          "second": "rough_sapphire",
+          "delta_e": 59.8298,
+          "shared_opaque_pixels": 136
+        },
+        {
+          "first": "cut_jade",
+          "second": "cut_garnet",
+          "delta_e": 60.7118,
+          "shared_opaque_pixels": 156
+        },
+        {
+          "first": "rough_jade",
+          "second": "cut_garnet",
+          "delta_e": 61.1491,
+          "shared_opaque_pixels": 136
+        },
+        {
+          "first": "cut_jade",
+          "second": "rough_garnet",
+          "delta_e": 61.5687,
+          "shared_opaque_pixels": 155
+        },
+        {
+          "first": "rough_garnet",
+          "second": "cut_sapphire",
+          "delta_e": 61.6228,
+          "shared_opaque_pixels": 152
+        },
+        {
+          "first": "cut_sapphire",
+          "second": "quartz",
+          "delta_e": 62.3029,
+          "shared_opaque_pixels": 149
+        },
+        {
+          "first": "cut_diamond",
+          "second": "abyssal_crystal",
+          "delta_e": 62.5252,
+          "shared_opaque_pixels": 115
+        },
+        {
+          "first": "cut_citrine",
+          "second": "quartz",
+          "delta_e": 62.7943,
+          "shared_opaque_pixels": 142
+        },
+        {
+          "first": "cut_garnet",
+          "second": "rough_sapphire",
+          "delta_e": 63.1851,
+          "shared_opaque_pixels": 136
+        },
+        {
+          "first": "cut_garnet",
+          "second": "cut_diamond",
+          "delta_e": 63.8494,
+          "shared_opaque_pixels": 128
+        },
+        {
+          "first": "rough_citrine",
+          "second": "quartz",
+          "delta_e": 64.729,
+          "shared_opaque_pixels": 138
+        },
+        {
+          "first": "cut_garnet",
+          "second": "cut_sapphire",
+          "delta_e": 64.8839,
+          "shared_opaque_pixels": 144
+        },
+        {
+          "first": "quartz",
+          "second": "abyssal_crystal",
+          "delta_e": 65.1164,
+          "shared_opaque_pixels": 141
+        },
+        {
+          "first": "rough_garnet",
+          "second": "cut_diamond",
+          "delta_e": 65.9233,
+          "shared_opaque_pixels": 120
+        },
+        {
+          "first": "rough_sapphire",
+          "second": "quartz",
+          "delta_e": 66.3607,
+          "shared_opaque_pixels": 137
+        },
+        {
+          "first": "rough_sapphire",
+          "second": "cut_ruby",
+          "delta_e": 67.0876,
+          "shared_opaque_pixels": 133
+        },
+        {
+          "first": "rough_citrine",
+          "second": "cut_ruby",
+          "delta_e": 67.4196,
+          "shared_opaque_pixels": 132
+        },
+        {
+          "first": "rough_citrine",
+          "second": "rough_ruby",
+          "delta_e": 67.4787,
+          "shared_opaque_pixels": 123
+        },
+        {
+          "first": "rough_citrine",
+          "second": "rough_diamond",
+          "delta_e": 68.9861,
+          "shared_opaque_pixels": 130
+        },
+        {
+          "first": "cut_citrine",
+          "second": "cut_ruby",
+          "delta_e": 69.2563,
+          "shared_opaque_pixels": 122
+        },
+        {
+          "first": "cut_sapphire",
+          "second": "cut_ruby",
+          "delta_e": 70.0916,
+          "shared_opaque_pixels": 126
+        },
+        {
+          "first": "cut_citrine",
+          "second": "rough_diamond",
+          "delta_e": 70.4781,
+          "shared_opaque_pixels": 134
+        },
+        {
+          "first": "cut_citrine",
+          "second": "cut_diamond",
+          "delta_e": 71.3195,
+          "shared_opaque_pixels": 122
+        },
+        {
+          "first": "cut_ruby",
+          "second": "quartz",
+          "delta_e": 71.5624,
+          "shared_opaque_pixels": 133
+        },
+        {
+          "first": "cut_citrine",
+          "second": "rough_ruby",
+          "delta_e": 71.5827,
+          "shared_opaque_pixels": 112
+        },
+        {
+          "first": "rough_sapphire",
+          "second": "rough_ruby",
+          "delta_e": 71.917,
+          "shared_opaque_pixels": 119
+        },
+        {
+          "first": "rough_jade",
+          "second": "cut_sapphire",
+          "delta_e": 71.9747,
+          "shared_opaque_pixels": 145
+        },
+        {
+          "first": "cut_jade",
+          "second": "cut_sapphire",
+          "delta_e": 71.9893,
+          "shared_opaque_pixels": 156
+        },
+        {
+          "first": "rough_jade",
+          "second": "abyssal_crystal",
+          "delta_e": 72.6138,
+          "shared_opaque_pixels": 132
+        },
+        {
+          "first": "rough_jade",
+          "second": "rough_sapphire",
+          "delta_e": 72.7305,
+          "shared_opaque_pixels": 128
+        },
+        {
+          "first": "cut_jade",
+          "second": "abyssal_crystal",
+          "delta_e": 72.8309,
+          "shared_opaque_pixels": 146
+        },
+        {
+          "first": "cut_ruby",
+          "second": "rough_diamond",
+          "delta_e": 72.8812,
+          "shared_opaque_pixels": 131
+        },
+        {
+          "first": "cut_jade",
+          "second": "rough_sapphire",
+          "delta_e": 73.4233,
+          "shared_opaque_pixels": 142
+        },
+        {
+          "first": "rough_citrine",
+          "second": "cut_diamond",
+          "delta_e": 73.4344,
+          "shared_opaque_pixels": 115
+        },
+        {
+          "first": "cut_sapphire",
+          "second": "rough_ruby",
+          "delta_e": 74.7294,
+          "shared_opaque_pixels": 116
+        },
+        {
+          "first": "rough_ruby",
+          "second": "quartz",
+          "delta_e": 75.4782,
+          "shared_opaque_pixels": 120
+        },
+        {
+          "first": "rough_ruby",
+          "second": "rough_diamond",
+          "delta_e": 76.7916,
+          "shared_opaque_pixels": 116
+        },
+        {
+          "first": "rough_ruby",
+          "second": "cut_diamond",
+          "delta_e": 77.0668,
+          "shared_opaque_pixels": 116
+        },
+        {
+          "first": "cut_ruby",
+          "second": "cut_diamond",
+          "delta_e": 78.6648,
+          "shared_opaque_pixels": 106
+        },
+        {
+          "first": "cut_jade",
+          "second": "cut_ruby",
+          "delta_e": 84.1298,
+          "shared_opaque_pixels": 138
+        },
+        {
+          "first": "rough_jade",
+          "second": "cut_ruby",
+          "delta_e": 85.9222,
+          "shared_opaque_pixels": 121
+        },
+        {
+          "first": "cut_jade",
+          "second": "rough_ruby",
+          "delta_e": 87.5995,
+          "shared_opaque_pixels": 127
+        },
+        {
+          "first": "cut_citrine",
+          "second": "abyssal_crystal",
+          "delta_e": 88.0432,
+          "shared_opaque_pixels": 137
+        },
+        {
+          "first": "rough_citrine",
+          "second": "abyssal_crystal",
+          "delta_e": 88.5212,
+          "shared_opaque_pixels": 127
+        },
+        {
+          "first": "rough_jade",
+          "second": "rough_ruby",
+          "delta_e": 89.4964,
+          "shared_opaque_pixels": 110
+        },
+        {
+          "first": "cut_citrine",
+          "second": "cut_sapphire",
+          "delta_e": 92.3978,
+          "shared_opaque_pixels": 156
+        },
+        {
+          "first": "rough_citrine",
+          "second": "rough_sapphire",
+          "delta_e": 94.9177,
+          "shared_opaque_pixels": 136
+        },
+        {
+          "first": "rough_citrine",
+          "second": "cut_sapphire",
+          "delta_e": 98.4485,
+          "shared_opaque_pixels": 131
+        },
+        {
+          "first": "cut_citrine",
+          "second": "rough_sapphire",
+          "delta_e": 99.4325,
+          "shared_opaque_pixels": 127
+        }
       ]
     },
     "metal_blocks": {
@@ -5297,6 +5845,134 @@
           "delta_e": 118.1377,
           "shared_opaque_pixels": 256
         }
+      ],
+      "final": [
+        {
+          "first": "sapphire_block",
+          "second": "abyssal_crystal_block",
+          "delta_e": 27.3505,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "garnet_block",
+          "second": "ruby_block",
+          "delta_e": 30.496,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "jade_block",
+          "second": "diamond_block",
+          "delta_e": 44.8289,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "citrine_block",
+          "second": "garnet_block",
+          "delta_e": 56.1742,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "garnet_block",
+          "second": "abyssal_crystal_block",
+          "delta_e": 56.5002,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "ruby_block",
+          "second": "abyssal_crystal_block",
+          "delta_e": 60.1941,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "sapphire_block",
+          "second": "diamond_block",
+          "delta_e": 61.0315,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "citrine_block",
+          "second": "jade_block",
+          "delta_e": 64.5772,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "diamond_block",
+          "second": "abyssal_crystal_block",
+          "delta_e": 67.958,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "jade_block",
+          "second": "garnet_block",
+          "delta_e": 69.4399,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "garnet_block",
+          "second": "diamond_block",
+          "delta_e": 71.1274,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "citrine_block",
+          "second": "ruby_block",
+          "delta_e": 74.9809,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "garnet_block",
+          "second": "sapphire_block",
+          "delta_e": 77.1108,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "citrine_block",
+          "second": "diamond_block",
+          "delta_e": 79.2507,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "sapphire_block",
+          "second": "ruby_block",
+          "delta_e": 81.7203,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "jade_block",
+          "second": "abyssal_crystal_block",
+          "delta_e": 84.0709,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "jade_block",
+          "second": "sapphire_block",
+          "delta_e": 85.7406,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "ruby_block",
+          "second": "diamond_block",
+          "delta_e": 86.1071,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "jade_block",
+          "second": "ruby_block",
+          "delta_e": 96.2078,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "citrine_block",
+          "second": "abyssal_crystal_block",
+          "delta_e": 105.3407,
+          "shared_opaque_pixels": 256
+        },
+        {
+          "first": "citrine_block",
+          "second": "sapphire_block",
+          "delta_e": 118.1377,
+          "shared_opaque_pixels": 256
+        }
       ]
     }
   },
@@ -5459,6 +6135,38 @@
         "gem": "diamond",
         "delta_e": 24.0086,
         "shared_opaque_pixels": 92
+      }
+    ],
+    "final": [
+      {
+        "gem": "citrine",
+        "delta_e": 17.3925,
+        "shared_opaque_pixels": 125
+      },
+      {
+        "gem": "jade",
+        "delta_e": 12.9337,
+        "shared_opaque_pixels": 142
+      },
+      {
+        "gem": "garnet",
+        "delta_e": 9.4663,
+        "shared_opaque_pixels": 147
+      },
+      {
+        "gem": "sapphire",
+        "delta_e": 17.136,
+        "shared_opaque_pixels": 132
+      },
+      {
+        "gem": "ruby",
+        "delta_e": 16.0593,
+        "shared_opaque_pixels": 116
+      },
+      {
+        "gem": "diamond",
+        "delta_e": 24.8816,
+        "shared_opaque_pixels": 111
       }
     ]
   }

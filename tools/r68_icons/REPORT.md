@@ -1,104 +1,94 @@
-# Round 68 follow-up ICONS — pass 2 proposal report
+# Round 68 follow-up ICONS — pass 3 final gem delivery
 
-**User picks (2026-10-31): metal bars A, with metal blocks A; jewellery
-settings B (prong crowns on ring shanks). Gems A are preferred but not
-final.** Their cut gems were put **in rework** because the outlines and
-facets did not read clearly as regular cuts. Pass 2 replaces that pending
-comparison with **C and D, ready for selection**. A stays as reference;
-B stays in the earlier-variants sections. Recommendation: **gems D and
-blocks D, with A’s unchanged rough gems and minerals**.
+**User picks (2026-10-31): metal bars A and metal blocks A; jewellery
+settings B; cut gems D and gem blocks D, with the Abyssal Crystal block
+as it is. Every group is decided.** The installation set combines these
+picks with the eight larger raw specimens requested in pass 3.
 
-[Offline preview](preview/index.html) · [Shared family](preview/picked_family.png)
-· [Block walls](preview/gem_block_walls.png)
+[Offline preview](preview/index.html) · [Picked family](preview/picked_family.png)
+· [Gem comparison](preview/gems_comparison.png) · [Block walls](preview/gem_block_walls.png)
+· [Installation mapping and licence rows](INSTALL.md)
 
-**Upgrade classification: compatible, proposal assets only.** No candidate
-is installed. No Lua, game assets, recipes, ids, tiers, saved state, version
-or upgrade declaration changes. No server or fixtures were run. Nothing
-was merged or pushed.
+**Upgrade classification: compatible, art delivery only.** Nothing is
+installed under `mods/`; no Lua, server, fixtures, recipes, ids, tiers,
+saved state, version or upgrade declaration changes. Nothing was merged
+or pushed. Desktop/web client acceptance belongs to the installation lane.
 
 ## Delivery and preservation
 
-- **26 added PNG files:** six cut gems and seven block faces each in
-  `candidates/gems_c/` and `candidates/gems_d/`.
-- **120 candidate PNGs total**, all 16 × 16 RGBA: 72 transparent item
-  icons, 48 fully opaque node-face textures. The 94 pass-1 candidate files
-  are byte-identical to `00713f9e`.
-- All six rough gems, Quartz and Abyssal Crystal are reused from
-  `candidates/gems_a/`, **without scaling or any pixel change**. They are
-  not duplicated into C/D. Every C/D preview and measurement uses these
-  exact A images alongside the new cuts.
-- `abyssal_crystal_block.png` in C and D is byte-identical to A. It remains
-  a raw mineral block; there is no invented cut crystal item.
-- All blocks have exactly matching opposite edges. Each is continuous
-  polished material across the face, with restrained bevel contrast for
-  a wall; no transparent icon is tiled onto the face.
+`candidates/gems_final/` contains **21 PNGs**, ready to copy as one group:
 
-The self-contained HTML marks bars/metal blocks A and settings B as
-**Picked**. Its gem comparison is **Current / A reference / C / D**, with
-rough/cut side by side at 16, 32 and 64 px, both minerals at those sizes,
-whole gem groups at 16 and 32 px, and a Garnet/Ruby callout. C/D each have
-one uninterrupted shared strip of the ten picked bars A, six picked
-settings B, and fourteen gem/mineral icons, at 16 and 32 px. Seven block
-faces per variant have 4 × 3 walls and mixed rows. B’s items, blocks and
-measurements remain in collapsed sections. The full pairwise and rough/cut
-ΔE tables include C/D. There are 1,138 inlined PNG instances and eight local
-navigation anchors; no remote resources, external URLs or scripts. Retain
-`preview/comparison-license.txt` when publishing the directory.
+- Six larger rough gems, plus larger Quartz and Abyssal Crystal.
+- Six picked D cuts, copied byte for byte.
+- Seven picked D blocks, copied byte for byte. The Abyssal Crystal block
+  remains byte-identical to its original A face.
 
-## Cut ideas and recommendation
+All 120 existing A/B/C/D candidate files are byte-identical to pass-2 tip
+`d16035eb`. The full art record now contains **141 candidate PNGs**: 86
+transparent item icons and 55 opaque node faces, all 16 × 16 RGBA. The
+picked installation set has **47 files**: bars/metal blocks A (20), settings
+B (6), and final gems/blocks (21). `INSTALL.md` maps each candidate to its
+exact item/node id, proposed prefixed destination filename, expanded
+current image expression and source/use citations in `ores.lua` or
+`goldsmith.lua`. It includes the CC0 rows needed by both owning mods.
 
-**C — ordered steps:** one consistent family of clipped rectangular and
-octagonal step cuts, broad saturated tables, and parallel lit/shaded rims.
-Regularity and a common family are its strengths. The large frontal faces
-are deliberately restrained, with fewer visual cues between the stones.
-Blocks C repeat the parallel step bevels around a broad square table.
+## Larger natural specimens
 
-**D — classic silhouettes:** a different familiar cut per gem, a small
-number of broad crown planes around a visible table, fixed upper-left
-light, and a broad brilliant diamond. Blocks D have four low-contrast
-crown planes around a large table. **Recommended:** the varied proportions
-separate the six jewels and their rough states at native inventory size;
-the diamond has the clearest top-gem silhouette.
+The eight raw specimens are redrawn directly on the final 16 px grid in
+`art.py`; no bitmap scaling, interpolation or antialiasing enters a
+candidate. Their colour sets are **exactly A’s original palettes**.
+The irregular outer skins, broad left-lit exposures and dark right-hand
+fractures follow A; Jade keeps its low, broad nugget, Ruby its tilted
+elongated natural crystal, Quartz its two prisms and Abyssal Crystal its
+three-pronged cluster. One-pixel glints and fracture lines stay crisp.
 
-| Gem | C | D |
-|---|---|---|
-| Citrine | Tall clipped rectangle | Horizontal oval crown |
-| Jade | Wide rectangular steps | Square step cut with small clipped corners |
-| Garnet | Square steps | Round/octagonal crown, dark warm red |
-| Sapphire | Tall octagonal steps | Wide cushion crown |
-| Ruby | Narrow, tall octagonal steps | Symmetric upright pear, vivid crimson |
-| Diamond | Broad octagonal table | Broad brilliant profile, bright crown and distinct pavilion planes |
+The specimens gain approximately **35–55% opaque area**, about 1.16–1.25
+in equivalent linear size. These are pixel-grid redraws, not a uniform
+resampling factor. The six rough gems now occupy 80–107% of their D cut
+counterparts’ opaque area, retaining each natural silhouette’s proportions.
+The cuts keep their ordered outlines, broad tables and regular facets;
+the rough forms keep their broken surfaces and asymmetric contours.
 
-All twelve new cut silhouettes are **exactly left/right symmetric at the
-pixel level**. C’s six and D’s oval, square, round and cushion cuts are
-also exactly top/bottom symmetric; the pear and brilliant profile are
-naturally only left/right symmetric. Illumination is intentionally not
-mirror-symmetric. Tables and perimeter vertices are authored directly on
-the 16 px grid instead of rounding an irregular inset outline.
+| Specimen | A / pass-2 rough pixels | Final rough pixels | Gain | Unchanged D cut pixels |
+|---|---:|---:|---:|---:|
+| Citrine | 95 | 145 | 53% | 156 |
+| Jade | 103 | 147 | 43% | 184 |
+| Garnet | 107 | 161 | 50% | 156 |
+| Sapphire | 97 | 144 | 48% | 168 |
+| Ruby | 88 | 129 | 47% | 146 |
+| Diamond | 102 | 145 | 42% | 136 |
+| Quartz | 110 | 171 | 55% | — |
+| Abyssal Crystal | 113 | 153 | 35% | — |
 
-The new cuts use more of the icon: A had **91–117 opaque pixels** per cut,
-C has **168–216**, D **136–184**. Diamond grows from 100 pixels to 216 (C)
-or 136 (D). D’s relative sizes remain close to the bars and A’s natural
-specimens in the shared strips; no scaling of the liked rough art was
-needed. Enlargements use nearest-neighbour sampling.
+## Preview and colour evidence
 
-## Colour evidence and limits
+At the top, the shared inventory strip shows **bars A + settings B +
+final gems** at 16 and 32 px. The main gem comparison places **Current /
+Pass 2 D with small rough / Final** side by side at 16, 32 and 64 px,
+with each rough/cut pair together. Both minerals receive the same sizes.
+Whole-group strips, the Garnet/Ruby callout, final block faces, 4 × 3
+walls and mixed block rows remain available. Earlier A/B/C gem studies
+are preserved in collapsed sections; D remains the direct comparison.
 
-Cut Garnet/Ruby: **3.85 OLD → 32.63 A → 32.73 C / 33.11 D**. The new
-variants keep the strong colour separation while adding regular square
-versus elongated cuts (C), or round versus pear (D). Their rough pair
-stays **31.31**, since A is unchanged. Quartz/Cut Diamond:
-**6.20 OLD → 31.76 A → 29.66 C / 34.77 D**.
+Final closest gem-group pairs are **Rough/Cut Garnet 9.47**, **Rough/Cut
+Jade 12.93**, and **Rough/Cut Ruby 16.06**. The lower rough/cut colour
+distances follow the enlarged overlapping faces; shape and surface
+structure, deliberately absent from the metric, remain the state cues.
+Garnet rough/cut is the closest pair to inspect at native size: the raw
+stone’s diagonal exposed face and fracture contrast with D’s ordered
+crown and broad table. This is evidence for visual review, not a threshold.
 
-The complete closest-pair, before/after and rough/cut tables are below.
-C/D use A’s original saturated colour ramps. The objective is readable
-geometry, not a higher distance score for every pair: D’s rough/cut Ruby
-is **17.03 vs A 17.79**, and Citrine **20.39 vs A 20.46**. Their upright
-pear/horizontal oval geometry and clear tables separate the states in
-ways this overlap-only colour metric deliberately does not measure.
-Jade rough/cut remains the closest pair (C 17.24, D 14.73); compare the
-irregular rough mound and the straight-edged cut in the native strips.
-These numbers are guides, not gates or a substitute for the user’s eye.
+The distinct material pairs remain separated: **Rough Garnet/Rough Ruby
+32.01** (pass 2: 31.31), **Cut Garnet/Cut Ruby 33.11** (unchanged D),
+**Quartz/Cut Diamond 33.77** (pass 2: 34.77). All final gem and block
+pairwise values and all six rough/cut measurements appear on the page,
+in `measurements.json`, and in the generated summary copied below.
+
+The HTML contains **1,155 embedded PNG instances**, eight local navigation
+anchors and no external resources, scripts or active content. It is
+751,582 UTF-8 bytes. Keep `preview/comparison-license.txt` with the page
+when publishing the directory. The sheets/page are software studies;
+no browser or game-client capture is claimed.
 
 ## Reproduce and verify
 
@@ -109,75 +99,50 @@ python3 tools/r68_icons/generate.py
 python3 tools/r68_icons/generate.py --check
 ```
 
-The same generator now writes/compares **177 reproducible outputs**:
-120 candidates, 47 current comparisons, HTML, five contact/wall sheets,
-source manifest, JSON and Markdown measurements, and the comparison-media
-notice. It rejects unexpected files in generated directories and checks
-size, RGBA mode, binary item alpha, full block opacity and matching edges.
+The same generator now writes/compares **199 reproducible outputs**:
+141 candidates, 47 current comparisons, HTML, five contact/wall sheets,
+source manifest, JSON and Markdown measurements, comparison-media notice,
+and `INSTALL.md`. It rejects unexpected files in the generated directories.
+The old image reconstruction and colour conversion are unchanged.
 
 Verification completed:
 
-- `generate.py --check`: **PASS**, all 177 outputs reproduce byte for byte.
-- All 94 original candidates verified against pass-1 git blob hashes.
-- C/D each contain exactly six cuts and seven blocks; symmetry and the
-  unchanged Abyssal Crystal blocks verified from their PNGs.
-- Offline HTML parsed: 1,138 valid embedded PNGs, eight valid local anchors,
-  no external/active resources; 727,968 UTF-8 bytes.
-- Measurements contain **875 pair values and 30 rough/cut entries**.
-- Native/enlarged gem comparisons, the shared 16/32 px family and C/D block
-  walls visually inspected. The page is a software preview, not a client
-  capture; browser and actual client acceptance remain the user’s.
+- `generate.py --check`: **PASS**, all 199 outputs reproduce byte for byte.
+- All 120 prior candidate blobs match `d16035eb`; all 13 D cut/block files
+  match their final copies, including the A-origin Abyssal Crystal block.
+- Each raw redraw uses exactly A’s opaque colour set and occupies more
+  pixels. Candidate checks cover 16 × 16 RGBA, binary item alpha, full
+  block opacity and matching opposite block edges.
+- Offline HTML audit: all 1,155 inlined PNGs decode, all eight anchors
+  resolve; no network resources or active content.
+- Measurements: **987 pairwise values and 36 rough/cut entries**.
+- Installation table: 47 distinct candidate/id rows; candidate paths and
+  source line links resolve. Source expressions were read without Lua.
+- Shared 16/32 px family and native/enlarged gem comparisons visually
+  inspected. The D blocks are unchanged.
+- `git diff --check`: **PASS**; `git diff d16035eb -- mods`: **empty**.
 
-- `git diff --check`: **PASS**; `git diff 00713f9e -- mods`: **empty**.
+Independent review is recorded in the final receipt after the content
+commit. The standing project policy requires a fresh Sol or Opus review;
+that review does not replace the user’s client GUI acceptance.
 
-**Independent review: PASS, no findings**, native Sol reviewer
-`icons_pass2_review`, fresh context under the project’s art review policy.
-Reviewed delta: `00713f9e..f81ece3c35680ed5d8e62836b03ee37e8410dfe7`.
-The reviewer inspected the art sheets, confirmed all preserved files and
-C/D reuse mappings (including settings B in the shared family), reproduced
-all 177 outputs, audited the offline HTML, and independently recalculated
-all **875 pairwise and 30 rough/cut ΔE values from the PNGs**. All agreed.
-This approves proposal delivery; it does not replace the user’s visual
-selection or desktop/web acceptance.
+## GUI checklist and decisions
 
-The current-image reconstruction and engine colour conversion are unchanged
-from pass 1. [current_sources.json](current_sources.json) records each
-source expression, filename and SHA-256; [LICENSE-media.md](LICENSE-media.md)
-records the original CC0 candidate art, GPL-3.0-or-later generator, and
-unchanged CC BY-SA 3.0 comparison attribution. Existing armour/trinket
-context retains its own CC0 provenance.
-
-## Open question and GUI checklist
-
-| Remaining user decision | Recommended option |
-|---|---|
-| C or D cut gems with their matching six gem blocks? | **D**, combined with A’s six rough gems, Quartz, Abyssal Crystal and its unchanged block. Bars/metal blocks A and settings B are already decided. |
-
-On both desktop and web target screens, browser at 100%: read the complete
-shared 16 px strip, then 32 px; compare Garnet/Ruby; compare each rough/cut
-pair (especially Jade, Sapphire and Ruby); identify Diamond separately
-from Quartz; inspect the repeated and mixed C/D block walls. Client GUI
-verification follows in the later installation lane. The existing Abyssal
-Crystal registry tier remains untouched (the pass-1 brief called it T6;
-the shipped harvest tier is 5).
+**No group-selection question remains.** On both desktop and web target
+screens, inspect the final family at native size, distinguish each raw/cut
+pair (especially Garnet and Jade), compare Garnet/Ruby and Quartz/Diamond,
+and inspect the picked metal/gem block walls after installation. The raw
+size redraw can be assessed in this page before that client check.
 
 ## Commit receipt
 
-- Pass-1 tip: `00713f9e`; branch `r68-icons`.
-- New cut/block art: `d9143d4f`.
-- Final independently reviewed art, generator, preview and report content:
-  **`f81ece3c35680ed5d8e62836b03ee37e8410dfe7`**.
-- At that reviewed content commit, `git status --porcelain` returned
-  **empty**, also confirmed by the reviewer.
-- This receipt is a documentation-only commit after the reviewed content.
-  The final branch-tip hash and final clean-tree check are emitted in the
-  runner’s `last.md`/final response after committing this receipt; a
-  committed file cannot contain its own containing commit’s hash.
-- Every pass-2 commit ends with
-  `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
+Pass-2 baseline: `d16035eb`; branch `r68-icons`. Every pass-3 commit ends
+with `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`. The final response
+and runner’s `last.md` carry the final branch-tip hash and clean-tree
+receipt after committing; a committed file cannot contain its own hash.
 
-The following tables are copied from the generated measurement summary.
-All pairwise values are in [measurements.json](measurements.json).
+The tables below are copied from the generated measurement summary. The
+full pairwise tables are in [measurements.json](measurements.json).
 
 ## Distinctness measurements
 
@@ -222,6 +187,9 @@ Every pair is in `measurements.json` and the expandable preview tables.
 | Gems and minerals | D | Rough Jade / Cut Jade | 14.73 | 103 |
 | Gems and minerals | D | Rough Ruby / Cut Ruby | 17.03 | 86 |
 | Gems and minerals | D | Rough Garnet / Cut Garnet | 18.76 | 107 |
+| Gems and minerals | FINAL | Rough Garnet / Cut Garnet | 9.47 | 147 |
+| Gems and minerals | FINAL | Rough Jade / Cut Jade | 12.93 | 142 |
+| Gems and minerals | FINAL | Rough Ruby / Cut Ruby | 16.06 | 116 |
 | Metal storage blocks | OLD | Tin Block / Steel Block | 3.02 | 256 |
 | Metal storage blocks | OLD | Iron Block / Silver Block | 5.12 | 256 |
 | Metal storage blocks | OLD | Iron Block / Silversteel Block | 5.53 | 256 |
@@ -246,26 +214,29 @@ Every pair is in `measurements.json` and the expandable preview tables.
 | Gem and crystal storage blocks | D | Sapphire Block / Abyssal Crystal Block | 27.35 | 256 |
 | Gem and crystal storage blocks | D | Garnet Block / Ruby Block | 30.50 | 256 |
 | Gem and crystal storage blocks | D | Jade Block / Diamond Block | 44.83 | 256 |
+| Gem and crystal storage blocks | FINAL | Sapphire Block / Abyssal Crystal Block | 27.35 | 256 |
+| Gem and crystal storage blocks | FINAL | Garnet Block / Ruby Block | 30.50 | 256 |
+| Gem and crystal storage blocks | FINAL | Jade Block / Diamond Block | 44.83 | 256 |
 
 ## Rough versus cut
 
-| Gem | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE |
-|---|---:|---:|---:|---:|---:|
-| Citrine | 31.73 | 20.46 | 34.10 | 27.40 | 20.39 |
-| Jade | 28.85 | 13.76 | 17.13 | 17.24 | 14.73 |
-| Garnet | 41.32 | 13.39 | 19.46 | 20.11 | 18.76 |
-| Sapphire | 38.10 | 17.72 | 22.42 | 24.15 | 24.17 |
-| Ruby | 38.96 | 17.79 | 31.28 | 18.44 | 17.03 |
-| Diamond | 22.89 | 24.29 | 31.12 | 31.96 | 24.01 |
+| Gem | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE | Final ΔE |
+|---|---:|---:|---:|---:|---:|---:|
+| Citrine | 31.73 | 20.46 | 34.10 | 27.40 | 20.39 | 17.39 |
+| Jade | 28.85 | 13.76 | 17.13 | 17.24 | 14.73 | 12.93 |
+| Garnet | 41.32 | 13.39 | 19.46 | 20.11 | 18.76 | 9.47 |
+| Sapphire | 38.10 | 17.72 | 22.42 | 24.15 | 24.17 | 17.14 |
+| Ruby | 38.96 | 17.79 | 31.28 | 18.44 | 17.03 | 16.06 |
+| Diamond | 22.89 | 24.29 | 31.12 | 31.96 | 24.01 | 24.88 |
 
 ## Known weak pairs, before and after
 
-| Pair | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE |
-|---|---:|---:|---:|---:|---:|
-| Tin Bar / Steel Bar | 2.96 | 8.36 | 9.27 | — | — |
-| Silver Bar / Silversteel Bar | 6.19 | 17.76 | 16.98 | — | — |
-| Iron Bar / Silversteel Bar | 10.20 | 31.55 | 32.33 | — | — |
-| Copper Bar / Bronze Bar | 17.84 | 16.01 | 16.63 | — | — |
-| Rough Garnet / Rough Ruby | 8.04 | 31.31 | 19.66 | 31.31 | 31.31 |
-| Cut Garnet / Cut Ruby | 3.85 | 32.63 | 31.85 | 32.73 | 33.11 |
-| Quartz / Cut Diamond | 6.20 | 31.76 | 28.12 | 29.66 | 34.77 |
+| Pair | Old ΔE | A ΔE | B ΔE | C ΔE | D ΔE | Final ΔE |
+|---|---:|---:|---:|---:|---:|---:|
+| Tin Bar / Steel Bar | 2.96 | 8.36 | 9.27 | — | — | — |
+| Silver Bar / Silversteel Bar | 6.19 | 17.76 | 16.98 | — | — | — |
+| Iron Bar / Silversteel Bar | 10.20 | 31.55 | 32.33 | — | — | — |
+| Copper Bar / Bronze Bar | 17.84 | 16.01 | 16.63 | — | — | — |
+| Rough Garnet / Rough Ruby | 8.04 | 31.31 | 19.66 | 31.31 | 31.31 | 32.01 |
+| Cut Garnet / Cut Ruby | 3.85 | 32.63 | 31.85 | 32.73 | 33.11 | 33.11 |
+| Quartz / Cut Diamond | 6.20 | 31.76 | 28.12 | 29.66 | 34.77 | 33.77 |
