@@ -27,7 +27,7 @@ joined to the joint GUI test of 0.57–0.66. Carry-overs:
   written.
 - **First-look defaults** to tune after the GUI test: underground Giant
   Spider and Giant Rat density (about a tenth of the old floor spots; raise
-  the cave rows' chance if too sparse), markers of 12 px at 1280×720, the
+  the cave rows' chance if too sparse), markers of 15 px at 1280×720, the
   1 s party check on the map (about 40–60 KB/s for an open map in a moving
   party), the Health colors dropdown closing on a coalesced Social resend,
   text above 1620 px growing less than the map window.
@@ -91,7 +91,7 @@ Remaining: the user's desktop/web
 joined to the joint GUI test of 0.57–0.65. Carry-overs:
 
 - **Open user question (MAP Q1):** desktop HUD scaling above 1 now only caps
-  the markers (1920×1080 at HUD 2: 42 → 21 px in both maps since 0.67.0); the server
+  the markers (1920×1080 at HUD 2: 52 → 26 px in both maps since 0.67.0); the server
   cannot tell it from a phone's density. Kept as ruled until the GUI test.
 - **First-look defaults** to tune after the GUI test: the equip notice's
   6 s and place, the blocked offhand's dim level, the creation buttons'

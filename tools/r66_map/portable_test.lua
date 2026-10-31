@@ -22,8 +22,8 @@
 --      camps by their race's faction, fortresses unchanged, every variant
 --      shipped with its master's mask.
 -- Prints the size table and "R66 MAP PORTABLE PASS checks=<n>". Round 67
--- updated the pinned sizes (markers 21 px at the reference, 32 before; the
--- floor 11, 16 before) and measures the map window on the client's own
+-- updated the pinned sizes (markers 26 px at the reference , 32 before; the
+-- floor 13 (11 in 0.67.0), 16 before) and measures the map window on the client's own
 -- report (ruling 18: no viewport cap for it).
 local repo = arg[1] or "."
 local MAP = repo .. "/mods/PLAYER/grug_map"
@@ -73,15 +73,15 @@ end
 -- ---------------------------------------------------------------------------
 -- F  the rule
 -- ---------------------------------------------------------------------------
-check(M.SIZE == 21 and M.MIN == 11, "F Round 67: 21 px at the reference, the floor 11")
-check(M.fit(21, 700, 700) == 21, "F the reference extent gives 21")
-check(M.fit(21, 1400, 700) == 21, "F never above the cap")
+check(M.SIZE == 26 and M.MIN == 13, "F Round 67: 26 px at the reference, the floor 13")
+check(M.fit(26, 700, 700) == 26, "F the reference extent gives 26")
+check(M.fit(26, 1400, 700) == 26, "F never above the cap")
 check(M.fit(42, 1400, 700) == 42, "F a larger map at HUD 2 reaches the cap")
-check(M.fit(80, 350, 700) == 11, "F half the map: 11")
-check(M.fit(80, 100, 700) == 11, "F never below 11")
+check(M.fit(80, 350, 700) == 13, "F half the map: 13")
+check(M.fit(80, 100, 700) == 13, "F never below 13")
 check(M.fit(8, 100, 700) == 8, "F a cap under the floor stays (today's size)")
-check(M.fit(21, nil, 700) == 21 and M.fit(21, 0, 700) == 21, "F no extent: the cap")
-check(M.fit(80, 525, 700) == 16, "F three quarters: 16")
+check(M.fit(26, nil, 700) == 26 and M.fit(26, 0, 700) == 26, "F no extent: the cap")
+check(M.fit(80, 525, 700) == 20, "F three quarters: 20")
 
 -- ---------------------------------------------------------------------------
 -- W  the map window
@@ -121,8 +121,8 @@ for _, p in ipairs(PROFILES) do
 end
 local by = {}
 for _, row in ipairs(rows) do by[row.name] = row end
-check(by["1920x1080"].after == 21 and by["1920x1080"].before == 21, "W 1920x1080 at the reference (21)")
-check(by["1280x720"].after < 21 and by["1280x720"].after >= M.MIN, "W 1280x720 smaller")
+check(by["1920x1080"].after == 26 and by["1920x1080"].before == 26, "W 1920x1080 at the reference (26)")
+check(by["1280x720"].after < 26 and by["1280x720"].after >= M.MIN, "W 1280x720 smaller")
 check(by["phone 2400x1080 density 2.5"].after < by["phone 2400x1080 density 2.5"].before / 2,
 	"W the phone's markers well under the HUD-scaled size")
 -- W.formspec draws that size: the trainers layer's icon extent.
@@ -182,7 +182,7 @@ do
 				icon and tostring(math.floor(icon * per_unit)) or tostring(form), row.after))
 	end
 	local icon = drawn_icon(nil)
-	check(icon and math.floor(icon * 72) == M.SIZE, "W no window information: 21 px")
+	check(icon and math.floor(icon * 72) == M.SIZE, "W no window information: 26 px")
 
 	-- G  the body text grows with the form on a grown ceiling (ruling 4):
 	-- the "Current:" line, the quest rows and the zone labels; at 1080p
@@ -237,11 +237,11 @@ do
 		row.mini.after = M.fit(cap, frame.hole, ref.hole)
 		check(row.mini.after <= cap, "M " .. row.name .. ": inside the cap")
 	end
-	check(by["1920x1080"].mini.after == 21, "M 1920x1080 at the reference (21)")
+	check(by["1920x1080"].mini.after == 26, "M 1920x1080 at the reference (26)")
 	local phone = by["phone 2400x1080 density 2.5"].mini
-	check(phone.box == by["1920x1080"].mini.box and phone.before == 53 and phone.after == 21,
-		"M the phone's box is the desktop's (" .. phone.box .. " px): 21 px, not 53")
-	check(by["1280x720"].mini.after < 21, "M 1280x720 smaller")
+	check(phone.box == by["1920x1080"].mini.box and phone.before == 65 and phone.after == 26,
+		"M the phone's box is the desktop's (" .. phone.box .. " px): 26 px, not 65")
+	check(by["1280x720"].mini.after < 26, "M 1280x720 smaller")
 	-- minimap.lua's marker_px is this rule (the source names it)
 	local file = assert(io.open(MAP .. "/minimap.lua", "rb"))
 	local source = file:read("*a")

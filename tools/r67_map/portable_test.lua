@@ -17,7 +17,7 @@
 --      band; the quest rows visible (with both group headings);
 --   M  markers at their anchors (no displacement left: no markers.offsets,
 --      no solve, no reserved quest slots; two markers on one anchor drawn
---      on the same spot), 21 px at the reference (11 px floor), the arrows
+--      on the same spot), 26 px at the reference (13 px floor), the arrows
 --      32 px on top, the draw order by importance (markers.rank, the
 --      minimap's z-index too);
 --   B  the layer buttons: flat, one marked, none in quest mode, the short
@@ -282,9 +282,9 @@ do
 		"M the minimap draws every marker at its anchor")
 	check(minimap:find("local z = Z.marker + row.marker.rank", 1, true) ~= nil,
 		"M the minimap's z-index is the importance")
-	eq(M.SIZE, 21, "M markers 21 px at the reference (32 before)")
-	eq(M.MIN, 11, "M the floor 11 px (16 before)")
-	eq(M.arrow(21), 32, "M the arrows keep 32 px at the reference")
+	eq(M.SIZE, 26, "M markers 26 px at the reference (32 before)")
+	eq(M.MIN, 13, "M the floor 13 px (16 before)")
+	eq(M.arrow(26), 32, "M the arrows keep 32 px at the reference")
 	-- Importance: places, bosses, trainers and innkeepers < the Steward and
 	-- services < the home and waystones < quest givers by state, story over
 	-- plain.
@@ -309,11 +309,11 @@ do
 	local L = state.layout
 	local sx, sy = atlas.world_to_screen(view, anchor, 0, 0, L.map_w, L.map_h)
 	local _, per_unit = M.metrics(info, L.w, L.form_h)
-	local units = 21 / per_unit
+	local units = 26 / per_unit
 	check(a and b and near(a.x, b.x) and near(a.y, b.y), "M two markers on one anchor share the spot")
 	check(a and near(a.x + units / 2, sx, 1e-5) and near(a.y + units / 2, sy, 1e-5),
 		"M a marker centred on its anchor")
-	check(a and math.floor(a.w * per_unit) == 21, "M 21 px drawn at 1920x1080")
+	check(a and math.floor(a.w * per_unit) == 26, "M 26 px drawn at 1920x1080")
 	local arrow = find(list, "grug_map_heading_gold_00.png")
 	local party = find(list, "grug_map_heading_cyan_00.png")
 	check(arrow and math.floor(arrow.w * per_unit) == 32 and party and math.floor(party.w * per_unit) == 32,

@@ -1,4 +1,4 @@
--- Shared marker sizes (21px at 1080p since Round 67, 32 before; since
+-- Shared marker sizes (26px at 1080p since Round 67, 0.8 of the 32 before; since
 -- Round 66 fitted to the map), the draw order by importance and the
 -- silhouette tooltips. Since Round 67 (rulings 20 and 21) every marker sits
 -- at its anchor: overlaps are allowed, nothing is displaced.
@@ -7,7 +7,7 @@ local L = dofile(path .. "/icon_layout.lua")
 local masks = dofile(path .. "/icon_masks.lua")
 -- ARROW: the player's and the party's arrows at the reference, today's
 -- size; they scale with the markers (ARROW / SIZE of a marker's size).
-local M = {SIZE=21, ARROW=32, layout=L}
+local M = {SIZE=26, ARROW=32, layout=L}
 grug_map.markers = M
 local scaled, scale_order = {}, {}
 
@@ -30,9 +30,9 @@ end
 -- 1920x1080 desktop at HUD and GUI scale 1 (there M.SIZE). `cap` is
 -- metrics' HUD-scaled size, `drawn` the map's drawn pixel extent, `reference`
 -- the same map's extent on that desktop; the result never exceeds the cap
--- and never goes below M.MIN (unless the cap does). Round 67: 11 (16 before,
+-- and never goes below M.MIN (unless the cap does). Round 67: 13 (16 before,
 -- scaled with M.SIZE).
-M.MIN = 11
+M.MIN = 13
 function M.fit(cap, drawn, reference)
  if not (drawn and reference and drawn > 0 and reference > 0) then return cap end
  local size = math.floor(M.SIZE * drawn / reference + 0.5 + 1e-6)

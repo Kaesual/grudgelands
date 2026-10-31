@@ -44,9 +44,9 @@ the pending desktop/web GUI checklist: [Round 64](../planning/round64-plan.md).
 User rulings 20 and 21 of 2026-10-30 (the playtest of 2026-10-28: markers
 moved for neighbours the player could not see), implemented in 0.67.0:
 
-- Markers are about two thirds of their Round 64 size (21 px at the
-  reference instead of 32, the floor 11 px instead of 16; the size rule of
-  Round 66 is unchanged) and overlaps are allowed: the displacement solve,
+- Markers are 0.8 of their Round 64 size (26 px at the reference instead
+  of 32, the floor 13 px instead of 16; the user's choice after a first
+  look at two thirds, 21 / 11 px; the size rule of Round 66 is unchanged) and overlaps are allowed: the displacement solve,
   its reserved quest-giver slots and its cache are gone, in the map window
   and on the minimap.
 - Markers draw by importance, bottom to top (the minimap's layers of
@@ -300,10 +300,10 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   `grug_core.factions`) and shipped by the same tool with their masters'
   masks. Both renderers use `grug_map/markers.lua`. **Marker size**
   (Round 66 ruling 5): a marker keeps the share of its map that it has on a
-  1920×1080 desktop at HUD and GUI scale 1, where it is 21 px since Round
-  67 (32 before): `round(21 × drawn / reference)`, never above the rounded
-  product of 21 and the effective HUD scale, never below 11 px (16 before
-  Round 67). The map window measures the map's drawn width at zoom 1 (its
+  1920×1080 desktop at HUD and GUI scale 1, where it is 26 px since Round 67
+  (32 before): `round(26 × drawn / reference)`, never above
+  the rounded product of 26 and the effective HUD scale, never below 13 px
+  (16 before Round 67). The map window measures the map's drawn width at zoom 1 (its
   `map_w` in formspec units times the client's integer pixel size, from the
   same window information the window is laid out with, the client's own
   since Round 67) against the same layout on the 1920×1080 reference;
@@ -672,14 +672,14 @@ drawn from the base image above. The gliding version (approved in playtest,
   givers, Housing Steward, capital services, mender, profession and Riding
   trainers, innkeepers, home and discovered waystones/Claim Stone. The clash
   landmark represents the rift site; there is no duplicate rift-boss icon.
-  Ordinary markers use the same size rule as the world map (21 px at the
+  Ordinary markers use the same size rule as the world map (26 px at the
   reference since Round 67), measured against the minimap's own hole (its
   drawn map) on the 1920×1080 reference; the player's and the party's
   arrows inside the hole scale alike from 32 px. The box is a quarter of
   the window height in real pixels whatever the HUD scaling, so before
   Round 66 the HUD-scaled markers outgrew it on a high-density screen (a
   2400×1080 phone at scaling 2.5: the desktop's 270 px box, 80 px markers;
-  32 px in Round 66, 21 px since Round 67). Every marker stands at its
+  32 px in Round 66, 26 px since Round 67). Every marker stands at its
   anchor (Round 67, no displacement).
   Icons glide with the terrain and are culled near the circular edge; the
   bezel covers the remaining corner overhang. Stable marker IDs retain

@@ -9,7 +9,7 @@ section below it, an Online Players table of both factions with faction,
 class, race and level icons, favourites and an Invite button, refreshed on
 change at most once per 2 s per viewer) and an invitation box on the HUD;
 the map window at 90 % of the screen with the markers at their true place
-and about two thirds of their size (21 px at 1080p), flat layer buttons,
+and 0.8 of their size (26 px at 1080p; two thirds, 21 px, before the user's first look), flat layer buttons,
 the 1 s party check, a compact quest list and quest HUD both story first,
 then by level; flying underground with a room check and the vertical
 flight speed per tier (8 and 12); nametags only on NPCs with a function

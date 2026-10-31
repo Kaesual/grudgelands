@@ -584,8 +584,9 @@ for the user's verdict on a first-look default.
    relative to the window.
 10. **Layer buttons:** the active one is underlined, none while a quest is
     selected; a click switches the layer and clears the quest selection.
-11. **Markers:** about two thirds of their old size (21 px at 1920×1080,
-    19 px on the phone, **12 px at 1280×720**: still readable?), never
+11. **Markers:** 0.8 of their old size (26 px at 1920×1080, 23 px on the
+    phone, **15 px at 1280×720**: still readable?; the user's choice after
+    a first look at two thirds, 21 / 19 / 12 px), never
     shifted, in the map window and on the minimap; neighbours may overlap;
     a quest "?" over a "!" over a silver one; the player and party arrows
     (32 px) at their true place and on top.
