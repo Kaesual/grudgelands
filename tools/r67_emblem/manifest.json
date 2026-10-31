@@ -1,0 +1,123 @@
+{
+  "candidate_sha256": {
+    "candidates/banner_accord_a.png": "5108ef1f37a2a4098dfd57da586748e55bff1d9b1169e3539c95aee994239dc8",
+    "candidates/banner_accord_b.png": "ade1d21da9448e805d7e7698cdd925e6865322809cf76f777136e253956a0fea",
+    "candidates/banner_accord_c.png": "d911d5c0e9e42cc055c98d120f4698fae828fc25abe70ee8999f1e826972c36a",
+    "candidates/banner_throng_a.png": "d4cdbf680955fa269cb6045024f6afd260a2926139f15c2ccd1a14aa445ec358",
+    "candidates/banner_throng_b.png": "3dd9b14e9a4ae7888124f5f2902d80c178b0f3cded27fff84ae475140ce8281a",
+    "candidates/banner_throng_c.png": "1879cff7515dd1dbfc3d2c8cae3ad471716a4ad3adb68c616a33a92d70a16593",
+    "candidates/emblem_accord_a.png": "561066639df65192da63b2d8fb2be8215768cf81a289d5e6a7dec7c37371017d",
+    "candidates/emblem_accord_b.png": "1cee92bf567ddbae3d2d4fc590b67585e562cfc1355b9541cf4d3170b1fbbd73",
+    "candidates/emblem_accord_c.png": "f53100e243c70a3c057eba4c84af707939556abd1251c7673ea24df6ab2c24b8",
+    "candidates/emblem_throng_a.png": "8347ad3288a3e940581b07e49f23b0a9ebb804f6aa6747a842107bec7717a601",
+    "candidates/emblem_throng_b.png": "689da2f2e2145a52da925915e3e141ab5ec831d17e8d89f040104c326c1ab2ab",
+    "candidates/emblem_throng_c.png": "e4088af765bca521c952bfb13b9217dfc2187504be383e969cf73053c8b53543"
+  },
+  "model": {
+    "front_uvs": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0
+      ],
+      [
+        1.0,
+        1.0
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "front_vertices_nodes": [
+      [
+        -0.48,
+        0.5,
+        -0.52
+      ],
+      [
+        0.48,
+        0.5,
+        -0.52
+      ],
+      [
+        0.48,
+        -1.5,
+        -0.52
+      ],
+      [
+        -0.48,
+        -1.5,
+        -0.52
+      ]
+    ],
+    "material_buffers": [
+      "cloth",
+      "rod",
+      "straps"
+    ],
+    "sha256": "47248045f71d5ed370a5cb4ce40b0ab0ad00bc77da865ccb303139cb31415856",
+    "source": "mods/MAPGEN/grug_mapgen/models/grug_mapgen_faction_banner.b3d"
+  },
+  "references": {
+    "ref_banner_accord.png": {
+      "sha256": "620dc9e768d262e6b718d981bd491a6f2f8bddacddc011aefd22ff030f29608a",
+      "source": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_faction_banner_accord.png"
+    },
+    "ref_banner_throng.png": {
+      "sha256": "d367676d443be8dafce75f2eb774de4eea64cb519d6b7b374010d6545fd72927",
+      "source": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_faction_banner_throng.png"
+    },
+    "ref_class_mage.png": {
+      "sha256": "8c7bd40c1a848843d3193b6289ed5502385cadbd18b0ea1d8f46bce685db44a4",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_mage.png"
+    },
+    "ref_class_priest.png": {
+      "sha256": "d2555d888829742b0b4f4c59ac4d20b2facefb8311f4067a8361265da47874f0",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_priest.png"
+    },
+    "ref_class_scout.png": {
+      "sha256": "1f2ebde7e9e7fc286d69ad51a35b60fef3dc236f51905a6d65634a2838800a75",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_scout.png"
+    },
+    "ref_class_warrior.png": {
+      "sha256": "249dda0411ff9c919df96343afdd110cf4b9609f4da9be0882ab370ae362bdcd",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_warrior.png"
+    },
+    "ref_emblem_accord.png": {
+      "sha256": "5955da244dee511505c72b883e7ccbe342214f277e9e088e93bf063e05f686dd",
+      "source": "mods/PLAYER/grug_inventory/textures/grug_inventory_faction_accord.png"
+    },
+    "ref_emblem_throng.png": {
+      "sha256": "741ffac7680ef9055b017894dcad06958dbeaf8fea8c50f099643128e2156b7f",
+      "source": "mods/PLAYER/grug_inventory/textures/grug_inventory_faction_throng.png"
+    },
+    "ref_race_dwarf.png": {
+      "sha256": "1db0936676dcee56f0b2689498f98c0d3c0fcdfe64de1e1a939c34c9a2018be8",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_dwarf.png"
+    },
+    "ref_race_elf.png": {
+      "sha256": "3fa02c3bcc689641066e8a806ba0f4e2c97d310b1bc24c3a302d260944fc628b",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_elf.png"
+    },
+    "ref_race_human.png": {
+      "sha256": "7cdc10b82b9088ff38f4426fc615f664bf646b87e3f3d397e5c54b4a2c532952",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_human.png"
+    },
+    "ref_race_orc.png": {
+      "sha256": "c91a812d5c7a92b769d5d3dfe51ab1e8c72fae7977a4c44d8c9eabf0c2867bb6",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_orc.png"
+    },
+    "ref_race_troll.png": {
+      "sha256": "d05649c29f5ba7be506250e4177229fd22a08282b78e1451129a552ed3011254",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_troll.png"
+    },
+    "ref_race_undead.png": {
+      "sha256": "183780fcab073e93121e3c48b60e32eab8ff722b409ace7058dfc9cda469c2e6",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_undead.png"
+    }
+  }
+}
