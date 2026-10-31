@@ -6,16 +6,16 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
-## Round 68 — readable text in the world (GUI acceptance pending)
+## Round 68 — readable text in the world (GUI accepted)
 
 Delivered in 0.68.0 (**compatible**, no step): `grug_text` (text on one
 unsaved entity per written surface, the CC0 glyph font), the wall signs'
 text on calm boards, chest labels on the front, and `grug_signs` with the
 Standing Sign, the Waypost and the two-node Notice Board
 ([completion](docs/planning/round68-plan.md#completion-2026-10-31)).
-Remaining: the user's desktop/web
-[GUI checklist](docs/planning/round68-plan.md#gui-checklist-desktop-and-web),
-joined to the joint GUI test of 0.57–0.66. Carry-overs:
+The user accepted the whole desktop/web
+[GUI checklist](docs/planning/round68-plan.md#gui-checklist-desktop-and-web)
+on 2026-10-31. Carry-overs:
 
 - **Mapgen wayposts:** with the next change that needs a map reset (the
   Round 67 entry [below](#round-67--playtest-feedback-gui-accepted)); the

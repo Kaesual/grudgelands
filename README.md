@@ -100,7 +100,7 @@ Warmaster's main line carries it across the front to the finale at 60.
 the board and chests their label on the front, without pointing at them;
 the wall signs get calm boards; and there are three new signs: a standing
 sign, a waypost whose arrows stack into one post, and a two-block notice
-board. This update is compatible; desktop and web acceptance is pending.
+board. This update is compatible and accepted on desktop and web.
 
 **0.67.0** answers the group play session: the Social tab lists every
 online player with favourites and an invite button, and invitations show

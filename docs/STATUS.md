@@ -2,7 +2,7 @@
 
 Updated 2026-10-31. This is the delivery pointer, not another game specification.
 
-**0.68.0 / Round 68 is merged locally (2026-10-31); not pushed.** Text
+**0.68.0 / Round 68 is GUI-accepted by the user on 2026-10-31 (the whole Round 68 checklist) and pushed (2026-10-31).** Text
 is readable in the world (the user's wish after the Round 67 acceptance):
 a new CORE mod `grug_text` turns text into one `[combine` texture of
 VoxeLibre's CC0 glyphs (431 files, credited) and shows it on one unsaved
@@ -35,11 +35,11 @@ before lane D, `r37_dc` passing after it. **The
 user's answers:** chest labels stay as they are (three lines, no plate);
 the 431 glyph files stay, the web join time goes into the checklist
 ([completion, numbers, decisions and GUI checklist](planning/round68-plan.md#completion-2026-10-31);
-[carry-overs](../BACKLOG.md#round-68--readable-text-in-the-world-gui-acceptance-pending)).
-**GUI test pending:** 0.68 joins the joint GUI test of 0.57–0.66 (0.67
-is accepted on its own). Production runs **0.65.0**; updating it to 0.68.0
+[carry-overs](../BACKLOG.md#round-68--readable-text-in-the-world-gui-accepted)).
+**The joint GUI test of 0.57–0.66 is still pending** (0.67 and 0.68 are
+accepted on their own). Production runs **0.65.0**; updating it to 0.68.0
 crosses no map reset and runs only the 0.67.0 step. origin/main is
-`b73086ec` (0.67.0 without the heraldry follow-up). Only the user pushes.
+the 0.68.0 release (pushed on the user's word, 2026-10-31).
 
 **0.67.0 / Round 67 is GUI-accepted by the user on 2026-10-31 (the whole Round 67 checklist); pushed up to `b73086ec` (2026-10-31), the heraldry follow-up after it waits for the next push.** The group play
 session's notes (2026-10-28): the "Party & PvP" tab is now **Social** (one

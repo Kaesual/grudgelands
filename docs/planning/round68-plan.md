@@ -10,8 +10,9 @@ with the notice board in two halves
 ([follow-up](#follow-up-wood-set-b-and-the-board-in-two-halves-2026-10-31)),
 then new icons for bars, settings, gems and their blocks, with the metal
 stairs and slabs following
-([follow-up](#follow-up-the-picked-bar-setting-gem-and-block-icons-2026-10-31)); GUI test pending,
-not pushed ([completion](#completion-2026-10-31)).
+([follow-up](#follow-up-the-picked-bar-setting-gem-and-block-icons-2026-10-31)).
+GUI-accepted by the user on 2026-10-31 (the whole checklist) and pushed
+([completion](#completion-2026-10-31)).
 Version: **0.68.0**. Classification: **compatible** (new nodes; the text
 of existing signs and chest labels is already in node metadata; the text
 entities are not saved). Delivery state: [STATUS](../STATUS.md).
@@ -286,10 +287,10 @@ LBM recreates them (proved with two boots on one world: a sign and a label
 written as meta only got their 2 entities, the hover text intact); ART adds
 tools only; SIGNS adds new nodes with the meta `text` (their `infotext`
 was dropped by the [follow-up](#follow-up-after-the-merges-2026-10-31)). No
-map reset, no step. **Push:** not pushed; origin/main is `b73086ec`
-(0.67.0 without the heraldry follow-up); production runs 0.65.0, so its
-update still runs only the 0.67.0 step. **GUI test:** pending; 0.68 joins
-the joint GUI test of 0.57–0.66 ([checklist](#gui-checklist-desktop-and-web)).
+map reset, no step. **Push:** pushed on 2026-10-31 after the GUI acceptance; production
+runs 0.65.0, so its update still runs only the 0.67.0 step. **GUI test:**
+the user accepted the whole [checklist](#gui-checklist-desktop-and-web)
+on 2026-10-31.
 **Sync:** by the coordinator after each merge.
 
 ### Lanes

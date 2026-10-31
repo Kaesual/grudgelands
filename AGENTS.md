@@ -16,8 +16,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 (`grug_text`: one unsaved text entity per written surface from CC0
 glyphs; wall sign text on calm boards, chest labels on the front; the
 Standing Sign, the stackable Waypost and the two-node Notice Board in
-`grug_signs`), merged locally, **not pushed**; **compatible**, no step;
-GUI test pending, joining the joint test of 0.57–0.66
+`grug_signs`; with the follow-ups wood set B, the board in two halves,
+new icons for bars, settings, gems and their blocks), GUI-accepted by the
+user on 2026-10-31 (the whole Round 68 checklist) and **pushed**;
+**compatible**, no step
 ([completion and checklist](docs/planning/round68-plan.md#completion-2026-10-31)).
 Previous: 0.67.0, Round 67 from the group play session (the
 Social tab with an online players table, favourites and an invitation box
@@ -27,7 +29,7 @@ vertical speed per tier; nametags only where they serve; wide mobs with
 room; one crafting row per output, the metal rods and back-recipes
 removed, a Materials help page, half fuel; chests with Sort, labels and
 three tiers with Upgrade; faction heraldry hart and boar), GUI-accepted by the user on 2026-10-31 (the whole Round 67 checklist);
-**pushed** up to `b73086ec`, the heraldry follow-up local. **Migrate**:
+**pushed** (the heraldry follow-up with 0.68.0). **Migrate**:
 step 0.67.0 refunds the metal rods as bars. Production runs **0.65.0** (user, 2026-10-31), so
 its update to 0.67.0 crosses no map reset: only the 0.67.0 step
 ([completion and checklist](docs/planning/round67-plan.md#completion-2026-10-30)).
