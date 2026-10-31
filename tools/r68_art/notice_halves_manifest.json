@@ -1,0 +1,178 @@
+{
+  "source_model": "notice_board_b.obj",
+  "texture": "notice_board_wood_b.png",
+  "source_sha256": "07dd230fdb4d02fe73d5559a7c734dc5b1992a028327aeaeab9817e5a004e73b",
+  "texture_sha256": "ca238e151eda9dd62ffa75dcd226a612e0c5e1b7864f91aafc34c9fa5bf1e86f",
+  "texture_size": [
+    64,
+    64
+  ],
+  "split_plane_source_x": 0.5,
+  "front_normal": [
+    0,
+    0,
+    -1
+  ],
+  "naming": "In the offline front view, +X points screen-right: left is source x <= 0.5; right is x >= 0.5.",
+  "integration": "Model-space coordinates only. The game lane owns the OBJ x mirror and node mapping.",
+  "comparison_sampler": "Nearest neighbour; texel coordinates rounded to 7 decimals for consistent exact-edge ties after triangulation.",
+  "cut_caps": false,
+  "halves": {
+    "left": {
+      "model": "notice_board_b_left.obj",
+      "material": "notice_board_b_left.mtl",
+      "vertices": 44,
+      "faces": 74,
+      "face_type": "triangles",
+      "node_offset_from_source_origin": [
+        0,
+        0,
+        0
+      ],
+      "source_to_local_translation": [
+        0,
+        0,
+        0
+      ],
+      "local_bounds": [
+        -0.5,
+        -0.5,
+        -0.25,
+        0.5,
+        1.1875,
+        0.25
+      ],
+      "uncapped_edges_at_join": 18
+    },
+    "right": {
+      "model": "notice_board_b_right.obj",
+      "material": "notice_board_b_right.mtl",
+      "vertices": 44,
+      "faces": 74,
+      "face_type": "triangles",
+      "node_offset_from_source_origin": [
+        1,
+        0,
+        0
+      ],
+      "source_to_local_translation": [
+        -1,
+        0,
+        0
+      ],
+      "local_bounds": [
+        -0.5,
+        -0.5,
+        -0.25,
+        0.5,
+        1.1875,
+        0.25
+      ],
+      "uncapped_edges_at_join": 18
+    }
+  },
+  "comparisons": {
+    "front": {
+      "size": [
+        560,
+        440
+      ],
+      "yaw": 0,
+      "elevation": 0,
+      "pixels_per_node": 220,
+      "target": [
+        0.5,
+        0.34375,
+        0.0
+      ],
+      "different_pixels": 0,
+      "total_pixels": 246400,
+      "max_channel_delta": 0
+    },
+    "angle": {
+      "size": [
+        560,
+        440
+      ],
+      "yaw": 30,
+      "elevation": 17,
+      "pixels_per_node": 220,
+      "target": [
+        0.5,
+        0.34375,
+        0.0
+      ],
+      "different_pixels": 0,
+      "total_pixels": 246400,
+      "max_channel_delta": 0
+    },
+    "rear": {
+      "size": [
+        560,
+        440
+      ],
+      "yaw": 180,
+      "elevation": 12,
+      "pixels_per_node": 220,
+      "target": [
+        0.5,
+        0.34375,
+        0.0
+      ],
+      "different_pixels": 0,
+      "total_pixels": 246400,
+      "max_channel_delta": 0
+    },
+    "left": {
+      "size": [
+        560,
+        440
+      ],
+      "yaw": -65,
+      "elevation": 22,
+      "pixels_per_node": 220,
+      "target": [
+        0.5,
+        0.34375,
+        0.0
+      ],
+      "different_pixels": 0,
+      "total_pixels": 246400,
+      "max_channel_delta": 0
+    },
+    "below": {
+      "size": [
+        560,
+        440
+      ],
+      "yaw": 35,
+      "elevation": -30,
+      "pixels_per_node": 220,
+      "target": [
+        0.5,
+        0.34375,
+        0.0
+      ],
+      "different_pixels": 0,
+      "total_pixels": 246400,
+      "max_channel_delta": 0
+    },
+    "above": {
+      "size": [
+        560,
+        440
+      ],
+      "yaw": -35,
+      "elevation": 65,
+      "pixels_per_node": 220,
+      "target": [
+        0.5,
+        0.34375,
+        0.0
+      ],
+      "different_pixels": 0,
+      "total_pixels": 246400,
+      "max_channel_delta": 0
+    }
+  }
+}

@@ -1,4 +1,242 @@
-# Round 68 ART — picked signs and calm wall textures
+# Round 68 ART — picked wood and notice-board halves
+
+**User's pick (2026-10-31): set B — warm heartwood — for everything:**
+the standing sign, waypost, notice board **including B's roof exactly as
+shown**, wooden wall sign and B's three matching inventory icons. The
+pass-3 preview now marks all four B texture cards **Picked**. The model
+choices remain standing sign A, waypost B and notice board B.
+
+## Pass 4 — notice board in two halves
+
+Delivered on the same `r68-art3` branch, after pass-3 commit `6a0c0541`.
+Open the [offline comparison](preview/index.html#notice-halves).
+
+The generator clips the existing `notice_board_b.obj` surfaces at exactly
+**model-space x = +0.5**, interpolating their UVs and retaining their
+normals. No exterior face is removed and no new cut cap is added. Each
+half has closed exterior edges; its only open edges lie on the touching
+cut plane. The roof's shape, UV mapping and picked B texture are unchanged.
+
+| Candidate in `candidates/` | Vertices | Faces (triangles) | Source x interval | Node offset from original origin | Translation from source to local coordinates |
+|---|---:|---:|---|---|---|
+| [notice_board_b_left.obj](candidates/notice_board_b_left.obj) | 44 | 74 | −0.5 … +0.5 | (0, 0, 0) | (0, 0, 0) |
+| [notice_board_b_right.obj](candidates/notice_board_b_right.obj) | 44 | 74 | +0.5 … +1.5 | (+1, 0, 0) | (−1, 0, 0) |
+
+**Left/right convention:** in the existing offline front view, the front
+normal is **−Z** and **+X points screen-right**. The left file is the
+lower-x half around the original node centre (0, 0, 0); the right file is
+the higher-x half around the second node centre (+1, 0, 0), translated
+by −1 in x into that node's local coordinates. Place the exported left
+mesh at (0, 0, 0) and the right mesh at (+1, 0, 0) to reconstruct the
+original. These are **model-space facts**: the integration lane handles
+the game's OBJ x mirror and the main/helper-node mapping.
+
+Both local bounds are **(−0.5, −0.5, −0.25) … (+0.5, +1.1875, +0.25)**.
+Each OBJ has its own matching MTL, one `wood` material/group, and uses the
+same unchanged **64 × 64** [notice_board_wood_b.png](candidates/notice_board_wood_b.png).
+No texture is duplicated or repacked. The one-piece
+[notice_board_b.obj](candidates/notice_board_b.obj) stays byte-identical
+to pass 3 and the shipped model: **56 vertices, 108 triangles**.
+
+### Seam comparison and checks
+
+The preview renders the actual serialized one-piece OBJ and the two
+serialized half OBJs, joined with the offsets above, without lettering.
+Both use the picked atlas, identical camera/light and a 560 × 440 canvas.
+
+| View | Differing pixels | Maximum RGBA channel delta |
+|---|---:|---:|
+| Front | **0 / 246,400** | **0** |
+| Angle (yaw 30°, elevation 17°) | **0 / 246,400** | **0** |
+
+The back, left exterior, underside and overhead comparisons also have
+**zero differing pixels**. The [split manifest](notice_halves_manifest.json)
+records all six cameras, pixel counts, bounds, counts, offsets and hashes.
+The nearest-neighbour comparison sampler rounds texel coordinates to
+seven decimal places before choosing a texel, resolving exact-edge ties
+consistently across the different triangulations. This removes floating
+point boundary ambiguity (the unrounded sampler differed at 26 frontal
+pixels and 69 rear pixels); the meshes and texture pixels are unchanged.
+Earlier previews retain their original sampler and bytes.
+
+`python3 tools/r68_art/generate.py --check` checks **156 outputs**. Its
+split checks cover area conservation per original face, every exported
+triangle's source surface and affine UV mapping, normals/winding, local
+bounds, exterior edge closure and exact pixel equality in all six views.
+The front/angle images were inspected directly. All **146 previous
+generated files other than the HTML page** remain byte-identical to
+`6a0c0541`, including every texture, inventory icon and one-piece OBJ.
+`git diff --check` passes; all page links remain local and relative.
+
+**Upgrade classification: compatible.** This pass adds development art
+outputs only, under `tools/r68_art/`. No `mods/`, Lua, world data, version
+or upgrade declaration changes; no server, fixture, sync, merge or push.
+The media ledger covers the two halves, their MTLs and comparison images.
+The final commit hash and empty post-commit `git status --porcelain`
+receipt are in the final handoff (captured by the runner as `last.md`).
+
+**Remaining integration checks:** coordinator review, then the game lane
+copies the picked assets and maps the two halves to its nodes. The user's
+desktop/web test checks the seam and roof from front/back/above/below at
+all four board rotations, digging cracks on either half, one item drop
+and complete removal when either half is dug. Runtime acceptance is not
+claimed by this offline art pass.
+
+## Pass 3 — wood texture
+
+**Picked in pass 4: B, warm heartwood, for the complete set.** Its warmer
+boards, stronger frame edges and roof grain sit closer to the wooden
+chest. A is the quieter, more muted alternative. Both keep soft grain in
+the writing fields. These texture A/B labels do not change the user's
+model picks: **standing sign A, waypost B, notice board B**.
+
+Worktree/branch: `r68-art3`, from main
+`0a1ada42028138d5f41f703cd5b4f6f5f66b670a`.
+
+Open the [offline preview, pass 3](preview/index.html#wood).
+Each sign, including the
+wooden wall sign, has shipped/A/B columns with front and angled views,
+the same sample text, and flat textures at exactly 8× (scrollable).
+The waypost also has a reverse reading view. Matching model icons appear
+at native 16 px and nearest-neighbour 32 px.
+
+| Set | Character | Whole family at one scale |
+|---|---|---|
+| Shipped at pass-3 start | Existing pass-1 model textures and pass-2 wooden wall tile. | [Shipped](preview/wood_scale_shipped.png) |
+| A — planed timber | Muted golden boards, restrained long grain, modest edge shading. | [Set A](preview/wood_scale_a.png) |
+| **B — warm heartwood** | Honey-coloured boards, richer grain, deeper frame and roof seams. | [Set B](preview/wood_scale_b.png) |
+
+All three strips show the wooden chest, a plank block, the wall sign and
+all three picked signs at **169 pixels per node**. Chest/plank source
+pixels are comparison assets only. Candidate grain is newly drawn, with
+the reference palette and pixel treatment; no source pixels are copied.
+The baseline previews use the unchanged prior candidates, verified
+byte-identical to the shipped files at this branch's base. They remain a
+stable comparison after a candidate is integrated.
+
+### Candidate handoff
+
+| Candidate stem, followed by `_a.png` or `_b.png` | Runtime texture to replace | Size |
+|---|---|---|
+| `sign_standing_wood` | `grug_signs_standing.png` | 64 × 64 RGBA |
+| `waypost_wood` | `grug_signs_waypost.png` | 64 × 64 RGBA |
+| `notice_board_wood` | `grug_signs_notice_board.png` | 64 × 64 RGBA |
+| `sign_wall_wood` | `default_sign_wall_wood.png` | 16 × 16 RGBA |
+
+All are in [candidates/](candidates/). The first three also have matching
+`_a_inv.png` and `_b_inv.png` candidates, **16 × 16 RGBA**, rendered from
+the unchanged unlettered model. For example,
+`sign_standing_wood_b_inv.png` replaces `grug_signs_standing_inv.png`.
+The wall inventory/wield icon remains suitable and is unchanged. The iron
+wall texture and icon are outside this pass and unchanged.
+
+**Four textures and three matching icons per set: 14 new candidate files.**
+The [wood manifest](wood_manifest.json) records the replacements, sizes,
+writing-field colour bounds, preview text metrics and frozen baseline
+hashes. Each candidate has its own row in the [media ledger](LICENSE-media.md).
+Original candidates are **CC0-1.0**, the generator **GPL-3.0-or-later**;
+comparison strips retain the chest/plank **CC-BY-SA-3.0** licence.
+
+### Wood and reading surfaces
+
+The front boards have staggered, lengthwise grain and slight tone changes
+between planks. Strong seams stay on frames, roof and backs. Small knots
+occur only on backs and roof planks. Square posts and vertical stiles have
+vertical grain; horizontal rails and roof boards follow their long axis.
+The arrow keeps darker top/bottom edges. Its two reading faces share a
+reversed UV patch: their protected rectangles together cover the entire
+patch width, so no dark tip accent is painted into either writing area.
+
+The protected writing texels span at most **14 RGB levels per channel in
+A, 19 in B** across the set; the variation comes from broad, soft grain,
+not isolated letter-like marks. B's darkest protected colour is
+`#B58B51`, its lightest `#C89E64`. The wall sign's entire front interior
+uses the same calm treatment. All glyphs retain **`#2B1E14`** ink.
+
+Pass 3 uses the actual shipped text metrics from
+`mods/CORE/grug_text/layout.lua`: **6 × 12 pixel cells**, **1/128 node per
+pixel**, centred on the power-of-two canvas, with the runtime **1/64-node
+surface offset**. The existing saved glyph snapshot was checked against
+the shipped glyph pixels: all 94 printable non-space ASCII characters
+match. The earlier previews retain their original provisional 7 × 14
+metrics; only the new section represents the shipped text layout.
+Lettering is always a separate preview plane, never painted into an asset.
+
+### Round post and fixed models
+
+The [three-waypost stack](preview/wood_stack_b.png) uses rotations
+**−115.5°, −84°, +61.5°**, at one-node intervals. Both joins have separate
+[lower](preview/wood_join_b_1.png) and [upper](preview/wood_join_b_2.png)
+close-ups at **1100 pixels per node**, with the boundary at image centre.
+The same views exist for A and the shipped baseline.
+
+**Fixed-UV limitation:** all 24 round-post side faces share one atlas
+column; each facet spans only about 0.26 of a texel horizontally. Distinct
+painted vertical fibres cannot be encoded in this layout. Varying the
+column down its height would create horizontal bands. Consequently its
+sample remains uniform along the entire height and around the post, caps
+and gutters included, in each set. The unchanged facets provide the
+vertical shading. This preserves rotation-independent texture continuity;
+there are no added rings, knots or colour jumps at joins. The original
+sub-texel faceting remains (maximum radial difference **0.000535 node**).
+
+No model, UV, text-area JSON, model dimension, material slot or texel
+density changed. The picked meshes still have **16 / 110 / 56 vertices**
+and **24 / 164 / 108 triangles**, respectively; all retain 16 texels per
+node. The wall's crop, thin-edge row and alpha layout stay fixed. Original
+one-pixel atlas gutters are repainted by extending the corresponding
+patch edges.
+
+### Verification and delivery
+
+Run from the repository root:
+
+```sh
+python3 tools/r68_art/generate.py
+python3 tools/r68_art/generate.py --check
+git diff --check
+```
+
+The generator builds **147 outputs**, including all earlier outputs, the
+14 new candidates, 60 pass-3 preview images and the wood manifest. Its
+existing geometry/UV/text-backing checks remain active. Added checks cover
+new dimensions/alpha, matching preview bytes, both arrow writing fields,
+uniform round-post samples including gutters/caps, and full text capacity
+at the runtime scale. Every HTML image/link is local and relative.
+The final `--check` and `git diff --check` both passed.
+
+All **71 previous generated files other than the HTML page** were compared
+byte-for-byte with the branch base and are unchanged. The six model
+packages, previous icons, both wall candidates and previous preview PNGs
+are intact. The shipped models/textures match the frozen baseline.
+Front, angle, reverse, family, stack and join images were inspected
+directly; the notice-board view includes the complete roof and feet.
+No browser or game-runtime acceptance is claimed.
+
+**Upgrade classification: compatible.** Development candidates only;
+all changes are under `tools/r68_art/`. No files under `mods/`, Lua,
+world data, version or upgrade declaration changed. No server, fixture,
+sync, merge or push was run. The existing uninitialized reference
+submodules and their pins were left alone. The open design TODOs do not
+block this art pass.
+
+The final commit hash and post-commit empty `git status --porcelain`
+receipt are in the final handoff, captured by the runner as `last.md`.
+The report's commit can also be resolved with
+`git log -1 --format=%H -- tools/r68_art/REPORT.md`.
+
+**Pass-3 follow-up:** the user picked B in pass 4 above. Coordinator review
+and integration remain. After copying the selected four textures and three icons,
+the user checks desktop and web: front/back text nearby and at distance,
+daylight/indoor light, square-post grain, two rotated waypost joins,
+wall signs on walls/floors/ceilings, and 16/32 px icons. This is an art
+proposal, not a record of GUI acceptance.
+
+## Historical report — passes 1 and 2
+
+The following sections record the previous deliveries and their original
+preview metrics. Pass 3 above supersedes their wood recommendation only;
+the accepted model choices and all previous assets remain intact.
 
 **User's pick (2026-10-31): standing sign A, waypost B, notice board B.**
 These three cards are marked **Picked** on the preview page and contact
