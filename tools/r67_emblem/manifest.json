@@ -1,17 +1,17 @@
 {
   "candidate_sha256": {
-    "candidates/banner_accord_a.png": "5108ef1f37a2a4098dfd57da586748e55bff1d9b1169e3539c95aee994239dc8",
-    "candidates/banner_accord_b.png": "ade1d21da9448e805d7e7698cdd925e6865322809cf76f777136e253956a0fea",
-    "candidates/banner_accord_c.png": "d911d5c0e9e42cc055c98d120f4698fae828fc25abe70ee8999f1e826972c36a",
-    "candidates/banner_throng_a.png": "d4cdbf680955fa269cb6045024f6afd260a2926139f15c2ccd1a14aa445ec358",
-    "candidates/banner_throng_b.png": "3dd9b14e9a4ae7888124f5f2902d80c178b0f3cded27fff84ae475140ce8281a",
-    "candidates/banner_throng_c.png": "1879cff7515dd1dbfc3d2c8cae3ad471716a4ad3adb68c616a33a92d70a16593",
-    "candidates/emblem_accord_a.png": "561066639df65192da63b2d8fb2be8215768cf81a289d5e6a7dec7c37371017d",
-    "candidates/emblem_accord_b.png": "1cee92bf567ddbae3d2d4fc590b67585e562cfc1355b9541cf4d3170b1fbbd73",
-    "candidates/emblem_accord_c.png": "f53100e243c70a3c057eba4c84af707939556abd1251c7673ea24df6ab2c24b8",
-    "candidates/emblem_throng_a.png": "8347ad3288a3e940581b07e49f23b0a9ebb804f6aa6747a842107bec7717a601",
-    "candidates/emblem_throng_b.png": "689da2f2e2145a52da925915e3e141ab5ec831d17e8d89f040104c326c1ab2ab",
-    "candidates/emblem_throng_c.png": "e4088af765bca521c952bfb13b9217dfc2187504be383e969cf73053c8b53543"
+    "candidates/banner_accord_a.png": "4b2fb3189be7f4b7305ef422895ab6ed75300f59f406f648dbb582ff1f893e9e",
+    "candidates/banner_accord_b.png": "5a359907128a7237e1066e077b5d86c875cae151f6a660e63e47d83ceda94651",
+    "candidates/banner_accord_c.png": "97ad330d527db983eb0a1ac81628b40bf9ca4989aabafdef7994df47418c3e82",
+    "candidates/banner_throng_a.png": "4fe2c09587ec002fd668c8cce7d6a4202891c0948565a895232c016fb6b7359c",
+    "candidates/banner_throng_b.png": "c0c8264c0908409d9fa90570180da5badb21e462f1724e13c546b1e8676bf082",
+    "candidates/banner_throng_c.png": "a048798e33d27146b66a56a0805e630074c6aae2baf3b65fdf683a6d5a76b7c0",
+    "candidates/emblem_accord_a.png": "8cd61bf654705dfce85e029431534ba749451b4056f5741e9860fed0b8a7d90c",
+    "candidates/emblem_accord_b.png": "0a64cdc068bc3c0afd9efc8d97082c9095fef9b6f0fac9e2dda1db4619a714b5",
+    "candidates/emblem_accord_c.png": "e4642a3e8564d9b07057fe441613c6c69e12f78ef8a14a31957425335d6b2418",
+    "candidates/emblem_throng_a.png": "7c7cca2a492eb6f51be0de0d5802886f029a63c6389a2a4b3c6ecf08037344dc",
+    "candidates/emblem_throng_b.png": "6543f9e24747f73a8dd6b7caf4494d332ec9b9fcf9000b03802d4c46b3c0b5fe",
+    "candidates/emblem_throng_c.png": "21254e43794d8839f0df2e3e2a53e14635ace5c399606728ef7679db960b2a32"
   },
   "model": {
     "front_uvs": [
@@ -62,6 +62,18 @@
     "sha256": "47248045f71d5ed370a5cb4ce40b0ab0ad00bc77da865ccb303139cb31415856",
     "source": "mods/MAPGEN/grug_mapgen/models/grug_mapgen_faction_banner.b3d"
   },
+  "palette": {
+    "accord": [
+      "#344b5a",
+      "#d6c59b"
+    ],
+    "throng": [
+      "#683e39",
+      "#d6c59b"
+    ]
+  },
+  "palette_sampling": "Most frequent fully opaque RGB in each shipped banner",
+  "pass": 2,
   "references": {
     "ref_banner_accord.png": {
       "sha256": "620dc9e768d262e6b718d981bd491a6f2f8bddacddc011aefd22ff030f29608a",

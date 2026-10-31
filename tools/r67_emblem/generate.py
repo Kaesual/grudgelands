@@ -17,133 +17,29 @@ MAP = ROOT / 'mods/MAPGEN/grug_mapgen'
 INV = ROOT / 'mods/PLAYER/grug_inventory/textures'
 CLASSES = ROOT / 'mods/PLAYER/grug_classes/textures'
 FACTIONS = ('accord', 'throng')
-PALETTE = {'accord': ('#3f6fce', '#bcd6ff'), 'throng': ('#c41e3a', '#ffd0c8')}
+# Pass 2 samples the most frequent opaque cloth colour of each shipped PNG.
+from collections import Counter
+from heraldry import IDEAS, IVORY, banner as draw_banner, down, icon
+
+
+def sampled_palette():
+    palette = {}
+    for faction in FACTIONS:
+        im = Image.open(MAP / f'textures/grug_mapgen_faction_banner_{faction}.png').convert('RGBA')
+        data = np.array(im)
+        colour = Counter(map(tuple, data[data[:, :, 3] == 255, :3])).most_common(1)[0][0]
+        palette[faction] = ('#'+''.join(f'{c:02x}' for c in colour), IVORY)
+    return palette
+
+
+PALETTE = sampled_palette()
 DARK = '#181e28'
-IVORY = '#f3e7ce'
-SCALE = 6
-IDEAS = {
-    'a': ('Wing & Tusk', 'Oathwing', 'Oathjaw',
-          'Two wings join around a keystone: different peoples holding one line.',
-          'Two rising tusks share one heavy jaw: a people that cannot be bought or broken.'),
-    'b': ('Root & Horn', 'Threefold Root', 'Gathering Horn',
-          'Three broad boughs grow from one rooted trunk: the pact belongs to its homelands.',
-          'One sweeping rally horn calls scattered strength into a single force.'),
-    'c': ('Lance & Maul', 'Crossed Lances', 'Breaker Maul',
-          'Two interlocked lances guard a common centre: a pact defended together.',
-          'A broad war maul carries one uncompromising edge: many hands behind one blow.'),
-}
-
-
-def polygon(draw, points, fill):
-    draw.polygon([(round(x * SCALE), round(y * SCALE)) for x, y in points], fill=fill)
-
-
-def curve(start, segments):
-    # Sample original cubic geometry; no vector asset or font is an input.
-    result = [start]
-    for c1, c2, end in segments:
-        p0 = np.array(result[-1], dtype=float)
-        p1, p2, p3 = map(lambda p: np.array(p, dtype=float), (c1, c2, end))
-        for t in np.linspace(0, 1, 25)[1:]:
-            p = (1-t)**3*p0 + 3*(1-t)**2*t*p1 + 3*(1-t)*t*t*p2 + t**3*p3
-            result.append(tuple(p))
-    return result
-
-
-def motif(faction, variant):
-    # A large, two-tone UI sigil; its alpha also defines the banner ink.
-    im = Image.new('RGBA', (100*SCALE, 100*SCALE))
-    d = ImageDraw.Draw(im)
-    base, light = PALETTE[faction]
-    if variant == 'a' and faction == 'accord':
-        polygon(d, [(6,17),(36,30),(50,18),(64,30),(94,17),(86,44),
-                    (73,49),(78,53),(64,61),(50,87),(36,61),(22,53),
-                    (27,49),(14,44)], base)
-        polygon(d, [(6,17),(36,30),(43,43),(19,35)], light)
-        polygon(d, [(94,17),(64,30),(57,43),(81,35)], light)
-        polygon(d, [(50,28),(60,40),(50,69),(40,40)], light)
-    elif variant == 'a':
-        polygon(d, [(8,13),(24,28),(29,49),(38,60),(62,60),(71,49),
-                    (76,28),(92,13),(88,58),(75,78),(50,91),(25,78),(12,58)], base)
-        polygon(d, [(8,13),(24,28),(29,49),(38,60),(27,59),(19,47)], light)
-        polygon(d, [(92,13),(76,28),(71,49),(62,60),(73,59),(81,47)], light)
-        polygon(d, [(32,71),(50,79),(68,71),(50,87)], light)
-    elif variant == 'b' and faction == 'accord':
-        polygon(d, [(50,7),(66,27),(62,34),(79,24),(90,41),(72,56),
-                    (57,57),(57,67),(77,79),(81,90),(50,80),(19,90),
-                    (23,79),(43,67),(43,57),(28,56),(10,41),(21,24),
-                    (38,34),(34,27)], base)
-        polygon(d, [(50,7),(57,28),(50,44),(43,28)], light)
-        polygon(d, [(21,24),(40,45),(31,46),(15,40)], light)
-        polygon(d, [(79,24),(60,45),(69,46),(85,40)], light)
-        polygon(d, [(50,54),(54,72),(50,80),(46,72)], light)
-    elif variant == 'b':
-        outline = curve((12,18), [((-1,44),(7,72),(27,85)),
-            ((49,100),(80,90),(92,59)), ((75,77),(52,76),(40,60)),
-            ((32,50),(33,39),(39,29))])
-        outline += [(45,25),(18,10)]
-        polygon(d, outline, base)
-        highlight = curve((12,18), [((-1,44),(7,72),(27,85))])
-        highlight += [(32,72)]
-        highlight += curve((32,72), [((17,59),(17,40),(25,25))])[1:]
-        highlight += [(39,29),(45,25),(18,10)]
-        polygon(d, highlight, light)
-        tip = curve((92,59), [((75,77),(52,76),(40,60))])
-        tip += [(48,82)]
-        polygon(d, tip, light)
-    elif variant == 'c' and faction == 'accord':
-        spear = [(9,8),(35,16),(29,23),(82,81),(73,89),(20,31),(13,38)]
-        polygon(d, spear, base)
-        polygon(d, [(100-x,y) for x,y in spear], base)
-        polygon(d, [(9,8),(26,18),(20,25),(13,38)], light)
-        polygon(d, [(91,8),(74,18),(80,25),(87,38)], light)
-        polygon(d, [(50,36),(63,50),(50,64),(37,50)], light)
-    else:
-        polygon(d, [(10,18),(27,9),(36,19),(65,19),(76,10),(91,24),
-                    (86,49),(65,47),(62,39),(58,39),(58,74),(66,82),
-                    (50,93),(34,82),(42,74),(42,39),(35,39),(29,50),
-                    (10,45)], base)
-        polygon(d, [(10,18),(27,9),(36,19),(65,19),(76,10),(91,24),
-                    (75,28),(27,28)], light)
-        polygon(d, [(46,40),(53,40),(53,75),(46,81)], light)
-    return im
 
 
 def png(im):
     buf = io.BytesIO()
     im.save(buf, format='PNG', optimize=False)
     return buf.getvalue()
-
-
-def down(im, size):
-    return im.resize(size, Image.Resampling.LANCZOS)
-
-
-def banner(faction, large_motif):
-    # Keep the shipped cloth alpha byte-for-byte; repaint every RGB value.
-    reference = Image.open(MAP / f'textures/grug_mapgen_faction_banner_{faction}.png').convert('RGBA')
-    im = Image.new('RGBA', (128*SCALE, 256*SCALE), PALETTE[faction][0])
-    d = ImageDraw.Draw(im)
-    base = np.array(Image.new('RGB', (1,1), PALETTE[faction][0]).getpixel((0,0)))
-    shade = tuple((base * .76).astype(int)) + (255,)
-    # The source viewBox is centred vertically: x'=1.28*x, y'=1.28*y+25.6.
-    def cloth(points, color):
-        polygon(d, [(x*1.28, y*1.28+25.6) for x,y in points], color)
-    cloth([(6,3),(16,3),(16,138),(50,151),(84,138),(84,3),(94,3),
-           (94,142),(50,157),(6,142)], shade)
-    pts = [(12,8),(88,8),(88,138),(50,151),(12,138),(12,8)]
-    d.line([(round(x*1.28*SCALE), round((y*1.28+25.6)*SCALE)) for x,y in pts],
-           fill=IVORY, width=2*SCALE, joint='curve')
-    # One modest hem and a square, undistorted motif above cloth centre.
-    ink_mask = down(large_motif.getchannel('A'), (92*SCALE,92*SCALE))
-    ink = Image.new('RGBA', ink_mask.size, IVORY)
-    ink.putalpha(ink_mask)
-    im.alpha_composite(ink, (18*SCALE,76*SCALE))
-    im = down(im, (128,256))
-    im.putalpha(reference.getchannel('A'))
-    data = np.array(im)
-    data[data[:,:,3] == 0, :3] = 0
-    return Image.fromarray(data)
 
 
 def chunks(data, start, end):
@@ -259,19 +155,20 @@ def projection(texture, vertices, buffers):
 
 
 def contact_sheet(images):
-    board=Image.new('RGB',(1200,1020),DARK)
+    board=Image.new('RGB',(1200,1320),DARK)
     d=ImageDraw.Draw(board)
     font=ImageFont.load_default(size=22)
     small=ImageFont.load_default(size=14)
-    d.text((30,24),'GRUDGELANDS / FACTION EMBLEMS',font=font,fill=IVORY)
-    d.text((30,59),'A recommended  /  UI sizes 16, 24, 32, 64  /  existing banner mesh',font=small,fill='#a8b4c4')
-    for i,key in enumerate(IDEAS):
+    d.text((30,24),'GRUDGELANDS / FACTION HERALDRY / PASS 2',font=font,fill=IVORY)
+    d.text((30,59),'A recommended  /  muted cloth, ivory thread  /  UI sizes 16, 24, 32, 64',font=small,fill='#a8b4c4')
+    for i,key in enumerate((*IDEAS,'current')):
         y=106+i*300
-        d.text((30,y),key.upper()+' / '+IDEAS[key][0],font=font,fill=IVORY)
+        title=key.upper()+' / '+IDEAS[key][0] if key!='current' else 'CURRENT / shipped art, unchanged'
+        d.text((30,y),title,font=font,fill=IVORY)
         for j,f in enumerate(FACTIONS):
             x=30+j*590
             d.text((x,y+35),'The '+f.title(),font=small,fill=PALETTE[f][1])
-            icon=images[f'emblem_{f}_{key}.png']
+            icon=images[f'emblem_{f}_{key}.png' if key!='current' else f'ref_emblem_{f}.png']
             for size,dx in [(16,0),(24,45),(32,100),(64,160)]:
                 im=down(icon,(size,size));board.paste(im,(x+dx,y+105-size//2),im)
                 d.text((x+dx,y+150),str(size),font=small,fill='#a8b4c4')
@@ -295,9 +192,10 @@ def outputs():
             out[HERE/'candidates'/name]=data
     for f in FACTIONS:
         for key in IDEAS:
-            large=motif(f,key)
+            large=icon(f,key,PALETTE)
             put(f'emblem_{f}_{key}.png',down(large,(100,100)),True)
-            cloth=banner(f,large)
+            reference=Image.open(MAP/f'textures/grug_mapgen_faction_banner_{f}.png').convert('RGBA')
+            cloth=draw_banner(f,key,PALETTE,reference)
             put(f'banner_{f}_{key}.png',cloth,True)
             put(f'view_{f}_{key}.png',projection(cloth,vertices,buffers))
         refs={f'ref_emblem_{f}.png':INV/f'grug_inventory_faction_{f}.png',
@@ -316,7 +214,7 @@ def outputs():
             sources[name]={'source':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
     put('contact.png',contact_sheet(images))
     out[HERE/'preview/index.html']=html_page(IDEAS,FACTIONS)
-    manifest={'model':{'source':str((MAP/'models/grug_mapgen_faction_banner.b3d').relative_to(ROOT)),
+    manifest={'pass':2, 'palette':PALETTE, 'palette_sampling':'Most frequent fully opaque RGB in each shipped banner', 'model':{'source':str((MAP/'models/grug_mapgen_faction_banner.b3d').relative_to(ROOT)),
                         'sha256':model_hash,'front_vertices_nodes':vertices[:4,:3].astype(float).round(5).tolist(),
                         'front_uvs':vertices[:4,6:].tolist(), 'material_buffers':['cloth','rod','straps']},
               'references':sources,'candidate_sha256':{str(p.relative_to(HERE)):hashlib.sha256(b).hexdigest()
