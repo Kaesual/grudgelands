@@ -1,0 +1,237 @@
+{
+  "abyssal_crystal": {
+    "expression": "default_diamond.png^[colorize:#3a1f6e:210",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "abyssal_crystal_block": {
+    "expression": "default_diamond.png^[colorize:#3a1f6e:210",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "abyssal_steel_bar": {
+    "expression": "default_steel_ingot.png^[colorize:#3a245d:135",
+    "source": "mods/BASE/default/textures/default_steel_ingot.png",
+    "source_sha256": "cbb71e7f969455c65c2914cda85328e77d82e0842273fbd284dd02401c979586"
+  },
+  "abyssal_steel_block": {
+    "expression": "default_steel_block.png^[colorize:#3a245d:135",
+    "source": "mods/BASE/default/textures/default_steel_block.png",
+    "source_sha256": "2ea2a1dbb8a576776d7e0ee67f808b188c09df428db8110b080963435b286580"
+  },
+  "bronze_bar": {
+    "expression": "default_bronze_ingot.png",
+    "source": "mods/BASE/default/textures/default_bronze_ingot.png",
+    "source_sha256": "5daab3aadf628788960cf0ef909358fa0eee29585949cc36149ccac99a33c1c1"
+  },
+  "bronze_block": {
+    "expression": "default_bronze_block.png",
+    "source": "mods/BASE/default/textures/default_bronze_block.png",
+    "source_sha256": "207ba1a7641914463c9134e3ec3dec2d6c9eda173a895e07f5963e240729167a"
+  },
+  "citrine_block": {
+    "expression": "default_diamond.png^[colorize:#d9a21b:190",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "copper_bar": {
+    "expression": "default_copper_ingot.png",
+    "source": "mods/BASE/default/textures/default_copper_ingot.png",
+    "source_sha256": "596b3442c02a00f81e0b69ec8bff3359ed3be2fff664169d23d5122d81f20c18"
+  },
+  "copper_block": {
+    "expression": "default_copper_block.png",
+    "source": "mods/BASE/default/textures/default_copper_block.png",
+    "source_sha256": "529e101fe1be40c2057287132722f418e6c2fb415197ceff17fdfeb06ca50bd0"
+  },
+  "cut_citrine": {
+    "expression": "default_diamond.png^[colorize:#d9a21b:190^[brighten",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "cut_diamond": {
+    "expression": "default_diamond.png^[colorize:#ffffff:20^[brighten",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "cut_garnet": {
+    "expression": "default_diamond.png^[colorize:#9e1526:210^[brighten",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "cut_jade": {
+    "expression": "default_diamond.png^[colorize:#3d9b65:190^[brighten",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "cut_ruby": {
+    "expression": "default_diamond.png^[colorize:#c51d35:195^[brighten",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "cut_sapphire": {
+    "expression": "default_diamond.png^[colorize:#235ac7:190^[brighten",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "diamond_block": {
+    "expression": "default_diamond.png^[colorize:#ffffff:20",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "embersteel_bar": {
+    "expression": "default_steel_ingot.png^[colorize:#b94b24:110",
+    "source": "mods/BASE/default/textures/default_steel_ingot.png",
+    "source_sha256": "cbb71e7f969455c65c2914cda85328e77d82e0842273fbd284dd02401c979586"
+  },
+  "embersteel_block": {
+    "expression": "default_steel_block.png^[colorize:#b94b24:110",
+    "source": "mods/BASE/default/textures/default_steel_block.png",
+    "source_sha256": "2ea2a1dbb8a576776d7e0ee67f808b188c09df428db8110b080963435b286580"
+  },
+  "garnet_block": {
+    "expression": "default_diamond.png^[colorize:#9e1526:210",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "gold_bar": {
+    "expression": "default_gold_ingot.png",
+    "source": "mods/BASE/default/textures/default_gold_ingot.png",
+    "source_sha256": "484e30dca4bd553dd46172af4177032fd94a022200bff11f9146ee6953249d4b"
+  },
+  "gold_block": {
+    "expression": "default_gold_block.png",
+    "source": "mods/BASE/default/textures/default_gold_block.png",
+    "source_sha256": "b3fadf50419b836df4a6bc3ab09f0d93e1dc672dc3464758ae8efd9f3fdeb20a"
+  },
+  "iron_bar": {
+    "expression": "default_steel_ingot.png",
+    "source": "mods/BASE/default/textures/default_steel_ingot.png",
+    "source_sha256": "cbb71e7f969455c65c2914cda85328e77d82e0842273fbd284dd02401c979586"
+  },
+  "iron_block": {
+    "expression": "default_steel_block.png",
+    "source": "mods/BASE/default/textures/default_steel_block.png",
+    "source_sha256": "2ea2a1dbb8a576776d7e0ee67f808b188c09df428db8110b080963435b286580"
+  },
+  "jade_block": {
+    "expression": "default_diamond.png^[colorize:#3d9b65:190",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "quartz": {
+    "expression": "default_diamond.png^[colorize:#eaf6ff:120",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "rough_citrine": {
+    "expression": "default_diamond.png^[colorize:#d9a21b:190",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "rough_diamond": {
+    "expression": "default_diamond.png^[colorize:#ffffff:20",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "rough_garnet": {
+    "expression": "default_diamond.png^[colorize:#9e1526:210",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "rough_jade": {
+    "expression": "default_diamond.png^[colorize:#3d9b65:190",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "rough_ruby": {
+    "expression": "default_diamond.png^[colorize:#c51d35:195",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "rough_sapphire": {
+    "expression": "default_diamond.png^[colorize:#235ac7:190",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "ruby_block": {
+    "expression": "default_diamond.png^[colorize:#c51d35:195",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "sapphire_block": {
+    "expression": "default_diamond.png^[colorize:#235ac7:190",
+    "source": "mods/BASE/default/textures/default_diamond.png",
+    "source_sha256": "4ad77fd27fce83fbb86d468ae159d2befdc007dac2190503c7d12b13bc42cc71"
+  },
+  "setting_copper_inlaid_steel": {
+    "expression": "default_gold_ingot.png^[colorize:#6f7781:100",
+    "source": "mods/BASE/default/textures/default_gold_ingot.png",
+    "source_sha256": "484e30dca4bd553dd46172af4177032fd94a022200bff11f9146ee6953249d4b"
+  },
+  "setting_gold": {
+    "expression": "default_gold_ingot.png^[colorize:#ddb64d:100",
+    "source": "mods/BASE/default/textures/default_gold_ingot.png",
+    "source_sha256": "484e30dca4bd553dd46172af4177032fd94a022200bff11f9146ee6953249d4b"
+  },
+  "setting_gold_filigreed_abyssal_steel": {
+    "expression": "default_gold_ingot.png^[colorize:#59436f:100",
+    "source": "mods/BASE/default/textures/default_gold_ingot.png",
+    "source_sha256": "484e30dca4bd553dd46172af4177032fd94a022200bff11f9146ee6953249d4b"
+  },
+  "setting_gold_filigreed_embersteel": {
+    "expression": "default_gold_ingot.png^[colorize:#9e633e:100",
+    "source": "mods/BASE/default/textures/default_gold_ingot.png",
+    "source_sha256": "484e30dca4bd553dd46172af4177032fd94a022200bff11f9146ee6953249d4b"
+  },
+  "setting_iron": {
+    "expression": "default_gold_ingot.png^[colorize:#8c8c86:100",
+    "source": "mods/BASE/default/textures/default_gold_ingot.png",
+    "source_sha256": "484e30dca4bd553dd46172af4177032fd94a022200bff11f9146ee6953249d4b"
+  },
+  "setting_tin": {
+    "expression": "default_gold_ingot.png^[colorize:#b7a289:100",
+    "source": "mods/BASE/default/textures/default_gold_ingot.png",
+    "source_sha256": "484e30dca4bd553dd46172af4177032fd94a022200bff11f9146ee6953249d4b"
+  },
+  "silver_bar": {
+    "expression": "default_tin_ingot.png^[colorize:#f4f6fa:90",
+    "source": "mods/BASE/default/textures/default_tin_ingot.png",
+    "source_sha256": "be79367d4f19cb7c5dc3b0bb4d5a1c208c34fd29dc65d188347654fb1edadb76"
+  },
+  "silver_block": {
+    "expression": "default_tin_block.png^[colorize:#f4f6fa:90",
+    "source": "mods/BASE/default/textures/default_tin_block.png",
+    "source_sha256": "0a9591b8c1a4042609254f67827b88b48529fa4e7c8677b015b82ab2d57bc76d"
+  },
+  "silversteel_bar": {
+    "expression": "default_steel_ingot.png^[colorize:#b7c9df:95",
+    "source": "mods/BASE/default/textures/default_steel_ingot.png",
+    "source_sha256": "cbb71e7f969455c65c2914cda85328e77d82e0842273fbd284dd02401c979586"
+  },
+  "silversteel_block": {
+    "expression": "default_steel_block.png^[colorize:#b7c9df:95",
+    "source": "mods/BASE/default/textures/default_steel_block.png",
+    "source_sha256": "2ea2a1dbb8a576776d7e0ee67f808b188c09df428db8110b080963435b286580"
+  },
+  "steel_bar": {
+    "expression": "default_steel_ingot.png^[colorize:#34404a:75",
+    "source": "mods/BASE/default/textures/default_steel_ingot.png",
+    "source_sha256": "cbb71e7f969455c65c2914cda85328e77d82e0842273fbd284dd02401c979586"
+  },
+  "steel_block": {
+    "expression": "default_steel_block.png^[colorize:#34404a:75",
+    "source": "mods/BASE/default/textures/default_steel_block.png",
+    "source_sha256": "2ea2a1dbb8a576776d7e0ee67f808b188c09df428db8110b080963435b286580"
+  },
+  "tin_bar": {
+    "expression": "default_tin_ingot.png",
+    "source": "mods/BASE/default/textures/default_tin_ingot.png",
+    "source_sha256": "be79367d4f19cb7c5dc3b0bb4d5a1c208c34fd29dc65d188347654fb1edadb76"
+  },
+  "tin_block": {
+    "expression": "default_tin_block.png",
+    "source": "mods/BASE/default/textures/default_tin_block.png",
+    "source_sha256": "0a9591b8c1a4042609254f67827b88b48529fa4e7c8677b015b82ab2d57bc76d"
+  }
+}
