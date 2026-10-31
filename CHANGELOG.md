@@ -12,6 +12,31 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.68.0 — readable signs, wayposts and notice boards (2026-10-31)
+
+Text you can read in the world. **Compatible:** no map reset and no
+migration; signs and chest labels written before show their text at once.
+
+- **Text on signs and chests:** a wall sign's text now stands on its
+  board (four lines of 15 characters, on walls, floors and ceilings), and
+  a chest's label on its front below the lock (three lines of 13), readable
+  from a distance without pointing at them. Text wraps at spaces; what
+  does not fit is cut off. Pointing still shows it as before.
+- **Calmer wall signs:** the wooden and the iron sign have a plain board
+  without the painted scribbles, so the writing stands out.
+- **Standing Sign:** a board on a post that faces you, at any angle
+  (1 Wooden Sign + 1 stick).
+- **Waypost:** an arrow on a post that points the way you look, with up to
+  14 characters readable from both sides. Click the top of a waypost to
+  stack another one on it: one post, several arrows (1 Wooden Sign +
+  1 stick).
+- **Notice Board:** a roofed board two blocks wide for seven lines of 30
+  characters (2 Wooden Signs + 2 sticks). It needs room for both halves
+  and their roof and solid ground under both.
+- Anyone may read every sign; in another player's claim writing needs the
+  Everything permission. A new sign whose ground is dug away drops as an
+  item.
+
 ## 0.67.0 — the Social tab, a bigger map, simpler crafting and chests in three tiers (2026-10-30)
 
 Fixes and wishes from the group play session. **Migration** needed: the

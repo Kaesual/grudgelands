@@ -6,6 +6,42 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 68 — readable text in the world (GUI acceptance pending)
+
+Delivered in 0.68.0 (**compatible**, no step): `grug_text` (text on one
+unsaved entity per written surface, the CC0 glyph font), the wall signs'
+text on calm boards, chest labels on the front, and `grug_signs` with the
+Standing Sign, the Waypost and the two-node Notice Board
+([completion](docs/planning/round68-plan.md#completion-2026-10-31)).
+Remaining: the user's desktop/web
+[GUI checklist](docs/planning/round68-plan.md#gui-checklist-desktop-and-web),
+joined to the joint GUI test of 0.57–0.66. Carry-overs:
+
+- **Mapgen wayposts:** with the next change that needs a map reset (the
+  Round 67 entry [below](#round-67--playtest-feedback-gui-accepted)); the
+  player-placed `grug_signs:waypost` is the node to place.
+- **First-look defaults** to tune after the GUI test: floor and ceiling
+  wall signs read upright only for a reader facing +z (the vendored sign
+  has no vertical wallmounted rotation); the waypost's arrow follows the
+  placer's look; the notice board turns in four steps; the web join with
+  the 431 glyph files (an atlas would roughly triple the texture string).
+- **TEXT:** the wall sign form stays single-line; a chest label's entity
+  lies in the node in front of the chest, so on a mapblock edge it can
+  vanish while only that block is unloaded and returns when the chest's
+  block is activated again; a word longer than a line always starts its
+  own line (fits ruling 4); `grug_text.register` wraps `after_destruct` at
+  call time, so a node's callbacks must be defined before it.
+- **SIGNS:** nothing reserves the notice board's roof space after
+  placement; the engine's hover text shows only 6 of a board's 7 lines; a
+  board can straddle a claim border, as a bed can (digging either half
+  removes both); the `notice_board_part` item can be placed through
+  `/give` (a no-op `on_place` would close it); `placer:get_look_dir()` has
+  no non-player guard; the Help line sits under "Bags, food and repair"
+  (Help has no building section).
+- **ART:** the closing section of `tools/r68_art/REPORT.md` still names the
+  coordinator's review and the user's look at the wall textures as open
+  (both done: the user approved the boards).
+
 ## Round 67 — playtest feedback (GUI accepted)
 
 Delivered in 0.67.0 (**migrate**: step 0.67.0 refunds the metal rods as
@@ -17,9 +53,9 @@ room and the stuck cleanup; one crafting row per output, fewer recipes, the
 craft box hint and Details, Help → Materials, half fuel; chests with Sort
 and labels, three container tiers with Upgrade and scrolling lists
 ([completion](docs/planning/round67-plan.md#completion-2026-10-30)).
-Remaining: the user's desktop/web
-[GUI checklist](docs/planning/round67-plan.md#gui-checklist-desktop-and-web),
-joined to the joint GUI test of 0.57–0.66. Carry-overs:
+The user accepted the whole
+[GUI checklist](docs/planning/round67-plan.md#gui-checklist-desktop-and-web)
+on 2026-10-31. Carry-overs:
 
 - **Wayposts in world generation (the user, 2026-10-31):** wayposts
   (arrow signs with readable town names) start as player-placed nodes; with
