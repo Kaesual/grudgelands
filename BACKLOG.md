@@ -21,10 +21,10 @@ Remaining: the user's desktop/web
 [GUI checklist](docs/planning/round67-plan.md#gui-checklist-desktop-and-web),
 joined to the joint GUI test of 0.57–0.66. Carry-overs:
 
-- **Deploy note (D review):** the 0.67.0 CHANGELOG's host instructions follow
-  the 0.53.0 form (no `--map-reset`); the production world (0.55.1) crosses
-  the map resets of 0.58–0.63, so its update uses the `--map-reset`
-  procedure of the upgrade contract.
+- **Deploy note:** production runs 0.65.0 (user, 2026-10-31); its update
+  to 0.67.0 crosses no map reset (the last is 0.63.0), so the CHANGELOG's
+  host instructions (the migration tool without `--map-reset`) apply as
+  written.
 - **First-look defaults** to tune after the GUI test: underground Giant
   Spider and Giant Rat density (about a tenth of the old floor spots; raise
   the cave rows' chance if too sparse), markers of 12 px at 1280×720, the

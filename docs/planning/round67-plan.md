@@ -730,8 +730,8 @@ field `_grug_visual_scale` (missing on old mobs: the tier's scale); SOCIAL
 adds the player meta `grug_parties:favorites` (missing: no favourites);
 CONTAINERS adds the node meta `grug_label` and grows shelves from 16 to
 32 slots lazily when opened (never shrinking); the bush stems stay
-registered. No map reset. **Push:** not pushed; production is still
-0.55.1; origin/main is `7a68e871` (0.65.0 and its status note). **GUI
+registered. No map reset. **Push:** not pushed; production runs 0.65.0
+(user, 2026-10-31), so its update needs only the 0.67.0 step; origin/main is `7a68e871` (0.65.0 and its status note). **GUI
 test:** pending; it joins the joint GUI test of 0.57–0.66
 ([checklist](#gui-checklist-desktop-and-web)). **Sync:** by the
 coordinator after each merge.

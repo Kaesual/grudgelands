@@ -38,8 +38,10 @@ Spiders and Giant Rats spawn on about a tenth of the floor spots they had
 ([completion, numbers, decisions and GUI checklist](planning/round67-plan.md#completion-2026-10-30);
 [carry-overs](../BACKLOG.md#round-67--playtest-feedback-gui-acceptance-pending)).
 **The joint GUI test of 0.57–0.66 is still pending; 0.67 joins it.**
-Production is still **0.55.1**; origin/main is `7a68e871` (0.65.0 and its
-status note). Only the user pushes.
+Production runs **0.65.0** (user, 2026-10-31; the older "0.55.1" lines
+below are history); updating it to 0.67.0 crosses no map reset (the last
+is 0.63.0) and runs only the 0.67.0 step. origin/main is `7a68e871` (0.65.0
+and its status note). Only the user pushes.
 
 **0.66.0 / Round 66 is merged locally; not pushed.** Polish from the
 user's notes after playing 0.65.0: shift-clicking a two-hander swaps both
