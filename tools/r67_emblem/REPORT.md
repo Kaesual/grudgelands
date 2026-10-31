@@ -195,6 +195,16 @@ the user's **desktop and web** GUI checklist is:
 
 ## Commit receipt
 
-The complete-art commit and clean-tree receipt are recorded in the
-following documentation commit. The final response is saved as `last.md`
-by the runner; no runner-owned file is added to this branch.
+- **Final Pass 4 art/preview commit:** `8fdd5ec501560b15f232dc3c28ae7e50a5837314`.
+  All six drawings, 12 candidates, comparison assets, generator, preview,
+  provenance and this report were complete at this checkpoint.
+  **`git status --porcelain` was empty.**
+- The following documentation-only commit adds this receipt. Its final
+  branch hash and post-report clean-tree result are in the final response,
+  saved as `last.md` by the runner. A tracked report cannot embed its own
+  commit hash without changing that hash; resolve the final report commit
+  with `git log -1 --format=%H -- tools/r67_emblem/REPORT.md`.
+
+Both Pass 4 commit messages end with
+`Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
+No runner-owned `last.md` is added to the branch.
