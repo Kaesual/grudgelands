@@ -157,6 +157,24 @@ confirmed against local files. The two open `TODO-*.md` files concern
 other work; the upstream workaround list requires no change for this lane.
 The reference submodules remain untouched.
 
+## Commit receipt
+
+- `c421b445`: generator, six model packages, saved preview-font input,
+  manifest and media provenance.
+- **Complete art and preview commit:**
+  `2f4d60faec3e4463bdd6e6f6ef4b20dacdaa25d5` — offline page, images,
+  report and the single `tools/README.md` entry. At this checkpoint,
+  **`git status --porcelain` was empty** and `git diff --check` passed.
+- This receipt is a following documentation-only commit. Its final branch
+  hash and the post-receipt clean-tree check are recorded in the final
+  handoff saved by the runner as `last.md`; a tracked report cannot embed
+  its own commit hash. Resolve it locally with
+  `git log -1 --format=%H -- tools/r68_art/REPORT.md`.
+
+All lane commit messages end with the requested GPT-6 Astra co-author
+trailer. Changes are confined to `tools/r68_art/` and one line in
+`tools/README.md`.
+
 ## Blockers / questions
 
 The user's A/B picks and independent coordinator review remain open.
