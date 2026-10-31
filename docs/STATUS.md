@@ -18,7 +18,10 @@ notice board B). Lanes TEXT and SIGNS each reviewed MERGE without a fix
 round, ART checked by the coordinator; merges `5c482606`, `48a23459`,
 `0fb2ab7f`, then this documentation lane D. **Compatible**, no step: the
 text is already in node meta (`text`, `grug_label`), the entities are not
-saved (two-boot LBM proof), the new nodes keep `text` and `infotext`.
+saved (two-boot LBM proof), the new nodes keep `text`. After the merges
+the user dropped the hover text of signs and chest labels (the text is on
+them now); old ones are cleared once per block by an LBM, still compatible
+([follow-up](planning/round68-plan.md#follow-up-after-the-merges-2026-10-31)).
 299 portable fixtures (two new); before this lane only `r37_dc` failed
 (waiting for the CHANGELOG entry); the round-end run on main: 298 of 299
 before lane D, `r37_dc` passing after it. **The
