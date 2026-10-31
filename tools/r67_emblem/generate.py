@@ -17,9 +17,9 @@ MAP = ROOT / 'mods/MAPGEN/grug_mapgen'
 INV = ROOT / 'mods/PLAYER/grug_inventory/textures'
 CLASSES = ROOT / 'mods/PLAYER/grug_classes/textures'
 FACTIONS = ('accord', 'throng')
-# Pass 3 retains the Pass 2 finish and samples the most frequent opaque cloth colour of each shipped PNG.
+# Pass 4 retains the Pass 2/3 finish and samples the most frequent opaque cloth colour of each shipped PNG.
 from collections import Counter
-from heraldry import IDEAS, VARIANTS, IVORY, banner as draw_banner, down, icon
+from heraldry import IDEAS, PAIRS, VARIANTS, IVORY, banner as draw_banner, down, icon
 
 
 def sampled_palette():
@@ -34,9 +34,14 @@ def sampled_palette():
 
 PALETTE = sampled_palette()
 DARK = '#181e28'
-# Immutable Pass 2 A comparison inputs; stored beside the offline HTML.
-PASS2_COMMIT = '55ea1695a69ed56541f44166461d9325a2e8219d'
-PASS2_REFS = {'ref_pass2_banner_accord.png': '4b2fb3189be7f4b7305ef422895ab6ed75300f59f406f648dbb582ff1f893e9e', 'ref_pass2_banner_throng.png': '4fe2c09587ec002fd668c8cce7d6a4202891c0948565a895232c016fb6b7359c', 'ref_pass2_emblem_accord.png': '8cd61bf654705dfce85e029431534ba749451b4056f5741e9860fed0b8a7d90c', 'ref_pass2_emblem_throng.png': '7c7cca2a492eb6f51be0de0d5802886f029a63c6389a2a4b3c6ecf08037344dc'}
+# Immutable Pass 3 A1/B3 comparison inputs; stored beside the offline HTML.
+PASS3_COMMIT = 'cf2e454a748e15bc0d5da7bda9376a4a3dd8565c'
+PASS3_REFS = {
+    'ref_pass3_emblem_accord.png': 'd0feee50f5d67a247edbb306a302f92df13fa366845b27bb37a58cf16bbe508b',
+    'ref_pass3_banner_accord.png': '1dbd9e2bf8409f9288b86583e493c92ddc0993ef2377f2765b66ad014afc2337',
+    'ref_pass3_emblem_throng.png': 'adf55de436dd883529176da7371d246e606f95cb144c73423621a97c0e985b45',
+    'ref_pass3_banner_throng.png': 'b1aa7fd139b7f4720923f60572ba38a0241bfcbcd6ae593a3136e06e2f3df161',
+}
 
 
 def png(im):
@@ -162,8 +167,8 @@ def contact_sheet(images):
     d = ImageDraw.Draw(board)
     font = ImageFont.load_default(size=22)
     small = ImageFont.load_default(size=14)
-    d.text((24, 22), 'GRUDGELANDS / HART & BOAR / PASS 3', font=font, fill=IVORY)
-    d.text((24, 57), 'Recommended: A1 + B1. Choose each faction independently; all six share the same palette and craft.', font=small, fill='#a8b4c4')
+    d.text((24, 22), 'GRUDGELANDS / HART & BOAR / PASS 4', font=font, fill=IVORY)
+    d.text((24, 57), 'Recommended: H1 + K1. Pairs: 1 painted livery / 2 cut ivory / 3 needlework.', font=small, fill='#a8b4c4')
     for j, faction in enumerate(FACTIONS):
         y = 108 + j*365
         d.text((24, y), 'THE '+faction.upper()+' / '+('HARTS' if j==0 else 'BOARS'), font=font, fill=IVORY)
@@ -182,17 +187,38 @@ def contact_sheet(images):
             view = down(images[f'view_{faction}_{key}.png'], (231, 187))
             board.paste(view, (x+126, y+167))
     d.line((24, 835, 1296, 835), fill='#35404e')
-    d.text((24, 858), 'COMPARISON / unchanged Pass 2 A and shipped art', font=font, fill=IVORY)
-    for i, (key, faction) in enumerate((('pass2', 'accord'), ('pass2', 'throng'), ('current', 'accord'), ('current', 'throng'))):
+    d.text((24, 858), 'COMPARISON / unchanged Pass 3 A1/B3 and shipped art', font=font, fill=IVORY)
+    for i, (key, faction) in enumerate((('pass3', 'accord'), ('pass3', 'throng'), ('current', 'accord'), ('current', 'throng'))):
         x = 24+i*328
-        prefix = 'ref_pass2_' if key=='pass2' else 'ref_'
-        d.text((x, 903), ('PASS 2 A' if key=='pass2' else 'SHIPPED')+' / '+faction.title(), font=small, fill=IVORY)
+        prefix = 'ref_pass3_' if key=='pass3' else 'ref_'
+        d.text((x, 903), ('PASS 3' if key=='pass3' else 'SHIPPED')+' / '+faction.title(), font=small, fill=IVORY)
         emblem = images[prefix+f'emblem_{faction}.png']
         for size, dx in ((16, 0), (24, 40), (32, 90), (64, 148)):
             im = down(emblem, (size, size))
             board.paste(im, (x+dx, 963-size//2), im)
         view = down(images[f'view_{faction}_{key}.png'], (294, 238))
         board.paste(view, (x, 1006))
+    return board
+
+
+def head_sheet(images):
+    board = Image.new('RGB', (1200, 920), DARK)
+    d = ImageDraw.Draw(board)
+    font = ImageFont.load_default(size=20)
+    small = ImageFont.load_default(size=13)
+    d.text((24, 18), 'PASS 4 / FRONTAL HERALDRY / H1 + K1 recommended', font=font, fill=IVORY)
+    for j, faction in enumerate(FACTIONS):
+        for i, key in enumerate(VARIANTS):
+            x, y = 50+i*400, 63+j*420
+            label, title, _ = IDEAS[faction][key]
+            d.text((x, y), label+' / '+title, font=small, fill=IVORY)
+            large = images[f'large_{faction}_{key}.png']
+            board.paste(large, (x, y+21), large)
+            for n, size in enumerate((16,24,32,64)):
+                im = down(images[f'emblem_{faction}_{key}.png'], (size,size))
+                xx = x+25+n*70
+                board.paste(im, (xx, y+342-size//2), im)
+                d.text((xx, y+381), str(size)+' px', font=small, fill='#a8b4c4')
     return board
 
 
@@ -212,6 +238,7 @@ def outputs():
         for key in VARIANTS:
             large=icon(f,key,PALETTE)
             put(f'emblem_{f}_{key}.png',down(large,(100,100)),True)
+            put(f'large_{f}_{key}.png',down(large,(300,300)))
             reference=Image.open(MAP/f'textures/grug_mapgen_faction_banner_{f}.png').convert('RGBA')
             cloth=draw_banner(f,key,PALETTE,reference)
             put(f'banner_{f}_{key}.png',cloth,True)
@@ -224,15 +251,15 @@ def outputs():
             sources[name]={'source':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
         put(f'view_{f}_current.png',projection(images[f'ref_banner_{f}.png'],vertices,buffers))
         for kind in ('emblem', 'banner'):
-            name = f'ref_pass2_{kind}_{f}.png'
+            name = f'ref_pass3_{kind}_{f}.png'
             path = HERE/'preview'/name
             data = path.read_bytes()
-            assert hashlib.sha256(data).hexdigest()==PASS2_REFS[name], name+' changed'
+            assert hashlib.sha256(data).hexdigest()==PASS3_REFS[name], name+' changed'
             out[path] = data
             images[name] = Image.open(io.BytesIO(data)).convert('RGBA')
-            sources[name] = {'source':f'tools/r67_emblem/candidates/{kind}_{f}_a.png',
-                             'commit':PASS2_COMMIT, 'sha256':PASS2_REFS[name]}
-        put(f'view_{f}_pass2.png',projection(images[f'ref_pass2_banner_{f}.png'],vertices,buffers))
+            sources[name] = {'source':f'tools/r67_emblem/candidates/{kind}_{f}_{1 if f == "accord" else 3}.png',
+                             'commit':PASS3_COMMIT, 'sha256':PASS3_REFS[name]}
+        put(f'view_{f}_pass3.png',projection(images[f'ref_pass3_banner_{f}.png'],vertices,buffers))
     for kind,ids in [('class',('warrior','scout','mage','priest')),
                      ('race',('human','dwarf','elf','orc','troll','undead'))]:
         for key in ids:
@@ -241,8 +268,9 @@ def outputs():
             out[HERE/'preview'/name]=path.read_bytes()
             sources[name]={'source':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
     put('contact.png',contact_sheet(images))
-    out[HERE/'preview/index.html']=html_page(IDEAS,FACTIONS)
-    manifest={'pass':3, 'recommendation':{'accord':'1','throng':'1'}, 'variants':IDEAS, 'palette':PALETTE, 'palette_sampling':'Most frequent fully opaque RGB in each shipped banner', 'model':{'source':str((MAP/'models/grug_mapgen_faction_banner.b3d').relative_to(ROOT)),
+    put('heads.png',head_sheet(images))
+    out[HERE/'preview/index.html']=html_page(IDEAS,FACTIONS,PAIRS)
+    manifest={'pass':4, 'pairs':PAIRS, 'recommendation':{'accord':'1','throng':'1'}, 'variants':IDEAS, 'palette':PALETTE, 'palette_sampling':'Most frequent fully opaque RGB in each shipped banner', 'model':{'source':str((MAP/'models/grug_mapgen_faction_banner.b3d').relative_to(ROOT)),
                         'sha256':model_hash,'front_vertices_nodes':vertices[:4,:3].astype(float).round(5).tolist(),
                         'front_uvs':vertices[:4,6:].tolist(), 'material_buffers':['cloth','rod','straps']},
               'references':sources,'candidate_sha256':{str(p.relative_to(HERE)):hashlib.sha256(b).hexdigest()

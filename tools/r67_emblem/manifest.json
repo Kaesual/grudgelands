@@ -1,17 +1,17 @@
 {
   "candidate_sha256": {
-    "candidates/banner_accord_1.png": "1dbd9e2bf8409f9288b86583e493c92ddc0993ef2377f2765b66ad014afc2337",
-    "candidates/banner_accord_2.png": "aba0c1d827e4f3adad8528c39232e6bba948836e5d2eb472619b122d0f03c240",
-    "candidates/banner_accord_3.png": "8a98b5ed34dac3438e91b7de6216d11298b3f709dd0f99d412365efedf078081",
-    "candidates/banner_throng_1.png": "68dd3f530832ac22f0cf6e9fbd4e77210c4ab1bccbbf6cb110f65ac17aac8370",
-    "candidates/banner_throng_2.png": "c1d4313e09bef73281e2ed8c6c50a922160540373a9b1dbbab21729816a6c9a1",
-    "candidates/banner_throng_3.png": "b1aa7fd139b7f4720923f60572ba38a0241bfcbcd6ae593a3136e06e2f3df161",
-    "candidates/emblem_accord_1.png": "d0feee50f5d67a247edbb306a302f92df13fa366845b27bb37a58cf16bbe508b",
-    "candidates/emblem_accord_2.png": "ff02378ae9d7495f2a69977ca5c133f609540f2be869068dd2110787c4732767",
-    "candidates/emblem_accord_3.png": "9d7663889b2dad26af8ec8e0399a0ef34c6c0546809ec15711a12793f33b0538",
-    "candidates/emblem_throng_1.png": "639abd939fb89c025c04d3fe6ebfaa6748fd66f5687840ae0ed56469eaf457ee",
-    "candidates/emblem_throng_2.png": "2f0bc8deb7b05b53168a84471b72a3198bd20861a0696e896a3b1fa2236e9b82",
-    "candidates/emblem_throng_3.png": "adf55de436dd883529176da7371d246e606f95cb144c73423621a97c0e985b45"
+    "candidates/banner_accord_1.png": "2e2e2cbcd7cc3898a942db008d7f4c12576b20bc8f87a2c7a06a294c4ae7867c",
+    "candidates/banner_accord_2.png": "ba0ca300d4e4ddf29cc8140459083f710aae64e2c2ee4ee4a96aaf90fa892361",
+    "candidates/banner_accord_3.png": "2c8961e13e32fe362cd975d60527c7a1a9eb53fc214d8c703bb507d19fa640bd",
+    "candidates/banner_throng_1.png": "54fd9a6d904be84bab4584b0cedfe3ede4db10dd45ac18ff4b0a754793ee1a81",
+    "candidates/banner_throng_2.png": "ea7da7e77d3bbd4fe9d22538e5ae8a77964674556eba2b6f7dc03c06ce3e4ed7",
+    "candidates/banner_throng_3.png": "86e208195aa66c8c490557a0a4a0234eb504dcdf0cf2ba0e5374794f8a7da2b5",
+    "candidates/emblem_accord_1.png": "7bf5101f50de5da5d70c1240d8f0fdba8751d4391559939569f8727479138c6a",
+    "candidates/emblem_accord_2.png": "429cb80966bf0060d545557a18033a995f6055d145b26c8ce874a584f165f435",
+    "candidates/emblem_accord_3.png": "15511892b79770e8a3652800c0a4e8f7a86bb1cb393f67e01ec8108a8a1cc1b7",
+    "candidates/emblem_throng_1.png": "22239473692115fe17da9a9ffbb3a45a7bfde316fe0413a4dd8e954aa12eb4e3",
+    "candidates/emblem_throng_2.png": "a339b2d269c04bb21fb9e0368b18d2d22e560559ddb6a3956e6f72a4b48b8569",
+    "candidates/emblem_throng_3.png": "39cc54875167c68bd865747088a939abed298fdc26f38f1e6a8778a5957ee5b5"
   },
   "model": {
     "front_uvs": [
@@ -62,6 +62,20 @@
     "sha256": "47248045f71d5ed370a5cb4ce40b0ab0ad00bc77da865ccb303139cb31415856",
     "source": "mods/MAPGEN/grug_mapgen/models/grug_mapgen_faction_banner.b3d"
   },
+  "pairs": {
+    "1": [
+      "Painted livery",
+      "Broad, quiet ivory shapes and open negative space: the clearest reading at row size."
+    ],
+    "2": [
+      "Cut ivory",
+      "Swept antlers and long tusks, with measured gold engraving following the planes of each face."
+    ],
+    "3": [
+      "Needlework",
+      "Fuller faces and upward ears, edged with a fine, regularly spaced gold stitch."
+    ]
+  },
   "palette": {
     "accord": [
       "#344b5a",
@@ -73,7 +87,7 @@
     ]
   },
   "palette_sampling": "Most frequent fully opaque RGB in each shipped banner",
-  "pass": 3,
+  "pass": 4,
   "recommendation": {
     "accord": "1",
     "throng": "1"
@@ -111,25 +125,25 @@
       "sha256": "741ffac7680ef9055b017894dcad06958dbeaf8fea8c50f099643128e2156b7f",
       "source": "mods/PLAYER/grug_inventory/textures/grug_inventory_faction_throng.png"
     },
-    "ref_pass2_banner_accord.png": {
-      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
-      "sha256": "4b2fb3189be7f4b7305ef422895ab6ed75300f59f406f648dbb582ff1f893e9e",
-      "source": "tools/r67_emblem/candidates/banner_accord_a.png"
+    "ref_pass3_banner_accord.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "1dbd9e2bf8409f9288b86583e493c92ddc0993ef2377f2765b66ad014afc2337",
+      "source": "tools/r67_emblem/candidates/banner_accord_1.png"
     },
-    "ref_pass2_banner_throng.png": {
-      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
-      "sha256": "4fe2c09587ec002fd668c8cce7d6a4202891c0948565a895232c016fb6b7359c",
-      "source": "tools/r67_emblem/candidates/banner_throng_a.png"
+    "ref_pass3_banner_throng.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "b1aa7fd139b7f4720923f60572ba38a0241bfcbcd6ae593a3136e06e2f3df161",
+      "source": "tools/r67_emblem/candidates/banner_throng_3.png"
     },
-    "ref_pass2_emblem_accord.png": {
-      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
-      "sha256": "8cd61bf654705dfce85e029431534ba749451b4056f5741e9860fed0b8a7d90c",
-      "source": "tools/r67_emblem/candidates/emblem_accord_a.png"
+    "ref_pass3_emblem_accord.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "d0feee50f5d67a247edbb306a302f92df13fa366845b27bb37a58cf16bbe508b",
+      "source": "tools/r67_emblem/candidates/emblem_accord_1.png"
     },
-    "ref_pass2_emblem_throng.png": {
-      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
-      "sha256": "7c7cca2a492eb6f51be0de0d5802886f029a63c6389a2a4b3c6ecf08037344dc",
-      "source": "tools/r67_emblem/candidates/emblem_throng_a.png"
+    "ref_pass3_emblem_throng.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "adf55de436dd883529176da7371d246e606f95cb144c73423621a97c0e985b45",
+      "source": "tools/r67_emblem/candidates/emblem_throng_3.png"
     },
     "ref_race_dwarf.png": {
       "sha256": "1db0936676dcee56f0b2689498f98c0d3c0fcdfe64de1e1a939c34c9a2018be8",
@@ -159,36 +173,36 @@
   "variants": {
     "accord": {
       "1": [
-        "A1",
-        "The Watchful Hart",
-        "A hart caboshed: slender, mirrored antlers above a long face, held on a weathered shield."
+        "H1",
+        "The Broadbrow Hart",
+        "A broad brow, leaf-shaped ears and four airy antler tips per side, painted in old ivory."
       ],
       "2": [
-        "A2",
-        "The Standing Hart",
-        "A hart statant: an upright neck, a quiet back and four fine legs beneath branching antlers."
+        "H2",
+        "The Highbough Hart",
+        "Tall swept antlers, level ears and a tapered face with restrained gold cheek engraving."
       ],
       "3": [
-        "A3",
-        "The Oathhart",
-        "A hart head couped in profile: a long neck and sweeping tines, like an old embroidered livery."
+        "H3",
+        "The Leafear Hart",
+        "Upright leaf ears and a fuller muzzle beneath a branching rack, worked as stitched ivory cloth."
       ]
     },
     "throng": {
       "1": [
-        "B1",
-        "The Ironwood Boar",
-        "A boar head couped in profile: a long snout, a rising tusk and a sharply bristled nape."
+        "K1",
+        "The Tuskguard Boar",
+        "A bristled wedge of a head, long narrow snout and two great rising tusks, painted in old ivory."
       ],
       "2": [
-        "B2",
-        "The Marching Boar",
-        "A boar passant: a low head, a heavy shoulder and four stout legs moving beneath a bristled back."
+        "K2",
+        "The Flinttusk Boar",
+        "A long angular face, swept ears and tall curved tusks with gold engraving along the cheek planes."
       ],
       "3": [
-        "B3",
-        "The Defiant Boar",
-        "A boar caboshed: wide ears, a blunt snout and paired tusks framed by an ordered bristled mane."
+        "K3",
+        "The Bristleback Boar",
+        "A full bristled brow, pointed ears and stout, upturned tusks, edged in tiny gold stitches."
       ]
     }
   }

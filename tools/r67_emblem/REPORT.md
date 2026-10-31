@@ -1,46 +1,48 @@
 # Round 67 follow-up EMBLEM — delivery
 
-**Pass 3 recommendation: A1 for The Accord, B1 for The Throng.**
-Open the [offline preview](preview/index.html) or the
-[contact sheet](preview/contact.png). The three harts and three boars are
-independent choices: every hart fits every boar in palette, framing and
-finish. These remain proposals awaiting the user's selection.
+**Pass 4 recommendation: H1 + K1, the painted livery pair.**
+Open the [offline preview](preview/index.html), the
+[300 px drawing board](preview/heads.png) or the
+[usage contact sheet](preview/contact.png). All six heads are new frontal
+proposals. The user has selected the animal direction, not these final files.
 
-## Pass 3 — deliberate animal heraldry, 2026-10-31
+## Pass 4 — frontal heads, 2026-10-31
 
-The user selected Pass 2's Hart & Boar direction but rejected the drawings:
-the hart's antlers were heavy and the boar's anatomy unclear. All six
-Pass 3 drawings are new, authored explicitly as contours in `heraldry.py`.
-They use tapered antler branches, deliberate negative-space cuts, consistent
-1.3-unit engraved details and a restrained three-material palette. The
-front-facing animals' silhouette and detail masks are exactly mirrored.
-There are no generated bitmap sources, traced images or font symbols.
+The user chose Pass 3's frontal hart A1 and boar B3 as the direction,
+while asking for stronger drawing. Pass 4 replaces every candidate with
+an explicitly authored frontal head. Each number is a coherent pair:
+the two animals share their contour treatment, detail weight, materials,
+shield and finish. Individual choices can also be combined.
 
-Pass 2's cloth-faced shields, fine gold rims, muted cloth and weathering
-remain. The animal fills a larger area in the recommended head variants;
-the full-body alternatives have smaller heads to keep their feet inside
-the heraldic field. On banners, the same animal appears without a second
-shield, between the retained corner vines and leaf spray.
+| Pair | The Accord | The Throng | Treatment and recommendation |
+|---|---|---|---|
+| **H1 + K1** | **The Broadbrow Hart:** a broad brow, sideways leaf-shaped ears and an open branching rack. | **The Tuskguard Boar:** a bristled wedge, pointed ears, a long snout and large external tusks. | **Recommended.** Painted ivory with the fewest interior marks; the eyes, ears and tusks have the clearest separation at Social-row size. |
+| **H2 + K2** | **The Highbough Hart:** taller swept beams, level ears and a more tapered face. | **The Flinttusk Boar:** swept ears, longer tusks and a more angular face. | Cut ivory with restrained 1.35-unit gold engraving following brow and cheek planes. More detail for headers and close viewing. |
+| **H3 + K3** | **The Leafear Hart:** upward ears and a fuller muzzle under a branching rack. | **The Bristleback Boar:** a full bristled brow and stout upturned tusks. | Needlework: fine gold contour stitches and a subtle thread texture; ornament deliberately softens at small sizes. |
 
-| Choice | Animal and treatment | Assessment |
-|---|---|---|
-| **A1 — The Watchful Hart** | Front-facing head, long narrow face, open ears and slender mirrored antlers. | **Recommended for The Accord.** The broad branching top and narrow face make a strong upright silhouette; the face remains central and the antlers have open space between their tines. |
-| **A2 — The Standing Hart** | Full hart statant in profile, upright neck, level back and four fine legs. | The most complete animal heraldry. Its smaller head and antlers trade close-up detail for the full-body pose. |
-| **A3 — The Oathhart** | Hart head couped in profile, elongated neck and two swept branching antlers. | A more directional livery silhouette; its long neck and lateral muzzle contrast with A1's symmetry. |
-| **B1 — The Ironwood Boar** | Boar head couped in profile, blunt long snout, distinct ear, rising lower tusk and bristled nape. | **Recommended for The Throng.** The heavy forward profile contrasts with A1's upright branches; a field-coloured separation makes the tusk distinct from the cheek. |
-| **B2 — The Marching Boar** | Full boar passant, low snout, heavy shoulder, bristled back, four stout legs and a hooked tail. | The most physical, marching alternative. The face and tusk are necessarily smaller at row size. |
-| **B3 — The Defiant Boar** | Front-facing boar head, broad ears, blunt nose disk, paired tusks and a symmetrical bristled mane. | A compact frontal counterpart to A1, with a broad face and no antlers; nose and tusk detail is clearest at header/banner size. |
+The hart's forehead now widens before tapering into its muzzle. Dark eye
+and ear openings are deliberate enclosed shapes; the painted pair has
+no vertical face engraving. Each side of the rack has four tips: a
+terminal, two outward branches and one inward branch. Beams and branches
+taper independently, with open field between them.
 
-At **24 px**, judge the branching hart, profile snout or full-body outline;
-the engraving is subordinate. At **16 px**, tines and small facial details
-soften, while the principal light shape and faction field remain. These
-are observations of offline raster comparisons, not GUI acceptance.
+The boar's long bridge terminates in a narrow angular nose, rather than
+a circular disk. Curved ivory tusks stand beside it across a generous
+field-coloured gap. Pointed ears, a bristled crest and descending cheek
+tufts establish the head above the snout. The tusks fit inside the shield
+rim. All six silhouette and detail masks are exactly mirrored; texture
+variation is seeded and intentionally subtler than the drawing.
 
-The art follows the proud rival factions and old conflict described in
+The 24 px samples retain the branching hart and tusked boar; small eye
+and engraving marks soften. At 16 px, the main animal shape and faction
+field remain, while fine tines and stitches merge. This is an offline
+visual assessment, not desktop or web GUI acceptance.
+
+The proud rival factions and old conflict in
 [world.md](../../docs/design/world.md), [pvp.md](../../docs/design/pvp.md)
-and [story.md](../../docs/design/story.md). The names and symbolic
-interpretations here are proposals, not new canonical faction history.
-The depth and Nether TODO files do not block this art lane.
+and [story.md](../../docs/design/story.md) inform the art. The labels and
+symbolic interpretations here are proposals, not new faction history.
+The depth and Nether TODO files do not block this lane.
 
 ### Palette and finish
 
@@ -51,25 +53,29 @@ The depth and Nether TODO files do not block this art lane.
 | Main animal | **#d6c59b**, old ivory |
 | Rim, engraving and ornament | **#aa9164**, tarnished gold |
 
-The cloth bases are sampled from the most frequent fully opaque RGB in
-the shipped banners. Pass 3 keeps Pass 2's subtle weave, uneven dye,
-faded edges, worn hem and matte pigment/thread treatment. Each emblem
-has three material tones: faction field, ivory and gold; surface variation
-and antialiasing add intermediate shades. Saturated primaries are absent.
+The cloth colours are sampled as the most frequent fully opaque RGB in
+the shipped banners. Pass 4 preserves Pass 2/3's subtle weave, uneven dye,
+faded edges, worn hem and gold vinework. Each emblem has three material
+tones: faction field, ivory and gold. Surface variation and antialiasing
+add intermediate shades. There are no saturated primaries.
 
-## Pass 2 — retained direction and comparison
+## Pass 3 — retained reference, superseded drawings
 
-Pass 2 was delivered in art commit
-`55ea1695a69ed56541f44166461d9325a2e8219d`, with report commit
-`c0c2a4a1`. Its A pair established the accepted muted palette, weathered
-cloth and heraldic shields. Its drawings have now been replaced.
+Pass 3's art commit is
+`cf2e454a748e15bc0d5da7bda9376a4a3dd8565c`, followed by report commit
+`0d3cf530`. Its **A1 hart and B3 boar** are retained byte for byte as the
+four `preview/ref_pass3_{emblem,banner}_{accord,throng}.png` inputs.
+The generator checks their fixed SHA-256 values. The comparison also
+shows their model projections and all UI usage mocks. The other four
+Pass 3 candidates survive only in git history.
 
-The four A-pair candidate images are preserved **byte for byte** only as
-`preview/ref_pass2_{emblem,banner}_{accord,throng}.png`; their fixed hashes
-are checked by the generator. Their two model projections also reproduce
-the old views exactly. The preview includes this pair with every usage
-mock, alongside unchanged shipped art. Pass 2 B/C and all Pass 1 candidates
-remain only in git history. No letter-suffixed candidate files remain.
+## Pass 2 — retained palette and heraldic direction
+
+Pass 2's A pair established the selected muted cloth, old ivory,
+tarnished gold and shield construction. Its art commit is
+`55ea1695a69ed56541f44166461d9325a2e8219d`. Its drawings were superseded
+by Pass 3 and now Pass 4. All Pass 1/2 candidates and comparison PNGs
+are absent from the current tree; git history retains them.
 
 ## Files and UV contract
 
@@ -79,11 +85,15 @@ There are **12 candidate PNGs**, all RGBA:
   `candidates/emblem_throng_{1,2,3}.png`: **100 × 100**, transparent outside
   the shield, drawn at 6× and reduced with Lanczos.
 - `candidates/banner_accord_{1,2,3}.png` and
-  `candidates/banner_throng_{1,2,3}.png`: **128 × 256**, retaining the
+  `candidates/banner_throng_{1,2,3}.png`: **128 × 256**, retaining each
   corresponding shipped alpha channel **byte for byte**.
 
-The generator reads the existing B3D and checks its rest transforms and
-UVs. The first material buffer is the double-sided rectangular cloth,
+`accord_1` maps to H1, `throng_1` to K1, and so on. No old letter-suffixed
+candidate filenames remain. The banner carries the same animal without
+a second shield, between the existing gold corner vines and leaf spray.
+
+The generator reads the existing B3D, verifies its rest transforms and
+UVs, and projects its three material buffers. The double-sided cloth is
 **0.96 × 2 nodes**. Its front vertices are:
 
 | Position, in nodes | UV |
@@ -93,36 +103,38 @@ UVs. The first material buffer is the double-sided rectangular cloth,
 | `( 0.48,-1.50, -0.52)` | `(1, 1)` |
 | `(-0.48,-1.50, -0.52)` | `(0, 1)` |
 
-V increases downward and the whole texture maps onto the rectangle.
-Alpha defines the pointed hem; its bounding box stays `(7, 29, 121, 227)`
-with exclusive maxima. Padding, attachment, cloth cut and orientation are
-unchanged. The other two material buffers are rod and straps.
+V increases downward. The whole texture maps onto the rectangle; alpha
+defines the pointed hem. Its bounding box remains `(7, 29, 121, 227)`
+with exclusive maxima. Cloth cut, padding, attachment and orientation
+are unchanged. The other two buffers are rod and straps.
 
-All ten projections use this actual mesh at rest with a common camera
+All ten projections use this actual mesh at rest with a shared camera
 approximately 5 m away, treating a node as a metre. A simple support pole
-and beam provide context. Projections are offline illustrations, not
-engine screenshots; the profile animals keep the flat texture's direction.
+and beam provide context. They are offline illustrations, not engine
+screenshots.
 
-[manifest.json](manifest.json) records Pass 3, variant labels, the
-recommendation, palette, model hash, measured vertices/UVs, reference
-provenance and candidate hashes. [LICENSE-media.md](LICENSE-media.md)
-records the original **CC0-1.0** art and the retained comparison/alpha
-attributions.
+[manifest.json](manifest.json) records Pass 4, all labels, paired
+treatments, recommendation, palette, measured mesh data and source/candidate
+hashes. [LICENSE-media.md](LICENSE-media.md) records the original
+**CC0-1.0** artwork and retained comparison, geometry and alpha provenance.
+No external image, font symbol or generated bitmap source enters a candidate.
 
 ## Preview and reproduction
 
-`preview/index.html` places all three harts side by side and all three
-boars side by side. Narrow windows scroll each row horizontally. Every
-candidate, Pass 2 A and current-art reference shows:
+`preview/index.html` shows **H1 + K1**, **H2 + K2**, and **H3 + K3** as
+side-by-side pairs, followed by Pass 3 A1/B3 and the unchanged shipped art.
+Each candidate has a **300 × 300** drawing study reduced directly from the
+same 600 px master. Every candidate and reference also shows:
 
-- UI icons at **16, 24, 32 and 64 px** on **#181e28**.
+- Actual delivered UI icons scaled to **16, 24, 32 and 64 px** on **#181e28**.
 - An inventory header with a **54 px** icon and the faction name.
-- Three online-player rows with **26 px** faction icons, names, shipped
-  class/race icons and levels; all six races are represented.
-- The flat banner texture and a projection on the existing model.
+- Three Social rows with **26 px** faction icons, names, shipped class/race
+  icons and levels; all six races appear in each pair.
+- The flat **128 × 256** banner and its projection on the existing model.
 
-The recommendation appears at the top. All images are beside the page,
-with relative paths, no scripts, external URLs or fetched fonts.
+The recommendation is at the top. Narrow windows scroll each pair
+horizontally. All images are beside the HTML, using relative paths and
+no scripts, remote fonts or external URLs.
 
 From the repository root:
 
@@ -131,62 +143,58 @@ python3 tools/r67_emblem/generate.py
 python3 tools/r67_emblem/generate.py --check
 ```
 
-Verified dependencies: **Python 3.14.8, Pillow 12.3.0, numpy 2.4.6**.
-`heraldry.py` owns drawing and finish, `generate.py` sampling and outputs,
-and `preview_page.py` the HTML. The four `ref_pass2_*.png` files are
-tracked immutable generator inputs, not disposable build products.
+Dependencies: Python 3, Pillow and numpy. `heraldry.py` owns the contours
+and finish, `generate.py` owns sampling and outputs, and `preview_page.py`
+owns the static HTML. The four `ref_pass3_*.png` files are tracked,
+immutable generator inputs. They are not disposable build products.
 
 ## Verification and handoff
 
-`--check` passed for **55 byte-reproduced outputs**: 12 candidates,
-12 matching preview copies, 18 reference images, ten projections, one
-contact sheet, one HTML page and one manifest. It checks RGBA/dimensions,
-transparent icon edges, exact banner alpha, matching candidate copies,
-local HTML references and unexpected output files.
+`--check` passed for **62 byte-reproduced outputs**: 12 candidates,
+12 matching preview copies, 18 references, ten projections, six enlarged
+views, two contact sheets, one HTML page and one manifest. Its artifact
+checks cover RGBA/dimensions, transparent icon edges, exact banner alpha,
+matching preview copies and local image links.
 
 Additional artifact checks passed: Python syntax, `git diff --check`,
-exact correspondence of all 18 references to their source bytes (Pass 2
-via its committed blobs), removal of the retired candidate filenames,
-and exact geometry/detail symmetry for A1 and B3. The contact sheet,
-projected banners, enlarged head drawings and an offline 54 px header /
-26 px player-row composite with the shipped icons were visually inspected.
-The final B1 tusk separation was additionally inspected enlarged.
-Browser rendering was not exercised.
+all 18 references against their original source bytes (Pass 3 against
+its committed blobs), exact symmetry of all six silhouette/detail masks,
+all six animal silhouettes fitting inside the inner shield, six 300 px
+views, unique HTML IDs and resolving navigation anchors, removal of
+Pass 2 references and lane-only change scope.
 
-**Upgrade classification: compatible.** This package changes development
-art only. `git diff c0c2a4a1 -- mods/` is empty. No Lua, runtime asset,
-model, saved state, world generation, game version or upgrade declaration
-changed. No fixtures, game server, engine boot, sync, merge or push ran.
-Only `tools/r67_emblem/` and its single `tools/README.md` entry changed.
+The drawing board, contact sheet, projected banners, and an offline
+54 px header / 26 px Social-row composite beside the shipped class/race
+icons were visually inspected. Browser rendering was not exercised.
 
-After the independent hart and boar selections, the coordinator copies
-those four chosen PNGs to the existing runtime paths and records media
-provenance. It must also reconcile `tools/r63_camp_art/build.py`, whose
-`svg_text()` still generates the old symbols: rebuilding it would overwrite
-the selection and its `--check` would reject the new art. That generator,
-`docs/design/settlements.md` and runtime files are outside this lane.
+**Upgrade classification: compatible.** Development art only.
+`git diff 0d3cf530 -- mods/` is empty. No Lua, runtime asset, model,
+saved state, generation, game version or upgrade declaration changed.
+No fixture, game server, engine boot, sync, merge or push ran. The changes
+are confined to `tools/r67_emblem/` and its single `tools/README.md` entry.
+
+After selection, the coordinator copies the four chosen files to the
+existing runtime paths and records provenance in the receiving media
+ledgers. The coordinator must also reconcile
+`tools/r63_camp_art/build.py`: its `svg_text()` still creates the old
+symbols, so rebuilding it would overwrite the selection and its `--check`
+would reject the new artwork. That generator, runtime files and the
+authoritative heraldry description in `docs/design/settlements.md` are
+outside this lane.
 
 The independent lane review belongs to the coordinator before integration;
 this artist does not claim independent review acceptance. After integration,
 the user's **desktop and web** GUI checklist is:
 
-1. Inspect headers and Social rows at normal UI size alongside every
-   class/race icon: colour, silhouettes and transparency.
-2. Inspect banners from both sides, near and several metres away, in
-   daylight and interior lighting: orientation, attachment and pointed hem.
-3. Check that all banner instances use the selected animals and that the
-   owning asset generator does not restore the old symbols.
+1. Inspect headers and Social rows at normal UI sizes beside every
+   class/race icon: colour, silhouettes, tusk/ear separation and transparency.
+2. Inspect both sides of banners near and several metres away, in daylight
+   and interior lighting: orientation, attachment, cloth cut and pointed hem.
+3. Confirm all banner instances use the selected heads and the owning
+   generator preserves them when rebuilt.
 
 ## Commit receipt
 
-- **Final Pass 3 art/preview commit:**
-  `cf2e454a748e15bc0d5da7bda9376a4a3dd8565c`.
-  At this complete-art checkpoint, **`git status --porcelain` was empty**.
-- This report is the following documentation-only commit. Its final branch
-  hash and post-report clean-tree result are in the final response, which
-  the runner saves as `last.md`. A tracked report cannot embed its own
-  commit hash without changing it; resolve that final commit with
-  `git log -1 --format=%H -- tools/r67_emblem/REPORT.md`.
-
-Both Pass 3 commit messages end with
-`Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
+The complete-art commit and clean-tree receipt are recorded in the
+following documentation commit. The final response is saved as `last.md`
+by the runner; no runner-owned file is added to this branch.
