@@ -3417,6 +3417,24 @@ tools](#player-meta-read-by-external-tools).
   front of the front (below the lock, on the part the lid does not move),
   refreshed by `default.containers.update_infotext` (GRUG PATCH: label
   save, clear, upgrade). Inks per surface in one table each.
+- **The new signs** (`grug_signs`, an ITEMS mod; lane SIGNS, rulings 6-8):
+  the standing sign (4 × 15) and the waypost (1 × 14 on each side of its
+  arrow, two one-faced surfaces) turn freely (`degrotate`), the two-node
+  notice board (7 × 30, its text on the right-hand node `notice_board`,
+  the left-hand `notice_board_part` holds only boxes) in four steps
+  (`4dir`). Lane ART's models are copied byte for byte; the OBJ loader
+  negates x (`irr/src/COBJMeshFileLoader.cpp:314`), so in the game each
+  model is ART's spec mirrored in x, and the surfaces' offsets are written
+  in the game's coordinates. The engine never turns `fixed` boxes of a
+  degrotate node (`mapnode.cpp` `getFaceDir`), so the standing sign and the
+  waypost have unrotated selection boxes around what their board or arrow
+  sweeps. The board is placed and dug as one (the bed's pattern: the
+  partner removed by `swap_node` + `remove_node`, so `grug_signs` removes
+  the board's text entity itself when the part is dug). Writing goes
+  through `grug_signs.write` (the wall sign's rules); every node is in the
+  claim reading exemption. Fixture `tools/r68_signs/portable_test.lua`
+  checks the text positions against ART's spec under the engine's mesh
+  turn.
 
 ## Player model and skins
 
