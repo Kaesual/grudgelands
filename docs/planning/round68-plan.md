@@ -238,6 +238,19 @@ for the user's verdict on a first-look default.
 15. **Web:** the texts are visible and crisp; time the join with the 431
     new glyph files (compare with 0.67.0).
 
+**Icons (follow-up INSTALL)**
+
+16. **Bars, settings and gems in the inventory,** at 16 and 32 px (a bag
+    slot and the hotbar; GUI scale 1 and 2): each of the ten bars, the six
+    settings, the six rough and six cut gems, Quartz and Abyssal Crystal
+    reads as itself; Garnet and Ruby apart, rough and cut apart, Quartz and
+    Diamond apart; no setting looks like a gold bar. *Look:* the picked
+    family beside the tools and gear.
+17. **The block walls:** place the ten metal blocks and the seven gem and
+    crystal blocks side by side and a 3 x 3 patch of one: the faces tile
+    without seams, each block reads as its material; the Emberglass block
+    and the stairs and slabs of the metal blocks keep their old look.
+
 ## 7. Orchestration notes
 
 - **Start state:** main `ecd035c0` (0.67.0 GUI-accepted; origin at
@@ -425,3 +438,21 @@ shows cracks; the halves rejoin into the one-piece model at all four turns
 either half no longer drops two boards (the partner's neighbours are checked
 from `after_destruct`). Still compatible: the part keeps its name, only its
 drawtype changes. GUI checklist items 1, 8 and 10 changed accordingly.
+
+### Follow-up: the picked bar, setting, gem and block icons (2026-10-31)
+
+The 47 icons the user picked from lane ICONS (bars and metal blocks A,
+settings B, gems D with the larger rough gems; `tools/r68_icons/`) are
+installed byte for byte under the owning mods' prefixes
+(`grug_materials_*.png`, `grug_artisans_setting_*.png`). Bars, metal
+blocks, rough and cut gems, Quartz, Abyssal Crystal and the gem blocks
+draw stored images named after their ids; a cut gem no longer brightens
+its raw image, a gem block no longer tiles it. Silver lump, Emberglass and
+its block, Anthracite, ore tiles, tools and gear keep their images.
+`tools/r68_icons/generate.py` reads a pre-install snapshot of the two Lua
+files (`tools/r68_icons/pre_install/`), so its comparison page and
+INSTALL.md stay as picked. Fixture `r68_install` (the 47 ids, the byte
+copies, nothing derived from the old vendored images, what keeps its
+look); headless capture of the inventory slots and the block walls. Still
+compatible: ids, recipes, drops, prices and saved state unchanged. GUI
+checklist items 16 and 17 added.

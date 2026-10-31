@@ -1,9 +1,10 @@
 # Media Origin & Licenses (grug_materials)
 
-**Thirty-six stored files: twelve tool sprites since WP13's round-2 tool
-ladder (§0 below), eighteen rock and mineral textures since Round 24 (§9)
-and the six Anthracite textures of Round 47 (§10); everything else is a
-runtime registration.** Apart from those, the mod's
+**Seventy-seven stored files: twelve tool sprites since WP13's round-2 tool
+ladder (§0 below), eighteen rock and mineral textures since Round 24 (§9),
+the six Anthracite textures of Round 47 (§10) and the forty-one bar, gem
+and storage-block icons of Round 68 (§11); everything else is a runtime
+registration.** Apart from those, the mod's
 registrations use vendored minetest_game media unchanged, generate a tinted
 derivative at runtime with Luanti texture modifiers, or copy a vendored node
 definition under a canonical name.
@@ -99,21 +100,16 @@ their media.
 
 ## 3. Raw, cut and resource-storage forms
 
-`Cut` forms append `^[brighten` to the listed raw-item chain. Resource block
-tiles use the raw-item chain without `^[brighten`.
+The six gems, Quartz and Abyssal Crystal draw stored images named after
+their ids since Round 68 (§11): each raw item, cut item and block node its
+own file (`grug_materials:cut_ruby` draws `grug_materials_cut_ruby.png`).
+Two raw items keep a tinted vendored image; the Emberglass block tiles the
+Emberglass item's chain:
 
-| Material | Raw runtime item | Cut runtime item | Block runtime node | Vendored original and raw modifier |
-|---|---|---|---|---|
-| Quartz | `grug_materials:quartz` | — | — | `default_diamond.png^[colorize:#eaf6ff:120` |
-| Silver | `grug_materials:silver_lump` | — | — | `default_iron_lump.png^[colorize:#e8edf2:200` |
-| Citrine | `grug_materials:rough_citrine` | `grug_materials:cut_citrine` | `grug_materials:citrine_block` | `default_diamond.png^[colorize:#d9a21b:190` |
-| Garnet | `grug_materials:rough_garnet` | `grug_materials:cut_garnet` | `grug_materials:garnet_block` | `default_diamond.png^[colorize:#9e1526:210` |
-| Jade | `grug_materials:rough_jade` | `grug_materials:cut_jade` | `grug_materials:jade_block` | `default_diamond.png^[colorize:#3d9b65:190` |
-| Emberglass | `grug_materials:emberglass` | — | `grug_materials:emberglass_block` | `default_mese_crystal.png^[colorize:#ff7a2e:45` |
-| Diamond | `grug_materials:rough_diamond` | `grug_materials:cut_diamond` | `grug_materials:diamond_block` | `default_diamond.png^[colorize:#ffffff:20` |
-| Sapphire | `grug_materials:rough_sapphire` | `grug_materials:cut_sapphire` | `grug_materials:sapphire_block` | `default_diamond.png^[colorize:#235ac7:190` |
-| Ruby | `grug_materials:rough_ruby` | `grug_materials:cut_ruby` | `grug_materials:ruby_block` | `default_diamond.png^[colorize:#c51d35:195` |
-| Abyssal Crystal | `grug_materials:abyssal_crystal` | — | `grug_materials:abyssal_crystal_block` | `default_diamond.png^[colorize:#3a1f6e:210` |
+| Material | Raw runtime item | Block runtime node | Vendored original and modifier |
+|---|---|---|---|
+| Silver | `grug_materials:silver_lump` | — | `default_iron_lump.png^[colorize:#e8edf2:200` |
+| Emberglass | `grug_materials:emberglass` | `grug_materials:emberglass_block` | `default_mese_crystal.png^[colorize:#ff7a2e:45` |
 
 `grug_materials:emberglass_shard` uses
 `default_mese_crystal_fragment.png^[colorize:#ff7a2e:45`.
@@ -123,7 +119,11 @@ tiles use the raw-item chain without `^[brighten`.
 
 ## 4. Processed bars and storage blocks
 
-| Material | Bar runtime item | Block runtime node | Vendored originals and modifier |
+Since Round 68 every bar and its storage block draw stored images named
+after their ids (`grug_materials:steel_bar` draws
+`grug_materials_steel_bar.png`; §11). Until then they used vendored media:
+
+| Material | Bar runtime item | Block runtime node | Vendored originals and modifier (before Round 68) |
 |---|---|---|---|
 | Copper | `grug_materials:copper_bar` | `grug_materials:copper_block` | unmodified `default_copper_ingot.png`, `default_copper_block.png` |
 | Tin | `grug_materials:tin_bar` | `grug_materials:tin_block` | unmodified `default_tin_ingot.png`, `default_tin_block.png` |
@@ -137,8 +137,8 @@ tiles use the raw-item chain without `^[brighten`.
 | Gold | `grug_materials:gold_bar` | `grug_materials:gold_block` | unmodified `default_gold_ingot.png`, `default_gold_block.png` |
 
 Emberglass and Abyssal Crystal are the other two entries in the 12-row
-processed-material registry; their resource and block media are already listed
-in §3.
+processed-material registry; their resource and block media are listed in
+§3 and §11.
 
 ## 5. Emberglass lighting
 
@@ -302,3 +302,62 @@ files are copied unchanged and renamed with this mod's prefix.
 | `grug_materials_anthracite_torch_on_floor_animated.png` | `anthracite/anthracite_torch_on_floor_animated.png` | the tile of the floor, wall and ceiling meshes (16 frames, 3.3 s) | GPT-6 Astra — CC0-1.0 |
 | `grug_materials_anthracite_torch_on_ceiling_animated.png` | `anthracite/anthracite_torch_on_ceiling_animated.png` | not sampled by the current meshes (the vendored ceiling sheet's layout) | GPT-6 Astra — CC0-1.0 |
 | `grug_materials_anthracite_torch_animated.png` | `anthracite/anthracite_torch_animated.png` | not sampled by the current meshes (the vendored wall sheet's layout) | GPT-6 Astra — CC0-1.0 |
+
+## 11. Round 68 bar, gem and storage-block icons — CC0 1.0
+
+Original pixel drawings made by **GPT-6 Astra**, 2026-10-31, for
+Grudgelands (Round 68 follow-up ICONS; the user picked bars and metal blocks
+A, cut gems and gem blocks D and the larger raw gems of pass 3 the same
+day). They are drawn entirely by `tools/r68_icons/art.py` and
+`generate.py` (GPL-3.0-or-later) with Python, Pillow and numpy; no source
+sprite pixels, external images or fonts enter them (the lane's own ledger
+`tools/r68_icons/LICENSE-media.md`). The project dedicates any rights it
+holds in them to **CC0 1.0 Universal**
+(<https://creativecommons.org/publicdomain/zero/1.0/>), to the extent such
+rights exist. The files are copied byte for byte from
+`tools/r68_icons/candidates/`, unmodified, and renamed with this mod's
+prefix (`tools/r68_install/portable_test.lua` checks the copies).
+
+| File | Source in `tools/r68_icons/` | Use | Author and licence |
+|---|---|---|---|
+| `grug_materials_copper_bar.png` | `candidates/bars_a/copper_bar.png` | `grug_materials:copper_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_tin_bar.png` | `candidates/bars_a/tin_bar.png` | `grug_materials:tin_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_bronze_bar.png` | `candidates/bars_a/bronze_bar.png` | `grug_materials:bronze_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_iron_bar.png` | `candidates/bars_a/iron_bar.png` | `grug_materials:iron_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_steel_bar.png` | `candidates/bars_a/steel_bar.png` | `grug_materials:steel_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_silver_bar.png` | `candidates/bars_a/silver_bar.png` | `grug_materials:silver_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_silversteel_bar.png` | `candidates/bars_a/silversteel_bar.png` | `grug_materials:silversteel_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_embersteel_bar.png` | `candidates/bars_a/embersteel_bar.png` | `grug_materials:embersteel_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_abyssal_steel_bar.png` | `candidates/bars_a/abyssal_steel_bar.png` | `grug_materials:abyssal_steel_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_gold_bar.png` | `candidates/bars_a/gold_bar.png` | `grug_materials:gold_bar` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_copper_block.png` | `candidates/bars_a/copper_block.png` | `grug_materials:copper_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_tin_block.png` | `candidates/bars_a/tin_block.png` | `grug_materials:tin_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_bronze_block.png` | `candidates/bars_a/bronze_block.png` | `grug_materials:bronze_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_iron_block.png` | `candidates/bars_a/iron_block.png` | `grug_materials:iron_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_steel_block.png` | `candidates/bars_a/steel_block.png` | `grug_materials:steel_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_silver_block.png` | `candidates/bars_a/silver_block.png` | `grug_materials:silver_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_silversteel_block.png` | `candidates/bars_a/silversteel_block.png` | `grug_materials:silversteel_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_embersteel_block.png` | `candidates/bars_a/embersteel_block.png` | `grug_materials:embersteel_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_abyssal_steel_block.png` | `candidates/bars_a/abyssal_steel_block.png` | `grug_materials:abyssal_steel_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_gold_block.png` | `candidates/bars_a/gold_block.png` | `grug_materials:gold_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_rough_citrine.png` | `candidates/gems_final/rough_citrine.png` | `grug_materials:rough_citrine` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_cut_citrine.png` | `candidates/gems_final/cut_citrine.png` | `grug_materials:cut_citrine` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_rough_jade.png` | `candidates/gems_final/rough_jade.png` | `grug_materials:rough_jade` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_cut_jade.png` | `candidates/gems_final/cut_jade.png` | `grug_materials:cut_jade` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_rough_garnet.png` | `candidates/gems_final/rough_garnet.png` | `grug_materials:rough_garnet` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_cut_garnet.png` | `candidates/gems_final/cut_garnet.png` | `grug_materials:cut_garnet` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_rough_sapphire.png` | `candidates/gems_final/rough_sapphire.png` | `grug_materials:rough_sapphire` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_cut_sapphire.png` | `candidates/gems_final/cut_sapphire.png` | `grug_materials:cut_sapphire` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_rough_ruby.png` | `candidates/gems_final/rough_ruby.png` | `grug_materials:rough_ruby` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_cut_ruby.png` | `candidates/gems_final/cut_ruby.png` | `grug_materials:cut_ruby` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_rough_diamond.png` | `candidates/gems_final/rough_diamond.png` | `grug_materials:rough_diamond` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_cut_diamond.png` | `candidates/gems_final/cut_diamond.png` | `grug_materials:cut_diamond` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_quartz.png` | `candidates/gems_final/quartz.png` | `grug_materials:quartz` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_abyssal_crystal.png` | `candidates/gems_final/abyssal_crystal.png` | `grug_materials:abyssal_crystal` inventory image | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_citrine_block.png` | `candidates/gems_final/citrine_block.png` | `grug_materials:citrine_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_jade_block.png` | `candidates/gems_final/jade_block.png` | `grug_materials:jade_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_garnet_block.png` | `candidates/gems_final/garnet_block.png` | `grug_materials:garnet_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_sapphire_block.png` | `candidates/gems_final/sapphire_block.png` | `grug_materials:sapphire_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_ruby_block.png` | `candidates/gems_final/ruby_block.png` | `grug_materials:ruby_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_diamond_block.png` | `candidates/gems_final/diamond_block.png` | `grug_materials:diamond_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |
+| `grug_materials_abyssal_crystal_block.png` | `candidates/gems_final/abyssal_crystal_block.png` | `grug_materials:abyssal_crystal_block` storage block, all six faces | GPT-6 Astra — CC0-1.0 |

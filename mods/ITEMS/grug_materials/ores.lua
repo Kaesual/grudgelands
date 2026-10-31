@@ -10,28 +10,39 @@ local ORE_VISUALS = {
 }
 
 -- Stored item images (Round 47 lane ART's Anthracite set, the user's pick
--- of 2026-10-13); the other raw items are tinted vendored images below.
+-- of 2026-10-13).
 local STORED_ITEM_IMAGES = {
 	anthracite = "grug_materials_anthracite_lump.png",
 }
 
--- Vendor payouts are grug_traders' price module (class and harvest tier).
-local ITEM_VISUALS = {
-	quartz = {"default_diamond.png", "#eaf6ff:120"},
-	silver = {"default_iron_lump.png", "#e8edf2:200"},
-	citrine = {"default_diamond.png", "#d9a21b:190"},
-	garnet = {"default_diamond.png", "#9e1526:210"},
-	jade = {"default_diamond.png", "#3d9b65:190"},
-	emberglass = {"default_mese_crystal.png", "#ff7a2e:45"},
-	diamond = {"default_diamond.png", "#ffffff:20"},
-	sapphire = {"default_diamond.png", "#235ac7:190"},
-	ruby = {"default_diamond.png", "#c51d35:195"},
-	abyssal_crystal = {"default_diamond.png", "#3a1f6e:210"},
+-- Stored images named after the registered id (`grug_materials:cut_ruby`
+-- draws `grug_materials_cut_ruby.png`; Round 68 ICONS, the user's picks of
+-- 2026-10-31): the raw, cut and block forms of these resources each have
+-- their own.
+local OWN_IMAGES = {
+	quartz = true, citrine = true, garnet = true, jade = true, diamond = true,
+	sapphire = true, ruby = true, abyssal_crystal = true,
 }
 
-local function item_texture(key)
+local function own_image(name)
+	return name:gsub(":", "_") .. ".png"
+end
+
+-- Silver and Emberglass keep tinted vendored images. Vendor payouts are
+-- grug_traders' price module (class and harvest tier).
+local ITEM_VISUALS = {
+	silver = {"default_iron_lump.png", "#e8edf2:200"},
+	emberglass = {"default_mese_crystal.png", "#ff7a2e:45"},
+}
+
+local function item_texture(resource)
+	local key = resource.key
+	if OWN_IMAGES[key] then return own_image(resource.raw_item) end
 	if STORED_ITEM_IMAGES[key] then return STORED_ITEM_IMAGES[key] end
 	local visual = ITEM_VISUALS[key]
+	if not visual then
+		error("grug_materials: missing item visual for " .. key)
+	end
 	return visual[1] .. "^[colorize:" .. visual[2]
 end
 
@@ -58,19 +69,20 @@ local function register_owned_resource(resource)
 	end
 	core.register_craftitem(resource.raw_item, {
 		description = raw_description,
-		inventory_image = item_texture(resource.key),
+		inventory_image = item_texture(resource),
 	})
 
 	if resource.cut_item then
 		core.register_craftitem(resource.cut_item, {
 			description = "Cut " .. resource.name,
-			inventory_image = item_texture(resource.key) .. "^[brighten",
+			inventory_image = own_image(resource.cut_item),
 		})
 	end
 	if resource.block_node then
 		core.register_node(resource.block_node, {
 			description = resource.name .. " Block",
-			tiles = {item_texture(resource.key)},
+			tiles = {OWN_IMAGES[resource.key] and own_image(resource.block_node)
+				or item_texture(resource)},
 			is_ground_content = false,
 			groups = {cracky = 1},
 			drop = resource.block_node,
@@ -88,44 +100,34 @@ end
 -- Canonical processed/storage concepts. No recipes are registered here;
 -- `grug_smelting` owns the furnace/alloy outputs and the storage recipe
 -- families (WP26, shipped 2026-09-16).
-local PROCESSED_VISUALS = {
-	copper = {"default_copper_ingot.png", "default_copper_block.png"},
-	tin = {"default_tin_ingot.png", "default_tin_block.png"},
-	bronze = {"default_bronze_ingot.png", "default_bronze_block.png"},
-	iron = {"default_steel_ingot.png", "default_steel_block.png"},
-	steel = {"default_steel_ingot.png^[colorize:#34404a:75",
-		"default_steel_block.png^[colorize:#34404a:75"},
-	silver = {"default_tin_ingot.png^[colorize:#f4f6fa:90",
-		"default_tin_block.png^[colorize:#f4f6fa:90"},
-	silversteel = {"default_steel_ingot.png^[colorize:#b7c9df:95",
-		"default_steel_block.png^[colorize:#b7c9df:95"},
-	embersteel = {"default_steel_ingot.png^[colorize:#b94b24:110",
-		"default_steel_block.png^[colorize:#b94b24:110"},
-	abyssal_steel = {"default_steel_ingot.png^[colorize:#3a245d:135",
-		"default_steel_block.png^[colorize:#3a245d:135"},
-	gold = {"default_gold_ingot.png", "default_gold_block.png"},
+-- Bars and storage blocks draw stored images named after their ids
+-- (Round 68 ICONS, the user's pick A of 2026-10-31).
+local PROCESSED_IMAGES = {
+	copper = true, tin = true, bronze = true, iron = true, steel = true,
+	silver = true, silversteel = true, embersteel = true, abyssal_steel = true,
+	gold = true,
 }
 
 -- A bar pays what its smelting inputs pay (grug_traders' price module), so
 -- no price lives here or in PROCESSED_MATERIALS (WP40's frozen projection).
 for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
-	local visual = PROCESSED_VISUALS[material.key]
+	local has_image = PROCESSED_IMAGES[material.key]
 	if material.kind == "bar" and not core.registered_items[material.item] then
-		if not visual then
+		if not has_image then
 			error("grug_materials: missing processed visual for " .. material.key)
 		end
 		core.register_craftitem(material.item, {
 			description = material.name .. " Bar",
-			inventory_image = visual[1],
+			inventory_image = own_image(material.item),
 		})
 	end
 	if not core.registered_nodes[material.block_node] then
-		if not visual then
+		if not has_image then
 			error("grug_materials: missing storage visual for " .. material.key)
 		end
 		core.register_node(material.block_node, {
 			description = material.name .. " Block",
-			tiles = {visual[2]},
+			tiles = {own_image(material.block_node)},
 			is_ground_content = false,
 			groups = {cracky = 1},
 			drop = material.block_node,
