@@ -249,7 +249,9 @@ for the user's verdict on a first-look default.
 17. **The block walls:** place the ten metal blocks and the seven gem and
     crystal blocks side by side and a 3 x 3 patch of one: the faces tile
     without seams, each block reads as its material; the Emberglass block
-    and the stairs and slabs of the metal blocks keep their old look.
+    keeps its old look. Beside each of the five metal blocks (Iron, Tin,
+    Copper, Bronze, Gold) its stair, inner and outer stair and slab show
+    the same face, lined up with the block.
 
 ## 7. Orchestration notes
 
@@ -456,3 +458,7 @@ copies, nothing derived from the old vendored images, what keeps its
 look); headless capture of the inventory slots and the block walls. Still
 compatible: ids, recipes, drops, prices and saved state unchanged. GUI
 checklist items 16 and 17 added.
+Follow-up STAIRS: the 20 Iron, Tin, Copper, Bronze and Gold stairs, inner
+and outer stairs and slabs take their faces from their canonical block
+(`tiles_from` in `STORAGE_DERIVATIVES`), keeping the vendored tile settings;
+fixture `r68_install` section S, capture scene `stairs`; compatible.
