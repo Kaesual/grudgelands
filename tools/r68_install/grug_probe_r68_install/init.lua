@@ -170,7 +170,7 @@ if SCENE == "stairs" then
 	end
 	SHOTS = {
 		{name = "S1_metal_stairs_above", run = function(p) view(p, 2, 3.5, -3, 0, 38) end},
-		{name = "S2_metal_stairs_angle", run = function(p) view(p, -3.5, 1.5, -2, 35, 22) end},
+		{name = "S2_metal_stairs_angle", run = function(p) view(p, -3.5, 1.5, -2, -35, 22) end},
 		{name = "S3_iron_and_tin_close", run = function(p) view(p, 2, 0.6, -0.6, 0, 30) end},
 	}
 end
