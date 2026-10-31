@@ -1,0 +1,209 @@
+{
+  "candidate_sha256": {
+    "candidates/banner_accord_1.png": "2e2e2cbcd7cc3898a942db008d7f4c12576b20bc8f87a2c7a06a294c4ae7867c",
+    "candidates/banner_accord_2.png": "ba0ca300d4e4ddf29cc8140459083f710aae64e2c2ee4ee4a96aaf90fa892361",
+    "candidates/banner_accord_3.png": "2c8961e13e32fe362cd975d60527c7a1a9eb53fc214d8c703bb507d19fa640bd",
+    "candidates/banner_throng_1.png": "54fd9a6d904be84bab4584b0cedfe3ede4db10dd45ac18ff4b0a754793ee1a81",
+    "candidates/banner_throng_2.png": "ea7da7e77d3bbd4fe9d22538e5ae8a77964674556eba2b6f7dc03c06ce3e4ed7",
+    "candidates/banner_throng_3.png": "86e208195aa66c8c490557a0a4a0234eb504dcdf0cf2ba0e5374794f8a7da2b5",
+    "candidates/emblem_accord_1.png": "7bf5101f50de5da5d70c1240d8f0fdba8751d4391559939569f8727479138c6a",
+    "candidates/emblem_accord_2.png": "429cb80966bf0060d545557a18033a995f6055d145b26c8ce874a584f165f435",
+    "candidates/emblem_accord_3.png": "15511892b79770e8a3652800c0a4e8f7a86bb1cb393f67e01ec8108a8a1cc1b7",
+    "candidates/emblem_throng_1.png": "22239473692115fe17da9a9ffbb3a45a7bfde316fe0413a4dd8e954aa12eb4e3",
+    "candidates/emblem_throng_2.png": "a339b2d269c04bb21fb9e0368b18d2d22e560559ddb6a3956e6f72a4b48b8569",
+    "candidates/emblem_throng_3.png": "39cc54875167c68bd865747088a939abed298fdc26f38f1e6a8778a5957ee5b5"
+  },
+  "model": {
+    "front_uvs": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0
+      ],
+      [
+        1.0,
+        1.0
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "front_vertices_nodes": [
+      [
+        -0.48,
+        0.5,
+        -0.52
+      ],
+      [
+        0.48,
+        0.5,
+        -0.52
+      ],
+      [
+        0.48,
+        -1.5,
+        -0.52
+      ],
+      [
+        -0.48,
+        -1.5,
+        -0.52
+      ]
+    ],
+    "material_buffers": [
+      "cloth",
+      "rod",
+      "straps"
+    ],
+    "sha256": "47248045f71d5ed370a5cb4ce40b0ab0ad00bc77da865ccb303139cb31415856",
+    "source": "mods/MAPGEN/grug_mapgen/models/grug_mapgen_faction_banner.b3d"
+  },
+  "pairs": {
+    "1": [
+      "Painted livery",
+      "Broad, quiet ivory shapes and open negative space: the clearest reading at row size."
+    ],
+    "2": [
+      "Cut ivory",
+      "Swept antlers and long tusks, with measured gold engraving following the planes of each face."
+    ],
+    "3": [
+      "Needlework",
+      "Fuller faces and upward ears, edged with a fine, regularly spaced gold stitch."
+    ]
+  },
+  "palette": {
+    "accord": [
+      "#344b5a",
+      "#d6c59b"
+    ],
+    "throng": [
+      "#683e39",
+      "#d6c59b"
+    ]
+  },
+  "palette_sampling": "Most frequent fully opaque RGB in each shipped banner",
+  "pass": 4,
+  "recommendation": {
+    "accord": "1",
+    "throng": "1"
+  },
+  "references": {
+    "ref_banner_accord.png": {
+      "sha256": "620dc9e768d262e6b718d981bd491a6f2f8bddacddc011aefd22ff030f29608a",
+      "source": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_faction_banner_accord.png"
+    },
+    "ref_banner_throng.png": {
+      "sha256": "d367676d443be8dafce75f2eb774de4eea64cb519d6b7b374010d6545fd72927",
+      "source": "mods/MAPGEN/grug_mapgen/textures/grug_mapgen_faction_banner_throng.png"
+    },
+    "ref_class_mage.png": {
+      "sha256": "8c7bd40c1a848843d3193b6289ed5502385cadbd18b0ea1d8f46bce685db44a4",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_mage.png"
+    },
+    "ref_class_priest.png": {
+      "sha256": "d2555d888829742b0b4f4c59ac4d20b2facefb8311f4067a8361265da47874f0",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_priest.png"
+    },
+    "ref_class_scout.png": {
+      "sha256": "1f2ebde7e9e7fc286d69ad51a35b60fef3dc236f51905a6d65634a2838800a75",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_scout.png"
+    },
+    "ref_class_warrior.png": {
+      "sha256": "249dda0411ff9c919df96343afdd110cf4b9609f4da9be0882ab370ae362bdcd",
+      "source": "mods/PLAYER/grug_classes/textures/grug_class_warrior.png"
+    },
+    "ref_emblem_accord.png": {
+      "sha256": "5955da244dee511505c72b883e7ccbe342214f277e9e088e93bf063e05f686dd",
+      "source": "mods/PLAYER/grug_inventory/textures/grug_inventory_faction_accord.png"
+    },
+    "ref_emblem_throng.png": {
+      "sha256": "741ffac7680ef9055b017894dcad06958dbeaf8fea8c50f099643128e2156b7f",
+      "source": "mods/PLAYER/grug_inventory/textures/grug_inventory_faction_throng.png"
+    },
+    "ref_pass3_banner_accord.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "1dbd9e2bf8409f9288b86583e493c92ddc0993ef2377f2765b66ad014afc2337",
+      "source": "tools/r67_emblem/candidates/banner_accord_1.png"
+    },
+    "ref_pass3_banner_throng.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "b1aa7fd139b7f4720923f60572ba38a0241bfcbcd6ae593a3136e06e2f3df161",
+      "source": "tools/r67_emblem/candidates/banner_throng_3.png"
+    },
+    "ref_pass3_emblem_accord.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "d0feee50f5d67a247edbb306a302f92df13fa366845b27bb37a58cf16bbe508b",
+      "source": "tools/r67_emblem/candidates/emblem_accord_1.png"
+    },
+    "ref_pass3_emblem_throng.png": {
+      "commit": "cf2e454a748e15bc0d5da7bda9376a4a3dd8565c",
+      "sha256": "adf55de436dd883529176da7371d246e606f95cb144c73423621a97c0e985b45",
+      "source": "tools/r67_emblem/candidates/emblem_throng_3.png"
+    },
+    "ref_race_dwarf.png": {
+      "sha256": "1db0936676dcee56f0b2689498f98c0d3c0fcdfe64de1e1a939c34c9a2018be8",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_dwarf.png"
+    },
+    "ref_race_elf.png": {
+      "sha256": "3fa02c3bcc689641066e8a806ba0f4e2c97d310b1bc24c3a302d260944fc628b",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_elf.png"
+    },
+    "ref_race_human.png": {
+      "sha256": "7cdc10b82b9088ff38f4426fc615f664bf646b87e3f3d397e5c54b4a2c532952",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_human.png"
+    },
+    "ref_race_orc.png": {
+      "sha256": "c91a812d5c7a92b769d5d3dfe51ab1e8c72fae7977a4c44d8c9eabf0c2867bb6",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_orc.png"
+    },
+    "ref_race_troll.png": {
+      "sha256": "d05649c29f5ba7be506250e4177229fd22a08282b78e1451129a552ed3011254",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_troll.png"
+    },
+    "ref_race_undead.png": {
+      "sha256": "183780fcab073e93121e3c48b60e32eab8ff722b409ace7058dfc9cda469c2e6",
+      "source": "mods/PLAYER/grug_classes/textures/grug_race_undead.png"
+    }
+  },
+  "variants": {
+    "accord": {
+      "1": [
+        "H1",
+        "The Broadbrow Hart",
+        "A broad brow, leaf-shaped ears and four airy antler tips per side, painted in old ivory."
+      ],
+      "2": [
+        "H2",
+        "The Highbough Hart",
+        "Tall swept antlers, level ears and a tapered face with restrained gold cheek engraving."
+      ],
+      "3": [
+        "H3",
+        "The Leafear Hart",
+        "Upright leaf ears and a fuller muzzle beneath a branching rack, worked as stitched ivory cloth."
+      ]
+    },
+    "throng": {
+      "1": [
+        "K1",
+        "The Tuskguard Boar",
+        "A bristled wedge of a head, long narrow snout and two great rising tusks, painted in old ivory."
+      ],
+      "2": [
+        "K2",
+        "The Flinttusk Boar",
+        "A long angular face, swept ears and tall curved tusks with gold engraving along the cheek planes."
+      ],
+      "3": [
+        "K3",
+        "The Bristleback Boar",
+        "A full bristled brow, pointed ears and stout, upturned tusks, edged in tiny gold stitches."
+      ]
+    }
+  }
+}
