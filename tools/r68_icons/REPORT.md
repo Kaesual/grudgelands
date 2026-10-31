@@ -122,9 +122,17 @@ Verification completed:
   inspected. The D blocks are unchanged.
 - `git diff --check`: **PASS**; `git diff d16035eb -- mods`: **empty**.
 
-Independent review is recorded in the final receipt after the content
-commit. The standing project policy requires a fresh Sol or Opus review;
-that review does not replace the user’s client GUI acceptance.
+**Independent review: PASS, no findings**, native Sol reviewer
+`icons_pass3_review`, fresh context under the project’s art review policy.
+Reviewed delta: `d16035eb..e63cf458da5dd768075f3cb01b4b010b40c6ec7c`.
+The reviewer reproduced all 199 outputs, confirmed preservation and exact
+D copies, checked all 47 installation mappings against the Lua sources,
+audited the offline HTML and visually inspected the shared family, gem
+comparisons and final block walls. Independent recalculation of all
+**91 final gem pairwise values and six final rough/cut entries** from the
+committed PNGs agreed, including overlap counts. The reviewer confirmed
+the clean worktree and compatible classification. This review does not
+replace the user’s client GUI acceptance.
 
 ## GUI checklist and decisions
 
@@ -136,10 +144,19 @@ size redraw can be assessed in this page before that client check.
 
 ## Commit receipt
 
-Pass-2 baseline: `d16035eb`; branch `r68-icons`. Every pass-3 commit ends
-with `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`. The final response
-and runner’s `last.md` carry the final branch-tip hash and clean-tree
-receipt after committing; a committed file cannot contain its own hash.
+- Pass-2 baseline: `d16035eb`; branch `r68-icons`.
+- Larger raw art and assembled final gem folder: `7617b909`.
+- Generator, preview, installation handoff and report: `7dffe611`.
+- Final independently reviewed content, including the tool index update:
+  **`e63cf458da5dd768075f3cb01b4b010b40c6ec7c`**.
+- At that reviewed commit, **`git status --porcelain` returned empty**,
+  independently confirmed by the reviewer.
+- This review receipt is a documentation-only commit after the reviewed
+  content. The final response and runner’s `last.md` carry the final
+  branch-tip hash and clean-tree check after committing this receipt;
+  a committed file cannot contain its own containing commit’s hash.
+- Every pass-3 commit ends with
+  `Co-Authored-By: GPT-6 Astra <noreply@openai.com>`.
 
 The tables below are copied from the generated measurement summary. The
 full pairwise tables are in [measurements.json](measurements.json).
