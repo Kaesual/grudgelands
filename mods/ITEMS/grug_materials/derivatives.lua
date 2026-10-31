@@ -19,6 +19,18 @@ local function register_derivative(derivative)
 	def.groups.grug_resource = nil
 	def.groups.grug_stratum = nil
 	def.drop = derivative.target
+	-- A metal stair or slab takes its images from the canonical block, so a
+	-- block retexture carries over; the vendored tile settings stay.
+	if derivative.tiles_from then
+		local block = core.registered_nodes[derivative.tiles_from]
+		if not block then
+			error("grug_materials: missing derivative tiles " .. derivative.tiles_from)
+		end
+		for i, tile in ipairs(def.tiles) do
+			local face = block.tiles[math.min(i, #block.tiles)]
+			tile.name = type(face) == "table" and face.name or face
+		end
+	end
 	if derivative.target:find("^grug_materials:slab_") and def.on_place then
 		local source_on_place = def.on_place
 		def.on_place = function(itemstack, placer, pointed_thing)

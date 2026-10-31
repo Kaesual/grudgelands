@@ -13,6 +13,8 @@
 # <world>/r68install_ack, which moves the probe on.
 #
 # Usage: XVFB=/path/to/Xvfb tools/r68_install/capture.sh OUT_DIR
+#   SCENE=icons (default) or stairs (follow-up STAIRS: each metal block next
+#   to its stair, inner and outer stair and slab),
 #   GUI_SCALE (default 1), WIDTH/HEIGHT (default 1920 x 1080), SUFFIX=<text>
 #   appended to every file name, SETTLE=<seconds> before each shot (default
 #   3), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri).
@@ -71,6 +73,7 @@ cat >>"$patchdir/b/minetest.conf" <<CONF
 # Round 68 INSTALL capture probe
 mobs_spawn = false
 r68install_settle = $settle
+r68install_scene = ${SCENE:-icons}
 CONF
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 
