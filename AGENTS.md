@@ -12,7 +12,14 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.67.0, Round 67 from the group play session (the
+**Current state:** 0.68.0, Round 68 readable text in the world
+(`grug_text`: one unsaved text entity per written surface from CC0
+glyphs; wall sign text on calm boards, chest labels on the front; the
+Standing Sign, the stackable Waypost and the two-node Notice Board in
+`grug_signs`), merged locally, **not pushed**; **compatible**, no step;
+GUI test pending, joining the joint test of 0.57–0.66
+([completion and checklist](docs/planning/round68-plan.md#completion-2026-10-31)).
+Previous: 0.67.0, Round 67 from the group play session (the
 Social tab with an online players table, favourites and an invitation box
 on the HUD; the map window at 90 % with markers in place and smaller, flat
 layer buttons, quest list and HUD story first; flight underground and the

@@ -96,6 +96,12 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.68.0** makes text readable in the world: wall signs show their text on
+the board and chests their label on the front, without pointing at them;
+the wall signs get calm boards; and there are three new signs: a standing
+sign, a waypost whose arrows stack into one post, and a two-block notice
+board. This update is compatible; desktop and web acceptance is pending.
+
 **0.67.0** answers the group play session: the Social tab lists every
 online player with favourites and an invite button, and invitations show
 on screen; the map window fills about 90 % of the screen with smaller
@@ -105,7 +111,7 @@ longer stick in rock; crafting has one row per item, fewer recipes, no
 metal rods and a Materials help page; fuel burns half as long; and chests
 get Sort, labels and Steel-Reinforced and Abyssal tiers with 64 and 96
 slots. The server's host runs the migration tool once (metal rods become
-bars); desktop and web acceptance is pending.
+bars); it is accepted on desktop and web.
 
 **0.66.0** polishes what the last play session found: shift-clicking a
 two-handed weapon swaps both hands and the blocked offhand shows why; the

@@ -1,6 +1,34 @@
 # Project status
 
-Updated 2026-10-30. This is the delivery pointer, not another game specification.
+Updated 2026-10-31. This is the delivery pointer, not another game specification.
+
+**0.68.0 / Round 68 is merged locally (2026-10-31); not pushed.** Text
+is readable in the world (the user's wish after the Round 67 acceptance):
+a new CORE mod `grug_text` turns text into one `[combine` texture of
+VoxeLibre's CC0 glyphs (431 files, credited) and shows it on one unsaved
+text entity per written surface, recreated by an LBM; the wall signs show
+4 lines of 15 characters on walls, floors and ceilings, on calm new boards
+(GPT-6 Astra's pass 2, dark ink on both), and chest labels 3 lines of 13
+on the front below the lock, every tier; the new ITEMS mod `grug_signs`
+adds the Standing Sign (turns freely, 4 × 15), the Waypost (the arrow
+along the placer's look, 14 characters on both sides, stackable) and the
+two-node Notice Board (four steps, 7 × 30), with recipes from the wooden
+wall sign and sticks (the user's art pick: standing sign A, waypost B,
+notice board B). Lanes TEXT and SIGNS each reviewed MERGE without a fix
+round, ART checked by the coordinator; merges `5c482606`, `48a23459`,
+`0fb2ab7f`, then this documentation lane D. **Compatible**, no step: the
+text is already in node meta (`text`, `grug_label`), the entities are not
+saved (two-boot LBM proof), the new nodes keep `text` and `infotext`.
+299 portable fixtures (two new); before this lane only `r37_dc` failed
+(waiting for the CHANGELOG entry), the round-end run on main follows. **The
+user's answers:** chest labels stay as they are (three lines, no plate);
+the 431 glyph files stay, the web join time goes into the checklist
+([completion, numbers, decisions and GUI checklist](planning/round68-plan.md#completion-2026-10-31);
+[carry-overs](../BACKLOG.md#round-68--readable-text-in-the-world-gui-acceptance-pending)).
+**GUI test pending:** 0.68 joins the joint GUI test of 0.57–0.66 (0.67
+is accepted on its own). Production runs **0.65.0**; updating it to 0.68.0
+crosses no map reset and runs only the 0.67.0 step. origin/main is
+`b73086ec` (0.67.0 without the heraldry follow-up). Only the user pushes.
 
 **0.67.0 / Round 67 is GUI-accepted by the user on 2026-10-31 (the whole Round 67 checklist); pushed up to `b73086ec` (2026-10-31), the heraldry follow-up after it waits for the next push.** The group play
 session's notes (2026-10-28): the "Party & PvP" tab is now **Social** (one

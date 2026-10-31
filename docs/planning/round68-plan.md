@@ -2,8 +2,13 @@
 
 Planned with the user on 2026-10-31 from their wish after Round 67's GUI
 acceptance; started on the user's "go" the same day. Claude coordinates.
-Version: **0.68.0**. Expected classification: **compatible** (new nodes; the
-text of existing signs and chest labels is already in node metadata).
+**Complete on 2026-10-31:** all three lanes merged (TEXT and SIGNS each
+reviewed MERGE without a fix round; the art study ART checked by the
+coordinator); GUI test pending, not pushed
+([completion](#completion-2026-10-31)).
+Version: **0.68.0**. Classification: **compatible** (new nodes; the text
+of existing signs and chest labels is already in node metadata; the text
+entities are not saved). Delivery state: [STATUS](../STATUS.md).
 
 ## Why
 
@@ -154,7 +159,74 @@ wall sign on the web client once TEXT has one.
 
 ### GUI checklist (desktop and web)
 
-Written by lane D from the merged lanes.
+Written by lane D from the lanes' excerpts and the reviewers' notes. Each
+item on the desktop client and on the web client. Items marked *look* ask
+for the user's verdict on a first-look default.
+
+**Wall signs and chest labels (TEXT)**
+
+1. **Wall signs on a wall,** the Wooden Sign and the iron sign: write,
+   rewrite, clear and dig. The text stands on the board in dark ink, 4
+   lines of 15 characters, wrapped at spaces, a word longer than a line
+   broken inside, what does not fit cut off; the hover text stays. Digging
+   leaves no text behind. *Look:* the calm boards (ART pass 2) and the
+   glyph size.
+2. **Wall signs on the floor and the ceiling:** the text lies on the
+   board; it reads upright only for a reader facing +z (north), from the
+   other sides it is turned (the vendored sign has no vertical wallmounted
+   rotation). On the ceiling it reads looking up. *Look:* acceptable?
+3. **Characters:** umlauts, accents, Cyrillic and Greek show; a character
+   the font lacks (also ï, Ï, ű, Ű and љ, missing upstream) shows the
+   placeholder glyph.
+4. **Chest labels,** every tier (Chest, Steel-Reinforced, Abyssal), normal
+   and locked: the label shows on the front below the lock, 3 lines of 13
+   characters; opening and closing the lid keeps it in place; Upgrade
+   keeps it (the ink turns light on the metal tiers); clearing or digging
+   removes it. The user ruled the labels stay as they are (three lines, no
+   label plate), so this checks only that they work.
+
+**The new signs (SIGNS)**
+
+5. **Recipes** (Basic, known from the start): Standing Sign and Waypost
+   from 1 Wooden Sign and 1 stick, Notice Board from 2 and 2. The icons at
+   16 and 32 px. Help → "Bags, food and repair" names the signs.
+6. **Standing Sign:** placed at several angles it faces you (any angle,
+   1.5° steps); 4 lines of 15 characters; the selection box covers the
+   board at every angle.
+7. **Waypost:** the arrow points the way you look (so you first see it
+   edge-on); 14 characters, on both sides, the back not mirrored; three
+   wayposts stacked by clicking the top one (no sneak needed), at
+   different angles: the pole joins, the arrow clearance, each text on its
+   arrow. *Look:* the direction rule and the walkable post.
+8. **Notice Board:** the left half goes where you point, the board to
+   your right; it turns in four steps; 7 lines of 30 characters. The hover
+   text shows only 6 of the 7 lines (engine display). Selection and
+   collision on both halves; it is walkable. *Look:* four steps instead of
+   free rotation.
+9. **Refused board:** next to a block, under a low ceiling (the two nodes
+   above must be free) or over a gap (solid ground under both halves): a
+   notice says why; reaching into someone else's claim: the claim's
+   refusal. Nothing is placed and the item stays in the hand.
+10. **Digging and support:** digging either half of the board removes both,
+    drops one Notice Board and leaves no text; dig the node under a
+    standing sign, a waypost or a board: it drops as an item and its text
+    goes.
+11. **Writing:** each form is sized to its sign (a text box, a single field
+    on the waypost); write, rewrite, newlines, clear; a text over 512
+    bytes is refused with a notice.
+
+**Everywhere**
+
+12. **Claims:** in someone else's claim every sign's text and every chest
+    label is readable; Save on a sign is refused, a chest label needs the
+    Everything right, a locked chest only its owner.
+13. **Rejoin and distance:** leave and rejoin, or walk far away and come
+    back: every text returns (the LBM), none doubled; digging a sign after
+    the rejoin still removes its text.
+14. **Crisp text** *(look)*: nearby and from a few metres, in daylight and
+    indoors, the same glyph size on every surface.
+15. **Web:** the texts are visible and crisp; time the join with the 431
+    new glyph files (compare with 0.67.0).
 
 ## 7. Orchestration notes
 
@@ -170,3 +242,133 @@ Written by lane D from the merged lanes.
   signs, SIGNS).
 - **Open before the go:** none known; the defaults of §2 stand unless the
   user overrules them.
+
+## Completion (2026-10-31)
+
+All three lanes are merged on main. TEXT and SIGNS were each reviewed
+independently (Opus): both **MERGE**, no fix round. The art study ART
+(GPT-6 Astra; tools only) was checked by the coordinator
+(`generate.py --check`); its picked files were copied into TEXT (the wall
+sign boards) and SIGNS (models, textures and icons), whose reviews checked
+them byte for byte. This lane D (the completion, the GUI checklist, the
+status owners) follows on main `0fb2ab7f`. **0.68.0 is compatible:** TEXT
+reads the existing node meta `text` (wall signs) and `grug_label` (chest
+labels) and writes no new state; its text entities are not saved and an
+LBM recreates them (proved with two boots on one world: a sign and a label
+written as meta only got their 2 entities, the hover text intact); ART adds
+tools only; SIGNS adds new nodes with the meta `text` and `infotext`. No
+map reset, no step. **Push:** not pushed; origin/main is `b73086ec`
+(0.67.0 without the heraldry follow-up); production runs 0.65.0, so its
+update still runs only the 0.67.0 step. **GUI test:** pending; 0.68 joins
+the joint GUI test of 0.57–0.66 ([checklist](#gui-checklist-desktop-and-web)).
+**Sync:** by the coordinator after each merge.
+
+### Lanes
+
+Main's first-parent commits from the plan `b649e707` (lane tip in
+brackets), in merge order:
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| TEXT | `5c482606` (`67e3239c`; `7029207f` … `67e3239c`) | New CORE mod `grug_text`: `layout.lua` (wrapping at spaces, a long word broken inside, newlines, cut-off; the `[combine` texture tinted by `[multiply:<ink>`; 1 glyph pixel = 1/128 node, 6 × 12 px cells, canvases in powers of two), `init.lua` (`register`, `refresh`, `remove`; one unsaved `upright_sprite` per written surface, the LBM `grug_text:restore`), `surfaces.lua` (both wall signs 4 × 15 in every wallmounted orientation through an override of their form handler; every chest tier, normal, locked, closed and open, 3 × 13 below the lock). The CC0 font imported by `tools/r68_text/import_font.py` (431 files, 506 characters). One GRUG PATCH in `default/containers.lua` `update_infotext`. ART's calm wall sign boards swapped in, ink `#2B1E14` on both; light ink `#ECE4CC` on the two metal chest tiers. 0.68.0 in `game.conf` and `upgrade.json`. Module guide "Text in the world", mod map, `inventory_equipment.md`, VENDOR, licences, CREDITS; fixture `tools/r68_text` (132 checks), capture and LBM probes | MERGE (notes only: floor and ceiling signs read upright from +z only, checklist item 2; `register` wraps `after_destruct` at call time, SIGNS told; chest label readability, to the user) |
+| ART | `48a23459` (`2f55d57e`; `c421b445` … `2f55d57e`) | GPT-6 Astra's study in `tools/r68_art/`: standing sign, waypost and notice board in two variants each (OBJ, 64 × 64 atlas, 16 px icon, text-area JSON), offline preview, the user's pick A/B/B; pass 2 the calm wall sign boards (wood `#B68357`, iron `#AAAAAA`, both with ink `#2B1E14`); generator, licence rows, `REPORT.md` | coordinator check (`generate.py --check`, 72 outputs) |
+| SIGNS | `0fb2ab7f` (`9b4a88ec`; `b010da60` … `9b4a88ec`, started from TEXT's branch, main merged in) | New ITEMS mod `grug_signs`: `standing_sign` (degrotate, faces the placer, 4 × 15), `waypost` (degrotate, the arrow along the placer's look, 1 × 14 as two one-faced surfaces, walkable post so wayposts stack, stacking by clicking the top), `notice_board` + `notice_board_part` (4dir, two nodes placed and dug as one, refused unless both nodes and the two above are free and unprotected over walkable ground, 7 × 30 on the board node); every node `attached_node = 3`; forms sized to the grid with the wall sign's rules (`grug_signs.write`); ART's picks byte for byte. Recipes through `tools/r45_rg/edits.lua` (240 catalog rows), the four nodes in the claim reading exemption (`interaction.lua`), the Help line. Module guide, mod map; fixture `tools/r68_signs` (266 checks), capture and probe; pins in `r35_f` and `r57_dyes` | MERGE (backlog notes only; agrees with the 4 steps and the walkable waypost) |
+| D | this section | the completion, the GUI checklist, STATUS, AGENTS, BACKLOG, README, CHANGELOG, the no-step line of the upgrade contract (the version and declaration were set by TEXT) | independent review |
+
+Main has **299** portable fixtures (2 new: `r68_text`, `r68_signs`).
+`mods/` against the plan commit (measured, `git diff b649e707 0fb2ab7f --
+mods`): 456 files, +2722 −2 lines: 8 Lua files (one vendored,
+`default/containers.lua`), 439 PNGs (431 glyphs, two wall sign boards,
+three sign textures and three icons), 3 OBJ models, the character table,
+two `mod.conf` and three media ledgers.
+
+### Decisions during the round
+
+**The user:**
+
+- **Art pick:** standing sign **A** (plain plank on a slim post), waypost
+  **B** (carved arrow), notice board **B** (with a roof).
+- **Wall sign boards:** the text was hard to read on the old boards (their
+  painted fake writing); ART's pass 2 drew calm boards for wood and iron,
+  approved by the user and swapped in by TEXT.
+- **Chest labels** stay as they are: three lines, no label plate, no
+  change (TEXT's question about the busy metal fronts).
+- **Glyph files:** keep the 431 files (no atlas: an atlas would roughly
+  triple the texture string); the web join time goes into the GUI
+  checklist (item 15).
+
+**The coordinator** (answers to lane questions; each built as stated):
+
+- SIGNS started from TEXT's branch before TEXT's merge, then merged main
+  before its review; its callbacks are defined before `grug_text.register`
+  (which wraps `after_destruct` at call time).
+- Dark ink `#2B1E14` on both wall signs (the iron board is light grey).
+- Light ink stays on the Steel-Reinforced and Abyssal chests.
+- The notice board turns in 4 steps; the waypost's arrow follows the
+  placer's look; the waypost's post is walkable so wayposts stack (the
+  user informed).
+
+### Deviations from the plan
+
+- **Ink on iron:** §2 planned light ink on the iron sign; ART's board is
+  light grey, so both wall signs use the dark ink `#2B1E14`.
+- **Board rotation:** 4 steps (`4dir`) instead of free rotation: a
+  two-node board stays on the grid. The standing sign and the waypost turn
+  freely (`degrotate`, 1.5°).
+- **VoxeLibre's facing convention** (the sprite's forward into the wall)
+  is refuted for one-faced sprites: it works there only because one
+  texture covers both faces. A one-faced sprite needs forward = −look
+  (TEXT; found by the first capture, pinned by the fixture). The waypost
+  therefore uses two one-faced surfaces, not one two-faced sprite.
+- **The engine's OBJ loader mirrors x** (`irr/src/COBJMeshFileLoader.cpp:314`):
+  in the game each model is ART's spec mirrored in x; SIGNS writes its
+  offsets in game coordinates and the fixture checks them against ART's
+  JSON. The engine also never turns `fixed` boxes of a degrotate node, so
+  the standing sign's and the waypost's selection boxes cover their sweep.
+- **Five glyphs missing upstream:** the table rows for ï, Ï, ű, Ű and љ
+  name files VoxeLibre does not ship; they show the placeholder glyph.
+- **Help:** §3 asked for the building/housing section; Help has none, so
+  the signs' line sits under "Bags, food and repair" beside the chests.
+
+### Numbers worth keeping
+
+From the lanes' reports (measured there).
+
+- **Texture string length** (bytes; the engine caps a texture at 65,535):
+
+  | Text | All cells filled | Prose | Upper bound |
+  |---|---|---|---|
+  | Wall sign 4 × 15 | 1,402 | 994 | 2,182 |
+  | Chest label 3 × 13 | 930 | 628 | 1,437 |
+  | Notice board 7 × 30 | 4,997 | 3,758 | 7,727 |
+
+  The notice board with 7 full lines of real text in SIGNS' capture:
+  **3,457 bytes** (fixture and engine agree).
+- **Entities:** one per written surface, none for an empty sign or an
+  unlabelled chest: TEXT's capture scene 22 entities for 22 written
+  surfaces, SIGNS' 18 for 18; the LBM proof 2 for 2.
+- **Font:** 431 glyph files, 38,302 bytes; 506 characters mapped
+  (Latin-1 to Latin-4, Cyrillic, Greek).
+- **Recipes:** the catalog has 240 rows (237 → 240).
+- No new globalstep; text textures are built only when the text changes
+  or the entity is created.
+
+### Checks
+
+- TEXT: `check_lua`, `check_fresh_server`, `check_upgrade`,
+  `import_font.py --check`, `export.lua --check` PASS; fixtures `r68_text`
+  and `r67_containers`; full run 297/298 (only `r37_dc`, waiting for this
+  CHANGELOG entry); smoke boot and the two-boot LBM probe PASS; captures
+  T1–T9. Review: `r68_text`, `r67_containers` PASS, captures inspected.
+- ART: `generate.py --check` (72 outputs).
+- SIGNS: `check_lua`, `check_fresh_server`, `check_upgrade`,
+  `gen_basic_recipes --check`, `export.lua --check` PASS; fixtures
+  `r68_signs` and `r45_rg`; full run 296 + 3 (`r35_f` and `r57_dyes` pins
+  updated and passing, `r37_dc` waiting for this lane); smoke boot PASS;
+  captures S1–S9. Review: `r68_signs`, `r45_rg`, `r35_f`, `r57_dyes` PASS.
+- Main: `check_fresh_server.py` PASS after each merge. This lane:
+  `check_upgrade.py`, `check_fresh_server.py`; `r37_dc` (the CHANGELOG's
+  newest entry, the Help version line, README and CHANGELOG links),
+  `r41_up`, `r42_dr` and `r43_gs` (the declaration, the README and
+  CHANGELOG links); the link and anchor check of the touched documents.
+  The round-end full run on main is the coordinator's.
