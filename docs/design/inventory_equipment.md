@@ -685,8 +685,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     **Sort**; on every container below Abyssal **Upgrade ⟨bar⟩×8**.
   - **Sort:** the chest's whole list in the inventory's order (above),
     with the Inventory tab's cooldown; not on shelves.
-  - **Label:** chests only, at most 40 characters, shown as hover text: the
-    label on the first line, the chest's name on the second. Who may edit
+  - **Label:** chests only, at most 40 characters, shown as hover text (the
+    label on the first line, the chest's name on the second) and, since
+    Round 68, written on the chest's front below the lock: three lines of
+    13 characters, wrapped at spaces, what does not fit cut off; dark ink
+    on the Wooden tier, light ink on the two metal tiers. It stays when the
+    lid opens and follows an upgrade. Who may edit
     it follows the claim rules for building ([housing](housing.md) §6.1):
     in the open world anyone; in a claim the owner and the Everything
     level (a draft or inactive claim protects nothing). Whoever may not

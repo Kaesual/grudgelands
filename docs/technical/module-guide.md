@@ -29,8 +29,8 @@ money](#traders-and-money), [Quests](#quests), [Parties](#parties),
 migrations](#world-version-and-migrations), [Performance log
 lines](#performance-log-lines), [Fishing](#fishing), [Mapgen and
 biomes](#mapgen-and-biomes), [World atlas rules](#world-atlas-rules),
-[Sound](#sound), [UI and formspecs](#ui-and-formspecs), [Player model and
-skins](#player-model-and-skins), [Looks and enchant
+[Sound](#sound), [UI and formspecs](#ui-and-formspecs), [Text in the
+world](#text-in-the-world), [Player model and skins](#player-model-and-skins), [Looks and enchant
 colours](#looks-and-enchant-colours), [Cloaks and
 achievements](#cloaks-and-achievements), [Player meta read by external
 tools](#player-meta-read-by-external-tools).
@@ -3365,6 +3365,58 @@ tools](#player-meta-read-by-external-tools).
   unforced form (the withdraw dialog: Cancel), so the field keeps its focus.
   Model and checks: `tools/r451_kf` (`focus.lua`); the book's read view
   (vendored `default`) focuses its ">" button.
+
+## Text in the world
+
+- **Round 68** (`grug_text`, a CORE mod; [round68-plan.md](../planning/round68-plan.md)
+  rulings 1-5): the engine draws no text on nodes, so a written surface gets
+  **one text entity**, a non-pointable `upright_sprite` just in front of it,
+  whose texture is the text: one `[combine` of the imported CC0 glyphs
+  (`grug_text_*.png`, 5-6 × 12 px, `characters.tsv`;
+  `tools/r68_text/import_font.py --check`) tinted with `[multiply:<ink>`.
+  One glyph pixel is 1/128 node on every surface; cells are 6 × 12 px
+  (monospaced, so "N characters" is exact); the canvas is rounded up to
+  powers of two and the text block centred on it. Characters without a
+  glyph show the placeholder `grug_text_rc`.
+- **Wrapping** (`layout.lua`, pure): rows break at spaces (a run of spaces is
+  one break), a word longer than a row starts its own row and breaks
+  inside, newlines start rows, what does not fit is cut off; control
+  characters are dropped, malformed UTF-8 shows the placeholder.
+- **Lifecycle:** the entities are **not saved** (`static_save = false`);
+  the engine deletes them with their unloaded mapblock and the LBM
+  `grug_text:restore` (`group:grug_text`, `run_at_every_load`) recreates
+  them when the node's block is activated (a node without text costs no
+  object search there). The node's own update paths call
+  `grug_text.refresh(pos)`, which finds the node's entities by the node
+  position they carry, keeps one per surface, updates only what changed
+  (position, rotation, texture) and removes extras; `register` wraps the
+  node's `after_destruct` to remove them. Empty text: no entity. Limit: a
+  chest label's entity lies in the node in front of the chest; for a chest
+  on a mapblock's edge it can be unloaded with the next block alone while
+  the chest's block stays active, and returns only when the chest's block
+  is activated again.
+- **Orientation:** the sprite's front (`textures[1]`) is seen from its local
+  +z side, so the entity's rotation is `vector.dir_to_rotation(-look, up)`
+  for the reader's look direction `look` and the text's `up` (per
+  `paramtype2`: `wallmounted`, `facedir`/`4dir`, `degrotate` at 1.5° per
+  step as the engine turns the mesh, `client/mesh.cpp` `rotateMeshXZby`).
+  A second face (`faces = 2`) shows the same text on the quad's back, read
+  correctly from behind (`client/content_cao.cpp`: the back quad swaps its
+  corners and keeps its UVs).
+- **API** (for lane SIGNS): `grug_text.register(name, surface or list)` at
+  load time after the node, a surface being `{lines, chars, ink, offset
+  (x reader's right, y up, z into the surface), frame, faces, align,
+  valign, text = fn(pos, node, meta)}`; `refresh(pos)`, `remove(pos)`,
+  `surfaces(name)`, `layout`, `charmap`, `INK`. The full contract is the
+  header of `grug_text/init.lua`.
+- **Shipped surfaces** (`surfaces.lua`): the wall signs
+  (`default:sign_wall_wood`, `grug_materials:iron_sign_wall`) 4 × 15 at
+  7/16 − 1/64 towards the wall, through an override of their form handler
+  (the hover text stays); every chest tier, normal and locked, closed and
+  `_open`, 3 × 13 of the 40-character label, centred at y = −5/16 just in
+  front of the front (below the lock, on the part the lid does not move),
+  refreshed by `default.containers.update_infotext` (GRUG PATCH: label
+  save, clear, upgrade). Inks per surface in one table each.
 
 ## Player model and skins
 

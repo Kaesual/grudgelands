@@ -141,6 +141,8 @@ our changes. Derivatives keep their source's licence.
   **Nicu**, CC BY-SA. Used in `grug_mobs`, `grug_mounts`, `grug_gear`,
   `grug_materials`, `grug_jobs`, `grug_fishing`, `grug_abilities`,
   `grug_projectiles`, `grug_cooking` and `grug_farming`.
+  The sign font (the glyphs in the world's text, `grug_text`) by
+  **PilzAdam**, extended by **EmoryNB**, CC0.
 - **Lord of the Test** (<https://github.com/minetest-LOTR/Lord-of-the-Test>) —
   CC BY-SA 3.0: humanoid skins by **Amaz** and **fishyWET** (`grug_mobs`),
   bows (`grug_gear`),
