@@ -6,17 +6,23 @@
 --   M  the models against lane ART's spec (tools/r68_art/candidates): the
 --      engine's OBJ loader mirrors x, so every text centre, normal and box
 --      in the game is ART's with x negated; each turned model stays inside
---      its unrotated selection boxes (degrotate never turns them);
+--      its unrotated selection boxes (degrotate never turns them); the
+--      notice board's two nodes draw ART's two halves (mesh drawtype, the
+--      board's node ART's left half, the part ART's right), which rejoin
+--      into the one-piece model, texture coordinates included;
 --   O  each text entity stands where ART's text area is after the engine
 --      turns the mesh (client/mesh.cpp rotateMesh, degrotate 1.5 degrees
 --      per step, 4dir as rotateMeshBy6dFacedir), 1/64 in front of the
 --      board, facing out of it;
 --   P  placement: the standing sign faces the placer, the waypost's arrow
 --      points where the placer looks, wayposts stack from the right-click;
---   B  the notice board: both halves placed facing the placer, refused when
---      a node, the headroom or the ground is missing or protected; digging
---      either half removes both, one drop, the text entity gone; the part
---      opens the board's form;
+--   B  the notice board: both halves placed facing the placer, the part
+--      where the turned model's half lies, refused when a node, the
+--      headroom or the ground is missing or protected; no half left at any
+--      turn when either half is dug, either half's ground is dug (the
+--      builtin attached_node walk, transcribed), both grounds go at once
+--      or a half is removed without a dig: one board dropped (none without
+--      a dig), the text entity gone; the part opens the board's form;
 --   F  writing: the forms (a text box per grid), quit-gated, protection,
 --      512 bytes, control characters, newlines, clearing, no hover text
 --      (the user, 2026-10-31); the LBM restores the entities; the one-time
@@ -194,7 +200,6 @@ core = {
 	is_protected = function(pos, name) return protected[key(pos)] == true and name ~= "owner" end,
 	record_protection_violation = function(pos, name) violations[#violations + 1] = key(pos) end,
 	is_creative_enabled = function() return false end,
-	check_for_falling = function() end,
 	log = function() end,
 	pos_to_string = function(p) return "(" .. key(p) .. ")" end,
 	formspec_escape = function(s) return (s:gsub("[%[%];,\\]", "\\%0")) end,
@@ -232,6 +237,71 @@ core.item_place_node = function(itemstack, placer, pointed_thing, param2)
 end
 core.item_place = function(itemstack, placer, pointed_thing, param2)
 	return core.item_place_node(itemstack, placer, pointed_thing, param2)
+end
+-- Drops land here: node_dig's handle_node_drops and drop_attached_node's
+-- add_item alike.
+local dropped = {}
+core.get_item_group = function(name, group)
+	local def = core.registered_nodes[name]
+	return def and def.groups and def.groups[group] or 0
+end
+core.get_node_drops = function(node)
+	local def = core.registered_nodes[node.name]
+	return {def and def.drop or node.name}
+end
+core.add_item = function(pos, item) dropped[#dropped + 1] = item end
+-- builtin/game/falling.lua, transcribed for attached_node (no falling
+-- nodes here): drop_attached_node takes the drops, then remove_node (the
+-- node's destructors run while it still stands), then adds the items;
+-- check_attached_node's floor rule (rating 3); check_for_falling's walk
+-- over the neighbours in its order, from each node that dropped.
+local function drop_attached_node(p)
+	local drops = core.get_node_drops(core.get_node(p), "")
+	core.remove_node(p)
+	for _, item in pairs(drops) do core.add_item(p, item) end
+end
+core.check_single_for_falling = function(p)
+	local n = core.get_node(p)
+	if core.get_item_group(n.name, "attached_node") == 3 then
+		local def2 = core.registered_nodes[core.get_node(vector.add(p, V(0, -1, 0))).name]
+		if def2 and not def2.walkable then
+			drop_attached_node(p)
+			return true
+		end
+	end
+	return false
+end
+local falling_neighbours = {
+	V(-1, -1, 0), V(1, -1, 0), V(0, -1, -1), V(0, -1, 1), V(0, -1, 0),
+	V(-1, 0, 0), V(1, 0, 0), V(0, 0, 1), V(0, 0, -1), V(0, 0, 0), V(0, 1, 0),
+}
+core.check_for_falling = function(p)
+	p = vector.round(p)
+	local s, n, v = {}, 0, 1
+	while true do
+		n = n + 1
+		s[n] = {p = p, v = v}
+		p = vector.add(p, falling_neighbours[v])
+		if not core.check_single_for_falling(p) then
+			repeat
+				local pop = s[n]
+				p, v = pop.p, pop.v
+				s[n] = nil
+				n = n - 1
+				if n == 0 and v == 11 then return end
+			until v < 11
+			v = v + 1
+		else
+			v = 1
+		end
+	end
+end
+-- builtin core.node_dig, reduced: the drops, remove_node, the on_dignode
+-- hook (falling.lua: check_for_falling).
+local function dig(pos)
+	for _, item in ipairs(core.get_node_drops(core.get_node(pos), "")) do core.add_item(pos, item) end
+	core.remove_node(pos)
+	core.check_for_falling(pos)
 end
 core.register_node("air", {walkable = false, buildable_to = true})
 core.register_node("default:stone", {walkable = true})
@@ -357,6 +427,25 @@ local function obj_vertices(file)
 	return out
 end
 local function mirror(v) return V(-v[1], v[2], v[3]) end
+-- Every triangle corner of an OBJ as the engine loads it (x negated), with
+-- its texture coordinate, shifted by `offset`.
+local function obj_corners(path, offset)
+	local text = read(path)
+	local v, vt, out = {}, {}, {}
+	for x, y, z in text:gmatch("\nv (%S+) (%S+) (%S+)") do
+		v[#v + 1] = vector.add(V(-tonumber(x), tonumber(y), tonumber(z)), offset)
+	end
+	for a, b in text:gmatch("\nvt (%S+) (%S+)") do vt[#vt + 1] = {tonumber(a), tonumber(b)} end
+	for face in text:gmatch("\nf ([^\n]+)") do
+		for vi, ti in face:gmatch("(%d+)/(%d+)/%d+") do
+			out[#out + 1] = {pos = v[tonumber(vi)], uv = vt[tonumber(ti)]}
+		end
+	end
+	return out
+end
+local function corner_key(c)
+	return ("%.6f %.6f %.6f %.6f %.6f"):format(c.pos.x, c.pos.y, c.pos.z, c.uv[1], c.uv[2])
+end
 
 -- client/mesh.cpp rotateMesh<X, Z>: u' = c u - s v, v' = s u + c v.
 local function turn(v, degrees)
@@ -384,7 +473,6 @@ local SPECS = {
 local MODELS = {
 	[STANDING] = "grug_signs_standing.obj",
 	[WAYPOST] = "grug_signs_waypost.obj",
-	[BOARD] = "grug_signs_notice_board.obj",
 }
 
 ------------------------------------------------------------------------------
@@ -403,6 +491,62 @@ for name, file in pairs(MODELS) do
 end
 eq(-SPECS[BOARD].bounds[4] .. "," .. -SPECS[BOARD].bounds[1], "-1.5,0.5",
 	"M the board's model reaches one node towards -x (the part, the reader's left)")
+-- The board in two halves (ART pass 4), each node drawing its own, so the
+-- digging cracks show on the half being dug. ART's left half (lower x,
+-- around the original origin) is the board's node, its right half (one
+-- node towards ART's +x, the game's -x) the part's.
+do
+	local bnode, pnode = core.registered_nodes[BOARD], core.registered_nodes[PART]
+	eq(bnode.drawtype .. "/" .. pnode.drawtype, "mesh/mesh", "M both halves are meshes")
+	eq(bnode.mesh, "grug_signs_notice_board_main.obj", "M the board's node draws the board's half")
+	eq(pnode.mesh, "grug_signs_notice_board_part.obj", "M the part draws the part's half")
+	eq(read("mods/ITEMS/grug_signs/models/" .. bnode.mesh), read("tools/r68_art/candidates/notice_board_b_left.obj"),
+		"M the board's half is ART's left half, byte for byte")
+	eq(read("mods/ITEMS/grug_signs/models/" .. pnode.mesh), read("tools/r68_art/candidates/notice_board_b_right.obj"),
+		"M the part's half is ART's right half, byte for byte")
+	eq(pnode.tiles[1] .. "/" .. pnode.paramtype2 .. "/" .. pnode.use_texture_alpha,
+		bnode.tiles[1] .. "/4dir/opaque", "M both halves share the texture and the turn")
+	for _, name in ipairs({BOARD, PART}) do
+		local ok = true
+		for _, v in ipairs(obj_vertices(core.registered_nodes[name].mesh)) do
+			if math.abs(v.x) > 0.5 + 1e-9 then ok = false end
+		end
+		check(ok, "M " .. name .. ": its half stays inside its node's x")
+	end
+	-- Rejoined in the game (param2 0: the part one node towards -x), the
+	-- halves are the one-piece model: every corner off the cut (x = -0.5)
+	-- with its texture coordinate is in both, the swapped halves are not.
+	local whole = obj_corners("tools/r68_art/candidates/notice_board_b.obj", V(0, 0, 0))
+	local function rejoined(main_file, part_file)
+		local list = obj_corners("mods/ITEMS/grug_signs/models/" .. main_file, V(0, 0, 0))
+		for _, c in ipairs(obj_corners("mods/ITEMS/grug_signs/models/" .. part_file, V(-1, 0, 0))) do
+			list[#list + 1] = c
+		end
+		return list
+	end
+	local function matches(a, b)
+		local set, missing = {}, 0
+		for _, c in ipairs(b) do set[corner_key(c)] = true end
+		for _, c in ipairs(a) do
+			if math.abs(c.pos.x + 0.5) > 1e-9 and not set[corner_key(c)] then missing = missing + 1 end
+		end
+		return missing
+	end
+	local joined = rejoined(bnode.mesh, pnode.mesh)
+	eq(matches(whole, joined) .. "/" .. matches(joined, whole), "0/0",
+		"M the two halves rejoin into the one-piece model (positions and texture)")
+	local swapped = rejoined(pnode.mesh, bnode.mesh)
+	check(matches(whole, swapped) > 0, "M the swapped halves would not (the check tells them apart)")
+	local function area(list)
+		local sum = 0
+		for i = 1, #list, 3 do
+			local a, b, c = list[i].pos, list[i + 1].pos, list[i + 2].pos
+			sum = sum + vector.length(vector.cross(vector.subtract(b, a), vector.subtract(c, a))) / 2
+		end
+		return sum
+	end
+	check(math.abs(area(whole) - area(joined)) < 1e-9, "M the halves' surface is the one-piece model's")
+end
 for _, name in ipairs({STANDING, WAYPOST}) do
 	local boxes = core.registered_nodes[name].selection_box.fixed
 	local ok = true
@@ -590,8 +734,63 @@ for p2, look in pairs({[0] = V(0, 0, 1), V(1, 0, 0), V(0, 0, -1), V(-1, 0, 0)}) 
 	local main = vector.add(part, V(look.z, 0, -look.x))
 	eq(core.get_node(main).name .. "/" .. core.get_node(main).param2, BOARD .. "/" .. p2,
 		"B facing " .. p2 .. ": the board to the placer's right")
+	-- The engine turns each half about its own node (4dir); the part's half
+	-- lies one node towards -x of the board's unturned, so the part must
+	-- stand where that offset turns to for the halves to rejoin.
+	check(vector.equals(part, vector.add(main, vector.round(turn(V(-1, 0, 0), FACEDIR_DEGREES[p2])))),
+		"B facing " .. p2 .. ": the part stands where the turned model's half lies")
 	core.remove_node(main)
 	eq(core.get_node(part).name, "air", "B facing " .. p2 .. ": dug as one")
+end
+-- No half board, ever: every way a half goes (dug, its ground dug, both
+-- grounds gone at once, removed without a dig as fire or an explosion
+-- does) takes the other half too, drops exactly one board (none without a
+-- dig) and leaves no text entity, at every turn.
+do
+	local function halves_left()
+		local n = 0
+		for _, node in pairs(nodes) do
+			if node.name == BOARD or node.name == PART then n = n + 1 end
+		end
+		return n
+	end
+	local function boards_dropped()
+		local n = 0
+		for _, item in ipairs(dropped) do if item == BOARD then n = n + 1 end end
+		return n
+	end
+	local function stone(p) nodes[key(p)] = {name = "default:stone", param2 = 0} end
+	local down = V(0, -1, 0)
+	local paths = {
+		{"the part dug", 1, function(part, main) dig(part) end},
+		{"the board dug", 1, function(part, main) dig(main) end},
+		{"the ground under the part dug", 1, function(part, main) dig(vector.add(part, down)) end},
+		{"the ground under the board dug", 1, function(part, main) dig(vector.add(main, down)) end},
+		{"both grounds gone at once", 1, function(part, main)
+			core.swap_node(vector.add(part, down), {name = "air"})
+			core.swap_node(vector.add(main, down), {name = "air"})
+			core.check_for_falling(vector.add(part, down))
+			core.check_for_falling(vector.add(main, down))
+		end},
+		{"the part removed without a dig", 0, function(part, main) core.remove_node(part) end},
+		{"the board removed without a dig", 0, function(part, main) core.remove_node(main) end},
+	}
+	for p2, look in pairs({[0] = V(0, 0, 1), V(1, 0, 0), V(0, 0, -1), V(-1, 0, 0)}) do
+		for _, path in ipairs(paths) do
+			local label = ("B facing %d, %s"):format(p2, path[1])
+			place_board(-10, -10, look)
+			local part = V(190, 1, -10)
+			local main = vector.add(part, V(look.z, 0, -look.x))
+			submit(main, "Lost and found")
+			check(halves_left() == 2 and #live(main) == 1, label .. ": placed with its text")
+			dropped = {}
+			path[3](part, main)
+			eq(halves_left(), 0, label .. ": no half left")
+			eq(boards_dropped(), path[2], label .. ": boards dropped")
+			eq(#live(main), 0, label .. ": no text entity")
+			stone(vector.add(part, down)); stone(vector.add(main, down))
+		end
+	end
 end
 do
 	local function refused(label, setup, undo)

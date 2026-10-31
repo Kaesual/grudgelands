@@ -12,10 +12,31 @@
 -- grug_text.refresh, logged). Each shot moves the floating player to a
 -- view; the probe logs the text entities it finds and the notice board's
 -- texture string length.
+--
+-- r68signs_mode = compare (capture.sh MODE=compare): the notice board's two
+-- half meshes against the one-piece model they were cut from (staged by
+-- capture.sh as this probe's `grug_probe_r68_signs_whole.obj` on a node
+-- drawn as the board's node drew it before), at each of the four turns,
+-- front and angle, at one spot from one camera, no text, no clouds: the
+-- shots C_halves_* and C_whole_* differ only in which meshes draw.
 
 local P = "[r68signs] "
 local NAME = "grugcap"
 local SETTLE = tonumber(core.settings:get("r68signs_settle") or "") or 3
+local MODE = core.settings:get("r68signs_mode") or ""
+local WHOLE = "grug_probe_r68_signs:board_whole"
+
+core.register_node(WHOLE, {
+	description = "Notice board, one piece (probe)",
+	drawtype = "mesh",
+	mesh = "grug_probe_r68_signs_whole.obj",
+	tiles = {"grug_signs_notice_board.png"},
+	use_texture_alpha = "opaque",
+	paramtype = "light",
+	paramtype2 = "4dir",
+	sunlight_propagates = true,
+	groups = {not_in_creative_inventory = 1},
+})
 
 local function log(msg) core.log("action", P .. msg) end
 
@@ -47,7 +68,6 @@ local function write(player, pos, text, also)
 	if core.get_meta(pos):get_string("text") ~= text then
 		log("write refused at " .. core.pos_to_string(pos) .. " (protected): meta + refresh")
 		core.get_meta(pos):set_string("text", text)
-		core.get_meta(pos):set_string("infotext", '"' .. text .. '"')
 		grug_text.refresh(pos)
 	end
 end
@@ -77,10 +97,12 @@ local main_board
 
 local function build(player)
 	for x = -6, 42 do for z = -8, 8 do stone(x, -1, z) end end
-	-- Front row, readers looking +z: a chest and a wall sign for scale, the
+	-- Front row, readers looking +z: a chest, planks and a wall sign for
+	-- scale (the wood beside the signs' wood), the
 	-- standing sign, a waypost turned so a face looks at the viewer (its
 	-- arrow points +x), the notice board.
 	for x = -1, 0 do for y = 0, 1 do stone(x, y, 1) end end
+	core.set_node(at(-2, 0, 0), {name = "default:wood"})
 	core.set_node(at(-3, 0, 0), {name = "default:chest", param2 = 0})
 	core.get_meta(at(-3, 0, 0)):set_string(default.containers.LABEL_KEY, "Seeds and tools")
 	default.containers.update_infotext(at(-3, 0, 0))
@@ -145,11 +167,72 @@ local function view(player, x, y, z, yaw, pitch)
 	player:set_look_vertical(math.rad(pitch))
 end
 
+-- Compare mode: one spot, the board's node at (0, 0, 0) turned by param2,
+-- the part beside it (halves) or the one-piece node alone with air where
+-- the part stood (whole, as the board's node drew it before).
+local function compare_set(state, param2)
+	for x = -1, 1 do for z = -1, 1 do
+		local pos = at(x, 0, z)
+		if core.get_node(pos).name ~= "air" then core.remove_node(pos) end
+	end end
+	local look = core.facedir_to_dir(param2)
+	local part = vector.subtract(at(0, 0, 0), vector.new(look.z, 0, -look.x))
+	if state == "halves" then
+		core.set_node(part, {name = PART, param2 = param2})
+		core.set_node(at(0, 0, 0), {name = BOARD, param2 = param2})
+	else
+		core.set_node(at(0, 0, 0), {name = WHOLE, param2 = param2})
+	end
+	log(("compare %s param2 %d: board %s, part side %s"):format(state, param2,
+		core.get_node(at(0, 0, 0)).name, core.get_node(part).name))
+	-- The board's middle, relative to O: half way to the part.
+	return vector.multiply(vector.subtract(part, O), 0.5), look
+end
+
+-- A fixed sky for compare mode: plain, no clouds, sun, moon or stars, full
+-- daylight (the zone moods would otherwise change it between shots).
+local function still_sky(player)
+	player:set_sky({type = "plain", base_color = "#8cbafa", clouds = false})
+	player:set_clouds({density = 0})
+	player:set_sun({visible = false, sunrise_visible = false})
+	player:set_moon({visible = false})
+	player:set_stars({visible = false})
+	player:override_day_night_ratio(1)
+end
+
+-- The camera 4.5 nodes from the board's middle, along the reader's look
+-- (front) or 40 degrees round to the reader's right (angle), looking 20
+-- degrees up: the crosshair passes over the roof (no selection box drawn)
+-- and the board sits in the lower half of the picture.
+local function compare_view(player, middle, look, angle)
+	local yaw = math.atan2(-look.x, look.z) + math.rad(angle)
+	local dir = vector.new(-math.sin(yaw), 0, math.cos(yaw))
+	local eye = vector.subtract(vector.add(middle, vector.new(0, 0.4, 0)), vector.multiply(dir, 4.5))
+	view(player, eye.x, eye.y - 1.5, eye.z, math.deg(yaw), -20)
+	still_sky(player)
+end
+
+local COMPARE = {}
+for _, state in ipairs({"halves", "whole"}) do
+	for param2 = 0, 3 do
+		for _, angle in ipairs({0, 40}) do
+			COMPARE[#COMPARE + 1] = {
+				name = ("C_%s_r%d_%s"):format(state, param2, angle == 0 and "front" or "angle"),
+				run = function(p)
+					local middle, look = compare_set(state, param2)
+					compare_view(p, middle, look, angle)
+				end,
+			}
+		end
+	end
+end
+
 -- The player's eyes are about 1.5 above its position.
 local SHOTS = {
 	{name = "S1_front_with_scale", run = function(p) view(p, 2.5, -0.6, -5, 0, 8) end},
 	{name = "S2_back", run = function(p) view(p, 2.5, -0.6, 5, 180, 8) end},
 	{name = "S3_notice_board_close", run = function(p) view(p, 6.5, -0.7, -2.4, 0, 6) end},
+	{name = "S3b_notice_board_angle", run = function(p) view(p, 8.6, -0.7, -2.2, 40, 6) end},
 	{name = "S4_standing_turned", run = function(p) view(p, 19, -0.6, -5.5, 0, 8) end},
 	{name = "S5_standing_turned_side", run = function(p) view(p, 26, -0.6, -4, 40, 8) end},
 	{name = "S6_waypost_stack_a", run = function(p) view(p, 29.5, 0.2, -2.5, -45, 12) end},
@@ -180,9 +263,17 @@ core.register_globalstep(function(dtime)
 		player:set_physics_override({gravity = 0, speed = 0, jump = 0})
 		player:hud_set_flags({crosshair = false, wielditem = false})
 		core.set_timeofday(0.5)
-		build(player)
-		log(("built at %s: %d text entities"):format(core.pos_to_string(O), count_entities()))
-		log(("notice board texture string: %d bytes"):format(#board_texture()))
+		if MODE == "compare" then
+			for x = -12, 12 do for z = -12, 12 do stone(x, -1, z) end end
+			still_sky(player)
+			player:hud_set_flags({hotbar = false, healthbar = false, breathbar = false,
+				minimap = false, minimap_radar = false, chat = false})
+			SHOTS = COMPARE
+		else
+			build(player)
+			log(("built at %s: %d text entities"):format(core.pos_to_string(O), count_entities()))
+			log(("notice board texture string: %d bytes"):format(#board_texture()))
+		end
 		state.phase = "shoot"
 		state.shot, state.waited, state.logged, state.ran = 1, 0, false, false
 		log("READY")
@@ -203,6 +294,7 @@ core.register_globalstep(function(dtime)
 		end
 		state.waited = state.waited + step
 		if not state.logged and state.waited >= SETTLE then
+			if MODE == "compare" then still_sky(player) end
 			state.logged = true
 			log("SHOT " .. shot.name)
 		elseif state.logged and read_ack() == shot.name then

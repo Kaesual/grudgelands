@@ -13,6 +13,9 @@
 # <world>/r68signs_ack, which moves the probe on.
 #
 # Usage: XVFB=/path/to/Xvfb tools/r68_signs/capture.sh OUT_DIR
+#   MODE=compare: the notice board's two halves against the one-piece model
+#   they were cut from (tools/r68_art/candidates/notice_board_b.obj, staged
+#   into a temp copy of the probe), every turn, front and angle (C_*.png).
 #   GUI_SCALE (default 1), WIDTH/HEIGHT (default 1920 x 1080), SUFFIX=<text>
 #   appended to every file name, SETTLE=<seconds> before each shot (default
 #   3), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri).
@@ -34,6 +37,11 @@ out="$(cd "$out" && pwd -P)"
 root="$(mktemp -d /tmp/grudgelands-headless.r68signs-XXXXXX)"
 cap="$(mktemp -d /tmp/grudgelands-capture.r68signs-XXXXXX)"
 patchdir="$(mktemp -d /tmp/grudgelands-capture.r68signs-patch-XXXXXX)"
+probedir="$(mktemp -d /tmp/grudgelands-capture.r68signs-probe-XXXXXX)"
+cp -r "$here/grug_probe_r68_signs" "$probedir/"
+mkdir -p "$probedir/grug_probe_r68_signs/models"
+cp "$repo/tools/r68_art/candidates/notice_board_b.obj" \
+	"$probedir/grug_probe_r68_signs/models/grug_probe_r68_signs_whole.obj"
 display_no=$((90 + RANDOM % 900))
 while [[ -e "/tmp/.X11-unix/X$display_no" || -e "/tmp/.X$display_no-lock" ]]; do
 	display_no=$((display_no + 1))
@@ -55,7 +63,7 @@ cleanup() {
 	cp "$cap/client.log" "$out/client$suffix.log" 2>/dev/null || true
 	cp "$cap/headless.txt" "$out/headless$suffix.txt" 2>/dev/null || true
 	grep -ah '\[r68signs\]' "$root/server.log" >"$out/probe$suffix.txt" 2>/dev/null || true
-	rm -rf "$root" "$cap" "$patchdir"
+	rm -rf "$root" "$cap" "$patchdir" "$probedir"
 }
 trap cleanup EXIT
 
@@ -69,6 +77,7 @@ cat >>"$patchdir/b/minetest.conf" <<CONF
 # Round 68 SIGNS capture probe
 mobs_spawn = false
 r68signs_settle = $settle
+r68signs_mode = ${MODE:-}
 CONF
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 
@@ -82,7 +91,7 @@ LIBGL_DRIVERS_PATH="${XVFB_DRIVERS:-/usr/lib64/dri}" \
 xvfb_pid=$!
 sleep 1
 
-env ROOT="$root" PORT="$port" PROBE="$here/grug_probe_r68_signs" \
+env ROOT="$root" PORT="$port" PROBE="$probedir/grug_probe_r68_signs" \
 	GAME_PATCH="$patchdir/probe.patch" \
 	"$repo/tools/luanti_headless.sh" "$server_timeout" >"$cap/headless.txt" 2>&1 &
 server_pid=$!

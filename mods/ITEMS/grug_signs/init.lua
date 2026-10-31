@@ -7,7 +7,8 @@
 -- (grug_housing.INTERACTION_EXCEPTIONS lists every node here).
 --
 -- The models are lane ART's picks (standing sign A, waypost B, notice
--- board B; tools/r68_art, LICENSE-media.md), copied byte for byte. Luanti's
+-- board B, the board split into its two node halves; wood set B;
+-- tools/r68_art, LICENSE-media.md), copied byte for byte. Luanti's
 -- OBJ loader negates x ("change handedness",
 -- irr/src/COBJMeshFileLoader.cpp:314), so in the game each model is ART's
 -- mirrored in x; every number below is in the game's coordinates (ART's
@@ -33,7 +34,8 @@ local GAP = 1 / 64
 local STANDING = "grug_signs:standing_sign"
 local WAYPOST = "grug_signs:waypost"
 local BOARD = "grug_signs:notice_board"
--- The board's left half as its reader sees it: no model, boxes only.
+-- The board's left half as its reader sees it: its half of the model and
+-- its boxes, no text.
 local BOARD_PART = "grug_signs:notice_board_part"
 grug_signs.NODES = {STANDING, WAYPOST, BOARD, BOARD_PART}
 
@@ -243,24 +245,32 @@ grug_text.register(WAYPOST, WAYPOST_SIDES)
 --
 -- The notice board: ART's B, a roofed board on two posts, two nodes wide
 -- and 1.6875 tall, 7 x 30. Placed and dug as one (the bed's two-node
--- pattern, beds/api.lua): the node with the model and the text stands on
--- the reader's right, its part on the left; digging either removes both
--- and drops one board; the text entity lives on the model's node.
+-- pattern, beds/api.lua): the node with the text stands on the reader's
+-- right, its part on the left; digging either removes both and drops one
+-- board; the text entity lives on the board's node. Each node draws its
+-- own half of the model (as the bed's halves do), so the digging cracks
+-- show on the half being dug: ART's model is cut at the halves' border
+-- (tools/r68_art REPORT pass 4), each half in its node's coordinates.
+-- ART's left half (lower x, around the original origin) is the board's,
+-- its right half the part's: mirrored by the OBJ loader, ART's +x is the
+-- game's -x, where the part stands (param2 0: board at x, part at x - 1),
+-- so the halves rejoin into the whole model at every turn of `4dir`.
 --
 
--- The model's node is the part's neighbour to the reader's right.
+-- The board's node is the part's neighbour to the reader's right.
 local function board_right(node)
 	return right_of(core.facedir_to_dir(node.param2 % 4))
 end
 
+-- Where the other half of a board's node stands, and its name.
+local function partner_pos(pos, node)
+	if node.name == BOARD then return vector.subtract(pos, board_right(node)), BOARD_PART end
+	return vector.add(pos, board_right(node)), BOARD
+end
+
 -- The other half of the board at pos, or nil.
 local function partner(pos, node)
-	local other, expected
-	if node.name == BOARD then
-		other, expected = vector.subtract(pos, board_right(node)), BOARD_PART
-	else
-		other, expected = vector.add(pos, board_right(node)), BOARD
-	end
+	local other, expected = partner_pos(pos, node)
 	local found = core.get_node(other)
 	if found.name == expected and found.param2 == node.param2 then return other end
 	return nil
@@ -269,7 +279,7 @@ grug_signs.partner = partner
 
 -- Removes the other half without its destructors (beds/api.lua
 -- remove_no_destruct): its own drop never happens. The text entity and
--- open forms go with the model's node.
+-- open forms go with the board's node.
 local function remove_partner(pos)
 	local other = partner(pos, core.get_node(pos))
 	if not other then return end
@@ -280,7 +290,14 @@ local function remove_partner(pos)
 		grug_text.remove(other)
 		close_forms(other)
 	end
-	core.check_for_falling(other)
+end
+
+-- What rested on the removed other half falls, once this half is gone too:
+-- checked in on_destruct, the builtin walk (falling.lua check_for_falling)
+-- would still find this half standing without its ground after a support
+-- loss and drop it a second time (two boards).
+local function partner_falls(pos, oldnode)
+	core.check_for_falling((partner_pos(pos, oldnode)))
 end
 
 local function refuse(placer, why)
@@ -350,7 +367,7 @@ local board_groups = {choppy = 2, oddly_breakable_by_hand = 3, flammable = 2, at
 core.register_node(BOARD, {
 	description = "Notice Board",
 	drawtype = "mesh",
-	mesh = "grug_signs_notice_board.obj",
+	mesh = "grug_signs_notice_board_main.obj",
 	tiles = {"grug_signs_notice_board.png"},
 	inventory_image = "grug_signs_notice_board_inv.png",
 	wield_image = "grug_signs_notice_board_inv.png",
@@ -375,7 +392,10 @@ core.register_node(BOARD, {
 		write(pos, fields, sender)
 	end,
 	on_destruct = remove_partner,
-	after_destruct = close_forms,
+	after_destruct = function(pos, oldnode)
+		close_forms(pos)
+		partner_falls(pos, oldnode)
+	end,
 })
 
 local part_groups = table.copy(board_groups)
@@ -383,7 +403,10 @@ part_groups.not_in_creative_inventory = 1
 
 core.register_node(BOARD_PART, {
 	description = "Notice Board",
-	drawtype = "airlike",
+	drawtype = "mesh",
+	mesh = "grug_signs_notice_board_part.obj",
+	tiles = {"grug_signs_notice_board.png"},
+	use_texture_alpha = "opaque",
 	paramtype = "light",
 	paramtype2 = "4dir",
 	sunlight_propagates = true,
@@ -401,6 +424,7 @@ core.register_node(BOARD_PART, {
 		return itemstack
 	end,
 	on_destruct = remove_partner,
+	after_destruct = partner_falls,
 })
 
 -- The board's front lies 1/16 in front of the centre; the text block's

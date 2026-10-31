@@ -24,8 +24,8 @@ container tiers use (`default/containers.lua`); the open chest's model
 ## Wall sign boards (Round 68)
 
 Original scripted pixel art authored for Grudgelands by GPT-6 Astra on
-2026-10-31 (the user's pick: a calm writing field for the text in the
-world), drawn by `tools/r68_art/generate.py` (lane ART of Round 68) with no
+2026-10-31 (the user's picks: a calm writing field for the text in the
+world; the wooden board in pass 3's wood set B, warm heartwood), drawn by `tools/r68_art/generate.py` (lane ART of Round 68) with no
 source image pixels; provenance in `tools/r68_art/LICENSE-media.md`. They
 **replace** the vendored files of the same names, so `README.txt`'s rows
 for `default_sign_wall_wood.png` (and the steel sign's) describe the
@@ -36,5 +36,5 @@ uses `default_sign_wall_steel.png`. The inventory and wield images
 
 | File | Source | License |
 |---|---|---|
-| `textures/default_sign_wall_wood.png` | `tools/r68_art/candidates/sign_wall_wood.png` | CC0-1.0 |
+| `textures/default_sign_wall_wood.png` | `tools/r68_art/candidates/sign_wall_wood_b.png` (pass 3, wood set B) | CC0-1.0 |
 | `textures/default_sign_wall_steel.png` | `tools/r68_art/candidates/sign_wall_iron.png` | CC0-1.0 |
