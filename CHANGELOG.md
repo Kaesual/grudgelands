@@ -15,13 +15,15 @@ the [project status](docs/STATUS.md) and the round plans.
 ## 0.68.0 — readable signs, wayposts and notice boards (2026-10-31)
 
 Text you can read in the world. **Compatible:** no map reset and no
-migration; signs and chest labels written before show their text at once.
+migration; signs and chest labels written before show their text at once
+and drop their old pointing text when their area loads.
 
 - **Text on signs and chests:** a wall sign's text now stands on its
   board (four lines of 15 characters, on walls, floors and ceilings), and
   a chest's label on its front below the lock (three lines of 13), readable
   from a distance without pointing at them. Text wraps at spaces; what
-  does not fit is cut off. Pointing still shows it as before.
+  does not fit is cut off. Pointing at a sign no longer repeats its text
+  at the top left, and a chest shows only its name there.
 - **Calmer wall signs:** the wooden and the iron sign have a plain board
   without the painted scribbles, so the writing stands out.
 - **Standing Sign:** a board on a post that faces you, at any angle

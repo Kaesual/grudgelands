@@ -1,9 +1,10 @@
 -- grug_signs: the standing sign, the waypost and the notice board (Round 68
 -- lane SIGNS, rulings 6-8). Their text shows in the world through
--- grug_text (one text entity per written surface); the hover text, the
--- 512-byte limit, the control-character stripping and the rights are the
--- wall sign's (default/nodes.lua): writing asks core.is_protected, reading
--- is free (grug_housing.INTERACTION_EXCEPTIONS lists every node here).
+-- grug_text (one text entity per written surface), never as hover text
+-- (the user, 2026-10-31); the 512-byte limit, the control-character
+-- stripping and the rights are the wall sign's (default/nodes.lua): writing
+-- asks core.is_protected, reading is free
+-- (grug_housing.INTERACTION_EXCEPTIONS lists every node here).
 --
 -- The models are lane ART's picks (standing sign A, waypost B, notice
 -- board B; tools/r68_art, LICENSE-media.md), copied byte for byte. Luanti's
@@ -93,9 +94,8 @@ end
 
 -- The wall sign's write path (default/nodes.lua register_sign): quit-gated
 -- (luanti issue 16187), core.is_protected, 512 bytes, control characters
--- stripped (tabs and newlines kept), the hover text in quotes. `also` is a
--- node that shows the same hover text (the notice board's other half).
-local function write(pos, fields, sender, also)
+-- stripped (tabs and newlines kept), no hover text.
+local function write(pos, fields, sender)
 	if not fields.quit then return end
 	local name = sender:get_player_name()
 	if core.is_protected(pos, name) then
@@ -110,11 +110,7 @@ local function write(pos, fields, sender, also)
 	end
 	text = text:gsub("[%z\1-\8\11-\31\127]", "")
 	default.log_player_action(sender, ("wrote %q to the sign at"):format(text), pos)
-	local meta = core.get_meta(pos)
-	meta:set_string("text", text)
-	local infotext = #text > 0 and '"' .. text .. '"' or ""
-	meta:set_string("infotext", infotext)
-	if also then core.get_meta(also):set_string("infotext", infotext) end
+	core.get_meta(pos):set_string("text", text)
 	grug_text.refresh(pos)
 end
 grug_signs.write = write
@@ -376,7 +372,7 @@ core.register_node(BOARD, {
 		return itemstack
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
-		write(pos, fields, sender, partner(pos, core.get_node(pos)))
+		write(pos, fields, sender)
 	end,
 	on_destruct = remove_partner,
 	after_destruct = close_forms,
@@ -412,3 +408,18 @@ core.register_node(BOARD_PART, {
 -- up (ART's text area, 1.75 x 0.875).
 grug_text.register(BOARD, {lines = 7, chars = 30, frame = "4dir",
 	offset = {x = -0.5, y = 0.5, z = -1 / 16 - GAP}})
+
+-- No hover text (the user, 2026-10-31): the text shows only on the sign.
+-- Before, a written sign kept it in its infotext (the notice board on both
+-- halves); the first load of its block after this LBM came drops it, once
+-- per block, as grug_text's LBM does for the wall signs (surfaces.lua).
+core.register_lbm({
+	label = "Drop the hover text of the standing sign, waypost and notice board",
+	name = "grug_signs:drop_hover_text",
+	nodenames = grug_signs.NODES,
+	run_at_every_load = false,
+	action = function(pos)
+		local meta = core.get_meta(pos)
+		if meta:get_string("infotext") ~= "" then meta:set_string("infotext", "") end
+	end,
+})

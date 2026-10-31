@@ -12,7 +12,8 @@
 --      chest's non-owner;
 --   L  the label: the field and its rights in the open world, an own claim,
 --      a foreign claim with and without "everything", a draft claim and a
---      locked chest; 40 characters, control characters; the hover text;
+--      locked chest; 40 characters, control characters; the hover text
+--      (the name, never the label);
 --   U  the upgrade: 8 bars charged from the carried lists, the node swapped
 --      with its meta and contents, the list grown, the next tier's bar, none
 --      at the last tier, refused without bars or rights; an open chest with
@@ -543,11 +544,13 @@ do
 	try("L a locked chest's owner", lockowner, locked, true)
 	try("L a locked chest's non-owner (a key holder)", stranger, locked, false)
 
-	-- The hover text: the label, then the chest's name.
+	-- The hover text: the chest's name only; the label shows on the front
+	-- (Round 68, the user 2026-10-31: no label in the hover text).
 	local pos = place("default:chest_steel")
 	open_chest(pos, owner)
 	submit(owner, "default:chest", {[F.label] = "Ores", [F.save] = "Save"})
-	eq(meta_at(pos):get_string("infotext"), "Ores\nSteel-Reinforced Chest", "L the hover text")
+	eq(meta_at(pos):get_string(C.LABEL_KEY), "Ores", "L the label is saved")
+	eq(meta_at(pos):get_string("infotext"), "Steel-Reinforced Chest", "L the hover text without the label")
 	submit(owner, "default:chest", {[F.label] = "", [F.save] = "Save"})
 	eq(meta_at(pos):get_string("infotext"), "Steel-Reinforced Chest", "L a cleared label")
 	close_chest(owner)
@@ -556,8 +559,8 @@ do
 		"L a locked chest's hover text names its owner")
 	open_chest(lpos, lockowner)
 	submit(lockowner, "default:chest", {[F.label] = "Gold", [F.save] = "Save"})
-	eq(meta_at(lpos):get_string("infotext"), "Gold\nLocked Steel-Reinforced Chest (owned by lockowner2)",
-		"L ...under its label")
+	eq(meta_at(lpos):get_string("infotext"), "Locked Steel-Reinforced Chest (owned by lockowner2)",
+		"L ...also with a label")
 	close_chest(lockowner)
 	-- A label shows as text to whoever may not edit it.
 	fs = open_chest(lpos, stranger).formspec
@@ -611,7 +614,8 @@ do
 	eq(inv:get_size("main"), 64, "U the list grows to 64")
 	eq(stacks(pos, "main")[1] .. "|" .. stacks(pos, "main")[32], "s:bar 7 0|s:apple 3 0",
 		"U the contents stay")
-	eq(meta_at(pos):get_string("infotext"), "Keep\nSteel-Reinforced Chest", "U the label stays")
+	eq(meta_at(pos):get_string(C.LABEL_KEY), "Keep", "U the label stays")
+	eq(meta_at(pos):get_string("infotext"), "Steel-Reinforced Chest", "U the hover text names the new tier")
 	eq(default.chest.open_chests.upb.swap, "default:chest_steel", "U the second viewer follows")
 	eq(#shown - before, 2, "U both viewers get the new form")
 	eq(select(2, list_element(last_shown("upb").formspec, "main")), 8, "U ...with 64 slots")

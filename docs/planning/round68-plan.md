@@ -4,8 +4,9 @@ Planned with the user on 2026-10-31 from their wish after Round 67's GUI
 acceptance; started on the user's "go" the same day. Claude coordinates.
 **Complete on 2026-10-31:** all three lanes merged (TEXT and SIGNS each
 reviewed MERGE without a fix round; the art study ART checked by the
-coordinator); GUI test pending, not pushed
-([completion](#completion-2026-10-31)).
+coordinator); after the merges the user dropped the hover text
+([follow-up](#follow-up-after-the-merges-2026-10-31)); GUI test pending,
+not pushed ([completion](#completion-2026-10-31)).
 Version: **0.68.0**. Classification: **compatible** (new nodes; the text
 of existing signs and chest labels is already in node metadata; the text
 entities are not saved). Delivery state: [STATUS](../STATUS.md).
@@ -54,7 +55,8 @@ before its review.
 
 1. **Text is readable in the world** without aiming at it: wall signs, the
    new standing sign, wayposts, the notice board and chest labels. The
-   hover text stays.
+   hover text stays. *(Superseded by the user on 2026-10-31: no hover
+   text; see the [follow-up](#follow-up-after-the-merges-2026-10-31).)*
 2. **Technique as VoxeLibre:** glyph textures combined into one texture per
    text, one text entity per surface.
 3. **Font:** VoxeLibre's CC0 pixel font for this version (credited); a
@@ -168,8 +170,8 @@ for the user's verdict on a first-look default.
 1. **Wall signs on a wall,** the Wooden Sign and the iron sign: write,
    rewrite, clear and dig. The text stands on the board in dark ink, 4
    lines of 15 characters, wrapped at spaces, a word longer than a line
-   broken inside, what does not fit cut off; the hover text stays. Digging
-   leaves no text behind. *Look:* the calm boards (ART pass 2) and the
+   broken inside, what does not fit cut off; pointing at the sign shows
+   no hover text (the user, 2026-10-31). Digging leaves no text behind. *Look:* the calm boards (ART pass 2) and the
    glyph size.
 2. **Wall signs on the floor and the ceiling:** the text lies on the
    board; it reads upright only for a reader facing +z (north), from the
@@ -182,7 +184,8 @@ for the user's verdict on a first-look default.
    and locked: the label shows on the front below the lock, 3 lines of 13
    characters; opening and closing the lid keeps it in place; Upgrade
    keeps it (the ink turns light on the metal tiers); clearing or digging
-   removes it. The user ruled the labels stay as they are (three lines, no
+   removes it. Pointing at the chest shows only its name (a locked chest's
+   with its owner), never the label. The user ruled the labels stay as they are (three lines, no
    label plate), so this checks only that they work.
 
 **The new signs (SIGNS)**
@@ -199,8 +202,8 @@ for the user's verdict on a first-look default.
    different angles: the pole joins, the arrow clearance, each text on its
    arrow. *Look:* the direction rule and the walkable post.
 8. **Notice Board:** the left half goes where you point, the board to
-   your right; it turns in four steps; 7 lines of 30 characters. The hover
-   text shows only 6 of the 7 lines (engine display). Selection and
+   your right; it turns in four steps; 7 lines of 30 characters. Pointing
+   at either half shows no hover text. Selection and
    collision on both halves; it is walkable. *Look:* four steps instead of
    free rotation.
 9. **Refused board:** next to a block, under a low ceiling (the two nodes
@@ -222,7 +225,9 @@ for the user's verdict on a first-look default.
     Everything right, a locked chest only its owner.
 13. **Rejoin and distance:** leave and rejoin, or walk far away and come
     back: every text returns (the LBM), none doubled; digging a sign after
-    the rejoin still removes its text.
+    the rejoin still removes its text. A sign or chest label written before
+    this follow-up (0.67.0, or an earlier 0.68.0 build) shows its text but
+    no hover text once its area has loaded.
 14. **Crisp text** *(look)*: nearby and from a few metres, in daylight and
     indoors, the same glyph size on every surface.
 15. **Web:** the texts are visible and crisp; time the join with the 431
@@ -256,7 +261,8 @@ reads the existing node meta `text` (wall signs) and `grug_label` (chest
 labels) and writes no new state; its text entities are not saved and an
 LBM recreates them (proved with two boots on one world: a sign and a label
 written as meta only got their 2 entities, the hover text intact); ART adds
-tools only; SIGNS adds new nodes with the meta `text` and `infotext`. No
+tools only; SIGNS adds new nodes with the meta `text` (their `infotext`
+was dropped by the [follow-up](#follow-up-after-the-merges-2026-10-31)). No
 map reset, no step. **Push:** not pushed; origin/main is `b73086ec`
 (0.67.0 without the heraldry follow-up); production runs 0.65.0, so its
 update still runs only the 0.67.0 step. **GUI test:** pending; 0.68 joins
@@ -372,3 +378,34 @@ From the lanes' reports (measured there).
   `r41_up`, `r42_dr` and `r43_gs` (the declaration, the README and
   CHANGELOG links); the link and anchor check of the touched documents.
   The round-end full run on main is the coordinator's.
+
+### Follow-up after the merges (2026-10-31)
+
+The user, after a first look: "When I aim the crosshair at a chest, its
+text shows in the HUD at the top left. Same with the notice boards,
+wayposts and signs. That is unnecessary, the text is on the chest now.
+Remove this HUD text." This overrides ruling 1's "The hover text stays".
+
+- **Signs:** the wall signs (GRUG PATCH in `default/nodes.lua`
+  `register_sign`, the Iron Sign clone with it) and `grug_signs.write`
+  (standing sign, waypost, notice board and its part) store only the meta
+  `text`, no `infotext`.
+- **Chests:** `default.containers.update_infotext` writes the chest's
+  name (a locked chest's with its owner) without the label; it still
+  refreshes the label on the front.
+- **Old worlds:** two one-time LBMs (`run_at_every_load = false`) drop the
+  stored hover text on the first load of each block saved before them:
+  `grug_text:drop_hover_text` (`surfaces.lua`: both wall signs and every
+  chest node; a labelled chest gets `update_infotext`) and
+  `grug_signs:drop_hover_text` (its four nodes). Chosen over the
+  every-load restore LBM: no per-load cost afterwards and no per-node
+  hover rule in `grug_text`. Only player-written text carried hover text,
+  and a block a player wrote in was active, so it has the timestamp the
+  engine compares. **Still compatible**, folded into 0.68.0: no step, no
+  version change; the engine records the two LBMs' introduction times in
+  the world's `env_meta.txt`.
+- **Fixtures:** `r68_text` (H: the vendored handler writes no
+  `infotext`, a chest's hover text without its label, the LBM on old signs
+  and chests), `r68_signs` (no hover text, the LBM on a sign and the
+  board's part), `r67_containers` (its label checks).
+- GUI checklist items 1, 4, 8 and 13 changed accordingly.

@@ -14,7 +14,11 @@
 --   L  the lifecycle: write, rewrite, clear, dig, the LBM after a reload
 --      (no duplicate, no entity for an empty text), a chest's label save,
 --      clear, open/close swap, the tier upgrade's swap (the ink), digging;
---      both faces of a two-sided surface; several surfaces on one node.
+--      both faces of a two-sided surface; several surfaces on one node;
+--   H  no hover text (the user, 2026-10-31): the wall sign's handler in
+--      default/nodes.lua writes none, a chest's is its name without the
+--      label, and the one-time LBM drops an old stored one (a sign's quoted
+--      text, a chest's label line) and leaves everything else alone.
 --
 -- Usage (repo root): luajit tools/r68_text/portable_test.lua [repo]
 
@@ -213,8 +217,9 @@ end
 
 ------------------------------------------------------------------------------
 -- The vendored nodes the module wires: the wall sign (its form handler as
--- default/nodes.lua's writes meta `text`), the iron clone, and the chests'
--- container entries through the real default/containers.lua.
+-- default/nodes.lua's writes meta `text` and no hover text, checked in H),
+-- the iron clone, and the chests' container entries through the real
+-- default/containers.lua.
 ------------------------------------------------------------------------------
 default = {get_translator = function(text, ...)
 	local args = {...}
@@ -228,7 +233,6 @@ local function sign_def(desc)
 		on_receive_fields = function(pos, _, fields)
 			if not fields.quit or not fields.text then return end
 			meta_at(pos):set_string("text", fields.text)
-			meta_at(pos):set_string("infotext", fields.text ~= "" and '"' .. fields.text .. '"' or "")
 		end,
 	}
 end
@@ -566,6 +570,91 @@ do
 	meta_at(rpos):set_string("text", "R")
 	T.refresh(rpos)
 	check(near(live(rpos)[1].pos, vector.add(rpos, V(0, 0, 0.3))), "L offset x is the reader's right")
+end
+
+------------------------------------------------------------------------------
+-- H. No hover text (the user, 2026-10-31).
+------------------------------------------------------------------------------
+do
+	-- The vendored wall sign's handler writes the text and no infotext.
+	local f = assert(io.open(repo .. "/mods/BASE/default/nodes.lua", "rb"))
+	local source = f:read("*a")
+	f:close()
+	local body = source:match("local function register_sign%(.-\nend\n")
+	if check(body ~= nil, "H default/nodes.lua's register_sign found") then
+		check(body:find('set_string("text", text)', 1, true) ~= nil, "H the wall sign writes its text")
+		eq(body:find("infotext", 1, true), nil, "H the wall sign writes no hover text")
+	end
+
+	local api = default.containers
+	local function desc(name) return core.registered_nodes[name].description end
+	-- A chest's hover text is its name, a locked chest's with the owner,
+	-- never the label.
+	local pos = V(500, 0, 0)
+	core.set_node(pos, {name = "default:chest_steel", param2 = 0})
+	meta_at(pos):set_string(api.LABEL_KEY, "Ores")
+	api.update_infotext(pos)
+	eq(meta_at(pos):get_string("infotext"), desc("default:chest_steel"), "H a labelled chest's hover text is its name")
+	eq(#live(pos), 1, "H ...and the label is on the front")
+	local lpos = V(502, 0, 0)
+	core.set_node(lpos, {name = "default:chest_locked", param2 = 0})
+	meta_at(lpos):set_string("owner", "bob")
+	meta_at(lpos):set_string(api.LABEL_KEY, "Gold")
+	api.update_infotext(lpos)
+	eq(meta_at(lpos):get_string("infotext"), desc("default:chest_locked") .. " (owned by bob)",
+		"H a locked chest's hover text names its owner, not its label")
+
+	-- The one-time LBM.
+	local drop
+	for _, lbm in ipairs(lbms) do
+		if lbm.name == "grug_text:drop_hover_text" then drop = lbm end
+	end
+	if check(drop ~= nil, "H the LBM that drops old hover text") then
+		eq(drop.run_at_every_load, false, "H it runs once per block")
+		local names = {}
+		for _, name in ipairs(drop.nodenames) do names[name] = true end
+		check(names["default:sign_wall_wood"] and names["grug_materials:iron_sign_wall"],
+			"H it covers both wall signs")
+		local all = true
+		for tier = 1, #api.TIERS do
+			for _, base in ipairs({"default:chest", "default:chest_locked"}) do
+				local name = api.tier_name(base, tier)
+				all = all and names[name] and names[name .. "_open"]
+			end
+		end
+		check(all, "H it covers every chest tier, normal and locked, closed and open")
+		eq(#drop.nodenames, 2 + 4 * #api.TIERS, "H and nothing else")
+
+		-- A sign written before: its text stays, the hover text goes.
+		local spos = V(510, 0, 0)
+		core.set_node(spos, {name = "default:sign_wall_wood", param2 = 2})
+		meta_at(spos):set_string("text", "Old words")
+		meta_at(spos):set_string("infotext", '"Old words"')
+		drop.action(spos, core.get_node(spos), 0)
+		eq(meta_at(spos):get_string("infotext"), "", "H an old sign's hover text is dropped")
+		eq(meta_at(spos):get_string("text"), "Old words", "H ...its text kept")
+		run_lbm(spos)
+		eq(#live(spos), 1, "H ...and shown on the board")
+		-- A labelled chest from before: the name stays, the label line goes.
+		meta_at(pos):set_string("infotext", "Ores\n" .. desc("default:chest_steel"))
+		drop.action(pos, core.get_node(pos), 0)
+		eq(meta_at(pos):get_string("infotext"), desc("default:chest_steel"),
+			"H an old chest label leaves the hover text")
+		eq(meta_at(pos):get_string(api.LABEL_KEY), "Ores", "H ...the label kept")
+		eq(#live(pos), 1, "H ...one label on the front")
+		core.swap_node(lpos, {name = "default:chest_locked_open", param2 = 0})
+		meta_at(lpos):set_string("infotext", "Gold\n" .. desc("default:chest_locked") .. " (owned by bob)")
+		drop.action(lpos, core.get_node(lpos), 0)
+		eq(meta_at(lpos):get_string("infotext"), desc("default:chest_locked") .. " (owned by bob)",
+			"H an open locked chest keeps its name and owner")
+		-- An unlabelled chest keeps its hover text.
+		local upos = V(504, 0, 0)
+		core.set_node(upos, {name = "default:chest", param2 = 0})
+		meta_at(upos):set_string("infotext", desc("default:chest"))
+		drop.action(upos, core.get_node(upos), 0)
+		eq(meta_at(upos):get_string("infotext"), desc("default:chest"), "H an unlabelled chest is left alone")
+		eq(#live(upos), 0, "H ...without a label")
+	end
 end
 
 if failures > 0 then

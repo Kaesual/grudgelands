@@ -18,8 +18,9 @@
 --      either half removes both, one drop, the text entity gone; the part
 --      opens the board's form;
 --   F  writing: the forms (a text box per grid), quit-gated, protection,
---      512 bytes, control characters, newlines, clearing, the hover text;
---      the LBM restores the entities;
+--      512 bytes, control characters, newlines, clearing, no hover text
+--      (the user, 2026-10-31); the LBM restores the entities; the one-time
+--      LBM drops an old stored hover text;
 --   R  the recipes in the Basic catalog, the claim reading exemption and
 --      Help's line.
 --
@@ -562,8 +563,8 @@ do
 		"B the board finds the part")
 	submit(V(201, 1, 0), "Market opens at sunrise\nFresh bread at the square")
 	eq(#live(V(201, 1, 0)), 1, "B one text entity on the board")
-	eq(meta_at(V(200, 1, 0)):get_string("infotext"), meta_at(V(201, 1, 0)):get_string("infotext"),
-		"B both halves show the hover text")
+	eq(meta_at(V(200, 1, 0)):get_string("infotext") .. "|" .. meta_at(V(201, 1, 0)):get_string("infotext"),
+		"|", "B neither half has hover text")
 	local n_shown = #shown
 	core.registered_nodes[PART].on_rightclick(V(200, 1, 0), core.get_node(V(200, 1, 0)),
 		player("owner", 0), stack("default:stick"))
@@ -642,7 +643,7 @@ do
 	check(shown[#shown].form:find("4 lines of 15") ~= nil, "F it names the grid")
 	submit(pos, "Welcome to\nAshford")
 	eq(meta_at(pos):get_string("text"), "Welcome to\nAshford", "F the text is saved, newline kept")
-	eq(meta_at(pos):get_string("infotext"), '"Welcome to\nAshford"', "F the hover text as the wall sign's")
+	eq(meta_at(pos):get_string("infotext"), "", "F no hover text")
 	local tex = live(pos)[1].props.textures[1]
 	eq(#grug_text.layout.wrap(meta_at(pos):get_string("text"), 4, 15), 2, "F the newline makes two rows")
 	check(tex:find("%^%[multiply:#2b1e14$") ~= nil, "F dark ink")
@@ -666,7 +667,23 @@ do
 	protected[key(pos)] = nil
 	submit(pos, "")
 	eq(#live(pos), 0, "F clearing removes the entity")
-	eq(meta_at(pos):get_string("infotext"), "", "F and the hover text")
+	eq(meta_at(pos):get_string("infotext"), "", "F still no hover text")
+	-- A sign written before stored its text as hover text: the one-time
+	-- LBM drops it, the text and its entity stay.
+	local drop
+	for _, lbm in ipairs(lbms) do
+		if lbm.name == "grug_signs:drop_hover_text" then drop = lbm end
+	end
+	if check(drop ~= nil, "F the LBM that drops old hover text") then
+		eq(drop.run_at_every_load, false, "F it runs once per block")
+		eq(table.concat(drop.nodenames, " "), table.concat(grug_signs.NODES, " "),
+			"F it covers the four nodes, the board's part too")
+		submit(pos, "Old words")
+		meta_at(pos):set_string("infotext", '"Old words"')
+		drop.action(pos, core.get_node(pos), 0)
+		eq(meta_at(pos):get_string("infotext"), "", "F an old hover text is dropped")
+		eq(meta_at(pos):get_string("text") .. " " .. #live(pos), "Old words 1", "F ...the text and its entity stay")
+	end
 	core.remove_node(pos)
 end
 do
@@ -684,6 +701,15 @@ do
 		"Miners meet by the old well\nBring a lantern after dusk\nLeave parcels with the clerk\n" ..
 		"All travellers are welcome"
 	submit(board, seven)
+	-- An old board's part stored the hover text too; the one-time LBM
+	-- clears it.
+	local part = V(215, 1, 10)
+	eq(core.get_node(part).name, PART, "F the board's part")
+	meta_at(part):set_string("infotext", '"old"')
+	for _, lbm in ipairs(lbms) do
+		if lbm.name == "grug_signs:drop_hover_text" then lbm.action(part, core.get_node(part), 0) end
+	end
+	eq(meta_at(part):get_string("infotext"), "", "F an old part's hover text is dropped")
 	local tex = live(board)[1].props.textures[1]
 	print(("notice board texture string with 7 full lines of real text: %d bytes"):format(#tex))
 	eq(#grug_text.layout.wrap(seven, 7, 30), 7, "F seven lines on the notice board")

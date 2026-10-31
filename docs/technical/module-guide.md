@@ -3411,12 +3411,24 @@ tools](#player-meta-read-by-external-tools).
   header of `grug_text/init.lua`.
 - **Shipped surfaces** (`surfaces.lua`): the wall signs
   (`default:sign_wall_wood`, `grug_materials:iron_sign_wall`) 4 × 15 at
-  7/16 − 1/64 towards the wall, through an override of their form handler
-  (the hover text stays); every chest tier, normal and locked, closed and
+  7/16 − 1/64 towards the wall, through an override of their form handler;
+  every chest tier, normal and locked, closed and
   `_open`, 3 × 13 of the 40-character label, centred at y = −5/16 just in
   front of the front (below the lock, on the part the lid does not move),
   refreshed by `default.containers.update_infotext` (GRUG PATCH: label
   save, clear, upgrade). Inks per surface in one table each.
+- **No hover text** (the user, 2026-10-31, after the round): a written
+  surface's text shows only on the surface. The wall signs' handler
+  (GRUG PATCH in `default/nodes.lua`) and `grug_signs.write` store only the
+  meta `text`; a chest's `infotext` is its name (a locked chest's with its
+  owner), never the label. Signs and labels written before kept the text in
+  their `infotext`; two one-time LBMs (`run_at_every_load = false`) drop
+  it on the first load of their block: `grug_text:drop_hover_text`
+  (`surfaces.lua`: the wall signs and every chest node; a labelled chest
+  gets `update_infotext`) and `grug_signs:drop_hover_text` (its four
+  nodes). Blocks saved later never carry it, so nothing runs on them again;
+  only player-written text had it, and a block a player wrote in was
+  active, so it carries the timestamp the engine compares.
 - **The new signs** (`grug_signs`, an ITEMS mod; lane SIGNS, rulings 6-8):
   the standing sign (4 × 15) and the waypost (1 × 14 on each side of its
   arrow, two one-faced surfaces) turn freely (`degrotate`), the two-node
