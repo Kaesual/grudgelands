@@ -4,7 +4,7 @@
 Only coordinates and colour ramps enter these drawings; no source sprite is
 sampled. The shipped gear informs the ramps (see LICENSE-media.md).
 """
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 METALS = ('copper', 'tin', 'bronze', 'iron', 'steel', 'silver',
           'silversteel', 'embersteel', 'abyssal_steel', 'gold')
@@ -294,6 +294,121 @@ def cut_gem(key, variant):
     return im
 
 
+def octagon(box, clip):
+    """Clockwise corners, centred on the half-pixel axes; no rounded scaling."""
+    x0, y0, x1, y1 = box
+    return [(x0+clip,y0),(x1-clip,y0),(x1,y0+clip),(x1,y1-clip),
+            (x1-clip,y1),(x0+clip,y1),(x0,y1-clip),(x0,y0+clip)]
+
+
+# Each perimeter and table is authored on the pixel grid. Symmetry concerns
+# the cut geometry; the deliberately asymmetric upper-left light is shared.
+CUT_C = {
+    'citrine': (octagon((1,0,14,15),3), octagon((4,3,11,12),1)),
+    'jade': (octagon((0,2,15,13),2), octagon((3,5,12,10),1)),
+    'garnet': (octagon((1,1,14,14),1), octagon((4,4,11,11),1)),
+    'sapphire': (octagon((1,0,14,15),4), octagon((4,3,11,12),2)),
+    'ruby': (octagon((2,0,13,15),3), octagon((5,3,10,12),1)),
+    'diamond': (octagon((0,0,15,15),4), octagon((3,3,12,12),2)),
+}
+CUT_D = {
+    'citrine': ([(5,2),(10,2),(13,3),(15,6),(15,9),(13,12),(10,13),(5,13),(2,12),(0,9),(0,6),(2,3)],
+                [(6,5),(9,5),(11,6),(12,7),(12,8),(11,9),(9,10),(6,10),(4,9),(3,8),(3,7),(4,6)]),
+    'jade': (octagon((1,1,14,14),2), octagon((4,4,11,11),1)),
+    'garnet': (octagon((1,1,14,14),4), octagon((4,4,11,11),2)),
+    'sapphire': (octagon((0,2,15,13),3), octagon((4,5,11,10),1)),
+    'ruby': ([(7,0),(8,0),(12,5),(14,9),(13,12),(10,15),(5,15),(2,12),(1,9),(3,5)],
+             [(7,4),(8,4),(10,7),(11,9),(10,11),(9,12),(6,12),(5,11),(4,9),(5,7)]),
+}
+
+
+def polished_gem(key, variant):
+    """C: a step-cut family. D: oval, square, round, cushion, pear, brilliant."""
+    im, d = canvas()
+    o, s, m, l, h = ramp(GEM[key])
+    if key == 'diamond' and variant == 'd':
+        # Side elevation: a wide crown/table over three simple pavilion planes.
+        # Paired coordinates keep even the two-pixel culet exactly symmetric.
+        points = [(4,1),(11,1),(15,6),(8,14),(7,14),(0,6)]
+        d.polygon(points, fill=o)
+        d.polygon([(4,2),(11,2),(14,6),(1,6)], fill=l)
+        d.polygon([(5,2),(10,2),(11,5),(4,5)], fill=h)
+        d.polygon([(2,7),(6,7),(7,12)], fill=m)
+        d.polygon([(6,7),(9,7),(8,12),(7,12)], fill=h)
+        d.polygon([(9,7),(13,7),(8,12)], fill=s)
+        d.line([(2,6),(13,6)], fill=l)
+        return im
+    points, table = (CUT_C if variant == 'c' else CUT_D)[key]
+    mask = Image.new('L',(16,16))
+    ImageDraw.Draw(mask).polygon(points,fill=255)
+    # A consistent one-pixel border, including along slopes. Padding makes
+    # the erosion correct even when a cut reaches the icon's outer row.
+    padded = Image.new('L',(18,18))
+    padded.paste(mask,(1,1))
+    inside = padded.filter(ImageFilter.MinFilter(3)).crop((1,1,17,17))
+    d.rectangle((0,0,15,15),fill=o)
+    planes, pd = canvas()
+    for i, p in enumerate(points):
+        j = (i+1) % len(points)
+        q = points[j]
+        mx, my = (p[0]+q[0])/2, (p[1]+q[1])/2
+        # Three broad values: bright upper/left, body at the shoulders,
+        # dark lower/right. D alternates a few planes for radial cut cues.
+        colour = l if mx+my < 14 else s
+        if variant == 'd':
+            if mx < 5 and my < 6:
+                colour = h
+            elif mx < 6 and my > 10:
+                colour = m
+            elif mx > 10 and my < 6:
+                colour = m
+        pd.polygon([p,q,table[j],table[i]],fill=colour)
+    pd.polygon(table,fill=l if key=='diamond' else m)
+    if variant == 'c' or key == 'jade':
+        # Crisp parallel rims make the central table explicit without noise.
+        pd.line([table[-1],table[0],table[1]],fill=h if key=='diamond' else l)
+        pd.line([table[3],table[4],table[5]],fill=s)
+    else:
+        pd.line([table[-1],table[0],table[1]],fill=l)
+        # The bottom table edge separates its broad face from the pavilion.
+        bottom = max(y for x,y in table)
+        edge = [(x,y) for x,y in table if y == bottom]
+        if len(edge) == 2:
+            pd.line(edge,fill=s)
+    # One straight polish glint, never an extra blob outside the contour.
+    x0,y0 = points[0]; x1,y1 = points[1]
+    pd.line([(x0,y0+1),(x1,y1+1)],fill=h)
+    im.paste(planes,(0,0),inside)
+    im.putalpha(mask)
+    return im
+
+
+def polished_block(key, variant):
+    """Solid cut material with quiet step planes (C) or crown planes (D)."""
+    if key == 'abyssal_crystal':
+        return block(key,'a','gem')  # the accepted raw mineral is unchanged
+    o,s,m,l,h = ramp(GEM[key])
+    im = Image.new('RGBA',(16,16),m)
+    d = ImageDraw.Draw(im)
+    hi, lo = mix(m,l,.42), mix(m,s,.32)
+    edge = mix(m,s,.40)
+    d.rectangle((0,0,15,15),outline=edge)
+    if variant == 'c':
+        # One broad squared table; two parallel bevels in the same material.
+        for inset in (1,3):
+            d.line([(inset,14-inset),(inset,inset),(14-inset,inset)],fill=hi)
+            d.line([(inset+1,15-inset),(15-inset,15-inset),(15-inset,inset+1)],fill=lo)
+    else:
+        # The face is a continuous polished block, not a transparent jewel
+        # pasted onto a background. Four facets meet a broad square table.
+        d.polygon([(1,1),(14,1),(10,5),(5,5)],fill=hi)
+        d.polygon([(1,1),(5,5),(5,10),(1,14)],fill=mix(m,l,.25))
+        d.polygon([(14,1),(14,14),(10,10),(10,5)],fill=lo)
+        d.polygon([(1,14),(14,14),(10,10),(5,10)],fill=mix(m,s,.22))
+        d.line([(3,2),(10,2)],fill=mix(m,l,.52))
+    return im
+
+
 def rough_gem(key, variant):
     im, d = canvas()
     o, s, m, l, h = ramp(GEM[key])
@@ -430,4 +545,9 @@ def candidates():
         for k in ('quartz','abyssal_crystal'):
             result['gems_'+v][k] = mineral(k,v)
         result['gems_'+v].update({k+'_block': block(k,v,'gem') for k in (*GEMS,'abyssal_crystal')})
+    for v in ('c','d'):
+        # Rough gems and both minerals are reused from A by the preview and
+        # measurements, not duplicated. Every new folder holds 6 cuts + 7 faces.
+        result['gems_'+v] = {'cut_'+k: polished_gem(k,v) for k in GEMS}
+        result['gems_'+v].update({k+'_block': polished_block(k,v) for k in (*GEMS,'abyssal_crystal')})
     return result
