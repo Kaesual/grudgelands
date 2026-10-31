@@ -103,20 +103,20 @@ local function build(player)
 	put(player, 32, 0, 0, WAYPOST, 0, "Ashford")
 	put(player, 32, 1, 0, WAYPOST, 60, "Eastmarch")
 	put(player, 32, 2, 0, WAYPOST, 150, "Old Mill")
-	-- A board facing +x (4dir 1) through the real on_place, else set.
+	-- A board read looking +x (4dir 1) through the real on_place, else set.
 	local item = ItemStack(BOARD)
 	player:set_look_horizontal(math.rad(-90))
 	player:set_look_vertical(0)
 	local def = core.registered_nodes[BOARD]
 	def.on_place(item, player, {type = "node", under = at(38, -1, 3), above = at(38, 0, 3)})
 	local placed = core.get_node(at(38, 0, 2))
-	log(("on_place facing +x: part %s, board %s param2 %d"):format(core.get_node(at(38, 0, 3)).name,
+	log(("on_place read looking +x: part %s, board %s param2 %d"):format(core.get_node(at(38, 0, 3)).name,
 		placed.name, placed.param2))
 	if placed.name == BOARD then
-		write(player, at(38, 0, 2), "Turned to face east\nThe board stands on the reader's right",
+		write(player, at(38, 0, 2), "Turned a quarter\nThe board stands on the reader's right",
 			at(38, 0, 3))
 	else
-		board(player, 38, 0, 3, 1, "Turned to face east\nThe board stands on the reader's right")
+		board(player, 38, 0, 3, 1, "Turned a quarter\nThe board stands on the reader's right")
 	end
 end
 
