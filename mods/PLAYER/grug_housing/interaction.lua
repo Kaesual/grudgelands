@@ -22,6 +22,10 @@ grug_housing.INTERACTION_EXCEPTIONS = {
 	-- on_receive_fields asks core.is_protected and reports the violation.
 	["default:sign_wall_wood"] = "reading a sign",
 	["grug_materials:iron_sign_wall"] = "reading a sign",
+	["grug_signs:standing_sign"] = "reading a sign",
+	["grug_signs:waypost"] = "reading a sign",
+	["grug_signs:notice_board"] = "reading a sign",
+	["grug_signs:notice_board_part"] = "reading a sign",
 	-- The stone's owner-only interface is guarded by Lanes A and C.
 	[grug_housing.STONE_ITEM] = "Claim Stone (owner-only interface)",
 }

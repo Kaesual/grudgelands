@@ -114,6 +114,15 @@ local edits = {
 	{output = "vessels:shelf_abyssal", count = 1, added = {
 		{group = "wood", n = 6}, {group = "vessel", n = 3},
 		{item = "grug_materials:steel_bar", n = 8}, {item = "grug_materials:abyssal_steel_bar", n = 8}}},
+	-- Round 68 lane SIGNS (the coordinator's default): the standing sign
+	-- and the waypost from 1 wooden wall sign and 1 stick, the notice board
+	-- from 2 of each.
+	{output = "grug_signs:standing_sign", count = 1, added = {
+		{item = "default:sign_wall_wood", n = 1}, {group = "stick", n = 1}}},
+	{output = "grug_signs:waypost", count = 1, added = {
+		{item = "default:sign_wall_wood", n = 1}, {group = "stick", n = 1}}},
+	{output = "grug_signs:notice_board", count = 1, added = {
+		{item = "default:sign_wall_wood", n = 2}, {group = "stick", n = 2}}},
 }
 
 -- Round 67 ruling 13: the metal rods leave the game (their items and the
