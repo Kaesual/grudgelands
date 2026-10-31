@@ -1,8 +1,90 @@
-# Round 68 ART — wood texture proposals
+# Round 68 ART — picked wood and notice-board halves
+
+**User's pick (2026-10-31): set B — warm heartwood — for everything:**
+the standing sign, waypost, notice board **including B's roof exactly as
+shown**, wooden wall sign and B's three matching inventory icons. The
+pass-3 preview now marks all four B texture cards **Picked**. The model
+choices remain standing sign A, waypost B and notice board B.
+
+## Pass 4 — notice board in two halves
+
+Delivered on the same `r68-art3` branch, after pass-3 commit `6a0c0541`.
+Open the [offline comparison](preview/index.html#notice-halves).
+
+The generator clips the existing `notice_board_b.obj` surfaces at exactly
+**model-space x = +0.5**, interpolating their UVs and retaining their
+normals. No exterior face is removed and no new cut cap is added. Each
+half has closed exterior edges; its only open edges lie on the touching
+cut plane. The roof's shape, UV mapping and picked B texture are unchanged.
+
+| Candidate in `candidates/` | Vertices | Faces (triangles) | Source x interval | Node offset from original origin | Translation from source to local coordinates |
+|---|---:|---:|---|---|---|
+| [notice_board_b_left.obj](candidates/notice_board_b_left.obj) | 44 | 74 | −0.5 … +0.5 | (0, 0, 0) | (0, 0, 0) |
+| [notice_board_b_right.obj](candidates/notice_board_b_right.obj) | 44 | 74 | +0.5 … +1.5 | (+1, 0, 0) | (−1, 0, 0) |
+
+**Left/right convention:** in the existing offline front view, the front
+normal is **−Z** and **+X points screen-right**. The left file is the
+lower-x half around the original node centre (0, 0, 0); the right file is
+the higher-x half around the second node centre (+1, 0, 0), translated
+by −1 in x into that node's local coordinates. Place the exported left
+mesh at (0, 0, 0) and the right mesh at (+1, 0, 0) to reconstruct the
+original. These are **model-space facts**: the integration lane handles
+the game's OBJ x mirror and the main/helper-node mapping.
+
+Both local bounds are **(−0.5, −0.5, −0.25) … (+0.5, +1.1875, +0.25)**.
+Each OBJ has its own matching MTL, one `wood` material/group, and uses the
+same unchanged **64 × 64** [notice_board_wood_b.png](candidates/notice_board_wood_b.png).
+No texture is duplicated or repacked. The one-piece
+[notice_board_b.obj](candidates/notice_board_b.obj) stays byte-identical
+to pass 3 and the shipped model: **56 vertices, 108 triangles**.
+
+### Seam comparison and checks
+
+The preview renders the actual serialized one-piece OBJ and the two
+serialized half OBJs, joined with the offsets above, without lettering.
+Both use the picked atlas, identical camera/light and a 560 × 440 canvas.
+
+| View | Differing pixels | Maximum RGBA channel delta |
+|---|---:|---:|
+| Front | **0 / 246,400** | **0** |
+| Angle (yaw 30°, elevation 17°) | **0 / 246,400** | **0** |
+
+The back, left exterior, underside and overhead comparisons also have
+**zero differing pixels**. The [split manifest](notice_halves_manifest.json)
+records all six cameras, pixel counts, bounds, counts, offsets and hashes.
+The nearest-neighbour comparison sampler rounds texel coordinates to
+seven decimal places before choosing a texel, resolving exact-edge ties
+consistently across the different triangulations. This removes floating
+point boundary ambiguity (the unrounded sampler differed at 26 frontal
+pixels and 69 rear pixels); the meshes and texture pixels are unchanged.
+Earlier previews retain their original sampler and bytes.
+
+`python3 tools/r68_art/generate.py --check` checks **156 outputs**. Its
+split checks cover area conservation per original face, every exported
+triangle's source surface and affine UV mapping, normals/winding, local
+bounds, exterior edge closure and exact pixel equality in all six views.
+The front/angle images were inspected directly. All **146 previous
+generated files other than the HTML page** remain byte-identical to
+`6a0c0541`, including every texture, inventory icon and one-piece OBJ.
+`git diff --check` passes; all page links remain local and relative.
+
+**Upgrade classification: compatible.** This pass adds development art
+outputs only, under `tools/r68_art/`. No `mods/`, Lua, world data, version
+or upgrade declaration changes; no server, fixture, sync, merge or push.
+The media ledger covers the two halves, their MTLs and comparison images.
+The final commit hash and empty post-commit `git status --porcelain`
+receipt are in the final handoff (captured by the runner as `last.md`).
+
+**Remaining integration checks:** coordinator review, then the game lane
+copies the picked assets and maps the two halves to its nodes. The user's
+desktop/web test checks the seam and roof from front/back/above/below at
+all four board rotations, digging cracks on either half, one item drop
+and complete removal when either half is dug. Runtime acceptance is not
+claimed by this offline art pass.
 
 ## Pass 3 — wood texture
 
-**Recommendation: B, warm heartwood, for the complete set.** Its warmer
+**Picked in pass 4: B, warm heartwood, for the complete set.** Its warmer
 boards, stronger frame edges and roof grain sit closer to the wooden
 chest. A is the quieter, more muted alternative. Both keep soft grain in
 the writing fields. These texture A/B labels do not change the user's
@@ -12,7 +94,7 @@ Worktree/branch: `r68-art3`, from main
 `0a1ada42028138d5f41f703cd5b4f6f5f66b670a`.
 
 Open the [offline preview, pass 3](preview/index.html#wood).
-The recommendation and new section are first. Each sign, including the
+Each sign, including the
 wooden wall sign, has shipped/A/B columns with front and angled views,
 the same sample text, and flat textures at exactly 8× (scrollable).
 The waypost also has a reverse reading view. Matching model icons appear
@@ -143,8 +225,8 @@ receipt are in the final handoff, captured by the runner as `last.md`.
 The report's commit can also be resolved with
 `git log -1 --format=%H -- tools/r68_art/REPORT.md`.
 
-**Remaining:** coordinator review and the user's texture pick before
-integration. After copying the selected four textures and three icons,
+**Pass-3 follow-up:** the user picked B in pass 4 above. Coordinator review
+and integration remain. After copying the selected four textures and three icons,
 the user checks desktop and web: front/back text nearby and at distance,
 daylight/indoor light, square-post grain, two rotated waypost joins,
 wall signs on walls/floors/ceilings, and 16/32 px icons. This is an art

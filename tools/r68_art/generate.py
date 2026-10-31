@@ -8,6 +8,7 @@ The saved preview font is a separate, credited input; no glyph enters an asset.
 """
 
 import argparse
+from collections import Counter
 from dataclasses import dataclass
 import hashlib
 from html.parser import HTMLParser
@@ -429,7 +430,7 @@ def place(faces, offset=(0,0,0), yaw=0):
 
 
 def render(faces, size=(420, 340), yaw=0, elevation=0, scale=230,
-           target=(0,0,0), background=BG):
+           target=(0,0,0), background=BG, stable_texel_edges=False):
     """Orthographic, nearest-neighbour rasterizer with z-buffer and back culling."""
     theta, phi = math.radians(yaw), math.radians(elevation)
     toward = np.array([math.sin(theta)*math.cos(phi), math.sin(phi),
@@ -467,8 +468,14 @@ def render(faces, size=(420, 340), yaw=0, elevation=0, scale=230,
             depth = alpha*tri[0,2] + beta*tri[1,2] + gamma*tri[2,2]
             u = alpha*uv[0,0] + beta*uv[1,0] + gamma*uv[2,0]
             v = alpha*uv[0,1] + beta*uv[1,1] + gamma*uv[2,1]
-            tx = np.clip((u*tex.shape[1]).astype(int), 0, tex.shape[1]-1)
-            ty = np.clip((v*tex.shape[0]).astype(int), 0, tex.shape[0]-1)
+            texel_x, texel_y = u*tex.shape[1], v*tex.shape[0]
+            if stable_texel_edges:
+                # Equivalent triangulations can straddle an exact integer
+                # texel edge by floating-point noise. Use one half-open tie
+                # rule at 1e-7 texel precision for the exported-OBJ comparison.
+                texel_x, texel_y = np.round(texel_x, 7), np.round(texel_y, 7)
+            tx = np.clip(texel_x.astype(int), 0, tex.shape[1]-1)
+            ty = np.clip(texel_y.astype(int), 0, tex.shape[0]-1)
             colour = tex[ty, tx].copy()
             colour[:, :, :3] = np.clip(colour[:, :, :3] * shade, 0, 255).astype(np.uint8)
             old_z = zbuf[y0:y1+1, x0:x1+1]
@@ -870,7 +877,7 @@ def wood_previews(package, walls):
 def wood_section():
     labels = (("shipped","Shipped · pass 2"),("a","A · planed timber"),("b","B · warm heartwood"))
     html = '''<section id="wood"><div class="section-head"><span>NEW</span><h2>Pass 3: wood texture</h2></div>
-<p class="wood-recommend"><strong>Recommendation: B — warm heartwood.</strong> Richer board edges, timber frames and roof grain give the set the chest's warmth. Soft grain and gentle plank tones keep the dark lettering clear.</p>
+<p class="wood-recommend"><strong>Picked: B — warm heartwood (2026-10-31).</strong> The user's choice for the standing sign, waypost, notice board including this roof, wooden wall sign and all three matching inventory icons. Roof geometry and B's roof texture stay exactly as shown.</p>
 <p class="note">Same shipped models: standing A, waypost B, notice board B. Only their wood changes.
 These A/B labels select a complete texture set. All pass-3 lettering uses the shipped 6 × 12 pixel cells,
 1/128 node per pixel and ink #2B1E14. Front and angled views share identical cameras in every column.</p>'''
@@ -879,7 +886,9 @@ These A/B labels select a complete texture set. All pass-3 lettering uses the sh
         html += f'<h3 class="wood-heading">{title}</h3><div class="wood-grid">'
         for variant,label in labels:
             name = f"{kind}_wood_{variant}"
-            html += f'<article class="candidate"><h3>{label}</h3>'
+            picked = variant == "b"
+            mark = '<span class="pick">Picked</span>' if picked else ''
+            html += f'<article class="candidate{" recommended" if picked else ""}"><div class="card-head"><h3>{label}</h3>{mark}</div>'
             for view in ("front","angle"):
                 html += f'<figure><img src="{name}_{view}.png" alt="{title}, {label}, {view} with game lettering"><figcaption>{view.title()}</figcaption></figure>'
             if kind == "waypost":
@@ -913,7 +922,184 @@ Offline projections; desktop/web filtering and lighting remain for the user's in
 The sections below preserve the earlier shape choices and pass-2 wall comparison.</p></section>'''
 
 
-def page(package):
+def face_area(face):
+    return sum(np.linalg.norm(np.cross(face.xyz[i] - face.xyz[0],
+                                       face.xyz[i+1] - face.xyz[0])) / 2
+               for i in range(1, len(face.xyz)-1))
+
+
+def clip_notice_face(face, left):
+    """Clip a convex face at x=0.5, interpolating its existing UV mapping."""
+    corners = []
+    for i, current in enumerate(face.xyz):
+        previous, uv0, uv1 = face.xyz[i-1], face.uv[i-1], face.uv[i]
+        before = previous[0] <= 0.5 if left else previous[0] >= 0.5
+        inside = current[0] <= 0.5 if left else current[0] >= 0.5
+        if before != inside:
+            t = (0.5 - previous[0]) / (current[0] - previous[0])
+            xyz = previous + t * (current - previous)
+            xyz[0] = 0.5
+            corners.append((xyz, uv0 + t * (uv1 - uv0)))
+        if inside:
+            corners.append((current.copy(), uv1.copy()))
+    # A vertex exactly on the plane can appear both as endpoint and crossing.
+    corners = [corner for i, corner in enumerate(corners)
+               if not np.array_equal(corner[0], corners[i-1][0])]
+    if len(corners) < 3:
+        return None
+    result = Face(np.array([c[0] for c in corners]), np.array([c[1] for c in corners]),
+                  face.texture, face.normal.copy(), face.unlit)
+    return result if face_area(result) > 1e-12 else None
+
+
+def read_notice_obj(raw, texture):
+    """Read our exported triangles, including serialized positions, UVs and normals."""
+    vertices, uvs, normals, faces = [], [], [], []
+    for line in raw.decode().splitlines():
+        fields = line.split()
+        if not fields:
+            continue
+        if fields[0] in ("v", "vt", "vn"):
+            {"v": vertices, "vt": uvs, "vn": normals}[fields[0]].append(
+                np.array([float(n) for n in fields[1:]]))
+        elif fields[0] == "f":
+            ids = [[int(n)-1 for n in corner.split("/")] for corner in fields[1:]]
+            assert len(ids) == 3
+            assert all(0 <= vi < len(vertices) and 0 <= ti < len(uvs)
+                       and 0 <= ni < len(normals) for vi, ti, ni in ids)
+            xyz = np.array([vertices[vi] for vi, _, _ in ids])
+            uv = np.array([[uvs[ti][0], 1-uvs[ti][1]] for _, ti, _ in ids])
+            normal = unit(np.cross(xyz[1]-xyz[0], xyz[2]-xyz[0]))
+            assert all(np.dot(normal, normals[ni]) > 0.999999 for _, _, ni in ids)
+            assert np.isfinite(xyz).all() and np.isfinite(uv).all()
+            assert (uv >= 0).all() and (uv <= 1).all()
+            faces.append(Face(xyz, uv, texture, normals[ids[0][2]]))
+    return faces, len(vertices)
+
+
+def notice_halves(package):
+    source, spec = package["notice_board_b"]
+    texture_name = "notice_board_wood_b.png"
+    texture = Image.open(BytesIO(OUTPUTS[f"candidates/{texture_name}"])).convert("RGBA")
+    meshes = {side: Mesh(f"notice_board_b_{side}") for side in ("left", "right")}
+    for face in source.faces:
+        pieces = [clip_notice_face(face, left) for left in (True, False)]
+        assert abs(sum(face_area(f) for f in pieces if f is not None)-face_area(face)) < 1e-10
+        for side, piece in zip(meshes, pieces):
+            if piece is not None:
+                meshes[side].faces.append(piece)
+
+    manifest = {
+        "source_model": "notice_board_b.obj", "texture": texture_name,
+        "source_sha256": hashlib.sha256(OUTPUTS["candidates/notice_board_b.obj"]).hexdigest(),
+        "texture_sha256": hashlib.sha256(OUTPUTS[f"candidates/{texture_name}"]).hexdigest(),
+        "texture_size": [64, 64], "split_plane_source_x": 0.5,
+        "front_normal": [0, 0, -1],
+        "naming": "In the offline front view, +X points screen-right: left is source x <= 0.5; right is x >= 0.5.",
+        "integration": "Model-space coordinates only. The game lane owns the OBJ x mirror and node mapping.",
+        "comparison_sampler": "Nearest neighbour; texel coordinates rounded to 7 decimals for consistent exact-edge ties after triangulation.",
+        "cut_caps": False, "halves": {}, "comparisons": {},
+    }
+    joined = []
+    for side, mesh in meshes.items():
+        offset = 0 if side == "left" else 1
+        mesh.faces = place(mesh.faces, (-offset, 0, 0))
+        raw, vertices, triangles = mesh.obj()
+        OUTPUTS[f"candidates/{mesh.name}.obj"] = raw
+        OUTPUTS[f"candidates/{mesh.name}.mtl"] = (
+            "# SPDX-License-Identifier: CC0-1.0\nnewmtl wood\nKa 1 1 1\nKd 1 1 1\n"
+            f"Ks 0 0 0\nd 1\nillum 1\nmap_Kd {texture_name}\n").encode()
+        faces, count = read_notice_obj(raw, texture)
+        assert count == vertices and len(faces) == triangles
+        points = np.concatenate([f.xyz for f in faces])
+        assert points[:, 0].min() == -0.5 and points[:, 0].max() == 0.5
+        # All exposed edges stay closed. Only the join plane may be uncapped.
+        edges = Counter()
+        for face in faces:
+            for a, b in zip(face.xyz, np.roll(face.xyz, -1, axis=0)):
+                edges[tuple(sorted((tuple(a), tuple(b))))] += 1
+        open_edges = [edge for edge, count in edges.items() if count == 1]
+        assert open_edges
+        assert all(a[0] == b[0] == 0.5-offset for a, b in open_edges)
+        restored = place(faces, (offset, 0, 0))
+        # Every exported triangle must lie on an original face and retain its
+        # affine UV mapping. Test all corners, not just the triangle centre.
+        for face in restored:
+            matches = []
+            for original in source.faces:
+                if np.dot(face.normal, original.normal) < 0.999999:
+                    continue
+                if np.max(np.abs((face.xyz-original.xyz[0]) @ original.normal)) > 1e-8:
+                    continue
+                if any(np.min(np.cross(b-a, face.xyz-a) @ original.normal) < -1e-8
+                       for a, b in zip(original.xyz, np.roll(original.xyz, -1, axis=0))):
+                    continue
+                mapping = np.linalg.lstsq(np.column_stack((original.xyz, np.ones(len(original.xyz)))),
+                                          original.uv, rcond=None)[0]
+                expected = np.column_stack((face.xyz, np.ones(3))) @ mapping
+                matches.append(np.max(np.abs(expected-face.uv)) < 1e-8)
+            assert any(matches), (side, "Exported triangle lost its original surface/UV mapping")
+        joined += restored
+        manifest["halves"][side] = {
+            "model": mesh.name + ".obj", "material": mesh.name + ".mtl",
+            "vertices": vertices, "faces": triangles, "face_type": "triangles",
+            "node_offset_from_source_origin": [offset, 0, 0],
+            "source_to_local_translation": [-offset, 0, 0],
+            "local_bounds": mesh.bounds(), "uncapped_edges_at_join": len(open_edges),
+        }
+    whole, _ = read_notice_obj(OUTPUTS["candidates/notice_board_b.obj"], texture)
+    assert abs(sum(map(face_area, whole))-sum(map(face_area, joined))) < 1e-8
+    # Compare the emitted files without text: no lettering can hide a seam.
+    # Extra exterior views exercise roof, back, sides and underside as well.
+    centre = (np.array(spec["bounds"][:3])+spec["bounds"][3:])/2
+    for view, yaw, elevation in (("front", 0, 0), ("angle", 30, 17),
+                                 ("rear", 180, 12), ("left", -65, 22),
+                                 ("below", 35, -30), ("above", -35, 65)):
+        camera = {"size": (560, 440), "yaw": yaw, "elevation": elevation,
+                  "scale": 220, "target": centre, "stable_texel_edges": True}
+        before, after = render(whole, **camera), render(joined, **camera)
+        diff = np.abs(np.asarray(before).astype(int)-np.asarray(after).astype(int))
+        manifest["comparisons"][view] = {
+            "size": list(camera["size"]), "yaw": yaw, "elevation": elevation,
+            "pixels_per_node": camera["scale"], "target": centre.tolist(),
+            "different_pixels": int(np.any(diff != 0, axis=2).sum()),
+            "total_pixels": before.width*before.height,
+            "max_channel_delta": int(diff.max()),
+        }
+        assert not diff.any(), (view, "Joined notice-board halves differ from the original")
+        if view in ("front", "angle"):
+            png(f"preview/notice_halves_{view}_whole.png", before)
+            png(f"preview/notice_halves_{view}_joined.png", after)
+    write_json("notice_halves_manifest.json", manifest)
+    return manifest
+
+
+def notice_halves_section(manifest):
+    html = '''<section id="notice-halves"><div class="section-head"><span>PASS 4</span><h2>Notice board halves</h2></div>
+<p class="note">Picked warm heartwood B, including the unchanged roof. The original model is cut at x = +0.5.
+The two exported halves are placed at (0, 0, 0) and (+1, 0, 0); both use the same 64 × 64 atlas.
+These unlettered views are rendered from the exported OBJ triangles, so text cannot conceal the join.</p>'''
+    for view in ("front", "angle"):
+        diff = manifest["comparisons"][view]
+        html += f'<h3 class="wood-heading">{view.title()} · {diff["different_pixels"]:,} / {diff["total_pixels"]:,} pixels differ · maximum channel delta {diff["max_channel_delta"]}</h3><div class="pair">'
+        for suffix, label in (("whole", "One-piece OBJ"), ("joined", "Joined left + right OBJs")):
+            html += f'<figure><img src="notice_halves_{view}_{suffix}.png" width="560" height="440" alt="{label}, {view}"><figcaption>{label} · texture set B</figcaption></figure>'
+        html += '</div>'
+    html += '<div class="variants">'
+    for side, half in manifest["halves"].items():
+        html += f'''<article class="candidate"><h3>{side.title()} half</h3><p>{half['vertices']} vertices · {half['faces']} triangles.<br>
+Node offset {half['node_offset_from_source_origin']}; source-to-local translation {half['source_to_local_translation']}.</p>
+<div class="downloads"><a href="../candidates/{half['model']}">OBJ</a><a href="../candidates/{half['material']}">MTL</a></div></article>'''
+    return html + '''</div><p class="note">Front preview convention: front faces −Z; +X points screen-right.
+Left is the original x ≤ 0.5 half; right is x ≥ 0.5, shifted −1 in x for its own node.
+Only the touching cut surfaces are uncapped. Exterior edges, normals, UVs and total surface area are checked.
+Nearest-neighbour texel-edge ties use the same 1e-7-texel precision for both models.
+The integration lane handles the game's OBJ x mirror and maps the halves to main/helper nodes.
+<a href="../notice_halves_manifest.json">Full measurements, hashes and six exterior-view comparisons</a> ·
+<a href="../candidates/notice_board_wood_b.png">Shared B atlas</a>.</p></section>'''
+
+
+def page(package, halves):
     cards = []
     for kind, title in (("sign_standing","Standing sign"),("waypost","Waypost"),
                         ("notice_board","Notice board")):
@@ -944,12 +1130,12 @@ def page(package):
 <div class="recommendations"><div><b>Standing sign · A</b><p>The plain board belongs beside the existing wall sign and stays clear at inventory size.</p></div><div><b>Waypost · B</b><p>The broader carved arrow reads as a direction marker from either side.</p></div><div><b>Notice board · B</b><p>The small roof gives a public board its own silhouette without crowding the notices.</p></div></div>
 <nav><a href="#wall">New wall textures</a><a href="#sign_standing">Standing sign</a><a href="#waypost">Waypost</a><a href="#notice_board">Notice board</a><a href="#scale">Scale comparison</a><a href="#handoff">Technical handoff</a></nav></header>'''
     html = html.replace('</style>', '''.wood-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.wood-grid .candidate{padding:16px}.wood-grid figure img{width:100%;height:auto}.wood-heading{margin:36px 0 16px}.wood-recommend{border-left:3px solid var(--accent);padding:12px 20px;background:var(--panel);max-width:1000px}.wood-recommend strong{color:var(--accent)}.wood-flat{max-width:none;margin-top:12px}.wood-grid details{overflow:auto}@media(max-width:1000px){.wood-grid{grid-template-columns:1fr}}</style>''')
-    html = html.replace('<nav>', '<nav><a href="#wood">Pass 3: wood texture</a>')
+    html = html.replace('<nav>', '<nav><a href="#notice-halves">Notice board halves</a><a href="#wood">Pass 3: wood texture</a>')
     html = html.replace('Grudgelands / Round 68 / Art picks and wall signs', 'Grudgelands / Round 68 / Wood texture workshop')
     html = html.replace('A place for directions.<br>A place for the village.', 'Wood with grain.<br>Room for words.')
     intro_start, intro_end = html.index('<p class="intro">'), html.index('<nav>')
-    html = html[:intro_start] + '<p class="intro"><strong>Recommended: texture set B.</strong> Warm heartwood for the picked signs, with gentle grain behind the text. Compare both new sets with the shipped surfaces below.</p>' + html[intro_end:]
-    html += wood_section() + "".join(cards) + wall_section()
+    html = html[:intro_start] + '<p class="intro"><strong>Picked: texture set B — warm heartwood.</strong> For every wooden sign, the notice-board roof and the matching inventory icons. The notice board now also has two model halves for integration.</p>' + html[intro_end:]
+    html += notice_halves_section(halves) + wood_section() + "".join(cards) + wall_section()
     html += '''<section id="scale"><div class="section-head"><span>05</span><h2>One scale, familiar neighbours</h2></div><p class="note">All five objects share one camera and one scale. The wall sign uses its existing 0.875 × 0.625-node board with the new calm wood texture; the chest is a one-node cube with its existing wooden textures. Lettering is a separate preview plane on every sign. The comparison strips scroll horizontally on narrow screens.</p>'''
     for v in "ab":
         html += f'<div class="scale"><h3>Variant {v.upper()} family</h3><img src="scale_{v}.png" alt="Variant {v.upper()} signs beside the new wood wall texture and existing wooden chest at the same scale"></div>'
@@ -1123,7 +1309,8 @@ def build(waypost_front=False):
                     (col*720+28,row*320+10),size=19)
     png("preview/contact.png",contact)
     wood_previews(package, walls)
-    page(package)
+    halves = notice_halves(package)
+    page(package, halves)
     validate(package, walls)
     validate_wood(package, walls)
     manifest = {name:{"vertices":spec["vertices"],"triangles":spec["faces"],
@@ -1160,8 +1347,8 @@ def main():
             path.write_bytes(data)
     if failures:
         raise SystemExit("\n".join(failures))
-    print(f"{'Checked' if args.check else 'Wrote'} {len(OUTPUTS)} outputs: original passes plus two wood texture sets, matching icons and offline previews.")
-    print("Verified: UV density, normals, text backing, alpha, wall UV footprints, uniform waypost joins, runtime text capacity and local page links.")
+    print(f"{'Checked' if args.check else 'Wrote'} {len(OUTPUTS)} outputs: original passes, wood sets, notice-board halves and offline previews.")
+    print("Verified: UV density, normals, text backing, alpha, wall UV footprints, uniform waypost joins, runtime text capacity, split surfaces/UVs, exterior closure and local page links.")
 
 
 if __name__ == "__main__":

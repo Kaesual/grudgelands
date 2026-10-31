@@ -48,6 +48,24 @@ pixel treatment guide newly drawn pixels; there is no image extraction.
 | `notice_board_wood_a_inv.png` | 16 × 16 transparent render of the unlettered model with wood A. | CC0-1.0 |
 | `notice_board_wood_b_inv.png` | 16 × 16 transparent render of the unlettered model with wood B. | CC0-1.0 |
 
+### Pass 4 — picked notice-board halves
+
+Original work by **GPT-6 Astra, 2026-10-31**, generated from
+[generate.py](generate.py), dedicated to **CC0-1.0**. The source model and
+picked warm-heartwood atlas remain unchanged.
+
+| File in `candidates/` | Construction / modifications | Licence |
+|---|---|---|
+| `notice_board_b_left.obj` | Source model clipped at x = +0.5, retaining the lower-x surfaces and their UVs; origin unchanged. | CC0-1.0 |
+| `notice_board_b_right.obj` | Source model clipped at x = +0.5, retaining the higher-x surfaces and their UVs; shifted −1 in x to its own node centre. | CC0-1.0 |
+| `notice_board_b_left.mtl` | One wood material using the unchanged `notice_board_wood_b.png` atlas. | CC0-1.0 |
+| `notice_board_b_right.mtl` | Same shared atlas and material for the right half. | CC0-1.0 |
+
+The four `preview/notice_halves_{front,angle}_{whole,joined}.png` images
+are original **CC0-1.0** software renders of the serialized models. They
+contain no comparison assets or lettering. `notice_halves_manifest.json`
+records the model measurements and pixel comparisons.
+
 Identically named PNGs in `preview/` are byte-identical copies. The
 candidate model projections, stacks and contact sheet combine the original
 art with the CC0 font below. They are also CC0-1.0, including pass 3's
