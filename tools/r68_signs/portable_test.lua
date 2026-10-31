@@ -721,5 +721,8 @@ do
 	end
 end
 
-print(("r68_signs: %d checks, %d failures"):format(checks, failures))
-if failures > 0 then os.exit(1) end
+if failures > 0 then
+	print(("R68 SIGNS PORTABLE FAIL %d of %d checks"):format(failures, checks))
+	error("R68 SIGNS portable fixture failed")
+end
+print(("R68 SIGNS PORTABLE PASS checks=%d"):format(checks))
