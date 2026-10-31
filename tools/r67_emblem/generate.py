@@ -17,9 +17,9 @@ MAP = ROOT / 'mods/MAPGEN/grug_mapgen'
 INV = ROOT / 'mods/PLAYER/grug_inventory/textures'
 CLASSES = ROOT / 'mods/PLAYER/grug_classes/textures'
 FACTIONS = ('accord', 'throng')
-# Pass 2 samples the most frequent opaque cloth colour of each shipped PNG.
+# Pass 3 retains the Pass 2 finish and samples the most frequent opaque cloth colour of each shipped PNG.
 from collections import Counter
-from heraldry import IDEAS, IVORY, banner as draw_banner, down, icon
+from heraldry import IDEAS, VARIANTS, IVORY, banner as draw_banner, down, icon
 
 
 def sampled_palette():
@@ -34,6 +34,9 @@ def sampled_palette():
 
 PALETTE = sampled_palette()
 DARK = '#181e28'
+# Immutable Pass 2 A comparison inputs; stored beside the offline HTML.
+PASS2_COMMIT = '55ea1695a69ed56541f44166461d9325a2e8219d'
+PASS2_REFS = {'ref_pass2_banner_accord.png': '4b2fb3189be7f4b7305ef422895ab6ed75300f59f406f648dbb582ff1f893e9e', 'ref_pass2_banner_throng.png': '4fe2c09587ec002fd668c8cce7d6a4202891c0948565a895232c016fb6b7359c', 'ref_pass2_emblem_accord.png': '8cd61bf654705dfce85e029431534ba749451b4056f5741e9860fed0b8a7d90c', 'ref_pass2_emblem_throng.png': '7c7cca2a492eb6f51be0de0d5802886f029a63c6389a2a4b3c6ecf08037344dc'}
 
 
 def png(im):
@@ -155,26 +158,41 @@ def projection(texture, vertices, buffers):
 
 
 def contact_sheet(images):
-    board=Image.new('RGB',(1200,1320),DARK)
-    d=ImageDraw.Draw(board)
-    font=ImageFont.load_default(size=22)
-    small=ImageFont.load_default(size=14)
-    d.text((30,24),'GRUDGELANDS / FACTION HERALDRY / PASS 2',font=font,fill=IVORY)
-    d.text((30,59),'A recommended  /  muted cloth, ivory thread  /  UI sizes 16, 24, 32, 64',font=small,fill='#a8b4c4')
-    for i,key in enumerate((*IDEAS,'current')):
-        y=106+i*300
-        title=key.upper()+' / '+IDEAS[key][0] if key!='current' else 'CURRENT / shipped art, unchanged'
-        d.text((30,y),title,font=font,fill=IVORY)
-        for j,f in enumerate(FACTIONS):
-            x=30+j*590
-            d.text((x,y+35),'The '+f.title(),font=small,fill=PALETTE[f][1])
-            icon=images[f'emblem_{f}_{key}.png' if key!='current' else f'ref_emblem_{f}.png']
-            for size,dx in [(16,0),(24,45),(32,100),(64,160)]:
-                im=down(icon,(size,size));board.paste(im,(x+dx,y+105-size//2),im)
-                d.text((x+dx,y+150),str(size),font=small,fill='#a8b4c4')
-            view=images[f'view_{f}_{key}.png'].resize((296,240),Image.Resampling.LANCZOS)
-            board.paste(view,(x+250,y+30))
-        d.line((30,y+285,1170,y+285),fill='#35404e')
+    board = Image.new('RGB', (1320, 1260), DARK)
+    d = ImageDraw.Draw(board)
+    font = ImageFont.load_default(size=22)
+    small = ImageFont.load_default(size=14)
+    d.text((24, 22), 'GRUDGELANDS / HART & BOAR / PASS 3', font=font, fill=IVORY)
+    d.text((24, 57), 'Recommended: A1 + B1. Choose each faction independently; all six share the same palette and craft.', font=small, fill='#a8b4c4')
+    for j, faction in enumerate(FACTIONS):
+        y = 108 + j*365
+        d.text((24, y), 'THE '+faction.upper()+' / '+('HARTS' if j==0 else 'BOARS'), font=font, fill=IVORY)
+        for i, key in enumerate(VARIANTS):
+            x = 24+i*435
+            label, title, _ = IDEAS[faction][key]
+            d.text((x, y+39), label+' / '+title, font=small, fill=IVORY)
+            emblem = images[f'emblem_{faction}_{key}.png']
+            board.paste(emblem, (x, y+77), emblem)
+            for size, dx in ((16, 122), (24, 169), (32, 218), (64, 277)):
+                im = down(emblem, (size, size))
+                board.paste(im, (x+dx, y+109-size//2), im)
+                d.text((x+dx, y+151), str(size), font=small, fill='#a8b4c4')
+            flat = down(images[f'banner_{faction}_{key}.png'], (64, 128))
+            board.paste(flat, (x+18, y+201), flat)
+            view = down(images[f'view_{faction}_{key}.png'], (231, 187))
+            board.paste(view, (x+126, y+167))
+    d.line((24, 835, 1296, 835), fill='#35404e')
+    d.text((24, 858), 'COMPARISON / unchanged Pass 2 A and shipped art', font=font, fill=IVORY)
+    for i, (key, faction) in enumerate((('pass2', 'accord'), ('pass2', 'throng'), ('current', 'accord'), ('current', 'throng'))):
+        x = 24+i*328
+        prefix = 'ref_pass2_' if key=='pass2' else 'ref_'
+        d.text((x, 903), ('PASS 2 A' if key=='pass2' else 'SHIPPED')+' / '+faction.title(), font=small, fill=IVORY)
+        emblem = images[prefix+f'emblem_{faction}.png']
+        for size, dx in ((16, 0), (24, 40), (32, 90), (64, 148)):
+            im = down(emblem, (size, size))
+            board.paste(im, (x+dx, 963-size//2), im)
+        view = down(images[f'view_{faction}_{key}.png'], (294, 238))
+        board.paste(view, (x, 1006))
     return board
 
 
@@ -191,7 +209,7 @@ def outputs():
         if candidate:
             out[HERE/'candidates'/name]=data
     for f in FACTIONS:
-        for key in IDEAS:
+        for key in VARIANTS:
             large=icon(f,key,PALETTE)
             put(f'emblem_{f}_{key}.png',down(large,(100,100)),True)
             reference=Image.open(MAP/f'textures/grug_mapgen_faction_banner_{f}.png').convert('RGBA')
@@ -205,6 +223,16 @@ def outputs():
             images[name]=Image.open(path).convert('RGBA')
             sources[name]={'source':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
         put(f'view_{f}_current.png',projection(images[f'ref_banner_{f}.png'],vertices,buffers))
+        for kind in ('emblem', 'banner'):
+            name = f'ref_pass2_{kind}_{f}.png'
+            path = HERE/'preview'/name
+            data = path.read_bytes()
+            assert hashlib.sha256(data).hexdigest()==PASS2_REFS[name], name+' changed'
+            out[path] = data
+            images[name] = Image.open(io.BytesIO(data)).convert('RGBA')
+            sources[name] = {'source':f'tools/r67_emblem/candidates/{kind}_{f}_a.png',
+                             'commit':PASS2_COMMIT, 'sha256':PASS2_REFS[name]}
+        put(f'view_{f}_pass2.png',projection(images[f'ref_pass2_banner_{f}.png'],vertices,buffers))
     for kind,ids in [('class',('warrior','scout','mage','priest')),
                      ('race',('human','dwarf','elf','orc','troll','undead'))]:
         for key in ids:
@@ -214,7 +242,7 @@ def outputs():
             sources[name]={'source':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
     put('contact.png',contact_sheet(images))
     out[HERE/'preview/index.html']=html_page(IDEAS,FACTIONS)
-    manifest={'pass':2, 'palette':PALETTE, 'palette_sampling':'Most frequent fully opaque RGB in each shipped banner', 'model':{'source':str((MAP/'models/grug_mapgen_faction_banner.b3d').relative_to(ROOT)),
+    manifest={'pass':3, 'recommendation':{'accord':'1','throng':'1'}, 'variants':IDEAS, 'palette':PALETTE, 'palette_sampling':'Most frequent fully opaque RGB in each shipped banner', 'model':{'source':str((MAP/'models/grug_mapgen_faction_banner.b3d').relative_to(ROOT)),
                         'sha256':model_hash,'front_vertices_nodes':vertices[:4,:3].astype(float).round(5).tolist(),
                         'front_uvs':vertices[:4,6:].tolist(), 'material_buffers':['cloth','rod','straps']},
               'references':sources,'candidate_sha256':{str(p.relative_to(HERE)):hashlib.sha256(b).hexdigest()

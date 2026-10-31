@@ -1,17 +1,17 @@
 {
   "candidate_sha256": {
-    "candidates/banner_accord_a.png": "4b2fb3189be7f4b7305ef422895ab6ed75300f59f406f648dbb582ff1f893e9e",
-    "candidates/banner_accord_b.png": "5a359907128a7237e1066e077b5d86c875cae151f6a660e63e47d83ceda94651",
-    "candidates/banner_accord_c.png": "97ad330d527db983eb0a1ac81628b40bf9ca4989aabafdef7994df47418c3e82",
-    "candidates/banner_throng_a.png": "4fe2c09587ec002fd668c8cce7d6a4202891c0948565a895232c016fb6b7359c",
-    "candidates/banner_throng_b.png": "c0c8264c0908409d9fa90570180da5badb21e462f1724e13c546b1e8676bf082",
-    "candidates/banner_throng_c.png": "a048798e33d27146b66a56a0805e630074c6aae2baf3b65fdf683a6d5a76b7c0",
-    "candidates/emblem_accord_a.png": "8cd61bf654705dfce85e029431534ba749451b4056f5741e9860fed0b8a7d90c",
-    "candidates/emblem_accord_b.png": "0a64cdc068bc3c0afd9efc8d97082c9095fef9b6f0fac9e2dda1db4619a714b5",
-    "candidates/emblem_accord_c.png": "e4642a3e8564d9b07057fe441613c6c69e12f78ef8a14a31957425335d6b2418",
-    "candidates/emblem_throng_a.png": "7c7cca2a492eb6f51be0de0d5802886f029a63c6389a2a4b3c6ecf08037344dc",
-    "candidates/emblem_throng_b.png": "6543f9e24747f73a8dd6b7caf4494d332ec9b9fcf9000b03802d4c46b3c0b5fe",
-    "candidates/emblem_throng_c.png": "21254e43794d8839f0df2e3e2a53e14635ace5c399606728ef7679db960b2a32"
+    "candidates/banner_accord_1.png": "1dbd9e2bf8409f9288b86583e493c92ddc0993ef2377f2765b66ad014afc2337",
+    "candidates/banner_accord_2.png": "aba0c1d827e4f3adad8528c39232e6bba948836e5d2eb472619b122d0f03c240",
+    "candidates/banner_accord_3.png": "8a98b5ed34dac3438e91b7de6216d11298b3f709dd0f99d412365efedf078081",
+    "candidates/banner_throng_1.png": "68dd3f530832ac22f0cf6e9fbd4e77210c4ab1bccbbf6cb110f65ac17aac8370",
+    "candidates/banner_throng_2.png": "c1d4313e09bef73281e2ed8c6c50a922160540373a9b1dbbab21729816a6c9a1",
+    "candidates/banner_throng_3.png": "b1aa7fd139b7f4720923f60572ba38a0241bfcbcd6ae593a3136e06e2f3df161",
+    "candidates/emblem_accord_1.png": "d0feee50f5d67a247edbb306a302f92df13fa366845b27bb37a58cf16bbe508b",
+    "candidates/emblem_accord_2.png": "ff02378ae9d7495f2a69977ca5c133f609540f2be869068dd2110787c4732767",
+    "candidates/emblem_accord_3.png": "9d7663889b2dad26af8ec8e0399a0ef34c6c0546809ec15711a12793f33b0538",
+    "candidates/emblem_throng_1.png": "639abd939fb89c025c04d3fe6ebfaa6748fd66f5687840ae0ed56469eaf457ee",
+    "candidates/emblem_throng_2.png": "2f0bc8deb7b05b53168a84471b72a3198bd20861a0696e896a3b1fa2236e9b82",
+    "candidates/emblem_throng_3.png": "adf55de436dd883529176da7371d246e606f95cb144c73423621a97c0e985b45"
   },
   "model": {
     "front_uvs": [
@@ -73,7 +73,11 @@
     ]
   },
   "palette_sampling": "Most frequent fully opaque RGB in each shipped banner",
-  "pass": 2,
+  "pass": 3,
+  "recommendation": {
+    "accord": "1",
+    "throng": "1"
+  },
   "references": {
     "ref_banner_accord.png": {
       "sha256": "620dc9e768d262e6b718d981bd491a6f2f8bddacddc011aefd22ff030f29608a",
@@ -107,6 +111,26 @@
       "sha256": "741ffac7680ef9055b017894dcad06958dbeaf8fea8c50f099643128e2156b7f",
       "source": "mods/PLAYER/grug_inventory/textures/grug_inventory_faction_throng.png"
     },
+    "ref_pass2_banner_accord.png": {
+      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
+      "sha256": "4b2fb3189be7f4b7305ef422895ab6ed75300f59f406f648dbb582ff1f893e9e",
+      "source": "tools/r67_emblem/candidates/banner_accord_a.png"
+    },
+    "ref_pass2_banner_throng.png": {
+      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
+      "sha256": "4fe2c09587ec002fd668c8cce7d6a4202891c0948565a895232c016fb6b7359c",
+      "source": "tools/r67_emblem/candidates/banner_throng_a.png"
+    },
+    "ref_pass2_emblem_accord.png": {
+      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
+      "sha256": "8cd61bf654705dfce85e029431534ba749451b4056f5741e9860fed0b8a7d90c",
+      "source": "tools/r67_emblem/candidates/emblem_accord_a.png"
+    },
+    "ref_pass2_emblem_throng.png": {
+      "commit": "55ea1695a69ed56541f44166461d9325a2e8219d",
+      "sha256": "7c7cca2a492eb6f51be0de0d5802886f029a63c6389a2a4b3c6ecf08037344dc",
+      "source": "tools/r67_emblem/candidates/emblem_throng_a.png"
+    },
     "ref_race_dwarf.png": {
       "sha256": "1db0936676dcee56f0b2689498f98c0d3c0fcdfe64de1e1a939c34c9a2018be8",
       "source": "mods/PLAYER/grug_classes/textures/grug_race_dwarf.png"
@@ -130,6 +154,42 @@
     "ref_race_undead.png": {
       "sha256": "183780fcab073e93121e3c48b60e32eab8ff722b409ace7058dfc9cda469c2e6",
       "source": "mods/PLAYER/grug_classes/textures/grug_race_undead.png"
+    }
+  },
+  "variants": {
+    "accord": {
+      "1": [
+        "A1",
+        "The Watchful Hart",
+        "A hart caboshed: slender, mirrored antlers above a long face, held on a weathered shield."
+      ],
+      "2": [
+        "A2",
+        "The Standing Hart",
+        "A hart statant: an upright neck, a quiet back and four fine legs beneath branching antlers."
+      ],
+      "3": [
+        "A3",
+        "The Oathhart",
+        "A hart head couped in profile: a long neck and sweeping tines, like an old embroidered livery."
+      ]
+    },
+    "throng": {
+      "1": [
+        "B1",
+        "The Ironwood Boar",
+        "A boar head couped in profile: a long snout, a rising tusk and a sharply bristled nape."
+      ],
+      "2": [
+        "B2",
+        "The Marching Boar",
+        "A boar passant: a low head, a heavy shoulder and four stout legs moving beneath a bristled back."
+      ],
+      "3": [
+        "B3",
+        "The Defiant Boar",
+        "A boar caboshed: wide ears, a blunt snout and paired tusks framed by an ordered bristled mane."
+      ]
     }
   }
 }

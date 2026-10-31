@@ -1,4 +1,4 @@
-"""Original Pass 2 heraldry, drawn with Pillow/numpy; no external art inputs."""
+"""Original Pass 3 heraldry, drawn with Pillow/numpy; no external art inputs."""
 import re
 
 import numpy as np
@@ -7,17 +7,20 @@ from PIL import Image, ImageDraw
 SCALE = 6
 IVORY = '#d6c59b'
 GOLD = '#aa9164'
+VARIANTS = ('1', '2', '3')
 IDEAS = {
-    'a': ('Hart & Boar', 'The Oathhart', 'The Unbowed Boar',
-          'A hart bears a branching antler on either side: unlike homelands held in one proud pact.',
-          'A bristled boar turns its tusk toward the foe: many peoples standing stubbornly together.'),
-    'b': ('Oak & Horn', 'The Bound Oak', 'The Gathering Horn',
-          'Three oak boughs share a stout trunk and roots: the pact has grown deep into its homelands.',
-          'A heavy, bound war horn calls scattered voices into one host, sworn to its own oaths.'),
-    'c': ('Falcon & Serpent', 'The Vigil Falcon', 'The Unbroken Coil',
-          'A folded-wing falcon keeps watch above the border: a compact herald of shared vigilance.',
-          'A coiled serpent raises its head without yielding: a host whose will cannot be bound.'),
+    'accord': {
+        '1': ('A1', 'The Watchful Hart', 'A hart caboshed: slender, mirrored antlers above a long face, held on a weathered shield.'),
+        '2': ('A2', 'The Standing Hart', 'A hart statant: an upright neck, a quiet back and four fine legs beneath branching antlers.'),
+        '3': ('A3', 'The Oathhart', 'A hart head couped in profile: a long neck and sweeping tines, like an old embroidered livery.'),
+    },
+    'throng': {
+        '1': ('B1', 'The Ironwood Boar', 'A boar head couped in profile: a long snout, a rising tusk and a sharply bristled nape.'),
+        '2': ('B2', 'The Marching Boar', 'A boar passant: a low head, a heavy shoulder and four stout legs moving beneath a bristled back.'),
+        '3': ('B3', 'The Defiant Boar', 'A boar caboshed: wide ears, a blunt snout and paired tusks framed by an ordered bristled mane.'),
+    },
 }
+
 
 
 def down(im, size):
@@ -62,67 +65,161 @@ def ellipse(draw, box, fill):
     draw.ellipse(tuple(round(v*SCALE) for v in box), fill=fill)
 
 
+def mirror(mask):
+    """Exactly mirror the raster geometry, including half-pixel sample centres."""
+    return Image.fromarray(np.maximum(np.array(mask), np.array(mask)[:, ::-1]))
+
+
+def hart_front(d, h):
+    # Tapered antler beams and individual tines, with open field between them.
+    # The whole charge is mirrored after drawing; neither side is freehand drift.
+    for shape in (
+        'M44 43 C35 36 29 29 26 20 C24 14 25 7 28 2 C26 13 29 24 35 30 L46 39 Z',
+        'M28 25 C18 24 12 17 10 8 C14 16 20 21 28 22 Z',
+        'M33 32 C24 34 17 30 13 24 C19 29 25 30 31 29 Z',
+        'M26 17 C31 13 34 8 35 2 C37 10 32 17 27 20 Z',
+        'M35 32 C36 24 39 21 40 17 C42 23 39 30 38 35 Z',
+        'M41 46 C32 41 25 39 18 40 C21 48 29 54 39 55 Z',
+        'M50 39 Q43 38 40 43 L38 51 L40 65 Q41 72 45 80 L45 86 Q47 90 50 91 Z',
+    ):
+        path(d, shape, 255)
+    # Deliberate eye, ear and nostril cuts; the surrounding face stays connected.
+    path(d, 'M24 43 Q32 44 37 49 Q30 49 24 43 Z', 0)
+    path(d, 'M40 57 L46 59 L44 62 L41 61 Z', 0)
+    path(d, 'M46 82 L49 83 L48 85 L46 85 Z', 0)
+    path(h, 'M48 47 Q45 57 47 70', stroke=230, width=1.3)
+    path(h, 'M42 64 Q43 72 46 76', stroke=210, width=1.3)
+
+
+def hart_standing(d, h):
+    # A continuous torso, neck and muzzle; legs are separate deliberate profiles.
+    path(d, 'M43 49 C52 52 69 50 78 52 Q90 53 91 62 L85 71 Q78 73 72 70 Q60 72 49 67 C43 63 37 56 34 47 L30 35 L22 36 L13 32 L14 28 L27 24 L32 21 Q39 23 39 30 L39 40 Z', 255)
+    path(d, 'M30 24 Q22 23 21 16 Q29 17 34 23 Z', 255)
+    path(d, 'M35 24 Q36 17 42 16 Q43 23 37 28 Z', 255)
+    # Back legs first, then the weight-bearing near legs; wide intervening gaps.
+    path(d, 'M48 62 L42 76 L35 86 L29 87 L29 90 L38 90 L47 78 L53 65 Z', 255)
+    path(d, 'M81 64 L77 74 L84 84 L84 88 L78 89 L78 92 L89 92 L88 82 L84 73 L89 66 Z', 255)
+    path(d, 'M45 60 L50 66 L47 88 L43 90 L43 93 L52 93 L52 88 L54 68 Z', 255)
+    path(d, 'M88 62 L93 64 L91 77 L95 88 L95 92 L87 92 L87 89 L90 88 L85 77 Z', 255)
+    path(d, 'M87 56 Q94 52 97 56 Q97 60 91 61 Z', 255)
+    # Small, tapering crown of antlers above the side-facing head.
+    for shape in (
+        'M32 25 C27 18 27 9 31 2 C29 11 30 17 35 23 Z',
+        'M29 14 Q21 14 18 5 Q23 11 29 11 Z',
+        'M29 8 L37 2 Q35 9 30 11 Z',
+        'M37 25 Q41 17 47 8 Q45 19 40 27 Z',
+        'M42 18 Q38 14 39 8 L44 15 Z',
+        'M44 15 Q49 14 53 9 Q52 17 43 20 Z',
+    ):
+        path(d, shape, 255)
+    ellipse(d, (27, 27, 30, 30), 0)
+    path(d, 'M14 29 L19 29 L18 32 L14 31 Z', 0)
+    path(h, 'M35 34 Q34 45 44 56', stroke=220, width=1.3)
+    path(h, 'M55 56 Q68 58 77 56', stroke=180, width=1.3)
+    path(h, 'M79 61 Q76 66 79 71', stroke=210, width=1.3)
+
+
+def hart_profile(d, h):
+    # Long upright neck, alert ears and a fine muzzle. Cut base, never a blob.
+    path(d, 'M44 35 C53 33 60 39 62 49 L59 65 Q60 79 67 89 L35 89 Q49 76 46 64 L39 48 L28 48 L15 43 L13 39 L30 33 Q37 29 44 35 Z', 255)
+    path(d, 'M43 36 Q49 26 60 29 Q58 38 50 41 Z', 255)
+    path(d, 'M35 35 Q26 32 24 26 Q34 27 41 34 Z', 255)
+    # Two distinct swept antlers, the nearer larger; all tips narrow to a point.
+    for shape in (
+        'M41 35 C36 25 34 13 40 2 C37 15 40 24 45 34 Z',
+        'M37 22 Q25 19 22 10 Q29 17 37 19 Z',
+        'M37 13 Q30 9 31 2 L39 11 Z',
+        'M39 28 Q29 28 25 23 Q32 25 40 25 Z',
+        'M48 34 C52 27 60 18 65 4 C64 20 57 29 52 37 Z',
+        'M56 23 Q51 17 53 9 Q55 16 59 19 Z',
+        'M61 15 Q70 13 74 7 Q73 16 62 19 Z',
+        'M53 29 Q65 27 70 21 Q69 30 54 32 Z',
+    ):
+        path(d, shape, 255)
+    path(d, 'M50 34 L56 31 L53 36 Z', 0)
+    path(d, 'M30 37 L35 37 L33 40 L30 39 Z', 0)
+    path(d, 'M14 40 L19 40 L18 43 L15 43 Z', 0)
+    path(h, 'M47 44 Q52 59 53 70 Q54 78 60 84', stroke=230, width=1.3)
+    path(h, 'M20 44 L30 45', stroke=230, width=1.3)
+
+
+def boar_profile(d, h):
+    # Forehead slopes into a long blunt snout. Bristles follow the nape, not a crown.
+    path(d, 'M19 43 L32 37 Q42 24 53 25 L61 20 L62 26 L69 24 L68 31 L76 30 L74 37 L82 37 L79 44 L86 47 L81 53 L87 59 L81 62 Q76 74 77 84 L43 84 Q46 77 43 71 Q35 68 29 60 L15 59 L9 56 L8 44 L12 41 Z', 255)
+    # Distinct triangular ear: sloping base separates it from the bristled nape.
+    path(d, 'M46 32 Q42 24 43 13 Q53 16 59 27 L54 38 Z', 255)
+    path(d, 'M47 20 L54 28 L50 32 Z', 0)
+    # Mouth is a broad field cut; the rising lower tusk grows through that space.
+    path(d, 'M13 53 L27 53 Q36 53 42 51 L40 54 Q33 57 25 56 L14 56 Z', 0)
+    tusk = 'M28 59 C36 61 39 50 33 36 C45 45 42 62 33 64 Z'
+    path(d, tusk, 255, stroke=0, width=3)
+    path(d, tusk, 255)
+    path(d, 'M39 34 L46 32 L44 36 L40 37 Z', 0)
+    path(d, 'M12 45 L16 45 L17 49 L13 49 Z', 0)
+    # Engraved cheek and ordered hair cuts, consistent light line weight.
+    path(h, 'M54 42 Q48 55 56 67 Q59 73 67 76', stroke=230, width=1.3)
+    path(h, 'M65 39 L62 49', stroke=220, width=1.3)
+    path(h, 'M71 47 L68 57', stroke=220, width=1.3)
+    path(h, 'M76 58 L73 67', stroke=220, width=1.3)
+    path(h, 'M53 79 L72 79', stroke=190, width=1.3)
+
+
+def boar_walking(d, h):
+    # Stout, arched shoulder and low muzzle, with bristles along the actual back.
+    path(d, 'M12 51 L26 47 L34 34 L39 24 L44 28 L49 20 L53 25 L59 18 L62 24 L68 19 L70 25 L77 22 L79 28 Q92 29 94 44 L93 54 Q87 66 76 65 L60 65 L49 63 Q43 69 34 65 L24 62 L13 63 L8 59 L7 52 Z', 255)
+    # Four legs with readable knee direction and broad cloven feet.
+    path(d, 'M41 58 L45 65 L38 77 L27 80 L23 77 L24 74 L33 73 Z', 255)
+    path(d, 'M70 60 L78 61 L77 69 L85 78 L84 82 L76 82 L75 79 L69 71 Z', 255)
+    path(d, 'M48 59 L55 63 L51 78 L51 84 L40 84 L39 80 L44 78 Z', 255)
+    path(d, 'M85 57 L93 53 L89 68 L94 81 L92 85 L81 85 L80 81 L85 80 L81 70 Z', 255)
+    path(d, 'M29 39 Q26 29 31 25 L41 35 L36 46 Z', 255)
+    path(d, 'M31 31 L36 36 L33 39 Z', 0)
+    # A thin hooked tail, separate from legs and body silhouette.
+    path(d, 'M91 35 Q101 29 98 43 L96 49 L94 47 Q98 32 92 38 Z', 255)
+    path(d, 'M11 57 L23 56 L33 52 L34 56 L24 60 L12 60 Z', 0)
+    path(d, 'M24 61 Q34 63 34 47 Q41 59 31 66 Z', 0)
+    path(d, 'M25 61 Q32 62 33 49 Q38 60 30 64 Z', 255)
+    path(d, 'M25 47 L30 45 L30 49 L26 50 Z', 0)
+    ellipse(d, (10, 53, 13, 56), 0)
+    path(h, 'M46 37 Q39 49 48 58', stroke=220, width=1.3)
+    path(h, 'M53 32 Q70 30 81 34', stroke=200, width=1.3)
+    path(h, 'M79 43 Q75 51 81 56', stroke=220, width=1.3)
+
+
+def boar_front(d, h):
+    # Symmetrical boar mask: nape spikes descend along the cheek, ears project wide.
+    for shape in (
+        'M50 17 L45 15 L43 20 L36 16 L35 23 L28 21 L29 29 L21 29 L25 37 L17 40 L23 46 L18 52 L24 57 L20 63 L27 68 L25 74 L34 78 L35 84 L44 86 L50 89 Z',
+        'M37 31 Q26 19 11 19 Q13 36 29 42 L37 39 Z',
+    ):
+        path(d, shape, 255)
+    path(d, 'M18 24 Q26 25 32 33 L28 35 Q22 31 18 24 Z', 0)
+    # Temple/eye cuts leave a long wedge muzzle distinctly apart from the cheeks.
+    path(d, 'M28 44 L39 45 L37 49 L30 49 Z', 0)
+    path(d, 'M39 52 Q36 62 38 68', stroke=0, width=1.4)
+    # Cut around each curved tusk, then draw its narrower ivory inside.
+    path(d, 'M39 76 C23 77 20 64 25 53 C25 65 29 69 37 67 Z', 0)
+    path(d, 'M38 74 C25 75 22 65 25 56 C26 65 30 70 38 69 Z', 255)
+    path(h, 'M42 31 L44 51', stroke=220, width=1.3)
+    path(h, 'M30 56 L28 62', stroke=220, width=1.3)
+    # Half of the blunt nose disk, mirrored into a broad uninterrupted snout.
+    path(h, 'M50 64 Q42 63 40 67 L40 75 Q44 79 50 79 Z', 230)
+    ellipse(d, (43, 69, 47, 73), 0)
+    path(d, 'M44 82 L50 83 L50 84 L44 84 Z', 0)
+
+
 def motif(faction, variant):
-    """Return a full-sized silhouette and sparse thread-detail mask."""
+    """Hand-authored contours, negative-space cuts and restrained gold engraving."""
     mask = Image.new('L', (100*SCALE, 100*SCALE))
     detail = Image.new('L', mask.size)
-    d, h = ImageDraw.Draw(mask), ImageDraw.Draw(detail)
-    if variant == 'a' and faction == 'accord':
-        # The forehead and antlers remain one connected silhouette.
-        left = 'M44 45 C34 37 25 33 22 22 Q20 13 22 7 C16 13 16 24 21 32 Q10 27 5 13 Q3 25 8 31 L23 42 Q32 46 39 50 Z'
-        path(d, left, 255)
-        path(d, 'M26 36 L29 22 L26 10 L35 20 L35 37 Z', 255)
-        path(d, 'M19 32 L8 35 L2 29 L5 41 L31 45 Z', 255)
-        mask = Image.fromarray(np.maximum(np.array(mask), np.array(mask)[:, ::-1]))
-        d = ImageDraw.Draw(mask)
-        path(d, 'M40 41 C43 37 57 37 60 42 L64 47 Q73 40 81 43 Q78 56 65 59 L61 75 Q59 86 50 91 Q41 86 39 75 L35 59 Q22 56 19 43 Q28 40 36 47 Z', 255)
-        path(d, 'M38 60 L44 62 L42 66 L38 64 Z', 0)
-        path(d, 'M62 60 L56 62 L58 66 L62 64 Z', 0)
-        path(h, 'M50 47 Q45 65 50 77 Q54 66 50 47 Z', 170)
-        path(h, 'M45 83 Q50 86 55 82', stroke=200, width=1.3)
-    elif variant == 'a':
-        # Broad side profile, bristles, snout and a single unmistakable tusk.
-        path(d, 'M12 76 Q18 57 16 46 L9 40 L23 35 L17 26 L33 27 L29 16 L45 23 L48 12 L59 26 Q70 28 77 42 L94 48 L96 62 L85 68 L69 68 Q65 80 54 83 L25 89 Z', 255)
-        path(d, 'M49 33 Q52 18 64 15 L61 40 Z', 255)
-        # Cut a field-coloured crescent behind the rising tusk.
-        path(d, 'M66 54 Q78 69 92 57 Q82 81 64 72 Z', 0)
-        path(d, 'M60 66 Q78 83 86 46 Q94 78 69 81 Z', 255)
-        ellipse(d, (67, 40, 73, 45), 0)
-        ellipse(d, (87, 52, 92, 57), 0)
-        path(h, 'M28 43 Q27 65 39 76', stroke=180, width=2.3)
-        path(h, 'M35 40 Q34 59 44 68', stroke=150, width=1.5)
-        path(h, 'M54 33 L59 23', stroke=200, width=2)
-    elif variant == 'b' and faction == 'accord':
-        # Three generous lobed boughs, no geometrical arrow tips.
-        path(d, 'M44 52 L56 52 L56 70 Q66 79 78 83 L83 91 L61 86 L50 81 L38 87 L17 91 L23 82 Q36 77 43 69 Z', 255)
-        path(d, 'M46 62 L27 55 L20 41 L29 36 L38 50 L47 52 Z', 255)
-        path(d, 'M53 60 L73 54 L81 40 L71 36 L64 48 L53 51 Z', 255)
-        path(d, 'M42 39 C32 34 32 26 39 24 C31 16 39 10 44 12 Q49 0 55 11 C65 8 71 18 63 24 C71 30 66 38 58 38 L57 48 L44 49 Z', 255)
-        path(d, 'M33 49 C27 55 17 53 18 46 C7 49 1 40 10 35 C2 28 9 20 17 25 C20 16 31 21 29 29 C41 27 43 40 34 42 Z', 255)
-        path(d, 'M66 48 C74 55 84 51 82 45 C94 47 99 38 90 33 C98 24 88 18 81 24 C79 15 67 20 70 29 C58 28 57 39 65 42 Z', 255)
-        path(h, 'M50 18 Q47 46 50 73', stroke=160, width=2.2)
-        path(h, 'M17 32 Q28 34 32 44', stroke=160, width=1.5)
-        path(h, 'M84 31 Q72 35 69 43', stroke=160, width=1.5)
-    elif variant == 'b':
-        path(d, 'M14 14 Q4 37 13 62 C23 86 55 94 78 76 Q90 65 95 49 Q79 66 63 65 C40 64 29 43 40 26 Z', 255)
-        path(d, 'M10 12 Q11 8 16 9 L45 23 L41 31 L9 19 Z', 255)
-        path(h, 'M19 26 Q15 49 30 64', stroke=165, width=2)
-        path(h, 'M12 46 L30 44 L33 52 L15 55 Z', 190)
-        path(h, 'M42 75 L48 61 L56 64 L51 81 Z', 190)
-    elif variant == 'c' and faction == 'accord':
-        path(d, 'M34 83 L28 94 L49 87 L59 91 L57 78 C69 72 74 55 69 39 Q65 30 68 24 L82 24 L92 32 L88 18 L75 14 C68 3 48 7 44 19 Q38 31 26 37 L14 42 L26 45 L15 51 L28 53 Q18 66 20 80 L28 73 Z', 255)
-        path(h, 'M47 34 C33 41 29 57 30 69 C44 66 56 50 58 33 Q52 29 47 34 Z', 180)
-        path(h, 'M47 39 Q36 49 34 60', stroke=85, width=1.6)
-        ellipse(d, (67, 15, 72, 19), 0)
-        path(d, 'M43 78 L42 85 L63 85 L63 89 L35 89 L35 84 Z', 255)
-    else:
-        # One broad, open coil; the head and hooked muzzle face outwards.
-        path(d, 'M65 48 C81 53 92 66 85 79 C76 96 41 95 24 84 C7 72 11 48 29 41 C42 35 56 41 58 54 C60 65 51 73 39 70 Q47 65 46 57 Q43 50 34 53 C23 58 27 72 40 76 C59 83 78 73 68 63 C58 53 52 48 53 38 Q53 30 60 24 L54 14 L68 17 Q75 9 86 14 L96 25 L89 34 L75 34 Q66 34 65 41 Z', 255)
-        ellipse(d, (80, 19, 85, 23), 0)
-        path(d, 'M88 29 L95 27 L94 31 Z', 0)
-        path(h, 'M61 38 Q61 50 72 58 C87 73 72 85 49 85', stroke=170, width=2)
-        path(h, 'M20 66 Q20 49 35 47', stroke=160, width=1.8)
-    # Interior thread never paints outside the main motif.
+    drawing = {
+        ('accord', '1'): hart_front, ('accord', '2'): hart_standing,
+        ('accord', '3'): hart_profile, ('throng', '1'): boar_profile,
+        ('throng', '2'): boar_walking, ('throng', '3'): boar_front,
+    }[faction, variant]
+    drawing(ImageDraw.Draw(mask), ImageDraw.Draw(detail))
+    if (faction, variant) in (('accord', '1'), ('throng', '3')):
+        mask, detail = mirror(mask), mirror(detail)
     detail = Image.fromarray(np.minimum(np.array(detail), np.array(mask)))
     return mask, detail
 
@@ -165,9 +262,9 @@ def icon(faction, variant, palette):
     charge = paint(silhouette, ink, 21, thread=True)
     charge.alpha_composite(paint(details, GOLD, 22, thread=True))
     size, x, y = {
-        ('accord', 'a'): (75, 12, 9), ('throng', 'a'): (70, 14, 11),
-        ('accord', 'b'): (70, 15, 11), ('throng', 'b'): (75, 12, 10),
-        ('accord', 'c'): (75, 12, 9), ('throng', 'c'): (74, 12, 10),
+        ('accord', '1'): (83, 8, 12), ('accord', '2'): (64, 16, 12),
+        ('accord', '3'): (80, 10, 9), ('throng', '1'): (82, 9, 9),
+        ('throng', '2'): (69, 14, 10), ('throng', '3'): (82, 9, 7),
     }[faction, variant]
     charge = down(charge, (size*SCALE, size*SCALE))
     im.alpha_composite(charge, (x*SCALE, y*SCALE))
