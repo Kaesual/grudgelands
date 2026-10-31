@@ -1,0 +1,170 @@
+{
+  "sign_standing_wood_a": {
+    "texture_size": [
+      64,
+      64
+    ],
+    "model": "sign_standing_a.obj",
+    "replaces": "grug_signs_standing.png",
+    "ink": "#2B1E14",
+    "inventory_image": "sign_standing_wood_a_inv.png",
+    "license": "CC0-1.0",
+    "writing_rgb_min": [
+      173,
+      137,
+      83
+    ],
+    "writing_rgb_max": [
+      184,
+      148,
+      94
+    ]
+  },
+  "waypost_wood_a": {
+    "texture_size": [
+      64,
+      64
+    ],
+    "model": "waypost_b.obj",
+    "replaces": "grug_signs_waypost.png",
+    "ink": "#2B1E14",
+    "inventory_image": "waypost_wood_a_inv.png",
+    "license": "CC0-1.0",
+    "writing_rgb_min": [
+      173,
+      137,
+      83
+    ],
+    "writing_rgb_max": [
+      184,
+      148,
+      94
+    ]
+  },
+  "notice_board_wood_a": {
+    "texture_size": [
+      64,
+      64
+    ],
+    "model": "notice_board_b.obj",
+    "replaces": "grug_signs_notice_board.png",
+    "ink": "#2B1E14",
+    "inventory_image": "notice_board_wood_a_inv.png",
+    "license": "CC0-1.0",
+    "writing_rgb_min": [
+      170,
+      134,
+      80
+    ],
+    "writing_rgb_max": [
+      184,
+      148,
+      94
+    ]
+  },
+  "sign_wall_wood_a": {
+    "texture_size": [
+      16,
+      16
+    ],
+    "replaces": "default_sign_wall_wood.png",
+    "ink": "#2B1E14",
+    "inventory_image": "unchanged",
+    "license": "CC0-1.0"
+  },
+  "sign_standing_wood_b": {
+    "texture_size": [
+      64,
+      64
+    ],
+    "model": "sign_standing_a.obj",
+    "replaces": "grug_signs_standing.png",
+    "ink": "#2B1E14",
+    "inventory_image": "sign_standing_wood_b_inv.png",
+    "license": "CC0-1.0",
+    "writing_rgb_min": [
+      185,
+      143,
+      85
+    ],
+    "writing_rgb_max": [
+      200,
+      158,
+      100
+    ]
+  },
+  "waypost_wood_b": {
+    "texture_size": [
+      64,
+      64
+    ],
+    "model": "waypost_b.obj",
+    "replaces": "grug_signs_waypost.png",
+    "ink": "#2B1E14",
+    "inventory_image": "waypost_wood_b_inv.png",
+    "license": "CC0-1.0",
+    "writing_rgb_min": [
+      185,
+      143,
+      85
+    ],
+    "writing_rgb_max": [
+      200,
+      158,
+      100
+    ]
+  },
+  "notice_board_wood_b": {
+    "texture_size": [
+      64,
+      64
+    ],
+    "model": "notice_board_b.obj",
+    "replaces": "grug_signs_notice_board.png",
+    "ink": "#2B1E14",
+    "inventory_image": "notice_board_wood_b_inv.png",
+    "license": "CC0-1.0",
+    "writing_rgb_min": [
+      181,
+      139,
+      81
+    ],
+    "writing_rgb_max": [
+      200,
+      158,
+      100
+    ]
+  },
+  "sign_wall_wood_b": {
+    "texture_size": [
+      16,
+      16
+    ],
+    "replaces": "default_sign_wall_wood.png",
+    "ink": "#2B1E14",
+    "inventory_image": "unchanged",
+    "license": "CC0-1.0"
+  },
+  "baseline_sha256": {
+    "candidates/sign_standing_a.obj": "2787e27bf9ee0a47c9ea7b05d3811f5e9157b25cbce4834f72f2a9892d8526f9",
+    "candidates/sign_standing_a.png": "47f7e53c370af67ff5e8ba47fc1bcb3c38cc9926982f4f09143f091087f91d4f",
+    "candidates/sign_standing_a.json": "bc9328ae9c16a266e544cdbaf0092aef65a590a476128ab109f4849e62578bf8",
+    "candidates/waypost_b.obj": "3df5192798ab81e7978bbd22f862922fb339c0b35fe99e3797e5d7393de9548a",
+    "candidates/waypost_b.png": "f213848aef0a69bd0b60b104f75755fa9a41f225181b844f9c0596a5c796feaa",
+    "candidates/waypost_b.json": "874bcdc62e7e839fd73f7302271e36ec801133629428322c70065d2879ae09ea",
+    "candidates/notice_board_b.obj": "07dd230fdb4d02fe73d5559a7c734dc5b1992a028327aeaeab9817e5a004e73b",
+    "candidates/notice_board_b.png": "5b87c6b344af6e9a644ef58e642ca039e675451347fbad24cbd453549457f2ba",
+    "candidates/notice_board_b.json": "25b0318f0889810ce5fce40af469856e0513e6c863cc7911d058e98cdfec676a",
+    "candidates/sign_wall_wood.png": "5df721c5a5d14285eea69886002671b6c936524647301f38437a28cdcd04c4eb"
+  },
+  "preview_text": {
+    "cell_px": [
+      6,
+      12
+    ],
+    "pixel_node_size": 0.0078125,
+    "ink": "#2B1E14",
+    "surface_offset": 0.015625,
+    "source": "mods/CORE/grug_text/layout.lua"
+  }
+}
