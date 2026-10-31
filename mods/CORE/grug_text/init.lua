@@ -30,8 +30,8 @@
 --                     reader's look direction and the text's up). Default:
 --                     from the node's paramtype2. Unrotated (facedir 0,
 --                     degrotate 0, wallmounted 4) the reader looks along +z;
---                     wallmounted floor and ceiling boards read with their
---                     top towards +z (towards +x for param2 6 and 7).
+--                     wallmounted floor and ceiling boards read for someone
+--                     facing +z (+x for param2 6 and 7).
 --       faces         1 (default) or 2: the sprite's back shows the same
 --                     text, read correctly from behind, not mirrored (the
 --                     engine swaps the back quad's corners and keeps its
@@ -91,7 +91,11 @@ local frames = {
 		local p = node.param2 % 8
 		local forward = core.wallmounted_to_dir(p)
 		if forward.y ~= 0 then
-			return forward, p >= 6 and vector.new(1, 0, 0) or vector.new(0, 0, 1)
+			-- Read by someone facing +z (+x for 6 and 7): on the floor the
+			-- text's top points that way; on the ceiling, looked up at, the
+			-- other way.
+			local ahead = p >= 6 and vector.new(1, 0, 0) or vector.new(0, 0, 1)
+			return forward, forward.y < 0 and ahead or vector.multiply(ahead, -1)
 		end
 		return forward, UP
 	end,
@@ -139,11 +143,16 @@ local function texture(surface, text)
 		grug_text.charmap)
 end
 
--- Where the surface's entity stands and how it is turned.
+-- Where the surface's entity stands and how it is turned. The sprite's
+-- front (textures[1]) is the quad seen from its local +z side, so the
+-- entity faces the reader: its forward is the reader's look direction
+-- reversed. That half turn about the text's up also reverses the local x
+-- and z axes, hence the offset's.
 local function placement(surface, pos, node)
 	local forward, up = surface.frame(node)
-	local rot = vector.dir_to_rotation(forward, up)
-	return vector.add(pos, vector.rotate(surface.offset, rot)), rot
+	local rot = vector.dir_to_rotation(vector.multiply(forward, -1), up)
+	local o = surface.offset
+	return vector.add(pos, vector.rotate(vector.new(-o.x, o.y, -o.z), rot)), rot
 end
 
 -- Sends only what changed (the LBM also runs on a block that was merely

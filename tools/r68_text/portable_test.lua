@@ -363,8 +363,9 @@ eq(#layout.texture(layout.wrap(full(4, 15), 4, 15), {lines = 4, chars = 15, ink 
 
 ------------------------------------------------------------------------------
 -- O. Orientation: the entity stands just in front of the surface, turned so
--- that it faces the reader (forward = the reader's look direction), its up
--- the text's up.
+-- that it faces the reader (its forward is the reader's look direction
+-- reversed: the sprite's front is seen from its +z side), its up the text's
+-- up, its x the reader's left.
 ------------------------------------------------------------------------------
 local function near(a, b) return vector.distance(a, b) < 1e-9 end
 local function frame(obj)
@@ -372,7 +373,7 @@ local function frame(obj)
 		vector.rotate(V(1, 0, 0), obj.rot)
 end
 local SIGN_DEPTH = 7 / 16 - 1 / 64
-local expected_up = {[0] = V(0, 0, 1), V(0, 0, 1), V(0, 1, 0), V(0, 1, 0), V(0, 1, 0), V(0, 1, 0)}
+local expected_up = {[0] = V(0, 0, -1), V(0, 0, 1), V(0, 1, 0), V(0, 1, 0), V(0, 1, 0), V(0, 1, 0)}
 for p2 = 0, 5 do
 	local pos = V(10 * p2, 5, 0)
 	core.set_node(pos, {name = "default:sign_wall_wood", param2 = p2})
@@ -384,7 +385,7 @@ for p2 = 0, 5 do
 		local forward, up, right = frame(obj)
 		check(near(obj.pos, vector.add(pos, vector.multiply(d, SIGN_DEPTH))),
 			"O sign param2 " .. p2 .. " stands just in front of the board")
-		check(near(forward, d), "O sign param2 " .. p2 .. " faces the reader")
+		check(near(forward, vector.multiply(d, -1)), "O sign param2 " .. p2 .. " faces the reader")
 		check(near(up, expected_up[p2]), "O sign param2 " .. p2 .. " text up")
 		check(near(vector.cross(up, forward), right) or near(vector.cross(forward, up), right),
 			"O sign param2 " .. p2 .. " is a rotation")
@@ -402,7 +403,7 @@ for p2 = 0, 3 do
 		local forward, up = frame(obj)
 		check(near(obj.pos, vector.add(pos, vector.add(vector.multiply(back, -(0.5 + 1 / 64)),
 			V(0, LABEL_Y, 0)))), "O chest facedir " .. p2 .. " label in front of the lower front")
-		check(near(forward, back), "O chest facedir " .. p2 .. " faces the reader")
+		check(near(forward, vector.multiply(back, -1)), "O chest facedir " .. p2 .. " faces the reader")
 		check(near(up, V(0, 1, 0)), "O chest facedir " .. p2 .. " upright")
 	end
 end
@@ -420,8 +421,7 @@ do
 	core.set_node(pos, {name = "default:sign_wall_wood", param2 = 2})
 	eq(#live(pos), 0, "L a new sign has no entity")
 	check(sign.groups.grug_text == 1, "L the sign joins the LBM's group")
-	check(sign.tiles[1]:find("^default_sign_wall_wood%.png%^%[combine") ~= nil,
-		"L the placeholder board tile")
+	eq(sign.tiles[1], "x.png", "L the board's tile is left to the art")
 	write(pos, "First words")
 	local first = live(pos)
 	eq(#first, 1, "L writing makes one entity")
@@ -545,7 +545,10 @@ do
 	eq(#list, 1, "L only the written surface has an entity")
 	eq(list[1].props.textures[2], list[1].props.textures[1], "L faces = 2: the back shows the text")
 	local forward = frame(list[1])
-	check(near(forward, V(-1, 0, 0)), "L degrotate 60 (90 degrees) turns the surface")
+	check(near(forward, V(1, 0, 0)), "L degrotate 60 (90 degrees) turns the surface")
+	-- The offset's x is the reader's right: the reader looks along -x here,
+	-- so the right is +z... and the depth -0.1 is towards the reader (+x).
+	check(near(list[1].pos, vector.add(pos, V(0.1, 0.1, 0))), "L the offset in the turned frame")
 	meta_at(pos):set_string("back", "Mill")
 	T.refresh(pos)
 	eq(#live(pos), 2, "L a second surface, a second entity")
@@ -555,6 +558,14 @@ do
 	T.refresh(pos)
 	eq(#live(pos), 1, "L the cleared surface's entity goes, the other stays")
 	check(T.surfaces("probe:post")[2].visual_size.x == 128 / 128, "L the second surface's size")
+	-- The offset's x is the reader's right: facing west (look -x), right is +z.
+	core.register_node("probe:right", {paramtype2 = "degrotate", groups = {}})
+	T.register("probe:right", {lines = 1, chars = 4, offset = {x = 0.3, y = 0, z = 0}})
+	local rpos = V(410, 0, 0)
+	core.set_node(rpos, {name = "probe:right", param2 = 60})
+	meta_at(rpos):set_string("text", "R")
+	T.refresh(rpos)
+	check(near(live(rpos)[1].pos, vector.add(rpos, V(0, 0, 0.3))), "L offset x is the reader's right")
 end
 
 if failures > 0 then
