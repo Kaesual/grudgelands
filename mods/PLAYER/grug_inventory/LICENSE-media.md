@@ -21,5 +21,5 @@ retain their original licenses.
 
 | File | Source | License |
 |---|---|---|
-| `textures/grug_inventory_faction_accord.png` | Original generator output | CC0-1.0 |
-| `textures/grug_inventory_faction_throng.png` | Original generator output | CC0-1.0 |
+| `textures/grug_inventory_faction_accord.png` | Round 67: `tools/r67_emblem/candidates/emblem_accord_1.png` (the hart's head; GPT-6 Astra, the user's pick; provenance `tools/r67_emblem/LICENSE-media.md`) | CC0-1.0 |
+| `textures/grug_inventory_faction_throng.png` | Round 67: `tools/r67_emblem/candidates/emblem_throng_1.png` (the boar's head; GPT-6 Astra, the user's pick; provenance `tools/r67_emblem/LICENSE-media.md`) | CC0-1.0 |

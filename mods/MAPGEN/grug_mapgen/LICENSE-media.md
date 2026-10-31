@@ -105,5 +105,5 @@ retain their original licenses.
 | `textures/grug_mapgen_camp_ridge.png` | Original generator output | CC0-1.0 |
 | `textures/grug_mapgen_camp_trim_accord.png` | Original generator output | CC0-1.0 |
 | `textures/grug_mapgen_camp_trim_throng.png` | Original generator output | CC0-1.0 |
-| `textures/grug_mapgen_faction_banner_accord.png` | Original generator output | CC0-1.0 |
-| `textures/grug_mapgen_faction_banner_throng.png` | Original generator output | CC0-1.0 |
+| `textures/grug_mapgen_faction_banner_accord.png` | Round 67: `tools/r67_emblem/candidates/banner_accord_1.png` (GPT-6 Astra, the user's pick; provenance `tools/r67_emblem/LICENSE-media.md`) | CC0-1.0 |
+| `textures/grug_mapgen_faction_banner_throng.png` | Round 67: `tools/r67_emblem/candidates/banner_throng_1.png` (GPT-6 Astra, the user's pick; provenance `tools/r67_emblem/LICENSE-media.md`) | CC0-1.0 |

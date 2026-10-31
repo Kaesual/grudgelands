@@ -11,7 +11,6 @@ from PIL import Image
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 MAP = ROOT / "mods/MAPGEN/grug_mapgen"
-INV = ROOT / "mods/PLAYER/grug_inventory/textures"
 # Animated B3D node meshes use engine units: BS=10, unlike node boxes.
 # reference_projects/luanti/src/client/node_visuals.cpp:507-520
 ENGINE_UNITS_PER_NODE = 10.0
@@ -19,26 +18,6 @@ ENGINE_UNITS_PER_NODE = 10.0
 
 def chunk(tag, body):
     return tag.encode("ascii") + struct.pack("<i", len(body)) + body
-
-
-def svg_text(faction, icon=False):
-    bg, ink = (("#344b5a", "#d6c59b") if faction == "accord" else
-               ("#683e39", "#d1ba91"))
-    symbol = ('<path d="M30 83V49L50 34L70 49V83M40 80V53M50 80V48M60 80V53" '
-              'fill="none" stroke="%s" stroke-width="6" stroke-linejoin="miter"/>' % ink
-              if faction == "accord" else
-              '<path d="M26 40L36 48L41 74L46 37L50 29L54 37L59 74L64 48L74 40L69 80L50 91L31 80Z" fill="%s"/>' % ink)
-    if icon:
-        return ('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" '
-                'viewBox="20 22 60 76">%s</svg>' % symbol)
-    return '''<svg xmlns="http://www.w3.org/2000/svg" width="128" height="256" viewBox="0 0 100 160">
-<defs><pattern id="weave" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 0H4M0 2H4" stroke="#fff" opacity=".035"/></pattern></defs>
-<path d="M6 3H94V142L50 157L6 142Z" fill="%s"/>
-<path d="M12 8H88V138L50 151L12 138Z" fill="none" stroke="%s" stroke-width="2"/>
-<path d="M6 3H94V142L50 157L6 142Z" fill="url(#weave)"/>
-<path d="M17 5V138M83 5V138" stroke="#000" opacity=".12" stroke-width="5"/>
-%s<path d="M38 111H62M44 117H56" stroke="%s" stroke-width="2"/>
-</svg>''' % (bg, ink, symbol, ink)
 
 
 def cloth_svg(color, trim=False):
@@ -213,14 +192,8 @@ def outputs():
         MAP / "textures/grug_mapgen_camp_trim_accord.png": raster(cloth_svg("#465967", True)),
         MAP / "textures/grug_mapgen_camp_trim_throng.png": raster(cloth_svg("#754c45", True)),
     }
-    for faction in ("accord", "throng"):
-        result[MAP / ("textures/grug_mapgen_faction_banner_%s.png" % faction)] = raster(svg_text(faction))
-        result[INV / ("grug_inventory_faction_%s.png" % faction)] = raster(svg_text(faction, True))
-    for path, data in result.items():
-        if path.suffix == ".png" and "faction_" in path.name:
-            image = Image.open(io.BytesIO(data)).convert("RGBA")
-            assert image.getpixel((0, 0))[3] == 0, "opaque heraldry background: " + path.name
-            assert image.getchannel("A").getextrema() == (0, 255), path.name
+    # The faction heraldry (banner cloth and inventory emblem) comes from
+    # tools/r67_emblem since Round 67 (the user's pick, hart and boar).
     return result
 
 
