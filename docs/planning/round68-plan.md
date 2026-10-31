@@ -7,7 +7,10 @@ reviewed MERGE without a fix round; the art study ART checked by the
 coordinator); after the merges the user dropped the hover text
 ([follow-up](#follow-up-after-the-merges-2026-10-31)) and picked wood set B
 with the notice board in two halves
-([follow-up](#follow-up-wood-set-b-and-the-board-in-two-halves-2026-10-31)); GUI test pending,
+([follow-up](#follow-up-wood-set-b-and-the-board-in-two-halves-2026-10-31)),
+then new icons for bars, settings, gems and their blocks, with the metal
+stairs and slabs following
+([follow-up](#follow-up-the-picked-bar-setting-gem-and-block-icons-2026-10-31)); GUI test pending,
 not pushed ([completion](#completion-2026-10-31)).
 Version: **0.68.0**. Classification: **compatible** (new nodes; the text
 of existing signs and chest labels is already in node metadata; the text

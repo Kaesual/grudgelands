@@ -22,6 +22,13 @@ saved (two-boot LBM proof), the new nodes keep `text`. After the merges
 the user dropped the hover text of signs and chest labels (the text is on
 them now); old ones are cleared once per block by an LBM, still compatible
 ([follow-up](planning/round68-plan.md#follow-up-after-the-merges-2026-10-31)).
+Further follow-ups, all compatible and in 0.68.0: wood set B on every sign
+and the notice board drawn in two halves (cracks on both, one drop when the
+ground goes), then GPT-6 Astra's icons for the metal bars, the goldsmith
+settings and the gems with their storage blocks (the user's picks: bars A,
+settings B, gems D), the metal stairs and slabs taking the new block faces
+([follow-ups](planning/round68-plan.md#follow-up-wood-set-b-and-the-board-in-two-halves-2026-10-31));
+300 portable fixtures after them, all passing.
 299 portable fixtures (two new); before this lane only `r37_dc` failed
 (waiting for the CHANGELOG entry); the round-end run on main: 298 of 299
 before lane D, `r37_dc` passing after it. **The
