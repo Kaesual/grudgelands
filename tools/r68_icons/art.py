@@ -475,6 +475,60 @@ def mineral(key, variant):
     return im
 
 
+# Pass 3: A's natural specimens redrawn at the D cuts' inventory weight.
+# The perimeter, exposed faces and fracture are placed on the final pixel
+# grid. No bitmap or rounded coordinate scaling: narrow edges stay one pixel.
+ROUGH_FINAL = {
+    'citrine': [(2,11),(3,4),(8,0),(12,2),(14,9),(11,14),(4,15)],
+    'jade': [(0,7),(3,3),(7,2),(12,3),(15,7),(14,12),(9,14),(3,13),(1,11)],
+    'garnet': [(1,5),(4,2),(10,2),(15,6),(14,12),(8,15),(2,13),(0,9)],
+    'sapphire': [(3,4),(8,0),(12,3),(14,12),(9,15),(3,13),(1,8)],
+    'ruby': [(3,13),(2,7),(5,1),(11,0),(13,5),(11,11),(8,15)],
+    'diamond': [(0,8),(6,1),(10,2),(14,7),(13,12),(7,15),(2,13)],
+}
+
+
+def final_rough(key):
+    im, d = canvas()
+    o, s, m, l, h = ramp(GEM[key])
+    points = ROUGH_FINAL[key]
+    d.polygon(points, fill=o)
+    # Retain A's irregular dark skin, exposed left face and right fracture.
+    d.polygon([(x+(1 if x<7 else -1), y+(1 if y<7 else -1)) for x,y in points], fill=s)
+    d.polygon([(3,5),(7,2),(11,4),(10,11),(4,12),(2,8)], fill=m)
+    d.polygon([(3,5),(7,2),(8,4),(6,8),(2,8)], fill=l)
+    d.line([(4,5),(6,3)], fill=h)
+    d.line([(10,5),(9,9),(11,12)], fill=o)
+    if key == 'jade':
+        d.polygon([(2,7),(5,4),(12,5),(13,10),(8,12),(3,11)], fill=m)
+        d.line([(3,7),(6,5),(10,5)], fill=l)
+    if key == 'ruby':
+        d.polygon([(4,7),(6,2),(10,1),(12,5),(8,12),(5,13)], fill=m)
+        d.line([(6,3),(5,7),(5,11)], fill=l)
+    return im
+
+
+def final_mineral(key):
+    """Keep Quartz's two prisms and Abyssal Crystal's three-pronged cluster."""
+    im, d = canvas()
+    o, s, m, l, h = ramp(GEM[key])
+    if key == 'quartz':
+        d.polygon([(0,7),(3,3),(6,5),(7,1),(11,0),(14,4),(14,12),(10,15),(3,14),(0,11)], fill=o)
+        d.polygon([(1,7),(3,5),(5,7),(6,13),(3,12),(1,10)], fill=m)
+        d.polygon([(8,2),(11,1),(13,4),(13,11),(9,14),(7,11)], fill=l)
+        d.polygon([(11,4),(13,4),(13,11),(10,13)], fill=m)
+        d.line([(8,3),(8,10)], fill=h)
+        d.line([(3,6),(3,11)], fill=h)
+    else:
+        d.polygon([(0,5),(3,3),(5,6),(6,0),(10,2),(12,8),(14,4),(15,7),(13,12),(8,15),(2,13)], fill=o)
+        d.polygon([(6,2),(9,3),(11,10),(8,14),(5,11)], fill=m)
+        d.line([(6,3),(6,9),(8,13)], fill=h)
+        d.polygon([(1,5),(3,5),(6,11),(4,12),(2,10)], fill=l)
+        d.line([(14,6),(12,11)], fill=l)
+        d.polygon([(9,3),(11,10),(8,14),(9,8)], fill=s)
+    return im
+
+
 def mix(a, b, factor):
     a, b = Image.new('RGB',(1,1),a).getpixel((0,0)), Image.new('RGB',(1,1),b).getpixel((0,0))
     return tuple(round(x*(1-factor)+y*factor) for x,y in zip(a,b)) + (255,)
@@ -550,4 +604,8 @@ def candidates():
         # measurements, not duplicated. Every new folder holds 6 cuts + 7 faces.
         result['gems_'+v] = {'cut_'+k: polished_gem(k,v) for k in GEMS}
         result['gems_'+v].update({k+'_block': polished_block(k,v) for k in (*GEMS,'abyssal_crystal')})
+    # One installation folder: the picked D cuts/faces, plus eight redraws.
+    result['gems_final'] = dict(result['gems_d'])
+    result['gems_final'].update({'rough_'+k: final_rough(k) for k in GEMS})
+    result['gems_final'].update({k: final_mineral(k) for k in ('quartz','abyssal_crystal')})
     return result
