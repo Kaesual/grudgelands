@@ -895,8 +895,8 @@ the Round 19 top-centre text list:
   name, remaining time and a detail line per status in one column (seven
   rows and "... and N more" when there are more than eight), refreshed about
   once a minute or on change while that mode is open. The professions
-  overview (Round 28 ruling 23: per known profession, primary slots first,
-  then Cooking and Alchemy, its tier, "Crafts: n/m toward tier N+1"
+  overview (Round 28 ruling 23: per known profession, Cooking and Alchemy
+  first, then the primary slots, its tier, "Crafts: n/m toward tier N+1"
   (`professions.md` §1 counts; "Highest tier reached." at T6) and, while
   the character's ten-level band caps the tier, the note "Capped by your
   level: reach level 10N+1, then craft once more for tier N+1") was the
