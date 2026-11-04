@@ -981,7 +981,8 @@ do
 		"bulwark_halt"))
 	local S = base_pool(60) / 8
 	local text = R.retort.description_for(p, R.retort)
-	check(text:find("+40%", 1, true) and text:find(tostring(math.floor(0.4 * S)), 1, true) and
+	-- Round 69: the tooltip shows the readied hit whole, 1.4 S, not its bonus alone.
+	check(text:find("+40%", 1, true) and text:find(tostring(math.floor(1.4 * S)), 1, true) and
 		text:find(tostring(math.floor(0.02 * base_pool(60))), 1, true),
 		"K9 Retort's tooltip: +40 %, its damage and the heal (" .. text .. ")")
 	text = R.broadstroke.description_for(p, R.broadstroke)

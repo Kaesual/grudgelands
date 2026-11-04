@@ -30,15 +30,22 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
 - The personal cooldown is **30 minutes of real time**, including offline time
   and server restarts. It begins only on successful return. Rebinding, death,
   reconnecting and restarting do not reset it.
-- Death respawns the player at the bound home regardless of the return cooldown,
+- Death respawns the player at the home return travel goes to (`grug_home.get`:
+  a Claim Stone set as home, below, else the bound innkeeper, else the
+  starting-town innkeeper), regardless of the return cooldown and of combat,
   without consuming or changing that cooldown. Other death rules are unchanged.
-- **Respawn is one teleport** (Round 28 ruling 16): straight to the bound
-  innkeeper's arrival, or the starting-town innkeeper when none is bound; there
-  is no intermediate stop. The player is held there through the
+- **Respawn is one teleport** (Round 28 ruling 16): straight to that home's
+  arrival; there is no intermediate stop. The player is held there through the
   `grug_core` movement aggregator (exclusive hold: no movement, no gravity,
   other speed effects untouched) until the destination area is emerged and the
-  arrival validated, then released. Only if that preparation fails or times out
-  does the player land in the starting town's saved start pocket, with a message.
+  arrival validated, then released. A Claim Stone's cube is read before the
+  teleport (its blocks are loaded, `core.load_area`), so nobody lands in a
+  blocked cube.
+- **A respawn always ends somewhere, held until then** (Round 69). A blocked or
+  unprepared Claim Stone goes on to the innkeeper, a failed or timed-out
+  innkeeper to the starting town's saved start pocket, with a message. A claim
+  lost on the way hands over to the home that replaced it. Only when the start
+  pocket fails too is the player released where they stand, with a message.
 - No teleport (respawn, return travel, mount dismount, character creation)
   adds a velocity derived from the server-side `get_velocity()`. After a
   lethal fall the server still holds the pre-impact speed (it ignores a dead
@@ -59,7 +66,7 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   same way, between a camp's surface and its rooms, with the waystones'
   rules.
 
-## Claim Stone as travel home (Round 25)
+## Claim Stone as home (Round 25)
 
 Full rules: [housing.md](housing.md) §8.
 
@@ -76,7 +83,8 @@ Full rules: [housing.md](housing.md) §8.
 - The map marks a claim home with the home icon at the stone
   (`grug_map/providers.lua`; the map window and the minimap, without a label
   since Round 44).
-- Death always respawns at the bound innkeeper, never at the Claim Stone.
+- Death respawns at the Claim Stone too, fuelled or not (Round 69, retiring
+  Round 25 ruling 25); the fallbacks are the ones above.
 - Independently, the activated stone is the waypoint "Your Claim Stone" in
   every waystone's list and an origin for travel to the discovered waystones
   (Round 45 PT9, [world.md](world.md) §6).

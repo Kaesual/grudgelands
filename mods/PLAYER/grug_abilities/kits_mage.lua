@@ -281,7 +281,7 @@ grug_abilities.register_ability({
 	description_for = function(user, def)
 		local values = def.values(user, def)
 		return ("Hurls a fireball at the enemy in your crosshair:\n" ..
-			"%d damage, and %d to other enemies within 2 m of the impact."):format(
+			"%d damage, and %d damage to other enemies within 2 m of the impact."):format(
 				effective_number(user, values.damage), effective_number(user, values.splash))
 	end,
 	color = "#ff8833",
@@ -558,7 +558,7 @@ grug_abilities.register_ability({
 		return {damage = damage(user, def or grug_abilities.registered.ice_nova, 0.65)}
 	end,
 	description_for = function(user, def)
-		return ("Damages enemies within %g m around you for %d\n" ..
+		return ("Strikes enemies within %g m around you for %d damage\n" ..
 			"and roots them for 2.5 s."):format(radius(user, def, 5),
 				effective_number(user, def.values(user, def).damage))
 	end,

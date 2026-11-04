@@ -402,16 +402,24 @@ Selecting a quest marks where its open objectives are done
   scaling drops parts of the line, and 0.7 units are about 50 px at 1080p
   and 37 px at 720p (most regions are 0.2–0.45 units
   wide at zoom 1);
-- finished kill and use objectives, item objectives (gathering, ore, quest
-  drops) and roles outside the region maps without a place of their own
-  (underground, water, rare and critter spawns) mark nothing; the text
-  suffices. Two objectives at one spot share one crosshair.
+- an item objective whose source the data names (Round 69 ruling 8, 14
+  quests: its own `roles` and `area`, or a quest drop of its item in the
+  player's variant) marks that source as a kill objective of it does, rings
+  for an area, a crosshair for a leader, a garrison camp or a role's own
+  place, while the item is still missing;
+- finished kill, use and item objectives, item objectives without a named
+  source (the gathering, crafting and fishing quests) and roles outside the
+  region maps without a place of their own (underground, water, rare and
+  critter spawns) mark nothing; the text suffices. Two objectives at one
+  spot share one crosshair.
 
 The index (role → regions, area → regions, leader → spot) is built once at
 start from the region maps ([spawn_regions.md](spawn_regions.md)): seed 42,
 151 roles, 1287 regions, 363 areas and 49 leaders in about 2 ms. On that
 seed the targets mark all 94 talk, 18 use and 360 kill objectives (94 kill
-objectives with a crosshair, 266 with rings).
+objectives with a crosshair, 266 with rings); every variant of the 14 quests
+with a named source has a target, and none of the 166 other item objective
+rows does (Round 69, `tools/r69_questmap`).
 
 ### Refresh
 

@@ -1200,6 +1200,14 @@ function grug_abilities.description_prefix(player, def)
 		cost_line .. ", " .. timing .. "\n" .. range_line
 end
 
+-- The skill's text for this player now: its current numbers where it has
+-- any. The hotbar and catalog stacks and the talent tree's granting nodes
+-- (grug_classes talent_graph_ui.lua) all read this one.
+function grug_abilities.skill_text(player, def)
+	return def.description_for and def.description_for(player, def)
+		or def.description
+end
+
 -- Apply one player's effective numeric description to an ability stack in
 -- place. Returns true only when the caller must write the stack back. Ability
 -- formulas live in kits.lua's def.values accessors; this plumbing only asks
@@ -1208,9 +1216,8 @@ function grug_abilities.update_stack_description(stack, def, player)
 	if not grug_core.scale_player_damage then
 		return false
 	end
-	local body = def.description_for and def.description_for(player, def)
-		or def.description
-	local desired = grug_abilities.description_prefix(player, def) .. body
+	local desired = grug_abilities.description_prefix(player, def) ..
+		grug_abilities.skill_text(player, def)
 	local meta = stack:get_meta()
 	if meta:get_string("description") == desired then
 		return false
@@ -1518,6 +1525,20 @@ function grug_abilities.register_on_swing(func)
 	swing_callbacks[#swing_callbacks + 1] = func
 end
 
+-- A plain swing of `def` before the one scaling pass: the weapon, the melee
+-- bonus, the flat talent add and the damage_pct by the swing definition's id
+-- and tags (Fine Edge on Strike and Bladecraft: a share of its untalented
+-- damage). The swing passes what it already read; a tooltip passes neither
+-- and gets the equipped melee weapon's.
+function grug_abilities.plain_swing_raw(player, def, weapon_damage, melee_bonus)
+	weapon_damage = weapon_damage or grug_abilities.swing_stats(player)
+	melee_bonus = melee_bonus or grug_classes.get_melee_bonus(player)
+	return weapon_damage + melee_bonus
+		+ grug_classes.get_talent_bonus(player, "melee_damage_add")
+		+ (weapon_damage + melee_bonus)
+		* grug_abilities.family_bonus(player, def, "damage_pct") / 100
+end
+
 -- Proc preparation still uses the two-phase grug_core seam because mobs_redo
 -- can reject a punch through do_punch or CMI after damage was calculated. The
 -- context is now one whole authoritative swing, never a native packet
@@ -1758,11 +1779,8 @@ attempt_swing = function(player, selected, held, latched)
 	local melee_bonus = grug_classes.get_melee_bonus(player)
 	local melee_damage_add = grug_classes.get_talent_bonus(player,
 		"melee_damage_add")
-	-- The plain swing's damage_pct by the swing definition's id and tags
-	-- (Fine Edge on Strike and Bladecraft): a share of its untalented damage.
-	local damage_pct = grug_abilities.family_bonus(player, selected, "damage_pct")
-	local raw_damage = weapon_damage + melee_bonus + melee_damage_add
-		+ (weapon_damage + melee_bonus) * damage_pct / 100
+	local raw_damage = grug_abilities.plain_swing_raw(player, selected,
+		weapon_damage, melee_bonus)
 	local proc
 	local proc_cost
 	local post
@@ -2248,9 +2266,11 @@ local function sync_skins(player, hand_list)
 	end
 end
 
--- Level and talent changes can re-tune every numeric ability. Walk only the
--- lists where ability items are allowed to live, and spend at most one
--- inventory write per changed ability. No globalstep or cast path calls this.
+-- Level, talent, equipment and status changes can re-tune every numeric
+-- ability. Walk only the lists where ability items are allowed to live, and
+-- spend at most one inventory write per changed ability. It runs on those
+-- changes only: a status that starts or ends may reach it from a cast or the
+-- status step, never once per tick.
 local function sync_descriptions(player)
 	local inv = player:get_inventory()
 	for _, listname in ipairs(representation_lists()) do
@@ -2661,10 +2681,13 @@ if grug_classes.register_on_talents_changed then
 end
 
 -- Pool-changing statuses follow the talent refresh path: clamp the private
--- mana ledger first, then redraw the exact resource bar once.
+-- mana ledger first, then redraw the exact resource bar once. A status's
+-- spell damage (a meal, an elixir) enters the spell tooltips, so they follow
+-- as well; a status only changes on its application, end or replacement.
 grug_core.register_on_status_modifiers_changed(function(player)
 	clamp_mana(player)
 	hud_update(player)
+	sync_descriptions(player)
 end)
 
 --

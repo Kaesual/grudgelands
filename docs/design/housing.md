@@ -393,8 +393,11 @@ minute); only the draft form (§7.1) counts seconds.
   player's bound innkeeper (the starting-town innkeeper when none is bound),
   with a message; an offline player gets it at the next login (ruling 26).
   Binding an innkeeper also replaces a claim home.
-- Death always respawns at the bound innkeeper, even when the Claim Stone is
-  the travel home (ruling 25).
+- Death respawns at the same home, the Claim Stone included, with or without
+  fuel (Round 69, retiring ruling 25). A respawn has no cooldown and no combat
+  rule. If the cube is blocked or the area cannot be prepared, it ends at the
+  innkeeper, then in the start pocket; the player is held until standing
+  somewhere valid.
 - Independently of the travel home, the activated stone is a waypoint, "Your
   Claim Stone", in every waystone's list, and its owner travels from it to
   the discovered waystones through the form's Waypoints tab (Round 45 PT9,

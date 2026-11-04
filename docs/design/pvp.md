@@ -79,7 +79,7 @@ eligibility and flag".
 - **Logout in PvP combat while flagged is death.** The enemy players who
   landed damage in the last 15 s and are online get the kill at once, with
   the death message "… fled the fight and fell."; the character starts dead
-  at the next login and respawns at the bound innkeeper. A disconnect counts
+  at the next login and respawns at home. A disconnect counts
   the same; a server shutdown does not.
 - **Kill credit:** every online enemy player who landed damage on the victim
   in the last 15 s gets a player kill; the owner of the lethal hit also gets

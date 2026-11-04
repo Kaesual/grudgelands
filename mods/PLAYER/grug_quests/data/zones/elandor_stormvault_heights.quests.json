@@ -134,7 +134,7 @@
               "area": "kragmar_bannerbreak_mesa/sunderstrap_camp"
             }
           ],
-          "text": "The Trench Archers at {name:sunderstrap_camp}, {dir_from_giver:sunderstrap_camp}, are stealing our runners' messages. Somewhere in that camp is a Runner's Packet full of questions about deliveries that never arrived. Bring one back to me. The people asking have waited long enough for an answer."
+          "text": "The Trench Archers at {name:sunderstrap_camp}, {dir_from_giver:sunderstrap_camp}, are stealing our runners' messages. Some of those archers carry a Runner's Packet full of questions about deliveries that never arrived. Bring one back to me. The people asking have waited long enough for an answer."
         },
         {
           "zone": "kragmar_thunderroot_wilds",

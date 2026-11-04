@@ -281,9 +281,9 @@ end
 
 -- Working title kept from the design file. Deliberately a plain English verb,
 -- not an ability name from an existing commercial game.
-local strike_description = "A full melee swing with your equipped weapon. " ..
-	"Hold LMB and keep a hostile in your crosshair; the shared weapon clock " ..
-	"prevents click spam."
+local strike_lead = "A full melee swing with your equipped weapon"
+local strike_rest = "Hold LMB and keep a hostile in your crosshair; the shared " ..
+	"weapon clock prevents click spam."
 
 local strike_def = {
 	id = "strike",
@@ -291,15 +291,18 @@ local strike_def = {
 	target_kind = "hostile",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
-	description = strike_description,
-	description_for = function(player)
+	description = strike_lead .. ". " .. strike_rest,
+	description_for = function(player, def)
+		-- The melee slot's swing, the fists without a weapon.
+		local text = ("%s: %d damage. %s"):format(strike_lead, effective_number(player,
+			grug_abilities.plain_swing_raw(player, def)), strike_rest)
 		local class_def = grug_classes.get_class_def(player)
 		if not class_def or class_def.resource ~= "rage" then
-			return strike_description
+			return text
 		end
 		-- The equipped weapon's grant per hit (ruling 9), one decimal.
 		local rage = ("%.1f"):format(grug_abilities.swing_rage(player))
-		return strike_description .. " Generates " ..
+		return text .. " Generates " ..
 			(rage:gsub("%.0$", "")) .. " rage when it lands."
 	end,
 	-- Bone white, deliberately neutral (E8): the four class colours carry the

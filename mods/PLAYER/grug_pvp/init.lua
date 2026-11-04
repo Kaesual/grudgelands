@@ -373,7 +373,7 @@ core.register_on_joinplayer(function(player)
 		R.clear(rec)
 		save_timers(player, rec)
 		-- After every join callback: the death then runs the ordinary
-		-- respawn path (the bound innkeeper).
+		-- respawn path (the home).
 		core.after(0, function()
 			local p = core.get_player_by_name(name)
 			if p and p:get_hp() > 0 then

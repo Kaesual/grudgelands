@@ -1,9 +1,10 @@
 -- Round 25 "Home stone" (docs/planning/round25-housing-plan.md, ruling 14):
--- the player's own placed Claim Stone can be the travel-home target. Arrival
--- is the arrival cube above the stone (travel.lua), with the usual cooldown.
+-- the player's own placed Claim Stone can be the home. Arrival is the arrival
+-- cube above the stone (travel.lua), with the usual cooldown on a return.
 -- An unfuelled claim still counts; only pick-up and destruction reset the
 -- target to the innkeeper home, with a message (at the next login when the
--- owner is offline). Respawn is unchanged: it always uses the innkeeper home.
+-- owner is offline). Respawn goes to the same home (Round 69, retiring Round
+-- 25 ruling 25).
 --
 -- The target is stored as the claim id, never as a position; it is valid only
 -- while grug_housing reports that very claim as the player's placed claim.
@@ -31,7 +32,8 @@ local function claim_row(player, claim)
   arrival=vector.new(arrival.x,arrival.y,arrival.z)}
 end
 
--- The travel-home target: the bound placed claim, else the innkeeper home.
+-- THE home of return and respawn: the bound placed claim, else the innkeeper
+-- home.
 -- A claim row carries `claim` (its id); innkeeper rows do not.
 function grug_home.get(player)
  local id = player:get_meta():get_string(CLAIM_KEY)
@@ -81,10 +83,10 @@ function grug_home.set_home_claim(player)
  meta:set_string(CLAIM_KEY, id)
  storage:set_string(LOST_PREFIX .. name, "")
  if housing.is_active(claim) then return true, "Your Claim Stone is now your home." end
- return true, "Your Claim Stone is now your home. It has no fuel, but you can still travel there."
+ return true, "Your Claim Stone is now your home. It has no fuel, but you still travel and respawn there."
 end
 
--- Binding an innkeeper makes it the travel home again (innkeeper.lua).
+-- Binding an innkeeper makes it the home again (innkeeper.lua).
 function grug_home.clear_home_claim(player)
  player:get_meta():set_string(CLAIM_KEY, "")
 end

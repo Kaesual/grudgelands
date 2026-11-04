@@ -475,10 +475,10 @@ local function render()
 end
 local before = render()
 has(before.log_q0_area_kind, "Defeat Small Boar: 0/8 (level 1" .. DASH .. "4)", "quest log: kill range")
-has(before.log_q0_camp, "Defeat Confused Bandit: 0/5 (level 9" .. DASH .. "10)\nBring Ledger Page: 0/3 (level 9" ..
+has(before.log_q0_camp, "Defeat Confused Bandit: 0/5 (level 9" .. DASH .. "10)\nBring Ledger Page: 0/3 (from Confused Bandit) (level 9" ..
 	DASH .. "10)", "quest log: camp kill and quest-drop item")
 has(before.log_q0_leader, "Defeat Confused Bandit Chief: 0/1 (level 10)", "quest log: one level")
-has(before.log_q0_tusks, "Bring Boar Tusk: 0/4 (level 1" .. DASH .. "4)", "quest log: item naming its source")
+has(before.log_q0_tusks, "Bring Boar Tusk: 0/4 (from Small Boar) (level 1" .. DASH .. "4)", "quest log: item naming its source")
 has(before.log_q0_plain, "Bring Cobblestone: 0/10\nBring Any Tree: 0/5\n\nRewards:", "quest log: items without a range")
 has(before.dialogue_kind, "Defeat Small Boar × 8 (level 1" .. DASH .. "4)\n", "active quest's dialogue: kill range")
 eq(before.hud_q0_area_kind, "0/8 Defeat Small Boar", "HUD tracker line unchanged (no range)")
@@ -524,11 +524,23 @@ for _, case in ipairs({
 	{"source role not in the area", "E-role-not-in-area", function(o) o.area = "woods" end},
 	{"critter as the source", "E-critter-target", function(o) o.roles = {"wild_turkey"} end},
 	{"source levels do not fit the quest level", "E-level-fit", function(o) o.roles = {"confused_bandit"} end},
+	-- Round 69: the objective line reads the source's names.
+	{"a source that selects no name", "E-no-name", function() end, function(w)
+		local real = w.target_names
+		w.target_names = function(mobs, area, zone)
+			local out = {}
+			for i in ipairs(mobs) do out[i] = {} end
+			return #mobs == 1 and mobs[1] == "grug_mobs:small_boar" and out or real(mobs, area, zone)
+		end
+		return function() w.target_names = real end
+	end},
 }) do
 	local files = deep_copy(base_files)
 	case[3](tusks(files))
+	local restore = case[4] and case[4](world)
 	local found = V.structure(files, npcs_before)
 	if #found == 0 then found = V.world(files, world) end
+	if restore then restore() end
 	local hit
 	for _, message in ipairs(found) do
 		if message:find("[" .. case[2] .. "]", 1, true) and message:find("quest q0_tusks", 1, true) then hit = message end

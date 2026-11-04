@@ -11,6 +11,9 @@
 --      node in an emerged sky pocket, and charges the 30-minute cooldown.
 --   3. A solid node in the arrival cube sends that trip to the innkeeper home.
 --   4. notify_claim_changed(..., "destroyed") resets the home with a message.
+--   Round 69: respawn on the real emerge path, to that claim home and, with
+--   the cube blocked, to the innkeeper, held on the way (the fixture
+--   tools/r69_home covers every other path).
 -- Ends the server itself; "RESULT PASS" is the verdict line.
 local PREFIX = "[r25_home_probe] "
 local NAME = "r25_home_probe"
@@ -46,6 +49,8 @@ function player.set_pos(self, pos) self.pos = vector.new(pos) end
 function player.get_velocity() return vector.new(0, 0, 0) end
 function player.add_velocity() end
 function player.get_look_horizontal() return 0 end
+function player.get_physics_override(self) return self.physics or {} end
+function player.set_physics_override(self, override) self.physics = override end
 local get_player_by_name = core.get_player_by_name
 core.get_player_by_name = function(name)
  if name == NAME then return player end
@@ -55,6 +60,12 @@ local chat_send_player = core.chat_send_player
 core.chat_send_player = function(name, message)
  if name == NAME then chat[#chat + 1] = message; log("chat: " .. message); return end
  return chat_send_player(name, message)
+end
+-- core.sound_play takes a real player only; the table player stays silent.
+local sound_play = grug_sounds.play
+grug_sounds.play = function(id, target, ...)
+ if target == player then return false end
+ return sound_play(id, target, ...)
 end
 local meta = player.get_meta()
 meta:set_string("grug_factions:faction", "accord")
@@ -77,6 +88,23 @@ local function wait_for(predicate, timeout, then_fn, label)
   core.after(0.5, poll)
  end
  poll()
+end
+
+-- Round 69: a respawn goes to the claim home or, blocked, to the innkeeper,
+-- straight away, and leaves the cooldown alone.
+local function respawn_to(arrival, label, then_fn)
+ local left = grug_home.remaining(player)
+ player.pos = vector.new(0, 300, 0)
+ check(grug_home.respawn(player), label .. ": respawn accepted")
+ check(vector.distance(player.pos, arrival) < 0.01, label .. ": the first teleport lands there")
+ check(grug_core.is_movement_held(player, "grug_home:respawn"), label .. ": held")
+ wait_for(function() return not grug_home.is_pending(player) end, 120, function()
+  log(label .. ": pos " .. core.pos_to_string(player.pos))
+  check(vector.distance(player.pos, arrival) < 0.01, label .. ": respawned there")
+  check(not grug_core.is_movement_held(player, "grug_home:respawn"), label .. ": released")
+  check(grug_home.remaining(player) <= left, label .. ": no cooldown started")
+  then_fn()
+ end, label .. " trip finished")
 end
 
 local function run()
@@ -114,6 +142,7 @@ local function run()
      check(vector.distance(player.pos, feet) < 0.01, "teleported into the arrival cube")
      -- Wall clock: the poll may land a second or two after the charge.
      check(grug_home.remaining(player) >= 1795, "30-minute cooldown charged")
+     respawn_to(feet, "claim respawn", function()
      -- Blocked cube: this trip goes to the innkeeper home instead.
      core.set_node(cell, {name = "default:stone"})
      meta:set_string("grug_home:ready_at", "0")
@@ -130,6 +159,7 @@ local function run()
       check(vector.distance(player.pos, inn.arrival) < 0.01,
        "blocked: arrived at the " .. inn.label .. " innkeeper")
       check(grug_home.home_is_claim(player), "blocked: claim stays the home")
+      respawn_to(inn.arrival, "blocked respawn", function()
       -- Destruction resets the home through the claim listener.
       chat = {}
       state, claim = "destroyed", claim
@@ -139,7 +169,9 @@ local function run()
       check(chat[1] == "Your Claim Stone has been destroyed. Your home is now the Dawnmere Innkeeper.",
        "destroyed: message " .. tostring(chat[1]))
       finish()
+      end)
      end, "blocked trip finished")
+     end)
     end, "claim trip finished")
    end)
   end)
