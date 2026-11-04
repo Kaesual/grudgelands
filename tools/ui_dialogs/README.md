@@ -35,6 +35,10 @@ subdirectories. Extra scenarios accepted by `ONLY` include `quest_ready`
 (a real offered kill quest credited through the quest API), `creation_start`
 (the creation window before any choice; Round 66), `craft_busy`
 (real recipe jobs) and `crown_empty`. These alter disposable test state only.
+Round 69's Trash box: `inventory_trash_refused`, `inventory_trash`,
+`inventory_trash_both` and `inventory_trash_long` in that order (the state
+carries over) go through the box's real callbacks, the guards included, and
+log what each guard answered as `TRASH` lines in `probe.txt`.
 Use `SEED=12345` for comparable backgrounds; the initial audit used fresh
 random seeds and is not a performance comparison.
 

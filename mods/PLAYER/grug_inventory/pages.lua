@@ -621,9 +621,9 @@ end)
 
 --
 -- Inventory page: the full eight-column bag grid on the left; Bags,
--- Potion belt and Money stacked on the right. The common hotbar is centered
--- under both columns. Native list IDs, deposit, sorting and transfer routes
--- remain unchanged; no listring because this is one inventory.
+-- Potion belt, Money and Trash stacked on the right. The common hotbar is
+-- centered under both columns. Native list IDs, deposit, sorting and transfer
+-- routes remain unchanged; no listring because this is one inventory.
 --
 
 local INVENTORY_PAGE = "grug_inventory:inventory"
@@ -686,6 +686,10 @@ local function inventory_content(player)
 	fs[#fs + 1] = ("button[%.3f,%.3f;2.2,0.55;grug_inv_sort;Sort]"):format(
 		layout.full_x + layout.box_w - layout.pad - 2.2, layout.inventory_y + 0.10)
 	fs[#fs + 1] = "tooltip[grug_inv_sort;Sort the inventory and the bags. The hotbar stays as it is.]"
+	fs[#fs + 1] = grug_inventory.area_box(layout.side_x, layout.trash_y, layout.side_w,
+		layout.slot_box_h, "Trash", nil, growth)
+	fs[#fs + 1] = grug_inventory.trash_content(player, x, layout.trash_y + layout.label_h,
+		layout.side_w - 2 * layout.pad, growth)
 	return table.concat(fs)
 end
 
@@ -696,6 +700,10 @@ sfinv.register_page(INVENTORY_PAGE, {
 			"full")
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
+		if fields.grug_trash_undo then
+			grug_inventory.trash_undo(player)
+			return true
+		end
 		if fields.grug_money_withdraw then
 			grug_money.show_withdraw(player)
 			return true
@@ -779,12 +787,15 @@ end)
 -- the equipment-change refresh consumer above after the model and sfinv
 -- context exist.
 
--- Keep the cached Inventory form current even while the window is closed, so
--- opening it shows the latest balance (the money row). Other selected pages
--- need no rebuild.
-grug_money.register_on_change(function(player)
+-- Re-send a cached Inventory page and nothing else.
+function grug_inventory.refresh_inventory_page(player)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == INVENTORY_PAGE then
 		sfinv.set_player_inventory_formspec(player, context)
 	end
-end)
+end
+
+-- Keep the cached Inventory form current even while the window is closed, so
+-- opening it shows the latest balance (the money row). Other selected pages
+-- need no rebuild.
+grug_money.register_on_change(grug_inventory.refresh_inventory_page)

@@ -119,8 +119,8 @@ grug_inventory.SCROLL_FIELDS = {full = "grug_inv_scroll_full",
 	-- A container's own list above the station view (station_list below).
 	container = "grug_inv_scroll_container"}
 
--- Full inventory: eight visible rows left, Bags/Potion belt/Money right.
--- The right stack ends at the inventory's bottom. Every page shares one
+-- Full inventory: eight visible rows left, Bags/Potion belt/Money/Trash
+-- right. The right stack ends at the inventory's bottom. Every page shares one
 -- centered hotbar; subpages keep two rows directly above it. Stations use
 -- the separate narrow geometry and four rows by default (callers may ask
 -- for four to six), with a native scrollbar for additional bag rows.
@@ -134,11 +134,12 @@ do
 	end
 	local full_label_h = 0.75
 	local inventory_h = grid_box_h(grug_inventory.VIEW_ROWS.full) + full_label_h - label_h
-	local money_h = inventory_h - 2 * slot_box_h - 2 * gap
+	local money_h = inventory_h - 3 * slot_box_h - 3 * gap
 	local top_y = 0.35
 	local box_x = (UI.frame_w - box_w) / 2
 	local inventory_y = top_y
 	local money_y = top_y + 2 * (slot_box_h + gap)
+	local trash_y = money_y + money_h + gap
 	local hotbar_box_y = UI.frame_h - slot_box_h - 0.25
 	local short_h = grid_box_h(grug_inventory.VIEW_ROWS.short)
 	local margin = 0.4
@@ -161,7 +162,7 @@ do
 		top_y = top_y, slot_box_h = slot_box_h,
 		full_x = 1.1, side_x = 12.0, side_w = 6.9,
 		inventory_y = inventory_y, inventory_h = inventory_h,
-		money_y = money_y, money_h = money_h,
+		money_y = money_y, money_h = money_h, trash_y = trash_y,
 		hotbar_box_y = hotbar_box_y, hotbar_y = hotbar_box_y + label_h,
 		short_y = hotbar_box_y - gap - short_h, short_h = short_h,
 	}

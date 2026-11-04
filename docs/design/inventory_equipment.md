@@ -102,6 +102,22 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   `main[9..]` and the bags (never the hotbar); after a sort it ignores clicks
   for 2.5 s, with no countdown and no resend. The old Bags tab (one bag at a
   time, a 32-slot bag cut to 24) is gone.
+- **The Trash box** (Round 69 rulings 1–2, `grug_inventory/trash.lua`): the
+  last box of the Inventory tab's right column, as high as the Potion belt
+  box and ending at the Inventory box's bottom; the Money box above it ends a
+  gap earlier. It exists in this tab only, never on another tab, a station or
+  a container. One slot with a ghost icon and two lines of text beside it. An
+  item dragged in (a whole stack or part of one; no listring, so shift-click
+  never reaches the slot) is gone at once. The box then says "Destroyed:" with
+  the item's name and offers **Undo**, which returns that stack with its
+  metadata and wear through the give helper until the next discard or until
+  the player leaves. What does not fit stays undoable, with a hint. The state
+  is runtime only: one detached list per player, always empty, and the last
+  stack in memory; an action log line records each discard. Soulbound and
+  bound items are refused by the guards every detached inventory has, and the
+  box shows a hint in the danger colour for six seconds. A bag leaves by the
+  bag rules: its contents move into the inventory first, and without room it
+  stays, with the rules' feed line.
 - **The Character tab:** model and eight labelled native equipment slots
   on the left, the selected Stats/Effects/Achievements panel on the right,
   both above the short inventory view. The mode lives only in runtime

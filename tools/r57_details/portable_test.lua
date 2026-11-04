@@ -484,6 +484,18 @@ check(fs:find("grug_craft_dselect", 1, true) ~= nil, "P a known recipe has Selec
 check(box.fields(P2, st2, {grug_craft_dselect = "Select this recipe"}), "P Select is handled")
 check(st2.selected == "grug_professions:thread|grug_mobs:linen_scrap*1" and st2.slot == 1 and
 	st2.box == nil and st2.details == nil, "P ...it chooses Thread in Basic and closes the page")
+-- Round 69 ruling 7: Select lands on the recipe's tab in the new order.
+do
+	local P4 = player_named("p4")
+	P4.meta["grug_jobs:primary:2"] = "tailor"
+	P4.meta["grug_jobs:learned:alchemist"] = 1
+	for area, tab in pairs({alchemist = 3, tailor = 5}) do
+		local recipe = grug_jobs.recipes_in_area(area)[1]
+		local st4 = {selected = recipe.id, box = "details"}
+		box.fields(P4, st4, {grug_craft_dselect = "Select this recipe"})
+		eq(st4.slot, tab, "P Select lands on the tab of " .. area)
+	end
+end
 box.fields(P1, st, {grug_craft_dback = "◀ Back"})
 eq(#st.details.pages, 1, "P ◀ Back steps back one page")
 check(box.build(P1, view):find("Patch Bolt", 1, true) ~= nil, "P ...to Patch Bolt")
