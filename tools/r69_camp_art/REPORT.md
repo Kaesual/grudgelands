@@ -1,5 +1,7 @@
 # Round 69 CAMPART delivery
 
+**The user's pick (2026-11-04): A — Wallwright** (`candidates/wallwright/`). The artist's recommendation was B.
+
 Delivered 2026-11-04 on branch `r69-campart`, in the assigned worktree only.
 **Compatible tooling only.** No game files, version, upgrade declaration or
 saved state changed. Lane CAMP owns integration and the live-world migration.
