@@ -6,8 +6,9 @@ and reviews, GPT-6 Astra draws the camp site.
 **Complete on 2026-11-04:** all six lanes merged, then this documentation
 lane D (QUESTMAP, HOME and SKILLS reviewed MERGE; UI MERGE AFTER FIXES, one
 doc line; CAMP MERGE AFTER FIXES, then MERGE). The user picked camp
-**A Wallwright**. **Not pushed; the [GUI test](#gui-checklist-desktop-and-web)
-is open** ([completion](#completion-2026-11-04)).
+**A Wallwright**. GUI-accepted by the user on 2026-11-04 (the whole
+[checklist](#gui-checklist-desktop-and-web)) and pushed
+([completion](#completion-2026-11-04)).
 Version: **0.69.0**. Classification: **migrate** (lane CAMP's camp rewrite,
 online part only); every other lane is compatible. No map reset. Delivery
 state: [STATUS](../STATUS.md).

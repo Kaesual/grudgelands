@@ -6,7 +6,7 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
-## Round 69 — trash box, home respawn, camp sites (GUI acceptance pending)
+## Round 69 — trash box, home respawn, camp sites (GUI-accepted)
 
 Delivered in 0.69.0 (**migrate**, no map reset: step 0.69.0 and the online box
 rewrite, [upgrade contract §5.9](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)):

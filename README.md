@@ -101,7 +101,7 @@ skill shows its exact number, in the talent tree too, even before you learn
 it; quests for a drop with a named source mark it on the map and name it in
 the log; and the enemy camps under construction get a new look. The server's
 host runs the migration tool once (no map reset); the game then rebuilds
-those camps itself. Desktop and web acceptance is pending.
+those camps itself. Accepted on desktop and web.
 
 **0.68.0** makes text readable in the world: wall signs show their text on
 the board and chests their label on the front, without pointing at them;

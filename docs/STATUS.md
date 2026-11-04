@@ -2,7 +2,7 @@
 
 Updated 2026-11-04. This is the delivery pointer, not another game specification.
 
-**0.69.0 / Round 69 is merged on main; not pushed, GUI test open.** From
+**0.69.0 / Round 69 is GUI-accepted by the user on 2026-11-04 (the whole Round 69 checklist) and pushed (2026-11-04).** From
 player reports and the user's notes: a **Trash box** in the Inventory tab
 (variant A: destroyed at once, Undo for the last one until the next discard
 or logout, bound items refused); **respawn goes to the home**, Claim Stone
@@ -34,10 +34,11 @@ folded into 0.69.0: the offer dialogue names the source and reads the giver's
 variant, and Glassroot's `border_packets` asks for the Packet "from those
 fletchers"; idle aggressive mobs walk away from an active Claim Stone's area
 ([completion, numbers and decisions](planning/round69-plan.md#completion-2026-11-04);
-[carry-overs](../BACKLOG.md#round-69--trash-box-home-respawn-camp-sites-gui-acceptance-pending)).
+[carry-overs](../BACKLOG.md#round-69--trash-box-home-respawn-camp-sites-gui-accepted)).
 **The joint GUI test of 0.57–0.66 is still pending.** **Production runs
 0.65.0;** an update to 0.69.0 crosses no map reset and runs the steps 0.67.0
-and 0.69.0. **Not pushed:** origin/main is `3cee37b3` (0.68.0).
+and 0.69.0. origin/main is the 0.69.0 release (pushed on the user's word,
+2026-11-04).
 
 **0.68.0 / Round 68 is GUI-accepted by the user on 2026-10-31 (the whole Round 68 checklist) and pushed (2026-10-31).** Text
 is readable in the world (the user's wish after the Round 67 acceptance):

@@ -16,8 +16,9 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 with Undo and the professions' order; respawn goes to the home, Claim Stone
 included; exact "N damage" on every damage skill and in the talent tree;
 rings and the source line for the 14 quests that name their drop; the six
-camps under construction in the user's pick, Wallwright), merged on main,
-**not pushed**, GUI test open. **Migrate**, no map reset: the step 0.69.0
+camps under construction in the user's pick, Wallwright), GUI-accepted by
+the user on 2026-11-04 (the whole Round 69 checklist) and **pushed**.
+**Migrate**, no map reset: the step 0.69.0
 only sets a world marker and the game rewrites each camp's box online, the
 user's documented exception
 ([upgrade contract §5.9](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online);
