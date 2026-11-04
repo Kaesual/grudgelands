@@ -436,7 +436,7 @@ grug_abilities.register_ability({
 	end,
 	description_for = function(user, def)
 		local v = def.values(user)
-		return ("Damages the aimed enemy for %d and heals you for half the damage,\n" ..
+		return ("Hits the aimed enemy for %d damage and heals you for half of it,\n" ..
 			"at most %d."):format(effective_number(user, v.damage),
 				effective_support_number(v.cap))
 	end,

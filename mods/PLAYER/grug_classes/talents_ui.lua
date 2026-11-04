@@ -216,3 +216,11 @@ grug_xp.register_on_level_change(function(player, old_level, new_level)
 		refresh_open_page(player)
 	end
 end)
+-- The tree's and the catalog's skill numbers read the weapon, the gear and a
+-- status's spell damage. Pure wear changes none of them.
+grug_core.register_on_equipment_change(function(player, listname, reason)
+	if reason ~= "durability_metadata" then
+		refresh_open_page(player)
+	end
+end)
+grug_core.register_on_status_modifiers_changed(refresh_open_page)

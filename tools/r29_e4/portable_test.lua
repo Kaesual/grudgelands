@@ -32,6 +32,7 @@ core = {
 	register_on_player_receive_fields = noop,
 }
 sfinv = {register_page = noop}
+grug_core = {register_on_equipment_change = noop, register_on_status_modifiers_changed = noop}
 local level, money, spent, resets = 1, 0, 0, 0
 grug_xp = {get_level = function() return level end, register_on_level_change = noop}
 grug_money = {

@@ -426,7 +426,7 @@ grug_abilities.register_ability({
 	description_for = function(player, def)
 		local v = def.values(player, def)
 		return ("Fires at a visible hostile target: %d damage; up to 2 others " ..
-			"within 3 m of it take %d. 1 arrow."):format(shown(player, v.damage),
+			"within 3 m of it take %d damage. 1 arrow."):format(shown(player, v.damage),
 				shown(player, v.splash))
 	end,
 	cast = function(user, _, def)
@@ -488,15 +488,14 @@ grug_abilities.register_ability({
 	description = "Left click swings your Melee-slot blade; right click looses " ..
 		"an arrow at a visible hostile target. Both share one clock. " ..
 		"Unlocked via talents.",
-	description_for = function(player)
+	description_for = function(player, def)
 		local loose = grug_abilities.registered.loose
 		-- The range line is the blade's; the shot's own range follows here
 		-- (the same get_range that decides it).
 		return ("Left click swings your Melee-slot blade (%d damage); right " ..
 			"click looses an arrow at a visible hostile target up to %g m away " ..
 			"(%d damage). Both share one clock."):format(
-				shown(player, blade_unit(player) * coefficient(player,
-					grug_abilities.registered.bladecraft, 1)),
+				shown(player, grug_abilities.plain_swing_raw(player, def)),
 				grug_abilities.get_range(player, bladecraft_shot),
 				shown(player, loose_values(player, loose).damage))
 	end,
@@ -536,10 +535,16 @@ grug_abilities.register_ability({
 		"heavier still from behind or in Parry's window. Unlocked via talents.",
 	description_for = function(player, def)
 		local unit = blade_unit(player)
-		return ("A charged swing of your Melee-slot blade: %d damage, %d from " ..
-			"behind or in Parry's window (which it spends)."):format(
-				shown(player, unit * opening_coefficient(player, def, false)),
-				shown(player, unit * opening_coefficient(player, def, true, true)))
+		local front = shown(player, unit * opening_coefficient(player, def, false))
+		local rear = shown(player, unit * opening_coefficient(player, def, true, false))
+		local parried = shown(player, unit * opening_coefficient(player, def, true, true))
+		-- Turn the Blade raises only the Parry window's hit.
+		if parried == rear then
+			return ("A charged swing of your Melee-slot blade: %d damage, %d damage from " ..
+				"behind or in Parry's window (which it spends)."):format(front, rear)
+		end
+		return ("A charged swing of your Melee-slot blade: %d damage, %d damage from " ..
+			"behind, %d damage in Parry's window (which it spends)."):format(front, rear, parried)
 	end,
 	proc_swing = function(user, target, ctx)
 		local parried = grug_classes.get_window(user, "parry") ~= nil
@@ -641,7 +646,7 @@ grug_abilities.register_ability({
 		"Unlocked via talents.",
 	description_for = function(player, def)
 		local v = def.values(player, def)
-		return ("For 6 s your blade swings deal %d more damage, and a shield of " ..
+		return ("For 6 s your blade swings add %d damage, and a shield of " ..
 			"%d holds."):format(shown(player, blade_unit(player) * v.add),
 				math.floor(v.absorb))
 	end,

@@ -446,7 +446,12 @@ something that already grows with the level:
   shields are flat shares of P.
 
 The node tooltip on the page shows the armor and pool amounts at the
-viewer's level for every rank.
+viewer's level for every rank. A node that grants or replaces a skill appends
+that skill's current text after "At your level:", the very string of its
+hotbar stack (`grug_abilities.skill_text`), learned or not, with the ranks the
+player has (Round 69 ruling 9); the strip under the tree keeps the node's text
+and its status first and the numbers after them. Modifier nodes and skills
+without a player-specific text (Taunt, Bellow, Blink) add nothing.
 
 **Crit.** Areas never crit (`opts.no_crit` of `deal_ability_damage`, the
 calculator's model): Ice Wave, Ice Nova, Meteor, Fire Rain, Winter Field,

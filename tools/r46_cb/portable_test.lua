@@ -191,10 +191,14 @@ spend_ok = true
 ------------------------------------------------------------------------------
 -- C: the Strike tooltip.
 ------------------------------------------------------------------------------
+-- Round 69: the text carries the swing's number, so the cut takes both parts
+-- of the sentence and the two seams it reads answer here.
+function effective_number() return 7 end
+grug_abilities.plain_swing_raw = function() return 7 end
 local describe = assert(loadstring(cut(KITS,
-	"\n(local strike_description = .-prevents click spam%.\")\n", "description") ..
-	"\nreturn " .. cut(KITS, "\n\tdescription_for = (function%(player%)\n" ..
-	"\t\tlocal class_def = .-\n\tend),\n", "Strike's description_for")))()
+	"\n(local strike_lead = .-weapon clock prevents click spam%.\")\n", "description") ..
+	"\nreturn " .. cut(KITS, "\n\tdescription_for = (function%(player, def%)\n" ..
+	"\t\t%-%- The melee slot's swing.-\n\tend),\n", "Strike's description_for")))()
 grug_classes.get_class_def = function() return {resource = "rage"} end
 equipped = stack_of("dagger")
 check(describe({}):find("Generates 5.6 rage when it lands.", 1, true),
