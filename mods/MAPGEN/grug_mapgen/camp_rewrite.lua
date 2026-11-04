@@ -134,8 +134,9 @@ return function(engine, storage, sites, map_reset, severe)
 	map_reset.clear(SOURCE, function() storage:set_string(KEY, "") end)
 	start()
 	-- The sites hold the prepared camps, which the load would otherwise
-	-- release: they stay only for a job, and every request comes before this.
-	engine.after(0, function()
+	-- release: they stay only for a job. grug_core's world markers ran first,
+	-- so every request comes before this.
+	engine.register_on_mods_loaded(function()
 		if not M.pending() then sites = nil end
 	end)
 	return M

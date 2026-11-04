@@ -101,6 +101,7 @@ local function new_world(opts)
 	end
 	local engine = {CONTENT_IGNORE = IGNORE, EMERGE_ERRORED = 1, EMERGE_CANCELLED = 2,
 		settings = {get = function() return "5" end}}
+	function engine.register_on_mods_loaded(fn) w.loaded = fn end
 	function engine.after(delay, fn, ...)
 		local args = {...}
 		w.queue[#w.queue + 1] = {delay = delay, run = function() fn(unpack(args)) end}
@@ -232,6 +233,7 @@ do -- a request: both camps written, the root kept, metadata and timers gone
 	assert(not storage.values.camp_rewrite, "nothing at load without a key")
 	rewrite.request()
 	assert(storage.values.camp_rewrite and rewrite.pending(), "the request is durable at once")
+	w.loaded()
 	drain(w, 1)
 	assert(w.writes == 2 and w.emerges == 2, "both camps written, one at a time")
 	assert(rewrite.pending(), "the key stays until two map saves have passed")
@@ -245,6 +247,8 @@ end
 do -- a new world: nothing runs, and the sites are released
 	local w, storage = new_world(), new_storage()
 	local rewrite = job(w, storage)
+	assert(#w.queue == 0, "a new world schedules nothing")
+	w.loaded()
 	drain(w)
 	assert(w.emerges == 0 and w.writes == 0 and not rewrite.pending(), "a new world does nothing")
 	assert(next(storage.values) == nil, "a new world writes no key")
