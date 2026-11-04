@@ -57,16 +57,12 @@ local STRUCTURES = {
 	{"command tent",0,6,3,2,4,"command"},
 }
 
-local cache = {}
 local function template(race)
 	local name = "camp_site_"..race
-	if not cache[name] then
-		local path = templates.ROOT.."/templates/"..name..".tpl"
-		local parsed = templates.parse_template(templates.read(path),path,name)
-		local palette = palettes.new(race)
-		cache[name] = templates.part(parsed,name,race,function() return palette end)
-	end
-	return cache[name]
+	local path = templates.ROOT.."/templates/"..name..".tpl"
+	local parsed = templates.parse_template(templates.read(path),path,name)
+	local palette = palettes.new(race)
+	return templates.part(parsed,name,race,function() return palette end)
 end
 
 return function(options, profile)

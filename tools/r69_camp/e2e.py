@@ -247,6 +247,10 @@ def scenario(run):
     fresh = load_dump(n_world, "fresh")
 
     # The comparison.
+    box_names = {c for p, c in new[full]["cells"].items() if in_box(new[full], p)}
+    check("proof", "the new design stands in the whole camp: no wool, the Round 63 materials",
+          not any(c[0].startswith("wool:") for c in box_names) and
+          any(c[0].startswith("grug_mapgen:camp_stockade_") for c in box_names))
     lines = []
     for camp in sorted(new):
         a, b, o = new[camp], fresh[camp], old[camp]
@@ -259,12 +263,18 @@ def scenario(run):
         light_box = len(diff(a, b, box, light=True))
         light_ring = len(diff(a, b, ring, light=True))
         status = "whole" if camp == full else "partly" if camp == partial else "untouched"
+        # A raw param1 byte may differ on a node: an opaque node's holds no
+        # light, a lantern's day bank reads 15 or 14. Open air never differs.
+        light_air = [p for p in diff(a, b, box, light=True) if a["cells"][p][0] == "air"]
         lines.append("%s (%s): box %d cells, %d differ from the new world, light %d; ring %d "
                      "cells, %d differ from the new world, light %d; %d kept from 0.68.0, %d "
                      "differ" % (camp, status, len(box), len(wrong), light_box, len(ring),
                                  len(ring_fresh), light_ring, len(had), len(ring_old)))
         check("proof", "%s (%s): every box cell equals the new world's" % (camp, status),
               len(box) == 5290 and not wrong, json.dumps(wrong[:6]))
+        check("proof", "%s: the light of the box's air and of the ring equals the new world's"
+              % camp, not light_air and not light_ring,
+              json.dumps([light_air[:6], light_ring]))
         check("proof", "%s: the ring equals the new world's" % camp, not ring_fresh,
               json.dumps([(p, a["cells"][p], b["cells"][p]) for p in ring_fresh[:6]]))
         check("proof", "%s: the ring equals the 0.68.0 world's where that existed" % camp,
