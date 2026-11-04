@@ -60,7 +60,7 @@ end
 -- the cube free; stale claim data must still never put a player into a solid
 -- node, so the arrival cell and the one above it are checked. The feet stand
 -- on the arrival cell's floor (on the stone when the cell is the cube's
--- bottom layer).
+-- bottom layer), 0.49 below the cell's centre, which is row.arrival.
 local function claim_arrival(row)
  local cell = vector.round(row.arrival)
  if not passable(cell) or not passable({x=cell.x,y=cell.y+1,z=cell.z}) then return nil end
@@ -119,13 +119,16 @@ local function prepare(name, trip)
  end)
 end
 
--- Travel goes to grug_home.get (a placed Claim Stone or the innkeeper home);
--- respawn always goes to the innkeeper home: the bound one, else the
--- starting-town innkeeper (grug_home.innkeeper).
+-- One rule for return and respawn: the trip goes to grug_home.get (a Claim
+-- Stone set as home, else the bound innkeeper, else the starting-town
+-- innkeeper). The rest of the rule is the player's state: a return needs them
+-- alive, out of combat and off cooldown; a respawn reads and starts no
+-- cooldown and has no combat rule, and it always ends somewhere: a blocked or
+-- unprepared claim ends at the innkeeper, a blocked or unprepared innkeeper
+-- at the start pocket. It is held from the first teleport until the last.
 local function request(player, respawn)
  local name = name_of(player)
- local resolve = respawn and grug_home.innkeeper or grug_home.get
- local row = resolve(player)
+ local row = grug_home.get(player)
  if not row then return false end
  if pending[name] then return false end
  if not respawn then
@@ -136,84 +139,110 @@ local function request(player, respawn)
  sessions[name] = sessions[name] or {}
  local identity = {id=row.id, faction=grug_factions.get_faction(player),
   race=grug_core.get_player_race(name)}
- if respawn then
-  -- The one respawn teleport: straight to the home's registry arrival, held
-  -- there (no movement, no gravity) until the area is emerged and validated.
-  -- The check below releases the hold on every path.
-  grug_core.hold_movement(player, RESPAWN_HOLD)
-  teleport(player, row.arrival)
- end
  local function land(p, arrival)
   -- A respawned player already waits at the arrival; it is not moved again.
   local at = p:get_pos()
   if not (respawn and at and vector.distance(at, arrival) < 0.1) then
    teleport(p, arrival)
   end
+  if respawn then return grug_core.release_movement(p, RESPAWN_HOLD) end
   local actual = p:get_pos()
   if actual and vector.distance(actual, arrival) < 0.1 then
-   if not respawn then
-    p:get_meta():set_string("grug_home:ready_at", tostring(os.time() + COOLDOWN))
-    grug_sounds.play("travel", p)
-   end
+   p:get_meta():set_string("grug_home:ready_at", tostring(os.time() + COOLDOWN))
+   grug_sounds.play("travel", p)
   end
  end
+ -- The respawn's last resort. The hold goes after the move; with no valid
+ -- pocket either nothing is left to wait for, so it goes all the same.
  local function unavailable(p)
   if not respawn then
    return notify(p, "Home arrival is unavailable. Please try again.")
   end
+  local moved = p:get_hp() > 0 and start_fallback(p)
   grug_core.release_movement(p, RESPAWN_HOLD)
-  if p:get_hp() > 0 and start_fallback(p) then
-   notify(p, "Your home could not be prepared. You woke in your starting town.")
-  else
-   notify(p, "Home arrival is unavailable.")
-  end
+  notify(p, moved and "Your home could not be prepared. You woke in your starting town." or
+   "Home arrival is unavailable.")
  end
- -- The trip stands while the player lives and the home, faction and race
- -- are the ones it was asked for; a return also needs the player out of
- -- combat and the cooldown not restarted.
+ -- A respawn stands while the player lives; where it ends is decided on
+ -- arrival, whatever happened to the home meanwhile. A return stands while
+ -- the player lives and the home, faction and race are the ones it was asked
+ -- for, out of combat and with the cooldown not restarted.
  local function check(p)
-  if respawn then grug_core.release_movement(p, RESPAWN_HOLD) end
+  if respawn then
+   if p:get_hp() > 0 then return true end
+   grug_core.release_movement(p, RESPAWN_HOLD)
+   return false
+  end
   if p:get_hp() <= 0 then return false end
-  local current = resolve(p)
+  local current = grug_home.get(p)
   if not current or current.id ~= identity.id or
     grug_factions.get_faction(p) ~= identity.faction or
     grug_core.get_player_race(name) ~= identity.race then return false end
-  if not respawn and (grug_core.in_combat(p) or grug_home.remaining(p) > 0) then
+  if grug_core.in_combat(p) or grug_home.remaining(p) > 0 then
    notify(p, "Return home canceled."); return false
   end
   return true
  end
- local function timeout(p)
-  if respawn then return unavailable(p) end
+ local function timed_out(p, fallback)
+  if respawn then return fallback(p) end
   notify(p, "Home arrival timed out. Please try again.")
  end
- -- Prepares one destination and calls arrive(player, current home, failed).
- local function go(target, arrive)
-  prepare(name, {pos=target.pos, check=check, timeout=timeout,
-   arrive=function(p, failed) arrive(p, resolve(p), failed) end})
- end
- go(row, function(p, current, failed)
-  if failed then return unavailable(p) end
-  if not current.claim then
-   local arrival = safe_arrival(current)
-   if not arrival then return unavailable(p) end
-   return land(p, arrival)
-  end
-  local arrival = claim_arrival(current)
-  if arrival then return land(p, arrival) end
-  -- Blocked arrival cube: this trip goes to the innkeeper home instead; the
-  -- claim stays the travel home (only pick-up and destruction reset it).
+ -- This trip goes to the innkeeper home instead; the claim stays the home
+ -- (only pick-up and destruction reset it). A respawn leaves the cube at once
+ -- and waits held at the innkeeper's arrival, as any innkeeper respawn does.
+ local function go_innkeeper(p)
   local inn = grug_home.innkeeper(p)
   if not inn then return unavailable(p) end
   notify(p, "Your Claim Stone's arrival is blocked. Returning to the " ..
    inn.label .. " Innkeeper instead.")
-  go(inn, function(q, _, inn_failed)
-   local fallback = grug_home.innkeeper(q)
-   fallback = not inn_failed and fallback and safe_arrival(fallback)
-   if not fallback then return unavailable(q) end
-   land(q, fallback)
-  end)
- end)
+  if respawn then teleport(p, inn.arrival) end
+  prepare(name, {pos=inn.pos, check=check,
+   timeout=function(q) timed_out(q, unavailable) end,
+   arrive=function(q, failed)
+    local fallback = grug_home.innkeeper(q)
+    fallback = not failed and fallback and safe_arrival(fallback)
+    if not fallback then return unavailable(q) end
+    land(q, fallback)
+   end})
+ end
+ -- Prepares one home and lands there. The one respawn teleport comes first:
+ -- straight to the arrival, held there (no movement, no gravity) until the
+ -- area is emerged and validated. A claim's arrival is player-built ground,
+ -- so it is read before the player goes there: the stone's blocks are in the
+ -- map, core.load_area brings them in and claim_arrival judges the cube.
+ local function go_home(p, target)
+  if respawn then
+   local first = target.arrival
+   if target.claim then
+    local cell = vector.round(target.arrival)
+    core.load_area(cell, vector.offset(cell,0,1,0))
+    first = claim_arrival(target)
+    if not first then return go_innkeeper(p) end
+   end
+   teleport(p, first)
+  end
+  -- Where a home whose area cannot be prepared ends.
+  local fallback = respawn and target.claim and go_innkeeper or unavailable
+  prepare(name, {pos=target.pos, check=check,
+   timeout=function(q) timed_out(q, fallback) end,
+   arrive=function(q, failed)
+    local current = grug_home.get(q)
+    -- A home lost or replaced on the way: a respawn follows it.
+    if respawn and not current then return unavailable(q) end
+    if respawn and current.id ~= target.id then return go_home(q, current) end
+    if failed then return fallback(q) end
+    if not current.claim then
+     local arrival = safe_arrival(current)
+     if not arrival then return unavailable(q) end
+     return land(q, arrival)
+    end
+    local arrival = claim_arrival(current)
+    if arrival then return land(q, arrival) end
+    go_innkeeper(q)
+   end})
+ end
+ if respawn then grug_core.hold_movement(player, RESPAWN_HOLD) end
+ go_home(player, row)
  return true
 end
 
