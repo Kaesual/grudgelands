@@ -102,13 +102,19 @@ Core principles:
   for **2–3 players**, and every encounter must be **beatable without a
   healer** (food/potions as the substitute) — the Priest makes parties
   comfortable, never mandatory.
-- **Numeric ability tooltips are player-specific.** Damage, healing and absorb
-  numbers show the effective current-level value before Crit and target-level
-  malus. Absorb settlement retains fractional points; its tooltip displays
-  that seam's value rounded down. The
+- **Numeric ability tooltips are player-specific and exact** (Round 69 ruling
+  9). Every damaging skill shows what a hit computes for this player now, in
+  one form, "N damage": level, weapon (a swing skill the melee slot, the fists
+  without one), gear, talents and a status's spell damage, before Crit, target
+  armor and target-level malus, and without a window that may be open
+  (Ruination, a Cold Shock or Clear Conscience hit). A hit on a target's
+  condition (Finisher's bonus) stays a share. Healing and absorb numbers follow
+  the same rule. Absorb settlement retains fractional points; its tooltip
+  displays that seam's value rounded down. The
   registered item definition keeps a number-free fallback; the player's
   ability ItemStack carries the effective description and refreshes on kit
-  sync, level change and talent change. Its timing line shows the player's
+  sync and on level, talent, equipment and status-modifier changes. Its timing
+  line shows the player's
   effective cooldown (a talent that shortens it, such as Quick Step or
   Onset, shows in it), the effective cost, and a swing skill's effective
   charge. Below it a **"Range: N m"** line (0.53.1,
@@ -613,7 +619,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + melee attribute/10 (Scout Dex, otherwise Str; fractions count), crit ×2, threat ×1. Grants the Warrior 8 rage × the weapon's base swing interval / 1 s per landed swing (§1, §3); the tooltip shows the equipped weapon's value. Hold or click LMB. |
+| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + melee attribute/10 (Scout Dex, otherwise Str; fractions count), crit ×2, threat ×1. Grants the Warrior 8 rage × the weapon's base swing interval / 1 s per landed swing (§1, §3); the tooltip shows the equipped weapon's value and the swing's damage. Hold or click LMB. |
 
 - **Granted to every class and to a classless character** — a fresh
   character is never standing in the world with no way to fight back. Each
