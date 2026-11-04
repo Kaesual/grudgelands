@@ -230,6 +230,7 @@ core.register_on_player_receive_fields = function(fn) receivers[#receivers + 1] 
 core.register_globalstep = function(fn) globalsteps[#globalsteps + 1] = fn end
 core.register_on_mods_loaded = function(fn) mods_loaded[#mods_loaded + 1] = fn end
 core.create_detached_inventory = function(name, callbacks)
+	core.detached_inventories[name] = callbacks -- builtin's table (Round 69's trash box)
 	local inv = node_inventory()
 	detached[name] = {inv = inv, callbacks = callbacks}
 	return inv
