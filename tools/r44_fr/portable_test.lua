@@ -274,6 +274,7 @@ end
 
 dofile(repo .. "/mods/BASE/sfinv/api.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/bags.lua")
+dofile(repo .. "/mods/PLAYER/grug_inventory/trash.lua")
 -- The real sort, counted.
 local sorts, real_sort = 0, grug_inventory.sort
 grug_inventory.sort = function(player)
@@ -507,7 +508,7 @@ local function view_boxes(fs)
 	for x, y, w, h, color, lx, ly, text in fs:gmatch(
 			"background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^;]+);false;6%]" ..
 			"style_type%[[^%]]+%]label%[([%d.]+),([%d.]+);([^%]]+)%]") do
-		local name = ({BAGS = "Bags", ["POTION BELT"] = "Potion belt", INVENTORY = "Inventory", ["ACTIVE HOTBAR"] = "Hotbar", MONEY = "Money"})[text] or text
+		local name = ({BAGS = "Bags", ["POTION BELT"] = "Potion belt", INVENTORY = "Inventory", ["ACTIVE HOTBAR"] = "Hotbar", MONEY = "Money", TRASH = "Trash"})[text] or text
 		out[name] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h),
 			color = color, lx = tonumber(lx), ly = tonumber(ly)}
 	end
@@ -619,12 +620,13 @@ for _, name in ipairs({"Bags", "Potion belt", "Inventory", "Hotbar"}) do
 			box.y + box.h <= frame.frame_h, name .. ": inside the window")
 	end
 end
-if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] and boxes.Money then
+if boxes.Bags and boxes.Inventory and boxes.Hotbar and boxes["Potion belt"] and boxes.Money and boxes.Trash then
 	check(close(boxes.Bags.x, boxes["Potion belt"].x) and close(boxes.Bags.x, boxes.Money.x),
 		"Bags, potion belt and money share the right column")
 	check(boxes.Bags.y + boxes.Bags.h < boxes["Potion belt"].y and
 		boxes["Potion belt"].y + boxes["Potion belt"].h < boxes.Money.y, "right column follows the approved order")
-	check(close(boxes.Inventory.y + boxes.Inventory.h, boxes.Money.y + boxes.Money.h),
+	-- Round 69 ruling 1: Trash below Money ends the column.
+	check(close(boxes.Inventory.y + boxes.Inventory.h, boxes.Trash.y + boxes.Trash.h),
 		"inventory and right column finish at the same edge")
 	check(close(boxes.Hotbar.x + boxes.Hotbar.w / 2, frame.frame_w / 2), "hotbar centered in whole window")
 	has(inventory, "12345c", "money balance retained")

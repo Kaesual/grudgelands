@@ -11,6 +11,7 @@ dofile(modpath .. "/hotbars.lua")
 dofile(modpath .. "/equipment.lua")
 dofile(modpath .. "/bags.lua")
 dofile(modpath .. "/inbox.lua")
+dofile(modpath .. "/trash.lua")
 dofile(modpath .. "/ui.lua")
 dofile(modpath .. "/navigation.lua")
 -- The furnace forms' fire and arrow (0.49.1 ANIM), for default and grug_jobs.

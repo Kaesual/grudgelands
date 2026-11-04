@@ -153,7 +153,7 @@ Basic lists what the character has held the ingredients of (Round 47,
 
 - **One recipe registry** (`grug_jobs/registry.lua`): every craft is an
   ingredient list — items or item groups, each with a count — and one output
-  stack, in one **area**: Basic, Cooking, the six primaries, Alchemy. A craft
+  stack, in one **area**: Basic, Cooking, Alchemy, the six primaries. A craft
   names its recipe; nothing matches a shape. Furnace, dual-furnace and alloy
   recipes are no recipes of the registry: they stay with their stations
   (§1.5).

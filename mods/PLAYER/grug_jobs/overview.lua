@@ -5,17 +5,18 @@
 -- never exceeds the character's ten-level band). The Crafting tab (ui.lua,
 -- craft_box.lua) draws it into its crafting box while no recipe is chosen.
 
--- One row per known profession, primary slots first, then the secondaries:
+-- One row per known profession, in the area tabs' order (Round 69 ruling 7):
+-- the secondaries, then the primary slots:
 -- {name, tier, crafts, needed (nil at T6), capped, next_level}; `capped`
 -- means the count is full and only the character level holds the tier.
 function grug_jobs.profession_overview(player)
 	local order = {}
+	for _, profession in ipairs(grug_jobs.SECONDARY_PROFESSIONS) do
+		if grug_jobs.has(player, profession) then order[#order + 1] = profession end
+	end
 	for slot = 1, grug_jobs.PRIMARY_SLOTS do
 		local profession = grug_jobs.primary_at(player, slot)
 		if profession then order[#order + 1] = profession end
-	end
-	for _, profession in ipairs(grug_jobs.SECONDARY_PROFESSIONS) do
-		if grug_jobs.has(player, profession) then order[#order + 1] = profession end
 	end
 	local character_tier = grug_jobs.character_tier(player)
 	local rows = {}

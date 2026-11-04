@@ -134,8 +134,11 @@ check(jobs.has(crafter, "alchemist"), "Alchemy stays known")
 
 local overview = jobs.profession_overview(crafter)
 eq(#overview, 4, "four rows in the overview")
-eq(overview[3] and overview[3].name, "Cooking", "Cooking after the primaries")
-eq(overview[4] and overview[4].name, "Alchemy", "Alchemy last")
+-- Round 69 ruling 7: the secondaries come first, as in the area tabs.
+eq(overview[1] and overview[1].name, "Cooking", "Cooking first")
+eq(overview[2] and overview[2].name, "Alchemy", "Alchemy second")
+eq(overview[3] and overview[3].name, "Weaponsmith", "the first primary after them")
+eq(overview[4] and overview[4].name, "Goldsmith", "the second primary last")
 -- The Crafting tab's box without a chosen recipe (Round 45, real
 -- coordinates; grug_jobs/craft_box.lua).
 local area = {x = 5.6, y = 1.0, w = 4.4, h = 8.1}

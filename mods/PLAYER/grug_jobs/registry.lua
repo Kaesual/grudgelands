@@ -2,7 +2,7 @@
 -- §4.1): every craft is an ingredient list in one crafting area. A record is
 --   {id, output, count, ingredients = {{item = name | group = name, n}, ...},
 --    area, profession, tier, time, station, progress}
--- `area` is "basic", "cooking", a primary profession or "alchemist";
+-- `area` is "basic", "cooking", "alchemist" or a primary profession;
 -- `profession` is the area's profession (nil for Basic); `time` is the
 -- duration of one craft in seconds (spec §2.30); `station` is nil or the
 -- station kind that must stand nearby; `progress` says whether the craft
@@ -32,10 +32,10 @@ grug_jobs.PRIMARY_PROFESSIONS = {
 -- 33: Alchemy joined Cooking).
 grug_jobs.SECONDARY_PROFESSIONS = {"cooking", "alchemist"}
 
--- The crafting areas (spec §2.16): Basic, Cooking, the six primaries (a
--- character shows the two it learned) and Alchemy.
-grug_jobs.AREAS = {"basic", "cooking", "weaponsmith", "armorsmith", "tailor",
-	"leatherworker", "woodcarver", "goldsmith", "alchemist"}
+-- The crafting areas (spec §2.16): Basic, Cooking, Alchemy and the six
+-- primaries (a character shows the two it learned).
+grug_jobs.AREAS = {"basic", "cooking", "alchemist", "weaponsmith", "armorsmith",
+	"tailor", "leatherworker", "woodcarver", "goldsmith"}
 local AREA_SET = {}
 for _, area in ipairs(grug_jobs.AREAS) do AREA_SET[area] = true end
 

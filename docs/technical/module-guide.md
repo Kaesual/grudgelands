@@ -131,7 +131,7 @@ tools](#player-meta-read-by-external-tools).
 - **The recipe registry** (Round 45, `grug_jobs/registry.lua`): every craft is
   a record `{id, output, count, ingredients = {{item = name | group = name,
   n}, ...}, area, profession, tier, time, station, progress}`; `area` is
-  `basic`, `cooking`, a primary or `alchemist` (`grug_jobs.AREAS`),
+  `basic`, `cooking`, `alchemist` or a primary (`grug_jobs.AREAS`),
   `profession` the area's (nil in Basic), `time` seconds per item
   (`grug_jobs.DURATIONS`), `station` nil or the profession's station kind
   (`grug_jobs.PROFESSION_STATIONS`), `progress` whether it awards profession
