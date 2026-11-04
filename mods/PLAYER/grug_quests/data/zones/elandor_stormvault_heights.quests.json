@@ -104,7 +104,7 @@
               "area": "elandor_glassroot_wilds/rootsnare"
             }
           ],
-          "text": "The Bandit Fletchers at {name:rootsnare}, {dir_from_giver:rootsnare}, steal the carriers' messages as readily as they cut our roots for arrow shafts. Those messages tell us which crews have returned and which still need supplies. Bring me a Runner's Packet from the camp. A path is little use if the people at either end cannot hear from one another."
+          "text": "The Bandit Fletchers at {name:rootsnare}, {dir_from_giver:rootsnare}, steal the carriers' messages as readily as they cut our roots for arrow shafts. Those messages tell us which crews have returned and which still need supplies. Bring me a Runner's Packet from those fletchers. A path is little use if the people at either end cannot hear from one another."
         },
         {
           "zone": "kragmar_blackwind_rise",

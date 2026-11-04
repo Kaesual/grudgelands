@@ -269,9 +269,18 @@ for the user's verdict on a first-look default.
     world, or stand there during the first start: you can walk or fall out; a
     full block at head height hurts until you do. Read and computed by the
     lane, not engine-tested; Return Home is the backstop.
-33. *Look:* Wallwright's tents with their straw mats. **Open for the user's
-    confirmation:** the Round 58 line "no shelter, no bed" was narrowed for
-    them ([deviations](#deviations-from-the-plan)); recommended: keep.
+33. *Look:* Wallwright's tents with their straw mats. **Confirmed by the user
+    (2026-11-04): they stay;** the Round 58 line "no shelter, no bed" was
+    narrowed for them ([deviations](#deviations-from-the-plan)).
+
+**Offer dialogue (follow-up)**
+
+34. **The offer names the source:** at a giver of Words Worth Bringing Back in
+    Glassroot Wilds (Accord), and in Bannerbreak Mesa (Throng), the OBJECTIVES
+    line reads "Bring Runner's Packet × 1 (from Bandit Fletcher) (level 38–40)",
+    "(from Trench Archer)" there, with no line cut or overlapping the rewards at
+    the smallest window, desktop and web. Glassroot's text asks for the Packet
+    "from those fletchers"; a kill or a gathering quest reads as before.
 
 ## 7. Orchestration notes
 
@@ -364,12 +373,12 @@ Main has **305** portable fixtures (5 new: `r69_ui`, `r69_home`, `r69_skills`,
   nodes (gravel, desert sand) on three races; `install_pick.py` swaps this one
   role, seven rear-footing cells per race. The art page's "today" column now
   shows the installed design; the original comparison is at `325737b2`.
-- **Straw mats, open for the user's confirmation:** Wallwright's tents use
+- **Straw mats, confirmed by the user (2026-11-04):** Wallwright's tents use
   `cottages_straw_mat`, which the Round 58 "no beds" fixture refused. It is
   plain decor (not walkable, no rightclick, already in war camps), so
   `r58_camps` was narrowed to real beds and `pvp.md`'s "no shelter" now calls
-  the tents set dressing. This changes a Round 58 line; recommended: keep (the
-  user picked the design with the mats visible). Checklist 33.
+  the tents set dressing. This changes a Round 58 line; the user keeps them
+  (picked with the mats visible). Checklist 33.
 - **The fix round's read-back,** not planned: the reviewer reproduced a
   neighbouring chunk undoing a write (the engine's mapgen VM reads its one-block
   shell and blits it back). A generation that outlasts the settling time can
@@ -441,3 +450,30 @@ From the lanes' reports (measured there unless marked).
   link and anchor check of the touched documents (1164 links, 0 bad). The
   coordinator's round-end full run on main `67391a4b`: 304 of 305, only
   `r37_dc` waiting for this CHANGELOG entry, which passes on this lane.
+
+### Follow-up (2026-11-04)
+
+The user's decisions after the round, folded into 0.69.0 (not pushed;
+compatible, no saved state):
+
+1. **The offer dialogue names the source,** from the same `objective.source`
+   the log uses: "Bring Runner's Packet × 1 (from Bandit Fletcher) (level
+   38–40)". The dialogue's detail pane is one line for the offer, a quest in
+   progress and the turn-in, so all three read it; kills and plain items read as
+   before. Checklist 34.
+2. **The Glassroot sentence:** "Bring me a Runner's Packet from those
+   fletchers."
+3. **Straw mats confirmed:** they stay (checklist 33, deviations).
+
+**Found on the way:** the pane read `Q.variant_of(def, source)` with a source
+that named no variant, so every offer showed the objectives of the quest's
+first variant, whichever giver offered it, and the source would have read
+Stormvault Heights' at all six givers. The offer now passes
+`def.giver_variant[npc]`, which `Q.accept` records. Wider than the one line:
+multi-variant quests also offer their own zone's kill names and level ranges
+(142 lines in the fixture, levels aside). The quest text was right already.
+
+Before accepting, a player reads objectives only in this pane. The list row
+and its hover show title and status; the map's giver markers show the giver;
+the quest log, HUD and target tooltips exist once a quest is active. The
+textarea wraps and scrolls (`guiFormSpecMenu.cpp:1555-1556`).

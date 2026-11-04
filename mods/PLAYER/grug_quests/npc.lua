@@ -207,14 +207,20 @@ local function detail_pane(player, npc_id, row, picked, notice, scale)
 	-- variant and giver the player took it from (Round 57); at the turn-in
 	-- the completion paragraph (ruling 14) in its place, when there is one.
 	local at_giver = def.giver_variant[npc_id] ~= nil and not active
-	local source = active or {giver = def.giver_variant[npc_id] and npc_id or nil}
+	-- The offer shows the variant this giver gives (what Q.accept records).
+	local source = active or {giver = def.giver_variant[npc_id] and npc_id or nil,
+		variant = def.giver_variant[npc_id]}
 	local completion = row.status == "ready" and Q.completion_text(def, active)
 	local detail = (completion or Q.quest_text(def, at_giver or (active and active.giver == npc_id), source)) .. "\n\nOBJECTIVES\n"
-	-- One line per objective (ruling 41), with its targets' level range
-	-- (Lane Q0): "Defeat Barrow Piglet × 8 (level 1–2)".
+	-- One line per objective (ruling 41), with an item's named source (Round
+	-- 69, the quest log's) and its targets' level range (Lane Q0): "Defeat
+	-- Barrow Piglet × 8 (level 1–2)", "Bring Runner's Packet × 1 (from Bandit
+	-- Fletcher) (level 38–40)".
 	for _, objective in ipairs(Q.variant_of(def, source).objectives) do
 		detail = detail .. (objective.description or Q.objective_action(objective)) ..
-			" × " .. objective.count .. Q.objective_levels_text(objective) .. "\n"
+			" × " .. objective.count ..
+			(objective.source and (" (from %s)"):format(objective.source) or "") ..
+			Q.objective_levels_text(objective) .. "\n"
 	end
 	local rewards = table.concat(Q.reward_lines(def, player), "\n")
 	local choices = #def.rewards.choices > 0

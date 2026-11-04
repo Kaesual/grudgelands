@@ -4,6 +4,8 @@
 -- carried: its rings and crosshairs through the window's own quest_targets,
 -- its quest log and tracker lines; then the same with the objectives
 -- finished; and the item objectives without a source, none of which may mark.
+-- Then the offer dialogue at the first giver of each of those variants (Round
+-- 69 follow-up): the real form holds that variant's line with its levels.
 -- Lines start "[r69qm]"; "RESULT ok" ends a clean run.
 -- Run: PROBE=tools/r69_questmap/grug_probe_r69_questmap SEED=42 LC_ALL=C \
 --      tools/luanti_headless.sh 300
@@ -21,6 +23,36 @@ end
 
 local player = {get_pos = function() return {x = 0, y = 10, z = 0} end}
 
+-- The objective lines the giver's dialogue shows for `variant`, offered by its
+-- first giver to a stand-in reader; the offer's rows and service gate stubbed
+-- for the call. Returns the lines wrong in the form and the longest line.
+local function offer_lines(Q, id, variant)
+	local npc = variant.givers[1]
+	local def, form = Q.registered_quests[id], nil
+	local rows, serves, show = Q.npc_quests, grug_factions.serves, core.show_formspec
+	Q.npc_quests = function() return {{id = id, title = def.title, status = "available", level = def.level}} end
+	grug_factions.serves = function() return true end
+	core.show_formspec = function(_, _, text) form = text end
+	local meta = {get_string = function() return "" end, get_int = function() return 0 end}
+	local reader = {get_player_name = function() return "r69_probe_reader" end,
+		is_player = function() return true end, get_hp = function() return 20 end,
+		get_pos = function() return {x = 0, y = 0, z = 0} end, get_meta = function() return meta end}
+	Q.npc_by_socket["r69_probe/" .. npc] = npc
+	local ok, err = pcall(Q.open_npc, reader, {_grug_start = "r69_probe", _grug_socket = npc, object = {
+		is_valid = function() return true end, get_pos = function() return {x = 0, y = 0, z = 0} end}}, id)
+	Q.npc_by_socket["r69_probe/" .. npc] = nil
+	Q.npc_quests, grug_factions.serves, core.show_formspec = rows, serves, show
+	if not ok then return 1, tostring(err) end
+	local wrong, longest = 0, ""
+	for _, o in ipairs(variant.objectives) do
+		local line = Q.objective_action(o) .. " \195\151 " .. o.count ..
+			(o.source and " (from " .. o.source .. ")" or "") .. Q.objective_levels_text(o)
+		if #line > #longest then longest = line end
+		if not (form or ""):find("\n" .. core.formspec_escape(line) .. "\n", 1, true) then wrong = wrong + 1 end
+	end
+	return wrong, longest
+end
+
 local function run()
 	local Q, W = grug_quests, grug_map.window
 	local box = dofile(core.get_modpath("grug_map") .. "/quest_box.lua")
@@ -30,6 +62,7 @@ local function run()
 	for id in pairs(Q.registered_quests) do ids[#ids + 1] = id end
 	table.sort(ids)
 	local quests, variants, missing, left, plain, plain_marked = 0, 0, 0, 0, 0, 0
+	local offers_wrong, widest = 0, ""
 	for _, id in ipairs(ids) do
 		local def = Q.registered_quests[id]
 		local counted = false
@@ -61,12 +94,18 @@ local function run()
 				for k, row in ipairs(rows) do lines[k] = box.objective_label(row) end
 				log(("%s/%s: %d crosshairs, %d rings | %s | HUD %s"):format(id, key, #found.crosshairs,
 					#found.rings, table.concat(lines, " + "), Q.hud_line({objectives = rows}, 38)))
+				local wrong, line = offer_lines(Q, id, variant)
+				offers_wrong = offers_wrong + wrong
+				if #line > #widest then widest = line end
+				log(("offer %s/%s: %s, %d wrong"):format(id, key, line, wrong))
 			end
 		end
 	end
 	log(("quests %d, variants %d, without a target %d, marks left when finished %d; " ..
 		"plain item objectives %d, marked %d"):format(quests, variants, missing, left, plain, plain_marked))
-	log((quests == 14 and missing == 0 and left == 0 and plain_marked == 0) and "RESULT ok" or "RESULT FAILED")
+	log(("offers: %d lines wrong, widest %d bytes: %s"):format(offers_wrong, #widest, widest))
+	log((quests == 14 and missing == 0 and left == 0 and plain_marked == 0 and offers_wrong == 0) and
+		"RESULT ok" or "RESULT FAILED")
 end
 
 local clock, done = 0, false

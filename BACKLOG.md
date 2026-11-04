@@ -17,17 +17,11 @@ that name their drop, the camp sites in Wallwright
 desktop/web [GUI checklist](docs/planning/round69-plan.md#gui-checklist-desktop-and-web)
 is open. Carry-overs:
 
-- **Waiting for the user:** confirm the straw mats in Wallwright's tents, with
-  `r58_camps` narrowed to real beds and `pvp.md`'s wording (recommended: keep).
-- **The user's call:**
-  - The offer dialogue still reads "Bring Runner's Packet × 1 (level 38–40)";
-    it could name the source (`npc.lua`, one line).
-  - The Glassroot variant of `border_packets`, "Bring me a Runner's Packet from
-    the camp.", suggests a world object, milder than Bannerbreak's did.
-    Proposal: "Bring me a Runner's Packet from those fletchers."
-  - An enemy can camp a Claim Stone respawn: claims lie in own peaceful land,
-    but flagged enemies may enter it. Nothing guards this and no ruling covers
-    it.
+- **Decided:** the user keeps the straw mats in Wallwright's tents (2026-11-04),
+  with `r58_camps` narrowed to real beds and `pvp.md`'s wording.
+- **The user's call:** an enemy can camp a Claim Stone respawn: claims lie in
+  own peaceful land, but flagged enemies may enter it. Nothing guards this and
+  no ruling covers it.
 - **QUESTMAP:** fixture T in `r69_questmap` asserts that a target exists, not
   which area (a mutation giving own-roles rows the first variant's `sources`
   passed all checks; no bug today, a one-line area-zone assert would close it);
