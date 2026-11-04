@@ -13,9 +13,8 @@
 --      replaced cells (a VoxelManip write keeps both) and the cells go in
 --      through one VoxelManip with the engine's light update. The same cells
 --      as the writer's, read from the same prepared blueprint, on the same
---      base, leaving out the anchor root the writer leaves out (the anchor's
---      banner with its metadata and timer stays). Like generation it runs no
---      on_construct.
+--      base, leaving out the anchor root the writer leaves out. Like
+--      generation it runs no on_construct.
 -- The pending key is durable and map-bound (cleared by a map reset). It goes
 -- only once two map saves have passed since the last write: the engine saves
 -- map and mod storage apart, so a crash may lose a written block, and then

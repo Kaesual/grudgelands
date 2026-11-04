@@ -51,6 +51,7 @@ What a change needs:
 | Restructured character state (talents, saved formats): a step converts it, offline or as online work at the character's next join | migrate |
 | A reworked quest (its objectives, prerequisites or order changed): it takes a new id, and the old id is dropped as an unknown id (§4; Round 57 ruling 21) | compatible |
 | Saved character or world state the new code cannot read that is not map-bound, when the round decides not to migrate it | new server |
+| A protected composition rewritten inside its unchanged box, by a migration's online part (§5.9; the deliberate exception of Round 69 ruling 5 to "world generation needs a map reset") | migrate |
 | A change to a validated world-creation scalar (`game.conf`'s mapgen pins, `r7_runtime.lua` `validate_live_scalars`) | new server |
 | A change to a validated world-creation scalar the game forces over `map_meta.txt` itself (`core.set_mapgen_setting*` with `override_meta`, `r7_native.lua` `apply_and_validate_main`: the six v7 terrain and climate noise params and, since Round 49, `mgv7_spflags`) | map reset |
 
@@ -223,6 +224,10 @@ list of the platform's migration contract):
 - 0.67.0 (Round 67, the playtest's notes) declares the sixth step, 0.67.0
   (§5.8): the metal rods are removed items, so every rod a world holds
   outside the map is refunded as bars offline. No map reset.
+- 0.69.0 (Round 69, the camps under construction get a new design) declares
+  the seventh step, 0.69.0 (§5.8), and no map reset: the step only leaves a
+  world marker and the game rewrites each camp's protected box online
+  (§5.9).
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the
@@ -257,6 +262,7 @@ written in `register_on_mods_loaded`, after every clear.
 | `grug_core` `world_preparation` (`starts_preload.lua`) | the plan and its progress: total, cursor, order, geometry, reach, authority digest, selection | `mode` (starts or full): the selected plan starts again |
 | `grug_mobs` (`map_reset.lua`) | every record of the world's authored actors: `startnpc:` and `startnpcdue:` (settlement NPC markers and respawn times), `rare_alive:` and `rare_next:`, `boss:dragon:<id>:alive/due/warned`, `leader_next:`, `rift_crack:` and `rift_boss_due:`, `live_pos:` and `live_absent:` | `live_gen:<key>`, the liveness generations (monotonic: a copy of an older generation never returns) |
 | `grug_housing` (`registry.lua` `map_reset`) | every `claim:<id>`; a `player:<name>` whose stone stood becomes `needs_stone` | `next_id` (monotonic), every other player record (a carried stone stays carried), the pre-reset pass's `recovered:*` (its `recovered:<player>:<seq>:<n>` and the game's clean-up entries `recovered:<player>:<seq>:<n>.<k>` and `recovered:<player>:<seq>:0.<k>`, until their items are taken), the packed containers' contents `packed:<player>:<seq>:<n>[.<k>]` (until the container is placed) and `pack_seq` (§3.5) |
+| `grug_mapgen` (Round 69, `camp_rewrite.lua`) | `camp_rewrite`, the pending box rewrite (§5.9): a new map generates the new blueprint | — |
 | `grug_core` `map_reset_pack:<seq>` (§3.5) | — | the pass's marker until the game's handler has run at the next load |
 | `grug_core` `reset_world` | — | the world record itself |
 | `grug_home` `claim_lost:<name>` | — | pending notices of a past pick-up or destruction |
@@ -606,7 +612,8 @@ skip its due steps.
   `tools/r47_ms/portable_test.lua`, 0.48.0's `tools/r48_bags/run.sh` with
   `tools/r48_bags/portable_test.lua`, 0.53.0's `tools/r53_ms/run.sh` with
   `tools/r53_ms/portable_test.lua`, 0.67.0's `tools/r67_craft/run.sh` (no
-  online work, so no join fixture) (§5.8). A tool run on a world before a
+  online work, so no join fixture), 0.69.0's `tools/r69_camp/run.sh` with
+  `tools/r69_camp/portable_test.lua` (§5.8, §5.9). A tool run on a world before a
   step also runs every later declared step, so an older step's exact checks
   read a copy migrated by that step alone (the tool in-process, pinned to its
   checkout), and the mechanism's checks leave the declared steps' markers
@@ -639,6 +646,7 @@ skip its due steps.
 | 0.48.0 (Round 48, the bags at half size) | Every character, offline ones included, gets the marker; nothing else is written (the layout needs the game's sort order and stack sizes, the leftovers the game's mail) | Each character's next join (`grug_core.migrations.handlers["0.48.0"]`, first join callback, so before the bags' join callback sizes the content lists): a character with bags has `main[9..]` and the bags' content lists sorted once into the new sizes (4 / 8 / 12 / 16 instead of 8 / 16 / 24 / 32) through the one sort path (`grug_inventory.sort` with target sizes); the hotbar is not touched; soulbound and bound items keep a cell; what does not fit (the end of the sort order) is sent as "npc" letters from "Lost and Found", four stacks each (`grug_mail.send_system` with stacks), each stack leaving its cell only once its letter is sent; then the content lists shrink, and one feed line follows the join when letters were sent. A character without bags only loses the marker. A failed send fails the handler with the unsent stacks still beyond the new sizes; the bags' join callback never shrinks a list over items, so the next join sends only the rest. Not covered and not needed: node inventories hold no bag contents; the step only adds letters to `grug_mail`'s storage. Since 0.62.0 the bags are 8 / 12 / 16 / 20 (no step: the join grows the lists), and the handler reads the live sizes, so a character still carrying the 0.48.0 marker now sorts into those (harmless: fewer stacks go to letters; its letter's "half as much" is then only roughly right) | `tools/r48_bags/run.sh`: unit tests, then a 0.47.0 world built by the 0.47.0 game, the tool in the runner's container, a boot and joins of 0.48.0; the join part's fixture `tools/r48_bags/portable_test.lua` |
 | 0.53.0 (Round 53, the new classes) | For every character, offline ones included: the player meta `grug_classes:talents` (the spent ranks; the points follow from the level, so every point is refunded), `grug_classes:respec_used` (the next respec is free again), every `grug_classes:talent_ready:<id>` and `grug_classes:unbroken_ready` and `grug_classes:untouchable_ready` (the 0.52.1 talent windows' stored cooldowns) are deleted; every stack of the retired skills `grug_abilities:cinderfall`, `:glacial_ward` and `:pinning_shot` leaves every list (the shown hotbar, the other layout `grug_hotbar_store`, a stray copy in `main[9..]` or a bag; a skill is a bound item that no node or detached inventory and no letter takes, and a dropped one is deleted); every character gets the marker. A character's inventory is written only when a retired skill went. The skills the new kits lock or swap are registered and left to the game's join (`grug_abilities.normalize_kit`); the Priest's Smite is not moved into Strike's slot | Each character's next join (`grug_core.migrations.handlers["0.53.0"]`, first join callback): a character with a class gets one chat line, "Your talent points have been reset.", and nothing else. The lower maximum HP of the Mage and the Priest is the stats' own join (`apply_stats` clamps the current HP) | `tools/r53_ms/run.sh`: unit tests, then a 0.52.1 world built by the 0.52.1 game (one character per class at level 30 with spent talents, stored windows and the retired skills on both layouts and in a bag), the shipped tool in the runner's container, boots and joins of 0.53.0; the join part's fixture `tools/r53_ms/portable_test.lua` |
 | 0.67.0 (Round 67, the playtest's crafting notes) | The six metal rods (`grug_professions:metal_rod_<metal>`) left the game (ruling 13): every rod stack becomes ceil(N / 2) bars of its metal (`grug_materials:<metal>_bar`), in place, its wear and meta dropped, in every store a removed item covers (§1), offline characters included: every list of every character's inventory; the `consumed` stacks of the running job (player meta `grug_jobs:job`) and of the waiting ones (`grug_jobs:queue`; a job whose recipe is gone returns them when it ends); `grug_housing`'s `recovered:*` entries (a rod stack, and the `lists` item meta of a packed container not cleaned yet) and the `packed:*` content keys; `grug_mail`'s `box:<name>` letters' attachments. A value is written only when it held a rod. Not covered (accepted, ruling default "Metal rods in saved state"): rods in node inventories on the map stay unknown items (a step never reads the map), and a cleaned packed container's tooltip text keeps naming the rods its stored contents no longer hold | none | `tools/r67_craft/run.sh`: unit tests in the runner's container, then a 0.66.1 world built by the 0.66.1 game (rods in main, the other hotbar, the overflow, a running and a waiting job, a letter, three Claim Stone entries; an offline character), the shipped tool in the runner's container, a refused boot and a boot and join of 0.67.0 (the jobs end and return bars) |
+| 0.69.0 (Round 69, the camps under construction) | The world marker `migrate_world:0.69.0`; nothing else is written (a step never reads the map) | The next load (`grug_core.migrations.handlers["0.69.0"]`, a world part): the handler records the job in `grug_mapgen`'s mod storage, key `camp_rewrite`, and after the load `grug_mapgen/camp_rewrite.lua` rewrites the six camps' boxes (§5.9). No character part | `tools/r69_camp/run.sh`: a 0.68.0 world built by the 0.68.0 game, the shipped tool in the runner's container, a refused boot, a boot killed during the job, the next boot finishing it with a join, a new world of the same seed compared cell by cell, a repeat, and the step with a map reset; the job's fixture `tools/r69_camp/portable_test.lua` |
 
 0.49.0 to 0.52.1, 0.53.1 to 0.66.1 and 0.68.0 declare no step. The pre-reset pass (§3.5) is no step: it
 has no version of its own, runs at every map reset from 0.50.0 on, and
@@ -659,3 +667,50 @@ end-to-end test proves them against the registrations of a running 0.44.0
 game (every equipment item with an item level, no other equipment, no alias
 to any of them) and shows that every pinned item's 0.45.0 definition
 differs.
+
+### 5.9 A protected composition rewritten online
+
+World generation needs a map reset; nothing else may replace what a world
+already generated. The one exception is the user's ruling of 2026-11-04
+([round 69 plan](../planning/round69-plan.md) §2, rulings 4 to 6): a
+composition inside an **unchanged box** may be rewritten by a migration's
+online part, because the map reset it would otherwise need is out of
+proportion to six small camps, and because nothing a player made can be in
+the way. A later round may use it only under the same conditions, with the
+same proof:
+
+- **The box is the player's limit too:** a position inside it is protected
+  from every player, and no claim can reach it. The six camps: protection
+  kind `war_camp`, 10 nodes beyond the box in x and z, from 10 below its
+  floor to 10 above its top (`world_protection.lua`, `settlement_boxes`), and
+  a claim keeps clear of such a box (`grug_housing`, ruling 27). Only the
+  `protection_bypass` privilege passes, so an administrator's own edits in a
+  box go.
+- **Footprint, anchor, protection, terrain fitting and sockets are unchanged,**
+  and the composition writes every cell of the box (the blueprint refuses a
+  gap), so no old cell survives and the box depends on nothing around it.
+- **The same cells as generation:** the writer's prepared blueprint, base and
+  skipped anchor root, checked against the published identity
+  (`r7_settlement.anchor_cells`). A VoxelManip write keeps node metadata and
+  timers, so the job clears those first, and it runs no `on_construct`, as
+  generation does not. The engine's light update replaces generation's own
+  light solve. Nodes that need an initialisation get it as in generation,
+  from their load-time LBM.
+- **Not at load:** the world handler only records the job, durably and
+  map-bound (§3.2, §3.4). The job emerges one box at a time after the load, so
+  it blocks no join. A chunk that is missing generates the new blueprint and
+  the write repeats it; the write itself is one VoxelManip in one server step.
+- **Crash and repeat:** the pending key goes only after two map save
+  intervals past the last write (the engine saves map and mod storage apart),
+  and a repeat writes the same bytes. A failed emerge or write reports
+  `[GRUG-SEVERE]` and keeps the key for the next start.
+- **A map reset in between:** the clear drops the key, and a start that resets
+  the map records nothing: the new map generates the new blueprint.
+- **The proof,** on a real world of the previous version (the two-boot proof,
+  `tools/r69_camp/e2e.py`): whole, half generated and untouched camps; after
+  the job every box cell equals a new world of the same seed (node and
+  param2), and a ring outside each box equals both the old world and the new
+  world; old metadata and timers gone.
+
+`tools/check_upgrade.py`'s town comparison sees neither this nor any other
+POI: it compares what the start towns and capitals build.
