@@ -196,8 +196,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   rulings 1–2 and 7: the list on the left, one wide box on the right, the
   right column gone): the 3×3
   grid and the recipe books are gone. Along the top the **area tabs**:
-  Basic (the default), Cooking, the two primary slots ("Primary 1" and "2"
-  while empty) and Alchemy, beside them the chosen area's tier progress
+  Basic (the default), Cooking, Alchemy and the two primary slots ("Primary
+  1" and "2" while empty; Round 69 ruling 7, the professions overview
+  follows), beside them the chosen area's tier progress
   ("Tier 3 · 7/15" with a small bar, "Tier 6 · highest", "Not learned",
   Basic has none). An empty primary slot or an unlearned profession shows an
   empty list with how to learn it.

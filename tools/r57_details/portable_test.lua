@@ -605,10 +605,10 @@ click_page({[DF.details] = "Details"})
 eq(#context.grug_craft.details.pages, 1, "P a new opening starts a fresh page stack")
 
 -- The enchant and upgrade boxes' Details (operation_box.lua): a Weaponsmith
--- with a Bronze Sword in the target slot.
+-- with a Bronze Sword in the target slot (the fourth tab: Round 69 ruling 7).
 P3.meta["grug_jobs:primary:1"] = "weaponsmith"
 lists[grug_jobs.TARGET_LIST][1] = ItemStack("grug_gear:sword_bronze")
-context.grug_craft = {slot = 3, page = 1, search = "", typed = "", only = false, qty = "1", rows = {}}
+context.grug_craft = {slot = 4, page = 1, search = "", typed = "", only = false, qty = "1", rows = {}}
 page_of()
 click_page({[DF.box .. "upgrade"] = "Upgrade an item"})
 page = page_of()
