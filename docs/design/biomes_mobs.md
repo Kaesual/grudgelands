@@ -507,9 +507,9 @@ target). Idle, a
 free-roaming mob wanders within 32 nodes of its spawn point
 and roams at a calm walk (Round 24); an idle aggressive one also probes
 every 4–5 seconds eight points on a ring at its view range and walks away
-from roads, bridges, villages, start towns and capital cities among them
-(Round 28 ruling 2, `combat_stats.md` "Road and town push"), never during a
-fight.
+from roads, bridges, villages, start towns, capital cities and (Round 69)
+active Claim Stones among them (Round 28 ruling 2, `combat_stats.md` "Road and
+town push"), never during a fight.
 
 **Natural spawn and unload distances:** an ordinary `mobs:spawn` row refuses
 positions within **24 nodes** of any connected player. An unload-eligible mob
@@ -1320,8 +1320,9 @@ gate, protected surface).
 - **Drift band.** No aggressive role spawns within 16 nodes of a road,
   bridge, village, PvP fortress or war camp (Round 31), start town or
   capital city (the spot and two rings of
-  eight probes at 8 and 16 nodes, the same probe as the idle push of
-  ruling 2); neutral roles and critters may.
+  eight probes at 8 and 16 nodes, the same point test as the idle push of
+  ruling 2, without its claims: a claim has no band); neutral roles and
+  critters may.
 - **Protected surface (ruling 3).** No ambient non-critter spawn — ABM row
   or region — on a road corridor or bridge (half width + 1, ±5 vertical), a
   village's building core, a Round 31 PvP fortress or war camp with its

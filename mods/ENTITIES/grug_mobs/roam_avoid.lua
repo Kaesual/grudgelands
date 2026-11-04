@@ -22,6 +22,18 @@
 -- direction closest to the opposite of the hits' mean direction (all hit:
 -- toward home), with the wander leash's own nudge (patrol.lua walk_toward).
 --
+-- Active Claim Stones (Round 69 follow-up, the user's ruling 2026-11-04): a
+-- point on an active claim hits too, because the stone is also the respawn
+-- point (Round 69 ruling 3) and a player should not wake among roaming mobs.
+-- The test is claim_refuses_spawn's (spawn_policy.lua): a draft or an unfuelled
+-- claim does not push. The claim is the push's alone: roam_avoid_hit stays the
+-- road and town test, because SR.in_drift reads it (spawn_regions.lua) and a
+-- claim has no spawn drift band, only the refusal inside it. A claim does not
+-- push a mob whose spawn point it covers (placed after the mob spawned): that
+-- mob's way out ends at its leash, so the push and the leash would pace it to
+-- and fro at the leash's rim; it roams as before until remove_far_mobs takes
+-- it once no player stays near, and no hostile spawn follows it.
+--
 -- Composition with the wander leash (Round 24 ruling 19, Round 28 ruling 4):
 -- aggro.lua roam_check calls the push only for a free roamer INSIDE its
 -- WANDER_RADIUS; outside it the leash walks the mob home and the push is not
@@ -112,15 +124,24 @@ function grug_mobs.roam_avoid_away(hits, home_x, home_z)
 	return DIRS[best][1], DIRS[best][2]
 end
 
+-- Whether `pos` lies on an active claim, claim_refuses_spawn's test.
+local function on_active_claim(housing, pos)
+	local claim = housing.claim_at(pos)
+	return claim ~= nil and housing.is_active(claim) == true
+end
+
 -- The eight probe hits around `pos` at radius `radius` (reused table).
+-- `housing` (optional) is grug_housing: its active claims hit too, tested
+-- first as the cheaper test.
 local hits = {}
 local point = {x = 0, y = 0, z = 0}
-function grug_mobs.roam_avoid_probe(pos, radius)
+function grug_mobs.roam_avoid_probe(pos, radius, housing)
 	point.y = pos.y
 	for index = 1, PROBES do
 		point.x = pos.x + DIRS[index][1] * radius
 		point.z = pos.z + DIRS[index][2] * radius
-		hits[index] = grug_mobs.roam_avoid_hit(point)
+		hits[index] = (housing ~= nil and on_active_claim(housing, point)) or
+			grug_mobs.roam_avoid_hit(point)
 	end
 	return hits
 end
@@ -147,7 +168,14 @@ function grug_mobs.roam_avoid_tick(self, pos)
 		return
 	end
 	local home = self._grug_home
-	local away_x, away_z = grug_mobs.roam_avoid_away(grug_mobs.roam_avoid_probe(pos, radius),
+	-- grug_housing loads after this mod and may be absent, so it is read here
+	-- (rawget: claim_refuses_spawn's reason); strict.lua stays quiet.
+	local housing = rawget(_G, "grug_housing")
+	if housing and home and on_active_claim(housing, home) then
+		housing = nil
+	end
+	local away_x, away_z = grug_mobs.roam_avoid_away(
+		grug_mobs.roam_avoid_probe(pos, radius, housing),
 		home and home.x - pos.x, home and home.z - pos.z)
 	if away_x then
 		grug_mobs.walk_toward(self, pos.x + away_x * radius, pos.z + away_z * radius, pos)

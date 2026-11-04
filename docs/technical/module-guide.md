@@ -1386,7 +1386,7 @@ tools](#player-meta-read-by-external-tools).
     (`subtypes.lua`; fixture `tools/r36_q0`).
   - `env_damage.lua` (percent environmental damage, read by the
     `grug_env_damage` GRUG PATCH), `roam_avoid.lua` (idle aggressive mobs
-    walk away from roads and towns), `separation.lua` (separation and melee
+    walk away from roads, towns and active claims), `separation.lua` (separation and melee
     knockback as position displacement).
   - Zone level bands live only in the mapgen source
     (`wp40/source/simple_map.lua`), served by `grug_zones.get`/`at`.
