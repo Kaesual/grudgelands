@@ -20,7 +20,7 @@
 --   S  the session: death, leave and rejoin on every leg;
 --   H  no faction and creation stasis behave as before.
 -- Prints "R69 HOME PASS checks=<n>" or the failures.
-grug_sounds = {play = function() return false end, CLICK_STYLE = ""}
+rawset(_G, "grug_sounds", {play = function() return false end, CLICK_STYLE = ""})
 local repo = arg[1] or "."
 local checks, failures = 0, {}
 local function check(ok, label)
@@ -498,8 +498,7 @@ check(respawn() == true and #trail == 0 and not held(), "H creation stasis: noth
 grug_core.player_in_creation_stasis = nil
 
 if #failures > 0 then
- print("R69 HOME FAILURES:")
- for _, label in ipairs(failures) do print("  " .. label) end
- os.exit(1)
+ for _, label in ipairs(failures) do print("FAIL " .. label) end
+ error(("R69 HOME FAIL %d/%d"):format(#failures, checks), 0)
 end
 print("R69 HOME PASS checks=" .. checks)
