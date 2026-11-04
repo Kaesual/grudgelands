@@ -9,4 +9,4 @@ ERROR[Main]: stack traceback:
 ERROR[Main]: 	[C]: in function 'error'
 ERROR[Main]: 	.../games/grudgelands/mods/CORE/grug_core/world_version.lua:272: in main chunk
 ERROR[Main]: 	[C]: in function 'dofile'
-ERROR[Main]: 	...ys27/user/games/grudgelands/mods/CORE/grug_core/init.lua:19: in main chunk
+ERROR[Main]: 	...1p5_/user/games/grudgelands/mods/CORE/grug_core/init.lua:19: in main chunk

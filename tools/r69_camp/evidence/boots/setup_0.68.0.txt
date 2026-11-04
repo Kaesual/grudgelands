@@ -4,7 +4,7 @@ joins: []
 --- log lines
 ACTION[Main]: [grug_core] world version 0.68.0 recorded for a new world
 ACTION[Main]: [grug_core] world version 0.68.0 (a new world), game 0.68.0: no migration step due
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39959.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31246.
 ACTION[Server]: [r69_camp_probe] phase setup_0.68.0, job pending: nil
 ACTION[Server]: [r69_camp_probe] dumped setup_0.68.0
 ACTION[Server]: [r69_camp_probe] observations written: setup

@@ -1101,5 +1101,13 @@
   "new_world": false
  },
  "pending": false,
- "phase": "repeat"
+ "phase": "repeat",
+ "reverted": {
+  "pos": {
+   "x": -566,
+   "y": 92,
+   "z": -624
+  },
+  "was": "grug_mapgen:camp_stockade_orc"
+ }
 }

@@ -41,7 +41,7 @@ PASS  proof   old metadata and the timer left the box, the anchor root's stays
 PASS  proof   the ring's metadata stays
 PASS  proof   the sockets and the protection answer as in 0.68.0
 PASS  proof   protection: war_camp reaches 10 beyond the box in x and z, and 10 below and 10 above it
-PASS  repeat  boot A: the job again changes no node
+PASS  repeat  boot A: the job again changes no node, and a cell reverted after the last write is found by the read-back and written back
 PASS  reset   the tool's --map-reset runs the step
 PASS  reset   boot M: 0.69.0 with a map reset starts; no job, the marker gone, no key
 

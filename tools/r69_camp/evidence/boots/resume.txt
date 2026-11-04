@@ -1,19 +1,19 @@
 launcher: staged probe: grug_probe_r69_camp
-seconds: 37, exit 0
+seconds: 38, exit 0
 joins: ['visitor registered (protocol 52), stayed 4.0 s']
 --- log lines
 ACTION[Main]: [grug_core] world version 0.69.0, game 0.69.0: no migration step due
 ACTION[Main]: [grug_core] migration 0.69.0: the world's online work is done
-ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:39959.
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31246.
 ACTION[Server]: visitor [127.0.0.1] joins game. List of players: visitor
 ACTION[Server]: [r69_camp_probe] phase resume, job pending: true
-ACTION[Server]: [grug_mapgen] camp site camp_site_stormvault_heights rewritten: 5289 cells, emerge 4.5 s, write 2.4 ms
 ACTION[Server]: visitor leaves game. List of players: 
-ACTION[Server]: [grug_mapgen] camp site camp_site_ashenward_march rewritten: 5289 cells, emerge 0.6 s, write 2.7 ms
-ACTION[Server]: [grug_mapgen] camp site camp_site_glassroot_wilds rewritten: 5289 cells, emerge 0.5 s, write 1.7 ms
-ACTION[Server]: [grug_mapgen] camp site camp_site_blackwind_rise rewritten: 5289 cells, emerge 0.8 s, write 2.5 ms
-ACTION[Server]: [grug_mapgen] camp site camp_site_bannerbreak_mesa rewritten: 5289 cells, emerge 1.0 s, write 2.2 ms
-ACTION[Server]: [grug_mapgen] camp site camp_site_thunderroot_wilds rewritten: 5289 cells, emerge 0.7 s, write 2.6 ms
-ACTION[Server]: [grug_mapgen] the camp sites' rewrite is done
+ACTION[Server]: [grug_mapgen] camp site camp_site_stormvault_heights rewritten: 5289 cells, emerge 5.5 s, write 2.0 ms
+ACTION[Server]: [grug_mapgen] camp site camp_site_ashenward_march rewritten: 5289 cells, emerge 0.2 s, write 2.4 ms
+ACTION[Server]: [grug_mapgen] camp site camp_site_glassroot_wilds rewritten: 5289 cells, emerge 0.4 s, write 1.5 ms
+ACTION[Server]: [grug_mapgen] camp site camp_site_blackwind_rise rewritten: 5289 cells, emerge 0.8 s, write 3.1 ms
+ACTION[Server]: [grug_mapgen] camp site camp_site_bannerbreak_mesa rewritten: 5289 cells, emerge 0.8 s, write 2.1 ms
+ACTION[Server]: [grug_mapgen] camp site camp_site_thunderroot_wilds rewritten: 5289 cells, emerge 1.0 s, write 1.5 ms
+ACTION[Server]: [grug_mapgen] the camp sites' rewrite is done, every box read back
 ACTION[Server]: [r69_camp_probe] dumped resume
 ACTION[Server]: [r69_camp_probe] observations written: resume
