@@ -155,11 +155,14 @@ grug_abilities.register_ability({
 	description_for = function(user, def)
 		local v = def.values(user)
 		local rage = ("%.1f"):format(grug_abilities.swing_rage(user))
-		local text = ("A full melee swing with your equipped weapon; generates %s rage " ..
-			"when it lands.\nA hostile hit that takes your health readies the next " ..
-			"Retort within 4 s: +%s%% of a Strike hit (%d damage); at most every 6 s."):format(
-				(rage:gsub("%.0$", "")), percent(v.bonus),
-				effective_number(user, v.bonus * strike_unit(user)))
+		-- The readied swing is the plain one times 1 + its bonus (the swing
+		-- callback below), scaled and floored as one hit.
+		local swing = grug_abilities.plain_swing_raw(user, def)
+		local text = ("A full melee swing with your equipped weapon: %d damage; generates " ..
+			"%s rage when it lands.\nA hostile hit that takes your health readies the next " ..
+			"Retort within 4 s: %d damage (+%s%% of a Strike hit); at most every 6 s."):format(
+				effective_number(user, swing), (rage:gsub("%.0$", "")),
+				effective_number(user, swing * (1 + v.bonus)), percent(v.bonus))
 		if v.heal > 0 then
 			text = text .. ("\nA readied Retort that lands heals you for %d."):format(
 				effective_support_number(v.heal))
@@ -465,8 +468,9 @@ grug_abilities.register_ability({
 	talent = "ruin_hamstring",
 	description = "A landed swing cripples: slows the enemy by 35% for 3 s. Charges over 8 s.",
 	description_for = function(user, def)
-		return ("A landed swing cripples: slows the enemy by 35%% for %g s. " ..
-			"Charges over 8 s."):format(HAMSTRING_TIME + family_bonus(user, def, "duration_add"))
+		return ("A landed swing deals %d damage and cripples: slows the enemy by 35%% " ..
+			"for %g s. Charges over 8 s."):format(effective_number(user, strike_unit(user)),
+				HAMSTRING_TIME + family_bonus(user, def, "duration_add"))
 	end,
 	color = "#a8324e",
 	charge = 8,
