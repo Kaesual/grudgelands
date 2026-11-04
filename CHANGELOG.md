@@ -26,6 +26,9 @@ world.
   also at your Claim Stone, with or without fuel. If the stone's arrival is
   blocked you land at your innkeeper, then in your starting town, and you are
   held safely until you stand somewhere valid. A respawn has no cooldown.
+- **Calmer homes:** idle aggressive mobs now walk away from a fuelled Claim
+  Stone's land, as they do from roads and villages. In a fight they still
+  follow you in.
 - **Exact skill numbers:** every damaging skill now shows "N damage" with your
   level, weapon, gear and talents: Strike, Hamstring and Retort's plain swing
   show theirs for the first time, and Ice Nova says so plainly. The talent tree

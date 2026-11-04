@@ -19,9 +19,6 @@ is open. Carry-overs:
 
 - **Decided:** the user keeps the straw mats in Wallwright's tents (2026-11-04),
   with `r58_camps` narrowed to real beds and `pvp.md`'s wording.
-- **The user's call:** an enemy can camp a Claim Stone respawn: claims lie in
-  own peaceful land, but flagged enemies may enter it. Nothing guards this and
-  no ruling covers it.
 - **QUESTMAP:** fixture T in `r69_questmap` asserts that a target exists, not
   which area (a mutation giving own-roles rows the first variant's `sources`
   passed all checks; no bug today, a one-line area-zone assert would close it);

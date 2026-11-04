@@ -282,6 +282,18 @@ for the user's verdict on a first-look default.
     the smallest window, desktop and web. Glassroot's text asks for the Packet
     "from those fletchers"; a kill or a gathering quest reads as before.
 
+**Mobs at a claim (follow-up)**
+
+35. **The claim keeps them off:** with a fuelled Claim Stone in your home land,
+    stand idle about 20 nodes inside the claim and watch its edge (nearer, a mob
+    notices you at the distance the push looks): aggressive mobs that wander up
+    turn away within a few seconds, and a mob you pull in follows you and fights
+    as before. Mobs still spawn right outside the square (no band around a
+    claim), and a stone without fuel pushes nobody.
+36. **A claim placed on mobs:** place and activate a stone with aggressive mobs
+    standing in the square: they keep wandering without pacing or twitching,
+    and they are gone after you leave the area and come back.
+
 ## 7. Orchestration notes
 
 - Start state: main `3cee37b3` plus this plan; all lanes branch from it.
@@ -483,3 +495,26 @@ warnings), `build_structure.py --check`; fixtures `r69_questmap` (extended: the
 real dialogue at all 630 givers, a mutation without the variant fails 161
 checks), `r28_q0`, `r37_dc`; full run 305/0. Engine probe (seed 42): all 31
 variants' offers in the real form, 0 wrong, widest line 69 bytes.
+
+**Lane PUSH (the user's ruling, 2026-11-04):** an idle, free-roaming aggressive
+mob walks away from an active Claim Stone's area, as it does from roads and
+villages (`roam_avoid.lua`), because the stone is also the respawn point (ruling
+3). Compatible, no saved state, no new dependency: `grug_housing` is read at call
+time. Active claims only, the test of `claim_refuses_spawn`. The claim counts
+for the idle probe alone: `roam_avoid_hit`, which `SR.in_drift` reads, is
+unchanged, so the spawn rules are too and a claim has no band around it. A mob
+whose spawn point lies on an active claim is pushed by no claim: its way out ends
+at its leash, and the push and the leash would pace it at the rim every 4 to 5 s;
+it roams as before until `remove_far_mobs` takes it, and roads and towns still
+push it. Probe with no claim near, on one seed's real protection: 4.0–4.3 µs
+before, 4.0–4.6 µs after (noise; on a stub world about 0.1 µs more). Checklist
+35–36.
+
+**Backlog note withdrawn:** "An enemy can camp a Claim Stone respawn" was wrong.
+Death clears the location flag, the button and the contact time (`grug_pvp`
+`R.clear`), a dead player is not sampled, and claims stand only in the owner's
+own home territory (`registry.lua` `zone_problem`), which clears the flag. An
+unflagged player cannot be harmed (`R.can_harm`) and cannot gain contact from an
+attacker. The flag comes back only by pressing the button or walking off own
+land, the player's own act. Only an admin's faction change could put a claim
+in enemy land.

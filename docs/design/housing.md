@@ -314,6 +314,13 @@ only when digging and placing; §6.3 covers the rest.
   overgrows (ruling 19; `farming.md`).
 - No hostile mob spawns inside an active claim; mobs may still walk in.
   Expired claims spawn normally (ruling 24).
+- An idle, free-roaming aggressive mob walks away from an active claim, as it
+  does from roads and villages (Round 69; the stone is also the respawn point
+  now, §8): a tendency, not a wall. A mob in a fight is not pushed, a draft or
+  an unfuelled claim pushes nobody, and a claim adds no spawn band around it. A
+  mob whose spawn point lies on an active claim is pushed by no claim: it roams
+  as before until the game removes it once no player stays near
+  ([combat_stats.md](combat_stats.md), the push).
 - Falling nodes follow the normal engine rules. Because the claim is unbounded
   upward, only permitted players can place anything above a home.
 - Flying: there is no claim-specific flight rule. Home territory already

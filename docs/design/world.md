@@ -917,7 +917,8 @@ land do not exist.
   protection (§2 R1, R1b) wins over every claim
   permission, the owner's included: roads through a claim stay protected.
 - No natural renewal (wild plants, trees) and no hostile mob spawns inside
-  an active claim; mobs may walk in. An expired claim renews and spawns
+  an active claim; mobs may walk in, and an idle aggressive roamer turns away
+  from it ([housing.md](housing.md) §6.4). An expired claim renews and spawns
   normally.
 - The claim can be the owner's travel-home target (§6).
 
