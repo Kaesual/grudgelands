@@ -2268,8 +2268,9 @@ end
 
 -- Level, talent, equipment and status changes can re-tune every numeric
 -- ability. Walk only the lists where ability items are allowed to live, and
--- spend at most one inventory write per changed ability. No globalstep or
--- cast path calls this.
+-- spend at most one inventory write per changed ability. It runs on those
+-- changes only: a status that starts or ends may reach it from a cast or the
+-- status step, never once per tick.
 local function sync_descriptions(player)
 	local inv = player:get_inventory()
 	for _, listname in ipairs(representation_lists()) do
