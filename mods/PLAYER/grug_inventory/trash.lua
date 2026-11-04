@@ -17,10 +17,15 @@ local GHOST = "creative_trash_icon.png^[multiply:#cb9290^[opacity:184"
 local GHOST_INSET, GHOST_SIZE = 0.125, 0.75
 local TEXT_DX = 1.15 -- from the slot's left edge
 local BUTTON_W, BUTTON_H, BUTTON_GAP = 1.7, 0.65, 0.1
-local CHAR_W = 0.15 -- a label character on the page, as in the stat column
-local NAME_IN_HINT = 16 -- so the longest hint stays three lines beside Undo
+-- The window's smallest size shrinks the form but not its fonts: at this text
+-- size CHAR_W holds there too, and two lines of hint fit the box. Every text
+-- below stays two lines: NAME_IN_HINT in the wide box, the short forms beside
+-- Undo.
+local TEXT_SIZE, CHAR_W, LINE_STEP = 0.85, 0.15, 0.4
+local NAME_IN_HINT = 16
 local BOUND_HINT = "%s can't be destroyed here: it is bound to you."
-local ROOM_HINT = "No room in your inventory: make space, then press Undo."
+local BOUND_HINT_SHORT = "Bound items can't be destroyed here."
+local ROOM_HINT = "No room: make space, then press Undo."
 
 -- Player name -> {stack = what Undo restores, hint = the danger line,
 -- hint_id = which timer may clear it}.
@@ -101,7 +106,8 @@ local function hint_on_refusal(owner)
 	callbacks.allow_put = function(inv, listname, index, stack, actor)
 		local count = guarded(inv, listname, index, stack, actor)
 		if count == 0 and actor and actor:get_player_name() == owner then
-			show_hint(actor, sessions[owner],
+			local session = sessions[owner]
+			show_hint(actor, session, session.stack and BOUND_HINT_SHORT or
 				BOUND_HINT:format(clip(grug_core.item_name(stack), NAME_IN_HINT)))
 		end
 		return count
@@ -133,8 +139,8 @@ core.register_on_leaveplayer(function(player)
 	core.remove_detached_inventory(box_name(name))
 end)
 
--- What the box says: its lines, their colour, and the tooltip with what a
--- clip cut off. Beside Undo the text has less room.
+-- What the box says: its lines, coloured, and the tooltip with what a clip
+-- cut off or a hint covers.
 local function box_text(session, chars)
 	local colors = grug_core.ui.colors
 	local name, count
@@ -156,8 +162,7 @@ local function box_text(session, chars)
 end
 
 -- The slot at (x, y), its ghost over the always empty cell, the text and
--- Undo inside `w`. The neighbouring boxes' labels stay at `growth`; the text
--- follows text_scale, because it has to fit the box on a shrunk form too.
+-- Undo inside `w`; the page's label size at `growth` comes back after them.
 function grug_inventory.trash_content(player, x, y, w, growth)
 	local esc = core.formspec_escape
 	local location, list = grug_inventory.trash_location(player)
@@ -176,11 +181,11 @@ function grug_inventory.trash_content(player, x, y, w, growth)
 			x + w - BUTTON_W, y + (1 - BUTTON_H) / 2, BUTTON_W, BUTTON_H)
 	end
 	local lines, full = box_text(session, math.floor(text_w / CHAR_W))
-	local step = #lines > 2 and 0.3 or 0.4
-	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(grug_core.ui.text_scale(player))
+	fs[#fs + 1] = ("style_type[label;font_size=*%.3f]"):format(
+		TEXT_SIZE * grug_core.ui.text_scale(player))
 	for index, line in ipairs(lines) do
 		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(text_x,
-			y + 0.5 + (index - (#lines + 1) / 2) * step, esc(line))
+			y + 0.5 + (index - (#lines + 1) / 2) * LINE_STEP, esc(line))
 	end
 	fs[#fs + 1] = "style_type[label;font_size=" .. grug_core.ui.font_size(nil, growth) .. "]"
 	if full then

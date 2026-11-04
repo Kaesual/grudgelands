@@ -224,7 +224,7 @@ H.window_info.hero = {real_gui_scaling = 2, max_formspec_size = {x = 20, y = 8}}
 fs = page(hero)
 local scaled = fs:match("style_type%[label;font_size=%*([%d.]+)%]label%[%d+%.%d+,%d+%.%d+;<" ..
 	COLORS.muted:gsub("%p", "%%%0") .. ">Destroyed")
-check(scaled and tonumber(scaled) < 1, "T text_scale reaches the text: " .. tostring(scaled))
+check(scaled and tonumber(scaled) < 0.85, "T text_scale reaches the text: " .. tostring(scaled))
 H.window_info.hero = nil
 -- Empty the state again.
 clear_inventory(hero)
@@ -336,14 +336,36 @@ drag(hero, "main", 10)
 eq(drag(hero, "main", 9), 0, "R refused beside a waiting stack")
 fs = page(hero)
 has(fs, "grug_trash_undo", "R Undo stays through a hint")
+-- Every hint stays two lines in its room, the long spaced name included.
+local function hint_fits(room, label)
+	local shown = page(hero)
+	local lines = 0
+	for line in shown:gmatch("<" .. COLORS.danger:gsub("%p", "%%%0") .. ">([^%]]*)%]") do
+		lines = lines + 1
+		check(chars(line) <= room, label .. ": the line fits: " .. line)
+	end
+	eq(lines, 2, label .. ": two lines")
+end
+hint_fits(LIMIT, "R the bound hint beside Undo")
+has(fs, "Bound items can't be", "R ...its short form")
 H.put(hero, "main", 11, "t:spaced")
 eq(drag(hero, "main", 11), 0, "R a long spaced name")
-fs = page(hero)
-local lines = select(2, fs:gsub("label%[[^%]]-<" .. COLORS.danger:gsub("%p", "%%%0") .. ">", ""))
-check(lines <= 3, "R the longest hint stays three lines beside Undo: " .. lines)
-for line in fs:gmatch("<" .. COLORS.danger:gsub("%p", "%%%0") .. ">([^%]]*)%]") do
-	check(chars(line) <= LIMIT, "R a hint line fits: " .. line)
-end
+hint_fits(LIMIT, "R the same for a long name")
+clear_inventory(hero)
+undo(hero)
+clear_inventory(hero)
+H.put(hero, "main", 11, "t:spaced")
+drag(hero, "main", 11)
+local WIDE = math.floor((layout.side_x + layout.side_w - layout.pad - (slot_x + 1.15)) / 0.15)
+hint_fits(WIDE, "R a long name in the wide box")
+clear_inventory(hero)
+H.put(hero, "main", 9, "t:packet")
+H.put(hero, "main", 10, "t:sword")
+drag(hero, "main", 10)
+fill_inventory(hero)
+undo(hero)
+hint_fits(LIMIT, "R the no-room hint beside Undo")
+hero.inv:set_stack("main", 10, ItemStack(""))
 -- A stale timer leaves a newer hint alone.
 H.timers = {}
 drag(hero, "main", 9)
