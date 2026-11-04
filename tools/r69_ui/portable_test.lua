@@ -463,6 +463,14 @@ timer.fn(unpack(timer.args))
 H.join(owner)
 lacks(page(owner), "can't be destroyed", "X a timer after a leave finds nothing")
 
+-- The help says it (the source, as tools/r45_ui reads it).
+do
+	local file = assert(io.open(repo .. "/mods/PLAYER/grug_inventory/help.lua"))
+	local help = file:read("*a")
+	file:close()
+	has(help, "Drag an item into the Trash box on the Inventory tab to destroy it.", "H the help line")
+end
+
 print(("R69 UI PORTABLE %s checks=%d failures=%d"):format(failures == 0 and "PASS" or "FAIL",
 	checks, failures))
 if failures > 0 then os.exit(1) end
