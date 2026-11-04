@@ -275,6 +275,24 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
   `float_settle` (the pickup rule may stay: it also covers a picture that
   lags for other reasons).
 
+## 8. A generating chunk writes its stale shell back over generated blocks
+
+- **Upstream problem:** `ServerMap::initBlockMake` (`src/servermap.cpp:254`)
+  reads the chunk plus a one-block shell into the mapgen VoxelManip when
+  generation starts, without the environment lock held through generation, and
+  `finishBlockMake` (`:291`) calls `blitBackAll` with its default
+  `overwrite_generated = true` (`src/map.h:335`), so every block of the shell
+  goes back as it was read. A write to a generated block in the shell between
+  the two is lost, silently.
+- **What we do:** only the one-off box rewrite of the migration 0.69.0 needs
+  it: `grug_mapgen/camp_rewrite.lua` reads every box back before its pending
+  key goes, and writes the job again if a cell differs, three passes in all,
+  then `[GRUG-SEVERE]` with the key kept. Upgrade contract §5.9.
+- **Fixed when:** `finishBlockMake` no longer writes blocks that were generated
+  before the chunk began. The read-back then costs little and can stay; it goes
+  with the job when the step's world can no longer occur.
+- **Affected versions:** 5.17.0 and `master` at `df0487906`.
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields

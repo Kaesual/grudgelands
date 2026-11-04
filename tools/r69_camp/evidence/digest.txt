@@ -1,0 +1,6 @@
+camp_site_ashenward_march (whole): box 5290 cells, 0 differ from the new world, light 167; ring 34256 cells, 0 differ from the new world, light 0; 34256 kept from 0.68.0, 0 differ
+camp_site_bannerbreak_mesa (partly): box 5290 cells, 0 differ from the new world, light 107; ring 34256 cells, 0 differ from the new world, light 0; 16736 kept from 0.68.0, 0 differ
+camp_site_blackwind_rise (untouched): box 5290 cells, 0 differ from the new world, light 0; ring 34256 cells, 0 differ from the new world, light 0; 0 kept from 0.68.0, 0 differ
+camp_site_glassroot_wilds (untouched): box 5290 cells, 0 differ from the new world, light 0; ring 34256 cells, 0 differ from the new world, light 0; 0 kept from 0.68.0, 0 differ
+camp_site_stormvault_heights (untouched): box 5290 cells, 0 differ from the new world, light 0; ring 34256 cells, 0 differ from the new world, light 0; 0 kept from 0.68.0, 0 differ
+camp_site_thunderroot_wilds (untouched): box 5290 cells, 0 differ from the new world, light 0; ring 34256 cells, 0 differ from the new world, light 0; 0 kept from 0.68.0, 0 differ

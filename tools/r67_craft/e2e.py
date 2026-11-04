@@ -53,6 +53,12 @@ from migration.codec import ItemStack  # noqa: E402
 OLD = "9fcf8093"           # main at 0.66.1 (the Round 67 base)
 OLD_VERSION = "0.66.1"
 NEW_VERSION = "0.67.0"
+# Round 69: the later declared steps (0.69.0 on) run in the same tool run and
+# start the world at their version; this step's own checks stay as they were
+# (the pattern of tools/r53_ms/e2e.py).
+DECLARED = json.loads((REPO / "tools" / "web_data" / "upgrade.json").read_text())["migrate"]
+DUE = [v for v in DECLARED if tuple(map(int, v.split("."))) > (0, 66, 1)]
+LAST = DUE[-1]
 PROBE = HERE / "grug_probe_r67_craft"
 it.PROBE = PROBE
 it.EVIDENCE_LINE = re.compile(it.EVIDENCE_LINE.pattern + r"|\[r67_craft_probe\]")
@@ -173,26 +179,27 @@ def scenario(run):
     it.LAUNCHER = REPO / "tools" / "luanti_headless.sh"
     r = it.boot(run, w, "refused_%s" % NEW_VERSION)
     check("guard", "boot R (%s): the 0.66.1 world without the tool is refused, naming the "
-                   "step 0.67.0 and the command line" % NEW_VERSION,
-          it.refused_with(r, "This world is at version %s and needs the migration step %s "
+                   "step%s %s and the command line" % (it.GAME, "s" if len(DUE) > 1 else "",
+                                                       ", ".join(DUE)),
+          it.refused_with(r, "This world is at version %s and needs the migration %s "
                              "before this game's version %s can start it"
-                          % (OLD_VERSION, NEW_VERSION, NEW_VERSION),
+                          % (OLD_VERSION, it.steps_text(DUE), it.GAME),
                           "python3 tools/migrate.py --world %s" % w), "rc %d" % r.rc)
     check("guard", "the refused start wrote nothing", it.dump(w) == dump_before)
 
     # The tool.
     rc, ev = tool(run, "check_before", w, check_mode=True)
     done = it.last(ev)
-    check("tool", "--check: world %s, due [%s], nothing written" % (OLD_VERSION, NEW_VERSION),
+    check("tool", "--check: world %s, due %s, nothing written" % (OLD_VERSION, DUE),
           rc == 0 and done.get("world_version") == OLD_VERSION
-          and done.get("due") == [NEW_VERSION] and it.dump(w) == dump_before,
+          and done.get("due") == DUE and it.dump(w) == dump_before,
           "exit %d %s" % (rc, json.dumps(done)))
     rc, ev = tool(run, "migrate", w)
     kinds = [e.get("event") for e in ev]
     step_done = next((e for e in ev if e.get("event") == "step_done"), {})
-    check("tool", "migrate: start, step_start, step_done, done; exit 0",
-          rc == 0 and kinds == ["start", "step_start", "step_done", "done"]
-          and it.last(ev).get("applied") == [NEW_VERSION], "exit %d %s" % (rc, kinds))
+    check("tool", "migrate: start, step_start and step_done per due step, done; exit 0",
+          rc == 0 and kinds == ["start"] + ["step_start", "step_done"] * len(DUE) + ["done"]
+          and it.last(ev).get("applied") == DUE, "exit %d %s" % (rc, kinds))
     check("tool", "step 0.67.0: two inventories, two job keys, four storage rows, no marker",
           step_done.get("step") == NEW_VERSION and step_done.get("counts") == {
               "characters": 2, "player_meta": 2, "inventories": 2, "positions": 0,
@@ -242,8 +249,8 @@ def scenario(run):
           and all(housing[k] == housing_before[k] for k in housing
                   if k not in ("recovered:smith:1:1", "recovered:smith:1:2",
                                "packed:smith:1:3")))
-    check("step", "the record is %s" % NEW_VERSION,
-          it.storage(w, "grug_core").get("world_version") == NEW_VERSION)
+    check("step", "the record is %s" % LAST,
+          it.storage(w, "grug_core").get("world_version") == LAST)
     dump_after = it.dump(w)
     it.world_diff(run, "tool_0.67.0", dump_before, dump_after)
     changed = sorted(set(dump_before) ^ set(dump_after))
@@ -255,11 +262,12 @@ def scenario(run):
                                       r"'(recovered:smith:1:[12]|packed:smith:1:3|box:smith)' \|",
                                       line)
                           or line.startswith("'storage' | 'grug_core' | 'world_version' |")
+                          or line.startswith("'storage' | 'grug_core' | 'migrate_world:")
                           for line in changed), json.dumps(changed[:6]))
     rc, ev = tool(run, "check_after", w, check_mode=True)
     done = it.last(ev)
-    check("tool", "--check after: world %s, nothing due" % NEW_VERSION,
-          rc == 0 and done.get("world_version") == NEW_VERSION and done.get("due") == [],
+    check("tool", "--check after: world %s, nothing due" % LAST,
+          rc == 0 and done.get("world_version") == LAST and done.get("due") == [],
           "exit %d %s" % (rc, json.dumps(done)))
 
     # Boot A: the new game on the migrated world.
@@ -269,8 +277,8 @@ def scenario(run):
     settled = joined.get("settled") or {}
     stores = joined.get("stores") or {}
     check("boot", "boot A (%s): starts from %s, rods unregistered; smith joined and left"
-                  % (NEW_VERSION, NEW_VERSION),
-          a.rc == 0 and (obs.get("load") or {}).get("from") == NEW_VERSION
+                  % (it.GAME, LAST),
+          a.rc == 0 and (obs.get("load") or {}).get("from") == LAST
           and obs.get("rods_registered") is False and obs.get("leaves") == 1,
           "rc %d %s %s" % (a.rc, json.dumps(obs.get("load")), a.joins))
     check("boot", "after the join: no rod in any list, both jobs done (job and queue empty)",

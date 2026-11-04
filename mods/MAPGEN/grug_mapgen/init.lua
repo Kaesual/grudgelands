@@ -27,6 +27,13 @@ grug_mapgen.mining_camps = dofile(modpath .. "/wp40/r58_camps.lua").index(
 	{raw_sha256 = function(bytes) return core.sha256(bytes, true) end,
 		full_seed = grug_mapgen.wp40.full_seed})
 
+-- The one-off rewrite of the camps under construction (Round 69): resumes a
+-- pending rewrite at this start, and the migration 0.69.0 requests it.
+grug_mapgen.camp_rewrite = dofile(modpath .. "/camp_rewrite.lua")(core,
+	core.get_mod_storage(), grug_mapgen.wp40.camp_sites, grug_core.map_reset,
+	grug_core.severe)
+grug_mapgen.wp40.camp_sites = nil
+
 -- Planned water flow for grug_core's water guard (world_zones.md §7.4): at a
 -- step between two planned inland surfaces, river or canal, the higher water
 -- flows over the lower one. That flow is generated world, also inside

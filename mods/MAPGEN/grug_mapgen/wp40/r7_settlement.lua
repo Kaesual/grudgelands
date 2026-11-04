@@ -1037,6 +1037,34 @@ local function same_plain(a, b)
 	return true
 end
 
+-- The finished cells of an anchor-relative settlement of one blueprint, the
+-- ones `M.config`'s writer settles from: built from `source` and checked
+-- against the published identity, in the composition's frame, with what the
+-- writer places them by: the base, the box and the reserved anchor root (nil
+-- without one). For the camp sites' box rewrite (`r69_camp_sites.lua`), which
+-- must land on the same cells; a settlement of plots or a city edge has no
+-- such single box.
+function M.anchor_cells(profile, source, identity_sha256, anchor, raw_sha256)
+	local fail = check_profile(profile)
+	local descriptors = M.descriptors(profile, source)
+	local descriptor = descriptors[1]
+	if #descriptors ~= 1 or descriptor.kind ~= "anchor" or (descriptor.turns or 0) ~= 0 then
+		fail("the anchor cells need one anchor-relative blueprint")
+	end
+	local rebuilt = prepare_cells(fail, descriptor, descriptor.build())
+	if hex(raw_sha256(rebuilt.identity_bytes)) ~= identity_sha256 then
+		fail(descriptor.id .. ": the rebuild differs from its published identity")
+	end
+	local bounds = rebuilt.bounds
+	return {cells = rebuilt.cells, base = {x = anchor.x, y = anchor.y, z = anchor.z},
+		min = {x = anchor.x + bounds.min.x, y = anchor.y + bounds.min.y,
+			z = anchor.z + bounds.min.z},
+		max = {x = anchor.x + bounds.max.x, y = anchor.y + bounds.max.y,
+			z = anchor.z + bounds.max.z},
+		reserved = profile.reserve_anchor_root and
+			{x = anchor.x, y = anchor.y + 1, z = anchor.z} or nil}
+end
+
 -- The world rectangle of a placed capital plot: its unrotated bounds turned
 -- by the plot's quarter turns, at its offset from the anchor at (x, z).
 function M.plot_rect(blueprint, x, z)

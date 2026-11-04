@@ -1,0 +1,27 @@
+{
+ "above": {
+  "protected": true
+ },
+ "below": {
+  "protected": true
+ },
+ "beyond": {
+  "protected": true
+ },
+ "corner": {
+  "feature": "war_camp",
+  "protected": true
+ },
+ "high": {
+  "feature": "war_camp",
+  "protected": true
+ },
+ "inside": {
+  "feature": "war_camp",
+  "protected": true
+ },
+ "low": {
+  "feature": "war_camp",
+  "protected": true
+ }
+}

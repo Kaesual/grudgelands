@@ -1,0 +1,10 @@
+launcher: staged probe: grug_probe_r69_camp
+seconds: 63, exit 0
+joins: []
+--- log lines
+ACTION[Main]: [grug_core] world version 0.69.0 recorded for a new world
+ACTION[Main]: [grug_core] world version 0.69.0 (a new world), game 0.69.0: no migration step due
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31246.
+ACTION[Server]: [r69_camp_probe] phase fresh, job pending: false
+ACTION[Server]: [r69_camp_probe] dumped fresh
+ACTION[Server]: [r69_camp_probe] observations written: fresh

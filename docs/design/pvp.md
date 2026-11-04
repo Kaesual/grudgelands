@@ -256,7 +256,8 @@ combat may follow its target in).
   Stakeguard" by their slot of `data/names.json` (Round 58 GUILDQUESTS), and
   a **named captain** at level 40 (the war camps' captain rules and
   respawns; names in `pvp_names.json`).
-- **Nothing of use to the enemy:** no lift, no vendor, no shelter, no bed.
+- **Nothing of use to the enemy:** no lift, no vendor, no bed (the worker
+  tents and their straw mats are set dressing, Round 69).
   The foreman of the own T4 mining camp gives the quest against it
   (`camp_site_raid`: its four guards and its captain, miners_guild.md §11).
 

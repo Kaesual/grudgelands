@@ -2922,7 +2922,9 @@ tools](#player-meta-read-by-external-tools).
   the lift offsets `LIFT` per composition kind, `ROOM_FLOOR_Y`, `tier_of`),
   bound by `r7_settlement.camp_profiles` (turned by
   `r31_pvp_catalog.gate_turns`, the war camps' rule) and built by
-  `r58_camp_blueprint.lua`; the war camp blueprint gains the lift,
+  `r58_camp_blueprint.lua` (a camp under construction from the templates
+  `camp_site_<race>.tpl`; `camp_rewrite.lua` with `wp40/r69_camp_sites.lua`
+  is the migration 0.69.0's box rewrite, upgrade contract §5.9); the war camp blueprint gains the lift,
   `quest_foreman` and `vendor_camp` sockets. The lift node
   `grug_mapgen:guild_lift` (`world_nodes.lua`, `4dir`, written facing its
   camp's gate and turned with it: `wp13/parts.lua`) is settlement palette

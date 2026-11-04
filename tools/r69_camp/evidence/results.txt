@@ -1,0 +1,48 @@
+PASS  setup   the 0.68.0 commit e4837b6e exported (its game and launcher)
+PASS  setup   boot S (0.68.0): a new world, the camps emerged as planned
+PASS  setup   camp_site_ashenward_march whole, camp_site_bannerbreak_mesa partly (2760 of 5290 cells missing), 4 camps untouched
+PASS  setup   the old design stands: wool in the whole camp's box
+PASS  guard   boot R: the 0.68.0 world without the tool is refused, naming the step
+PASS  guard   the refused start wrote nothing
+PASS  tool    --check: world 0.68.0, due [0.69.0], nothing written
+PASS  tool    migrate: exit 0, one marker, nothing else
+PASS  tool    only the marker and the record changed
+PASS  crash   boot C: killed after 1 camp(s) were written; the world is left pending or marked
+PASS  resume  boot Z: the next start finishes all six while a player joins
+PASS  resume  the marker and the pending key are gone, the record is 0.69.0
+PASS  fresh   boot N: a new world, no migration crossed, no job, no marker, no key
+PASS  proof   no box node of any camp has on_construct, on_timer, after_place or an LBM (62 node types)
+PASS  proof   the new design stands in the whole camp: no wool, the Round 63 materials
+PASS  proof   camp_site_ashenward_march (whole): every box cell equals the new world's
+PASS  proof   camp_site_ashenward_march: the light of the box's air and of the ring equals the new world's
+PASS  proof   camp_site_ashenward_march: the ring equals the new world's
+PASS  proof   camp_site_ashenward_march: the ring equals the 0.68.0 world's where that existed
+PASS  proof   camp_site_bannerbreak_mesa (partly): every box cell equals the new world's
+PASS  proof   camp_site_bannerbreak_mesa: the light of the box's air and of the ring equals the new world's
+PASS  proof   camp_site_bannerbreak_mesa: the ring equals the new world's
+PASS  proof   camp_site_bannerbreak_mesa: the ring equals the 0.68.0 world's where that existed
+PASS  proof   camp_site_blackwind_rise (untouched): every box cell equals the new world's
+PASS  proof   camp_site_blackwind_rise: the light of the box's air and of the ring equals the new world's
+PASS  proof   camp_site_blackwind_rise: the ring equals the new world's
+PASS  proof   camp_site_blackwind_rise: the ring equals the 0.68.0 world's where that existed
+PASS  proof   camp_site_glassroot_wilds (untouched): every box cell equals the new world's
+PASS  proof   camp_site_glassroot_wilds: the light of the box's air and of the ring equals the new world's
+PASS  proof   camp_site_glassroot_wilds: the ring equals the new world's
+PASS  proof   camp_site_glassroot_wilds: the ring equals the 0.68.0 world's where that existed
+PASS  proof   camp_site_stormvault_heights (untouched): every box cell equals the new world's
+PASS  proof   camp_site_stormvault_heights: the light of the box's air and of the ring equals the new world's
+PASS  proof   camp_site_stormvault_heights: the ring equals the new world's
+PASS  proof   camp_site_stormvault_heights: the ring equals the 0.68.0 world's where that existed
+PASS  proof   camp_site_thunderroot_wilds (untouched): every box cell equals the new world's
+PASS  proof   camp_site_thunderroot_wilds: the light of the box's air and of the ring equals the new world's
+PASS  proof   camp_site_thunderroot_wilds: the ring equals the new world's
+PASS  proof   camp_site_thunderroot_wilds: the ring equals the 0.68.0 world's where that existed
+PASS  proof   old metadata and the timer left the box, the anchor root's stays
+PASS  proof   the ring's metadata stays
+PASS  proof   the sockets and the protection answer as in 0.68.0
+PASS  proof   protection: war_camp reaches 10 beyond the box in x and z, and 10 below and 10 above it
+PASS  repeat  boot A: the job again changes no node, and a cell reverted after the last write is found by the read-back and written back
+PASS  reset   the tool's --map-reset runs the step
+PASS  reset   boot M: 0.69.0 with a map reset starts; no job, the marker gone, no key
+
+46 checks, 0 failed

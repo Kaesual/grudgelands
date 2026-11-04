@@ -260,6 +260,21 @@ local function character_0_53_0(player)
 	end
 end
 
+--
+-- 0.69.0, the world part. The online part of the migration step 0.69.0
+-- (Round 69 lane CAMP; tools/migration/steps/v0_69_0.py, which only sets the
+-- world marker). The six camps under construction get their new composition
+-- without a map reset: each one's protected box is rewritten from the new
+-- blueprint. That is map work, which waits for emerges and has no place in
+-- a load: this handler only records it (grug_mapgen's durable pending key),
+-- and grug_mapgen/camp_rewrite.lua does it after the load, off the start
+-- path, resuming after a restart. Safe to run again: it records the same
+-- key. grug_mapgen loads after grug_core; its API is looked up here.
+
+local function world_0_69_0()
+	grug_mapgen.camp_rewrite.request()
+end
+
 grug_core.migrations = {
 	-- The declaration's `migrate` list, ascending: the guard refuses a world
 	-- whose record lies before one of them. tools/check_upgrade.py proves this
@@ -271,6 +286,7 @@ grug_core.migrations = {
 		"0.48.0", -- bags halved, what no longer fits mailed; a join part
 		"0.53.0", -- talents reset, talent windows and retired skills gone; a join part
 		"0.67.0", -- metal rods refunded as bars in every store; offline only
+		"0.69.0", -- the camps under construction rewritten; a world part
 	},
 	-- Online work, only for a step that leaves some:
 	--   handlers["x.y.z"] = {
@@ -282,5 +298,6 @@ grug_core.migrations = {
 		["0.47.0"] = {character = character_0_47_0},
 		["0.48.0"] = {character = character_0_48_0},
 		["0.53.0"] = {character = character_0_53_0},
+		["0.69.0"] = {world = world_0_69_0},
 	},
 }

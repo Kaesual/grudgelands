@@ -1,0 +1,9 @@
+launcher: staged probe: grug_probe_r69_camp
+seconds: 55, exit 0
+joins: []
+--- log lines
+ACTION[Main]: [grug_core] world version 0.69.0, game 0.69.0: no migration step due
+ACTION[Main]: [grug_core] migration 0.69.0: the world's online work is done
+ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:31246.
+ACTION[Server]: [r69_camp_probe] phase crash, job pending: true
+ACTION[Server]: [grug_mapgen] camp site camp_site_stormvault_heights rewritten: 5289 cells, emerge 5.7 s, write 2.2 ms
