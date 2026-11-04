@@ -7,16 +7,18 @@ overlaps by more than half (`axisAlignedCollision`, the inner margin in
 src/collision.cpp); only entering a further node collides. So a body can
 leave for any free neighbour, and it is held only where no neighbour is free.
 
-For every body position in the box (feet cell y 1..8, head cell above), for
-every race, this lists the positions overlapping a walkable cell, and of those
-the ones with no way out: no free body position beside them at the same height
-or one up, no open cell under the feet to fall through, and no free position
-straight above while the cells over the head stay open (a body rises through
-what it overlaps, standing on the node it has cleared). Every walkable node
-counts as blocking, a thin one too, so the count is an upper bound. A held
-position whose
-head cell suffocates (`grug_core.should_suffocate`) ends in a death and a
-respawn. Exit 1 lists any held position that does not.
+The check is cell-centred: for every body position in the box (feet cell
+y 1..8, head cell above), for every race, it takes a body standing in the
+middle of one column, and every walkable node as a full cube. It lists the
+positions overlapping a walkable cell and of those the ones with no way out:
+no free body position beside them at the same height or one up, no open cell
+under the feet to fall through, and no free position straight above while the
+cells over the head stay open (a body rises through what it overlaps, standing
+on the node it has cleared). A body straddling two columns is not modelled,
+and movement is client-side, so this is no proof and no engine test. The
+backstop for such a body is Return Home (out of combat, off its cooldown),
+and a held position whose head cell suffocates (`grug_core.should_suffocate`)
+ends in a death and a respawn. Exit 1 lists any held position that does not.
 
 Usage: python3 tools/r69_camp/check_escape.py
 """

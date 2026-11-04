@@ -128,11 +128,13 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	if type(socket_rows) ~= "table" or #socket_rows < 1 then
 		fail("settlement socket roster differs")
 	end
-	-- The camps under construction, for the box rewrite (camp_rewrite.lua).
-	local camp_sites = runtime.camp_sites(built)
 	-- Main's preparations of every lazy blueprint (identity, palette, cell
 	-- bounds, landmarks): the payload hands them to emerge below.
 	local prepared_blueprints = runtime.prepared_handover()
+	-- The camps under construction, for the box rewrite (camp_rewrite.lua).
+	local camp_sites = dofile(wp40 .. "/r69_camp_sites.lua")(wp40,
+		function(bytes) return core_api.sha256(bytes, true) end, socket_rows,
+		prepared_blueprints)
 
 	-- WORLD PROTECTION OF ROADS AND POIs (Round 25 rulings 15-17), for player
 	-- digging and placing only: every road of the layout text emerge
@@ -504,7 +506,7 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		capital_layout_text = payload.capital_layout,
 		-- The Miner's Guild rooms of this world (guild_rooms.lua's index).
 		guild_rooms = guild_rooms,
-		-- The camps under construction: {key, place()} (r7_runtime.lua).
+		-- The camps under construction: {key, place()} (r69_camp_sites.lua).
 		camp_sites = camp_sites,
 		-- The world-layout cache's key parts {seed, source, settings,
 		-- interpreter} for the other world-folder caches; nil when this start

@@ -598,33 +598,6 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		return rows
 	end
 
-	-- Main only: the camps under construction of this world, in roster order,
-	-- each with `key` and `place()`, its cells as the writer settles them
-	-- (`r7_settlement_module.anchor_cells`), for the box rewrite of the
-	-- migration 0.69.0 (`camp_rewrite.lua`).
-	function module.camp_sites(built)
-		if type(built) ~= "table" or type(built.zones_session) ~= "table" or
-				type(built.zones_session.anchor) ~= "function" then
-			fail("camp site authority differs")
-		end
-		local sites = {}
-		for index = 1, #settlements do
-			local row = settlements[index]
-			local profile = row.profile
-			if profile.slot == "camp_construction" then
-				local anchor = built.zones_session.anchor(profile.zone_id, profile.slot)
-				if type(anchor) ~= "table" or anchor.id ~= profile.anchor_id or
-						type(anchor.y) ~= "number" then
-					fail("camp site anchor differs: " .. profile.key)
-				end
-				sites[#sites + 1] = {key = profile.key, place = function()
-					return r7_settlement_module.anchor_cells(row.prepared, anchor, raw_sha256)
-				end}
-			end
-		end
-		return sites
-	end
-
 	-- Every placed capital plot whose ground this world's final terrain does
 	-- not actually support, in roster order (a log diagnostic: the planner
 	-- placed it on its own sample, before the streets' cut and fill).

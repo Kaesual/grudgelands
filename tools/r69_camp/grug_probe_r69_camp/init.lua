@@ -209,6 +209,27 @@ local function after_job()
 	end)
 end
 
+-- The read-back on a real map: in a `repeat` boot one written cell goes back
+-- after the job's last write, as a chunk generating beside the box would do.
+if kind == "repeat" then
+	local log_line, writes = core.log, 0
+	core.log = function(level, text)
+		log_line(level, text)
+		if text and tostring(text):find("[grug_mapgen] camp site ", 1, true) then
+			writes = writes + 1
+			if writes == 6 then
+				core.after(1, function()
+					local camp = camps()[1]
+					local pos = {x = camp.anchor.x + 10, y = camp.anchor.y + 2, z = camp.anchor.z}
+					obs.reverted = {pos = pos, was = core.get_node(pos).name}
+					core.swap_node(pos, {name = "default:stone"})
+					log("reverted one written cell")
+				end)
+			end
+		end
+	end
+end
+
 core.register_on_leaveplayer(function()
 	obs.leaves = obs.leaves + 1
 end)

@@ -18,7 +18,9 @@ It reuses Round 43 IT's harness (tools/r43_it/it.py).
            where that existed and the new world's everywhere; metadata and
            timers gone from the boxes, the ring's kept; sockets and
            protection as in 0.68.0
-  boot A   the pending key written again: a repeat leaves the same bytes
+  boot A   the pending key written again, and one written cell reverted after
+           the job's last write: the read-back finds it, a second pass mends
+           it, and the repeat leaves the same bytes
   boot M   a copy of the 0.68.0 world through the tool's --map-reset, the map
            emptied, the reset raised: starts, no job, the marker gone
 
@@ -224,7 +226,7 @@ def scenario(run):
     (run.evidence / "times.txt").write_text("\n".join(" ".join(t) for t in times) + "\n")
     check("resume", "boot Z: the next start finishes all six while a player joins",
           z.rc == 0 and obs.get("finish") == "resume" and len(times) == 6 and
-          obs.get("leaves") == 1 and "the camp sites' rewrite is done" in z.log,
+          obs.get("leaves") == 1 and "every box read back" in z.log,
           "rc %d joins %s %s" % (z.rc, z.joins, json.dumps(times)))
     check("resume", "the marker and the pending key are gone, the record is %s" % NEW_VERSION,
           not it.storage(w, "grug_mapgen").get(PENDING) and
@@ -321,9 +323,13 @@ def scenario(run):
     a = it.boot(run, w, "repeat")
     again = load_dump(w, "repeat")
     same = all(diff(again[c], new[c], list(new[c]["cells"])) == [] for c in new)
-    check("repeat", "boot A: the job again changes no node",
-          a.rc == 0 and len(re.findall(r"camp site \S+ rewritten", a.log)) == 6 and same,
-          "rc %d" % a.rc)
+    check("repeat", "boot A: the job again changes no node, and a cell reverted after the "
+                    "last write is found by the read-back and written back",
+          a.rc == 0 and same and (a.obs or {}).get("reverted") and
+          len(re.findall(r"camp site \S+ rewritten", a.log)) == 12 and
+          "the camp sites' read-back found" in a.log and
+          "every box read back" in a.log and not it.storage(w, "grug_mapgen").get(PENDING),
+          "rc %d %s" % (a.rc, json.dumps((a.obs or {}).get("reverted"))))
 
     # Boot M: 0.69.0 and a map reset together.
     rc, ev = tool(run, "map_reset", reset_world, "--map-reset")

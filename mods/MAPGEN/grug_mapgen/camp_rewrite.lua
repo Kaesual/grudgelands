@@ -19,16 +19,28 @@
 -- only once two map saves have passed since the last write: the engine saves
 -- map and mod storage apart, so a crash may lose a written block, and then
 -- the next start repeats the job. A repeat is harmless: same cells, same
--- bytes. A failed emerge or write reports severe and keeps the key for the
--- next start. Only this one job touches the map; a new world never has the key.
+-- bytes.
+--
+-- Before the key goes, every box is read back. The engine's mapgen VoxelManip
+-- holds its chunk and a one-block shell from before generation and writes all
+-- of it back after, so a chunk generating beside a box during a write undoes
+-- that write in the shell (docs/technical/upstream-workarounds.md). A box that
+-- differs, or that cannot be read, runs the job again, TRIES passes in all;
+-- then it reports severe and keeps the key for the next start, as a failed
+-- emerge or write does. Only this one job touches the map; a new world never
+-- has the key.
 --
 -- request() (the migration's world handler) records the work; it does nothing
 -- at a start that resets the map, whose map generates the new blueprint.
 return function(engine, storage, sites, map_reset, severe)
 	local KEY = "camp_rewrite"
 	local SOURCE = "grug_mapgen"
+	local TRIES = 3
 	local M = {}
 	local scheduled = false
+	local passes = 1
+	-- The prepared camps of this job, by index: built once, gone with it.
+	local places = {}
 
 	-- Writes one prepared camp. Returns true, or nil and the reason.
 	local function write(place)
@@ -69,12 +81,65 @@ return function(engine, storage, sites, map_reset, severe)
 		return written
 	end
 
+	-- How many cells of a written camp differ from the blueprint in node or
+	-- param2, and how many could not be read.
+	local function compare(place)
+		local vm = engine.get_voxel_manip()
+		local emin, emax = vm:read_from_map(place.min, place.max)
+		local area = VoxelArea(emin, emax)
+		local data, param2 = vm:get_data(), vm:get_param2_data()
+		local ignore = engine.CONTENT_IGNORE
+		local base, root = place.base, place.reserved
+		local differ, unread = 0, 0
+		for _, cell in ipairs(place.cells) do
+			local x, y, z = base.x + cell.x, base.y + cell.y, base.z + cell.z
+			if not root or x ~= root.x or y ~= root.y or z ~= root.z then
+				local at = area:index(x, y, z)
+				if data[at] == ignore then
+					unread = unread + 1
+				elseif data[at] ~= engine.get_content_id(cell.name) or
+						param2[at] ~= cell.param2 then
+					differ = differ + 1
+				end
+			end
+		end
+		return differ, unread
+	end
+
 	local function failed(key, reason)
 		severe.report(SOURCE, "The camp site " .. key .. " could not be rewritten; " ..
 			"the next start tries again", tostring(reason), "camp_rewrite")
 	end
 
 	local run
+	-- Two map saves after the last write: every box read back, then the key.
+	local function settle()
+		local problems = {}
+		for index, site in ipairs(sites) do
+			local ok, differ, unread = pcall(compare, places[index])
+			if not ok then
+				problems[#problems + 1] = site.key .. " unreadable: " .. tostring(differ)
+			elseif differ + unread > 0 then
+				problems[#problems + 1] = ("%s: %d cells differ, %d unread"):format(site.key,
+					differ, unread)
+			end
+		end
+		if #problems == 0 then
+			storage:set_string(KEY, "")
+			sites, places = nil, nil
+			engine.log("action", "[grug_mapgen] the camp sites' rewrite is done, every box read back")
+			return
+		end
+		local detail = table.concat(problems, "; ")
+		if passes >= TRIES then
+			return failed("(after " .. passes .. " passes)", detail)
+		end
+		passes = passes + 1
+		engine.log("warning", "[grug_mapgen] the camp sites' read-back found " .. detail ..
+			"; writing again, pass " .. passes)
+		run(1)
+	end
+
 	local function finish(site, place, index, started, emerge_failed)
 		if emerge_failed then return failed(site.key, "its emerge failed") end
 		local start = engine.get_us_time()
@@ -91,16 +156,13 @@ return function(engine, storage, sites, map_reset, severe)
 		local site = sites[index]
 		if not site then
 			local interval = tonumber(engine.settings:get("server_map_save_interval")) or 5.3
-			engine.after(2 * interval + 1, function()
-				storage:set_string(KEY, "")
-				sites = nil
-				engine.log("action", "[grug_mapgen] the camp sites' rewrite is done")
-			end)
+			engine.after(2 * interval + 1, settle)
 			return
 		end
 		local started = engine.get_us_time()
-		local ok, place = pcall(site.place)
+		local ok, place = pcall(function() return places[index] or site.place() end)
 		if not ok then return failed(site.key, place) end
+		places[index] = place
 		local emerge_failed = false
 		engine.emerge_area(place.min, place.max, function(_, action, remaining)
 			if action == engine.EMERGE_ERRORED or action == engine.EMERGE_CANCELLED then
@@ -133,11 +195,5 @@ return function(engine, storage, sites, map_reset, severe)
 	-- Map-bound: a new map generates the new blueprint.
 	map_reset.clear(SOURCE, function() storage:set_string(KEY, "") end)
 	start()
-	-- The sites hold the prepared camps, which the load would otherwise
-	-- release: they stay only for a job. grug_core's world markers ran first,
-	-- so every request comes before this.
-	engine.register_on_mods_loaded(function()
-		if not M.pending() then sites = nil end
-	end)
 	return M
 end

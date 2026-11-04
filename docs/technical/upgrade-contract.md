@@ -694,8 +694,9 @@ same proof:
   (`r7_settlement.anchor_cells`). A VoxelManip write keeps node metadata and
   timers, so the job clears those first, and it runs no `on_construct`, as
   generation does not. The engine's light update replaces generation's own
-  light solve. Nodes that need an initialisation get it as in generation,
-  from their load-time LBM.
+  light solve. **The composition holds no node that needs an initialisation**
+  (`on_construct`, a timer, an LBM): an LBM would miss a block already active
+  during the job. The proof reads this from the live registrations.
 - **Not at load:** the world handler only records the job, durably and
   map-bound (§3.2, §3.4). The job emerges one box at a time after the load, so
   it blocks no join. A chunk that is missing generates the new blueprint and
@@ -705,12 +706,24 @@ same proof:
   leave a node it overlaps by more than half (`src/collision.cpp`
   `axisAlignedCollision`), so they walk or fall out, and a full cube at head
   height suffocates (5 % of the pool per second) until they do.
-  `tools/r69_camp/check_escape.py` proves no body position in the composition
-  is without a way out; a later composition needs the same.
+  `tools/r69_camp/check_escape.py` finds a way out from every cell-centred
+  body position; it does not model a body straddling two columns and is no
+  engine test (movement is client-side). The backstop is Return Home, out of
+  combat and off its cooldown. A later composition needs the same check.
 - **Crash and repeat:** the pending key goes only after two map save
   intervals past the last write (the engine saves map and mod storage apart),
   and a repeat writes the same bytes. A failed emerge or write reports
   `[GRUG-SEVERE]` and keeps the key for the next start.
+- **Read back before the key goes:** a chunk generating beside a box during a
+  write can undo that write in its one-block shell
+  ([upstream workarounds](upstream-workarounds.md)). So at that moment every
+  box is compared with the blueprint in node and param2, the anchor root left
+  out. A difference or an unreadable box runs the job again, three passes in
+  all, then `[GRUG-SEVERE]` with the key kept for the next start. A generation
+  that outlasts the settling time can still undo a write after the read-back.
+- **Preparation authority:** the files `preparation_identity.lua` lists stay
+  byte-identical, or a world in `full` preparation mode stops at its next
+  start. So the job's seam lives outside them (`r69_camp_sites.lua`).
 - **A map reset in between:** the clear drops the key, and a start that resets
   the map records nothing: the new map generates the new blueprint.
 - **The proof,** on a real world of the previous version (the two-boot proof,

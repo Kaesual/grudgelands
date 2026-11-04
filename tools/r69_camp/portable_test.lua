@@ -111,7 +111,6 @@ local function new_world(opts)
 	end
 	local engine = {CONTENT_IGNORE = IGNORE, EMERGE_ERRORED = 1, EMERGE_CANCELLED = 2,
 		settings = {get = function() return "5" end}}
-	function engine.register_on_mods_loaded(fn) w.loaded = fn end
 	function engine.after(delay, fn, ...)
 		local args = {...}
 		w.queue[#w.queue + 1] = {delay = delay, run = function() fn(unpack(args)) end}
@@ -127,22 +126,29 @@ local function new_world(opts)
 	end
 	function engine.get_voxel_manip()
 		local vm = {}
-		function vm:read_from_map(min, max) return min, max end
+		function vm:read_from_map(min, max)
+			w.box = {min = min, max = max}
+			return min, max
+		end
 		function vm:get_data()
 			local data = {}
 			for z = w.box.min.z, w.box.max.z do for y = w.box.min.y, w.box.max.y do
 				for x = w.box.min.x, w.box.max.x do
 					local name = w.nodes[key(x, y, z)]
-					data[#data + 1] = opts.hole == key(x, y, z) and IGNORE or
-						(name and ids[name] or id_of("old"))
+					local hole = opts.hole == key(x, y, z) or
+						(opts.hole_after_write == key(x, y, z) and w.writes > 0)
+					data[#data + 1] = hole and IGNORE or (name and id_of(name) or id_of("old"))
 				end
 			end end
 			return data
 		end
 		function vm:get_param2_data()
 			local data = {}
-			for i = 1, (w.box.max.z - w.box.min.z + 1) * (w.box.max.y - w.box.min.y + 1) *
-					(w.box.max.x - w.box.min.x + 1) do data[i] = 0 end
+			for z = w.box.min.z, w.box.max.z do for y = w.box.min.y, w.box.max.y do
+				for x = w.box.min.x, w.box.max.x do
+					data[#data + 1] = w.param2s[key(x, y, z)] or 0
+				end
+			end end
 			return data
 		end
 		function vm:set_data(data) self.data = data end
@@ -159,6 +165,7 @@ local function new_world(opts)
 				end
 			end end
 			w.writes = w.writes + 1
+			if opts.after_write then opts.after_write(w) end
 		end
 		return vm
 	end
@@ -243,7 +250,6 @@ do -- a request: both camps written, the root kept, metadata and timers gone
 	assert(not storage.values.camp_rewrite, "nothing at load without a key")
 	rewrite.request()
 	assert(storage.values.camp_rewrite and rewrite.pending(), "the request is durable at once")
-	w.loaded()
 	drain(w, 1)
 	assert(w.writes == 2 and w.emerges == 2, "both camps written, one at a time")
 	assert(rewrite.pending(), "the key stays until two map saves have passed")
@@ -258,7 +264,6 @@ do -- a new world: nothing runs, and the sites are released
 	local w, storage = new_world(), new_storage()
 	local rewrite = job(w, storage)
 	assert(#w.queue == 0, "a new world schedules nothing")
-	w.loaded()
 	drain(w)
 	assert(w.emerges == 0 and w.writes == 0 and not rewrite.pending(), "a new world does nothing")
 	assert(next(storage.values) == nil, "a new world writes no key")
@@ -305,7 +310,55 @@ do -- a failed emerge and an unloaded cell: severe, the key stays, no write
 	drain(w)
 	assert(w.writes == 0 and storage.values.camp_rewrite and #w.severe == 1, "a failed rebuild")
 end
-print("job: request, resume, repeat, crash, map reset, failures")
+do -- the read-back: a generating neighbour reverts a written cell
+	local reverted = false
+	local w, storage = new_world({after_write = function(w)
+		if w.writes == 2 and not reverted then
+			reverted = true
+			w.nodes[key(101, 10, 1)] = "old"
+		end
+	end}), new_storage()
+	local rewrite = job(w, storage)
+	rewrite.request()
+	drain(w, 1)
+	assert(w.writes == 2 and rewrite.pending(), "the key waits for the read-back")
+	drain(w)
+	assert(w.writes == 4, "a reverted cell writes the job again")
+	assert(w.nodes[key(101, 10, 1)] == "new_1", "the cell is back")
+	assert(not rewrite.pending() and #w.severe == 0, "then the key goes, no severe")
+	-- param2 alone counts, and the anchor root never does.
+	reverted = false
+	w, storage = new_world({after_write = function(w)
+		if w.writes == 1 and not reverted then
+			reverted = true
+			w.param2s[key(1, 10, 1)] = 3
+			w.nodes[key(0, 11, 0)] = "something"
+		end
+	end}), new_storage()
+	rewrite = job(w, storage, nil, {site("a", 0)})
+	rewrite.request()
+	drain(w)
+	assert(w.writes == 2 and not rewrite.pending(), "a reverted param2 writes again")
+	assert(w.nodes[key(0, 11, 0)] == "something", "the root is neither read nor written")
+	w, storage = new_world({after_write = function(w)
+		w.param2s[key(0, 10, 0)] = 3
+		w.nodes[key(1, 10, 1)] = "something"
+	end}), new_storage()
+	rewrite = job(w, storage, nil, {site("a", 0)})
+	rewrite.request()
+	drain(w)
+	assert(w.writes == 3, "the job writes three passes, no more")
+	assert(rewrite.pending() and storage.values.camp_rewrite, "then the key stays")
+	assert(#w.severe == 1 and #w.queue == 0, "severe once, and nothing left running")
+	-- A box that cannot be read is no mismatch, and no loop either.
+	w, storage = new_world({hole_after_write = key(1, 11, 1)}), new_storage()
+	rewrite = job(w, storage, nil, {site("a", 0)})
+	rewrite.request()
+	drain(w)
+	assert(rewrite.pending() and #w.severe == 1, "an unreadable box keeps the key, severe once")
+	assert(w.writes <= 3 and #w.queue == 0, "and nothing loops")
+end
+print("job: request, resume, repeat, crash, map reset, failures, read-back")
 
 -- The world handler records the job, and only that.
 do
