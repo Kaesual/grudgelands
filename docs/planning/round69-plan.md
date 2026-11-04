@@ -284,11 +284,12 @@ for the user's verdict on a first-look default.
 
 **Mobs at a claim (follow-up)**
 
-35. **The claim keeps them off:** with a fuelled Claim Stone in hostile land,
-    wait idle at the claim's edge: aggressive mobs that wander up turn away
-    within a few seconds, and a mob you pull in follows you and fights as
-    before. Mobs still spawn right outside the square (no band around a claim),
-    and a stone without fuel pushes nobody.
+35. **The claim keeps them off:** with a fuelled Claim Stone in your home land,
+    stand idle about 20 nodes inside the claim and watch its edge (nearer, a mob
+    notices you at the distance the push looks): aggressive mobs that wander up
+    turn away within a few seconds, and a mob you pull in follows you and fights
+    as before. Mobs still spawn right outside the square (no band around a
+    claim), and a stone without fuel pushes nobody.
 36. **A claim placed on mobs:** place and activate a stone with aggressive mobs
     standing in the square: they keep wandering without pacing or twitching,
     and they are gone after you leave the area and come back.
@@ -502,7 +503,7 @@ villages (`roam_avoid.lua`), because the stone is also the respawn point (ruling
 time. Active claims only, the test of `claim_refuses_spawn`. The claim counts
 for the idle probe alone: `roam_avoid_hit`, which `SR.in_drift` reads, is
 unchanged, so the spawn rules are too and a claim has no band around it. A mob
-whose spawn point the claim covers is not pushed by that claim: its way out ends
+whose spawn point lies on an active claim is pushed by no claim: its way out ends
 at its leash, and the push and the leash would pace it at the rim every 4 to 5 s;
 it roams as before until `remove_far_mobs` takes it, and roads and towns still
 push it. Probe with no claim near, on one seed's real protection: 4.0–4.3 µs

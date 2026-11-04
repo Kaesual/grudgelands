@@ -819,7 +819,8 @@ end
 -- The drift band (ruling 2, the region design): an aggressive role never
 -- spawns within DRIFT nodes of a road, bridge, village, start town or capital
 -- city. The point check samples the spot and two rings of eight around it
--- with the same probe the idle push uses (roam_avoid.lua).
+-- with the point test the idle push shares (roam_avoid_hit, roam_avoid.lua);
+-- the push's claims are its own and make no band here.
 SR.DRIFT = CORE.DRIFT
 local DRIFT_RINGS = {SR.DRIFT / 2, SR.DRIFT}
 local probe = {x = 0, y = 0, z = 0}

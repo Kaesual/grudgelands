@@ -14,9 +14,9 @@
 --   3. the push: an idle aggressive free roamer beside a claim walks away at
 --      the same period; neutral, fighting or following mobs do not; outside
 --      the wander radius the leash steers;
---   4. a claim placed over a mob's home does not push that mob, deep in it
---      or near its edge, so the leash has nothing to fight; a road still
---      does; a mob from outside is drawn out, also when surrounded;
+--   4. a mob whose home lies on an active claim is pushed by no claim, deep
+--      in it or near its edge, so the leash has nothing to fight; a road
+--      still pushes it; a mob from outside is drawn out, also when surrounded;
 --   5. the cost of one probe with no claim near (printed, comparison only).
 -- Prints "R69 PUSH PORTABLE PASS checks=<n>" or raises on the first failure.
 local repo = arg and arg[1] or "."

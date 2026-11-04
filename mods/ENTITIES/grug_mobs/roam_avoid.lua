@@ -28,11 +28,12 @@
 -- The test is claim_refuses_spawn's (spawn_policy.lua): a draft or an unfuelled
 -- claim does not push. The claim is the push's alone: roam_avoid_hit stays the
 -- road and town test, because SR.in_drift reads it (spawn_regions.lua) and a
--- claim has no spawn drift band, only the refusal inside it. A claim does not
--- push a mob whose spawn point it covers (placed after the mob spawned): that
--- mob's way out ends at its leash, so the push and the leash would pace it to
--- and fro at the leash's rim; it roams as before until remove_far_mobs takes
--- it once no player stays near, and no hostile spawn follows it.
+-- claim has no spawn drift band, only the refusal inside it. A mob whose spawn
+-- point lies on an active claim (placed after the mob spawned) is pushed by no
+-- claim: its way out ends at its leash, so the push and the leash would pace
+-- it to and fro at the leash's rim; it roams as before until remove_far_mobs
+-- takes it once no player stays near, and no hostile spawn follows it. Roads
+-- and towns still push it.
 --
 -- Composition with the wander leash (Round 24 ruling 19, Round 28 ruling 4):
 -- aggro.lua roam_check calls the push only for a free roamer INSIDE its

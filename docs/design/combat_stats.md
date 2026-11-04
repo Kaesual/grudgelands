@@ -1519,9 +1519,9 @@ order). When all eight points hit it walks straight toward its spawn point
 wander radius the push steers; outside it the leash walks the mob home and the
 push is not asked, so the two never fight. A claim counts for this idle push
 only: the spawn drift band reads the road and town test alone, so a claim has
-no band around it (hostile spawns are refused inside it). A claim does not
-push a mob whose spawn point it covers, or the push and the leash would pace
-that mob at the leash's rim; roads and towns still do, and the mob goes when
+no band around it (hostile spawns are refused inside it). A mob whose spawn
+point lies on an active claim is pushed by no claim, or the push and the leash
+would pace it at the leash's rim; roads and towns still push it, and it goes when
 `remove_far_mobs` takes it. Neutral mobs, critters, NPCs, camp
 members, patrollers, rares, bosses and the other bound actors are never
 pushed, and pursuit is unchanged: a fighting mob follows its target across any
