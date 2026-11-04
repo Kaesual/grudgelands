@@ -246,6 +246,16 @@ def scenario(run):
           "rc %d %s" % (n.rc, json.dumps(obs_new.get("load"))))
     fresh = load_dump(n_world, "fresh")
 
+    # Wallwright needs nothing initialised: the live registrations of a new
+    # world's box nodes, not the design's word.
+    facts = obs_new.get("box_nodes") or {}
+    active = {n: f for n, f in facts.items()
+              if f["on_construct"] or f["on_timer"] or f["after_place"] or f["lbm"]}
+    (run.evidence / "box_nodes.json").write_text(json.dumps(facts, indent=1, sort_keys=True))
+    check("proof", "no box node of any camp has on_construct, on_timer, after_place or an LBM "
+                   "(%d node types)" % len(facts), len(facts) > 20 and not active,
+          json.dumps(active))
+
     # The comparison.
     box_names = {c for p, c in new[full]["cells"].items() if in_box(new[full], p)}
     check("proof", "the new design stands in the whole camp: no wool, the Round 63 materials",

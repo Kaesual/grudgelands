@@ -51,10 +51,15 @@ local SOCKETS = {
 }
 -- The composition's landmarks in the local frame.
 local STRUCTURES = {
-	{"stockade",0,-R,R,1,4,"palisade"},
-	{"watchtower frame",-7,-7,1,1,6,"scaffold"},
-	{"hut frame",7,-6,2,2,3,"scaffold"},
-	{"command tent",0,6,3,2,4,"command"},
+	{"gate wall",0,-10,10,1,6,"palisade"},
+	{"west wall",-10,0,1,10,4,"palisade"},
+	{"rear wall",0,10,10,1,4,"palisade"},
+	{"east wall",10,-6,1,4,4,"palisade"},
+	{"east scaffold",9,5,2,4,6,"scaffold"},
+	{"command tent",0,7,3,2,4,"command"},
+	{"north worker tent",-7,5,2,2,3,"tent"},
+	{"south worker tent",-7,-5,2,2,3,"tent"},
+	{"panel stack",7,-6,2,1,2,"scaffold"},
 }
 
 local function template(race)

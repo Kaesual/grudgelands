@@ -237,8 +237,9 @@ for _, profile in ipairs(settlement.roster) do
 			check(bp.landmarks.race == profile.art.race and bp.landmarks.faction == camp.faction,
 				label .. " registers as its builder")
 			for _, cell in ipairs(bp.cells) do
-				check(not cell.name:find("bed") and cell.name ~= "grug_decor:cottages_straw_mat",
-					label .. " no bed")
+				-- Round 69: Wallwright's tents lay straw mats, plain decor with no
+				-- use to anyone, as in the war camps; a real bed stays refused.
+				check(not cell.name:find("bed"), label .. " no bed")
 			end
 		else
 			local lift = sockets.lift

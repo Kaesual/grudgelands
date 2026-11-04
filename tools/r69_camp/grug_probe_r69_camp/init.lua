@@ -67,8 +67,34 @@ local function record(camp)
 	obs.camps[camp.id] = row
 end
 
+-- What each node of the box does at runtime, from the live registrations:
+-- the picked design needs nothing initialised, and what a player inside it
+-- meets (grug_core.should_suffocate is the game's own tick rule).
+local function node_facts(names)
+	local rows = {}
+	for name in pairs(names) do
+		local def = core.registered_nodes[name]
+		local row = {on_construct = def.on_construct ~= nil, on_timer = def.on_timer ~= nil,
+			after_place = def.after_place_node ~= nil, suffocates =
+				grug_core.should_suffocate(def, false, false), walkable = def.walkable ~= false,
+			lbm = {}}
+		for _, lbm in ipairs(core.registered_lbms) do
+			for _, wanted in ipairs(type(lbm.nodenames) == "table" and lbm.nodenames or
+					{lbm.nodenames}) do
+				local group = wanted:match("^group:(.+)$")
+				if wanted == name or (group and core.get_item_group(name, group) > 0) then
+					row.lbm[#row.lbm + 1] = lbm.name
+				end
+			end
+		end
+		rows[name] = row
+	end
+	return rows
+end
+
 local function dump()
 	local out = {}
+	local box_names = {}
 	for _, camp in ipairs(camps()) do
 		local low, high = grown(camp.min, -RING, -RING), grown(camp.max, RING, RING)
 		local vm = core.get_voxel_manip()
@@ -84,6 +110,10 @@ local function dump()
 				index_of[cid] = #names
 			end
 			tokens[#tokens + 1] = index_of[cid] .. ":" .. param2[i] .. ":" .. light[i]
+			if cid ~= core.CONTENT_AIR and x >= camp.min.x and x <= camp.max.x and
+					y >= camp.min.y and y <= camp.max.y and z >= camp.min.z and z <= camp.max.z then
+				box_names[core.get_name_from_content_id(cid)] = true
+			end
 		end end end
 		out[#out + 1] = ("camp %s %d %d %d %d %d %d %d %d %d"):format(camp.id,
 			low.x, low.y, low.z, high.x, high.y, high.z,
@@ -103,6 +133,7 @@ local function dump()
 		out[#out + 1] = "meta " .. table.concat(meta, " ")
 		out[#out + 1] = "timers " .. table.concat(timers, " ")
 	end
+	obs.box_nodes = node_facts(box_names)
 	assert(core.safe_file_write(world .. "/r69_dump_" .. phase .. ".txt",
 		table.concat(out, "\n") .. "\n"))
 	log("dumped " .. phase)

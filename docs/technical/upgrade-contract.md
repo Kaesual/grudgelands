@@ -700,6 +700,13 @@ same proof:
   map-bound (§3.2, §3.4). The job emerges one box at a time after the load, so
   it blocks no join. A chunk that is missing generates the new blueprint and
   the write repeats it; the write itself is one VoxelManip in one server step.
+- **A player in the way:** a player who logged out in a box, or stands there
+  during the job, may stand inside a new solid cell. The engine lets a body
+  leave a node it overlaps by more than half (`src/collision.cpp`
+  `axisAlignedCollision`), so they walk or fall out, and a full cube at head
+  height suffocates (5 % of the pool per second) until they do.
+  `tools/r69_camp/check_escape.py` proves no body position in the composition
+  is without a way out; a later composition needs the same.
 - **Crash and repeat:** the pending key goes only after two map save
   intervals past the last write (the engine saves map and mod storage apart),
   and a repeat writes the same bytes. A failed emerge or write reports

@@ -1161,9 +1161,10 @@ both 23 × 23 and centred like the war camps):
 - **6 camps under construction**, one in each contested T4 zone, built by
   the other faction (the race of the zone across the front), from ordinary
   building templates like the mining camps (`camp_site_<race>.tpl`, Round 69,
-  23 × 10 × 23, every cell written): the Round 63 materials, a stockade going
-  up, guards and a captain, and nothing an enemy could use (no lift, vendor,
-  shelter or bed). The migration 0.69.0 rewrites each existing camp's box
+  23 × 10 × 23, every cell written): the Wallwright design in the Round 63
+  materials, a finished west wall, an east working scaffold and successive
+  bays of panels, first courses, footings and survey stakes; guards and a
+  captain, and nothing an enemy could use (no lift, vendor or bed). The migration 0.69.0 rewrites each existing camp's box
   ([upgrade contract](../technical/upgrade-contract.md) §5.9).
 - Camps carry **no activation node** (no banner, no fire): they are not in
   the anchor activation roster, and their protection is their building core

@@ -58,6 +58,16 @@ for race, faction in pairs(FACTION) do
 		end
 		-- The sockets: ids, cells, facings and tags as every world's garrison
 		-- has them, clear and reachable from the gate.
+		-- The structure boxes stand on the composition, inside the box.
+		for _, s in ipairs(bp.landmarks.structures) do
+			assert(math.abs(s.x) + s.w <= R + 1 and math.abs(s.z) + s.d <= R + 1,
+				label .. s.label .. " leaves the box")
+			local built = false
+			for z = s.z - s.d, s.z + s.d do for x = s.x - s.w, s.x + s.w do for y = 1, s.h do
+				built = built or (cells[key(x, y, z)] ~= nil and not clear(x, y, z))
+			end end end
+			assert(built, label .. s.label .. " stands on nothing")
+		end
 		local found = 0
 		for _, s in ipairs(bp.landmarks.sockets) do
 			local row = assert(SOCKETS[s.id], label .. "an unknown socket " .. tostring(s.id))
