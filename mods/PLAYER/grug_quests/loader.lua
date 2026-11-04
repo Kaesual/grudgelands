@@ -37,9 +37,40 @@ local function read_files()
 	return files
 end
 
+local function drop_rows(list, zone)
+	local drops = {}
+	for index, drop in ipairs(list) do
+		local mobs, area = V.target_names(drop), V.area_ref(drop.area, zone)
+		local names = Q.target_names(mobs, area, zone)
+		drops[index] = {item = drop.item, chance = drop.chance, mobs = mobs, area = area,
+			names = names, name_set = Q.name_set(names)}
+	end
+	return drops
+end
+
+-- The sources an item objective names (Round 69): its own `roles`/`area`,
+-- then every quest drop of its item in `drops` (the variant's, drop_rows),
+-- each {mobs, area, names} like a kill objective, so the map marks them the
+-- same way (grug_map targets.lua). nil without one: a plain gathering,
+-- crafting or fishing objective.
+local function item_sources(objective, zone, drops)
+	local sources = {}
+	if objective.roles then
+		local mobs, area = V.target_names(objective), V.area_ref(objective.area, zone)
+		sources[1] = {mobs = mobs, area = area, names = Q.target_names(mobs, area, zone)}
+	end
+	for _, drop in ipairs(drops) do
+		if drop.item == objective.item then
+			sources[#sources + 1] = {mobs = drop.mobs, area = drop.area, names = drop.names}
+		end
+	end
+	return #sources > 0 and sources or nil
+end
+
 -- One objective list of a variant as registry rows, its targets resolved
--- in `zone` (the variant's zone: a bare area or place id is that zone's).
-local function objective_rows(list, zone)
+-- in `zone` (the variant's zone: a bare area or place id is that zone's);
+-- `drops` are the variant's quest drops (drop_rows).
+local function objective_rows(list, zone, drops)
 	local objectives = {}
 	for index, objective in ipairs(list) do
 		local row = {type = objective.type, count = objective.count or 1}
@@ -52,6 +83,8 @@ local function objective_rows(list, zone)
 		elseif objective.type == "item" then
 			row.item = objective.item
 			row.group = objective.group and objective.group:gsub("^group:", "") or nil
+			row.sources = item_sources(objective, zone, drops)
+			row.source = row.sources and Q.source_text(row.sources)
 		elseif objective.type == "use" then
 			-- The place in its canonical form and its name (labels.lua); an
 			-- unknown place keeps its reference for the world check to refuse.
@@ -67,17 +100,6 @@ local function objective_rows(list, zone)
 	return objectives
 end
 
-local function drop_rows(list, zone)
-	local drops = {}
-	for index, drop in ipairs(list) do
-		local mobs, area = V.target_names(drop), V.area_ref(drop.area, zone)
-		local names = Q.target_names(mobs, area, zone)
-		drops[index] = {item = drop.item, chance = drop.chance, mobs = mobs, area = area,
-			names = names, name_set = Q.name_set(names)}
-	end
-	return drops
-end
-
 local function role_rows(list)
 	local out = {}
 	for index, row in ipairs(list) do out[index] = {role = row.role, faction = row.faction} end
@@ -89,11 +111,12 @@ end
 local function definition(file, quest)
 	local variants = {}
 	for index, variant in ipairs(V.variants(file, quest)) do
+		local drops = drop_rows(variant.quest_drops, variant.zone)
 		variants[index] = {key = variant.key, zone = variant.zone,
 			givers = table.copy(variant.givers), turnins = table.copy(variant.turnins),
 			giver_roles = role_rows(variant.giver_roles), turnin_roles = role_rows(variant.turnin_roles),
-			objectives = objective_rows(variant.objectives, variant.zone),
-			quest_drops = drop_rows(variant.quest_drops, variant.zone),
+			objectives = objective_rows(variant.objectives, variant.zone, drops),
+			quest_drops = drops,
 			description = variant.text, completion = variant.completion}
 	end
 	local rewards = quest.rewards

@@ -969,6 +969,7 @@ end
 -- Round 38: a kill objective or quest drop counts the names its roles and
 -- area select (labels.lua Q.target_names); a role that selects no name
 -- could never be credited. tools/r38_names/guarantee.py proves the rest.
+-- Round 69: an item objective's own source reads by those names too.
 local function check_names(add, where, world, zone, row)
 	local mobs = V.target_names(row)
 	if #mobs == 0 or not world.target_names then return end
@@ -1117,6 +1118,7 @@ function V.world(files, world)
 						check_target(add, where, world, zone, name, V.area_ref(objective.area, zone), quest.level,
 							"item source", faction)
 					end
+					check_names(add, where, world, zone, objective)
 				end
 			end
 			for index, drop in ipairs(variant.quest_drops) do

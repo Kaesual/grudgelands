@@ -340,7 +340,15 @@ dialogue, the quest log, the tracker and the message feed share that label.
 A PvP camp's captain reads as he is named on this world (his camp's race).
 Item objectives show the concise item name, not description stat/durability
 lines; an item objective's named source must really drop that item at the
-levels it is met (`E-item-source-drop`).
+levels it is met (`E-item-source-drop`). Such an objective, its source being
+its own `roles` and `area` or a quest drop of its item in the player's
+variant (Round 69), names it in the quest log and the map's tooltips, "Bring
+Runner's Packet: 0/1 (from Trench Archer) (level 38–40)", with the names the
+drop counts (`Q.target_names`), and on the tracker, "0/1 Runner's Packet from
+Trench Archer" (the line of several objectives stays the compact one, which
+has no room for it). The map marks that source
+([quest targets](world_map.md#quest-targets)); a role that selects no name
+stops the load (`E-no-name`).
 Worn qualifying items remain acceptable. Starter kill/drop targets follow the
 minimum-level-aware local wildlife roster and remain locally achievable.
 
