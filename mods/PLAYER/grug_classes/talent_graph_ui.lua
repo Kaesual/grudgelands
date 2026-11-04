@@ -44,7 +44,7 @@ function graph.icon_texture(def)
 	return shipped[file] and file or nil
 end
 
--- A node's text for `viewer`: its description, and for a shared key whose
+-- A node's own text for `viewer`: its description, and for a shared key whose
 -- size depends on the level (armor, the pools) every rank's amount at the
 -- viewer's level, through the same rules the consumers read.
 local POOL_KEYS = {max_hp_percent_add = {"hp", "HP"}, max_mana_percent_add = {"mana", "mana"}}
@@ -54,7 +54,7 @@ local function amount_text(value)
 	end
 	return (("%.1f"):format(value):gsub("%.0$", ""))
 end
-function graph.node_text(viewer, def)
+local function own_text(viewer, def)
 	local parts = {}
 	for key, values in pairs(def.effects) do
 		local pool = POOL_KEYS[key]
@@ -74,6 +74,23 @@ function graph.node_text(viewer, def)
 		end
 	end
 	return def.description
+end
+
+-- What a granting node's skill says now, learned or not: the very text of
+-- its hotbar stack on one line (wrap_text and the strip reflow it). Empty for
+-- every other node and for a skill without player-specific text. The skills
+-- register after this mod.
+local function skill_text(viewer, def)
+	local abilities = rawget(_G, "grug_abilities")
+	local skill = def.ability and abilities and abilities.registered[def.ability]
+	if not skill or not skill.description_for then
+		return ""
+	end
+	return " At your level: " .. abilities.skill_text(viewer, skill):gsub("%s*\n%s*", " ")
+end
+
+function graph.node_text(viewer, def)
+	return own_text(viewer, def) .. skill_text(viewer, def)
 end
 
 function graph.background_texture(tree)
@@ -186,8 +203,10 @@ local function strip_text(viewer, view)
 	local reason = graph.spend_refusal(def.class, view.ranks, def.id, view.budget)
 	local status = rank >= def.ranks and "Maximum rank reached." or reason or
 		view.buy_text or ""
-	return ("%s — rank %d/%d: %s  %s"):format(def.name, rank, def.ranks,
-		graph.node_text(viewer, def), status)
+	-- The strip keeps its text and status in view; a skill's numbers follow
+	-- them (the textarea scrolls, the tooltip shows them whole).
+	return ("%s — rank %d/%d: %s  %s%s"):format(def.name, rank, def.ranks,
+		own_text(viewer, def), status, skill_text(viewer, def))
 end
 
 -- The page's content in real coordinates. view = {trees (the class's
