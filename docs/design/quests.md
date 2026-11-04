@@ -343,7 +343,7 @@ lines; an item objective's named source must really drop that item at the
 levels it is met (`E-item-source-drop`). Such an objective, its source being
 its own `roles` and `area` or a quest drop of its item in the player's
 variant (Round 69), names it in the quest log and the map's tooltips, "Bring
-Runner's Packet: 0/1 (from Trench Archer) (level 38)", with the names the
+Runner's Packet: 0/1 (from Trench Archer) (level 38–40)", with the names the
 drop counts (`Q.target_names`), and on the tracker, "0/1 Runner's Packet from
 Trench Archer" (the line of several objectives stays the compact one, which
 has no room for it). The map marks that source

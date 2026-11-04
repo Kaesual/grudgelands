@@ -38,7 +38,9 @@ grug_quests.MAX_CHOICES = 4
 -- `area` ("zone/area"); both only select `names` (per role, labels.lua
 -- Q.target_names) and `name_set`: a kill counts by the name the mob shows
 -- (Round 38);
--- `item` names one `item` or an item `group`; `talk` is a travel quest's
+-- `item` names one `item` or an item `group`, with the `sources` the data
+-- names (Round 69: {mobs, area, names} rows, loader.lua) and their names as
+-- one text, `source`; `talk` is a travel quest's
 -- only objective; `use` (Round 36) names a `place` (a clash site's
 -- settlement key or a recipe quest place "zone/id", use.lua), the `object`
 -- kind shown there, the `label` of the act and its `hold` in seconds, and

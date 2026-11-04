@@ -25,7 +25,7 @@ end
 -- One line per objective (ruling 41): "Bring Wood Axe: 0/1", with the
 -- targets' level range (Lane Q0): "Defeat Barrow Piglet: 0/8 (level 1–2)",
 -- and an item's named source (Round 69): "Bring Runner's Packet: 0/1 (from
--- Trench Archer) (level 33)". Also the map's quest target tooltips (Round 47).
+-- Trench Archer) (level 38–40)". Also the map's quest target tooltips (Round 47).
 local function objective_label(objective)
 	return ("%s: %d/%d%s%s"):format(grug_quests.objective_action(objective),
 		objective.count, objective.required,

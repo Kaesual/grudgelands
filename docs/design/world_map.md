@@ -417,7 +417,9 @@ The index (role → regions, area → regions, leader → spot) is built once at
 start from the region maps ([spawn_regions.md](spawn_regions.md)): seed 42,
 151 roles, 1287 regions, 363 areas and 49 leaders in about 2 ms. On that
 seed the targets mark all 94 talk, 18 use and 360 kill objectives (94 kill
-objectives with a crosshair, 266 with rings).
+objectives with a crosshair, 266 with rings); every variant of the 14 quests
+with a named source has a target, and none of the 166 other item objective
+rows does (Round 69, `tools/r69_questmap`).
 
 ### Refresh
 
