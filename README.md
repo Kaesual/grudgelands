@@ -82,8 +82,7 @@ To create a local world or host a server, see
    to see its targets. Press `E` for the quickbar: mounts, boats, your
    potion belt and Return home.
 5. **Set a home at an innkeeper:** Return home brings you back after a
-   journey. Death costs no items, money or XP; you respawn at your bound
-   innkeeper.
+   journey. Death costs no items, money or XP; you respawn at your home.
 
 Press `I` for your inventory. Its **Help** tab explains equipment, crafting,
 professions, travel and combat, and includes the sound controls.
@@ -95,6 +94,14 @@ levels 21–40 and leads you to your faction's fortress at 40; from 41 your
 Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
+
+**0.69.0** adds a Trash box to the Inventory tab, with Undo for the last
+item; you now respawn at your home, a Claim Stone included; every damaging
+skill shows its exact number, in the talent tree too, even before you learn
+it; quests for a drop with a named source mark it on the map and name it in
+the log; and the enemy camps under construction get a new look. The server's
+host runs the migration tool once (no map reset); the game then rebuilds
+those camps itself. Desktop and web acceptance is pending.
 
 **0.68.0** makes text readable in the world: wall signs show their text on
 the board and chests their label on the front, without pointing at them;

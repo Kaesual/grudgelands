@@ -6,6 +6,56 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 69 — trash box, home respawn, camp sites (GUI acceptance pending)
+
+Delivered in 0.69.0 (**migrate**, no map reset: step 0.69.0 and the online box
+rewrite, [upgrade contract §5.9](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)):
+the Trash box and the professions' order, respawn at the home, exact numbers
+in tooltips and the talent tree, markers and a source line for the 14 quests
+that name their drop, the camp sites in Wallwright
+([completion](docs/planning/round69-plan.md#completion-2026-11-04)). The
+desktop/web [GUI checklist](docs/planning/round69-plan.md#gui-checklist-desktop-and-web)
+is open. Carry-overs:
+
+- **Waiting for the user:** confirm the straw mats in Wallwright's tents, with
+  `r58_camps` narrowed to real beds and `pvp.md`'s wording (recommended: keep).
+- **The user's call:**
+  - The offer dialogue still reads "Bring Runner's Packet × 1 (level 38–40)";
+    it could name the source (`npc.lua`, one line).
+  - The Glassroot variant of `border_packets`, "Bring me a Runner's Packet from
+    the camp.", suggests a world object, milder than Bannerbreak's did.
+    Proposal: "Bring me a Runner's Packet from those fletchers."
+  - An enemy can camp a Claim Stone respawn: claims lie in own peaceful land,
+    but flagged enemies may enter it. Nothing guards this and no ruling covers
+    it.
+- **QUESTMAP:** fixture T in `r69_questmap` asserts that a target exists, not
+  which area (a mutation giving own-roles rows the first variant's `sources`
+  passed all checks; no bug today, a one-line area-zone assert would close it);
+  `dawnmere_pantry_02` has two areas under `MAX_RINGS` (5 nearest), so one
+  objective could lose all its rings, as a kill already can; Dawnmere's
+  `start_rats` names two places and rings only `meadows`, as the kill always
+  did; `start_rats` reads level 1–4 on the kill and the role's range on the
+  item.
+- **UI:** a hacked client can trash its own equipped item (stats follow);
+  `CHAR_W` assumes default fonts, so a very large font setting can still overrun
+  the box; a no-room bag refusal shows only its feed line, which the open window
+  may cover; Undo goes through `give`, so gear's derived description lines are
+  rebuilt, as on any pickup.
+- **HOME:** `grug_home.cancel` from "Set home here" or "Set as home" during a
+  hold releases it and the player stays at the arrival (existing behaviour); a
+  leave in the instant after a cube is blocked during the wait leaves the player
+  in it (theoretical).
+- **SKILLS:** `melee_damage_add` has no talent and `ctx.melee_damage_add` has no
+  reader.
+- **CAMP:** a player in active range of a camp during the settle can false-alarm
+  the read-back ("Grass covered" flips some of the 22 covered ground cells;
+  three passes, `[GRUG-SEVERE]`, the key kept, the next start retries: read, not
+  run); a generation outlasting the settling time can still undo a write after
+  the read-back; no boot in `full` preparation mode (all 27 digest files equal
+  `v0.68.0` by sha256).
+- **Memory:** a world's second boot settles about 150 MiB above its third (229
+  against 82 MiB, measured); in 0.68 too, not new.
+
 ## Round 68 — readable text in the world (GUI accepted)
 
 Delivered in 0.68.0 (**compatible**, no step): `grug_text` (text on one

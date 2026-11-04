@@ -1,6 +1,41 @@
 # Project status
 
-Updated 2026-10-31. This is the delivery pointer, not another game specification.
+Updated 2026-11-04. This is the delivery pointer, not another game specification.
+
+**0.69.0 / Round 69 is merged on main; not pushed, GUI test open.** From
+player reports and the user's notes: a **Trash box** in the Inventory tab
+(variant A: destroyed at once, Undo for the last one until the next discard
+or logout, bound items refused); **respawn goes to the home**, Claim Stone
+included and also without fuel, falling back to the innkeeper and the start
+with the hold on (Round 25 ruling 25 retired); **exact "N damage"** on every
+damage skill, Strike, Hamstring and Retort's plain swing included, and in the
+talent tree, also for unlearned skills, through the same text as the hotbar;
+**rings and a source line** for the 14 quests that name their drop; the
+**Crafting tabs** in the order Basic, Cooking, Alchemy, Primary 1, Primary 2;
+and the six **camps under construction** in GPT-6 Astra's design A Wallwright
+(the user's pick; the artist recommended B). **Migrate, no map reset:** the
+step 0.69.0 only sets a world marker; the game rewrites each camp's fixed box
+online and reads it back before the key goes, the user's documented exception
+([upgrade contract §5.9](technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
+UI, HOME, SKILLS and QUESTMAP are compatible, CAMPART is tools only. Proof on
+a real 0.68.0 world, seed 42: 46 checks, 0 failed; 0 of 5290 box cells differ
+from a new world in all six camps (measured); ruling 6's fallback was not
+needed. Reviews: QUESTMAP, HOME, SKILLS MERGE; UI MERGE AFTER FIXES (one doc
+line); CAMP MERGE AFTER FIXES (a neighbouring chunk could undo a write, hence
+the read-back), then MERGE. Merges `81f252c7`, `410a8639`, `449ac5a1`,
+`6c79288d`, `325737b2`, `67391a4b`, then this documentation lane D. 305
+portable fixtures (five new); the round-end run on main: 304 of 305 before
+lane D (only `r37_dc`, waiting for this CHANGELOG entry), `r37_dc` passing
+after it. **Open for the user:** the
+[GUI checklist](planning/round69-plan.md#gui-checklist-desktop-and-web), first
+**a real mouse drag into the Trash box**, which no lane or reviewer has run;
+the straw mats in Wallwright's tents against Round 58's "no bed" line and the
+`pvp.md` wording (recommended: keep)
+([completion, numbers and decisions](planning/round69-plan.md#completion-2026-11-04);
+[carry-overs](../BACKLOG.md#round-69--trash-box-home-respawn-camp-sites-gui-acceptance-pending)).
+**The joint GUI test of 0.57–0.66 is still pending.** **Production runs
+0.65.0;** an update to 0.69.0 crosses no map reset and runs the steps 0.67.0
+and 0.69.0. **Not pushed:** origin/main is `3cee37b3` (0.68.0).
 
 **0.68.0 / Round 68 is GUI-accepted by the user on 2026-10-31 (the whole Round 68 checklist) and pushed (2026-10-31).** Text
 is readable in the world (the user's wish after the Round 67 acceptance):
