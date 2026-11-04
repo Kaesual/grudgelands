@@ -12,7 +12,19 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.68.0, Round 68 readable text in the world
+**Current state:** 0.69.0, Round 69 (the Trash box in the Inventory tab
+with Undo and the professions' order; respawn goes to the home, Claim Stone
+included; exact "N damage" on every damage skill and in the talent tree;
+rings and the source line for the 14 quests that name their drop; the six
+camps under construction in the user's pick, Wallwright), merged on main,
+**not pushed**, GUI test open. **Migrate**, no map reset: the step 0.69.0
+only sets a world marker and the game rewrites each camp's box online, the
+user's documented exception
+([upgrade contract §5.9](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online);
+[completion and checklist](docs/planning/round69-plan.md#completion-2026-11-04)).
+Production runs **0.65.0**; its update to 0.69.0 crosses no map reset and
+runs the steps 0.67.0 and 0.69.0.
+Previous: 0.68.0, Round 68 readable text in the world
 (`grug_text`: one unsaved text entity per written surface from CC0
 glyphs; wall sign text on calm boards, chest labels on the front; the
 Standing Sign, the stackable Waypost and the two-node Notice Board in
@@ -257,7 +269,8 @@ Details: [STATUS](docs/STATUS.md).
   versions.
 - **Migrations only through the tool, with a test.** A change the new code
   cannot read from saved state is declared: a map reset when the state is
-  map-bound (or world generation changed), otherwise a migration (a removed
+  map-bound (or world generation changed; the one exception is a composition
+  rewritten inside its unchanged box, upgrade contract §5.9), otherwise a migration (a removed
   item, restructured character state) or, when the round decides not to
   migrate, a new server; a validated world-creation scalar needs a new
   server unless the game forces it over `map_meta.txt` (then a map reset;

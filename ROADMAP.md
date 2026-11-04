@@ -235,8 +235,8 @@ available in the game. Detailed follow-up scope and current design owners:
   30-minute cooldown and owns death respawn. Visit-unlocked waystones
   connect every start, every capital and the PvP fortress of a faction
   (Rounds 29 and 31). Since Round 25 the player's own Claim Stone can
-  replace the innkeeper as travel-home target; respawn stays at the
-  innkeeper. Universal riding unlocks at
+  replace the innkeeper as the home, and since Round 69 respawn goes there
+  too. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 8/12 nodes per
   second; damage dismounts. Battlegrounds permit flight, enemy territory allows
   land mounts only, and every exterior-ocean column forbids flight. Boats are
@@ -770,6 +770,12 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   door and the Lethariel mere shrines; bags of 8 / 12 / 16 / 20 slots.
   Complete on 2026-10-25; not pushed, the joint GUI test of 0.57 to 0.62
   open; the production deploy with one map reset follows.
+- [x] **Round 69 "Trash slot, respawn at home, camp sites, exact tooltips,
+  quest-drop markers"** ([plan](docs/planning/round69-plan.md)), version
+  0.69.0, **migrate**, no map reset: the game's first rewrite of a generated
+  composition inside its box
+  ([upgrade contract](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
+  Complete on 2026-11-04; not pushed, its GUI test open.
 
 ### Remaining work
 

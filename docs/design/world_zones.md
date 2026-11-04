@@ -168,7 +168,7 @@ of commit `082982da`.
 
 - Every race has its own **outer level-1–10 starting zone and starting
   settlement**. New characters start there rather than in a capital.
-  Respawns follow the bound innkeeper home, by default the starting town's
+  Respawns follow the home, by default the starting town's innkeeper
   ([home_travel.md](home_travel.md)).
 - There are **six race capitals**, one for every race and three per faction.
   Every capital has its own named city zone in the central part of its

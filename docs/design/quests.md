@@ -118,8 +118,10 @@ repeatable switch by Round 57, 2026-10-23
   in the target frame's difficulty colour relative to the player's level
   (`grug_xp.con_color`: gray at ten or more levels below, green to yellow
   to red; it follows a level change); below it the objective line in the
-  quest yellow (e.g. "0/4 Bring Raw Meat"). The boxes follow the quest
-  log's order (Round 67 ruling 19a, one shared sort, `grug_quests.sort_quests`):
+  quest yellow (e.g. "0/10 Bring Raw Meat"; with a named source
+  "0/1 Runner's Packet from Trench Archer", Round 69). The boxes follow the
+  quest log's order (Round 67 ruling 19a, one shared sort,
+  `grug_quests.sort_quests`):
   story quests on top, each group by quest level, ties by title, then id,
   without group headings, so easy and hard quests read at a glance.
   All boxes share one width (the side text width, 38 characters at most)

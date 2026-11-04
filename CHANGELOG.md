@@ -12,6 +12,50 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.69.0 — a Trash box, respawn at home, exact skill numbers and new camp sites (2026-11-04)
+
+Players' reports and wishes. **Migration** needed: the server's host runs the
+migration tool once on the stopped world (last point). No map reset, no new
+world.
+
+- **Trash box:** the Inventory tab has a Trash box under the Money box. Drag
+  an item in and it is destroyed; **Undo** brings the last one back until you
+  destroy another or log out. Soulbound and bound items, hotbar skills and
+  mounts are refused with a hint.
+- **Respawn at your home:** you now respawn wherever Return Home takes you,
+  also at your Claim Stone, with or without fuel. If the stone's arrival is
+  blocked you land at your innkeeper, then in your starting town, and you are
+  held safely until you stand somewhere valid. A respawn has no cooldown.
+- **Exact skill numbers:** every damaging skill now shows "N damage" with your
+  level, weapon, gear and talents: Strike, Hamstring and Retort's plain swing
+  show theirs for the first time, and Ice Nova says so plainly. The talent tree
+  shows the same numbers on its skills, even before you learn them, and they
+  follow your weapon and your food. Enemy armor, level and crits stay out.
+- **Quest drops on the map:** the 14 quests that ask for an item from a named
+  enemy mark that enemy on the map, with rings or a crosshair, until you carry
+  the item, and the quest log, the map's tooltips and the HUD name the source:
+  "0/1 Runner's Packet from Trench Archer". Gathering, crafting and fishing
+  quests stay unmarked. In Bannerbreak Mesa, Words Worth Bringing Back now says
+  that some archers carry the Packet.
+- **New camp sites:** the enemy camps under construction no longer look like
+  half a broken camp: a finished wall, a working scaffold and new wall bays
+  rising in the camps' own materials, for every race. Guards and captains stand
+  where they stood.
+- **Professions' order:** the Crafting tab now reads Basic, Cooking, Alchemy
+  and your two primary professions; the overview follows.
+- **For the server's host:** stop the server, back the world up, run
+  `python3 tools/migrate.py --world <world directory>` from the new version's
+  checkout and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
+  The tool only marks the world. In the first seconds after the start the game
+  rebuilds the six camps inside their fixed boxes, whatever was generated
+  there, and checks them; anything an administrator built inside a box is
+  replaced. A player standing in a box then may end up inside a new block and
+  walks out. The first start takes longer once (about 25 s against 8 s
+  measured). An older world moves to 0.69.0 in one update, crossing every map
+  reset and step in between.
+
 ## 0.68.0 — readable signs, wayposts and notice boards (2026-10-31)
 
 Text you can read in the world. **Compatible:** no map reset and no
