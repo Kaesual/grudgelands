@@ -12,8 +12,8 @@
 --   3. A solid node in the arrival cube sends that trip to the innkeeper home.
 --   4. notify_claim_changed(..., "destroyed") resets the home with a message.
 --   Round 69: respawn on the real emerge path, to that claim home and, with
---   the cube blocked, to the innkeeper (the movement hold ignores this table
---   player; the fixture tools/r69_home judges the hold).
+--   the cube blocked, to the innkeeper, held on the way (the fixture
+--   tools/r69_home covers every other path).
 -- Ends the server itself; "RESULT PASS" is the verdict line.
 local PREFIX = "[r25_home_probe] "
 local NAME = "r25_home_probe"
@@ -49,6 +49,8 @@ function player.set_pos(self, pos) self.pos = vector.new(pos) end
 function player.get_velocity() return vector.new(0, 0, 0) end
 function player.add_velocity() end
 function player.get_look_horizontal() return 0 end
+function player.get_physics_override(self) return self.physics or {} end
+function player.set_physics_override(self, override) self.physics = override end
 local get_player_by_name = core.get_player_by_name
 core.get_player_by_name = function(name)
  if name == NAME then return player end
@@ -58,6 +60,12 @@ local chat_send_player = core.chat_send_player
 core.chat_send_player = function(name, message)
  if name == NAME then chat[#chat + 1] = message; log("chat: " .. message); return end
  return chat_send_player(name, message)
+end
+-- core.sound_play takes a real player only; the table player stays silent.
+local sound_play = grug_sounds.play
+grug_sounds.play = function(id, target, ...)
+ if target == player then return false end
+ return sound_play(id, target, ...)
 end
 local meta = player.get_meta()
 meta:set_string("grug_factions:faction", "accord")
@@ -89,9 +97,11 @@ local function respawn_to(arrival, label, then_fn)
  player.pos = vector.new(0, 300, 0)
  check(grug_home.respawn(player), label .. ": respawn accepted")
  check(vector.distance(player.pos, arrival) < 0.01, label .. ": the first teleport lands there")
+ check(grug_core.is_movement_held(player, "grug_home:respawn"), label .. ": held")
  wait_for(function() return not grug_home.is_pending(player) end, 120, function()
   log(label .. ": pos " .. core.pos_to_string(player.pos))
   check(vector.distance(player.pos, arrival) < 0.01, label .. ": respawned there")
+  check(not grug_core.is_movement_held(player, "grug_home:respawn"), label .. ": released")
   check(grug_home.remaining(player) <= left, label .. ": no cooldown started")
   then_fn()
  end, label .. " trip finished")
