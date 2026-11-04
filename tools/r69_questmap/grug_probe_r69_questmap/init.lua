@@ -36,7 +36,9 @@ local function offer_lines(Q, id, variant)
 	local meta = {get_string = function() return "" end, get_int = function() return 0 end}
 	local reader = {get_player_name = function() return "r69_probe_reader" end,
 		is_player = function() return true end, get_hp = function() return 20 end,
-		get_pos = function() return {x = 0, y = 0, z = 0} end, get_meta = function() return meta end}
+		get_pos = function() return {x = 0, y = 0, z = 0} end, get_meta = function() return meta end,
+		get_inventory = function() return {get_list = function() return {} end, get_size = function() return 0 end,
+			get_stack = function() return ItemStack("") end} end}
 	Q.npc_by_socket["r69_probe/" .. npc] = npc
 	local ok, err = pcall(Q.open_npc, reader, {_grug_start = "r69_probe", _grug_socket = npc, object = {
 		is_valid = function() return true end, get_pos = function() return {x = 0, y = 0, z = 0} end}}, id)

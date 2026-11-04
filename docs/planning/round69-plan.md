@@ -477,3 +477,9 @@ Before accepting, a player reads objectives only in this pane. The list row
 and its hover show title and status; the map's giver markers show the giver;
 the quest log, HUD and target tooltips exist once a quest is active. The
 textarea wraps and scrolls (`guiFormSpecMenu.cpp:1555-1556`).
+
+Checks: `check_lua`, `check_fresh_server`, `validate.py --game` (0 errors, 17
+warnings), `build_structure.py --check`; fixtures `r69_questmap` (extended: the
+real dialogue at all 630 givers, a mutation without the variant fails 161
+checks), `r28_q0`, `r37_dc`; full run 305/0. Engine probe (seed 42): all 31
+variants' offers in the real form, 0 wrong, widest line 69 bytes.
