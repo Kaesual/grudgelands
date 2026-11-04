@@ -132,6 +132,34 @@ local function show(player, kind)
   end
   grug_inventory.refresh(player)
   inventory_page(player, "grug_inventory:inventory")
+ elseif kind:match("^inventory_trash") then
+  -- Extra-only scenarios, in the order of the README: the box's real
+  -- callbacks with the real guards around them.
+  local location, list = grug_inventory.trash_location(player)
+  local name = location:match("^detached:(.+)$")
+  local callbacks = core.detached_inventories[name]
+  local box = core.get_inventory({type = "detached", name = name})
+  local function put(item) return callbacks.allow_put(box, list, 1, ItemStack(item), player) end
+  if kind ~= "inventory_trash" and kind ~= "inventory_trash_long" then
+   local skill
+   for item, def in pairs(core.registered_items) do
+    if (def.groups or {}).grug_ability then skill = item break end
+   end
+   log(("TRASH guards skill=%s stone=%s packet=%s plain=%s"):format(put(skill),
+    put("grug_housing:claim_stone"), put("grug_mobs:runners_packet"), put("default:cobble 7")))
+   put("grug_mobs:runners_packet")
+  elseif kind == "inventory_trash" then
+   callbacks.on_put(box, list, 1, ItemStack("grug_gear:sword_steel"), player)
+  else
+   local longest, length = nil, 0
+   for item in pairs(core.registered_items) do
+    local text = grug_core.item_name(item)
+    if #text > length then longest, length = item, #text end
+   end
+   log("TRASH longest " .. grug_core.item_name(longest))
+   callbacks.on_put(box, list, 1, ItemStack(longest .. " 3"), player)
+  end
+  inventory_page(player, "grug_inventory:inventory")
  elseif kind == "effects_active" then
   -- Real status records and icon resolver; no polling or fake formspec rows.
   assert(grug_core.set_status(player, "alchemy_cave", {

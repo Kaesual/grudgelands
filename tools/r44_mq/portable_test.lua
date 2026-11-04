@@ -28,8 +28,9 @@
 --      and the targets: crosshairs (leaders, talk NPCs, use places) before
 --      rings, at most five rings, the nearest the player, a kill objective
 --      without an area only in the quest's zone, finished objectives and
---      item objectives without a mark; in the form rings under the
---      crosshair, sized by the region, tinted and semi-transparent;
+--      item objectives without a named source without a mark, one with a
+--      source (Round 69) marked like a kill of it; in the form rings under
+--      the crosshair, sized by the region, tinted and semi-transparent;
 --   R  the refresh rule: an event sends at once, a second one inside a
 --      second is owed and goes out when the second is over (one trailing
 --      send), a scrollbar event alone sends nothing, alone nothing is sent
@@ -926,6 +927,22 @@ do
 	found = targets.targets(index, registered_quests.q_enemy, rows(registered_quests.q_enemy, {}),
 		{x = 0, z = 0}, lookup)
 	check(#found.crosshairs == 0 and #found.rings == 0, "T an item quest marks nothing")
+	-- Round 69: an item objective's named sources mark like a kill of them:
+	-- a leader's crosshair, an area's rings, without an area the zone's
+	-- regions of the role; finished, nothing. Tooltip line: the source.
+	local drop = {zone = "dawnmere", objectives = {{type = "item", item = "default:apple", count = 1,
+		sources = {{mobs = {"grug_mobs:crumb"}}, {mobs = {"grug_mobs:bandit"}, area = "dawnmere/bandit_camp"}}}}}
+	found = targets.targets(index, drop, {{count = 0, required = 1}}, {x = 0, z = 0}, lookup)
+	check(#found.crosshairs == 1 and found.crosshairs[1].x == 520 and found.crosshairs[1].objectives[1] == 1,
+		"T an item source: the leader's crosshair")
+	check(#found.rings == 2 and found.rings[1].objectives[1] == 1, "T an item source: the area's rings")
+	found = targets.targets(index, drop, {{count = 1, required = 1}}, {x = 0, z = 0}, lookup)
+	check(#found.crosshairs == 0 and #found.rings == 0, "T an item source: finished, nothing")
+	drop.objectives[1].sources = {{mobs = {"grug_mobs:wolf"}}}
+	found = targets.targets(index, drop, nil, {x = 0, z = 0}, lookup)
+	eq(#found.rings, 5, "T an item source without an area: the zone's regions of the role")
+	has(dofile(repo .. "/mods/PLAYER/grug_map/quest_box.lua").objective_label({type = "item", what = "Packet", count = 0, required = 1,
+		source = "Trench Archer"}), "Bring Packet: 0/1 (from Trench Archer)", "T the line names the source")
 	check(near(targets.ring_radius(9, 32), math.sqrt(9 * 1024 / math.pi)), "T ring radius from size")
 	-- A garrison camp (no recipe region) and the rift boss (no region, a
 	-- place of his own): a crosshair, in the other faction's land too.

@@ -145,7 +145,7 @@ and section G.
 
 Revised 2026-09-23, Round 18:
 
-- Every death respawns at the bound innkeeper home with full inventory
+- Every death respawns at the home with full inventory
   ([home_travel.md](home_travel.md)). No corpse run or extra durability-on-death.
 - **No death causes XP loss**, including PvE, PvP and environmental deaths.
   No replacement penalty is introduced; travel back remains a consequence.

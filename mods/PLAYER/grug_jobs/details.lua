@@ -341,14 +341,14 @@ end
 
 grug_jobs.details_recipe_for = function(player, item) return recipe_for(player, item) end
 
--- The area tab a recipe is listed in (ui.lua's slots: Basic, Cooking, the
--- two primary slots, Alchemy), or nil.
+-- The area tab a recipe is listed in (ui.lua's slots: Basic, Cooking,
+-- Alchemy, the two primary slots), or nil.
 local function slot_of(player, recipe)
 	if recipe.area == "basic" then return 1 end
 	if recipe.area == "cooking" then return 2 end
-	if recipe.area == "alchemist" then return 5 end
+	if recipe.area == "alchemist" then return 3 end
 	for slot = 1, grug_jobs.PRIMARY_SLOTS do
-		if grug_jobs.primary_at(player, slot) == recipe.area then return 2 + slot end
+		if grug_jobs.primary_at(player, slot) == recipe.area then return 3 + slot end
 	end
 	return nil
 end

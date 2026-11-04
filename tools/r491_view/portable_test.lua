@@ -155,7 +155,10 @@ core.override_item = function(name, fields)
 end
 core.register_on_player_receive_fields = function(fn) receivers[#receivers + 1] = fn end
 core.register_globalstep = function(fn) globalsteps[#globalsteps + 1] = fn end
-core.create_detached_inventory = function() return node_inventory() end
+core.create_detached_inventory = function(name, callbacks)
+	core.detached_inventories[name] = callbacks -- builtin's table (Round 69's trash box)
+	return node_inventory()
+end
 core.remove_detached_inventory = function() end
 
 local function submit(player, formname, fields)

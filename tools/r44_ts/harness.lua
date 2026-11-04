@@ -155,7 +155,8 @@ return function(repo, hidden)
 	--
 	local registered = {mods_loaded = {}, joinplayer = {}, allow = {}, action = {},
 		receive = {}, class_chosen = {}, race_chosen = {}, faction_chosen = {},
-		level_change = {}, mounts_changed = {}}
+		level_change = {}, mounts_changed = {}, status_modifiers = {},
+		equipment_change = {}}
 	H.registered = registered
 	local after_jobs = {}
 	local detached = {}
@@ -235,7 +236,12 @@ return function(repo, hidden)
 		end,
 		clear_move_immunity = noop,
 		clear_absorb_modifiers = noop,
-		register_on_status_modifiers_changed = noop,
+		register_on_status_modifiers_changed = function(fn)
+			table.insert(registered.status_modifiers, fn)
+		end,
+		register_on_equipment_change = function(fn)
+			table.insert(registered.equipment_change, fn)
+		end,
 	}
 	local combat = assert(io.open(repo .. "/mods/CORE/grug_core/combat.lua")):read("*a")
 	local fit = combat:match("(function grug_core%.base_pool%(level%).-\n" ..

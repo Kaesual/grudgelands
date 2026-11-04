@@ -613,7 +613,8 @@ has(fs, ("formspec_version[6]size[%.3f,%.3f]"):format(grug_inventory.UI.frame_w,
 	grug_inventory.UI.window_h), "P the inventory window's frame")
 has(fs, "grug_inv_scroll_short", "P the short inventory view")
 eq(count(fs, "list[current_player;main;"), 2, "P main only in the view")
-for index, label in ipairs({"Basic", "Cooking", "Primary 1", "Primary 2", "Alchemy"}) do
+-- Round 69 ruling 7: Alchemy before the primary slots.
+for index, label in ipairs({"Basic", "Cooking", "Alchemy", "Primary 1", "Primary 2"}) do
 	has(fs, ("%s%d;%s]"):format(FIELDS.area, index, label), "P area tab " .. label)
 end
 has(fs, nav_style("grug_craft_area1", true), "P Basic is the default area, styled selected")
@@ -693,18 +694,18 @@ end
 ------------------------------------------------------------------------------
 -- A. Areas.
 ------------------------------------------------------------------------------
-click(p, {[FIELDS.area .. "4"] = "Primary 2"})
+click(p, {[FIELDS.area .. "5"] = "Primary 2"})
 says(p.formspec, "No primary profession yet. Learn one from its trainer in the capital.",
 	"A an empty primary slot says how to learn one")
-has(p.formspec, nav_style("grug_craft_area4", true), "A the chosen tab styled")
-click(p, {[FIELDS.area .. "5"] = "Alchemy"})
+has(p.formspec, nav_style("grug_craft_area5", true), "A the chosen tab styled")
+click(p, {[FIELDS.area .. "3"] = "Alchemy"})
 says(p.formspec, "Not learned yet. Learn Alchemy from its trainer in the capital.",
 	"A an unlearned profession says how to learn it")
 has(p.formspec, core.formspec_escape(core.colorize(grug_core.ui.colors.muted, "Not learned")) .. "]",
 	"A no tier progress while unlearned")
-click(p, {[FIELDS.area .. "3"] = "Weaponsmith"})
+click(p, {[FIELDS.area .. "4"] = "Weaponsmith"})
 fs = p.formspec
-has(fs, "grug_craft_area3;Weaponsmith]", "A the primary slot's tab names its profession")
+has(fs, "grug_craft_area4;Weaponsmith]", "A the primary slot's tab names its profession")
 has(fs, "Tier 1 · 4/10", "A the tier progress")
 has(fs, "box[17.25,0.75;0.98,0.12;#d4b77d]", "A the tier bar filled 4/10")
 has(fs, "Copper Sword", "A the T1 recipe listed")
@@ -802,7 +803,7 @@ has(fs, "Torch", "N the torch")
 geometry_ok(fs, "N craftable only")
 -- In a profession area the tier counts: the T2 axe is not craftable at T1.
 put(p, "main", 13, "t:bar 5")
-click(p, {[FIELDS.area .. "3"] = "Weaponsmith"})
+click(p, {[FIELDS.area .. "4"] = "Weaponsmith"})
 fs = p.formspec
 has(fs, "Copper Sword", "N the T1 sword is craftable")
 lacks(fs, "Iron Battle Axe", "N the T2 axe is not, at weaponsmith T1")
@@ -1071,7 +1072,7 @@ put(smith, "main", 9, "t:bar 10")
 put(smith, "main", 10, "t:stick 10")
 put(smith, "main", 11, "t:coal 10")
 open(smith)
-click(smith, {[FIELDS.area .. "3"] = "Weaponsmith"})
+click(smith, {[FIELDS.area .. "4"] = "Weaponsmith"})
 click(smith, {[FIELDS.row .. "1"] = ""})
 fs = smith.formspec
 eq(st_of(smith).selected, sword.id, "S the sword chosen")
@@ -1107,7 +1108,7 @@ local novice = new_player("novice")
 novice.meta.fields["grug_jobs:primary:1"] = "weaponsmith"
 novice.meta.fields["grug_jobs:level:weaponsmith"] = 1
 open(novice)
-click(novice, {[FIELDS.area .. "3"] = "Weaponsmith"})
+click(novice, {[FIELDS.area .. "4"] = "Weaponsmith"})
 click(novice, {[FIELDS.row .. "2"] = ""})
 eq(st_of(novice).selected, nil, "S the hidden T2 axe has no row to click (PT3)")
 -- A choice the list no longer shows (made before a profession was
@@ -1241,7 +1242,7 @@ do
 	chef.meta.fields["grug_jobs:primary:1"] = "weaponsmith"
 	chef.meta.fields["grug_jobs:level:weaponsmith"] = 1
 	open(chef)
-	click(chef, {[FIELDS.area .. "3"] = "Weaponsmith"})
+	click(chef, {[FIELDS.area .. "4"] = "Weaponsmith"})
 	click(chef, {[FIELDS.row .. "1"] = ""})
 	fs = chef.formspec
 	part = box_part(fs)

@@ -3,7 +3,7 @@
 -- Crafting artboard; Round 57 lane CRAFT: layout C, round57-plan.md rulings
 -- 1-2 and 7). Real coordinates inside the inventory window's frame, above
 -- the short inventory view:
---   top     the area tabs (Basic, Cooking, the two primary slots, Alchemy)
+--   top     the area tabs (Basic, Cooking, Alchemy, the two primary slots)
 --           and the selected area's tier progress;
 --   left    the recipe list: search, "Craftable only" and "Favorites only",
 --           10 rows per page (icon, name, ×N), "Page x of y"; one row per
@@ -162,13 +162,13 @@ end
 grug_jobs._clip_chars = clip_chars
 
 --
--- Areas (spec §2.16): Basic and Cooking, the two primary slots, Alchemy. An
--- empty primary slot and an unlearned profession show an empty list with how
+-- Areas (spec §2.16; the order Round 69 ruling 7): Basic, Cooking, Alchemy,
+-- the two primary slots. An empty primary slot and an unlearned profession show an empty list with how
 -- to learn it, as the recipe books did.
 --
 
-local AREA_SLOTS = {{area = "basic"}, {area = "cooking"}, {primary = 1},
-	{primary = 2}, {area = "alchemist"}}
+local AREA_SLOTS = {{area = "basic"}, {area = "cooking"}, {area = "alchemist"},
+	{primary = 1}, {primary = 2}}
 
 -- {area (nil for an empty primary slot), label, learned} per tab.
 local function area_tabs(player)

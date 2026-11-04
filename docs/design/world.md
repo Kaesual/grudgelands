@@ -469,8 +469,8 @@ from y = −501.
   medium-level heartland and the high-level contested front; roads reach it
   through them (`world_zones.md` §§3, 9).
 - New characters use their race's outer level-1–10 starting settlement.
-  Respawns follow the bound innkeeper home; the starting settlement is the
-  default. See [home travel](home_travel.md).
+  Respawns follow the home (innkeeper or Claim Stone); the starting settlement
+  is the default. See [home travel](home_travel.md).
 - Every race has its own king in its own capital: **six kings total**. Housing
   instead comes from the Housing Steward, a service NPC in every capital who
   hands out the Claim Stone from level 20 (§5); no king grants land or
@@ -925,7 +925,7 @@ land do not exist.
 
 The current V1 return and death destination is the twelve-location
 [innkeeper home system](home_travel.md). A player's own Claim Stone can be the
-travel-home target instead (home stone, below). The waypoint network is a
+home instead (home stone, below). The waypoint network is a
 separate travel feature, part of V1 (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B2;
 WP17).
@@ -986,8 +986,8 @@ be the "travel home" target of the innkeeper return, with the same 30-minute
 cooldown. The arrival is the stone's arrival cube. When the stone is picked up
 or destroyed, the target falls back to the player's bound innkeeper (the
 starting-town innkeeper when none is bound), with a message; binding an
-innkeeper also replaces a claim home. Death still respawns at the bound
-innkeeper. This replaces the former Home Stone channel (10-second cast,
+innkeeper also replaces a claim home. Death respawns at the same home (Round
+69). This replaces the former Home Stone channel (10-second cast,
 60-minute cooldown).
 
 

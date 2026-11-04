@@ -10,7 +10,8 @@
 -- Usage: local H = dofile("tools/r44_ch/harness.lua")(repo)
 
 return function(repo)
-local H = {feed = {}, sounds = {}, equipment_changes = 0, logs = {}, dropped = {}}
+local H = {feed = {}, sounds = {}, equipment_changes = 0, logs = {}, dropped = {},
+	timers = {}, detached = {}}
 
 --
 -- Engine surface
@@ -22,7 +23,7 @@ local function fs_escape(text)
 end
 H.fs_escape = fs_escape
 
-local callbacks = {allow = {}, action = {}, join = {}, mods_loaded = {},
+local callbacks = {allow = {}, action = {}, join = {}, leave = {}, mods_loaded = {},
 	receive = {}, class_chosen = {}, equipment = {}}
 local window_info = {}
 H.window_info = window_info
@@ -38,6 +39,7 @@ core = {
 	register_allow_player_inventory_action = function(f) table.insert(callbacks.allow, f) end,
 	register_on_player_inventory_action = function(f) table.insert(callbacks.action, f) end,
 	register_on_joinplayer = function(f) table.insert(callbacks.join, f) end,
+	register_on_leaveplayer = function(f) table.insert(callbacks.leave, f) end,
 	register_on_mods_loaded = function(f) table.insert(callbacks.mods_loaded, f) end,
 	register_on_player_receive_fields = function(f) table.insert(callbacks.receive, f) end,
 	register_craftitem = function(name, def) core.registered_items[name] = def end,
@@ -48,7 +50,10 @@ core = {
 	is_creative_enabled = function() return false end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
 	add_item = function(_, stack) H.dropped[#H.dropped + 1] = ItemStack(stack):to_string() end,
-	after = function() end,
+	-- Kept for a test to fire (Round 69's hint timer).
+	after = function(delay, fn, ...)
+		H.timers[#H.timers + 1] = {delay = delay, fn = fn, args = {...}}
+	end,
 	-- Round 55: grug_achievements' offline queue (an empty mod storage).
 	get_mod_storage = function()
 		return {get_string = function() return "" end, set_string = function() end}
@@ -169,6 +174,18 @@ local function new_inventory()
 		return stack
 	end
 	return inv
+end
+
+-- builtin's detached_inventory.lua: the callbacks stay in a table of their own.
+core.detached_inventories = {}
+function core.create_detached_inventory(name, cb)
+	core.detached_inventories[name] = {allow_put = cb.allow_put, allow_take = cb.allow_take,
+		allow_move = cb.allow_move, on_put = cb.on_put, on_take = cb.on_take, on_move = cb.on_move}
+	H.detached[name] = new_inventory()
+	return H.detached[name]
+end
+function core.remove_detached_inventory(name)
+	core.detached_inventories[name], H.detached[name] = nil, nil
 end
 
 --
@@ -306,6 +323,11 @@ if hotbars then
 end
 dofile(repo .. "/mods/PLAYER/grug_inventory/equipment.lua")
 dofile(repo .. "/mods/PLAYER/grug_inventory/bags.lua")
+local trash = io.open(repo .. "/mods/PLAYER/grug_inventory/trash.lua")
+if trash then
+	trash:close()
+	dofile(repo .. "/mods/PLAYER/grug_inventory/trash.lua")
+end
 grug_sounds = grug_sounds or {}
 	grug_sounds.CLICK_STYLE = grug_sounds.CLICK_STYLE or ""
 	dofile(repo .. "/mods/CORE/grug_core/ui.lua")
@@ -438,6 +460,7 @@ H.allow = allow
 local function after_action(player, action, info)
 	for _, f in ipairs(callbacks.action) do f(player, action, player.inv, info) end
 end
+H.after_action = after_action
 
 -- One move; returns the moved count. `somewhere` = a shift-click sub-move.
 function H.move(player, from_list, from_i, to_list, to_i, count, somewhere)
@@ -536,6 +559,10 @@ end
 -- A rejoin of an existing player: every join callback again.
 function H.join(player)
 	for _, f in ipairs(callbacks.join) do f(player) end
+end
+
+function H.leave(player)
+	for _, f in ipairs(callbacks.leave) do f(player) end
 end
 
 function H.put(player, list, index, item)

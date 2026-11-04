@@ -677,12 +677,13 @@ smith.meta["grug_jobs:level:cooking"] = 1
 smith.meta["grug_jobs:crafts:cooking"] = 10
 local overview = grug_jobs.profession_overview(smith)
 eq(#overview, 2, "two known professions")
-eq(overview[1].name, "Weaponsmith", "primary first")
-eq(overview[1].tier, 2, "weaponsmith tier")
-eq(overview[1].crafts, 7, "crafts in tier")
-eq(overview[1].needed, 15, "needed for the next tier")
-eq(overview[1].capped, false, "7/15 at level 15: crafting, not the level, is missing")
-eq(overview[2].capped, false, "cooking T1 is not capped at level 15")
+-- Round 69 ruling 7: the secondaries come first.
+eq(overview[2].name, "Weaponsmith", "primary after the secondary")
+eq(overview[2].tier, 2, "weaponsmith tier")
+eq(overview[2].crafts, 7, "crafts in tier")
+eq(overview[2].needed, 15, "needed for the next tier")
+eq(overview[2].capped, false, "7/15 at level 15: crafting, not the level, is missing")
+eq(overview[1].capped, false, "cooking T1 is not capped at level 15")
 local prof_fs = grug_jobs.professions_formspec(overview, AREA)
 formspec_ok(prof_fs, "professions tab")
 has(prof_fs, fs_escape("Weaponsmith — Tier 2"), "profession name and tier")
@@ -690,7 +691,7 @@ has(prof_fs, fs_escape("Crafts: 7/15 toward tier 3"), "tier progress")
 lacks(prof_fs, "Capped by your level", "no cap note while crafts are missing")
 smith.meta["grug_jobs:crafts:weaponsmith"] = 15
 overview = grug_jobs.profession_overview(smith)
-eq(overview[1].capped, true, "15/15 at level 15: the level blocks tier 3")
+eq(overview[2].capped, true, "15/15 at level 15: the level blocks tier 3")
 -- The note wraps to the mode area's width (Round 44).
 local capped_fs = grug_jobs.professions_formspec(overview, AREA)
 has(capped_fs, fs_escape(colorize("#f0c75e", "Capped by your level: reach level 21, then craft")),
@@ -700,7 +701,7 @@ smith.meta["grug_jobs:crafts:weaponsmith"] = 7
 has(prof_fs, fs_escape("Crafts: 10/10 toward tier 2"), "cooking progress")
 char_level = 5
 overview = grug_jobs.profession_overview(smith)
-eq(overview[2].capped, true, "level 5 caps cooking T1")
+eq(overview[1].capped, true, "level 5 caps cooking T1")
 has(grug_jobs.professions_formspec(overview, AREA),
 	fs_escape(colorize("#f0c75e", "Capped by your level: reach level 11, then craft")),
 	"saturated cap note")

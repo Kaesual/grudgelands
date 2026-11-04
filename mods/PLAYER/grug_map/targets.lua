@@ -15,18 +15,24 @@
 --     faction's land: a quest target shows wherever it is (the user,
 --     2026-10-08);
 --   * a talk objective: a crosshair at the NPC; a use objective: a crosshair
---     at its place.
+--     at its place;
+--   * an item objective whose source the data names (Round 69: its own roles
+--     and area, or a quest drop of its item in the player's variant; the
+--     loader's `sources`): each source as a kill objective of it, so a
+--     crosshair at a leader, a garrison camp or a role's own place, else
+--     rings.
 -- Crosshairs come first (a quest "kill seven bandits and their leader"
 -- shows the leader's crosshair however many rings there are); then at most
 -- MAX_RINGS rings, the regions nearest the player. Every crosshair and ring
 -- names the objectives it marks (their indices in def.objectives, Round 47:
--- the map's tooltips show their lines). A finished kill or use
+-- the map's tooltips show their lines). A finished kill, use or item
 -- objective marks nothing; a talk objective counts from the start (a
 -- travel quest's destination), so its NPC stays marked while the quest is
--- active. Item objectives (gathering, ore, quest drops) and roles outside
--- the region maps without a place of their own (underground, water, rare
--- and critter spawns) mark nothing; the quest text suffices. Two objectives
--- at one spot share one crosshair.
+-- active. Item objectives without a named source (gathering, crafting,
+-- fishing; Round 69 ruling 8) and roles outside the region maps without a
+-- place of their own (underground, water, rare and critter spawns) mark
+-- nothing; the quest text suffices. Two objectives at one spot share one
+-- crosshair.
 --
 -- The region index is built once at start from the cached region maps:
 -- role -> regions and "zone/area" -> regions, each region {zone, x, z,
@@ -121,6 +127,26 @@ function M.targets(index, def, progress, pos, lookup)
 		end
 		return matched
 	end
+	-- A kill objective or an item objective's source: {mobs, area}.
+	local function mark_mobs(target)
+		for _, mob in ipairs(target.mobs or {}) do
+			local role = mob:match("^grug_mobs:(.+)$") or mob
+			local leader = index.leaders[role]
+			if leader then
+				crosshair(leader)
+			elseif target.area then
+				if index.areas[target.area] then
+					ring_list(index.areas[target.area])
+				else
+					crosshair(lookup.area and lookup.area(target.area))
+				end
+			else
+				if not ring_list(index.roles[role], def.zone) then
+					crosshair(lookup.role and lookup.role(role))
+				end
+			end
+		end
+	end
 	for index_, objective in ipairs(def.objectives) do
 		current = index_
 		local row = progress and progress[index_]
@@ -130,23 +156,9 @@ function M.targets(index, def, progress, pos, lookup)
 		elseif objective.type == "use" and open then
 			crosshair(objective.place and lookup.place(objective.place))
 		elseif objective.type == "kill" and open then
-			for _, mob in ipairs(objective.mobs or {}) do
-				local role = mob:match("^grug_mobs:(.+)$") or mob
-				local leader = index.leaders[role]
-				if leader then
-					crosshair(leader)
-				elseif objective.area then
-					if index.areas[objective.area] then
-						ring_list(index.areas[objective.area])
-					else
-						crosshair(lookup.area and lookup.area(objective.area))
-					end
-				else
-					if not ring_list(index.roles[role], def.zone) then
-						crosshair(lookup.role and lookup.role(role))
-					end
-				end
-			end
+			mark_mobs(objective)
+		elseif objective.type == "item" and open then
+			for _, source in ipairs(objective.sources or {}) do mark_mobs(source) end
 		end
 	end
 	local function distance(entry)

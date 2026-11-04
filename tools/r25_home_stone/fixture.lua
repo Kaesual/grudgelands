@@ -12,7 +12,8 @@
 --      the retired tools/round17/home_micro.lua;
 --   S  set_home_claim / home_is_claim (refusals, owner, unfuelled message,
 --      Round 26: a draft is refused);
---   T  travel to the arrival cube, cooldown, respawn stays at the innkeeper;
+--   T  travel to the arrival cube, cooldown, respawn goes to the same home
+--      (Round 69; the fallback paths: tools/r69_home);
 --   E  an expired (unfuelled) claim is still the target;
 --   B  blocked arrival cube (solid, liquid, no headroom) falls back to the
 --      innkeeper for that trip, with a message, the claim stays the home;
@@ -305,12 +306,12 @@ check(not home.home_is_claim(player), "S claim not home before setting")
 ok, message = home.set_home_claim(player)
 check(ok and message == "Your Claim Stone is now your home.", "S set home: " .. tostring(message))
 check(home.home_is_claim(player) and home.get(player).label == "Claim Stone", "S home is claim")
-check(home.innkeeper(player).id == "highcourt", "S innkeeper binding kept for respawn")
+check(home.innkeeper(player).id == "highcourt", "S innkeeper binding kept as the fallback")
 ok, message = home.set_home_claim(player)
 check(ok and message:find("already", 1, true), "S set twice")
 
 -- ---------------------------------------------------------------------------
--- T: travel to the arrival cube, cooldown, respawn stays at the innkeeper
+-- T: travel to the arrival cube, cooldown, respawn at the same home
 -- ---------------------------------------------------------------------------
 local arrival = grug_housing.arrival_pos(claim)
 local feet = vnew(round(arrival.x), round(arrival.y) - 0.49, round(arrival.z))
@@ -322,12 +323,14 @@ check(moves == 1 and same(player.pos, feet), "T arrived in the cube")
 check(home.remaining(player) == 1800, "T usual cooldown charged")
 chat = {}
 check(not home.return_home(player) and last_chat() == "Return home is cooling down.", "T cooldown refuses")
--- Respawn ignores the claim: the innkeeper home, cooldown untouched.
+-- Round 69 retired Round 25 ruling 25: respawn goes to the claim home too,
+-- cooldown untouched.
 local highcourt = home.location("highcourt")
+player.pos = vnew(0, 100, 0)
 check(callbacks.respawn[1](player), "T respawn hook")
-do local job = finish(); check(same(job.center, highcourt.pos), "T respawn prepares the innkeeper") end
+do local job = finish(); check(same(job.center, stone_pos), "T respawn prepares the claim") end
 check(moves == 2, "T respawn is one teleport")
-check(same(player.pos, highcourt.arrival) and home.remaining(player) == 1800, "T respawn at innkeeper")
+check(same(player.pos, feet) and home.remaining(player) == 1800, "T respawn at the claim")
 check(home.home_is_claim(player), "T respawn keeps the claim home")
 clock = clock + 1800
 -- A claim picked up while the trip is pending cannot teleport.

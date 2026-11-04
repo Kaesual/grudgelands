@@ -210,6 +210,23 @@ function Q.names_levels(by_role, selected)
 	return lo and {lo, hi} or nil
 end
 
+-- The names an item objective's sources count (loader.lua item_sources), each
+-- once, joined as a kill's subject: "Trench Archer", "Pebble Crab or
+-- Boulder Crab". Resolved once at load; the quest log, the map's tooltips and the HUD
+-- read it as the row's `source`. nil when the sources select no name.
+function Q.source_text(sources)
+	local names, seen = {}, {}
+	for _, source in ipairs(sources) do
+		for _, list in ipairs(source.names) do
+			for _, name in ipairs(list) do
+				local shown = plain(name)
+				if not seen[shown] then seen[shown] = true; names[#names + 1] = shown end
+			end
+		end
+	end
+	return #names > 0 and table.concat(names, " or ") or nil
+end
+
 -- The short subject: "Wood Axe", "Any Tree", "Barrow Piglet or Grave Rat",
 -- "Yam Piglet", "Elder Maren", "Light the signal fire". A kill's
 -- subject is the names it counts (Q.target_names); a role the names file

@@ -497,7 +497,8 @@ do
 			set_list = function(_, l, v) lists[l] = v end,
 			get_list = function(_, l) return lists[l] end}
 	end
-	core.create_detached_inventory = function(name)
+	core.create_detached_inventory = function(name, callbacks)
+		core.detached_inventories[name] = callbacks -- builtin's table (Round 69's trash box)
 		detached[name] = fake_inventory()
 		return detached[name]
 	end
