@@ -23,11 +23,14 @@ local function tracked(journal, id)
 end
 
 -- One line per objective (ruling 41): "Bring Wood Axe: 0/1", with the
--- targets' level range (Lane Q0): "Defeat Barrow Piglet: 0/8 (level 1–2)".
--- Also the map's quest target tooltips (Round 47).
+-- targets' level range (Lane Q0): "Defeat Barrow Piglet: 0/8 (level 1–2)",
+-- and an item's named source (Round 69): "Bring Runner's Packet: 0/1 (from
+-- Trench Archer) (level 33)". Also the map's quest target tooltips (Round 47).
 local function objective_label(objective)
-	return ("%s: %d/%d%s"):format(grug_quests.objective_action(objective),
-		objective.count, objective.required, grug_quests.objective_levels_text(objective))
+	return ("%s: %d/%d%s%s"):format(grug_quests.objective_action(objective),
+		objective.count, objective.required,
+		objective.source and (" (from %s)"):format(objective.source) or "",
+		grug_quests.objective_levels_text(objective))
 end
 M.objective_label = objective_label
 

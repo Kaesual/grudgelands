@@ -5,7 +5,13 @@ local huds = {}
 -- escape and the width counts only visible characters.
 local plain = grug_core.plain_text
 
+-- An item objective with a named source (Round 69) leaves out the verb so the
+-- source fits the tracker's width: "0/1 Runner's Packet from Trench Archer".
 local function objective_text(objective)
+	if objective.source then
+		return ("%d/%d %s from %s"):format(objective.count, objective.required,
+			grug_quests.objective_subject(objective), objective.source)
+	end
 	local subject = objective.description
 	if not subject or subject == "Defeat named threat" or objective.type ~= "kill" then
 		subject = grug_quests.objective_action(objective)
