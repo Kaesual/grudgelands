@@ -1,0 +1,498 @@
+{
+ "default:acacia_tree": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:acacia_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:cobble": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:desert_cobble": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:desert_stone_block": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:dirt": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:dirt_with_coniferous_litter": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:dirt_with_dry_grass": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:dirt_with_grass": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:dirt_with_rainforest_litter": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:dry_dirt": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:fence_acacia_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "default:fence_aspen_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "default:fence_junglewood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "default:fence_pine_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "default:fence_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "default:jungletree": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:junglewood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:ladder_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": false
+ },
+ "default:mossycobble": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:obsidianbrick": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:pine_tree": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:pine_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:stone_block": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:tree": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "default:wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_decor:cottages_straw_mat": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": false
+ },
+ "grug_decor:cottages_table": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_decor:darkage_basalt_brick": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_decor:darkage_marble_tile": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_decor:darkage_reinforced_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_decor:darkage_slate_tile": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_decor:darkage_slate_tile_slab": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_canvas": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_ridge": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_stockade_dwarf": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_stockade_elf": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_stockade_human": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_stockade_orc": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_stockade_troll": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_stockade_undead": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_trim_accord": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_trim_throng": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_wall_cap_dwarf": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_wall_cap_elf": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_wall_cap_human": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_wall_cap_orc": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_wall_cap_troll": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:camp_wall_cap_undead": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "grug_mapgen:faction_banner_accord": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": false
+ },
+ "grug_mapgen:faction_banner_throng": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": false
+ },
+ "grug_nodes:blight_dirt": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_nodes:dirt_with_silver_litter": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_trees:gravewood_tree": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_trees:gravewood_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_trees:silverwood_tree": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "grug_trees:silverwood_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": true,
+  "walkable": true
+ },
+ "stairs:slab_desert_stonebrick": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "stairs:slab_junglewood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "stairs:slab_obsidianbrick": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "stairs:slab_pine_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ },
+ "stairs:slab_wood": {
+  "after_place": false,
+  "lbm": null,
+  "on_construct": false,
+  "on_timer": false,
+  "suffocates": false,
+  "walkable": true
+ }
+}

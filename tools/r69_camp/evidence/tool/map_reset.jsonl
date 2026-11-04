@@ -1,0 +1,6 @@
+{"event": "start", "mode": "migrate", "world": "<run>/w_reset"}
+{"event": "pack_start", "seq": 1, "claims": 0}
+{"event": "pack_done", "seconds": 0.0, "seq": 1, "counts": {"claims": 0, "players": 0, "containers": 0, "items": 0, "charcoal": 0, "blocks_read": 0}, "nodes": {}, "empty": {}}
+{"event": "step_start", "step": "0.69.0", "from": "0.68.0"}
+{"event": "step_done", "step": "0.69.0", "counts": {"characters": 0, "player_meta": 0, "inventories": 0, "positions": 0, "privileges": 0, "mod_storage": 0, "markers": 1}}
+{"event": "done", "mode": "migrate", "world_version": "0.68.0", "record": "0.68.0", "new_world": false, "target": "0.69.0", "due": ["0.69.0"], "backends": {"player": "absent", "auth": "absent", "mod_storage": "sqlite3", "map": "sqlite3"}, "map_reset": true, "pack_seq": 1, "applied": ["0.69.0"]}

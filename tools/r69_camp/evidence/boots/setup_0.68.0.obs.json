@@ -1,0 +1,741 @@
+{
+ "box_nodes": {
+  "default:acacia_tree": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "default:acacia_wood": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "default:dirt_with_dry_grass": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "default:dirt_with_grass": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "default:gravel": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "default:torch": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": false,
+   "walkable": false
+  },
+  "default:tree": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "default:wood": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "grug_decor:xdecor_barrel": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "ignore": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": false,
+   "walkable": false
+  },
+  "stairs:slab_acacia_wood": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": false,
+   "walkable": true
+  },
+  "stairs:slab_desert_stonebrick": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": false,
+   "walkable": true
+  },
+  "wool:black": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "wool:brown": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  },
+  "wool:red": {
+   "after_place": false,
+   "lbm": null,
+   "on_construct": false,
+   "on_timer": false,
+   "suffocates": true,
+   "walkable": true
+  }
+ },
+ "camps": {
+  "camp_site_ashenward_march": {
+   "id": "camp_site_ashenward_march",
+   "protection": {
+    "above": {
+     "protected": true
+    },
+    "below": {
+     "protected": true
+    },
+    "beyond": {
+     "protected": true
+    },
+    "corner": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "high": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "inside": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "low": {
+     "feature": "war_camp",
+     "protected": true
+    }
+   },
+   "sockets": [
+    {
+     "dir": {
+      "x": -1,
+      "z": 0
+     },
+     "id": "gate_west",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": 2,
+     "y": 1,
+     "z": 9
+    },
+    {
+     "dir": {
+      "x": 1,
+      "z": 0
+     },
+     "id": "gate_east",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": -2,
+     "y": 1,
+     "z": 9
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "yard_west",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": 4,
+     "y": 1,
+     "z": -1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "yard_east",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": -4,
+     "y": 1,
+     "z": -1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "captain",
+     "role": "captain",
+     "x": 0,
+     "y": 1,
+     "z": -3
+    }
+   ]
+  },
+  "camp_site_bannerbreak_mesa": {
+   "id": "camp_site_bannerbreak_mesa",
+   "protection": {
+    "above": {
+     "protected": true
+    },
+    "below": {
+     "protected": true
+    },
+    "beyond": {
+     "protected": true
+    },
+    "corner": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "high": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "inside": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "low": {
+     "feature": "war_camp",
+     "protected": true
+    }
+   },
+   "sockets": [
+    {
+     "dir": {
+      "x": 1,
+      "z": 0
+     },
+     "id": "gate_west",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": -2,
+     "y": 1,
+     "z": -9
+    },
+    {
+     "dir": {
+      "x": -1,
+      "z": 0
+     },
+     "id": "gate_east",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": 2,
+     "y": 1,
+     "z": -9
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "yard_west",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": -4,
+     "y": 1,
+     "z": 1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "yard_east",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": 4,
+     "y": 1,
+     "z": 1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "captain",
+     "role": "captain",
+     "x": 0,
+     "y": 1,
+     "z": 3
+    }
+   ]
+  },
+  "camp_site_blackwind_rise": {
+   "id": "camp_site_blackwind_rise",
+   "protection": {
+    "above": {
+     "protected": true
+    },
+    "below": {
+     "protected": true
+    },
+    "beyond": {
+     "protected": true
+    },
+    "corner": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "high": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "inside": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "low": {
+     "feature": "war_camp",
+     "protected": true
+    }
+   },
+   "sockets": [
+    {
+     "dir": {
+      "x": 1,
+      "z": 0
+     },
+     "id": "gate_west",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": -2,
+     "y": 1,
+     "z": -9
+    },
+    {
+     "dir": {
+      "x": -1,
+      "z": 0
+     },
+     "id": "gate_east",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": 2,
+     "y": 1,
+     "z": -9
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "yard_west",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": -4,
+     "y": 1,
+     "z": 1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "yard_east",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": 4,
+     "y": 1,
+     "z": 1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "captain",
+     "role": "captain",
+     "x": 0,
+     "y": 1,
+     "z": 3
+    }
+   ]
+  },
+  "camp_site_glassroot_wilds": {
+   "id": "camp_site_glassroot_wilds",
+   "protection": {
+    "above": {
+     "protected": true
+    },
+    "below": {
+     "protected": true
+    },
+    "beyond": {
+     "protected": true
+    },
+    "corner": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "high": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "inside": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "low": {
+     "feature": "war_camp",
+     "protected": true
+    }
+   },
+   "sockets": [
+    {
+     "dir": {
+      "x": -1,
+      "z": 0
+     },
+     "id": "gate_west",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": 2,
+     "y": 1,
+     "z": 9
+    },
+    {
+     "dir": {
+      "x": 1,
+      "z": 0
+     },
+     "id": "gate_east",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": -2,
+     "y": 1,
+     "z": 9
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "yard_west",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": 4,
+     "y": 1,
+     "z": -1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "yard_east",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": -4,
+     "y": 1,
+     "z": -1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "captain",
+     "role": "captain",
+     "x": 0,
+     "y": 1,
+     "z": -3
+    }
+   ]
+  },
+  "camp_site_stormvault_heights": {
+   "id": "camp_site_stormvault_heights",
+   "protection": {
+    "above": {
+     "protected": true
+    },
+    "below": {
+     "protected": true
+    },
+    "beyond": {
+     "protected": true
+    },
+    "corner": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "high": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "inside": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "low": {
+     "feature": "war_camp",
+     "protected": true
+    }
+   },
+   "sockets": [
+    {
+     "dir": {
+      "x": -1,
+      "z": 0
+     },
+     "id": "gate_west",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": 2,
+     "y": 1,
+     "z": 9
+    },
+    {
+     "dir": {
+      "x": 1,
+      "z": 0
+     },
+     "id": "gate_east",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": -2,
+     "y": 1,
+     "z": 9
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "yard_west",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": 4,
+     "y": 1,
+     "z": -1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "yard_east",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": -4,
+     "y": 1,
+     "z": -1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": 1
+     },
+     "id": "captain",
+     "role": "captain",
+     "x": 0,
+     "y": 1,
+     "z": -3
+    }
+   ]
+  },
+  "camp_site_thunderroot_wilds": {
+   "id": "camp_site_thunderroot_wilds",
+   "protection": {
+    "above": {
+     "protected": true
+    },
+    "below": {
+     "protected": true
+    },
+    "beyond": {
+     "protected": true
+    },
+    "corner": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "high": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "inside": {
+     "feature": "war_camp",
+     "protected": true
+    },
+    "low": {
+     "feature": "war_camp",
+     "protected": true
+    }
+   },
+   "sockets": [
+    {
+     "dir": {
+      "x": 1,
+      "z": 0
+     },
+     "id": "gate_west",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": -2,
+     "y": 1,
+     "z": -9
+    },
+    {
+     "dir": {
+      "x": -1,
+      "z": 0
+     },
+     "id": "gate_east",
+     "role": "guard_post",
+     "tags": [
+      "gate"
+     ],
+     "x": 2,
+     "y": 1,
+     "z": -9
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "yard_west",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": -4,
+     "y": 1,
+     "z": 1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "yard_east",
+     "role": "guard_post",
+     "tags": [
+      "camp"
+     ],
+     "x": 4,
+     "y": 1,
+     "z": 1
+    },
+    {
+     "dir": {
+      "x": 0,
+      "z": -1
+     },
+     "id": "captain",
+     "role": "captain",
+     "x": 0,
+     "y": 1,
+     "z": 3
+    }
+   ]
+  }
+ },
+ "finish": "setup",
+ "full": "camp_site_ashenward_march",
+ "game": "0.68.0",
+ "leaves": 0,
+ "load": {
+  "from": "0.68.0",
+  "new_world": true
+ },
+ "old_meta": {
+  "x": -571,
+  "y": 92,
+  "z": -619
+ },
+ "partial": "camp_site_bannerbreak_mesa",
+ "pending": false,
+ "phase": "setup_0.68.0",
+ "ring_meta": {
+  "x": -562,
+  "y": 92,
+  "z": -624
+ }
+}
