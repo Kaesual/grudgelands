@@ -15,7 +15,10 @@
 --      when the item is carried; the row carries the source;
 --   L  the objective line in the quest log, the tooltips and the HUD, with
 --      its width; the plain lines stay as they were;
---   X  the Bannerbreak text.
+--   X  the Bannerbreak and Glassroot texts;
+--   D  the real giver's dialogue (npc.lua) at every giver of every quest: the
+--      objective line of the variant that giver gives, with its source
+--      (Round 69 follow-up); the player accepting there gets that variant.
 -- Usage (repo root): luajit tools/r69_questmap/portable_test.lua [REPO]
 local repo = arg and arg[1] or "."
 local checks, failures = 0, 0
@@ -340,6 +343,112 @@ do
 	local text = variant.description
 	check(not text:find("Somewhere in that camp", 1, true), "X the text suggests no world object")
 	check(text:find("archers carry a Runner's Packet", 1, true) ~= nil, "X the archers carry it")
+	text = Q.registered_quests.border_packets.variant_by_key.elandor_glassroot_wilds.description
+	check(text:find("Bring me a Runner's Packet from those fletchers. A path", 1, true) ~= nil,
+		"X the Glassroot sentence names the fletchers")
+	check(not text:find("from the camp", 1, true), "X ...and no camp the text does not place")
+end
+
+-- D -----------------------------------------------------------------------
+do
+	local DASH = "\226\128\147"
+	rawset(_G, "grug_sounds", {play = function() end})
+	rawset(_G, "grug_factions", {same_faction = function() return false end,
+		serves = function() return true end})
+	rawset(_G, "vector", {distance = function() return 1 end})
+	core.formspec_escape = core.formspec_escape or function(text) return text end
+	core.colorize = core.colorize or function(_, text) return text end
+	local shown
+	core.show_formspec = function(_, _, form) shown = form end
+	core.register_on_player_receive_fields = function() end
+	core.register_on_leaveplayer = function() end
+	core.register_entity = function() end
+	grug_core.register_tag_visibility = function() end
+	real_dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+	real_dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
+	grug_core.ui.text_scale = function() return 1 end
+	real_dofile(repo .. "/mods/PLAYER/grug_quests/npc.lua")
+	Q.completion_text = function() return nil end
+
+	-- The quest's whole detail text at giver `npc`, as offered.
+	local reader = make_player(nil)
+	function reader:is_player() return true end
+	function reader:get_hp() return 20 end
+	function reader:get_pos() return {x = 0, y = 0, z = 0} end
+	local real_rows = Q.npc_quests
+	local function offer(id, npc)
+		local def = Q.registered_quests[id]
+		Q.npc_by_socket["fixture/" .. npc] = npc
+		Q.npc_quests = function()
+			return {{id = id, title = def.title, status = "available", level = def.level}}
+		end
+		shown = nil
+		check(Q.open_npc(reader, {_grug_start = "fixture", _grug_socket = npc, object = {
+			is_valid = function() return true end, get_pos = function() return {x = 0, y = 0, z = 0} end}}, id),
+			"D " .. id .. " opens at " .. npc)
+		Q.npc_quests = real_rows
+		return shown or ""
+	end
+	local function has(text, part, label)
+		check(text:find(part, 1, true) ~= nil, label .. ": " .. part)
+	end
+	local function hasnt(text, part, label)
+		check(text:find(part, 1, true) == nil, label .. ": no " .. part)
+	end
+
+	-- The lines the user read, one per giver.
+	local packet = Q.registered_quests.border_packets
+	local function packet_offer(key) return offer("border_packets", packet.variant_by_key[key].givers[1]) end
+	has(packet_offer("kragmar_bannerbreak_mesa"), "OBJECTIVES\nBring Runner's Packet \195\151 1 (from " ..
+		"Trench Archer)\n", "D the Bannerbreak offer")
+	-- The level range needs a world's recipes (validate.objective_levels):
+	-- the engine run's; here its place in the line.
+	local shown_levels = packet.variant_by_key.elandor_glassroot_wilds.objectives[1]
+	shown_levels.levels = {38, 40}
+	has(packet_offer("elandor_glassroot_wilds"), "OBJECTIVES\nBring Runner's Packet \195\151 1 (from " ..
+		"Bandit Fletcher) (level 38" .. DASH .. "40)\n", "D the Glassroot offer")
+	shown_levels.levels = nil
+
+	-- Every giver of every quest: the objectives of the variant it gives,
+	-- which is what Q.accept records, not the quest's first variant.
+	local offers, sourced, moved, widest, widest_line = 0, 0, 0, 0, nil
+	for _, id in ipairs(ids) do
+		local def = Q.registered_quests[id]
+		for npc, key in pairs(def.giver_variant) do
+			local form = offer(id, npc)
+			offers = offers + 1
+			local first = def.variant_by_key[def.variant_order[1]]
+			for k, objective in ipairs(def.variant_by_key[key].objectives) do
+				local line = Q.objective_action(objective) .. " \195\151 " .. objective.count ..
+					(objective.source and " (from " .. objective.source .. ")" or "") ..
+					Q.objective_levels_text(objective)
+				has(form, "\n" .. line .. "\n", "D " .. id .. " at " .. npc)
+				if objective.source then
+					sourced = sourced + 1
+					if #line > widest then widest, widest_line = #line, line end
+				else
+					hasnt(line, "(from ", "D " .. id .. " a plain line")
+				end
+				local other = first.objectives[k]
+				if Q.objective_action(other) ~= Q.objective_action(objective) or
+						Q.objective_levels_text(other) ~= Q.objective_levels_text(objective) then
+					moved = moved + 1
+				end
+			end
+		end
+	end
+	check(sourced >= 32, "D every sourced row was offered: " .. sourced)
+	print(("  offers: %d givers, %d sourced lines, widest %d bytes: %s"):format(offers, sourced, widest,
+		tostring(widest_line)))
+	print(("  %d lines read their own variant now, not the quest's first"):format(moved))
+
+	-- The player accepting at that giver gets the variant the offer showed.
+	local taker = make_player(nil)
+	local glassroot = packet.variant_by_key.elandor_glassroot_wilds
+	grug_xp.get_level = function() return 39 end
+	check(Q.accept(taker, "border_packets", glassroot.givers[1]), "D accept at Glassroot")
+	eq(Q.journal(taker).quests[1].objectives[1].source, "Bandit Fletcher",
+		"D the log reads the source the offer named")
 end
 
 print(("r69_questmap: %d sourced item objectives over %d variants, %d plain, %d checks, %d failures")

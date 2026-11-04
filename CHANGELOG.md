@@ -33,9 +33,10 @@ world.
   follow your weapon and your food. Enemy armor, level and crits stay out.
 - **Quest drops on the map:** the 14 quests that ask for an item from a named
   enemy mark that enemy on the map, with rings or a crosshair, until you carry
-  the item, and the quest log, the map's tooltips and the HUD name the source:
-  "0/1 Runner's Packet from Trench Archer". Gathering, crafting and fishing
-  quests stay unmarked. In Bannerbreak Mesa, Words Worth Bringing Back now says
+  the item, and the giver's offer, the quest log, the map's tooltips and the HUD
+  name the source: "0/1 Runner's Packet from Trench Archer". A quest given in
+  several zones now offers the enemies of the zone you take it in. Gathering,
+  crafting and fishing quests stay unmarked. In Bannerbreak Mesa, Words Worth Bringing Back now says
   that some archers carry the Packet.
 - **New camp sites:** the enemy camps under construction no longer look like
   half a broken camp: a finished wall, a working scaffold and new wall bays

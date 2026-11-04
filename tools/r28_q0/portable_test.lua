@@ -458,7 +458,8 @@ end
 local offered = offers()
 has(offered.dialogue_kind, "Defeat Small Boar × 8 (level 1" .. DASH .. "4)\n", "offer dialogue: kill range")
 has(offered.dialogue_camp, "Defeat Confused Bandit × 5 (level 9" .. DASH .. "10)\n" ..
-	"Bring Ledger Page × 3 (level 9" .. DASH .. "10)\n", "offer dialogue: camp kill and quest-drop item")
+	"Bring Ledger Page × 3 (from Confused Bandit) (level 9" .. DASH .. "10)\n",
+	"offer dialogue: camp kill and quest-drop item, the item's source named (Round 69 follow-up)")
 has(offered.dialogue_leader, "Defeat Confused Bandit Chief × 1 (level 10)\n", "offer dialogue: one level")
 has(offered.dialogue_plain, "Bring Cobblestone × 10\nBring Any Tree × 5\n", "offer dialogue: items without a range")
 

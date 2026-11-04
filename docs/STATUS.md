@@ -28,9 +28,11 @@ portable fixtures (five new); the round-end run on main: 304 of 305 before
 lane D (only `r37_dc`, waiting for this CHANGELOG entry), `r37_dc` passing
 after it. **Open for the user:** the
 [GUI checklist](planning/round69-plan.md#gui-checklist-desktop-and-web), first
-**a real mouse drag into the Trash box**, which no lane or reviewer has run;
-the straw mats in Wallwright's tents against Round 58's "no bed" line and the
-`pvp.md` wording (recommended: keep)
+**a real mouse drag into the Trash box**, which no lane or reviewer has run.
+The user keeps the straw mats in Wallwright's tents (2026-11-04). A follow-up
+folded into 0.69.0: the offer dialogue names the source and reads the giver's
+variant, and Glassroot's `border_packets` asks for the Packet "from those
+fletchers"
 ([completion, numbers and decisions](planning/round69-plan.md#completion-2026-11-04);
 [carry-overs](../BACKLOG.md#round-69--trash-box-home-respawn-camp-sites-gui-acceptance-pending)).
 **The joint GUI test of 0.57–0.66 is still pending.** **Production runs

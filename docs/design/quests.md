@@ -346,7 +346,9 @@ levels it is met (`E-item-source-drop`). Such an objective, its source being
 its own `roles` and `area` or a quest drop of its item in the player's
 variant (Round 69), names it in the quest log and the map's tooltips, "Bring
 Runner's Packet: 0/1 (from Trench Archer) (level 38–40)", with the names the
-drop counts (`Q.target_names`), and on the tracker, "0/1 Runner's Packet from
+drop counts (`Q.target_names`), in the giver's dialogue, "Bring Runner's Packet
+× 1 (from Bandit Fletcher) (level 38–40)", which shows the variant that giver
+gives, and on the tracker, "0/1 Runner's Packet from
 Trench Archer" (the line of several objectives stays the compact one, which
 has no room for it). The map marks that source
 ([quest targets](world_map.md#quest-targets)); a role that selects no name
