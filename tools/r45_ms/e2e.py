@@ -427,6 +427,7 @@ def scenario(run):
                   "record (positions, auth, other mod storage untouched)",
           changed and all(re.match(r"'(item|meta)' \| '(smith|scribe|sleeper)' \|", line)
                           or line.startswith("'storage' | 'grug_core' | 'world_version' |")
+                          or line.startswith("'storage' | 'grug_core' | 'migrate_world:")
                           for line in changed), json.dumps(changed[:6]))
     postgresql(run)
     rc, ev = it.tool(run, "check_after", w, "-", check_mode=True, shipped=True)

@@ -230,7 +230,6 @@ do -- a request: both camps written, the root kept, metadata and timers gone
 	w.meta[key(0, 11, 0)], w.timers[key(0, 11, 0)] = true, true
 	local rewrite = job(w, storage)
 	assert(not storage.values.camp_rewrite, "nothing at load without a key")
-	assert(#w.queue == 0, "a new world schedules nothing")
 	rewrite.request()
 	assert(storage.values.camp_rewrite and rewrite.pending(), "the request is durable at once")
 	drain(w, 1)
@@ -242,6 +241,13 @@ do -- a request: both camps written, the root kept, metadata and timers gone
 	assert(w.nodes[key(0, 11, 0)] == "old", "the anchor root is not written")
 	drain(w)
 	assert(not rewrite.pending(), "done after the settle")
+end
+do -- a new world: nothing runs, and the sites are released
+	local w, storage = new_world(), new_storage()
+	local rewrite = job(w, storage)
+	drain(w)
+	assert(w.emerges == 0 and w.writes == 0 and not rewrite.pending(), "a new world does nothing")
+	assert(next(storage.values) == nil, "a new world writes no key")
 end
 do -- a restart picks the key up; a repeat writes the same
 	local w, storage = new_world(), new_storage({camp_rewrite = "1"})
@@ -267,7 +273,9 @@ do -- a map reset: nothing recorded, an older key cleared
 	local rewrite = job(w, storage, reset_stub(true))
 	assert(not storage.values.camp_rewrite, "the map reset clears the key")
 	rewrite.request()
-	assert(not storage.values.camp_rewrite and #w.queue == 0, "no job at a reset's start")
+	assert(not storage.values.camp_rewrite, "no key at a reset's start")
+	drain(w)
+	assert(w.emerges == 0 and w.writes == 0, "no job at a reset's start")
 end
 do -- a failed emerge and an unloaded cell: severe, the key stays, no write
 	local w, storage = new_world({emerge_action = 1}), new_storage()

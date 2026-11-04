@@ -93,6 +93,7 @@ return function(engine, storage, sites, map_reset, severe)
 			local interval = tonumber(engine.settings:get("server_map_save_interval")) or 5.3
 			engine.after(2 * interval + 1, function()
 				storage:set_string(KEY, "")
+				sites = nil
 				engine.log("action", "[grug_mapgen] the camp sites' rewrite is done")
 			end)
 			return
@@ -132,5 +133,10 @@ return function(engine, storage, sites, map_reset, severe)
 	-- Map-bound: a new map generates the new blueprint.
 	map_reset.clear(SOURCE, function() storage:set_string(KEY, "") end)
 	start()
+	-- The sites hold the prepared camps, which the load would otherwise
+	-- release: they stay only for a job, and every request comes before this.
+	engine.after(0, function()
+		if not M.pending() then sites = nil end
+	end)
 	return M
 end

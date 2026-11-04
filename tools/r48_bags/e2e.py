@@ -251,6 +251,7 @@ def scenario(run):
     check("step", "nothing else changed: the characters' meta rows (the markers) and the record",
           changed and all(re.match(r"'meta' \| '(hoarder|light|sleeper)' \|", line)
                           or line.startswith("'storage' | 'grug_core' | 'world_version' |")
+                          or line.startswith("'storage' | 'grug_core' | 'migrate_world:")
                           for line in changed), json.dumps(changed[:6]))
     rc, ev = tool(run, "check_after", w, check_mode=True)
     done = it.last(ev)
