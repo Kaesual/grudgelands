@@ -61,12 +61,11 @@ local function forget_capital(player) to_capital[player:get_player_name()] = nil
 core.register_on_dieplayer(forget_capital)
 core.register_on_leaveplayer(forget_capital)
 
--- The open sea's rule refuses every box; this answers for the marked nodes. What
--- was dug is air, marks nothing, and so takes no placement.
+-- The open sea's rule refuses every box; this answers for the marked nodes, as the
+-- run's tier wrote them. What was dug is air, marks nothing, and so takes no placement.
 local function marked(run, pos)
 	local node = core.get_node_or_nil(pos)
-	local tpl = M.templates[M.definition(run.expedition).template]
-	return node ~= nil and tpl.dig[node.name] == true
+	return node ~= nil and M.written(run).dig[node.name] == true
 end
 
 grug_core.register_world_exception(function(pos, name)

@@ -108,7 +108,7 @@ end
 local function run_level(id, bonus)
 	local def = catalogue.definition(id)
 	if not def then return nil, "That Expedition does not exist." end
-	if type(bonus) ~= "number" or bonus % 1 ~= 0 or bonus < 0 or bonus > catalogue.MAX_BONUS then
+	if type(bonus) ~= "number" or bonus % 1 ~= 0 or bonus < 0 or bonus > def.max_level - def.level then
 		return nil, "That is not a level of this Expedition."
 	end
 	return def.level + bonus, def
@@ -119,7 +119,7 @@ function M.offered_levels(player, id)
 	local result = {}
 	if not def then return result end
 	local level = grug_xp.get_level(player)
-	for bonus = 0, catalogue.MAX_BONUS do
+	for bonus = 0, def.max_level - def.level do
 		local run = def.level + bonus
 		if level >= catalogue.entry_level(run) then
 			result[#result + 1] = {bonus = bonus, level = run}

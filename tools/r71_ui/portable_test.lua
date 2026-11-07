@@ -3,7 +3,9 @@
 --   A  the socket: the real registry takes the role on all six clerk sockets, and
 --      only there; the resolver gives the capital's villager;
 --   D  the dialog's rows on the REAL runs.lua, the real catalogue and the real
---      toolkit: the dropdown offers only levels the creator may enter, one row per
+--      toolkit: the dropdowns offer only levels the creator may enter, a tier and then
+--      a level inside it (Round 71 RANGE: only tiers with a level on offer, each
+--      naming its ore and gem, the player's own level first), one row per
 --      member warns and stops nobody, a member who is not the leader cannot
 --      create, a run shows Enter, a refusal shows runs.lua's text, a level below
 --      the entry level is refused at Enter;
@@ -77,6 +79,16 @@ _G.grug_xp = {get_level = function(player)
 end}
 _G.grug_factions = {serves = function(faction, player) return player.faction == faction end}
 _G.grug_sounds = {play = function() end}
+-- The resources' names from the shipped registry's own lines.
+local resource_names = {}
+do
+	local file = assert(io.open(repo .. "/mods/ITEMS/grug_materials/registry.lua"))
+	for name, node in file:read("*a"):gmatch('name = "([^"]+)",%s*natural_node = "([^"]+)"') do
+		resource_names[node] = {name = name}
+	end
+	file:close()
+end
+_G.grug_materials = {resource_for_node = function(node) return resource_names[node] end}
 local trip, teleported
 _G.grug_home = {
 	register_on_teleport = function(fn) teleported = fn end,
@@ -129,11 +141,17 @@ end}
 local catalogue = dofile(repo .. "/mods/PLAYER/grug_expeditions/catalogue.lua")
 -- Two rows a dialog may offer; the catalogue ships only the hidden test row so far.
 local LIST = {
-	{id = "test_vault", name = "Test Vault", level = 20, max_players = 3, template = "test_vault"},
-	{id = "other", name = "The Other, Deep Vault", level = 60, max_players = 4, template = "test_vault"},
+	{id = "test_vault", name = "Test Vault", level = 20, max_level = 29, max_players = 3,
+		template = "test_vault"},
+	{id = "other", name = "The Other, Deep Vault", level = 60, max_level = 69, max_players = 4,
+		template = "test_vault"},
+	{id = "wide", name = "Wide Vault", level = 20, max_level = 69, max_players = 3,
+		template = "test_vault"},
 }
 local real_definition = catalogue.definition
-catalogue.definition = function(id) return id == "other" and LIST[2] or real_definition(id) end
+catalogue.definition = function(id)
+	return (id == "other" and LIST[2]) or (id == "wide" and LIST[3]) or real_definition(id)
+end
 local queue = {}
 local preparation = {
 	init = function() end,
@@ -206,8 +224,11 @@ local function party(leader, ...)
 	end
 	return view
 end
-local function dropdown_items(spec)
-	return spec:match("dropdown%[[^;]*;[^;]*;level;(.-[^\\]);%d+;true%]")
+local function dropdown_items(spec, field)
+	return spec:match("dropdown%[[^;]*;[^;]*;" .. (field or "level") .. ";(.-[^\\]);%d+;true%]")
+end
+local function dropdown_index(spec, field)
+	return tonumber(spec:match("dropdown%[[^;]*;[^;]*;" .. field .. ";.-[^\\];(%d+);true%]"))
 end
 
 -- ---- D. The dialog ------------------------------------------------------------
@@ -218,9 +239,11 @@ check(ok, "D opens for its faction")
 has(spec, "Expedition Registrar", "D the title")
 has(spec, "Test Vault", "D the list")
 has(spec, "The Other\\, Deep Vault", "D a name is escaped")
-has(spec, "Level 20\\, up to 3 players", "D the row's level and places")
+has(spec, "Levels 20-29\\, up to 3 players", "D the row's levels and places")
 local items = dropdown_items(spec)
-check(items == "Level 20 (+0),Level 21 (+1)", "D only the levels it may enter: " .. tostring(items))
+check(items == "Level 20,Level 21", "D only the levels it may enter: " .. tostring(items))
+check(dropdown_items(spec, "tier") == "T2 (20-29): Gold\\, Jade", "D one tier, its ore and gem: " ..
+	tostring(dropdown_items(spec, "tier")))
 has(spec, ";open;", "D a solo player may open it")
 hasnt(spec, "WHO CAN ENTER", "D no rows without a party")
 -- The other row: nothing on offer, can_create's own text, no button.
@@ -238,12 +261,56 @@ check(shown.Solo == nil, "D the same value sends nothing")
 press(solo, {level = "9"})
 check(shown.Solo == nil, "D an index the window did not show is ignored")
 
+-- Two steps over a wide range (Round 71 RANGE): a tier, then a level inside it.
+do
+	local sixty = player("Sixty", 60)
+	open(sixty)
+	local wide = press(sixty, {expeditions_row_3 = "x"})
+	has(wide, "Levels 20-69\\, up to 3 players", "D the wide row")
+	check(dropdown_items(wide, "tier") == "T2 (20-29): Gold\\, Jade,T3 (30-39): Silver\\, Garnet," ..
+		"T4 (40-49): Emberglass\\, Sapphire,T5 (50-59): Abyssal Crystal\\, Ruby," ..
+		"T6 (60-69): Abyssal Crystal\\, Diamond", "D every tier at 60: " .. tostring(dropdown_items(wide, "tier")))
+	check(dropdown_index(wide, "tier") == 5 and dropdown_items(wide) ==
+		"Level 60,Level 61,Level 62,Level 63,Level 64,Level 65,Level 66,Level 67,Level 68,Level 69",
+		"D the own level's tier first, all ten of T6")
+	check(dropdown_index(wide, "level") == 1, "D at the own level")
+	-- A new tier shows its levels and takes its first; the level field still names the old list.
+	wide = press(sixty, {tier = "4", level = "1"})
+	check(dropdown_index(wide, "tier") == 4 and dropdown_index(wide, "level") == 1, "D T5 at its first")
+	check(dropdown_items(wide):match("^Level 50,.*,Level 59$") ~= nil, "D T5's ten levels")
+	wide = press(sixty, {tier = "4", level = "10"})
+	check(dropdown_index(wide, "level") == 10, "D a level inside the tier")
+	shown.Sixty = nil
+	press(sixty, {tier = "9", level = "10"})
+	check(shown.Sixty == nil, "D a tier the window did not show is ignored")
+	wide = press(sixty, {tier = "5", level = "3"})
+	check(dropdown_index(wide, "tier") == 5 and dropdown_index(wide, "level") == 1,
+		"D a tier change ignores the stale level")
+	press(sixty, {tier = "4", level = "1"})
+	press(sixty, {tier = "4", level = "10"})
+	local made = M.create(sixty, "wide", R.sessions.Sixty.bonus)
+	check(made and made.level == 59, "D the chosen level is what opens")
+	table.remove(queue) -- the fake preparation keeps a cancelled run
+	M.end_run(made, "released")
+	-- Only tiers with a level on offer: 29 creates up to 31.
+	local late = player("Late", 29)
+	open(late)
+	wide = press(late, {expeditions_row_3 = "x"})
+	check(dropdown_items(wide, "tier") == "T2 (20-29): Gold\\, Jade,T3 (30-39): Silver\\, Garnet",
+		"D two tiers at 29: " .. tostring(dropdown_items(wide, "tier")))
+	check(dropdown_index(wide, "tier") == 1 and dropdown_index(wide, "level") == 10, "D at 29 itself")
+	wide = press(late, {tier = "2", level = "10"})
+	check(dropdown_items(wide) == "Level 30,Level 31", "D T3 only to 31")
+	online.Sixty, online.Late = nil, nil
+	R.sessions.Sixty, R.sessions.Late = nil, nil
+end
+
 -- A leader sees every member and may go on regardless.
 local lead, low, far = player("Lead", 20), player("Low", 19), player("Far", 25)
 levels.Gone = 30
 party("Lead", "Low", "Far", "Gone")
 _, spec = open(lead)
-check(dropdown_items(spec) == "Level 20 (+0),Level 21 (+1),Level 22 (+2)", "D the leader's own levels")
+check(dropdown_items(spec) == "Level 20,Level 21,Level 22", "D the leader's own levels")
 has(spec, "WHO CAN ENTER", "D the rows")
 has(spec, "Low", "D a member's row")
 has(spec, "Can enter", "D an eligible row")
@@ -271,7 +338,7 @@ check(feed[1].text == "Your Expedition is being prepared...", "N the text: " .. 
 check(feed[1].key == "expedition", "N one line per player")
 has(spec, "Your Expedition is being prepared...", "D the window says so")
 hasnt(spec, ";enter;", "D nobody enters before it is ready")
-has(spec, "Level 22 (+2)\\, 0 of 3 places taken", "D the run's line")
+has(spec, "Level 22\\, 0 of 3 places taken", "D the run's line")
 
 -- A second party waits behind: the queue shows, in the feed and the window.
 local second = player("Second", 25)

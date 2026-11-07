@@ -4,8 +4,8 @@ Repeatable group content in the Miner's Guild's name: a party, or one player, op
 sealed mine far beyond the map, fights through it and takes the reward at its end.
 Every run is written anew, so an Expedition can be played again and again.
 
-**Decided** by the user, 2026-11-07; the framework and the level 20 Expedition are
-implemented in Round 71 (`grug_expeditions`). This file owns the game rules and their
+**Decided** by the user, 2026-11-07; the framework and The Stilled Seam (levels 20–69)
+are implemented in Round 71 (`grug_expeditions`). This file owns the game rules and their
 numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the record of
 the rulings; [Round 71](../planning/round71-plan.md) holds what shipped. How it is built:
 [module guide](../technical/module-guide.md#expeditions),
@@ -20,33 +20,46 @@ ground drops.
 
 ## 1. The set
 
-| Expedition | Level | Most players inside | Ore and gem tier | State |
-|---|---|---:|---|---|
-| The Stilled Seam | 20 | 3 | T2 | implemented |
-| Level 30 | 30 | 3 | T3 | approved, not built |
-| Level 40 | 40 | 4 | T4 | approved, not built |
-| Level 50 | 50 | 4 | T5 | approved, not built |
-| Level 60 | 60 | 4 | T6 | approved, not built |
+Three Expeditions, each over a wide level range (user, 2026-11-07, [concept
+§9](../planning/round71-expeditions-concept.md#9-after-the-build-three-expeditions-user-2026-11-07)):
 
-The four later Expeditions follow on the proven format, after the user's test. Their
-[outline](../planning/round71-expeditions-outline.md) holds proposals; nothing in it is
-decided.
+| Expedition | Mob levels | Most players inside | State |
+|---|---|---:|---|
+| The Stilled Seam | 20–69 | 3 at every level | implemented |
+| The Second Shift | 40–69 | 4 | designed, built in Round 72 |
+| The Last Mint | 60–69 | 4 | designed, built in Round 72 |
+
+**Every 10 levels the tier follows:** the reward, the ore and the gem. The ore is what that
+tier's rock is mined for, the next metal's input ([items](items_crafting.md) §3.0.1), but
+T2's: The Stilled Seam is a gold working.
+
+| Tier | Mob levels | Ore | Gem |
+|---|---|---|---|
+| T2 | 20–29 | Gold | Jade |
+| T3 | 30–39 | Silver | Garnet |
+| T4 | 40–49 | Emberglass | Sapphire |
+| T5 | 50–59 | Abyssal Crystal | Ruby |
+| T6 | 60–69 | Abyssal Crystal (T6 has no ore of its own; user) | Diamond |
 
 An Expedition lasts 10–20 minutes, is balanced for 3–4 players and runs in a line at
 first. Floor plans are 2D on one main floor for now; the template format stays 3D.
 
 ## 2. Levels and entry
 
-- The creator picks **+0 to +9** on top of the Expedition's level. That sets the level of
-  every mob and the boss, the item level of their drops and of the chest. So level 60
-  reaches 61–69 and T7.
+- The creator picks the **mob level** inside the Expedition's range, in two steps: a tier,
+  which names its ore and gem, then a level inside it. Only tiers with a level the creator
+  may enter are offered; the window starts at the creator's own level. The level sets every
+  mob and the boss, the item level of their drops and of the chest, and the tier. Players
+  are capped at 60, so 61–69 is played at 60 with the level malus: the top of the range is
+  meant to be hard.
 - **Entry level:** run level − 2, at most 60. Level 60 needs 58, 61 needs 59, 62–69
   need 60.
-- The dropdown offers only levels the **creator** may enter, for a party leader too.
+- The dropdowns offer only levels the **creator** may enter, for a party leader too: a
+  level 29 player creates up to 31, a level 60 player everything.
 - A party leader sees one row per member with their eligibility before creating. It warns
   and stops nobody.
 - **Entering is a hard gate:** a player below the entry level cannot teleport in. Level
-  20 at +1 (level 21) admits a level 19 player, at +2 (level 22) it does not.
+  21 admits a level 19 player, level 22 does not.
 
 ## 3. Owner
 
@@ -182,9 +195,15 @@ Expedition level**. A player at the entry limit keeps the level malus
 
 ## 11. Ore
 
-- Ores and gems are minable nodes of the Expedition's own tier only (§1), also at +9.
+- Ores and gems are minable nodes of the run's tier only (§1). A template is written once,
+  with the T2 nodes; a run of another tier writes its own ore and gem in their places, and
+  only those can be dug. The rock round them stays the template's: the ore textures are
+  drawn on plain stone.
 - They are rare on the way, only after the first mob pack, and not too many. The reward
   room is somewhat richer: the real reward comes at the end.
+- **Expeditions support mining, they do not replace it** (user, 2026-11-07): what a run
+  yields per player of its tier's ore and gem stays clearly below the same time of ordinary
+  mining in that tier's rock, gems above all. The knob is fewer filled places at a tier.
 - **Exception to [world.md](world.md) R4:** Expedition ore is renewable through an
   Expedition's reset only. A mined node comes back with the next run's template, and
   through nothing else.
@@ -198,7 +217,7 @@ So the rule for group quests below 51 holds ([quests](quests.md#group-quests-rou
 
 ## 13. The Stilled Seam
 
-The level 20 Expedition: an abandoned gold working held by spiders and golems. Its
+An abandoned gold working held by spiders and golems, at mob levels 20–69. Its
 [description](../planning/round71-l20-description.md) was approved by the user and has the
 story, the floor plan and the texts.
 
@@ -213,11 +232,19 @@ story, the floor plan and the texts.
 | 4 Working face | [Flintback](biomes_mobs.md), alone |
 | 5 Store | chest, end waystone; 4 Gold, 2 Jade |
 
-- **Mobs:** 12 spiders, 3 elite golems and the boss. Spiders have 384 HP at 20 and 720 at 29,
-  elites 1,152 and 2,160, Flintback 8 × an elite's: 9,216 and 17,280.
-- **Ore:** eight shared nodes per run, all T2, also at +9.
-- **Chest, per player:** 1 Uncommon (blue) item, at 25 % a Rare (yellow) item, a bag of 10 × a
-  kill's coin bag at the run's level, 3–5 Spider Silk, 1–2 Coarse Spider Silk at 21–29, 1–2 Venom Gland at 50 %.
+- **Mobs:** 12 spiders, 3 elite golems and the boss. Spiders have 384 HP at 20, 2,696 at 60
+  and 3,507 at 69; elites 1,152, 8,088 and 10,522; Flintback 8 × an elite's: 9,216, 64,704
+  and 84,176. Every mob keeps its name at every level; Flintback's is one fixed name.
+- **Ore:** eight shared places per run, five ore and three gem, of the run's tier (§1).
+- **Chest, per player:** 1 Uncommon (blue) item, at 25 % a Rare (yellow) item, both at the
+  run's level as item level, and a bag of 10 × a kill's coin bag at the run's level. The
+  materials are what its spiders drop in each mob band: 3–5 Raw Silk and, at 50 %, 1–2 Venom
+  Glands at every level; 1–2 Coarse Spider Silk at 21–30, Layered Spider Web at 31–40, Glass
+  Spider Silk at 51–69; 1–2 Venom Sacs at 50 % at 31–40 and always at 41–50.
+- **Balance** (`tools/r71_l20/balance.py`, modelled): up to 60 every level plays as 20 does,
+  a run about 9 minutes. At 61–69 the level malus stretches packs and boss: at 69 a run
+  is about 13.5 minutes, the boss about 4.8, and the tank takes about 2.9 times the
+  damage of level 20 in pools.
 - **Quest:** "Party: The Stilled Seam", from the six guild leaders
   ([quests](quests.md)): kill Flintback once, at any of its levels. The Expedition stays
   repeatable after the turn-in.

@@ -41,6 +41,8 @@ data 342
 - `dig <node>`: a palette node meant to be dug. Every cell of it can be dug in a running Expedition by a player who
   belongs to it, through the ordinary mining path; everything else in the box stays refused for everyone
   (`grug_expeditions/guard.lua`). The mark is by node, so a template keeps its diggable nodes out of its walls.
+  Ore and gem are written as T2's (`catalogue.TEMPLATE_ORE`, `TEMPLATE_GEM`): a run of another tier writes its tier's
+  nodes in their cells and marks those instead (`catalogue.TIERS`, `template.resolve`'s variants, `written(run)`).
 - `place <name> x y z`: a named cell. `arrival` (the cell a player stands in, the start waystone beside it),
   `start_waystone` and `end_waystone` are required; `chest`, `door` and any other name are for the lanes that read them
   through `grug_expeditions.places(run)`.

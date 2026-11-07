@@ -84,8 +84,9 @@ local function prove_mounts(lib, player, heard)
 end
 
 local function prove_digging(lib, player, run, heard)
-	-- Disposable marks: the tiny template has no ore, and its file stays FRAME's.
-	local tpl = E.templates[E.definition(run.expedition).template]
+	-- Disposable marks: the tiny template has no ore, and its file stays FRAME's. The
+	-- run's tier's marks are what the rule reads (Round 71 RANGE).
+	local tpl = E.written(run)
 	tpl.dig[ORE] = true
 	local wall = {rel(run, 4, 6, 10), rel(run, 4, 6, 11), rel(run, 4, 6, 12), rel(run, 4, 6, 13)}
 	for _, pos in ipairs(wall) do core.set_node(pos, {name = ORE}) end
