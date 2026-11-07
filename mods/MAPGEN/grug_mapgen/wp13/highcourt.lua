@@ -619,8 +619,8 @@ local function loader(directory)
 
 		-- 9. The orchards of the open edge, on whatever turf the quarters leave:
 		-- the belt inside the wall and the corners behind the castle and the
-		-- chapel. An apple crown reaches four nodes from a stem the planter
-		-- jitters by one, so x and z stop at 50: no leaf on the precinct ring.
+		-- chapel. An apple crown reaches six nodes from its stem, so a few leaves
+		-- touch the precinct ring from stems at 50; they stay inside the pad.
 		local orchard = 0
 		for _, block in ipairs({{-50, -50, -14, -50, 4, 5},
 				{14, -50, 50, -50, 4, 5}, {-50, -44, -47, -33, 4, 5},
