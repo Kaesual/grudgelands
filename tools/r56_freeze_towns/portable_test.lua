@@ -135,7 +135,7 @@ check(not pcall(templates.sockets, {{id = "b", building = "other"}}, collected()
 -- Round 70 (TOWNS, a declared map reset: the six towns' reworked layouts) the
 -- towns' new values.
 local FROZEN = {
-	hearthpine = {"b3273d20345458ac026409630a5a8c5a1d612a1d0f46acf3db55c14b3bca33f6",
+	hearthpine = {"1e689ab1fee4f0ae36b4f58bd59aad1ef859e81b8dc701bfb635bcf647507c8d",
 		"f7001bfdf74d0f89b7d5ad5697b10a6228fc863d19208baafc7c072207c3ea1b"},
 	dawnmere = {"72e2180154b0dc992a13e34514995f8793fc056e5d0c26f79bded4648ba8998c",
 		"ac96af25b169c03921a61a377ff6aeb1b03ae5aeaec28a4b863e45b1442db92b"},

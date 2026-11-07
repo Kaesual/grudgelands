@@ -113,16 +113,16 @@ do
 	end
 	local spot = bp and destination(bp, "warlord_platform")
 	if check(spot ~= nil, "P Sunscar has the warlord_platform destination") then
-		-- the hall's door at template (7,1,0), placed at x -7, z 14: the
-		-- street in front of it is (0,1,12)
-		local path = T.walker(T.map_of(bp.cells)).search(T.stand(0, 1, 12),
+		-- the hall's door at template (7,1,0), placed at x -7, z 22: the
+		-- street in front of it is (0,1,20)
+		local path = T.walker(T.map_of(bp.cells)).search(T.stand(0, 1, 20),
 			at_feet(spot.x, spot.y, spot.z), false)
 		local by_stair = false
 		for _, st in ipairs(path or {}) do
-			if st.x == 8 and st.z >= 16 and st.z <= 23 and st.s > 1 then by_stair = true end
+			if st.x == 8 and st.z >= 24 and st.z <= 31 and st.s > 1 then by_stair = true end
 		end
 		check(path ~= nil and by_stair,
-			"P from the street up the town's outer stair (x 8, z 16..23) to the platform")
+			"P from the street up the town's outer stair (x 8, z 24..31; Round 70: the hall moved eight north) to the platform")
 	end
 end
 
