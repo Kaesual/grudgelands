@@ -182,7 +182,6 @@ local function add_crop(key, description, item, image)
 		seed = "grug_farming:seed_" .. key,
 		stages = {},
 		stage_count = STAGES,
-		stage_seconds = STAGE_SECONDS,
 		seed_source = item,
 		profile = assert(profiles[key], "grug_farming: missing profile " .. key),
 	}

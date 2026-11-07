@@ -502,14 +502,16 @@ end)
 
 -- An item with on_use never punches (game.cpp, processPlayerInteraction: a usable
 -- item sends INTERACT_USE), so the drop under the crosshair stays on the
--- ground. True when `pointed` is a drop: this press was its pickup attempt, a
--- full inventory included, through the entity's own on_punch.
+-- ground. A pointed drop gets one pickup attempt through the entity's own
+-- on_punch; true when that took some of it, so a drop nothing could be taken
+-- from leaves the press to the item's own use.
 function grug_inventory.pick_up_pointed(player, pointed)
 	local entity = pointed and pointed.type == "object" and pointed.ref and
 		pointed.ref:get_luaentity()
 	if not entity or entity.name ~= "__builtin:item" then return false end
+	local count = ItemStack(entity.itemstring):get_count()
 	entity:on_punch(player)
-	return true
+	return ItemStack(entity.itemstring):get_count() < count
 end
 
 -- Every usable item (hoes, potions, books, ...) picks up what it points at

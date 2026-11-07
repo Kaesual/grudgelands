@@ -639,7 +639,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   potions, elixirs, books, guild consumables) never punches, so the press
   on a dropped item would use the item instead: every `on_use` first hands
   a pointed drop to its pickup (`grug_inventory.pick_up_pointed`), a broken
-  hoe too. That press does nothing else, a full inventory included.
+  hoe too. A press that takes any of the drop does nothing else; one that
+  can take none (a full inventory) goes on to the item's own use.
 - **Consumption and the inactive hotbar layout** (Round 50 ruling 3):
   every consumer keeps its own order and takes from the inactive layout
   last, counting and taking over the same lists

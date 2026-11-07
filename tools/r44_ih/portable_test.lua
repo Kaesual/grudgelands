@@ -868,14 +868,33 @@ do
 	eq(#uses, 0, "use pass: the hoe's own use did not run")
 	before["t:stone"] = (before["t:stone"] or 0) + 3
 	same_census(before, census(p), "hoe pickup")
-	-- A full inventory: the press was the attempt, nothing else happens.
+	-- A partial take counts: the press was the pickup, no use.
+	local partly = new_player("i4", "warrior")
+	fill_list(partly, "main", 1, 32, "t:dirt 99")
+	put(partly, "main", 9, "t:stone 98")
+	pointed, entity = drop("t:stone 3")
+	eq(use(hoe, partly, pointed), nil, "use pass: partial take: the wielded stack alone")
+	eq(count_at(partly, "main", 9), 99, "use pass: partial take: what fits is taken")
+	eq(ItemStack(entity.itemstring):get_count(), 2, "use pass: partial take: the rest stays")
+	eq(#uses, 0, "use pass: partial take: no use")
+	-- A full inventory: nothing could be taken, the press is the item's use.
 	local full = new_player("i2", "warrior")
 	fill_list(full, "main", 1, 32, "t:dirt 99")
+	fill_list(full, BELT, 1, 4, "t:mixture 20")
 	pointed, entity = drop("t:stone 3")
-	eq(use(hoe, full, pointed), nil, "use pass: full inventory: the wielded stack alone")
-	eq(entity.itemstring, "t:stone 3 0", "use pass: full inventory: the drop stays")
-	eq(#uses, 0, "use pass: full inventory: no use either")
+	local through = use(hoe, full, pointed)
+	eq(ItemStack(entity.itemstring):get_count(), 3, "use pass: full inventory: the drop stays")
+	eq(uses[1], "object", "use pass: full inventory: the item's own use runs")
+	eq(through:get_meta():get_string("used"), "1", "use pass: full inventory: its result comes back")
+	-- A potion in hand at a drop nothing can be taken from is drunk, as in 0.69.0.
+	uses = {}
+	put(full, "main", 1, "t:drink 5")
+	pointed = drop("t:stone 3")
+	eq(core.registered_items["t:drink"].on_use(full.inv:get_stack("main", 1), full, pointed):get_count(),
+		4, "use pass: full inventory: a potion in hand is drunk")
+	eq(uses[1], "object", "use pass: full inventory: the potion's own use ran")
 	-- Tilling and every other target go on as before.
+	uses = {}
 	local result = use(hoe, p, {type = "node"})
 	eq(uses[1], "node", "use pass: a node still reaches the hoe's use")
 	eq(result:get_meta():get_string("used"), "1", "use pass: its result comes back")
@@ -899,6 +918,15 @@ do
 	eq(drink(wielded, drinker, pointed), nil, "use pass: no stale stack comes back")
 	eq(count_at(drinker, "main", 1), 7, "use pass: the merge into the wielded stack stays")
 	eq(#uses, 0, "use pass: a potion is not drunk at a drop")
+	-- Partly into the wielded stack itself: taken, and the merge stays.
+	fill_list(drinker, "main", 2, 32, "t:dirt 99")
+	put(drinker, "main", 1, "t:drink 18")
+	pointed, entity = drop("t:drink 5")
+	wielded = drinker.inv:get_stack("main", 1)
+	eq(drink(wielded, drinker, pointed), nil, "use pass: a partial merge: no stale stack")
+	eq(count_at(drinker, "main", 1), 20, "use pass: a partial merge stays")
+	eq(ItemStack(entity.itemstring):get_count(), 3, "use pass: a partial merge: the rest stays")
+	eq(#uses, 0, "use pass: a partial merge is no drink")
 	eq(drink(ItemStack("t:drink 5"), drinker, {type = "nothing"}):get_count(), 4,
 		"use pass: pointing at nothing it drinks")
 end
