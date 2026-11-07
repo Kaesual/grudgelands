@@ -362,7 +362,7 @@ local HALLS = {
 	-- the next capital
 	{"nhal_veyr", "nhal_veyr_mausoleum", "crypt", "crypt_vault"},
 	-- the next capital
-	{"gor_drazhak", "gor_drazhak_warlord_hall", "ors"},
+	{"gor_drazhak", "gor_drazhak_warlord_hall", "ors", "ors"},
 	-- the next capital
 	{"kezamba", "kezamba_kings_hall", "basalt"},
 }
