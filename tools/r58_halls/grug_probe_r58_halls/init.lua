@@ -4,6 +4,10 @@
 -- connects one real client. The driver (character creation, camera, SHOT /
 -- ack handshake) is lane FT's probe's (tools/r51_ft), from lanes LK and TC.
 --
+-- Round 70 lane GUILD added the three other capitals, the check of the
+-- Stonewright's work bay (every machine cell once, the furnace turned with the
+-- house, the emitter cell) and a shot of it, by day and in the dark.
+--
 -- Per capital: the hall's sockets from the registry (capital_services.lua
 -- GUILD_HALL: the leader at the back, the porter in the forecourt), an
 -- emerged box round them (a region, never the world), then
@@ -27,6 +31,9 @@ local CAPITALS = {
 	{key = "dur_brannoc", guild = "charter"},
 	{key = "gor_drazhak", guild = "oathdelvers"},
 	{key = "lethariel", guild = "charter"},
+	{key = "highcourt", guild = "charter"},
+	{key = "nhal_veyr", guild = "oathdelvers"},
+	{key = "kezamba", guild = "oathdelvers"},
 }
 local HALL = dofile(core.get_modpath("grug_mapgen") .. "/wp13/capital_services.lua").GUILD_HALL
 local TIERS = {"default:stone", "grug_materials:t2_stone", "grug_materials:t3_stone",
@@ -110,6 +117,34 @@ local function survey(hall)
 		z = hall.porter.z + az * 3}
 	SHOTS[#SHOTS + 1] = {name = key .. "_inside", pos = inside,
 		yaw = yaw_to(inside, hall.leader), pitch = 8}
+	-- the Stonewright's work bay: every machine cell once, around his socket
+	local wright, entry = socket_pos(key, HALL.stonewright)
+	if not wright then
+		log("CHECK " .. key .. ": no Stonewright socket (MISSING)")
+		return
+	end
+	local cells, missing, param2 = 0, 0, nil
+	for _, machine in ipairs({"grinder", "furnace"}) do
+		for x = 0, 1 do
+			for y = 0, machine == "furnace" and 2 or 1 do
+				for z = 0, 1 do
+					local name = ("grug_guild:stonewright_%s_%d_%d_%d"):format(machine, x, y, z)
+					local found = core.find_nodes_in_area(vector.subtract(wright, 8),
+						vector.add(wright, 8), {name})
+					if #found == 1 then cells = cells + 1 else missing = missing + 1 end
+					if found[1] then param2 = core.get_node(found[1]).param2 end
+				end
+			end
+		end
+	end
+	log(("CHECK %s: Stonewright socket role %s at %s, machine cells %d of 20, missing %d, " ..
+		"facedir %s (%s)"):format(key, tostring(entry.role), core.pos_to_string(wright), cells,
+		missing, tostring(param2), cells == 20 and entry.role == "stonewright" and "ok" or "MISSING"))
+	-- from the aisle (four toward the yard), at eye height
+	local bay = {x = wright.x + side.x * 4, y = wright.y + 1.6, z = wright.z + side.z * 4}
+	SHOTS[#SHOTS + 1] = {name = key .. "_bay", pos = bay, yaw = yaw_to(bay, wright), pitch = 8}
+	SHOTS[#SHOTS + 1] = {name = key .. "_bay_night", pos = bay, yaw = yaw_to(bay, wright),
+		pitch = 8, time = 0}
 end
 
 ---------------------------------------------------------------------------
@@ -207,7 +242,7 @@ core.register_globalstep(function(dtime)
 			core.request_shutdown("probe done", false, 0)
 			return
 		end
-		core.set_timeofday(TIME_OF_DAY)
+		core.set_timeofday(shot.time or TIME_OF_DAY)
 		hold(player, shot)
 		hide_hud(player)
 		state.waited = state.waited + step

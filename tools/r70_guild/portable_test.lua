@@ -7,7 +7,8 @@
 --    no recipe gives more than it takes, one key per number.
 -- B. The blocks and machines: five full cubes like cut stone with a tier, no
 --    crafting recipe, 20 undiggable machine cells with the art's boxes and
---    tiles, four animated hearth faces at light 8, one furnace loop emitter.
+--    tiles, four animated hearth faces at light 8, one furnace loop emitter;
+--    every picked PNG ships, Thread wears its icon.
 -- C. Prices: an ornamented stone is priced by its recipe, the load audit
 --    (output <= inputs) passes, the conversions do not print money; no
 --    fee-free route.
@@ -166,6 +167,25 @@ for machine, list in pairs(cells) do
 	end
 	check(machine ~= "", "B " .. machine)
 end
+local function shipped(path)
+	local handle = io.open(repo .. "/" .. path, "rb")
+	if handle then handle:close() end
+	return handle ~= nil
+end
+for _, list in pairs(cells) do
+	for _, cell in ipairs(list) do
+		for _, tile in ipairs(cell.tiles) do
+			check(shipped("mods/PLAYER/grug_guild/textures/" .. tile.name), "B " .. tile.name .. " ships")
+		end
+	end
+end
+for _, row in ipairs(C.ORNAMENTED) do
+	check(shipped("mods/PLAYER/grug_guild/textures/grug_guild_" .. row.id .. ".png"),
+		"B " .. row.id .. "'s face ships")
+end
+eq(game.items["grug_professions:thread"].inventory_image, "grug_professions_thread.png",
+	"B Thread has its own icon")
+check(shipped("mods/ITEMS/grug_professions/textures/grug_professions_thread.png"), "B the icon ships")
 eq(hearth, 4, "B four hearth cells at light 8")
 eq(animated, 4, "B four animated faces")
 local ambience = dofile(repo .. "/mods/CORE/grug_ambience/data.lua")
