@@ -129,6 +129,8 @@ Lane D expands this list.
 - 10 minutes with nobody inside releases the slot; a late login goes home.
 - Both waystones lead to the capital; Return Home works inside.
 - Mobs have the chosen level; their drops and the chest match it.
+- Engaging one mob pulls the whole pack; it never gives up, and the players stay in
+  combat. After a wipe a partly killed pack refills; a dead pack stays dead.
 - Death respawns at the start waystone; building and mounts are refused.
 - The boss opens the reward room; each player sees their own chest.
 - The end waystone returns to the capital. A new run finds the planned layout.

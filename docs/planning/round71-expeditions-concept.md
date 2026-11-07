@@ -25,7 +25,11 @@ Plans: [Round 71](round71-plan.md), [Round 70](round70-plan.md). Round 70 §2.10
   coordinator, 2026-11-07). Several y levels stay out for now; the template format
   stays 3D.
 - First set: levels 20, 30, 40, 50 and 60.
-- Mobs do not respawn. What is dead stays dead.
+- **Packs (user, 2026-11-07):** a pack is pulled whole: engaging one mob pulls all of
+  it. Normal de-aggro does not apply: a pulled pack never gives up, and players stay in
+  combat until the pack is dead or they leave the Expedition. If the pack leaves combat
+  because all its players are dead or gone, it returns and its dead mobs respawn at
+  once. A fully dead pack stays dead; nothing else respawns.
 - **Maximum players inside:** 3 at levels 20 and 30, 4 at levels 40–60. Fewer are
   always allowed. Entering takes a place; only leaving the party frees it, so a
   larger party is full after the first 3–4 entries.

@@ -51,7 +51,8 @@ marked nodes stay the only source.
 | **5 · Store** | Personal reward chest, six resource nodes and end waystone. No mobs. | Loot, share the mining and return to the capital. |
 
 Total: **12 normal spiders, 3 elite golems and 1 boss**. Separate the packs
-so they can be fought individually. Mobs never respawn. Death returns
+so they can be fought individually. A pack is pulled whole and never gives up;
+after a wipe its dead mobs respawn, and only a fully dead pack stays dead (concept §2). Death returns
 players to room 0 with Round 70's penalty; the cleared walk back stays open
 during the boss fight. No building, mounts, flying or block-placement puzzle.
 Only marked ore and gems can be dug; all other geometry is indestructible.
@@ -158,8 +159,8 @@ Grounding: [guild and its voice](../design/miners_guild.md),
 - **Who opens the chest:** kill credit follows damage and healing, never party
   membership, and a member can enter after the kill. Everyone of the owner who has
   entered this run opens their own inventory once.
-- **A full wipe:** evading heals a mob. Flintback resets to full health, dead
-  packs stay dead, and the run goes on.
+- **A full wipe:** Flintback resets to full health, a partly killed pack refills,
+  fully dead packs stay dead, and the run goes on.
 - **Names:** Flintback stays, beside Drava Flintshoulder.
 - **Golems:** they drop no ore or gems here (see "Route and encounters").
 - **Payout:** start with eight nodes and the weight-4 quest. L20 should
