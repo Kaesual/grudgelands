@@ -1163,6 +1163,11 @@ the families `UNDERGROUND_MOBS` admits) and the water rows (Kraken,
 Reed Angelfish, Bay and Abyssal Shark, Tide Goby). Every other surface row registers no ABM, the Shore Crab's
 and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
 (§4.2), the Reef Lurker only as its 51–60 shore sub-type.
+
+**The Expedition slots** (Round 71, the user's ruling): no natural mob spawns over
+the slot field plus 320 nodes on every side, at any y, the water rows included, so
+that no random mob's nametag shows through an Expedition's wall. `grug_expeditions`
+sets the rectangle (`grug_mobs.set_spawn_free_field`).
 Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
 
 **Registered but placed nowhere** (open questions, [BACKLOG "Audit 2026-10

@@ -41,6 +41,9 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   arrival validated, then released. A Claim Stone's cube is read before the
   teleport (its blocks are loaded, `core.load_area`), so nobody lands in a
   blocked cube.
+- A death inside a running Expedition respawns at its start waystone, held like any
+  respawn (`grug_home.register_respawn_home`, filled by `grug_expeditions/guard.lua`).
+  A run that ended meanwhile hands the respawn back to the home.
 - **A respawn always ends somewhere, held until then** (Round 69). A blocked or
   unprepared Claim Stone goes on to the innkeeper, a failed or timed-out
   innkeeper to the starting town's saved start pocket, with a message. A claim

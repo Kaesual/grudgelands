@@ -8,10 +8,10 @@ local HINT = "Expedition – protected"
 
 -- No natural mob spawns over the whole slot field, at any y: nobody may see a
 -- random mob's nametag through a wall. An ABM spawns within 80 nodes of a player
--- (active_block_range 4), so nothing spawns for a player in a box. A client sees
--- objects to about 144 nodes (active_object_send_range_blocks 8, plus the block),
--- so a mob spawned for someone out at sea must first walk 176 nodes through that
--- player's active blocks, at the idle pace of 2.5 at most, within its 180 s life.
+-- (active_block_range 4), so nothing spawns for a player in a box. A client gets
+-- objects within 128 nodes (active_object_send_range_blocks 8), so a mob spawned
+-- for someone out at sea must first walk 192 nodes, inside that player's active
+-- blocks, at the idle pace of 2.5 at most, within its 180 s life.
 local SPAWN_MARGIN = 320
 local first = M.slot_box(1)
 local _, last = M.slot_box(M.catalogue.SLOTS)
