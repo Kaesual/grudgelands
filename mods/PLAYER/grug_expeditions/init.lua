@@ -84,6 +84,7 @@ core.register_on_mods_loaded(function()
 end)
 
 assert(loadfile(path .. "/runs.lua"))(catalogue, preparation)
+dofile(path .. "/guard.lua")
 
 -- The two stones inside: the capital's waystone in look, the way back in function.
 core.register_node("grug_expeditions:waystone", {
