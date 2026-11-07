@@ -634,7 +634,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   instead of dropping (purchases, the Claim Stone, station results) says
   the inventory is full only when the whole inventory is. Quest rewards
   are the one source with their own all-or-nothing settlement: they follow
-  this order but never land on the belt (or the inactive layout).
+  this order, belt first included, after the hand-in's items are taken.
 - **A usable item picks up drops** (Round 70). An item with `on_use` (hoes,
   potions, elixirs, books, guild consumables) never punches, so the press
   on a dropped item would use the item instead: every `on_use` first hands
@@ -747,8 +747,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   bag is always empty.
 - **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
   elixirs only (group `grug_potion`), created for every player; filled here
-  by hand and first of all by the give helper (Round 70: crafted, picked
-  up, looted, bought or mailed, above) and drunk from the quickbar (below).
+  by hand and first of all by the give order (Round 70: crafted, picked
+  up, looted, bought, mailed or a quest reward, above) and drunk from the
+  quickbar (below).
 - **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn under the
   equipment slots in the Character page's gear box with the arrow total
   beside it. There is
