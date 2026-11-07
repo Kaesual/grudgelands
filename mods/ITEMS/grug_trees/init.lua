@@ -193,7 +193,7 @@ core.register_node("grug_trees:gravewood_wood", {
 
 -- Decoration a player can carry (Round 70, round70-plan.md §2.3): the same
 -- tooltip line and group as grug_nodes' plants (grug_nodes/plants.lua, which
--- loads later). Decaying leaves and hanging plants still drop nothing: leaf
+-- loads later; tools/r70_plants checks the line). Decaying leaves and hanging plants still drop nothing: leaf
 -- decay skips a drop that is one of its own leaves.
 local function decor_description(description, how)
 	return description .. "\nDecoration: no recipe uses it.\n" .. how

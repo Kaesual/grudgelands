@@ -41,8 +41,13 @@ return function(engine, directory, nodes, gathering)
  -- replaced, while the special tile grows upward through source water. The
  -- bed wears the sand's world-aligned 32 px tile (grug_nodes, Round 51).
  local ROOTED="Plant it in a sand bed under water."
+ -- The tooltip of a carried plant, the same line as grug_nodes/plants.lua and
+ -- grug_trees (tools/r70_plants checks all of them).
+ local function decor_description(description,how)
+  return description.."\nDecoration: no recipe uses it.\n"..how
+ end
  engine.register_node(catalog.freshwater[2], {
-  description=nodes.decor_description("Freshwater Waterweed",ROOTED),
+  description=decor_description("Freshwater Waterweed",ROOTED),
   drawtype="plantlike_rooted",
   waving=0,
   tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
@@ -82,7 +87,7 @@ return function(engine, directory, nodes, gathering)
   local image="grug_mapgen_seagrass_"..index.."_anim.png"
   local carried=index==1
   engine.register_node(name, {
-   description=carried and nodes.decor_description("Seagrass",ROOTED) or "Seagrass",
+   description=carried and decor_description("Seagrass",ROOTED) or "Seagrass",
    drawtype="plantlike_rooted",
    waving=0,
    tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
@@ -312,7 +317,7 @@ return function(engine, directory, nodes, gathering)
  -- It drops itself and a player places it on source water (Round 70,
  -- round70-plan.md §2.3).
  engine.register_node(catalog.freshwater[1], {
-  description=nodes.decor_description("Freshwater Waterlily","Place it on open water."),
+  description=decor_description("Freshwater Waterlily","Place it on open water."),
   drawtype="nodebox",
   paramtype="light",
   paramtype2="facedir",

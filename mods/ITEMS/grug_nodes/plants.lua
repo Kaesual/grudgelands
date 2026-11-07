@@ -15,11 +15,11 @@
 -- by the two functions below.
 
 -- The tooltip of a carried plant: its name, the one decoration line and how
--- it is placed. grug_trees writes the same line (it loads first).
-function grug_nodes.decor_description(description, how)
+-- it is placed. grug_trees and grug_mapgen's world_nodes.lua write the same
+-- line (tools/r70_plants checks all of them).
+local function decor_description(description, how)
 	return description .. "\nDecoration: no recipe uses it.\n" .. how
 end
-local decor_description = grug_nodes.decor_description
 
 local ON_GROUND = "Plant it on the ground."
 local AS_BLOCK = "Place it like a block."

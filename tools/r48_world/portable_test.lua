@@ -49,8 +49,7 @@ do
 		engine.registered_nodes[palette.floor] = {tiles = {"fixture_wood.png"}}
 	end
 	dofile(repo .. "/mods/MAPGEN/grug_mapgen/world_nodes.lua")(engine,
-		repo .. "/mods/MAPGEN/grug_mapgen", {crop_visual = function() return {} end,
-			decor_description = function(description) return description end},
+		repo .. "/mods/MAPGEN/grug_mapgen", {crop_visual = function() return {} end},
 		{source_can_dig = function() return function() end end})
 	_G.default = saved_default
 	local def = defs[MAILBOX]
