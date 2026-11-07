@@ -29,7 +29,11 @@ Plans: [Round 71](round71-plan.md), [Round 70](round70-plan.md). Round 70 §2.10
   it. Normal de-aggro does not apply: a pulled pack never gives up, and players stay in
   combat until the pack is dead or they leave the Expedition. If the pack leaves combat
   because all its players are dead or gone, it returns and its dead mobs respawn at
-  once. A fully dead pack stays dead; nothing else respawns.
+  once. A fully dead pack stays dead; nothing else respawns. A dead player leaves the
+  pack's list, and a player back at the start waystone is not hunted. Waystones and
+  Return Home stay refused in combat, so a pulled pack ends in a win, a death or a
+  logout. A mob left behind jumps after its player, because a mob in an inactive block
+  would otherwise hold them in combat for ever.
 - **Maximum players inside:** 3 at levels 20 and 30, 4 at levels 40–60. Fewer are
   always allowed. Entering takes a place; only leaving the party frees it, so a
   larger party is full after the first 3–4 entries.
@@ -87,7 +91,10 @@ Plans: [Round 71](round71-plan.md), [Round 70](round70-plan.md). Round 70 §2.10
   entered within 10 minutes. An offline member does not count.
 - After those 10 minutes the Expedition ends. Nobody can enter any more and the slot
   is free again.
-- A player who logs in after their Expedition ended goes straight home.
+- **Logging out inside counts as a death (user, 2026-11-07),** with the penalty, and
+  takes the player off the pack's list. At the next login the player stands at the start
+  waystone if the Expedition still belongs to them, otherwise in the capital they came
+  from.
 - A server restart ends every Expedition, which falls under the login rule above.
 
 ## 5. Slots and preparation
