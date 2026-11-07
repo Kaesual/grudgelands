@@ -70,6 +70,20 @@ function S.save_sent(name, sent)
 	storage:set_string("sent:" .. name, #sent > 0 and core.serialize(sent) or "")
 end
 
+-- Who hears that a whole list was written (grug_bridge, 0.69.1): func(list)
+-- after the write, for the kinds "tickets" and "broadcasts". Every change of
+-- those lists ends in their save below, the pruning at a read included. The
+-- list is the caller's: never written to, never kept.
+local saved_callbacks = {tickets = {}, broadcasts = {}}
+
+function S.register_on_saved(kind, func)
+	table.insert(saved_callbacks[kind], func)
+end
+
+local function run_saved(kind, list)
+	for _, func in ipairs(saved_callbacks[kind]) do func(list) end
+end
+
 function S.tickets()
 	local tickets = load("tickets") or {}
 	if M.prune(tickets, now()) > 0 then S.save_tickets(tickets) end
@@ -78,6 +92,7 @@ end
 
 function S.save_tickets(tickets)
 	save("tickets", tickets)
+	run_saved("tickets", tickets)
 end
 
 function S.broadcasts()
@@ -88,6 +103,7 @@ end
 
 function S.save_broadcasts(broadcasts)
 	save("broadcasts", broadcasts)
+	run_saved("broadcasts", broadcasts)
 end
 
 --

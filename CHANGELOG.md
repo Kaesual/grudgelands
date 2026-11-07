@@ -12,6 +12,18 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.69.1 — the web bridge (2026-11-07)
+
+For server hosts. Compatible: no migration, no map reset. Nothing changes for
+players on a world without the bridge's settings.
+
+- **Web bridge:** the new mod `grug_bridge` lets the hosting platform's website
+  administer a running realm: who is online, kick, name bans, public chat, the
+  admin mail and fixed actions (money, XP, items, privileges for online
+  characters). A player sees a line in the message feed when an administrator
+  gives them money or an item. The mod does nothing until the host sets its
+  [settings](docs/technical/web-bridge.md#settings).
+
 ## 0.69.0 — a Trash box, respawn at home, exact skill numbers and new camp sites (2026-11-04)
 
 Players' reports and wishes. **Migration** needed: the server's host runs the

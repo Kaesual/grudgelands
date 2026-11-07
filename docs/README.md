@@ -18,6 +18,7 @@ reading every development round.
 | How are forms styled without changing their mechanisms? | [UI presentation toolkit](technical/ui-presentation.md), [implementation plan](planning/ui-modernization-plan.md) |
 | Which mod owns a concern? | [Mod ownership map](technical/mod-map.md) |
 | What does a realm website read, and in which format? | [Module guide, "Player meta read by external tools"](technical/module-guide.md#player-meta-read-by-external-tools), [web data export](../tools/web_data/README.md) |
+| How does the hosting platform's website administer a running realm? | [Web bridge](technical/web-bridge.md) (the wire contract), [module guide](technical/module-guide.md#web-bridge) |
 | How does a world survive a version upgrade? | [Upgrade contract](technical/upgrade-contract.md) (release mode, the declaration, the map reset, migrations and the tool) |
 | Which implementation seam or pitfall matters? | [Module guide](technical/module-guide.md), [Lua rules](technical/luanti-lua.md), [upstream workarounds](technical/upstream-workarounds.md) |
 | Why was something decided or how was it tested? | [Research and historical evidence](research/README.md) |
