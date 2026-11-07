@@ -17,8 +17,10 @@
 --             authority (vegetation_density.lua `categories`) accepts: the
 --             habitat, the shore rule and the claim exclusions;
 --   written   source nodes the writer left in the chunks;
---   outside   written nodes the renewal authority does not accept there.
---             Writer and renewal read one rule, so this stays 0.
+--   outside   written nodes the renewal authority does not accept there, each
+--             named on stderr with its reason. Writer and renewal read one
+--             habitat, so only `writer_bare` columns may land here (a few on
+--             the two islands, on the base too: renewal keeps off them).
 --
 -- --part I/N takes every N-th chunk (a seed's run split over processes; add
 -- the parts with tools/r70_spawn/table.py). --estimate K writes K evenly
@@ -204,11 +206,14 @@ local function count(target, zone, field)
 	row[field] = row[field] + 1
 end
 local function accepted(key, x, y, z, support)
-	local categories = density.categories(x, y, z, support, 15)
-	if not categories then return false end
-	for c = 1, #categories do
-		if categories[c].class == "resource" and categories[c].key == key then return true end
+	local categories, reason = density.categories(x, y, z, support, 15)
+	if categories then
+		reason = "no such category"
+		for c = 1, #categories do
+			if categories[c].class == "resource" and categories[c].key == key then return true end
+		end
 	end
+	io.stderr:write(("outside: %s at %d,%d,%d on %s: %s\n"):format(key, x, y, z, support, reason))
 	return false
 end
 local cid_target = {}
