@@ -8,11 +8,13 @@ import base64
 from collections import deque
 import importlib.util
 import hashlib
+import io
 import json
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import light
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -114,35 +116,37 @@ class Castle:
             self.fill(x,17,z0,x,y-1,z0,role('signature'))
             self.fill(x,17,z1,x,y-1,z1,role('signature'))
         self.fill((x0+x1)//2,eave+half//2+1,z0,(x0+x1)//2,eave+half//2+1,z1,role('roof_ridge'))
-    def portal(self,z,doors=False):
-        # Six open lanes under a high arch, with a genuine paired door in the centre.
-        self.fill(19,3,z,25,8,z,'node air')
+    def portal(self,z):
+        # Seven open lanes. This is an arch, with no non-closing door leaves.
+        self.fill(19,3,z,25,8,z,'.')
         for x in (18,26): self.fill(x,3,z,x,8,z,role('signature'))
         self.fill(19,9,z,25,9,z,role('signature'))
         self.fill(20,10,z,24,10,z,role('castle_wall'))
-        for x,variant,face in (((21,'_a',2),(22,'_b',2)) if doors else ()):
-            self.put(x,3,z,'role door variant='+variant+f' o=facedir:{face}')
-            self.put(x,4,z,role('door_hidden',face if variant=='_a' else (face+3)%4))
     def throne(self):
         # Full-width shallow steps, then a flat dais with two side approaches.
         self.fill(15,3,25,29,3,31,role('castle_paving'))
         self.fill(15,4,26,29,4,31,role('castle_paving'))
-        self.fill(15,3,25,29,3,25,role('castle_wall_stair',0))
-        self.fill(15,4,26,29,4,26,role('castle_wall_stair',0))
-        self.fill(20,4,27,24,4,28,role('rug_accent'))
-        # Seven-wide back with a nine-node crown: stock stone and shaped palette nodes.
-        for x in range(19,26):
-            top=9+(3-abs(x-22))
-            self.fill(x,5,30,x,top,30,role('signature'))
-            self.put(x,top+1,30,role('signature_slab'))
-        self.fill(21,6,30,23,7,30,role('rug_accent'))
-        self.fill(20,5,29,24,5,29,role('signature'))
-        self.fill(21,5,29,23,5,29,role('rug_accent'))
+        self.fill(15,3,25,29,3,25,role('signature_stair',0))
+        self.fill(15,4,26,29,4,26,role('signature_stair',0))
+        # A freestanding, bronze-framed chair, not masonry against the wall.
+        # Raise the deep seat above the approach eye line. Its back is inset cloth;
+        # the open gaps under the arms make the seat/back/arm silhouette explicit.
+        bronze=node('grug_materials:bronze_block')
+        cap=node('grug_materials:slab_bronze_block')
+        self.fill(19,5,28,25,5,30,bronze)
+        self.fill(20,6,28,24,6,29,role('rug_accent'))
+        self.fill(19,6,30,25,12,30,bronze)
+        self.fill(20,7,30,24,11,30,role('rug_accent'))
         for x in (19,25):
-            self.fill(x,5,28,x,6,29,role('signature'))
-            self.fill(x,7,28,x,7,29,role('signature_slab'))
+            self.fill(x,6,28,x,8,28,bronze)
+            self.fill(x,8,29,x,8,29,bronze)
+            self.fill(x,9,28,x,9,29,cap)
+            self.put(x,13,30,cap)
         for x,metal in zip(range(20,25),ORNAMENTS):
-            self.put(x,8,30,node('grug_guild:ornamented_'+metal))
+            self.put(x,12,30,node('grug_guild:ornamented_'+metal))
+            self.put(x,13,30,cap)
+        self.fill(21,13,30,23,13,30,bronze)
+        self.put(22,14,30,cap)
         for x in (18,26):
             self.fill(x,5,30,x,9,30,role('castle_wall'))
             self.put(x,10,30,'role light_beacon else=LAMP')
@@ -153,13 +157,13 @@ def composition(form):
     c=Castle()
     c.fill(0,0,0,44,2,34,role('foundation'))
     c.fill(2,2,2,42,2,32,role('castle_paving'))
-    c.fill(19,1,0,25,2,1,'node air')
+    c.fill(19,1,0,25,2,1,'.')
     c.fill(19,1,1,25,1,1,role('castle_paving'))
     # A recessed woven runner never adds a collision step.
     c.fill(19,2,2,25,2,24,role('rug'))
     c.fill(20,2,2,24,2,24,role('rug_accent'))
-    c.fill(19,1,1,25,1,1,role('castle_wall_stair',0))
-    c.fill(19,2,2,25,2,2,role('castle_wall_stair',0))
+    c.fill(19,1,1,25,1,1,role('signature_stair',0))
+    c.fill(19,2,2,25,2,2,role('signature_stair',0))
     for z in (10,23): c.fill(19,2,z,25,2,z,role('signature'))
     c.ring(0,0,44,34,3,6,role('castle_wall'))
     c.ring(1,1,43,33,3,5,role('castle_wall'))
@@ -182,7 +186,7 @@ def composition(form):
         for x in (0,40): c.tower(x,30,x+4,34,33)
         c.roof(4,8,40,32,18)
         c.tower(16,0,28,6,18)
-        c.fill(17,3,1,27,8,6,'node air')
+        c.fill(17,3,1,27,8,6,'.')
     elif form=='high_seat':
         for x in (0,37): c.tower(x,0,x+7,7,17)
         c.ring(4,8,40,32,17,23,role('signature'))
@@ -190,18 +194,18 @@ def composition(form):
             for z in (12,18,24,29): c.fill(x,18,z-1,x,21,z+1,node('default:glass'))
         # Continuous roof transition rings; no upper playable floors.
         c.fill(4,24,8,40,24,32,role('roof_ridge'))
-        c.fill(10,24,12,34,24,29,'node air')
+        c.fill(10,24,12,34,24,29,'.')
         c.ring(9,11,35,30,24,30,role('signature'))
         for z in (11,30):
             for x in (13,18,23,28,32): c.fill(x,26,z,x,28,z,node('default:glass'))
         c.fill(9,31,11,35,31,30,role('roof_ridge'))
-        c.fill(17,31,16,27,31,25,'node air')
+        c.fill(17,31,16,27,31,25,'.')
         c.ring(16,15,28,26,31,35,role('signature'))
         for x in range(18,27,2): c.fill(x,32,15,x,34,15,node('default:glass'))
         c.fill(16,36,15,28,36,26,role('roof_ridge'))
         c.battlement(16,15,28,26,37)
         c.tower(16,0,28,6,20)
-        c.fill(17,3,1,27,8,6,'node air')
+        c.fill(17,3,1,27,8,6,'.')
     elif form=='gate_crown':
         for x in (6,30): c.tower(x,0,x+8,7,34)
         c.fill(15,12,0,29,12,7,role('castle_paving'))
@@ -215,11 +219,10 @@ def composition(form):
     else: raise ValueError(form)
     # Enclosed foyer ceiling and side service pockets. Lower than the throne room.
     c.fill(2,10,2,42,10,7,role('ceiling'))
-    for z in (0,1,8): c.portal(z,doors=z==8)
-    # A broad arch above a pair of doors: the side aisles stay open for a group.
-    for x in (4,40): c.fill(x,3,19,x,6,21,'node air')
+    for z in (0,1,8): c.portal(z)
+    for x in (4,40): c.fill(x,3,19,x,6,21,'.')
     for x in (6,38):
-        for z in (14,20): c.put(x,3,z,role('seat',1 if x==6 else 3))
+        for z in (14,20): c.put(x,3,z,role('seat',3 if x==6 else 1))
     # Static placed lamps, with supports. No flame, timer or construction callback.
     for x in (5,39):
         for z in (11,17,23,29):
@@ -232,7 +235,15 @@ def composition(form):
     for z in (13,21):
         c.fill(4,12,z,40,12,z,role('beam'))
         for x in (13,22,31): c.put(x,11,z,'role light_beacon else=LAMP')
+    for z in (17,26):
+        c.fill(4,9,z,40,9,z,role('beam'))
+        for x in (7,12,17,22,27,32,37): c.put(x,8,z,'role light_beacon else=LAMP')
     c.throne()
+    # The rear light brackets stop beside the throne's sightline. The seventh
+    # rear light is flush with the dais under the king, not across the chair.
+    c.fill(18,9,26,26,9,26,'.')
+    c.put(22,8,26,'.')
+    c.put(22,4,27,'role light_beacon else=LAMP')
     return c
 
 
@@ -245,12 +256,13 @@ def template(form,race):
     m.head=[f'# Round 70 {form}; generated by tools/r70_castle/build.py.', 'name '+m.name,
             'pivot 45 35','origin 0 0 0',f'size 45 {peak+1} 35','cell 1',
             f'meta extent=[0,0,44,34] peak={peak} top={peak}','races '+race]
-    entries=sorted(set(c.cells.values())|{node('grug_materials:emberglass_lamp')}); assert len(entries)<=len(tplfile.ALPHABET)
+    entries=sorted((set(c.cells.values())-{'.'})|{node('grug_materials:emberglass_lamp')}); assert len(entries)<=len(tplfile.ALPHABET)
     keys={e:tplfile.ALPHABET[i] for i,e in enumerate(entries)}
     m.legend=[[keys[e],e.replace('else=LAMP','else='+keys[node('grug_materials:emberglass_lamp')])] for e in entries]
     m.layers=[[''.join(keys.get(c.cells.get((x,y,z)),'.') for x in range(45))
                for z in range(35)] for y in range(peak+1)]
-    m.points=[['doors',22,1,0,'face=2 id=approach'],['doors',21,3,8,'face=2 id=great_door'],
+    m.points=[['doors',22,1,0,'face=2 id=approach'],['doors',22,3,8,'face=2 id=hall_arch'],
+              ['doors',4,3,20,'face=3 id=service_west'],['doors',40,3,20,'face=1 id=service_east'],
               ['inside',22,3,12,'id=hall'],['room_corner',5,2,9,f'top={23 if form=="high_seat" else 16} closed=true id=hall'],
               ['room_corner',39,2,31,'']]
     m.points += [['sockets',x,y,z,f'face={f} id={key} role={r}{tags}'] for key,x,y,z,f,r,tags in SOCKETS]
@@ -276,6 +288,11 @@ def standing(cells,registry,p):
 def validate(text,path,palettes,registry):
     GATE.parse_template(text,str(path),path.stem)
     t=T.parse_template(str(path),text)
+    palette_roles,palette_nodes=GATE.editor_palette(ROOT)
+    pending={'grug_guild:ornamented_'+m for m in ORNAMENTS}
+    for entry in t.legend.values():
+        assert ((entry['kind']=='role' and entry['name'] in palette_roles) or
+                (entry['kind']=='node' and entry['name'] in palette_nodes|pending)), entry
     assert t.pivot==(45,35) and t.origin==(0,0,0) and t.size[0::2]==(45,35)
     cells,bad=T.resolved_cells(t,T.resolve(t,palettes,capital_binding(palettes,t.races[0])),palettes)
     assert not bad,bad
@@ -284,12 +301,10 @@ def validate(text,path,palettes,registry):
         assert n in registry or n=='air',n
         assert 0<=x<=44 and 0<=z<=34 and 0<=y<=38
         if n=='air': continue
+        assert not n.startswith('doors:'), 'open arches must have no door leaves'
         assert registry[n].get('liquidtype','none')=='none'
         assert not any(s in n for s in ('chest','furnace','fire:','water','lava','torch','candle','lantern'))
         assert not registry[n].get('groups',{}).get('falling_node')
-        if n.startswith('doors:door_'):
-            assert cells[x,y+1,z][0]=='doors:hidden'
-            assert cells[x,y+1,z][1]==(p2 if n.endswith('_a') else (p2+3)%4)
     actual=[(dict(p['attrs'])['id'],p['x'],p['y'],p['z'],p['face'],dict(p['attrs'])['role'])
             for p in t.points if p['group']=='sockets']
     assert actual==[s[:6] for s in SOCKETS],actual
@@ -297,6 +312,16 @@ def validate(text,path,palettes,registry):
     old_points=[(p['group'],p['face'],p['attrs']) for p in old.points if p['group']=='sockets']
     new_points=[(p['group'],p['face'],p['attrs']) for p in t.points if p['group']=='sockets']
     assert old_points==new_points, 'socket identity/order/face/role/tags changed'
+    assert 'node air' not in text, 'force-air cells must use the reserved dot'
+    for z,y,xs in ((1,1,range(19,26)),(2,2,range(19,26)),
+                   (25,3,range(15,30)),(26,4,range(15,30))):
+        for x in xs:
+            n,p2=cells[x,y,z]
+            assert p2==0 and registry[n].get('groups',{}).get('stair')
+            assert not any(s in n for s in ('wall','fence','gate')), n
+    for x in (4,40):
+        assert any(p['group']=='doors' and (p['x'],p['y'],p['z'])==(x,3,20) for p in t.points)
+    assert all(cells[x,y,8][0]=='air' for x in range(19,26) for y in range(3,9))
     start=(22,1,0); assert standing(cells,registry,start)
     seen={start}; queue=deque([start])
     while queue:
@@ -319,7 +344,9 @@ def validate(text,path,palettes,registry):
     hall={(x,z) for x,y,z in seen if 5<=x<=39 and 9<=z<=31 and y==floor_feet(x,z)}
     assert len(hall)>684,(path,len(hall))
     assert all((x,3,z) in seen for x in range(8,37) for z in range(10,25)), 'battle rectangle'
-    return t,cells,{'hall_gross':805,'hall_reachable':len(hall),'clear_battle_rectangle':'29 x 15 = 435',
+    bank=light.propagate(cells,registry)
+    lighting=light.measure(bank,[(x,floor_feet(x,z)+1,z) for x,z in sorted(hall)],(22,6,27))
+    return t,cells,{'hall_gross':805,'hall_reachable':len(hall),'night_light':lighting,'clear_battle_rectangle':'29 x 15 = 435',
                     'reachable_total_columns':len({(x,z) for x,y,z in seen if y== (z+1 if 19<=x<=25 and z<=1 else floor_feet(x,z))}),
                     'peak':t.meta['peak'],'sockets':actual}
 
@@ -400,10 +427,10 @@ def current(palettes,race):
 
 
 def render_digest(payload,key):
-    content={'scene':payload['scenes'][key],'types':payload['types'],
+    content={'scene':payload['scenes'][key],'types':payload['types'],'light_nodes':payload['light_nodes'],
              'textures':payload['textures'],'meshes':payload['meshes']}
     h=hashlib.sha256(json.dumps(content,sort_keys=True,separators=(',',':')).encode())
-    for p in (HERE/'render.py',HERE/'geometry.js',VIEWER/'renderer.js',HERE.parent/'r69_camp_art/render.py'):
+    for p in (HERE/'render.py',HERE/'light.py',HERE/'geometry.js',VIEWER/'renderer.js',HERE.parent/'r69_camp_art/render.py'):
         h.update(p.read_bytes())
     return h.hexdigest()
 
@@ -423,7 +450,9 @@ def page(scenes,registry,aliases,check,metrics):
     types,report=V.build_types(names,registry,aliases,tex,meshes)
     assert not report['skipped'] and not report['missing_mesh'] and not tex.missing,(report,tex.missing)
     payload={'scenes':packed,'types':types,'textures':tex.images,'meshes':meshes,'forms':FORMS,
-             'races':RACES,'dress':DRESS,'metrics':metrics}
+             'races':RACES,'dress':DRESS,'metrics':metrics,
+             'light_nodes':{n:{'paramtype':registry[n].get('paramtype','none'),
+                                'light_source':registry[n].get('light_source',0)} for n in ['air']+names}}
     html=V.inline_renderer((HERE/'page.in.html').read_text())
     html=html.replace('t.colorSpace = THREE.SRGBColorSpace;','t.encoding = THREE.sRGBEncoding;')
     html=html.replace('renderer.outputColorSpace = THREE.SRGBColorSpace;','renderer.outputEncoding = THREE.sRGBEncoding;')
@@ -440,12 +469,20 @@ def page(scenes,registry,aliases,check,metrics):
     stills=''
     for form in FORMS:
         stills+='<h3>'+FORMS[form]['name']+'</h3><div class="stills">'
-        for view in ('approach','hall','top'):
+        for view,label in (('hall','Hall · bright study (not daylight)'),
+                           ('night','Hall · night light model, same camera'),
+                           ('entrance','Open entrance arch · viewed from the foyer'),
+                           ('throne','Throne · seat, arms and back'),
+                           ('approach','Approach · bright study'),('top','Roof removed · bright study')):
             p=HERE/'renders'/f'{form}_human_{view}.png'
             if p.exists():
-                stills+='<figure><img alt="'+form+' '+view+'" src="data:image/png;base64,'+base64.b64encode(p.read_bytes()).decode()+'"><figcaption>'+view.title()+'</figcaption></figure>'
+                from PIL import Image
+                compressed=io.BytesIO()
+                Image.open(p).save(compressed,format='WEBP',quality=90,method=6)
+                stills+='<figure><img loading="lazy" alt="'+form+' '+view+'" src="data:image/webp;base64,'+base64.b64encode(compressed.getvalue()).decode()+'"><figcaption>'+label+'</figcaption></figure>'
         stills+='</div>'
     html=html.replace('__STILLS__',stills)
+    assert len(html.encode())<=15_000_000, 'page exceeds 15 MB'
     write(HERE/'page.html',html,check)
     return len(names)
 
@@ -478,7 +515,7 @@ def main():
         count=page(scenes,reg['nodes'],reg.get('aliases',{}),a.check,metrics)
         print(f'24 viewer scenes; {count} node types; no missing media.')
     print('18 templates: both Python parsers and native LuaJIT reader PASS; 72 native rotated stamps PASS.')
-    print('Bounds, socket air/head/support, complete doors, approach flood fill and 435-node clear battle rectangle PASS.')
+    print('Bounds, socket air/head/support, open arches, approach flood fill and 435-node clear battle rectangle PASS.')
     for form in FORMS: print(form, {r:metrics[form][r]['hall_reachable'] for r in RACES})
     print('Byte reproduction PASS.' if a.check else 'Outputs written.')
 

@@ -1,8 +1,11 @@
 {
-  "inputs": "8d661dbef80da5bec718ae5a3e76c4b379fe29c4947a4dbf0520157fa9ddca18",
+  "inputs": "e1468cb7cdd5f0afe3ca0baf2be9fb3ac16de7cc279020469a5fa64d0044d640",
   "files": {
-    "gate_crown_human_approach.png": "feedd6ab7f049119afcac1463a1d69aabb5fe2a3f61a3bbadf8b0678440eb582",
-    "gate_crown_human_hall.png": "8e0592adb4fa11efe63bd1e4a7ddc9decf1fae6a5025183216241a01c3e11339",
-    "gate_crown_human_top.png": "abf78a57a66f43d317ad995c82e41f15e904bd9d9e2f46af96b26cd4825ccef2"
+    "gate_crown_human_approach.png": "35607417a2b8cb98b55a663b242e51533d895a5162d17756df7743b10d9c56b3",
+    "gate_crown_human_hall.png": "91b3adfffac83032adc592268475f1fb80eb7a562ff4db684c216d7caa2a8181",
+    "gate_crown_human_night.png": "94184a8df7912dcf6286f4e2d8807010eab0f820a89d10186219816511c41352",
+    "gate_crown_human_entrance.png": "a12c2c1593b75eb6049058db10438d863624d837ee9933015be62137faeb04e7",
+    "gate_crown_human_throne.png": "665d124d5f780ee5e8225ff7828ea9d4bc80ee3de419eec333bdcc25afecb6f7",
+    "gate_crown_human_top.png": "c7d341c2ba11fc0e265beb382841d177e3ccb61a4608dd20edcb312dda00f125"
   }
 }

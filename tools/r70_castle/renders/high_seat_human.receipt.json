@@ -1,8 +1,11 @@
 {
-  "inputs": "640c15b1faa6db00394fb8dcb328321471c63cd7bbf652f053fb4b99eebd572f",
+  "inputs": "a2d066a608cafbaf464bfecc4300db402b99e3bc558f997a9e0101700b19644d",
   "files": {
-    "high_seat_human_approach.png": "d5a944a07274f3af2865ff669305abf96f30f40d960b5a4d45616ae252930156",
-    "high_seat_human_hall.png": "b607a525964ef62e03baa61c46a3e80e4ad79be4cb285673272de791213efd08",
-    "high_seat_human_top.png": "ac26e65cb7eb3aa5a43f731ea91b21095eae2b4db963f886ec4b5f8418f4dccf"
+    "high_seat_human_approach.png": "6e3e535a84445debbb5f9c05bc964c064a6bfb3dee5e4256c8c6887152a4359d",
+    "high_seat_human_hall.png": "ab8a7ff2e1ceadd198bd9f4b258f9fc0f1d602b77be153c864a9e7b72468eb06",
+    "high_seat_human_night.png": "3f56503b096a69706a02c58e6397796e68edb2449e368c0e8fe774c61adece60",
+    "high_seat_human_entrance.png": "11dcc239fd39b3a166ab3cfa6abf077902073a2659d30430bfbef6c115ed5132",
+    "high_seat_human_throne.png": "d3181c5b33b438034401e191fb78a98974aa1b61c953ebc2d455c6c1ef0a8424",
+    "high_seat_human_top.png": "b701695246d5d763f2c38e9f76047c8b71594a6d59e20b5ff5af49f58349d8ea"
   }
 }

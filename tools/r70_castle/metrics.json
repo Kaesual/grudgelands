@@ -2,9 +2,35 @@
   "crownward": {
     "dwarf": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1042,
+      "reachable_total_columns": 1037,
       "peak": 33,
       "sockets": [
         [
@@ -83,9 +109,35 @@
     },
     "human": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1042,
+      "reachable_total_columns": 1037,
       "peak": 33,
       "sockets": [
         [
@@ -164,9 +216,35 @@
     },
     "elf": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1042,
+      "reachable_total_columns": 1037,
       "peak": 33,
       "sockets": [
         [
@@ -245,9 +323,35 @@
     },
     "orc": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1042,
+      "reachable_total_columns": 1037,
       "peak": 33,
       "sockets": [
         [
@@ -326,9 +430,35 @@
     },
     "undead": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1042,
+      "reachable_total_columns": 1037,
       "peak": 33,
       "sockets": [
         [
@@ -407,9 +537,35 @@
     },
     "troll": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1042,
+      "reachable_total_columns": 1037,
       "peak": 33,
       "sockets": [
         [
@@ -490,9 +646,35 @@
   "high_seat": {
     "dwarf": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1066,
+      "reachable_total_columns": 1061,
       "peak": 38,
       "sockets": [
         [
@@ -571,9 +753,35 @@
     },
     "human": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1066,
+      "reachable_total_columns": 1061,
       "peak": 38,
       "sockets": [
         [
@@ -652,9 +860,35 @@
     },
     "elf": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1066,
+      "reachable_total_columns": 1061,
       "peak": 38,
       "sockets": [
         [
@@ -733,9 +967,35 @@
     },
     "orc": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1066,
+      "reachable_total_columns": 1061,
       "peak": 38,
       "sockets": [
         [
@@ -814,9 +1074,35 @@
     },
     "undead": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1066,
+      "reachable_total_columns": 1061,
       "peak": 38,
       "sockets": [
         [
@@ -895,9 +1181,35 @@
     },
     "troll": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1066,
+      "reachable_total_columns": 1061,
       "peak": 38,
       "sockets": [
         [
@@ -978,9 +1290,35 @@
   "gate_crown": {
     "dwarf": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1038,
+      "reachable_total_columns": 1033,
       "peak": 34,
       "sockets": [
         [
@@ -1059,9 +1397,35 @@
     },
     "human": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1038,
+      "reachable_total_columns": 1033,
       "peak": 34,
       "sockets": [
         [
@@ -1140,9 +1504,35 @@
     },
     "elf": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1038,
+      "reachable_total_columns": 1033,
       "peak": 34,
       "sockets": [
         [
@@ -1221,9 +1611,35 @@
     },
     "orc": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1038,
+      "reachable_total_columns": 1033,
       "peak": 34,
       "sockets": [
         [
@@ -1302,9 +1718,35 @@
     },
     "undead": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1038,
+      "reachable_total_columns": 1033,
       "peak": 34,
       "sockets": [
         [
@@ -1383,9 +1825,35 @@
     },
     "troll": {
       "hall_gross": 805,
-      "hall_reachable": 783,
+      "hall_reachable": 778,
+      "night_light": {
+        "columns": 778,
+        "median": 7.0,
+        "at_most_3": 53,
+        "zero": 0,
+        "min": 1,
+        "max": 12,
+        "king_head": 12,
+        "histogram": [
+          0,
+          4,
+          18,
+          31,
+          43,
+          94,
+          129,
+          137,
+          135,
+          109,
+          56,
+          19,
+          3,
+          0,
+          0
+        ]
+      },
       "clear_battle_rectangle": "29 x 15 = 435",
-      "reachable_total_columns": 1038,
+      "reachable_total_columns": 1033,
       "peak": 34,
       "sockets": [
         [
