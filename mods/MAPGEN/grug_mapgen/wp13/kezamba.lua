@@ -119,16 +119,13 @@ local function loader(directory)
 	-- it is built with (`building_templates/layouts/kezamba.roster`: `town`
 	-- the plain troll timber, `basalt` the civic stone).
 	local PLOTS = {
-		-- 1. The king's hall, east of the throne approach with its great door
-		-- looking west onto it. It is NOT on the axis, and that was the
-		-- ravine's doing rather than a choice: the approach has to reach the
-		-- south gate and the gorge took the ground west of it from z = -47 to
-		-- z = -21. The gorge is gone (it was a route corridor, see step 6), and
-		-- the hall stays where the gorge put it: an off-axis hall facing its
-		-- own approach is a better forecourt than a symmetrical one, and
-		-- re-centring it would move the whole south quarter.
+		-- 1. The castle (Round 70, form A), on the southern terrace, its great
+		-- door looking north onto the forecourt. It stays off the axis: the
+		-- south avenue passes beside it and turns into its court. Turn 2 is
+		-- the form's own front to the north; the basalt palette builds it and
+		-- roofs it, the roster's binding for this template.
 		{id = "kings_hall", template = "kezamba_kings_hall",
-			x = 8, z = -42, turns = 3, handle = "basalt",
+			x = 5, z = -52, turns = 2, handle = "basalt", roof = "basalt",
 			drop = {waypoint = true}},
 
 		-- 2. The moot house: a stilt hall STRADDLING THE LAKE'S WEST BANK, its
@@ -366,7 +363,7 @@ local function loader(directory)
 
 		-- 4. THE PLOTS.
 		for _, plot in ipairs(PLOTS) do
-			local part = CAPITAL.part(plot.template, plot.id, plot.handle)
+			local part = CAPITAL.part(plot.template, plot.id, plot.handle, plot.roof)
 			local turns = plot.turns % 4
 			local rw = (turns % 2 == 1) and part.d or part.w
 			local rd = (turns % 2 == 1) and part.w or part.d
