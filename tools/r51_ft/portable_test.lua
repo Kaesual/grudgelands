@@ -119,7 +119,7 @@ local CAPITAL_TREES = {
 	-- the next capital
 	dur_brannoc = 64,
 	-- the next capital
-	lethariel = 163,
+	lethariel = 167,
 	-- the next capital
 	nhal_veyr = 78,
 	-- the next capital

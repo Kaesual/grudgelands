@@ -4,10 +4,9 @@
 -- stone.
 --
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
--- contract.md section 2.1 -- the 96 x 96 civic core, anchor-relative exactly
--- like a start, inside the contract's bounds of x/z [-47, 47] and y [-2, 40] --
--- plus the run specifications the two OVERLAY modules turn into the avenues,
--- the ring street and the grove edge.
+-- contract.md section 2.1 -- the civic core (radius 56 since Round 70,
+-- `precinct_ring.lua` owns the size), anchor-relative exactly like a start,
+-- inside `BOUNDS.capital_core`.
 --
 -- The contract's section 2.4 elf row is "silverwood and marble, tall narrow
 -- halls, colonnades, lantern-lit walks, groves between plots, no curtain
@@ -17,14 +16,13 @@
 --
 -- THE MERE, and why this core is not a square.
 -- -------------------------------------------
--- WP40 fits and flattens the 96 x 96 civic core at the anchor's own height --
--- and then lays the crown lake into it: the authored lake
--- `lethariel_crown_lake` of `wp40/water_authored.lua` (Round 22 Phase 5,
--- plan D34), whose surface stands two nodes below the core's ground course on
--- every seed. Inside +-47 it is exactly the `MERE` wedge below, 1 393 of the
--- 9 409 columns, whose tip is at (0, 22) and which widens northward to the
--- pad's own north-east corner; outside the core its shore is warped and its
--- bed carved.
+-- WP40 fits and flattens the civic core at the anchor's own height -- and then
+-- lays the crown lake into it: the authored lake `lethariel_crown_lake` of
+-- `wp40/water_authored.lua` (Round 22 Phase 5, plan D34), whose surface stands
+-- two nodes below the core's ground course on every seed. Inside the pad it is
+-- exactly the `MERE` wedge below, whose tip is at (0, 36) since Round 70 moved
+-- the chain 14 nodes north, and which widens northward to the pad's north
+-- edge; outside the core its shore is warped and its bed carved.
 --
 -- A composition that laid its pad across that wedge would lay a slab of turf
 -- over open water. So this composition DOES NOT WRITE THERE. The wedge is committed as `MERE` below
@@ -33,7 +31,9 @@
 -- above a mere, with a marble quay along its edge.
 --
 -- The avenues outside the core are the capital planner's streets (road-module
--- roads, Round 22); where one crosses the lake it is a bridge.
+-- roads, Round 22). No street crosses the lake: `core_landing` finds nothing on
+-- the pad's north edge, so the planner starts the north avenue on the shore
+-- beyond the water.
 --
 --   * `M.core()` returns the core composition in the exact shape of a start
 --     composition (schema, canonical cells, bounds, sorted palette, landmarks)
@@ -63,26 +63,21 @@ local function loader(directory)
 
 	-- THE MERE, as the crown lake lies inside the core pad: for every z from
 	-- the tip northward, the first and last x of the water. It was measured
-	-- from the old static world plan (by the since-deleted
-	-- `tools/wp13/lethariel_plots.lua --shore`); the authored lake of
-	-- `wp40/water_authored.lua` is the same capsule chain, and the two agree
-	-- column for column inside +-47 (checked on three seeds when the lake was
-	-- authored, Round 22 Phase 5 lane W2b).
+	-- from the real water function by `tools/r70_cap/lake_table.py`, with the
+	-- calm square at the pad's half and the chain 14 north (Round 70).
 	--
 	-- It is committed as DATA and not derived, because a blueprint is a fixed
 	-- cell list built once at load with no world to ask. The day the lake's
 	-- chain moves, this table is re-taken with it.
-	local MERE_FIRST = 22
+	local MERE_FIRST = 36
 	local MERE = {
-		[22] = {0, 0}, [23] = {-8, 8}, [24] = {-12, 12}, [25] = {-14, 14},
-		[26] = {-16, 16}, [27] = {-18, 18}, [28] = {-20, 20}, [29] = {-21, 21},
-		[30] = {-23, 23}, [31] = {-24, 24}, [32] = {-25, 25}, [33] = {-26, 26},
-		[34] = {-27, 27}, [35] = {-28, 28}, [36] = {-29, 29}, [37] = {-30, 30},
-		[38] = {-30, 32}, [39] = {-31, 34}, [40] = {-32, 35}, [41] = {-32, 37},
-		[42] = {-33, 39}, [43] = {-33, 40}, [44] = {-34, 42}, [45] = {-34, 44},
-		[46] = {-35, 46}, [47] = {-35, 47}, [48] = {-36, 49}, [49] = {-36, 57},
-		[50] = {-36, 57}, [51] = {-36, 57}, [52] = {-37, 57}, [53] = {-37, 57},
-		[54] = {-37, 57}, [55] = {-37, 57}, [56] = {-37, 57}, [57] = {-37, 57},
+		[36] = {0, 0}, [37] = {-8, 8}, [38] = {-12, 12}, [39] = {-14, 14},
+		[40] = {-16, 16}, [41] = {-18, 18}, [42] = {-20, 20},
+		[43] = {-21, 21}, [44] = {-23, 23}, [45] = {-24, 24},
+		[46] = {-25, 25}, [47] = {-26, 26}, [48] = {-27, 27},
+		[49] = {-28, 28}, [50] = {-29, 29}, [51] = {-30, 30},
+		[52] = {-30, 32}, [53] = {-31, 34}, [54] = {-32, 35},
+		[55] = {-32, 37}, [56] = {-33, 39}, [57] = {-33, 40},
 	}
 	-- One node of natural shore between anything this composition lays and the
 	-- water itself, so a rounding difference in a future WP40 revision costs a
@@ -96,17 +91,16 @@ local function loader(directory)
 		return x < span[1] - SHORE_MARGIN or x > span[2] + SHORE_MARGIN
 	end
 
-	-- Where the NORTH AVENUE takes over from the pad. The causeway across the
-	-- mere is the overlay's, it starts at z = 22, and the seam forbids a core
-	-- cell and an overlay cell in the same place (the integration fixture
-	-- asserts it for every settlement), so the pad lays nothing inside the
-	-- run's own seven-lane band from that row northward.
-	local CAUSEWAY_FROM = 22
-	local CAUSEWAY_HALF = 3
+	-- The axis ends at the lake's tip. Nothing crosses the mere, and the pad
+	-- lays nothing inside the avenue's seven-wide band from that row northward,
+	-- so the quay stays two arms and `core_landing` finds no landing on the
+	-- north edge: the planner starts the north avenue on the shore.
+	local AXIS_END = MERE_FIRST
+	local AXIS_HALF = 3
 
-	-- Ground the CORE itself may lay: dry, and not the causeway's.
+	-- Ground the CORE itself may lay: dry, and not the axis band's.
 	local function pad(x, z)
-		if z >= CAUSEWAY_FROM and math.abs(x) <= CAUSEWAY_HALF then
+		if z >= AXIS_END and math.abs(x) <= AXIS_HALF then
 			return false
 		end
 		return dry(x, z)
@@ -134,21 +128,40 @@ local function loader(directory)
 
 	-- The QUAY: the marble promenade along the mere's edge. It is authored as
 	-- a band that follows the committed shore rather than as a rectangle,
-	-- because the shore is a diagonal.
+	-- because the shore is a diagonal. QUAY_HEAD is where it meets the north
+	-- promenade, between the colonnades' feet.
 	local QUAY_WIDTH = 3
+	local QUAY_HEAD = {x1 = -4, z1 = MERE_FIRST - 4, x2 = 4, z2 = MERE_FIRST - 1}
+
+	-- The castle (Round 70, form A): 35 x 45 turned once, its great door on the
+	-- east looking across the court to the south avenue. COURT is that court,
+	-- paved to the castle's foot; the approach runs on the door's row.
+	local CASTLE = {x = -52, z = -51, w = 35, d = 45}
+	local COURT = {x1 = CASTLE.x + CASTLE.w, z1 = -42, x2 = -4, z2 = -16}
+	local APPROACH = {z1 = -32, z2 = -26}
 
 	local STREETS = {
-		-- The throne approach, from the south gate through the crossing.
+		-- The south avenue, from the south gate through the crossing.
 		{-2, -RADIUS, 2, 4, "avenue"},
-		-- The quay approach, from the crossing north to the head of the
-		-- causeway. It stops at the last dry row on the axis: the causeway
-		-- itself is the north avenue's, and it starts in the water.
-		{-2, 5, 2, 20, "avenue"},
+		-- The north promenade, from the crossing between the colonnades to the
+		-- quay's head. It ends on the lake's tip: nothing crosses the mere.
+		{-2, 5, 2, QUAY_HEAD.z1 + 1, "avenue"},
 		-- The east-west avenue, gate to gate through the same crossing.
 		{-RADIUS, -2, RADIUS, 2, "avenue"},
-		-- The hall's forecourt and the flank lane past it.
-		{-9, -24, -5, -6, "lane"},
-		{-38, -42, -34, -40, "lane"},
+		-- The castle's approach, from the south avenue to the great door, and
+		-- the court round it.
+		{COURT.x1, COURT.z1, COURT.x2, COURT.z2, "avenue"},
+		{COURT.x2, APPROACH.z1, -3, APPROACH.z2, "avenue"},
+		-- The flank lane past the court, from the west avenue south.
+		{-15, -15, -13, -3, "lane"},
+		{-15, -45, -9, -43, "lane"},
+		-- The gate forecourts: a gate chamber's door is in its city face and
+		-- its doorstep is one node beyond the part's own footprint, and the
+		-- ground watch walks here (`gate_watch.lua`). The west one stops at the
+		-- castle's north wall.
+		{-8, -(RADIUS - 7), 8, -(RADIUS - 12), "lane"},
+		{RADIUS - 12, -8, RADIUS - 7, 8, "lane"},
+		{-(RADIUS - 7), -6, -(RADIUS - 12), 8, "lane"},
 		-- The market walk, the booth row on it and the plaza approach.
 		{4, -25, 30, -23, "lane"},
 		{2, -25, 4, -14, "lane"},
@@ -158,14 +171,16 @@ local function loader(directory)
 		{-40, 5, -36, 9, "lane"},
 		{-35, 7, -31, 9, "lane"},
 		{-30, 12, -21, 14, "lane"},
-		-- The east quarter's walk to the sacred grove and the shrine.
+		-- The east quarter's walk to the sacred grove, and north up the old
+		-- shrine ground to the mere shrine and on to the quay.
 		{6, 8, 24, 10, "lane"},
 		{26, 5, 28, 8, "lane"},
+		{17, 11, 19, 25, "lane"},
+		{19, 24, 27, 25, "lane"},
+		{25, 26, 27, 44, "lane"},
 		-- The doorsteps of the outer houses.
 		{-46, 27, -38, 29, "lane"},
-		{-44, -20, -42, -18, "lane"},
 		{40, -40, 42, -38, "lane"},
-		{-16, -44, -14, -42, "lane"},
 	}
 
 	-- The plot roster. `template` is the building template (Round 56,
@@ -181,19 +196,18 @@ local function loader(directory)
 	-- part cannot know how many of a thing a CAPITAL may have -- one throne,
 	-- one travel pad for WP17, one vendor per kind.
 	local PLOTS = {
-		-- 1. THE HALL OF THE SILVER BOUGHS, the king's hall. It stands WEST of
-		-- the throne approach with its great door on the east, and not north
-		-- of the crossing where Highcourt and Dur Brannoc put theirs, because
-		-- north of the crossing at Lethariel is the mere: the dry ground on
-		-- the axis runs out at z = 21 and a 36-node hall does not fit in it.
-		-- So the approach is the SOUTH avenue and the hall looks across it.
+		-- 1. THE HALL OF THE SILVER BOUGHS, the king's castle (Round 70, form
+		-- A). It stands WEST of the south avenue with its great door on the
+		-- east, and not north of the crossing where the other castles stand,
+		-- because north of the crossing at Lethariel is the mere: the box
+		-- would need the lake 24 nodes north, and the whole public quarter
+		-- moved with it. So the castle turns once and looks across its court.
 		{id = "kings_hall", template = "lethariel_kings_hall",
-			x = -41, z = -40, turns = 3, palette = "pale", roof = "pale",
+			x = CASTLE.x, z = CASTLE.z, turns = 3, palette = "pale", roof = "pale",
 			drop = {waypoint = true}},
 
-		-- 2. The three inner gates. Lethariel has no curtain wall, so these
-		-- are the civic precinct's own gates and the fourth "gate" is the
-		-- quay: the north avenue leaves the pad over water.
+		-- 2. The three inner gates: the civic precinct's own, and the fourth
+		-- side is the quay, because the lake closes the north.
 		{id = "gate_south", template = "lethariel_gate_south", watch = true,
 			x = -6, z = -RADIUS, turns = 0, palette = "pale", roof = "pale"},
 		{id = "gate_west", template = "lethariel_gate_south", watch = true,
@@ -211,13 +225,14 @@ local function loader(directory)
 			recast = {vendor = {role = "idle", tags = {"work"},
 				from = "_vendor_", to = "_booth_"}}},
 
-		-- 4. The two colonnades flanking the throne approach -- the
-		-- contract's own word for this race, and the piece that makes the
-		-- approach a processional rather than a road.
+		-- 4. The two colonnades flanking the north promenade -- the contract's
+		-- own word for this race, and the piece that makes the walk to the
+		-- quay a processional rather than a road. They moved here from the
+		-- south avenue in Round 70, when the castle's court took that land.
 		{id = "colonnade_west", template = "lethariel_colonnade_west",
-			x = -9, z = -31, turns = 1, palette = "pale"},
+			x = -9, z = 20, turns = 1, palette = "pale"},
 		{id = "colonnade_east", template = "lethariel_colonnade_east",
-			x = 6, z = -31, turns = 3, palette = "pale"},
+			x = 6, z = 20, turns = 3, palette = "pale"},
 
 		-- 5. The civic furniture: the king's statue north-east of the
 		-- crossing and the fountain court in the west quarter.
@@ -241,9 +256,9 @@ local function loader(directory)
 		-- profile `terraced_grove` means when a city is built in it.
 		{id = "sacred_grove", template = "lethariel_sacred_grove",
 			x = 25, z = 8, turns = 0, palette = "elf"},
-		-- The shrine at the head of the grove walk.
+		-- The shrine at the head of the grove walk, near the shore it follows.
 		{id = "mere_shrine", template = "lethariel_mere_shrine",
-			x = 16, z = 12, turns = 0, palette = "pale"},
+			x = 16, z = 26, turns = 0, palette = "pale"},
 
 		-- 8. Two BOUGH HOUSES: the tree platforms of this race, one either
 		-- side of the city.
@@ -273,19 +288,20 @@ local function loader(directory)
 		"gate_east", "star_hall", "bough_west", "bough_east", "quay_house",
 		"south_house", "plaza_house", "shore_house"}
 
-	-- The corner waypoints of the city loop, in the open ground between the
-	-- outer plots.
 	-- The corner waypoints of the city loop. They stand ON THE GREAT STREETS
 	-- and not on the turf between the quarters, which is where the first
-	-- version put them: this core is crowded -- a 32 x 36 king's hall, a
+	-- version put them: this core is crowded -- a 35 x 45 castle, a
 	-- twenty-one-node market and a seventeen-node sacred grove -- and three of
 	-- the four landed inside a building. A paved cell is one the composition
 	-- itself cleared, so a waypoint on one is a waypoint an NPC can stand on.
+	-- The order keeps every leg clear of the castle (Round 70): the straight
+	-- line from `watch_west` to `watch_south_west` runs through it, so the
+	-- watch crosses to the east between the two and takes the court from there.
 	local CORNERS = {
-		{id = "watch_south_west", x = -2, z = -36, face = 0, order = 2},
+		{id = "watch_quay", x = 2, z = 30, face = 2, order = 2},
 		{id = "watch_west", x = -36, z = 2, face = 2, order = 3},
-		{id = "watch_quay", x = 2, z = 16, face = 2, order = 4},
-		{id = "watch_south_east", x = 36, z = -2, face = 0, order = 5},
+		{id = "watch_south_east", x = 36, z = -2, face = 0, order = 4},
+		{id = "watch_south_west", x = -11, z = -44, face = 0, order = 5},
 	}
 
 	-- The city around the core -- its outline, streets, walls or planted
@@ -377,7 +393,7 @@ local function loader(directory)
 		-- `layout.glade`'s texture -- silver litter with trodden patches where
 		-- the city walks -- written column by column instead of as one fill,
 		-- because a fill would lay turf over the lake.
-		local laid, water, causeway = 0, 0, 0
+		local laid, water, axis = 0, 0, 0
 		for z = -RADIUS, RADIUS do
 			for x = -RADIUS, RADIUS do
 				if pad(x, z) then
@@ -385,14 +401,14 @@ local function loader(directory)
 					buf:put(x, 0, z, elf_palette.node("ground"))
 					laid = laid + 1
 				elseif dry(x, z) then
-					causeway = causeway + 1
+					axis = axis + 1
 				else
 					water = water + 1
 				end
 			end
 		end
-		for z = -34, 34, 4 do
-			for x = -34, 34, 7 do
+		for z = -RADIUS + 3, RADIUS - 3, 4 do
+			for x = -RADIUS + 3, RADIUS - 3, 7 do
 				local hash = (x * 13 + z * 29) % 17
 				local role
 				if hash < 4 then role = "ground_patch"
@@ -416,8 +432,11 @@ local function loader(directory)
 			local name = (street[5] == "avenue") and AVENUE or LANE
 			pave(name, street[1], street[2], street[3], street[4], 5)
 		end
-		for _, kerb in ipairs({{-3, -RADIUS, -3, 20}, {3, -RADIUS, 3, 20},
-				{-RADIUS, -3, RADIUS, -3}, {-RADIUS, 3, RADIUS, 3}}) do
+		for _, kerb in ipairs({{-3, -(RADIUS - 13), -3, APPROACH.z1 - 1},
+				{-3, APPROACH.z2 + 1, -3, QUAY_HEAD.z1 - 1},
+				{3, -(RADIUS - 13), 3, QUAY_HEAD.z1 - 1},
+				{-(RADIUS - 13), -3, RADIUS - 13, -3},
+				{-(RADIUS - 13), 3, RADIUS - 13, 3}}) do
 			for z = kerb[2], kerb[4] do
 				for x = kerb[1], kerb[3] do
 					if dry(x, z) then buf:put(x, 0, z, KERB) end
@@ -425,38 +444,45 @@ local function loader(directory)
 			end
 		end
 
+		-- The court: a kerb ring, the approach through it and a marble line
+		-- from the south avenue to the great door.
+		dressing.inlay(buf, elf_palette, COURT.x1, COURT.z1, COURT.x2, COURT.z2)
+		pave(AVENUE, COURT.x1, APPROACH.z1, COURT.x2, APPROACH.z2, 5)
+		local door_row = math.floor((APPROACH.z1 + APPROACH.z2) / 2)
+		for x = COURT.x1, -3 do buf:put(x, 0, door_row, MARBLE) end
+
 		-- 3. THE QUAY: a marble promenade following the mere's own edge, one
-		-- node of natural shore outside it, with a low kerb on the water side
-		-- so a citizen walking it does not walk off it. It is written from
-		-- the committed shore table, so it is the same diagonal the lake is.
+		-- node of natural shore outside it, three wide landward of that, with
+		-- a low kerb on the water side so a citizen walking it does not walk
+		-- off it. It is written from the committed shore table, so it is the
+		-- same diagonal the lake is: a column is on the quay when the shore
+		-- lies within QUAY_WIDTH of it along x or north along z.
+		local function quay_step(x, z)
+			for step = 1, QUAY_WIDTH do
+				if not dry(x - step, z) or not dry(x + step, z) or
+						not dry(x, z + step) then
+					return step
+				end
+			end
+			return nil
+		end
 		local quay = 0
-		for z = MERE_FIRST, RADIUS do
-			local span = MERE[z]
-			for _, side in ipairs({-1, 1}) do
-				local edge = (side < 0) and (span[1] - SHORE_MARGIN - 1) or
-					(span[2] + SHORE_MARGIN + 1)
-				for step = 0, QUAY_WIDTH - 1 do
-					local x = edge - side * step
-					-- Never inside the north avenue's own band: that run
-					-- starts at z = 22 and the two may not share a cell (the
-					-- integration fixture asserts it for every settlement).
-					if x >= -RADIUS and x <= RADIUS and dry(x, z) and
-							math.abs(x) > 3 then
-						buf:put(x, 0, z, (step == 0) and KERB or AVENUE)
-						buf:clear(x, 1, z, x, 4, z)
-						quay = quay + 1
-					end
+		for z = MERE_FIRST - QUAY_WIDTH - 1, RADIUS - 2 do
+			for x = -RADIUS + 2, RADIUS - 2 do
+				local step = pad(x, z) and quay_step(x, z)
+				if step then
+					buf:put(x, 0, z, (step == 1) and KERB or AVENUE)
+					buf:clear(x, 1, z, x, 4, z)
+					quay = quay + 1
 				end
 			end
 		end
-		-- The quay's own head on the axis, where the causeway leaves the pad.
-		for z = 18, 21 do
-			for x = -6, 6 do
-				if dry(x, z) then
-					buf:put(x, 0, z, AVENUE)
-					buf:clear(x, 1, z, x, 5, z)
-					quay = quay + 1
-				end
+		-- The quay's own head on the axis, where the promenade meets it.
+		for z = QUAY_HEAD.z1, QUAY_HEAD.z2 do
+			for x = QUAY_HEAD.x1, QUAY_HEAD.x2 do
+				buf:put(x, 0, z, AVENUE)
+				buf:clear(x, 1, z, x, 5, z)
+				quay = quay + 1
 			end
 		end
 
@@ -606,10 +632,14 @@ local function loader(directory)
 		-- and the light behind it.
 		local lanterns = 0
 		for _, spot in ipairs({{-6, -6}, {6, -6}, {-6, 6},
-				{-6, -12}, {6, -12}, {-6, -36}, {6, -36},
-				{-14, -6}, {14, -6}, {-14, 6}, {18, 6}, {22, 6},
-				{-24, -6}, {24, -6}, {-36, -6}, {36, -6}, {-36, 6}, {36, 6},
-				{-6, 16}, {6, 16}, {-6, 20}, {6, 20}, {16, -16}}) do
+				{-6, -12}, {6, -12}, {6, -36}, {-11, -6}, {14, -6}, {-14, 6},
+				{18, 6}, {22, 6}, {-24, -5}, {24, -6}, {-36, -5}, {36, -6},
+				{-36, 6}, {36, 6}, {-6, 16}, {6, 16}, {16, -16},
+				-- The court: two pairs framing the approach.
+				{-7, -34}, {-7, -24}, {-15, -34}, {-15, -24},
+				-- Outside the colonnades, and the gates' ground.
+				{-12, 22}, {-12, 32}, {13, 22}, {13, 32},
+				{-43, 6}, {43, -6}, {43, 6}, {-11, -48}, {11, -47}}) do
 			if dry_area(spot[1] - 1, spot[2] - 1, spot[1] + 1, spot[2] + 1) and
 					layout.free_area(buf, spot[1] - 1, spot[2] - 1,
 						spot[1] + 1, spot[2] + 1, 5) then
@@ -617,19 +647,32 @@ local function loader(directory)
 				lanterns = lanterns + 1
 			end
 		end
-		-- The quay's own lantern line, on its landward kerb.
-		for z = MERE_FIRST + 4, RADIUS - 2, 6 do
+		-- The quay's own lantern line, on the turf behind its landward edge.
+		-- The quay is a walk, and wider than QUAY_WIDTH where the shore runs
+		-- diagonally, so each pillar steps inland until it stands off the
+		-- paving.
+		local function on_turf(x1, z1, x2, z2)
+			for z = z1, z2 do
+				for x = x1, x2 do
+					local ground = buf:at(x, 0, z)
+					if ground == nil or not GROUND[ground.name] then return false end
+				end
+			end
+			return true
+		end
+		for z = MERE_FIRST + 6, RADIUS - 2, 6 do
 			local span = MERE[z]
 			for _, side in ipairs({-1, 1}) do
-				local edge = (side < 0) and (span[1] - SHORE_MARGIN - 3) or
-					(span[2] + SHORE_MARGIN + 3)
-				if edge >= -RADIUS + 1 and edge <= RADIUS - 1 and
-						math.abs(edge) > 4 and
-						dry_area(edge - 1, z - 1, edge + 1, z + 1) and
-						layout.free_area(buf, edge - 1, z - 1, edge + 1,
-							z + 1, 5) then
-					dressing.lantern_pillar(buf, elf_palette, edge, z)
-					lanterns = lanterns + 1
+				for reach = SHORE_MARGIN + QUAY_WIDTH + 2, SHORE_MARGIN + QUAY_WIDTH + 9 do
+					local edge = (side < 0) and (span[1] - reach) or (span[2] + reach)
+					if math.abs(edge) <= RADIUS - 3 and
+							on_turf(edge - 1, z - 1, edge + 1, z + 1) and
+							layout.free_area(buf, edge - 1, z - 1, edge + 1,
+								z + 1, 5) then
+						dressing.lantern_pillar(buf, elf_palette, edge, z)
+						lanterns = lanterns + 1
+						break
+					end
 				end
 			end
 		end
@@ -643,6 +686,7 @@ local function loader(directory)
 			{-6, -4, 0, "x"}, {4, -4, 0, "x"}, {-6, 4, 2, "x"},
 			{4, 4, 2, "x"}, {8, 12, 0, "x"}, {-14, 15, 2, "x"},
 			{-10, -12, 1, "z"}, {10, -12, 3, "z"},
+			{-25, 40, 0, "x"}, {23, 40, 0, "x"},
 		}
 		for _, seat in ipairs(BENCHES) do
 			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
@@ -652,15 +696,17 @@ local function loader(directory)
 					seat[4])
 			end)
 		end
-		for _, bed in ipairs({{-14, -3, -12, -1}, {12, 1, 14, 3}}) do
+		for _, bed in ipairs({{-12, -3, -10, -1}, {12, 1, 14, 3},
+				{-13, -40, -9, -37}, {-13, -21, -9, -18}}) do
 			paved_prop("planter", bed[1], bed[2], bed[3], bed[4], function()
 				dressing.planter(buf, elf_palette, bed[1], bed[2], bed[3],
 					bed[4])
 			end)
 		end
 
-		-- 8b. THE SHORE WORKS, on the last dry rows east of the quay
-		-- approach: the fish counter the mere feeds, the wood the city burns,
+		-- 8b. THE SHORE WORKS, east of the north promenade (they stayed when
+		-- Round 70 moved the shore north): the fish counter the mere feeds,
+		-- the wood the city burns,
 		-- the herb beds and a standing stone half carved. Each of them is the
 		-- FEATURE one of this core's work sockets names (sockets contract
 		-- section 8.1), and each is authored here rather than left to a piece
@@ -688,13 +734,23 @@ local function loader(directory)
 		-- terraced grove with a city in it keeps its trees, and this is where
 		-- the contract's "groves between plots" lands inside the core.
 		local standards = layout.plant_grove(buf, elf_palette, RADIUS, 7, {
-			{-10, -44, 11}, {9, -44, 11}, {-10, -37, 11}, {10, -37, 11},
+			{9, -44, 11}, {10, -37, 11},
 			{32, -24, 11}, {13, -12, 11}, {34, -10, 11}, {41, -10, 11},
-			{-32, -6, 11}, {-20, -6, 11}, {20, -6, 11}, {-10, 5, 11},
-			{30, 5, 11}, {44, 9, 11}, {13, 14, 11}, {43, 16, 11},
-			{-44, 20, 11}, {-37, 20, 11}, {-15, 20, 11}, {12, 21, 11},
-			{19, 23, 11}, {44, 23, 11}, {34, 26, 11}, {26, 27, 11},
+			{20, -6, 11}, {-10, 5, 11}, {30, 5, 11}, {44, 9, 11},
+			{13, 14, 11}, {43, 16, 11}, {-44, 20, 11}, {-37, 20, 11},
+			{-15, 20, 11}, {44, 23, 11}, {34, 26, 11}, {30, 29, 11},
 			{-31, 28, 11}, {41, 30, 11}, {33, 33, 11}, {40, 37, 11},
+			-- The old shrine ground, the walk to the quay and the shore.
+			{21, 14, 11}, {15, 21, 11}, {22, 21, 11}, {14, 27, 11},
+			{-20, 34, 11}, {-26, 36, 11}, {-32, 32, 11}, {-16, 30, 11},
+			{21, 36, 11}, {30, 37, 11},
+			-- The ground Round 70 added: the north shoulders, the east
+			-- and the south band.
+			{-50, 44, 11}, {-50, 34, 11}, {-46, 50, 11}, {-40, 52, 11},
+			{48, 40, 11}, {52, 34, 11}, {46, 47, 11}, {52, 50, 11},
+			{51, 22, 11}, {51, 12, 11}, {50, -14, 11}, {52, -24, 11},
+			{51, -36, 11}, {48, -50, 11}, {38, -51, 11}, {28, -51, 11},
+			{18, -50, 11}, {-12, -52, 11},
 		})
 		if standards < 16 then
 			error("wp13 lethariel: only " .. standards ..
@@ -753,17 +809,18 @@ local function loader(directory)
 		-- mere. `fish` is capital-only and this is the capital that has a lake
 		-- in its core; the water they face is the world's, one node beyond the
 		-- quay's kerb, not a cell this blueprint writes.
-		-- On the QUAY ITSELF, which is a diagonal: at z = 28 the mere spans
+		-- On the QUAY ITSELF, which is a diagonal: at z = 42 the mere spans
 		-- x -20..20, the walk starts two nodes outside that, and a socket on
-		-- the round number would have stood in the water.
-		socket("quay_idle_west", "idle", -23, 1, 28, 0, {tags = {"bench"}})
-		socket("quay_idle_east", "idle", 23, 1, 28, 0, {tags = {"bench"}})
-		socket("quay_idle_head", "idle", -4, 1, 19, 0, {tags = {"work"}})
+		-- the round number would have stood in the water. Each stands on the
+		-- walk in front of its bench, which keeps off the paving.
+		socket("quay_idle_west", "idle", -23, 1, 42, 0, {tags = {"bench"}})
+		socket("quay_idle_east", "idle", 23, 1, 42, 0, {tags = {"bench"}})
+		socket("quay_idle_head", "idle", -4, 1, 33, 0, {tags = {"work"}})
 		socket("grove_idle_walk", "idle", 22, 1, 9, 1, {tags = {"work"}})
-		socket("grove_idle_shrine", "idle", 18, 1, 11, 2, {tags = {"work"}})
+		socket("grove_idle_shrine", "idle", 18, 1, 25, 2, {tags = {"work"}})
 		socket("forecourt_idle_west", "idle", -6, 1, -14, 1, {tags = {"bench"}})
 		socket("forecourt_idle_east", "idle", 7, 1, -14, 3, {tags = {"bench"}})
-		socket("market_idle_walk", "idle", 12, 1, -24, 2, {tags = {"work"}})
+		socket("market_idle_walk", "idle", 12, 1, 27, 2, {tags = {"work"}})
 		-- THE CORE'S OWN WORK SOCKETS (sockets contract section 8.1). Each
 		-- faces the feature its activity names, one or two nodes away, and
 		-- each of those features is authored in section 8b or is the bench the
@@ -775,7 +832,7 @@ local function loader(directory)
 		socket("shore_work_pile", "work", 13, 1, 13, 0, {activity = "chop"})
 		socket("shore_work_beds", "work", 9, 1, 16, 0, {activity = "tend"})
 		socket("shore_work_stone", "work", 13, 1, 16, 0, {activity = "carve"})
-		socket("shore_work_sweep", "work", -4, 1, 19, 0, {activity = "sweep"})
+		socket("shore_work_sweep", "work", -4, 1, 33, 0, {activity = "sweep"})
 		-- The two sitters face where their benches look: into the crossing,
 		-- their backs to the lantern pillars (Round 36 lane W2).
 		socket("crossing_work_west", "work", -5, 2, -4, 0,
@@ -791,10 +848,10 @@ local function loader(directory)
 		local SPARES = {
 			{"core_spare_crossing_east", 12, -4, 3},
 			{"core_spare_crossing_west", -16, -1, 1},
-			{"core_spare_quay_west", -28, 30, 2}, -- Round 47: 0 faced a tree
-			{"core_spare_quay_east", 24, 24, 0},
-			{"core_spare_approach", 5, -26, 0},
-			{"core_spare_market_walk", 12, -31, 0},
+			{"core_spare_quay_west", -28, 44, 2}, -- Round 47: 0 faced a tree
+			{"core_spare_quay_east", 24, 38, 0},
+			{"core_spare_approach", 5, 25, 0},
+			{"core_spare_market_walk", 12, 20, 0},
 			{"core_spare_west_avenue", -34, -5, 1},
 			{"core_spare_east_avenue", 34, 5, 3},
 			{"core_spare_grove", 25, 2, 2},
@@ -897,21 +954,21 @@ local function loader(directory)
 				gate_south = {x = 0, y = 1, z = -RADIUS},
 				gate_east = {x = RADIUS, y = 1, z = 0},
 				gate_west = {x = -RADIUS, y = 1, z = 0},
-				-- The north "gate" is the head of the causeway and stands on
-				-- the last dry row of the axis, not on the pad edge.
-				gate_north = {x = 0, y = 1, z = 20},
+				-- The north "gate" is the head of the quay and stands on the
+				-- axis near its last dry row, not on the pad edge.
+				gate_north = {x = 0, y = 1, z = QUAY_HEAD.z1 + 2},
 				main_street = {min = {x = -2, y = 0, z = -RADIUS},
 					max = {x = 2, y = 5, z = 4}},
 				avenue_south = {min = {x = -2, y = 0, z = -RADIUS},
 					max = {x = 2, y = 5, z = 4}},
 				avenue_north = {min = {x = -2, y = 0, z = 5},
-					max = {x = 2, y = 5, z = 21}},
+					max = {x = 2, y = 5, z = QUAY_HEAD.z2}},
 				avenue_west = {min = {x = -RADIUS, y = 0, z = -2},
 					max = {x = -3, y = 5, z = 2}},
 				avenue_east = {min = {x = 3, y = 0, z = -2},
 					max = {x = RADIUS, y = 5, z = 2}},
-				throne_approach = {min = {x = -2, y = 0, z = -30},
-					max = {x = 2, y = 8, z = -6}},
+				throne_approach = {min = {x = COURT.x1, y = 0, z = APPROACH.z1},
+					max = {x = -3, y = 8, z = APPROACH.z2}},
 				-- The reserved square is the plaza INSIDE its kerb.
 				waypoint_plaza = {min = {x = PLAZA.x1 + 1, y = 0,
 						z = PLAZA.z1 + 1},
@@ -931,7 +988,7 @@ local function loader(directory)
 				ground_columns = laid,
 				mere_columns = water,
 				quay_columns = quay,
-				causeway_columns = causeway,
+				axis_columns = axis,
 				lantern_pillars = lanterns,
 				precinct_wall_columns = wall,
 				standards = standards,

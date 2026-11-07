@@ -410,9 +410,14 @@ Lethariel also shows what happens when the map does not give a capital four
 usable quarters. Its crown lake reaches into the civic core itself, so the
 **lore and spiritual district is the mere precinct** and the planner keeps it
 beside the lake, where it has room for three plots and two dressings; the
-other three districts take the quarters with room. The civic core stops at the
-water's edge and meets it with a marble quay, and an avenue that crosses the
-lake does so as a bridge.
+other three districts take the quarters with room. Since Round 70 the lake lies
+14 nodes farther north, so its tip stands at z 36 of the core and the precinct
+sits farther inland than before. The civic core stops at the water's edge and
+meets it with a three-wide marble quay, one node of natural shore outside the
+water. Nothing crosses the lake: the north avenue begins on the far shore, and
+inside the core a promenade between the two colonnades ends at the quay's head.
+The king's castle stands on the dry western shoulder, turned once so that its
+great door looks east across a paved court to the south avenue.
 
 **Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
 Drazhak. What a walled capital has on its envelope edge is decided by the race

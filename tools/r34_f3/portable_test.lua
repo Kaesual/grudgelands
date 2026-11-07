@@ -35,7 +35,7 @@ end
 -- only the fixed POIs now; Round 34 pinned f140b58b... on main f6d11c95)
 -- (Round 70 CAP0: `civic_width` 112 widens the capitals' river keep-out, a
 -- declared map reset, so seed 12345's rivers moved.)
-local PINNED = {["12345"] = "3c3474e1109f366c4d5d883a982d0d256eca15f6f77de48b4ea6bba4b1541f1a"}
+local PINNED = {["12345"] = "d14274a2add8205a2af7cad962ebc8acb423f731c0949c0aa4e976b76b3a7b8a"}
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1
