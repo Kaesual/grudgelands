@@ -338,9 +338,11 @@ return function(lib, player)
 	lib.phase("dead")
 	stand(player, E.start_arrival(run))
 	lib.wait_for(function() return #hall_now(run) == 3 end, 10)
+	lib.wait(4) -- a mob away from home runs home when it wakes, and takes no hit
 	hall = hall_now(run)
 	grug_core.deal_ability_damage(player, hall[1].object, 5)
 	lib.wait(1)
+	lib.check(grug_core.in_combat(player), "pulled before the kills")
 	for _, ent in ipairs(hall) do kill_silently(ent) end
 	lib.wait(0.2)
 	local free = lib.wait_for(function() return not grug_core.in_combat(player) end, 5)
@@ -360,11 +362,12 @@ return function(lib, player)
 	lib.wait(2)
 	local boss = by_room(run, COURT[1])[1]
 	lib.check(boss ~= nil and boss._grug_boss_id ~= nil, "the boss stands")
-	grug_core.deal_ability_damage(player, boss.object, 500)
+	grug_core.deal_ability_damage(player, boss.object, 50)
 	lib.wait(1)
 	local wounded = boss.health
 	lib.logf("boss %s/%s", tostring(boss.health), tostring(boss.hp_max))
-	lib.check(wounded < boss.hp_max, "wounded")
+	lib.check(wounded > 0 and wounded < boss.hp_max, "wounded")
+	lib.check(grug_core.in_combat(player), "the boss holds the player")
 	lib.heal = false
 	player:set_hp(0)
 	lib.wait(2)
