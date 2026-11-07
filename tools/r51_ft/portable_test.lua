@@ -121,7 +121,7 @@ local CAPITAL_TREES = {
 	-- the next capital
 	lethariel = 163,
 	-- the next capital
-	nhal_veyr = 70,
+	nhal_veyr = 78,
 	-- the next capital
 	gor_drazhak = 47,
 	-- the next capital
