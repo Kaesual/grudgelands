@@ -32,12 +32,223 @@ local function verify(lib, run)
 end
 S.verify = verify
 
+local function level_up(player)
+	grug_xp.set_xp(player, grug_xp.xp_for_level(19))
+end
+
+-- Asks an area and counts the answers; a generated answer means it was not.
+local function ask_area(lib, p1, p2)
+	local counts, left = {}, nil
+	core.emerge_area(p1, p2, function(_, action, remaining)
+		counts[action] = (counts[action] or 0) + 1
+		left = remaining
+	end)
+	lib.wait_for(function() return left == 0 end, 100)
+	return counts[core.EMERGE_GENERATED] or 0, counts[core.EMERGE_CANCELLED] or 0
+end
+
+-- Real leftovers of a used slot: a saved mob, a dropped item, chest meta, a timer.
+local function plant(lib, run)
+	local mob = core.add_entity(E.encounters(run)[1].pos, "grug_mobs:giant_spider")
+	local item = core.add_item(vector.offset(run.places.arrival, 2, 0, 2), "default:dirt 5")
+	local chest = run.places.chest
+	core.load_area(chest)
+	core.get_meta(chest):set_string("leftover", "yes")
+	core.get_meta(chest):get_inventory():set_size("main", 8)
+	core.get_meta(chest):get_inventory():add_item("main", "default:dirt 3")
+	core.get_node_timer(chest):start(600)
+	lib.logf("PLANTED mob %s item %s meta %s timer %s", tostring(mob ~= nil), tostring(item ~= nil),
+		core.get_meta(chest):get_string("leftover"), tostring(core.get_node_timer(chest):is_started()))
+end
+
+local function objects_in(run)
+	local n, names = 0, {}
+	for object in core.objects_in_area(run.minp, run.maxp) do
+		if not object:is_player() then
+			n = n + 1
+			local entity = object:get_luaentity()
+			names[#names + 1] = entity and entity.name or "?"
+		end
+	end
+	return n, table.concat(names, " ")
+end
+
+local function no_leftovers(lib, run, label)
+	local n, names = objects_in(run)
+	local chest = run.places.chest
+	core.load_area(chest)
+	local meta = core.get_meta(chest)
+	local stacks = meta:get_inventory():get_size("main")
+	lib.check(n == 0 and meta:get_string("leftover") == "" and stacks == 0 and
+		not core.get_node_timer(chest):is_started(),
+		("%s: objects %d (%s), meta '%s', inventory %d, timer %s"):format(label, n, names,
+			meta:get_string("leftover"), stacks, tostring(core.get_node_timer(chest):is_started())))
+end
+
+local function wait_ready(lib, run)
+	local took = lib.wait_for(function() return run.state == "ready" end, 120)
+	lib.check(took ~= nil, ("ready after %.2f s"):format(took or -1))
+end
+
+local function enter(lib, player, run)
+	assert(E.enter(player, "highcourt"))
+	lib.wait_for(function() return E.run_inside(player) == run end, 30)
+	lib.check(E.run_inside(player) == run, "inside at " .. core.pos_to_string(player:get_pos()))
+end
+
+-- The client moves over fresh land at 10 nodes a second, a mount's pace, at a real
+-- viewing range; the preparation runs twice beside it, the second over the first.
+function S.move(lib, player)
+	level_up(player)
+	grug_core.hold_movement(player, "r71frame:move")
+	local at = vector.round(player:get_pos())
+	at.y = 90
+	local step_len = 0.9
+	local last_chunks = lib.chunks
+	lib.on_extra = function()
+		at.z = at.z + step_len
+		player:set_pos(at)
+	end
+	local function rate(label, t0)
+		lib.logf("CHUNKS %s %d in %.1f s", label, lib.chunks - last_chunks, (core.get_us_time() - t0) / 1e6)
+		last_chunks = lib.chunks
+	end
+	local t0 = core.get_us_time()
+	lib.wait(15) -- the first chunks of the walk
+	rate("warmup", t0)
+	lib.phase("walk_baseline")
+	t0 = core.get_us_time()
+	lib.wait(50)
+	lib.phase_end()
+	rate("walk_baseline", t0)
+	lib.phase("walk_prepare")
+	t0 = core.get_us_time()
+	local run = assert(E.create(player, "test_vault", 0))
+	lib.job_run = run
+	wait_ready(lib, run)
+	verify(lib, run)
+	E.end_run(run, "probe")
+	local second = assert(E.create(player, "test_vault", 0))
+	lib.job_run = second
+	wait_ready(lib, second)
+	lib.phase_end()
+	rate("walk_prepare", t0)
+	lib.job_report("walk")
+	verify(lib, second)
+	lib.phase("walk_after")
+	t0 = core.get_us_time()
+	lib.wait(30)
+	lib.phase_end()
+	rate("walk_after", t0)
+	lib.on_extra = nil
+	lib.logf("walked to %s", core.pos_to_string(at))
+end
+
+-- A run from create to end, the release clock, a rewrite over real leftovers, later
+-- generation round a fresh box, Return Home.
+function S.life(lib, player)
+	level_up(player)
+	E.catalogue.RESERVE_SECONDS = 20
+	local log = {}
+	E.register_on_end(function(run, why) log[#log + 1] = run.id .. " " .. why end)
+	local run = assert(E.create(player, "test_vault", 0))
+	lib.job_run = run
+	wait_ready(lib, run)
+	lib.job_report("life_fresh")
+	verify(lib, run)
+	local a = vector.offset(run.minp, -16, -16, -16)
+	local b = vector.offset(run.maxp, 16, 16, 16)
+	local generated, cancelled = ask_area(lib, a, b)
+	lib.check(generated == 0 and cancelled == 0, ("box +- 16 generated: %d new, %d cancelled"):format(generated,
+		cancelled))
+	enter(lib, player, run)
+	lib.check(run.state == "running", "running")
+	plant(lib, run)
+	lib.wait(8)
+	lib.logf("objects after planting: %d (%s)", objects_in(run))
+	assert(E.leave(player))
+	lib.wait_for(function() return E.run_inside(player) == nil end, 40)
+	lib.logf("left to %s", core.pos_to_string(player:get_pos()))
+	local t0 = core.get_us_time()
+	lib.wait_for(function() return run.state == "ended" end, 40)
+	lib.check(run.state == "ended" and log[1] == run.id .. " empty",
+		("released %.1f s after the last one out"):format((core.get_us_time() - t0) / 1e6))
+	lib.check(E.run_at(run.places.arrival) == nil and E.run_of(player) == nil, "slot and owner free")
+	lib.logf("objects still in the old box: %d (%s)", objects_in(run))
+	lib.logf("meta still in the old box: '%s'", core.get_meta(run.places.chest):get_string("leftover"))
+	E.catalogue.RESERVE_SECONDS = 600
+	local second = assert(E.create(player, "test_vault", 0))
+	lib.check(second.slot == run.slot, "the same slot")
+	lib.job_run = second
+	wait_ready(lib, second)
+	lib.job_report("life_rewrite")
+	no_leftovers(lib, second, "after the rewrite")
+	verify(lib, second)
+	enter(lib, player, second)
+	lib.wait(25)
+	no_leftovers(lib, second, "25 s inside")
+	verify(lib, second)
+	-- every chunk touching the box is generated: more generation cannot reach it
+	generated = ask_area(lib, vector.offset(second.minp, -160, -112, -160),
+		vector.offset(second.maxp, 160, 112, 160))
+	lib.logf("generated round the box: %d blocks answered new", generated)
+	lib.wait(10)
+	verify(lib, second)
+	grug_home.return_home(player)
+	lib.wait_for(function() return E.run_inside(player) == nil end, 40)
+	lib.check(E.run_inside(player) == nil and second.entered[lib.NAME], "Return Home left, the place stays")
+	lib.logf("home at %s, cooldown %d", core.pos_to_string(player:get_pos()), grug_home.remaining(player))
+	E.end_run(second, "probe")
+end
+
+-- First boot of the restart proof: stops with the player inside a run, leftovers in it.
+function S.restart1(lib, player)
+	level_up(player)
+	local run = assert(E.create(player, "test_vault", 0))
+	wait_ready(lib, run)
+	enter(lib, player, run)
+	plant(lib, run)
+	lib.wait(12)
+	lib.logf("objects at shutdown: %d (%s)", objects_in(run))
+end
+
+local join_pos
+core.register_on_joinplayer(function(player) join_pos = player:get_pos() end)
+
+-- Second boot, same world: no run left, the player goes home, the slot rewrites.
+function S.restart2(lib, player)
+	local first = {minp = (E.slot_box(1))}
+	first.minp, first.maxp = E.slot_box(1)
+	lib.check(E.slot_at(join_pos) == 1, "logged in inside the box: " .. core.pos_to_string(join_pos))
+	lib.wait_for(function() return E.slot_at(player:get_pos()) == nil end, 30)
+	lib.wait(3)
+	lib.check(E.slot_at(player:get_pos()) == nil and E.run_of(player) == nil,
+		"went home to " .. core.pos_to_string(player:get_pos()))
+	lib.logf("objects back in the old box: %d (%s)", objects_in(first))
+	lib.wait(10)
+	local chest = vector.add(first.minp, E.templates.test_vault.places.chest)
+	core.load_area(chest)
+	lib.logf("old chest: meta '%s', timer %s", core.get_meta(chest):get_string("leftover"),
+		tostring(core.get_node_timer(chest):is_started()))
+	local run = assert(E.create(player, "test_vault", 0))
+	lib.check(run.slot == 1, "the same slot")
+	lib.job_run = run
+	wait_ready(lib, run)
+	lib.job_report("restart")
+	no_leftovers(lib, run, "after the rewrite")
+	verify(lib, run)
+	enter(lib, player, run)
+	lib.wait(25)
+	no_leftovers(lib, run, "25 s inside")
+	verify(lib, run)
+end
+
 -- Phase 1: create, refused while preparing, ready, the layout, enter, waystone back.
 function S.basic(lib, player)
 	lib.phase("baseline")
 	lib.wait(10)
 	lib.phase_end()
-	grug_xp.set_xp(player, grug_xp.xp_for_level(19))
+	level_up(player)
 	local level = grug_xp.get_level(player)
 	lib.logf("level %d, offered %d levels", level, #E.offered_levels(player, "test_vault"))
 	local ok, why = E.can_create(player, "test_vault", 9)

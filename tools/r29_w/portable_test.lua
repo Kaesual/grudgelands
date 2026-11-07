@@ -324,13 +324,13 @@ for _, t in ipairs(after) do if t.delay == 30 then t.fn() end end
 check(fell == 3 and not home.is_pending(player), "B a stalled emerge falls back")
 table.remove(emerge, 1)
 check(reported == 0, "B nothing moved, nothing reported")
-check(home.waystone_pos("highcourt").x == STONE.highcourt.x and home.waystone_pos("nowhere") == nil,
+check(home.waystone_pos("dawnmere").x == STONE.dawnmere.x and home.waystone_pos("nowhere") == nil,
  "B a stone by id")
-check(home.travel(player, fallback_trip(function() return home.waystone_arrival("highcourt") end)),
+check(home.travel(player, fallback_trip(function() return home.waystone_arrival("dawnmere") end)),
  "B a trip to a stone by id")
 finish(0)
-check(reported == 1 and fell == 3 and math.abs(player.pos.x - STONE.highcourt.x) <= 1 and
- math.abs(player.pos.z - STONE.highcourt.z) <= 1, "B the teleport reports")
+check(reported == 1 and fell == 3 and math.abs(player.pos.x - STONE.dawnmere.x) <= 1 and
+ math.abs(player.pos.z - STONE.dawnmere.z) <= 1, "B the teleport reports")
 
 -- The map seam: known stones only, own network.
 local marks = home.known_waypoints(player)

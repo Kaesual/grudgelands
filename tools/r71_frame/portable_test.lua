@@ -57,7 +57,7 @@ for _, row in ipairs(C.list()) do check(not row.hidden, "C list leaves hidden ro
 
 -- D. The template reader, on the shipped test template through zlib.
 local T = dofile(repo .. "/mods/PLAYER/grug_expeditions/template.lua")
-local ffi = require("ffi")
+local _, ffi = pcall(require, "ffi")
 ffi.cdef[[int uncompress(uint8_t *dest, unsigned long *destLen, const uint8_t *src, unsigned long srcLen);]]
 local zlib = ffi.load("z")
 local function inflate(bytes)
