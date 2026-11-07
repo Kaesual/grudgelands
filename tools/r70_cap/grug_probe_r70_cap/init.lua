@@ -149,19 +149,20 @@ end
 
 core.register_globalstep(function(dtime)
 	state.clock = state.clock + dtime
-	if state.clock < 0.5 then
-		if state.phase == "legs" and state.guard then
-			local leg = state.legs[state.leg]
-			if leg then
-				local guard = state.guard
-				if guard.object and guard.object:get_pos() then
-					pcall(grug_mobs.route_walk, guard, dtime, guard.object:get_pos(), CAPITAL,
-						leg.a.pos, leg.b.pos, "r70cap", true)
-				end
-			end
+	if state.phase == "legs" and state.guard then
+		-- The leg through the real cache, on the real guard's body: each step
+		-- until its cache entry has decided (the guard's own patrol shares
+		-- the slot, so the entry is read right after the call).
+		local leg, guard = state.legs[state.leg], state.guard
+		local pos = guard.object and guard.object:get_pos()
+		if leg and pos then
+			pcall(grug_mobs.route_walk, guard, dtime, pos, CAPITAL, leg.a.pos, leg.b.pos,
+				"r70cap", true)
+			local held = guard.temp and guard.temp.grug_leg
+			if held and held.owner == "r70cap" then state.entry = held.entry end
 		end
-		return
 	end
+	if state.clock < 0.5 then return end
 	local step = state.clock
 	state.clock = 0
 	local player = core.get_player_by_name(NAME)
@@ -199,25 +200,29 @@ core.register_globalstep(function(dtime)
 			census(state.anchor, state.by_id)
 			state.guard = find_guard(state.anchor)
 			log("check patrol guard " .. tostring(state.guard and state.guard.name))
-			state.legs = patrol_legs(state.by_id)
-			state.leg, state.waited = 1, 0
-			log("check legs " .. #state.legs)
-			state.phase = state.guard and "legs" or "shots"
+			state.phase = "shots"
 		end
 	elseif state.phase == "legs" then
 		state.waited = state.waited + step
-		local stats = grug_mobs.route_cache_stats(CAPITAL) or {}
 		local leg = state.legs[state.leg]
 		if not leg then
-			log("check route cache " .. core.write_json(stats))
-			state.phase = "shots"
+			log("check route cache " .. core.write_json(grug_mobs.route_cache_stats(CAPITAL) or {}))
+			log("shutdown")
+			state.phase = "done"
+			core.request_shutdown("probe done", false, 0)
 			return
 		end
-		if (stats.pending or 0) == 0 and state.waited >= 1 or state.waited >= 20 then
-			log(("check leg %s %s -> %s %.0f nodes: ok %s none %s pending %s"):format(leg.group,
-				leg.a.id, leg.b.id, vector.distance(leg.a.pos, leg.b.pos),
-				tostring(stats.ok), tostring(stats.none), tostring(stats.pending)))
-			state.leg, state.waited = state.leg + 1, 0
+		local entry = state.entry
+		if entry and not (entry.a.x == leg.a.pos.x and entry.a.z == leg.a.pos.z and
+				entry.b.x == leg.b.pos.x and entry.b.z == leg.b.pos.z) then
+			entry = nil
+		end
+		if entry and entry.state ~= "pending" or state.waited >= 15 then
+			log(("check leg %s %s -> %s %.0f nodes: %s, %d corners"):format(leg.group, leg.a.id,
+				leg.b.id, vector.distance(leg.a.pos, leg.b.pos),
+				entry and entry.state or "UNDECIDED",
+				entry and #entry.points or 0))
+			state.leg, state.waited, state.entry = state.leg + 1, 0, nil
 		end
 	elseif state.phase == "shots" then
 		state.shots = castle_shots(state.by_id)
@@ -226,9 +231,11 @@ core.register_globalstep(function(dtime)
 	elseif state.phase == "shoot" then
 		local shot = state.shots[state.shot]
 		if not shot then
-			state.phase = "done"
-			log("shutdown")
-			core.request_shutdown("probe done", false, 0)
+			core.set_timeofday(0.5)
+			state.legs = state.guard and patrol_legs(state.by_id) or {}
+			state.leg, state.waited = 1, 0
+			log("check legs " .. #state.legs)
+			state.phase = "legs"
 			return
 		end
 		if not state.ran then
