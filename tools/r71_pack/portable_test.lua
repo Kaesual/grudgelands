@@ -542,6 +542,13 @@ do
 	advance(1)
 	check(#living() == 3 and pack.alive == 3 and activate(saved) == nil, "E a body gets its place back")
 
+	-- a run home lost with its block starts again when the mob wakes
+	local walker = living()[1]
+	walker.object:set_pos({x = 30, y = 5, z = 30})
+	walker.temp.grug_evading = nil
+	local woken = activate(walker.object.go_inactive())
+	check(woken and woken.temp.grug_evading ~= nil, "E a waiting pack's mob away from home runs on")
+
 	-- a fully dead pack stays dead
 	local cleo = fake_player("cleo", run)
 	hit(living()[1], cleo)

@@ -358,7 +358,8 @@ end
 
 -- On every activation, before anything else of the mob runs (the rule of
 -- liveness.lua, without its storage: a pack lasts a run): the body of its member, or
--- a stale copy that removes itself. A restart leaves only stale copies.
+-- a stale copy that removes itself. A restart leaves only stale copies. An evade run
+-- is lost with its block, so a waiting pack's mob away from home starts it again.
 local live_claim = grug_mobs.live_claim
 function grug_mobs.live_claim(self)
 	if self._grug_pack then
@@ -369,6 +370,7 @@ function grug_mobs.live_claim(self)
 			return false
 		end
 		member.object = self.object
+		if not pulled[member.pack] then grug_mobs.evade_home(self) end
 	end
 	return live_claim(self)
 end
