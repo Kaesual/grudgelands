@@ -76,7 +76,8 @@ def pack_fight(level, spiders, elites):
     total = spiders * spider_s + elites * elite_s
     spider_seconds = spider_s * spiders * (spiders + 1) / 2
     damage = spider_seconds * hit + total * elites * elite_hit
-    return total, damage
+    # The party really takes this long: PARTY and UPTIME stretch the pure fight time.
+    return total, damage / (PARTY * UPTIME)
 
 
 def boss(level):

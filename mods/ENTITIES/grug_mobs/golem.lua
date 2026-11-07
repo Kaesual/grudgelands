@@ -19,8 +19,8 @@
 -- Damage is stamped at FIRE time from the shooter's level-scaled `damage`
 -- (grug_mobs.stamp_arrow_damage, installed as arrow_override below), so an
 -- elite golem's rock hits for an elite golem's damage without a number in
--- this file. Slower than the skeleton's arrow (12 vs 16): a thrown boulder
--- should be dodgeable.
+-- this file. Slower than the skeleton's arrow (12 vs 16). A rock homes on its
+-- target like every shot (combat_stats.md): only cover before the throw avoids it.
 grug_mobs.register_simple_arrow("grug_mobs:rock_entity", {
 	label = "a hurled rock",
 	texture = "grug_mobs_rock.png",
@@ -264,7 +264,7 @@ mobs:spawn({
 --
 
 local flintback = golem_def("Flintback", "grug_mobs_stone_golem.png")
-flintback._grug_hp_scale = 12
+flintback._grug_hp_scale = 8
 flintback.walk_chance = 0
 flintback.drops = {}
 grug_mobs.register_mob("grug_mobs:flintback", flintback)
