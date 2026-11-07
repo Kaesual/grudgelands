@@ -23,8 +23,8 @@
 --   T  the terrace stair (dressing.terrace): lifts 1 to 5 climbed half a
 --      node at a time with `lift` treads, and Silverleaf's two terrace
 --      houses walked from the lane to the door;
---   S  the six start towns: the waystone at the centre next to the
---      Quartermaster, its mailbox beside it, the travel socket's id.
+--   S  the six start towns: the waystone near the centre, its mailbox beside
+--      it, the travel socket's id.
 --
 -- THE PLAYER MODEL: a node k spans k-0.5 .. k+0.5; a full node's top is
 -- k+0.5, a bottom slab's k, a stair's lower half k and its raised half k+0.5
@@ -539,12 +539,11 @@ for _, profile in ipairs(settlement.roster) do
 		end
 		local label = "S " .. profile.key
 		if check(stone ~= nil and vendor ~= nil, label .. " has its waystone socket and Quartermaster") then
-			local dx, dz = stone.x - vendor.x, stone.z - vendor.z
-			local d = math.sqrt(dx * dx + dz * dz)
-			check(d <= 6, ("%s: the waystone %.1f m from the Quartermaster"):format(label, d))
+			-- Round 70 (the user, 2026-11-07): near the town's centre, no
+			-- longer beside the Quartermaster; tools/r70_towns pins the pocket.
 			local spawn = bp.landmarks.spawn or bp.landmarks.arrival
 			local sx, sz = stone.x - spawn.x, stone.z - spawn.z
-			check(sx * sx + sz * sz <= 12 * 12, label .. ": at the town's centre (within 12 of the spawn)")
+			check(sx * sx + sz * sz <= 16 * 16, label .. ": near the town's centre (within 16 of the spawn)")
 			local cell = at[stone.x .. ":1:" .. stone.z]
 			check(cell and cell.name == "grug_mapgen:waystone", label .. ": the waystone stands in its socket")
 			local box = at[(stone.x + 2) .. ":1:" .. (stone.z + 1)]
@@ -560,9 +559,11 @@ for _, profile in ipairs(settlement.roster) do
 		end
 		if profile.key == "silverleaf" then
 			local walk = walker(at)
-			for _, x in ipairs({-19, 19}) do
-				local path = walk.search(stand(x, 1, -24), function(st)
-					return st.x == x and st.z == -18 and math.abs(st.s - 3.5) < EPS
+			-- Round 70: the houses moved six out and five back with their
+			-- podiums; the stair's foot is on the walk round them.
+			for _, x in ipairs({-25, 25}) do
+				local path = walk.search(stand(x, 1, -29), function(st)
+					return st.x == x and st.z == -23 and math.abs(st.s - 3.5) < EPS
 				end, true)
 				check(path ~= nil, "T Silverleaf's terrace house at x " .. x ..
 					": from the lane up the terrace stair to the door without a jump")
