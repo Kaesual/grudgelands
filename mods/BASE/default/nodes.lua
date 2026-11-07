@@ -2195,7 +2195,9 @@ core.register_node("default:coral_brown", {
 	description = S("Brown Coral"),
 	tiles = {"default_coral_brown.png"},
 	groups = {cracky = 3},
-	drop = "default:coral_skeleton",
+	-- GRUG PATCH: drops itself, like Cyan, Green and Pink Coral (Round 70,
+	-- round70-plan.md §2.3; upstream: default:coral_skeleton).
+	drop = "default:coral_brown",
 	sounds = default.node_sound_stone_defaults(),
 })
 
@@ -2203,7 +2205,9 @@ core.register_node("default:coral_orange", {
 	description = S("Orange Coral"),
 	tiles = {"default_coral_orange.png"},
 	groups = {cracky = 3},
-	drop = "default:coral_skeleton",
+	-- GRUG PATCH: drops itself, like Cyan, Green and Pink Coral (Round 70,
+	-- round70-plan.md §2.3; upstream: default:coral_skeleton).
+	drop = "default:coral_orange",
 	sounds = default.node_sound_stone_defaults(),
 })
 

@@ -60,7 +60,7 @@ grug_gear.BRACKETS = {
 local NUM_BRACKETS = #grug_gear.BRACKETS
 
 -- The equip requirement of an item level: the item level itself from level
--- 1, capped at 60 (round45-plan.md §4.1; boss drops at 65/70 require 60).
+-- 1, capped at 60 (round45-plan.md §4.1; boss drops up to 70 require 60).
 -- grug_quality writes the same rule into a stack's `grug_req_level`.
 function grug_gear.required_level(ilvl)
 	return math.max(1, math.min(math.floor(tonumber(ilvl) or 1), 60))

@@ -22,7 +22,8 @@
 -- only the items without one:
 --
 --   bulk goods               the explicit bulk table below (cobble, sand,
---                            leaves, logs, planks ...), sold in lots
+--                            leaves, decorative plants, logs, planks ...),
+--                            sold in lots
 --   storage blocks           nine times their bar's payout
 --   crafted goods            half the material value of their cheapest
 --                            recipe (potions, dishes, seeds, tools, bags ...)
@@ -112,9 +113,10 @@ for _, name in ipairs({"default:sandstone", "default:sandstonebrick",
 	BULK[name] = 80 -- 1c per 20
 end
 BULK["default:cactus"] = 50 -- as a log
--- By group, first match: leaves and saplings 1c per 50, logs 1c per 20,
--- planks 1c per 99.
-local BULK_GROUPS = {{"leaves", 20}, {"sapling", 20}, {"tree", 50}, {"wood", 12}}
+-- By group, first match: leaves, saplings and decorative plants 1c per 50,
+-- logs 1c per 20, planks 1c per 99.
+local BULK_GROUPS = {{"leaves", 20}, {"sapling", 20}, {"grug_decor_plant", 20},
+	{"tree", 50}, {"wood", 12}}
 
 -- Never sellable (sell plan §3.4): the Bag of Coins (economy.md §1), the
 -- Fallen Crown, and every soulbound or bound item (the Claim Stone, every
@@ -125,7 +127,7 @@ local NEVER_GROUPS = {"grug_soulbound", "grug_bound_skill", "grug_rare_trophy"}
 
 -- Groups whose rating is the item's tier.
 local TIER_GROUPS = {"grug_leather_grade", "grug_tailor_bolt", "grug_wood_grade",
-	"grug_jewellery_setting"}
+	"grug_jewellery_setting", "grug_decor_plant"}
 
 local catalogue -- id -> {kind, tier}
 local resources -- raw/cut item -> resource row

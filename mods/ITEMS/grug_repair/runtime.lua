@@ -29,6 +29,18 @@ local function announce_break(player, stack)
 	end
 end
 
+-- `uses` qualifying uses of wear on an unbroken eligible stack. The remainder
+-- keeps the fraction, so a stack's whole life is exactly its lifetime in uses.
+local function add_wear(player, stack, uses)
+	local meta = stack:get_meta()
+	local lifetime = grug_repair.maximum_durability(stack)
+	local amount = meta:get_int(WEAR_REMAINDER) + math.floor(65535 * uses)
+	local whole = math.floor(amount / lifetime)
+	meta:set_int(WEAR_REMAINDER, amount % lifetime)
+	stack:set_wear(math.min(65535, stack:get_wear() + whole))
+	disable_broken_operation(stack)
+	grug_repair.refresh_durability(stack, player)
+end
 
 local function wear_stack(player, list, index)
 	if creative(player) then return false end
@@ -37,15 +49,8 @@ local function wear_stack(player, list, index)
 	if not grug_repair.eligible(stack) or grug_core.equipment_is_broken(stack) then
 		return false
 	end
-	local meta = stack:get_meta()
-	local lifetime = grug_repair.maximum_durability(stack)
-	local amount = meta:get_int(WEAR_REMAINDER) + 65535
-	local whole = math.floor(amount / lifetime)
-	meta:set_int(WEAR_REMAINDER, amount % lifetime)
-	stack:set_wear(math.min(65535, stack:get_wear() + whole))
-	disable_broken_operation(stack)
+	add_wear(player, stack, 1)
 	announce_break(player, stack)
-	grug_repair.refresh_durability(stack, player)
 	inv:set_stack(list, index, stack)
 	if grug_inventory.is_equipment_list(list) then
 		-- Pure wear is its own cheap event (Round 37 ruling 2.1.2): the
@@ -165,6 +170,35 @@ grug_core.register_on_settled_incoming_hit(function(player)
 	if #candidates > 0 then wear_stack(player, candidates[math.random(#candidates)], 1) end
 end)
 
+-- The death penalty (Round 70, durability_repair.md): every equipped item
+-- that wears loses this share of its maximum durability, down to 0. Which
+-- items that is, is `eligible`'s answer; trinkets never are. One event for
+-- the whole set: one equipment notification, pure wear (it names no list, so
+-- every cache drops) unless an item broke, and one break cue.
+grug_repair.DEATH_WEAR_PERCENT = 10
+
+function grug_repair.wear_death(player)
+	if creative(player) then return false end
+	local inv = player:get_inventory()
+	local worn, broke = false, false
+	for _, slot in ipairs(grug_inventory.equipment_slots) do
+		local stack = inv:get_stack(slot.list, 1)
+		if grug_repair.eligible(stack) and not grug_core.equipment_is_broken(stack) then
+			add_wear(player, stack, grug_repair.maximum_durability(stack) *
+				grug_repair.DEATH_WEAR_PERCENT / 100)
+			broke = broke or grug_core.equipment_is_broken(stack)
+			inv:set_stack(slot.list, 1, stack)
+			worn = true
+		end
+	end
+	if broke then grug_sounds.play("gear_break", player) end
+	if worn then
+		grug_inventory.equipment_changed(player, nil,
+			not broke and "durability_metadata" or nil)
+	end
+	return worn
+end
+
 core.register_on_leaveplayer(function(player)
 	settled[player:get_player_name()] = nil
 end)
@@ -183,7 +217,12 @@ core.register_on_mods_loaded(function()
 				local on_use = def.on_use
 				if on_use then
 					core.override_item(name, {on_use = function(stack, user, pointed)
-						if grug_core.equipment_is_broken(stack) then return stack end
+						if grug_core.equipment_is_broken(stack) then
+							-- This wrapper runs outside grug_inventory's pickup one
+							-- and a broken tool still picks up drops.
+							grug_inventory.pick_up_pointed(user, pointed)
+							return stack
+						end
 						stack = on_use(stack, user, pointed) or stack
 						disable_broken_operation(stack)
 						announce_break(user, stack)

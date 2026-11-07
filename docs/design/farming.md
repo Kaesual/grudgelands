@@ -24,7 +24,12 @@ Dragonweed, Crimson Lotus); Ember Moss is both a healing herb in the wild and
 a crop. Ground cover (grass, ferns, reeds, cattails, moss carpet and the like)
 drops itself for decoration and has no seeds and no propagation.
 
-Every family has four logical stages at 200 seconds per advance. Growth runs
+Every family has four logical stages. Each advance takes **160–240 seconds**,
+200 on average (Round 70): the length follows from the crop's position and
+stage, in whole seconds, so a field ripens spread out and nothing about it is
+stored. The kept progress is the seconds of wet and lit growth into the current
+stage; pause, resume and offline catch-up all read the same lengths, and a long
+absence walks them stage by stage up to ripe. Growth runs
 only above wet crop soil; drying pauses exact partial progress and rewetting
 resumes it. Crop soil checks for water within three nodes every 15 seconds
 while a growing crop stands on it and once a minute otherwise; planting and
@@ -131,7 +136,10 @@ candidate denominator and retain the existing geographic, biome, support,
 shore, level and depth predicates. Do not relocate rejected initial candidates.
 Grass, decorative flowers, ores and gems are excluded. Rock Salt and Salt
 Crust keep their full initial density (Round 48: they renew, but the world
-generates them as before).
+generates them as before). Round 70 raised the catalog rates of the sources
+a world held too few of (Stormkelp, Wild Cocoa, Frost Melon, Bamboo Shoot,
+Sugar Cane); they stay halved like every other row
+([round70-plan.md](../planning/round70-plan.md) §2.1).
 
 ## Wild plant renewal
 
@@ -149,10 +157,10 @@ read-only authority `grug_mapgen` `wp40/vegetation_density.lua`
 - *Resource plants* (the renewable world content and P9G gathering rows) count
   **per species**, at `1 / initial_denominator` per eligible column (cave rows:
   per eligible cave-floor node), with each row's zone, biome, support, level or
-  depth and shore predicates. Rock Salt (the three coast zones and their
-  shore rule) and Salt Crust (mesa clay in The Shattered Line) renew too, at
-  their full initial density (Round 48, the deliberate exception to
-  [world.md](world.md) R4).
+  depth and water predicates, the writer's own functions. Rock Salt (the
+  beaches of the three coast zones, off the water, since Round 70) and Salt
+  Crust (mesa clay in The Shattered Line) renew too, at their full initial
+  density (Round 48, the deliberate exception to [world.md](world.md) R4).
 - *Ground cover* (grass, dry grass, ferns, junglegrass, dry shrubs) counts **as
   one total** at the sum of the biome's decoration rates
   ([biomes_mobs.md](biomes_mobs.md) §2.1), thinned per support exactly like the
@@ -232,7 +240,11 @@ the natural count about 1.5 plants (radius 4–24, ±4 nodes high; woody trunks
 4 below to 12 above). Target = eligible supports × density, rounded to an
 integer by a fixed per-patch fraction. At or above the target nothing is
 placed; below it the chance is the class chance × (target − present) / target.
-Shoreline species count at most two eligible supports per box width.
+A resource row with a shore rule (Stormkelp, Frost Melon, Bamboo Shoot, Sugar
+Cane) rolls four times the resource chance (Round 70, the user, 2026-11-07), so
+a harvested shore plant returns while a player stays nearby; Rock Salt is no
+such row. Shoreline species count at most two eligible supports per box width,
+Stormkelp three: its reach from the water (Round 70).
 Round 51: the shore papyrus counts as a shoreline species and by columns (a
 stack of 2–4 is one plant); the lichen counts at most one patch (25 columns)
 of supports, since it grows only inside its patches.
@@ -260,8 +272,8 @@ renewal path.
 
 **Rates** (first version by feel, tuned in playtest; constants in
 `grug_farming/renewal.lua`): each player is serviced once per 5 seconds with
-4 sampled spots; class chance at a full deficit 0.05 for resource plants, 0.5
-for ground cover and 0.1 for tree and shrub saplings. Area queries are capped at 150 000 node
+4 sampled spots; class chance at a full deficit 0.05 for resource plants (0.2
+with a shore rule), 0.5 for ground cover and 0.1 for tree and shrub saplings. Area queries are capped at 150 000 node
 visits per player and step, independent of world size.
 
 **Apples and blueberries** are not renewal plants: a picked natural apple

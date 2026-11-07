@@ -8,8 +8,8 @@
 --      elite and named rare 10/10/5 %, never more than one gear item per kill,
 --      critters none; the quality is the enchant count plus one;
 --   B. bosses: a King, a dragon, a General and the rift boss (Round 36) always
---      drop two items, blue or gold at about even odds, at item level 65 / 70 /
---      65 / 65; the kill-loot hook leaves Kings, royal guards and the rift boss
+--      drop two items, blue or gold at about even odds, at item level 70 / 70 /
+--      65 / 60; the kill-loot hook leaves Kings, royal guards and the rift boss
 --      to the ledger and drops the General's; encounter adds (whelps, summoned
 --      raiders) drop no gear and no bag; inside the loot lockout the rift boss
 --      gives an elite's roll, a King and a dragon nothing;
@@ -234,16 +234,16 @@ end
 ------------------------------------------------------------------------------
 do
 	local bosses = {
-		{label = "King", ilvl = 65, mob = {name = "grug_mobs:king_human",
+		{label = "King", ilvl = 70, mob = {name = "grug_mobs:king_human",
 			_grug_boss_id = "king:human", _grug_royal_king = true, _grug_tier = "elite",
-			_grug_level = 65}},
+			_grug_level = 70}},
 		{label = "dragon", ilvl = 70, mob = {name = "grug_mobs:dragon_ice",
 			_grug_boss_id = "dragon:ice", _grug_tier = "boss", _grug_level = 70}},
 		{label = "General", ilvl = 65, mob = {name = "grug_mobs:general_accord",
 			_grug_boss_id = "general:accord", _grug_royal_king = true, _grug_tier = "elite",
 			_grug_level = 65}},
 		-- Round 36: the rift boss, through its ledger like a dragon.
-		{label = "rift boss", ilvl = 65, mob = {name = "grug_mobs:rift_boss",
+		{label = "rift boss", ilvl = 60, mob = {name = "grug_mobs:rift_boss",
 			_grug_boss_id = "rift:r20_anchor_077", _grug_tier = "elite", _grug_level = 60}},
 	}
 	for _, boss in ipairs(bosses) do

@@ -1668,7 +1668,7 @@ compatible biome patch outside these ids grants no source.
 | Crimson Lotus | `elandor_glassroot_wilds`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_thunderroot_wilds`; `kragmar_whispering_reedlands` |
 | Sunleaf | `elandor_copperfell_foothills`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_hearthpine_vale`; `elandor_silverleaf_glades`; `elandor_starbough_vale`; `kragmar_kapok_cradle`; `kragmar_mournfen`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna`; `kragmar_stillgrave_hollow`; `kragmar_sunscar_flats` |
 | Marshbloom | `elandor_lorindor`; `elandor_whitebridge_shire`; `kragmar_ossuary_reach`; `kragmar_whispering_reedlands` |
-| Stormkelp | `front_gravesalt_escarpment`; `front_shattered_line` (swamp mud only); `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
+| Stormkelp | `front_gravesalt_escarpment`; `front_shattered_line`; `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
 | Potato | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway` |
 | Corn | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_shattered_line`; `kragmar_bannerbreak_mesa`; `kragmar_redtusk_savanna`; `kragmar_speargrass_reach`; `kragmar_sunscar_flats` |
 | Melon | `elandor_glassroot_wilds`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_kapok_cradle`; `kragmar_raincall_basin`; `kragmar_thunderroot_wilds`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
@@ -1690,17 +1690,20 @@ rainforest litter or Deep Jungle/Jungle Fringe canopy litter; Mushroom uses
 Deep Forest litter, Bone Forest litter or Swamp mud; and Wild Cocoa uses Deep
 Jungle/Jungle Fringe canopy litter.
 
-Stormkelp and Rock Salt are shore predicates rather than engine beach
-decorations. Their root is dry land with exact accepted P7 support and at least
-one cardinal neighbor classified as planned water, coastal shelf, deep ocean
-or immutable dragon channel; diagonal contact is insufficient. Rock Salt also
-requires logical biome `grug_beach`. In Gravesalt its support is exactly
-`default:sand`; in Stormscale and Wyrmglass its support is `default:stone` or
-`default:gravel`. These are zone-scoped alternatives, not a global expansion
-of accepted hosts. The analytic P7 support and actual settled/lower-owner
-support must identify the same accepted node. Stormkelp does not require the
-beach biome, so the Skyglass coast also hosts it. The three
-Rock Salt zone endpoints remain exact; Salt Crust is a distinct Cooking item.
+Stormkelp and Rock Salt carry water predicates rather than engine beach
+decorations (Round 70, the user's rulings of 2026-11-07;
+`habitat_registry.lua` `p9g_predicate_matches`, read by the writer and by
+renewal). A column counts as water when it is classified as planned water,
+coastal shelf, deep ocean or immutable dragon channel. Both roots are dry land
+with exact accepted P7 support, `default:sand`, `default:gravel` or
+`default:stone`, and the analytic P7 support and actual settled/lower-owner
+support must identify the same accepted node. Stormkelp (`near_water`) needs a
+water column within three nodes, measured as a square, in any biome of its five
+zones. Rock Salt (`no_water`) needs logical biome `grug_beach` and no water
+column on its four faces, so it may stand anywhere on the beach of its three
+zones except the water line, and it keeps off river and lake banks like every
+row that is no shore row. The three Rock Salt zone endpoints remain exact; Salt
+Crust is a distinct Cooking item.
 
 The claim-exclusion records `exclude:coast:island_wyrmglass` and
 `exclude:coast:island_stormscale` describe whole-island envelopes rather than
@@ -1865,7 +1868,7 @@ one-cell settlement checks are unchanged.
   96-node civic core and its 40-node collar; there are no per-race terrace
   forms (the anchor profiles' `shape` names are not read). None depends on
   accidental v7 land.
-- The six kings are equal civic rulers and killable level-65 elite NPCs. Every
+- The six kings are equal civic rulers and killable level-70 elite NPCs. Every
   king has exactly four level-60 elite royal guards. The king is the tallest
   figure in his hall: final `visual_size` 1.6 (2.72 nodes, box and model
   alike) against his elite guards' 1.4 (2.38 nodes) (Round 28 ruling 9). No capital is a superior
@@ -2042,7 +2045,7 @@ numeric-truncated seed.
   exactly 60 inside the capital's protected volume (from the capital anchor's
   placement height − 80 upward, Round 24 ruling 30). Below that floor and
   everywhere else on non-exterior land it returns the existing generic base
-  `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
+  `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-70 king
   remains outside this resolver.
 - `faction_at` returns `accord`, `throng` or nil and never derives
   construction rights from `race_region`. `territory_rule_at` and
@@ -2292,9 +2295,9 @@ bands 1–2 mean levels 1–6 and bands 2–3 mean 4–10.
 | blightberry | Mournfen 11–20 | blight viable soil | none; 1/256 |
 | sunberry | Redtusk 11–20 | savanna viable soil | none; 1/256 |
 | jungle_berry | Raincall 11–20 | jungle-edge viable soil | none; 1/256 |
-| frost_melon | Frostbarrow, Whitebridge, Ossuary, Whispering Reedlands 21–30 (the two Throng zones since Round 60) | crags gravel or swamp mud, or sand in either, at a freshwater margin (Round 22 Phase 5: margins are mostly sand) | fresh cardinal contact; 1/64 (the margin is a thin band) |
-| sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/256 |
-| bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/256 |
+| frost_melon | Frostbarrow, Whitebridge, Ossuary, Whispering Reedlands 21–30 (the two Throng zones since Round 60) | crags, pine hills, blight or bone forest gravel or sand, swamp mud or sand, at a freshwater margin (Round 22 Phase 5: margins are mostly sand; Round 70: Frostbarrow's rivers run through its pine hills, Ossuary's through blight and bone forest) | fresh cardinal contact; 1/16 (the margin is a thin band) |
+| sugar_cane | every named zone and band with a shore | shore sand only; no rock support | fresh or sea cardinal contact; 1/64 (Round 70) |
+| bamboo_shoot | every named zone with matching shore host | jungle-edge, deep-jungle or swamp; sand or mud | fresh or sea cardinal contact; 1/32 (Round 70) |
 | cave_cap | cave floors at y −500…−100 (native `all_floors` decoration since Round 49) | actual T1–T4 tier rock support (`default:stone`, `grug_materials:t2_stone`..`t4_stone`) | no surface placement; 1/768 |
 | salt_crust | Shattered Line bands 2–3, levels 44–50 | badlands mesa clay | none; 1/512 |
 | ember_moss | cave floors at y ≤ −701 (native `all_floors` decoration since Round 49) | actual T5 tier rock (`grug_materials:t5_stone`) support | no surface placement; 1/1024 |
@@ -2320,8 +2323,7 @@ cave sources regrow normally. Every other candidate rejection does not move, ret
 it.
 
 The accepted Mushroom set additionally includes `kragmar_speargrass_reach` on
-its swamp-mud host. Stormkelp additionally includes `front_shattered_line`,
-restricted there to swamp-mud shores. Other closed WP33 rows remain unchanged.
+its swamp-mud host. Other closed WP33 rows remain unchanged.
 
 Second-soil patches use coherent existing terrain variation: meadow dirt,
 pine gravel, savanna dry/cracked earth, jungle mud, blight ash ground and elf

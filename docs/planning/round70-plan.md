@@ -218,6 +218,11 @@ bindings hang on sockets.
 **Ruling (user, 2026-11-07):** one shared basic form for the castles, not six
 individual designs.
 
+**Rulings on the DESIGN review (user, 2026-11-07):** the land-use proposal
+(`tools/r70_design`) stands, with its per-place recommendations. The civic core
+grows from radius 48 to **56** in all six capitals. Kezamba and Lethariel may move
+the core a little away from their lake, so the buildings there have more room.
+
 ### 2.8 Start towns (user, 2026-11-07; needs the map reset)
 
 - Rework the layout of the six start towns. The waystone looks squeezed in.
@@ -258,11 +263,19 @@ rift 65.
   `king_def` (`bosses.lua`), so the 65 there must split.
 - **The Fallen Crown** raises an item to its tier's top + 10, at most 70: a T5 item
   to 60, a T6 item to 70, an item at 61–69 to 70. It applies only to items below
-  level 70, so it refuses a dragon's level 75 item and a King's level 70 drop.
+  level 70, so it refuses a King's or a dragon's level 70 drop.
   Today a boss drop takes an enchant-only crown at equal level; that ends.
-  Only dragons drop level 75.
-- **Dragons** rise to level 75 with **30,000 HP** (the user finds them too easy)
-  and drop level 75 items. **Enchants stay limited to T7.**
+- **Dragons** stay at level 70 and item level 70 and rise to **30,000 HP** (the
+  user finds them too easy; changed 2026-11-07 after the level malus numbers, no
+  item level 75). Their loot stays as it is, although they now match the Kings'
+  item level: Kings have their own challenge, the fight through the capital.
+  **Enchants stay limited to T7.**
+- **Level malus** (user, 2026-11-07): replaces "free up to 5 levels, then 10
+  points per level, floor 10%". A player deals 5 points less per level the mob is
+  above them, from the first level, with a floor of 25% at 15 levels:
+  `max(0.25, 1 − 0.05 × gap)`. Applies to every mob. Generals at 65 cost level-60
+  players 25% of their damage, Kings and dragons at 70 cost 50%. Everyday
+  levelling feels this at 1–3 levels above; measured in the GUI test, not modelled.
 - **T7** (61–70) stops being "boss drops and crowned items only": instance mobs
   at 61–69 drop it too. `roll_mob_gear` caps every non-boss mob at item level 60
   (`grug_quality/init.lua`), and that cap keeps the level 70 Abyssal Shark out of
@@ -281,8 +294,8 @@ The crown's other effect stays: every enchant gains one tier.
 `grug_traders/crown.lua` and `grug_quality`. Fixtures: `tools/r33_c1`,
 `tools/r33_c4`, `tools/r45_eu`, `tools/r31_g` (Generals).
 
-**To check:** item level 75 is new: check the gear curves, the clamps at 70
-(`grug_quality`) and the use level, which is capped at 60 (`grug_gear/init.lua`).
+Fixtures and docs of the malus: `grug_core/combat.lua`, `combat_stats.md`,
+`tools/r36_k`, `tools/r36_r`.
 
 ## 3. Shared conventions
 
@@ -323,9 +336,8 @@ The hints are small and permanent, and they follow equip, repair and wear change
 
 ### LEVELS — bosses and items
 
-The numbers of §2.10. Generals stay at 65 while Kings rise. Item level 75 works
-through gear curves, enchant clamps and use level. Kings at 70 stay fair: report
-what the encounter needs.
+The numbers of §2.10. Generals stay at 65 while Kings rise. The new level malus
+applies to every mob. Kings at 70 stay fair: report what the encounter needs.
 
 ### ART — pick page
 
@@ -399,8 +411,9 @@ Lane D expands this list.
 - Stonewright: each rank's recipes, lots, fee, the grinder and furnace, each block.
 - Death lowers durability by 10%, can break an item, costs nothing after PvP; both
   HUD hints appear and clear.
-- Kings at 70, dragons at 75 with 30,000 HP, the rift boss's item level, the crown's
+- Kings at 70, dragons at 70 with 30,000 HP, the rift boss's item level, the crown's
   results and refusals.
+- The new level malus: fights 1–3 levels above you, elite group quests, Generals.
 - Each capital: core, castle, throne room, gates, patrols, king fight.
 - Each start town: centre, waystone, a walk from spawn to the first quests.
 - Wayposts at road junctions show readable town names.

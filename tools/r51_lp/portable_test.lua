@@ -2,9 +2,10 @@
 -- sources, the real mapgen runtime of one seed (tools/seed_fleet/runtime.lua,
 -- built as the engine builds it, main's vegetation authority included) and
 -- the real renewal:
---   A. the plants: drawtype, alpha, not walkable, nothing glows, drops
---      nothing (ferns and marram too), the picked art byte for byte, the
---      bush foliage and the lianas decay with their wood, the liana pair;
+--   A. the plants: drawtype, alpha, not walkable, nothing glows, the picked
+--      art byte for byte, the bush foliage and the lianas decay with their
+--      wood, the liana pair (what they drop since Round 70: the
+--      tools/r70_plants fixture);
 --   B. the rows: every LP row's biomes, kind, node, density, rule and class
 --      (the viewer's guide densities), no swamp papyrus pedestal row, and the
 --      authority's palettes: each simple row grows on its hosts at the row's
@@ -82,7 +83,6 @@ for _, row in ipairs(PLANTS) do
 	local def = rawget(nodes, name)
 	if check(def ~= nil, name .. " is registered") then
 		check(def.drawtype == drawtype, name .. " is " .. drawtype)
-		check(def.drop == "", name .. " drops nothing")
 		check((def.light_source or 0) == 0, name .. " does not glow")
 		check(def.is_ground_content == false, name .. " is no ground content")
 		if drawtype ~= "allfaces_optional" then
@@ -98,10 +98,6 @@ for _, name in ipairs({"grug_nodes:lichen_carpet", "grug_nodes:lichen_carpet_b"}
 	local def = nodes[name]
 	check(def.use_texture_alpha == "clip" and def.groups.attached_node == 3 and def.buildable_to and
 		def.node_box.fixed[5] == -7 / 16, name .. ": a 1/16 carpet, alpha clip, attached below")
-end
-for i = 1, 3 do
-	check(nodes["default:fern_" .. i].drop == "", "default:fern_" .. i .. " drops nothing")
-	check(nodes["default:marram_grass_" .. i].drop == "", "default:marram_grass_" .. i .. " drops nothing")
 end
 -- decay with the wood: the stems' after_destruct and the leaves' timers
 for _, pair in ipairs({{"default:bush_stem", "grug_nodes:jungle_bush_leaves", "default:bush_leaves"},

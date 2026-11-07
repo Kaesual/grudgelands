@@ -138,15 +138,15 @@ function grug_core.level_scale(level)
 	return grug_core.base_pool(level) / (8 * grug_core.baseline_melee_total(level))
 end
 
--- Higher-level mobs resist players who are more than five levels below them:
--- -10 percentage points per further level, with a 10% floor.
+-- Higher-level mobs resist players below them: -5 percentage points per level
+-- of the gap, from the first level, with a 25% floor at 15 levels.
 function grug_core.level_malus(player_level, mob_level)
-	local excess = math.floor(tonumber(mob_level) or 1)
-		- (math.floor(tonumber(player_level) or 1) + 5)
-	if excess <= 0 then
+	local gap = math.floor(tonumber(mob_level) or 1)
+		- math.floor(tonumber(player_level) or 1)
+	if gap <= 0 then
 		return 1
 	end
-	return math.max(0.1, 1 - 0.1 * excess)
+	return math.max(0.25, 1 - 0.05 * gap)
 end
 
 -- Support and consumable amounts arrive here after deriving their absolute

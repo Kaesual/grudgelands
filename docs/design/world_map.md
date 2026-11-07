@@ -276,7 +276,7 @@ Round 44 (the UI rework spec, rulings 10, 12 and 14, §3.6; wireframe v1).
   | Button | Long name | Content | Factions | Tooltip |
   |---|---|---|---|---|
   | Quests | Quest givers | every quest giver by its state, the minimap's set and precedence: gold "?" ready, "!" available, silver "?" active, silver "!" locked (next quest in one or two levels) | own | the NPC's name |
-  | Bosses | Kings & bosses | the six kings, the two dragons (a dragon arena within 64 nodes of its dragon is one icon), the rift boss at his clash site (the clash icon), the rare dens | both | the name, with the level where the registry has a fixed one ("King of Highcourt (level 65)"); a den its name, "Rare den" and the level at its anchor |
+  | Bosses | Kings & bosses | the six kings, the two dragons (a dragon arena within 64 nodes of its dragon is one icon), the rift boss at his clash site (the clash icon), the rare dens | both | the name, with the level where the registry has a fixed one ("King of Highcourt (level 70)"); a den its name, "Rare den" and the level at its anchor |
   | Services | Trainers & traders | the profession and Riding trainers, the mender, the Crownbinder, the Decor Merchant, the Housing Steward | own | the NPC's title |
   | Travel | Settlements & travel | every start, capital, village and outpost; the own innkeepers, the home (innkeeper or Claim Stone), the discovered waystones and the Claim Stone waypoint | both; own for NPCs and travel | the settlement's name; "Highcourt Innkeeper", "Your home: Highcourt Innkeeper", "Highcourt Waystone" |
   | Places | Points of interest | bandit and Mirefolk camps, mines and gem camps, the mining camps (Round 58, the brown tent and bright pickaxe icon `grug_map_mining_camp.png`), clash sites | both | "Bandit camp: Coalbrand Yard" (kind and name) |
@@ -991,6 +991,6 @@ were in, and quest texts and level routes now name zones.
   `grug_map_zone_grid.txt` stays gone (the grid is sampled at every start,
   seed 42 0.13 s), and a world's old file stays unread.
 - **Kings** are markers of the map window's Bosses layer since Round 47,
-  with name and level ("King of Highcourt (level 65)"); in Rounds 44–46
+  with name and level ("King of Highcourt (level 70)"); in Rounds 44–46
   they were baked icons without a tooltip, until then "King of Highcourt"
   markers.

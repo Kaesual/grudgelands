@@ -12,6 +12,10 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.70.0 — in progress
+
+Round 70 is under way; lane D writes this entry. **Map reset** needed.
+
 ## 0.69.0 — a Trash box, respawn at home, exact skill numbers and new camp sites (2026-11-04)
 
 Players' reports and wishes. **Migration** needed: the server's host runs the

@@ -89,8 +89,11 @@ tools](#player-meta-read-by-external-tools).
   `grug_abilities` gates `valid_target`, the swing handler and support
   (`support_refused`: a refusal costs nothing). PvP contact arms
   `mark_in_combat(player, grug_core.PVP_COMBAT_TIMEOUT)`. Logout death:
-  credited at leave, applied at the next join (`grug_pvp:logout_death`);
-  a shutdown sets no mark. NPC kills count through `_grug_pvp_kind` on the
+  credited at leave, applied at the next join (`grug_pvp:logout_death`, `1`
+  or, without an enemy's hit in the 30 s of `R.pvp_death`, `wear`; the set_hp
+  reason's `pvp_death` carries it to the death);
+  a shutdown sets no mark. `register_on_death(fn(player, pvp))` runs after every
+  death; `grug_repair`'s init.lua calls `wear_death` on a non-PvP one. NPC kills count through `_grug_pvp_kind` on the
   garrison prototypes and grug_mobs' eligible-kill hook. `page.lua` (sfinv
   page after Party; texts in the pure `view.lua`) and `hud.lua` (one status
   source) are P2's; the zone banner's territory line and colour ask
@@ -644,6 +647,8 @@ tools](#player-meta-read-by-external-tools).
   dropped), and the stats, look, Character page and ability mana/HUD/
   description/skin consumers return at once; grug_repair writes only the
   tooltip's "Durability: N / M" line (`grug_repair.refresh_durability`).
+  The HUD's durability hints (`grug_repair/hints.lua`) read the worn slot on
+  that reason and every equipment slot on any other change.
   Held swings refresh their usable same-item snapshot without restarting
   cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**
@@ -1148,7 +1153,7 @@ tools](#player-meta-read-by-external-tools).
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
     Kraken L70 (elite), the Round 51 sharks (Bay Shark L30, Abyssal Shark
-    L70 elite), the island dragons L70, the capital kings L65 and their royal
+    L70 elite), the island dragons L70, the capital kings L70 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
@@ -1570,7 +1575,8 @@ tools](#player-meta-read-by-external-tools).
   Fallen Crown (the crown NPC owns the fee and the crown item). Gear drops
   (Round 33) are data in `grug_quality/init.lua`: `grug_items.DROP_CHANCES`
   (normal, elite and rare rows; zone leaders and war-camp captains roll the
-  elite row), `BOSS_DROPS` (two items at 65/70), `BAG_DROPS` (0.1 % by mob
+  elite row), `BOSS_DROPS` (two items at each boss's fixed item level),
+  `BAG_DROPS` (0.1 % by mob
   level) and `grug_items.enchant_tier(ilvl)` (T7 above 60); the pool is
   `grug_gear.drop_pool` (every equippable item of the tier). Every stack
   with an item level carries `grug_req_level` = min(ilvl, 60), written by

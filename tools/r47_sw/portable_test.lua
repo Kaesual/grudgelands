@@ -8,7 +8,7 @@
 --   B. groups and drops: the mud variants and the wet grass are soil, mud,
 --      natural loose ground and drop mud (lane TA's root ground list takes
 --      every `soil` node); the plants are snappy and drop themselves; the
---      swamp leaves and the hanging moss drop nothing, like gravewood's
+--      swamp leaves and the hanging moss drop themselves, like gravewood's
 --      leaves; no new node is an attached_node = 4;
 --   C. digging: hand and shovel need the same time as on mud for the three
 --      grounds, the rooted reeds as on mud too, the plants as papyrus, the
@@ -132,8 +132,9 @@ for _, name in ipairs(PLANTS) do
 	check(nodes[name].drop == nil and nodes[name].groups.snappy == 3, name .. " is snappy and drops itself")
 end
 for _, name in ipairs(TREE) do
-	check(nodes[name].drop == "" and nodes[name].drop == nodes["grug_trees:gravewood_leaves"].drop,
-		name .. " drops what gravewood leaves drop (nothing)")
+	-- Round 70 (round70-plan.md §2.3): no longer "", tools/r70_plants has the rest
+	check(nodes[name].drop == nil and nodes[name].drop == nodes["grug_trees:gravewood_leaves"].drop,
+		name .. " drops what gravewood leaves drop (itself)")
 	check(nodes[name].groups.leafdecay == 3, name .. " is in the leaf decay group")
 end
 

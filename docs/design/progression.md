@@ -146,9 +146,14 @@ and section G.
 Revised 2026-09-23, Round 18:
 
 - Every death respawns at the home with full inventory
-  ([home_travel.md](home_travel.md)). No corpse run or extra durability-on-death.
+  ([home_travel.md](home_travel.md)). No corpse run and no item drop.
 - **No death causes XP loss**, including PvE, PvP and environmental deaths.
-  No replacement penalty is introduced; travel back remains a consequence.
+- **A death wears the equipped items** (Round 70, the user's ruling of
+  2026-11-07, reversing Round 18's "no extra durability-on-death" and "no
+  replacement penalty"): 10 % of each item's maximum durability, which can
+  break it, except after an enemy player's hit in the last 30 s.
+  [durability_repair.md](durability_repair.md) owns the rule. Travel back
+  remains a consequence too.
 - XP is capped at the cumulative threshold for level 60; overflow from normal
   rewards and `/xp give` is discarded. The command reports the actual award.
 - On a real upward level transition, living characters refill HP and mana after

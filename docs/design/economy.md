@@ -170,6 +170,7 @@ items without one:
   | Cobblestone, Mossy and Desert Cobblestone, Granite, Basalt, Slate; Stone, Desert Stone and their bricks and blocks | 20 mc | 1c per 50 |
   | Sand, Desert Sand, Silver Sand, Gravel | 20 mc | 1c per 50 |
   | Leaves (`group:leaves`), saplings (`group:sapling`) | 20 mc | 1c per 50 |
+  | Decorative plants (`group:grug_decor_plant`: the plants, foliage and corals of [biomes_mobs.md](biomes_mobs.md) §1.3, Round 70), tier 1 | 20 mc | 1c per 50 |
   | Sandstone, Desert and Silver Sandstone and their bricks and blocks | 80 mc (four sand) | 1c per 20 |
   | Logs (`group:tree`) and Cactus | 50 mc | 1c per 20 |
   | Planks (`group:wood`) | 12 mc (a quarter log, rounded down) | 1c per 99 |
@@ -196,7 +197,7 @@ items without one:
   bound items (`grug_soulbound`, `grug_bound_skill`: the Claim Stone, every
   quest-only item since Round 60 (both Captain's Orders, the Dispatch
   Folio, since Round 61 the Runner's Packet), ability items, the retired mount and boat items); and,
-  having no value, dirt and the soils, clay, snow, ice, ground cover,
+  having no value, dirt and the soils, clay, snow, ice, other ground cover,
   flowers and dyes, obsidian, and anything no player can hold (growth
   stages, door halves, liquids, mapgen nodes).
 - A craft, cook, pack/unpack or service loop may not print money: an output
@@ -212,8 +213,9 @@ items without one:
 
 **The sell window** (the trader's Sell tab):
 
-- It lists what the player carries in `main`, the bags and the inactive
-  hotbar layout, with no marker (`grug_inventory.consume_lists`, the lists
+- It lists what the player carries in `main`, the bags, the inactive
+  hotbar layout and the potion belt (Round 70: crafted potions land there
+  first), with no marker (`grug_inventory.consume_lists`, the lists
   every consumer counts and takes from; Round 56 ruling 8). A good that
   sells singly keeps one row per slot with **1**, **5**, **10** and **All**, at its quality
   factor. A **lot good** gets **one row per item name**, its count summed
@@ -305,8 +307,8 @@ items without one:
 - **The crown** (Round 33, [item_tiers.md](item_tiers.md) §4): the
   Crownbinder at the gate of every capital's goldsmith hall applies one Fallen Crown to one item for one
   hour of band-6 income, **1g 48s** (`grug_traders.CROWN_FEE`, checked by
-  `income.py`). Once per item; the operation refuses where it would change
-  nothing.
+  `income.py`). Once per item, only below item level 70; a King's or a
+  dragon's drop is refused.
 - **Culture vendor** (Round 33, [item_tiers.md](item_tiers.md) §6.4): the
   Decor Merchant at the gate of every capital's woodcarver hall sells
   cosmetic blocks and lights nobody can craft — accent blocks 25c (marble,

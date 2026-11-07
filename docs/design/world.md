@@ -463,7 +463,7 @@ from y = −501.
 - All six capitals are walled (Round 23 ruling 2026-09-28, which walled
   Lethariel and Kezamba as well; `settlements.md`).
 - Its guards and important faction NPCs are level 60; the killable race king
-  is the explicit level-65 elite exception and is protected by four level-60
+  is the explicit level-70 elite exception and is protected by four level-60
   elite royal guards (`world_zones.md` §12).
 - Its center has four cardinal gates facing level 10–20 home territory,
   medium-level heartland and the high-level contested front; roads reach it
@@ -493,7 +493,7 @@ from y = −501.
 The capital watch remains level 60 and still uses its guard banner; the six
 WP13 cities stand around it since 2026-09-16 (`settlements.md`, "Capitals in
 the world"). The king/royal-guard binding, reset, death and group-respawn
-rules are implemented by the six level-65 king entities and their four
+rules are implemented by the six level-70 king entities and their four
 level-60 royal guards per capital. They consume the authored `king` and royal
 guard sockets; the king alone owns reset, death and group-respawn authority as
 specified in `world_zones.md` §12. A king holds his seat (Round 41): he never
@@ -528,7 +528,7 @@ visible:
   `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that non-nil
   generic base outside the shallow capital hard volume, capped at 70, but may
   never lower it; exterior nil remains nil. Ordinary and royal capital guards
-  inside the shallow hard volume remain exactly 60. The fixed level-65 king is
+  inside the shallow hard volume remain exactly 60. The fixed level-70 king is
   separate from both resolvers.
   A guard at level ≥ 60 is automatically an elite (scale/tint/telegraph,
   `combat_stats.md` §3). A Round 31 PvP garrison sets level and tier at
@@ -1174,7 +1174,7 @@ units fight opposing faction NPCs. NPC levels follow their named zone/role.
 Guard levels use the positional base above, with exact level-60 capital
 defense in the shallow capital hard volume; a later authored post role may only
 raise the generic base outside that volume within its cap. Kings retain their
-separate fixed level 65.
+separate fixed level 70.
 
 **Drop rule (anti-litter, decided 2026-08-06)**: mobs and NPCs drop
 loot ONLY when a player was involved — details in combat_stats.md §3

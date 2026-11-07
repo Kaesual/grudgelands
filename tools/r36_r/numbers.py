@@ -8,7 +8,8 @@ grug_mobs/levels.lua:
   * a level-60 player deals the baseline hit P(60)/8 = 337 a second (the
     Warrior's sword and the Mage's Fireball; a Priest's Smite about 219 a
     second), times the target's armour group (elite 80 %, a boss-tier dragon
-    100 %) and the level malus (a level-70 dragon: -50 %);
+    100 %) and the level malus (Round 70: a level-70 dragon -50 %, a level-70
+    King the same, a level-65 General -25 %);
   * a mob swings once a second; its hit reaches the player after the
     pressure fit at the default `grug_mob_damage_scale` 1.5, before the
     player's own armour, dodge, absorbs and heals (the KAT's "raw" pressure);
@@ -36,7 +37,7 @@ and cools down 6 s; the Stormscale Wyvern alternates breath and lightning
 nodes) winds up 1.25 s every 12 s and holds the next attack 2 s; at half HP
 the cooldowns shrink to 70 % (enrage). The dive (airborne only), the
 whelps, the hazards and the displacement are left out. A bystander in a
-side line takes one breath projectile (1.5 x the hit). The King: a level-65
+side line takes one breath projectile (1.5 x the hit). The King: a level-70
 elite whose signature (2 s cast, 8 s cooldown, the first after 4 s) is the
 volley, three arrows of 1 x the hit each until Round 37, now one on the
 target; he swings once a second otherwise and winds up as an elite.
@@ -75,8 +76,8 @@ def mob_hit(L, tier):
 
 
 def malus(player, mob):
-    excess = mob - (player + 5)
-    return 1 if excess <= 0 else max(0.1, 1 - 0.1 * excess)
+    gap = mob - player
+    return 1 if gap <= 0 else max(0.25, 1 - 0.05 * gap)
 
 
 def player_dps(mob_level, tier):
@@ -128,7 +129,7 @@ print("| Encounter | HP | Hit | DPS of one player | 1 player | 2 players | 3 pla
 print("|---|---:|---:|---:|---|---|---|")
 row("Rift boss (L60 elite x2 HP, pulse)", 60, "elite", scale=2, pulse=True)
 row("Rift boss at x3 HP (the first proposal)", 60, "elite", scale=3, pulse=True)
-row("Dragon (L70 boss, swing only)", 70, "boss", flat=18000, telegraph=False)
+row("Dragon (L70 boss, swing only)", 70, "boss", flat=30000, telegraph=False)
 row("Front elite leader (L59, Glass-Throat)", 59, "elite", scale=1.5)
 row("War commander (L60 elite leader)", 60, "elite", scale=1.5)
 
@@ -239,10 +240,10 @@ for name, lightning in (("Wyrmglass Ice Dragon", False), ("Stormscale Wyvern", T
     for label, hits in (("before: 3 locked hits", 3), ("now: 1 hit", 1)):
         fan_row("%s, %s" % (name, label), hits,
                 lambda players, hits, lightning=lightning: dragon_fight(
-                    18000, dragon_dps, players, dragon_hit, hits, lightning))
-king_hp, king_hit, king_dps = mob_hp(65, "elite"), mob_hit(65, "elite"), player_dps(65, "elite")
+                    30000, dragon_dps, players, dragon_hit, hits, lightning))
+king_hp, king_hit, king_dps = mob_hp(70, "elite"), mob_hit(70, "elite"), player_dps(70, "elite")
 for label, hits in (("before: 3 arrows on the target", 3), ("now: 1 arrow", 1)):
-    fan_row("King of Lethariel (L65 elite), %s" % label, hits,
+    fan_row("King of Lethariel (L70 elite), %s" % label, hits,
             lambda players, hits: king_fight(king_hp, king_dps, players, king_hit, hits))
 print()
 print("A bystander in a breath's side line takes %d (1.5 x the dragon's hit of %d) per breath;"

@@ -45,7 +45,7 @@ core.register_on_mods_loaded(function()
 			3 * grug_traders.sell_price(found:get_name()), "it sells at x3")
 	end
 	local king = {name = "grug_mobs:king_human", _grug_boss_id = "king:human",
-		_grug_royal_king = true, _grug_tier = "elite", _grug_level = 65}
+		_grug_royal_king = true, _grug_tier = "elite", _grug_level = 70}
 	local rewards = grug_items.roll_mob_gear(king, 42)
 	check(#rewards >= 2, "a King drops two items")
 	for _, stack in ipairs(rewards) do

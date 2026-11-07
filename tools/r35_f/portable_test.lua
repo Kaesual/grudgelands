@@ -103,7 +103,7 @@ end
 ------------------------------------------------------------------------------
 do
 	local plays, creative_on = {}, false
-	local mods_loaded, outgoing, incoming = {}, nil, nil
+	local mods_loaded, outgoing, incoming, picked = {}, nil, nil, nil
 	core = {
 		get_mod_storage = function() return {get_string = function() return "" end, set_string = function() end} end,
 		is_creative_enabled = function() return creative_on end,
@@ -131,6 +131,7 @@ do
 		melee_list = function() return "grug_weapon" end,
 		is_equipment_list = function(list) return equipment[list] == true end,
 		equipment_changed = function() end,
+		pick_up_pointed = function(_, pointed) picked = pointed end,
 	}
 	grug_gear = {reference_purchase_price = function() return 1 end}
 	grug_repair = {
@@ -195,8 +196,10 @@ do
 	eq(breaks(), 3, "B the first till leaves the hoe whole")
 	hoe = on_use(hoe, player, {})
 	eq(breaks(), 4, "B the hoe's break plays once")
-	on_use(hoe, player, {})
+	local at_drop = {type = "object"}
+	on_use(hoe, player, at_drop)
 	eq(breaks(), 4, "B a broken hoe stays silent")
+	eq(picked, at_drop, "B a broken hoe still picks up what it points at (Round 70)")
 
 	-- Creative never wears, so never breaks.
 	creative_on = true

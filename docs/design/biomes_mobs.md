@@ -33,7 +33,7 @@ delivered behavior.
   `grug_mob_damage_scale` (default 1.5) exactly once to non-player damage.
   `combat_stats.md` owns settlement and exceptions. Elite armor 80
   (×3 HP, ×1.8 dmg, ×4 XP), rare armor 90 (×2.5 / ×1.4 / ×2), and the
-  boss tier has a flat 18,000 HP (normal damage, XP and armor). Speeds: aggressive **4.6**
+  boss tier has a flat 30,000 HP (normal damage, XP and armor). Speeds: aggressive **4.6**
   (4.4 until 2026-09-16,
   user ruling 2), heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
@@ -139,13 +139,45 @@ clay and drop `grug_nodes:mesa_clay`; they band the badlands' steep faces by
 height (world_zones.md §7.6, "Steep ground"). Hanging moss is a run of the
 continuous strand (`grug_trees:swamp_hanging_moss_strand`) above the tapered
 end (`grug_trees:swamp_hanging_moss`): digging a piece turns the strand
-right above it into the end and takes the pieces below it (they drop
-nothing; a protected piece stays). Hanging moss comes back only with its
-tree: it decays with the tree's wood, and the swamp tree has no sapling.
+right above it into the end and takes the pieces below it (each gives the
+digger one Hanging Moss; a protected piece stays). Hanging moss comes back
+only with its tree: it decays with the tree's wood, without a drop, and the
+swamp tree has no sapling.
+
+**Decorative plants carried (Round 70, [plan](../planning/round70-plan.md)
+§2.3; this ends land plan ruling 11).** The land plants below, the swamp and
+gravewood foliage, lianas and hanging moss, ferns and marram grass, the
+freshwater waterlily and waterweed, seagrass and all five corals drop
+themselves and can be placed. A variant drops the first of its kind, which
+places any of them at random (ferns, lichen, seagrass); a strand drops its
+end. Both reasons of the old rule stay answered: the tooltip of each says
+"Decoration: no recipe uses it." and how it is placed, so nobody takes one
+for a gathering source, and a stack is worth 1c (tier 1, sold in lots;
+[economy.md](economy.md) §2), so nobody farms them. They carry no
+`grug_gathering_source` group and no recipe takes them.
+- *Ground plants* and *foliage* place like any node, under `is_protected`.
+  Placed leaves do not decay (`default.after_place_leaves`).
+- *Waterlily:* on source water (river water too), in the air above it.
+- *Seagrass, waterweed:* the plant replaces a plain `default:sand` bed under
+  source water, as the generator's does; seagrass needs 1 water node above
+  the bed, waterweed 2 and grows 1–4 tall, always under the surface. Digging
+  either leaves the sand bed (and no sand item).
+- *Liana, hanging moss:* one carried piece is one node. It hangs as an end
+  under a solid node or leaves; pointed at a run it joins that run's bottom
+  and the old end turns into a strand. A placed piece does not decay, so it
+  stays when the block above goes.
+- *Placed plants are the same nodes as wild ones.* Nothing tells them apart
+  and nothing needs to: the renewal counts both, only ever adds and never
+  places in protected ground or a claim, with one exception: seagrass and
+  kelp regrow in protected bay, belt and channel water
+  (`grug_core.water_plant_renewal_allowed`), claims still refusing. For
+  players, towns, landmarks and protected water refuse placing and digging
+  alike, so seagrass and coral farther than 24 nodes off the coast stay out
+  of reach.
 
 **Land plants (Round 51 lane LP, picked in the land viewer).** Decoration
-only: none glows, none drops anything (land plan rulings 10 and 11, round
-plan §3.6), and none shares a name or a texture with a gathering source.
+only: none glows (land plan ruling 10), and none shares a name or a texture
+with a gathering source.
 - *Lianas* hang under jungle and kapok leaves like the hanging moss: the
   continuous strand `grug_trees:liana_strand` above the end
   `grug_trees:liana`, the same dig rule, decaying with jungle wood. The
@@ -164,9 +196,8 @@ plan §3.6), and none shares a name or a texture with a gathering source.
 - *Bushes:* the jungle's large-leaved bush and the badlands' withered bush
   are default's bush and acacia bush shapes wearing
   `grug_nodes:jungle_bush_leaves` and `grug_nodes:withered_bush_leaves`;
-  the foliage decays with the stem and drops nothing.
-- Default's ferns and marram grass also drop nothing now. Papyrus stays
-  default's (it drops itself, for paper).
+  the foliage decays with the stem, without a drop.
+- Papyrus stays default's (it drops itself, for paper).
 
 ### 1.4 Settlements
 
@@ -251,7 +282,7 @@ placeholder.
 | grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]`, gravemoss `[herb T1]`, dragonweed `[herb T2]` (in their zones) | |
 | grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); large-leaved bushes; papyrus at the warm shores (§2.1) | lianas, ferns and strong-coloured flowers (Round 51); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), dead bush (no papyrus since Round 51: the reeds and cattails do that job) | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]`; crimson lotus `[herb T3]` (in its zones, Round 60) | shallow water pools 1–2 deep (mud floor), Round 47 |
-| grug_beach | — | marram on dry sand (Round 51, every biome's sand shore); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
+| grug_beach | — | marram on dry sand (Round 51, every biome's sand shore); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome near-water predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 ### 2.1 WP40 surface and deterministic decoration projection
@@ -333,7 +364,7 @@ run by run where each cell has ground right under it at the foot and none at
 the foot's level, never where the ground falls away or rises. Kapok grows
 from jungle wood; silverwood and gravewood are their own species with their
 own nodes. Leaves decay within radius 3 of wood; the gravewood's grey leaves
-drop nothing. Saplings grow the generator's tree of their species too (§5).
+drop themselves when dug (§1.3, Round 70) and nothing when they decay. Saplings grow the generator's tree of their species too (§5).
 Simple variant ranges above mean one independently settled entry per named
 variant at the displayed fill.
 
@@ -404,14 +435,21 @@ source is a low hand-gathered node and drops exactly one stable raw item; the
 three healing herbs first pass the fail-closed Alchemy authorization below.
 The exact named-zone and host rosters are `world_zones.md` Section 11; density
 is over eligible root columns, not all map columns.
-Rock Salt retains exactly Gravesalt, Stormscale and Wyrmglass. Its dry cardinal
-shore roots require logical Beach: sand in Gravesalt, stone or gravel on the
-two mountain islands. The final P7 support must match the zone-specific host;
-mountain beach sand is not retained to make the resource placeable. No other
-gathering source set, density or harvest rule changes.
+Rock Salt retains exactly Gravesalt, Stormscale and Wyrmglass. Round 70 (the
+user, 2026-11-07): it grows on the whole logical Beach of the three zones, on
+sand, gravel or stone, and never touches water. The final P7 support must match
+one of the hosts. Density is per eligible column, so a shore rule alone left a
+source with too few columns; see the census in
+[round70-plan.md](../planning/round70-plan.md) §2.1.
+
+The densities below are the catalog's. The world generates each source at half
+of it, except Rock Salt (`habitat_registry.lua` `initial_denominator`,
+[farming.md](farming.md) "Initial wild population"): Stormkelp at 1/256 and
+Wild Cocoa at 1/1024 (Round 70).
 
 | Source | Exact opportunity density | Classification | Farmable (Round 48) |
 |---|---:|---|---|
+| Stormkelp | 1/128 | universal spice T3 | no |
 | Potato | 1/256 | universal food | yes |
 | Corn | 1/256 | universal food | yes |
 | Sunleaf | 1/384 | universal spice T1 | no |
@@ -419,10 +457,9 @@ gathering source set, density or harvest rule changes.
 | Gravemoss | 1/512 | healing herb T1 | no |
 | Marshbloom | 1/512 | universal spice T2 | no |
 | Melon | 1/512 | universal food | yes |
+| Wild Cocoa | 1/512 | universal found-only food | no |
 | Dragonweed | 1/768 | healing herb T2 | no |
 | Crimson Lotus | 1/1024 | healing herb T3 | no |
-| Stormkelp | 1/1024 | universal spice T3 | no |
-| Wild Cocoa | 1/1024 | universal found-only food | no |
 | Rock Salt | 1/1024 | universal found-only food | no |
 
 The classification column is the WP33 catalog's, whose fields are hashed into
@@ -457,10 +494,9 @@ Skyglass Canopy, Stormscale Summit; deep forest, jungle floor, swamp).
 Cooking — which costs no main slot — and never farmed, Round 48 ruling 5):
 **sunleaf T1** (the six start zones and every 11–20 zone, on the six home
 biomes, Round 60), **marshbloom T2** (swamp), **stormkelp T3** (the exact
-cardinal dry-shore predicate in `world_zones.md` §11). Marshbloom sits on
-the swamp's mud; Stormkelp's natural source may use any accepted P7 dry
-support in its four named high/endpoint zones and does not require
-`grug_beach` or sand.
+near-water predicate in `world_zones.md` §11). Marshbloom sits on the swamp's
+mud; Stormkelp's natural source grows on sand, gravel or stone within three
+nodes of water in its five named zones, in any biome (Round 70).
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
 own T1–T6 recipes, `items_crafting.md`; the tiers tie to
@@ -846,7 +882,7 @@ spawn row or palette membership.
 | Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L70 boss | three perches in a round arena of radius 40 that is its leash (`world.md` §4b); 2 s breath-line / ground-slam telegraphs; a telegraphed wing gust that pushes players about 6 nodes (Round 36); persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
 | Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L70 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
 | Dragon whelps (Ice Whelp, Wyvern Whelp) | any | two at a dragon's enrage, fixed **L60** normal (the user, 2026-10-06: until Round 38 a fixed L20 on the level-60 islands) | encounter adds: no gear, no bag, no drops; the island's level-60 kill XP each | the dragon's mesh, small |
-| Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d`, drawn from the race look layers with the royal tabard and crown ([character_visuals.md](character_visuals.md) §1.1) |
+| Six race Kings | any | authored `king` socket in each capital, fixed L70 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d`, drawn from the race look layers with the royal tabard and crown ([character_visuals.md](character_visuals.md) §1.1) |
 | Rift boss (Round 36) | any | the rift's clash site (`world.md` §4b), fixed L60 elite, 2 × an elite's HP (no harder than a dragon, user) | spawned like a leader when a player with the finale active or done (or the main line finished) is within 48 nodes (none within 6 of its spot), never saved with the map; void bolts (`dogshoot`), the elite frontal wind-up, a void pulse every 14 s (2 s wind-up, ×2 hit to every player within 6 nodes, knockback); its own 24-node leash and evade home; back 5 min of wall-clock time after its death; loot through the boss ledger (`items_crafting.md` §5.3b) | the Dungeon Master's mesh with its own texture (Isquarre the Tithe-Eater, `grug_mobs_isquarre.png`); voice family `giant` |
 | Two fortress Generals (Round 31) | any | authored `general` socket of each PvP fortress, fixed L65 elite | the king chassis without a crown: the seat race's king's signature (Accord Rally, Throng Cleave); two fixed L60 elite bodyguards; the king's group reset and 15 min respawn; guard drops (war trophies to an enemy player's kill) plus two gear items at item level 65, each blue or gold at even odds (`items_crafting.md` §5.1), no reward ledger | `character.b3d`, one fixed look of the seat race with the royal tabard and no crown; the bodyguards any race of the faction in guard armour ([character_visuals.md](character_visuals.md) §1.1) |
 

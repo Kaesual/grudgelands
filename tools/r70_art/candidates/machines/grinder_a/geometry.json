@@ -1,0 +1,331 @@
+{
+  "boxes": [
+    {
+      "bounds": [
+        0.12,
+        0,
+        0.12,
+        1.88,
+        0.28,
+        1.88
+      ],
+      "part": "foundation",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.3,
+        0.28,
+        0.45,
+        1.7,
+        0.75,
+        1.7
+      ],
+      "part": "mill bed",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.62,
+        0.75,
+        0.3400000000000001,
+        1.38,
+        1.03,
+        0.53
+      ],
+      "part": "lower millstone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.42999999999999994,
+        0.75,
+        0.53,
+        1.57,
+        1.03,
+        0.7200000000000001
+      ],
+      "part": "lower millstone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.24,
+        0.75,
+        0.7200000000000001,
+        1.76,
+        1.03,
+        1.48
+      ],
+      "part": "lower millstone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.42999999999999994,
+        0.75,
+        1.48,
+        1.57,
+        1.03,
+        1.6700000000000002
+      ],
+      "part": "lower millstone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.62,
+        0.75,
+        1.6700000000000002,
+        1.38,
+        1.03,
+        1.86
+      ],
+      "part": "lower millstone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.665,
+        1.07,
+        0.43000000000000005,
+        1.335,
+        1.3900000000000001,
+        0.5975
+      ],
+      "part": "runner stone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.49749999999999994,
+        1.07,
+        0.5975,
+        1.5025,
+        1.3900000000000001,
+        0.7650000000000001
+      ],
+      "part": "runner stone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.32999999999999996,
+        1.07,
+        0.7650000000000001,
+        1.67,
+        1.3900000000000001,
+        1.435
+      ],
+      "part": "runner stone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.49749999999999994,
+        1.07,
+        1.435,
+        1.5025,
+        1.3900000000000001,
+        1.6025
+      ],
+      "part": "runner stone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.665,
+        1.07,
+        1.6025,
+        1.335,
+        1.3900000000000001,
+        1.77
+      ],
+      "part": "runner stone",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.9,
+        1.39,
+        1,
+        1.1,
+        1.72,
+        1.2
+      ],
+      "part": "spindle",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.96,
+        1.62,
+        0.35,
+        1.1,
+        1.76,
+        1.1
+      ],
+      "part": "turning handle",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.96,
+        1.76,
+        0.3,
+        1.1,
+        1.96,
+        0.44
+      ],
+      "part": "hand grip",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.16,
+        0.32,
+        0.05,
+        1.25,
+        0.44,
+        0.62
+      ],
+      "part": "catch tray",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.16,
+        0.44,
+        0.05,
+        0.28,
+        0.62,
+        0.62
+      ],
+      "part": "tray side",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        1.13,
+        0.44,
+        0.05,
+        1.25,
+        0.62,
+        0.62
+      ],
+      "part": "tray side",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.29,
+        0.44,
+        0.15,
+        0.7,
+        0.52,
+        0.53
+      ],
+      "part": "ground gravel",
+      "texture": "rubble"
+    },
+    {
+      "bounds": [
+        0.75,
+        0.44,
+        0.15,
+        1.1,
+        0.5,
+        0.53
+      ],
+      "part": "sand sample",
+      "texture": "sand"
+    },
+    {
+      "bounds": [
+        0.47,
+        1.39,
+        1.05,
+        0.66,
+        1.54,
+        1.24
+      ],
+      "part": "feed cobble",
+      "texture": "rubble"
+    },
+    {
+      "bounds": [
+        0.58,
+        1.39,
+        1.26,
+        0.83,
+        1.6,
+        1.47
+      ],
+      "part": "feed cobble",
+      "texture": "rubble"
+    }
+  ],
+  "construction": "node boxes, split and clipped at integer cell boundaries",
+  "coordinates": "metres/nodes; origin lower front left; +y up, +z rear; front -z",
+  "dimensions_xyz": [
+    2,
+    2,
+    2
+  ],
+  "kind": "grinder",
+  "occupied_cell_coordinates": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      1
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      1
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      1
+    ]
+  ],
+  "occupied_cells": 8,
+  "reserved_cells": 8,
+  "runtime": "Static decorative nodes only. No light, fire, particles, sound, animation, timers or interaction.",
+  "textures": {
+    "dressed_stone": "../textures/dressed_stone.png",
+    "grindstone": "../textures/grindstone.png",
+    "iron": "../textures/iron.png",
+    "rubble": "../textures/rubble.png",
+    "sand": "../textures/sand.png",
+    "timber": "../textures/timber.png"
+  },
+  "uv": "16 texels per node, repeating in world-aligned face planes; see README for integration limits.",
+  "variant": "A"
+}

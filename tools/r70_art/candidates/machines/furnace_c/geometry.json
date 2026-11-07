@@ -1,0 +1,352 @@
+{
+  "boxes": [
+    {
+      "bounds": [
+        0.08,
+        0,
+        0.1,
+        2.91,
+        0.25,
+        1.9
+      ],
+      "part": "foundation",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.18,
+        0.25,
+        0.8,
+        1.93,
+        1.62,
+        1.84
+      ],
+      "part": "oven body",
+      "texture": "firebrick"
+    },
+    {
+      "bounds": [
+        0.18,
+        0.4,
+        0.65,
+        0.48,
+        1.4,
+        1.84
+      ],
+      "part": "left pier",
+      "texture": "firebrick"
+    },
+    {
+      "bounds": [
+        1.6,
+        0.4,
+        0.65,
+        1.93,
+        1.4,
+        1.84
+      ],
+      "part": "right pier",
+      "texture": "firebrick"
+    },
+    {
+      "bounds": [
+        0.47,
+        0.46,
+        0.77,
+        1.61,
+        1.2,
+        0.81
+      ],
+      "part": "cold arch recess",
+      "texture": "soot"
+    },
+    {
+      "bounds": [
+        0.48,
+        1.08,
+        0.57,
+        0.6799999999999999,
+        1.28,
+        0.89
+      ],
+      "part": "stepped arch voussoir",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.67,
+        1.27,
+        0.57,
+        0.8700000000000001,
+        1.47,
+        0.89
+      ],
+      "part": "stepped arch voussoir",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.86,
+        1.42,
+        0.57,
+        1.25,
+        1.6199999999999999,
+        0.89
+      ],
+      "part": "stepped arch voussoir",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        1.24,
+        1.27,
+        0.57,
+        1.44,
+        1.47,
+        0.89
+      ],
+      "part": "stepped arch voussoir",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        1.43,
+        1.08,
+        0.57,
+        1.63,
+        1.28,
+        0.89
+      ],
+      "part": "stepped arch voussoir",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.25,
+        1.65,
+        0.75,
+        1.85,
+        1.83,
+        1.87
+      ],
+      "part": "hood ledge",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.69,
+        1.83,
+        1.13,
+        1.4,
+        2,
+        1.75
+      ],
+      "part": "low flue cap",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.49,
+        0.43,
+        0.48,
+        1.64,
+        0.57,
+        0.81
+      ],
+      "part": "worn hearth lip",
+      "texture": "slag"
+    },
+    {
+      "bounds": [
+        0.64,
+        0.61,
+        0.72,
+        0.685,
+        1.06,
+        0.78
+      ],
+      "part": "hearth grate",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.9,
+        0.61,
+        0.72,
+        0.9450000000000001,
+        1.06,
+        0.78
+      ],
+      "part": "hearth grate",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.16,
+        0.61,
+        0.72,
+        1.2049999999999998,
+        1.06,
+        0.78
+      ],
+      "part": "hearth grate",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.42,
+        0.61,
+        0.72,
+        1.4649999999999999,
+        1.06,
+        0.78
+      ],
+      "part": "hearth grate",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        2.03,
+        0.25,
+        0.56,
+        2.76,
+        0.64,
+        1.58
+      ],
+      "part": "mould bench",
+      "texture": "firebrick"
+    },
+    {
+      "bounds": [
+        1.86,
+        0.64,
+        0.48,
+        2.88,
+        0.78,
+        1.64
+      ],
+      "part": "bench top",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        2.08,
+        0.78,
+        0.68,
+        2.67,
+        0.84,
+        0.9
+      ],
+      "part": "mould bed",
+      "texture": "soot"
+    },
+    {
+      "bounds": [
+        2.16,
+        0.84,
+        0.7100000000000001,
+        2.57,
+        0.9,
+        0.8600000000000001
+      ],
+      "part": "cooled casting",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        2.08,
+        0.78,
+        1.12,
+        2.67,
+        0.84,
+        1.34
+      ],
+      "part": "mould bed",
+      "texture": "soot"
+    },
+    {
+      "bounds": [
+        2.16,
+        0.84,
+        1.1500000000000001,
+        2.57,
+        0.9,
+        1.3
+      ],
+      "part": "cooled casting",
+      "texture": "iron"
+    }
+  ],
+  "construction": "node boxes, split and clipped at integer cell boundaries",
+  "coordinates": "metres/nodes; origin lower front left; +y up, +z rear; front -z",
+  "dimensions_xyz": [
+    3,
+    2,
+    2
+  ],
+  "kind": "furnace",
+  "occupied_cell_coordinates": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      1
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      1
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      2,
+      0,
+      0
+    ],
+    [
+      2,
+      0,
+      1
+    ]
+  ],
+  "occupied_cells": 10,
+  "reserved_cells": 12,
+  "runtime": "Static decorative nodes only. No light, fire, particles, sound, animation, timers or interaction.",
+  "textures": {
+    "dressed_stone": "../textures/dressed_stone.png",
+    "firebrick": "../textures/firebrick.png",
+    "iron": "../textures/iron.png",
+    "slag": "../textures/slag.png",
+    "soot": "../textures/soot.png"
+  },
+  "uv": "16 texels per node, repeating in world-aligned face planes; see README for integration limits.",
+  "variant": "C"
+}

@@ -228,6 +228,15 @@ list of the platform's migration contract):
   the seventh step, 0.69.0 (§5.8), and no map reset: the step only leaves a
   world marker and the game rewrites each camp's protected box online
   (§5.9).
+- 0.70.0 (Round 70, the spawns, Stonewright, castles and start towns) needs
+  the thirteenth map reset: the gathering catalogue and the world content
+  rules change what world generation places (Rock Salt, Stormkelp, Wild
+  Cocoa, Frost Melon, Bamboo Shoot, Sugar Cane) and their digests move with
+  them. It declares no step and adds no map-bound state: a source node holds
+  no record, and wild renewal keeps none. `map_reset_pass` stays 0.50.0. The
+  production world moves from 0.65.0 to 0.70.0 across one reset and runs the
+  steps 0.67.0 and 0.69.0. The round's later lanes extend this entry when
+  they add to the reset.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the
