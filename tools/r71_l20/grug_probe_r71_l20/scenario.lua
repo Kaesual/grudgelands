@@ -5,7 +5,7 @@
 local E = grug_expeditions
 local QUEST, GIVER = "capital_stilled_seam", "r58_guild_leader_highcourt"
 local FEET = 5
-local HP = {[20] = {normal = 384, elite = 1152, boss = 13824}, [29] = {normal = 720, elite = 2160, boss = 25920}}
+local HP = {[20] = {normal = 384, elite = 1152, boss = 9216}, [29] = {normal = 720, elite = 2160, boss = 17280}}
 -- Where the probe stands to wake a room.
 local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 100, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
 
@@ -171,7 +171,10 @@ return function(lib, player)
 		lib.logf("DIED %s %s", tostring(reason and reason.type), core.pos_to_string(player:get_pos(), 2))
 	end)
 	core.register_on_player_hpchange(function(_, change, reason)
-		if reason.type == "fall" then lib.logf("FALL %d", change) end
+		if reason.type == "fall" then
+			lib.falls = (lib.falls or 0) + 1
+			lib.logf("FALL %d", change)
+		end
 	end, false)
 	local kills = {}
 	grug_mobs.register_on_boss_kill(function(_, id) kills[#kills + 1] = id end)
@@ -278,5 +281,6 @@ return function(lib, player)
 	lib.check(#kills == 2 and kills[2] == "expedition:stilled_seam", "the second credit")
 	lib.check(Q.status(player, QUEST) ~= "ready", "the quest is done once, the Expedition repeats")
 	open_chest(lib, player, high, 29)
+	lib.check((lib.falls or 0) == 0, "flat ground: no fall in two runs: " .. tostring(lib.falls))
 	lib.keep_alive = nil
 end
