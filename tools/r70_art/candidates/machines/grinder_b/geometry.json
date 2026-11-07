@@ -1,0 +1,415 @@
+{
+  "boxes": [
+    {
+      "bounds": [
+        0.08,
+        0,
+        0.12,
+        1.92,
+        0.25,
+        1.9
+      ],
+      "part": "foundation",
+      "texture": "dressed_stone"
+    },
+    {
+      "bounds": [
+        0.15,
+        0.25,
+        0.4,
+        0.35,
+        1.88,
+        0.68
+      ],
+      "part": "front post",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.15,
+        0.25,
+        1.5,
+        0.35,
+        1.88,
+        1.75
+      ],
+      "part": "rear post",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.10999999999999999,
+        0.5,
+        0.36,
+        0.39,
+        0.68,
+        0.73
+      ],
+      "part": "post strap",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.65,
+        0.25,
+        0.4,
+        1.8499999999999999,
+        1.88,
+        0.68
+      ],
+      "part": "front post",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        1.65,
+        0.25,
+        1.5,
+        1.8499999999999999,
+        1.88,
+        1.75
+      ],
+      "part": "rear post",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        1.6099999999999999,
+        0.5,
+        0.36,
+        1.89,
+        0.68,
+        0.73
+      ],
+      "part": "post strap",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.44000000000000006,
+        0.73,
+        0.65,
+        0.9,
+        1.25,
+        1.48
+      ],
+      "part": "crusher roller",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.36000000000000004,
+        0.88,
+        0.65,
+        0.98,
+        1.1,
+        1.48
+      ],
+      "part": "roller shoulder",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        0.6000000000000001,
+        0.9,
+        0.35,
+        0.74,
+        1.04,
+        1.65
+      ],
+      "part": "roller axle",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.55,
+        1.25,
+        0.76,
+        0.79,
+        1.34,
+        0.88
+      ],
+      "part": "crushing rib",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.55,
+        1.25,
+        1.03,
+        0.79,
+        1.34,
+        1.15
+      ],
+      "part": "crushing rib",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.55,
+        1.25,
+        1.3,
+        0.79,
+        1.34,
+        1.42
+      ],
+      "part": "crushing rib",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.08,
+        0.73,
+        0.65,
+        1.54,
+        1.25,
+        1.48
+      ],
+      "part": "crusher roller",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        1.0,
+        0.88,
+        0.65,
+        1.62,
+        1.1,
+        1.48
+      ],
+      "part": "roller shoulder",
+      "texture": "grindstone"
+    },
+    {
+      "bounds": [
+        1.24,
+        0.9,
+        0.35,
+        1.3800000000000001,
+        1.04,
+        1.65
+      ],
+      "part": "roller axle",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.19,
+        1.25,
+        0.76,
+        1.4300000000000002,
+        1.34,
+        0.88
+      ],
+      "part": "crushing rib",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.19,
+        1.25,
+        1.03,
+        1.4300000000000002,
+        1.34,
+        1.15
+      ],
+      "part": "crushing rib",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.19,
+        1.25,
+        1.3,
+        1.4300000000000002,
+        1.34,
+        1.42
+      ],
+      "part": "crushing rib",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        0.35,
+        1.44,
+        0.68,
+        1.65,
+        1.9,
+        0.8
+      ],
+      "part": "hopper lip",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.35,
+        1.44,
+        1.5,
+        1.65,
+        1.9,
+        1.62
+      ],
+      "part": "hopper lip",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.36,
+        1.44,
+        0.8,
+        0.48,
+        1.9,
+        1.5
+      ],
+      "part": "hopper cheek",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        1.52,
+        1.44,
+        0.8,
+        1.6400000000000001,
+        1.9,
+        1.5
+      ],
+      "part": "hopper cheek",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.55,
+        1.57,
+        0.92,
+        1.35,
+        1.76,
+        1.42
+      ],
+      "part": "feed cobble",
+      "texture": "rubble"
+    },
+    {
+      "bounds": [
+        0.23,
+        0.26,
+        0.08,
+        1.76,
+        0.38,
+        0.6
+      ],
+      "part": "output tray",
+      "texture": "timber"
+    },
+    {
+      "bounds": [
+        0.35,
+        0.38,
+        0.18,
+        0.9,
+        0.49,
+        0.56
+      ],
+      "part": "gravel sample",
+      "texture": "rubble"
+    },
+    {
+      "bounds": [
+        1,
+        0.38,
+        0.18,
+        1.63,
+        0.46,
+        0.56
+      ],
+      "part": "sand sample",
+      "texture": "sand"
+    },
+    {
+      "bounds": [
+        1.24,
+        0.55,
+        0.28,
+        1.38,
+        1.03,
+        0.42
+      ],
+      "part": "crank arm",
+      "texture": "iron"
+    },
+    {
+      "bounds": [
+        1.24,
+        0.55,
+        0.06,
+        1.4,
+        0.7,
+        0.31
+      ],
+      "part": "crank grip",
+      "texture": "timber"
+    }
+  ],
+  "construction": "node boxes, split and clipped at integer cell boundaries",
+  "coordinates": "metres/nodes; origin lower front left; +y up, +z rear; front -z",
+  "dimensions_xyz": [
+    2,
+    2,
+    2
+  ],
+  "kind": "grinder",
+  "occupied_cell_coordinates": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      1
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      1
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      1
+    ]
+  ],
+  "occupied_cells": 8,
+  "reserved_cells": 8,
+  "runtime": "Static decorative nodes only. No light, fire, particles, sound, animation, timers or interaction.",
+  "textures": {
+    "dressed_stone": "../textures/dressed_stone.png",
+    "grindstone": "../textures/grindstone.png",
+    "iron": "../textures/iron.png",
+    "rubble": "../textures/rubble.png",
+    "sand": "../textures/sand.png",
+    "timber": "../textures/timber.png"
+  },
+  "uv": "16 texels per node, repeating in world-aligned face planes; see README for integration limits.",
+  "variant": "B"
+}

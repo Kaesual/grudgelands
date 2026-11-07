@@ -1,0 +1,20 @@
+{
+  "mods/BASE/default/furnace.lua": "8b4a031efe3b5a831ca21548d20d74d3ab61b9e7eb40e3925b10c9cf061fdfd5",
+  "mods/BASE/default/license.txt": "bc382898f83c59701b9ca2ca3e21e82e34b4a9442f6d37332177caea61d32a43",
+  "mods/BASE/default/textures/default_cobble.png": "ce9e03d6786da33b1a16fbf26dd809a21e19d70958e50d73803a61d481de7826",
+  "mods/BASE/default/textures/default_furnace_front_active.png": "6560e0e80a9c737a729823ded23ceed80f013104f9a70e1d4258800df2f347be",
+  "mods/BASE/default/textures/default_gravel.png": "69e4e086f69de5dcd14c2947f4f82bd4d19744bbc44d2ceb18b8766672faf0c6",
+  "mods/BASE/default/textures/default_paper.png": "8c1182a86175677b694c84960738e05d9008ae51076cefddfc05f729dffcba77",
+  "mods/BASE/default/textures/default_sand.png": "d2d18f62db97b01cfae9a09f4cfd275c3615045012b76e388112949eb0f707be",
+  "mods/BASE/default/textures/default_stick.png": "a0f025ef8d281071815ab3d74d8bcd05fbff9d5c7838782b7860e711b2602420",
+  "mods/BASE/default/textures/default_stone.png": "0803a6cd3e8a07ec5d7885735800ee9578a3fa9019d4deb8838290a744e2318a",
+  "mods/BASE/default/textures/default_stone_brick.png": "71493a7ec3ddb724f41c3a0a015622a5fe3c5bbe2916e4f2b9c893d6b0b4a082",
+  "mods/BASE/default/textures/default_wood.png": "4540d1d39328d23a881f2b9180c11fdf92e6414bf93cbfe1383b786e60af874e",
+  "mods/ITEMS/grug_materials/textures/grug_materials_abyssal_steel_bar.png": "b1989f11522bdbeca16bf7baa0b4190a4e0bdb367eccacbf9ea343fdb2f29296",
+  "mods/ITEMS/grug_materials/textures/grug_materials_embersteel_bar.png": "6ca70e4ca8c9c061e499ac1a2184388062f2abd5c55f5c08100e7d4b1a57c072",
+  "mods/ITEMS/grug_materials/textures/grug_materials_iron_bar.png": "0f10fdabfab2ae3283de5f7524e6cb917119c130db91eec045257f36386226bd",
+  "mods/ITEMS/grug_materials/textures/grug_materials_silversteel_bar.png": "dded74392dcced03a2ddde7179528532c0004d8589f540dc36fd3cc25aae7685",
+  "mods/ITEMS/grug_materials/textures/grug_materials_steel_bar.png": "f74334f93a0a2bffe9f6ce899f83802166357d5a5509f810d10982526119bc8e",
+  "mods/ITEMS/grug_smelting/node.lua": "2bc25e92b3ce2bec3466a45496264607f65d258ea352dba2a30e3457f543c5ca",
+  "mods/ITEMS/grug_smelting/textures/grug_smelting_dual_furnace_front_active.png": "e1285e470f4d9a4d829e8d3d345d155f42d7bc6b20415d2eab51c62cc258ebd8"
+}
