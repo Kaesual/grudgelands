@@ -222,6 +222,9 @@ individual designs.
 (`tools/r70_design`) stands, with its per-place recommendations. The civic core
 grows from radius 48 to **56** in all six capitals. Kezamba and Lethariel may move
 the core a little away from their lake, so the buildings there have more room.
+Lethariel: the crown lake moves 14 nodes north, no new crossing. Kezamba: the
+cenote moves 18 nodes north, and the east boardwalk goes, leaving one avenue over
+water. The castle is form A, Crownward (`tools/r70_castle`), with a smaller throne.
 
 ### 2.8 Start towns (user, 2026-11-07; needs the map reset)
 
