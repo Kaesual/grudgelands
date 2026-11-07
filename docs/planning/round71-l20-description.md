@@ -45,7 +45,7 @@ marked nodes stay the only source.
 |---|---|---|
 | **0 · Arrival** | Start waystone; no mobs or resources. | Gather safely before entering the cart bay. |
 | **1 · Cart bay** | Pack **a**: 4 normal spiders. One Gold node beyond them. | Focus a target together; the spiders' slowing bites discourage scattering. |
-| **2 · Prop room** | Pack **b**: 2 normal spiders and 1 elite golem. One Jade node at the far wall. | Clear the spiders, then dodge the golem's thrown rocks and step aside from its frontal slam. |
+| **2 · Prop room** | Pack **b**: 2 normal spiders and 1 elite golem. One Jade node at the far wall. | Clear the spiders, then heal through the golem's thrown rocks and step aside from its frontal slam. |
 | **3 · Sorting floor** | Packs **c** and **d**, each 3 normal spiders and 1 elite golem. A solid rock screen separates them. | Take one pack at a time; regroup before rounding the screen. |
 | **4 · Working face** | **Flintback**, one elite boss, alone. | Fight in an open court; its death opens the reward door. |
 | **5 · Store** | Personal reward chest, six resource nodes and end waystone. No mobs. | Loot, share the mining and return to the capital. |
@@ -58,9 +58,10 @@ during the boss fight. No building, mounts, flying or block-placement puzzle.
 Only marked ore and gems can be dug; all other geometry is indestructible.
 
 **Flintback** is the living rock the miners first mistook for the seam's
-back wall. It reuses the stone golem's body and attacks: thrown rocks and
-a signalled frontal slam. Spread out, step aside during the wind-up and
-circle it. No adds, phases, required class ability or new mob look.
+back wall. It reuses the stone golem's body and attacks: homing thrown rocks and
+a signalled frontal slam. The Warrior holds it, the healer keeps them standing,
+everyone steps aside during the wind-up. Without a Warrior and a healer the
+fight is hard or lost (concept §2). No adds, phases or new mob look.
 
 ## Ore and rewards
 
