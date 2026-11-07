@@ -13,8 +13,7 @@
 --   grug_guild.trade_in(player, item, requested_lots) -> points, lifetime, balance | nil, err
 --       takes the requested whole lots (omitted means All, as the Sell
 --       tab's All) and credits grug_guild.add(player, total, "trade_in");
---       err "no_faction", "not_exchanged" (no rate or a pending row),
---       "too_few" (below one lot)
+--       err "no_faction", "not_exchanged" (no rate), "too_few" (below one lot)
 --
 -- As the Sell tab's lots (grug_traders/trade.lua): a row counts every stack
 -- of the item over the lists, whatever its meta (quality, wear), and the

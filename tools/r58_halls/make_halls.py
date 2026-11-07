@@ -18,8 +18,11 @@ smallest district lot (Lethariel's, 23 x 23 with the plot's two-node ring):
     it, a gable roof in the civic roof (the human, dwarf, elf and undead
     capitals) or a flat deck behind a breastwork (the orc and troll ones);
     inside as HALLS built it: the exchange counter on the east side, the
-    clerk's desk and the ore sorter's table on the west side, the leader's
-    desk at the back under a frieze of the six tier stones;
+    clerk's desk on the west side, the leader's desk at the back under a
+    frieze of the six tier stones; since Round 70 the Stonewright's work bay
+    (lane GUILD) on the west side behind the clerk: the grinder and the
+    smelting furnace against the west wall, fronts to the hall, the
+    Stonewright between them behind his table;
   * the ORE YARD on the east, 6 wide, open to the street: a HEADFRAME over a
     grated shaft collar, four timber legs 15 high with three rings of beams,
     two sheave wheels on its head beam and the rope down to a tub, the
@@ -41,12 +44,14 @@ house unturned, so the front faces the plot's street.
 
 The hall socket contract (settlements.md, "The Miner's Guild houses"): the
 points `{id}_leader` (role quest), `{id}_exchange` (role idle, tag work: the
-exchange counter, taken over by lane CAMPNPC as a service socket) and three
-residents (`{id}_clerk`, `{id}_sorter`, `{id}_porter`); on the district plot
+exchange counter, taken over by lane CAMPNPC as a service socket),
+`{id}_sorter` (the Stonewright's socket since Round 70, a service socket too)
+and the residents `{id}_clerk` and `{id}_porter`; on the district plot
 `miners_guild` the settlement registers them as `miners_guild/<id>`
 (capital_services.lua `GUILD_HALL`).
 """
 
+import json
 import os
 import sys
 
@@ -58,6 +63,9 @@ import tplfile  # noqa: E402
 
 OUT = os.path.join(REPO, "mods", "MAPGEN", "grug_mapgen", "building_templates",
                    "templates")
+# Lane ART's construction records of the picked machines (Round 70): every
+# occupied cell's node and offset, facing -z at facedir 0.
+ART = os.path.join(REPO, "tools", "r70_art", "candidates", "final")
 
 # The guilds' banners and emblem plaques (the user's pick, 2026-10-23).
 GUILDS = {
@@ -106,6 +114,28 @@ RAIL = "node grug_mapgen:mine_rail o=facedir:0"
 CART = "node grug_mapgen:mine_cart o=facedir:0"
 LANTERN = "node grug_decor:xdecor_lantern"
 HANGING = "node grug_decor:xdecor_lantern_hanging"
+# The Stonewright's work bay (Round 70, lane GUILD), lane ART's 5 x 3 x 3:
+# along the west wall the grinder (z 9-10) and the furnace (z 12-13), each
+# 2 deep with its front to the east (facedir 3), a one-node aisle between
+# them (z 11) with the Stonewright standing in it, the front cells at BAY_X.
+# The furnace takes the north side: it is 3 high and the west window is at z 9
+# and 10.
+BAY_X = 2
+GRINDER_Z, FURNACE_Z = 9, 12
+STONEWRIGHT = (BAY_X + 1, 11)
+
+
+def machine_cells(machine, z0):
+    """A machine's cells turned to face east: {(x, y, z): entry}. The art's
+    +z (rear) runs west from BAY_X, its +x (right, seen from the front) north
+    from z0, as facedir 3 turns the cell's own boxes and tiles (INSTALL.md)."""
+    with open(os.path.join(ART, machine + ".json"), encoding="utf-8") as handle:
+        record = json.load(handle)
+    cells = {}
+    for cell in record["cells"]:
+        ox, oy, oz = cell["offset"]
+        cells[(BAY_X - oz, 1 + oy, z0 + ox)] = "node %s o=facedir:3" % cell["name"]
+    return cells
 
 
 def build(spec):
@@ -231,8 +261,8 @@ def build(spec):
                         put(x, y + 2, z, "role wall_accent")
 
     # 4. The hall. The exchange counter on the east side, its keeper behind
-    # it facing west; the clerk's desk on the west side; the ore sorter's
-    # sample table behind it; the leader's desk at the back.
+    # it facing west; the clerk's desk on the west side; the Stonewright's
+    # work bay behind it; the leader's desk at the back.
     def counter(x, z):
         put(x, 1, z, "role table_leg")
         put(x, 2, z, "role table_top")
@@ -253,8 +283,13 @@ def build(spec):
     put(w - 2, 1, zc - 2, "node default:coalblock")
     put(w - 2, 2, zc - 2, "node grug_materials:copper_block")
     counter(2, zc + 1)
-    counter(2, zc + 4)
-    put(1, 1, zc + 5, "role storage o=facedir:1")
+    # The work bay: the machines, the Stonewright's table in front of him,
+    # the storage behind him in the aisle between them.
+    for machine, z0 in (("grinder", GRINDER_Z), ("furnace", FURNACE_Z)):
+        for (x, y, z), entry in machine_cells(machine, z0).items():
+            put(x, y, z, entry)
+    counter(STONEWRIGHT[0] + 1, STONEWRIGHT[1])
+    put(1, 1, STONEWRIGHT[1], "role storage o=facedir:1")
     zl = hz1 - 1
     desk([(x, zl) for x in (cx - 1, cx, cx + 1)])
     for x, face in ((1, 1), (w - 2, 3)):
@@ -347,7 +382,7 @@ def build(spec):
         (cx, 1, hz1, "face=2 id={id}_leader role=quest"),
         (w - 2, 1, zc + 1, "face=3 id={id}_exchange role=idle tags=[work]"),
         (1, 1, zc + 1, "face=1 id={id}_clerk role=idle tags=[work]"),
-        (1, 1, zc + 4, "face=1 id={id}_sorter role=idle tags=[work]"),
+        (STONEWRIGHT[0], 1, STONEWRIGHT[1], "face=1 id={id}_sorter role=idle tags=[work]"),
         (cx + 2, 1, zf - 1, "face=0 id={id}_porter role=idle tags=[door]"),
     ]
     top = max(y for (_, y, _) in cells)
@@ -369,7 +404,7 @@ def model(spec):
     m.origin, m.size, m.pivot = (x0, y0, z0), (sx, sy, sz), (w, d)
     m.races = [spec["race"]]
     m.head = [
-        "# Round 58 lanes HALLS, HALLS2: the Miner's Guild house of %s, written by" % spec["label"],
+        "# Round 58 lanes HALLS, HALLS2, Round 70 GUILD: the Miner's Guild house of %s, written by" % spec["label"],
         "# tools/r58_halls/make_halls.py (edit the script, not this file).",
         "name %s" % name,
         "pivot %d %d" % (w, d),

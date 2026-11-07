@@ -254,9 +254,9 @@ profession_shelf("smith", {
 
 -- The mason: the ground a district is paved and walled with. All of it is made
 -- from free stone and clay, so traders pay nothing for it (prices.lua). No
--- Cobblestone or Gravel (round58-plan.md §2a): the Miner's Guild takes both
--- for reputation, and no vendor sells what the guild takes, so copper never
--- buys reputation. Vendors still buy them (the bulk lots).
+-- Cobblestone or Gravel since Round 58; the user keeps it so in Round 70
+-- (plan §2.6), although buying what gives reputation is allowed now. Vendors
+-- still buy them (the bulk lots).
 profession_shelf("mason", {
 	{"default:clay_brick", 2},
 	{"default:stonebrick", 5},

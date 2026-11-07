@@ -10,13 +10,13 @@
 --    Remains' rock, bar and gem the tier's own (grug_materials registry),
 --    the accessors, and validate() refusing a broken catalogue.
 -- B. Round 58 §2a on the real game (the r57_details harness and Round 57's
---    source index, grug_jobs/sources.lua): no exchanged item has a vendor
---    source; each is registered and has a source of its own (mining, digging,
---    a drop); a `pending` row is exactly an item a vendor still sells (the
---    mason's Cobblestone and Gravel until lane REP takes them off the shelf
---    and deletes the field); no made goods (bars, blocks, bricks, cut gems);
---    every mined resource is exchanged. grug_guild loads and publishes its
---    API; every grug_guild item it registers is named by the catalogue.
+--    source index, grug_jobs/sources.lua): each exchanged item is registered
+--    and has a source of its own (mining, digging, a drop); no made goods
+--    (bars, blocks, bricks, cut gems); every mined resource is exchanged.
+--    grug_guild loads and publishes its API; every grug_guild item it
+--    registers is named by the catalogue. Round 70 (the user, plan §2.6): the
+--    rule "no copper route into reputation" is gone, so a vendor may sell an
+--    exchanged item; the check that none does went with it.
 -- C. No copper loop: a vendor pays for a consumable at most what the
 --    materials behind its price would have sold for (the cheapest copper per
 --    point of the exchange; stone and sand at prices.lua's bulk value), and
@@ -91,6 +91,12 @@ for tier = 1, 6 do
 	for _, key in ipairs({"copper_min", "copper_max", "bars_min", "bars_max", "gem_chance"}) do
 		expected["remains.t" .. tier .. "." .. key] = true
 	end
+end
+for _, row in ipairs(C.STONEWRIGHT) do
+	for _, key in ipairs({"stone", "output", "fee"}) do
+		expected["stonewright." .. row.id .. "." .. key] = true
+	end
+	if row.tier then expected["stonewright." .. row.id .. ".bars"] = true end
 end
 local value_count = 0
 for key, number in pairs(C.VALUES) do
@@ -215,21 +221,12 @@ local OWN = {mining = true, dig = true, drop = true, gather = true, fishing = tr
 local made = {"_bar$", "_block$", "brick", "^grug_materials:cut_", "stair", "slab"}
 for _, row in ipairs(C.EXCHANGE) do
 	check(game.items[row.item] ~= nil, "B " .. row.item .. " is registered")
-	local vendors, own = {}, false
+	local own = false
 	for _, source in ipairs(index.sources(row.item)) do
-		if source.kind == "vendor" then vendors[#vendors + 1] = source.label end
 		if OWN[source.kind] then own = true end
 	end
 	check(own, "B " .. row.item .. " has a source of its own (mining, digging, a drop)")
-	if row.pending then
-		check(#vendors > 0, "B pending " .. row.item .. " still has a vendor source (else delete `pending`)")
-		print("note " .. row.item .. ": sold by " .. table.concat(vendors, ", ") ..
-			"; joins the exchange when lane REP takes it off the shelf")
-		eq(C.exchange_rate(row.item), nil, "B a pending row is not exchanged yet")
-	else
-		check(#vendors == 0, "B " .. row.item .. " has no vendor source (" .. table.concat(vendors, ", ") .. ")")
-		eq(C.exchange_rate(row.item), row, "B exchange_rate " .. row.item)
-	end
+	eq(C.exchange_rate(row.item), row, "B exchange_rate " .. row.item)
 	for _, pattern in ipairs(made) do
 		check(not row.item:find(pattern), "B " .. row.item .. " is no made good (" .. pattern .. ")")
 	end
@@ -247,15 +244,20 @@ check(type(grug_guild) == "table" and grug_guild.catalog ~= nil, "B grug_guild p
 for _, name in ipairs({"rank_for", "threshold", "exchange_rate", "consumable", "consumable_by_item",
 		"remains", "guild", "lifetime", "balance", "rank", "add", "spend", "register_on_change",
 		"register_on_rank_change", "trade_in_rows", "trade_in", "active_effect", "start_effect",
-		"stop_effect", "remains_loot", "vendor_rows", "buy"}) do
+		"stop_effect", "remains_loot", "vendor_rows", "buy", "stonewright_recipe",
+		"stonewright_rows", "stonewright_make"}) do
 	check(type(grug_guild[name]) == "function", "B grug_guild." .. name .. " is published")
 end
 local named = {}
 for _, row in ipairs(C.CONSUMABLES) do named[row.item] = true end
 for _, row in ipairs(C.REMAINS) do named[row.node] = true end
+for _, row in ipairs(C.ORNAMENTED) do named[row.output] = true end
+for _, cell in ipairs(dofile(repo .. "/mods/PLAYER/grug_guild/machines_data.lua")) do
+	named[cell.name] = true
+end
 for name in pairs(game.items) do
 	if name:find("^grug_guild:") then
-		check(named[name], "B a registered grug_guild item is named by CONSUMABLES or REMAINS: " .. name)
+		check(named[name], "B a registered grug_guild item is named by the catalogue or the machines' cells: " .. name)
 	end
 end
 

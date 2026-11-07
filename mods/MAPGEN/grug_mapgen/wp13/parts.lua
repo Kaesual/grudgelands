@@ -267,6 +267,9 @@ end
 local PREFIX_KIND = {
 	["grug_mapgen:camp_"] = M.FACEDIR,
 	["grug_mapgen:faction_banner_"] = M.FACEDIR,
+	-- the Stonewright's grinder and furnace cells (Round 70): their fronts
+	-- turn with the house
+	["grug_guild:stonewright_"] = M.FACEDIR,
 	["stairs:"] = M.FACEDIR,
 	["doors:"] = M.FACEDIR,
 	["beds:"] = M.FACEDIR,

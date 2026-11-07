@@ -632,10 +632,12 @@ with its apron, which fits the smallest lot), its front to the plot's street:
   under a timber frame (posts at the corners and every third column, a top
   plate), one door in the middle of the front wall in a stone surround, the
   guild's emblem sign over it and its banners beside it. Inside: the exchange
-  counter on the east side, the clerk's desk and the ore sorter's sample
-  table on the west side, the leader's desk at the back under a frieze of the
-  six tier stones (the depths the guild mines), stores and shelves in the
-  back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it with
+  counter on the east side, the clerk's desk on the west side and behind it
+  the Stonewright's work bay (Round 70: the grinder and the burning smelting
+  furnace against the west wall, fronts to the hall, the Stonewright between
+  them behind his table, a one-node aisle at his back), the leader's desk at
+  the back under a frieze of the six tier stones (the depths the guild
+  mines), stores and shelves in the back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it with
   a gable to the street in their civic roof; Gor Drazhak and Kezamba with a
   flat deck behind a breastwork (merlons in Gor Drazhak). Kezamba builds it
   in the basalt of its civic halls, Nhal Veyr in its crypt stone.
@@ -671,7 +673,8 @@ the same ids in all six capitals:
 |---|---|---|
 | `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it; since Round 59 the one giver of its capital's hub `<capital key>_guild` (chapter 1's second story quest, [quests.md](quests.md) "Chapter 1 in the capitals"). |
 | `miners_guild/miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the Miner's Guild Exchange (`grug_traders:guild_exchange`): the socket is taken over as the service role `guild_exchange` (`grug_traders/vendors.lua`, the socket id read from `GUILD_HALL.exchange`), as the Crownbinder takes his; a guild vendor of the capital's faction that opens on Trade-in and buys like every vendor, without the camp vendor's reputation page or repair. |
-| `miners_guild/miners_guild_clerk`, `miners_guild/miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
+| `miners_guild/miners_guild_sorter` | `idle`, inhabited, tag `work`, between the grinder and the furnace behind his table | the Stonewright (`grug_traders:stonewright`, Round 70): the socket is taken over as the service role `stonewright` (the socket id read from `GUILD_HALL.stonewright`), a guild service of the capital's faction ([miners_guild.md](miners_guild.md) §5.3). |
+| `miners_guild/miners_guild_clerk` | `idle`, tag `work` | a resident at the clerk's desk |
 | `miners_guild/miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
 
 Like every district plot it also publishes `miners_guild/miners_guild_gate_idle`,

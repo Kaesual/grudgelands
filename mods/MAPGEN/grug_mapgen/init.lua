@@ -11,6 +11,9 @@ dofile(modpath .. "/world_nodes.lua")(core, modpath, grug_nodes, grug_gathering)
 dofile(modpath .. "/poi_displays.lua")(core)
 -- The Miner's Guild lift rooms' nodes (Round 58).
 dofile(modpath .. "/guild_room_nodes.lua")(core, grug_materials)
+-- The Stonewright's stones and machines (Round 70): the guild's own file, run
+-- here because the templates place them (its header says why).
+dofile(core.get_modpath("grug_guild") .. "/nodes.lua")(core)
 grug_mapgen.wp40 = dofile(modpath .. "/wp40/r7_loader.lua")(
 	core, modpath, grug_materials, grug_gathering, grug_core)
 -- The Miner's Guild lift rooms of this world (wp40/guild_rooms.lua: the

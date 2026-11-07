@@ -251,6 +251,17 @@ local function load_station_recipes()
 		end
 		add_station_recipe(recipe.output, recipe.count, recipe.area, inputs)
 	end
+	-- The Stonewright's recipes (Round 70, miners_guild.md §5.3): the audit
+	-- judges them like every recipe and an ornamented stone is priced by its
+	-- recipe. The fee is a service, not an input.
+	local guild = rawget(_G, "grug_guild")
+	for _, recipe in ipairs(guild and guild.catalog.STONEWRIGHT or {}) do
+		local inputs = {}
+		for _, input in ipairs(recipe.inputs) do
+			for _ = 1, input.count do inputs[#inputs + 1] = input.item end
+		end
+		add_station_recipe(recipe.output, recipe.output_count, "stonewright", inputs)
+	end
 end
 
 -- Every recipe that makes the item: {method, count, inputs = {names}}.

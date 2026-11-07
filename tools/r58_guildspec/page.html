@@ -41,7 +41,6 @@ input[type=number] { width: 6.5em; font: inherit; font-family: var(--mono); font
 input[type=number].changed { border-color: var(--accent); background: var(--accent-soft); }
 input[type=number].bad { border-color: var(--warn); background: var(--warn-bg); }
 .fixed { font-family: var(--mono); font-size: 14px; }
-.pending { font-size: 12px; font-weight: 600; letter-spacing: .03em; color: var(--accent); }
 textarea { width: 100%; box-sizing: border-box; min-height: 40px; resize: vertical; font: inherit; font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; }
 textarea:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .bar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); }
@@ -149,8 +148,7 @@ for (let n = 1; n <= D.ranks; n++) row(rowsOf("g-ranks"), "Rang " + n, null, [fi
 for (const x of D.exchange) {
   const sub = x.tier ? "Erntestufe " + x.tier : "Stein und Sand";
   const r = row(rowsOf("g-exchange"), x.name, sub, [field("exchange." + x.item + ".points", "Punkte"), field("exchange." + x.item + ".lot", "je")],
-    D.reasons[x.pending ? "pending" : x.class], "d-ex-" + x.item);
-  if (x.pending) r.querySelector(".label").append(el("span", "pending", " wartet auf REP"));
+    D.reasons[x.class], "d-ex-" + x.item);
 }
 // Consumables per tier.
 for (const c of D.consumables) {
@@ -217,8 +215,8 @@ function model(v) {
   if (off.length) { const w = document.getElementById("selfcheck"); w.hidden = false; w.textContent = "Achtung: das Modell dieser Seite weicht vom Generator ab (" + off.join(", ") + "). Bitte melde das."; }
 })();
 
-// The cheapest copper a point of reputation costs (every exchange row, the
-// pending ones too): a vendor may pay at most price x this for a consumable.
+// The cheapest copper a point of reputation costs (every exchange row):
+// a vendor may pay at most price x this for a consumable.
 function cheapestCopper(v) {
   let min = Infinity;
   for (const x of D.exchange) { const pts = rate(v, x.item); if (!(pts > 0)) continue;

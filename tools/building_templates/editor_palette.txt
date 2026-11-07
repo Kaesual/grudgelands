@@ -782,3 +782,30 @@ node grug_mapgen:camp_wall_cap_troll
 role rubble
 node default:ladder_wood
 node grug_mapgen:guild_lift
+# Round 70 GUILD: the Stonewright's ornamented stones and the cells of its
+# grinder and furnace (place a machine's cells together, tools/r58_halls).
+node grug_guild:ornamented_iron
+node grug_guild:ornamented_steel
+node grug_guild:ornamented_silversteel
+node grug_guild:ornamented_embersteel
+node grug_guild:ornamented_abyssal_steel
+node grug_guild:stonewright_furnace_0_0_0
+node grug_guild:stonewright_furnace_0_0_1
+node grug_guild:stonewright_furnace_0_1_0
+node grug_guild:stonewright_furnace_0_1_1
+node grug_guild:stonewright_furnace_0_2_0
+node grug_guild:stonewright_furnace_0_2_1
+node grug_guild:stonewright_furnace_1_0_0
+node grug_guild:stonewright_furnace_1_0_1
+node grug_guild:stonewright_furnace_1_1_0
+node grug_guild:stonewright_furnace_1_1_1
+node grug_guild:stonewright_furnace_1_2_0
+node grug_guild:stonewright_furnace_1_2_1
+node grug_guild:stonewright_grinder_0_0_0
+node grug_guild:stonewright_grinder_0_0_1
+node grug_guild:stonewright_grinder_0_1_0
+node grug_guild:stonewright_grinder_0_1_1
+node grug_guild:stonewright_grinder_1_0_0
+node grug_guild:stonewright_grinder_1_0_1
+node grug_guild:stonewright_grinder_1_1_0
+node grug_guild:stonewright_grinder_1_1_1

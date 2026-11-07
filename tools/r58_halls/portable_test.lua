@@ -10,7 +10,8 @@
 --   B. the hall socket contract (capital_services.lua M.GUILD_HALL): the
 --      leader on a `quest` socket, the exchange counter on an inhabited
 --      `idle` socket tagged `work` (the shape a service socket takes over,
---      grug_core.assign_service_socket), three inhabited residents, each id
+--      grug_core.assign_service_socket), the Stonewright's socket of the
+--      same shape (the sorter's, Round 70), two inhabited residents, each id
 --      once, every contract id the plot's own id prefixed by the plot
 --      (`<plot>/<id>`, r7_settlement.lua M.sockets); the template carries
 --      the same points;
@@ -72,10 +73,10 @@ check(walkable["default:stone"] == true and walkable["default:torch"] == false,
 check(HALL.plot == "miners_guild" and
 	HALL.leader == "miners_guild/miners_guild_leader" and
 	HALL.exchange == "miners_guild/miners_guild_exchange" and
-	#HALL.residents == 3 and
+	HALL.stonewright == "miners_guild/miners_guild_sorter" and
+	#HALL.residents == 2 and
 	HALL.residents[1] == "miners_guild/miners_guild_clerk" and
-	HALL.residents[2] == "miners_guild/miners_guild_sorter" and
-	HALL.residents[3] == "miners_guild/miners_guild_porter",
+	HALL.residents[2] == "miners_guild/miners_guild_porter",
 	"capital_services.GUILD_HALL")
 -- the plot's own socket id of a contract id (the settlement prefixes a
 -- plot's sockets with `<plot id>/`)
@@ -156,6 +157,10 @@ for _, cap in ipairs(CAPITALS) do
 	check(exchange and exchange.role == "idle" and exchange.spawn ~= false and
 		exchange.tags and exchange.tags[1] == "work",
 		key .. ": the exchange counter is an inhabited idle socket tagged work")
+	local stonewright = by_id[own(HALL.stonewright)]
+	check(stonewright and stonewright.role == "idle" and stonewright.spawn ~= false and
+		stonewright.tags and stonewright.tags[1] == "work",
+		key .. ": the Stonewright's socket is an inhabited idle socket tagged work")
 	for _, id in ipairs(HALL.residents) do
 		local socket = by_id[own(id)]
 		check(socket and socket.role == "idle" and socket.spawn ~= false,
@@ -167,11 +172,12 @@ for _, cap in ipairs(CAPITALS) do
 			if socket.role == "quest_place" then places = places + 1 else hall_sockets = hall_sockets + 1 end
 		end
 	end
-	-- the five, and the gate spot every plot publishes (`<plot>_gate_idle`);
+	-- the leader, the exchange, the Stonewright, the two residents, and the
+	-- gate spot every plot publishes (`<plot>_gate_idle`);
 	-- Round 60 CAPITALS: Nhal Veyr's plot also holds chapter 2's town place,
 	-- a quest_place socket nobody stands on (settlements.md "Chapter 2's
 	-- town place").
-	check(hall_sockets == 3 + #HALL.residents, key .. ": six hall plot sockets (" ..
+	check(hall_sockets == 4 + #HALL.residents, key .. ": six hall plot sockets (" ..
 		hall_sockets .. ")")
 	check(places == (key == "nhal_veyr" and 1 or 0), key .. ": the hall plot's town places (" .. places .. ")")
 	local destination
@@ -229,6 +235,7 @@ for _, cap in ipairs(CAPITALS) do
 	check(reachable(destination), key .. ": the house's inside spot is reachable")
 	check(reachable(leader), key .. ": the leader is reachable")
 	check(reachable(exchange), key .. ": the exchange counter is reachable")
+	check(reachable(stonewright), key .. ": the Stonewright is reachable")
 	for _, id in ipairs(HALL.residents) do
 		check(reachable(by_id[own(id)]), key .. ": " .. id .. " is reachable")
 	end

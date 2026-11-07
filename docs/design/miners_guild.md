@@ -119,8 +119,10 @@ one picture.
   and the spendable balance; spending never lowers the rank; ranks 0–10, the
   last ones hard to reach; ranks 1–6 unlock buying the T1–T6 consumables. A
   new player is rank 0.
-- **Ruling (§2a):** no copper route into reputation: the mason stops selling
-  Cobblestone and Gravel; the exchange takes only items that no vendor sells.
+- **Ruling (the user, 2026-11-07):** buying items that give reputation is
+  allowed; copper is limited too. This ends Round 58's rule against a copper
+  route into reputation. The mason stays as he is and does not sell
+  Cobblestone or Gravel again.
 - Rank n needs the lifetime total `RANKS[n]` (catalogue `rank.<n>`). Earning
   adds the same points to both numbers; spending takes from the balance only.
 - **Proposal (the thresholds):** 200, 900, 2,700, 9,000, 23,000, 50,000,
@@ -167,10 +169,8 @@ one picture.
   - Left out: bars, blocks, bricks, cut gems, Sandstone (four Sand, both ways
     by recipe) and Desert Sand (no natural source in our world; a recipe only).
 - **Cobblestone and Gravel joined with lane REP (built):** the mason no
-  longer sells them (`grug_traders/stock.lua`), and their rows carry no
-  `pending` field any more; the fixture (`tools/r58_guildspec`) checks them
-  like every other row, and refuses a `pending` row that has no vendor source
-  left.
+  longer sells them (`grug_traders/stock.lua`); the fixture
+  (`tools/r58_guildspec`) checks them like every other row.
 
 ### 5.2 The camp vendor
 
@@ -201,6 +201,56 @@ one picture.
   the settlement they stand in (Round 31 ruling 13, as every vendor; the
   reviewer's raider concern), and the foremen and leaders serve their own
   faction like every quest giver.
+
+### 5.3 The Stonewright
+
+**Ruling** (the user, 2026-11-07,
+[Round 70 plan §2.6](../planning/round70-plan.md#26-the-stonewright-block-recipes-at-a-guild-npc-user-2026-11-07)):
+a guild NPC in all six guild houses converts stone as a service. Low ranks
+unlock convenience recipes for a small copper fee, high ranks new decorative
+blocks for metal bars, Cobblestone and a fee. They are full blocks only; no
+crafting recipe makes them.
+
+| Rank | Unlocks | One lot takes | Gives |
+|---:|---|---|---:|
+| 1 | Cobblestone → Gravel | 10 Cobblestone, 1c | 10 |
+| 2 | Gravel → Sand | 10 Gravel, 1c | 10 |
+| 2 | Cobblestone → Sand | 10 Cobblestone, 2c | 10 |
+| 3 | Cobblestone → Stone (`default:stone`) | 10 Cobblestone, 2c | 10 |
+| 4 | Ornamented Iron Stone | 8 Cobblestone, 1 Iron Bar, 5c | 8 |
+| 5 | Ornamented Steel Stone | 8 Cobblestone, 1 Steel Bar, 10c | 8 |
+| 6 | Ornamented Silversteel Stone | 8 Cobblestone, 1 Silversteel Bar, 25c | 8 |
+| 7 | Ornamented Embersteel Stone | 8 Cobblestone, 1 Embersteel Bar, 60c | 8 |
+| 8 | Ornamented Abyssal Steel Stone | 8 Cobblestone, 1 Abyssal Steel Bar, 1s 50c | 8 |
+
+Ranks 9 and 10 have no recipes; the cloak at rank 10 is the reward. The
+amounts are a **proposal** (`stonewright.<recipe>.<field>` in the catalogue).
+
+- **Built** (Round 70 lane GUILD, `grug_guild/stonewright.lua`): the Stonewright
+  (`grug_traders:stonewright`) takes over the hall's `miners_guild_sorter`
+  socket as the service role `stonewright` and serves the capital's faction. Its
+  window (`grug_traders/trade.lua`, `stonewright = true`) is one page without
+  modes: the guild lines, then one row per recipe with the Trade-in's lots
+  (**1 / 5 / 10 / All**), a locked row greyed with "Reach Reputation Rank N",
+  a row without a lot greyed with what is missing. Whole lots only; the rest
+  stays with the player. A count sums `grug_inventory.consume_lists`; a
+  conversion that would not fit once its inputs are gone is refused and
+  changes nothing, so a full bag can still convert its own stacks. It saves
+  nothing of its own and spends no reputation: the rank unlocks, the balance
+  stays.
+- **The blocks:** `grug_guild:ornamented_iron`, `_steel`, `_silversteel`,
+  `_embersteel`, `_abyssal_steel`: cut stone like Stone Block (full cubes,
+  `cracky = 2`, `stone = 1`), tiers 2–6, priced by their recipe
+  ([economy.md](economy.md) §2).
+- **The machines:** Grinder B and Smelting Furnace A, picked 2026-11-07, stand
+  behind the Stonewright in every house (`tools/r58_halls/make_halls.py`;
+  [settlements.md](settlements.md) "The Miner's Guild houses"). They are
+  placed decoration, one undiggable node per cell
+  (`grug_guild:stonewright_grinder_x_y_z`, `grug_guild:stonewright_furnace_x_y_z`,
+  written from lane ART's records by `tools/r70_guild/make_machines.py`).
+  The furnace always burns: its four hearth cells animate and give light 8, and
+  one of its cells is an emitter of the shipped furnace loop
+  ([sound.md](sound.md) §4.4), so no timer runs per node.
 
 ## 6. Achievements and cloaks
 
@@ -422,6 +472,8 @@ that path and goes to the coordinator with the change the lane would want.
 | `items.lua` | CONSUME | the 12 items, the 6 Remains nodes, the loot roll: §10.6 |
 | `vendor.lua` | CAMPNPC | the reputation page's rows and the purchase: §10.7 |
 | `lift.lua` | LIFT | the lift's interaction: overrides `grug_mapgen:guild_lift`'s right-click (the node's static fields and picked art are `world_nodes.lua`'s); `lift_at(pos)`, `use_lift(player, pos)` (§3) |
+| `stonewright.lua` | Round 70 GUILD | the Stonewright's rows and conversion (§5.3) |
+| `nodes.lua`, `machines_data.lua` | Round 70 GUILD | the five ornamented stones and the machines' nodes; `grug_mapgen/init.lua` runs `nodes.lua`, because the templates resolve their nodes while grug_mapgen loads, before this mod; the data file is written by `tools/r70_guild/make_machines.py` |
 
 Each lane filled its file (Round 58); while the skeleton stood alone, the
 functions were documented stubs answering as for a character of rank 0 with
@@ -445,11 +497,15 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
   `ore_sense.{duration, range, interval_min, interval_max, marker_seconds}`;
   `treasure_hunt.{duration, place_min, place_max, marker_range,
   remove_distance, respawn_seconds, check_seconds}` (seconds and nodes);
-  `remains.t<n>.{copper_min, copper_max, bars_min, bars_max, gem_chance}`.
+  `remains.t<n>.{copper_min, copper_max, bars_min, bars_max, gem_chance}`;
+  `stonewright.<recipe>.{stone, output, fee}`, an ornamented one also `.bars`.
   Whole numbers; code never reads `VALUES` directly but the tables below.
 - `RANKS[n]`: the lifetime total rank n needs (n = 1..10); `MAX_RANK = 10`.
-- `EXCHANGE`: list of `{item, points, lot, pending}` (catalogue order, the
+- `EXCHANGE`: list of `{item, points, lot}` (catalogue order, the
   trade-in's row order); `EXCHANGE_BY_ITEM[item]`.
+- `STONEWRIGHT`: list of `{id, rank, output, output_count, fee, inputs}`, an
+  ornamented recipe also `{tier, name}` (the window's row order);
+  `STONEWRIGHT_BY_ID[id]`; `ORNAMENTED`, those rows.
 - `CONSUMABLES`: list of rows `{kind, tier, item, name, use_level, rank,
   price, sell_copper, variant, duration, …}` with the kind's parameters (Ore
   Sense: `range, interval_min, interval_max, marker_seconds, targets`;
@@ -463,8 +519,9 @@ load the same bytes with `dofile`. Published as `grug_guild.catalog`.
   `KINDS`, `KIND_NAMES`, `NUMERALS`, `TIER_COUNT`.
 - Accessors, also published on `grug_guild`: `rank_for(lifetime) -> 0..10`,
   `threshold(rank) -> lifetime | nil` (0 for rank 0, nil beyond 10),
-  `exchange_rate(item) -> row | nil` (nil for a pending row),
+  `exchange_rate(item) -> row | nil`,
   `consumable(kind, tier)`, `consumable_by_item(item)`, `remains(tier)`,
+  `stonewright_recipe(id)`,
   `guild(faction) -> {id, name} | nil`; `validate()` raises on a broken shape
   (run at load).
 
@@ -526,6 +583,13 @@ click counts only for an item the page showed buyable. `buy` checks the
 room before it spends (`grug_inventory.fits`) and gives through
 `grug_inventory.give`; it saves nothing of its own.
 
+### 10.7a The Stonewright (`stonewright.lua`, Round 70 GUILD)
+
+| Function | Returns |
+|---|---|
+| `grug_guild.stonewright_rows(player)` | one row per recipe `{recipe, unlocked, lots, short}`, `lots` the whole lots goods and money pay for, `short` what stops the first lot (an input row or `"money"`); `{}` without a guild |
+| `grug_guild.stonewright_make(player, id, requested_lots)` | `made, fee`, or `nil, err` (`"no_faction"`, `"unknown"`, `"rank"`, `"too_few"`, `"money"`, `"full"`): omitted lots mean All; nothing changes on a refusal |
+
 ### 10.8 Ids
 
 | Id | What |
@@ -533,6 +597,8 @@ room before it spends (`grug_inventory.fits`) and gives through
 | `grug_guild:ore_sense_t1` … `_t6` | Ore Sense I … VI |
 | `grug_guild:treasure_hunt_t1` … `_t6` | Treasure Hunt I … VI |
 | `grug_guild:miners_remains_t1` … `_t6` | Miner's Remains in each tier's rock |
+| `grug_guild:ornamented_iron`, `_steel`, `_silversteel`, `_embersteel`, `_abyssal_steel` | the ornamented stones (§5.3) |
+| `grug_guild:stonewright_grinder_<x>_<y>_<z>`, `grug_guild:stonewright_furnace_<x>_<y>_<z>` | the machines' cells (§5.3), placed only in the map |
 | `grug_mapgen:guild_lift` | the lift point (CAMPS; LIFT overrides it) |
 | `grug_mapgen:room_fill`, `room_floor`, `room_lamp`, `room_mantle_t1` … `_t6` | the room's nodes (ROOMS) |
 | status `mining_sense`, variants `ore_sense`, `treasure_hunt` | the effect slot (not `elixir`) |

@@ -44,7 +44,7 @@ local function find_halls()
 	for _, cap in ipairs(CAPITALS) do
 		if next(ONLY) == nil or ONLY[cap.key] then
 			local leader = socket_pos(cap.key, HALL.leader)
-			local porter = socket_pos(cap.key, HALL.residents[3])
+			local porter = socket_pos(cap.key, HALL.residents[#HALL.residents])
 			local exchange = socket_pos(cap.key, HALL.exchange)
 			if leader and porter and exchange then
 				halls[#halls + 1] = {cap = cap, leader = leader, porter = porter,
