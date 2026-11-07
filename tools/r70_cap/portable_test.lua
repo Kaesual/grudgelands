@@ -66,7 +66,7 @@ local DONE = {
 	-- the next capital
 	dur_brannoc = true,
 	-- the next capital
-	lethariel = false,
+	lethariel = true,
 	-- the next capital
 	nhal_veyr = false,
 	-- the next capital
@@ -80,7 +80,7 @@ local CASTLE = {
 	-- the next capital
 	dur_brannoc = {plot = "kings_hall", x = -22, z = 10, turns = 0},
 	-- the next capital
-	lethariel = false,
+	lethariel = {plot = "kings_hall", x = -52, z = -51, turns = 3},
 	-- the next capital
 	nhal_veyr = false,
 	-- the next capital
@@ -103,7 +103,13 @@ local MOVED = {
 		court_idle_forge = "court", court_idle_yard = "court", court_idle_fire = "court",
 	},
 	-- the next capital
-	lethariel = {},
+	lethariel = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+	},
 	-- the next capital
 	nhal_veyr = {},
 	-- the next capital

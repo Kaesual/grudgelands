@@ -92,13 +92,13 @@ for _, case in ipairs({{"lethariel_mere_shrine", "pale"}, {"lethariel_plot_mere_
 		"M " .. name .. ": from the box edge up the treads to the inside point")
 end
 do
-	-- the core's shrine at x 16, z 12, turns 0 (lethariel.lua), walked from
+	-- the core's shrine at x 16, z 26, turns 0 (lethariel.lua), walked from
 	-- the street south of it
 	local _, part = T.part_cells("lethariel", "lethariel_mere_shrine", "mere_shrine", "pale")
 	local spot = part.points.inside[1]
 	local bp = T.library.composition("lethariel").core()
 	check(T.walker(T.map_of(bp.cells)).search(T.stand(20, 1, 10),
-		at_feet(16 + spot.x, spot.y, 12 + spot.z), false) ~= nil,
+		at_feet(16 + spot.x, spot.y, 26 + spot.z), false) ~= nil,
 		"M the core's mere shrine: from the street to the inside point")
 end
 
