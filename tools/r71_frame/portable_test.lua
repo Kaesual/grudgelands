@@ -400,9 +400,14 @@ do
 	local solo = new_player("solo")
 	local stale = {is_player = function() return false end, removed = false}
 	function stale:remove() self.removed = true end
+	function stale.get_attach() end
 	local stranger = new_player("stranger")
 	stranger.pos = {x = 8070, y = -100, z = -1610}
-	objects = {stale, stranger}
+	-- A player still in the box keeps what hangs on them: the name tag.
+	local tag = {is_player = function() return false end, removed = false}
+	function tag:remove() self.removed = true end
+	function tag.get_attach() return stranger end
+	objects = {stale, tag, stranger}
 	local run = assert(E.create(solo, "test_vault", 0))
 	check(run.state == "preparing" and run.slot == 1, "F starts preparing in the first slot")
 	check(E.preparation(run).waiting == 0, "F waiting for its first step")
@@ -412,6 +417,7 @@ do
 	until_state(run, "ready")
 	objects = {}
 	check(stale.removed and home[#home] == "stranger", "F objects out, a player sent away")
+	check(not tag.removed, "F a player's name tag stays on them")
 	check(deleted == 256, "F all 256 blocks deleted one by one: " .. deleted)
 	local first_write
 	local last_delete

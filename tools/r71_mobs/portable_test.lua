@@ -45,10 +45,14 @@ core = {
 	register_node = function(name, def) core.registered_nodes[name] = def end,
 	load_area = function() end,
 	objects_in_area = function()
-		local gone = {is_player = function() return false end,
-			remove = function() core.objects_removed = (core.objects_removed or 0) + 1 end}
+		local function remove() core.objects_removed = (core.objects_removed or 0) + 1 end
+		local gone = {is_player = function() return false end, get_attach = function() end,
+			remove = remove}
+		-- A player's name tag stays on its player.
 		local player = {is_player = function() return true end}
-		local list, at = {player, gone}, 0
+		local tag = {is_player = function() return false end,
+			get_attach = function() return player end, remove = remove}
+		local list, at = {player, tag, gone}, 0
 		return function()
 			at = at + 1
 			return list[at]
@@ -322,7 +326,7 @@ for _, fn in ipairs(ended) do fn(run, "released") end
 runs_at[1000] = nil
 check(#removed_boxes == 2 and next(detached) == nil, "D the run's lists end with it")
 check(resets[1] == boss._grug_boss_id, "B a run's end clears its ledger")
-check(core.objects_removed == 1, "B a run's end takes its live objects, no player")
+check(core.objects_removed == 1, "B a run's end takes its live objects, no player, nothing attached")
 check(not open(ana, run.places.chest) and feeds[#feeds] == "This Expedition has ended.",
 	"D an ended run opens nothing")
 
