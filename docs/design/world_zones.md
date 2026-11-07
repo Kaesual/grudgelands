@@ -1698,8 +1698,10 @@ coastal shelf, deep ocean or immutable dragon channel. Both roots are dry land
 with exact accepted P7 support, `default:sand`, `default:gravel` or
 `default:stone`, and the analytic P7 support and actual settled/lower-owner
 support must identify the same accepted node. Stormkelp (`near_water`) needs a
-water column within three nodes, measured as a square, in any biome of its five
-zones. Rock Salt (`no_water`) needs logical biome `grug_beach` and no water
+water column within ten nodes, measured as a square, whose surface lies at most
+four nodes below the ground, in any biome of its five zones (the user,
+2026-11-07: spread inland from the water line, on the low land along it, not on
+a cliff top beside the sea). Rock Salt (`no_water`) needs logical biome `grug_beach` and no water
 column on its four faces, so it may stand anywhere on the beach of its three
 zones except the water line, and it keeps off river and lake banks like every
 row that is no shore row. The three Rock Salt zone endpoints remain exact; Salt

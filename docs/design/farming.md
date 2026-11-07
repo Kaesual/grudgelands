@@ -244,7 +244,7 @@ A resource row with a shore rule (Stormkelp, Frost Melon, Bamboo Shoot, Sugar
 Cane) rolls four times the resource chance (Round 70, the user, 2026-11-07), so
 a harvested shore plant returns while a player stays nearby; Rock Salt is no
 such row. Shoreline species count at most two eligible supports per box width,
-Stormkelp three: its reach from the water (Round 70).
+Stormkelp ten: its reach from the water (Round 70).
 Round 51: the shore papyrus counts as a shoreline species and by columns (a
 stack of 2–4 is one plant); the lichen counts at most one patch (25 columns)
 of supports, since it grows only inside its patches.
