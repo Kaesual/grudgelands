@@ -89,6 +89,8 @@ _G.grug_expeditions = {slot_box = C.slot_box, slot_at = C.slot_at, catalogue = C
 	start_arrival = function() return {x = 8, y = 4.51, z = 8} end,
 	templates = {test_vault = {dig = {["default:stone_with_tin"] = true}}}}
 _G.core.get_node_or_nil = function(pos) return nodes[pos] end
+_G.core.register_on_dieplayer = function() end
+_G.core.register_on_leaveplayer = function() end
 _G.grug_mounts = {register_summon_guard = function(fn) summon_guard = fn end}
 _G.grug_home = {register_respawn_home = function(fn) respawn_row = fn end}
 _G.grug_core.register_world_exception = function(fn) exception = fn end
@@ -156,6 +158,14 @@ check(summon_guard(nil, {x = 0, y = 2, z = 0}) == nil, "C mounts on the map")
 local function player(name, pos)
 	return {get_player_name = function() return name end, get_pos = function() return pos end}
 end
+vector = {add = function(a) return a end, subtract = function(a) return a end,
+	distance = function() return 100 end} -- the look on arrival: tools/r69_home section G
+local saved = {}
+grug_expeditions.saved_origin = function(p) return saved[p:get_player_name()] end
+local CAPITAL = {x = 100, y = 10, z = 100}
+core.load_area = function() end
+grug_home.waystone_pos = function(id) return id == "highcourt" and CAPITAL or nil end
+grug_home.waystone_arrival = function(id) return id == "highcourt" and {x = 101, y = 9.51, z = 100} or nil end
 at_run = run
 local row = respawn_row(player("ann", inside))
 check(row and row.id == "expedition:7" and row.arrival.y == 4.51 and row.pos == run.places.arrival,
@@ -166,7 +176,14 @@ members.ann = nil
 check(respawn_row(player("ann", inside)) == nil, "C someone who no longer belongs")
 members.ann = true
 at_run = nil
-check(respawn_row(player("ann", inside)) == nil, "C the run ended meanwhile")
+check(respawn_row(player("ann", inside)) == nil, "C the run ended meanwhile, nothing saved: the home")
+saved.ann = "highcourt"
+local origin = respawn_row(player("ann", inside))
+check(origin and origin.id == "expedition_origin:highcourt" and origin.pos == CAPITAL and
+	origin.arrival.x == 101, "C the run gone: the capital they came from")
+check(respawn_row(player("ann", {x = 0, y = 2, z = 0})) == nil, "C outside a box the home as ever")
+saved.ann = "gone"
+check(respawn_row(player("ann", inside)) == nil, "C a capital without a stone: the home")
 
 -- ---- D. The template's dig line --------------------------------------------------
 local T = dofile(repo .. "/mods/PLAYER/grug_expeditions/template.lua")

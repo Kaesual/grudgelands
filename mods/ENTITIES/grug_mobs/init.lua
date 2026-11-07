@@ -1007,7 +1007,10 @@ function grug_mobs.register_mob(name, def)
 	local native_do_attack = prototype.do_attack or mobs.mob_class.do_attack
 	prototype.do_attack = function(self, target, force)
 		grug_mobs.touch_boss_activity(self)
-		return native_do_attack(self, target, force)
+		local result = native_do_attack(self, target, force)
+		-- A mob of an Expedition's pack brings the whole pack (packs.lua).
+		if self._grug_pack then grug_mobs.pack_contact(self, target) end
+		return result
 	end
 	-- mobs_redo copies a fixed field set from the source definition. Install
 	-- our presentation metadata on the registered Lua-entity prototype so

@@ -3,7 +3,8 @@
 -- file, the owner's players enter it, and it ends when nobody has been inside for
 -- 10 minutes. Rules: docs/planning/round71-expeditions-concept.md sections 2, 4, 5.
 -- Nothing about a run is saved: a restart ends every run, a login in a box whose
--- run is gone goes home.
+-- run is gone stands in the capital the player came from (one saved value, the
+-- capital's id), else at home. Packs: packs.lua.
 --
 -- THE INTERFACE (other mods read it; a `run` row is read-only for them)
 --
