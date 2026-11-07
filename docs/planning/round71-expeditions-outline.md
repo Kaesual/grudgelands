@@ -10,8 +10,8 @@ before integration.
 The [concept](round71-expeditions-concept.md) governs every proposal. Each aims
 for **15 minutes within 10–20**, roughly four ordinary packs and one boss, at
 its stated party size throughout **level +0 to +9**. Fewer players may enter;
-the fights do not shrink. Jobs below are freely assigned: no required class,
-healer or talent. Avoidable attacks and recovery between packs make that viable.
+the fights do not shrink. Every Expedition needs a tank and a healer (concept §2); the other jobs below are
+freely assigned.
 Mobs and chest rewards use the chosen level. Family names below describe the
 roster; only bosses keep their fixed name across levels.
 
@@ -65,7 +65,7 @@ Read the opening duct, put the screen between it and the party, then leave
 shelter to fight between blasts. Stops leave room to pass on foot.
 The front fighter keeps enemies away from the brake; ranged players clear
 the far edge; the third player moves the cart and helps either side. Anyone
-can take the brake, and support needs no separate duty or healing spell.
+can take the brake.
 
 **Route.** Arrival → loading yard (first pack; reclaim cart) → duct passage
 (learn shelter) → sorting bays (shelter and enemies together) → foreman's
