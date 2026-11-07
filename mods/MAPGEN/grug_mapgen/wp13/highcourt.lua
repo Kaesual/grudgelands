@@ -129,8 +129,9 @@ local function loader(directory)
 		-- The orchard streets' links up to the market and the plaza.
 		{-22, -38, -20, -32, "lane"},
 		{20, -38, 22, -33, "lane"},
-		-- The market's north walk, from the great avenue to the square.
-		{-41, -6, -5, -4, "lane"},
+		-- The market's north walk, from the great avenue along the square to
+		-- the west gate's forecourt.
+		{-45, -6, -5, -4, "lane"},
 		-- The waypoint plaza's approach, from the great avenue east.
 		{5, -14, 13, -12, "lane"},
 		-- The chapel's walk, the well court's and the chapel house's, off the
@@ -612,16 +613,16 @@ local function loader(directory)
 			end)
 		end
 
-		-- 9. The orchards of the open edge, on whatever turf is left in the
-		-- two outer corners, and the hedgerows that carry the boundary on
-		-- between the orchard pieces.
+		-- 9. The orchards of the open edge, on whatever turf the quarters leave:
+		-- the belt inside the wall and the corners behind the castle and the
+		-- chapel. An apple crown reaches four nodes from a stem the planter
+		-- jitters by one, so x and z stop at 50: no leaf on the precinct ring.
 		local orchard = 0
-		for _, block in ipairs({{-46, -12, -38, 4, 4, 5},
-				{-18, -46, -8, -38, 4, 5}, {-34, 40, -24, 45, 4, 5},
-				{24, 40, 34, 45, 4, 5}, {-34, 8, -24, 18, 4, 5},
-				{8, 8, 18, 18, 4, 5}, {-18, -34, -8, -14, 4, 5},
-				{8, 30, 18, 44, 4, 5}, {-18, 30, -8, 44, 4, 5},
-				{-34, -12, -24, -2, 4, 5}}) do
+		for _, block in ipairs({{-50, -50, -14, -50, 4, 5},
+				{14, -50, 50, -50, 4, 5}, {-50, -44, -47, -33, 4, 5},
+				{48, -44, 50, -10, 4, 5}, {-50, -19, -44, -10, 4, 5},
+				{-18, -46, -8, -38, 4, 5}, {-16, -34, -8, -23, 4, 5},
+				{-44, 41, -31, 50, 4, 5}, {31, 42, 50, 50, 4, 5}}) do
 			orchard = orchard + layout.plant_orchard(buf, human, block[1],
 				block[2], block[3], block[4], block[5], block[6])
 		end
@@ -672,7 +673,7 @@ local function loader(directory)
 				{kind = booth.kind})
 		end
 		-- `door`: the elder stands on the chapel's doorstep and its authored
-		-- facing is the door, so the consumer turns it round to the west lane
+		-- facing is the door, so the consumer turns it round to the bypass
 		-- (start_npcs.lua `socket_face_yaw`, playtest round 2).
 		-- Where it stands is a point of the chapel's template.
 		do
