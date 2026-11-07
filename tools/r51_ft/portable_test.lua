@@ -115,13 +115,13 @@ end
 -- ground for `layout.green`, and Dur Brannoc its castle; each capital lane
 -- pins its own new count.)
 local CAPITAL_TREES = {
-	highcourt = 86,
+	highcourt = 100,
 	-- the next capital
 	dur_brannoc = 64,
 	-- the next capital
 	lethariel = 167,
 	-- the next capital
-	nhal_veyr = 70,
+	nhal_veyr = 78,
 	-- the next capital
 	gor_drazhak = 47,
 	-- the next capital

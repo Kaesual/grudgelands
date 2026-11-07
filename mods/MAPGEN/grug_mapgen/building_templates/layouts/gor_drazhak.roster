@@ -7,7 +7,7 @@ race orc
 palette town race=orc
 palette ors race=orc wall=grug_decor:darkage_ors_block wall_infill=grug_decor:darkage_adobe
 
-use gor_drazhak_warlord_hall count=1 main=ors town=town
+use gor_drazhak_warlord_hall count=1 main=ors roof=ors
 use gor_drazhak_gate_south count=4 main=ors
 use highcourt_market count=1
 use gor_drazhak_colonnade_west count=1

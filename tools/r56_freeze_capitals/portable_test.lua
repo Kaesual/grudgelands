@@ -113,9 +113,9 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- declared map reset: the core's radius 56, Dur Brannoc's castle) every
 -- capital's new digests again; each capital lane pins its own.
 local FROZEN = {
-	highcourt = {"abc75504ededff37c18f83c9f09e195e1d4b3e42164d315ebc22d1149f2c5c1b",
-		"61eddb6f823916828b970d9b4dd740fdf7409e499881d4be560847c5cfe93ede",
-		"92b576f2f09cc0252a3ae862784c163741b6305ac6421705ccf44d8cb43eb8f7"},
+	highcourt = {"ed4c5bd9e39f6c059c2e4c77ac78a96a9eb052255d68a81d67daf9d90607d4b9",
+		"f6b0eb2750d999b797d74c9a23b5cc04b5cc7f4d6b40d9952acdf84317a23845",
+		"bb9edff773f80a5ec2dbfc5336ba850b9bfe52168710c248908eb0909a773186"},
 	-- the next capital
 	dur_brannoc = {"846961cd7a6edc906185fb59f4d42da986abd75fe4c3e4a650299a2f8c48ba9f",
 		"8d7ea2686c9ffac290086a5cc2b844ff108960af9f45b7012c809963f5baed6d",
@@ -125,13 +125,13 @@ local FROZEN = {
 		"7f82b9fc323dcd16623ecc0389f60c93e7ac6dfa37a8bcf9b58174c65e4ba370",
 		"00d1a90ce55e834fde033e41e78ccd2af995247cca98505f56c295526b7fe7aa"},
 	-- the next capital
-	nhal_veyr = {"919d95a0ca0e21241e1139c71f44d782194850d4493bafc82a87f1f461c44869",
-		"a1e918e7a39b3b24a48df3cb2cb8b9433f1bf5f9fd37efec34546addaf98b7ac",
-		"5570ef4f3363ce0f940982b4dec1be3788425a35b89bc7e9460af0b563b2fb47"},
+	nhal_veyr = {"90fcc51122df02ac74c550e1b5a3e186d47f46c715f27369f45adc0ddfb74eef",
+		"9971463eb916aff137d63e8018aeeb3d9f822a05f097da76876198f2ee28669c",
+		"7ce987d1a7c499546d98ffbbdadbf9b343bfe939c6be2f14f7784ac3a9c90bdc"},
 	-- the next capital
-	gor_drazhak = {"028d5f6323df57ce7d8d1da0677d22b71c679e9aa61d4895be8265436d59b585",
-		"0c7225cef4c9b790b62d69d782a227fb4b617f22e6ecbbdb716e837a063502be",
-		"a509076f58c3a790031a6ef198b06205ff8822b7e6b210bad4fe745454312bd9"},
+	gor_drazhak = {"bc5019233b5363a316ea689063cfdf2c006d66e51ff2cde30b831306ec450013",
+		"8ac478378008b993136310b70913d2d20f540e6a37918ca8b659e01ca4b59a92",
+		"a751c7c460c84f0450a38f04ad7c31f591fd63daf8c0bd5d14de55dbf12c34ef"},
 	-- the next capital
 	kezamba = {"711b3aaaca00cc47dbb1f484ebfa5ed76913be94214d71617a989d13e22cacf9",
 		"9eff6c643c2f7091b047d114c04a35b018b7828c937af5279babf78be8b06b0e",
