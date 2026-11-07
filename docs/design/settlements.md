@@ -185,8 +185,9 @@ river, Dur Brannoc an angular mountain hold with a tower on every corner, Nhal
 Veyr a walled necropolis with one round ring, Gor Drazhak a jagged war camp
 with a pinwheel of avenues, Lethariel a lakeside city with few towers,
 Kezamba a jungle city round its cenote (`world_zones.md` §12 has the
-details). The civic core stays exactly as authored; start towns are
-untouched. The layout is a pure function of the
+details). The civic core is authored, the same on every seed: since Round 70
+radius 56 around a castle of one shared form (`world_zones.md` §12); start
+towns are untouched. The layout is a pure function of the
 seed and the code, so a world always rebuilds the same city.
 
 Decided 2026-09-15 with the pilot capital, Highcourt.
@@ -211,8 +212,9 @@ round 10. Its wall, parapet, bank or palisade is written after all structural
 core content and later dressing may use only free cells: a house, orchard,
 green, lore piece, martial piece or prop may meet the boundary but may not cut
 it. Only the four authored thirteen-column gate or threshold bands stay open.
-The boundary and its gates stand at radius 48, two nodes outside the earlier
-radius 46. Each capital retains the actual asymmetric extent of its gatehouses;
+The boundary and its gates stand at radius 56 (Round 70; `wp13/precinct_ring.lua`
+is the one source of the core's size), the gatehouses' outer faces on the pad's
+edge at 57. Each capital retains the actual asymmetric extent of its gatehouses;
 projection bounds include every authored cell, and no ring column intersects a
 building. Nhal Veyr's bars align with their wall on both axes. The 5 x 5
 corner drums and towers of Dur Brannoc, Gor Drazhak and Nhal Veyr own the ring
@@ -371,7 +373,10 @@ deep enough to have soil between its two kerbs rather than being all kerb
 
 **The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
 citadel is stone block, its halls are pine under slate, and its city stands
-on the granite ground round the flat civic core. The four quarters are the forge and its professions, the garrison, the
+on the granite ground round the flat civic core. Since Round 70 the king sits
+in the castle at the head of the throne approach, a nine-wide avenue from the
+south gate; a five-wide bypass runs up both flanks and behind the castle to the
+north gate, and the forge court lies east of it. The four quarters are the forge and its professions, the garrison, the
 halls of record with the carvers' yard and the barrow terrace, and the terrace
 houses with their alehouse and brewhouse. Its open ground is what a dwarf city
 keeps: an ore court with a mine mouth cut into a rock face, charcoal clamps, a

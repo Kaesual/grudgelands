@@ -59,6 +59,7 @@ end
 
 local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+local PAD = dofile(wp13 .. "/precinct_ring.lua").PAD
 local json = dofile(repo .. "/tools/r28_b1/json.lua")
 local NODES = json.parse(read("tools/building_templates/nodes.json")).nodes
 local parts = dofile(wp13 .. "/parts.lua")
@@ -354,10 +355,15 @@ end
 ------------------------------------------------------------------------------
 local HALLS = {
 	{"highcourt", "highcourt_kings_hall", "white_slate"},
-	{"dur_brannoc", "dur_brannoc_kings_hall", "slate"},
+	-- the next capital
+	{"dur_brannoc", "dur_brannoc_kings_hall", "slate", "slate"},
+	-- the next capital
 	{"lethariel", "lethariel_kings_hall", "pale"},
+	-- the next capital
 	{"nhal_veyr", "nhal_veyr_mausoleum", "crypt", "crypt_vault"},
+	-- the next capital
 	{"gor_drazhak", "gor_drazhak_warlord_hall", "ors"},
+	-- the next capital
 	{"kezamba", "kezamba_kings_hall", "basalt"},
 }
 for _, hall in ipairs(HALLS) do
@@ -435,9 +441,9 @@ for _, capital in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", 
 			local loop = loops[capital .. "_" .. gate .. "_watch_" .. name] or {}
 			local ok = #loop == 4
 			for _, p in ipairs(loop) do
-				-- the city side of the gatehouse (its inner wall at 43) and
-				-- within its width
-				if p[axis] * side > 42 or math.abs(p[other]) > 6 or not open(p.x, p.z) then
+				-- the city side of the gatehouse (its inner wall six inside the
+				-- pad) and within its width
+				if p[axis] * side > PAD - 7 or math.abs(p[other]) > 6 or not open(p.x, p.z) then
 					ok = false
 				end
 			end

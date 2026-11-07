@@ -1,6 +1,13 @@
 -- Shared geometry for the protected boundary of a capital's civic core.
 --
--- The ring lies one column inside the 99 x 99 core pad, at +/-48. Structural
+-- This file is the ONE SOURCE of the civic core's size (Round 70, radius 56
+-- in all six capitals): everything that needs it reads it from here, the
+-- compositions, `city_green.lua`, the capital planner and the settlement
+-- bounds. The fitting profiles' `civic_width` (`wp40/source/simple_map.lua`)
+-- is plain data and cannot read a module, so `wp40/r7_capitals.lua` fails the
+-- load when it differs from CIVIC_WIDTH.
+--
+-- The ring lies one column inside the 115 x 115 core pad, at +/-56. Structural
 -- content is authored before it, so a house, orchard, green or prop cannot
 -- silently cut the boundary. Later free-cell dressing respects it. Only the
 -- four thirteen-column gatehouse/threshold bands are omitted here. A capital
@@ -11,7 +18,10 @@
 
 local M = {}
 
-M.RADIUS = 48
+M.RADIUS = 56
+M.PAD = M.RADIUS + 1          -- the pad's half width, the compositions' RADIUS
+M.CIVIC_WIDTH = 2 * M.RADIUS  -- the fitting profiles' civic_width
+M.CORNER = M.RADIUS - 1       -- the corner towers' centres
 M.GATE_HALF = 6
 
 function M.is_gate(x, z, gate_half)
@@ -21,11 +31,11 @@ function M.is_gate(x, z, gate_half)
 end
 
 -- The corner drums and towers of Dur Brannoc, Gor Drazhak and Nhal Veyr are
--- 5 x 5 squares centred on (+/-47, +/-47), so their walls reach +/-45 and
--- the ring columns at +/-45 are theirs: a ring that wrote there cut the
--- tower's own masonry (Round 23 found Nhal Veyr's bars and Gor Drazhak's
--- earth in the tower walls). The first ring column beyond the skip, at
--- +/-44, stands against the tower wall.
+-- 5 x 5 squares centred on (+/-CORNER, +/-CORNER), so their walls reach two
+-- columns inside it and those ring columns are theirs: a ring that wrote there
+-- cut the tower's own masonry (Round 23 found Nhal Veyr's bars and Gor
+-- Drazhak's earth in the tower walls). The first ring column beyond the skip
+-- stands against the tower wall.
 function M.is_corner(x, z, corner_half)
 	local half = corner_half or 3
 	return math.abs(x) >= M.RADIUS - half and

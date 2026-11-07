@@ -718,7 +718,7 @@ rewrite records the WP40 model it replaced.
   surface, checked analytically against the planned centreline segments.
   Claims may contain roads; the corridor stays protected inside them.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
-  flat 96-node civic core and its 40-node collar (§12).
+  flat 112-node civic core and its 40-node collar (§12).
 - **POIs sit in the terrain (Round 22, D33).** Every other anchor keeps its
   x/z, and its height comes from the terrain: the lower median of the natural
   ground under its building core (village and home bandit camp 24; frontier
@@ -807,7 +807,7 @@ rewrite records the WP40 model it replaced.
   calm level over a grade of 0.3), so the rise or fall back to the natural
   ground is a hill, never a wall; the fade's outer edge varies with noise.
   Around a
-  capital only the 96×96 civic core is flat: the calm zone around it keeps
+  capital only the 112×112 civic core is flat: the calm zone around it keeps
   long-wave hills and hollows (wavelengths of about 100 nodes and more, a
   race-specific amplitude of roughly ±8–12 nodes, no fine detail) out to
   about 200–260 nodes, full natural relief returns by about 400–580 nodes,
@@ -1755,7 +1755,7 @@ one-cell settlement checks are unchanged.
   protected spawn surface: no ambient non-critter spawn stands there
   (`grug_mobs.protected_spawn_surface`), while the rest of the capital zone
   carries its 20–30 spawn recipe; level-60 guards remain explicit.
-- Capital grading flattens only the dry capital-owned 96×96 civic core.
+- Capital grading flattens only the dry capital-owned 112×112 civic core.
   The target reference interval for natural height N is [N-24, N+16],
   intersected over core columns with water lower bounds. A feasible interval
   clamps the natural centre; an infeasible interval uses its rounded midpoint.
@@ -1779,9 +1779,10 @@ one-cell settlement checks are unchanged.
   flat; the ground around it keeps long-wave hills and hollows of limited
   height (§7.6). Each capital's target ground height sits well below its
   region's clouds (§7.6).
-- A fixed 96×96 civic core contains the king's hall, the current waypoint
-  socket and principal service court, and four core gates on the axes. It
-  stays as authored and free of natural water. The future WP17 waypoint pad
+- A fixed 112×112 civic core (radius 56 since Round 70, `wp13/precinct_ring.lua`
+  owns the size) contains the king's castle, the current waypoint socket and
+  principal service court, and four core gates on the axes. It is authored
+  and free of natural water. The future WP17 waypoint pad
   may stand anywhere in the city (user decision 2026-09-29, WP audit A5).
 - **The capital planner (Round 22, D60, D69, D70, D72; Round 26 Lane W; as
   built):** once per world start, in main, after height, water and roads,
@@ -1879,18 +1880,20 @@ one-cell settlement checks are unchanged.
   target band above water (`terrain_data.lua` `data.capital_target`: dwarf
   24–70, human 14–40, elf 16–55, undead 14–45, orc 18–60, troll 10–36) and
   its long-wave amplitude (`data.capital_wave`, ±8–12 nodes), around the flat
-  96-node civic core and its 40-node collar; there are no per-race terrace
+  112-node civic core and its 40-node collar; there are no per-race terrace
   forms (the anchor profiles' `shape` names are not read). None depends on
   accidental v7 land.
 - The six kings are equal civic rulers and killable level-70 elite NPCs. Every
-  king has exactly four level-60 elite royal guards. The king is the tallest
+  king has exactly two level-60 elite royal guards, who hold their posts
+  beside the throne; the two door guards at the great door are ordinary
+  guard posts of the watch. The king is the tallest
   figure in his hall: final `visual_size` 1.6 (2.72 nodes, box and model
   alike) against his elite guards' 1.4 (2.38 nodes) (Round 28 ruling 9). No capital is a superior
   faction seat. Shared faction services use the same service definition in all
   three capitals; race services and the king remain local. Essential services
   are delivered by separate passive, invulnerable NPCs and never depend on the
   king being alive.
-- A king is the authoritative entity for the five-NPC royal encounter. Its
+- A king is the authoritative entity for the three-NPC royal encounter. Its
   throne anchor, ordinary chase/leash rules and 15-second no-contact rule own
   the encounter state. The guards have no independent home target: while the
   king lives they always path toward and follow its current position.
@@ -1898,9 +1901,9 @@ one-cell settlement checks are unchanged.
   socket's authored facing, and a walk back to it after a fight.
 - When the king evades it returns to its throne and heals fully. If the king's
   return path reaches the ordinary failed-path threshold, the king teleports to
-  its anchor and all four guards are moved with it in the same reset. A guard
+  its anchor and both guards are moved with it in the same reset. A guard
   whose own path fails snaps to the king's current position; it never moves or
-  overrides the king. A full reset restores all four guard slots together, so
+  overrides the king. A full reset restores both guard slots together, so
   raiders cannot permanently dismantle the retinue one guard at a time. A
   guard killed without either a reset or the king's death (picked off from
   beyond the king's view) returns on its own after 15 minutes, a persistent
@@ -1912,7 +1915,7 @@ one-cell settlement checks are unchanged.
   breath's fan (`world.md` §4b): the middle arrow homes on the target, the
   two side arrows fly straight and may hit a bystander (Round 37).
 - Killing the king wins the encounter immediately. Any surviving royal guards
-  retreat and despawn without additional loot. The king and all four guards
+  retreat and despawn without additional loot. The king and both guards
   respawn together at full health after 15 minutes. The absolute wall-clock
   respawn timestamp is persistent and server downtime counts. They receive no
   temporary invulnerability on respawn.

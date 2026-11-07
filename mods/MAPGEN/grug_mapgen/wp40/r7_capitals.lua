@@ -15,12 +15,22 @@ return function(wp40_directory)
 	local planner = dofile(wp40_directory .. "/capital_planner.lua")
 	local capital_source = dofile(wp40_directory .. "/r7_capital_blueprint.lua")
 	local services = dofile(wp40_directory .. "/../wp13/capital_services.lua")
+	local RING = dofile(wp40_directory .. "/../wp13/precinct_ring.lua")
 	local floor, sqrt, min, max = math.floor, math.sqrt, math.min, math.max
 
 	local M = {planner = planner, source = capital_source}
 
 	local function fail(message)
 		error("WP40 capitals: " .. message, 0)
+	end
+
+	-- The fitting profiles are plain data and cannot read the core's size, so
+	-- a profile that disagrees with it fails the load, named.
+	for _, row in ipairs(dofile(wp40_directory .. "/source/simple_map.lua").anchor_profiles) do
+		if row.civic_width and row.civic_width ~= RING.CIVIC_WIDTH then
+			fail(row.id .. ": civic_width is not the core's " .. RING.CIVIC_WIDTH ..
+				" (wp13/precinct_ring.lua)")
+		end
 	end
 
 	-- The planned canal (D58) as an authored water row: one level, river
@@ -196,7 +206,7 @@ return function(wp40_directory)
 				for _, cell in ipairs(core_cells) do
 					local along = cell.x * dx + cell.z * dz
 					local across = cell.x * dz - cell.z * dx
-					if along >= 46 and along <= 49 and across >= -3 and across <= 3 and
+					if along >= RING.PAD - 3 and along <= RING.PAD and across >= -3 and across <= 3 and
 							cell.y >= -1 and cell.y <= 1 and cell.name ~= "air" and
 							not cell.name:find("water", 1, true) then
 						return true
@@ -234,7 +244,7 @@ return function(wp40_directory)
 			end
 			texts[#texts + 1] = text
 			local st = plan.stats
-			local built = 96 * 96
+			local built = RING.CIVIC_WIDTH * RING.CIVIC_WIDTH
 			local placed_required = 0
 			for _, p in ipairs(plan.plots) do
 				built = built + (p.x1 - p.x0 + 1) * (p.z1 - p.z0 + 1)

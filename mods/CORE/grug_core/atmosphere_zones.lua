@@ -341,12 +341,12 @@ grug_core.atmosphere_moods = MOODS
 -- a capital inside its own clouds. Once the world authority exists, each race
 -- mood's cloud base (set_clouds `height`, the y of the cloud bottom) is raised
 -- to at least CLOUD_CLEARANCE above that capital's ground: the highest of the
--- capital anchor's own y and nine terrain samples across its 96 by 96 civic
+-- capital anchor's own y and nine terrain samples across its 112 by 112 civic
 -- core. A mood already high enough keeps its value, as does every mood if the
 -- computation fails. Every other mood field is unchanged. Runs before any
 -- player can join, so no player carries a stale copy of the preset.
 local CLOUD_CLEARANCE = 60
-local CIVIC_HALF = 48
+local CIVIC_HALF = 56 -- `wp13/precinct_ring.lua` RADIUS; tools/r70_cap checks it
 
 -- Computes every new cloud base first and returns them; nothing is written,
 -- so an error anywhere leaves all presets authored.

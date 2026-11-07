@@ -97,7 +97,7 @@ local function loader(directory)
 	local GREEN_STEP, SPACING, KEEP, WALL_CLEAR = 11, 4, 4, 12
 	local GROUP = {{0, 0}, {4, 1}, {-3, 3}, {1, -4}, {-4, -2}}
 	local POOL, ATTEMPTS, SMALLEST = 24, 2, 8
-	local CORE_HALF = 49
+	local CORE_HALF = dofile(directory .. "/precinct_ring.lua").PAD
 	M.REACH = 8 -- a tree's cells lie within 8 of its stem (tree_templates.lua)
 
 	local trees_module

@@ -65,7 +65,7 @@ local function loader(directory)
 
 	local M = {}
 
-	local RADIUS = 49
+	local RADIUS = precinct_ring.PAD
 	local SCHEMA = "grug_wp13_highcourt_core_v1"
 
 	-- The city's own patrol loop (the sockets contract's `group`), and every
@@ -177,9 +177,9 @@ local function loader(directory)
 		{id = "gate_west", template = "highcourt_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "white", roof = "white_slate"},
 		{id = "gate_north", template = "highcourt_gate_south", watch = true,
-			x = -6, z = 43, turns = 2, palette = "white", roof = "white_slate"},
+			x = -6, z = RADIUS - 6, turns = 2, palette = "white", roof = "white_slate"},
 		{id = "gate_east", template = "highcourt_gate_south", watch = true,
-			x = 43, z = -6, turns = 3, palette = "white", roof = "white_slate"},
+			x = RADIUS - 6, z = -6, turns = 3, palette = "white", roof = "white_slate"},
 
 		-- 3. The market square, west of the approach.
 		{id = "market", template = "highcourt_market",
