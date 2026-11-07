@@ -1,7 +1,7 @@
 -- Round 71 lane PACK portable test (LuaJIT): the states of a pack, on the real
 -- packs.lua and the real aggro.lua, with stubs of the engine and of a mob's body. The
 -- engine half is tools/r71_pack/run.sh; the login rule's other half is in r71_frame,
--- the respawn row in r71_guard. Section H is the proof of ruling 6: a seeded world of
+-- the respawn row in r71_guard and r69_home. Section H is the proof of ruling 6: a seeded world of
 -- walls, inactive blocks, deaths and logouts in which nobody is ever held with nothing
 -- able to reach them. Prints "R71 PACK PORTABLE PASS checks=<n>".
 --
@@ -82,7 +82,9 @@ local function new_body(pos, name, data)
 end
 
 core = {
-	registered_nodes = {air = {walkable = false}, stone = {walkable = true}},
+	registered_nodes = {air = {walkable = false}, stone = {walkable = true},
+		lava = {walkable = false, damage_per_second = 8},
+		hot = {walkable = true, damage_per_second = 4}},
 	get_modpath = function() return repo .. "/mods/PLAYER/grug_expeditions" end,
 	get_current_modname = function() return "grug_expeditions" end,
 	log = function() end,
@@ -90,7 +92,12 @@ core = {
 	after = function(seconds, fn) timers[#timers + 1] = {at = clock + seconds, fn = fn} end,
 	load_area = function() end,
 	line_of_sight = function(a, b) return sight(a, b) end,
-	get_node_or_nil = function(pos) return {name = walls[key(pos)] and "stone" or "air"} end,
+	-- A floor at y 4 unless a cell says otherwise; `walls` holds true or a node name.
+	get_node_or_nil = function(pos)
+		local cell = walls[key(pos)]
+		if type(cell) == "string" then return {name = cell} end
+		return {name = (cell or pos.y == 4) and "stone" or "air"}
+	end,
 	get_player_by_name = function(name) local p = players[name]; return p and p.online and p or nil end,
 	is_player = function(p) return type(p) == "table" and p.is_player ~= nil and p.is_player() end,
 	chat_send_all = function(text) chat[#chat + 1] = text end,
@@ -297,6 +304,7 @@ do
 	for _, ent in ipairs(bodies) do
 		if ent.name == GOLEM.mob then golem = ent end
 	end
+	check(bodies[1]._grug_pack >= os.time() * 1000 - 1000000, "A body keys above the session's clock")
 	-- idle it stays by its marker: 8 nodes, not the 32 of a free roamer (the boss too)
 	local idler = bodies[1]
 	local home = idler._grug_home
@@ -469,12 +477,43 @@ do
 	mob.object:set_pos({x = 8, y = 5, z = 0})
 	advance(30)
 	check(mob.object:get_pos().x == 8, "D a mob in reach stays")
+	-- a swing lands at reach + reach_ext and no further: 3.5 nodes off, in clear sight,
+	-- a reach of 3 strikes nothing and jumps; the extension on top of a player does
+	mob.object:set_pos({x = 6.5, y = 5, z = 0})
+	mob.reach_ext = 0.8
+	advance(30)
+	check(mob.object:get_pos().x == 6.5, "D within reach + reach_ext it stays")
+	mob.reach_ext = 0
+	advance(10)
+	check(distance(mob.object:get_pos(), ana.at) <= 2, "D just out of reach, in sight: it jumps")
+	mob.object:set_pos({x = 8, y = 5, z = 0})
+	advance(1)
 	-- a thin wall: in reach but no sight, a jump
 	sight = function() return false end
 	local before = mob.object:get_pos().x
 	advance(10)
 	check(mob.object:get_pos().x == 10, "D behind a wall, in reach: it lands on the player's own cell")
 	check(before == 8, "D it stood there")
+	sight = function() return true end
+	-- a jump needs a floor: a pit, or one that burns, or lava in the cell: their own
+	ana.at = {x = 400, y = 5, z = 0}
+	for _, side in ipairs({{2, 0}, {-2, 0}, {0, 2}, {0, -2}}) do
+		walls[key({x = 400 + side[1], y = 4, z = side[2]})] = "air"
+	end
+	advance(1)
+	check(mob.object:get_pos().x == 400 and mob.object:get_pos().z == 0, "D no floor: the player's cell")
+	ana.at = {x = 500, y = 5, z = 0}
+	for index, side in ipairs({{2, 0}, {-2, 0}, {0, 2}, {0, -2}}) do
+		if index % 2 == 0 then
+			walls[key({x = 500 + side[1], y = 4, z = side[2]})] = "hot"
+		else
+			walls[key({x = 500 + side[1], y = 5, z = side[2]})] = "lava"
+		end
+	end
+	advance(1)
+	check(mob.object:get_pos().x == 500 and mob.object:get_pos().z == 0, "D never onto what burns")
+	ana.at = {x = 10, y = 5, z = 0}
+	advance(1)
 	-- walking towards the player is progress, whatever the time
 	sight = function() return true end
 	mob.object:set_pos({x = 31, y = 5, z = 30}) -- 36.4 away: jumps as far
@@ -782,7 +821,7 @@ local function world(seed)
 				check(to ~= nil, "H every living member hunts, seed " .. seed)
 				local id = ent.object
 				-- One node needs no ray: the darkness of this world is a stand-in for walls.
-				local near = distance(at, to) <= 1 or (distance(at, to) <= ent.reach + 1 and sight())
+				local near = distance(at, to) <= 1 or (distance(at, to) <= ent.reach and sight())
 				local row = wedged[id]
 				if near or (row and row.target ~= ent.attack) then wedged[id] = nil end
 				if not near then
@@ -814,5 +853,72 @@ local function world(seed)
 	reset_world()
 end
 for seed = 1, 300 do world(seed) end
+
+-- ---- I. The real markers ---------------------------------------------------------
+-- The Stilled Seam's encounter lines, as the template file holds them: each room one
+-- pack, and each pack, idling at the walk of the real roam cap for an hour, stays by
+-- its markers and never meets another.
+do
+	local file = assert(io.open(repo .. "/mods/PLAYER/grug_expeditions/templates/stilled_seam.exp", "rb"))
+	local text = file:read("*a")
+	file:close()
+	local rows = {}
+	for room, mob, count, tier, x, y, z in text:sub(1, text:find("\ndata ")):gmatch(
+			"encounter (%S+) (%S+) (%d+) (%S+) (%d+) (%d+) (%d+)") do
+		rows[#rows + 1] = {room = room, mob = mob, count = tonumber(count), tier = tier,
+			pos = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}}
+	end
+	check(#rows == 8, "I the eight marker rows: " .. #rows)
+	local SPREAD = {{0, 0}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}, {3, 3}, {-3, 3}, {3, -3}, {-3, -3}}
+	local run = new_run()
+	local packs_by_room, of_pack = {}, {}
+	for _, row in ipairs(rows) do
+		packs_by_room[row.room] = packs_by_room[row.room] or P.new(run, "expedition:stilled_seam:1")
+		for index = 1, row.count do
+			local offset = SPREAD[index]
+			assert(P.add(packs_by_room[row.room], row,
+				{x = row.pos.x + offset[1], y = row.pos.y, z = row.pos.z + offset[2]}))
+		end
+	end
+	local rooms = 0
+	for _ in pairs(packs_by_room) do rooms = rooms + 1 end
+	check(rooms == 5, "I pack_a to pack_d and the boss: " .. rooms)
+	local bodies = living()
+	check(#bodies == 16, "I sixteen mobs: " .. #bodies)
+	for room, pack in pairs(packs_by_room) do
+		for _, member in ipairs(pack.members) do of_pack[member.object] = room end
+	end
+	math.randomseed(71)
+	local farthest, closest = 0, math.huge
+	for _ = 1, 3600 do
+		for _, ent in ipairs(bodies) do
+			local before = ent._test_turned
+			grug_mobs.leash_tick(ent, 1)
+			local at, home = ent.object:get_pos(), ent._grug_home
+			local step = 1 -- walk_velocity of the spider and the golem
+			if ent._test_turned ~= before then
+				local d = distance(at, home)
+				ent.object:set_pos({x = at.x + (home.x - at.x) / d * step, y = at.y,
+					z = at.z + (home.z - at.z) / d * step})
+			else
+				local yaw = math.random() * 6.283
+				ent.object:set_pos({x = at.x + math.cos(yaw) * step, y = at.y,
+					z = at.z + math.sin(yaw) * step})
+			end
+			farthest = math.max(farthest, distance(ent.object:get_pos(), home))
+		end
+		for _, a in ipairs(bodies) do
+			for _, b in ipairs(bodies) do
+				if of_pack[a.object] ~= of_pack[b.object] then
+					closest = math.min(closest, distance(a.object:get_pos(), b.object:get_pos()))
+				end
+			end
+		end
+	end
+	check(farthest <= 9.5, "I an idle mob stays by its marker: " .. farthest)
+	check(closest >= 15, "I two packs never meet: " .. closest)
+	check(no_timers(), "I an idle hour costs no tick")
+	reset_world()
+end
 
 print("R71 PACK PORTABLE PASS checks=" .. checks)

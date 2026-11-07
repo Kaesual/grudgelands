@@ -25,11 +25,11 @@
 --     its key gone and removes itself. A body the engine refuses counts as dead.
 --   * further than JUMP_RANGE from its target, inside the active blocks of any player
 --     near it (active_block_range 4, 64 nodes): it jumps beside the target.
---   * WEDGED_SECONDS without getting a node closer: it strikes (in reach or a shot,
+--   * WEDGED_SECONDS without getting a node closer: it can strike (in reach or a shot,
 --     in sight) or it jumps. So a corner, a pit, a pillar or a wall ends in at most
 --     that time, whatever the navigation thinks; a navigation give-up jumps at once.
--- A jump lands on a free cell the player can see, else on the player's own cell, so a
--- jumped mob is in reach. The list itself is checked every tick against who is
+-- A jump lands on a free floored cell the player can see, else on the player's own
+-- cell, so a jumped mob is in reach. The list itself is checked every tick against who is
 -- online, alive and inside.
 local M = grug_expeditions
 local P = {}
@@ -49,7 +49,8 @@ local AWAY_FROM_HOME = 10
 local SIDES = {{2, 0}, {-2, 0}, {0, 2}, {0, -2}}
 
 local bodies = {}    -- body key -> its member: a copy whose key is gone is stale
-local next_body = 0
+-- Over the session's clock: a key can never match a stale copy of an earlier session.
+local next_body = os.time() * 1000
 local by_run = {}    -- run -> its packs
 local fights = {}    -- player name -> {[pack] = true}, the lists they are on
 local pulled = {}    -- pack -> true: all the tick visits
@@ -64,19 +65,27 @@ function P.standable(pos)
 	for dy = 0, 1 do
 		local node = core.get_node_or_nil({x = pos.x, y = pos.y + dy, z = pos.z})
 		local def = node and core.registered_nodes[node.name]
-		if not def or def.walkable then return false end
+		if not def or def.walkable or (def.damage_per_second or 0) > 0 then return false end
 	end
 	return true
 end
 
--- A cell beside the player that the player can see, else their own: always one a
--- mob can stand on and strike from.
+-- A floor that holds a mob and does not hurt it.
+local function has_floor(pos)
+	local node = core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
+	local def = node and core.registered_nodes[node.name]
+	return def ~= nil and def.walkable == true and (def.damage_per_second or 0) <= 0
+end
+
+-- A cell beside the player, with a floor, that the player can see, else their own:
+-- always one a mob can stand on and strike from, never a fall.
 local function beside(player)
 	local at = vector.round(player:get_pos())
 	local eye = {x = at.x, y = at.y + 1, z = at.z}
 	for _, side in ipairs(SIDES) do
 		local pos = {x = at.x + side[1], y = at.y, z = at.z + side[2]}
-		if P.standable(pos) and core.line_of_sight(eye, {x = pos.x, y = pos.y + 1, z = pos.z}) then
+		if P.standable(pos) and has_floor(pos) and
+				core.line_of_sight(eye, {x = pos.x, y = pos.y + 1, z = pos.z}) then
 			return pos
 		end
 	end
@@ -240,7 +249,8 @@ end
 
 local function can_strike(ent, pos, at, distance)
 	local ranged = ent.attack_type == "shoot" or ent.attack_type == "dogshoot"
-	local range = ranged and ent.view_range or (ent.reach or 3) + 1
+	-- A swing lands at reach + reach_ext (api.lua do_states), no further.
+	local range = ranged and ent.view_range or (ent.reach or 3) + (ent.reach_ext or 0)
 	return distance <= range and core.line_of_sight(
 		{x = pos.x, y = pos.y + 1, z = pos.z}, {x = at.x, y = at.y + 1, z = at.z})
 end

@@ -1494,7 +1494,7 @@ XP); these rules replace the leash, the pursuit policy above and group alerts.
   without getting a node closer, and not able to strike (in reach, or a shot, in sight):
   it jumps; a failed path search jumps at once. Without a live body (its block went
   inactive) a new body stands beside the player at the old health, and the old copy
-  removes itself when it wakes. A jump lands on a free cell the player can see, else on
+  removes itself when it wakes. A jump lands on a free cell with a floor that the player can see, else on
   the player's own.
 - **Idle** a pack's mob stays within 8 nodes of its marker, so packs can be fought one
   at a time.
