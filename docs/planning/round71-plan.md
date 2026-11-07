@@ -19,7 +19,7 @@ it. This round proves the idea with one Expedition before four more are built.
 | 1b | GUARD | Opus | No riding, respawn inside, ore digging, proof that spawns stay out | FRAME's interface |
 | 1b | MOBS | Opus | Room spawns, per-entity levels, no respawn, item levels above 60, boss credit, chest, reward door | FRAME's interface, Round 70 LEVELS |
 | 1b | UI | Opus | Registrar NPC, level dropdown, eligibility dialog, invitation warning, preparing and ready notices, map | FRAME's interface |
-| 0 | L20DOC | Astra, Opus review | Storyline, a short description and a 2D floor plan of the level 20 instance | go |
+| 0 | L20DOC | Astra, Opus review | Storyline, a short description and a 2D floor plan of the level 20 Expedition | go |
 | 2 | L20 | Opus | The level 20 Expedition: template, roster, boss, loot table, quest | every wave 1 merge, **the user's approval of L20DOC** |
 | 3 | D | Opus | Docs, completion, GUI checklist | every merge |
 
