@@ -8,7 +8,7 @@
 --   B  every cell inside BOUNDS.capital_core;
 --   T  every socket of the core a standing point inside the pad.
 -- A capital in DONE (a capital lane adds its key when its core is finished):
---   R  the protected ring closed, every gate on it;
+--   R  the protected ring closed, every gate on it; Kezamba's mask the water;
 --   W  every socket reached on foot from the crossing, doors passable;
 --   C  the castle: 45 x 35, the two royal guards at their posts, the door
 --      guards ordinary posts at the great door, the throne within the seat's
@@ -110,14 +110,14 @@ local MOVED = {
 	gor_drazhak = {},
 	-- the next capital
 	kezamba = {
+		-- Its row (z 56) is the ring: it keeps its old place under the moot
+		-- house's last row, which moved 15.
+		shore_walk_north = "ring",
 		-- The castle's own rows follow the picked template, not the 2D study.
 		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
 		door_guard_west = "castle", door_guard_east = "castle",
 		hall_idle_west = "castle", hall_idle_east = "castle",
 		hall_idle_service = "castle",
-		-- Its row (z 56) is the ring: it keeps its old place under the moot
-		-- house's last row, which moved 15.
-		shore_walk_north = "ring",
 	},
 }
 
@@ -333,6 +333,24 @@ local function capital_tests(capital)
 		end
 	end
 	if not DONE[capital] then return end
+
+	-- Kezamba: the mask the composition builds round is the real water.
+	if capital == "kezamba" then
+		local mask = dofile(wp13 .. "/kezamba_lagoon.lua")()
+		for _, row in ipairs(dofile(wp40 .. "/water_authored.lua")({LAKE_PROXY = 40})) do
+			if row.id == "kezamba_cenote" then
+				local wrong = 0
+				for z = -ring.PAD, ring.PAD do
+					for x = -ring.PAD, ring.PAD do
+						if (row.indicator(1800 + x, 1500 + z) >= 0.5) ~= mask.lagoon(x, z) then
+							wrong = wrong + 1
+						end
+					end
+				end
+				check(wrong == 0, "R " .. label .. "the mask is the water (" .. wrong .. " columns differ)")
+			end
+		end
+	end
 
 	-- R
 	local columns, gaps = 0, 0
