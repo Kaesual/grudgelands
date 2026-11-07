@@ -371,6 +371,15 @@ the palette now carries a tilled crop and a planted bed, and a planter is cut
 deep enough to have soil between its two kerbs rather than being all kerb
 ([wp13-kezamba.md](../research/wp13-kezamba.md)).
 
+**The human capital.** Since Round 70 Highcourt's king sits in the castle at
+the head of the throne approach, a nine-wide avenue from the south gate between
+the two colonnades, with the market west of it and the travel plaza east. A
+five-wide bypass runs up both flanks and behind the castle to the north gate;
+on the west it passes between the castle and the chapel, whose doors open onto
+it. The chapel and its two houses stand west of the bypass, the service court
+with the two royal booths east of it, and the orchard belt fills the open
+ground inside the precinct wall.
+
 **The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
 citadel is stone block, its halls are pine under slate, and its city stands
 on the granite ground round the flat civic core. Since Round 70 the king sits

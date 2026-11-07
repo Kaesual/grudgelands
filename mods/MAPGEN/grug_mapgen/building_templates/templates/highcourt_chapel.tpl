@@ -394,7 +394,7 @@ layer 18
 points
 doors 10 1 7 face=3
 doors 10 1 8 face=3
-inside 2 1 12 id={id}
+inside 5 1 10 id={id}
 room_corner 1 0 1 closed=true id={id} top=6
 room_corner 9 0 13
 lights 11 3 5

@@ -9,7 +9,7 @@ palette white race=human signature=grug_decor:darkage_marble signature_slab=grug
 palette slate race=human roof_ridge=grug_decor:darkage_slate_tile roof_slab=grug_decor:darkage_slate_tile_slab roof_stair=grug_decor:darkage_slate_tile_stair roof_stair_inner=grug_decor:darkage_slate_tile_stair_inner roof_stair_outer=grug_decor:darkage_slate_tile_stair_outer
 palette white_slate race=human roof_ridge=grug_decor:darkage_slate_tile roof_slab=grug_decor:darkage_slate_tile_slab roof_stair=grug_decor:darkage_slate_tile_stair roof_stair_inner=grug_decor:darkage_slate_tile_stair_inner roof_stair_outer=grug_decor:darkage_slate_tile_stair_outer signature=grug_decor:darkage_marble signature_slab=grug_decor:darkage_marble_slab signature_stair=grug_decor:darkage_marble_stair
 
-use highcourt_kings_hall count=1 main=white_slate
+use highcourt_kings_hall count=1 main=white_slate roof=white_slate
 use highcourt_gate_south count=4 main=white
 use highcourt_market count=1 main=white
 use highcourt_colonnade_west count=1 main=white
