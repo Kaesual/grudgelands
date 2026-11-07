@@ -371,6 +371,15 @@ the palette now carries a tilled crop and a planted bed, and a planter is cut
 deep enough to have soil between its two kerbs rather than being all kerb
 ([wp13-kezamba.md](../research/wp13-kezamba.md)).
 
+**The human capital.** Since Round 70 Highcourt's king sits in the castle at
+the head of the throne approach, a nine-wide avenue from the south gate between
+the two colonnades, with the market west of it and the travel plaza east. A
+five-wide bypass runs up both flanks and behind the castle to the north gate;
+on the west it passes between the castle and the chapel, whose doors open onto
+it. The chapel and its two houses stand west of the bypass, the service court
+with the two royal booths east of it, and the orchard belt fills the open
+ground inside the precinct wall.
+
 **The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
 citadel is stone block, its halls are pine under slate, and its city stands
 on the granite ground round the flat civic core. Since Round 70 the king sits
@@ -476,7 +485,13 @@ Its civic buildings are dungeon stone under a pale stone roof and everything a
 citizen built is gravewood board; its own two parts, which no other capital has,
 are a walk-in mausoleum on a stepped plinth and a candle court with an altar at
 its centre. Its curtain wall and its four districts are laid out by the capital
-planner like every capital's.
+planner like every capital's. Since Round 70 the king sits in the castle at the
+head of the throne approach, a nine-wide avenue from the south gate; a five-wide
+processional walk runs up both flanks and behind the castle to the north gate,
+and the city watch walks a loop round the whole precinct. The vigil hall stands
+apart across the walk in the west quarter, a public quest place; the ossuary
+court with the Bone Works and the Charnel Yard lies east of the walk, and the
+burial ground takes the open ground round the quarters.
 
 It is also the first capital to place the WAVE-2 activities of the NPC socket
 contract: its residents mourn at grave markers, pray at candles, tend the

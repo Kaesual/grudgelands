@@ -354,7 +354,7 @@ end
 -- R. The royal guards' posts beside the king.
 ------------------------------------------------------------------------------
 local HALLS = {
-	{"highcourt", "highcourt_kings_hall", "white_slate"},
+	{"highcourt", "highcourt_kings_hall", "white_slate", "white_slate"},
 	-- the next capital
 	{"dur_brannoc", "dur_brannoc_kings_hall", "slate", "slate"},
 	-- the next capital
