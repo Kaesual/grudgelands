@@ -4,6 +4,7 @@
 -- fixtures that load those files (tools/r31_g for the General and the Kings'
 -- chassis) exercise on a fake engine. The item levels and the crown are
 -- tools/r33_c1 and tools/r33_c4; the encounter numbers tools/r70_levels/numbers.py.
+-- The level malus runs from the real grug_core/combat.lua, every gap of the rule.
 -- Prints "R70 LEVELS PORTABLE PASS checks=<n>" or the failures.
 local ROOT = arg and arg[1] or "."
 local checks, failures = 0, 0
@@ -33,12 +34,12 @@ rawset(_G, "grug_xp", {mob_xp = function(level) return 25 + 5 * level end})
 dofile(ROOT .. "/mods/ENTITIES/grug_mobs/levels.lua")
 local stats_for = grug_mobs.stats_for
 
-local hp = stats_for(75, "boss")
+local hp = stats_for(70, "boss")
 eq(hp, 30000, "A a dragon has 30,000 HP")
 eq((stats_for(1, "boss")), 30000, "A the boss tier's HP is flat")
-local _, damage, xp = stats_for(75, "boss")
-eq(damage, 78.9, "A a level 75 boss hits at the normal curve")
-eq(xp, 400, "A and pays the normal XP of its level")
+local _, damage, xp = stats_for(70, "boss")
+eq(damage, 71.25, "A a level 70 boss hits at the normal curve")
+eq(xp, 375, "A and pays the normal XP of its level")
 eq((stats_for(70, "elite")), 10812, "A a King at 70 has an elite's HP of his level")
 eq((stats_for(65, "elite")), 9401, "A a General stays at a level 65 elite's HP")
 
@@ -53,7 +54,7 @@ check(bosses:find("general._grug_fixed_level = garrison.GENERAL_LEVEL", 1, true)
 local garrison = dofile(ROOT .. "/mods/ENTITIES/grug_mobs/pvp_garrison.lua")
 eq(garrison.GENERAL_LEVEL, 65, "B a General stays level 65")
 check(read("mods/ENTITIES/grug_mobs/boss_dragons.lua"):find(
-	'_grug_fixed_level = 75, _grug_tier = "boss"', 1, true) ~= nil, "B a dragon is level 75")
+	'_grug_fixed_level = 70, _grug_tier = "boss"', 1, true) ~= nil, "B a dragon stays level 70")
 check(read("mods/ENTITIES/grug_mobs/rift.lua"):find(
 	'_grug_fixed_level = 60, _grug_tier = "elite"', 1, true) ~= nil,
 	"B the rift boss stays a level 60 elite")
@@ -67,6 +68,29 @@ end
 check(read("mods/ITEMS/grug_quality/init.lua"):find(
 	"BOSS_DROPS.ilvl[boss] or math.min(level, 60)", 1, true) ~= nil,
 	"C every non-boss mob stays capped at item level 60")
+
+-- The level malus (round70-plan.md §2.10), through the real function.
+local combat = read("mods/CORE/grug_core/combat.lua")
+local chunk = combat:match("(function grug_core%.level_malus%(.-\nend)\n")
+if check(chunk ~= nil, "D level_malus found") then
+	assert(loadstring(chunk))()
+	local malus = grug_core.level_malus
+	local function near(a, b, label)
+		return check(math.abs(a - b) < 1e-9, label .. " (" .. a .. " vs " .. b .. ")")
+	end
+	eq(malus(60, 60), 1, "D a mob at the player's level")
+	eq(malus(60, 40), 1, "D a mob below the player")
+	near(malus(60, 61), 0.95, "D from the first level")
+	near(malus(30, 33), 0.85, "D 3 levels above")
+	near(malus(60, 65), 0.75, "D a General at 65")
+	near(malus(60, 70), 0.5, "D a King or a dragon at 70")
+	near(malus(55, 69), 0.3, "D 14 levels above")
+	near(malus(40, 55), 0.25, "D the floor at 15 levels")
+	near(malus(1, 70), 0.25, "D the floor holds below it")
+	for gap = 1, 69 do
+		near(malus(1, 1 + gap), math.max(0.25, 1 - 0.05 * gap), "D gap " .. gap)
+	end
+end
 
 if failures > 0 then
 	print("R70 LEVELS PORTABLE FAIL " .. failures .. " of " .. checks)

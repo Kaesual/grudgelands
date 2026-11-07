@@ -11,7 +11,7 @@
 --      per tier, with the tier cap and T7 (item_tiers.md §1.1 tables);
 --   B. the tier is stored per enchant and shown in the tooltip; a found
 --      enchant has the item's tier and exactly the rule's value (no roll),
---      boss drops at 65/70/75 carry T7;
+--      boss drops at 65/70 carry T7;
 --   C. an enchant on one item (Round 45: the Crafting tab's target slot,
 --      grug_jobs/operation_jobs.lua): the recipe's tier, its value at the
 --      item's level, the same enchant refused, the weaker-overwrite warning
@@ -24,7 +24,7 @@
 --   E. the crown (round70-plan.md §2.10): tier top + 10, 70 at most, only
 --      below 70, every enchant +1 tier (T7 at most), once per item, refusals
 --      (crowned, level 70 and up, would not raise, no equipment), the preview
---      text; item level 75: tooltip, requirement, curves, the T7 limit;
+--      text;
 --   F. families: bow enchants and upgrades at the Leatherworker (leather),
 --      spellbooks at the Tailor (bolts; the recipe 2 bolts + Parchment, no
 --      mastery band since Round 45), the Woodcarver keeps staves and wands;
@@ -522,10 +522,10 @@ do
 	local refused, boss_why = Q.crown_item(boss_item)
 	check(refused == nil and boss_why == ONLY_BELOW, "E a King's level 70 drop is refused")
 	local dragon_item = dropped("dragon")
-	eq(dragon_item and Q.effective_ilvl(dragon_item), 75, "E a dragon drops item level 75")
+	eq(dragon_item and Q.effective_ilvl(dragon_item), 70, "E a dragon drops item level 70")
 	local dragon_refused, dragon_why = Q.crown_item(dragon_item)
 	check(dragon_refused == nil and dragon_why == ONLY_BELOW,
-		"E a dragon's level 75 drop is refused")
+		"E a dragon's level 70 drop is refused")
 	local reenchanted = plan("enchant:sword:prefix:str:t6", boss_item)
 	if check(reenchanted ~= nil, "E a King drop takes a T6 enchant") then
 		local only, only_why = Q.crown_item(reenchanted.output)
@@ -551,27 +551,11 @@ do
 	local rift_crowned = Q.crown_item(rift_item)
 	eq(rift_crowned and Q.effective_ilvl(rift_crowned), 70, "E a T6 item at 60 crowns to 70")
 	-- A 0.69.0 stack keeps its level and the new rule reads it: an old King's
-	-- drop at 65 lifts to 70, an old dragon's at 70 is refused.
+	-- drop at 65 lifts to 70.
 	local old_king = ItemStack("grug_gear:sword_abyssal_steel")
 	Q.roll_enchants(old_king, 65, 2, 77)
 	eq(Q.effective_ilvl(old_king), 65, "E an old King's drop stays 65 in the hand")
 	eq(Q.effective_ilvl(Q.crown_item(old_king)), 70, "E ...and crowns to 70")
-	local old_dragon = ItemStack("grug_gear:sword_abyssal_steel")
-	Q.roll_enchants(old_dragon, 70, 2, 78)
-	local old_refused, old_why = Q.crown_item(old_dragon)
-	check(old_refused == nil and old_why == ONLY_BELOW and Q.effective_ilvl(old_dragon) == 70,
-		"E an old dragon's drop stays 70 and takes no crown")
-	-- Item level 75: the tooltip, the requirement capped at 60, the weapon and
-	-- armor curves past 70, and enchants limited to T7's value at 70.
-	eq(dragon_item:get_meta():get_int("grug_req_level"), 60, "E item level 75 requires level 60")
-	check(description(dragon_item):find("Item level 75", 1, true) ~= nil,
-		"E the tooltip shows item level 75")
-	eq(grug_gear.weapon_damage_at_level(75, "sword"), 30, "E a level 75 sword's base damage")
-	eq(grug_gear.weapon_damage_at_level(70, "sword"), 29, "E a level 70 sword's base damage")
-	for _, affix in ipairs(affixes_of(dragon_item)) do
-		eq(affix.tier, 7, "E a level 75 item's enchant stays T7")
-		eq(affix.value, Q.enchant_value(affix.stat, 70, 7), "E ...at its item-level-70 value")
-	end
 	local _, tool_why = Q.crown_preview(ItemStack("grug_materials:pick_bronze"))
 	check(tool_why ~= nil, "E a tool or non-item is refused")
 	local _, empty_why = Q.crown_preview(ItemStack(""))

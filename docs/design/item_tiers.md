@@ -41,10 +41,7 @@ loot), [professions.md](professions.md) (progression, mastery, stations),
 [combat_stats.md](combat_stats.md) §2 (how crit and armor resolve).
 
 Tiers: T1 = item or character level 1–10 … T6 = 51–60, T7 = 61–70 (boss
-drops and crowned items; Round 71's instance mobs at 61–69 join them). T7 is
-the last enchant tier: a dragon's item level 75 (Round 70, dragons only) has
-T7 enchants at their item-level-70 value (the clamp in §1.1) and adds weapon
-base damage and armor.
+drops and crowned items; Round 71's instance mobs at 61–69 join them).
 
 ## 1. Enchant values
 
@@ -660,7 +657,7 @@ The bags and spellbooks in this table need only their profession tier (Round
   tier (T6 → T7 at most). Values follow §1.1: a crowned T6 item's T7 enchants
   are worth their item-level-70 value.
 - Once per item (a stored flag), and only on items below item level 70: a
-  King's level 70 drop and a dragon's level 75 drop are refused. The crown
+  King's or a dragon's level 70 drop is refused. The crown
   always raises the item level, so it has no enchant-only use (Round 70; a
   boss drop took one at equal level until then). A stack crowned earlier stays
   as it is.

@@ -93,7 +93,7 @@ grug_items.DROP_CHANCES = {
 -- the rift boss an elite's roll at its level (round36-plan.md §2.1), every
 -- other boss nothing.
 grug_items.BOSS_DROPS = {count = 2, gold = 50,
-	ilvl = {king = 70, general = 65, dragon = 75, rift = 60},
+	ilvl = {king = 70, general = 65, dragon = 70, rift = 60},
 	locked = {rift = "elite"}}
 
 -- A bag from any mob, independent of the gear roll: `chance` percent per
@@ -106,7 +106,7 @@ grug_items.BAG_DROPS = {chance = 0.1, sizes = {
 }}
 
 -- The enchant tier of an item level (round33-plan.md §2.3): 1-10 is T1 ...
--- 51-60 T6; above 60 T7, the last enchant tier: a dragon's item level 75 too.
+-- 51-60 T6; above 60 (boss drops) T7.
 function grug_items.enchant_tier(ilvl)
 	ilvl = math.floor(tonumber(ilvl) or 1)
 	if ilvl > 60 then return 7 end
@@ -116,8 +116,7 @@ end
 -- The enchant value rule (item_tiers.md §1.1): value = a + b L + c L^2 with
 -- L = clamp(min(item level, 10 x tier), 1, 70), rounded to the stat's
 -- decimals and at least `minimum`. An enchant grows with its item's level up
--- to its tier's top; T7 (boss drops, the crown) reaches item level 70 and an
--- item above that adds no enchant value.
+-- to its tier's top; T7 (boss drops, the crown) reaches item level 70.
 local CURVES = {
 	str = {a = 0.8, b = 0.15, c = 0.0025, minimum = 1},
 	dex = {a = 0.8, b = 0.13, c = 0.0011, minimum = 1},

@@ -112,19 +112,19 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   `round(4 + 0.35 × ilvl)` (then the weapon-family factor). Combat applies no
   second ilvl multiplier. Character level still supplies the shared damage fit.
 - **Endgame headroom**: own-level quest/craft gear is the baseline. Boss
-  drops and crowned items reach item level **65 / 70 / 75** (the General 65,
-  Kings and a crowned T6 item 70, dragons 75; round70-plan.md §2.10).
-  At L60 the 1H weapon values are 25 / 27 / 29 / 30 damage for ilvl 60 / 65 /
-  70 / 75; a level 75 item's enchants stay at their item-level-70 value.
+  drops and crowned items reach item level **65 / 70** (the General 65, Kings,
+  dragons and a crowned T6 item 70; round70-plan.md §2.10).
+  At L60 the 1H weapon values are 25 / 27 / 29 damage for ilvl 60 / 65 / 70.
   Enchant values grow with item level ([item_tiers.md](item_tiers.md) §1.1):
   a fully damage-enchanted level-60 Warrior gains about **+47 % / +57 % /
   +69 %** at item level 60 / 65 / 70, the order of the intended +50–60 %
   ceiling; the Scout's set +49 / +59 / +69 % (Round 36's Dexterity curve)
   and the Priest's heal set match it (item_tiers §1.3). These
   are itemization ceilings, not extra level-curve terms.
-- **Higher-mob-level damage malus**: against a mob more than five levels above
-  the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
-  player level − 5))`. It is part of the same final damage multiplication and
+- **Higher-mob-level damage malus** (Round 70): against a mob `gap` levels above
+  the player, from the first level, multiply player damage by
+  `max(0.25, 1 − 0.05×gap)`: 0.85 at 3 levels, 0.75 at 5, 0.50 at 10, the floor
+  0.25 from 15. It is part of the same final damage multiplication and
   is floored only once with the level scalar (`grug_core.level_malus`).
 - **Crit** = 5% + 0.05%×Dex, **cap 30%**; a crit deals **×2** damage, and a
   healing crit heals ×2 (Round 33, [item_tiers.md](item_tiers.md) §1.0).

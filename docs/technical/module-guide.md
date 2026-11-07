@@ -1148,7 +1148,7 @@ tools](#player-meta-read-by-external-tools).
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
     Kraken L70 (elite), the Round 51 sharks (Bay Shark L30, Abyssal Shark
-    L70 elite), the island dragons L75, the capital kings L70 and their royal
+    L70 elite), the island dragons L70, the capital kings L70 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —

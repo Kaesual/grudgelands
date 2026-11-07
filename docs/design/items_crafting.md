@@ -1316,8 +1316,8 @@ pixel-cluster cleanup before they become final game art.
 
 Drops obey the player-tag rule (combat_stats §3), the chances of §5.1 and
 the enchant values of §6.3, and use **gear-drop ilvl = min(mob level, 60)**.
-Bosses are the exception (Round 33, Round 70): the race Kings drop item level
-**70**, the fortress Generals **65**, the dragons **75**, the rift boss **60**
+Bosses are the exception (Round 33, Round 70): the race Kings and the dragons
+drop item level **70**, the fortress Generals **65**, the rift boss **60**
 (§5.1). An ilvl above 60 feeds the same weapon base-damage curve as every other
 weapon, not a second combat multiplier, and those enchants are tier T7 (§6.3). The
 Kraken (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the enchant value and the
@@ -1377,8 +1377,8 @@ One roll per kill decides, so a kill drops **at most one** gear item:
 **Bosses** — the six race Kings, the two dragons and the rift boss (Round 36)
 through their personal reward (§5.3, §5.4, §5.3b), the two PvP fortress
 Generals on every enemy player's kill — always drop **two** items, each blue
-or gold at even odds: Kings item level 70, Generals 65, the rift boss 60,
-dragons 75. Their other loot (Fallen Crown,
+or gold at even odds: Kings and dragons item level 70, Generals 65, the
+rift boss 60. Their other loot (Fallen Crown,
 Scaled Hide, the General's war trophies) stays. The General has no reward
 ledger: his two items drop on the kill, like any mob gear, and only an enemy
 player's kill drops them; his bodyguards, like royal guards, drop no gear.
@@ -1429,7 +1429,7 @@ extra mechanic needed.
 The two offshore dragons are separate contested encounters and use personal
 boss rewards with independent per-character 24-hour loot lockouts. Their
 participation and reset accounting matches the king ledger below. A boss
-reward is two blue-or-gold items at item level 75 (§5.1) and authored materials, but it
+reward is two blue-or-gold items at item level 70 (§5.1) and authored materials, but it
 never pays ledger money directly and no universal bar/pick depends on it:
 continental T5 Abyssal Crystal is the ordinary T6 entry. There is no hoard
 chest (WP audit E11) and no renewable gem socket on the islands (E5).

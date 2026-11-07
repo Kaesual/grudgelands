@@ -257,7 +257,7 @@ Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
   [world.md](world.md) §4b).
 - The fixed `dragon` anchors are the encounter authority: the Wyrmglass Ice
   Dragon stands at **(-3260, -40)** and the Stormscale Jungle Wyvern at
-  **(+3260, -40)**. Each is a clock-independent fixed-level-75 boss (the
+  **(+3260, -40)**. Each is a clock-independent fixed-level-70 boss (the
   islands themselves stay level-60 zones) with three
   arena perches, a telegraphed breath line and ground slam, and a persistent
   30-minute wall-clock respawn. An active lair receives the final 60-second

@@ -8,7 +8,7 @@
 --      elite and named rare 10/10/5 %, never more than one gear item per kill,
 --      critters none; the quality is the enchant count plus one;
 --   B. bosses: a King, a dragon, a General and the rift boss (Round 36) always
---      drop two items, blue or gold at about even odds, at item level 70 / 75 /
+--      drop two items, blue or gold at about even odds, at item level 70 / 70 /
 --      65 / 60; the kill-loot hook leaves Kings, royal guards and the rift boss
 --      to the ledger and drops the General's; encounter adds (whelps, summoned
 --      raiders) drop no gear and no bag; inside the loot lockout the rift boss
@@ -237,8 +237,8 @@ do
 		{label = "King", ilvl = 70, mob = {name = "grug_mobs:king_human",
 			_grug_boss_id = "king:human", _grug_royal_king = true, _grug_tier = "elite",
 			_grug_level = 70}},
-		{label = "dragon", ilvl = 75, mob = {name = "grug_mobs:dragon_ice",
-			_grug_boss_id = "dragon:ice", _grug_tier = "boss", _grug_level = 75}},
+		{label = "dragon", ilvl = 70, mob = {name = "grug_mobs:dragon_ice",
+			_grug_boss_id = "dragon:ice", _grug_tier = "boss", _grug_level = 70}},
 		{label = "General", ilvl = 65, mob = {name = "grug_mobs:general_accord",
 			_grug_boss_id = "general:accord", _grug_royal_king = true, _grug_tier = "elite",
 			_grug_level = 65}},
@@ -369,7 +369,7 @@ do
 	end
 	-- A boss rolls the bag too, by its own level.
 	local dragon = {name = "grug_mobs:dragon_ice", _grug_boss_id = "dragon:ice",
-		_grug_tier = "boss", _grug_level = 75}
+		_grug_tier = "boss", _grug_level = 70}
 	local out = grug_items.roll_mob_gear(dragon, 7)
 	check(#out == 3 and slots[out[3]:get_name():match(":(.+)$")] == 20,
 		"D a dragon's bag comes beside its two items")
