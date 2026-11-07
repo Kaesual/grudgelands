@@ -56,6 +56,7 @@ RESULTS=/tmp/r.tsv tools/seed_fleet/run.sh quick   # also every seed's result li
 ## Other checks
 
 - [Round 69 camp art](r69_camp_art/README.md): three construction-camp candidates for six races, an offline 3D comparison, PNG views and reproducible templates.
+- [Round 70 castle art](r70_castle/README.md): three shared castle forms, a multi-block throne, six capital palettes, an offline comparison and reproducible templates.
 - `tools/check_lua.sh <files>`: plain Lua 5.1 parser, `SETGLOBAL` list and the
   sweeps of [docs/technical/luanti-lua.md](../docs/technical/luanti-lua.md)
   (needs ripgrep).

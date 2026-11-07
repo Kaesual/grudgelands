@@ -17,7 +17,7 @@ E node grug_guild:ornamented_iron
 F node grug_guild:ornamented_silversteel
 G node grug_guild:ornamented_steel
 H node grug_materials:emberglass_lamp
-I role beam o=facedir:12
+I role beam
 J role castle_paving
 K role castle_slit o=facedir:0
 L role castle_wall

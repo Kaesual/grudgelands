@@ -230,7 +230,7 @@ def composition(form):
         c.put(x,6,3,'role light_beacon else=LAMP')
     # High cross-beams carry lamps over the carpet without floor pillars.
     for z in (13,21):
-        c.fill(4,12,z,40,12,z,role('beam',12))
+        c.fill(4,12,z,40,12,z,role('beam'))
         for x in (13,22,31): c.put(x,11,z,'role light_beacon else=LAMP')
     c.throne()
     return c
