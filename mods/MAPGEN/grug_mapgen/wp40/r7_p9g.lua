@@ -3,7 +3,8 @@
 
 return function(catalog, p9g_content, raw_sha256, habitat)
 	assert(type(habitat) == "table" and
-		type(habitat.initial_denominator) == "function")
+		type(habitat.initial_denominator) == "function" and
+		type(habitat.p9g_predicate_matches) == "function")
 	local MAX_SAFE = 9007199254740991
 	local MAX_CANDIDATES = 4096
 	local REASONS = {
@@ -104,7 +105,8 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		local row = rows[index]
 		if type(row) ~= "table" or row.placement_class ~= "new_p9g_source" or
 			type(row.id) ~= "string" or type(row.source_node) ~= "string" or
-			row.fill_numerator ~= 1 or (row.fill_denominator ~= 256 and
+			row.fill_numerator ~= 1 or (row.fill_denominator ~= 128 and
+			row.fill_denominator ~= 256 and
 			row.fill_denominator ~= 384 and row.fill_denominator ~= 512 and
 			row.fill_denominator ~= 768 and row.fill_denominator ~= 1024) or
 			(index > 1 and not less_bytes(rows[index - 1].id, row.id)) or
@@ -152,9 +154,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		for item = 1, #row.shore_water_classes do
 			shore[row.shore_water_classes[item]] = true
 		end
-		if row.shore_predicate ~= "none" and
-				row.shore_predicate ~= "dry_cardinal" and
-				row.shore_predicate ~= "salt_cardinal" then
+		if not habitat.is_p9g_predicate(row.shore_predicate) then
 			fail("P9G shore predicate differs")
 		end
 		zone_sets[index], host_sets[index], shore_sets[index] = zones, hosts, shore
@@ -261,13 +261,33 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		local column_cache = not emit_ledger and {} or nil
 		local column_cache_keys, column_cache_next = {}, 1
 
-		local function shore_matches(context, catalog_index, x, z)
-			if rows[catalog_index].shore_predicate == "none" then return true end
-			local allowed = shore_sets[catalog_index]
-			return allowed[context.column_values_at(x + 1, z)] == true or
-				allowed[context.column_values_at(x - 1, z)] == true or
-				allowed[context.column_values_at(x, z + 1)] == true or
-				allowed[context.column_values_at(x, z - 1)] == true
+		-- The water predicates (habitat_registry.lua, renewal's too). A host
+		-- far inland asks all 48 neighbours, so a chunk's water classes are
+		-- read once: `water_memo` holds the columns of the current `settle`
+		-- (at most the owner plus SHORE_REACH on each side).
+		local water_memo, water_context = {}, nil
+		local function water_class_at(x, z)
+			local key = (x + 32768) * 65536 + z + 32768
+			local class = water_memo[key]
+			if not class then
+				class = water_context.column_values_at(x, z)
+				water_memo[key] = class
+			end
+			return class
+		end
+		local water_readers = {}
+		for index = 1, #rows do
+			local allowed = shore_sets[index]
+			water_readers[index] = function(x, z)
+				return allowed[water_class_at(x, z)] == true
+			end
+		end
+		local function bind_water(context)
+			water_memo, water_context = {}, context
+		end
+		local function shore_matches(catalog_index, x, z)
+			return habitat.p9g_predicate_matches(rows[catalog_index].shore_predicate,
+				water_readers[catalog_index], x, z)
 		end
 
 		local FACTION_BY_RACE = {dwarf = "accord", human = "accord",
@@ -297,13 +317,14 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			if not zone_sets[catalog_index][zone_id] then return "wrong_zone" end
 			local candidates = host_sets[catalog_index][biome]
 			if water_class ~= "land" or not candidates then return "wrong_biome" end
-			if not shore_matches(context, catalog_index, x, z) then return "wrong_shore" end
+			-- The support first: it costs one read, the water rule up to 48.
 			local actual_ref = context.analytic_p7_ref(x, surface_y, z)
 			for index = 1, #candidates do
 				local host = candidates[index]
 				if host.zone == nil or host.zone == zone_id then
 					local support_ref = context.production_content(host.support)
 					if support_ref and actual_ref == support_ref then
+						if not shore_matches(catalog_index, x, z) then return "wrong_shore" end
 						return nil, host.support
 					end
 				end
@@ -344,9 +365,9 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				exclusion = nil
 			end
 			-- A river or lake bank (stale-rule R5) is exactly where a shore row
-			-- grows; only rows without a shore predicate keep off it.
+			-- grows; every other row keeps off it.
 			if exclusion_id == "exclude:water_bank" and
-					rows[catalog_index].shore_predicate ~= "none" then
+					habitat.p9g_shore_row(rows[catalog_index].shore_predicate) then
 				exclusion = nil
 			end
 			if exclusion == "fixed_or_protected" or exclusion == "route_or_water" then
@@ -490,6 +511,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				end
 				return ledger
 			end
+			bind_water(context)
 			local candidate_count = 0
 			local first_cell_x = math.floor(context.min_x / 16)
 			local last_cell_x = math.floor(context.max_x / 16)
@@ -740,6 +762,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			integer(x, "P9G probe x", -30912, 30927)
 			integer(y, "P9G probe y", -31000, 31000)
 			integer(z, "P9G probe z", -30912, 30927)
+			bind_water(context)
 			local reason, evidence = settlement_decision(context, catalog_index, x, y, z)
 			return reason or "accepted", evidence
 		end

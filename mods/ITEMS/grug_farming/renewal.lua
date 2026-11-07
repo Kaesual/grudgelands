@@ -54,13 +54,18 @@ return function(api)
 		WOODY_DOWN = 4,
 		WOODY_UP = 12,
 		-- Shoreline species: eligible supports per box width (a band along the
-		-- water line crossing the box), since only shore columns host them.
+		-- water line crossing the box), since only shore columns host them; a
+		-- wider band comes with the category (`shore_band`, Round 70).
 		-- A patch species (the lichen, Round 51) counts at most its patch's
 		-- columns (the category's `patch_area`).
 		SHORE_BAND = 2,
 		-- Placement chance at a full deficit, per class; it scales with the
 		-- deficit fraction (target - present) / target.
 		CHANCE = {resource = 0.05, cover = 0.5, tree = 0.1, shrub = 0.1},
+		-- A resource row with a shore rule returns this much faster (Round 70,
+		-- the user, 2026-11-07): a shore holds few of its plants, so a player
+		-- there would wait hours for one.
+		SHORE_RESOURCE_FACTOR = 4,
 		-- No sapling within this radius of any non-natural node or farm soil.
 		SAPLING_GUARD_RADIUS = 10,
 		-- Area-query node visits allowed per player and step (spot search,
@@ -259,7 +264,7 @@ return function(api)
 		budget.left = budget.left - used_open
 		local supports = open + plants
 		if category.shore then
-			supports = min(supports, R.SHORE_BAND * (2 * radius + 1))
+			supports = min(supports, (category.shore_band or R.SHORE_BAND) * (2 * radius + 1))
 		end
 		if category.patch_area then supports = min(supports, category.patch_area) end
 		local expected = category.p * supports
@@ -270,6 +275,9 @@ return function(api)
 		end
 		if plants >= target then return "at_target" end
 		local chance = R.CHANCE[category.class] * (target - plants) / target
+		if category.class == "resource" and category.shore then
+			chance = chance * R.SHORE_RESOURCE_FACTOR
+		end
 		local roll = forced_roll or random()
 		if roll >= chance then return "roll" end
 		local species = pick_species(category)

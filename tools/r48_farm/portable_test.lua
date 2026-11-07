@@ -684,10 +684,13 @@ do
 	local crust = categories_at(-20, "grug_nodes:mesa_clay").salt_crust
 	check(crust and math.abs(crust.p - 1 / 512) < 1e-12,
 		"R Salt Crust habitat on mesa clay in The Shattered Line at its full rate 1/512")
-	local rock = categories_at(9, "default:sand").rock_salt
+	-- Round 70: Rock Salt grows on the whole beach, never touching water.
+	local rock = categories_at(0, "default:sand").rock_salt
 	check(rock and math.abs(rock.p - 1 / 1024) < 1e-12,
-		"R Rock Salt on a Gravesalt shore (salt_cardinal) at its full rate 1/1024")
-	check(categories_at(0, "default:sand").rock_salt == nil, "R Rock Salt needs the shore")
+		"R Rock Salt on a Gravesalt beach at its full rate 1/1024")
+	check(rock and rock.shore == false, "R Rock Salt is no shore row")
+	check(categories_at(9, "default:sand").rock_salt == nil,
+		"R Rock Salt does not touch the water")
 	-- A rare row's natural count in a counting box is a fraction: the patch
 	-- holds one plant in that fraction of patches (renewal.lua
 	-- patch_fraction). Try spots along z, one per patch, a few rolls each.
@@ -706,7 +709,7 @@ do
 	end
 	check(renew(-20, "grug_mapgen:salt_crust_source"),
 		"R a renewal step places Salt Crust below its target")
-	check(renew(9, "grug_gathering:rock_salt_source"),
+	check(renew(0, "grug_gathering:rock_salt_source"),
 		"R a renewal step places Rock Salt below its target")
 	local dark = {density.categories(-20, GROUND + 1, 0, "grug_nodes:mesa_clay", 9)}
 	eq(dark[2], "dark", "R below natural light 10 at noon nothing renews")

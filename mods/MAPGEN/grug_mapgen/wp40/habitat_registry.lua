@@ -83,6 +83,9 @@ local V = {
 	-- columns (an integer hash of the column and the world), its patch every
 	-- column within PATCH_RADIUS (square) of it; PATCH_AREA columns.
 	PATCH_ONE_IN = 450, PATCH_RADIUS = 2, PATCH_AREA = 25,
+	-- Round 70: a `near_water` gathering row (Stormkelp) grows within
+	-- SHORE_REACH (square) of water, so its band is that wide (renewal.lua).
+	SHORE_REACH = 3,
 }
 V.DENSE = {grug_deep_forest = 3, grug_deep_jungle = 3} -- times 1/2: x1.5
 V.WARM_BIOMES = {grug_deep_jungle = true, grug_jungle_edge = true,
@@ -388,6 +391,44 @@ function M.vegetation_factor(rule, class, values)
 		values.biome, values.zone) / V.ONE
 end
 
+-- THE P9G WATER PREDICATES (Round 70, the user's rulings of 2026-11-07), read
+-- by the writer (r7_p9g.lua) and by renewal (vegetation_density.lua), so the
+-- two cannot differ. `water_at(x, z)` answers whether a column is water of the
+-- row's classes; the writer memoizes it per chunk, because a far inland host
+-- reads all 48 neighbours.
+--   none        no water rule;
+--   near_water  a water column within SHORE_REACH (square), nearest ring
+--               first; the only shore row of the catalogue (Stormkelp);
+--   no_water    no water column on the four faces: the root touches none
+--               (Rock Salt, which is no shore row).
+local P9G_PREDICATES = {none = true, near_water = true, no_water = true}
+function M.is_p9g_predicate(predicate)
+	return P9G_PREDICATES[predicate] == true
+end
+function M.p9g_shore_row(predicate)
+	return predicate == "near_water"
+end
+function M.p9g_predicate_matches(predicate, water_at, x, z)
+	if predicate == "none" then return true end
+	if predicate == "no_water" then
+		return not (water_at(x + 1, z) or water_at(x - 1, z) or
+			water_at(x, z + 1) or water_at(x, z - 1))
+	end
+	for reach = 1, V.SHORE_REACH do
+		for offset = -reach, reach do
+			if water_at(x + offset, z - reach) or water_at(x + offset, z + reach) then
+				return true
+			end
+		end
+		for offset = 1 - reach, reach - 1 do
+			if water_at(x - reach, z + offset) or water_at(x + reach, z + offset) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 local function set(values)
 	local result = {}
 	for index = 1, #(values or {}) do result[values[index]] = true end
@@ -404,9 +445,10 @@ function M.compile_world(row)
 end
 
 function M.compile_p9g(row)
+	local predicate = row.shore_predicate or "none"
 	local compiled = {key = row.key, node = row.source_node, kind = "p9g",
-		row = row, zones = set(row.zones), hosts = {},
-		shore = row.shore_predicate or "none",
+		row = row, zones = set(row.zones), hosts = {}, predicate = predicate,
+		shore = M.p9g_shore_row(predicate) and predicate or "none",
 		shore_classes = set(row.shore_water_classes)}
 	for index = 1, #row.hosts do
 		local host = row.hosts[index]
