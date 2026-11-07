@@ -5,6 +5,7 @@
 # touched. Run it through the shared Lua queue (2 slots).
 #
 # Usage: XVFB=/path/to/Xvfb tools/r71_l20/run.sh OUT_DIR
+#   SCENARIO=range runs lane RANGE's range.lua (T4 at 47, T6 at 65) instead of scenario.lua.
 #   TIMEOUT=<server seconds, default 295>, VIEWING_RANGE (default 190), SEED (default 42), XVFB_DRIVERS (default
 #   /usr/lib64/dri). Writes probe.txt (the probe's lines), server.log, client.log and
 #   one <name>.png per BURST line of the probe.
@@ -51,7 +52,14 @@ LIBGL_DRIVERS_PATH="${XVFB_DRIVERS:-/usr/lib64/dri}" \
 xvfb_pid=$!
 sleep 1
 
-env ROOT="$root" PORT="$port" SEED="$seed" PROBE="$here/grug_probe_r71_l20" \
+# SCENARIO=range: lane RANGE's scenario (range.lua), chosen by a file in a staged copy.
+probe="$here/grug_probe_r71_l20"
+if [[ -n "${SCENARIO:-}" ]]; then
+	cp -a "$probe" "$cap/grug_probe_r71_l20"
+	echo "$SCENARIO" >"$cap/grug_probe_r71_l20/scenario_name"
+	probe="$cap/grug_probe_r71_l20"
+fi
+env ROOT="$root" PORT="$port" SEED="$seed" PROBE="$probe" \
 	"$repo/tools/luanti_headless.sh" "$timeout_s" >"$cap/headless.txt" 2>&1 &
 server_pid=$!
 
