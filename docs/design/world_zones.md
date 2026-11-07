@@ -1429,6 +1429,18 @@ graph requirement may shape a zone, and nothing may require a graph to be
   the start pad. A second road from the same start (a loop) branches off the
   first road in a Y junction where it leaves that road's surface instead of
   running on top of its gate stretch.
+- **Wayposts** (Round 70, `wp40/wayposts.lua`): where a secondary road leaves
+  a primary road, one stack of three `grug_signs:waypost` nodes stands beside
+  the road, opposite the mouth, with an arrow and name for each end of the
+  primary road and for the secondary road's settlement (a name over the
+  board's 14 characters keeps its first word). Few on purpose, about a dozen
+  a world: no stack at a trail, a capital street, a bridge, a deep cut or
+  within 96 road nodes of a primary road's end, and none within 96 nodes of
+  another. The stack takes no road column, stands in the road's corridor, so
+  it is protected and nothing grows there, and comes from the road layout,
+  the same in main and emerge. The emerge writer places the nodes; a text is
+  metadata only main can write, so an LBM writes it when the block first
+  loads (no saved state besides that metadata).
 - Retired: the 57-edge authoritative route graph, hub stations in every zone,
   star junctions, the shared junction grade solve and the capital ingress
   corridors.

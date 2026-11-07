@@ -884,20 +884,31 @@ it) at its centre, in the cell of the settlement's `travel_waypoint` socket
   course (`dressing.waypoint_pad`): a cross and the diamond round it in the
   start palette's signature stone, the diamond's inside paved with the lane
   material, the waystone in the middle. It is laid on open ground after the
-  buildings and lights and before the trees and flora. Since Round 58 (the
-  user's ruling of 2026-10-22) it lies at the town's centre next to the
-  Quartermaster (the race vendor), on open ground that carries no authored
-  pattern (pad centre in start-local x/z; the Quartermaster stands at about
-  (7, −4)):
+  buildings and lights and before the trees and flora. Since Round 70 (the
+  user's ruling of 2026-11-07, replacing the ruling of 2026-10-22 that kept
+  it beside the Quartermaster) it lies near the town's centre, off the road
+  from the gate, in a **pocket of 13 × 13 nodes** that holds nothing but the
+  stone and the mailbox, so all four arrival sides stay open and a traveller
+  arrives off the main walking line. The centre around it grew a little
+  ([land-use study](../../tools/r70_design/REPORT.md)); the town's envelope,
+  spawn, gate axis, Quartermaster and quest, home and cook sockets stayed.
+  Pad centre in start-local x/z:
 
   | Start | Centre | Where |
   |---|---|---|
-  | Hearthpine | (2, −2) | the arrival plaza beside the spawn, west of the market stall and the Quartermaster at its end |
-  | Dawnmere | (2, −3) | the green's south walk, west of the Quartermaster |
-  | Silverleaf | (10, −3) | the court east of the crescent, beside the Quartermaster |
-  | Stillgrave | (2, −4) | the court, west of the Quartermaster |
-  | Sunscar | (6, −3) | the yard, north-west of the Quartermaster |
-  | Kapok Cradle | (4, −6) | the clearing east of the boardwalk road, south-west of the Quartermaster |
+  | Hearthpine | (−9, 7) | the north-west of the arrival square, across it from the market stall and the Quartermaster |
+  | Dawnmere | (−9, −8) | the green's south-west edge, its one paved place |
+  | Silverleaf | (13, 8) | the court's clearing east of the crescent, on the east avenue |
+  | Stillgrave | (−12, −2) | the court's west, off the chapel axis; the memorials stand north of it |
+  | Sunscar | (−11, 2) | the yard's quiet west side; trade and arms are east |
+  | Kapok Cradle | (−10, −7) | a plank pocket in the clearing west of the boardwalk road |
+
+  The centres, as built (x and z, walls and paving included): Hearthpine's
+  square −16…18, −12…16; Dawnmere's green −17…17, −14…10 between the south
+  lane and the hall walk, turf but for the pocket and the walks; Silverleaf's
+  court −13…21, −12…16; Stillgrave's court −20…18, −12…16, the road on to the
+  chapel door; Sunscar's yard −19…20, −13…18; Kapok's clearing −18…17, −15…19,
+  bare mud under the boardwalk.
 
 ## Housing Stewards (Round 25)
 
