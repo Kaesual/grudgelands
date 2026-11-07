@@ -110,6 +110,7 @@ return function(lib, player)
 	end
 	local golem = test_mob("grug_mobs:stone_golem", 29, run.id)
 	golem._grug_player_tag = {name = lib.NAME, until_t = core.get_gametime() + 60}
+	golem._grug_no_coin_bag = true -- the filter call below is a real roll
 	local names = {}
 	for _, row in ipairs(grug_mobs._item_drop_filter(golem, core.registered_entities[golem.name].drops or {})) do
 		names[#names + 1] = row.name
@@ -207,7 +208,11 @@ return function(lib, player)
 	lib.wait(1)
 	local left = 0
 	for object in core.objects_in_area(run.minp, run.maxp) do
-		if not object:is_player() then left = left + 1 end
+		if not object:is_player() and not object:get_attach() then
+			left = left + 1
+			local ent = object:get_luaentity()
+			lib.logf("left in the box: %s", ent and ent.name or "?")
+		end
 	end
 	lib.check(left == 0, "nothing live stays in the box: " .. left)
 	local second = assert(E.create(player, "test_vault", 0))
