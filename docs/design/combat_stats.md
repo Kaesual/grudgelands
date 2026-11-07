@@ -112,9 +112,10 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   `round(4 + 0.35 × ilvl)` (then the weapon-family factor). Combat applies no
   second ilvl multiplier. Character level still supplies the shared damage fit.
 - **Endgame headroom**: own-level quest/craft gear is the baseline. Boss
-  drops and crowned items reach item level **65 / 70** (Kings and the
-  General 65, dragons 70, a crowned T6 item 65; round33-plan.md §2.1, §2.5).
-  At L60 the 1H weapon values are 25 / 27 / 29 damage for ilvl 60 / 65 / 70.
+  drops and crowned items reach item level **65 / 70 / 75** (the General 65,
+  Kings and a crowned T6 item 70, dragons 75; round70-plan.md §2.10).
+  At L60 the 1H weapon values are 25 / 27 / 29 / 30 damage for ilvl 60 / 65 /
+  70 / 75; a level 75 item's enchants stay at their item-level-70 value.
   Enchant values grow with item level ([item_tiers.md](item_tiers.md) §1.1):
   a fully damage-enchanted level-60 Warrior gains about **+47 % / +57 % /
   +69 %** at item level 60 / 65 / 70, the order of the intended +50–60 %
@@ -185,7 +186,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   min(item level, 60) (Round 33, round33-plan.md §2.2): weapons, the
   Scout's Melee offhand, armour, shields, spellbooks and trinkets alike;
   base items require their base item level 1 / 11 / 21 / 31 / 41 / 51
-  (the ladder, Round 45), boss drops at item level 65/70 level 60. The
+  (the ladder, Round 45), boss drops above item level 60 level 60. The
   definition carries `_grug_req_level`, a dropped, upgraded or crowned stack
   its own `grug_req_level` (`grug_inventory/equipment.lua`, the allow
   callback; `grug_quality`);
@@ -513,7 +514,7 @@ Normal tier at level L:
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 90 (×2.5 HP, ×1.4 dmg, ×2 XP; between normal and elite,
   Round 49 ruling 6)**, and the registered
-  **boss tier (18,000 HP flat; normal damage, XP and armor; no telegraph)**.
+  **boss tier (30,000 HP flat; normal damage, XP and armor; no telegraph)**.
   No mob uses the boss tier before
   the round-6 king/dragon content. The single implementation table and formula
   are the `TIERS` table and `grug_mobs.stats_for` in
@@ -764,7 +765,7 @@ Normal tier at level L:
   mechanism and bypasses positional and post-role fields only for a deliberately
   designed fixed entity. Its implemented uses are the Kraken (an elite)
   at L70, the Round 51 sharks (the Bay Shark, normal, at L30; the Abyssal
-  Shark, elite, at L70) and every WP13 king at L65. No second king-specific fixed-level path exists.
+  Shark, elite, at L70) and every WP13 king at L70. No second king-specific fixed-level path exists.
 
 | Mob level | HP | Dmg/hit | Kill XP (normal, solo, own level) | Elite / rare XP |
 |-----------|----|---------|-----------------------:|----------------:|

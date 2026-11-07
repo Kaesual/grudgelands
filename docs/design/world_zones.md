@@ -257,7 +257,7 @@ Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
   [world.md](world.md) §4b).
 - The fixed `dragon` anchors are the encounter authority: the Wyrmglass Ice
   Dragon stands at **(-3260, -40)** and the Stormscale Jungle Wyvern at
-  **(+3260, -40)**. Each is a clock-independent fixed-level-70 boss (the
+  **(+3260, -40)**. Each is a clock-independent fixed-level-75 boss (the
   islands themselves stay level-60 zones) with three
   arena perches, a telegraphed breath line and ground slam, and a persistent
   30-minute wall-clock respawn. An active lair receives the final 60-second
@@ -1865,7 +1865,7 @@ one-cell settlement checks are unchanged.
   96-node civic core and its 40-node collar; there are no per-race terrace
   forms (the anchor profiles' `shape` names are not read). None depends on
   accidental v7 land.
-- The six kings are equal civic rulers and killable level-65 elite NPCs. Every
+- The six kings are equal civic rulers and killable level-70 elite NPCs. Every
   king has exactly four level-60 elite royal guards. The king is the tallest
   figure in his hall: final `visual_size` 1.6 (2.72 nodes, box and model
   alike) against his elite guards' 1.4 (2.38 nodes) (Round 28 ruling 9). No capital is a superior
@@ -2042,7 +2042,7 @@ numeric-truncated seed.
   exactly 60 inside the capital's protected volume (from the capital anchor's
   placement height − 80 upward, Round 24 ruling 30). Below that floor and
   everywhere else on non-exterior land it returns the existing generic base
-  `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
+  `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-70 king
   remains outside this resolver.
 - `faction_at` returns `accord`, `throng` or nil and never derives
   construction rights from `race_region`. `territory_rule_at` and

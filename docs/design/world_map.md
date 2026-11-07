@@ -991,6 +991,6 @@ were in, and quest texts and level routes now name zones.
   `grug_map_zone_grid.txt` stays gone (the grid is sampled at every start,
   seed 42 0.13 s), and a world's old file stays unread.
 - **Kings** are markers of the map window's Bosses layer since Round 47,
-  with name and level ("King of Highcourt (level 65)"); in Rounds 44–46
+  with name and level ("King of Highcourt (level 70)"); in Rounds 44–46
   they were baked icons without a tooltip, until then "King of Highcourt"
   markers.

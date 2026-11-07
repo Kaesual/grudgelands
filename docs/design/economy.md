@@ -305,8 +305,8 @@ items without one:
 - **The crown** (Round 33, [item_tiers.md](item_tiers.md) §4): the
   Crownbinder at the gate of every capital's goldsmith hall applies one Fallen Crown to one item for one
   hour of band-6 income, **1g 48s** (`grug_traders.CROWN_FEE`, checked by
-  `income.py`). Once per item; the operation refuses where it would change
-  nothing.
+  `income.py`). Once per item, only below item level 70; a King's or a
+  dragon's drop is refused.
 - **Culture vendor** (Round 33, [item_tiers.md](item_tiers.md) §6.4): the
   Decor Merchant at the gate of every capital's woodcarver hall sells
   cosmetic blocks and lights nobody can craft — accent blocks 25c (marble,

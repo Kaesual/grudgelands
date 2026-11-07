@@ -41,7 +41,10 @@ loot), [professions.md](professions.md) (progression, mastery, stations),
 [combat_stats.md](combat_stats.md) §2 (how crit and armor resolve).
 
 Tiers: T1 = item or character level 1–10 … T6 = 51–60, T7 = 61–70 (boss
-drops and crowned items only).
+drops and crowned items; Round 71's instance mobs at 61–69 join them). T7 is
+the last enchant tier: a dragon's item level 75 (Round 70, dragons only) has
+T7 enchants at their item-level-70 value (the clamp in §1.1) and adds weapon
+base damage and armor.
 
 ## 1. Enchant values
 
@@ -288,7 +291,8 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 - **A shield-bearing Warrior reaches the 70 % armor cap** against a
   same-level foe from about level 55 with plain gear (metal set plus shield).
   From there an armor enchant counts only against stronger foes (a level-65
-  King: +2.3–2.4 % effective HP per enchant). This is today's armor formula.
+  General: +2.3–2.4 % effective HP per enchant, a level-70 King about
+  +1.9 %). This is today's armor formula.
 - **The Priest's healing uses Intelligence like a Mage's Fireball** (Round
   36): healing and absorbs are multiplied by `1 + gear Int / 10 / B(L)`,
   where gear Int is the Intelligence above the class's own level growth and
@@ -544,7 +548,7 @@ Signatures: 94; with a use: 61 (today 27); newly used: 34; sell-only: 33.
 - **+1 item level per level** (Round 45, spec ruling 26): a job of "+N
   levels" raises the item level by N, at most to the cap `10 × T`; the level
   requirement follows (`min(item level, 60)`). An item at or above its cap
-  (crowned items, boss drops at 65/70, items already at the top) takes no
+  (crowned items, boss drops above 60, items already at the top) takes no
   level: "Already at the cap". A higher profession tier never lifts an item
   past its own tier's cap (a T2 Weaponsmith raises a T1 sword to 10 at
   most), and the player's level never limits an upgrade: a result above it
@@ -651,11 +655,15 @@ The bags and spellbooks in this table need only their profession tier (Round
 ## 4. The crown
 
 - The crown NPC in every capital applies one Fallen Crown to one item for a
-  money fee: the item level becomes `10 × T + 5` (T = material tier) and every
-  enchant gains one tier (T6 → T7 at most). Values follow §1.1: a crowned T6
-  item's T7 enchants are worth their item-level-65 value.
-- Once per item (a stored flag); refused where it would not raise the item
-  level (boss drops at 65/70, an already crowned item).
+  money fee: the item level becomes `min(10 × T + 10, 70)` (T = material tier:
+  a T5 item 60, a T6 item 70, an item at 61–69 70) and every enchant gains one
+  tier (T6 → T7 at most). Values follow §1.1: a crowned T6 item's T7 enchants
+  are worth their item-level-70 value.
+- Once per item (a stored flag), and only on items below item level 70: a
+  King's level 70 drop and a dragon's level 75 drop are refused. The crown
+  always raises the item level, so it has no enchant-only use (Round 70; a
+  boss drop took one at equal level until then). A stack crowned earlier stays
+  as it is.
 - **Fee: one hour of band-6 net solo income**, rounded by
   [economy.md](economy.md) §4.1, from the same income estimate as the mount
   prices (`tools/r29_e4/income.py`): 1g 45s on the estimate before Round 33.
