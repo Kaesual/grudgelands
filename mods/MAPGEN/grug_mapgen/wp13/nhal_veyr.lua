@@ -2,11 +2,11 @@
 -- capital of the game.
 --
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
--- contract.md section 2.1 -- the 96 x 96 civic core, anchor-relative exactly
--- like a start, flat at y = 0 by construction, inside the contract's bounds of
--- x/z [-47, 47] and y [-2, 40] -- plus the run specifications the overlay
--- modules turn into the avenues, the ring street, the district lanes and the
--- curtain wall.
+-- contract.md section 2.1 -- the civic core (radius 56 since Round 70,
+-- `precinct_ring.lua` owns the size), anchor-relative exactly like a start,
+-- flat at y = 0 by construction, inside `BOUNDS.capital_core`. The city round
+-- it (outline, streets, curtain wall, placed plots) is the capital planner's
+-- per-world layout (Round 22, `wp40/capital_planner.lua`, `wp13/city_edge.lua`).
 --
 -- Nhal Veyr is the undead capital of the contract's section 2.4 table:
 -- "raised necropolis, step 3", and "dungeon stone and obsidian brick,
@@ -25,22 +25,21 @@
 --
 -- WHERE THIS CORE DIFFERS FROM THE OTHER TWO, and why
 -- ---------------------------------------------------
---   * The north quarter is a MAUSOLEUM and not a hall. It is the library's
---     `king_hall` -- the contract's ruling of 2026-09-14 is that the core
---     builds the throne room the king encounter will use, so the architecture
---     may not be re-invented -- but it is built and roofed in dungeon stone
---     over obsidian brick, and the composition lays its nave floor in grave
---     slabs with four votive lights between the bays. A basilica in black
---     masonry with a crypt floor is a mausoleum; the throne is the king's
---     socket either way.
+--   * The north quarter is the castle every capital shares (Round 70, form A,
+--     `tools/r70_castle`), in dungeon stone over obsidian brick and under the
+--     vault's pale roof. Its plot, template and roster row keep the name
+--     MAUSOLEUM; the landmarks are the `kings_hall` seam every capital
+--     publishes, and the throne is the king's socket either way.
+--   * The vigil hall stays APART from the castle, in the west quarter across
+--     the processional walk: a public quest place, not a court of the king's.
 --   * The north-east quarter is the OSSUARY COURT, this capital's signature,
 --     where Dur Brannoc has its forge court and Highcourt its service court.
 --     The two royal booths stand in it, but so do the bone stacks, the
 --     coffins, the embalmer's slab, the wax pot and the candle line.
 --   * The turf between the quarters is a BURIAL GROUND. Highcourt's core plants
 --     orchards on the ground its plots leave and Dur Brannoc plants pines;
---     a necropolis buries its dead there, so `dressing.graveyard` runs over
---     four stretches of open ground and gravewoods stand among the markers.
+--     a necropolis buries its dead there, so rows of markers run over the open
+--     ground round the quarters and gravewoods stand among them.
 --   * The boundary is a citadel parapet with a drum at each corner, the same
 --     piece Dur Brannoc landed, in this capital's masonry. A walled city's
 --     civic core is a precinct inside the walls, not a field with four gate
@@ -94,33 +93,36 @@ local function loader(directory)
 	local CASTLE = {x = -22, z = 10, w = 45, d = 35}
 
 	local STREETS = {
-		-- The throne approach, from the south gate through the crossing to the
-		-- mausoleum's forecourt.
-		{-2, -RADIUS, 2, 5, "avenue"},
-		-- The service avenue behind the mausoleum, out to the north gate.
-		{-2, 38, 2, RADIUS, "avenue"},
+		-- The throne approach: nine wide from the south gate's forecourt
+		-- through the crossing to the castle's forecourt, five wide in the gate.
+		{-4, -(RADIUS - 8), 4, 8, "avenue"},
+		{-2, -RADIUS, 2, -(RADIUS - 8), "avenue"},
 		-- The east-west avenue, gate to gate through the same crossing.
 		{-RADIUS, -2, RADIUS, 2, "avenue"},
-		-- The two flank lanes past the mausoleum and the back lane joining them.
-		{-24, 0, -22, 42, "lane"},
-		{19, 0, 21, 42, "lane"},
-		{-24, 38, 21, 40, "lane"},
-		-- The mausoleum's forecourt.
-		{-10, 3, 10, 5, "lane"},
+		-- The processional walk: five wide up both flanks of the castle and
+		-- behind it, so the north gate is reached without the throne room and
+		-- the royal precinct stands apart from it.
+		{-29, 0, -25, 50, "lane"},
+		{-29, 46, 29, 50, "lane"},
+		{25, 0, 29, 50, "lane"},
+		-- The north avenue, from the walk out through the north gate.
+		{-2, 46, 2, RADIUS, "avenue"},
+		-- The castle's forecourt.
+		{-18, 3, 18, 9, "avenue"},
 		-- The gate forecourts: a gate chamber's door is in its city face and
-		-- its doorstep is one node beyond the part's own footprint. The north
-		-- gate's forecourt is the back lane, which already reaches it.
-		{-8, -(RADIUS - 7), 8, -38, "lane"},
-		{-8, 38, 8, RADIUS - 7, "lane"},
-		{38, -8, RADIUS - 7, 8, "lane"},
-		{-(RADIUS - 7), -8, -38, 8, "lane"},
+		-- its doorstep is one node beyond the part's own footprint, and the
+		-- ground watch walks here (`gate_watch.lua`).
+		{-8, -(RADIUS - 7), 8, -(RADIUS - 12), "lane"},
+		{-8, RADIUS - 12, 8, RADIUS - 7, "lane"},
+		{RADIUS - 12, -8, RADIUS - 7, 8, "lane"},
+		{-(RADIUS - 7), -8, -(RADIUS - 12), 8, "lane"},
 		-- The travel plaza's approach off the east avenue.
-		{4, -13, 11, -11, "lane"},
+		{5, -13, 12, -11, "lane"},
 		-- The west quarter: the cistern court's walk and the vigil hall's.
-		{-34, 14, -25, 16, "lane"},
+		{-34, 14, -30, 16, "lane"},
 		{-38, 17, -36, 23, "lane"},
 		-- The doorsteps of the outer houses and the guild.
-		{-36, -17, -34, -15, "lane"},
+		{-43, -17, -41, -15, "lane"},
 		{-31, -38, -29, -36, "lane"},
 		{34, -14, 36, -12, "lane"},
 		{26, -40, 28, -38, "lane"},
@@ -131,8 +133,7 @@ local function loader(directory)
 	-- docs/technical/building-template-format.md), `x`/`z` the pad anchor of
 	-- the rotated footprint, `turns` the rotation, `palette` and `roof` the
 	-- roster palettes it is built and roofed with. The templates carry what
-	-- the core used to add afterwards: the mausoleum's floor bands and
-	-- braziers and the vigil elder's doorstep.
+	-- the core used to add afterwards: the vigil elder's doorstep.
 	--
 	-- `watch` marks a core gatehouse whose guards gate_watch.lua sets (Round
 	-- 58): the ground guards' rectangle and the tower guard's post.
@@ -164,7 +165,7 @@ local function loader(directory)
 
 		-- 3. The market square, west of the approach.
 		{id = "market", template = "highcourt_market",
-			x = -35, z = -28, turns = 0, palette = "town",
+			x = -40, z = -28, turns = 0, palette = "town",
 			drop = {waypoint = true},
 			-- A booth without a trader is a flair NPC's work spot, and its id
 			-- has to say booth: `market_vendor_1` with the role `idle` is a
@@ -174,14 +175,14 @@ local function loader(directory)
 
 		-- 4. The two colonnades flanking the approach.
 		{id = "colonnade_west", template = "nhal_veyr_colonnade_west",
-			x = -9, z = -21, turns = 1, palette = "crypt"},
+			x = -12, z = -21, turns = 1, palette = "crypt"},
 		{id = "colonnade_east", template = "nhal_veyr_colonnade_east",
-			x = 4, z = -21, turns = 3, palette = "crypt"},
+			x = 7, z = -21, turns = 3, palette = "crypt"},
 
 		-- 5. The civic furniture: the king's statue east of the crossing and
 		-- the cistern court in the west quarter.
 		{id = "statue", template = "highcourt_statue",
-			x = 12, z = -11, turns = 0, palette = "crypt"},
+			x = 15, z = -11, turns = 0, palette = "crypt"},
 		{id = "cistern_court", template = "highcourt_well_court",
 			x = -45, z = 9, turns = 0, palette = "town"},
 
@@ -203,9 +204,9 @@ local function loader(directory)
 		-- the odd cells of the z- gable's inner run, and the generator's own
 		-- chimney stack stands on the middle cell of that same wall.
 		{id = "bone_works", template = "dur_brannoc_great_forge",
-			x = 24, z = 8, turns = 0, palette = "town"},
+			x = 24 + COURT_X, z = 8, turns = 0, palette = "town"},
 		{id = "charnel_yard", template = "highcourt_service_yard",
-			x = 24, z = 27, turns = 0, palette = "town"},
+			x = 24 + COURT_X, z = 27, turns = 0, palette = "town"},
 
 		-- 8. The bonesmiths' guild, in the south-east corner.
 		{id = "bonesmith_guild", template = "nhal_veyr_bonesmith_guild",
@@ -219,21 +220,19 @@ local function loader(directory)
 		-- to face their ground instead: the `home` kit furnishes the cell
 		-- behind every other wall and only the z- doorway is authored clear.
 		{id = "market_house", template = "dur_brannoc_market_house",
-			x = -45, z = -20, turns = 3, palette = "town"},
+			x = -52, z = -20, turns = 3, palette = "town"},
 		{id = "south_house", template = "dur_brannoc_south_house",
 			x = -41, z = -41, turns = 1, palette = "town"},
 		{id = "lane_house", template = "nhal_veyr_lane_house",
 			x = 37, z = -17, turns = 1, palette = "town"},
 		{id = "plaza_house", template = "dur_brannoc_plaza_house",
 			x = 9, z = -46, turns = 1, palette = "town"},
-		-- The fallen one stands BETWEEN the two west houses, which is the only
-		-- place on this pad where the contract's line reads: a ruin on its own
-		-- is a heap in a field, and a ruin with a kept cottage on either side
-		-- of it is a street that lost a house. Its apron ring stops one node
-		-- clear of the south house's and two clear of the market house's; the
-		-- market square's west kerb is one node further out again.
+		-- The fallen one stands in the south-west corner of the precinct, beside
+		-- the south house and clear of the approach and the market (Round 70: the
+		-- market took its old place): a ruin on its own is a heap in a field, and
+		-- a ruin next to a kept cottage is a street that lost a house.
 		{id = "fallen_house", template = "nhal_veyr_fallen_house",
-			x = -45, z = -30, turns = 0, palette = "town"},
+			x = -53, z = -41, turns = 0, palette = "town"},
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
@@ -253,7 +252,7 @@ local function loader(directory)
 	--   * the gravewood stands, whose branches reach three nodes from the stem
 	--     and a course or two above it;
 	--   * the burial ground, whose markers are set two nodes apart over every
-	--     open column of four rectangles;
+	--     open column of its rectangles;
 	--   * the blight flora, which sows about a fifth of every unbuilt column
 	--     on the pad.
 	--
@@ -263,23 +262,24 @@ local function loader(directory)
 	-- a table, `STANDING` is built from it before the scatters, and the three
 	-- of them ask it.
 	--
-	-- The corner waypoints of the city loop stand on the lanes that box the
-	-- mausoleum, which closes the circuit the two colonnades open at the
-	-- south. On a LANE and not on the turf between the plots, deliberately:
-	-- the guard that walks this loop is walking the city's own streets, and a
-	-- waypoint on paving is one the burial ground can never reach.
+	-- The corner waypoints of the city loop go round the whole precinct, which
+	-- closes the circuit the two colonnades open at the south: the castle is too
+	-- wide for the close loop the old mausoleum had (Round 70). The two north
+	-- corners stand on the walk and the court's paving; the two south ones on
+	-- open ground between the outer plots, and `STANDING` keeps the burial
+	-- ground off them.
 	local CORNERS = {
-		{id = "watch_south_west", x = -23, z = 10, face = 0, order = 2},
-		{id = "watch_north_west", x = -23, z = 39, face = 1, order = 3},
-		{id = "watch_north_east", x = 20, z = 39, face = 3, order = 4},
-		{id = "watch_south_east", x = 20, z = 10, face = 2, order = 5},
+		{id = "watch_south_west", x = -27, z = -35, face = 0, order = 2},
+		{id = "watch_north_west", x = -27, z = 48, face = 2, order = 3},
+		{id = "watch_north_east", x = 50, z = 39, face = 2, order = 4},
+		{id = "watch_south_east", x = 24, z = -40, face = 0, order = 5},
 	}
 
 	-- The flair spots the composition owns, beside the ones its parts publish.
 	local IDLES = {
-		{id = "court_idle_works", x = 41, z = 23, face = 3, tags = {"work"}},
-		{id = "court_idle_yard", x = 28, z = 24, face = 0, tags = {"work"}},
-		{id = "court_idle_fire", x = 35, z = 39, face = 0, tags = {"fire"}},
+		{id = "court_idle_works", x = 41 + COURT_X, z = 23, face = 3, tags = {"work"}},
+		{id = "court_idle_yard", x = 28 + COURT_X, z = 24, face = 0, tags = {"work"}},
+		{id = "court_idle_fire", x = 35 + COURT_X, z = 39, face = 0, tags = {"fire"}},
 		{id = "forecourt_idle_west", x = -6, z = 3, face = 1,
 			tags = {"bench"}},
 		{id = "forecourt_idle_east", x = 7, z = 3, face = 3,
@@ -293,13 +293,15 @@ local function loader(directory)
 	-- finished cells, so a prop that moves takes its socket's acceptance with
 	-- it.
 	local WORKS = {
-		{id = "court_work_slab", activity = "carve", x = 27, z = 23, face = 1},
-		{id = "court_work_pot", activity = "brew", x = 31, z = 23, face = 1},
-		-- One node east of the gravewood stack at (22, 12..15) and looking at
+		{id = "court_work_slab", activity = "carve", x = 27 + COURT_X, z = 23,
+			face = 1},
+		{id = "court_work_pot", activity = "brew", x = 31 + COURT_X, z = 23,
+			face = 1},
+		-- One node east of the gravewood stack at (30, 12..15) and looking at
 		-- it: the stack's own column is four courses of log and a socket on it
 		-- has no feet, which is what the KAT's headroom rule said about the
 		-- first version of this row.
-		{id = "court_work_stack", activity = "carve", x = 23, z = 13,
+		{id = "court_work_stack", activity = "carve", x = 23 + COURT_X, z = 13,
 			face = 3},
 	}
 
@@ -315,15 +317,15 @@ local function loader(directory)
 	-- (`_grug_idle_tag`, `FACE_AWAY_TAGS`), and a spare has neither a line nor
 	-- a door.
 	local SPARES = {
-		{id = "core_spare_crossing_east", x = 12, z = -1, face = 3},
+		{id = "core_spare_crossing_east", x = 15, z = -1, face = 3},
 		{id = "core_spare_crossing_west", x = -13, z = 1, face = 1},
-		{id = "core_spare_hall_green", x = 20, z = 13, face = 3},
-		{id = "core_spare_market_walk", x = -15, z = -20, face = 0},
+		{id = "core_spare_hall_green", x = 25, z = 13, face = 3},
+		{id = "core_spare_market_walk", x = -20, z = -20, face = 0},
 		{id = "core_spare_approach", x = 2, z = -26, face = 0},
 		{id = "core_spare_west_lane", x = -23, z = 16, face = 1},
 		{id = "core_spare_east_avenue", x = 30, z = -1, face = 3},
 		{id = "core_spare_west_avenue", x = -31, z = 1, face = 1},
-		{id = "core_spare_north_court", x = 20, z = 31, face = 2},
+		{id = "core_spare_north_court", x = 20, z = 47, face = 2},
 		{id = "core_spare_plaza_south", x = 24, z = -20, face = 3},
 	}
 
@@ -404,8 +406,7 @@ local function loader(directory)
 		end
 		pave(AVENUE, COURT.x1, COURT.z1, COURT.x2, COURT.z2, 5)
 		dressing.inlay(buf, undead, COURT.x1, COURT.z1, COURT.x2, COURT.z2)
-		for _, kerb in ipairs({{-3, -RADIUS, -3, 7}, {3, -RADIUS, 3, 7},
-				{-3, 40, -3, RADIUS}, {3, 40, 3, RADIUS},
+		for _, kerb in ipairs({{-5, -(RADIUS - 8), -5, 2}, {5, -(RADIUS - 8), 5, 2},
 				{-RADIUS, -3, RADIUS, -3}, {-RADIUS, 3, RADIUS, 3}}) do
 			for z = kerb[2], kerb[4] do
 				for x = kerb[1], kerb[3] do
@@ -465,7 +466,7 @@ local function loader(directory)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak, nave_floor = part.nave_floor}
+				d = footprint.d, peak = part.peak}
 			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors or {}) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
@@ -522,8 +523,7 @@ local function loader(directory)
 			end
 		end
 
-		-- 5. The mausoleum's floor bands and braziers are its template's own
-		-- (Round 56).
+		-- 5. Every template of the roster's core is used.
 		templates.all_used(stamped, "nhal_veyr")
 
 		-- 6. THE OSSUARY COURT: the two royal booths of the contract's
@@ -532,8 +532,8 @@ local function loader(directory)
 		-- the two fixed vendor offsets of `grug_traders/vendors.lua` come to
 		-- rest.
 		local VENDORS = {
-			{id = "vendor_race", kind = "race", x = 42, z = 10},
-			{id = "vendor_general", kind = "general", x = 42, z = 17},
+			{id = "vendor_race", kind = "race", x = 42 + COURT_X, z = 10},
+			{id = "vendor_general", kind = "general", x = 42 + COURT_X, z = 17},
 		}
 		for _, booth in ipairs(VENDORS) do
 			paved_prop("booth", booth.x - 1, booth.z - 1, booth.x + 3,
@@ -544,30 +544,30 @@ local function loader(directory)
 		for _, pile in ipairs({{23, 38, 4, "z"}, {26, 38, 4, "z"},
 				{42, 24, 4, "z"}, {30, 38, 4, "z"}, {34, 38, 4, "z"},
 				{22, 12, 4, "z"}}) do
-			local x2 = (pile[4] == "x") and pile[1] + pile[3] - 1 or pile[1]
+			local x1 = pile[1] + COURT_X
+			local x2 = (pile[4] == "x") and x1 + pile[3] - 1 or x1
 			local z2 = (pile[4] == "z") and pile[2] + pile[3] - 1 or pile[2]
-			paved_prop("gravewood_stack", pile[1], pile[2], x2, z2, function()
-				dressing.wood_pile(buf, undead, pile[1], pile[2], pile[3],
-					pile[4])
+			paved_prop("gravewood_stack", x1, pile[2], x2, z2, function()
+				dressing.wood_pile(buf, undead, x1, pile[2], pile[3], pile[4])
 			end)
 		end
 		for _, stack in ipairs({{23, 23}, {24, 23}, {42, 30}, {42, 31},
 				{42, 33}, {38, 41}, {39, 41}, {41, 41}, {44, 26}, {44, 27},
 				{44, 34}, {22, 20}}) do
-			paved_prop("coffin_crates", stack[1], stack[2], stack[1], stack[2],
-				function()
-					dressing.crates(buf, undead, stack[1], stack[2], 2)
-				end)
+			local x = stack[1] + COURT_X
+			paved_prop("coffin_crates", x, stack[2], x, stack[2], function()
+				dressing.crates(buf, undead, x, stack[2], 2)
+			end)
 		end
 		-- The wax pots and the embalmer's slab line: the palette's own hearth
 		-- (a cauldron) and its signature block, stood in the open between the
 		-- bone works and the charnel yard, which is what the working half of
 		-- an ossuary court is.
 		for _, spot in ipairs({{30, 23}, {32, 23}, {34, 23}}) do
-			paved_prop("wax_pot", spot[1], spot[2], spot[1], spot[2],
-				function()
-					buf:put(spot[1], 1, spot[2], undead.node("hearth"))
-				end)
+			local x = spot[1] + COURT_X
+			paved_prop("wax_pot", x, spot[2], x, spot[2], function()
+				buf:put(x, 1, spot[2], undead.node("hearth"))
+			end)
 		end
 		-- The embalmers' slab line: DUNGEON STONE and not the signature
 		-- obsidian brick, for the reason the vigil district's own slab records.
@@ -576,31 +576,31 @@ local function loader(directory)
 		-- `carve` feature set that accepted them would let any wall base read as
 		-- a carver's block (the review of 2026-09-16).
 		for _, spot in ipairs({{26, 23}, {28, 23}, {36, 23}, {38, 23}}) do
-			paved_prop("slab", spot[1], spot[2], spot[1], spot[2],
-				function()
-					buf:put(spot[1], 1, spot[2], STONE)
-				end)
+			local x = spot[1] + COURT_X
+			paved_prop("slab", x, spot[2], x, spot[2], function()
+				buf:put(x, 1, spot[2], STONE)
+			end)
 		end
 		for _, seat in ipairs({{44, 36, 3, "z"}, {22, 28, 3, "z"}}) do
-			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
+			local x1 = seat[1] + COURT_X
+			local x2 = (seat[4] == "x") and x1 + 2 or x1
 			local z2 = (seat[4] == "z") and seat[2] + 2 or seat[2]
-			paved_prop("court_bench", seat[1], seat[2], x2, z2, function()
-				dressing.bench(buf, undead, seat[1], seat[2], seat[3], 3,
-					seat[4])
+			paved_prop("court_bench", x1, seat[2], x2, z2, function()
+				dressing.bench(buf, undead, x1, seat[2], seat[3], 3, seat[4])
 			end)
 		end
 		for _, lamp in ipairs({{22, 7}, {38, 6}, {22, 42}, {45, 42},
 				{42, 22}, {22, 24}}) do
-			paved_prop("court_candle", lamp[1], lamp[2], lamp[1], lamp[2],
-				function()
-					dressing.path_light(buf, undead, lamp[1], lamp[2])
-				end)
+			local x = lamp[1] + COURT_X
+			paved_prop("court_candle", x, lamp[2], x, lamp[2], function()
+				dressing.path_light(buf, undead, x, lamp[2])
+			end)
 		end
 
 		-- 7. The plaza's kerb lamps and the street lighting. The great
-		-- avenue's lamp line stops one node short of the crossing: a standard
-		-- on the kerb at x = +-3 is on the verge of one avenue and in the
-		-- CARRIAGEWAY of the other.
+		-- avenue's lamp line stands on its kerb at x = +-5 and stops short of
+		-- the crossing: there a standard would stand in the CARRIAGEWAY of the
+		-- other avenue.
 		for _, lamp in ipairs({{PLAZA.x1, PLAZA.z1}, {PLAZA.x2, PLAZA.z1},
 				{PLAZA.x1, PLAZA.z2}, {PLAZA.x2, PLAZA.z2}}) do
 			paved_prop("plaza_lamp", lamp[1], lamp[2], lamp[1], lamp[2],
@@ -608,13 +608,20 @@ local function loader(directory)
 					dressing.path_light(buf, undead, lamp[1], lamp[2])
 				end)
 		end
-		layout.street_lamps(buf, undead, 0, -44, -6, 8, outdoors)
-		layout.street_lamps(buf, undead, 0, 42, RADIUS - 2, 8, outdoors)
+		for z = -(RADIUS - 13), -6, 8 do
+			for _, x in ipairs({-5, 5}) do
+				if outdoors(x, z) and layout.free(buf, x, z, 3) then
+					dressing.path_light(buf, undead, x, z)
+				end
+			end
+		end
+		layout.street_lamps(buf, undead, 0, RADIUS - 7, RADIUS - 2, 8, outdoors)
 		for _, spot in ipairs({{-6, -6}, {6, -6}, {-6, 6}, {6, 6},
-				{-25, -6}, {-25, 6}, {25, -6}, {25, 6},
-				{-40, -6}, {-40, 6}, {40, -6}, {40, 6},
-				{-25, 18}, {-25, 30}, {28, -16}, {-16, -6}, {16, -6},
-				{-34, -8}, {34, 4}}) do
+				{-25, -6}, {-24, 6}, {25, -6}, {24, 6},
+				{-44, -6}, {-44, 6}, {44, -6}, {44, 6},
+				{-24, 18}, {-24, 30}, {24, 18}, {24, 30},
+				{-30, 44}, {30, 44}, {-14, 45}, {14, 45},
+				{28, -16}, {-16, -3}, {14, -4}, {34, 4}}) do
 			if outdoors(spot[1], spot[2]) and
 					layout.free(buf, spot[1], spot[2], 4) then
 				paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
@@ -624,10 +631,10 @@ local function loader(directory)
 			end
 		end
 
-		-- 8. Benches at the crossing and on the mausoleum's forecourt, and two
+		-- 8. Benches at the crossing and on the castle's forecourt, and two
 		-- blight beds either side of its steps.
-		for _, seat in ipairs({{-6, -4, 0, "x"}, {4, -4, 0, "x"},
-				{-6, 4, 2, "x"}, {4, 4, 2, "x"}}) do
+		for _, seat in ipairs({{-8, -4, 0, "x"}, {6, -4, 0, "x"},
+				{-8, 4, 2, "x"}, {6, 4, 2, "x"}}) do
 			paved_prop("bench", seat[1], seat[2], seat[1] + 2, seat[2],
 				function()
 					dressing.bench(buf, undead, seat[1], seat[2], seat[3], 3,
@@ -673,16 +680,16 @@ local function loader(directory)
 		-- pad finds room. The markers break round the trees instead, which is
 		-- also what a burial ground under trees looks like.
 		--
-		-- THREE NODES CLEAR OF THE PRECINCT RING, every stand, which is what
-		-- the `-42` bound buys against a ring at 46: a crown reaches three
-		-- nodes from its stem, the parapet is written after the trees and only
-		-- asks whether the four courses above the ground are free -- so a stem
-		-- at the ring's own column lets the wall be built under it and hangs
-		-- leaves on the merlon cap. That is the defect Dur Brannoc's pines had
-		-- and the KAT's shape rule is what found it.
+		-- CLEAR OF THE PRECINCT RING AND ITS DRUMS, every stand, which is what
+		-- the `-46` bound buys against a ring at 56: a stem lands up to two nodes
+		-- from its grid point and a crown reaches further, the parapet is written
+		-- after the trees and only asks whether the four courses above the ground
+		-- are free -- so a stem at the ring's own column lets the wall be built
+		-- under it and hangs leaves on the merlon cap. That is the defect Dur
+		-- Brannoc's pines had and the KAT's shape rule is what found it.
 		local trees = 0
-		for z = -42, 42, 4 do
-			for x = -42, 42, 4 do
+		for z = -46, 46, 4 do
+			for x = -46, 46, 4 do
 				local hash = (x * 53 + z * 89 + x * z) % 101
 				local tx = x + hash % 5 - 2
 				local tz = z + math.floor(hash / 5) % 5 - 2
@@ -700,9 +707,11 @@ local function loader(directory)
 				" gravewood stands found open ground", 0)
 		end
 
-		-- 10. THE BURIAL GROUND between the quarters, which is what a
+		-- 10. THE BURIAL GROUND round the quarters, which is what a
 		-- necropolis puts on the turf its plots leave: rows of markers on
 		-- flagstones, two nodes apart, with about one plot in six left open.
+		-- The fields stop short of the corner drums, which still need their
+		-- ground.
 		--
 		-- `dressing.graveyard` is NOT what writes it, and the reason is worth
 		-- recording because it cost this composition a doorway. That routine
@@ -721,8 +730,10 @@ local function loader(directory)
 		-- or a gravewood stem, which is what a burial ground round a city
 		-- looks like.
 		local graves = 0
-		for _, field in ipairs({{-20, -44, -8, -20}, {6, -44, 18, -20},
-				{-20, 8, -8, 34}, {24, -36, 36, -20}}) do
+		for _, field in ipairs({{-20, -54, -8, -20}, {6, -54, 18, -20},
+				{24, -36, 36, -20}, {-54, 8, -46, 50}, {-44, 42, -30, 54},
+				{-28, 51, -8, 55}, {8, 51, 28, 55}, {31, 45, 50, 54},
+				{40, -50, 50, -22}, {-52, -52, -28, -44}}) do
 			for z = field[2], field[4], 2 do
 				for x = field[1], field[3], 2 do
 					local hash = (x * 29 + z * 61) % 11
@@ -962,17 +973,17 @@ local function loader(directory)
 				gate_east = {x = RADIUS, y = 1, z = 0},
 				gate_west = {x = -RADIUS, y = 1, z = 0},
 				main_street = {min = {x = -2, y = 0, z = -RADIUS},
-					max = {x = 2, y = 5, z = 5}},
+					max = {x = 2, y = 5, z = 8}},
 				avenue_south = {min = {x = -2, y = 0, z = -RADIUS},
-					max = {x = 2, y = 5, z = 5}},
-				avenue_north = {min = {x = -2, y = 0, z = 38},
+					max = {x = 2, y = 5, z = 8}},
+				avenue_north = {min = {x = -2, y = 0, z = 46},
 					max = {x = 2, y = 5, z = RADIUS}},
 				avenue_west = {min = {x = -RADIUS, y = 0, z = -2},
 					max = {x = -3, y = 5, z = 2}},
 				avenue_east = {min = {x = 3, y = 0, z = -2},
 					max = {x = RADIUS, y = 5, z = 2}},
-				throne_approach = {min = {x = -2, y = 2, z = 9},
-					max = {x = 2, y = 8, z = 33}},
+				throne_approach = {min = {x = -2, y = 2, z = CASTLE.z},
+					max = {x = 2, y = 8, z = CASTLE.z + 26}},
 				-- The reserved square is the plaza INSIDE its kerb: the four
 				-- lamp standards stand on the kerb ring itself.
 				waypoint_plaza = {min = {x = PLAZA.x1 + 1, y = 0,
@@ -1002,7 +1013,6 @@ local function loader(directory)
 				graves = graves,
 				gravewoods = trees,
 				flora = flora,
-				nave_floor = placed.mausoleum.nave_floor,
 			},
 		}
 	end
