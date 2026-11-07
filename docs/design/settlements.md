@@ -408,8 +408,7 @@ meets it with a three-wide marble quay, one node of natural shore outside the
 water. Nothing crosses the lake: the north avenue begins on the far shore, and
 inside the core a promenade between the two colonnades ends at the quay's head.
 The king's castle stands on the dry western shoulder, turned once so that its
-great door looks east across a paved court to the south avenue; it is the one
-castle whose approach does not start at the south gate.
+great door looks east across a paved court to the south avenue.
 
 **Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
 Drazhak. What a walled capital has on its envelope edge is decided by the race

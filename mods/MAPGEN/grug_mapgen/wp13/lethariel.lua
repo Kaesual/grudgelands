@@ -647,19 +647,32 @@ local function loader(directory)
 				lanterns = lanterns + 1
 			end
 		end
-		-- The quay's own lantern line, on the ground behind its landward edge.
-		for z = MERE_FIRST + 3, RADIUS - 2, 6 do
+		-- The quay's own lantern line, on the turf behind its landward edge.
+		-- The quay is a walk, and wider than QUAY_WIDTH where the shore runs
+		-- diagonally, so each pillar steps inland until it stands off the
+		-- paving.
+		local function on_turf(x1, z1, x2, z2)
+			for z = z1, z2 do
+				for x = x1, x2 do
+					local ground = buf:at(x, 0, z)
+					if ground == nil or not GROUND[ground.name] then return false end
+				end
+			end
+			return true
+		end
+		for z = MERE_FIRST + 6, RADIUS - 2, 6 do
 			local span = MERE[z]
 			for _, side in ipairs({-1, 1}) do
-				local reach = SHORE_MARGIN + QUAY_WIDTH + 2
-				local edge = (side < 0) and (span[1] - reach) or (span[2] + reach)
-				if edge >= -RADIUS + 1 and edge <= RADIUS - 1 and
-						math.abs(edge) > 4 and
-						dry_area(edge - 1, z - 1, edge + 1, z + 1) and
-						layout.free_area(buf, edge - 1, z - 1, edge + 1,
-							z + 1, 5) then
-					dressing.lantern_pillar(buf, elf_palette, edge, z)
-					lanterns = lanterns + 1
+				for reach = SHORE_MARGIN + QUAY_WIDTH + 2, SHORE_MARGIN + QUAY_WIDTH + 9 do
+					local edge = (side < 0) and (span[1] - reach) or (span[2] + reach)
+					if math.abs(edge) <= RADIUS - 3 and
+							on_turf(edge - 1, z - 1, edge + 1, z + 1) and
+							layout.free_area(buf, edge - 1, z - 1, edge + 1,
+								z + 1, 5) then
+						dressing.lantern_pillar(buf, elf_palette, edge, z)
+						lanterns = lanterns + 1
+						break
+					end
 				end
 			end
 		end
@@ -673,7 +686,7 @@ local function loader(directory)
 			{-6, -4, 0, "x"}, {4, -4, 0, "x"}, {-6, 4, 2, "x"},
 			{4, 4, 2, "x"}, {8, 12, 0, "x"}, {-14, 15, 2, "x"},
 			{-10, -12, 1, "z"}, {10, -12, 3, "z"},
-			{-24, 41, 0, "x"}, {22, 41, 0, "x"},
+			{-25, 40, 0, "x"}, {23, 40, 0, "x"},
 		}
 		for _, seat in ipairs(BENCHES) do
 			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
@@ -798,8 +811,8 @@ local function loader(directory)
 		-- quay's kerb, not a cell this blueprint writes.
 		-- On the QUAY ITSELF, which is a diagonal: at z = 42 the mere spans
 		-- x -20..20, the walk starts two nodes outside that, and a socket on
-		-- the round number would have stood in the water. Each stands in front
-		-- of its bench.
+		-- the round number would have stood in the water. Each stands on the
+		-- walk in front of its bench, which keeps off the paving.
 		socket("quay_idle_west", "idle", -23, 1, 42, 0, {tags = {"bench"}})
 		socket("quay_idle_east", "idle", 23, 1, 42, 0, {tags = {"bench"}})
 		socket("quay_idle_head", "idle", -4, 1, 33, 0, {tags = {"work"}})
