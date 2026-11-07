@@ -150,6 +150,11 @@ Decided 2026-09-14.
   put back on its socket's standing cell; nothing checks it again until its
   next activation, and one on a stair, in a door or walking elsewhere is
   left alone.
+- **A socket that takes a new role needs no map reset** (Round 71): an NPC an
+  older world saved on it with another role removes itself at its activation
+  (`start_npc_claim`), and the marker then reads as empty, so the ordinary
+  strikes free it and the socket's NPC is placed, about 15 s after the area
+  becomes active.
 - Every start receives a first NPC roster: two gate guards and one patrol,
   the race's own vendor, residents at doors, benches, work areas and
   **workplaces**, and a quest giver following `quests.md`. A start also
@@ -671,7 +676,8 @@ the same ids in all six capitals:
 |---|---|---|
 | `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it; since Round 59 the one giver of its capital's hub `<capital key>_guild` (chapter 1's second story quest, [quests.md](quests.md) "Chapter 1 in the capitals"). |
 | `miners_guild/miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the Miner's Guild Exchange (`grug_traders:guild_exchange`): the socket is taken over as the service role `guild_exchange` (`grug_traders/vendors.lua`, the socket id read from `GUILD_HALL.exchange`), as the Crownbinder takes his; a guild vendor of the capital's faction that opens on Trade-in and buys like every vendor, without the camp vendor's reputation page or repair. |
-| `miners_guild/miners_guild_clerk`, `miners_guild/miners_guild_sorter` | `idle`, tag `work` | residents at the clerk's desk and the sample table |
+| `miners_guild/miners_guild_clerk` | `idle`, inhabited, tag `work` | the Expedition Registrar (Round 71, `grug_expeditions/registrar.lua`): the socket is taken over as the service role `expedition_registrar`, a villager of the capital's race and faction; its window lists the Expeditions and enters a run. |
+| `miners_guild/miners_guild_sorter` | `idle`, tag `work` | a resident at the sample table |
 | `miners_guild/miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
 
 Like every district plot it also publishes `miners_guild/miners_guild_gate_idle`,

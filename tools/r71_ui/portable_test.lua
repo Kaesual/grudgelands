@@ -12,6 +12,7 @@
 --      a minimap off the map holds no tile and places party members.
 -- Prints "R71 UI PORTABLE PASS checks=<n>".
 local repo = arg[1] or "."
+local _
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1
