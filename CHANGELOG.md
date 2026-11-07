@@ -12,9 +12,71 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
-## 0.70.0 — in progress
+## 0.70.0 — castles, the Stonewright, new start towns and a price for dying (2026-11-07)
 
-Round 70 is under way; lane D writes this entry. **Map reset** needed.
+**Map reset** needed: the capitals, the start towns, the guild houses, the
+rivers and where wild sources grow all change what world generation builds,
+so an existing world's map is generated anew from its seed. Characters keep
+their level, gear, inventory, money, quests, professions, mounts and
+waypoints, as in every map reset; their position and home claim go with the
+old map, and the containers in a housing claim come back through the Claim
+Stone's Belongings tab. No migration step of its own.
+
+- **Castles:** every King now rules from a castle in his people's stone,
+  with a larger throne room, a carpet up the dais and a tall throne set with
+  the five ornamented stones. The six capitals grew around it and their
+  quarters were laid out anew. Lethariel's lake moved north, its quay follows
+  the new shore, and a promenade between the colonnades ends at the quay's
+  head; Kezamba's cenote moved north too, so one
+  boardwalk crosses the water and the east avenue runs on land.
+- **The Stonewright:** a new NPC at the Miner's Guild house of all six
+  capitals turns stone for a small fee by your guild rank: Cobblestone into
+  Gravel, Gravel and Cobblestone into Sand, Cobblestone into Stone; from
+  rank 4 he makes one ornamented stone per metal, Iron to Abyssal Steel, for
+  building. His grinder and his furnace, which always burns, stand behind him.
+- **Start towns:** all six have a new layout with a clear centre; the
+  waystone stands free near the middle, and no longer beside the
+  Quartermaster.
+- **Wayposts:** roads now have wayposts at junctions that name the towns they
+  lead to.
+- **Rare sources:** Rock Salt grows on the beaches of its three zones, never
+  touching water; Stormkelp grows up to 10 nodes from water on low shores of
+  all five zones; there is much more Frost Melon, Wild Cocoa, Bamboo Shoot and
+  Sugar Cane, and Frost Melon follows the rivers of Frostbarrow and Ossuary
+  Reach. Stormkelp, Frost Melon, Bamboo Shoot and Sugar Cane also return
+  faster near you after a harvest.
+- **Decorative plants:** Ruby Fans, ferns, lichen, bush leaves, corals,
+  seagrass, waterlilies, lianas and the other decorative plants now drop
+  themselves and can be placed where they grow. Their tooltip says that no
+  recipe uses them; they sell for almost nothing.
+- **Farming:** each crop stage takes 160 to 240 seconds, so a field no longer
+  ripens all at once; the average is unchanged. Grown corn touches the ground.
+- **Potion belt:** crafted, picked-up and rewarded potions go to your belt
+  first, then to your bags. Potions on the belt can be sold and handed in.
+- **Pick up with anything:** a click on a dropped item picks it up with a hoe,
+  a potion or any other usable item in your hand.
+- **Thread** has its own icon: a spool of yarn.
+- **Dying now costs something:** each death wears your equipped weapons,
+  shields, spellbooks and armor by 10% of their durability, and can break
+  them; trinkets do not wear. A death within 30 seconds of a hit from an
+  enemy player costs nothing. You keep your items and XP. Small lines on the
+  HUD warn while a broken item is equipped or one is below 15%.
+- **Stronger bosses:** Kings rise to level 70 and drop item level 70; Generals
+  stay at 65; dragons keep level 70 and rise to 30,000 HP; the rift boss drops
+  item level 60.
+- **The Fallen Crown** raises an item to its tier's top + 10, at most 70, and
+  no longer works on level 70 items; every enchant still gains a tier.
+- **Fighting above your level:** you now deal 5% less damage per level a mob is
+  above you, from the first level, down to 25% at 15 levels. It used to start
+  at 6 levels.
+- **Server admins:** stop the server, back the world up, run
+  `python3 tools/migrate.py --world <world directory> --map-reset` from
+  the new version's checkout (it packs the claims' containers), empty the
+  map, raise `grug_reset_world` and start it
+  ([updating a hosted world](README.md#your-own-world-or-server),
+  [upgrade contract](docs/technical/upgrade-contract.md#35-the-pre-reset-pass)).
+  An older world moves to 0.70.0 in one update, crossing every map reset and
+  step in between.
 
 ## 0.69.0 — a Trash box, respawn at home, exact skill numbers and new camp sites (2026-11-04)
 

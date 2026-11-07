@@ -151,10 +151,10 @@ local SECTIONS = {
 		heading("Riding, home and death"),
 		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mounts then wait in the quickbar: press E and click one to mount or dismount.",
 		"• The Shipwright beside the Riding Trainer sells a Boat at level 15 and an Improved Boat at level 30. Use the boat from the quickbar (E) while standing or swimming in water at the surface, and again to go ashore. Any hit throws you into the water.",
-		"• In every capital the Crownbinder lifts one item with a Fallen Crown and a fee: its item level rises to its tier's top + 5 and its enchants one tier, once per item. The Decor Merchant there sells decorative blocks and lights.",
+		"• In every capital the Crownbinder lifts one item with a Fallen Crown and a fee: its item level rises to its tier's top + 10, 70 at most, and its enchants one tier, once per item. The Decor Merchant there sells decorative blocks and lights.",
 		"• Set your home at an innkeeper in a start town or capital of your faction, or on your own Claim Stone. The Character page and the quickbar (E) have Return home (every 30 minutes, not in combat).",
 		"• When the map is reset, the containers of your claim wait in the Belongings tab of your Claim Stone once you place and activate one: empty ones as plain items, the others as packed containers; take them out (packed ones cannot be dropped, stored, mailed or sold) and place one to unpack it with all its contents.",
-		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
+		"• Dying wears your equipped items by 10% of their durability, unless an enemy player hit you in the last 30 s, and ends your active buffs. You keep your items and XP and respawn at your home.",
 		"• The Social tab lists every online player of both factions: mark favourites with the star and invite players of your faction to a party of up to 10 with Invite. An invitation shows at the left of the screen until it expires after 2 minutes; answer it on the Social tab. The tab also holds the Flag me for PvP button.",
 	})},
 	-- Round 67 ruling 16: built per player (materials_content below).

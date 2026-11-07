@@ -775,7 +775,14 @@ Rounds 25–35 count as GUI-accepted (the user, 2026-10-05), Round 39 too
   0.69.0, **migrate**, no map reset: the game's first rewrite of a generated
   composition inside its box
   ([upgrade contract](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
-  Complete on 2026-11-04; not pushed, its GUI test open.
+  Complete on 2026-11-04; GUI-accepted and pushed the same day.
+- [x] **Round 70 "Spawns, Stonewright, castles, start towns, death penalty"**
+  ([plan](docs/planning/round70-plan.md)), version 0.70.0, **map reset**, no
+  step: rare sources that exist in every world, a castle form in all six
+  capitals with civic radius 56, reworked start towns, wayposts at road
+  junctions, a Miner's Guild stone service with decorative blocks, a death
+  penalty that spares PvP deaths, Kings at level 70 and a new level malus.
+  Complete on 2026-11-07; not pushed, its GUI test open.
 
 ### Remaining work
 

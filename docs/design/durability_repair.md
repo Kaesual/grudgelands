@@ -41,7 +41,8 @@ mob, a fall, drowning) and whether or not that enemy is still online. The
 window is its own value (`R.PVP_DEATH_SECONDS`), separate from the 15 s kill
 credit, and only `grug_pvp` holds the hits: it decides before settling the
 death and reports through `grug_pvp.register_on_death`. An own-faction hit, a
-dodged hit or a hit on a party member does not count. A logout death is decided
+dodged hit or a hit on a party member does not count; an enemy hit taken whole
+by an absorb effect counts as landed, as for PvP contact. A logout death is decided
 when the player leaves and saved with its mark, so the answer survives any
 time offline: a player who was hit keeps the exemption, one who only struck or
 healed in PvP combat was not hit by an enemy and pays

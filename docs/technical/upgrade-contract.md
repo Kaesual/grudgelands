@@ -233,10 +233,15 @@ list of the platform's migration contract):
   rules change what world generation places (Rock Salt, Stormkelp, Wild
   Cocoa, Frost Melon, Bamboo Shoot, Sugar Cane) and their digests move with
   them. It declares no step and adds no map-bound state: a source node holds
-  no record, and wild renewal keeps none. `map_reset_pass` stays 0.50.0. The
-  production world moves from 0.65.0 to 0.70.0 across one reset and runs the
-  steps 0.67.0 and 0.69.0. The round's later lanes extend this entry when
-  they add to the reset.
+  no record, and wild renewal keeps none. The later lanes join the same
+  reset: the Stonewright's desk and machines in the six guild houses, the
+  six start towns with their waystones, wayposts at road junctions (the
+  only new generated state: a stack's `text` in node meta, written by main
+  at generation), and the six capitals with civic radius 56 (rivers keep
+  farther off, so they change worldwide), the castle and the moved lakes of
+  Lethariel and Kezamba. Item, node and socket ids stay. `map_reset_pass`
+  stays 0.50.0. The production world moves from 0.65.0 to 0.70.0 across one
+  reset and runs the steps 0.67.0 and 0.69.0.
 - **History:** released commits stay reachable on `origin/main`; its history
   is never rewritten. The platform fetches older released commits to create
   test realms and to restore backups, and builds its tool runner from the

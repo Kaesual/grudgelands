@@ -172,8 +172,9 @@ local function current_offer(player, session, vendor, discount)
 	return offer
 end
 
--- Every stack the vendor would buy in the player's main list, bags and the
--- inactive hotbar layout (grug_inventory.consume_lists, Round 56 ruling 8:
+-- Every stack the vendor would buy in the player's main list, bags, the
+-- inactive hotbar layout and the potion belt, the belt with no marker
+-- (grug_inventory.consume_lists, Round 56 ruling 8:
 -- the lists every consumer counts and takes from, so a lot count never
 -- promises what the take cannot find). A good that sells singly keeps one
 -- row per slot ({list, index, item, count, unit}); a lot good (Round 48,
