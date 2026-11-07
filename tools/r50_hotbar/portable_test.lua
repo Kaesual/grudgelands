@@ -390,8 +390,8 @@ do
 	eq(row(p, STORE), hidden, "G the sort leaves the hidden list as it is")
 	eq(table.concat(I.carried_lists(p.inv), ","), "main,grug_bag1_content",
 		"G carried_lists: main and the bags, not the hidden list")
-	eq(table.concat(I.consume_lists(p.inv), ","), "main,grug_bag1_content," .. STORE,
-		"G consume_lists: the hidden list last")
+	eq(table.concat(I.consume_lists(p.inv), ","), "main,grug_bag1_content," .. STORE .. "," .. I.POTION_BELT, -- Round 70
+		"G consume_lists: the hidden list, then the belt")
 end
 
 -- The soulbound rule (grug_housing/soulbound.lua, D3): the hidden list is a
@@ -525,6 +525,19 @@ do
 	eq(journal.quests[1] and journal.quests[1].objectives[1].count, 6,
 		"C a5 progress counts B's dirt (2 + 1 + 1 + 2 of 4)")
 	eq(journal.quests[1] and journal.quests[1].ready, true, "C a5 ready to turn in")
+	-- Round 70: crafted elixirs land on the belt, so a quest counts it too.
+	Q.register_quest("elixir", {npc = "elder", title = "Elixir", description = "Bring it.",
+		objectives = {{type = "item", item = "t:elixir", count = 2}},
+		rewards = {weight = 1, items = {"t:elixir 1"}}})
+	local drinker = consumer("warrior", {16}, {
+		{"main", 9, "t:elixir 1"}, {I.POTION_BELT, 2, "t:elixir 2"}})
+	check(Q.accept(drinker, "elixir"), "C a5 belt: the quest is accepted")
+	local belt_journal = Q.journal(drinker).quests[1]
+	eq(belt_journal.objectives[1].count, 2, "C a5 belt: the belt's elixirs count")
+	eq(belt_journal.ready, true, "C a5 belt: ready to turn in")
+	check(Q.turn_in(drinker, "elixir"), "C a5 belt: the turn-in succeeds")
+	eq(at(drinker, I.POTION_BELT, 2), "t:elixir", "C a5 belt: the belt pays last")
+	eq(at(drinker, "main", 9), "t:elixir", "C a5 belt: the reward lands in main[9..]")
 	local turned, why = Q.turn_in(p, "dirt")
 	check(turned, "C a6 the turn-in succeeds (" .. tostring(why) .. ")")
 	eq(at(p, "main", 2), "", "C a6 the hotbar's dirt is taken (before B)")

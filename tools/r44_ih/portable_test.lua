@@ -21,8 +21,10 @@
 --   F. the sort: categories, tier, name, quality, merging of identical
 --      stacks only, free slots at the end, the hotbar untouched, soulbound
 --      sorted like any other item (Round 49);
---   G. the potion belt's allow rule and its creation at join;
---   H. ammo from a bag (count, shot, refund).
+--   G. the potion belt's allow rule and its creation at join; belt first
+--      (Round 70): give, pickup and dug drops, fits, room_for, consume_lists;
+--   H. ammo from a bag (count, shot, refund);
+--   I. a usable item picks up the drop it points at (Round 70).
 -- Every operation checks that no item is lost or duplicated.
 --
 --   luajit tools/r44_ih/portable_test.lua [REPO]
@@ -46,7 +48,7 @@ end
 ------------------------------------------------------------------------------
 -- Engine surface.
 ------------------------------------------------------------------------------
-local callbacks = {allow = {}, action = {}, pickup = {}, join = {}}
+local callbacks = {allow = {}, action = {}, pickup = {}, join = {}, mods_loaded = {}}
 local dropped, feed_lines, tooltip_calls = {}, {}, 0
 local builtin_drops = 0
 core = {
@@ -59,6 +61,10 @@ core = {
 	register_on_player_inventory_action = function(f) table.insert(callbacks.action, f) end,
 	register_on_item_pickup = function(f) table.insert(callbacks.pickup, f) end,
 	register_on_joinplayer = function(f) table.insert(callbacks.join, f) end,
+	register_on_mods_loaded = function(f) table.insert(callbacks.mods_loaded, f) end,
+	override_item = function(name, changes)
+		for key, value in pairs(changes) do core.registered_items[name][key] = value end
+	end,
 	register_craftitem = function(name, def) core.registered_items[name] = def end,
 	get_modpath = function() return ROOT .. "/mods/PLAYER/grug_inventory" end,
 	get_current_modname = function() return "grug_inventory" end,
@@ -223,6 +229,7 @@ item("t:stew", {description = "Stew", groups = {grug_food = 1, grug_food_tier = 
 item("t:dirt", {description = "Dirt"})
 item("t:stone", {description = "Stone"})
 item("t:potion", {description = "Healing Potion", stack_max = 20, groups = {grug_potion = 1}})
+item("t:elixir", {description = "Elixir", stack_max = 20, groups = {grug_potion = 1}})
 item("t:mixture", {description = "Mixture", stack_max = 20, groups = {grug_potion_mixture = 1}})
 item("t:claim", {description = "Claim Stone", stack_max = 1, groups = {grug_soulbound = 1}})
 item("t:sword_t1", {description = "Bronze Sword", stack_max = 1, _grug_bracket = 1,
@@ -707,10 +714,98 @@ do
 		"belt: a put from another inventory is refused for non-potions")
 	check(I.belt_accepts(ItemStack("t:potion")), "belt_accepts: potion")
 	local before = census(p)
-	I.give(p, "t:potion 1")
-	eq(count_at(p, BELT, 2), 3, "belt: the give helper never fills the belt")
+	I.give(p, "t:potion 1") -- Round 70: the belt's matching stack, before main
+	eq(count_at(p, BELT, 2), 4, "belt: the give helper fills the matching stack first")
 	before["t:potion"] = before["t:potion"] + 1
 	same_census(before, census(p), "belt")
+end
+
+-- Belt first (Round 70): a matching stack, a free slot, then the give order.
+do
+	local p = new_player("g2", "warrior")
+	equip_bag(p, 1, BAG.small)
+	put(p, "main", 9, "t:potion 5")
+	put(p, I.content_list(1), 1, "t:potion 5")
+	local before = census(p)
+	eq(I.give(p, "t:potion 3"):get_count(), 0, "belt first: all taken")
+	eq(count_at(p, BELT, 1), 3, "belt first: a free belt slot beats a partial stack elsewhere")
+	eq(count_at(p, "main", 9), 5, "belt first: main's partial stack untouched")
+	before["t:potion"] = before["t:potion"] + 3
+	same_census(before, census(p), "belt first")
+
+	-- Partly full: the matching stack, the free slots, then main's partial stack.
+	put(p, BELT, 1, "t:potion 18")
+	put(p, BELT, 2, "t:elixir 20")
+	put(p, BELT, 3, "t:potion 20")
+	put(p, BELT, 4, "t:elixir 7")
+	before = census(p)
+	eq(I.give(p, "t:potion 10"):get_count(), 0, "belt partly full: all taken")
+	eq(count_at(p, BELT, 1), 20, "belt partly full: the matching stack fills")
+	eq(count_at(p, BELT, 3), 20, "belt partly full: a full stack stays")
+	eq(count_at(p, BELT, 4), 7, "belt partly full: another potion's slot stays")
+	eq(count_at(p, "main", 9), 13, "belt partly full: only the rest goes to the bags' order")
+	before["t:potion"] = before["t:potion"] + 10
+	same_census(before, census(p), "belt partly full")
+
+	-- Not potions: the give order as ever.
+	local mixture = new_player("g3", "warrior")
+	I.give(mixture, "t:mixture 2")
+	eq(count_at(mixture, "main", 9), 2, "belt first: a mixture goes to main")
+	eq(count_at(mixture, BELT, 1), 0, "belt first: a mixture stays out of the belt")
+
+	-- A meta difference is another stack: a free slot, never a merge.
+	local q = new_player("g4", "warrior")
+	put(q, BELT, 1, "t:potion 2")
+	local odd = ItemStack("t:potion 3")
+	odd:get_meta():set_string("note", "x")
+	I.give(q, odd)
+	eq(count_at(q, BELT, 1), 2, "belt first: a different stack does not merge")
+	eq(count_at(q, BELT, 2), 3, "belt first: it takes a free slot")
+
+	-- Full belt and full inventory: the leftover comes back, nothing is lost.
+	local full = new_player("g5", "warrior")
+	fill_list(full, BELT, 1, 4, "t:potion 20")
+	fill_list(full, "main", 1, 32, "t:stone 99")
+	before = census(full)
+	eq(I.give(full, "t:potion 5"):get_count(), 5, "belt full, bags full: the whole stack is left")
+	same_census(before, census(full), "belt full, bags full")
+	check(not I.fits(full, "t:potion 1"), "fits: no room anywhere")
+	eq(I.room_for(full, ItemStack("t:potion 5")), 0, "room_for: no room anywhere")
+
+	-- Bags full, belt free: the belt alone counts, also over several stacks.
+	full.inv:set_stack(BELT, 2, ItemStack("t:potion 18"))
+	full.inv:set_stack(BELT, 4, ItemStack(""))
+	check(I.fits(full, "t:potion 22"), "fits: the belt's room counts (2 + 20)")
+	check(not I.fits(full, "t:potion 23"), "fits: and no more")
+	check(I.fits(full, {"t:potion 10", "t:potion 12"}), "fits: two stacks share the room")
+	check(not I.fits(full, {"t:potion 12", "t:potion 12"}), "fits: and do not count it twice")
+	check(not I.fits(full, "t:dirt 1"), "fits: other items see no belt room")
+	eq(I.room_for(full, ItemStack("t:potion 30")), 22, "room_for: the belt's room")
+	eq(count_at(full, BELT, 2), 18, "fits and room_for change nothing")
+	eq(count_at(full, BELT, 4), 0, "fits and room_for change nothing (free slot)")
+	before = census(full)
+	eq(I.give(full, "t:potion 30"):get_count(), 8, "belt only: the rest is left")
+	before["t:potion"] = before["t:potion"] + 22
+	same_census(before, census(full), "belt only")
+
+	-- World pickup and dug drops.
+	local world = new_player("g6", "warrior")
+	eq(callbacks.pickup[1](ItemStack("t:potion 2"), world):get_count(), 0, "pickup: taken")
+	eq(count_at(world, BELT, 1), 2, "pickup: into the belt")
+	fill_list(world, BELT, 1, 4, "t:potion 20")
+	fill_list(world, "main", 1, 32, "t:stone 99")
+	eq(callbacks.pickup[1](ItemStack("t:potion 2"), world):get_count(), 2,
+		"pickup: a full belt and inventory leave the drop as it was")
+	local digger = new_player("g7", "warrior")
+	core.handle_node_drops({x = 0, y = 0, z = 0}, {"t:potion 1"}, digger)
+	eq(count_at(digger, BELT, 1), 1, "dug drops: into the belt")
+
+	-- The lists: consumers find what landed on the belt, carriers do not.
+	local lists = I.consume_lists(digger.inv)
+	eq(lists[#lists], BELT, "consume_lists: the belt comes last")
+	for _, list in ipairs(I.carried_lists(digger.inv)) do
+		check(list ~= BELT, "carried_lists: no belt")
+	end
 end
 
 ------------------------------------------------------------------------------
@@ -730,6 +825,82 @@ do
 	equip_bag(w, 2, BAG.small)
 	put(w, I.content_list(2), 1, "grug_gear:arrow 3")
 	eq(I.ammo_count(w), 3, "ammo: a bag counts without a quiver too")
+end
+
+------------------------------------------------------------------------------
+-- I. A usable item picks up the drop it points at (Round 70): the on_use pass
+-- runs on the mods-loaded hook; the drop's on_punch is its own, here the
+-- builtin's shape over the real pickup callback.
+------------------------------------------------------------------------------
+do
+	local uses, hoe = {}, ItemStack("t:hoe")
+	item("t:hoe", {description = "Hoe", stack_max = 1,
+		on_use = function(stack, _, pointed)
+			uses[#uses + 1] = pointed.type
+			stack:get_meta():set_string("used", "1")
+			return stack
+		end})
+	item("t:drink", {description = "Drink", stack_max = 20, groups = {grug_potion = 1},
+		on_use = function(stack, _, pointed)
+			uses[#uses + 1] = pointed.type
+			stack:take_item(1)
+			return stack
+		end})
+	item("t:food", {description = "Food", on_use = false})
+	for _, callback in ipairs(callbacks.mods_loaded) do callback() end
+	eq(core.registered_items["t:food"].on_use, false, "use pass: a disabled on_use stays disabled")
+
+	local function drop(itemstring)
+		local entity = {name = "__builtin:item", itemstring = itemstring}
+		function entity:on_punch(hitter)
+			local left = callbacks.pickup[1](ItemStack(self.itemstring), hitter)
+			self.itemstring = left:is_empty() and "" or left:to_string()
+		end
+		return {type = "object", ref = {get_luaentity = function() return entity end}}, entity
+	end
+	local p = new_player("i1", "warrior")
+	local use = core.registered_items["t:hoe"].on_use
+	local pointed, entity = drop("t:stone 3")
+	local before = census(p)
+	eq(use(hoe, p, pointed), nil, "use pass: a pickup leaves the wielded stack alone")
+	eq(entity.itemstring, "", "use pass: the drop is gone")
+	eq(count_at(p, "main", 9), 3, "use pass: the hoe picked it up")
+	eq(#uses, 0, "use pass: the hoe's own use did not run")
+	before["t:stone"] = (before["t:stone"] or 0) + 3
+	same_census(before, census(p), "hoe pickup")
+	-- A full inventory: the press was the attempt, nothing else happens.
+	local full = new_player("i2", "warrior")
+	fill_list(full, "main", 1, 32, "t:dirt 99")
+	pointed, entity = drop("t:stone 3")
+	eq(use(hoe, full, pointed), nil, "use pass: full inventory: the wielded stack alone")
+	eq(entity.itemstring, "t:stone 3 0", "use pass: full inventory: the drop stays")
+	eq(#uses, 0, "use pass: full inventory: no use either")
+	-- Tilling and every other target go on as before.
+	local result = use(hoe, p, {type = "node"})
+	eq(uses[1], "node", "use pass: a node still reaches the hoe's use")
+	eq(result:get_meta():get_string("used"), "1", "use pass: its result comes back")
+	use(hoe, p, {type = "nothing"})
+	eq(uses[2], "nothing", "use pass: air still reaches the use")
+	local mob = {type = "object", ref = {get_luaentity = function() return {name = "t:mob"} end}}
+	use(hoe, p, mob)
+	eq(uses[3], "object", "use pass: a mob is no drop")
+	local other = {type = "object", ref = {get_luaentity = function() return nil end}}
+	use(hoe, p, other)
+	eq(uses[4], "object", "use pass: nor is a player")
+	-- A potion in hand picking up its own kind: the belt is full, the drop
+	-- merges into the wielded stack, whose old count must not come back.
+	uses = {}
+	local drinker = new_player("i3", "warrior")
+	put(drinker, "main", 1, "t:drink 5")
+	local drink = core.registered_items["t:drink"].on_use
+	fill_list(drinker, BELT, 1, 4, "t:mixture 20")
+	pointed = drop("t:drink 2")
+	local wielded = drinker.inv:get_stack("main", 1)
+	eq(drink(wielded, drinker, pointed), nil, "use pass: no stale stack comes back")
+	eq(count_at(drinker, "main", 1), 7, "use pass: the merge into the wielded stack stays")
+	eq(#uses, 0, "use pass: a potion is not drunk at a drop")
+	eq(drink(ItemStack("t:drink 5"), drinker, {type = "nothing"}):get_count(), 4,
+		"use pass: pointing at nothing it drinks")
 end
 
 print(("R44 IH PORTABLE %s checks=%d failures=%d"):format(

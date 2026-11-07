@@ -91,13 +91,15 @@ local function owned_lists(player)
 	end
 	return lists
 end
--- Quest items count from the owned lists and the inactive hotbar layout
--- (Round 50 ruling 3); rewards land only in the owned lists (settlement).
-local STORE = grug_inventory.HOTBAR_STORE
+-- Quest items count from the owned lists, the inactive hotbar layout (Round
+-- 50 ruling 3) and the potion belt (Round 70: a crafted elixir lands there);
+-- rewards land only in the owned lists (settlement).
+local STORE, BELT = grug_inventory.HOTBAR_STORE, grug_inventory.POTION_BELT
 local function holdings(player)
 	local counts, inv = {}, player:get_inventory()
 	local lists = owned_lists(player)
 	lists[#lists + 1] = STORE
+	lists[#lists + 1] = BELT
 	for _, list in ipairs(lists) do
 		for _, stack in ipairs(inv:get_list(list) or {}) do
 			local name = stack:get_name()
@@ -528,16 +530,18 @@ Q.reward_stacks = reward_stacks
 -- Preflight copies every owned slot, in the give helper's order (main[9..],
 -- the bags, the hotbar last), so rewards land where any other item would.
 -- Removing requirements and adding rewards to the same copies accounts for
--- space freed by this very hand-in. The inactive hotbar layout's slots come
--- after them: requirements are taken from it last, rewards never land in it.
+-- space freed by this very hand-in. The slots of the inactive hotbar layout
+-- and the potion belt come after them: requirements are taken from those last,
+-- rewards never land in them.
 local function settlement(player, def, active, rewards)
 	local inv, rows, hotbar, hidden = player:get_inventory(), {}, {}, {}
 	local lists = owned_lists(player)
 	lists[#lists + 1] = STORE
+	lists[#lists + 1] = BELT
 	for _, list in ipairs(lists) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			local row = {list = list, index = index, expected = ItemStack(stack), replacement = ItemStack(stack)}
-			if list == STORE then
+			if list == STORE or list == BELT then
 				hidden[#hidden + 1] = row
 			elseif list == "main" and index <= 8 then
 				hotbar[#hotbar + 1] = row

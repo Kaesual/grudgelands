@@ -1,4 +1,6 @@
 -- Eight plain hoes share one soil operation; tiers change lifetime only.
+-- A press on a dropped item never gets here: every usable item picks it up
+-- first (grug_inventory, storage.lua).
 return function(callbacks)
  local uses_by_tier = {300,600,1000,1500,2000,3000}
  local hoe_tints = {

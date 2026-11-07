@@ -7,7 +7,8 @@
 -- list per equipped bag, and the inactive hotbar layout (below). Items
 -- arrive in one order: `main[9..]`, the bags in slot order, the hotbar last,
 -- so a hotbar slot freed for a skill stays free; never the inactive layout.
--- Arrows go to a Scout's quiver first.
+-- Arrows go to a Scout's quiver first, potions and elixirs to the potion belt
+-- first (Round 70).
 
 local HOTBAR = 8
 grug_inventory.HOTBAR_SIZE = HOTBAR
@@ -31,7 +32,7 @@ end
 -- The lists a player keeps items in: `main` and each equipped bag's content
 -- list, in bag slot order. Readers that count or take items walk these.
 -- The quiver, the potion belt, the equipment slots and the inactive hotbar
--- layout are not among them.
+-- layout are not among them (consume_lists adds the last and the belt).
 function grug_inventory.carried_lists(inv)
 	local lists = {"main"}
 	for i = 1, grug_inventory.BAG_COUNT do
@@ -42,16 +43,18 @@ function grug_inventory.carried_lists(inv)
 end
 
 -- The lists a consumer counts and takes items from (Round 50 ruling 3):
--- carried_lists, then the inactive hotbar layout last. Counting and taking
--- walk the same lists, so a count never promises what the take cannot find.
--- A vendor's sell list and lot selling walk them too (Round 56 ruling 8).
--- Nothing ever gives into the inactive layout (it is not in the give order
--- below).
+-- carried_lists, then the inactive hotbar layout, then the potion belt, where
+-- crafted potions land first, so they stay sellable (Round 70). Counting and
+-- taking walk the same lists, so a count never promises what the take cannot
+-- find. A vendor's sell list and lot selling walk them too (Round 56 ruling
+-- 8). Nothing ever gives into the inactive layout (it is not in the give
+-- order below).
 function grug_inventory.consume_lists(inv)
 	local lists = grug_inventory.carried_lists(inv)
 	if inv:get_size(grug_inventory.HOTBAR_STORE) > 0 then
 		lists[#lists + 1] = grug_inventory.HOTBAR_STORE
 	end
+	if inv:get_size(BELT) > 0 then lists[#lists + 1] = BELT end
 	return lists
 end
 
@@ -133,6 +136,15 @@ local function is_arrow(stack)
 	return core.get_item_group(stack:get_name(), "grug_arrow") > 0
 end
 
+-- The potion belt's cells. A potion or elixir fills them, a matching stack
+-- then a free slot, before it looks at the give order (Round 70): a partial
+-- stack in a bag does not outrank a free belt slot.
+local function belt_cells(inv, given)
+	local slots = {}
+	for index = 1, inv:get_size(BELT) do slots[index] = {list = BELT, index = index} end
+	return cells_of(inv, slots, given)
+end
+
 -- The one way items enter a player's inventory (spec §2.4): returns the
 -- leftover, which the caller drops, refuses, queues or keeps as before.
 -- Every stack gets the weapon-tooltip setup an engine pickup or craft gives
@@ -147,6 +159,12 @@ function grug_inventory.give(player, stack, skip_quiver)
 		stack = grug_inventory.add_to_quiver(player, stack)
 	end
 	if stack:is_empty() then return stack end
+	if grug_inventory.belt_accepts(stack) then
+		local belt = belt_cells(inv)
+		stack = fill(belt, stack)
+		commit(inv, belt)
+		if stack:is_empty() then return stack end
+	end
 	local cells = cells_of(inv, ordered_slots(inv))
 	stack = fill(cells, stack)
 	commit(inv, cells)
@@ -165,12 +183,17 @@ function grug_inventory.fits(player, stacks, lists)
 	local quiver_room = grug_inventory.has_quiver(player) and
 		grug_inventory.quiver_capacity() - grug_inventory.quiver_count(player) or 0
 	local cells = cells_of(inv, ordered_slots(inv), lists)
+	local belt
 	for _, item in ipairs(stacks) do
 		local stack = ItemStack(item)
 		if quiver_room > 0 and not stack:is_empty() and is_arrow(stack) then
 			local into = math.min(quiver_room, stack:get_count())
 			quiver_room = quiver_room - into
 			stack:take_item(into)
+		end
+		if grug_inventory.belt_accepts(stack) then
+			belt = belt or belt_cells(inv, lists)
+			stack = fill(belt, stack)
 		end
 		if not stack:is_empty() and not fill(cells, stack):is_empty() then
 			return false
@@ -179,8 +202,8 @@ function grug_inventory.fits(player, stacks, lists)
 	return true
 end
 
--- How many of `stack` would give take right now (the quiver, then the
--- order, partial stacks counted)? Changes nothing. The shift-click inbox
+-- How many of `stack` would give take right now (the quiver or the belt, then
+-- the order, partial stacks counted)? Changes nothing. The shift-click inbox
 -- (inbox.lua) admits exactly this many.
 function grug_inventory.room_for(player, stack)
 	stack = ItemStack(stack)
@@ -191,6 +214,7 @@ function grug_inventory.room_for(player, stack)
 		local room = grug_inventory.quiver_capacity() - grug_inventory.quiver_count(player)
 		if room > 0 then stack:take_item(math.min(room, count)) end
 	end
+	if grug_inventory.belt_accepts(stack) then stack = fill(belt_cells(inv), stack) end
 	if stack:is_empty() then return count end
 	return count - fill(cells_of(inv, ordered_slots(inv)), stack):get_count()
 end
@@ -439,9 +463,10 @@ end
 
 --
 -- The potion belt (spec §2.9, §3.5): four slots for potions and elixirs
--- (group grug_potion; alchemy mixtures are not in it). Filled in the
--- Inventory tab, used from the quickbar. Created for every player at join;
--- set_size leaves an existing list as it is.
+-- (group grug_potion; alchemy mixtures are not in it). Filled by the give
+-- helper first (Round 70) and in the Inventory tab, used from the quickbar.
+-- Created for every player at join; set_size leaves an existing list as it
+-- is.
 --
 function grug_inventory.belt_accepts(stack)
 	return stack ~= nil and not stack:is_empty() and
@@ -473,6 +498,33 @@ core.register_on_item_pickup(function(itemstack, picker)
 		return nil
 	end
 	return grug_inventory.give(picker, itemstack)
+end)
+
+-- An item with on_use never punches (game.cpp, processPlayerInteraction: a usable
+-- item sends INTERACT_USE), so the drop under the crosshair stays on the
+-- ground. True when `pointed` is a drop: this press was its pickup attempt, a
+-- full inventory included, through the entity's own on_punch.
+function grug_inventory.pick_up_pointed(player, pointed)
+	local entity = pointed and pointed.type == "object" and pointed.ref and
+		pointed.ref:get_luaentity()
+	if not entity or entity.name ~= "__builtin:item" then return false end
+	entity:on_punch(player)
+	return true
+end
+
+-- Every usable item (hoes, potions, books, ...) picks up what it points at
+-- first (Round 70). nil leaves the wielded stack alone: the pickup may have
+-- merged into it, and returning the stack would write the old count back.
+core.register_on_mods_loaded(function()
+	for name, definition in pairs(core.registered_items) do
+		local use = definition.on_use
+		if type(use) == "function" then
+			core.override_item(name, {on_use = function(stack, user, pointed)
+				if grug_inventory.pick_up_pointed(user, pointed) then return nil end
+				return use(stack, user, pointed)
+			end})
+		end
+	end
 end)
 
 -- A creative player keeps the creative mod's own handling (it chains to

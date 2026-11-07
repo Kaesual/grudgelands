@@ -17,7 +17,12 @@ local SOIL_INTERVAL = 15
 local IDLE_SOIL_INTERVAL = 60
 local WATER_RADIUS = 3
 local STAGES = 4
+-- The average stage; the salt pan fills at exactly this pace (salt_pan.lua).
 local STAGE_SECONDS = 200
+-- A crop's stage takes STAGE_SECONDS +- this (Round 70): see stage_seconds.
+local STAGE_SPREAD = 40
+-- Below the square root of 2^53, so stage_seconds' squares stay exact.
+local STAGE_HASH_MODULUS = 94906249
 local CROP_PROGRESS_META = "wet_progress"
 local CROP_PLANTER_META = "grug_crop_planter"
 
@@ -32,6 +37,22 @@ grug_farming.SOIL_INTERVAL = SOIL_INTERVAL
 grug_farming.WATER_RADIUS = WATER_RADIUS
 grug_farming.STAGES = STAGES
 grug_farming.STAGE_SECONDS = STAGE_SECONDS
+
+-- How long `stage` of the crop at `pos` takes: 160-240 whole seconds, 200 on
+-- average (Round 70), so a field ripens spread out. Worked out from the
+-- position and the stage, never stored: start, pause, resume and offline
+-- catch-up all read the same length, and a crop's only saved progress stays
+-- wet_progress, the seconds of wet and lit growth into its current stage.
+-- The squares break the neighbours' arithmetic rows, which would otherwise
+-- ripen a field in stripes.
+local function stage_seconds(pos, stage)
+	local hash = (pos.x * 7919 + pos.y * 104729 + pos.z * 1299709 +
+		stage * 15485863) % STAGE_HASH_MODULUS
+	hash = (hash * hash + 11) % STAGE_HASH_MODULUS
+	hash = (hash * hash + 13) % STAGE_HASH_MODULUS
+	return STAGE_SECONDS - STAGE_SPREAD + hash % (2 * STAGE_SPREAD + 1)
+end
+grug_farming.stage_seconds = stage_seconds
 
 local function start_soil_timer(pos)
 	core.get_node_timer(pos):start(SOIL_INTERVAL)
@@ -65,11 +86,11 @@ local function pause_crop_timer(pos)
 	timer:stop()
 end
 
-local function resume_crop_timer(pos)
+local function resume_crop_timer(pos, state)
 	local timer = core.get_node_timer(pos)
 	if timer:is_started() then return end
 	local elapsed = core.get_meta(pos):get_float(CROP_PROGRESS_META)
-	timer:set(STAGE_SECONDS, elapsed)
+	timer:set(stage_seconds(pos, state.stage), elapsed)
 end
 
 local function start_crop_timer(pos)
@@ -84,7 +105,7 @@ local function start_crop_timer(pos)
 	end
 	local state = growing_crop_at(pos)
 	if soil == SOIL_WET and state and crop_lit(pos, state) then
-		core.get_node_timer(pos):set(STAGE_SECONDS, 0)
+		core.get_node_timer(pos):set(stage_seconds(pos, state.stage), 0)
 	else
 		core.get_node_timer(pos):stop()
 	end
@@ -102,7 +123,7 @@ local function soil_timer(pos)
 	local state = growing_crop_at(above)
 	if state then
 		if wet and crop_lit(above, state) then
-			resume_crop_timer(above)
+			resume_crop_timer(above, state)
 		else
 			pause_crop_timer(above)
 		end
@@ -250,10 +271,24 @@ local function transition_crop(pos, state, next_stage, player_name)
 	return true
 end
 
+-- The stage `elapsed` seconds of growth reach from `stage` at `pos`, each stage
+-- at its own length (offline catch-up may cross several), and the seconds left
+-- over into the stage reached.
+local function grown_stage(pos, stage, elapsed)
+	while stage < STAGES do
+		local seconds = stage_seconds(pos, stage)
+		if elapsed < seconds then break end
+		elapsed = elapsed - seconds
+		stage = stage + 1
+	end
+	return stage, elapsed
+end
+
 local function crop_timer(pos, elapsed)
 	local node = core.get_node(pos)
 	local state = crop_by_node[node.name]
 	if not state or state.stage >= STAGES then return false end
+	local seconds = stage_seconds(pos, state.stage)
 	local below = {x = pos.x, y = pos.y - 1, z = pos.z}
 	-- Expired timers are removed before Luanti invokes any callbacks, so a
 	-- crop that went dry or dark since its last soil check expires here, and
@@ -264,23 +299,20 @@ local function crop_timer(pos, elapsed)
 	if core.get_node(below).name ~= SOIL_WET or not crop_lit(pos, state) then
 		local meta = core.get_meta(pos)
 		meta:set_float(CROP_PROGRESS_META, math.max(meta:get_float(CROP_PROGRESS_META),
-			STAGE_SECONDS - SOIL_INTERVAL))
+			seconds - SOIL_INTERVAL))
 		return false
 	end
-	local advance = math.floor(elapsed / STAGE_SECONDS)
-	local remainder = elapsed % STAGE_SECONDS
-	if advance < 1 then
+	local next_stage, remainder = grown_stage(pos, state.stage, elapsed)
+	-- A timer started at another length (a 0.69.0 crop's 200 s) can end early.
+	if next_stage == state.stage then
 		core.get_meta(pos):set_float(CROP_PROGRESS_META, elapsed)
-		core.get_node_timer(pos):set(STAGE_SECONDS, elapsed)
+		core.get_node_timer(pos):set(seconds, elapsed)
 		return false
 	end
-	local next_stage = math.min(STAGES, state.stage + advance)
 	local player_name = core.get_meta(pos):get_string(CROP_PLANTER_META)
 	if not transition_crop(pos, state, next_stage, player_name) then
-		core.get_meta(pos):set_float(CROP_PROGRESS_META,
-			math.max(0, STAGE_SECONDS - SOIL_INTERVAL))
-		core.get_node_timer(pos):set(STAGE_SECONDS,
-			math.max(0, STAGE_SECONDS - SOIL_INTERVAL))
+		core.get_meta(pos):set_float(CROP_PROGRESS_META, seconds - SOIL_INTERVAL)
+		core.get_node_timer(pos):set(seconds, seconds - SOIL_INTERVAL)
 		return false
 	end
 	if next_stage >= STAGES then
@@ -288,7 +320,7 @@ local function crop_timer(pos, elapsed)
 		return false
 	end
 	core.get_meta(pos):set_float(CROP_PROGRESS_META, remainder)
-	core.get_node_timer(pos):set(STAGE_SECONDS, remainder)
+	core.get_node_timer(pos):set(stage_seconds(pos, next_stage), remainder)
 	return false
 end
 

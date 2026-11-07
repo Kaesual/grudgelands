@@ -8,6 +8,9 @@
 --      timer expires after it went dark (or, in the same step as the soil
 --      check, dry) keeps its stage's progress through the engine's expiry
 --      order (review fix).
+--   V  varied growth (Round 70): every stage 160-240 s, 200 on average, a
+--      field ripens spread out; pause, resume and offline catch-up keep the
+--      crop's own lengths; a stored 0.69.0 crop neither jumps nor loses time.
 --   C  Melon and Mushroom plant, grow, regrow to stage 2 on a right-click
 --      harvest; seeds and spores; 18 crop families; no Salt Crust crop, seed
 --      or seed recipe (held seeds alias to Salt Crust); the Basic
@@ -24,7 +27,8 @@
 --      (default/nodes.lua).
 --   T  saplings (default/trees.lua): natural light only.
 --   W  the wild crop sources' stage-4 look and the art plan's file names
---      (grug_gathering/presentation.lua); the wild Salt Crust source.
+--      (grug_gathering/presentation.lua); the wild Salt Crust source; grown
+--      corn stands on the ground (Round 70, the lowered stacked tiles).
 --   X  tooltips: one added line per item, also after a second pass.
 -- Usage (repo root): luajit tools/r48_farm/portable_test.lua [REPO]
 local repo = arg[1] or "."
@@ -349,7 +353,7 @@ do
 	eq(name_at(crop), "grug_farming:carrot_1", "L a stale timer in the dark advances nothing")
 	check(not C.get_node_timer(crop):is_started(), "L and does not restart")
 	light_at(crop, 8)
-	fire(crop, 200)
+	fire(crop, 240) -- Round 70: the longest stage; 200 is only the average
 	eq(name_at(crop), "grug_farming:carrot_2", "L in light a full stage advances")
 	-- The engine's timer step (nodetimer.cpp): every running timer gains
 	-- the step's time; the expired ones are removed first, then their
@@ -382,13 +386,21 @@ do
 			if events and events[second] then events[second]() end
 		end
 	end
+	-- A column whose carrot root takes exactly 200 s in stage 1 (Round 70:
+	-- stages vary): the review's timing cases below keep their numbers.
+	local function column_of_200(from)
+		local x = from
+		while grug_farming.stage_seconds(P(x, 1, 0), 1) ~= 200 do x = x + 1 end
+		return x
+	end
 	-- The review's case: lit for 196 s, the light goes after the soil check
 	-- at 195 s, the crop's timer expires at 200 s before the next check; lit
 	-- again at 220 s, the check at 225 s resumes it with the stage's kept
 	-- progress (185 s, no dark time), so it reaches stage 2 at 240 s.
 	do
-		local dark_soil = field(60)
-		light_at(P(60, 1, 0), 8)
+		local x = column_of_200(300)
+		local dark_soil = field(x)
+		light_at(P(x, 1, 0), 8)
 		local dark = plant("grug_farming:seed_carrot", dark_soil)
 		run_seconds(15)
 		check(C.get_node_timer(dark):is_started(), "L lit: the carrot grows")
@@ -406,17 +418,18 @@ do
 	-- Its dry twin: the water goes, and the soil check and the crop's timer
 	-- expire in the same step, the soil first; the crop keeps 185 s too.
 	do
-		local dry_soil = field(70)
-		light_at(P(70, 1, 0), 8)
+		local x = column_of_200(1200)
+		local dry_soil = field(x)
+		light_at(P(x, 1, 0), 8)
 		local dry = plant("grug_farming:seed_carrot", dry_soil)
 		C.get_node_timer(dry_soil).elapsed = 10 -- soil checks at 5, 20, ..., 200 s
-		run_seconds(199, {[199] = function() W.nodes["70,0,2"] = nil end})
+		run_seconds(199, {[199] = function() W.nodes[x .. ",0,2"] = nil end})
 		check(C.get_node_timer(dry):is_started(), "L dry twin: growing until the water goes")
 		run_seconds(1)
 		eq(name_at(dry_soil), SOIL, "L dry twin: the soil dried in the same step")
 		eq(name_at(dry), "grug_farming:carrot_1", "L dry twin: no stage advance")
 		eq(C.get_meta(dry):get_float("wet_progress"), 185, "L dry twin: progress kept (185 s)")
-		run_seconds(15, {[1] = function() set(P(70, 0, 2), "default:water_source") end})
+		run_seconds(15, {[1] = function() set(P(x, 0, 2), "default:water_source") end})
 		check(C.get_node_timer(dry):is_started(), "L dry twin: rewetting resumes it")
 		run_seconds(15)
 		eq(name_at(dry), "grug_farming:carrot_2", "L dry twin: stage 2 within 15 s")
@@ -427,7 +440,7 @@ do
 		local spore = "grug_farming:seed_" .. crop_key
 		local exempt = plant(spore, exempt_soil)
 		check(C.get_node_timer(exempt):is_started(), "L " .. crop_key .. " starts at light 0")
-		fire(exempt, 200)
+		fire(exempt, 240) -- Round 70: the longest stage
 		eq(name_at(exempt), "grug_farming:" .. crop_key .. "_2", "L " .. crop_key .. " grows at light 0")
 		fire_soil(exempt_soil)
 		check(C.get_node_timer(exempt):is_started(), "L " .. crop_key .. " is not paused by darkness")
@@ -436,6 +449,135 @@ do
 	W.nodes["30,0,2"] = nil
 	fire_soil(P(30, 0, 0))
 	check(not C.get_node_timer(P(30, 1, 0)):is_started(), "L dryness still pauses an exempt crop")
+
+	-- V: varied growth (Round 70). Lengths are pure: position and stage.
+	local seconds = grug_farming.stage_seconds
+	do
+		local sum, count, low, high = 0, 0, 1000, 0
+		for x = -150, 149 do
+			for z = -150, 149 do
+				for stage = 1, 3 do
+					local length = seconds(P(x, 7, z), stage)
+					sum, count = sum + length, count + 1
+					low, high = math.min(low, length), math.max(high, length)
+				end
+			end
+		end
+		eq(low, 160, "V the shortest stage")
+		eq(high, 240, "V the longest stage")
+		check(math.abs(sum / count - 200) < 0.2, "V the average stage is 200 s (got " ..
+			sum / count .. ")")
+		eq(grug_farming.STAGE_SECONDS, 200, "V the constant stays the average (the salt pan's pace)")
+	end
+	-- A field planted in one go ripens spread out, each crop after exactly its
+	-- own three stages, however the soil's checks fall.
+	do
+		local cells = {}
+		for x = 2000, 2008 do
+			local soil = field(x)
+			light_at(P(x, 1, 0), 8)
+			cells[#cells + 1] = plant("grug_farming:seed_carrot", soil)
+		end
+		for t = 1, 720 do
+			run_seconds(1)
+			for _, cell in ipairs(cells) do
+				if not cell.ripe and name_at(cell) == "grug_farming:carrot_4" then cell.ripe = t end
+			end
+		end
+		local first, last = 10000, 0
+		for _, cell in ipairs(cells) do
+			first, last = math.min(first, cell.ripe or 10000), math.max(last, cell.ripe or 0)
+			eq(cell.ripe, seconds(cell, 1) + seconds(cell, 2) + seconds(cell, 3),
+				"V ripe after exactly its own stages " .. key(cell))
+		end
+		check(last - first >= 60, "V nine plants ripen at least a minute apart (first " .. first ..
+			", last " .. last .. ")")
+		print(("V a row of nine carrots ripens between %d and %d s"):format(first, last))
+	end
+	-- Pause and resume: the running timer's length is the stage's, the kept
+	-- progress is seconds and survives the pause, also across a stage.
+	do
+		local soil = field(2100)
+		local crop = plant("grug_farming:seed_carrot", soil)
+		light_at(crop, 8)
+		fire_soil(soil)
+		eq(C.get_node_timer(crop).timeout, seconds(crop, 1), "V the timer runs the stage's length")
+		C.get_node_timer(crop).elapsed = 100
+		light_at(crop, 0)
+		fire_soil(soil)
+		eq(C.get_meta(crop):get_float("wet_progress"), 100, "V a pause keeps the seconds")
+		light_at(crop, 8)
+		fire_soil(soil)
+		eq(C.get_node_timer(crop).timeout, seconds(crop, 1), "V resume: the same length")
+		eq(C.get_node_timer(crop).elapsed, 100, "V resume: the kept seconds")
+		fire(crop, seconds(crop, 1) + 4)
+		eq(name_at(crop), "grug_farming:carrot_2", "V the stage ends at its length")
+		eq(C.get_meta(crop):get_float("wet_progress"), 4, "V the overrun goes into the next stage")
+		eq(C.get_node_timer(crop).timeout, seconds(crop, 2), "V the next stage's own length")
+		eq(C.get_node_timer(crop).elapsed, 4, "V and its timer starts at the overrun")
+	end
+	-- Offline catch-up: one long elapsed walks the crop's own lengths.
+	do
+		local soil = field(2110)
+		local crop = plant("grug_farming:seed_carrot", soil)
+		light_at(crop, 8)
+		fire_soil(soil)
+		fire(crop, seconds(crop, 1) + seconds(crop, 2) + 7)
+		eq(name_at(crop), "grug_farming:carrot_3", "V catch-up crosses two stages")
+		eq(C.get_meta(crop):get_float("wet_progress"), 7, "V catch-up keeps the rest")
+		eq(C.get_node_timer(crop).timeout, seconds(crop, 3), "V catch-up: stage 3's length")
+		local exact = field(2120)
+		local short = plant("grug_farming:seed_carrot", exact)
+		light_at(short, 8)
+		fire_soil(exact)
+		fire(short, seconds(short, 1) + seconds(short, 2) - 1)
+		eq(name_at(short), "grug_farming:carrot_2", "V one second short of two stages is one")
+		fire(short, 5000)
+		eq(name_at(short), "grug_farming:carrot_4", "V a long absence ends ripe, no further")
+		check(not C.get_node_timer(short):is_started(), "V and a ripe crop keeps no timer")
+		eq(C.get_meta(short):get_float("wet_progress"), 0, "V ripe: progress cleared")
+	end
+	-- The upgrade: a 0.69.0 crop's timer runs at 200 s and its progress is
+	-- seconds. It fires on time; a shorter stage carries the rest over, a
+	-- longer one waits on from 200 s. A paused one resumes at its seconds.
+	do
+		local function column(from, wanted)
+			local x = from
+			while not wanted(seconds(P(x, 1, 0), 1)) do x = x + 1 end
+			return x
+		end
+		local function stored(x, elapsed)
+			local soil = field(x)
+			local crop = plant("grug_farming:seed_carrot", soil)
+			light_at(crop, 8)
+			fire_soil(soil)
+			C.get_node_timer(crop):set(200, elapsed)
+			C.get_meta(crop):set_float("wet_progress", elapsed)
+			return crop, soil
+		end
+		local short = stored(column(2200, function(length) return length < 190 end), 0)
+		local length = seconds(short, 1)
+		fire(short, 200)
+		eq(name_at(short), "grug_farming:carrot_2", "V upgrade: a shorter stage advances once")
+		eq(C.get_meta(short):get_float("wet_progress"), 200 - length, "V upgrade: no second lost")
+		local long = stored(column(2300, function(value) return value > 210 end), 0)
+		fire(long, 200)
+		eq(name_at(long), "grug_farming:carrot_1", "V upgrade: a longer stage does not advance at 200 s")
+		eq(C.get_node_timer(long).timeout, seconds(long, 1), "V upgrade: it waits to its own length")
+		eq(C.get_node_timer(long).elapsed, 200, "V upgrade: from the 200 s it has")
+		eq(C.get_meta(long):get_float("wet_progress"), 200, "V upgrade: the seconds are kept")
+		local paused, paused_soil = stored(column(2400, function(value) return value < 190 end), 195)
+		light_at(paused, 0)
+		fire_soil(paused_soil)
+		eq(C.get_meta(paused):get_float("wet_progress"), 195, "V upgrade: a paused crop keeps 195 s")
+		light_at(paused, 8)
+		fire_soil(paused_soil)
+		eq(C.get_node_timer(paused).elapsed, 195, "V upgrade: resumes at its seconds")
+		fire(paused, 195)
+		eq(name_at(paused), "grug_farming:carrot_2", "V upgrade: past its length, one stage")
+		eq(C.get_meta(paused):get_float("wet_progress"), 195 - seconds(paused, 1),
+			"V upgrade: and the rest carries over")
+	end
 end
 
 -- C: the crop population, Melon and Mushroom, seeds and spores.
@@ -467,7 +609,7 @@ do
 		local crop = plant("grug_farming:seed_" .. crop_key, soil)
 		light_at(crop, 8)
 		fire_soil(soil)
-		for _ = 1, 3 do fire(crop, 200) end
+		for _ = 1, 3 do fire(crop, 240) end -- Round 70: the longest stage
 		eq(name_at(crop), "grug_farming:" .. crop_key .. "_4", "C " .. crop_key .. " grows to stage 4")
 		W.given = {}
 		registered_nodes[name_at(crop)].on_rightclick(crop, C.get_node(crop), player,
@@ -872,6 +1014,28 @@ do
 		"W the wild Salt Crust source still registers (basin look, drops its item)")
 	eq(registered_nodes["grug_mapgen:carrot_source"].drop, "grug_cooking:carrot",
 		"W a wild crop source drops only its item")
+end
+
+-- W: grown corn (Round 70). The stage 3 and 4 tiles' bottom rows are empty, so
+-- every node draws its tile lower and the tile above reaches into it; the
+-- stack's own art is unchanged, and wild corn is one whole tile.
+do
+	local function tile(stage, segment)
+		return grug_nodes.crop_visual("corn", stage, nil,
+			{mode = "cultivated", segment = segment}).tiles[1]
+	end
+	local base = "grug_farming_corn_"
+	eq(tile(3, 0), "[combine:16x16:0,3=" .. base .. "3_segment_0.png:0,-13=" .. base ..
+		"3_segment_1.png", "W corn stage 3 root")
+	eq(tile(3, 1), "[combine:16x16:0,3=" .. base .. "3_segment_1.png", "W corn stage 3 top")
+	eq(tile(4, 0), "[combine:16x16:0,5=" .. base .. "4_segment_0.png:0,-11=" .. base ..
+		"4_segment_1.png", "W corn stage 4 root")
+	eq(tile(4, 1), "[combine:16x16:0,5=" .. base .. "4_segment_1.png:0,-11=" .. base ..
+		"4_segment_2.png", "W corn stage 4 middle")
+	eq(tile(4, 2), "[combine:16x16:0,5=" .. base .. "4_segment_2.png", "W corn stage 4 top")
+	eq(tile(2, 0), base .. "2.png", "W corn stage 2 stays one tile")
+	eq(grug_nodes.crop_visual("corn", 4, nil, "wild").tiles[1], base .. "4.png",
+		"W wild corn stays its whole tile")
 end
 
 -- X: tooltips.
