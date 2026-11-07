@@ -224,7 +224,8 @@ crafting recipe makes them.
 | 8 | Ornamented Abyssal Steel Stone | 8 Cobblestone, 1 Abyssal Steel Bar, 1s 50c | 8 |
 
 Ranks 9 and 10 have no recipes; the cloak at rank 10 is the reward. The
-amounts are a **proposal** (`stonewright.<recipe>.<field>` in the catalogue).
+amounts are the user's accepted ones of 2026-11-07
+(`stonewright.<recipe>.<field>` in the catalogue).
 
 - **Built** (Round 70 lane GUILD, `grug_guild/stonewright.lua`): the Stonewright
   (`grug_traders:stonewright`) takes over the hall's `miners_guild_sorter`
