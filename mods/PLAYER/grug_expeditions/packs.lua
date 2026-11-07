@@ -6,8 +6,8 @@
 -- dawn.lua's mob_bound; every accepted do_attack: init.lua).
 --
 -- THE STATES OF A PACK
---   waiting  nobody on its list; `pulled` holds it not, and it costs nothing
---   pulled   engaged by someone: on `pulled`, visited by the tick once a second
+--   waiting  nobody on its list: it costs nothing, and idle it stays by its markers
+--   pulled   engaged by someone: in `pulled`, visited by the tick once a second
 --   dead     every mob dead; it stays dead
 -- pull: a player's hit, a threat gain, a hit taken or a mob taking them as its target
 -- (engage_mob, do_attack) puts them on the list and sets every member on them.
@@ -45,6 +45,7 @@ local JUMP_RANGE = 32
 local WEDGED_SECONDS = 8
 local CLOSER = 1
 local HOME_REACH = 4
+local AWAY_FROM_HOME = 10
 local SIDES = {{2, 0}, {-2, 0}, {0, 2}, {0, -2}}
 
 local bodies = {}    -- body key -> its member: a copy whose key is gone is stale
@@ -359,7 +360,8 @@ end
 -- On every activation, before anything else of the mob runs (the rule of
 -- liveness.lua, without its storage: a pack lasts a run): the body of its member, or
 -- a stale copy that removes itself. A restart leaves only stale copies. An evade run
--- is lost with its block, so a waiting pack's mob away from home starts it again.
+-- is lost with its block, so a waiting pack's mob found away from its idle reach
+-- starts it again.
 local live_claim = grug_mobs.live_claim
 function grug_mobs.live_claim(self)
 	if self._grug_pack then
@@ -370,7 +372,10 @@ function grug_mobs.live_claim(self)
 			return false
 		end
 		member.object = self.object
-		if not pulled[member.pack] then grug_mobs.evade_home(self) end
+		if not pulled[member.pack] and
+				vector.distance(self.object:get_pos(), self._grug_home) > AWAY_FROM_HOME then
+			grug_mobs.evade_home(self)
+		end
 	end
 	return live_claim(self)
 end

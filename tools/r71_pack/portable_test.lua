@@ -160,7 +160,7 @@ grug_mobs = {
 	end,
 	walk_clear = function() end,
 	walk_fixed = function(self) walks[#walks + 1] = self end,
-	walk_toward = function() end,
+	walk_toward = function(self) self._test_turned = (self._test_turned or 0) + 1 end,
 	roam_avoid_tick = function() end,
 	idle_health_tick = function() end,
 	give_up_stuck = function() error("a pack mob reached the give-up") end,
@@ -297,6 +297,27 @@ do
 	for _, ent in ipairs(bodies) do
 		if ent.name == GOLEM.mob then golem = ent end
 	end
+	-- idle it stays by its marker: 8 nodes, not the 32 of a free roamer (the boss too)
+	local idler = bodies[1]
+	local home = idler._grug_home
+	idler.object:set_pos({x = home.x + 7, y = 5, z = home.z})
+	grug_mobs.leash_tick(idler, 1)
+	check(not idler._test_turned, "A within 8 nodes of its marker it may idle")
+	idler.object:set_pos({x = home.x + 9, y = 5, z = home.z})
+	grug_mobs.leash_tick(idler, 1)
+	check(idler._test_turned == 1, "A beyond them it turns back")
+	idler.object:set_pos({x = home.x, y = 5, z = home.z})
+	local standing = P.new(run, "expedition:x:9")
+	assert(P.add(standing, BOSS, {x = 200, y = 5, z = 0}))
+	local boss
+	for _, ent in ipairs(living()) do
+		if ent._grug_boss_id then boss = ent end
+	end
+	boss.object:set_pos({x = 209, y = 5, z = 0})
+	grug_mobs.leash_tick(boss, 1)
+	check(boss._test_turned == 1, "A a boss waits at its marker too")
+	boss.object:remove()
+
 	-- golem.lua: group_attack = false. The pull is the pack's, whatever the family.
 	hit(golem, ana)
 	for _, ent in ipairs(bodies) do
