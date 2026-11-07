@@ -175,6 +175,7 @@ local function player(name, level, faction)
 		is_player = function() return true end,
 		is_valid = function() return true end,
 		get_player_name = function(self) return self.name end,
+		get_meta = function() return {set_string = function() end} end, -- the saved capital
 		get_hp = function(self) return self.hp end,
 		get_pos = function(self) return self.pos end,
 		hud_add = function(_, def) huds[#huds + 1] = def; return #huds end,
