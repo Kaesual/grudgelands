@@ -361,7 +361,7 @@ run by run where each cell has ground right under it at the foot and none at
 the foot's level, never where the ground falls away or rises. Kapok grows
 from jungle wood; silverwood and gravewood are their own species with their
 own nodes. Leaves decay within radius 3 of wood; the gravewood's grey leaves
-drop nothing. Saplings grow the generator's tree of their species too (§5).
+drop themselves when dug (§1.3, Round 70) and nothing when they decay. Saplings grow the generator's tree of their species too (§5).
 Simple variant ranges above mean one independently settled entry per named
 variant at the displayed fill.
 

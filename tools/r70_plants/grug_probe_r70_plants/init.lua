@@ -104,6 +104,8 @@ local function run(y)
 	-- the rooted plants, the engine holding the height
 	local WEED = "grug_mapgen:freshwater_waterweed"
 	local bed = ground(5)
+	-- sand falls when dug out from a bed with nothing under it
+	core.set_node(vector.offset(bed, 0, -1, 0), stone)
 	core.set_node(bed, {name = "default:sand"})
 	for dy = 1, 4 do core.set_node(vector.offset(bed, 0, dy, 0), {name = "default:water_source"}) end
 	left = on_place(WEED, bed)
