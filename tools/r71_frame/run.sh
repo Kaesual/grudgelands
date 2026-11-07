@@ -9,7 +9,8 @@
 #   TIMEOUT=<server seconds, default 290>, SEED (default 42), WORLD=<a kept run
 #   root> re-uses its world, KEEP_WORLD=1 keeps the run root (its path goes to
 #   OUT_DIR/root.txt), CONF=<file> extra lines for the staged minetest.conf,
-#   CLIENT=0 runs without a client, XVFB_DRIVERS (default /usr/lib64/dri).
+#   CLIENT=0 runs without a client, XVFB_DRIVERS (default /usr/lib64/dri),
+#   VIEWING_RANGE (default 190, the client default; lane SPIKE ran 60).
 # The probe logs "[r71frame] BURST <name> <seconds>": this script then takes
 # screenshots for that long, named <name>_<ms after the burst began>.png.
 # Writes probe.txt (the probe's and [GRUG-PERF] lines), load.txt (epoch and
@@ -104,7 +105,7 @@ screen_w = 960
 screen_h = 540
 fullscreen = false
 enable_sound = false
-viewing_range = 60
+viewing_range = ${VIEWING_RANGE:-190}
 fps_max = 15
 hud_scaling = 1
 gui_scaling = 1

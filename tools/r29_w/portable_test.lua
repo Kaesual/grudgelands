@@ -305,6 +305,33 @@ for _, t in ipairs(after) do if t.delay == 30 then t.fn() end end
 check(not home.is_pending(player) and last_chat():find("cannot be reached", 1, true),
  "B stalled emerge releases")
 table.remove(emerge, 1)
+-- Round 71: a trip with a fallback decides itself; a stone by id; the teleport
+-- report.
+local fell, reported = 0, 0
+home.register_on_teleport(function(p) if p == player then reported = reported + 1 end end)
+local function fallback_trip(arrival)
+ return {pos=STONE.highcourt, unavailable="never shown", check=function() return true end,
+  arrival=arrival, fallback=function() fell = fell + 1 end}
+end
+check(home.travel(player, fallback_trip(function() return nil end)), "B fallback trip starts")
+finish(0)
+check(fell == 1 and last_chat() ~= "never shown", "B no arrival falls back")
+check(home.travel(player, fallback_trip(function() return nil end)), "B fallback trip again")
+finish(core.EMERGE_ERRORED)
+check(fell == 2 and last_chat() ~= "never shown", "B a failed emerge falls back")
+check(home.travel(player, fallback_trip(function() return nil end)), "B fallback trip a third time")
+for _, t in ipairs(after) do if t.delay == 30 then t.fn() end end
+check(fell == 3 and not home.is_pending(player), "B a stalled emerge falls back")
+table.remove(emerge, 1)
+check(reported == 0, "B nothing moved, nothing reported")
+check(home.waystone_pos("dawnmere").x == STONE.dawnmere.x and home.waystone_pos("nowhere") == nil,
+ "B a stone by id")
+check(home.travel(player, fallback_trip(function() return home.waystone_arrival("dawnmere") end)),
+ "B a trip to a stone by id")
+finish(0)
+check(reported == 1 and fell == 3 and math.abs(player.pos.x - STONE.dawnmere.x) <= 1 and
+ math.abs(player.pos.z - STONE.dawnmere.z) <= 1, "B the teleport reports")
+
 -- The map seam: known stones only, own network.
 local marks = home.known_waypoints(player)
 check(#marks == 4, "B known_waypoints: own start plus three discovered")
