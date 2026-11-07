@@ -274,9 +274,8 @@ local function loader(directory)
 		-- A RAIL BELONGS ON A FLANK AND NEVER ON AN END.
 		--
 		-- The first version of this routine railed every column of the run's
-		-- whole bounding box, and the east and north avenues END over open
-		-- water -- so the rail was laid straight ACROSS the carriageway at
-		-- x = 47 and z = 47. `default:fence_*` is walkable with a raised
+		-- whole bounding box, and a deck that ENDS over open water had its rail
+		-- laid straight ACROSS the carriageway at the pad's edge. `default:fence_*` is walkable with a raised
 		-- collision box precisely so it cannot be jumped, and either side of
 		-- the deck is cenote, so the road was closed at exactly the point the
 		-- research note sends the player. The KAT checked the deck and not the
@@ -630,8 +629,8 @@ local function loader(directory)
 		-- than stamped as a part.
 		--
 		-- There is no troll landing template, and the reason is geometry:
-		-- Kezamba's shoreline runs DIAGONALLY across the pad -- from (39, -7) to
-		-- (-16, 47) -- so a rectangular apron with a jetty off one face either
+		-- Kezamba's shoreline runs DIAGONALLY across the pad -- from (39, 11) to
+		-- (-14, 57) -- so a rectangular apron with a jetty off one face either
 		-- has its apron in the water or its jetty on the land, at every position
 		-- and every rotation. Four were tried against the committed mask before
 		-- this was written down.
@@ -772,10 +771,9 @@ local function loader(directory)
 		-- THE THREE ANGLERS, on shore columns of the committed mask, each
 		-- looking east into the cenote. Every one of them has open water within
 		-- three nodes of where it looks, which the KAT re-measures.
-		-- The third angler stood at (-13, 32) and looked straight into one of
-		-- the moot house's own legs -- open water at reach two, a jungletree at
-		-- reach one. (-11, 28) is the last pad column of its own row, so the
-		-- cenote is at reach one and nothing stands between.
+		-- No angler may look through another or through a leg of the moot house
+		-- at reach one: each stands on the last pad column of its own row, so
+		-- the cenote is at reach one and nothing stands between.
 		for index, spot in ipairs({{-5, 38}, {-9, 44}, {-8, 41}}) do
 			socket("cenote_fish_" .. index, "work", spot[1], 1, spot[2], 1,
 				{activity = "fish"})
