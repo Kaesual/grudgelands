@@ -1,0 +1,93 @@
+{
+  "provenance": "Pass 5 local LuaJIT spot probe, reusing exported lake0/lake_shift plot centres. Measured once per variant; no planner or voxel run.",
+  "method": "For each of the three lethariel_mere plot centres (not its two dressings), sample integer offsets ox,oz from -65 through 65 using lake_variant.factory(water_authored.lua, shifted)({LAKE_PROXY=40}). Measure min sqrt(ox*ox+oz*oz) where the lethariel_crown_lake indicator at (1800+x+ox,-1500+z+oz) >= 0.5. All minima are <65, so all potentially closer columns lie inside the searched square. This includes the existing outer shore warp.",
+  "checker_reported_range": "19\u201332 to 32\u201344 nodes on two seeds; the checker report does not specify its distance estimator or seed pair.",
+  "rows": [
+    {
+      "seed": "12345",
+      "lake0": [
+        {
+          "id": "mere_lore_hall",
+          "x": 72,
+          "z": 16,
+          "distance": 31
+        },
+        {
+          "id": "mere_shrine",
+          "x": 102,
+          "z": 2,
+          "distance": 31.240998703627
+        },
+        {
+          "id": "mere_mourning",
+          "x": 121,
+          "z": -7,
+          "distance": 25.495097567964
+        }
+      ],
+      "lake_shift": [
+        {
+          "id": "mere_lore_hall",
+          "x": 72,
+          "z": 16,
+          "distance": 44.283179650969
+        },
+        {
+          "id": "mere_shrine",
+          "x": 104,
+          "z": -3,
+          "distance": 46.400431032481
+        },
+        {
+          "id": "mere_mourning",
+          "x": 123,
+          "z": -12,
+          "distance": 38.013155617496
+        }
+      ]
+    },
+    {
+      "seed": "3684797457838814663",
+      "lake0": [
+        {
+          "id": "mere_lore_hall",
+          "x": 70,
+          "z": 16,
+          "distance": 31
+        },
+        {
+          "id": "mere_shrine",
+          "x": 89,
+          "z": 9,
+          "distance": 34.655446902327
+        },
+        {
+          "id": "mere_mourning",
+          "x": 137,
+          "z": -9,
+          "distance": 17.691806012954
+        }
+      ],
+      "lake_shift": [
+        {
+          "id": "mere_lore_hall",
+          "x": 70,
+          "z": 16,
+          "distance": 44.553338819891
+        },
+        {
+          "id": "mere_shrine",
+          "x": 89,
+          "z": 9,
+          "distance": 43.416586692185
+        },
+        {
+          "id": "mere_mourning",
+          "x": 114,
+          "z": 1,
+          "distance": 37.589892258425
+        }
+      ]
+    }
+  ]
+}

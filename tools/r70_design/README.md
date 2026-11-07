@@ -1,119 +1,115 @@
 # Round 70 DESIGN — capital cores and start towns
 
-Open **[page.html](page.html)** directly in a browser. It is one standalone file:
-CSS, JavaScript, SVG and all selectable planner data are inline. It makes no
-external requests. Nothing is published by this lane.
+Open **[page.html](page.html)** directly in a browser. It is self-contained:
+CSS, JavaScript, SVG and selectable planner data are inline; no network requests.
 
-This is a **2D land reservation proposal**. The pass-2 re-check confirmed the
-layouts and prior fixes; pass 3 addresses its remaining text-only findings, for
-the coordinator's delta review and the user's decision. It is not a castle model, a voxel blueprint,
-a game change or runtime acceptance. See [REPORT.md](REPORT.md) for recommendations,
-measurements and limitations, and [claims.md](claims.md) for the numbered source ledger.
+**Accepted by the user, 2026-11-07:** radius 56 for all six capitals and every
+pass-3 per-place recommendation. Pass 5 corrects two amendments after the
+independent check: move
+Lethariel’s lake 14 north and Kezamba’s 18 north relative to unchanged city
+anchors. The other ten layouts stay. Historical note: radius 48 was considered
+and not selected; its compact alternatives are retired.
 
-## What the page contains
+This is 2D land use, not a built castle or runtime acceptance. The two lake
+amendments still need the user’s decision and the coordinator’s independent
+re-check. [REPORT.md](REPORT.md) owns this delivery’s recommendation, measurements,
+costs and limits; [claims.md](claims.md) repeats all 93 cited page claims.
 
-- Twelve sections: six capitals and six start towns. Each has exported **today**
-  and **proposed** plans at the same scale, a 20-node scale bar, building key,
-  exact movement schedules and all **659** socket rows, implementation costs and a decision question.
-- One 45 × 35 castle reservation in six placements; a 35 × 23 = **805 nodes² hall-floor reservation**
-  inside each. Today's gross hall in five capitals is **29 × 25 = 725**:
-  about **11%** more reserved area, with depth **25 → 23**. The checker's
-  684 / 402 reachable floor is a separate net measurement. Wall and
-  supporting-space budgets are shown separately. Lethariel faces east on its dry western shoulder;
-  Kezamba faces north on the dry southern terrace. The other four face south.
-- Nominal civic radius 48 → 56 (96 → 112 nominal width), with gates/keep-out
-  parameter sensitivity. Each start gets a 13 × 13 clear waystone pocket around
-  its existing reach-3 pad, without increasing the town envelope.
-- Four drawn radius-48 land alternatives save most of the coordinated core-growth
-  work. They retain the same castle with narrower approaches, stairs entering
-  the foyer, north-watch conflicts to resolve and (Highcourt) two fewer houses.
-  Lethariel and Kezamba need growth as placed. Keeping 48 departs from §2.7's
-  growth ruling; the user may still choose it. Recommendation: **56 for civic space**.
-- The checker’s **40-seed civic_width=112** evidence measures **all six at 56**
-  with today’s cores; a mixed 48/56 choice is unmeasured. It sits alongside the
-  original **mask-only** comparison below. All 40
-  exact seeds, per-seed counts/failures and input hashes are retained.
-- Whole-capital comparisons for exact seed strings `12345`,
-  `3684797457838814663` and `17713522922938657774`, all from
-  `tools/seed_fleet/seeds.txt`. Each capital has its own seed selector; a dashed
-  outline in the proposed city view shows the baseline outline.
-- Theme selector (system/light/dark), optional socket dots, optional horizontal
-  60-node reward-distance slice, and keyboard/click building highlights.
-  At phone widths the equal-scale plan pair stacks vertically. The coordinate
-  and service tables scroll horizontally within their container.
+## Reading the page
 
-Coordinates are anchor-relative **x/z, +z north**, in nodes. Building rectangles
-are the actual rotated template pivots; faint outlines include every non-air
-written column, including overhangs. Landmark boxes are not mislabelled as building
-footprints. Box endpoints are inclusive. Nominal terrain-profile widths (96/112,
-128) are distinct from the authored cell limits (core ±49 today, proposed ±57;
-starts ±63). Background colours are schematic classifications of exported cells,
-not textures or a promise of exact future planting.
+Twelve sections show **today beside the proposal**, with equal-scale plans,
+exact building schedules, all **659** exported sockets, costs and district
+service bindings. Only Kezamba and Lethariel have new decision questions. Their
+sections add the smaller-shift tradeoffs, exact lake-chain coordinates, castle-site
+checks, three-seed results and the better 40-seed lake comparison.
 
-## Rebuild and inspect
+- The 45×35 castle and 35×23 hall reservations stay in all six cities. No castle
+  architecture is designed. Two royal guards and two ordinary door guards stay.
+- Lethariel gains 1,259 dry columns at radius 56. Both colonnades move north
+  instead of being retired, and the shrine follows the marble quay. No north crossing
+  is promised; a new
+  crossing is a separate open option. The mere precinct drifts inland. Its western
+  castle stays; a central northern castle would need a larger lake shift.
+- Kezamba gains 1,336 dry columns. Five rather than six templates move; the two
+  western houses and original waystone plaza stay. The moot house still
+  straddles water; the northern boardwalk remains and the east avenue becomes
+  dry inside the core, losing one of the two boardwalks. Its southern castle stays.
+  The question offers a smaller four-node shift with less land and a revised layout.
+- These gains are measured against the same expanded ±57 cell boundary. They
+  require the lake change, which is not built. The two comparisons use the real
+  shifted-water planner, today’s core cells and the old landing detector.
+- The lake shifts are 12.5% / 16.1% of core width, but reduce wet core columns
+  by 54.0% / 33.9%. The POI exclusion boxes move, and Kezamba needs a new mask
+  generator. These costs are named on the page.
+- The separate 40-seed lake comparison is the better planner figure; the older
+  civic-width evidence remains historical and uses unshifted lakes.
 
-Run from the repository root. LuaJIT is used for execution; the repository's
-plain Lua 5.1 parser is used for syntax verification.
+Coordinates are anchor-relative x/z, **+z north**. Inclusive building pivots are
+solid; faint outlines include every non-air written column and overhang.
+Nominal profile width 112 is distinct from the authored ±57 cell limits. Quays,
+streets and gold shapes in the proposed views are land reservations. They do not
+certify future voxels, furnishings, terrain seams or routes.
+
+Theme, sockets, reward-distance slice and building highlights remain available.
+The whole-city selectors use exact seed strings `12345`,
+`3684797457838814663`, `17713522922938657774`. The two changed city views show
+shifted-water results; the other four retain their earlier mask-only studies.
+
+## Rebuild
+
+From the repository root:
 
 ```sh
 python3 tools/r70_design/run.py
+python3 tools/r70_design/run.py --lakes
 python3 tools/r70_design/build.py
 python3 tools/r70_design/verify.py
-bash tools/check_lua.sh tools/r70_design/export.lua
+bash tools/check_lua.sh tools/r70_design/export.lua tools/r70_design/lake_variant.lua
 ```
 
-`run.py` reuses committed data. If a deliberate source revision requires a new
-measurement, remove only the affected data file(s) first. It exports blueprints, compact template/composition geometry
-and service bindings, then queues the six planner runs with **at most two LuaJIT
-processes**, under `chrt --idle 0` and `ionice -c3`. Each worker has its own output
-and log. Seeds remain strings; no conversion through floating-point integers.
-It never starts Luanti, writes a world, generates mapchunks or emits node content.
-The real shared world assembly necessarily plans terrain/water/roads/POI placement
-as inputs to the capital planner; this is not whole-world voxel generation.
+The queue reuses committed outputs. Remove only an affected output deliberately
+when its input changes. It runs at most two LuaJIT processes under `chrt --idle 0`
+and `ionice -c3`, with separate logs and outputs. The real world assembly plans
+terrain, water, roads and placement; it never boots Luanti or generates voxels.
 
-The proposed planner runs change **only** `CORE=56`, `CORE_GATE=57`,
-`CORE_KEEP=60` in memory. Terrain, `civic_width`, authored buildings and the
-46…49 landing detector are deliberately still the current game. Therefore this
-experiment measures sensitivity, not the final implementation or its feasibility.
-The exporter does not hide missing required plots with stand-ins. The 40-seed
-checker study additionally changed civic_width to 112; it still used the old
-cores and landing detector. Neither study substitutes for the **full seed fleet**
-required after implementation. No planner jobs were rerun in passes 2 or 3.
+`--lakes` exports the real authored-water masks and paired planner runs. The
+`lake0` control and `lake_shift` proposal both enlarge all six civic profiles to
+112, CORE/GATE/KEEP to 56/57/60, and the two calm squares to half=57. Only the
+latter translates the lake capsule points. `lake_variant.lua` does this in memory;
+no game file changes. Existing game `MERE`/lagoon masks are checked against the
+unshifted water at ±47, and the new masks against actual fitted wet-column counts.
+Final core geometry and the landing scan are intentionally not substituted.
 
-Optional SVG visual inspection (system PyGObject, librsvg and cairo):
+For optional SVG inspection:
 
 ```sh
 python3 tools/r70_design/inspect_svg.py /tmp/r70-design-plans
 python3 tools/r70_design/inspect_svg.py /tmp/r70-design-plans-dark --dark
 ```
 
-These render the **actual SVGs embedded in the page**. They include all twelve main pairs and the four compact alternatives. They do not run a browser,
-exercise JavaScript or certify responsive layout. Chromium and Firefox could not
-start in this session's sandbox; browser checks remain open.
+This uses librsvg, not a browser. It does not test events, phone layout, the
+engine or walking. Future implementation needs the full template gate, full
+seed fleet, and desktop/web checks listed in the report.
 
-## Files and provenance
-
-Base game code: **`55aa7708a2d6b28fbd3c87ad3e47b72cfea24a0d`**, branch `r70-design`.
+## Evidence files
 
 | File | Purpose |
 |---|---|
-| `export.lua` | Executes the real WP13 compositions/template loader and real capital planner; observes template stamping for exact dimensions and sockets. |
-| `run.py` | Bounded export queue and cache reuse; no server calls. |
-| `data/blueprints.json` | Twelve real compositions: template pivots, written-column extents, doors, sockets, landmarks and schematic top-column classifications. |
-| `data/geometry.json` | Actual stamped template and whole-composition non-air cell runs; palette of node names and current top heights. |
-| `data/socket-schedules.json` | Every exported socket’s proposed x/z, origin, design attachment and nearby affected footprints. |
-| `data/checker-fleet.json` | Compact preservation of the checker’s 40 paired seed exports, input hashes and recomputed aggregate evidence. |
-| `data/design-check.md`, `data/royal-binding.txt` | Full pass-1 report and historical proof that two royal guards is deliberate. |
-| `data/bindings.json` | Real district service/inn/guild tables and actual generated plot socket ids. |
-| `data/<seed>-<variant>.json` | Six capitals per run, with outlines, streets, plots, gates, mask counts and local fitted-terrain samples. |
-| `data/metrics.json` | Derived per-seed movement/loss counts. |
-| `proposals.py` | Design-only reservations, translations, principal connections and furniture intentions. |
-| `build.py`, `geometry.py`, `claims.py` | Page/ledger construction, source-line lookup and bounded geometric checks of buildings, streets, door exits, sockets, fences and walls. |
-| `shell.html`, `style.css`, `page.js` | Inputs inlined into `page.html`; never fetched by that page. |
-| `verify.py` | Artifact consistency, geometry, source-backed data, internal links and offline-resource checks; eight collision rejection regressions; no game fixture. |
-| `inspect_svg.py` | Optional direct SVG rendering for visual inspection. |
+| `export.lua`, `run.py` | Real composition/template, socket and planner exports; bounded queue and reuse. |
+| `lake_variant.lua` | Design-only displacement of the two lake chains and expanded calm square. |
+| `data/blueprints.json`, `data/geometry.json` | Unchanged actual twelve compositions, template pivots, doors, sockets and compact written-cell runs. |
+| `data/bindings.json` | Actual district service, inn and guild bindings. |
+| `data/lakes.json` | Exact old/new water-indicator masks; old composition-mask agreement at ±47. |
+| `data/<seed>-lake0.json`, `data/<seed>-lake_shift.json` | Six paired real-planner exports; new core wet-column and castle checks for the two cities. |
+| `data/shore-check.json` | Two-seed mere precinct distance probe, per-plot results and exact method. |
+| `data/lake-metrics.json` | Dry land, smaller-shift buffer checks and northern castle-site probes. |
+| `data/socket-schedules.json`, `data/metrics.json` | All proposed sockets and current page’s per-seed plot movement/loss counts. |
+| `data/<seed>-today.json`, `data/<seed>-proposed.json` | Original current-game / mask-only planner evidence, unchanged. |
+| `data/checker-lake-fleet.json`, `data/design-check-pass4.md` | Pass-4 independent lake review; 40-seed aggregates rechecked from existing outputs. |
+| `data/checker-fleet.json`, `data/design-check.md`, `data/royal-binding.txt` | Prior independent review, 40-seed receipt and guard-binding history. |
+| `proposals.py`, `build.py`, `geometry.py`, `claims.py` | Land reservations, page/ledger construction and bounded geometry checks. |
+| `shell.html`, `style.css`, `page.js`, `verify.py`, `inspect_svg.py` | Presentation inputs, artifact checks and SVG inspection. |
 
-No assets are generated by an image model. All geometry is exported data or explicit
-2D design reservations. No files under `mods/`, another worktree or the main checkout
-are changed. This package is compatible/tools-only; implementing the proposals
-belongs to Round 70's declared **map reset**. Agents do not push or merge this lane.
+Game-code base: `55aa7708a2d6b28fbd3c87ad3e47b72cfea24a0d`. Pass 4 starts at
+`c3612f30`. No image-model assets are used. This package is **compatible, tools
+only**; implementation belongs to Round 70’s **map reset**. Agents do not push.

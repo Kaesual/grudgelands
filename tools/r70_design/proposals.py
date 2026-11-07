@@ -183,22 +183,41 @@ P['hearthpine']['roads'][1]=([-17,0,19,0],3)
 P['hearthpine']['roads'][3]=([-29,26,0,26],3)
 
 
-# The radius-48 alternative keeps the same castle but brings it six nodes
-# toward the crossing; the three-node bypass then fits before the old north gate.
-COMPACT={}
-import copy
-for key in ['dur_brannoc','highcourt','gor_drazhak','nhal_veyr']:
-    q=copy.deepcopy(P[key]);COMPACT[key]=q
-    q['castle']=[-22,4,22,38]
-    q['room']=[-17,12,17,34]
-    q['shifts']={ident:[6,0] for ident in P[key]['shifts']
-                 if ident in ['great_forge','smelting_yard','service_yard','service_store',
-                              'host_store','beast_shed','bone_works','charnel_yard']}
-    q['roads']=[([0,-49,0,3],5),([-49,0,49,0],5),
-                ([-27,0,-27,40,27,40,27,0],3),([0,40,0,49],5)]
-    q['court']=[-18,3,18,3]
-    if key=='highcourt':
-        q['shifts']['chapel']=[-8,0]
-        q['remove']=['north_house','chapel_house']
-COMPACT['highcourt']['shifts']['service_yard']=[6,1]
 P['gor_drazhak']['socket_positions'].update(court_work_spar_a=[38,25],court_work_spar_b=[39,25])
+
+# Pass 4: retain the accepted radius and castle boxes; release civic land by
+# translating the two lake chains north relative to their unchanged anchors.
+P['lethariel'].update(remove=[], lake_shift=[0,14],
+    title='A wider quay quarter, with both colonnades retained',
+    lead='Move the crown lake fourteen nodes north relative to the core. Keep the accepted western castle and bring both colonnades to the dry northern approach.',
+    intent='The marble quay and mere shrine follow the new shore. The north avenue starts on the shore; there is no lake crossing today or in this proposal. The star hall and sacred grove stay. The former southern strips become the castle court, while their colonnades frame a new northern promenade.',
+    question='Accept the fourteen-node lake shift, two retained colonnades and the mere precinct farther inland (checker: 19–32 → 32–44 nodes off shore; exact-column spot check reaches 46), keeping the western castle? The shift returns 1,259 dry columns but removes 54% of the water inside the expanded core. Keep the shore-starting north avenue, or commission a new crossing separately? That would need a deck and a new landing scan: at least 34 nodes west to the shore on z=57, or 131 along the north axis. Those are geometric lower bounds, not a measured build or a promised connection.')
+P['lethariel']['shifts'].update(colonnade_west=[0,51],colonnade_east=[0,51],mere_shrine=[0,14])
+P['lethariel']['sockets']={'colonnade_west_walk':[0,51],'colonnade_east_walk':[0,51]}
+P['lethariel']['socket_positions']={}
+P['lethariel']['roads'][0]=([0,-57,0,33],5)
+P['lethariel']['watch'][2]=[2,30]
+for sid in ['quay_idle_west','quay_idle_east','quay_idle_head','shore_work_sweep',
+            'core_spare_quay_west','core_spare_quay_east']:
+    P['lethariel']['sockets'][sid]=[0,14]
+
+P['kezamba'].update(lake_shift=[0,18],
+    shifts={'stable':[-32,48], 'lane_house':[0,10], 'granary':[-35,20],
+            'gate_house_south':[-36,-13], 'moot_house':[0,15]},
+    waypoint=None,
+    title='A southern castle and more room beside the cenote',
+    lead='Move the cenote eighteen nodes north relative to the core. The castle stays on the accepted southern terrace; five buildings move, instead of six.',
+    intent='The stable uses newly dry land north of the crossing. The granary takes the western clearing; the lane house moves ten nodes north. Both western houses and the original waystone plaza stay. The moot house moves fifteen nodes north and still straddles the shore. The north boardwalk remains; the east boardwalk is lost, leaving one avenue over water instead of two.',
+    question='Accept the eighteen-node lake shift and five building moves, retaining the southern castle and original waystone plaza, at the cost of losing the east boardwalk (two avenues over water → one)? Today 627 deck, rail and pier cells stand over water outside templates, including 263 on the east avenue; that avenue becomes ground paving. The shift returns 1,336 dry columns but removes 34% of the water inside the expanded core. A four-node shift keeps water under both avenues, with only 300 dry columns returned (1,036 fewer); 101 columns of the proposed stable remain wet, so the stable needs another site and the five-move layout is not preserved. Keep the larger land gain or redesign around the smaller shift?')
+P['kezamba']['roads']=[([0,-57,0,57],5),([-57,0,57,0],5),
+    ([0,-12,27,-12,27,-17],5),([-18,17,-18,42,-26,42,-26,50,-25,50],3),
+    ([-18,17,0,17],3)]
+P['kezamba']['watch']=[[-30,-44],[0,-44],[-4,-8],[-24,38]]
+P['kezamba']['sockets']={'gate_post_south':[0,-8],'gate_post_west':[-8,0],
+    'crossing_idle_west':[0,-8]}
+for sid in ['vendor_fishmonger','quay_stall','cenote_fish_1','cenote_fish_2',
+            'cenote_fish_3','quay_idle_south','shore_walk_south']:
+    P['kezamba']['sockets'][sid]=[0,18]
+P['kezamba']['socket_positions']={'forecourt_idle':[7,-16],
+    'quay_idle_north':[-18,45], 'shore_walk_north':[-18,56],
+    'crossing_idle_east':[7,-4], 'cenote_fish_3':[-8,41]}
