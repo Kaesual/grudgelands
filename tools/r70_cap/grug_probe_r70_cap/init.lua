@@ -75,11 +75,13 @@ local function castle_shots(by_id)
 	return list
 end
 
--- Every leg of every patrol group, in order.
+-- Every leg of every patrol group of the core, in order. The district plots'
+-- watch stays out: its legs lie beyond the emerged area.
 local function patrol_legs(by_id)
 	local groups, names = {}, {}
-	for id, socket in pairs(by_id) do
-		if socket.role == "guard_patrol" and socket.group then
+	for _, socket in pairs(by_id) do
+		if socket.role == "guard_patrol" and socket.group and
+				math.max(math.abs(socket.x), math.abs(socket.z)) <= 57 then
 			if not groups[socket.group] then
 				groups[socket.group] = {}
 				names[#names + 1] = socket.group
