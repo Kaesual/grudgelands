@@ -267,9 +267,12 @@ What this copy adds to or changes in the platform's first version:
 - **The bridge's part:** it answers every new `boot` and a rising `dropped_events`
   with a `resync`.
 - **`online`:** "every change" is a join, a leave, a level change or an arrival.
+- **Chat:** the event's text arrives without colour escapes, and `/me` counts as a
+  command.
 - **Commands:** `admin` at most 64 characters, `to` at most 40; website text is
   cleaned of escapes and control characters; the refusals of a character in
-  creation, of the items no grant hands out, of an empty subject or body and of a
-  privilege the server's admin keeps; money and item grants show in the feed; a
-  privilege's callbacks run; `kick` reads `Kicked: `.
+  creation, of an alias, an item string and the items no grant hands out, of an
+  empty text, subject or body, of a closed ticket and of a privilege the server's
+  admin keeps; a held or absent privilege is `ok`; money and item grants show in the
+  feed; a privilege's callbacks run; `kick` reads `Kicked: `.
 - **Bans:** a ban disconnects through `core.disconnect_player`; the date's format.
