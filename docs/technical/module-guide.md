@@ -2374,8 +2374,10 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   the downward pushes of one step add up to a fall. Jumps stand on the feet's cell,
   `floor(y + 0.5)`: `math.round` takes a floor below y 0 into the floor's own cell.
 - **Adding an Expedition:** a source in `tools/expedition_templates/sources/` and
-  `build.py` ([format](expedition-template-format.md); `t.dig` for ore); a catalogue row; a
-  `loot.TABLES` row (the load stops without one, and refuses a table naming an ore or
+  `build.py` ([format](expedition-template-format.md); `t.dig` for ore, written with the
+  T2 ore and gem: a run's tier swaps them, `catalogue.TIERS`); a catalogue row with its
+  level range (`level`, `max_level`); a `loot.TABLES` row with material rows by mob band
+  (`level = {lo, hi}`; the load stops without a table, and refuses one naming an ore or
   gem); the boss's definition with `_grug_hp_scale` and a fixed name in a world slot of
   `data/names.json` (`world/<boss>/L<lo>-<hi>`, plus `tools/r38_names`, `disposition.lua`
   and `grug_achievements/creatures.lua`); its quest with a row in `EXPEDITION_TARGETS` in
