@@ -21,6 +21,8 @@ changed. No other agent was used in this pass. The
 [pass-4 checker findings](data/design-check-pass4.md) were checked at their
 source; its planner measurements were reused, not rerun.
 
+**The user's answers on the lake shift (2026-11-07):** Lethariel as proposed, 14 nodes north, no new crossing; Kezamba 18 nodes north without the east boardwalk.
+
 ## Recommendation and return
 
 Move the **lake chains north**, keeping both city anchors fixed. This is
