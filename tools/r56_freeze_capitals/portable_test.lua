@@ -113,9 +113,9 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- declared map reset: the core's radius 56, Dur Brannoc's castle) every
 -- capital's new digests again; each capital lane pins its own.
 local FROZEN = {
-	highcourt = {"abc75504ededff37c18f83c9f09e195e1d4b3e42164d315ebc22d1149f2c5c1b",
-		"61eddb6f823916828b970d9b4dd740fdf7409e499881d4be560847c5cfe93ede",
-		"92b576f2f09cc0252a3ae862784c163741b6305ac6421705ccf44d8cb43eb8f7"},
+	highcourt = {"ab0b1a96003e402be14d89c8107fe7bc2873f958106eb6bc556d24856a126f3d",
+		"e10c6224c76fe12becc6eb21ab2efd06d322b5adb4ab0bfb0e67c0edbe23b0a1",
+		"f3ad29121aff15aadf07c617b78f83acdffdc55945555c50203c3beb10465694"},
 	-- the next capital
 	dur_brannoc = {"846961cd7a6edc906185fb59f4d42da986abd75fe4c3e4a650299a2f8c48ba9f",
 		"8d7ea2686c9ffac290086a5cc2b844ff108960af9f45b7012c809963f5baed6d",

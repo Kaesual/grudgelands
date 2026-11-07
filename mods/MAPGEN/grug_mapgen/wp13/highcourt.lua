@@ -129,6 +129,10 @@ local function loader(directory)
 		-- The orchard streets' links up to the market and the plaza.
 		{-22, -38, -20, -32, "lane"},
 		{20, -38, 22, -33, "lane"},
+		-- The two loop corners on open ground, paved so the turf's cover keeps
+		-- off them.
+		{-28, -34, -26, -32, "lane"},
+		{49, 38, 51, 40, "lane"},
 		-- The market's north walk, from the great avenue along the square to
 		-- the west gate's forecourt.
 		{-45, -6, -5, -4, "lane"},
