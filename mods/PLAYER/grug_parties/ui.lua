@@ -312,8 +312,8 @@ local function party_invitations(fs, name, context, pending, scale)
 	fs[#fs + 1] = ("button[2.50,%.2f;1.8,0.58;grug_party_decline;Decline]"):format(BOX_Y + 4.25)
 	local warning = grug_parties.invitation_warning(name)
 	if warning then
-		fs[#fs + 1] = grug_core.ui.prose(4.45, BOX_Y + 4.3, 5.15, 0.6,
-			core.colorize(grug_core.ui.colors.accent, warning), false, scale)
+		fs[#fs + 1] = ("label[4.45,%.2f;%s]"):format(BOX_Y + 4.54,
+			esc(core.colorize(grug_core.ui.colors.accent, warning)))
 	end
 end
 

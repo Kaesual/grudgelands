@@ -66,10 +66,10 @@ end
 local bodies = {}
 local real_get = core.get_player_by_name
 core.get_player_by_name = function(name) return bodies[name] or real_get(name) end
-local function body(pos)
+local function body(name, pos)
 	return {get_pos = function() return vector.new(pos) end,
 		get_look_horizontal = function() return 1 end, is_player = function() return true end,
-		get_player_name = function() return "stand-in" end}
+		get_player_name = function() return name end}
 end
 
 grug_expeditions.list = function() return {grug_expeditions.definition("test_vault")} end
@@ -118,6 +118,7 @@ local SHOTS = {
 		fake_party = {id = 7001, leader = NAME, members = {member(NAME, 20, true),
 			member("Bram", 19, true), member("Ilse", 24, true)}}
 		open(player)
+		press(player, {level = "3"})
 		press(player, {open = "x"})
 		run = grug_expeditions.run_of(player)
 		log("CHECK run " .. tostring(run and run.state) .. " level " .. tostring(run and run.level))
@@ -152,8 +153,8 @@ local SHOTS = {
 	end},
 	{name = "U10_minimap_in_box", setup = function(player)
 		local at = player:get_pos()
-		bodies.Near = body({x = at.x + 14, y = at.y, z = at.z + 6})
-		bodies.Home = body(registrar_pos())
+		bodies.Near = body("Near", {x = at.x + 14, y = at.y, z = at.z + 6})
+		bodies.Home = body("Home", registrar_pos())
 		log(("CHECK inside %s, slot %s, location %q, minimap texture %q"):format(
 			core.pos_to_string(at, 1), tostring(grug_expeditions.slot_at(at)),
 			(grug_map.location.text_of(player)), tostring(grug_map.minimap.texture_of(player))))
@@ -218,8 +219,10 @@ core.register_globalstep(function(dtime)
 			state.enter_when_ready = false
 			log("SHOT " .. shot.name)
 			core.after(1, function()
-				local ok, why = grug_expeditions.enter(player, CAPITAL)
-				log("CHECK enter " .. tostring(ok) .. " " .. tostring(why))
+				open(player)
+				press(player, {enter = "x"})
+				log("CHECK enter pressed, the window's session " ..
+					tostring(grug_expeditions.registrar.sessions[NAME] ~= nil))
 			end)
 		end
 		if shot.wait_ready and run.state ~= "ready" then return end

@@ -98,10 +98,9 @@ local function eligibility_rows(fs, x, y, rows)
 	return refused
 end
 
-local function message_line(fs, session, x, y, w, g)
-	if session.message then
-		fs[#fs + 1] = UI.prose(x, y, w, 0.6, core.colorize(RED, session.message), false, g)
-	end
+-- A coloured line: a label, the read-only textarea draws no colour escapes.
+local function coloured_line(fs, y, color, text)
+	fs[#fs + 1] = ("label[0.45,%.2f;%s]"):format(y, esc(core.colorize(color, text)))
 end
 
 -- The player's own Expedition: its state, who can enter, and Enter. Enter stays
@@ -117,7 +116,7 @@ local function run_form(player, session, run)
 		UI.prose(0.65, 2.7, 7.7, 0.9, state_text(run), false, g),
 		UI.heading(0.65, 3.8, "WHO CAN ENTER", g)}
 	eligibility_rows(fs, 0.65, 4.2, M.eligibility(player, run.expedition, run.bonus))
-	message_line(fs, session, 0.4, 8.55, 8.2, g)
+	if session.message then coloured_line(fs, 8.8, RED, session.message) end
 	if run.state ~= "preparing" then
 		fs[#fs + 1] = UI.button_style("enter", "selected", g)
 		fs[#fs + 1] = ("button[5.6,9.15;3,0.6;enter;Enter]")
@@ -152,11 +151,10 @@ local function choice_body(fs, player, session, def, g)
 	if level and party then
 		fs[#fs + 1] = UI.heading(5.45, 3.35, "WHO CAN ENTER", g)
 		if eligibility_rows(fs, 5.45, 3.75, M.eligibility(player, def.id, bonus)) > 0 then
-			fs[#fs + 1] = UI.prose(0.4, 8.55, 12.2, 0.6, core.colorize(WARN,
-				"Not everyone in your party can enter at this level."), false, g)
+			coloured_line(fs, 8.8, WARN, "Not everyone in your party can enter at this level.")
 		end
 	end
-	message_line(fs, session, 0.4, 8.55, 12.2, g)
+	if session.message then coloured_line(fs, 8.8, RED, session.message) end
 	local ok, why = M.can_create(player, def.id, bonus)
 	if ok then
 		fs[#fs + 1] = UI.button_style("open", "selected", g)

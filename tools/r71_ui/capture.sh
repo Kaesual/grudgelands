@@ -125,7 +125,7 @@ while kill -0 "$server_pid" 2>/dev/null; do
 		name="${shots[$taken]}"
 		if [[ "$name" == U9_arrival ]]; then
 			# The arrival: frames as fast as they come.
-			for n in $(seq -w 1 30); do
+			for n in $(seq -w 1 70); do
 				import -display ":$display_no" -window root -resize 25% "$out/$name$suffix-$n.jpg"
 				date +%s.%N >>"$out/$name$suffix.times"
 			done
