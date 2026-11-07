@@ -270,8 +270,7 @@ local P9G = {
 	}, ground_hosts({"grug_blight", "grug_elf_forest", "grug_jungle_edge",
 		"grug_meadows", "grug_pine_hills", "grug_savanna"}), "none", "spice", 1, true,
 		"default_grass_3.png^[colorize:#e5d34a:105"),
-	-- Round 70 (the user, 2026-11-07): an initial 1/1024.
-	p9g("wp33_wild_cocoa_source_v1", "wild_cocoa", "Wild Cocoa", 512, {
+	p9g("wp33_wild_cocoa_source_v1", "wild_cocoa", "Wild Cocoa", 512, { -- Round 70: an initial 1/1024
 		"front_skyglass_canopy", "front_stormscale_summit",
 	}, {
 		host("grug_deep_jungle", "grug_nodes:dirt_with_canopy_litter"),
