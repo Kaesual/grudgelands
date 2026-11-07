@@ -64,9 +64,9 @@ for _, file in ipairs({"bosses.lua", "kraken.lua", "shark.lua", "rift.lua"}) do
 		"B " .. file .. " has no flat boss-tier mob")
 end
 
--- The non-boss drop cap Round 71 lifts for instance mobs stays as it is.
+-- Round 71 lifted the non-boss drop cap for Expedition mobs only (tools/r33_c1).
 check(read("mods/ITEMS/grug_quality/init.lua"):find(
-	"BOSS_DROPS.ilvl[boss] or math.min(level, 60)", 1, true) ~= nil,
+	"(self._grug_expedition and level or math.min(level, 60))", 1, true) ~= nil,
 	"C every non-boss mob stays capped at item level 60")
 
 -- The level malus (round70-plan.md §2.10), through the real function.

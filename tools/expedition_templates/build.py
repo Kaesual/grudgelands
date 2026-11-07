@@ -30,7 +30,7 @@ def build_all():
     def walkable(node):
         if node == "air":
             return False
-        if node == tpl.WAYSTONE:
+        if node in tpl.OWN_NODES:
             return True
         if node not in nodes:
             raise SystemExit(f"unknown node {node}")

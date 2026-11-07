@@ -22,9 +22,12 @@ def build():
     t.place("arrival", 8, 5, 8)
     t.set(34, 5, 42, "grug_expeditions:waystone")
     t.place("end_waystone", 34, 5, 42)
-    t.set(30, 5, 40, "default:chest", 1)
+    t.set(30, 5, 40, "grug_expeditions:reward_chest", 1)
     t.place("chest", 30, 5, 40)
+    # the reward door fills the passage; the boss's death opens it
+    t.box(32, 5, 29, 35, 7, 29, "grug_expeditions:reward_door")
     t.place("door", 33, 5, 29)
     t.encounter("hall", "grug_mobs:giant_spider", 2, "normal", 30, 5, 12)
     t.encounter("hall", "grug_mobs:giant_spider", 1, "elite", 38, 5, 22)
+    t.encounter("court", "grug_mobs:stone_golem", 1, "boss", 34, 5, 24)
     return t

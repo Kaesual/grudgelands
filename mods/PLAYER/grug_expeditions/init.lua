@@ -87,6 +87,7 @@ core.register_on_mods_loaded(function()
 end)
 
 assert(loadfile(path .. "/runs.lua"))(catalogue, preparation)
+dofile(path .. "/encounters.lua")
 dofile(path .. "/guard.lua")
 dofile(path .. "/registrar.lua")
 
