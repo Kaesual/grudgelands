@@ -163,7 +163,7 @@ local function loader(directory)
 	-- part does not know how many of a thing a CAPITAL may have. Three roles
 	-- name a singular runtime seam: one throne, one travel pad for WP17, and
 	-- exactly two vendor families in `grug_traders`. A part that offers more
-	-- of them -- the market's four booths, the hall's own waypoint -- has
+	-- of them -- the market's four booths, the castle's own waypoint -- has
 	-- those sockets dropped or re-published as what they actually are: a
 	-- market booth without a trader is a flair NPC's work spot, not a sixth
 	-- vendor the runtime would try to fill. The KAT asserts the resulting
@@ -591,7 +591,7 @@ local function loader(directory)
 				{-40, -6}, {-44, 6}, {44, -6}, {44, 6},
 				{-24, 18}, {-24, 30}, {24, 18}, {24, 30},
 				{-30, 44}, {30, 44}, {-14, 45}, {14, 45},
-				{34, -22}, {10, -22}, {-11, -22}, {-16, -6}, {14, -4}}) do
+				{34, -22}, {10, -22}, {-11, -22}, {-16, -6}, {14, -6}}) do
 			if outdoors(spot[1], spot[2]) and
 					layout.free(buf, spot[1], spot[2], 4) then
 				paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
