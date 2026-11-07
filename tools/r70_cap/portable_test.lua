@@ -72,7 +72,7 @@ local DONE = {
 	-- the next capital
 	gor_drazhak = false,
 	-- the next capital
-	kezamba = false,
+	kezamba = true,
 }
 -- The castle's placement: anchor, turns, per capital.
 local CASTLE = {
@@ -86,7 +86,7 @@ local CASTLE = {
 	-- the next capital
 	gor_drazhak = false,
 	-- the next capital
-	kezamba = false,
+	kezamba = {plot = "kings_hall", x = 5, z = -52, turns = 2},
 }
 -- Rows of the study's schedule the build moved on purpose, id -> reason.
 local MOVED = {
@@ -109,7 +109,16 @@ local MOVED = {
 	-- the next capital
 	gor_drazhak = {},
 	-- the next capital
-	kezamba = {},
+	kezamba = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+		-- Its row (z 56) is the ring: it keeps its old place under the moot
+		-- house's last row, which moved 15.
+		shore_walk_north = "ring",
+	},
 }
 
 local CAPITALS = {"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak", "kezamba"}
