@@ -1,12 +1,14 @@
 -- Highcourt: the human capital, and the first capital of the game.
 --
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
--- contract.md section 2.1: the 96 x 96 civic core, anchor-relative exactly
--- like a start, flat at y = 0 by construction, inside the contract's bounds
--- of x/z [-47, 47] and y [-2, 40] (it reaches y 31, the hall's ridge
--- lantern). Its buildings are building templates (Round 56), frozen from
--- the capital and start-town generators it was first authored out of, the
--- same way Dawnmere Fields' are frozen from the latter alone.
+-- contract.md section 2.1: the civic core (radius 56 since Round 70,
+-- `precinct_ring.lua` owns the size), anchor-relative exactly like a start,
+-- flat at y = 0 by construction, inside `BOUNDS.capital_core` (it reaches
+-- y 33, the castle's towers). Its buildings are building templates (Round
+-- 56), frozen from the capital and start-town generators it was first
+-- authored out of, the same way Dawnmere Fields' are frozen from the latter
+-- alone; the castle is Round 70's form A (`tools/r70_castle`) in this
+-- capital's palette.
 --
 -- Highcourt is the human capital of the contract's section 2.4 table: a
 -- brick-and-white-stone city on a river plateau, half-timbered lanes, a
@@ -29,7 +31,7 @@
 -- stonewall over brick string courses, brick merlon caps, four gatehouses on
 -- the avenues. The four gatehouses that stand where the avenues leave the
 -- CORE stay where they are -- they are the precinct's gates.
--- The white stone is the crown's, not the city's: the king's hall, the
+-- The white stone is the crown's, not the city's: the castle, the
 -- chapel, the colonnades, the gatehouses and the civic furniture are dressed
 -- in marble over citadel masonry under slate, and everything a citizen built
 -- is the human palette's brick, plank and loam.
@@ -48,9 +50,8 @@
 --     template and palettes, and the roster
 --     `building_templates/layouts/highcourt.roster` lists the templates and
 --     palettes the core and the districts place. The templates carry what
---     the core used to add to its buildings afterwards: the chapel's belfry,
---     the hall's marble floor bands, braziers and hangings, and the chapel
---     elder's doorstep.
+--     the core used to add to its buildings afterwards: the chapel's belfry
+--     and the chapel elder's doorstep.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -83,53 +84,65 @@ local function loader(directory)
 	-- darkage slate family on the civic roofs as well, which has the corner
 	-- shapes the rasteriser needs. `town` is the plain human palette.
 
-	-- The streets. Every one of them is five or three nodes wide, paved at
-	-- y = 0 and cleared to head height; the plots are laid clear of them, so
-	-- a plot stamped later never has to fight a street for a cell.
+	-- The castle (Round 70, form A): 45 x 35, its great door on the axis
+	-- looking down the approach, the bypass round its three other sides.
+	local CASTLE = {x = -22, z = 10, w = 45, d = 35}
+
+	-- The household's service court: the whole east quarter beyond the
+	-- bypass, paved in one piece with the streets. COURT_X is how far Round 70
+	-- moved it east: every prop of step 6 is written in the old court's
+	-- coordinates plus this.
+	local COURT_X = 8
+	local COURT = {x1 = 22 + COURT_X, z1 = 7, x2 = 46 + COURT_X, z2 = 37}
+
+	-- The streets, paved at y = 0 and cleared to head height; the plots are
+	-- laid clear of them, so a plot stamped later never has to fight a street
+	-- for a cell.
 	--
-	-- `role` is the surface: "avenue" is the citadel paving of the four
-	-- great streets, "lane" the cobble of the inner ones.
+	-- `role` is the surface: "avenue" is the citadel paving of the great
+	-- streets, "lane" the cobble of the inner ones.
 	local STREETS = {
-		-- The great avenue, from the south gate through the crossing to the
-		-- forecourt of the king's hall: the throne approach of the contract,
-		-- on the north-south axis.
-		{-2, -RADIUS, 2, 5, "avenue"},
-		-- The service avenue behind the hall, from the back lane to the
-		-- north gate.
-		{-2, 38, 2, RADIUS, "avenue"},
+		-- The throne approach: nine wide from the south gate's forecourt
+		-- through the crossing to the castle's forecourt, five wide in the
+		-- gate.
+		{-4, -(RADIUS - 8), 4, 8, "avenue"},
+		{-2, -RADIUS, 2, -(RADIUS - 8), "avenue"},
 		-- The east-west avenue, gate to gate through the same crossing.
 		{-RADIUS, -2, RADIUS, 2, "avenue"},
-		-- The two side lanes past the hall's flanks, and the back lane that
-		-- joins them behind it.
-		{-22, -38, -20, 38, "lane"},
-		{20, -38, 22, 38, "lane"},
-		{-22, 38, 22, 40, "lane"},
-		-- The forecourts the four gatehouses open onto: a gate chamber's
-		-- door is in its city face and its doorstep is one node beyond the
-		-- part's own footprint, so the composition owes each of them paving.
-		{-8, -(RADIUS - 7), 8, -38, "lane"},
-		{-8, 38, 8, RADIUS - 7, "lane"},
-		{38, -8, RADIUS - 7, 8, "lane"},
-		{-(RADIUS - 7), -8, -38, 8, "lane"},
+		-- The bypass: five wide up both flanks of the castle and behind it,
+		-- between the castle and the chapel on the west, so everyday traffic
+		-- reaches the north gate without the throne room.
+		{-29, 0, -25, 50, "lane"},
+		{-29, 46, 29, 50, "lane"},
+		{25, 0, 29, 50, "lane"},
+		-- The north avenue, from the bypass out through the north gate.
+		{-2, 46, 2, RADIUS, "avenue"},
+		-- The castle's forecourt.
+		{-18, 3, 18, 9, "avenue"},
+		-- The gate forecourts: a gate chamber's door is in its city face and
+		-- its doorstep is one node beyond the part's own footprint, and the
+		-- ground watch walks here (`gate_watch.lua`).
+		{-8, -(RADIUS - 7), 8, -(RADIUS - 12), "lane"},
+		{-8, RADIUS - 12, 8, RADIUS - 7, "lane"},
+		{RADIUS - 12, -8, RADIUS - 7, 8, "lane"},
+		{-(RADIUS - 7), -8, -(RADIUS - 12), 8, "lane"},
+		-- The orchard streets' links up to the market and the plaza.
+		{-22, -38, -20, -32, "lane"},
+		{20, -38, 22, -33, "lane"},
 		-- The market's north walk, from the great avenue to the square.
-		{-36, -6, -3, -4, "lane"},
+		{-41, -6, -5, -4, "lane"},
 		-- The waypoint plaza's approach, from the great avenue east.
-		{3, -14, 12, -12, "lane"},
-		-- The chapel's walk and the well court's, off the west lane.
-		{-23, 26, -21, 28, "lane"},
-		{-36, 12, -21, 14, "lane"},
-		-- The principal service court east of the hall, laid in one piece
-		-- with the streets and NOT after the plots: a court paved after the
-		-- buildings that stand in it clears their walls to head height, and
-		-- the composition still builds. The workyard and the store are
-		-- stamped over this rectangle and keep their own aprons.
-		{23, 7, 46, 37, "lane"},
-		-- The doorsteps of the four houses on the outer ring.
-		{-37, 24, -35, 26, "lane"},
+		{5, -14, 13, -12, "lane"},
+		-- The chapel's walk, the well court's and the chapel house's, off the
+		-- bypass. The chapel's doors stay in its east wall, facing the bypass.
+		{-31, 26, -30, 28, "lane"},
+		{-36, 12, -30, 14, "lane"},
+		{-45, 37, -30, 39, "lane"},
+		-- The doorsteps of the houses on the outer ring.
+		{-45, 24, -43, 26, "lane"},
 		{34, -25, 36, -23, "lane"},
 		{34, -12, 36, -10, "lane"},
-		{-37, 37, -35, 39, "lane"},
-		{-37, -25, -35, -23, "lane"},
+		{-44, -25, -42, -23, "lane"},
 		{29, -36, 33, -34, "lane"},
 	}
 
@@ -151,14 +164,12 @@ local function loader(directory)
 	-- vendor the runtime would try to fill. The KAT asserts the resulting
 	-- multiset against the contract, so the policy cannot drift.
 	local PLOTS = {
-		-- 1. The king's hall, on the north-south axis, its great door
-		-- looking down the approach to the south gate.
-		-- The hall is built with the slate palette as well as roofed with it:
-		-- its four lucarnes per slope take their hoods from the main
-		-- palette's own `roof_slab`, so a hall built with the plain one would
-		-- wear four plank hoods on a slate roof.
+		-- 1. The castle, on the axis, its great door looking down the approach
+		-- to the south gate. Built with the slate palette as well as roofed
+		-- with it, the roster's binding for this template.
 		{id = "kings_hall", template = "highcourt_kings_hall",
-			x = -15, z = 9, turns = 0, palette = "white_slate", roof = "white_slate",
+			x = CASTLE.x, z = CASTLE.z, turns = 0, palette = "white_slate",
+			roof = "white_slate",
 			drop = {waypoint = true}},
 
 		-- 2. The four gatehouses. Highcourt has no curtain wall, so these
@@ -183,7 +194,7 @@ local function loader(directory)
 
 		-- 3. The market square, west of the approach.
 		{id = "market", template = "highcourt_market",
-			x = -36, z = -31, turns = 0, palette = "white",
+			x = -41, z = -31, turns = 0, palette = "white",
 			drop = {waypoint = true},
 			-- and the booth's id says booth, not vendor: an id is a string
 			-- the NPC lane reads in logs, and `market_vendor_1` with the
@@ -194,14 +205,14 @@ local function loader(directory)
 		-- 4. The two colonnades flanking the approach, turned so their
 		-- walks run with it.
 		{id = "colonnade_west", template = "highcourt_colonnade_west",
-			x = -9, z = -21, turns = 1, palette = "white"},
+			x = -12, z = -21, turns = 1, palette = "white"},
 		{id = "colonnade_east", template = "highcourt_colonnade_east",
-			x = 4, z = -21, turns = 3, palette = "white"},
+			x = 7, z = -21, turns = 3, palette = "white"},
 
 		-- 5. The civic furniture: the king's statue on the east side of the
 		-- crossing, the public well court on the west.
 		{id = "statue", template = "highcourt_statue",
-			x = 12, z = -11, turns = 0, palette = "white"},
+			x = 15, z = -11, turns = 0, palette = "white"},
 		{id = "well_court", template = "highcourt_well_court",
 			x = -46, z = 8, turns = 0, palette = "white"},
 
@@ -219,14 +230,14 @@ local function loader(directory)
 		{id = "orchard_west", template = "highcourt_orchard_west",
 			x = -45, z = -45, turns = 2, palette = "town"},
 
-		-- 7. The chapel with its belfry, on the west lane.
+		-- 7. The chapel with its belfry, across the bypass from the castle.
 		{id = "chapel", template = "highcourt_chapel",
-			x = -34, z = 20, turns = 0, palette = "town", roof = "white_slate"},
+			x = -42, z = 20, turns = 0, palette = "town", roof = "white_slate"},
 
 		-- 8. The household's own buildings, in the service court east of the
-		-- hall: the open workyard and the store.
+		-- castle: the open workyard and the store.
 		{id = "service_yard", template = "highcourt_service_yard",
-			x = 25, z = 7, turns = 0, palette = "town"},
+			x = 25 + COURT_X, z = 7, turns = 0, palette = "town"},
 		-- The store's door is at index 4 and single-leaved on purpose. The
 		-- `store` interior kit stands its roof posts on the odd cells of the
 		-- gable wall's inner run (x1 + 2, x1 + 4, ...), so the centred
@@ -236,7 +247,7 @@ local function loader(directory)
 		-- which is why nothing caught this before a capital asked for a
 		-- wider one.
 		{id = "service_store", template = "highcourt_service_store",
-			x = 25, z = 22, turns = 0, palette = "town"},
+			x = 25 + COURT_X, z = 22, turns = 0, palette = "town"},
 
 		-- 9. The half-timbered city: a workshop on the south lane and four
 		-- houses along the outer ring.
@@ -249,15 +260,15 @@ local function loader(directory)
 		-- every start uses; asking the same generator for a door in the gable
 		-- end instead opens it onto the furniture.
 		{id = "north_house", template = "highcourt_north_house",
-			x = -46, z = 23, turns = 3, palette = "town"},
+			x = -54, z = 23, turns = 3, palette = "town"},
 		{id = "lane_house", template = "highcourt_lane_house",
 			x = 37, z = -17, turns = 1, palette = "town"},
 		{id = "orchard_house", template = "highcourt_orchard_house",
 			x = 37, z = -30, turns = 1, palette = "town"},
 		{id = "chapel_house", template = "highcourt_chapel_house",
-			x = -46, z = 36, turns = 3, palette = "town"},
+			x = -54, z = 36, turns = 3, palette = "town"},
 		{id = "market_house", template = "highcourt_market_house",
-			x = -46, z = -30, turns = 3, palette = "town"},
+			x = -53, z = -30, turns = 3, palette = "town"},
 	}
 
 	-- Destination order is part of the consumer contract and never changes.
@@ -272,16 +283,18 @@ local function loader(directory)
 	-- next.
 	local CORNERS = {
 		{id = "watch_south_east", x = 34, z = -31, face = 0, order = 3},
-		{id = "watch_north_east", x = 42, z = 32, face = 2, order = 4},
-		{id = "watch_north_west", x = -38, z = 34, face = 2, order = 5},
-		{id = "watch_south_west", x = -40, z = -16, face = 0, order = 6},
+		{id = "watch_north_east", x = 50, z = 39, face = 2, order = 4},
+		{id = "watch_north_west", x = -27, z = 48, face = 2, order = 5},
+		{id = "watch_south_west", x = -27, z = -32, face = 0, order = 6},
 	}
 
 	-- The waypoint plaza (WP17): a flat, open, kerbed square east of the
 	-- approach, with its lamps outside the open area and nothing inside it
 	-- but the waystone at the pad's centre and its mailbox. Travel needs room
-	-- and sky: a player arrives beside the stone.
-	local PLAZA = {x1 = 12, z1 = -32, x2 = 32, z2 = -12}
+	-- and sky: a player arrives beside the stone. x1 is 13 and not 12: the east
+	-- colonnade's eaves oversail its own footprint to x = 12. Centred on the
+	-- waystone's column.
+	local PLAZA = {x1 = 13, z1 = -32, x2 = 31, z2 = -12}
 
 	-- The city around the core -- its outline, streets, walls or planted
 	-- edge, gates and the placed district plots -- is laid out per world by
@@ -369,14 +382,19 @@ local function loader(directory)
 		-- 1. The plateau: turf over subsoil, worn where the city walks.
 		layout.meadow(buf, human, RADIUS, 40)
 
-		-- 2. The streets, and the kerbs of the three great avenues.
+		-- 2. The streets, the service court and the kerbs of the great avenues.
+		-- The court is laid in one piece with the streets and NOT after the
+		-- plots: a court paved after the buildings that stand in it clears
+		-- their walls to head height, and the composition still builds. The
+		-- workyard and the store are stamped over this rectangle and keep
+		-- their own aprons.
 		for _, street in ipairs(STREETS) do
 			local name = (street[5] == "avenue") and AVENUE or LANE
 			pave(name, street[1], street[2], street[3], street[4], 5)
 		end
-		dressing.inlay(buf, human, 23, 7, 46, 37)
-		for _, kerb in ipairs({{-3, -RADIUS, -3, 5}, {3, -RADIUS, 3, 5},
-				{-3, 38, -3, RADIUS}, {3, 38, 3, RADIUS},
+		pave(LANE, COURT.x1, COURT.z1, COURT.x2, COURT.z2, 5)
+		dressing.inlay(buf, human, COURT.x1, COURT.z1, COURT.x2, COURT.z2)
+		for _, kerb in ipairs({{-5, -(RADIUS - 8), -5, 2}, {5, -(RADIUS - 8), 5, 2},
 				{-RADIUS, -3, RADIUS, -3}, {-RADIUS, 3, RADIUS, 3}}) do
 			for z = kerb[2], kerb[4] do
 				for x = kerb[1], kerb[3] do
@@ -447,7 +465,7 @@ local function loader(directory)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak, nave_floor = part.nave_floor}
+				d = footprint.d, peak = part.peak}
 			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors or {}) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
@@ -499,18 +517,17 @@ local function loader(directory)
 			end
 		end
 
-		-- 5. The chapel's belfry and the hall's floor, braziers and hangings
-		-- are the templates' own (Round 56).
+		-- 5. The chapel's belfry is its template's own (Round 56).
 
-		-- 6. The principal service court, east of the hall: the two royal
+		-- 6. The principal service court, east of the castle: the two royal
 		-- trading booths of the contract's `vendor` pair, the household's
 		-- draw well, its stacked goods and its lamps. This is where the two
 		-- fixed vendor offsets of `grug_traders/vendors.lua` come to rest.
 		-- The court's paving is laid with the streets above; what follows is
 		-- what stands ON it, between the workyard and the store.
 		local VENDORS = {
-			{id = "vendor_race", kind = "race", x = 41, z = 8},
-			{id = "vendor_general", kind = "general", x = 41, z = 14},
+			{id = "vendor_race", kind = "race", x = 41 + COURT_X, z = 8},
+			{id = "vendor_general", kind = "general", x = 41 + COURT_X, z = 14},
 		}
 		for _, booth in ipairs(VENDORS) do
 			paved_prop("booth", booth.x - 1, booth.z - 1, booth.x + 3,
@@ -518,29 +535,27 @@ local function loader(directory)
 					dressing.stall(buf, human, booth.x, booth.z, 0)
 				end)
 		end
-		paved_prop("court_well", 43, 24, 45, 26, function()
-			dressing.well(buf, human, 44, 25, nil)
+		paved_prop("court_well", 43 + COURT_X, 24, 45 + COURT_X, 26, function()
+			dressing.well(buf, human, 44 + COURT_X, 25, nil)
 		end)
 		for _, stack in ipairs({{24, 20}, {24, 21}, {39, 20}, {39, 21}}) do
-			paved_prop("crates", stack[1], stack[2], stack[1], stack[2],
-				function()
-					dressing.crates(buf, human, stack[1], stack[2], 2)
-				end)
+			local x = stack[1] + COURT_X
+			paved_prop("crates", x, stack[2], x, stack[2], function()
+				dressing.crates(buf, human, x, stack[2], 2)
+			end)
 		end
-		for _, pile in ipairs({{40, 30, 4, "z"}, {24, 30, 4, "z"}}) do
-			local x2 = (pile[4] == "x") and pile[1] + pile[3] - 1 or pile[1]
-			local z2 = (pile[4] == "z") and pile[2] + pile[3] - 1 or pile[2]
-			paved_prop("wood_pile", pile[1], pile[2], x2, z2, function()
-				dressing.wood_pile(buf, human, pile[1], pile[2], pile[3],
-					pile[4])
+		for _, pile in ipairs({{40, 30, 4}, {24, 30, 4}}) do
+			local x = pile[1] + COURT_X
+			paved_prop("wood_pile", x, pile[2], x, pile[2] + pile[3] - 1, function()
+				dressing.wood_pile(buf, human, x, pile[2], pile[3], "z")
 			end)
 		end
 		for _, lamp in ipairs({{45, 7}, {23, 18}, {45, 20}, {38, 25},
 				{45, 36}}) do
-			paved_prop("court_lamp", lamp[1], lamp[2], lamp[1], lamp[2],
-				function()
-					dressing.path_light(buf, human, lamp[1], lamp[2])
-				end)
+			local x = lamp[1] + COURT_X
+			paved_prop("court_lamp", x, lamp[2], x, lamp[2], function()
+				dressing.path_light(buf, human, x, lamp[2])
+			end)
 		end
 
 		-- 7. The market walk, the plaza lamps and the street lighting.
@@ -554,18 +569,24 @@ local function loader(directory)
 					dressing.path_light(buf, human, lamp[1], lamp[2])
 				end)
 		end
-		-- The great avenue's lamp line stops one node short of the crossing:
-		-- a standard on the kerb at x = +-3 is on the verge of the
-		-- north-south avenue and in the CARRIAGEWAY of the east-west one,
-		-- and a lamp post in the middle of a gate road is a lamp post
-		-- nothing can drive past.
-		layout.street_lamps(buf, human, 0, -44, -4, 8, outdoors)
-		layout.street_lamps(buf, human, 0, 40, RADIUS - 1, 8, outdoors)
+		-- The great avenue's lamp line stands on its kerb at x = +-5 and stops
+		-- short of the crossing: there a standard would stand in the
+		-- CARRIAGEWAY of the other avenue, and a lamp post in the middle of a
+		-- gate road is a lamp post nothing can drive past.
+		for z = -(RADIUS - 13), -6, 8 do
+			for _, x in ipairs({-5, 5}) do
+				if outdoors(x, z) and layout.free(buf, x, z, 3) then
+					dressing.path_light(buf, human, x, z)
+				end
+			end
+		end
+		layout.street_lamps(buf, human, 0, RADIUS - 7, RADIUS - 2, 8, outdoors)
 		for _, spot in ipairs({{-6, -6}, {6, -6}, {-6, 6}, {6, 6},
-				{-25, -6}, {-25, 6}, {25, -6}, {25, 6},
-				{-40, -6}, {-40, 6}, {40, -6}, {40, 6},
-				{-25, 24}, {25, 24}, {-25, -26}, {-25, 8},
-				{34, -22}, {10, -22}, {-16, -6}, {16, -6}}) do
+				{-25, -6}, {-24, 6}, {25, -6}, {24, 6},
+				{-40, -6}, {-44, 6}, {44, -6}, {44, 6},
+				{-24, 18}, {-24, 30}, {24, 18}, {24, 30},
+				{-30, 44}, {30, 44}, {-14, 45}, {14, 45},
+				{34, -22}, {10, -22}, {-11, -22}, {-16, -6}, {14, -4}}) do
 			if outdoors(spot[1], spot[2]) and
 					layout.free(buf, spot[1], spot[2], 4) then
 				paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
@@ -576,9 +597,9 @@ local function loader(directory)
 		end
 
 		-- 8. Benches and planters where the city sits: the crossing, the
-		-- hall's forecourt and the plaza's kerb.
-		for _, seat in ipairs({{-6, -4, 0, "x"}, {4, -4, 0, "x"},
-				{-6, 4, 2, "x"}, {4, 4, 2, "x"}}) do
+		-- castle's forecourt and the plaza's kerb.
+		for _, seat in ipairs({{-8, -4, 0, "x"}, {6, -4, 0, "x"},
+				{-8, 4, 2, "x"}, {6, 4, 2, "x"}}) do
 			paved_prop("bench", seat[1], seat[2], seat[1] + 2, seat[2],
 				function()
 					dressing.bench(buf, human, seat[1], seat[2], seat[3], 3,
@@ -668,9 +689,9 @@ local function loader(directory)
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
 				corner.face, {group = WATCH, order = corner.order})
 		end
-		socket("court_idle_well", "idle", 44, 1, 27, 0, {tags = {"work"}})
+		socket("court_idle_well", "idle", 44 + COURT_X, 1, 27, 0, {tags = {"work"}})
 		-- Round 47: faced 2 (0 faced a window).
-		socket("court_idle_yard", "idle", 34, 1, 20, 2, {tags = {"work"}})
+		socket("court_idle_yard", "idle", 34 + COURT_X, 1, 20, 2, {tags = {"work"}})
 		socket("forecourt_idle_west", "idle", -6, 1, 3, 1, {tags = {"bench"}})
 		socket("forecourt_idle_east", "idle", 7, 1, 3, 3, {tags = {"bench"}})
 		--
@@ -691,15 +712,15 @@ local function loader(directory)
 		local function spare(id, x, z, face)
 			socket(id, "idle", x, 1, z, face, {spawn = false})
 		end
-		spare("core_spare_crossing_east", 12, -4, 3)
+		spare("core_spare_crossing_east", 15, -4, 3)
 		spare("core_spare_crossing_west", -13, -1, 1)
-		spare("core_spare_hall_green", 19, 13, 3)
-		spare("core_spare_market_walk", -15, -20, 0)
+		spare("core_spare_hall_green", 25, 13, 3)
+		spare("core_spare_market_walk", -20, -20, 0)
 		spare("core_spare_approach", 2, -26, 0)
-		spare("core_spare_west_lane", -21, 16, 1)
+		spare("core_spare_west_lane", -27, 16, 1)
 		spare("core_spare_east_avenue", 30, -2, 3)
 		spare("core_spare_west_avenue", -31, 0, 1)
-		spare("core_spare_north_court", 17, 31, 2)
+		spare("core_spare_north_court", 20, 47, 2)
 		spare("core_spare_plaza_south", 30, -20, 3)
 
 		-- 12. Pane shapes, settled once over the finished pad, for the
@@ -800,17 +821,17 @@ local function loader(directory)
 				-- approach, and keeps the start compositions' key so a
 				-- consumer that knows only that name finds the great street.
 				main_street = {min = {x = -2, y = 0, z = -RADIUS},
-					max = {x = 2, y = 5, z = 5}},
+					max = {x = 2, y = 5, z = 8}},
 				avenue_south = {min = {x = -2, y = 0, z = -RADIUS},
-					max = {x = 2, y = 5, z = 5}},
-				avenue_north = {min = {x = -2, y = 0, z = 38},
+					max = {x = 2, y = 5, z = 8}},
+				avenue_north = {min = {x = -2, y = 0, z = 46},
 					max = {x = 2, y = 5, z = RADIUS}},
 				avenue_west = {min = {x = -RADIUS, y = 0, z = -2},
 					max = {x = -3, y = 5, z = 2}},
 				avenue_east = {min = {x = 3, y = 0, z = -2},
 					max = {x = RADIUS, y = 5, z = 2}},
-				throne_approach = {min = {x = -2, y = 2, z = 9},
-					max = {x = 2, y = 8, z = 33}},
+				throne_approach = {min = {x = -2, y = 2, z = CASTLE.z},
+					max = {x = 2, y = 8, z = CASTLE.z + 26}},
 				-- The reserved square is the plaza INSIDE its kerb: the
 				-- four lamp standards stand on the kerb ring itself, so a
 				-- box drawn on the kerb is a box with four lamps in it and
@@ -819,8 +840,8 @@ local function loader(directory)
 				waypoint_plaza = {min = {x = PLAZA.x1 + 1, y = 0,
 						z = PLAZA.z1 + 1},
 					max = {x = PLAZA.x2 - 1, y = 4, z = PLAZA.z2 - 1}},
-				service_court = {min = {x = 23, y = 0, z = 6},
-					max = {x = 46, y = 6, z = 37}},
+				service_court = {min = {x = COURT.x1, y = 0, z = COURT.z1 - 1},
+					max = {x = COURT.x2, y = 6, z = COURT.z2}},
 				kings_hall = box("kings_hall", 2, 2),
 				kings_hall_door = door_of("kings_hall"),
 				market = box("market", 1, 1),
@@ -833,7 +854,6 @@ local function loader(directory)
 				sockets = sockets,
 				orchard_trees = orchard,
 				precinct_wall_columns = wall,
-				nave_floor = placed.kings_hall.nave_floor,
 			},
 		}
 	end
