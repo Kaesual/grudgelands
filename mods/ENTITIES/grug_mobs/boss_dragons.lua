@@ -1157,7 +1157,7 @@ local function dragon_def(id, opts, callbacks)
 		description = opts.description,
 		_grug_voice = "dragon",
 		clock = "any", type = "monster",
-		_grug_fixed_level = 70, _grug_tier = "boss",
+		_grug_fixed_level = 75, _grug_tier = "boss",
 		_grug_no_far_despawn = true,
 		-- Authored (Round 37 MP): never removed by or counted against
 		-- mobs_redo's active-mob limit (mobs/api.lua grug_authored).

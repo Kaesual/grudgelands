@@ -1353,7 +1353,7 @@ do
 			"U " .. label .. ": the start refuses")
 		check(same_item(smith.inv:get_stack(TARGET, 1), item), "U " .. label .. ": untouched")
 	end
-	check(boss ~= nil and Q.effective_ilvl(boss) == 65, "U the boss sword is item level 65")
+	check(boss ~= nil and Q.effective_ilvl(boss) == 70, "U the King's sword is item level 70")
 	learn(smith, "weaponsmith", 3)
 	character_level = 30
 	clear(smith)
