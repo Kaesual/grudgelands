@@ -24,15 +24,25 @@ grug_mounts.register_summon_guard(function(_, pos)
 	if M.slot_at(pos) then return "Mounts cannot be used in an Expedition." end
 end)
 
--- A player who died in their run. Asked again when the area is ready: a run that
--- ended meanwhile hands the respawn back to the ordinary home.
+-- A player who died in a box. In their run: the start waystone. Their run gone, a
+-- logout death's login included: the capital they came from, without a saved one the
+-- ordinary home. Asked again when the area is ready: a run that ended meanwhile
+-- hands the respawn on.
 grug_home.register_respawn_home(function(player)
-	local run = M.run_at(player:get_pos())
-	if not run or not run.entered[player:get_player_name()] or not M.belongs(run, player) then
-		return nil
+	local pos = player:get_pos()
+	if not M.slot_at(pos) then return nil end
+	local run = M.run_at(pos)
+	if run and run.entered[player:get_player_name()] and M.belongs(run, player) then
+		return {id = "expedition:" .. run.id, pos = run.places.arrival,
+			arrival = M.start_arrival(run)}
 	end
-	return {id = "expedition:" .. run.id, pos = run.places.arrival,
-		arrival = M.start_arrival(run)}
+	local origin = M.saved_origin(player)
+	local way = origin and grug_home.waystone_pos(origin)
+	if not way then return nil end
+	-- The arrival is judged on the nodes: a stone the player came from is generated.
+	core.load_area(vector.subtract(way, 2), vector.add(way, 2))
+	local arrival = grug_home.waystone_arrival(origin)
+	return arrival and {id = "expedition_origin:" .. origin, pos = way, arrival = arrival} or nil
 end)
 
 -- The open sea's rule refuses every box; this answers for the marked nodes. What

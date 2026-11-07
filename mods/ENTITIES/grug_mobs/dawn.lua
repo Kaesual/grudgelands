@@ -46,6 +46,7 @@ local function bound(ent)
 		or ent._grug_boss_summon ~= nil or ent._grug_royal_summon ~= nil
 		or ent._grug_royal_king ~= nil or ent._grug_leader ~= nil
 		or ent._grug_tier == "rare" or ent._grug_tier == "boss"
+		or ent._grug_pack ~= nil
 end
 -- Also the stuck cleanup's list of mobs that stay (room.lua, Round 67).
 grug_mobs.mob_bound = bound

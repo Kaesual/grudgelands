@@ -42,6 +42,11 @@ core = {
 	serialize = function(t) return t end,
 	after = function(_, fn) timers[#timers + 1] = fn end,
 	register_on_mods_loaded = function(fn) on_loaded[#on_loaded + 1] = fn end,
+	-- packs.lua's: tools/r71_pack
+	register_on_dieplayer = function() end,
+	register_on_leaveplayer = function() end,
+	register_on_joinplayer = function() end,
+	register_on_shutdown = function() end,
 	register_node = function(name, def) core.registered_nodes[name] = def end,
 	load_area = function() end,
 	objects_in_area = function()
@@ -126,6 +131,7 @@ grug_mobs = {
 	place_on_ground = function() end,
 	set_tier = function(ent, tier) tiers[ent] = tier end,
 	settle_mob_death = function() return true end,
+	live_claim = function() return true end,
 	_item_drop_filter = function(_, drops) return drops end,
 	boss_settle = function(id, _, _, credit_as) settled[#settled + 1] = {id, credit_as} end,
 	boss_attempt_reset = function(id) resets[#resets + 1] = id end,
@@ -151,6 +157,7 @@ grug_inventory = {
 }
 local feeds = {}
 grug_core = {feed = function(_, _, text) feeds[#feeds + 1] = text end,
+	engage_mob = function() end,
 	ui = {text_growth = function() return 1 end, colors = {muted = "#fff"}}}
 
 local runs_at = {}
@@ -160,6 +167,7 @@ grug_expeditions = {
 	register_on_ready = function(fn) ready[#ready + 1] = fn end,
 	register_on_end = function(fn) ended[#ended + 1] = fn end,
 	register_on_enter = function(fn) entered[#entered + 1] = fn end,
+	register_on_leave = function() end,
 	encounters = function(run) return run.encounters end,
 	places = function(run) return run.places end,
 	run_at = function(pos) return runs_at[pos.z] end,
@@ -220,6 +228,7 @@ for _, ent in ipairs(mobs_of(run)) do
 	check(ent._grug_spawn_level == 29 and ent._grug_authored == true and ent.lifetimer >= 20000,
 		"A the first staticdata carries level, the limit's mark and the far despawn's")
 	check(ent.static_save == nil and ent._grug_boss_id == nil, "A a plain mob stays saved, no boss")
+	check(ent._grug_pack ~= nil, "A every mob is a body of its room's pack (tools/r71_pack)")
 end
 local first = mobs_of(run)
 check(first[1].pos.x ~= first[2].pos.x or first[1].pos.z ~= first[2].pos.z, "A a pack spreads")

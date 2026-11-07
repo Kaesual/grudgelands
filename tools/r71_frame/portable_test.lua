@@ -361,6 +361,12 @@ local function new_player(name, level)
 	function p:get_pos() return {x = self.pos.x, y = self.pos.y, z = self.pos.z} end
 	function p:get_hp() return self.hp end
 	function p:is_player() return true end
+	p.meta = {}
+	function p:get_meta()
+		local meta = self.meta
+		return {get_string = function(_, key) return meta[key] or "" end,
+			set_string = function(_, key, value) meta[key] = value end}
+	end
 	players[name] = p
 	return p
 end
@@ -631,7 +637,8 @@ do
 	shy.online = true
 	callbacks.join(shy)
 	tick()
-	check(shy.pos.x == 1, "H and goes home at login")
+	tick()
+	check(shy.pos.x == CAPITAL.x, "H and stands in the capital they came from at login")
 	E.end_run(run4, "test")
 	tick()
 	leave_party("guest")
@@ -683,8 +690,31 @@ do
 	local before = #home
 	callbacks.join(p)
 	tick()
-	check(#home == before + 1 and p.pos.x == 1 and feed_to("clocked") == "Your Expedition has ended.",
-		"J a run gone: straight home")
+	tick()
+	check(#home == before and p.pos.x == CAPITAL.x and feed_to("clocked") == "Your Expedition has ended.",
+		"J a run gone: the capital they came from, by the saved value alone")
+	-- a stone that cannot be reached, or no saved value: home (the login's fallback)
+	p.pos = {x = 8070, y = -100, z = -1610}
+	capital_open = false
+	callbacks.join(p)
+	tick()
+	tick()
+	capital_open = true
+	check(#home == before + 1 and p.pos.x == 1, "J no arrival at the capital: home")
+	local fresh = new_player("fresh")
+	fresh.pos = {x = 8070, y = -100, z = -1610}
+	callbacks.join(fresh)
+	tick()
+	tick()
+	check(#home == before + 2 and fresh.pos.x == 1, "J no saved value: home")
+	before = before + 1
+	-- a logout death pending: the respawn decides, nothing travels
+	fresh.pos = {x = 8070, y = -100, z = -1610}
+	fresh.meta[E.LOGOUT_DEATH] = "1"
+	callbacks.join(fresh)
+	tick()
+	tick()
+	check(fresh.pos.x == 8070 and #home == before + 1, "J a pending logout death leaves it to the respawn")
 	-- a new run in the same slot is not theirs
 	local other = new_player("other")
 	local run = ready_run(other)
@@ -692,7 +722,8 @@ do
 	p.pos = {x = 8070, y = -100, z = -1610}
 	callbacks.join(p)
 	tick()
-	check(#home == before + 2, "J another run's box")
+	tick()
+	check(p.pos.x == CAPITAL.x, "J another run's box")
 	-- not even when it is the same owner's next run
 	go_in(other, run)
 	E.end_run(run, "test")
@@ -702,20 +733,25 @@ do
 	callbacks.leave(other)
 	callbacks.join(other)
 	tick()
-	check(#home == before + 3, "J the owner's next run holds no place for them")
+	tick()
+	check(other.pos.x == CAPITAL.x, "J the owner's next run holds no place for them")
 	-- dead at login: the respawn does it
 	p.pos = {x = 8070, y = -100, z = -1610}
 	p.hp = 0
+	p.moves = 0
 	callbacks.join(p)
 	tick()
-	check(#home == before + 3, "J a dead player waits for the respawn")
+	tick()
+	check(p.moves == 0, "J a dead player waits for the respawn")
 	p.hp = 20
 	E.end_run(next_run, "test")
 	-- outside any box nothing happens
 	p.pos = {x = 0, y = 10, z = 0}
+	p.moves = 0
 	callbacks.join(p)
 	tick()
-	check(#home == before + 3, "J the map is none of this")
+	tick()
+	check(p.moves == 0, "J the map is none of this")
 end
 
 -- K. The way out.

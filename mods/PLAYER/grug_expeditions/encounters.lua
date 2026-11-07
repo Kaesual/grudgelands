@@ -1,8 +1,9 @@
 -- Encounters (Round 71): the rooms of a run and its boss. init.lua's encounters(run)
 -- gives the markers; a room's mobs appear when a player of the run comes near, as
--- the rift boss does, once: what is dead stays dead, and nothing here ever places a
--- room again. An idle server pays nothing: the one-second pass runs only while a
--- run has a player inside and a room still waiting.
+-- the rift boss does, once: nothing here places a room again, and each room is one
+-- pack from then on (packs.lua: a wipe refills it, what a pack lost for good stays
+-- dead). An idle server pays nothing: the one-second pass runs only while a run has
+-- a player inside and a room still waiting.
 --
 -- Every mob carries in its first staticdata, so it holds from the first activation:
 --   _grug_spawn_level  the run's level, before the first tick (levels.lua)
@@ -13,20 +14,23 @@
 --                      (serverenvironment.cpp deactivateFarObjects). Preparation's
 --                      delete_area takes whatever a run left behind
 --   _grug_authored     the active-mob limit neither refuses nor removes it
+--   _grug_pack         its body key (packs.lua), with the fields of a chase that
+--                      does not end
 --
 -- A marker's tier is `normal`, `elite` or `boss`, at most one boss of count 1 per
 -- template. The boss is an elite with a ledger id, never the `boss` tier of
 -- levels.lua, whose HP are flat: HP come from its definition's `_grug_hp_scale`.
 -- Its death settles credit only (bosses.lua, no lockout, no reward) and opens the
--- door; a wipe leaves it to the normal evade, which heals it. Its registered
--- definition names its fixed name: a world slot in data/names.json.
+-- door; it is a pack of one, so a wipe heals it and sends it home and its attempt
+-- starts over. Its registered definition names its fixed name: a world slot in
+-- data/names.json.
 local M = grug_expeditions
 local path = core.get_modpath(core.get_current_modname())
 local loot = dofile(path .. "/loot.lua")
+local packs = dofile(path .. "/packs.lua")
 
 local SPAWN_RANGE = grug_mobs.rift_rules.SPAWN_RANGE
 local PASS_SECONDS = 1
-local LIFETIMER = 30000
 -- One mob per offset round its marker, the marker's cell first.
 local SPREAD = {{0, 0}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}, {3, 3}, {-3, 3}, {3, -3}, {-3, -3}}
 local SPREAD_REACH = 4
@@ -50,6 +54,7 @@ local function state_of(run)
 			state.boss_id = "expedition:" .. run.expedition .. ":" .. run.id
 		end
 	end
+	for _, room in pairs(state.rooms) do room.pack = packs.new(run, state.boss_id) end
 	states[run] = state
 	return state
 end
@@ -60,43 +65,21 @@ function M.rewards_open(run)
 	return state ~= nil and (state.boss_id == nil or state.boss_dead == true)
 end
 
-local function standable(pos)
-	for dy = 0, 1 do
-		local node = core.get_node_or_nil({x = pos.x, y = pos.y + dy, z = pos.z})
-		local def = node and core.registered_nodes[node.name]
-		if not def or def.walkable then return false end
-	end
-	return true
-end
-
 local function spot(marker, index)
 	local offset = SPREAD[(index - 1) % #SPREAD + 1]
 	local pos = {x = marker.x + offset[1], y = marker.y, z = marker.z + offset[2]}
-	return standable(pos) and pos or {x = marker.x, y = marker.y, z = marker.z}
-end
-
-local function spawn_mob(run, state, row, pos)
-	local boss = row.tier == "boss"
-	local object = core.add_entity(pos, row.mob, core.serialize({
-		_grug_spawn_level = run.level, _grug_expedition = run.id,
-		_grug_authored = true, lifetimer = LIFETIMER,
-		_grug_boss_id = boss and state.boss_id or nil}))
-	local ent = object and object:get_luaentity()
-	if not ent then return false end
-	grug_mobs.place_on_ground(object, pos)
-	grug_mobs.set_tier(ent, boss and "elite" or row.tier)
-	return true
+	return packs.standable(pos) and pos or {x = marker.x, y = marker.y, z = marker.z}
 end
 
 -- Places what is still missing; true when the room is done. A mob the engine
 -- refused is tried again on the next pass.
-local function spawn_room(run, state, room)
+local function spawn_room(run, room)
 	local done = true
 	for _, entry in ipairs(room) do
 		local row = entry.row
 		core.load_area(vector.subtract(row.pos, SPREAD_REACH), vector.add(row.pos, SPREAD_REACH))
 		while entry.left > 0 do
-			if not spawn_mob(run, state, row, spot(row.pos, row.count - entry.left + 1)) then
+			if not packs.add(room.pack, row, spot(row.pos, row.count - entry.left + 1)) then
 				core.log("error", "[grug_expeditions] " .. row.mob .. " could not be placed in " ..
 					run.expedition)
 				done = false
@@ -136,7 +119,7 @@ pass = function()
 				local player = core.get_player_by_name(name)
 				local pos = player and player:get_hp() > 0 and player:get_pos()
 				for key, room in pairs(pos and state.rooms or {}) do
-					if near(room, pos) and spawn_room(run, state, room) then
+					if near(room, pos) and spawn_room(run, room) then
 						state.rooms[key] = nil
 					end
 				end

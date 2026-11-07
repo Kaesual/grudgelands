@@ -9,6 +9,10 @@ local by_party = {}       -- party id -> a party-owned run
 local inside_of = {}      -- name -> the run the player stands in
 local next_id = 0
 local hooks = {ready = {}, ended = {}, entered = {}, left = {}}
+-- Saved player meta: the capital of the last way in, for a login or a respawn that
+-- outlives the run; and a pending logout death (packs.lua).
+local META_ORIGIN = "grug_expeditions:origin"
+M.LOGOUT_DEATH = "grug_expeditions:logout_death"
 
 local function fire(event, ...)
 	for _, callback in ipairs(hooks[event]) do callback(...) end
@@ -237,8 +241,14 @@ local function send_out(player, origin)
 		fallback = grug_home.respawn})
 end
 
+-- The capital this player last came in from: a value that outlives the run.
+function M.saved_origin(player)
+	local origin = player:get_meta():get_string(META_ORIGIN)
+	return origin ~= "" and origin or nil
+end
+
 -- `name` holds no place any more; out of the box when inside. Offline, the login
--- rule sends them home.
+-- rule sends them out.
 local function expel(run, name)
 	run.entered[name] = nil
 	local origin = run.origins[name]
@@ -331,9 +341,10 @@ core.register_on_leaveplayer(function(player)
 end)
 
 -- The login rule: in a box without a live run that holds this player's place, the
--- run is over (a restart ended it, or the slot has a new run): straight home.
--- Nothing is stored for this: the saved position is all it needs. A dead player's
--- respawn goes home by itself.
+-- run is over (a restart ended it, or the slot has a new run): back in the capital
+-- they came from, whose id is the one saved value (a restart forgets run.origins),
+-- else home. A dead player's respawn asks the same (guard.lua), and so does a
+-- pending logout death's, which runs after this (packs.lua).
 core.register_on_joinplayer(function(player)
 	local pos = player:get_pos()
 	if not catalogue.slot_at(pos) then return end
@@ -344,7 +355,7 @@ core.register_on_joinplayer(function(player)
 		local p = core.get_player_by_name(name)
 		if not p or p:get_hp() <= 0 then return end
 		notice(p, "Your Expedition has ended.")
-		grug_home.respawn(p)
+		if p:get_meta():get_string(M.LOGOUT_DEATH) == "" then send_out(p, M.saved_origin(p)) end
 	end)
 end)
 
@@ -398,6 +409,7 @@ function M.enter(player, capital)
 			if arrival then
 				run.entered[name] = true
 				run.origins[name] = capital
+				player:get_meta():set_string(META_ORIGIN, capital)
 			end
 			return arrival
 		end})
