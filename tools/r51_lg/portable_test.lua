@@ -249,9 +249,11 @@ end
 local STRAND, TIP = "grug_trees:swamp_hanging_moss_strand", "grug_trees:swamp_hanging_moss"
 for _, name in ipairs({STRAND, TIP}) do
 	local def = nodes[name]
-	check(def.drawtype == "plantlike" and def.walkable == false and def.drop == "" and
+	-- Round 70 (round70-plan.md §2.3): both drop the end, tools/r70_plants has the rest
+	check(def.drawtype == "plantlike" and def.walkable == false and
+		(def.drop or name) == TIP and
 		def.groups.leafdecay == 3 and type(def.on_timer) == "function",
-		name .. ": plantlike, not walkable, drops nothing, decays with its tree")
+		name .. ": plantlike, not walkable, drops the end, decays with its tree")
 	check(type(def.after_dig_node) == "function", name .. " keeps its run whole when dug")
 end
 check(nodes[STRAND].tiles[1] == "grug_trees_swamp_hanging_moss_strand.png", "the strand wears the picked strand")

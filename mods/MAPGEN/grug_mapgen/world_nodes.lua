@@ -40,8 +40,14 @@ return function(engine, directory, nodes, gathering)
  -- A rooted node keeps the water column intact: only the natural sand bed is
  -- replaced, while the special tile grows upward through source water. The
  -- bed wears the sand's world-aligned 32 px tile (grug_nodes, Round 51).
+ local ROOTED="Plant it in a sand bed under water."
+ -- The tooltip of a carried plant, the same line as grug_nodes/plants.lua and
+ -- grug_trees (tools/r70_plants checks all of them).
+ local function decor_description(description,how)
+  return description.."\nDecoration: no recipe uses it.\n"..how
+ end
  engine.register_node(catalog.freshwater[2], {
-  description="Freshwater Waterweed",
+  description=decor_description("Freshwater Waterweed",ROOTED),
   drawtype="plantlike_rooted",
   waving=0,
   tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
@@ -51,22 +57,37 @@ return function(engine, directory, nodes, gathering)
   wield_image=first_frame(WEED),
   paramtype="light",
   paramtype2="leveled",
-  -- No `sand` group: the bed is no sand item (it drops default:sand), and
-  -- group:sand recipes (glass) would offer it as an alternative (Round 41).
-  groups={crumbly=3,not_in_creative_inventory=1},
+  -- No `sand` group: the bed is no sand item, and group:sand recipes (glass)
+  -- would offer it as an alternative (Round 41). It drops itself (Round 70,
+  -- round70-plan.md §2.3); digging it leaves the plain sand bed, like
+  -- default kelp, and placing it takes that bed under water 2 or more deep
+  -- (nodes.place_rooted), 1-4 tall and under the surface like the writer's.
+  groups={snappy=3,grug_decor_plant=1},
   sounds=default.node_sound_sand_defaults(),
   selection_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,-0.3,0.5}},
-  drop="default:sand",
+  node_dig_prediction="default:sand",
+  node_placement_prediction="",
+  on_place=function(itemstack,placer,pointed)
+   return nodes.place_rooted(itemstack,placer,pointed,function(depth)
+    if depth<2 then return nil end
+    return catalog.freshwater[2],16*math.min(math.random(1,4),depth-1)
+   end)
+  end,
+  after_dig_node=function(pos)
+   engine.set_node(pos,{name="default:sand"})
+  end,
  })
 
  -- Seagrass (Round 51 T3, sea plan ruling 7): three low rooted variants on
- -- the sand bed, one node of blades in the sea water above. A decorative
- -- plant drops nothing (round plan §3.6); digging it leaves the plain sand
- -- bed, like default kelp, and the renewal grows it back (farming.md).
+ -- the sand bed, one node of blades in the sea water above. Since Round 70
+ -- (round70-plan.md §2.3) every variant drops the first, which plants any of
+ -- them; digging it leaves the plain sand bed, like default kelp, and the
+ -- renewal grows it back (farming.md).
  for index,name in ipairs(catalog.seagrass) do
   local image="grug_mapgen_seagrass_"..index.."_anim.png"
+  local carried=index==1
   engine.register_node(name, {
-   description="Seagrass",
+   description=carried and decor_description("Seagrass",ROOTED) or "Seagrass",
    drawtype="plantlike_rooted",
    waving=0,
    tiles={{name="grug_nodes_sand.png",align_style="world",scale=2}},
@@ -74,14 +95,20 @@ return function(engine, directory, nodes, gathering)
    inventory_image=first_frame(image),
    wield_image=first_frame(image),
    paramtype="light",
-   groups={snappy=3,not_in_creative_inventory=1},
+   groups=carried and {snappy=3,grug_decor_plant=1} or {snappy=3,not_in_creative_inventory=1},
    sounds=default.node_sound_sand_defaults(),
    selection_box={type="fixed",fixed={
     {-0.5,-0.5,-0.5,0.5,0.5,0.5},
     {-0.3,0.5,-0.3,0.3,1.25,0.3}}},
    node_dig_prediction="default:sand",
    node_placement_prediction="",
-   drop="",
+   drop=catalog.seagrass[1],
+   on_place=carried and function(itemstack,placer,pointed)
+    return nodes.place_rooted(itemstack,placer,pointed,function(depth)
+     if depth<1 then return nil end
+     return catalog.seagrass[math.random(1,#catalog.seagrass)],0
+    end)
+   end or nil,
    after_dig_node=function(pos)
     engine.set_node(pos,{name="default:sand"})
    end,
@@ -287,8 +314,10 @@ return function(engine, directory, nodes, gathering)
 
  -- This occupies the air node immediately above the source-water surface;
  -- its thin box sits at the bottom of that node and never replaces water.
+ -- It drops itself and a player places it on source water (Round 70,
+ -- round70-plan.md §2.3).
  engine.register_node(catalog.freshwater[1], {
-  description="Freshwater Waterlily",
+  description=decor_description("Freshwater Waterlily","Place it on open water."),
   drawtype="nodebox",
   paramtype="light",
   paramtype2="facedir",
@@ -300,11 +329,13 @@ return function(engine, directory, nodes, gathering)
   pointable=true,
   buildable_to=true,
   floodable=true,
-  groups={snappy=3,flora=1,flammable=1,not_in_creative_inventory=1},
+  liquids_pointable=true,
+  groups={snappy=3,flora=1,flammable=1,grug_decor_plant=1},
   sounds=default.node_sound_leaves_defaults(),
   node_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,-15/32,0.5}},
   selection_box={type="fixed",fixed={-7/16,-0.5,-7/16,7/16,-15/32,7/16}},
-  drop="",
+  node_placement_prediction="",
+  on_place=nodes.place_waterlily,
  })
 
  -- Dragon arena hazards (Round 31 DA2, wp40/arena_layout.lua): written by the

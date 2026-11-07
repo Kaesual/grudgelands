@@ -191,8 +191,16 @@ core.register_node("grug_trees:gravewood_wood", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
+-- Decoration a player can carry (Round 70, round70-plan.md §2.3): the same
+-- tooltip line and group as grug_nodes' plants (grug_nodes/plants.lua, which
+-- loads later; tools/r70_plants checks the line). Decaying leaves and hanging plants still drop nothing: leaf
+-- decay skips a drop that is one of its own leaves.
+local function decor_description(description, how)
+	return description .. "\nDecoration: no recipe uses it.\n" .. how
+end
+
 core.register_node("grug_trees:gravewood_leaves", {
-	description = "Gravewood Dead Leaves",
+	description = decor_description("Gravewood Dead Leaves", "Place it like a block."),
 	drawtype = "allfaces_optional",
 	-- Existing CC BY-SA leaf texture; the engine modifier tints the foliage toward grey.
 	tiles = {"default_leaves.png^[colorize:#858585:210"},
@@ -201,8 +209,7 @@ core.register_node("grug_trees:gravewood_leaves", {
 	-- it renders (allfaces_optional maps waving 1 to the leaves material).
 	waving = 1,
 	is_ground_content = false,
-	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
-	drop = "",
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1, grug_decor_plant = 1},
 	sounds = default.node_sound_leaves_defaults(),
 	after_place_node = after_place_leaves,
 })
@@ -210,17 +217,16 @@ core.register_node("grug_trees:gravewood_leaves", {
 -- The swamp tree (Round 47 lane SW, tools/r47_sw/DESIGN.md) grows from
 -- gravewood's wood with its own olive leaves and hanging moss. Both decay
 -- with gravewood's wood (the generator keeps them within 3 of it) and
--- drop nothing, as gravewood's leaves.
+-- drop themselves, as gravewood's leaves.
 core.register_node("grug_trees:swamp_leaves", {
-	description = "Swamp Leaves",
+	description = decor_description("Swamp Leaves", "Place it like a block."),
 	drawtype = "allfaces_optional",
 	-- Lane ART's olive leaves (CC0, LICENSE-media.md).
 	tiles = {"grug_trees_swamp_leaves.png"},
 	paramtype = "light",
 	waving = 1,
 	is_ground_content = false,
-	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
-	drop = "",
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1, grug_decor_plant = 1},
 	sounds = default.node_sound_leaves_defaults(),
 	after_place_node = after_place_leaves,
 })
@@ -230,8 +236,10 @@ core.register_node("grug_trees:swamp_leaves", {
 -- node of a strand would fall; it goes with the tree's leaf decay instead.
 -- Round 51 (land plan ruling 4): a run is the continuous strand above the
 -- tapered end (`swamp_hanging_moss`, the lowest node); hanging.lua keeps a
--- dug run whole (the end moves up).
-local function hanging_moss(name, description, texture)
+-- dug run whole (the end moves up). Round 70: the end is the carried item,
+-- a strand drops it too, and hanging.lua places it.
+local function hanging_moss(name, description, texture, groups, drop)
+	groups.snappy, groups.leafdecay, groups.flammable = 3, 3, 2
 	core.register_node(name, {
 		description = description,
 		drawtype = "plantlike",
@@ -244,21 +252,25 @@ local function hanging_moss(name, description, texture)
 		waving = 1,
 		is_ground_content = false,
 		selection_box = {type = "fixed", fixed = {-5 / 16, -0.5, -5 / 16, 5 / 16, 0.5, 5 / 16}},
-		groups = {snappy = 3, leafdecay = 3, flammable = 2},
-		drop = "",
+		groups = groups,
+		drop = drop,
 		sounds = default.node_sound_leaves_defaults(),
 		after_place_node = after_place_leaves,
 	})
 end
-hanging_moss("grug_trees:swamp_hanging_moss", "Hanging Moss",
-	"grug_trees_swamp_hanging_moss.png")
+local HANGS = "Hang it under a block. Place more below it for a longer run."
+hanging_moss("grug_trees:swamp_hanging_moss", decor_description("Hanging Moss", HANGS),
+	"grug_trees_swamp_hanging_moss.png", {grug_decor_plant = 1})
 hanging_moss("grug_trees:swamp_hanging_moss_strand", "Hanging Moss Strand",
-	"grug_trees_swamp_hanging_moss_strand.png")
+	"grug_trees_swamp_hanging_moss_strand.png", {not_in_creative_inventory = 1},
+	"grug_trees:swamp_hanging_moss")
 -- Round 51 lane LP: the jungle's lianas, the same strand above an end under
 -- jungle and kapok leaves (wp40/tree_templates.lua), decaying with jungle
--- wood (shapes.lua) and dropping nothing.
-hanging_moss("grug_trees:liana", "Liana", "grug_trees_liana.png")
-hanging_moss("grug_trees:liana_strand", "Liana Strand", "grug_trees_liana_strand.png")
+-- wood (shapes.lua).
+hanging_moss("grug_trees:liana", decor_description("Liana", HANGS), "grug_trees_liana.png",
+	{grug_decor_plant = 1})
+hanging_moss("grug_trees:liana_strand", "Liana Strand", "grug_trees_liana_strand.png",
+	{not_in_creative_inventory = 1}, "grug_trees:liana")
 
 -- The strand/end pairs (lane LP's lianas register theirs the same way).
 grug_trees.hanging = dofile(core.get_modpath("grug_trees") .. "/hanging.lua")({
@@ -266,7 +278,16 @@ grug_trees.hanging = dofile(core.get_modpath("grug_trees") .. "/hanging.lua")({
 	swap_node = function(pos, node) return core.swap_node(pos, node) end,
 	remove_node = function(pos) return core.remove_node(pos) end,
 	is_protected = function(pos, name) return core.is_protected(pos, name) end,
+	record_violation = function(pos, name) return core.record_protection_violation(pos, name) end,
 	override_item = function(name, fields) return core.override_item(name, fields) end,
+	drop = function(pos, item, digger) return core.handle_node_drops(pos, {item}, digger) end,
+	item_place = function(...) return core.item_place(...) end,
+	-- grug_core loads after default, so this is looked up at the click.
+	rightclick = function(...) return grug_core.node_rightclick(...) end,
+	holds = function(name)
+		local def = core.registered_nodes[name]
+		return def ~= nil and def.walkable ~= false and not def.buildable_to
+	end,
 })
 grug_trees.hanging.register("grug_trees:swamp_hanging_moss_strand", "grug_trees:swamp_hanging_moss")
 grug_trees.hanging.register("grug_trees:liana_strand", "grug_trees:liana")

@@ -139,13 +139,45 @@ clay and drop `grug_nodes:mesa_clay`; they band the badlands' steep faces by
 height (world_zones.md §7.6, "Steep ground"). Hanging moss is a run of the
 continuous strand (`grug_trees:swamp_hanging_moss_strand`) above the tapered
 end (`grug_trees:swamp_hanging_moss`): digging a piece turns the strand
-right above it into the end and takes the pieces below it (they drop
-nothing; a protected piece stays). Hanging moss comes back only with its
-tree: it decays with the tree's wood, and the swamp tree has no sapling.
+right above it into the end and takes the pieces below it (each gives the
+digger one Hanging Moss; a protected piece stays). Hanging moss comes back
+only with its tree: it decays with the tree's wood, without a drop, and the
+swamp tree has no sapling.
+
+**Decorative plants carried (Round 70, [plan](../planning/round70-plan.md)
+§2.3; this ends land plan ruling 11).** The land plants below, the swamp and
+gravewood foliage, lianas and hanging moss, ferns and marram grass, the
+freshwater waterlily and waterweed, seagrass and all five corals drop
+themselves and can be placed. A variant drops the first of its kind, which
+places any of them at random (ferns, lichen, seagrass); a strand drops its
+end. Both reasons of the old rule stay answered: the tooltip of each says
+"Decoration: no recipe uses it." and how it is placed, so nobody takes one
+for a gathering source, and a stack is worth 1c (tier 1, sold in lots;
+[economy.md](economy.md) §2), so nobody farms them. They carry no
+`grug_gathering_source` group and no recipe takes them.
+- *Ground plants* and *foliage* place like any node, under `is_protected`.
+  Placed leaves do not decay (`default.after_place_leaves`).
+- *Waterlily:* on source water (river water too), in the air above it.
+- *Seagrass, waterweed:* the plant replaces a plain `default:sand` bed under
+  source water, as the generator's does; seagrass needs 1 water node above
+  the bed, waterweed 2 and grows 1–4 tall, always under the surface. Digging
+  either leaves the sand bed (and no sand item).
+- *Liana, hanging moss:* one carried piece is one node. It hangs as an end
+  under a solid node or leaves; pointed at a run it joins that run's bottom
+  and the old end turns into a strand. A placed piece does not decay, so it
+  stays when the block above goes.
+- *Placed plants are the same nodes as wild ones.* Nothing tells them apart
+  and nothing needs to: the renewal counts both, only ever adds and never
+  places in protected ground or a claim, with one exception: seagrass and
+  kelp regrow in protected bay, belt and channel water
+  (`grug_core.water_plant_renewal_allowed`), claims still refusing. For
+  players, towns, landmarks and protected water refuse placing and digging
+  alike, so seagrass and coral farther than 24 nodes off the coast stay out
+  of reach.
 
 **Land plants (Round 51 lane LP, picked in the land viewer).** Decoration
-only: none glows, none drops anything (land plan rulings 10 and 11, round
-plan §3.6), and none shares a name or a texture with a gathering source.
+only: none glows (land plan ruling 10), and none shares a name or a texture
+with a gathering source.
 - *Lianas* hang under jungle and kapok leaves like the hanging moss: the
   continuous strand `grug_trees:liana_strand` above the end
   `grug_trees:liana`, the same dig rule, decaying with jungle wood. The
@@ -164,9 +196,8 @@ plan §3.6), and none shares a name or a texture with a gathering source.
 - *Bushes:* the jungle's large-leaved bush and the badlands' withered bush
   are default's bush and acacia bush shapes wearing
   `grug_nodes:jungle_bush_leaves` and `grug_nodes:withered_bush_leaves`;
-  the foliage decays with the stem and drops nothing.
-- Default's ferns and marram grass also drop nothing now. Papyrus stays
-  default's (it drops itself, for paper).
+  the foliage decays with the stem, without a drop.
+- Papyrus stays default's (it drops itself, for paper).
 
 ### 1.4 Settlements
 
@@ -333,7 +364,7 @@ run by run where each cell has ground right under it at the foot and none at
 the foot's level, never where the ground falls away or rises. Kapok grows
 from jungle wood; silverwood and gravewood are their own species with their
 own nodes. Leaves decay within radius 3 of wood; the gravewood's grey leaves
-drop nothing. Saplings grow the generator's tree of their species too (§5).
+drop themselves when dug (§1.3, Round 70) and nothing when they decay. Saplings grow the generator's tree of their species too (§5).
 Simple variant ranges above mean one independently settled entry per named
 variant at the displayed fill.
 

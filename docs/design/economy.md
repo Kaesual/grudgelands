@@ -170,6 +170,7 @@ items without one:
   | Cobblestone, Mossy and Desert Cobblestone, Granite, Basalt, Slate; Stone, Desert Stone and their bricks and blocks | 20 mc | 1c per 50 |
   | Sand, Desert Sand, Silver Sand, Gravel | 20 mc | 1c per 50 |
   | Leaves (`group:leaves`), saplings (`group:sapling`) | 20 mc | 1c per 50 |
+  | Decorative plants (`group:grug_decor_plant`: the plants, foliage and corals of [biomes_mobs.md](biomes_mobs.md) §1.3, Round 70), tier 1 | 20 mc | 1c per 50 |
   | Sandstone, Desert and Silver Sandstone and their bricks and blocks | 80 mc (four sand) | 1c per 20 |
   | Logs (`group:tree`) and Cactus | 50 mc | 1c per 20 |
   | Planks (`group:wood`) | 12 mc (a quarter log, rounded down) | 1c per 99 |
@@ -196,7 +197,7 @@ items without one:
   bound items (`grug_soulbound`, `grug_bound_skill`: the Claim Stone, every
   quest-only item since Round 60 (both Captain's Orders, the Dispatch
   Folio, since Round 61 the Runner's Packet), ability items, the retired mount and boat items); and,
-  having no value, dirt and the soils, clay, snow, ice, ground cover,
+  having no value, dirt and the soils, clay, snow, ice, other ground cover,
   flowers and dyes, obsidian, and anything no player can hold (growth
   stages, door halves, liquids, mapgen nodes).
 - A craft, cook, pack/unpack or service loop may not print money: an output
