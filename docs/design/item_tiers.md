@@ -41,7 +41,7 @@ loot), [professions.md](professions.md) (progression, mastery, stations),
 [combat_stats.md](combat_stats.md) §2 (how crit and armor resolve).
 
 Tiers: T1 = item or character level 1–10 … T6 = 51–60, T7 = 61–70 (boss
-drops and crowned items; Round 71's instance mobs at 61–69 join them).
+drops and crowned items; Round 71's Expedition mobs at 61–69 join them).
 
 ## 1. Enchant values
 

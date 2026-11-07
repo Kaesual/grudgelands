@@ -4,6 +4,8 @@ Concept from the user's notes and rulings of 2026-11-07, checked against the
 code at `829be5dd`. This is the rulings' source for [Round 71](round71-plan.md).
 Everything is ruled by the user unless it is marked as a proposal. The word is
 **Expedition**, for players and in docs, briefs and code (user, 2026-11-07).
+**This file stays as the record of the rulings; [`expeditions.md`](../design/expeditions.md)
+owns the rules as they stand.**
 
 Plans: [Round 71](round71-plan.md), [Round 70](round70-plan.md). Round 70 §2.10
 (item levels, kings, dragons) comes first.
