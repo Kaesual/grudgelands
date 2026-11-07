@@ -63,15 +63,12 @@ local function town_shots(key)
 end
 
 local function waypost_site()
-	local keys = {}
-	for key in pairs(grug_mapgen.wp40.waypost_texts) do keys[#keys + 1] = key end
-	table.sort(keys)
-	local x, y, z = keys[1]:match("^(-?%d+):(-?%d+):(-?%d+)$")
-	local base = vector.new(tonumber(x), tonumber(y), tonumber(z))
-	while grug_mapgen.wp40.waypost_texts[base.x .. ":" .. (base.y - 1) .. ":" .. base.z] do
-		base.y = base.y - 1
+	local rows = grug_mapgen.wp40.waypost_rows
+	local first = rows[1]
+	for _, row in ipairs(rows) do
+		if row.x * 100000 + row.z < first.x * 100000 + first.z then first = row end
 	end
-	return base, #keys
+	return vector.new(first.x, first.y, first.z), #rows
 end
 
 local function waypost_log(base)
@@ -114,7 +111,7 @@ core.register_globalstep(function(dtime)
 		local key = TOWNS[state.town]
 		if not key then
 			local base, count = waypost_site()
-			log("waypost nodes in this world " .. count .. ", first stack " .. core.pos_to_string(base))
+			log("waypost stacks in this world " .. count .. ", first " .. core.pos_to_string(base))
 			state.phase = "emerging"
 			state.base = base
 			player:set_pos(vector.offset(base, 0, 12, 0))

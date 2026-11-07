@@ -330,9 +330,25 @@ do
 			"J its second end, east, the long name cut")
 		check(row.arms[3].text == "Copperfell" and row.arms[3].param2 == 120,
 			"J the village up the secondary road")
-		local texts = wayposts.texts(rows)
-		check(texts["300:6:-4"] == "Dur Brannoc" and texts["300:8:-4"] == "Copperfell",
-			"J the LBM's table, bottom to top")
+		-- Main's text pass: the three nodes bottom to top, a chunk's own only.
+		local written = {}
+		local function write(pos, text) written[pos.y] = text end
+		local function always() return true end
+		wayposts.write_texts(rows, {x = 288, y = 0, z = -16}, {x = 367, y = 79, z = 63},
+			always, write)
+		check(written[6] == "Dur Brannoc" and written[7] == "Whitebridge" and
+			written[8] == "Copperfell", "J the texts, bottom to top")
+		written = {}
+		wayposts.write_texts(rows, {x = 288, y = 7, z = -16}, {x = 367, y = 86, z = 63},
+			always, write)
+		check(written[6] == nil and written[7] ~= nil, "J a chunk writes its own nodes only")
+		written = {}
+		wayposts.write_texts(rows, {x = 288, y = 0, z = 0}, {x = 367, y = 79, z = 79},
+			always, write)
+		check(next(written) == nil, "J another column's chunk writes nothing")
+		wayposts.write_texts(rows, {x = 288, y = 0, z = -16}, {x = 367, y = 79, z = 63},
+			function() return false end, write)
+		check(next(written) == nil, "J no text without the node")
 	end
 	-- A later junction with no good column is skipped, the earlier stack kept
 	-- (found by the seed fleet: the spacing test read the missing column).

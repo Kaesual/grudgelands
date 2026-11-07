@@ -1439,8 +1439,8 @@ graph requirement may shape a zone, and nothing may require a graph to be
   another. The stack takes no road column, stands in the road's corridor, so
   it is protected and nothing grows there, and comes from the road layout,
   the same in main and emerge. The emerge writer places the nodes; a text is
-  metadata only main can write, so an LBM writes it when the block first
-  loads (no saved state besides that metadata).
+  metadata only main can write, so main's `on_generated` writes it as soon as
+  the chunk is finished (no saved state besides that metadata).
 - Retired: the 57-edge authoritative route graph, hub stations in every zone,
   star junctions, the shared junction grade solve and the capital ingress
   corridors.

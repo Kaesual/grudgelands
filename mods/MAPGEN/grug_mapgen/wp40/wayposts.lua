@@ -19,8 +19,12 @@
 -- water) gets no stack; both environments skip the same one.
 --
 -- The node's text is metadata, which the emerge environment cannot write: the
--- writer places the nodes, and main's LBM (grug_mapgen/init.lua) writes each
--- one's text from `M.rows` when its block first loads.
+-- writer places the nodes, and main's on_generated (grug_mapgen/init.lua)
+-- writes each one's text from `M.rows` as soon as the chunk is finished. An
+-- LBM would not do: a block that went active as an empty shell of a
+-- neighbouring chunk is never activated again when it is generated
+-- (serverenvironment.cpp:946-957, emerge.cpp:599-626), so its text would wait
+-- for the block's next load.
 local M = {}
 
 M.NODE = "grug_signs:waypost"
@@ -144,15 +148,22 @@ function M.rows(road_module, road_text, labels, column_values_at, road_column_at
 	return rows
 end
 
--- Main's table for the LBM: "x:y:z" -> the text of that node.
-function M.texts(rows)
-	local texts = {}
-	for _, row in ipairs(rows) do
-		for index, arm in ipairs(row.arms) do
-			texts[row.x .. ":" .. (row.y + index - 1) .. ":" .. row.z] = arm.text
+-- Main, once a chunk is generated: the text of each waypost node in it.
+-- `is_waypost(pos)` guards a chunk the writer gave up on; `write(pos, text)`
+-- stores it.
+function M.write_texts(rows, minp, maxp, is_waypost, write)
+	for index = 1, #rows do
+		local row = rows[index]
+		if row.x >= minp.x and row.x <= maxp.x and row.z >= minp.z and row.z <= maxp.z then
+			for arm = 1, #row.arms do
+				local y = row.y + arm - 1
+				if y >= minp.y and y <= maxp.y then
+					local pos = {x = row.x, y = y, z = row.z}
+					if is_waypost(pos) then write(pos, row.arms[arm].text) end
+				end
+			end
 		end
 	end
-	return texts
 end
 
 return M
