@@ -102,7 +102,8 @@ return function(lib, player)
 	boss = assert(boss_of(run)) -- the old reference went with the unload
 	local function test_mob(name, level, expedition)
 		local object = core.add_entity(boss.object:get_pos(), name, core.serialize({
-			_grug_spawn_level = level, _grug_expedition = expedition}))
+			_grug_spawn_level = level, _grug_expedition = expedition,
+			_grug_authored = true})) -- without it the limit of 1 refuses the test mob
 		local ent = object:get_luaentity()
 		grug_mobs.ensure_init(ent)
 		return ent
