@@ -1,0 +1,312 @@
+-- The Expedition Registrar (Round 71; docs/planning/round71-expeditions-concept.md
+-- sections 4 and 5): the villager on the clerk's socket of every capital's guild
+-- house, its one window and the notices of a run. It only asks and calls
+-- init.lua's interface: every rule and every refusal text are runs.lua's.
+--
+-- Without a run the window lists the Expeditions, the levels the player may enter
+-- and one row per party member, which warns and stops nobody; with one it shows
+-- that run and Enter. Nothing here is saved.
+--
+-- Takes over the socket like the Miner's Guild Exchange takes its counter
+-- (grug_traders/vendors.lua) and needs no template change. On a world older than
+-- this file the clerk gives way at its activation (grug_mobs start_npc_claim).
+local M = grug_expeditions
+local capital_services = dofile(core.get_modpath("grug_mapgen") .. "/wp13/capital_services.lua")
+
+local ROLE = "expedition_registrar"
+local CLERK = "miners_guild/miners_guild_clerk"
+local TITLE, SUBTITLE = "Expedition Registrar", "The Miner's Guild needs fighters"
+local FORMNAME = "grug_expeditions:registrar"
+local REACH = 8
+local GREEN, RED, WARN = "#8fdc7a", "#ff6060", "#d4b77d"
+-- The window without a run, and with one.
+local CHOICE_W, CHOICE_H, RUN_W, RUN_H = 13, 9.9, 9, 9.9
+local ROW_PITCH = 0.42
+local PREPARING = "Your Expedition is being prepared..."
+-- Why a run ended, for those it touches. A reason without a row reads as the last.
+local ENDED = {failed = "Your Expedition could not be prepared. Try again soon."}
+local ENDED_OTHER = "Your Expedition has ended."
+-- How long the black screen of an arrival lasts: the first blocks of a box take
+-- 0.6 to 0.8 s to reach a client, which until then draws the open sky.
+local CURTAIN_SECONDS = 1
+
+local capital_keys = {}
+for key in pairs(capital_services.PLOTS) do capital_keys[#capital_keys + 1] = key end
+table.sort(capital_keys)
+for _, key in ipairs(capital_keys) do grug_core.assign_service_socket(key, CLERK, ROLE) end
+grug_mobs.register_start_socket_role(ROLE, function(_, settlement)
+	return "grug_mobs:villager_" .. settlement.race_id
+end)
+
+local sessions = {}
+local UI = grug_core.ui
+
+local function esc(text) return core.formspec_escape(tostring(text)) end
+
+-- Bound to the live registrar, within talking range, and to its own faction.
+-- A capital's settlement key is its home location's id.
+local function permitted(player, entity)
+	if not player or not player.is_player or not player:is_player() or
+			player:get_hp() <= 0 or type(entity) ~= "table" or
+			entity._grug_socket_role ~= ROLE or not entity.object then
+		return false
+	end
+	local location = grug_home.location(entity._grug_start)
+	if not location or not grug_factions.serves(location.faction, player) then return false end
+	local pos, npc = player:get_pos(), entity.object:get_pos()
+	return pos ~= nil and npc ~= nil and vector.distance(pos, npc) <= REACH
+end
+
+local function level_text(level, bonus)
+	return ("Level %d (+%d)"):format(level, bonus)
+end
+
+local function count(set)
+	local n = 0
+	for _ in pairs(set) do n = n + 1 end
+	return n
+end
+
+-- What a run's owner reads about its state.
+local function state_text(run)
+	if run.state == "preparing" then
+		local status = M.preparation(run)
+		local ahead = status and status.waiting or 0
+		if ahead > 0 then return ("%s %d ahead in the queue."):format(PREPARING, ahead) end
+		return PREPARING
+	end
+	if run.state == "ready" then
+		return ("Ready. It waits %d minutes for you."):format(M.catalogue.RESERVE_SECONDS / 60)
+	end
+	return "Under way."
+end
+
+-- One row per member at x, y: name, level, whether they can enter. Returns the
+-- number of rows that cannot.
+local function eligibility_rows(fs, x, y, rows)
+	local refused = 0
+	for index, row in ipairs(rows) do
+		local top = y + (index - 1) * ROW_PITCH
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]label[%.2f,%.2f;%s]"):format(x, top, esc(row.name),
+			x + 3, top, esc("Lv " .. row.level))
+		local text = row.eligible and core.colorize(GREEN, "Can enter") or
+			core.colorize(RED, row.reason or "Cannot enter")
+		if not row.online then text = text .. core.colorize(UI.colors.muted, "  (offline)") end
+		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(x + 4, top, esc(text))
+		if not row.eligible then refused = refused + 1 end
+	end
+	return refused
+end
+
+local function message_line(fs, session, x, y, w, g)
+	if session.message then
+		fs[#fs + 1] = UI.prose(x, y, w, 0.6, core.colorize(RED, session.message), false, g)
+	end
+end
+
+-- The player's own Expedition: its state, who can enter, and Enter. Enter stays
+-- while the level or the places say no: the click gives the reason.
+local function run_form(player, session, run)
+	local def = M.definition(run.expedition)
+	local g = UI.text_growth(player, RUN_W, RUN_H)
+	local fs = {UI.frame(RUN_W, RUN_H, nil, nil, player), "set_focus[close;true]",
+		UI.service_header(RUN_W, TITLE, SUBTITLE, nil, g),
+		UI.panel(0.4, 1.6, 8.2, 6.9), UI.heading(0.65, 1.95, def.name, g),
+		("label[0.65,2.4;%s]"):format(esc(("%s, %d of %d places taken"):format(
+			level_text(run.level, run.bonus), count(run.entered), run.max_players))),
+		UI.prose(0.65, 2.7, 7.7, 0.9, state_text(run), false, g),
+		UI.heading(0.65, 3.8, "WHO CAN ENTER", g)}
+	eligibility_rows(fs, 0.65, 4.2, M.eligibility(player, run.expedition, run.bonus))
+	message_line(fs, session, 0.4, 8.55, 8.2, g)
+	if run.state ~= "preparing" then
+		fs[#fs + 1] = UI.button_style("enter", "selected", g)
+		fs[#fs + 1] = ("button[5.6,9.15;3,0.6;enter;Enter]")
+	end
+	fs[#fs + 1] = "button_exit[0.4,9.15;1.7,0.6;close;Close]"
+	return table.concat(fs)
+end
+
+-- The chosen level of `offered`, kept while it is still on offer.
+local function chosen_level(session, offered)
+	for index, row in ipairs(offered) do
+		if row.bonus == session.bonus then return row, index end
+	end
+	session.bonus = offered[1] and offered[1].bonus or nil
+	return offered[1], 1
+end
+
+local function choice_body(fs, player, session, def, g)
+	fs[#fs + 1] = UI.heading(5.45, 1.95, def.name, g)
+	local offered = M.offered_levels(player, def.id)
+	session.offered = offered
+	local level, index = chosen_level(session, offered)
+	local bonus = level and level.bonus or 0
+	if level then
+		local items = {}
+		for i, row in ipairs(offered) do items[i] = esc(level_text(row.level, row.bonus)) end
+		fs[#fs + 1] = ("label[5.45,2.65;Mob level]dropdown[7.3,2.35;3.2,0.6;level;%s;%d;true]")
+			:format(table.concat(items, ","), index)
+	end
+	-- A leader sees every member before opening it; the warning stops nobody.
+	local party = grug_parties.view(player)
+	if level and party then
+		fs[#fs + 1] = UI.heading(5.45, 3.35, "WHO CAN ENTER", g)
+		if eligibility_rows(fs, 5.45, 3.75, M.eligibility(player, def.id, bonus)) > 0 then
+			fs[#fs + 1] = UI.prose(0.4, 8.55, 12.2, 0.6, core.colorize(WARN,
+				"Not everyone in your party can enter at this level."), false, g)
+		end
+	end
+	message_line(fs, session, 0.4, 8.55, 12.2, g)
+	local ok, why = M.can_create(player, def.id, bonus)
+	if ok then
+		fs[#fs + 1] = UI.button_style("open", "selected", g)
+		fs[#fs + 1] = "button[9.1,9.15;3.5,0.6;open;Open Expedition]"
+	else
+		fs[#fs + 1] = UI.prose(2.4, 9.15, 10.2, 0.65, why, true, g)
+	end
+end
+
+local function choice_form(player, session)
+	local g = UI.text_growth(player, CHOICE_W, CHOICE_H)
+	local fs = {UI.frame(CHOICE_W, CHOICE_H, nil, nil, player), "set_focus[close;true]",
+		UI.service_header(CHOICE_W, TITLE, SUBTITLE, nil, g),
+		UI.panel(0.4, 1.6, 4.6, 6.9), UI.panel(5.2, 1.6, 7.4, 6.9),
+		UI.heading(0.65, 1.95, "EXPEDITIONS", g)}
+	local list, rows, selected = M.list(), {}, nil
+	session.listed = {}
+	for index, row in ipairs(list) do
+		session.listed[index] = row.id
+		if row.id == session.expedition then selected = row end
+	end
+	selected = selected or list[1]
+	session.expedition = selected and selected.id or nil
+	for index, row in ipairs(list) do
+		rows[index] = {title = row.name, selected = row == selected,
+			subtitle = ("Level %d, up to %d players"):format(row.level, row.max_players)}
+	end
+	if selected then
+		fs[#fs + 1] = UI.rows(session, {name = "expeditions", x = 0.5, y = 2.25, w = 4.4, h = 6.15,
+			scale = g, rows = rows})
+		choice_body(fs, player, session, selected, g)
+	else
+		fs[#fs + 1] = UI.prose(0.65, 2.3, 4.1, 1.5, "The guild has no Expedition to offer yet.", true, g)
+	end
+	fs[#fs + 1] = "button_exit[0.4,9.15;1.7,0.6;close;Close]"
+	return table.concat(fs)
+end
+
+local function form(player, session)
+	local run = M.run_of(player)
+	if run then return run_form(player, session, run) end
+	return choice_form(player, session)
+end
+
+local function show(player, session)
+	core.show_formspec(player:get_player_name(), FORMNAME, form(player, session))
+end
+
+function M.open_registrar(player, entity)
+	if not permitted(player, entity) then return false end
+	local session = {entity = entity, capital = entity._grug_start}
+	sessions[player:get_player_name()] = session
+	grug_sounds.play("npc_steward", player)
+	show(player, session)
+	return true
+end
+
+-- The dropdown sends its index with every event of the window: only a change
+-- counts, and only an index the window showed.
+local function read_level(session, fields)
+	local row = fields.level and session.offered and session.offered[tonumber(fields.level)]
+	if row and row.bonus ~= session.bonus then
+		session.bonus = row.bonus
+		return true
+	end
+	return false
+end
+
+local function tell(run, text)
+	for _, player in ipairs(core.get_connected_players()) do
+		if run.inside[player:get_player_name()] or M.belongs(run, player) then
+			grug_core.feed(player, "notice", text, "expedition")
+		end
+	end
+end
+
+core.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= FORMNAME then return false end
+	local name = player:get_player_name()
+	local session = sessions[name]
+	if not session then return true end
+	if fields.quit or not permitted(player, session.entity) then
+		sessions[name] = nil
+		if not fields.quit then core.close_formspec(name, FORMNAME) end
+		return true
+	end
+	local clicked = UI.rows_event(session, "expeditions", fields)
+	local changed = read_level(session, fields)
+	if clicked and session.listed[clicked] then
+		session.expedition, session.bonus = session.listed[clicked], nil
+		changed = true
+	end
+	if changed then session.message = nil end
+	if fields.open and session.expedition then
+		local run, why = M.create(player, session.expedition, session.bonus or 0)
+		session.message = why
+		if run then tell(run, state_text(run)) end
+		changed = true
+	elseif fields.enter then
+		local ok, why = M.enter(player, session.capital)
+		if ok then
+			sessions[name] = nil
+			core.close_formspec(name, FORMNAME)
+			return true
+		end
+		session.message, changed = why, true
+	end
+	if changed then show(player, session) end
+	return true
+end)
+
+local function forget(player) sessions[player:get_player_name()] = nil end
+core.register_on_leaveplayer(forget)
+core.register_on_dieplayer(forget)
+
+-- A window open on `run` shows the news, and one waiting in the queue moves up.
+local function refresh(run)
+	for name, session in pairs(sessions) do
+		local player = core.get_player_by_name(name)
+		local own = player and M.run_of(player)
+		if player and (M.belongs(run, player) or (own and own.state == "preparing")) then
+			session.message = nil
+			show(player, session)
+		end
+	end
+end
+
+M.register_on_ready(function(run)
+	tell(run, ("Your Expedition is ready: %s, level %d."):format(
+		M.definition(run.expedition).name, run.level))
+	refresh(run)
+end)
+
+M.register_on_end(function(run, reason)
+	tell(run, ENDED[reason] or ENDED_OTHER)
+	refresh(run)
+end)
+
+-- The arrival: black until the box has reached the client, instead of a frame of
+-- open sky at y -100.
+M.register_on_enter(function(_, name)
+	local player = core.get_player_by_name(name)
+	if not player then return end
+	local curtain = player:hud_add({type = "image", position = {x = 0.5, y = 0.5},
+		alignment = {x = 0, y = 0}, scale = {x = -100, y = -100},
+		text = "[fill:1x1:#000000", z_index = 1000})
+	core.after(CURTAIN_SECONDS, function()
+		if player:is_valid() then player:hud_remove(curtain) end
+	end)
+end)
+
+-- For fixtures: the sessions and the window's text.
+M.registrar = {sessions = sessions, form = form, FORMNAME = FORMNAME, ROLE = ROLE, CLERK = CLERK}

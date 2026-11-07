@@ -253,7 +253,7 @@ local ANSWER_COOLDOWN = 2
 -- The socket roles a villager entity serves at (profession trainers are known
 -- by `_grug_profession`); each serves only its own faction (Round 31).
 local SERVICE_ROLE = {innkeeper = true, riding_trainer = true, shipwright = true,
-	housing_manager = true}
+	housing_manager = true, expedition_registrar = true}
 --
 -- THE MOURNER'S BOWED HEAD (contract section 8.2, wave 2: "stands still, head
 -- bowed if the mesh allows"). MEASURED, not assumed: `character.b3d` carries
@@ -1118,6 +1118,12 @@ for index = 1, #identities do
 					if housing and housing.open_manager then
 						housing.open_manager(clicker, self)
 					end
+					return
+				end
+				if self._grug_socket_role == "expedition_registrar" then
+					-- grug_expeditions depends on this mod too.
+					local expeditions = rawget(_G, "grug_expeditions")
+					if expeditions then expeditions.open_registrar(clicker, self) end
 					return
 				end
 				local jobs = rawget(_G, "grug_jobs")
