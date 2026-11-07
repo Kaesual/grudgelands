@@ -97,6 +97,10 @@ local function loader(directory)
 	-- and the platform still looks down the whole approach.
 	local PLATFORM = {x1 = 4, z1 = 3, x2 = 14, z2 = 8, top = 4}
 
+	-- The castle (Round 70, form A): 45 x 35, its great door on the axis
+	-- looking down the approach, the bypass round its three other sides.
+	local CASTLE = {x = -22, z = 10, w = 45, d = 35}
+
 	local STREETS = {
 		-- The throne approach, from the south gate through the crossing to the
 		-- hall's forecourt.
@@ -146,10 +150,11 @@ local function loader(directory)
 	-- have: one throne, one travel pad for WP17 and one vendor per kind in
 	-- `grug_traders`. The KAT asserts the resulting multiset.
 	local PLOTS = {
-		-- 1. THE WARLORD HALL, on the axis, its great door looking down the
-		-- approach to the south gate and over the fighting platform.
+		-- 1. The castle, the warlord's seat, on the axis: its great door looks
+		-- down the approach to the south gate beside the fighting platform.
+		-- Built and roofed with the ors palette, the roster's binding.
 		{id = "warlord_hall", template = "gor_drazhak_warlord_hall",
-			x = -15, z = 9, turns = 0, palette = "ors",
+			x = CASTLE.x, z = CASTLE.z, turns = 0, palette = "ors", roof = "ors",
 			drop = {waypoint = true}},
 
 		-- 2. The four inner gatehouses, where the avenues leave the precinct.
@@ -417,7 +422,7 @@ local function loader(directory)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak, nave_floor = part.nave_floor}
+				d = footprint.d, peak = part.peak}
 			-- every dwelling wears its deck's breastwork, a part of its
 			-- template (`parapet_columns`, the ring's columns)
 			if part.parapet_columns then deck_rings = deck_rings + 1 end
@@ -480,7 +485,6 @@ local function loader(directory)
 		-- 4b. The dwellings' deck breastworks and 5. the hall's floor bands
 		-- and braziers are their templates' own (Round 56).
 		templates.all_used(stamped, "gor_drazhak")
-		local nave_floor = placed.warlord_hall.nave_floor
 
 		-- 5b. THE FIGHTING PLATFORM, in front of the hall's great door.
 		--
@@ -994,7 +998,6 @@ local function loader(directory)
 				deck_rings = deck_rings,
 				acacias = trees,
 				outcrops = outcrops,
-				nave_floor = nave_floor,
 				platform_cells = platform_cells,
 			},
 		}
