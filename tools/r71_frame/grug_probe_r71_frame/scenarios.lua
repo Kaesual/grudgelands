@@ -326,19 +326,17 @@ function S.tag(lib, player)
 	lib.wait(3)
 	keeps_tag(lib, player, tag, "run end")
 
-	run = assert(E.create(player, "test_vault", 0))
-	wait_ready(lib, run)
-	enter(lib, player, run)
-	lib.wait(2)
-	tag = assert(tag_of(player), "no name tag")
-	E.end_run(run, "probe")
+	-- A player a preparation finds in the box: a trip home lands too fast to be caught,
+	-- so the probe puts them there, and waits for the tag to be there too.
+	player:set_pos(run.places.arrival)
+	lib.wait_for(function()
+		local at = tag:get_pos()
+		return at and E.slot_at(at) == run.slot
+	end, 10)
+	lib.check(E.slot_at(player:get_pos()) == run.slot, "in the box before the preparation")
 	local next_run = assert(E.create(player, "test_vault", 0))
-	lib.check(next_run.slot == run.slot, "the same slot at once")
-	coroutine.yield()
-	coroutine.yield()
-	lib.logf("two steps into the preparation the player stands in slot %s",
-		tostring(E.slot_at(player:get_pos())))
 	wait_ready(lib, next_run)
+	lib.check(not E.slot_at(player:get_pos()), "sent out of the box")
 	lib.wait(3)
 	keeps_tag(lib, player, tag, "preparation")
 end
