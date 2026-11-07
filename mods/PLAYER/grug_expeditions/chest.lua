@@ -153,7 +153,9 @@ end
 -- VoxelManip wrote the chest: its hover text comes here.
 M.register_on_ready(function(run)
 	local pos = M.places(run).chest
-	if pos then core.get_meta(pos):set_string("infotext", TITLE) end
+	if not pos then return end
+	core.load_area(pos) -- a long preparation may have let its block go
+	core.get_meta(pos):set_string("infotext", TITLE)
 end)
 
 M.register_on_end(function(run)

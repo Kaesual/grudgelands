@@ -55,6 +55,7 @@ return function(lib, player)
 	lib.wait_for(function() return run.state == "ready" end, 90)
 	lib.check(run.state == "ready" and run.level == 29, "ready at level 29")
 	local places = E.places(run)
+	core.load_area(run.minp, run.maxp) -- the short unload timeout, on a busy machine
 	lib.check(core.get_node(places.door).name == "grug_expeditions:reward_door", "the door stands")
 	lib.check(core.get_node(places.chest).name == "grug_expeditions:reward_chest", "the chest stands")
 	lib.check(core.get_meta(places.chest):get_string("infotext") == "Reward Chest", "its hover text")
