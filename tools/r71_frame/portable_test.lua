@@ -60,7 +60,8 @@ file:close()
 local tpl = T.parse(text, inflate, "test_vault")
 T.check_fits(tpl, C.BOX, {"arrival", "start_waystone", "end_waystone"}, "test_vault")
 check(tpl.name == "test_vault" and tpl.size.x == 48 and tpl.size.y == 32 and tpl.size.z == 48, "D the head")
-check(tpl.places.start_waystone.x == 8 and #tpl.encounters == 2, "D places and markers")
+-- Three markers since lane MOBS added the test boss.
+check(tpl.places.start_waystone.x == 8 and #tpl.encounters == 3, "D places and markers")
 check(tpl.encounters[1].mob == "grug_mobs:giant_spider" and tpl.encounters[1].count == 2 and
 	tpl.encounters[2].tier == "elite" and tpl.encounters[2].room == "hall", "D a marker's fields")
 local function cell(pos)

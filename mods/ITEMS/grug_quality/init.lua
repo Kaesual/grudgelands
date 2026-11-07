@@ -1044,7 +1044,9 @@ function grug_items.roll_mob_gear(self, seed, locked)
 		boss = nil
 	end
 	local level = math.max(1, math.floor(tonumber(self._grug_level) or 1))
-	local ilvl = boss and grug_items.BOSS_DROPS.ilvl[boss] or math.min(level, 60)
+	-- An Expedition mob drops at its own level, above 60 too (Round 71).
+	local ilvl = boss and grug_items.BOSS_DROPS.ilvl[boss] or
+		(self._grug_expedition and level or math.min(level, 60))
 	-- The pool of the item level's material tier; boss drops above 60 are T6.
 	local items = grug_gear.drop_pool[grug_items.enchant_tier(math.min(ilvl, 60))]
 	local rng, used_seed = rng_for(seed,
@@ -1075,6 +1077,14 @@ function grug_items.roll_mob_gear(self, seed, locked)
 		out[#out + 1] = ItemStack(bag_for(level))
 	end
 	return out, used_seed
+end
+
+-- One gear item of `quality` (1 white, 2 blue, 3 gold) at `ilvl`, from the pool a
+-- kill at that level rolls from: an Expedition's chest (Round 71).
+function grug_items.roll_gear_item(ilvl, quality, seed)
+	local items = grug_gear.drop_pool[grug_items.enchant_tier(math.min(ilvl, 60))]
+	local rng, used_seed = rng_for(seed, "gear:" .. ilvl)
+	return gear_stack(items[rng:next(1, #items)], ilvl, quality, rng, used_seed)
 end
 
 -- The existing grug_mobs death hook is reached only after its shared

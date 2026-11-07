@@ -207,14 +207,16 @@ end
 -- fn(player, boss_id) for every player the ledger credits with a King's, a
 -- dragon's or the rift boss's kill ("rift:<site key>", Round 36), whether or
 -- not the loot lockout lets them loot it (grug_achievements counts the
--- kills).
+-- kills), and an Expedition boss's ("expedition:<catalogue id>", below).
 local boss_kill_callbacks = {}
 
 function grug_mobs.register_on_boss_kill(fn)
 	boss_kill_callbacks[#boss_kill_callbacks + 1] = fn
 end
 
-local function settle_boss(id, self, race)
+-- `credit_as` (Round 71, an Expedition boss): credit only, under this stable id
+-- instead of `id`, one ledger per run: no lockout and no reward, the chest pays.
+local function settle_boss(id, self, race, credit_as)
 	local row = ledgers[id]
 	local pos = self.object and self.object:get_pos()
 	if not row or not pos then
@@ -234,11 +236,13 @@ local function settle_boss(id, self, race)
 		end
 		if player and (near or death_ok) then
 			for index = 1, #boss_kill_callbacks do
-				boss_kill_callbacks[index](player, id)
+				boss_kill_callbacks[index](player, credit_as or id)
 			end
 			local meta = player:get_meta()
 			local key = lockout_key(id)
-			if meta:get_int(key) <= now then
+			if credit_as then
+				-- Credited above; the chest pays.
+			elseif meta:get_int(key) <= now then
 				if race then
 					give_or_queue(player, crown_stack(race))
 				elseif id:find("^dragon:") then

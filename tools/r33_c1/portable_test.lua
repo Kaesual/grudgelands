@@ -219,6 +219,26 @@ do
 	local capped = #out > 0
 	for _, stack in ipairs(out) do capped = capped and stack:get_meta():get_int("grug_ilvl") == 60 end
 	check(capped, "A an ordinary mob above 60 drops item level 60")
+	-- Round 71: an Expedition mob drops at its own level, 61-69, from the T6 pool.
+	for level = 61, 69 do
+		local mob = {name = "grug_mobs:wyrm", _grug_tier = "elite", _grug_level = level,
+			_grug_expedition = 1}
+		local seen, exact = 0, true
+		for index = 1, 400 do
+			for _, stack in ipairs(grug_items.roll_mob_gear(mob, seed_of(index))) do
+				if not is_bag(stack) then
+					seen = seen + 1
+					exact = exact and stack:get_meta():get_int("grug_ilvl") == level
+				end
+			end
+		end
+		check(seen > 0 and exact, "A an Expedition mob at " .. level .. " drops its own level")
+	end
+	do
+		local stack = grug_items.roll_gear_item(65, 3, seed_of(1))
+		check(stack:get_meta():get_int("grug_ilvl") == 65 and quality_of(stack) == 3,
+			"A the chest's gear item at level and quality")
+	end
 	local critter = {name = "grug_mobs:rabbit", _grug_tier = "critter", _grug_level = 1}
 	local gear = 0
 	for index = 1, 20000 do

@@ -11,6 +11,8 @@ MAGIC = "grudgelands-expedition-template 1"
 BOX = (128, 64, 128)
 REQUIRED = ("arrival", "start_waystone", "end_waystone")
 WAYSTONE = "grug_expeditions:waystone"
+# The mod's own nodes, walkable all: the node registry does not list them.
+OWN_NODES = (WAYSTONE, "grug_expeditions:reward_chest", "grug_expeditions:reward_door")
 
 
 class Template:
