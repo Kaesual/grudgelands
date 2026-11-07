@@ -24,7 +24,7 @@ voices](#mob-voices), [Dawn departure](#dawn-departure), [Mobs in
 water](#mobs-in-water), [Enchantments](#enchantments), [Materials and
 tier-rock gating](#materials-and-tier-rock-gating), [Traders and
 money](#traders-and-money), [Quests](#quests), [Parties](#parties),
-[Mail](#mail), [Housing](#housing), [Travel](#travel), [Atlas](#atlas),
+[Mail](#mail), [Web bridge](#web-bridge), [Housing](#housing), [Travel](#travel), [Atlas](#atlas),
 [Preparation](#preparation), [World version and
 migrations](#world-version-and-migrations), [Performance log
 lines](#performance-log-lines), [Fishing](#fishing), [Mapgen and
@@ -2198,6 +2198,33 @@ tools](#player-meta-read-by-external-tools).
   kept from every event of the page and written back as the fields'
   defaults. Fixture `tools/r48_admin` (the real sfinv and
   `grug_inventory/ui.lua`).
+
+## Web bridge
+
+`grug_bridge` (0.69.1) is the game's side of the [web bridge
+contract](web-bridge.md). Without the HTTP API or either setting it registers
+nothing and logs one line, so local and browser worlds play as without it.
+
+- **`link.lua`** is the exchange and free of engine calls, as are `mirror.lua` and
+  `bans.lua`; `init.lua` passes in what they need, so `tools/r691_bridge` runs the
+  shipped files. Events are encoded when queued: one that cannot be written is lost
+  alone and never blocks the queue. The request is assembled from those strings,
+  which also keeps its byte bound exact and writes empty lists as `[]`. A queued
+  event is valid UTF-8 (`L.valid_utf8`): the JSON writer copies bytes, `M.clean`
+  keeps a stray lead byte, and a bridge refusing that body would stop the queue.
+- **Errors** never reach the engine: `core.after` and the HTTP callback run in the
+  server step, where an uncaught error ends the server, so every hook, command and
+  callback is caught and the exchange goes on. Requests set `quiet`: otherwise the
+  engine logs an error for each failed fetch.
+- **The mail mirror** hears `grug_mail.store.register_on_saved(kind, func)`, the
+  one hook in `grug_mail`: every change of the ticket and broadcast lists ends in
+  their save, pruning at a read included. It compares each entry with the last sent
+  one, so it needs no knowledge of who changed what.
+- **The ledger** of command ids stays in memory on purpose ([contract](web-bridge.md#commands)).
+- **Commands** treat their arguments as untrusted and return result codes; a grant
+  goes through the same paths as `/money`, `/xp` and a letter's attachments.
+- **Tests:** `tools/r691_bridge`: `portable_test.lua` on a stub engine, `run.sh` a
+  real server and client against `fake_bridge.py`.
 
 ## Housing
 
