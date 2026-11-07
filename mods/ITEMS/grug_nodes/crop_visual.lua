@@ -10,6 +10,24 @@ local SHAPES = {
 	melon = "ground_fruit", mushroom = "mushroom",
 }
 
+-- Grown corn: the stacked tiles of stages 3 and 4 end this many pixel rows above
+-- the ground (the root tile's bottom rows are empty), top is the highest
+-- segment. Every node draws its own tile that far lower and the tile above
+-- reaches into it, so the whole plant stands on the ground in one piece.
+local CORN_STACK = {[3] = {rows = 3, top = 1}, [4] = {rows = 5, top = 2}}
+
+local function lowered_corn_tile(stage, segment)
+	local stack = CORN_STACK[stage]
+	local function segment_tile(index)
+		return "grug_farming_corn_" .. stage .. "_segment_" .. index .. ".png"
+	end
+	local tile = "[combine:16x16:0," .. stack.rows .. "=" .. segment_tile(segment)
+	if segment < stack.top then
+		tile = tile .. ":0," .. (stack.rows - 16) .. "=" .. segment_tile(segment + 1)
+	end
+	return tile
+end
+
 local BOUNDS = {
 	grain = {{.22,.18},{.28,.36},{.34,.60},{.40,.86}},
 	root = {{.18,.10},{.25,.22},{.32,.36},{.38,.50}},
@@ -36,6 +54,7 @@ return function(key, stage, sounds, context)
 			key == "bamboo_shoot")
 	local tile = "grug_farming_" .. key .. "_" .. stage ..
 		(segmented and ("_segment_" .. segment) or "") .. ".png"
+	if segmented and key == "corn" then tile = lowered_corn_tile(stage, segment) end
 	local tiles = {tile}
 	local drawtype = "plantlike"
 	local visual_scale = mode == "wild" and 1.15 or 1

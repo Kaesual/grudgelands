@@ -233,6 +233,7 @@ item("t:coal_lump", {})
 item("default:coal_lump", {})
 item("grug_smelting:charcoal", {})
 item("grug_mobs:fallen_crown", {stack_max = 16})
+item("t:brew", {stack_max = 20, groups = {grug_potion = 1}})
 item("grug_abilities:strike", {stack_max = 1, groups = {grug_ability = 1, grug_bound_skill = 1}})
 item("grug_abilities:loose", {stack_max = 1, groups = {grug_ability = 1, grug_bound_skill = 1}})
 item("grug_abilities:sprint", {stack_max = 1, groups = {grug_ability = 1, grug_bound_skill = 1}})
@@ -390,8 +391,8 @@ do
 	eq(row(p, STORE), hidden, "G the sort leaves the hidden list as it is")
 	eq(table.concat(I.carried_lists(p.inv), ","), "main,grug_bag1_content",
 		"G carried_lists: main and the bags, not the hidden list")
-	eq(table.concat(I.consume_lists(p.inv), ","), "main,grug_bag1_content," .. STORE,
-		"G consume_lists: the hidden list last")
+	eq(table.concat(I.consume_lists(p.inv), ","), "main,grug_bag1_content," .. STORE .. "," .. I.POTION_BELT, -- Round 70
+		"G consume_lists: the hidden list, then the belt")
 end
 
 -- The soulbound rule (grug_housing/soulbound.lua, D3): the hidden list is a
@@ -525,6 +526,127 @@ do
 	eq(journal.quests[1] and journal.quests[1].objectives[1].count, 6,
 		"C a5 progress counts B's dirt (2 + 1 + 1 + 2 of 4)")
 	eq(journal.quests[1] and journal.quests[1].ready, true, "C a5 ready to turn in")
+	-- Round 70: crafted elixirs land on the belt, so a quest counts it too.
+	Q.register_quest("elixir", {npc = "elder", title = "Elixir", description = "Bring it.",
+		objectives = {{type = "item", item = "t:elixir", count = 2}},
+		rewards = {weight = 1, items = {"t:elixir 1"}}})
+	local drinker = consumer("warrior", {16}, {
+		{"main", 9, "t:elixir 1"}, {I.POTION_BELT, 2, "t:elixir 2"}})
+	check(Q.accept(drinker, "elixir"), "C a5 belt: the quest is accepted")
+	local belt_journal = Q.journal(drinker).quests[1]
+	eq(belt_journal.objectives[1].count, 2, "C a5 belt: the belt's elixirs count")
+	eq(belt_journal.ready, true, "C a5 belt: ready to turn in")
+	check(Q.turn_in(drinker, "elixir"), "C a5 belt: the turn-in succeeds")
+	eq(at(drinker, I.POTION_BELT, 2), "t:elixir", "C a5 belt: the belt pays last")
+	eq(at(drinker, "main", 9), "t:elixir", "C a5 belt: the reward lands in main[9..]")
+	-- Round 70: reward potions land on the belt first, all or nothing, with
+	-- the room this hand-in frees counted.
+	do
+		local BELT = I.POTION_BELT
+		local serial = 0
+		local function offer(objective, rewards)
+			serial = serial + 1
+			local id = "brew_" .. serial
+			Q.register_quest(id, {npc = "elder", title = id, description = "Bring it.",
+				objectives = {objective}, rewards = {weight = 1, items = rewards}})
+			return id
+		end
+		local function dirt(count) return {type = "item", item = "t:dirt", count = count} end
+		-- `main` full of sticks, one dirt on the hotbar to pay the hand-in, the
+		-- belt's cells as given.
+		local function packed(belt)
+			local q = consumer("warrior", {}, {})
+			fill(q, "main", 1, 32, "t:stick 99")
+			q.inv:set_stack("main", 1, ItemStack("t:dirt 1"))
+			for index = 1, 4 do q.inv:set_stack(BELT, index, ItemStack(belt[index] or "")) end
+			return q
+		end
+		local function kept(q, id, label)
+			local snapshot = census(q)
+			local ok, message = Q.turn_in(q, id)
+			check(not ok, label .. ": refused")
+			has(message, "Make room", label .. ": asks for room")
+			eq(census(q), snapshot, label .. ": nothing moved")
+			check(Q.journal(q).quests[1] ~= nil, label .. ": the quest stays active")
+		end
+
+		-- A free belt slot beats a partial stack in main.
+		local id = offer(dirt(1), {"t:brew 3"})
+		local q = consumer("warrior", {}, {{"main", 1, "t:dirt 1"}, {"main", 9, "t:brew 5"}})
+		check(Q.accept(q, id), "C belt reward: accepted")
+		check(Q.turn_in(q, id), "C belt reward: paid")
+		eq(at(q, BELT, 1), "t:brew 3", "C belt reward: the free belt slot")
+		eq(at(q, "main", 9), "t:brew 5", "C belt reward: main's partial stack untouched")
+
+		-- Partly full: the matching stack, the free slot, then main's order.
+		id = offer(dirt(1), {"t:brew 20", "t:brew 5"})
+		q = consumer("warrior", {}, {{"main", 1, "t:dirt 1"}, {"main", 9, "t:brew 5"}, {BELT, 1, "t:brew 18"},
+			{BELT, 2, "t:coal_lump 3"}, {BELT, 3, "t:coal_lump 3"}})
+		check(Q.accept(q, id), "C belt reward partly full: accepted")
+		check(Q.turn_in(q, id), "C belt reward partly full: paid")
+		eq(at(q, BELT, 1), "t:brew 20", "C belt reward partly full: the matching stack")
+		eq(at(q, BELT, 4), "t:brew 20", "C belt reward partly full: the free slot")
+		eq(at(q, "main", 9), "t:brew 8", "C belt reward partly full: the rest in the give order")
+		local brews = 0
+		for _, list in ipairs({BELT, "main"}) do
+			for i = 1, q.inv:get_size(list) do
+				local stack = q.inv:get_stack(list, i)
+				if stack:get_name() == "t:brew" then brews = brews + stack:get_count() end
+			end
+		end
+		eq(brews, 18 + 5 + 25, "C belt reward partly full: no item lost or duplicated")
+
+		-- Bags full: the belt's room alone carries it, the hand-in's slot too.
+		id = offer(dirt(1), {"t:brew 20", "t:brew 2"})
+		q = packed({"t:brew 18", "t:coal_lump 1", "t:coal_lump 1"})
+		check(Q.accept(q, id), "C belt room only: accepted")
+		check(Q.turn_in(q, id), "C belt room only: not refused")
+		eq(at(q, BELT, 1), "t:brew 20", "C belt room only: the matching stack")
+		eq(at(q, BELT, 4), "t:brew 20", "C belt room only: the free slot")
+		eq(at(q, "main", 1), "", "C belt room only: the hand-in's slot is free")
+
+		-- One more than the belt (22) and the freed slot (20) hold.
+		id = offer(dirt(1), {"t:brew 20", "t:brew 20", "t:brew 3"})
+		q = packed({"t:brew 18", "t:coal_lump 1", "t:coal_lump 1"})
+		check(Q.accept(q, id), "C belt room short: accepted")
+		kept(q, id, "C belt room short")
+
+		-- Two rewards share the belt's room, never counting it twice.
+		id = offer(dirt(1), {"t:brew 12", "t:brew 12", "t:brew 20"})
+		q = packed({"t:coal_lump 1", "t:coal_lump 1", "t:coal_lump 1"})
+		check(Q.accept(q, id), "C belt room shared: accepted")
+		kept(q, id, "C belt room shared")
+
+		-- The hand-in's own potion frees its belt slot for the reward.
+		id = offer({type = "item", item = "t:elixir", count = 2}, {"t:brew 4", "t:stick 1"})
+		q = packed({"t:elixir 2", "t:coal_lump 1", "t:coal_lump 1", "t:coal_lump 1"})
+		q.inv:set_stack("main", 1, ItemStack(""))
+		check(Q.accept(q, id), "C belt freed: accepted")
+		check(Q.turn_in(q, id), "C belt freed: paid")
+		eq(at(q, BELT, 1), "t:brew 4", "C belt freed: the reward takes the slot it freed")
+		eq(at(q, "main", 1), "t:stick", "C belt freed: the plain reward stays off the belt")
+
+		-- Anything else sees no belt room.
+		id = offer(dirt(1), {"t:stone 5", "t:coal_lump 5"})
+		q = packed({})
+		check(Q.accept(q, id), "C belt plain: accepted")
+		kept(q, id, "C belt plain")
+
+		-- A write the engine refuses on the belt rolls every earlier row back.
+		id = offer(dirt(1), {"t:brew 3"})
+		q = packed({})
+		check(Q.accept(q, id), "C belt rollback: accepted")
+		local snapshot, write = census(q), q.inv.set_stack
+		function q.inv:set_stack(list, index, stack)
+			if list == BELT then return false end
+			return write(self, list, index, stack)
+		end
+		local ok, message = Q.turn_in(q, id)
+		q.inv.set_stack = write
+		check(not ok, "C belt rollback: refused")
+		has(message, "changed", "C belt rollback: says so")
+		eq(census(q), snapshot, "C belt rollback: nothing lost")
+	end
 	local turned, why = Q.turn_in(p, "dirt")
 	check(turned, "C a6 the turn-in succeeds (" .. tostring(why) .. ")")
 	eq(at(p, "main", 2), "", "C a6 the hotbar's dirt is taken (before B)")

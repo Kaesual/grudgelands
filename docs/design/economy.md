@@ -213,8 +213,9 @@ items without one:
 
 **The sell window** (the trader's Sell tab):
 
-- It lists what the player carries in `main`, the bags and the inactive
-  hotbar layout, with no marker (`grug_inventory.consume_lists`, the lists
+- It lists what the player carries in `main`, the bags, the inactive
+  hotbar layout and the potion belt (Round 70: crafted potions land there
+  first), with no marker (`grug_inventory.consume_lists`, the lists
   every consumer counts and takes from; Round 56 ruling 8). A good that
   sells singly keeps one row per slot with **1**, **5**, **10** and **All**, at its quality
   factor. A **lot good** gets **one row per item name**, its count summed

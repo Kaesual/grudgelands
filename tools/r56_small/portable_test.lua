@@ -139,6 +139,7 @@ core = { -- luacheck: ignore (global stub)
 	register_on_joinplayer = noop,
 	register_allow_player_inventory_action = noop,
 	register_on_item_pickup = noop,
+	register_on_mods_loaded = noop,
 	register_on_leaveplayer = noop,
 	handle_node_drops = noop,
 }

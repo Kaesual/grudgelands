@@ -91,13 +91,16 @@ local function owned_lists(player)
 	end
 	return lists
 end
--- Quest items count from the owned lists and the inactive hotbar layout
--- (Round 50 ruling 3); rewards land only in the owned lists (settlement).
-local STORE = grug_inventory.HOTBAR_STORE
+-- Quest items count from the owned lists, the inactive hotbar layout (Round
+-- 50 ruling 3) and the potion belt (Round 70: a crafted elixir lands there);
+-- rewards land in the owned lists, potions and elixirs on the belt first, never
+-- in the inactive layout (settlement).
+local STORE, BELT = grug_inventory.HOTBAR_STORE, grug_inventory.POTION_BELT
 local function holdings(player)
 	local counts, inv = {}, player:get_inventory()
 	local lists = owned_lists(player)
 	lists[#lists + 1] = STORE
+	lists[#lists + 1] = BELT
 	for _, list in ipairs(lists) do
 		for _, stack in ipairs(inv:get_list(list) or {}) do
 			local name = stack:get_name()
@@ -525,20 +528,25 @@ local function reward_stacks(player, def, choice)
 	return out
 end
 Q.reward_stacks = reward_stacks
--- Preflight copies every owned slot, in the give helper's order (main[9..],
--- the bags, the hotbar last), so rewards land where any other item would.
+-- Preflight copies every owned slot, in the give helper's order (the belt for
+-- potions and elixirs, main[9..], the bags, the hotbar last), so rewards land
+-- where any other item would.
 -- Removing requirements and adding rewards to the same copies accounts for
--- space freed by this very hand-in. The inactive hotbar layout's slots come
--- after them: requirements are taken from it last, rewards never land in it.
+-- space freed by this very hand-in. The slots of the inactive hotbar layout
+-- and the potion belt come after them for the takes: requirements are taken
+-- from those last. Rewards never land in the inactive layout.
 local function settlement(player, def, active, rewards)
-	local inv, rows, hotbar, hidden = player:get_inventory(), {}, {}, {}
+	local inv, rows, hotbar, hidden, belt = player:get_inventory(), {}, {}, {}, {}
 	local lists = owned_lists(player)
 	lists[#lists + 1] = STORE
+	lists[#lists + 1] = BELT
 	for _, list in ipairs(lists) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			local row = {list = list, index = index, expected = ItemStack(stack), replacement = ItemStack(stack)}
 			if list == STORE then
 				hidden[#hidden + 1] = row
+			elseif list == BELT then
+				belt[#belt + 1] = row
 			elseif list == "main" and index <= 8 then
 				hotbar[#hotbar + 1] = row
 			else
@@ -550,6 +558,7 @@ local function settlement(player, def, active, rewards)
 	local takes = {}
 	for _, row in ipairs(rows) do takes[#takes + 1] = row end
 	for _, row in ipairs(hidden) do takes[#takes + 1] = row end
+	for _, row in ipairs(belt) do takes[#takes + 1] = row end
 	local _, ready, allocation = progress(player, def, active)
 	if not ready then return nil, "You no longer have all required items." end
 	for _, taken in pairs(allocation) do
@@ -566,11 +575,14 @@ local function settlement(player, def, active, rewards)
 	end
 	for _, reward in ipairs(rewards) do
 		local rest = ItemStack(reward)
-		-- Fill compatible partial stacks before spending an empty slot.
-		for pass = 1, 2 do
-			for _, row in ipairs(rows) do
-				if (pass == 1 and not row.replacement:is_empty()) or (pass == 2 and row.replacement:is_empty()) then
-					rest = row.replacement:add_item(rest)
+		-- Fill compatible partial stacks before spending an empty slot; a
+		-- potion or elixir does both on the belt first (grug_inventory.give).
+		for _, cells in ipairs(grug_inventory.belt_accepts(rest) and {belt, rows} or {rows}) do
+			for pass = 1, 2 do
+				for _, row in ipairs(cells) do
+					if (pass == 1 and not row.replacement:is_empty()) or (pass == 2 and row.replacement:is_empty()) then
+						rest = row.replacement:add_item(rest)
+					end
 				end
 			end
 		end

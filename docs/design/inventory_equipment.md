@@ -621,7 +621,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   every item source — pickup, dug blocks, loot, boss loot, purchases, quest
   rewards and drops, fishing, harvests, refunds, equipment returns, station
   results, coin withdrawals — goes through `grug_inventory.give`: arrows to
-  a Scout's quiver first, then partial stacks of the same item anywhere,
+  a Scout's quiver first, **potions and elixirs to the potion belt first**
+  (Round 70: a matching stack, then a free belt slot, before anything
+  else; what does not fit goes on in this order), then partial stacks of
+  the same item anywhere,
   then the empty slots of `main[9..]`, the bags in slot order and the
   hotbar last, so a hotbar slot freed for a skill stays free; never the
   inactive hotbar layout (§1), not even its partial stacks. A soulbound
@@ -629,11 +632,21 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   lie in `main` and every bag, nowhere else). `grug_inventory.fits` answers
   the same question without changing anything; a source that refuses
   instead of dropping (purchases, the Claim Stone, station results) says
-  the inventory is full only when the whole inventory is.
+  the inventory is full only when the whole inventory is. Quest rewards
+  are the one source with their own all-or-nothing settlement: they follow
+  this order, belt first included, after the hand-in's items are taken.
+- **A usable item picks up drops** (Round 70). An item with `on_use` (hoes,
+  potions, elixirs, books, guild consumables) never punches, so the press
+  on a dropped item would use the item instead: every `on_use` first hands
+  a pointed drop to its pickup (`grug_inventory.pick_up_pointed`), a broken
+  hoe too. A press that takes any of the drop does nothing else; one that
+  can take none (a full inventory) goes on to the item's own use.
 - **Consumption and the inactive hotbar layout** (Round 50 ruling 3):
   every consumer keeps its own order and takes from the inactive layout
   last, counting and taking over the same lists
-  (`grug_inventory.consume_lists`): crafting ingredients (§4), arrows (the
+  (`grug_inventory.consume_lists`, since Round 70 with the potion belt at
+  the very end, so what lands there stays sellable and a quest finds it;
+  no recipe takes a potion): crafting ingredients (§4), arrows (the
   quiver, `main`, the bags, then B), quest items (counted for progress and
   turn-in; rewards never land in the inactive layout), the Claim Stone's
   activation fuel, the Fallen Crown and the vendor's sell list (its rows
@@ -646,7 +659,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   each list to `grug_inbox`, a one-slot player
   list no page draws (`grug_inventory/inbox.lua`). It takes exactly what
   `grug_inventory.room_for` says the give helper can place (`main[9..]`,
-  the bags, the hotbar last; arrows into a Scout's quiver first) and hands
+  the bags, the hotbar last; arrows into a Scout's quiver first, potions
+  into the belt first) and hands
   it out at once, so it is always empty; a stack that only partly fits
   leaves the rest in the source, and when nothing fits nothing moves and
   the feed says "No room in your inventory." Bound skills and soulbound
@@ -734,7 +748,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   bag is always empty.
 - **The potion belt** (`grug_potion_belt`, 4 slots, Round 44): potions and
   elixirs only (group `grug_potion`), created for every player; filled here
-  and drunk from the quickbar (below).
+  by hand and first of all by the give order (Round 70: crafted, picked
+  up, looted, bought, mailed or a quest reward, above) and drunk from the
+  quickbar (below).
 - **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn under the
   equipment slots in the Character page's gear box with the arrow total
   beside it. There is

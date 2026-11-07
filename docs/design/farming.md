@@ -24,7 +24,12 @@ Dragonweed, Crimson Lotus); Ember Moss is both a healing herb in the wild and
 a crop. Ground cover (grass, ferns, reeds, cattails, moss carpet and the like)
 drops itself for decoration and has no seeds and no propagation.
 
-Every family has four logical stages at 200 seconds per advance. Growth runs
+Every family has four logical stages. Each advance takes **160–240 seconds**,
+200 on average (Round 70): the length follows from the crop's position and
+stage, in whole seconds, so a field ripens spread out and nothing about it is
+stored. The kept progress is the seconds of wet and lit growth into the current
+stage; pause, resume and offline catch-up all read the same lengths, and a long
+absence walks them stage by stage up to ripe. Growth runs
 only above wet crop soil; drying pauses exact partial progress and rewetting
 resumes it. Crop soil checks for water within three nodes every 15 seconds
 while a growing crop stands on it and once a minute otherwise; planting and

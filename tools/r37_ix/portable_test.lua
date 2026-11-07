@@ -509,7 +509,7 @@ do -- T: tall-crop tops
 	-- A growth step to stage 2 builds its helper and keeps it (swap, no destruct).
 	local state_def = c.registered_nodes["grug_farming:sugar_cane_1"]
 	c.get_meta(root):set_string("grug_crop_planter", "ann")
-	state_def.on_timer(root, 200)
+	state_def.on_timer(root, 240) -- Round 70: the longest stage, 200 is the average
 	eq(c.get_node(root).name, "grug_farming:sugar_cane_2", "T the crop grows a stage")
 	eq(c.get_node(P(10, 2, 0)).name, "grug_farming:sugar_cane_2_upper_1",
 		"T the grown stage keeps its new upper node")

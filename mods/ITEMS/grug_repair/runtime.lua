@@ -183,7 +183,12 @@ core.register_on_mods_loaded(function()
 				local on_use = def.on_use
 				if on_use then
 					core.override_item(name, {on_use = function(stack, user, pointed)
-						if grug_core.equipment_is_broken(stack) then return stack end
+						if grug_core.equipment_is_broken(stack) then
+							-- This wrapper runs outside grug_inventory's pickup one
+							-- and a broken tool still picks up drops.
+							grug_inventory.pick_up_pointed(user, pointed)
+							return stack
+						end
 						stack = on_use(stack, user, pointed) or stack
 						disable_broken_operation(stack)
 						announce_break(user, stack)

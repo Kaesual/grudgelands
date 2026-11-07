@@ -169,6 +169,7 @@ grug_factions = {get_faction = function() return "accord" end, same_faction = fu
 dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
+	belt_accepts = function() return false end, -- Round 70: the settlement asks
 	-- Round 44: quest drops go through grug_inventory.give (main-only here).
 	give = function(player, stack) return player:get_inventory():add_item("main", stack) end,
 	-- Round 60: a quest drop rolls only when it fits (main-only here).
