@@ -23,6 +23,10 @@ local function name_of(player)
 	return type(player) == "string" and player or player:get_player_name()
 end
 
+local function notice(player, text)
+	grug_core.feed(player, "notice", text, "expedition")
+end
+
 local function party_of(name)
 	return grug_parties.view(name)
 end
@@ -235,17 +239,14 @@ end
 
 -- `name` holds no place any more; out of the box when inside. Offline, the login
 -- rule sends them home.
-local function expel(run, name, notice)
+local function expel(run, name)
 	run.entered[name] = nil
 	local origin = run.origins[name]
 	run.origins[name] = nil
 	if inside_of[name] ~= run then return end
 	mark_left(run, name, "expelled")
 	local player = core.get_player_by_name(name)
-	if player then
-		core.chat_send_player(name, notice)
-		send_out(player, origin)
-	end
+	if player then send_out(player, origin) end
 end
 
 -- ---- Life of a run --------------------------------------------------------------
@@ -264,10 +265,7 @@ function M.end_run(run, reason)
 		local origin = run.origins[name]
 		mark_left(run, name, "ended")
 		local player = core.get_player_by_name(name)
-		if player then
-			core.chat_send_player(name, "Your Expedition has ended.")
-			send_out(player, origin)
-		end
+		if player then send_out(player, origin) end
 	end
 	fire("ended", run, reason)
 end
@@ -345,7 +343,7 @@ core.register_on_joinplayer(function(player)
 	core.after(0, function()
 		local p = core.get_player_by_name(name)
 		if not p or p:get_hp() <= 0 then return end
-		core.chat_send_player(name, "Your Expedition has ended.")
+		notice(p, "Your Expedition has ended.")
 		grug_home.respawn(p)
 	end)
 end)
@@ -362,7 +360,7 @@ grug_parties.register_on_member_left(function(name, party_id, last)
 		run.owner = {kind = "player", name = last}
 		bind_owner(run)
 	end
-	expel(run, name, "You left the party, and so its Expedition.")
+	expel(run, name)
 end)
 
 -- A solo owner in a party now: leading it (they invited someone), the Expedition
@@ -392,7 +390,7 @@ function M.enter(player, capital)
 		unavailable = "The way into the Expedition could not be prepared.",
 		check = function(p)
 			local still, why = M.can_enter(p, run)
-			if not still then core.chat_send_player(name, why) end
+			if not still then notice(p, why) end
 			return still
 		end,
 		arrival = function()
@@ -427,7 +425,7 @@ end
 
 function M.use_waystone(player)
 	local ok, reason = M.leave(player)
-	if not ok then core.chat_send_player(player:get_player_name(), reason) end
+	if not ok then notice(player, reason) end
 end
 
 preparation.init(catalogue, function(player)

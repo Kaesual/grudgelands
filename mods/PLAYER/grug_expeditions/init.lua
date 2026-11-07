@@ -18,6 +18,7 @@
 --   definition(id)          a catalogue row {id, name, level, max_players, template}
 --   list()                  the rows a dialog may offer (hidden test rows left out)
 --   entry_level(level)      min(level - 2, 60)
+--   rewards_open(run)       the boss is dead, or the template has none
 --   catalogue               catalogue.lua itself: BOX, ORIGIN, PITCH, MAX_BONUS, ...
 --
 -- A run row:
@@ -53,6 +54,9 @@
 --                              grug_home location id, where the way back leads
 --   leave(player)              the way out of both waystones
 --   end_run(run, reason)       ends it at once
+--   open_door(run)             takes the reward door away and tells those inside
+--   open_registrar(player, entity)  the registrar's window; false for a player it
+--                              does not serve
 --
 -- Hooks:
 --   register_on_ready(function(run))           the box is written; set meta here

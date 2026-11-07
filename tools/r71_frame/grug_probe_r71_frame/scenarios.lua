@@ -293,4 +293,52 @@ function S.basic(lib, player)
 	lib.phase_end()
 end
 
+-- Round 71 FOLLOW: what hangs on a player inside stays on them, at a run's end and when
+-- a preparation clears the box round them. The feed's lines are logged as well.
+local function tag_of(player)
+	for _, child in ipairs(player:get_children()) do
+		local entity = child:get_luaentity()
+		if entity and entity.name == "grug_core:tag_carrier" then return child end
+	end
+end
+
+local function keeps_tag(lib, player, tag, label)
+	local alive = tag:is_valid() and tag_of(player) == tag
+	lib.check(alive, ("%s: the tag lives, at %s"):format(label, core.pos_to_string(player:get_pos())))
+	lib.logf("%s: text '%s'", label, alive and tag:get_nametag_attributes().text or "(gone)")
+end
+
+function S.tag(lib, player)
+	level_up(player)
+	local feed = grug_core.feed
+	grug_core.feed = function(who, kind, text, key)
+		lib.logf("FEED %s %s: %s", kind, tostring(key), text)
+		return feed(who, kind, text, key)
+	end
+	local run = assert(E.create(player, "test_vault", 0))
+	wait_ready(lib, run)
+	enter(lib, player, run)
+	lib.wait(2)
+	local tag = assert(tag_of(player), "no name tag")
+	lib.logf("attached before the end: %d", #player:get_children())
+	E.end_run(run, "joined_party")
+	lib.wait_for(function() return not E.slot_at(player:get_pos()) end, 40)
+	lib.wait(3)
+	keeps_tag(lib, player, tag, "run end")
+
+	-- A player a preparation finds in the box: a trip home lands too fast to be caught,
+	-- so the probe puts them there, and waits for the tag to be there too.
+	player:set_pos(run.places.arrival)
+	lib.wait_for(function()
+		local at = tag:get_pos()
+		return at and E.slot_at(at) == run.slot
+	end, 10)
+	lib.check(E.slot_at(player:get_pos()) == run.slot, "in the box before the preparation")
+	local next_run = assert(E.create(player, "test_vault", 0))
+	wait_ready(lib, next_run)
+	lib.check(not E.slot_at(player:get_pos()), "sent out of the box")
+	lib.wait(3)
+	keeps_tag(lib, player, tag, "preparation")
+end
+
 return S

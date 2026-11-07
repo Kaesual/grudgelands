@@ -24,8 +24,19 @@ local CHOICE_W, CHOICE_H, RUN_W, RUN_H = 13, 9.9, 9, 9.9
 local ROW_PITCH = 0.42
 local PREPARING = "Your Expedition is being prepared..."
 -- Why a run ended, for those it touches. A reason without a row reads as the last.
-local ENDED = {failed = "Your Expedition could not be prepared. Try again soon."}
+local ENDED = {
+	failed = "Your Expedition could not be prepared. Try again soon.",
+	empty = ("Your Expedition has ended: nobody was inside for %d minutes."):format(
+		M.catalogue.RESERVE_SECONDS / 60),
+	joined_party = "You joined a party, so your Expedition has ended.",
+}
 local ENDED_OTHER = "Your Expedition has ended."
+-- Why a player is on the way out without having asked: a line of its own, beside
+-- the line of the end. The other ways out are the player's own and say nothing.
+local LEFT = {
+	expelled = "You are no longer in the party, so you left its Expedition.",
+	ended = "You are on your way back.",
+}
 -- How long the black screen of an arrival lasts: the first blocks of a box take
 -- 0.6 to 0.8 s to reach a client, which until then draws the open sky.
 local CURTAIN_SECONDS = 1
@@ -291,6 +302,11 @@ end)
 M.register_on_end(function(run, reason)
 	tell(run, ENDED[reason] or ENDED_OTHER)
 	refresh(run)
+end)
+
+M.register_on_leave(function(_, name, reason)
+	local player = LEFT[reason] and core.get_player_by_name(name)
+	if player then grug_core.feed(player, "notice", LEFT[reason], "expedition_left") end
 end)
 
 -- The arrival: black until the box has reached the client, instead of a frame of

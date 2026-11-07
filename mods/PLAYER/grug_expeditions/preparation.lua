@@ -98,7 +98,11 @@ local PHASES = {}
 function PHASES.clear(work)
 	local run = work.run
 	for object in core.objects_in_area(run.minp, run.maxp) do
-		if object:is_player() then send_out(object) else object:remove() end
+		if object:is_player() then
+			send_out(object)
+		elseif not object:get_attach() then -- a player's tag stays with them
+			object:remove()
+		end
 	end
 	work.blocks, work.block = blocks_of(run.minp, catalogue.BOX), 1
 	work.phase = "delete"

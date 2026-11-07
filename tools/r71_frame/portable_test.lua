@@ -124,7 +124,7 @@ for slot = 1, C.SLOTS do
 end
 
 -- F-K. The shipped mod on a fake engine.
-local chat, afters, emerges, objects = {}, {}, {}, {}
+local chat, feeds, afters, emerges, objects = {}, {}, {}, {}, {}
 local map, op_log, step_ops = {}, {}, {}
 local tick_count, clock = 0, 0
 local refuse_emerges, fail_all = 0, false
@@ -202,7 +202,11 @@ core = {
 }
 default = {node_sound_stone_defaults = function() return {} end}
 grug_xp = {get_level = function(player) return player.level end}
-grug_core = {in_combat = function(player) return player.combat end}
+grug_core = {in_combat = function(player) return player.combat end,
+	feed = function(player, kind, text, key)
+		feeds[#feeds + 1] = {name = player:get_player_name(), kind = kind, text = text, key = key}
+		return true
+	end}
 
 -- Parties: register_on_member_left and the emit after it, as grug_parties does.
 local party_left, party_change, parties, party_of_name, next_party = {}, {}, {}, {}, 0
@@ -360,9 +364,9 @@ local function new_player(name, level)
 	players[name] = p
 	return p
 end
-local function chat_to(name)
-	for i = #chat, 1, -1 do
-		if chat[i][1] == name then return chat[i][2] end
+local function feed_to(name)
+	for i = #feeds, 1, -1 do
+		if feeds[i].name == name then return feeds[i].text end
 	end
 end
 
@@ -400,9 +404,14 @@ do
 	local solo = new_player("solo")
 	local stale = {is_player = function() return false end, removed = false}
 	function stale:remove() self.removed = true end
+	function stale.get_attach() end
 	local stranger = new_player("stranger")
 	stranger.pos = {x = 8070, y = -100, z = -1610}
-	objects = {stale, stranger}
+	-- A player still in the box keeps what hangs on them: the name tag.
+	local tag = {is_player = function() return false end, removed = false}
+	function tag:remove() self.removed = true end
+	function tag.get_attach() return stranger end
+	objects = {stale, tag, stranger}
 	local run = assert(E.create(solo, "test_vault", 0))
 	check(run.state == "preparing" and run.slot == 1, "F starts preparing in the first slot")
 	check(E.preparation(run).waiting == 0, "F waiting for its first step")
@@ -412,6 +421,7 @@ do
 	until_state(run, "ready")
 	objects = {}
 	check(stale.removed and home[#home] == "stranger", "F objects out, a player sent away")
+	check(not tag.removed, "F a player's name tag stays on them")
 	check(deleted == 256, "F all 256 blocks deleted one by one: " .. deleted)
 	local first_write
 	local last_delete
@@ -673,7 +683,8 @@ do
 	local before = #home
 	callbacks.join(p)
 	tick()
-	check(#home == before + 1 and p.pos.x == 1 and chat_to("clocked"), "J a run gone: straight home")
+	check(#home == before + 1 and p.pos.x == 1 and feed_to("clocked") == "Your Expedition has ended.",
+		"J a run gone: straight home")
 	-- a new run in the same slot is not theirs
 	local other = new_player("other")
 	local run = ready_run(other)
@@ -718,7 +729,8 @@ do
 	p.combat = true
 	E.use_waystone(p)
 	tick()
-	check(E.run_inside(p) == run and chat_to("walker"):find("combat", 1, true), "K the stones refuse in combat")
+	check(E.run_inside(p) == run and feed_to("walker"):find("combat", 1, true), "K the stones refuse in combat")
+	check(feeds[#feeds].kind == "notice" and feeds[#feeds].key == "expedition", "K a notice in the feed")
 	p.combat = nil
 	core.registered_nodes["grug_expeditions:waystone"].on_rightclick(nil, nil, p)
 	tick()
@@ -730,7 +742,16 @@ do
 	check(p.trip == nil, "K no trip left over")
 	local still = run.state
 	check(still == "running", "K the run stays")
+	-- Combat on the way in: the check of the trip refuses, in the feed.
+	check(E.enter(p, "highcourt"), "K a trip in")
+	p.combat = true
+	feeds = {}
+	tick()
+	check(E.run_inside(p) == nil and feed_to("walker") == "Cannot travel in combat.",
+		"K the trip's check refuses in the feed")
+	p.combat = nil
 	E.end_run(run, "test")
+	check(#chat == 0, "K no personal notice in chat")
 end
 
 print("R71 FRAME PORTABLE PASS checks=" .. checks)

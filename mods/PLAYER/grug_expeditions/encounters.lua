@@ -157,9 +157,11 @@ M.register_on_end(function(run)
 	if state and state.boss_id then grug_mobs.boss_attempt_reset(state.boss_id) end
 	states[run] = nil
 	-- Live objects go with the run, a step before any new preparation's delete_area,
-	-- which would leave the engine their saved copies to look for.
+	-- which would leave the engine their saved copies to look for. Attached ones stay:
+	-- a player's name tag and wield go on with them, a mob's follow it by their orphan
+	-- checks.
 	for object in core.objects_in_area(run.minp, run.maxp) do
-		if not object:is_player() then object:remove() end
+		if not object:is_player() and not object:get_attach() then object:remove() end
 	end
 end)
 
