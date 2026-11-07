@@ -216,7 +216,8 @@ real fight or PostgreSQL. So:
 
 38. **[fight]** **A real fight's length and difficulty, at 20 and at 29,** with a Warrior, a
     Priest and a third player at the run's level. The model says packs 16–27 s, Flintback
-    2 minutes, the run 8.7 minutes, against the concept's 10–20.
+    2 minutes, the run 8.7 minutes, against the concept's 10–20. Then without a
+    Warrior, and without a healer: the ruling says hard or impossible, and nothing tested it.
 39. **[fight]** Flintback throws rocks and signals its slam, and stepping aside dodges only
     the slam. A wipe heals it.
 40. The boss's death opens the door and drops nothing.
@@ -233,6 +234,7 @@ real fight or PostgreSQL. So:
 
 46. **[Rehearsal]** The running game does not stutter during preparation, on **PostgreSQL**:
     the slices' database cost and the disk use were never measured there.
+47. **[2+]** Two owners run at once: the second takes slot 2. Only slot 1 ran in the engine.
 
 ## 7. Orchestration notes
 

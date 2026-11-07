@@ -14,8 +14,8 @@ the rulings; [Round 71](../planning/round71-plan.md) holds what shipped. How it 
 The word is **Expedition**, for players, in docs and in code.
 
 A few details below are the coordinator's defaults, standing until the user rules on them
-([completion](../planning/round71-plan.md#decisions-during-the-round)): sight as a pull, a
-list holding only who engaged, one chest roll, lost chest contents and a boss without
+([completion](../planning/round71-plan.md#decisions-during-the-round)): sight as a pull, a list holding only who engaged, forced exits in combat, no boats, refined bars in drops, the
+black arrival, one chest roll, lost chest contents and a boss without
 ground drops.
 
 ## 1. The set
@@ -85,8 +85,8 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
 
 - **10 minutes:** an Expedition is reserved for only 10 minutes while nobody of the owner
   is inside, both after it is ready and after the run began. So a ready Expedition must be
-  entered within 10 minutes. An offline member does not count as inside; a dead one does
-  until they respawn or log out.
+  entered within 10 minutes. An offline member does not count as inside; a dead one does until they log out; a respawn stands them at
+the start waystone, still inside.
 - After those 10 minutes it **ends**: nobody can enter any more, and the slot is free.
   A notice names the reason.
 - **Logout out of combat** costs nothing: the player comes back where they stood.
