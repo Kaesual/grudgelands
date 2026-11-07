@@ -90,7 +90,7 @@ local FOURTEEN = {
 local ids = {}
 for id in pairs(Q.registered_quests) do ids[#ids + 1] = id end
 table.sort(ids)
-eq(#ids, 390, "S the shipped quests")
+eq(#ids, 391, "S the shipped quests") -- Round 71 L20: the Expedition's group quest
 
 -- S -----------------------------------------------------------------------
 local variants_seen, sourced_items, plain_items = 0, 0, 0
