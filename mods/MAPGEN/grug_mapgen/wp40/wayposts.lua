@@ -89,8 +89,10 @@ local function stand(road, index, first, column_values_at, road_column_at)
 						local lateral = road.hw + reach / 2
 						local x = floor(cx - tz * side * lateral + 0.5)
 						local z = floor(cz + tx * side * lateral + 0.5)
-						local y = ground_at(x, z, floor(cx + 0.5), floor(cz + 0.5),
-							column_values_at, road_column_at)
+						local ox, oz = x - cx, z - cz
+						local y = ox * ox + oz * oz <= (road.hw + ROAD_SIDE) * (road.hw + ROAD_SIDE) and
+							ground_at(x, z, floor(cx + 0.5), floor(cz + 0.5),
+								column_values_at, road_column_at)
 						if y then return {x = x, y = y + 1, z = z} end
 					end
 				end

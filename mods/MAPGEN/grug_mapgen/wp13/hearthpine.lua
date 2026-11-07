@@ -137,7 +137,7 @@ local function loader(directory)
 		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
-		-- the litter east of the street
+		-- the square east of the street
 		{id = "idle_spare_1", role = "idle", spawn = false, x = 7,
 			y = 1, z = 9, dir = {x = 0, z = -1}},
 		-- beside the bench on the square's west edge

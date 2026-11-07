@@ -239,13 +239,13 @@ local function loader(directory)
 		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
-		-- the sand west of the muster yard
+		-- the sand in the muster yard's south-west
 		{id = "idle_spare_1", role = "idle", spawn = false, x = -7,
 			y = 1, z = -6, dir = {x = 1, z = 0}},
-		-- the sand south of the muster yard
+		-- the sand in the muster yard's south
 		{id = "idle_spare_2", role = "idle", spawn = false, x = 6,
 			y = 1, z = -12, dir = {x = 0, z = 1}},
-		-- the desert cobble by the north lane
+		-- the hall's west corner
 		{id = "idle_spare_3", role = "idle", spawn = false, x = -8,
 			y = 1, z = 22, dir = {x = 0, z = -1}},
 	}

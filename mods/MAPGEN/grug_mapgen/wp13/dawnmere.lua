@@ -172,7 +172,7 @@ local function loader(directory)
 		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
-		-- the brick walk east of the green
+		-- the turf in the green's east
 		{id = "idle_spare_1", role = "idle", spawn = false, x = 8,
 			y = 1, z = 7, dir = {x = -1, z = 0}},
 		-- the turf between the cottages

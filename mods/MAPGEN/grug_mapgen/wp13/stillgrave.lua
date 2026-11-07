@@ -199,10 +199,10 @@ local function loader(directory)
 		-- the blight south-west of the waystone's pocket
 		{id = "idle_spare_1", role = "idle", spawn = false, x = -21,
 			y = 1, z = -9, dir = {x = 1, z = 0}},
-		-- the blighted ground to the south
+		-- the court's south kerb
 		{id = "idle_spare_2", role = "idle", spawn = false, x = 7,
 			y = 1, z = -12, dir = {x = 0, z = 1}},
-		-- the gravel north-east of the lane
+		-- the court north-east of the road
 		{id = "idle_spare_3", role = "idle", spawn = false, x = 8,
 			y = 1, z = 14, dir = {x = 0, z = -1}},
 	}

@@ -173,10 +173,10 @@ local function loader(directory)
 		-- the court's east edge, beside the waystone's clearing
 		{id = "idle_spare_1", role = "idle", spawn = false, x = 20,
 			y = 1, z = 8, dir = {x = -1, z = 0}},
-		-- the silver litter to the south
+		-- the court's south kerb
 		{id = "idle_spare_2", role = "idle", spawn = false, x = -5,
 			y = 1, z = -12, dir = {x = 0, z = 1}},
-		-- the silver litter to the north
+		-- the court's north-west
 		{id = "idle_spare_3", role = "idle", spawn = false, x = -7,
 			y = 1, z = 12, dir = {x = 0, z = -1}},
 	}

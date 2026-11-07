@@ -192,10 +192,10 @@ local function loader(directory)
 		-- the mud south-west of the clearing
 		{id = "idle_spare_1", role = "idle", spawn = false, x = -19,
 			y = 1, z = -13, dir = {x = 1, z = 0}},
-		-- the rainforest floor south-east
+		-- the clearing's south-east
 		{id = "idle_spare_2", role = "idle", spawn = false, x = 7,
 			y = 1, z = -11, dir = {x = 0, z = 1}},
-		-- the rainforest floor north-west
+		-- the clearing's north-west
 		{id = "idle_spare_3", role = "idle", spawn = false, x = -13,
 			y = 1, z = 7, dir = {x = 1, z = 0}},
 	}
