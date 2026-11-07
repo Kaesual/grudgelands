@@ -34,8 +34,11 @@ vector = {
 	add = function(a, n) return {x = a.x + n, y = a.y + n, z = a.z + n} end,
 	subtract = function(a, n) return {x = a.x - n, y = a.y - n, z = a.z - n} end,
 	distance = distance,
-	round = function(p) return {x = math.floor(p.x + 0.5), y = math.floor(p.y + 0.5),
-		z = math.floor(p.z + 0.5)} end,
+	-- The engine's math.round: halves away from zero, so -107.5 is -108.
+	round = function(p)
+		local function round(v) return v < 0 and -math.floor(-v + 0.5) or math.floor(v + 0.5) end
+		return {x = round(p.x), y = round(p.y), z = round(p.z)}
+	end,
 }
 
 local mob_objects = {}
@@ -101,6 +104,7 @@ core = {
 	get_player_by_name = function(name) local p = players[name]; return p and p.online and p or nil end,
 	is_player = function(p) return type(p) == "table" and p.is_player ~= nil and p.is_player() end,
 	chat_send_all = function(text) chat[#chat + 1] = text end,
+	calculate_knockback = function() return 8 end,
 	register_on_dieplayer = function(fn) table.insert(callbacks.die, fn) end,
 	register_on_leaveplayer = function(fn) table.insert(callbacks.leave, fn) end,
 	register_on_joinplayer = function(fn) table.insert(callbacks.join, fn) end,
@@ -141,6 +145,10 @@ local fighting = {} -- player name -> the combat timer's end
 local boss_resets, walks = {}, {}
 grug_core = {
 	mono_time = function() return clock end,
+	damage_source = function(object)
+		local ent = object:get_luaentity()
+		return ent and ent._grug_source or object
+	end,
 	mark_in_combat = function(player, seconds)
 		if player:get_hp() <= 0 then return end
 		local name = player:get_player_name()
@@ -455,6 +463,56 @@ do
 	for _, ent in ipairs(living()) do ent.object.go_inactive() end
 	advance(1)
 	check(idle.alive == 0 and next(idle.players) == nil, "C a refused body frees the list")
+	reset_world()
+end
+
+-- A player standing on a floor below y 0: every Expedition. Their feet are at an exact
+-- half, the top of the floor's cell, and the jump's cells are those of the feet, not of
+-- the floor under them: a mob on the player's own cell lifts them, and the fall kills.
+do
+	local run = new_run()
+	local pack = mixed(run)
+	local ana = fake_player("ana", run)
+	local bodies = living()
+	hit(bodies[1], ana)
+	ana.at = {x = 100, y = -107.5, z = 0}
+	for x = 96, 104 do
+		for z = -4, 4 do walls[key({x = x, y = -108, z = z})] = "stone" end
+	end
+	advance(1)
+	for _, ent in ipairs(bodies) do
+		local at = ent.object:get_pos()
+		check(at.y == -107, "C the jump stands on the floor, not in it")
+		check(distance(at, {x = 100, y = -107, z = 0}) >= 2 and distance(at, ana.at) <= 3,
+			"C below y 0 it lands beside the player, not on them")
+	end
+	reset_world()
+end
+
+-- The push of a pack's hit stays level: the line from a mob's origin to a player's feet
+-- points down, and a pack swinging as one sums past the fall tolerance on flat ground.
+do
+	local run = new_run()
+	local pack = mixed(run)
+	local ana = fake_player("ana", run)
+	local bodies = living()
+	hit(bodies[1], ana)
+	local pushes = {}
+	function ana.add_velocity(_, v) pushes[#pushes + 1] = v end
+	local dir = {x = 0.6, y = -0.8, z = 0}
+	check(core.calculate_knockback(ana, bodies[1].object, 1, {}, dir, 1, 21) == 0,
+		"C a pack's hit leaves the engine no push")
+	check(#pushes == 1 and pushes[1].x == 0.6 * 8 and pushes[1].y == 0 and pushes[1].z == 0,
+		"C it pushes level, at the engine's strength")
+	-- its rock counts as its hit, whoever else stays with the engine
+	local rock = {is_player = function() return false end,
+		get_luaentity = function() return {_grug_source = bodies[1].object} end}
+	check(core.calculate_knockback(ana, rock, 1, {}, dir, 1, 21) == 0 and #pushes == 2,
+		"C so does its rock")
+	local stray = {is_player = function() return false end,
+		get_luaentity = function() return {name = "grug_mobs:wolf"} end}
+	check(core.calculate_knockback(ana, stray, 1, {}, dir, 1, 21) == 8 and #pushes == 2,
+		"C any other mob keeps the engine's push")
 	reset_world()
 end
 

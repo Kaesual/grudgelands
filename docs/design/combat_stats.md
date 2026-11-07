@@ -605,7 +605,9 @@ Normal tier at level L:
   dragon breath and side shots; user ruling 2026-10-06) push. Riders are never pushed, nor is a player hit by the dragon's
   slam (it has its own arena push). Implementation: one
   `core.calculate_knockback` override, `grug_core.knockback_pushes`
-  (`grug_core/combat.lua`).
+  (`grug_core/combat.lua`). An Expedition pack's push is level, at the same
+  strength (`grug_expeditions/packs.lua`): its mobs swing as one, and the
+  downward share of a step's pushes would read as a fall on flat ground.
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing (the player's `collide_with_objects` in

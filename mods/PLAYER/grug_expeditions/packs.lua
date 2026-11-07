@@ -80,7 +80,12 @@ end
 -- A cell beside the player, with a floor, that the player can see, else their own:
 -- always one a mob can stand on and strike from, never a fall.
 local function beside(player)
-	local at = vector.round(player:get_pos())
+	-- The cell of the feet. vector.round takes a half away from zero, so on a floor
+	-- below y 0 (every box), where the feet stand at an exact half, it names the floor
+	-- itself: no side is free, and the pack lands on the player.
+	local feet = player:get_pos()
+	local at = {x = math.floor(feet.x + 0.5), y = math.floor(feet.y + 0.5),
+		z = math.floor(feet.z + 0.5)}
 	local eye = {x = at.x, y = at.y + 1, z = at.z}
 	for _, side in ipairs(SIDES) do
 		local pos = {x = at.x + side[1], y = at.y, z = at.z + side[2]}
@@ -90,6 +95,21 @@ local function beside(player)
 		end
 	end
 	return at
+end
+
+-- A mob's hit pushes along the line from its origin, above a player's feet, to the feet
+-- (builtin knockback.lua): close by, that line points into the floor. A pack swings as
+-- one, the pushes of a step add up, and the client takes the stop for a fall: on flat
+-- ground, a whole pool of damage. So a pack's hit, or its rock, pushes level, as strong
+-- as ever (the rule of who pushes stays grug_core.knockback_pushes).
+local calculate_knockback = core.calculate_knockback
+function core.calculate_knockback(player, hitter, interval, caps, dir, distance, damage)
+	local push = calculate_knockback(player, hitter, interval, caps, dir, distance, damage)
+	local source = hitter and push ~= 0 and grug_core.damage_source(hitter)
+	local ent = source and source:get_luaentity()
+	if not ent or not ent._grug_pack then return push end
+	player:add_velocity({x = dir.x * push, y = 0, z = dir.z * push})
+	return 0
 end
 
 -- ---- Bodies -----------------------------------------------------------------------
