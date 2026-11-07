@@ -12,6 +12,8 @@ R.BUTTON_SECONDS = 60 -- ruling 2: the button flags for 60 s from the press
 R.CONTACT_FLAG_SECONDS = 60 -- ruling 2: contact keeps the flag for 60 s
 R.PVP_COMBAT_SECONDS = 10 -- ruling 8: PvP combat after the last contact
 R.CREDIT_SECONDS = 15 -- rulings 9/16: landed damage that earns the kill
+R.PVP_DEATH_SECONDS = 30 -- Round 70: an enemy's hit this recent makes a death
+-- PvP, which costs no durability (a value of its own, not the kill credit)
 
 function R.new_record()
 	return {loc = false, button_until = 0, contact_at = 0}
@@ -129,6 +131,18 @@ function R.credited(damagers, now)
 	end
 	table.sort(names)
 	return names
+end
+
+-- Round 70 (durability_repair.md): is this death a PvP death? True when any
+-- name in `damagers` landed damage within the last 30 s, whatever finished the
+-- victim and whether or not that enemy is still online.
+function R.pvp_death(damagers, now)
+	for _, at in pairs(damagers or {}) do
+		if now - at <= R.PVP_DEATH_SECONDS then
+			return true
+		end
+	end
+	return false
 end
 
 -- The ruling-16 counters, in the PvP tab's order.

@@ -165,6 +165,11 @@ layout.anchors = {
 	},
 	-- The level-up announcement (ruling 20): large, above the flash line.
 	banner = {position = {x = 0.5, y = 0.25}, offset = {x = 0, y = 0}},
+	-- The durability hints (Round 70, grug_repair hints.lua): two lines left
+	-- of the column, mirroring the combat icon. `offset.y` is the edge they
+	-- share (layout.gear_hint), so they never need the window's scalings.
+	gear_hints = {position = {x = 0.5, y = 1},
+		offset = {x = -(layout.BAR_WIDTH / 2 + 12), y = layout.rows.life.top}},
 }
 
 -- Feed geometry: at most FEED_LINES lines of FEED_LINE GUI units each (the
@@ -470,6 +475,17 @@ function layout.xp_label(text)
 	local out = layout.text_element("xp", {number = layout.COLOR.xp, text = text})
 	out.offset.x = layout.XP_WIDTH / 2 + 8
 	out.alignment.x = 1
+	return out
+end
+
+-- One durability hint: its right end on the anchor, `upper` above the shared
+-- edge and otherwise below it. Text grows away from that edge at any GUI
+-- scaling (src/client/hud.cpp:420: offset.Y = (align.Y - 1) * height / 2), so
+-- the two lines cannot touch, wherever a row of the column would have to
+-- convert its pitch.
+function layout.gear_hint(upper, def)
+	local out = layout.text_element("gear_hints", def)
+	out.alignment = {x = -1, y = upper and -1 or 1}
 	return out
 end
 
