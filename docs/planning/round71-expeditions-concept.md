@@ -91,10 +91,11 @@ Plans: [Round 71](round71-plan.md), [Round 70](round70-plan.md). Round 70 §2.10
   entered within 10 minutes. An offline member does not count.
 - After those 10 minutes the Expedition ends. Nobody can enter any more and the slot
   is free again.
-- **Logging out inside counts as a death (user, 2026-11-07),** with the penalty, and
-  takes the player off the pack's list. At the next login the player stands at the start
-  waystone if the Expedition still belongs to them, otherwise in the capital they came
-  from.
+- **Logging out in combat with a pack counts as a death (user, 2026-11-07),** with the
+  penalty, and takes the player off the pack's list. At the next login that player stands
+  at the start waystone if the Expedition still belongs to them. Out of combat a logout
+  costs nothing and the player comes back where they stood. Whoever logs in after their
+  Expedition ended stands in the capital they came from.
 - A server restart ends every Expedition, which falls under the login rule above.
 
 ## 5. Slots and preparation
