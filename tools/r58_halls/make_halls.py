@@ -39,8 +39,8 @@ guild art (grug_mapgen `guild_banner_*`, `guild_emblem_*`), the rail and the
 carts grug_mapgen's yard pieces.
 
 The template frame (format doc §2): x east, z north, the street side is
-z = -1 (the front), the hall's door faces -z; the district plot stands the
-house unturned, so the front faces the plot's street.
+z = -1 (the front), the hall's door faces -z; the capital planner turns the
+plot per seed (0 to 3 quarter turns), so the front faces the plot's street.
 
 The hall socket contract (settlements.md, "The Miner's Guild houses"): the
 points `{id}_leader` (role quest), `{id}_exchange` (role idle, tag work: the
