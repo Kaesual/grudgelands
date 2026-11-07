@@ -18,8 +18,8 @@ Q.validate = V
 -- every level lies within L +- LEVEL_SLACK (containment).
 V.LEVEL_SLACK = 3
 -- A role that stands in an Expedition, no zone hosts it: role -> the Expedition's
--- level, what its level range is read as, the +0 to +9 of a run being the player's
--- choice. As in tools/r28_design/validate.py.
+-- first level, what its level range is read as, the run's level (up to 69) being the
+-- player's choice. As in tools/r28_design/validate.py.
 V.EXPEDITION_TARGETS = {flintback = 20}
 V.MAX_GIVERS_PER_HUB = 2
 V.MAX_LINES_PER_GIVER = 2

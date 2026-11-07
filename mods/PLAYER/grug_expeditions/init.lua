@@ -16,16 +16,20 @@
 --   run_inside(player|name) the run the player stands in now, or nil
 --   belongs(run, player|name)
 --   slot_box(slot)          minp, maxp
---   definition(id)          a catalogue row {id, name, level, max_players, template}
+--   definition(id)          a catalogue row {id, name, level, max_level, max_players,
+--                           template}: its mob levels run from level to max_level
 --   list()                  the rows a dialog may offer (hidden test rows left out)
 --   entry_level(level)      min(level - 2, 60)
 --   rewards_open(run)       the boss is dead, or the template has none
---   catalogue               catalogue.lua itself: BOX, ORIGIN, PITCH, MAX_BONUS, ...
+--   catalogue               catalogue.lua itself: BOX, ORIGIN, PITCH, TIERS, tier_of, ...
+--   written(run)            the template as the run's tier writes it: {ids, dig}, the
+--                           tier's ore and gem in the template's places
 --
 -- A run row:
 --   id          session-unique number
 --   slot        1..100; minp, maxp its box
---   expedition  the catalogue id; bonus 0..9, level = catalogue level + bonus
+--   expedition  the catalogue id; bonus 0..max_level - level, level = catalogue
+--               level + bonus
 --   max_players
 --   owner       {kind = "player", name = ...} or {kind = "party", id = ...}
 --   creator     the name that opened it
@@ -88,8 +92,16 @@ for _, row in ipairs(catalogue.EXPEDITIONS) do
 	end
 end
 core.register_on_mods_loaded(function()
-	for _, tpl in pairs(grug_expeditions.templates) do template.resolve(tpl) end
+	local swaps = catalogue.swaps()
+	for _, tpl in pairs(grug_expeditions.templates) do template.resolve(tpl, swaps) end
 end)
+
+-- The template as `run` writes it, its tier's ore and gem in the template's places:
+-- {ids, dig}. Read by the dig rule (guard.lua).
+function grug_expeditions.written(run)
+	local tpl = grug_expeditions.templates[catalogue.definition(run.expedition).template]
+	return tpl.variants[catalogue.tier_of(run.level).tier] or tpl
+end
 
 assert(loadfile(path .. "/runs.lua"))(catalogue, preparation)
 dofile(path .. "/encounters.lua")

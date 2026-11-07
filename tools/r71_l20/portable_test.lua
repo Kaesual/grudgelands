@@ -1,7 +1,9 @@
 -- Round 71 lane L20 portable test (LuaJIT): The Stilled Seam's catalogue row, its
 -- loot table and the written template, proved over the cells, not by eye: the route
--- for a player and for a mob, the door, the ore, the packs and the light. The engine
--- half is tools/r71_l20/run.sh, the numbers tools/r71_l20/balance.py.
+-- for a player and for a mob, the door, the ore, the packs and the light. Lane RANGE
+-- (J): levels 20-69, the tier's ore and gem in the template's places, the chest's
+-- materials by band. The engine half is tools/r71_l20/run.sh, the numbers
+-- tools/r71_l20/balance.py.
 -- Prints "R71 L20 PORTABLE PASS checks=<n>".
 --
 --   luajit tools/r71_l20/portable_test.lua [REPO]
@@ -24,6 +26,7 @@ local row = C.definition("stilled_seam")
 check(row ~= nil, "A the row")
 eq(row.name, "The Stilled Seam", "A its name")
 eq(row.level, 20, "A its level")
+eq(row.max_level, 69, "A up to 69")
 eq(row.max_players, 3, "A at most three")
 eq(row.template, "stilled_seam", "A its template")
 local listed = C.list()
@@ -485,10 +488,105 @@ local lua_rule = read_file("mods/PLAYER/grug_quests/validate.lua"):match("V%.EXP
 local py_rule = read_file("tools/r28_design/validate.py"):match('EXPEDITION_TARGETS = {"flintback": (%d+)}')
 eq(tonumber(lua_rule), row.level, "I the game's validator")
 eq(tonumber(py_rule), row.level, "I the design validator")
--- The boss: a golem's body, its name fixed over 20-29.
+-- The boss: a golem's body, its name fixed over 20-69.
 local golem = read_file("mods/ENTITIES/grug_mobs/golem.lua")
 check(golem:find('register_mob("grug_mobs:flintback", flintback)', 1, true), "I Flintback is registered")
-check(read_file("mods/ENTITIES/grug_mobs/data/names.json"):find('"world/flintback/L20-29": "Flintback"', 1, true),
-	"I the name's slot")
+local names_text = read_file("mods/ENTITIES/grug_mobs/data/names.json")
+check(names_text:find('"world/flintback/L20-69": "Flintback"', 1, true), "I the name's slot")
+-- Every mob of the Seam is named at every level, the boss by its one name (names_core).
+local NC = dofile(repo .. "/mods/ENTITIES/grug_mobs/names_core.lua")
+local index = NC.build(json.decode(names_text).names)
+for level = row.level, row.max_level do
+	eq(NC.lookup(index, "flintback", nil, level), "Flintback", "I Flintback at " .. level)
+	check(NC.lookup(index, "giant_spider", nil, level), "I a spider's name at " .. level)
+	check(NC.lookup(index, "stone_golem", nil, level), "I a golem's name at " .. level)
+end
+-- The quest's target is read at the Expedition's first level, whatever the run's.
+eq(NC.lookup(index, "flintback", nil, nil), "Flintback", "I the kill objective's one name")
+
+-- J. The range (Round 71 RANGE): five tiers over 20-69, each writing its ore and gem
+-- in the template's places with the dig marks following, and the chest by band.
+local registry = read_file("mods/ITEMS/grug_materials/registry.lua")
+local harvest = {}
+for node, tier in registry:gmatch('natural_node = "([^"]+)",.-harvest_tier = (%d+)') do
+	harvest[node] = tonumber(tier)
+end
+eq(C.TIERS[1].min_level, row.level, "J the first tier at the Seam's first level")
+eq(C.TIERS[#C.TIERS].max_level, row.max_level, "J the last at its last")
+for i, tier in ipairs(C.TIERS) do
+	eq(tier.tier, i + 1, "J T" .. tier.tier)
+	eq(tier.max_level - tier.min_level, 9, "J ten levels in T" .. tier.tier)
+	if i > 1 then eq(tier.min_level, C.TIERS[i - 1].max_level + 1, "J no gap before T" .. tier.tier) end
+	eq(C.tier_of(tier.min_level), tier, "J tier_of " .. tier.min_level)
+	eq(C.tier_of(tier.max_level), tier, "J tier_of " .. tier.max_level)
+	-- The gem is the tier's own; the ore needs the tier's pick, T6's Abyssal Crystal T5's (user).
+	eq(harvest[tier.gem], tier.tier, "J T" .. tier.tier .. "'s gem " .. tier.gem)
+	eq(harvest[tier.ore], math.min(tier.tier, 5), "J T" .. tier.tier .. "'s ore " .. tier.ore)
+end
+eq(C.TEMPLATE_ORE, GOLD, "J the template's ore")
+eq(C.TEMPLATE_GEM, JADE, "J the template's gem")
+check(next(C.swaps()[2]) == nil, "J T2 writes the file as it is")
+
+-- The variants as the game resolves them, content ids by name.
+local ids_by_name, next_cid = {}, 0
+_G.core = {registered_nodes = setmetatable({}, {__index = function() return {} end}),
+	get_content_id = function(name)
+		if not ids_by_name[name] then next_cid = next_cid + 1; ids_by_name[name] = next_cid end
+		return ids_by_name[name]
+	end}
+T.resolve(tpl, C.swaps())
+_G.core = nil
+for _, tier in ipairs(C.TIERS) do
+	local variant = tpl.variants[tier.tier]
+	local label = "J T" .. tier.tier
+	local marks = 0
+	for name in pairs(variant.dig) do
+		marks = marks + 1
+		check(name == tier.ore or name == tier.gem, label .. " marks only its ore and gem: " .. name)
+	end
+	eq(marks, tier.ore == tier.gem and 1 or 2, label .. "'s marks")
+	for _, spot in ipairs(WANT) do
+		local want = spot[1] == GOLD and tier.ore or tier.gem
+		eq(variant.ids[tpl.cells:byte(at(spot[2], F + 1, spot[3]))], ids_by_name[want],
+			("%s writes %s at %d,%d"):format(label, want, spot[2], spot[3]))
+	end
+	-- Nothing else changes, and no T2 node is left at another tier.
+	local changed = 0
+	for index, name in ipairs(tpl.nodes) do
+		local id = variant.ids[index - 1]
+		if id ~= tpl.ids[index - 1] then
+			changed = changed + 1
+			check(name == GOLD or name == JADE, label .. " swaps only ore and gem")
+		end
+		if tier.tier > 2 then
+			check(id ~= ids_by_name[GOLD] and id ~= ids_by_name[JADE], label .. " leaves no T2 node")
+		end
+	end
+	eq(changed, tier.tier == 2 and 0 or 2, label .. "'s swaps")
+end
+
+-- The chest by band: the spiders' own materials, nothing of the 20s' signature later.
+local items_json = json.decode(read_file("mods/ENTITIES/grug_mobs/data/items.json"))
+local known = {}
+for _, item in ipairs(items_json) do known[item.id] = true end
+for name in read_file("mods/ENTITIES/grug_mobs/items.lua"):gmatch('material%("([%w_]+)"') do
+	known["grug_mobs:" .. name] = true
+end
+local BAND_ONLY = {["grug_mobs:coarse_spider_silk"] = {21, 30},
+	["grug_mobs:layered_spider_web"] = {31, 40}, ["grug_mobs:glass_spider_silk"] = {51, 69}}
+for level = row.level, row.max_level do
+	local got = {}
+	for _, entry in ipairs(L.plan(tbl, level, function(lo) return lo end, {5, 15})) do
+		if entry.item then
+			check(known[entry.item], "J a registered material: " .. entry.item)
+			got[entry.item] = true
+		end
+	end
+	check(got["grug_mobs:spider_silk"] and got["grug_mobs:venom_gland"], "J silk and glands at " .. level)
+	for item, band in pairs(BAND_ONLY) do
+		eq(got[item] == true, level >= band[1] and level <= band[2], ("J %s at %d"):format(item, level))
+	end
+	eq(got["grug_mobs:venom_sac"] == true, level >= 31 and level <= 50, "J venom sacs at " .. level)
+end
 
 print(("R71 L20 PORTABLE PASS checks=%d"):format(checks))

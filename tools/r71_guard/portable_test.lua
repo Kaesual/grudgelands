@@ -88,6 +88,8 @@ _G.grug_expeditions = {slot_box = C.slot_box, slot_at = C.slot_at, catalogue = C
 	definition = C.definition,
 	start_arrival = function() return {x = 8, y = 4.51, z = 8} end,
 	templates = {test_vault = {dig = {["default:stone_with_tin"] = true}}}}
+-- The run's tier's marks (init.lua written): the test row's tier writes the file's.
+grug_expeditions.written = function() return grug_expeditions.templates.test_vault end
 _G.core.get_node_or_nil = function(pos) return nodes[pos] end
 _G.core.register_on_dieplayer = function() end
 _G.core.register_on_leaveplayer = function() end

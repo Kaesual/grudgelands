@@ -121,16 +121,28 @@ function M.load(path, name, box, required)
 end
 
 -- Content ids exist once every mod has registered its nodes; an unknown node
--- stops the server there.
-function M.resolve(tpl)
-	local ids = {}
-	for index, name in ipairs(tpl.nodes) do
+-- stops the server there. `swaps` ({[key] = {[node] = node}}, catalogue.swaps)
+-- gives the variants a run writes: tpl.variants[key] = {ids, dig}, the palette and
+-- the marks with those nodes swapped. tpl.ids and tpl.dig stay the file's.
+function M.resolve(tpl, swaps)
+	local function id_of(name)
 		if not core.registered_nodes[name] then
 			error("[grug_expeditions] template " .. tpl.name .. ": unknown node " .. name, 0)
 		end
-		ids[index - 1] = core.get_content_id(name)
+		return core.get_content_id(name)
 	end
+	local ids = {}
+	for index, name in ipairs(tpl.nodes) do ids[index - 1] = id_of(name) end
 	tpl.ids = ids
+	tpl.variants = {}
+	for key, swap in pairs(swaps or {}) do
+		local variant = {ids = {}, dig = {}}
+		for index, name in ipairs(tpl.nodes) do
+			variant.ids[index - 1] = swap[name] and id_of(swap[name]) or ids[index - 1]
+		end
+		for name in pairs(tpl.dig) do variant.dig[swap[name] or name] = true end
+		tpl.variants[key] = variant
+	end
 end
 
 return M
