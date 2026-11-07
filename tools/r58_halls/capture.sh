@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Round 58 lanes HALLS, HALLS2: engine screenshots of the Miner's Guild houses in
-# Dur Brannoc and Lethariel (The Charter of Stone) and Gor Drazhak (The
-# Oathdelvers), outside and inside, and a check that each house's frieze and
-# plaque stand in the world (probe.txt, "CHECK"). Only the houses' regions are
-# emerged, never the world.
+# the six capitals (three until Round 70), outside and inside and the
+# Stonewright's work bay by day and at night, and a check that each house's
+# frieze, plaque and machines stand in the world (probe.txt, "CHECK"). Only the
+# houses' regions are emerged, never the world.
 #
 # Lane LK's method and isolation (tools/r51_lk/capture.sh, from lane TC's):
 # the server boots through tools/luanti_headless.sh with the disposable

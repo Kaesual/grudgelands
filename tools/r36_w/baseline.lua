@@ -29,7 +29,9 @@
 -- Watch and Whitebridge Market Close, bounds and airspace unchanged; and
 -- by Round 60 lane CAPITALS (a declared map reset) for chapter 2's public
 -- register: one `quest_place` socket added to Nhal Veyr's Miner's Guild
--- plot, nothing else. As a module:
+-- plot, nothing else; and by Round 70 lane GUILD (a declared map reset) for
+-- the Stonewright's work bay: `miners_guild_sorter` moved in the six guild
+-- houses, nothing else. As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}

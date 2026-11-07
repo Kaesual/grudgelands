@@ -17,7 +17,7 @@
 --     arithmetic yield more of it, so a load-time call that needs a world
 --     answers nothing and the load goes on;
 --   - grug_mapgen registers only its world nodes (world_nodes.lua,
---     poi_displays.lua); the world construction is skipped, grug_zones.get
+--     poi_displays.lua, the guild's nodes.lua); the world construction is skipped, grug_zones.get
 --     answers from the mapgen's own zone source and grug_core gets the few
 --     seams the installed authority would give it. grug_map (the minimap's
 --     bake, seconds at load) is skipped: it registers no item;
@@ -370,6 +370,8 @@ return function(repo, options)
 		if name == "grug_mapgen" then
 			grug_mapgen = {wp40 = permissive()}
 			dofile(mod.dir .. "/world_nodes.lua")(core, mod.dir, grug_nodes, grug_gathering)
+			-- The Stonewright's stones and machines, as grug_mapgen's init.lua.
+			dofile(repo .. "/mods/PLAYER/grug_guild/nodes.lua")(core)
 			dofile(mod.dir .. "/poi_displays.lua")(core)
 			local zones = {}
 			for _, zone in ipairs(zone_source.zones) do zones[zone.id] = zone end

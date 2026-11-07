@@ -1804,7 +1804,12 @@ tools](#player-meta-read-by-external-tools).
     Miner's Guild Exchange (`grug_traders:guild_exchange`) takes over each
     capital's `capital_services.GUILD_HALL.exchange` socket as the service
     role `guild_exchange` (`grug_core` `SERVICE_ROLES`), like the
-    Crownbinder.
+    Crownbinder. The Stonewright (`grug_traders:stonewright`, Round 70)
+    takes over `GUILD_HALL.stonewright` the same way; `stonewright = true`
+    gives it one page without modes, the recipes of
+    `grug_guild.stonewright_rows` with the Trade-in's lots, locked by rank
+    (`stoneN_<index>`, `stoneall_<index>`), made by
+    `grug_guild.stonewright_make`.
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached

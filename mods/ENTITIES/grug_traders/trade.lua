@@ -44,6 +44,13 @@
 -- that embeds grug_repair's quote for the socket the vendor stands on
 -- (grug_repair's camp vendor provider re-checks socket, distance and
 -- faction on every action).
+--
+-- THE STONEWRIGHT (Round 70, miners_guild.md §5.3). A vendor whose definition
+-- carries `stonewright = true` shows one page and no modes: the guild lines,
+-- then the Trade-in's rows and lots (1 / 5 / 10 / All), one row per recipe,
+-- locked by rank like the reputation page. Its fields count only there, and
+-- nothing else counts at it; grug_guild.stonewright_make checks the rank, the
+-- goods, the fee and the room again and changes nothing on a refusal.
 
 local FORMNAME = "grug_traders:trade"
 
@@ -56,7 +63,7 @@ local FORM_W, FORM_H = 16, 10.2
 local GREYED = "#8a8a8a"
 
 -- player name -> {vendor, faction, pos, origin, mode, tab, page, offer, rows,
--- trade_rows, rep_shown, offers_scroll, offers_scroll_max}
+-- trade_rows, rep_shown, stone_rows, offers_scroll, offers_scroll_max}
 local sessions = {}
 local repair_serial = 0
 
@@ -71,6 +78,11 @@ grug_traders.guild_vendor = guild_vendor
 -- A guild vendor whose Buy mode is the reputation page (the camp vendor).
 local function guild_page(vendor)
 	return guild_vendor(vendor) and vendor.guild_page == true
+end
+
+-- The guild house's Stonewright (its definition's `stonewright = true`).
+local function stonewright(vendor)
+	return vendor ~= nil and vendor.stonewright == true and rawget(_G, "grug_guild") ~= nil
 end
 
 -- A vendor that repairs (the camp vendor), with grug_repair loaded (it
@@ -230,7 +242,8 @@ local function header(parts, player, session, vendor, discount)
 		parts[#parts + 1] = "label[5.0,1.2;" .. esc(core.colorize("#7ee081",
 			"Kinship discount: -" .. pct .. "% on every purchase")) .. "]"
 	end
-	local modes = {{"buy", "Buy"}, {"sell", "Sell"}}
+	-- The Stonewright's one page needs no modes.
+	local modes = stonewright(vendor) and {} or {{"buy", "Buy"}, {"sell", "Sell"}}
 	if guild_vendor(vendor) then modes[#modes + 1] = {"tradein", "Trade-in"} end
 	if repairs(vendor, session) then modes[#modes + 1] = {"repair", "Repair"} end
 	for index, mode in ipairs(modes) do
@@ -379,6 +392,8 @@ local function render_buy(parts, player, session, vendor, discount)
 	return FORM_H
 end
 
+local ALL_FIELD = {sell = "sellall_", tradein = "tradein_", stone = "stoneall_"}
+
 -- A fixed set of quantities, interpreted as whole lots for bulk goods.
 -- Unavailable amounts are text rather than actionable buttons.
 local function quantity_buttons(parts, y, prefix, index, count, total)
@@ -390,8 +405,7 @@ local function quantity_buttons(parts, y, prefix, index, count, total)
 			parts[#parts + 1] = ("label[%.2f,%.2f;%s]"):format(x + 0.25, y + 0.3, esc(core.colorize(GREYED, tostring(amount))))
 		end
 	end
-	local field = prefix == "tradein" and "tradein_" or "sellall_"
-	parts[#parts + 1] = ("button[13.0,%.2f;2.4,0.6;%s%d;All (%s)]"):format(y, field, index, esc(total))
+	parts[#parts + 1] = ("button[13.0,%.2f;2.4,0.6;%s%d;All (%s)]"):format(y, ALL_FIELD[prefix], index, esc(total))
 end
 
 local function render_sell(parts, player, session)
@@ -512,6 +526,59 @@ local function render_tradein(parts, player, session)
 	parts[#parts + 1] = "button[8.9,8.95;0.7,0.6;tradein_next;>]"
 end
 
+-- "10 Cobblestone + 1c", "8 Cobblestone + 1 Iron Bar + 5c".
+local function recipe_cost(recipe)
+	local parts = {}
+	for _, input in ipairs(recipe.inputs) do
+		parts[#parts + 1] = input.count .. " " .. short_desc(input.item)
+	end
+	parts[#parts + 1] = grug_money.format(recipe.fee)
+	return table.concat(parts, " + ")
+end
+
+-- The Stonewright's page (Round 70): the guild lines, then one row per recipe
+-- by catalogue index: what a lot makes and costs, then the Trade-in's lots; a
+-- locked row is greyed and says the rank, a row without a lot says what is
+-- missing. `session.stone_rows` keeps the rows shown, the click's cross-check.
+local function render_stonewright(parts, player, session)
+	session.stone_rows = {}
+	if not guild_lines(parts, player) then return end
+	local rows = grug_guild.stonewright_rows(player)
+	session.stone_rows = rows
+	-- The cost line in the smaller size, so the longest one stays clear of the
+	-- lots on a small screen (the Trade-in's rows have one short line).
+	local name_size = "style_type[label;font_size=" .. grug_core.ui.font_size(0.85, parts.growth) .. "]"
+	local cost_size = "style_type[label;font_size=" .. grug_core.ui.font_size(0.75, parts.growth) .. "]"
+	for index, row in ipairs(rows) do
+		local y = 2.5 + (index - 1) * 0.77
+		local recipe = row.recipe
+		parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 15.2, 0.76)
+		local function text(value)
+			return esc((row.unlocked and row.lots >= 1) and value or core.colorize(GREYED, value))
+		end
+		parts[#parts + 1] = ("item_image[0.7,%.2f;0.7,0.7;%s]"):format(y, recipe.output)
+		parts[#parts + 1] = ("tooltip[0.7,%.2f;0.7,0.7;%s]"):format(y, esc(full_desc(recipe.output)))
+		parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.2,
+			text(recipe.output_count .. " " .. short_desc(recipe.output)))
+		parts[#parts + 1] = cost_size .. ("label[1.7,%.2f;%s]"):format(y + 0.52,
+			text(recipe_cost(recipe))) .. name_size
+		if not row.unlocked then
+			parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35,
+				text(("Reach Reputation Rank %d"):format(recipe.rank)))
+		elseif row.lots < 1 then
+			local short = row.short
+			parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35, text("Need " ..
+				(short == "money" and grug_money.format(recipe.fee) or
+					(short.count .. " " .. short_desc(short.item)))))
+		else
+			quantity_buttons(parts, y, "stone", index, row.lots, tostring(row.lots * recipe.output_count))
+			parts[#parts + 1] = ("tooltip[stoneall_%d;%s]"):format(index,
+				esc(("Make %d %s for %s"):format(row.lots * recipe.output_count,
+					short_desc(recipe.output), grug_money.format(row.lots * recipe.fee))))
+		end
+	end
+end
+
 local function build(player, session, vendor, status)
 	-- The body is rendered FIRST because the buy grid decides the window
 	-- height; size[] is prepended afterwards. Its text grows as the base
@@ -530,6 +597,8 @@ local function build(player, session, vendor, status)
 		render_sell(body, player, session)
 	elseif session.mode == "tradein" then
 		render_tradein(body, player, session)
+	elseif session.mode == "stonewright" then
+		render_stonewright(body, player, session)
 	else
 		needed = render_buy(body, player, session, vendor, discount)
 	end
@@ -599,8 +668,9 @@ function grug_traders.open(clicker, vendor_name, pos, faction, origin)
 		origin = type(origin) == "table" and type(origin.settlement) == "string" and
 			type(origin.socket) == "string" and
 			{settlement = origin.settlement, socket = origin.socket} or nil,
-		-- A guild vendor opens on its Trade-in mode.
-		mode = guild_vendor(vendor) and "tradein" or "buy",
+		-- A guild vendor opens on its Trade-in mode, the Stonewright has one
+		-- page.
+		mode = stonewright(vendor) and "stonewright" or guild_vendor(vendor) and "tradein" or "buy",
 		tab = "general",
 		page = 1,
 	}
@@ -890,6 +960,43 @@ local function do_rep_buy(player, session, row)
 		grug_guild.format_points(row.price)))
 end
 
+-- A row of the Stonewright's page (Round 70): the row is recomputed and
+-- cross-checked against the one shown, then grug_guild makes the lots.
+local STONE_REFUSALS = {
+	no_faction = "You belong to no guild.",
+	unknown = "The Stonewright does not make that.",
+	too_few = "You do not carry enough for that.",
+	money = "Not enough money.",
+	full = "Your inventory is full.",
+}
+local function do_stonewright(player, session, index, quantity)
+	local shown = session.stone_rows and session.stone_rows[index]
+	if not shown or not shown.unlocked then
+		show(player)
+		return
+	end
+	local recipe = shown.recipe
+	local fresh = grug_guild.stonewright_rows(player)[index]
+	if not fresh or fresh.recipe ~= recipe or fresh.lots ~= shown.lots then
+		show(player, "Your items have changed.")
+		return
+	end
+	local lots = quantity == "all" and fresh.lots or quantity
+	if lots < 1 or lots > fresh.lots then
+		show(player)
+		return
+	end
+	local made, fee = grug_guild.stonewright_make(player, recipe.id, lots)
+	if not made then
+		show(player, fee == "rank" and ("Reach Reputation Rank %d first."):format(recipe.rank) or
+			STONE_REFUSALS[fee] or "The Stonewright does not make that.")
+		return
+	end
+	grug_sounds.play("vendor_buy", player)
+	show(player, ("Made %d %s for %s."):format(made, short_desc(recipe.output),
+		grug_money.format(fee)))
+end
+
 -- Repair stays in this validated vendor session. The service still owns
 -- its single-use quote and validates the authored socket on every repair.
 local function do_repair(player, session, notice)
@@ -932,6 +1039,24 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			session.offers_scroll = math.max(0, math.min(session.offers_scroll_max or 0,
 				tonumber(value)))
 		end
+	end
+
+	-- The Stonewright's page, in a fixed order, and nothing else there (a
+	-- client may send any field anywhere).
+	if stonewright(vendor) then
+		for index in ipairs(grug_guild.catalog.STONEWRIGHT) do
+			for _, amount in ipairs({1, 5, 10}) do
+				if fields["stone" .. amount .. "_" .. index] then
+					do_stonewright(player, session, index, amount)
+					return true
+				end
+			end
+			if fields["stoneall_" .. index] then
+				do_stonewright(player, session, index, "all")
+				return true
+			end
+		end
+		return true
 	end
 
 	if fields.mode_buy then

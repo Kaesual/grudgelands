@@ -16,7 +16,7 @@ price tables, buy-back, the audit fixes and a simple income estimate, without
 a checksummed manifest or audit DAG. Quest copper rewards use the same ×2.5
 axis (D2).
 
-The Miner's Guild's reputation (Round 58) is no ledger currency and no copper buys it: [miners_guild.md](miners_guild.md).
+The Miner's Guild's reputation (Round 58) is no ledger currency: [miners_guild.md](miners_guild.md).
 
 ## 1. Currency: copper / silver / gold
 
@@ -104,10 +104,9 @@ precedence over preserving the exact mathematical ratio.
   (ruling 28) no vendor sells leather, cloth, ores or metal bars of any
   tier: hides and cloth are hunted, ores mined, bars smelted. Thread stays
   on every shelf as a job supply, and the tailor keeps White and Brown Wool
-  (bed decor). Since Round 58 (plan §2a) no vendor sells what the Miner's
-  Guild takes for reputation ([miners_guild.md](miners_guild.md) §5): the
-  mason no longer sells Cobblestone and Gravel, so copper never buys
-  reputation; vendors still buy both.
+  (bed decor). Buying what the Miner's Guild takes for reputation is allowed
+  (the user, Round 70: copper is limited too); the mason stays as he is and
+  sells no Cobblestone or Gravel; vendors still buy both.
 - A vendor's **buy-back is capped at 5%** of the item's purchase price,
   **rounded up to the next copper**, and applies to goods a vendor also
   sells (gear, supplies) and to every equippable of the gear catalog by the
@@ -185,6 +184,9 @@ items without one:
   material value before the halving, so a potion made from a mixture is not
   halved twice. Tools need no rule of their own; halved they stay below the
   gear buy-back of their tier. Wear is ignored, as for gear.
+  The five **ornamented stones** (Round 70, the Stonewright,
+  [miners_guild.md](miners_guild.md) §5.3) are crafted goods of tier 2–6
+  (`_grug_tier`), priced by their Stonewright recipe.
 - **Storage blocks** pay **nine times** their item's payout, because
   unpacking is free: the twelve pack/unpack rows of `grug_smelting` (the
   metal blocks, Emberglass and Abyssal Crystal) and every other block that
@@ -202,8 +204,9 @@ items without one:
   stages, door halves, liquids, mapgen nodes).
 - A craft, cook, pack/unpack or service loop may not print money: an output
   pays **at most** the summed value of its consumed inputs (break-even is
-  allowed). The startup audit judges every engine, dual-furnace and
-  profession-station recipe whose inputs are all priced, over the combined
+  allowed). The startup audit judges every engine, dual-furnace,
+  profession-station and Stonewright recipe whose inputs are all priced
+  (the Stonewright's copper fee counts as no input), over the combined
   table of both passes in milli-copper, a `group:` input by its cheapest
   priced member, and a consumed crafted good at its material value before
   the halving (a block back into its nine gems gains nothing a player did

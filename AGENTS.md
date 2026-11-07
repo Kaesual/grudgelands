@@ -543,9 +543,10 @@ The topic rules below name the one path to use; the
   `guild = true`), the mining effect and its items (`effect.lua`,
   `items.lua`, status `mining_sense`), the vendor page (`vendor.lua`) and the
   lift's right-click (`lift.lua`, trips through `grug_home.travel`); its
-  world nodes are `grug_mapgen`'s ("World generation"). No copper route into
-  reputation: the exchange takes only items no vendor sells
-  (`tools/r58_guildspec` checks it on the real game). Topic checks after a
+  world nodes are `grug_mapgen`'s ("World generation"). Buying items that
+  give reputation is allowed (the user, Round 70): copper is limited too.
+  The Stonewright (`stonewright.lua`, Round 70) converts stone by rank at
+  the guild house, with its blocks and machines. Topic checks after a
   number or the spec changes: `luajit tools/r58_guildspec/write_doc.lua .
   --check` (the spec's generated tables); after the shipped guild art
   changes: `python3 tools/r58_consume/art/ship.py --check` (drop 01's

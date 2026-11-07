@@ -10,7 +10,8 @@
 -- The files and their lanes (spec §10, so parallel lanes never edit one
 -- file): catalog.lua GUILDSPEC (its VALUES: the tuning page's accepted
 -- numbers), store.lua and exchange.lua REP, effect.lua and items.lua
--- CONSUME, vendor.lua CAMPNPC, lift.lua LIFT. The lift and room nodes are
+-- CONSUME, vendor.lua CAMPNPC, lift.lua LIFT, stonewright.lua Round 70's
+-- GUILD. The lift and room nodes are
 -- grug_mapgen's (spec §3): grug_mapgen:guild_lift (CAMPS, a placeholder
 -- that LIFT overrides from here) and the room nodes (ROOMS).
 -- Until a lane fills its file, its functions answer as for a character of
@@ -29,6 +30,7 @@ grug_guild.consumable = catalog.consumable
 grug_guild.consumable_by_item = catalog.consumable_by_item
 grug_guild.remains = catalog.remains
 grug_guild.guild = catalog.guild
+grug_guild.stonewright_recipe = catalog.stonewright_recipe
 
 dofile(path .. "/store.lua")
 dofile(path .. "/exchange.lua")
@@ -36,6 +38,7 @@ dofile(path .. "/effect.lua")
 dofile(path .. "/items.lua")
 dofile(path .. "/vendor.lua")
 dofile(path .. "/lift.lua")
+dofile(path .. "/stonewright.lua")
 
 -- The load audit: every item the catalogue names is registered once every
 -- mod has loaded (the consumables and Remains only once lane CONSUME
@@ -50,6 +53,10 @@ core.register_on_mods_loaded(function()
 		need(row.host)
 		need(row.bar)
 		need(row.gem)
+	end
+	for _, row in ipairs(catalog.STONEWRIGHT) do
+		need(row.output)
+		for _, input in ipairs(row.inputs) do need(input.item) end
 	end
 	local consumables = 0
 	for _, row in ipairs(catalog.CONSUMABLES) do

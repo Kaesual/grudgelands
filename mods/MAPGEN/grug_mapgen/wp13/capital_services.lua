@@ -40,8 +40,9 @@ M.INNS = {highcourt = "homes_tavern", dur_brannoc = "terrace_alehouse",
 -- contract of docs/design/settlements.md "The Miner's Guild houses".
 M.GUILD_HALL = {plot = "miners_guild", leader = "miners_guild/miners_guild_leader",
  exchange = "miners_guild/miners_guild_exchange",
- residents = {"miners_guild/miners_guild_clerk", "miners_guild/miners_guild_sorter",
-  "miners_guild/miners_guild_porter"}}
+ -- Round 70: the Stonewright takes over the sorter's socket at the work bay.
+ stonewright = "miners_guild/miners_guild_sorter",
+ residents = {"miners_guild/miners_guild_clerk", "miners_guild/miners_guild_porter"}}
 local STATIONS = {forge="grug_jobs:forge", tailor="grug_jobs:tailor_bench",
  alchemist="grug_brewing:brewing_stand", leatherworker="grug_jobs:tanning_rack",
  woodcarver="grug_jobs:carving_bench", goldsmith="grug_jobs:jewellers_bench",
