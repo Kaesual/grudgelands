@@ -51,6 +51,7 @@ for level = 62, 69 do check(C.entry_level(level) == 60, "B the ceiling at " .. l
 -- C. The catalogue's rows.
 for _, row in ipairs(C.EXPEDITIONS) do
 	check(row.id and row.name and row.level and row.max_players and row.template, "C row " .. row.id)
+	check(row.max_level and row.max_level >= row.level, "C a level range in " .. row.id)
 end
 check(C.definition("test_vault").max_players == 3, "C the test row")
 for _, row in ipairs(C.list()) do check(not row.hidden, "C list leaves hidden rows out") end

@@ -22,7 +22,7 @@
 -- 5. The clearing pass: every mapblock of the box solid. Slices opening air beside
 --    natural cave water let it flow; the water guard then leaves
 --    grug_core:water_barrier nodes in the box.
--- 6. The template, mapblock by mapblock.
+-- 6. The template, mapblock by mapblock, with the run's tier's ore and gem.
 --
 -- Each write has its own VoxelManip and the engine's own light. VoxelManip writes no
 -- meta and no timers: on_ready's listeners set theirs after the last block.
@@ -67,9 +67,9 @@ local function seal_block(area)
 	vm:write_to_map(true)
 end
 
-local function write_block(tpl, minp, area)
+local function write_block(tpl, ids, minp, area)
 	local byte = string.byte
-	local cells, ids = tpl.cells, tpl.ids
+	local cells = tpl.cells
 	local sx, rows = tpl.size.x, tpl.size.x * tpl.size.y
 	local total = rows * tpl.size.z
 	local x0 = area[1].x - minp.x
@@ -194,7 +194,7 @@ function PHASES.write(work)
 	for _ = 1, catalogue.BLOCKS_PER_STEP do
 		local area = work.blocks[work.block]
 		if not area then return "done" end
-		write_block(work.tpl, work.run.minp, area)
+		write_block(work.tpl, work.ids, work.run.minp, area)
 		work.block = work.block + 1
 	end
 end
@@ -218,10 +218,13 @@ local function pump()
 	core.after(0, pump)
 end
 
--- Starts preparing `run` (minp, maxp) from `tpl`. finish(ok) runs on a server
--- step after the last block, or with false when the map refused the box.
+-- Starts preparing `run` (minp, maxp, level) from `tpl`. finish(ok) runs on a
+-- server step after the last block, or with false when the map refused the box. The
+-- run's tier writes its own ore and gem (template.resolve's variants).
 function M.enqueue(run, tpl, finish)
-	queue[#queue + 1] = {run = run, tpl = tpl, finish = finish, phase = "clear", tries = 0, gates = 0}
+	local variant = tpl.variants and tpl.variants[catalogue.tier_of(run.level).tier] or tpl
+	queue[#queue + 1] = {run = run, tpl = tpl, ids = variant.ids, finish = finish,
+		phase = "clear", tries = 0, gates = 0}
 	if not running then
 		running = true
 		core.after(0, pump)

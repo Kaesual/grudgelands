@@ -20,15 +20,23 @@ M.TABLES = {
 			{item = "grug_mobs:coarse_spider_silk", min = 1, max = 2, level = {21, 30}},
 		},
 	},
-	-- Level 20-29. Priced by tools/r71_l20/balance.py: the coins are about a quarter
-	-- hour of the band's income, the length of a run.
+	-- Level 20-69. Priced by tools/r71_l20/balance.py: the coins are about a quarter
+	-- hour of the band's income, the length of a run. The materials are what its
+	-- spiders drop in each mob band (grug_mobs data/drops.json, bands of ten levels
+	-- from 21; 61-69 drop as band 6): Raw Silk and Venom Glands at every level (the
+	-- silk is the Tailor's T4-T6 bolt input), each band's signature silk, and Venom
+	-- Sacs where the band has no silk of its own.
 	stilled_seam = {
 		gear = {{quality = 2}, {quality = 3, chance = 25}},
 		coin_bags = {{factor = 10}},
 		materials = {
 			{item = "grug_mobs:spider_silk", min = 3, max = 5},
-			{item = "grug_mobs:coarse_spider_silk", min = 1, max = 2, level = {21, 29}},
+			{item = "grug_mobs:coarse_spider_silk", min = 1, max = 2, level = {21, 30}},
 			{item = "grug_mobs:venom_gland", min = 1, max = 2, chance = 50},
+			{item = "grug_mobs:layered_spider_web", min = 1, max = 2, level = {31, 40}},
+			{item = "grug_mobs:venom_sac", min = 1, max = 2, chance = 50, level = {31, 40}},
+			{item = "grug_mobs:venom_sac", min = 1, max = 2, level = {41, 50}},
+			{item = "grug_mobs:glass_spider_silk", min = 1, max = 2, level = {51, 69}},
 		},
 	},
 }

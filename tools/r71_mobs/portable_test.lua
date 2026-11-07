@@ -377,8 +377,8 @@ check(load_fails({}), "F an Expedition without a loot table stops it")
 
 -- ---- G. A boss's fixed name ----------------------------------------------------
 local NC = dofile(repo .. "/mods/ENTITIES/grug_mobs/names_core.lua")
-local index = NC.build({["world/flintback/L20-29"] = "Flintback"})
-for _, level in ipairs({20, 29}) do
+local index = NC.build({["world/flintback/L20-69"] = "Flintback"})
+for _, level in ipairs({20, 29, 47, 69}) do
 	check(NC.lookup(index, "flintback", nil, level) == "Flintback", "G a world slot names it off the map")
 end
 

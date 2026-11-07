@@ -626,8 +626,8 @@ Quest content is data, one file per zone, read at load by
   level fit (every level a target, quest-drop source or item source is met
   at lies within the quest's reward level ±3; a target that stands in an
   Expedition, no zone hosts it, is listed in both validators'
-  `EXPEDITION_TARGETS` and counts as met at the Expedition's level, its
-  +0 to +9 being the player's choice), and since Round 57 the
+  `EXPEDITION_TARGETS` and counts as met at the Expedition's first level,
+  a run's level being the player's choice), and since Round 57 the
   variants, the faction pairing per giver, the choices and their enchants,
   and in reworked files the rules of "The rework flag" below.
   `tools/r28_design/validate.py` checks the same rules on the design files

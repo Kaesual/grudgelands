@@ -4,8 +4,9 @@
 -- init.lua's interface: every rule and every refusal text are runs.lua's.
 --
 -- Without a run the window lists the Expeditions, the levels the player may enter
--- and one row per party member, which warns and stops nobody; with one it shows
--- that run and Enter. Nothing here is saved.
+-- in two steps (a tier, which names its ore and gem, then a level inside it) and one
+-- row per party member, which warns and stops nobody; with one it shows that run and
+-- Enter. Nothing here is saved.
 --
 -- Takes over the socket like the Miner's Guild Exchange takes its counter
 -- (grug_traders/vendors.lua) and needs no template change. On a world older than
@@ -68,8 +69,18 @@ local function permitted(player, entity)
 	return pos ~= nil and npc ~= nil and vector.distance(pos, npc) <= REACH
 end
 
-local function level_text(level, bonus)
-	return ("Level %d (+%d)"):format(level, bonus)
+local function level_text(level)
+	return ("Level %d"):format(level)
+end
+
+-- A tier's line: its levels, its ore and its gem, by grug_materials' names.
+local function resource_name(node)
+	local row = grug_materials.resource_for_node(node)
+	return row and row.name or node
+end
+local function tier_text(tier)
+	local ore, gem = resource_name(tier.ore), resource_name(tier.gem)
+	return ("T%d (%d-%d): %s, %s"):format(tier.tier, tier.min_level, tier.max_level, ore, gem)
 end
 
 local function count(set)
@@ -123,7 +134,7 @@ local function run_form(player, session, run)
 		UI.service_header(RUN_W, TITLE, SUBTITLE, nil, g),
 		UI.panel(0.4, 1.6, 8.2, 6.9), UI.heading(0.65, 1.95, def.name, g),
 		("label[0.65,2.4;%s]"):format(esc(("%s, %d of %d places taken"):format(
-			level_text(run.level, run.bonus), count(run.entered), run.max_players))),
+			level_text(run.level), count(run.entered), run.max_players))),
 		UI.prose(0.65, 2.7, 7.7, 0.9, state_text(run), false, g),
 		UI.heading(0.65, 3.8, "WHO CAN ENTER", g)}
 	eligibility_rows(fs, 0.65, 4.2, M.eligibility(player, run.expedition, run.bonus))
@@ -136,32 +147,60 @@ local function run_form(player, session, run)
 	return table.concat(fs)
 end
 
--- The chosen level of `offered`, kept while it is still on offer.
-local function chosen_level(session, offered)
-	for index, row in ipairs(offered) do
-		if row.bonus == session.bonus then return row, index end
+-- The offered levels by tier, in order: {{tier = catalogue row, levels = {row, ...}}}.
+local function by_tier(offered)
+	local tiers = {}
+	for _, row in ipairs(offered) do
+		local tier = M.catalogue.tier_of(row.level)
+		local last = tiers[#tiers]
+		if not last or last.tier ~= tier then
+			last = {tier = tier, levels = {}}
+			tiers[#tiers + 1] = last
+		end
+		last.levels[#last.levels + 1] = row
 	end
-	session.bonus = offered[1] and offered[1].bonus or nil
-	return offered[1], 1
+	return tiers
+end
+
+-- The chosen level of `offered`, kept while it is still on offer; at first the
+-- player's own level, or the nearest one offered. The level and its tier's index.
+local function chosen_level(player, session, tiers)
+	local own, best, best_gap = grug_xp.get_level(player), nil, nil
+	for t, group in ipairs(tiers) do
+		for _, row in ipairs(group.levels) do
+			if row.bonus == session.bonus then return row, t end
+			local gap = math.abs(row.level - own)
+			if not best_gap or gap < best_gap then best, best_gap = {row, t}, gap end
+		end
+	end
+	session.bonus = best and best[1].bonus or nil
+	if best then return best[1], best[2] end
 end
 
 local function choice_body(fs, player, session, def, g)
 	fs[#fs + 1] = UI.heading(5.45, 1.95, def.name, g)
-	local offered = M.offered_levels(player, def.id)
-	session.offered = offered
-	local level, index = chosen_level(session, offered)
+	local tiers = by_tier(M.offered_levels(player, def.id))
+	session.tiers = tiers
+	local level, tier_index = chosen_level(player, session, tiers)
+	session.tier = tier_index
 	local bonus = level and level.bonus or 0
 	if level then
-		local items = {}
-		for i, row in ipairs(offered) do items[i] = esc(level_text(row.level, row.bonus)) end
-		fs[#fs + 1] = ("label[5.45,2.65;Mob level]dropdown[7.3,2.35;3.2,0.6;level;%s;%d;true]")
-			:format(table.concat(items, ","), index)
+		local tier_items, level_items, level_index = {}, {}, 1
+		for i, group in ipairs(tiers) do tier_items[i] = esc(tier_text(group.tier)) end
+		for i, row in ipairs(tiers[tier_index].levels) do
+			level_items[i] = esc(level_text(row.level))
+			if row == level then level_index = i end
+		end
+		fs[#fs + 1] = ("label[5.45,2.65;Tier]dropdown[7.3,2.35;5.1,0.6;tier;%s;%d;true]")
+			:format(table.concat(tier_items, ","), tier_index)
+		fs[#fs + 1] = ("label[5.45,3.35;Mob level]dropdown[7.3,3.05;3.2,0.6;level;%s;%d;true]")
+			:format(table.concat(level_items, ","), level_index)
 	end
 	-- A leader sees every member before opening it; the warning stops nobody.
 	local party = grug_parties.view(player)
 	if level and party then
-		fs[#fs + 1] = UI.heading(5.45, 3.35, "WHO CAN ENTER", g)
-		if eligibility_rows(fs, 5.45, 3.75, M.eligibility(player, def.id, bonus)) > 0 then
+		fs[#fs + 1] = UI.heading(5.45, 4.05, "WHO CAN ENTER", g)
+		if eligibility_rows(fs, 5.45, 4.45, M.eligibility(player, def.id, bonus)) > 0 then
 			coloured_line(fs, 8.8, WARN, "Not everyone in your party can enter at this level.")
 		end
 	end
@@ -191,7 +230,8 @@ local function choice_form(player, session)
 	session.expedition = selected and selected.id or nil
 	for index, row in ipairs(list) do
 		rows[index] = {title = row.name, selected = row == selected,
-			subtitle = ("Level %d, up to %d players"):format(row.level, row.max_players)}
+			subtitle = ("Levels %d-%d, up to %d players"):format(row.level, row.max_level,
+				row.max_players)}
 	end
 	if selected then
 		fs[#fs + 1] = UI.rows(session, {name = "expeditions", x = 0.5, y = 2.25, w = 4.4, h = 6.15,
@@ -223,10 +263,17 @@ function M.open_registrar(player, entity)
 	return true
 end
 
--- The dropdown sends its index with every event of the window: only a change
--- counts, and only an index the window showed.
+-- Both dropdowns send their index with every event of the window: only a change
+-- counts, and only an index the window showed. A new tier takes its first level and
+-- leaves the level field, which still names the old tier's list.
 local function read_level(session, fields)
-	local row = fields.level and session.offered and session.offered[tonumber(fields.level)]
+	local group = fields.tier and session.tiers and session.tiers[tonumber(fields.tier)]
+	if group and session.tier ~= tonumber(fields.tier) then
+		session.bonus = group.levels[1].bonus
+		return true
+	end
+	local levels = session.tiers and session.tier and session.tiers[session.tier]
+	local row = fields.level and levels and levels.levels[tonumber(fields.level)]
 	if row and row.bonus ~= session.bonus then
 		session.bonus = row.bonus
 		return true

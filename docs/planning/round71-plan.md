@@ -224,7 +224,7 @@ real fight or PostgreSQL. So:
 41. The chest is refused before the kill. The warning line reads well, and shift-click takes
     (not driven in the engine). Gear at the run's level, no ore or gem.
 42. **[2+]** Each player sees their own chest, also a member who came in after the kill.
-43. Eight nodes dig with a T2 pick, at 20 and at +9.
+43. Eight nodes dig with a T2 pick, at 20 and at 29.
 44. All six guild leaders offer "Party: The Stilled Seam" from level 18, in their faction's
     text; it turns in at the giver, and the Expedition repeats.
 45. The end waystone returns to the capital. A new run finds the planned layout: mined ore
@@ -235,6 +235,20 @@ real fight or PostgreSQL. So:
 46. **[Rehearsal]** The running game does not stutter during preparation, on **PostgreSQL**:
     the slices' database cost and the disk use were never measured there.
 47. **[2+]** Two owners run at once: the second takes slot 2. Only slot 1 ran in the engine.
+
+**The level range (lane RANGE, after the build)**
+
+48. A level 60 character: the tier dropdown shows T2 to T6, "T6 (60-69): Abyssal Crystal,
+    Diamond" is readable and not cut off (web too); T6 and 60 are preselected.
+49. Pick T4: levels 40–49, 40 selected; 47 and Open give "Level 47, 0 of 3 places taken".
+50. A level 29 character sees only T2 and T3; T3's label says 30-39 though only 30–31 are
+    offered (acceptable?). A leader's member rows sit below both dropdowns.
+51. A T6 run at 65: Abyssal Crystal and Diamond in the walls, no Gold or Jade; the Abyssal Steel
+    pick digs both, the Embersteel pick is refused on Diamond. Nametags at Lv 65 read Crevice
+    Spider, Stone Golem, Flintback; the chest holds item level 65 gear and Glass Spider Silk.
+52. **Mining support:** a timed 10-minute dig at T2 depth with an Iron pick, against the run's
+    Gold (the model assumes a fast miner: if a real one is half as fast, the run's Gold is
+    about 70 % of mining instead of 35 %).
 
 ## 7. Orchestration notes
 
@@ -403,6 +417,18 @@ From the lanes' reports, measured there unless marked; comparisons, not targets.
   are in the reports. `r71_frame` carries about 111,000 checks, `r71_pack` 249,000, `r71_l20` 48,500.
 - **Lane D:** docs only, no fixtures and no boots, by its brief. `tools/r71_l20/balance.py` run
   for the model's final numbers.
+
+### After the build: lane RANGE (2026-11-07)
+
+The user ruled three Expeditions ([concept §9](round71-expeditions-concept.md#9-after-the-build-three-expeditions-user-2026-11-07)).
+RANGE widened The Stilled Seam to levels 20–69 (merged `6a96eab4`, review MERGE): a level range
+per catalogue row, a tier then level dropdown, the template's Gold and Jade swapped per tier
+(T3 Silver/Garnet, T4 Emberglass/Sapphire, T5 Abyssal Crystal/Ruby, T6 Abyssal Crystal/Diamond),
+chest materials by the spiders' drop bands, names through 69. Full run 320/0, engine T4 at 47 and
+T6 at 65 82 PASS. Model: levels 20–60 alike (8.7 min), 65 10.6 min, 69 13.5 min with level 60
+players. Mining estimate per player and run against the same minutes of mining: ore 12–35 %,
+gems 15–21 % (estimated, optimistic on miner speed). The Second Shift and The Last Mint are
+planned for Round 72 (`round72-second-shift.md`, `round72-last-mint.md`).
 
 ### Open notes
 

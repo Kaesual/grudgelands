@@ -3,7 +3,11 @@
 -- scenario is a coroutine resumed once per server step.
 local modpath = core.get_modpath(core.get_current_modname())
 local lib = dofile(modpath .. "/lib.lua")
-local scenario = dofile(modpath .. "/scenario.lua")
+-- run.sh with SCENARIO=range stages a copy holding a `scenario_name` file: lane RANGE's.
+local chosen = io.open(modpath .. "/scenario_name")
+local name = chosen and chosen:read("*l") or "scenario"
+if chosen then chosen:close() end
+local scenario = dofile(modpath .. "/" .. name .. ".lua")
 
 local thread = coroutine.create(function()
 	local player = lib.wait_character()

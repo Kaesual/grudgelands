@@ -21,23 +21,62 @@ M.EMERGE_MARGIN = 16
 -- itself.
 M.CLEAR_NODE = "default:stone"
 
--- The creator's choice on top of an Expedition's level: +0 to +9.
-M.MAX_BONUS = 9
 -- The hard ceiling of the entry level, whatever the Expedition's level.
 M.ENTRY_CEILING = 60
 -- With nobody of the owner inside, an Expedition is released after this long.
 M.RESERVE_SECONDS = 600
 
--- One row per Expedition: `id`, `name` (shown to players), `level`, `max_players`
--- (the most players inside), `template` (a file in templates/, without its
--- extension). `hidden` rows exist for tests: list() leaves them out, so no
--- dialog offers them, and create() still takes them.
+-- One row per Expedition: `id`, `name` (shown to players), `level` and `max_level`
+-- (the mob levels a creator may choose, concept section 9), `max_players` (the most
+-- players inside), `template` (a file in templates/, without its extension).
+-- `hidden` rows exist for tests: list() leaves them out, so no dialog offers them,
+-- and create() still takes them.
 M.EXPEDITIONS = {
-	{id = "test_vault", name = "Test Vault", level = 20, max_players = 3,
+	{id = "test_vault", name = "Test Vault", level = 20, max_level = 29, max_players = 3,
 		template = "test_vault", hidden = true},
-	{id = "stilled_seam", name = "The Stilled Seam", level = 20, max_players = 3,
+	{id = "stilled_seam", name = "The Stilled Seam", level = 20, max_level = 69, max_players = 3,
 		template = "stilled_seam"},
 }
+
+-- Every 10 levels the tier follows (concept section 9): the ore and gem nodes, the
+-- chest's materials (loot.lua) and the item level. The ore is what the tier's rock
+-- is mined for, the next metal's input (items_crafting.md section 3.0.1), but T2's
+-- Gold: The Stilled Seam is a gold working. A template is written with the T2
+-- nodes; a run of another tier writes its own in their places (swaps).
+M.TEMPLATE_ORE, M.TEMPLATE_GEM = "default:stone_with_gold", "grug_materials:stone_with_jade"
+M.TIERS = {
+	{tier = 2, min_level = 20, max_level = 29,
+		ore = "default:stone_with_gold", gem = "grug_materials:stone_with_jade"},
+	{tier = 3, min_level = 30, max_level = 39,
+		ore = "grug_materials:stone_with_silver", gem = "grug_materials:stone_with_garnet"},
+	{tier = 4, min_level = 40, max_level = 49,
+		ore = "grug_materials:stone_with_emberglass", gem = "grug_materials:stone_with_sapphire"},
+	{tier = 5, min_level = 50, max_level = 59,
+		ore = "grug_materials:abyssal_crystal_ore", gem = "grug_materials:stone_with_ruby"},
+	{tier = 6, min_level = 60, max_level = 69,
+		ore = "grug_materials:abyssal_crystal_ore", gem = "grug_materials:stone_with_diamond"},
+}
+
+-- The tier row of a run level; a level outside the table takes the nearest row.
+function M.tier_of(level)
+	for _, row in ipairs(M.TIERS) do
+		if level <= row.max_level then return row end
+	end
+	return M.TIERS[#M.TIERS]
+end
+
+-- Per tier, the template's nodes a run of that tier writes as others:
+-- {[tier] = {[template node] = the tier's node}}; T2's is empty.
+function M.swaps()
+	local out = {}
+	for _, row in ipairs(M.TIERS) do
+		local swap = {}
+		if row.ore ~= M.TEMPLATE_ORE then swap[M.TEMPLATE_ORE] = row.ore end
+		if row.gem ~= M.TEMPLATE_GEM then swap[M.TEMPLATE_GEM] = row.gem end
+		out[row.tier] = swap
+	end
+	return out
+end
 
 local by_id = {}
 for _, row in ipairs(M.EXPEDITIONS) do by_id[row.id] = row end
