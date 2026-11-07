@@ -410,7 +410,7 @@ do
 		damage_groups = {fleshy = grug_gear.weapon_damage_at_level(10, "sword")},
 		groupcaps = {}, max_drop_level = 0})
 	inv:set_stack("main", 11, upgraded)
-	-- Crowned (crown_plan: 10 x tier + 5, the same at 0.44.0).
+	-- Crowned (crown_plan: 10 x tier + 10 since Round 70; +5 at 0.44.0).
 	local crowned = assert(grug_items.crown_item(new_stack("grug_gear:sword_bronze")))
 	inv:set_stack("main", 12, crowned)
 	local function fields(stack)
@@ -463,11 +463,11 @@ do
 			" -> " .. now end
 	end
 	check(kept_before[10]:match("^3|1|S%d+||2|0%.98") and kept_before[11]:match("^10|10|") and
-		kept_before[12]:match("^15|15|.*|1|") and damage(inv:get_stack("main", 10)) == 5 and
+		kept_before[12]:match("^20|20|.*|1|") and damage(inv:get_stack("main", 10)) == 5 and
 		damage(inv:get_stack("main", 11)) == 8 and damage(inv:get_stack("main", 12)) ==
-		grug_gear.weapon_damage_at_level(15, "sword") and #kept == 0,
+		grug_gear.weapon_damage_at_level(20, "sword") and #kept == 0,
 		"D a station-enchanted (5 damage, faster swing), an upgraded (10 / 10, 8) and a crowned "
-		.. "(15 / 15) Bronze Sword keep item level, requirement, enchant, quality and "
+		.. "(20 / 20) Bronze Sword keep item level, requirement, enchant, quality and "
 		.. "capabilities: " .. table.concat(kept, "; ") .. " " .. table.concat(kept_before, " / ", 10, 12))
 end
 

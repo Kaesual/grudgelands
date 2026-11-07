@@ -591,7 +591,7 @@ do
 	local rows = grug_traders.crown_rows(p)
 	eq(#rows, 1, "F only gear is offered")
 	check(rows[1] and rows[1].result and rows[1].text and
-		rows[1].text:find("Item level 41 becomes 55", 1, true) ~= nil,
+		rows[1].text:find("Item level 41 becomes 60", 1, true) ~= nil,
 		"F ...with the operation's preview (" .. tostring(rows[1] and rows[1].text) .. ")")
 	-- No Fallen Crown: nothing changes.
 	local ok, message = grug_traders.crown_apply(p, rows[1])
@@ -617,7 +617,7 @@ do
 	check(p.lists.grug_bag_1[1]:is_empty(), "F one Fallen Crown is consumed")
 	local crowned = p.lists.grug_weapon[1]
 	check(crowned:get_meta():get_int("grug_crowned") == 1 and
-		grug_items.effective_ilvl(crowned) == 55, "F the crowned item (item level 55) replaces the old one")
+		grug_items.effective_ilvl(crowned) == 60, "F the crowned item (item level 60) replaces the old one")
 	eq(equipment_changed, 1, "F an equipped item refreshes the equipment")
 	check(tooltips >= 1, "F the weapon's effective-damage line is rebuilt")
 	-- Once per item: the operation's refusal is shown, no button.
@@ -653,12 +653,12 @@ do
 		w.lists.grug_weapon[1]:get_meta():get_int("grug_crowned") == 0,
 		"F crown_apply refuses it too and nothing changes")
 	wearer_level = 60
-	-- A boss drop above the crown's target is refused (never lowering).
+	-- A boss drop at level 70 is refused: the crown works only below it.
 	local drop = ItemStack(grug_gear.weapon_item("sword", 6))
 	grug_items.roll_enchants(drop, 70, 1, 7)
 	local text, reason = grug_traders.crown_preview(drop)
-	check(text == nil and reason and reason:find("lower", 1, true) ~= nil,
-		"F an item-level-70 drop is not lowered to 65")
+	check(text == nil and reason == "The crown works only on items below item level 70.",
+		"F an item-level-70 drop is refused")
 	-- 0.45.1 (tools/r451_kf/focus.lua, the engine's focus order): the window
 	-- focuses Close when it opens and after a Crown click, never a preview
 	-- textarea (which would eat the inventory key).

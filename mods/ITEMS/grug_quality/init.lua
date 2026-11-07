@@ -93,7 +93,7 @@ grug_items.DROP_CHANCES = {
 -- the rift boss an elite's roll at its level (round36-plan.md §2.1), every
 -- other boss nothing.
 grug_items.BOSS_DROPS = {count = 2, gold = 50,
-	ilvl = {king = 65, general = 65, dragon = 70, rift = 65},
+	ilvl = {king = 70, general = 65, dragon = 70, rift = 60},
 	locked = {rift = "elite"}}
 
 -- A bag from any mob, independent of the gear roll: `chance` percent per
@@ -733,7 +733,7 @@ end
 -- An item's upgrade span (item_tiers.md §3.1): its item level, its cap
 -- 10 x its material tier, and that tier; nil and the reason for an item
 -- without either (tools, wood and stone gear). A crowned item, a boss drop
--- at 65/70 or an item pinned above its tier's top has an item level at or
+-- above 60 or an item pinned above its tier's top has an item level at or
 -- above the cap: it takes no level.
 function grug_items.upgrade_span(stack)
 	if not stack or stack:is_empty() then return nil, "Place an item to upgrade." end
@@ -798,11 +798,15 @@ function grug_items.operation_plan(recipe, stack, player, levels)
 	return grug_items.operation_result(recipe, stack, player, levels)
 end
 
--- The crown (round33-plan.md §2.5, item_tiers.md §4): one Fallen Crown lifts
--- one item to its material tier's top + 5 and every enchant one tier (T7 at
--- most); once per item. Refused where it would lower the item level or
--- change nothing. Returns the crowned copy and the preview text, or nil and
--- the refusal. The crown NPC (grug_traders) takes the crown and the fee.
+-- The crown (round33-plan.md §2.5, round70-plan.md §2.10, item_tiers.md §4):
+-- one Fallen Crown lifts one item below CROWN_CAP to its material tier's
+-- top + 10, CROWN_CAP at most, and every enchant one tier (T7 at most); once
+-- per item. It always raises the item level: a King's or a dragon's drop is
+-- refused, and so is an item the rule would not lift. Returns the crowned copy
+-- and the preview text, or nil and the refusal. The crown NPC (grug_traders)
+-- takes the crown and the fee.
+grug_items.CROWN_CAP = 70
+
 local function crown_plan(stack)
 	if not stack or stack:is_empty() then return nil, "Hand over the item to crown." end
 	local family = family_for(stack)
@@ -813,26 +817,22 @@ local function crown_plan(stack)
 	if not tier or not ilvl then return nil, "This item has no tier." end
 	local meta = stack:get_meta()
 	if meta:get_int("grug_crowned") == 1 then return nil, "This item is already crowned." end
-	local target = 10 * tier + 5
-	if target < ilvl then
-		return nil, "The crown would lower this item's level (" .. ilvl .. " to " ..
-			target .. ")."
+	if ilvl >= grug_items.CROWN_CAP then
+		return nil, "The crown works only on items below item level " ..
+			grug_items.CROWN_CAP .. "."
+	end
+	local target = math.min(10 * tier + 10, grug_items.CROWN_CAP)
+	if target <= ilvl then
+		return nil, "The crown would not raise this item's level (" .. ilvl .. ")."
 	end
 	local affixes = read_affixes(meta)
-	local lines, raised = {}, false
-	if target ~= ilvl then
-		lines[1] = "Item level " .. ilvl .. " becomes " .. target .. "."
-	end
+	local lines = {"Item level " .. ilvl .. " becomes " .. target .. "."}
 	for index = 1, #affixes do
 		local affix = affixes[index]
 		if affix.tier < 7 then
-			raised = true
 			lines[#lines + 1] = enchant_name(affix) .. " becomes T" .. (affix.tier + 1) .. "."
 			affix.tier = affix.tier + 1
 		end
-	end
-	if target == ilvl and not raised then
-		return nil, "The crown would change nothing on this item."
 	end
 	local out = ItemStack(stack)
 	local out_meta = out:get_meta()

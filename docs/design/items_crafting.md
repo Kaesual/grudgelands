@@ -71,7 +71,7 @@ Expert, Master — never as "T4". The ladders are independent;
   everywhere.
 - **Rare patrol mobs** with special loot as raid incentive into enemy
   territory; each of the six race **Kings** is a heavily guarded raid boss
-  whose drops reach item level 65.
+  whose drops reach item level 70.
 - **Class/profession synergy intended** (Warrior+Weaponsmith or Armorsmith,
   Priest/Mage+Tailor, …).
 - Gems are depth-tiered and the same everywhere (§3.0.1, Round 29).
@@ -172,7 +172,7 @@ universal pick.
 - **Abyssal Steel** is the ordinary craftable T6 metal. The optional final
   masterwork state is **the crown** (Round 33, [item_tiers.md](item_tiers.md)
   §4): a Crownbinder applies one Fallen Crown to one item, its item level
-  becomes its tier's top + 5 and every enchant gains one tier; it replaces
+  becomes its tier's top + 10, 70 at most, and every enchant gains one tier; it replaces
   the Grudgeforged item-level-70 upgrade of the WP audit's D3. Named rares
   drop no trophies (D4). No Crown enters an Abyssal Steel bar or pick.
 - Mundane Stone, Copper, Tin, Iron ore, Coal and Gold may retain stable
@@ -1316,10 +1316,10 @@ pixel-cluster cleanup before they become final game art.
 
 Drops obey the player-tag rule (combat_stats §3), the chances of §5.1 and
 the enchant values of §6.3, and use **gear-drop ilvl = min(mob level, 60)**.
-Bosses are the exception (Round 33): the race Kings and the fortress Generals
-drop item level **65**, the dragons item level **70** (§5.1). Their ilvl above
-60 feeds the same weapon base-damage curve as every other weapon, not a second
-combat multiplier, and their enchants are tier T7 (§6.3). The
+Bosses are the exception (Round 33, Round 70): the race Kings and the dragons
+drop item level **70**, the fortress Generals **65**, the rift boss **60**
+(§5.1). An ilvl above 60 feeds the same weapon base-damage curve as every other
+weapon, not a second combat multiplier, and those enchants are tier T7 (§6.3). The
 Kraken (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the enchant value and the
 enchant tier follow the item's ilvl, that one number is all a drop needs: a
 drop has no crafter whose mastery could be read instead. Named zone → materials is
@@ -1377,8 +1377,8 @@ One roll per kill decides, so a kill drops **at most one** gear item:
 **Bosses** — the six race Kings, the two dragons and the rift boss (Round 36)
 through their personal reward (§5.3, §5.4, §5.3b), the two PvP fortress
 Generals on every enemy player's kill — always drop **two** items, each blue
-or gold at even odds: Kings, Generals and the rift boss item level 65,
-dragons item level 70. Their other loot (Fallen Crown,
+or gold at even odds: Kings and dragons item level 70, Generals 65, the
+rift boss 60. Their other loot (Fallen Crown,
 Scaled Hide, the General's war trophies) stays. The General has no reward
 ledger: his two items drop on the kill, like any mob gear, and only an enemy
 player's kill drops them; his bodyguards, like royal guards, drop no gear.
@@ -1439,14 +1439,14 @@ chest (WP audit E11) and no renewable gem socket on the islands (E5).
 The main line's finale boss at the rift ([world.md](world.md) §4b) rewards
 through the same participation ledger and death grace as the dragons. Once
 per character per **24 hours** (its own rolling wall-clock lockout) a credited
-participant receives the boss reward: two blue-or-gold items at item level 65
+participant receives the boss reward: two blue-or-gold items at item level 60
 and nothing else. A credited kill inside the lockout gives that character an
 **elite's roll** instead (§5.1's elite row at its level 60, at most one item)
 and never moves the lockout. Every credited kill counts for achievements.
 
 ### 5.4 Six race Kings and Fallen Crowns
 
-Each race has one killable level-65 elite King protected by four level-60
+Each race has one killable level-70 elite King protected by four level-60
 elite royal guards. Essential service NPCs are separate, passive and
 invulnerable.
 
@@ -1501,7 +1501,7 @@ trinkets; dropped, crafted or bought — requires the character level
 51**, the first level of each tier's band, and they require exactly that
 level, so the starter kit and the first vendor bracket fit a new character
 without an exception (`_grug_req_level`). A found item requires its own item level up to the character cap,
-stored per stack (`grug_req_level`); boss drops at item level 65/70 require
+stored per stack (`grug_req_level`); boss drops above item level 60 require
 level 60. Every equipment slot refuses an item above the character's level
 and says so in the message feed, naming the slot; the tooltip ends with
 "Requires level N" above level 1. The hand slots also enforce the
@@ -1833,7 +1833,7 @@ Round 45, spec §2.26, §2.32) adds +N item levels to an item of its families
 and material tier T, at most up to `10 × T`, never past it and never lower;
 one level costs one own material of tier T (a weapon also a Stick) and 1 s,
 gives no XP, and its enchants follow; a **Fallen Crown** lifts
-an item to `10 × T + 5` and its enchants one tier, once
+an item below 70 to `min(10 × T + 10, 70)` and its enchants one tier, once
 ([item_tiers.md](item_tiers.md) §3, §4). There are no Imbue/Temper kits,
 random crafted application rolls or separate refinement steps.
 

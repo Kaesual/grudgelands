@@ -1,7 +1,8 @@
 -- The Crownbinder (round33-plan.md §2.5, item_tiers.md §4): one in every
--- capital applies a Fallen Crown to one item. The item's level becomes its
--- tier's top + 5 and every enchant gains one tier; the operation itself and
--- its refusals belong to grug_items (lane C4). This file is the NPC's side:
+-- capital applies a Fallen Crown to one item below item level 70. The item's
+-- level becomes its tier's top + 10, 70 at most, and every enchant gains one
+-- tier; the operation itself and its refusals belong to grug_items (lane
+-- C4). This file is the NPC's side:
 -- which items it is offered, the fee, and the one atomic payment.
 --
 -- The fee is one hour of band-6 net solo income (item_tiers.md §4, rounded by

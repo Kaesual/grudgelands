@@ -79,7 +79,7 @@ local function texture(kind)
 end
 
 -- A boss's name with its level where the registry has a fixed one:
--- "King of Highcourt (level 65)".
+-- "King of Highcourt (level 70)".
 local function with_level(name, entity)
 	local level = entity and grug_mobs.fixed_level(entity)
 	return level and ("%s (level %d)"):format(name, level) or name

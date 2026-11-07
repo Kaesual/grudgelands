@@ -590,7 +590,7 @@ local function king_def(race, row)
 	return {
 		description = row.name, clock = "any", type = "npc",
 		_grug_voice = "humanoid",
-		_grug_faction = row.faction, _grug_fixed_level = 65,
+		_grug_faction = row.faction, _grug_fixed_level = 70,
 		_grug_tier = "elite", _grug_leash_range = 30,
 		attack_type = ranged and "dogshoot" or "dogfight",
 		attack_players = true, attack_monsters = false, attack_npcs = false,
@@ -883,6 +883,7 @@ for faction, race in pairs(GENERALS) do
 	local name = garrison.general_entity(faction_id)
 	local general = king_def(race_id, RACES[race_id])
 	general.description = garrison.general_name(faction_id)
+	general._grug_fixed_level = garrison.GENERAL_LEVEL -- below a King's
 	general._grug_visual = function(self)
 		return {race = race_id, look = GENERAL_LOOKS[faction_id], royal = "guard",
 			armor_line = "metal", level = self._grug_level,

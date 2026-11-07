@@ -1153,7 +1153,7 @@ tools](#player-meta-read-by-external-tools).
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
     Kraken L70 (elite), the Round 51 sharks (Bay Shark L30, Abyssal Shark
-    L70 elite), the island dragons L70, the capital kings L65 and their royal
+    L70 elite), the island dragons L70, the capital kings L70 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
@@ -1575,7 +1575,8 @@ tools](#player-meta-read-by-external-tools).
   Fallen Crown (the crown NPC owns the fee and the crown item). Gear drops
   (Round 33) are data in `grug_quality/init.lua`: `grug_items.DROP_CHANCES`
   (normal, elite and rare rows; zone leaders and war-camp captains roll the
-  elite row), `BOSS_DROPS` (two items at 65/70), `BAG_DROPS` (0.1 % by mob
+  elite row), `BOSS_DROPS` (two items at each boss's fixed item level),
+  `BAG_DROPS` (0.1 % by mob
   level) and `grug_items.enchant_tier(ilvl)` (T7 above 60); the pool is
   `grug_gear.drop_pool` (every equippable item of the tier). Every stack
   with an item level carries `grug_req_level` = min(ilvl, 60), written by
