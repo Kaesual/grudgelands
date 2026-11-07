@@ -49,7 +49,7 @@ C.OTHERS = set({
 	"goblin_miner", "goblin_miner_slinger", "goblin_raider", "goblin_slinger",
 	"gravewood_treant", "ice_dragon", "ice_whelp", "jungle_wyvern",
 	"lava_flan", "mesa_golem", "mirefolk", "oerkki", "poacher", "rift_boss", "rift_spawn",
-	"skeleton_archer", "skeleton_raider", "stone_golem", "storm_whelp",
+	"skeleton_archer", "skeleton_raider", "stone_golem", "flintback", "storm_whelp",
 	"war_construct", "wisp",
 })
 
@@ -59,7 +59,7 @@ C.FAMILIES = {
 	boar = set({"boar", "plague_boar", "jungle_boar"}),
 	rat = set({"giant_rat"}),
 	skeleton = set({"skeleton_archer", "skeleton_raider", "frost_stray", "bog_witch"}),
-	golem = set({"stone_golem", "mesa_golem"}),
+	golem = set({"stone_golem", "mesa_golem", "flintback"}),
 	construct = set({"war_construct"}),
 }
 
