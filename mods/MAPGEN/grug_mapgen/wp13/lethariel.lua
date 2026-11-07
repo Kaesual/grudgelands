@@ -290,17 +290,18 @@ local function loader(directory)
 
 	-- The corner waypoints of the city loop. They stand ON THE GREAT STREETS
 	-- and not on the turf between the quarters, which is where the first
-	-- version put them: this core is crowded -- a 32 x 36 king's hall, a
+	-- version put them: this core is crowded -- a 35 x 45 castle, a
 	-- twenty-one-node market and a seventeen-node sacred grove -- and three of
 	-- the four landed inside a building. A paved cell is one the composition
 	-- itself cleared, so a waypoint on one is a waypoint an NPC can stand on.
-	-- The order keeps every leg clear of the castle (Round 70): the watch comes
-	-- down the west avenue, crosses to the east, and only then the court.
+	-- The order keeps every leg clear of the castle (Round 70): the straight
+	-- line from `watch_west` to `watch_south_west` runs through it, so the
+	-- watch crosses to the east between the two and takes the court from there.
 	local CORNERS = {
-		{id = "watch_west", x = -36, z = 2, face = 2, order = 2},
-		{id = "watch_south_east", x = 36, z = -2, face = 0, order = 3},
-		{id = "watch_south_west", x = -11, z = -44, face = 0, order = 4},
-		{id = "watch_quay", x = 2, z = 30, face = 2, order = 5},
+		{id = "watch_quay", x = 2, z = 30, face = 2, order = 2},
+		{id = "watch_west", x = -36, z = 2, face = 2, order = 3},
+		{id = "watch_south_east", x = 36, z = -2, face = 0, order = 4},
+		{id = "watch_south_west", x = -11, z = -44, face = 0, order = 5},
 	}
 
 	-- The city around the core -- its outline, streets, walls or planted
@@ -466,8 +467,8 @@ local function loader(directory)
 			return nil
 		end
 		local quay = 0
-		for z = MERE_FIRST - QUAY_WIDTH - 1, RADIUS do
-			for x = -RADIUS, RADIUS do
+		for z = MERE_FIRST - QUAY_WIDTH - 1, RADIUS - 2 do
+			for x = -RADIUS + 2, RADIUS - 2 do
 				local step = pad(x, z) and quay_step(x, z)
 				if step then
 					buf:put(x, 0, z, (step == 1) and KERB or AVENUE)
@@ -690,8 +691,9 @@ local function loader(directory)
 			end)
 		end
 
-		-- 8b. THE SHORE WORKS, on the last dry rows east of the quay
-		-- approach: the fish counter the mere feeds, the wood the city burns,
+		-- 8b. THE SHORE WORKS, east of the north promenade (they stayed when
+		-- Round 70 moved the shore north): the fish counter the mere feeds,
+		-- the wood the city burns,
 		-- the herb beds and a standing stone half carved. Each of them is the
 		-- FEATURE one of this core's work sockets names (sockets contract
 		-- section 8.1), and each is authored here rather than left to a piece
