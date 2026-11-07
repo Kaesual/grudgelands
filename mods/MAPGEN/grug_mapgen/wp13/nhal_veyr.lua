@@ -76,14 +76,22 @@ local function loader(directory)
 	-- the vault roof.
 
 	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
-	-- everything above its paving but the waystone and its mailbox. x1 is 11 and not 8, for the reason
-	-- Dur Brannoc records: the east colonnade's eaves oversail its own
-	-- footprint to x = 9.
-	local PLAZA = {x1 = 11, z1 = -32, x2 = 27, z2 = -12}
+	-- everything above its paving but the waystone and its mailbox. x1 is 13
+	-- and not 10, for the reason Dur Brannoc records: the east colonnade's
+	-- eaves oversail its own footprint to x = 12. Centred on the waystone's
+	-- column.
+	local PLAZA = {x1 = 13, z1 = -32, x2 = 25, z2 = -12}
 
-	-- The ossuary court: the whole north-east quarter, paved in one piece with
-	-- the streets so a building stamped into it keeps its own apron.
-	local COURT = {x1 = 22, z1 = 5, x2 = 45, z2 = 43}
+	-- The ossuary court: the whole north-east quarter east of the castle's
+	-- bypass, paved in one piece with the streets so a building stamped into
+	-- it keeps its own apron. COURT_X is how far Round 70 moved it east: every
+	-- prop of step 6 is written in the old court's coordinates plus this.
+	local COURT_X = 8
+	local COURT = {x1 = 22 + COURT_X, z1 = 5, x2 = 45 + COURT_X, z2 = 43}
+
+	-- The castle (Round 70, form A): 45 x 35, its great door on the axis
+	-- looking down the approach, the bypass round its three other sides.
+	local CASTLE = {x = -22, z = 10, w = 45, d = 35}
 
 	local STREETS = {
 		-- The throne approach, from the south gate through the crossing to the
@@ -134,14 +142,13 @@ local function loader(directory)
 	-- have: one throne, one travel pad for WP17 and exactly two `grug_traders`
 	-- families. The KAT asserts the resulting multiset.
 	local PLOTS = {
-		-- 1. THE MAUSOLEUM, on the axis, its great door looking down the
-		-- approach to the south gate. Built with the crypt palette as well as
-		-- roofed with the vault: a lucarne takes its hood from the main
-		-- palette's own `roof_slab`, so a hall built with the plain one would
-		-- wear obsidian hoods on a dungeon-stone roof.
+		-- 1. THE MAUSOLEUM, the castle of Round 70 (the plot and the template
+		-- keep their name), on the axis, its great door looking down the
+		-- approach to the south gate. Built with the crypt palette and roofed
+		-- with the vault, the roster's binding for this template.
 		{id = "mausoleum", template = "nhal_veyr_mausoleum",
-			x = -15, z = 9, turns = 0, palette = "crypt", roof = "crypt_vault",
-			drop = {waypoint = true}},
+			x = CASTLE.x, z = CASTLE.z, turns = 0, palette = "crypt",
+			roof = "crypt_vault", drop = {waypoint = true}},
 
 		-- 2. The four inner gatehouses, where the avenues leave the precinct.
 		-- Nhal Veyr's curtain wall is 209 nodes further out, so these are the
