@@ -275,7 +275,7 @@ def mint():
     s.ore((261, 273))
     s.ore((464, 272))
     s.ore((1007, 182))
-    return s.footer("Bait the line. Wait for the aim to lock. Step out and break a clamp.",
+    return s.footer("Bait the line. Wait for the aim to lock. Step aside; the blow breaks a clamp.",
                     "Only marked clamps break. The boss floor stays whole; the gantry's dry lower route also serves the walk back.")
 
 

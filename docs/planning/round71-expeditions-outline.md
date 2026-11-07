@@ -48,8 +48,8 @@ at most. No new sound is assumed.
 **3 players · levels 30–39 · one main floor**
 
 **The idea.** You steal back a mine's safety cart and move your shelter through
-the fighting. At the last sorting floor, the foreman turns the dust ducts on
-you, and his own equipment keeps you alive.
+the fighting. At the last sorting floor, the smugglers' overseer turns the dust ducts on
+you, and the cart he stole keeps you alive.
 
 **Story.** A contractor sold the crew's safety equipment to armed smugglers;
 the stopped mine is their loading yard. The Charter of Stone, for **The
@@ -71,7 +71,7 @@ can take the brake, and support needs no separate duty or healing spell.
 (learn shelter) → sorting bays (shelter and enemies together) → foreman's
 floor → store. The rail never blocks the walk back.
 
-**Boss: Merrit Lockjaw**, a bandit foreman. He fights beside the cart while
+**Boss: Merrit Lockjaw**, the smugglers' overseer, a bandit. He fights beside the cart while
 opening alternating ducts. The party chooses the useful stop, shelters for
 the burst and comes out to hit him; he stays damageable throughout. Use
 existing bandit melee and archer families for the mine's packs.
@@ -80,8 +80,8 @@ existing bandit melee and archer families for the mine's packs.
 
 | Mechanic | Existing basis | New work | Simpler fallback |
 |---|---|---|---|
-| Movable shelter | Decorative mine cart and rails; interactions | **Large:** guided movement, shelter checks, safe passage around it | Fixed screens beside each duct; keep the shelter timing. |
-| Duct blasts and boss rhythm | Bandits; attack warning patterns | **Medium:** visible duct warnings, room damage, boss timing; current projectiles do not check cover | One marked blast strip at a time, with a permanent safe edge. |
+| Movable shelter | Decorative mine cart and rails; interactions | **Large:** guided movement, shelter checks, safe passage around it | Fixed screens beside each duct; keep the shelter timing. The cart, and with it the idea above, goes. |
+| Duct blasts and boss rhythm | Bandits; attack warning patterns | **Medium**, plus the shared room clock below: visible duct warnings, damage with no mob behind it, boss timing; current projectiles do not check cover | One marked blast strip at a time, with a permanent safe edge. |
 | Stolen equipment's look | Mine props and bandit bodies | **Small:** screen added to cart; optional foreman's texture | Ordinary cart beside existing timber screens. |
 
 ![Rough route and moving shelter](round71-outline/level30-borrowed-bulwark.png)
@@ -105,7 +105,7 @@ either faction's guilt; examining it is not accepting branded pay.
 **Mechanics and roles.** Both galleries remain reachable by a broad permanent
 ramp, about one room's height apart. Glowing cracks show the softer body;
 the other takes reduced damage, never none. One body attacks while the other
-braces. After its heavy slam, they exchange armour and duties, with time to
+braces. On a fixed, warned beat they exchange armour and duties, with time to
 move. Front fighters face the active body; ranged fighters follow the exposed
 face; support holds the ramp's clear view; a fourth player helps either landing.
 These are jobs, not a two-tank or ranged-class requirement.
@@ -125,7 +125,7 @@ first pack and in the store; never on a dangerous drop.
 | Mechanic | Existing basis | New work | Simpler fallback |
 |---|---|---|---|
 | Two galleries | Walking, ramps, 3D templates | **Small:** readable sightlines and a short return route | A horseshoe gallery on one floor. |
-| One boss in two bodies | Crystal Shard body and attacks; single-boss rewards | **Large:** shared life, alternating attacks, one defeat and wipe state | One body walks between two landings. |
+| One boss in two bodies | Crystal Shard body and attacks; single-boss rewards | **Large:** shared life, alternating attacks, one defeat and wipe state, an exception so the pack rule leaves a body on its landing | One body blinks between two landings on a warned beat. |
 | Passing armour | Existing attack cues and textures | **Medium:** linked vulnerability cue and damage change; **small** optional cracked skin | Single body exposes cracks after each slam. |
 
 ![Rough section through two connected galleries](round71-outline/level40-hanging-assay.png)
@@ -135,13 +135,13 @@ first pack and in the store; never on a dangerous drop.
 **4 players · levels 50–59 · one main floor**
 
 **The idea.** The mine remembers where you stood and strikes those places a
-few seconds later. In the final fight it repeats the same record twice, so
-stepping back into yesterday's safe habit is the mistake.
+few seconds later. In the final fight it strikes the same record twice, so
+stepping back onto the spot that was just hit is the mistake.
 
 **Story.** The guild has received wages addressed to miners already dead.
 Below the payroll room, skeletons still work a shift with no ending. This
-local ledger names the **Undertithe**: accepting its branded wages binds a
-name, and death does not discharge the debt. For **The Accord**, The Charter
+local ledger gives no creditor's name, only the rule: accepting branded wages
+binds a name, and death does not discharge the debt. For **The Accord**, The Charter
 of Stone separates the dead workers' names from a fraudulent payroll. For
 **The Throng**, The Oathdelvers recover names sold as if an oath belonged to
 the paymaster. These are particular victims, not the origin of all undead.
@@ -156,14 +156,14 @@ damage. Only one recorded set exists at a time, at most four marks.
 
 **Route.** Arrival → timekeeper's desk (first pack) → marking floor (one
 recorded blow) → wage room (the same lesson under pack pressure) → audit
-court → store. Use existing skeleton raider melee and archer families.
+court → store. Use existing Skeleton Raiders and Archers, who shoot and strike only up close, with Buried Miners (zombies) as the melee fighters.
 
 **Boss: Auditor Nemm**, a skeleton with the payroll chained to its ribs.
 Nemm repeats each recorded blow **twice**, with a fresh warning before the
 second. The old marks remain visible until both blows finish, then clear.
 Players choose the next safe part of the court themselves; no ability is
 copied and no class is punished for healing. Killing Nemm stops the payments;
-the guild then strikes out the bought names. His death is the only quest
+the guild then closes the false payroll. Its death is the only quest
 objective.
 
 **Ore.** Harvest **T5: Abyssal Crystal and Ruby**, in cleared side niches and
@@ -181,9 +181,9 @@ the store. The workrooms remain spacious enough to place marks safely.
 
 **4 players · levels 60–69 · height and short jump-and-run proposal**
 
-**The idea.** A buried press stamps the Tithe-Brand into stolen battlefield
-pay. You trick its guardian into breaking the press's own supports, until the
-machine that armed the dead can no longer protect him.
+**The idea.** A buried hot press burns the Tithe-Brand into stolen battlefield
+pay. You trick its guardian into breaking the press's own clamps, until the
+machine that paid the dead can no longer protect it.
 
 **Story.** A salvage crew followed the marked consignments to one hidden
 branding workshop. For **The Accord**, The Charter of Stone separates recovered
@@ -219,17 +219,24 @@ store. Level 61+ equipment does not change the mining tier.
 
 | Mechanic | Existing basis | New work | Simpler fallback |
 |---|---|---|---|
-| Aimed press and breakable clamps | Sentinel body, frontal attack cues; intentional digging permissions | **Large:** aimed machinery, authored break targets, armour stages and wipe restoration | Three fixed stamp plates; a baited blow on each removes a ward, with no moving arm or broken geometry. |
+| Aimed press and breakable clamps | Sentinel body, the elite wind-up's frozen aim, named template places | **Large** with a moving arm: aimed machinery, authored break targets, armour stages and wipe restoration. **Medium** if the strip runs from the guardian on the existing wind-up and the press stands still | Three fixed stamp plates; a baited blow on each removes a ward, with no moving arm or broken geometry. |
 | Short gantry crossing | Ordinary jumping and static stairs | **Small:** safe catch ledge and walking return | A continuous bent gantry; keep the height. |
+| Lava below the grates | Template nodes | **Small:** a sealed basin; lava flows inside a box, and the lane proof covered water only | Glowing rock instead of lava. |
 | Branded press and guardian | Existing stone, metal and Sentinel assets | **Small:** optional branded skin; **medium** moving press model included above | Static block-built press and a floor warning. |
 
 ![Rough press chamber, bait lines and optional gantry](round71-outline/level60-last-mint.png)
 
 ## What the framework must learn
 
-- **Visible encounter cues:** persistent floor shapes and machine states,
-  readable without sound, particle clouds or quick client reactions.
-- **Room state on a wipe:** restore the active pack's starting state for its
+Sizes count once, for the first Expedition that needs the piece.
+
+- **Visible encounter cues (medium):** persistent floor shapes and machine states,
+  readable without sound, particle clouds or quick client reactions. Particles
+  live 3 seconds at most, so marks that stay are new entities or nodes.
+- **Room clock (medium, only for The Borrowed Bulwark's ducts):** a timed hazard
+  no mob owns, scaled to the run's level, silent when nobody is near.
+- **Room state on a wipe (small, each reset counted above):** a wipe event the
+  mechanics can hear, which restores the active pack's starting state for its
   hazards, cart, clamps and boss; preserve cleared packs and their open return.
 - **Guided movable props:** player-operated carts between marked stops,
   with safe passage around them.
@@ -250,14 +257,18 @@ and camera confusion. Its simpler version loses more of its identity.
 
 ## Open choices and recommendation
 
-- **Reveal pace:** recommend the first direct Tithe-Brand at 40 and the name
-  Undertithe at 50. Keep every explanation local and self-contained so these
+- **Reveal pace:** recommend the first direct Tithe-Brand at 40, the rule of the debt
+  at 50 and the name Undertithe at 60. Keep every explanation local and self-contained so these
   quests remain optional in any order.
-- **Scope:** recommend pursuing the recorded positions and cart first;
-  test the press idea next, and retain the two-body creature as the ambitious
-  option. These are selections for later work, not implementation approval.
+- **Scope:** recommend pursuing the recorded positions first: a medium and two
+  smalls. The cart comes next, but it is the largest job here, a large beside a
+  medium and the room clock. Test the press idea in its cheaper form, and retain
+  the two-body creature as the ambitious option. These are selections for later work, not implementation approval.
 - **Jumping:** recommend trying the forgiving gantry only at 60. If ordinary
   desktop or web movement makes it awkward, use the continuous walkway.
+- **Clamps:** the concept names two destructible things, a story tunnel and ore
+  and gems. Clamps would be a third: only the boss's blow breaks them, no player
+  can dig them. Recommend allowing it.
 
 ## Grounding and sketches
 
