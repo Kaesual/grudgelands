@@ -183,6 +183,9 @@ local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 -- break (the breaking use is a full change). The armour total depends on the
 -- broken state only, so it stays; only that slot's cached copy is stale.
 -- Consumers that do not read wear or the projectile identity return on it.
+-- A death's wear (grug_repair.wear_death, Round 70) passes the reason with no
+-- list, because several slots wore: both caches drop, the consumers still
+-- return on the reason.
 function grug_inventory.equipment_changed(player, listname, reason)
 	if not player or not player.is_player or not player:is_player() then
 		return

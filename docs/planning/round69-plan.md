@@ -320,10 +320,10 @@ CAMPART touches tools only; CAMP declares the step 0.69.0 with an online part
 only, the user's documented exception to "world generation needs a map reset"
 ([upgrade contract §5.9](../technical/upgrade-contract.md#59-a-protected-composition-rewritten-online)).
 Saved state: `grug_core` `migrate_world:0.69.0`; `grug_mapgen` `camp_rewrite`,
-map-bound and cleared once the boxes read back. **Push:** not pushed;
-origin/main is `3cee37b3` (0.68.0). **Production** runs 0.65.0; an update to
+map-bound and cleared once the boxes read back. **Push:** pushed on the
+user's word on 2026-11-04; origin/main is `829be5dd` (0.69.0). **Production** runs 0.65.0; an update to
 0.69.0 crosses no map reset and runs the steps 0.67.0 and 0.69.0. **GUI test:**
-[open](#gui-checklist-desktop-and-web). **Sync:** by the coordinator after
+[accepted on 2026-11-04](#gui-checklist-desktop-and-web). **Sync:** by the coordinator after
 each merge.
 
 ### Lanes

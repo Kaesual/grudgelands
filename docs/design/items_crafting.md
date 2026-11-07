@@ -1446,7 +1446,7 @@ and never moves the lockout. Every credited kill counts for achievements.
 
 ### 5.4 Six race Kings and Fallen Crowns
 
-Each race has one killable level-70 elite King protected by four level-60
+Each race has one killable level-70 elite King protected by two level-60
 elite royal guards. Essential service NPCs are separate, passive and
 invulnerable.
 

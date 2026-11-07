@@ -268,7 +268,7 @@ local royal_reset -- a King's or General's encounter reset (below)
 
 function grug_mobs.boss_leash_reset(self)
 	if self and self._grug_royal_race then
-		-- The king alone owns the five-NPC encounter. A guard may individually
+		-- The king alone owns the three-NPC encounter. A guard may individually
 		-- leash, heal and resume following, but must never clear participation
 		-- or recreate the retinue underneath a live king attempt.
 		if self._grug_royal_king and grug_mobs.royal_encounter_reset then
@@ -838,7 +838,7 @@ for race, row in pairs(RACES) do
 	guard._grug_tier = "elite"
 	-- Only the king owns an encounter leash/reset. Royal guards return to the
 	-- king through royal_guard_tick and never acquire an independent chase
-	-- anchor or reset the five-NPC group.
+	-- anchor or reset the three-NPC group.
 	guard._grug_no_leash = true
 	guard._grug_leash_range = nil
 	-- The king's people, each guard with a look of its own, in the royal

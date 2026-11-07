@@ -82,7 +82,9 @@ To create a local world or host a server, see
    to see its targets. Press `E` for the quickbar: mounts, boats, your
    potion belt and Return home.
 5. **Set a home at an innkeeper:** Return home brings you back after a
-   journey. Death costs no items, money or XP; you respawn at your home.
+   journey. Dying wears your equipped items by 10% of their durability,
+   unless an enemy player hit you in the last 30 s; you keep your items
+   and XP and respawn at your home.
 
 Press `I` for your inventory. Its **Help** tab explains equipment, crafting,
 professions, travel and combat, and includes the sound controls.

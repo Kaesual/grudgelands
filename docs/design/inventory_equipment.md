@@ -643,11 +643,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   can take none (a full inventory) goes on to the item's own use.
 - **Consumption and the inactive hotbar layout** (Round 50 ruling 3):
   every consumer keeps its own order and takes from the inactive layout
-  last, counting and taking over the same lists
-  (`grug_inventory.consume_lists`, since Round 70 with the potion belt at
-  the very end, so what lands there stays sellable and a quest finds it;
-  no recipe takes a potion): crafting ingredients (§4), arrows (the
-  quiver, `main`, the bags, then B), quest items (counted for progress and
+  last. Crafting ingredients (§4) walk their own slot order in
+  `grug_jobs` (the bags, `main` past the hotbar, the hotbar, then B) and
+  never the potion belt: no recipe takes a potion. The others count and
+  take over the same lists (`grug_inventory.consume_lists`, since Round 70
+  with the potion belt at the very end, so what lands there stays sellable
+  and a quest finds it): arrows (the quiver, `main`, the bags, then B),
+  quest items (counted for progress and
   turn-in; rewards never land in the inactive layout), the Claim Stone's
   activation fuel, the Fallen Crown and the vendor's sell list (its rows
   and lot selling, with no marker on the inactive layout's rows; Round 56

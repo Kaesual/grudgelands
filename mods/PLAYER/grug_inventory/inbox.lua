@@ -9,7 +9,7 @@
 -- that no page draws and that is always empty, so the engine always asks its
 -- allow callback, which accepts exactly what the give helper can place
 -- (main[9..], the bags, the hotbar last; arrows into a Scout's quiver
--- first). The engine moves that many (an infinite source keeps its stack, the
+-- first, potions onto the belt first). The engine moves that many (an infinite source keeps its stack, the
 -- source's own take callbacks run), and the on callback hands them out
 -- through grug_inventory.give and empties the slot. Nothing fits: nothing
 -- moves and a "No room" line says so.
