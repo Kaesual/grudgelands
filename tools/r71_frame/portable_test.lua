@@ -365,7 +365,16 @@ local function chat_to(name)
 	end
 end
 
+-- The sister lanes' parts of the mod have their own fixtures (r71_guard, r71_ui,
+-- r71_mobs) and need more of the game than this harness fakes.
+local load_file = dofile
+local SISTERS = {["guard.lua"] = true, ["registrar.lua"] = true, ["encounters.lua"] = true,
+	["chest.lua"] = true, ["loot.lua"] = true}
+_G.dofile = function(file)
+	if not SISTERS[file:match("[^/]+$")] then return load_file(file) end
+end
 dofile(repo .. "/mods/PLAYER/grug_expeditions/init.lua")
+_G.dofile = load_file
 local E = grug_expeditions
 callbacks.loaded()
 local events = {}

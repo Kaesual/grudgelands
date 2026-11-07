@@ -48,6 +48,7 @@ _G.core = {
 	close_formspec = function(name) closed[name] = true end,
 	register_on_player_receive_fields = function(fn) receivers[#receivers + 1] = fn end,
 	register_on_leaveplayer = function() end,
+	register_on_joinplayer = function() end,
 	register_on_dieplayer = function() end,
 	register_on_mods_loaded = function() end,
 	get_connected_players = function()
@@ -62,10 +63,12 @@ _G.core = {
 }
 
 local parties = {}
-_G.grug_parties = {view = function(player)
-	local name = type(player) == "string" and player or player:get_player_name()
-	return parties[name]
-end}
+_G.grug_parties = {register_on_change = function() end,
+	register_on_member_left = function() end,
+	view = function(player)
+		local name = type(player) == "string" and player or player:get_player_name()
+		return parties[name]
+	end}
 local levels = {}
 _G.grug_xp = {get_level = function(player)
 	return levels[type(player) == "string" and player or player:get_player_name()]
@@ -76,6 +79,7 @@ local trip
 _G.grug_home = {
 	register_on_teleport = function() end,
 	travel = function(_, row) trip = row; return true end,
+	waystone_pos = function() return {x = 0, y = 0, z = 0} end,
 	location = function(id)
 		return ({highcourt = {faction = "accord"}, gor_drazhak = {faction = "throng"}})[id]
 	end,
