@@ -190,13 +190,12 @@ P['gor_drazhak']['socket_positions'].update(court_work_spar_a=[38,25],court_work
 P['lethariel'].update(remove=[], lake_shift=[0,14],
     title='A wider quay quarter, with both colonnades retained',
     lead='Move the crown lake fourteen nodes north relative to the core. Keep the accepted western castle and bring both colonnades to the dry northern approach.',
-    intent='The marble quay and mere shrine follow the new shore; the north avenue still crosses water. The star hall and sacred grove stay. The former southern strips become the castle court, while their colonnades frame a new northern promenade.',
-    question='Accept the fourteen-node lake shift and two retained colonnades, keeping the accepted western castle?')
+    intent='The marble quay and mere shrine follow the new shore. The north avenue starts on the shore; there is no lake crossing today or in this proposal. The star hall and sacred grove stay. The former southern strips become the castle court, while their colonnades frame a new northern promenade.',
+    question='Accept the fourteen-node lake shift, two retained colonnades and the mere precinct farther inland (checker: 19–32 → 32–44 nodes off shore; exact-column spot check reaches 46), keeping the western castle? The shift returns 1,259 dry columns but removes 54% of the water inside the expanded core. Keep the shore-starting north avenue, or commission a new crossing separately? That would need a deck and a new landing scan: at least 34 nodes west to the shore on z=57, or 131 along the north axis. Those are geometric lower bounds, not a measured build or a promised connection.')
 P['lethariel']['shifts'].update(colonnade_west=[0,51],colonnade_east=[0,51],mere_shrine=[0,14])
 P['lethariel']['sockets']={'colonnade_west_walk':[0,51],'colonnade_east_walk':[0,51]}
 P['lethariel']['socket_positions']={}
 P['lethariel']['roads'][0]=([0,-57,0,33],5)
-P['lethariel']['roads'].append(([0,32,0,57],7))
 P['lethariel']['watch'][2]=[2,30]
 for sid in ['quay_idle_west','quay_idle_east','quay_idle_head','shore_work_sweep',
             'core_spare_quay_west','core_spare_quay_east']:
@@ -208,8 +207,8 @@ P['kezamba'].update(lake_shift=[0,18],
     waypoint=None,
     title='A southern castle and more room beside the cenote',
     lead='Move the cenote eighteen nodes north relative to the core. The castle stays on the accepted southern terrace; five buildings move, instead of six.',
-    intent='The stable uses newly dry land north of the crossing. The granary takes the western clearing; the lane house moves ten nodes north. Both western houses and the original waystone plaza stay. The moot house moves fifteen nodes north and still straddles the shore; the north avenue keeps its boardwalk.',
-    question='Accept the eighteen-node lake shift and five building moves, retaining the southern castle and the original waystone plaza?')
+    intent='The stable uses newly dry land north of the crossing. The granary takes the western clearing; the lane house moves ten nodes north. Both western houses and the original waystone plaza stay. The moot house moves fifteen nodes north and still straddles the shore. The north boardwalk remains; the east boardwalk is lost, leaving one avenue over water instead of two.',
+    question='Accept the eighteen-node lake shift and five building moves, retaining the southern castle and original waystone plaza, at the cost of losing the east boardwalk (two avenues over water → one)? Today 627 deck, rail and pier cells stand over water outside templates, including 263 on the east avenue; that avenue becomes ground paving. The shift returns 1,336 dry columns but removes 34% of the water inside the expanded core. A four-node shift keeps water under both avenues, with only 300 dry columns returned (1,036 fewer); 101 columns of the proposed stable remain wet, so the stable needs another site and the five-move layout is not preserved. Keep the larger land gain or redesign around the smaller shift?')
 P['kezamba']['roads']=[([0,-57,0,57],5),([-57,0,57,0],5),
     ([0,-12,27,-12,27,-17],5),([-18,17,-18,42,-26,42,-26,50,-25,50],3),
     ([-18,17,0,17],3)]
@@ -221,4 +220,4 @@ for sid in ['vendor_fishmonger','quay_stall','cenote_fish_1','cenote_fish_2',
     P['kezamba']['sockets'][sid]=[0,18]
 P['kezamba']['socket_positions']={'forecourt_idle':[7,-16],
     'quay_idle_north':[-18,45], 'shore_walk_north':[-18,56],
-    'crossing_idle_east':[7,-4], 'cenote_fish_3':[-10,44]}
+    'crossing_idle_east':[7,-4], 'cenote_fish_3':[-8,41]}

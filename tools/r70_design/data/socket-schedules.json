@@ -8833,9 +8833,9 @@
       "face": 1,
       "id": "cenote_fish_3",
       "role": "work",
-      "x": -10,
+      "x": -8,
       "y": 1,
-      "z": 44,
+      "z": 41,
       "origin": "Lua / adapter",
       "owner": "moot_house",
       "affected_by": "moot_house"

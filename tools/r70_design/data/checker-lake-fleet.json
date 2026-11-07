@@ -1,0 +1,1671 @@
+{
+  "provenance": "Independent Opus pass-4 checker on 4146eb8b; aggregates recomputed from its 80 scratch exports in pass 5, without rerunning the planner. Original output SHA-256 digests retained per variant.",
+  "scope": "40 fleet seeds; lake0 versus lake_shift, both civic_width=112, CORE/GATE/KEEP=56/57/60, calm half=57, old authored core cells and landing detector. Cases count changed capital/seed/street labels, not whole failed capitals.",
+  "other_four_capitals_identical": true,
+  "summary": {
+    "lethariel": {
+      "mean_delta": -0.15,
+      "min_delta": -3,
+      "max_delta": 3,
+      "new_unrouted_cases": 9,
+      "gone_unrouted_cases": 1
+    },
+    "kezamba": {
+      "mean_delta": 1.0,
+      "min_delta": -8,
+      "max_delta": 6,
+      "new_unrouted_cases": 3,
+      "gone_unrouted_cases": 5
+    }
+  },
+  "rows": [
+    {
+      "seed": "17713522922938657774",
+      "lake0": {
+        "sha256": "8d7501d2dffef95add882117a74bed5242b24905c7315b94c075a04987e23d4d",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 39,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "566aaf12b92f932bba2a83c54ceb4231eff9627be5a40ebf2f00c3faa6152a30",
+        "capitals": {
+          "kezamba": {
+            "plots": 50,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 40,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "5575844014311305038",
+      "lake0": {
+        "sha256": "e81baa558b52c47c6d3b8dc42a031d1bc1e3628f7a0be0b736418d491a3bc15c",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 41,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "774a40343d02d3e88788af7615f65d9554291ba8f2f6a656d5b613554de4e68d",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 40,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "6410640627505506314",
+      "lake0": {
+        "sha256": "197f6278b7f32f0674dafbd8e50e6959347654071220b66dfe049b8c13e0049f",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "dc21ab1d1b206a11cca38e054eb065fa4dbfe7e37ce20f5ce7b00106ca04cb72",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "9512886083845910081",
+      "lake0": {
+        "sha256": "2d3dfa52c5816ceb1827b33d6080cd882da89dbdcb80e68ca2519eae79db6e60",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "f753fd9fd27d72d98ab0d71a56e0681b893a6f57b35cf4e64200bdf79bc24760",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "4282870288782723",
+      "lake0": {
+        "sha256": "f78bb3b79e2aeb7a7c537ce9c6d979681abf4e7c178a431c9ed0f16e42b47549",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 39,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "3475ce25e0b0418015f6909496c7ce9173674e23d42b223ce6904e801f6c5fd9",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 37,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "2996858566870034",
+      "lake0": {
+        "sha256": "7cc93f3a272a6d3123a36eadddb63fc0a627b429434c8a33b32efcef9b620083",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "d83fe381c340e4497a5c070640fdf916e3385ed7e0d56d163c632e7d22be2327",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "12345",
+      "lake0": {
+        "sha256": "403778921a3d819e59bc2ff9b301808894d7c2b73fe39ac25a4d2fa999d2f6b0",
+        "capitals": {
+          "kezamba": {
+            "plots": 50,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "c8317268267d5d8fe5c23111989b74966cf3ccf66db73e2a06e73e0b6752ab18",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "3684797457838814663",
+      "lake0": {
+        "sha256": "cb57352061ec9081c6a73db741d2a9223773526ea5372cd3e893a315a6a2b015",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "76a563acea0608ced90fbf0af2edab8286f94efd579f85fc49f98c179a03b327",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "6866842473207",
+      "lake0": {
+        "sha256": "34a9328771ebd899f85ac01b5d84860fcfcde94acbb9f2aa32a1020cdbfce0bf",
+        "capitals": {
+          "kezamba": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "bc00d98a0d34f111acba46210332eb7ea8e4b3efef9d7805a95d687d9ac0dd2a",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "75731352233772710",
+      "lake0": {
+        "sha256": "9aee1f560ecd47755eabb7967c2f37417c459e3a770d1a0fe28749026caf21ed",
+        "capitals": {
+          "kezamba": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring1/q4 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "2535812a8d174745b262265c2294b955745c24ea3a0b465c2a6c1f2e07c62675",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "52857145422941",
+      "lake0": {
+        "sha256": "d388b2360755b87fd37344d42e18665bb65206d36e5cacf2b03d77cff7610e95",
+        "capitals": {
+          "kezamba": {
+            "plots": 50,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "f2d6147c7dd3de3d3650678c0b55ab9053749874e99445ce22fb59fd91ba38b4",
+        "capitals": {
+          "kezamba": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "378823812252024157",
+      "lake0": {
+        "sha256": "f54749d55ecf7e772c2d296b84fc2eb7ea1dc8a8d924bdf943eae7fb14a2fd54",
+        "capitals": {
+          "kezamba": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring1/q2 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "7fafaf4d076957daa37cbbcc48084a28cf655914e113f2e724e16a9c87cbbc94",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring1/q2 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "131326668077996",
+      "lake0": {
+        "sha256": "f4b9524e5e234592552b5beb47bc6e1508e70faed08db1ee307f0a58ff6b5f8c",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "6e443056f71da881f927b2b74ece4655d27b8efe6099861dbd9f52e738f2ad24",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "536848449312304584",
+      "lake0": {
+        "sha256": "2ba15174df53d58a0155f46ea5ef8f52ec11879e21dae89349306ebbc7514431",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "efa8d3df913865d2f6cfd9bc6713e49620eed972ff3241c02bd74f7f29db9fe2",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "144317006856832",
+      "lake0": {
+        "sha256": "cfcbfc60c02d15d05d78168cd7064e82f9d813febbd857261033f7497279bddd",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "d921909af9d9f3c56a0b65abce41b9a60212348db522ff98d85462500788c2a9",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "546685758698740298",
+      "lake0": {
+        "sha256": "6276fe29740a223c1fcc8c2e6d20893cf9aa04518e8a74465ee3f225bdc5f384",
+        "capitals": {
+          "kezamba": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 39,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "2d05e9f262389b73a877168785ab405e3a8e98124cd6399cc12cfb33c0f51852",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 37,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "149812936261531",
+      "lake0": {
+        "sha256": "2305fdb13639464ef84e72df3af397c27994835660080142cc4f1d004e9ffa38",
+        "capitals": {
+          "kezamba": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "63941261578620fecfd197a3290bc1582146b844e6a3f9f24005c7ac9d06033b",
+        "capitals": {
+          "kezamba": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "809064843090012821",
+      "lake0": {
+        "sha256": "ba2688f0ecd2003f1f71544675e65fb823bfc3601e2d3083e40321abebc482af",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "ed4a19eee14af8425e473fe7cb88f25e71b695d67df5fdca293ec36ed5cfdae3",
+        "capitals": {
+          "kezamba": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "219471344270569",
+      "lake0": {
+        "sha256": "a292f7b756ea660192e7f8cd56ad4c239c2e2595eb30ee776ef53c22cb03c803",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "7791b3f4b82be52864f471897bc9f74d8ea7c5d55c5cc559e3be65e3b015467b",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1044486602088043433",
+      "lake0": {
+        "sha256": "20bcd03aeffce3eb30a9e003f2e38261c08e790c8d1e2710d374538b186e678b",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "c1c4f71cc7f30120dbb032b430e9b25d6c6146c26c0d1d9a6d1b4b2eaceda1c6",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "242386438251100",
+      "lake0": {
+        "sha256": "2d005558d3f776b7f88f9f570935da6ec9ad35ccfb197c9d25c42e920e3505fa",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "a9ac0010c8f1e6c1a1c8a2a5b2b9b63f5b4cfc9f2f936165fddd9e085e5bf89b",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1106439485595573225",
+      "lake0": {
+        "sha256": "0fc740fa0327e6f86237671aebeecbf1211deada186fae9f0cde5c1fdbb80804",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "c774d66868dbfe35790806cd478c6534d7bf9ffa4f8e10950b4653196adb4320",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "282487941662923",
+      "lake0": {
+        "sha256": "04f23ac9d034f49b20595e9ce0f418ee0c576e4d0a9934691f5fdb2a8b0625c4",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 41,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "7d683eb6de610e612b67411c882c014068cdeb4552ccbea1ca6d800e850fa69c",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1128139817863128323",
+      "lake0": {
+        "sha256": "9ef3e103bfc84d7c171976fd7f391d1935cd5dcc7f73892e708adf1bbd2b667c",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "02016bbd60d070021e59c264ced18178c630da6771eb4bced0357ec021463dbd",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "288542770271758",
+      "lake0": {
+        "sha256": "010a59f5eff2105e66c7733a43a46f963fc5b69e36a286f1d3aef7523eeb9f19",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "8e9707a9dbbe6a6f93bc5dfde52b13b67403d917134f46aaa83f342d759bc823",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1302672481898954152",
+      "lake0": {
+        "sha256": "a76613a0b40c49fcaa9e7348df427edf359aa6dbb5a69d74753024033fb9e58d",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 40,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "7d02e7ac950deb98add102bddf0ea06862f63de11565b5cb8c8edc63cfb3f453",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 40,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "323103855302695",
+      "lake0": {
+        "sha256": "ff2532033f884856f1ea502a520bcae1698e4596b6368663bb7d386440586581",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "e4777a602cb749ed3d34a249e3229cccc2b85b33c77b01908a1a6d7a576c2371",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1323159794382059362",
+      "lake0": {
+        "sha256": "017b2caf2aabbb31f044a4ad58480506e30b0189a6d072157e59532ccfffa189",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 40,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "3d8868cbc42a75dad6c86fa98c46672edfdcd35f6b551418199a6f7774a672c0",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 40,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "349612920386346",
+      "lake0": {
+        "sha256": "009d80d31deda03eb918fdd46fe7394e7d07978dfc1cab7673b911683440fc03",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring1/q4 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "c4e82457b80f91db452f7de0852d8a066d19c3a042e51378d88179d03b1d2b63",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1445372798720190656",
+      "lake0": {
+        "sha256": "89f9df42998b3bcdb7e17b0165f2ebc72faaa9d64e18a3cccccd346bf08334e0",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "ec60979bea8cbf84ae98e35cb98f41fad266fc3e846385bd57de9f9cf4e85fcc",
+        "capitals": {
+          "kezamba": {
+            "plots": 50,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "565433840066662",
+      "lake0": {
+        "sha256": "8442f09bce5cb1da30049a339530774ffaa149f8121f417b1d029493c79a5adb",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "f30c938d7420235fbab1d6eaa10b10a84f448fd9285b12bb75df7cf7b4774fac",
+        "capitals": {
+          "kezamba": {
+            "plots": 51,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1472993485033885391",
+      "lake0": {
+        "sha256": "ed6d58a7b5a097a18e01e1d56b92792a23a76f14016c6f9356ea5c2e240466fb",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "de649b12fd28170f205bf18e282c4bcacf60a27423fcce571fc98a68c711bc44",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "587653980902461",
+      "lake0": {
+        "sha256": "2c6efeb84f95a8c26edd73988c26469dfdd6ec2664109703f6a4d557005afba2",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 40,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "785c3b40e3266d243b74b58f54529b1c025c887979ef3513735cab6f5e45146b",
+        "capitals": {
+          "kezamba": {
+            "plots": 50,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 39,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1584942290392717997",
+      "lake0": {
+        "sha256": "0bdd2814d6e96d87b7e7eb624e03595aeb70ffbaf9531e95843dcf5572b64d4d",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 41,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "a2273c1a5c19b9f28fd11b202b0c94a001745336dc1c008f96fcc3ed8854879e",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 41,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "634425740233143",
+      "lake0": {
+        "sha256": "c6a77080e4495b8b770bcf939b48af99baccf9205c871227cf1c894eb552d224",
+        "capitals": {
+          "kezamba": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "1f416cedba8db35207f6ed42a3879836ced8e98bd9696fbe0be34f7968b7e8c7",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1598556932139183406",
+      "lake0": {
+        "sha256": "56d4313be82a25378dc4c488a62f8a12aae4145ad34fb2af3aefebe01f80d744",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 43,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "d634a2ae54e9dee3be8e2100a71a1a74da5a3d1164acbb608e5a6cc49fc1681c",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "642104573473858",
+      "lake0": {
+        "sha256": "3a5a11123608e003ddf4f7cb3819e856cd0476d46aebb74c65ff8f34336f7616",
+        "capitals": {
+          "kezamba": {
+            "plots": 47,
+            "failures": {
+              "no_route": " ring1/q1 ring1/q4 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "cd17935f535102e294ced189fdf778c7eacce5457d95d42e3ee89ac391a26877",
+        "capitals": {
+          "kezamba": {
+            "plots": 48,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 42,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q2"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1832871829642488463",
+      "lake0": {
+        "sha256": "1f60cf5688a93dcbc15f310843dca13ab250a794f7cbeb15d96d4c78d64a0347",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring1/q4 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "87542c11ffa0002962a3f0c4a1ccfc4a66de6ab89f83c201d8309fe807e2b347",
+        "capitals": {
+          "kezamba": {
+            "plots": 52,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "644155983349864",
+      "lake0": {
+        "sha256": "8fa12a49f0d26f2af21d896e699ce747efe9f3b2f0d10aa554a22eba2847564e",
+        "capitals": {
+          "kezamba": {
+            "plots": 46,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 38,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "b98bbd15036130bae691c44b30ff8b4df845ecc0fd78b2c720c3325931304235",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 39,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1859775881767637243",
+      "lake0": {
+        "sha256": "00dd68c551aedf1b401a6c59a353903dde99ea4746d6306491aa616eadb0a8ff",
+        "capitals": {
+          "kezamba": {
+            "plots": 52,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 44,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      },
+      "lake_shift": {
+        "sha256": "10932c07d3771b064c0de60d1dcd6045aa1cd1ff8190740d8186d19843734673",
+        "capitals": {
+          "kezamba": {
+            "plots": 49,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          },
+          "lethariel": {
+            "plots": 45,
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            },
+            "missing_required": []
+          }
+        }
+      }
+    }
+  ]
+}

@@ -34,6 +34,19 @@ def regressions():
     return 8
 
 
+def fishing_regression():
+    points=build.P['kezamba']['socket_positions']
+    before=points['cenote_fish_3']
+    try:
+        points['cenote_fish_3']=[-10,44]
+        try:
+            build.validate_lakes()
+        except AssertionError as exc:
+            assert 'fishing ray hits socket' in str(exc),exc
+        else:raise AssertionError('Former angler position was not rejected')
+    finally:points['cenote_fish_3']=before
+
+
 def main():
     for p in HERE.glob('*.py'):
         ast.parse(p.read_text(), filename=str(p))
@@ -83,6 +96,7 @@ def main():
             assert len(raw['capitals'])==6
             assert all(not p['missing_required'] for p in raw['capitals'].values())
     negative=regressions()
+    fishing_regression()
     schedules=json.loads((HERE/'data/socket-schedules.json').read_text())
     for key in build.NAMES:
         today=build.sockets(key);after=build.sockets(key,True)
@@ -105,6 +119,20 @@ def main():
         assert min(deltas)==fleet['summary'][key]['worst_delta']
         for r in fleet['rows']:
             for v in ['today','civic112']:assert not r[v]['capitals'][key]['missing_required']
+    fleet=build.LAKE_FLEET
+    assert len(fleet['rows'])==len({r['seed'] for r in fleet['rows']})==40
+    assert fleet['other_four_capitals_identical']
+    for key in build.LAKES:
+        deltas=[];new=gone=0
+        for r in fleet['rows']:
+            a,b=[r[v]['capitals'][key] for v in ['lake0','lake_shift']]
+            assert not a['missing_required'] and not b['missing_required']
+            deltas.append(b['plots']-a['plots'])
+            ar,br=[set((p['failures'].get('no_route') or '').split()) for p in [a,b]]
+            new+=len(br-ar);gone+=len(ar-br)
+        assert fleet['summary'][key]==dict(mean_delta=sum(deltas)/40,
+            min_delta=min(deltas),max_delta=max(deltas),
+            new_unrouted_cases=new,gone_unrouted_cases=gone)
     claim_ids=re.findall(r'\*\*(C\d+) \[',(HERE/'claims.md').read_text())
     page_claims=doc.xpath('//article[starts-with(@id,"claim-")]')
     assert len(claim_ids)==len(page_claims)==93
@@ -113,8 +141,8 @@ def main():
     for li in doc.xpath('//div[@class="cost-card"]/ul/li'):
         assert li.xpath('./a[@class="ref"]')
     print(f'PASS: 12 places, 24 equal-scale SVGs, {geometry} geometry schedules, {negative} collision regressions, 93 claim links.')
-    print('PASS: paired shifted-water planner evidence on three seeds, exact dry-column counts, shore buffers, dry templates, moot-house landing and fishing reach.')
-    print(f'PASS: all {sum(len(v) for v in schedules.values())} sockets scheduled, room/wall budgets and 40-seed aggregate evidence.')
+    print('PASS: paired shifted-water planner evidence on three seeds, exact dry-column counts, shore buffers, dry templates, moot-house landing and forward fishing rays; former blocked ray rejected.')
+    print(f'PASS: all {sum(len(v) for v in schedules.values())} sockets scheduled, room/wall budgets and both 40-seed aggregate receipts.')
     print('PASS: inline assets/data only, exact seed strings, no missing required plots, JavaScript syntax, Python syntax.')
     print('NOT VERIFIED: browser layout/events, final 3D/terrain/engine walking/combat; see REPORT.md.')
 

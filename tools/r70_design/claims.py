@@ -34,8 +34,8 @@ are owned by `proposals.py`; the map tables derive the before values from the ex
 Measured claims point to the exporter and its committed JSON inputs. Line references
 in this ledger are checked while building the page, not an independent review.
 **The user accepted pass 3: radius 56 for all six capitals and every per-place
-recommendation (2026-11-07). Pass 4 proposes only the Kezamba and Lethariel lake
-amendments; their independent review and decision remain pending. No runtime/3D
+recommendation (2026-11-07). Pass 5 corrects the Kezamba and Lethariel lake
+amendments after the independent pass-4 check; re-check and decision remain pending. No runtime/3D
 implementation or GUI acceptance is claimed.**
 
 '''

@@ -14,6 +14,12 @@
         "wet_with_margin": 191
       },
       {
+        "shift": 4,
+        "dry_gain": 300,
+        "wet_columns": 101,
+        "wet_with_margin": 131
+      },
+      {
         "shift": 8,
         "dry_gain": 600,
         "wet_columns": 50,
