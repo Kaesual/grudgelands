@@ -729,7 +729,7 @@ local function loader(directory)
 		-- lamps and the benches. `free_area` takes paving for free ground, so
 		-- every candidate stands on unpaved shelf by its coordinates.
 		local outcrops = 0
-		for _, rock in ipairs({{-18, -30, -16, -28, 1}, {8, -28, 10, -26, 1},
+		for _, rock in ipairs({{-18, -31, -16, -29, 1}, {8, -28, 10, -26, 1},
 				{33, -6, 35, -4, 1}, {42, -24, 44, -22, 2},
 				{-50, 30, -48, 32, 2}, {-44, 52, -42, 54, 1},
 				{-38, 47, -36, 49, 2}, {38, 50, 40, 52, 1},

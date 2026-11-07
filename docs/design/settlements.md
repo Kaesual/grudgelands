@@ -429,9 +429,9 @@ butcher, a tanner, a brewer, an armourer and a smith, each standing at the work
 he sells), a war yard round a sunken fighting arena, a quarter of bone halls
 with a totem court, a burial barrow and a quarry face cut into the mesa, and a
 warren of clan lodges round a cook court and a story fire. Since Round 70 the
-warlord sits in the castle at the head of the throne approach, a nine-wide avenue
-from the south gate, built of ors stone inside the earth bank; a five-wide bypass
-runs up both flanks and behind the castle to the north gate, and the muster court
+warlord sits in a castle of adobe and desert stone block inside the earth bank, at
+the head of the throne approach, a nine-wide avenue from the south gate; a five-wide
+bypass runs up both flanks and behind the castle to the north gate, and the muster court
 lies east of it. Beside the castle's great door stands a raised **fighting
 platform** with its own breastwork, its own stair and two guard posts on it.
 
