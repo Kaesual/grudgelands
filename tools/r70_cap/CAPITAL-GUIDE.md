@@ -58,6 +58,7 @@ the page), the castle `tools/r70_castle/INSTALL.md`, the checks
 - **A patrol leg over 32 nodes** first tries the streets, and core ground has none: the planner's roads begin
   outside the pad. It falls back to pieces of at most 24 on the straight line. `capture.sh` runs every leg
   through the real cache and logs `none`: a leg with `none` needs a nearer corner.
+- **Nametags show through walls:** the two "Accord Guard" labels in the throne shot are the north gate's watch.
 - **The castle's door:** `kings_hall_door` is the first `doors` point, now on the forecourt at y 1, not y 3.
 - `PANE_CONNECTS` in `parts.lua` lacks the ornamented stones: add them only if a wall of yours puts one
   next to a pane. Dur Brannoc's does not.
@@ -84,7 +85,7 @@ the page), the castle `tools/r70_castle/INSTALL.md`, the checks
 |---|---|---|
 | Template gate | `python3 tools/building_templates/check.py` | hard gate, also `--self-test` |
 | Shared test | `luajit tools/r70_cap/portable_test.lua . <capital>` | your capital in `DONE` |
-| Pins you change, one line of reason each | `tools/r36_w/baseline.tsv` (your `<capital>/core` line, through `baseline.lua`), `tools/r51_ft` `CAPITAL_TREES`, `tools/r56_freeze_capitals` `FROZEN`, `tools/r58_townfix` `HALLS` (add the roof channel) | |
+| Pins you change, one line of reason each | `tools/r36_w/baseline.tsv` (your `<capital>/core` line, through `baseline.lua`), `tools/r51_ft` `CAPITAL_TREES`, `tools/r56_freeze_capitals` `FROZEN`, `tools/r58_townfix` `HALLS` (add the roof channel), `tools/r34_f3` `PINNED` if a moved lake moves rivers | |
 | Planner | `lua_run.sh <label> 4 tools/r70_cap/plan_seeds.sh OUT_DIR` | 40 seeds; prints plots against the study's `today`, new unrouted streets. Fix those that cut off a required plot, report the rest |
 | Fleet | `lua_run.sh <label> 8 tools/seed_fleet/run.sh quick` | |
 | Engine | `XVFB=… CAPITAL=<capital> SEED=12345 lua_run.sh <label> 1 tools/r70_cap/capture.sh OUT_DIR` | shots to `r70/shots/<lane>/`; read `probe.txt`: king and guards at their sockets, every leg, the seat's path to the door |
