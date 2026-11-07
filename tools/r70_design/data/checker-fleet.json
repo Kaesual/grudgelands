@@ -1,0 +1,3808 @@
+{
+  "provenance": "Opus checker scratch exports; original report copied as data/design-check.md. Summary recomputed in pass 2 without rerunning the planner.",
+  "scope": "40 fleet seeds, today vs civic_width=112 plus CORE/CORE_GATE/CORE_KEEP=56/57/60; old authored cores and old landing detector, not the new castles.",
+  "summary": {
+    "dur_brannoc": {
+      "mean_delta": -1.125,
+      "worst_delta": -5,
+      "infeasible": {
+        "today": 0,
+        "civic112": 0
+      },
+      "new_unrouted_cases": 2,
+      "removed_unrouted_cases": 0
+    },
+    "highcourt": {
+      "mean_delta": -1.9,
+      "worst_delta": -6,
+      "infeasible": {
+        "today": 0,
+        "civic112": 0
+      },
+      "new_unrouted_cases": 2,
+      "removed_unrouted_cases": 0
+    },
+    "lethariel": {
+      "mean_delta": -0.075,
+      "worst_delta": -4,
+      "infeasible": {
+        "today": 0,
+        "civic112": 2
+      },
+      "new_unrouted_cases": 0,
+      "removed_unrouted_cases": 2
+    },
+    "gor_drazhak": {
+      "mean_delta": -2.1,
+      "worst_delta": -5,
+      "infeasible": {
+        "today": 2,
+        "civic112": 0
+      },
+      "new_unrouted_cases": 0,
+      "removed_unrouted_cases": 0
+    },
+    "nhal_veyr": {
+      "mean_delta": -1.15,
+      "worst_delta": -5,
+      "infeasible": {
+        "today": 0,
+        "civic112": 0
+      },
+      "new_unrouted_cases": 0,
+      "removed_unrouted_cases": 0
+    },
+    "kezamba": {
+      "mean_delta": -1.225,
+      "worst_delta": -8,
+      "infeasible": {
+        "today": 3,
+        "civic112": 3
+      },
+      "new_unrouted_cases": 3,
+      "removed_unrouted_cases": 1
+    }
+  },
+  "rows": [
+    {
+      "seed": "17713522922938657774",
+      "today": {
+        "sha256": "69305f311227d15f6d5d84e5d930d035a84c0dd7c9326cfe3700facc1e0723c3",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 40,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "465b4dfbba4bde78ed4325cc5801fc1d5b0d444ef251187cc5497ff2ff063066",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q4"
+            }
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 39,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "5575844014311305038",
+      "today": {
+        "sha256": "27fa8a1f70fc9db2fdf42ec247e7af9c2cccdcd694bbc44c871be0290b47a86c",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring1/q4 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "328efd8b7514fbe285863fcc51f6de401a1a85f9b75d5feb7ae423343c7f4db9",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 39,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "6410640627505506314",
+      "today": {
+        "sha256": "df880a4830632d29a2a1132e9fd4d6c04394f620a0900bf30c85124830580873",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "6ca34e3e105989f0fec5c8b4b294ac35d49bdf476178ad34dd372cac5f1b2811",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "9512886083845910081",
+      "today": {
+        "sha256": "4a4c1e0f71312aa2c77f912d20caa6801547fde59d264e444c2e0646eb366008",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "a39d8e83e9903f9e74648621d8039cb848a0c9d760a04f4fdbce91be1e78f02a",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "4282870288782723",
+      "today": {
+        "sha256": "ded96465392f561cf8608e4fdd2f4c4c1e552ff318c00b043a8f06aa784d305a",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 39,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "812e7d1660873a588f3f51023c86a37e3e6c5731dba4fb791fa6c4d0b4c4953e",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 39,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "2996858566870034",
+      "today": {
+        "sha256": "fc819148970a7d05a3b11c056b8eb41caef56576eb3eb62735d1e8190c32940a",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "98a5451b900f1fe64f8ccc3493131040b8dd329aa767344cb7de793f6554c6fc",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "12345",
+      "today": {
+        "sha256": "acd7514ff56ebee4123d01ebec84fc084a27784b1d11c9c76bd4fded4de9ebb8",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "8443a85f8df90716011b4b373f39b632300cead312222cc63118c5bfc6c66fc4",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "3684797457838814663",
+      "today": {
+        "sha256": "14ca28cf3f5475280a2fb5ee9c15f9801f9bc4e843791e1a8eaac5af19969cd6",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "7a7278c7c47f969d50072297d7355dffc43a91dad895aca058828cab1a3c9e08",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "6866842473207",
+      "today": {
+        "sha256": "eb4773ae14cf1baad4cd5438393db8d12db2b9149e70902a7125b3529b6203e6",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1
+            }
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "4a0119f8dd8f47312a92b019d46a00584dd923243f2c432758315f8fd3d9c767",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "75731352233772710",
+      "today": {
+        "sha256": "edbdc14a7505b5190c67cf8824657f7c3170ec95ab03f9082713b579610e80b2",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "a6c46916a8b99cd6feb90a6763021cfd7cce9ba211619a994c0fec8b105305e7",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q2"
+            }
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring1/q4 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "52857145422941",
+      "today": {
+        "sha256": "a9bfe4f7c04753a81124004879b5fdc19f69cc52c02a7c594064e5ccb7f988ac",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "2eeb6a45f5f622ef2e426c464626044b5501be428b2374e5490fc431094c3f3b",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "378823812252024157",
+      "today": {
+        "sha256": "750e9afcb39da82d103dc42f17c9faf572473d84d9d3a2db6c0e511e8919b388",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "469176f2118f2e90882ad9a827510d58a272cd1c378c2845dbc6d6fd24575bd5",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring1/q2 ring2/q1 ring2/q2"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "131326668077996",
+      "today": {
+        "sha256": "3d1e9ec96363beb14b6937632435a6ba9498ab3872b07929587d7100e03858df",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "8165fdbbfbd4b8dfc9f74b9865915a4987c6c20807da08ad1aa1e07c5ea554d3",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "536848449312304584",
+      "today": {
+        "sha256": "5c3e232a7b29e70dd4fc39f8df8312a3e032ca1fd477becf6e84686b72f8ecdc",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "6b826ae173bd94768ebc8693a8d1f787d3597c7cc37f75b99a64df6dda6f68bd",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "144317006856832",
+      "today": {
+        "sha256": "745b41ce6e7a101a59cbddb61053045add643e820dff0384b215ca074e817c20",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "7bc89719700ab86f098f294113278603dbb49f4d199d5be790f8d1c775136f1b",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "546685758698740298",
+      "today": {
+        "sha256": "e874b0410f87b855cc725f707a849f0e8ca43ecb1086366565f4fd121cace595",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "2013445852d036e30e6d5a92aa900b29c58608dbf0751ea36002a70fde108d72",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 40,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "149812936261531",
+      "today": {
+        "sha256": "6627d6815d910f5992566ac42185bc090cd061dbac659550341489e98cf7eada",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "892575e360fb9d493d8a173656d39ddee938748655102e9b126032f8d565271d",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "809064843090012821",
+      "today": {
+        "sha256": "0b9b22049281f483b799fe3f8284c11ff77e55464be65fafcbc7bad33351280f",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "2313d1ab5c107257bdfe752a5ee12beb7a4fdb6a5ed9a5e66f21a90849c13163",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "219471344270569",
+      "today": {
+        "sha256": "d99ab05ba77ffb8139cf9ae4a4a96340defbcfeb480ec278816e01f377d50381",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "c290b9e609bdbb09833781f589e6815e8ceb3930c1746bd3ceea8502149851c4",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1044486602088043433",
+      "today": {
+        "sha256": "c0b950633017e9159673f9c10e33d409207739b4c9586908e338b38c04f3f718",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "d3ee373968851f35e8a99750637fd97033ae515e94ef6edd3b39f49d22bac5e9",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "242386438251100",
+      "today": {
+        "sha256": "14acbbe3dd5ec1db3e24414df4c673bd3b1530e8d0c1309a81dbc69cd182ff76",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "c7d2e0fe493030dd702db2f4ff1ee863d57f152cf07ca002e34440e59ada9546",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1106439485595573225",
+      "today": {
+        "sha256": "c3619417f4632c6fcf89b7d08bb3035272bcd9c57def7162917ccfe993705224",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "694e96ca2e746e196dcf1bffe3fe0bf2a41b48d7e65835cef8b07b555fac6ee3",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "282487941662923",
+      "today": {
+        "sha256": "c493ac8e1f9d0d14435a49f9b475e78f81f155459e29d05c582e8b1cd3a875aa",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "707e53eb5d3bc4047a532c18e45f36ee3b2ee2b6af89ae630a65015cccebb74f",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 41,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1128139817863128323",
+      "today": {
+        "sha256": "6b4aa31f572ea0923932ce68557a72392382c515480adfdfde9853283b6921f6",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1
+            }
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 37,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "bd948cdc181e1ec521327c94398ff13d99ce8b1a519e75ccd0faf6eb9d059666",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "288542770271758",
+      "today": {
+        "sha256": "15ba1e1472ebaba78698ae40b1c1b80eda3576ddd5dd0cc7d0b0acb8ee6b9b0a",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 41,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "8a0b11918bd6ef9d58f851b05f6c18f54a255aa6de1d4710a48b9bc1e6ca7b60",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1302672481898954152",
+      "today": {
+        "sha256": "e7a2c411e4fc08bb38ee59bbb1d201ad2d05298350e51323bd85bf9cbcc93514",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 39,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "d0b52e8b6da49a6480e9f15bafc1a7df0f1dbc013c2eeee1755e604f1d40b81f",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 41,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "323103855302695",
+      "today": {
+        "sha256": "7efeae43f32b16e4f94a38a45bf46aacab83184fa4d6486bb96e25057920d845",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "26722e0840680953247347a6bc7ba42e966336c487f0a5942725700dbb3e01e8",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1323159794382059362",
+      "today": {
+        "sha256": "58d84be248b1b8b2a91122e46402070e83895d33300211c9c5522a564c9bd832",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 41,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "0a740a66c53d945b5a6064e2c9696fadf12cb7b2d84929a1f5d19d81d0e1d4bd",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 40,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "349612920386346",
+      "today": {
+        "sha256": "65e5aeb4e35a27afb6e605741d922edcf99cebc3b6a286c47bb7d3211bb0d611",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "8d598971935eeea22418add257a3f80c364804c28c5b8cb8322e4b8b1c484c3c",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "infeasible": 1,
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1445372798720190656",
+      "today": {
+        "sha256": "35e7b0ec8d7d10f5c1ed980b7fcedadb9d580305dc3f1f2e0b74e1f47b77bac0",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "988bfda3f3a81e2c6f9dbf2c514b829bd5ae3a5606618665f05fa12ee5d57243",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 41,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "565433840066662",
+      "today": {
+        "sha256": "a70cf294a25638331a53f629213380b72d54d161bcaddfa8252ee3bfba8c3eb1",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "f5cc0b1f918a63b867603710a9d4941cf2d5ad989b41872e96129dac38c7ea0e",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1472993485033885391",
+      "today": {
+        "sha256": "764cbfeaf9ec0fa1696418d4d79b27041fec5b75f3012aaaaba5a977c7bb2375",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "fd5d61e4db1ff01113ae77ab907ff3dc950f321a049c2476c1e00fe77a515325",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "587653980902461",
+      "today": {
+        "sha256": "f7e2bb12c64e26a032e56e3788400aa79597897ae425f50bbae7098f5365193f",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 40,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "2a03a7d7a5334641a55921f21322b793fed4a8fcc04228e4c835e70f2f699fa8",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 41,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1584942290392717997",
+      "today": {
+        "sha256": "24afc7c9540077fc1e1f23884990012ff1458d494899018114c301b786e42dea",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "5c58512e8d65c0a832af2c27bb3fc6c361da6131d8109c91577f866015a1e210",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "634425740233143",
+      "today": {
+        "sha256": "e3a7a37c6274a9982f0ddaf9e7b57c8aa10f4feb596fbcf0a6cce323caf22879",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "bd1df6d12e272e548ad3b0cd752ac31c0ebb0131575209908b5b7dfb80a956bc",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring2/q4"
+            }
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1598556932139183406",
+      "today": {
+        "sha256": "338c03c2b0eb0b96aac58ef59dff8a3bffb1a4a17d99db2ad55dc2a7ffe53e78",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "28406302a056c48cbe2e998b3e6b8ad2b3229d3ff26066694ebc19861581d128",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 43,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "642104573473858",
+      "today": {
+        "sha256": "1190bf5220c1814349f217a53fcad14511e0fbade811836391a9eb5dfee80562",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 38,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "2eb2ccaa3a922afc4a48bb912fb11aac5f68af0dd7595dde3418cdd70c5c2df2",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1"
+            }
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring1/q4 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 42,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1832871829642488463",
+      "today": {
+        "sha256": "5449666a9f00d6beef574cced40fc46ac01de650d0f10fec17d2c764ee76bb21",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 52,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "d5bf9392b44715f672a868e7f01ca23aef826ca3ce4853ac7c120cfa427cbd8a",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "644155983349864",
+      "today": {
+        "sha256": "adb90964aedff5710276c9ec32d4cd848b53470c82d2255f397a34b266fc1a79",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 40,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1 ring2/q3"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "62e50c6c957bd2afdfcf5d34f7a69ac2dba2be25c14e293eae5198ad0dcebb7f",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 47,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 39,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 46,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    },
+    {
+      "seed": "1859775881767637243",
+      "today": {
+        "sha256": "08cfd64889e34aa76c99de2a0d55348f2b42c70a5c1c094469f7fc5be487223c",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 48,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 53,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 51,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      },
+      "civic112": {
+        "sha256": "7373784dcafc99d2d8216c0a00fd89b45463f96a4e2e46c1972414a64895ad03",
+        "capitals": {
+          "dur_brannoc": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "gor_drazhak": {
+            "plots": 45,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "highcourt": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          },
+          "kezamba": {
+            "plots": 50,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "lethariel": {
+            "plots": 44,
+            "required": 10,
+            "missing_required": [],
+            "failures": {
+              "no_route": " ring1/q1 ring2/q1"
+            }
+          },
+          "nhal_veyr": {
+            "plots": 49,
+            "required": 10,
+            "missing_required": [],
+            "failures": []
+          }
+        }
+      }
+    }
+  ]
+}
