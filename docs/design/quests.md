@@ -624,7 +624,10 @@ Quest content is data, one file per zone, read at load by
   hub, front lines, objective shapes, known NPCs, items, groups and roles,
   critter targets, areas that host their target, quest-drop pairing, the
   level fit (every level a target, quest-drop source or item source is met
-  at lies within the quest's reward level ±3), and since Round 57 the
+  at lies within the quest's reward level ±3; a target that stands in an
+  Expedition, no zone hosts it, is listed in both validators'
+  `EXPEDITION_TARGETS` and counts as met at the Expedition's level, its
+  +0 to +9 being the player's choice), and since Round 57 the
   variants, the faction pairing per giver, the choices and their enchants,
   and in reworked files the rules of "The rework flag" below.
   `tools/r28_design/validate.py` checks the same rules on the design files
@@ -1322,7 +1325,12 @@ guild leader alone (`guild`). 64 quests became 47.
   quest, below) and `capital_raw_meat` (8 Raw Meat from the capital's day
   game, the cooks of Lethariel, Gor Drazhak, Kezamba and Nhal Veyr, level
   20–21). Varda's Mire Carp in Dur Brannoc is a variant of the band's fish
-  quest `band_mire_carp`, homed in Totemwater Reach.
+  quest `band_mire_carp`, homed in Totemwater Reach. Round 71 adds
+  `capital_stilled_seam` ("Party: The Stilled Seam", the six guild leaders
+  on `guild`, level 20, weight 4, turned in at the giver, one text per
+  faction): kill Flintback in [the level 20
+  Expedition](../planning/round71-l20-description.md), at any of its levels.
+  Optional and free, it follows "Group quests" above.
 - **Local quests**: each capital's climax, its named leader alone and free
   (Penn, Brakk, Rusk, Garr, Takka's `kezamba_offerings_04` and Hush's
   `nhal_veyr_vigil_03`, ids kept for the two whose objectives stayed or

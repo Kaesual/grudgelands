@@ -5,14 +5,8 @@ local E = grug_expeditions
 local QUEST, GIVER = "capital_stilled_seam", "r58_guild_leader_highcourt"
 local FEET = 5
 local HP = {[20] = {normal = 384, elite = 1152, boss = 13824}, [29] = {normal = 720, elite = 2160, boss = 25920}}
--- Where the probe stands to wake a room, what it holds: {room, x, z, look}.
-local ROOMS = {
-	{"pack_a", 54, 20, normal = 4, elite = 0},
-	{"pack_b", 100, 20, normal = 2, elite = 1},
-	{"pack_c", 100, 66, normal = 3, elite = 1},
-	{"pack_d", 100, 98, normal = 3, elite = 1},
-	{"boss", 84, 108, normal = 0, elite = 0, boss = 1},
-}
+-- Where the probe stands to wake a room.
+local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 100, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
 
 local function rel(run, x, y, z) return vector.add(run.minp, vector.new(x, y, z)) end
 local function feet(pos) return {x = pos.x, y = pos.y - 0.5, z = pos.z} end
@@ -44,68 +38,63 @@ local function shot(lib, player, name)
 	lib.wait(1)
 end
 
--- Wakes the rooms one by one and holds their mobs against the document.
+-- Wakes every room, holds the mobs against the document, kills all but the boss.
 local function prove_rooms(lib, player, run, level)
-	local total = 0
 	for _, row in ipairs(ROOMS) do
 		go(lib, player, run, row[2], row[3])
-		lib.wait(2.5)
-		local normal, elite, boss, names = 0, 0, 0, {}
-		for _, ent in ipairs(mobs_in(run)) do
-			local at = ent.object:get_pos()
-			local dist = vector.distance(at, player:get_pos())
-			lib.check(ent._grug_level == level, ("%s at level %d: %s"):format(ent.name, level,
-				tostring(ent._grug_level)))
-			local want = ent._grug_boss_id and HP[level].boss or HP[level][ent._grug_tier]
-			if ent.hp_max ~= want then
-				lib.check(false, ("%s HP %s, want %s"):format(ent.name, tostring(ent.hp_max), tostring(want)))
-			end
-			names[ent.description or "?"] = true
-			if dist < 60 then
-				if ent._grug_boss_id then boss = boss + 1
-				elseif ent._grug_tier == "elite" then elite = elite + 1
-				else normal = normal + 1 end
-			end
-		end
-		local list = {}
-		for name in pairs(names) do list[#list + 1] = name end
-		table.sort(list)
-		lib.logf("room %s level %d: %d normal, %d elite, %d boss near; names %s", row[1], level, normal,
-			elite, boss, table.concat(list, ", "))
-		lib.check(boss == (row.boss or 0), "the boss near " .. row[1])
-		for _, ent in ipairs(mobs_in(run)) do
-			if not ent._grug_boss_id then
-				ent.health = 0
-				ent:check_for_death({type = "unknown"})
-				total = total + 1
-			end
-		end
-		lib.wait(1)
+		lib.wait(1.5)
 	end
-	return total
+	local tally, names = {normal = 0, elite = 0, boss = 0}, {}
+	for _, ent in ipairs(mobs_in(run)) do
+		local tier = ent._grug_boss_id and "boss" or ent._grug_tier
+		tally[tier] = tally[tier] + 1
+		names[#names + 1] = ent.description or "?"
+		lib.check(ent._grug_level == level, ("%s at level %s"):format(ent.name, tostring(ent._grug_level)))
+		lib.check(ent.hp_max == HP[level][tier], ("%s HP %s"):format(ent.name, tostring(ent.hp_max)))
+	end
+	table.sort(names)
+	lib.logf("rooms at level %d: %d normal, %d elite, %d boss: %s", level, tally.normal, tally.elite,
+		tally.boss, table.concat(names, ", "))
+	lib.check(tally.normal == 12 and tally.elite == 3 and tally.boss == 1, "the document's counts")
+	local killed = 0
+	for _, ent in ipairs(mobs_in(run)) do
+		if not ent._grug_boss_id then
+			ent.health = 0
+			ent:check_for_death({type = "unknown"})
+			killed = killed + 1
+		end
+	end
+	lib.wait(1)
+	return killed
 end
 
--- How far a pack walks on its own while the party is elsewhere.
+-- How far mobs walk on their own while the party stands apart. A mob that went for
+-- the probe's character stops counting.
 local function prove_wander(lib, player, run, x, z, seconds)
 	go(lib, player, run, x, z)
-	lib.wait(3)
-	local list, far = mobs_in(run), 0
-	local from = {}
-	for index, ent in ipairs(list) do from[index] = ent.object:get_pos() end
+	lib.wait(2)
+	local rows = {}
+	for _, ent in ipairs(mobs_in(run)) do
+		rows[#rows + 1] = {ent = ent, from = ent.object:get_pos(), far = 0}
+	end
 	local t0 = core.get_us_time()
 	while core.get_us_time() - t0 < seconds * 1e6 do
-		for index, ent in ipairs(list) do
-			local at = ent.object:get_pos()
-			if at then far = math.max(far, vector.distance(at, from[index])) end
+		for _, row in ipairs(rows) do
+			local at = row.ent.object:get_pos()
+			if row.ent.state == "attack" or row.ent.attack then row.fought = true end
+			if at and not row.fought then row.far = math.max(row.far, vector.distance(at, row.from)) end
 		end
-		lib.wait(1)
+		lib.wait(0.5)
 	end
-	local states = {}
-	for _, ent in ipairs(list) do
-		states[#states + 1] = (ent.name:match(":(.+)") or "?") .. "=" .. tostring(ent.state)
+	local idle, far = 0, 0
+	for _, row in ipairs(rows) do
+		if not row.fought then
+			idle = idle + 1
+			far = math.max(far, row.far)
+		end
 	end
-	lib.logf("wander near %d,%d: %d mobs, furthest %.1f nodes in %d s (%s)", x, z, #list, far, seconds,
-		table.concat(states, " "))
+	lib.logf("wander near %d,%d: %d mobs, %d stayed idle, furthest of those %.1f nodes in %d s", x, z,
+		#rows, idle, far, seconds)
 	return far
 end
 
@@ -151,8 +140,11 @@ local function hit_boss(lib, player, run)
 	grug_core.deal_ability_damage(player, boss.object, 50)
 	lib.wait(0.5)
 	lib.check(boss.health < boss.hp_max, "the boss is hurt")
-	grug_core.deal_ability_damage(player, boss.object, 10000000)
-	lib.wait(1)
+	-- A punch's damage is 16 bits: as often as its HP need.
+	for _ = 1, 3 do
+		if boss.object:get_pos() then grug_core.deal_ability_damage(player, boss.object, 30000) end
+		lib.wait(0.4)
+	end
 	lib.check(boss_of(run) == nil, "the boss is dead")
 end
 
@@ -192,10 +184,10 @@ return function(lib, player)
 	shot(lib, player, "room1")
 	go(lib, player, run, 98, 30, -math.pi / 2)
 	shot(lib, player, "room2")
-	local a = prove_wander(lib, player, run, 108, 52, 40)
+	local a = prove_wander(lib, player, run, 108, 52, 30)
 	go(lib, player, run, 108, 66, math.pi)
 	shot(lib, player, "room3")
-	local b = prove_wander(lib, player, run, 88, 108, 40)
+	local b = prove_wander(lib, player, run, 88, 108, 30)
 	go(lib, player, run, 50, 108, -math.pi / 2)
 	shot(lib, player, "room4")
 	lib.logf("wander, furthest: %.1f / %.1f nodes", a, b)

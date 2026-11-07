@@ -428,4 +428,67 @@ print(("light at eye height: %d cells, mean %.1f, %.0f %% at %d or more, darkest
 check(darkest >= LIGHT_MIN, "H no dark corner: " .. darkest .. " at " .. dark_at)
 check(usual / cells >= USUAL_SHARE, "H the rooms read: " .. usual / cells)
 
+-- I. The quest: the document's shape and its four approved texts.
+local json = dofile(repo .. "/tools/r28_b4_quests/json.lua")
+local function read_file(path)
+	local handle = assert(io.open(repo .. "/" .. path, "r"))
+	local text = handle:read("*a")
+	handle:close()
+	return text
+end
+local home = json.decode(read_file("mods/PLAYER/grug_quests/data/zones/elandor_highcourt.quests.json"))
+local quest
+for _, q in ipairs(home.quests) do
+	if q.id == "capital_stilled_seam" then quest = q end
+end
+check(quest ~= nil, "I the quest lives in its first variant's file")
+eq(quest.title, "Party: The Stilled Seam", "I the title")
+eq(quest.level, 20, "I level 20")
+eq(quest.line, "guild", "I the guild leaders' line")
+check(quest.optional == true and quest.group == true, "I optional, a group quest")
+eq(quest.story, nil, "I no story flag")
+eq(#quest.requires, 0, "I it requires nothing")
+eq(quest.rewards.weight, 4, "I weight 4")
+eq(quest.rewards.copper, nil, "I copper from the weight")
+eq(quest.rewards.items, nil, "I no item")
+eq(quest.rewards.choices, nil, "I no choice")
+eq(#quest.objectives, 1, "I one objective")
+eq(quest.objectives[1].type, "kill", "I a kill")
+eq(quest.objectives[1].roles[1], "flintback", "I Flintback")
+eq(quest.objectives[1].count, 1, "I once")
+eq(quest.objectives[1].area, nil, "I at any level, in no area")
+-- The approved block quotes, whole.
+local doc = read_file("docs/planning/round71-l20-description.md")
+local function approved(head)
+	local at = assert(doc:find("**" .. head .. "**", 1, true), head)
+	return doc:match("\n> ([^\n]+)\n", at)
+end
+local TEXTS = {accord = {approved("The Accord \226\128\148 offer"), approved("The Accord \226\128\148 completion")},
+	throng = {approved("The Throng \226\128\148 offer"), approved("The Throng \226\128\148 completion")}}
+local VARIANTS = {
+	{"elandor_highcourt", "highcourt", "accord"}, {"elandor_dur_brannoc", "dur_brannoc", "accord"},
+	{"elandor_lethariel", "lethariel", "accord"}, {"kragmar_gor_drazhak", "gor_drazhak", "throng"},
+	{"kragmar_kezamba", "kezamba", "throng"}, {"kragmar_nhal_veyr", "nhal_veyr", "throng"},
+}
+eq(#quest.variants, #VARIANTS, "I six variants")
+for index, want in ipairs(VARIANTS) do
+	local v = quest.variants[index]
+	eq(v.zone, want[1], "I variant " .. index)
+	eq(#v.givers, 1, "I one giver in " .. want[2])
+	eq(v.givers[1], "r58_guild_leader_" .. want[2], "I the leader of " .. want[2])
+	eq(v.turnins, nil, "I turned in at the giver")
+	eq(v.text, TEXTS[want[3]][1], "I the offer in " .. want[2])
+	eq(v.completion, TEXTS[want[3]][2], "I the completion in " .. want[2])
+end
+-- The target's rule, in both validators, the same as the catalogue's level.
+local lua_rule = read_file("mods/PLAYER/grug_quests/validate.lua"):match("V%.EXPEDITION_TARGETS = {flintback = (%d+)}")
+local py_rule = read_file("tools/r28_design/validate.py"):match('EXPEDITION_TARGETS = {"flintback": (%d+)}')
+eq(tonumber(lua_rule), row.level, "I the game's validator")
+eq(tonumber(py_rule), row.level, "I the design validator")
+-- The boss: a golem's body, its name fixed over 20-29.
+local golem = read_file("mods/ENTITIES/grug_mobs/golem.lua")
+check(golem:find('register_mob("grug_mobs:flintback", flintback)', 1, true), "I Flintback is registered")
+check(read_file("mods/ENTITIES/grug_mobs/data/names.json"):find('"world/flintback/L20-29": "Flintback"', 1, true),
+	"I the name's slot")
+
 print(("R71 L20 PORTABLE PASS checks=%d"):format(checks))
