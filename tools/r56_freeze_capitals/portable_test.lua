@@ -109,26 +109,28 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- point stands on the floor) Kezamba's new identity and build digests and
 -- Lethariel's new point and build digests (its district shrine's destination);
 -- since Round 70 (GUILD, a declared map reset: the Stonewright's work bay in
--- the six guild houses) every capital's new digests.
+-- the six guild houses) every capital's new digests; since Round 70 CAP0 (a
+-- declared map reset: the core's radius 56, Dur Brannoc's castle) every
+-- capital's new digests again; each capital lane pins its own.
 local FROZEN = {
-	highcourt = {"2ce7c1bc0a158c7839ac71f98c28dc536081b01bbaddf1346dce649cf80d970f",
-		"bc4006364e101eb2a4caca657d6a646dfcd753ef52250a1ea46bb165264c9a19",
-		"63340f471e34461bb0cc6ad9acdad7558af0a86da3fdf2567b494f75ef01a600"},
-	dur_brannoc = {"9d9ad43c1e40cfee4310905b1a3bd1c376b189b5ee9d25c9454153cdbe028e63",
-		"e9dfa33f41ad72eba9f0bc7429f144d2df7bdcc8bfd55f3041b63802a83eec89",
-		"3cfff5ae22fd6345c85697ce94904966e52bb2991e64c8f121ab9a77dca04a0c"},
-	lethariel = {"e7c858f0faa9e06136f64b5eb6389a270ee5e3946431220cf88188dea894bc10",
-		"fd31f9d1a5424f9bed00a42dfa2410fc12424d26bcc994d4c0e6dc93d9f1893a",
-		"ad2a94eb29dfccb0e075377ee15e6fb935932c62fa449a5e029c30697f05a795"},
-	nhal_veyr = {"1db816c982b76c8c4e7011015b56725a42e51fa04e7bfaa96e95c23dee2f87be",
-		"4fb6fcce9cc942429d26369a205917bbc06f6fc6f2894e6216a1e459d58cf773",
-		"115f5527d62a9aeee5454b1d505abf894c87c1d822786b4533459e6e41e33e55"},
-	gor_drazhak = {"2bb126b189f7b5260069cdfa79256ddfd64b5e02177a86375b1d109fe2e670be",
-		"714a547c308027b0104c6a25c9ea2257bbdc35dc0dc056addbe9fa3b11b989f2",
-		"23192296e58f4ee0f00cb97d30dd46752ba0dd48c0c8805328bb8f000fe68cce"},
-	kezamba = {"548f35ff11f44938b98975f7725e21cc67e51dbce92191786bab24ccce3348dc",
-		"7cebe34703494f2bdb32f09a7bec916322f3c665ec8fbd027228c3e51a746c89",
-		"f0ed760337aaf205aadebe6255f9ffd06ca71cfad63cb91f1ea2250012bbb7af"},
+	highcourt = {"abc75504ededff37c18f83c9f09e195e1d4b3e42164d315ebc22d1149f2c5c1b",
+		"61eddb6f823916828b970d9b4dd740fdf7409e499881d4be560847c5cfe93ede",
+		"92b576f2f09cc0252a3ae862784c163741b6305ac6421705ccf44d8cb43eb8f7"},
+	dur_brannoc = {"846961cd7a6edc906185fb59f4d42da986abd75fe4c3e4a650299a2f8c48ba9f",
+		"8d7ea2686c9ffac290086a5cc2b844ff108960af9f45b7012c809963f5baed6d",
+		"bd63e88dcc8a3b344280e38e85d629f12f9a8a852a7fa7f1d23df5f33ea4dc6c"},
+	lethariel = {"82d73eb49f11a0be54aadf6b02f98f56e658f5e7b8e439f54e3f5abb3528df92",
+		"f6a1923cb52937f56adb31155398541c6b15b9c4749e14c4fff88520ce02d804",
+		"a3e6e753511323c48c37dd2e759dde7c0e627c44c9dad82d35876d3cec557e12"},
+	nhal_veyr = {"919d95a0ca0e21241e1139c71f44d782194850d4493bafc82a87f1f461c44869",
+		"a1e918e7a39b3b24a48df3cb2cb8b9433f1bf5f9fd37efec34546addaf98b7ac",
+		"5570ef4f3363ce0f940982b4dec1be3788425a35b89bc7e9460af0b563b2fb47"},
+	gor_drazhak = {"028d5f6323df57ce7d8d1da0677d22b71c679e9aa61d4895be8265436d59b585",
+		"0c7225cef4c9b790b62d69d782a227fb4b617f22e6ecbbdb716e837a063502be",
+		"a509076f58c3a790031a6ef198b06205ff8822b7e6b210bad4fe745454312bd9"},
+	kezamba = {"711b3aaaca00cc47dbb1f484ebfa5ed76913be94214d71617a989d13e22cacf9",
+		"9eff6c643c2f7091b047d114c04a35b018b7828c937af5279babf78be8b06b0e",
+		"d58bb720021dd365fadd24490770e3d46e3250b1917e9e45a141c8a2193ba504"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()

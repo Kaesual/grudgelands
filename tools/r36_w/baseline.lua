@@ -31,7 +31,10 @@
 -- register: one `quest_place` socket added to Nhal Veyr's Miner's Guild
 -- plot, nothing else; and by Round 70 lane GUILD (a declared map reset) for
 -- the Stonewright's work bay: `miners_guild_sorter` moved in the six guild
--- houses, nothing else. As a module:
+-- houses, nothing else; and by Round 70 lane CAP0 (a declared map reset) for
+-- the core's radius 56: the six cores' bounds, airspace and gate sockets,
+-- Dur Brannoc's core with its castle. Each capital lane rewrites its core's
+-- line. As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}
