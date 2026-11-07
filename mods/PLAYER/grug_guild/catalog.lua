@@ -7,7 +7,8 @@
 -- VALUES holds every tunable number under the key the tuning page uses
 -- (`rank.<n>`, `exchange.<item>.points|lot`, `<kind>.t<n>.price`,
 -- `<kind>.<parameter>`, `consumable.t<n>.sell_copper`,
--- `remains.t<n>.<field>`). The user's accepted numbers are written into it
+-- `remains.t<n>.<field>`, `stonewright.<recipe>.<field>`). The user's
+-- accepted numbers are written into it
 -- mechanically (tools/r58_guildspec/apply_tuning.py). The tables after it
 -- name the ids and the fixed rules and take their numbers from VALUES.
 
@@ -155,6 +156,45 @@ M.VALUES = {
 	["remains.t6.bars_min"] = 1,
 	["remains.t6.bars_max"] = 2,
 	["remains.t6.gem_chance"] = 8,
+
+	-- The Stonewright (spec §5.3, Round 70): one lot of a recipe takes `stone`
+	-- of its stone, `bars` of its metal bar and `fee` copper and gives
+	-- `output`. Convenience lots of ten at a small fee (a stack is about ten
+	-- copper, far above the 1c per 50 a vendor pays for the stone); an
+	-- ornamented lot frames eight stones with one bar, its fee on the tier
+	-- axis. The amounts are a proposal for the user's decision.
+	["stonewright.cobble_gravel.stone"] = 10,
+	["stonewright.cobble_gravel.output"] = 10,
+	["stonewright.cobble_gravel.fee"] = 1,
+	["stonewright.gravel_sand.stone"] = 10,
+	["stonewright.gravel_sand.output"] = 10,
+	["stonewright.gravel_sand.fee"] = 1,
+	["stonewright.cobble_sand.stone"] = 10,
+	["stonewright.cobble_sand.output"] = 10,
+	["stonewright.cobble_sand.fee"] = 2,
+	["stonewright.cobble_stone.stone"] = 10,
+	["stonewright.cobble_stone.output"] = 10,
+	["stonewright.cobble_stone.fee"] = 2,
+	["stonewright.ornamented_iron.stone"] = 8,
+	["stonewright.ornamented_iron.bars"] = 1,
+	["stonewright.ornamented_iron.output"] = 8,
+	["stonewright.ornamented_iron.fee"] = 5,
+	["stonewright.ornamented_steel.stone"] = 8,
+	["stonewright.ornamented_steel.bars"] = 1,
+	["stonewright.ornamented_steel.output"] = 8,
+	["stonewright.ornamented_steel.fee"] = 10,
+	["stonewright.ornamented_silversteel.stone"] = 8,
+	["stonewright.ornamented_silversteel.bars"] = 1,
+	["stonewright.ornamented_silversteel.output"] = 8,
+	["stonewright.ornamented_silversteel.fee"] = 25,
+	["stonewright.ornamented_embersteel.stone"] = 8,
+	["stonewright.ornamented_embersteel.bars"] = 1,
+	["stonewright.ornamented_embersteel.output"] = 8,
+	["stonewright.ornamented_embersteel.fee"] = 60,
+	["stonewright.ornamented_abyssal_steel.stone"] = 8,
+	["stonewright.ornamented_abyssal_steel.bars"] = 1,
+	["stonewright.ornamented_abyssal_steel.output"] = 8,
+	["stonewright.ornamented_abyssal_steel.fee"] = 150,
 }
 local V = M.VALUES
 
@@ -198,11 +238,8 @@ M.ORE_SENSE_TARGETS = {
 	{"diamond"},
 }
 
--- The exchange: only items no vendor sells (round58-plan.md §2a: no bars,
--- blocks, bricks or other made goods). A row may carry `pending = "<lane>"`
--- while a vendor still sells its item: it is then not exchanged until that
--- lane takes the item off the shelf and deletes the field (Round 58: lane
--- REP did so for Cobblestone and Gravel; no row is pending now).
+-- The exchange: raw mined goods only (round58-plan.md §2a: no bars, blocks,
+-- bricks or other made goods).
 local EXCHANGE_ITEMS = {
 	{item = "default:cobble"},
 	{item = "default:mossycobble"},
@@ -231,6 +268,27 @@ local EXCHANGE_ITEMS = {
 	{item = "grug_materials:rough_diamond"},
 }
 
+-- The Stonewright's recipes (spec §5.3; the ranks and the conversions are the
+-- user's ruling of 2026-11-07, plan §2.6), row order the window's order: a
+-- convenience recipe converts one stone into another, an ornamented one
+-- (`bar`, `tier`, `name`) makes a new block of that metal tier. Ranks 9 and
+-- 10 have no recipe.
+local COBBLE = "default:cobble"
+local STONEWRIGHT_RECIPES = {
+	{id = "cobble_gravel", rank = 1, stone = COBBLE, output = "default:gravel"},
+	{id = "gravel_sand", rank = 2, stone = "default:gravel", output = "default:sand"},
+	{id = "cobble_sand", rank = 2, stone = COBBLE, output = "default:sand"},
+	{id = "cobble_stone", rank = 3, stone = COBBLE, output = "default:stone"},
+	{id = "ornamented_iron", rank = 4, stone = COBBLE, tier = 2, name = "Ornamented Iron Stone"},
+	{id = "ornamented_steel", rank = 5, stone = COBBLE, tier = 3, name = "Ornamented Steel Stone"},
+	{id = "ornamented_silversteel", rank = 6, stone = COBBLE, tier = 4,
+		name = "Ornamented Silversteel Stone"},
+	{id = "ornamented_embersteel", rank = 7, stone = COBBLE, tier = 5,
+		name = "Ornamented Embersteel Stone"},
+	{id = "ornamented_abyssal_steel", rank = 8, stone = COBBLE, tier = 6,
+		name = "Ornamented Abyssal Steel Stone"},
+}
+
 local function value(key)
 	local number = V[key]
 	if type(number) ~= "number" then
@@ -247,7 +305,7 @@ end
 M.EXCHANGE = {}
 M.EXCHANGE_BY_ITEM = {}
 for index, entry in ipairs(EXCHANGE_ITEMS) do
-	local row = {item = entry.item, pending = entry.pending,
+	local row = {item = entry.item,
 		points = value("exchange." .. entry.item .. ".points"),
 		lot = value("exchange." .. entry.item .. ".lot")}
 	M.EXCHANGE[index] = row
@@ -293,6 +351,26 @@ for tier = 1, M.TIER_COUNT do
 		gem_chance = value(prefix .. "gem_chance")}
 end
 
+-- STONEWRIGHT: one row per recipe, {id, rank, output, output_count, fee,
+-- inputs = {{item, count}, ...}}; an ornamented one also {tier, name}.
+-- ORNAMENTED: those rows, the blocks the guild registers (items.lua).
+M.STONEWRIGHT = {}
+M.STONEWRIGHT_BY_ID = {}
+M.ORNAMENTED = {}
+for index, entry in ipairs(STONEWRIGHT_RECIPES) do
+	local prefix = "stonewright." .. entry.id .. "."
+	local row = {id = entry.id, rank = entry.rank, tier = entry.tier, name = entry.name,
+		output = entry.output or "grug_guild:" .. entry.id,
+		output_count = value(prefix .. "output"), fee = value(prefix .. "fee"),
+		inputs = {{item = entry.stone, count = value(prefix .. "stone")}}}
+	if entry.tier then
+		row.inputs[2] = {item = TIER_BAR[entry.tier], count = value(prefix .. "bars")}
+		M.ORNAMENTED[#M.ORNAMENTED + 1] = row
+	end
+	M.STONEWRIGHT[index] = row
+	M.STONEWRIGHT_BY_ID[row.id] = row
+end
+
 -- Accessors (pure; grug_guild publishes them as its catalogue API).
 
 -- The rank a lifetime total reaches: 0 .. MAX_RANK.
@@ -312,11 +390,9 @@ function M.threshold(rank)
 end
 
 -- The exchange row of an item ({item, points, lot}), nil for an item the
--- guild does not take (a pending row included).
+-- guild does not take.
 function M.exchange_rate(item)
-	local row = M.EXCHANGE_BY_ITEM[item]
-	if not row or row.pending then return nil end
-	return row
+	return M.EXCHANGE_BY_ITEM[item]
 end
 
 function M.consumable(kind, tier)
@@ -329,6 +405,10 @@ end
 
 function M.remains(tier)
 	return M.REMAINS[tier]
+end
+
+function M.stonewright_recipe(id)
+	return M.STONEWRIGHT_BY_ID[id]
 end
 
 -- {id, name} of a faction's guild, nil without a faction.
@@ -372,6 +452,18 @@ function M.validate()
 		if row.copper_min < 0 or row.copper_max < row.copper_min or row.bars_min < 0 or
 				row.bars_max < row.bars_min or row.gem_chance < 1 then
 			fail("bad Remains loot of tier " .. tier)
+		end
+	end
+	-- The load audit's rule (economy.md §2) in units: a recipe never gives
+	-- more than it takes.
+	for _, row in ipairs(M.STONEWRIGHT) do
+		local taken = 0
+		for _, input in ipairs(row.inputs) do
+			if input.count < 1 then fail("bad input of " .. row.id) end
+			taken = taken + input.count
+		end
+		if row.fee < 1 or row.output_count < 1 or row.output_count > taken then
+			fail("bad Stonewright recipe " .. row.id)
 		end
 	end
 	return true

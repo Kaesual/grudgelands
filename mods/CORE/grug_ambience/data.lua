@@ -277,6 +277,9 @@ D.emitter_nodes = {
 	["default:furnace_active"] = "furnace",
 	-- The Dual Furnace while it burns (grug_jobs workspaces.lua swaps it).
 	["grug_smelting:dual_furnace_active"] = "furnace",
+	-- The Stonewright's Smelting Furnace always burns (Round 70): one cell of
+	-- the twelve-cell assembly, so one loop per furnace.
+	["grug_guild:stonewright_furnace_0_1_0"] = "furnace",
 	["grug_nodes:camp_fire"] = "fire",
 	["default:water_flowing"] = "water",
 	["default:river_water_flowing"] = "water",

@@ -59,7 +59,7 @@ local function loader(directory)
 
 	local M = {}
 
-	local RADIUS = 49
+	local RADIUS = precinct_ring.PAD
 	local SCHEMA = "grug_wp13_nhal_veyr_core_v1"
 
 	-- The city's own patrol loop. The four gatehouses keep a two-waypoint
@@ -151,9 +151,9 @@ local function loader(directory)
 		{id = "gate_west", template = "nhal_veyr_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "crypt", roof = "crypt_vault"},
 		{id = "gate_north", template = "nhal_veyr_gate_south", watch = true,
-			x = -6, z = 43, turns = 2, palette = "crypt", roof = "crypt_vault"},
+			x = -6, z = RADIUS - 6, turns = 2, palette = "crypt", roof = "crypt_vault"},
 		{id = "gate_east", template = "nhal_veyr_gate_south", watch = true,
-			x = 43, z = -6, turns = 3, palette = "crypt", roof = "crypt_vault"},
+			x = RADIUS - 6, z = -6, turns = 3, palette = "crypt", roof = "crypt_vault"},
 
 		-- 3. The market square, west of the approach.
 		{id = "market", template = "highcourt_market",
@@ -740,7 +740,8 @@ local function loader(directory)
 		-- detour and the first parapet column beyond the skip joins straight into
 		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local drums = 0
-		for _, corner in ipairs({{-47, -47}, {47, -47}, {-47, 47}, {47, 47}}) do
+		local C = precinct_ring.CORNER
+		for _, corner in ipairs({{-C, -C}, {C, -C}, {-C, C}, {C, C}}) do
 			local cx, cz = corner[1], corner[2]
 			if layout.free_area(buf, cx - 2, cz - 2, cx + 2, cz + 2, 8) then
 				buf:ring(cx - 2, cz - 2, cx + 2, cz + 2, 1, 7, STONE)

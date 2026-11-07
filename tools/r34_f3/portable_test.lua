@@ -33,7 +33,9 @@ if #seeds == 0 then
 end
 -- the water layout text of seed 12345 (Round 46: re-pinned, the water reads
 -- only the fixed POIs now; Round 34 pinned f140b58b... on main f6d11c95)
-local PINNED = {["12345"] = "97b0685d49eecc178b905d8330bdaa6ad04fa1ebd03605bf044923fb552f1e23"}
+-- (Round 70 CAP0: `civic_width` 112 widens the capitals' river keep-out, a
+-- declared map reset, so seed 12345's rivers moved.)
+local PINNED = {["12345"] = "3c3474e1109f366c4d5d883a982d0d256eca15f6f77de48b4ea6bba4b1541f1a"}
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1

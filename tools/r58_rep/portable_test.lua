@@ -21,8 +21,9 @@
 --    take nothing; a vendor without the field has no Trade-in mode.
 -- D. The achievement series (grug_achievements): the cloaks unlock at rank
 --    3, 6 and 10 through the rank hook; a faction switch keeps them.
--- E. Round 58 §2a: the mason sells no Cobblestone or Gravel, no shelf sells
---    an exchanged item, both are exchanged; the consumables' vendor payout
+-- E. The mason sells no Cobblestone or Gravel (the user keeps that in Round
+--    70, though a shelf may sell an exchanged item now), both are exchanged;
+--    the consumables' vendor payout
 --    is the catalogue's sell_copper.
 -- Prints "R58 REP PORTABLE PASS checks=<n>" or raises.
 
@@ -557,17 +558,8 @@ check(next(mason) ~= nil, "E the mason has a shelf")
 check(not mason["default:cobble"], "E the mason sells no Cobblestone")
 check(not mason["default:gravel"], "E the mason sells no Gravel")
 check(mason["default:stonebrick"] and mason["default:clay_brick"], "E the mason keeps his bricks")
-for kind, shelf in pairs(grug_traders.profession_stock) do
-	for _, entry in ipairs(shelf) do
-		check(not C.EXCHANGE_BY_ITEM[entry.item], "E shelf " .. kind .. " sells no exchanged item: " .. entry.item)
-	end
-end
-for _, entry in ipairs(grug_traders.stock) do
-	check(not C.EXCHANGE_BY_ITEM[entry.item], "E the core stock sells no exchanged item: " .. entry.item)
-end
 check(C.exchange_rate("default:cobble") ~= nil and C.exchange_rate("default:gravel") ~= nil,
 	"E Cobblestone and Gravel are exchanged")
-for _, row in ipairs(C.EXCHANGE) do eq(row.pending, nil, "E no pending row: " .. row.item) end
 
 -- The payout: two stand-in registrations of consumables (lane CONSUME
 -- registers the real ones), then the price module's own resolution.

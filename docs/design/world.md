@@ -493,7 +493,7 @@ from y = −501.
 The capital watch remains level 60 and still uses its guard banner; the six
 WP13 cities stand around it since 2026-09-16 (`settlements.md`, "Capitals in
 the world"). The king/royal-guard binding, reset, death and group-respawn
-rules are implemented by the six level-70 king entities and their four
+rules are implemented by the six level-70 king entities and their two
 level-60 royal guards per capital. They consume the authored `king` and royal
 guard sockets; the king alone owns reset, death and group-respawn authority as
 specified in `world_zones.md` §12. A king holds his seat (Round 41): he never
@@ -592,8 +592,8 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   with a fresh set. (Spec now; implementation lands with the King/raid
   WP.)
 - **Royal guards are the decided exception:** the living king is authoritative,
-  all four guards always path toward it, its evade/teleport relocates the group,
-  and its death makes survivors retreat/despawn. The entire five-NPC encounter
+  both guards always path toward it, its evade/teleport relocates the group,
+  and its death makes survivors retreat/despawn. The entire three-NPC encounter
   returns together after the persistent 15-minute respawn; a guard killed
   outside a reset or the king's death returns on its own after the same
   15 minutes (Round 37, `world_zones.md` §12). A PvP fortress's General

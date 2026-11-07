@@ -111,8 +111,22 @@ end
 -- (Round 58 HALLS2: the Miner's Guild houses moved out of the cores onto
 -- district plots of their own, paved and treeless, so the cores' trees are
 -- back to the counts before HALLS.)
-local CAPITAL_TREES = {highcourt = 83, dur_brannoc = 62, lethariel = 141, nhal_veyr = 70,
-	gor_drazhak = 35, kezamba = 37}
+-- (Round 70: the core grew to radius 56, so the old layouts have more open
+-- ground for `layout.green`, and Dur Brannoc its castle; each capital lane
+-- pins its own new count.)
+local CAPITAL_TREES = {
+	highcourt = 86,
+	-- the next capital
+	dur_brannoc = 64,
+	-- the next capital
+	lethariel = 163,
+	-- the next capital
+	nhal_veyr = 70,
+	-- the next capital
+	gor_drazhak = 47,
+	-- the next capital
+	kezamba = 46,
+}
 local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
 local cores = {}
 for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak",
@@ -167,6 +181,10 @@ do
 	-- before (main 713fcf88): the cover cells and Nhal Veyr's bones
 	local BEFORE = {highcourt = 582, dur_brannoc = 594, lethariel = 641, nhal_veyr = 1760,
 		gor_drazhak = 498, kezamba = 676}
+	-- their open ground then (the pad of radius 49): the rule is a density, so
+	-- Round 70's larger pads scale it by the open ground they have now
+	local OPEN_BEFORE = {highcourt = 2813, dur_brannoc = 2960, lethariel = 2845,
+		nhal_veyr = 2702, gor_drazhak = 2844, kezamba = 2667}
 	-- the plain scatter's tufts on a socket's feet before (a plant is not
 	-- walkable; the patches keep a subset of the scatter's cells)
 	local SOCKET_BEFORE = {lethariel = 5, gor_drazhak = 2}
@@ -212,12 +230,13 @@ do
 		end
 		print(("D %-11s cover %4d -> %4d (bones %d), %d gaps and %d patches"):format(key,
 			BEFORE[key], n_cover, bones, gaps, patches))
-		check(n_cover > 0 and n_cover <= 0.45 * BEFORE[key], key .. "'s core cover is cut (" ..
+		local grown = n_open / OPEN_BEFORE[key]
+		check(n_cover > 0 and n_cover <= 0.45 * BEFORE[key] * grown, key .. "'s core cover is cut (" ..
 			BEFORE[key] .. " -> " .. n_cover .. ")")
 		check(gaps >= 3 and patches >= 3, key .. "'s core cover is uneven (" .. gaps ..
 			" gaps, " .. patches .. " patches)")
 		if key == "nhal_veyr" then
-			check(bones > 0 and bones <= 90, "Nhal Veyr's core bones are cut (899 -> " .. bones .. ")")
+			check(bones > 0 and bones <= 92 * grown, "Nhal Veyr's core bones are cut (899 -> " .. bones .. ")")
 		end
 		local blocked = 0
 		for _, s in ipairs(core.landmarks.sockets or {}) do
@@ -271,7 +290,7 @@ do
 			if taken[c.x .. ":" .. c.y .. ":" .. c.z] then on_taken = on_taken + 1 end
 			local lx, lz = c.x - anchor.x, c.z - anchor.z
 			local ground, water = column(c.x, c.z)
-			-- the core (49 + 4), the wall (12), the plot with collar (8 + 1)
+			-- the old core (49 + 4), inside today's, the wall (12), the plot with collar (8 + 1)
 			-- and approach (12 in front, -z), the square (6 + 4), the street
 			-- and its neighbours
 			if (math.abs(lx) <= 53 and math.abs(lz) <= 53) or math.abs(lx) > 108 or

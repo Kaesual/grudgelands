@@ -84,8 +84,10 @@ local V = {
 	-- column within PATCH_RADIUS (square) of it; PATCH_AREA columns.
 	PATCH_ONE_IN = 450, PATCH_RADIUS = 2, PATCH_AREA = 25,
 	-- Round 70: a `near_water` gathering row (Stormkelp) grows within
-	-- SHORE_REACH (square) of water, so its band is that wide (renewal.lua).
-	SHORE_REACH = 3,
+	-- SHORE_REACH (square) of water, so its band is that wide (renewal.lua),
+	-- on ground at most SHORE_HEIGHT above that water's surface: the low land
+	-- along a shore, not a cliff top beside the sea.
+	SHORE_REACH = 10, SHORE_HEIGHT = 4,
 }
 V.DENSE = {grug_deep_forest = 3, grug_deep_jungle = 3} -- times 1/2: x1.5
 V.WARM_BIOMES = {grug_deep_jungle = true, grug_jungle_edge = true,
@@ -393,12 +395,13 @@ end
 
 -- THE P9G WATER PREDICATES (Round 70, the user's rulings of 2026-11-07), read
 -- by the writer (r7_p9g.lua) and by renewal (vegetation_density.lua), so the
--- two cannot differ. `water_at(x, z)` answers whether a column is water of the
--- row's classes; the writer memoizes it per chunk, because a far inland host
--- reads all 48 neighbours.
+-- two cannot differ. `p9g_water_rule` turns a predicate into the function
+-- rule(x, z, ground); `level_at(x, z)` is the water surface y of a column of
+-- the row's classes, nil on any other column.
 --   none        no water rule;
---   near_water  a water column within SHORE_REACH (square), nearest ring
---               first; the only shore row of the catalogue (Stormkelp);
+--   near_water  a water column within SHORE_REACH (square) whose surface lies
+--               at most SHORE_HEIGHT below the ground; the only shore row of
+--               the catalogue (Stormkelp);
 --   no_water    no water column on the four faces: the root touches none
 --               (Rock Salt, which is no shore row).
 local P9G_PREDICATES = {none = true, near_water = true, no_water = true}
@@ -408,25 +411,68 @@ end
 function M.p9g_shore_row(predicate)
 	return predicate == "near_water"
 end
-function M.p9g_predicate_matches(predicate, water_at, x, z)
-	if predicate == "none" then return true end
+
+-- near_water reads 441 columns where it reads them one by one, and a host far
+-- inland would read all of them. So the water is kept by blocks of WATER_BLOCK
+-- columns: a block is read once, a dry one keeps nothing, a wet one its water
+-- columns and their highest surface. An inland test asks at most 16 blocks. The
+-- answer is a pure function of the column, so FIFO eviction only costs a reread.
+local WATER_BLOCK, WATER_BLOCK_LIMIT = 8, 2048
+local function near_water_rule(level_at)
+	local floor = math.floor
+	local reach, rise = V.SHORE_REACH, V.SHORE_HEIGHT
+	local blocks, block_keys, next_key = {}, {}, 1
+	local function block_at(bx, bz)
+		local key = (bx + 8192) * 16384 + bz + 8192
+		local block = blocks[key]
+		if block ~= nil then return block end
+		block = false
+		for z = bz * WATER_BLOCK, bz * WATER_BLOCK + WATER_BLOCK - 1 do
+			for x = bx * WATER_BLOCK, bx * WATER_BLOCK + WATER_BLOCK - 1 do
+				local level = level_at(x, z)
+				if level then
+					block = block or {peak = level}
+					if level > block.peak then block.peak = level end
+					local count = #block
+					block[count + 1], block[count + 2], block[count + 3] = x, z, level
+				end
+			end
+		end
+		local old = block_keys[next_key]
+		if old then blocks[old] = nil end
+		blocks[key], block_keys[next_key] = block, key
+		next_key = next_key % WATER_BLOCK_LIMIT + 1
+		return block
+	end
+	return function(x, z, ground)
+		local lowest = ground - rise
+		for bz = floor((z - reach) / WATER_BLOCK), floor((z + reach) / WATER_BLOCK) do
+			for bx = floor((x - reach) / WATER_BLOCK), floor((x + reach) / WATER_BLOCK) do
+				local block = block_at(bx, bz)
+				if block and block.peak >= lowest then
+					for index = 1, #block, 3 do
+						if block[index + 2] >= lowest and
+								math.abs(block[index] - x) <= reach and
+								math.abs(block[index + 1] - z) <= reach then
+							return true
+						end
+					end
+				end
+			end
+		end
+		return false
+	end
+end
+
+function M.p9g_water_rule(predicate, level_at)
+	if predicate == "near_water" then return near_water_rule(level_at) end
 	if predicate == "no_water" then
-		return not (water_at(x + 1, z) or water_at(x - 1, z) or
-			water_at(x, z + 1) or water_at(x, z - 1))
-	end
-	for reach = 1, V.SHORE_REACH do
-		for offset = -reach, reach do
-			if water_at(x + offset, z - reach) or water_at(x + offset, z + reach) then
-				return true
-			end
-		end
-		for offset = 1 - reach, reach - 1 do
-			if water_at(x - reach, z + offset) or water_at(x + reach, z + offset) then
-				return true
-			end
+		return function(x, z)
+			return not (level_at(x + 1, z) or level_at(x - 1, z) or
+				level_at(x, z + 1) or level_at(x, z - 1))
 		end
 	end
-	return false
+	return function() return true end
 end
 
 local function set(values)

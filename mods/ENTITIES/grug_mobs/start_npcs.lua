@@ -18,7 +18,7 @@
 --                 WALKER_EVERY below.
 --   quest         the quest shell (start_villagers.lua)
 --   vendor        resolved by grug_traders, which owns vendors
---   king          one race king plus the four royal hall guards
+--   king          one race king plus the two royal throne guards
 --   waypoint      nothing; the `travel_waypoint` socket is the cell of the
 --                 pad's waystone, which grug_home/waypoints.lua reads
 --   general       a fortress General; `bodyguard` his two guards, `captain`
@@ -938,7 +938,7 @@ local function build_rows()
 					socket.spawn ~= false and
 					(socket.role ~= "guard_patrol" or socket.order == 1)
 				if carries then
-					-- A royal group: a capital's king and his four throne
+					-- A royal group: a capital's king and his two throne
 					-- guards, a fortress General and his two bodyguards.
 					local entity, royal, leader, boss_id
 					if spec then
@@ -2009,8 +2009,8 @@ local function royal_slots(row)
 end
 
 -- A fallen retinue member stays down for the current attempt.  The king's
--- full reset restores all four slots together; killing the king instead books
--- one shared absolute wall-clock timestamp for the complete five-NPC group.
+-- full reset restores both slots together; killing the king instead books
+-- one shared absolute wall-clock timestamp for the complete three-NPC group.
 -- A guard killed without either (picked off from beyond the king's view, his
 -- target dead before any reset) returns on its own after ROYAL_RETURN, a
 -- persisted wall-clock time like the group's (Round 37 MP, MOC-06; until

@@ -2,7 +2,8 @@
 -- D60, D69, D70, D72): a SOURCE declaring three kinds of blueprint
 -- (`r7_settlement.lua`, contract section 2.2.3):
 --
---   * the 96 x 96 civic core, anchor-relative exactly like a start, unchanged;
+--   * the civic core (`wp13/precinct_ring.lua` owns its size), anchor-relative
+--     exactly like a start;
 --   * the district plots, each placed by this world's capital layout
 --     (`capital_planner.lua`): an offset from the anchor, quarter turns so its
 --     entry faces its street, and a base height;

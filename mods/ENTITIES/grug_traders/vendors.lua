@@ -537,6 +537,26 @@ grug_mobs.register_start_socket_role("guild_exchange", function()
 	return "grug_traders:guild_exchange"
 end)
 
+-- THE STONEWRIGHT (Round 70, miners_guild.md §5.3): the guild house's stone
+-- service in every capital, before the grinder and the furnace. A vendor
+-- whose window is the one page of recipes (`stonewright`: trade.lua), no
+-- shelf, buying nothing. It takes over the sorter's socket (the hall socket
+-- contract, capital_services.GUILD_HALL `stonewright`) and serves the
+-- capital's faction.
+register_vendor({
+	name = "grug_traders:stonewright",
+	kind = "stonewright",
+	nametag = "Stonewright",
+	stock = "stonewright",
+	stonewright = true,
+}, GUARD_TEXTURE.accord)
+for _, key in ipairs(capital_keys) do
+	grug_core.assign_service_socket(key, capital_services.GUILD_HALL.stonewright, "stonewright")
+end
+grug_mobs.register_start_socket_role("stonewright", function()
+	return "grug_traders:stonewright"
+end)
+
 --
 -- Placement
 --

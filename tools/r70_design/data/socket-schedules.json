@@ -3881,12 +3881,12 @@
       "tags": [
         "bench"
       ],
-      "x": -15,
+      "x": -8,
       "y": 1,
-      "z": -42,
+      "z": 32,
       "origin": "template",
       "owner": "colonnade_west",
-      "affected_by": "colonnade_west, kings_hall"
+      "affected_by": "colonnade_west"
     },
     {
       "dir": {
@@ -3899,12 +3899,12 @@
       "tags": [
         "bench"
       ],
-      "x": -15,
+      "x": -6,
       "y": 1,
-      "z": -16,
+      "z": 22,
       "origin": "template",
       "owner": "colonnade_west",
-      "affected_by": "colonnade_west, kings_hall"
+      "affected_by": "colonnade_west"
     },
     {
       "dir": {
@@ -3916,12 +3916,12 @@
       "id": "colonnade_west_walk",
       "order": 1,
       "role": "guard_patrol",
-      "x": -14,
+      "x": -7,
       "y": 1,
-      "z": -36,
+      "z": 27,
       "origin": "template",
       "owner": "colonnade_west",
-      "affected_by": "colonnade_west, kings_hall"
+      "affected_by": "colonnade_west"
     },
     {
       "dir": {
@@ -3934,12 +3934,12 @@
       "tags": [
         "bench"
       ],
-      "x": -4,
+      "x": 9,
       "y": 1,
-      "z": -42,
+      "z": 22,
       "origin": "template",
       "owner": "colonnade_east",
-      "affected_by": "colonnade_east, gate_south"
+      "affected_by": "colonnade_east"
     },
     {
       "dir": {
@@ -3952,12 +3952,12 @@
       "tags": [
         "bench"
       ],
-      "x": -4,
+      "x": 7,
       "y": 1,
-      "z": -16,
+      "z": 32,
       "origin": "template",
       "owner": "colonnade_east",
-      "affected_by": "colonnade_east, colonnade_west"
+      "affected_by": "colonnade_east"
     },
     {
       "dir": {
@@ -3971,7 +3971,7 @@
       "role": "guard_patrol",
       "x": 8,
       "y": 1,
-      "z": -36,
+      "z": 27,
       "origin": "template",
       "owner": "colonnade_east",
       "affected_by": "colonnade_east"
@@ -4095,10 +4095,10 @@
       "role": "work",
       "x": 18,
       "y": 2,
-      "z": 16,
+      "z": 30,
       "origin": "template",
       "owner": "mere_shrine",
-      "affected_by": ""
+      "affected_by": "mere_shrine"
     },
     {
       "activity": "pray",
@@ -4111,10 +4111,10 @@
       "role": "work",
       "x": 20,
       "y": 2,
-      "z": 14,
+      "z": 28,
       "origin": "template",
       "owner": "mere_shrine",
-      "affected_by": ""
+      "affected_by": "mere_shrine"
     },
     {
       "activity": "pray",
@@ -4127,10 +4127,10 @@
       "role": "work",
       "x": 20,
       "y": 2,
-      "z": 18,
+      "z": 32,
       "origin": "template",
       "owner": "mere_shrine",
-      "affected_by": ""
+      "affected_by": "mere_shrine"
     },
     {
       "dir": {
@@ -4297,7 +4297,7 @@
       "role": "guard_patrol",
       "x": 2,
       "y": 1,
-      "z": 16,
+      "z": 30,
       "origin": "Lua / adapter",
       "owner": null,
       "affected_by": ""
@@ -4332,7 +4332,7 @@
       ],
       "x": -23,
       "y": 1,
-      "z": 28,
+      "z": 42,
       "origin": "Lua / adapter",
       "owner": null,
       "affected_by": ""
@@ -4350,10 +4350,10 @@
       ],
       "x": 23,
       "y": 1,
-      "z": 28,
+      "z": 42,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "mere_shrine"
     },
     {
       "dir": {
@@ -4368,10 +4368,10 @@
       ],
       "x": -4,
       "y": 1,
-      "z": 19,
+      "z": 33,
       "origin": "Lua / adapter",
       "owner": "bough_west",
-      "affected_by": ""
+      "affected_by": "colonnade_west"
     },
     {
       "dir": {
@@ -4404,10 +4404,10 @@
       ],
       "x": 18,
       "y": 1,
-      "z": 11,
+      "z": 25,
       "origin": "Lua / adapter",
       "owner": "mere_shrine",
-      "affected_by": ""
+      "affected_by": "mere_shrine"
     },
     {
       "dir": {
@@ -4458,7 +4458,7 @@
       ],
       "x": 12,
       "y": 1,
-      "z": -24,
+      "z": 27,
       "origin": "Lua / adapter",
       "owner": "colonnade_east",
       "affected_by": "colonnade_east"
@@ -4538,10 +4538,10 @@
       "role": "work",
       "x": -4,
       "y": 1,
-      "z": 19,
+      "z": 33,
       "origin": "Lua / adapter",
       "owner": "bough_west",
-      "affected_by": ""
+      "affected_by": "colonnade_west"
     },
     {
       "activity": "sit",
@@ -4624,7 +4624,7 @@
       "spawn": false,
       "x": -28,
       "y": 1,
-      "z": 30,
+      "z": 44,
       "origin": "Lua / adapter",
       "owner": null,
       "affected_by": ""
@@ -4640,10 +4640,10 @@
       "spawn": false,
       "x": 24,
       "y": 1,
-      "z": 24,
+      "z": 38,
       "origin": "Lua / adapter",
       "owner": "sacred_grove",
-      "affected_by": ""
+      "affected_by": "mere_shrine"
     },
     {
       "dir": {
@@ -4656,7 +4656,7 @@
       "spawn": false,
       "x": 5,
       "y": 1,
-      "z": -26,
+      "z": 25,
       "origin": "Lua / adapter",
       "owner": "colonnade_east",
       "affected_by": "colonnade_east"
@@ -4672,7 +4672,7 @@
       "spawn": false,
       "x": 12,
       "y": 1,
-      "z": -31,
+      "z": 20,
       "origin": "Lua / adapter",
       "owner": "colonnade_east",
       "affected_by": "colonnade_east"
@@ -8204,10 +8204,10 @@
       "role": "guard_patrol",
       "x": -19,
       "y": 5,
-      "z": 39,
+      "z": 54,
       "origin": "template",
       "owner": "moot_house",
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "dir": {
@@ -8221,10 +8221,10 @@
       "role": "guard_patrol",
       "x": -11,
       "y": 5,
-      "z": 31,
+      "z": 46,
       "origin": "template",
       "owner": "moot_house",
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "dir": {
@@ -8239,10 +8239,10 @@
       ],
       "x": -19,
       "y": 5,
-      "z": 35,
+      "z": 50,
       "origin": "template",
       "owner": "moot_house",
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "dir": {
@@ -8257,10 +8257,10 @@
       ],
       "x": -18,
       "y": 5,
-      "z": 39,
+      "z": 54,
       "origin": "template",
       "owner": "moot_house",
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "activity": "brew",
@@ -8572,12 +8572,12 @@
       "tags": [
         "work"
       ],
-      "x": -42,
+      "x": -18,
       "y": 1,
-      "z": 10,
+      "z": 9,
       "origin": "template",
       "owner": "granary",
-      "affected_by": "granary, shore_house"
+      "affected_by": "granary"
     },
     {
       "dir": {
@@ -8590,9 +8590,9 @@
       "tags": [
         "work"
       ],
-      "x": -17,
+      "x": 11,
       "y": 1,
-      "z": -46,
+      "z": 10,
       "origin": "template",
       "owner": "stable",
       "affected_by": "castle, stable"
@@ -8608,12 +8608,12 @@
       "tags": [
         "door"
       ],
-      "x": -23,
+      "x": 5,
       "y": 1,
-      "z": -46,
+      "z": 10,
       "origin": "template",
       "owner": "stable",
-      "affected_by": "castle, stable, west_house"
+      "affected_by": "castle, stable"
     },
     {
       "dir": {
@@ -8655,9 +8655,9 @@
       "face": 0,
       "id": "travel_waypoint",
       "role": "waypoint",
-      "x": -12,
+      "x": -38,
       "y": 1,
-      "z": 8,
+      "z": -24,
       "origin": "Lua / adapter",
       "owner": null,
       "affected_by": ""
@@ -8677,7 +8677,7 @@
       "z": -44,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": "west_house"
+      "affected_by": ""
     },
     {
       "dir": {
@@ -8725,10 +8725,10 @@
       "role": "guard_patrol",
       "x": -24,
       "y": 1,
-      "z": 20,
+      "z": 38,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "dir": {
@@ -8771,10 +8771,10 @@
       "role": "vendor",
       "x": -25,
       "y": 1,
-      "z": 21,
+      "z": 39,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "activity": "stall",
@@ -8787,10 +8787,10 @@
       "role": "work",
       "x": -22,
       "y": 1,
-      "z": 21,
+      "z": 39,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "activity": "fish",
@@ -8803,10 +8803,10 @@
       "role": "work",
       "x": -5,
       "y": 1,
-      "z": 20,
+      "z": 38,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "activity": "fish",
@@ -8819,10 +8819,10 @@
       "role": "work",
       "x": -9,
       "y": 1,
-      "z": 26,
+      "z": 44,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "activity": "fish",
@@ -8833,12 +8833,12 @@
       "face": 1,
       "id": "cenote_fish_3",
       "role": "work",
-      "x": -11,
+      "x": -8,
       "y": 1,
-      "z": 28,
+      "z": 41,
       "origin": "Lua / adapter",
       "owner": "moot_house",
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "dir": {
@@ -8853,10 +8853,10 @@
       ],
       "x": -18,
       "y": 1,
-      "z": 30,
+      "z": 45,
       "origin": "Lua / adapter",
       "owner": "moot_house",
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "dir": {
@@ -8869,12 +8869,12 @@
       "tags": [
         "work"
       ],
-      "x": -22,
+      "x": -18,
       "y": 1,
-      "z": 17,
+      "z": 32,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "granary, moot_house"
     },
     {
       "dir": {
@@ -8905,12 +8905,12 @@
       "tags": [
         "bench"
       ],
-      "x": 5,
+      "x": 7,
       "y": 2,
-      "z": 4,
+      "z": -4,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "granary, stable"
     },
     {
       "dir": {
@@ -8959,10 +8959,10 @@
       "spawn": false,
       "x": -18,
       "y": 1,
-      "z": 40,
+      "z": 56,
       "origin": "Lua / adapter",
       "owner": "moot_house",
-      "affected_by": ""
+      "affected_by": "moot_house"
     },
     {
       "dir": {
@@ -8973,12 +8973,12 @@
       "id": "shore_walk_south",
       "role": "idle",
       "spawn": false,
-      "x": -19,
+      "x": -18,
       "y": 1,
-      "z": 18,
+      "z": 26,
       "origin": "Lua / adapter",
       "owner": null,
-      "affected_by": ""
+      "affected_by": "granary"
     }
   ],
   "hearthpine": [

@@ -6,10 +6,14 @@
 Each LABEL is one run (a seed before or after); its FILEs are the parts of
 that run, added up. Prints per source the eligible columns and written nodes
 of each run, the nodes outside the renewal habitat (0 wanted), then each
-run's written nodes per zone.
+run's written nodes per zone and, from a --rings run, the shares by distance
+from water and by rise above it.
 """
 import sys
 from collections import defaultdict
+
+
+EXTRA = defaultdict(dict)
 
 
 def read(files):
@@ -17,6 +21,11 @@ def read(files):
     for path in files:
         with open(path) as handle:
             for line in handle:
+                if line.startswith("#"):
+                    name, source, value, eligible, written = line.split()
+                    tally = EXTRA[(path, name[1:], source)]
+                    tally[int(value)] = (int(eligible), int(written))
+                    continue
                 source, zone, *values = line.split()
                 for index, value in enumerate(values):
                     rows[source][zone][index] += int(value)
@@ -46,6 +55,13 @@ def main():
             zones = sorted(rows[source].items(), key=lambda item: -item[1][1])
             shares = ", ".join(f"{zone} {row[1]}/{row[0]}" for zone, row in zones if row[1] or row[0] > 200)
             print(f"  {source}: {shares}")
+    for (path, name, source), tally in sorted(EXTRA.items()):
+        eligible = sum(row[0] for row in tally.values()) or 1
+        written = sum(row[1] for row in tally.values()) or 1
+        print(f"{path} {source} by {name}: value eligible % written %")
+        for value, row in sorted(tally.items()):
+            print(f"  {value:3d} {row[0]:8d} {100 * row[0] / eligible:5.1f} "
+                  f"{row[1]:5d} {100 * row[1] / written:5.1f}")
 
 
 if __name__ == "__main__":

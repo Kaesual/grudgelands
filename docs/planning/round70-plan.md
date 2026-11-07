@@ -50,7 +50,7 @@ columns times density.
 | Source | Today (per world) | Ruled change | Expected after |
 |---|---|---|---|
 | Rock Salt | 0–1 | whole `grug_beach` biome of the three zones, on sand, gravel or stone, **no water contact**; density stays 1/1024 | about 170–240 |
-| Stormkelp | 0–1 | up to 3 nodes from water, on sand, gravel or stone, all five zones; density 1/256 | about 170–205 |
+| Stormkelp | 0–1 | up to 10 nodes from water with a height limit (user, 2026-11-07, replacing 3 nodes without one), on sand, gravel or stone, all five zones; density set so the count stays | about 170–205 |
 | Frost Melon | 5–13 | four times the density; check the hosts in Frostbarrow and Ossuary Reach | about 53–56 |
 | Wild Cocoa | about 110–130 | effective 1/1024, no halving | about 230 |
 | Bamboo Shoot | about 16–33 | effective 1/64 | about 200–260 |
@@ -176,6 +176,10 @@ comment in `grug_traders/stock.lua` and the check `tools/r58_guildspec`.
 - **Mason:** stays as it is; it does not sell Cobblestone or Gravel again.
 - **Shapes:** decorative blocks start as full blocks only, no stairs or slabs.
 
+**Fees (user, 2026-11-07):** as the lane proposed (`grug_guild/catalog.lua`,
+`stonewright`): 10 → 10 for 1–2c; ornamented stones 8 Cobblestone + 1 bar → 8 for
+5c, 10c, 25c, 60c and 1s 50c.
+
 **Art (GPT-6 Astra):** a grinder and a smelting furnace behind the Stonewright,
 and the decorative blocks.
 
@@ -222,6 +226,9 @@ individual designs.
 (`tools/r70_design`) stands, with its per-place recommendations. The civic core
 grows from radius 48 to **56** in all six capitals. Kezamba and Lethariel may move
 the core a little away from their lake, so the buildings there have more room.
+Lethariel: the crown lake moves 14 nodes north, no new crossing. Kezamba: the
+cenote moves 18 nodes north, and the east boardwalk goes, leaving one avenue over
+water. The castle is form A, Crownward (`tools/r70_castle`), with a smaller throne.
 
 ### 2.8 Start towns (user, 2026-11-07; needs the map reset)
 

@@ -4,7 +4,7 @@
 return function(catalog, p9g_content, raw_sha256, habitat)
 	assert(type(habitat) == "table" and
 		type(habitat.initial_denominator) == "function" and
-		type(habitat.p9g_predicate_matches) == "function")
+		type(habitat.p9g_water_rule) == "function")
 	local MAX_SAFE = 9007199254740991
 	local MAX_CANDIDATES = 4096
 	local REASONS = {
@@ -261,33 +261,31 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 		local column_cache = not emit_ledger and {} or nil
 		local column_cache_keys, column_cache_next = {}, 1
 
-		-- The water predicates (habitat_registry.lua, renewal's too). A host
-		-- far inland asks all 48 neighbours, so a chunk's water classes are
-		-- read once: `water_memo` holds the columns of the current `settle`
-		-- (at most the owner plus SHORE_REACH on each side).
-		local water_memo, water_context = {}, nil
-		local function water_class_at(x, z)
+		-- The water predicates (habitat_registry.lua, renewal's too). A chunk's
+		-- columns are read once: `water_memo` holds the classes and water
+		-- surfaces the current `settle` asked. near_water's blocks outlive it.
+		local water_memo, level_memo, water_context = {}, {}, nil
+		local function water_column(x, z)
 			local key = (x + 32768) * 65536 + z + 32768
 			local class = water_memo[key]
 			if not class then
-				class = water_context.column_values_at(x, z)
-				water_memo[key] = class
+				local _, level
+				class, _, _, _, _, _, level = water_context.column_values_at(x, z)
+				water_memo[key], level_memo[key] = class, level
 			end
-			return class
+			return class, level_memo[key]
 		end
-		local water_readers = {}
+		local water_rules = {}
 		for index = 1, #rows do
 			local allowed = shore_sets[index]
-			water_readers[index] = function(x, z)
-				return allowed[water_class_at(x, z)] == true
-			end
+			water_rules[index] = habitat.p9g_water_rule(rows[index].shore_predicate,
+				function(x, z)
+					local class, level = water_column(x, z)
+					return allowed[class] and level or nil
+				end)
 		end
 		local function bind_water(context)
-			water_memo, water_context = {}, context
-		end
-		local function shore_matches(catalog_index, x, z)
-			return habitat.p9g_predicate_matches(rows[catalog_index].shore_predicate,
-				water_readers[catalog_index], x, z)
+			water_memo, level_memo, water_context = {}, {}, context
 		end
 
 		local FACTION_BY_RACE = {dwarf = "accord", human = "accord",
@@ -317,14 +315,16 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			if not zone_sets[catalog_index][zone_id] then return "wrong_zone" end
 			local candidates = host_sets[catalog_index][biome]
 			if water_class ~= "land" or not candidates then return "wrong_biome" end
-			-- The support first: it costs one read, the water rule up to 48.
+			-- The support first: it costs one read, the water rule many.
 			local actual_ref = context.analytic_p7_ref(x, surface_y, z)
 			for index = 1, #candidates do
 				local host = candidates[index]
 				if host.zone == nil or host.zone == zone_id then
 					local support_ref = context.production_content(host.support)
 					if support_ref and actual_ref == support_ref then
-						if not shore_matches(catalog_index, x, z) then return "wrong_shore" end
+						if not water_rules[catalog_index](x, z, surface_y) then
+							return "wrong_shore"
+						end
 						return nil, host.support
 					end
 				end

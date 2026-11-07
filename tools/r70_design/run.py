@@ -30,8 +30,17 @@ def export(job):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--blueprints-only', action='store_true')
+    parser.add_argument('--lakes', action='store_true', help='Paired radius-56 lake sensitivity runs')
     args = parser.parse_args()
     (HERE / 'data').mkdir(exist_ok=True)
+    if args.lakes:
+        export(('lakes', 'lakes.json'))
+        jobs = [('planner', f'{seed}-{variant}.json', seed, variant)
+                for seed in SEEDS for variant in ('lake0', 'lake_shift')]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            for _ in pool.map(export, jobs):
+                pass
+        return
     export(('blueprints', 'blueprints.json'))
     export(('geometry', 'geometry.json'))
     export(('bindings', 'bindings.json'))

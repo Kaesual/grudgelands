@@ -126,9 +126,10 @@
     },
     "3684797457838814663": {
       "before": 44,
-      "after": 43,
+      "after": 42,
       "moved": 42,
       "lost": [
+        "homes_singing_grove",
         "martial_lawn"
       ],
       "gained": [],
@@ -136,23 +137,21 @@
       "required": 10,
       "missing": [],
       "area_before": 99368,
-      "area_after": 99995,
+      "area_after": 100795,
       "no_route_before": " ring1/q1 ring2/q1",
-      "no_route_after": " ring1/q1 ring2/q1"
+      "no_route_after": " ring1/q1 ring2/q1 ring2/q2"
     },
     "17713522922938657774": {
       "before": 40,
-      "after": 41,
-      "moved": 39,
+      "after": 40,
+      "moved": 40,
       "lost": [],
-      "gained": [
-        "homes_gardens"
-      ],
+      "gained": [],
       "lost_area": 2752,
       "required": 10,
       "missing": [],
       "area_before": 99975,
-      "area_after": 100018,
+      "area_after": 99981,
       "no_route_before": " ring1/q1 ring2/q1",
       "no_route_after": " ring1/q1 ring2/q1"
     }
@@ -275,10 +274,11 @@
   "kezamba": {
     "12345": {
       "before": 51,
-      "after": 49,
-      "moved": 49,
+      "after": 48,
+      "moved": 48,
       "lost": [
-        "vine_common",
+        "canopy_pasture",
+        "totem_graves",
         "vine_terraces"
       ],
       "gained": [],
@@ -286,47 +286,42 @@
       "required": 10,
       "missing": [],
       "area_before": 99486,
-      "area_after": 99554,
+      "area_after": 100075,
       "no_route_before": " ring1/q1 ring2/q1",
       "no_route_after": " ring1/q1 ring2/q1"
     },
     "3684797457838814663": {
       "before": 49,
-      "after": 50,
-      "moved": 46,
+      "after": 49,
+      "moved": 49,
       "lost": [],
-      "gained": [
-        "canopy_muster"
-      ],
+      "gained": [],
       "lost_area": 2464,
       "required": 10,
       "missing": [],
       "area_before": 99503,
-      "area_after": 99497,
+      "area_after": 99875,
       "no_route_before": " ring1/q1 ring2/q1",
       "no_route_after": " ring1/q1 ring2/q1"
     },
     "17713522922938657774": {
       "before": 51,
-      "after": 49,
-      "moved": 47,
+      "after": 50,
+      "moved": 49,
       "lost": [
-        "canopy_muster",
-        "canopy_pasture",
         "totem_graves",
-        "totem_grove"
+        "vine_terraces"
       ],
       "gained": [
-        "shore_gardens",
         "shore_vineyard"
       ],
       "lost_area": 2464,
       "required": 10,
       "missing": [],
       "area_before": 98994,
-      "area_after": 98891,
+      "area_after": 99350,
       "no_route_before": " ring1/q1 ring2/q1",
-      "no_route_after": " ring1/q1 ring2/q1"
+      "no_route_after": " ring1/q1 ring2/q1 ring2/q2"
     }
   }
 }

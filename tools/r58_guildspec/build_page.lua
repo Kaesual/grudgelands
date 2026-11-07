@@ -30,7 +30,6 @@ local REASONS = {
 	ore = "Gewöhnliches Erz: 1 Punkt, je Erntestufe über T1 verdoppelt.",
 	precious = "Edelmetall oder Kristall (seltener als gewöhnliches Erz): 2 Punkte, je Erntestufe verdoppelt.",
 	gem = "Edelstein (etwa ein Viertel so häufig wie Erz): 4 Punkte, je Erntestufe verdoppelt.",
-	pending = "Noch nicht im Tausch: der Steinmetz verkauft es, bis REP es aus dem Regal nimmt (§2a).",
 	["ore_sense.price"] = "Teuer: etwa eine Stunde Abbau in dieser Stufe für eine halbe Stunde Wirkung.",
 	["treasure_hunt.price"] = "Wie Ore Sense: etwa eine Stunde Abbau in dieser Stufe.",
 	["consumable.sell_copper"] = "Ein Händler zahlt 5 % des Rufpreises in Kupfer (1 Ruf ≈ 1c an Material): nie mehr, als das Material dahinter brachte.",
@@ -117,7 +116,7 @@ function M.data(repo, names)
 		local resource = by_item[row.item]
 		local class = resource and (resource.gem and "gem" or ORE_CLASS[resource.key]) or "bulk"
 		out.exchange[#out.exchange + 1] = {item = row.item, name = name(row.item), class = class,
-			tier = resource and resource.harvest_tier or 0, pending = row.pending and true or false}
+			tier = resource and resource.harvest_tier or 0}
 	end
 	for tier = 1, 6 do
 		local sense = catalog.consumable("ore_sense", tier)

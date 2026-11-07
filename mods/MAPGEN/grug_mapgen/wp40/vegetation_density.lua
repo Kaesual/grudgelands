@@ -331,9 +331,10 @@ return function(deps)
 		compiled.host_cache = {}
 		if compiled.kind == "p9g" then
 			local classes = compiled.shore_classes
-			compiled.water_at = function(x, z)
-				return classes[(column_values_at(x, z))] == true
-			end
+			compiled.water_rule = habitat.p9g_water_rule(compiled.predicate, function(x, z)
+				local water, _, _, _, _, _, level = column_values_at(x, z)
+				return classes[water] and level or nil
+			end)
 		end
 		resources[#resources + 1] = compiled
 		resource_by_node[compiled.node] = compiled
@@ -389,7 +390,7 @@ return function(deps)
 	-- predicates (habitat_registry.lua, the writer's own function).
 	local function shore_ok(source, x, ground, z)
 		if source.kind ~= "world" then
-			return habitat.p9g_predicate_matches(source.predicate, source.water_at, x, z)
+			return source.water_rule(x, z, ground)
 		end
 		if source.shore == "none" then return true end
 		for direction = 1, 4 do

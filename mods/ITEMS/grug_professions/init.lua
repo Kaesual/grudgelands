@@ -56,7 +56,7 @@ function grug_professions.family_owner(family)
 end
 
 local SUPPLIES = {
-	{"thread", "Thread", "default_paper.png^[colorize:#d8d1bd:115", 1},
+	{"thread", "Thread", "grug_professions_thread.png", 1},
 	{"parchment", "Parchment", "default_paper.png^[colorize:#d6b879:65", 5},
 }
 

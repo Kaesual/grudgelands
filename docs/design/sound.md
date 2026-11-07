@@ -356,7 +356,8 @@ short hammer cue).
   fire loop at 60 % of the fire gain, heard as far. Digging or blowing up a
   burning furnace stops its loop for every listener at once, with a short
   fade (the node's `on_destruct`); one that goes out fades on the next pass
-  like every other loop;
+  like every other loop. The Stonewright's Smelting Furnace (Round 70) always
+  burns: one of its twelve cells is in the same search, so it plays one loop;
 - **flowing water:** only at *flowing* water or river water, never at a
   source, heard to 14 nodes. Flowing water is rare in our worlds (6 of 768
   16 × 16 columns in twelve sampled regions, seed 12345).

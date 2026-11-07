@@ -190,8 +190,9 @@ river, Dur Brannoc an angular mountain hold with a tower on every corner, Nhal
 Veyr a walled necropolis with one round ring, Gor Drazhak a jagged war camp
 with a pinwheel of avenues, Lethariel a lakeside city with few towers,
 Kezamba a jungle city round its cenote (`world_zones.md` §12 has the
-details). The civic core stays exactly as authored; start towns are
-untouched. The layout is a pure function of the
+details). The civic core is authored, the same on every seed: since Round 70
+radius 56 around a castle of one shared form (`world_zones.md` §12); start
+towns are untouched. The layout is a pure function of the
 seed and the code, so a world always rebuilds the same city.
 
 Decided 2026-09-15 with the pilot capital, Highcourt.
@@ -216,8 +217,9 @@ round 10. Its wall, parapet, bank or palisade is written after all structural
 core content and later dressing may use only free cells: a house, orchard,
 green, lore piece, martial piece or prop may meet the boundary but may not cut
 it. Only the four authored thirteen-column gate or threshold bands stay open.
-The boundary and its gates stand at radius 48, two nodes outside the earlier
-radius 46. Each capital retains the actual asymmetric extent of its gatehouses;
+The boundary and its gates stand at radius 56 (Round 70; `wp13/precinct_ring.lua`
+is the one source of the core's size), the gatehouses' outer faces on the pad's
+edge at 57. Each capital retains the actual asymmetric extent of its gatehouses;
 projection bounds include every authored cell, and no ring column intersects a
 building. Nhal Veyr's bars align with their wall on both axes. The 5 x 5
 corner drums and towers of Dur Brannoc, Gor Drazhak and Nhal Veyr own the ring
@@ -376,7 +378,10 @@ deep enough to have soil between its two kerbs rather than being all kerb
 
 **The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
 citadel is stone block, its halls are pine under slate, and its city stands
-on the granite ground round the flat civic core. The four quarters are the forge and its professions, the garrison, the
+on the granite ground round the flat civic core. Since Round 70 the king sits
+in the castle at the head of the throne approach, a nine-wide avenue from the
+south gate; a five-wide bypass runs up both flanks and behind the castle to the
+north gate, and the forge court lies east of it. The four quarters are the forge and its professions, the garrison, the
 halls of record with the carvers' yard and the barrow terrace, and the terrace
 houses with their alehouse and brewhouse. Its open ground is what a dwarf city
 keeps: an ore court with a mine mouth cut into a rock face, charcoal clamps, a
@@ -637,10 +642,12 @@ with its apron, which fits the smallest lot), its front to the plot's street:
   under a timber frame (posts at the corners and every third column, a top
   plate), one door in the middle of the front wall in a stone surround, the
   guild's emblem sign over it and its banners beside it. Inside: the exchange
-  counter on the east side, the clerk's desk and the ore sorter's sample
-  table on the west side, the leader's desk at the back under a frieze of the
-  six tier stones (the depths the guild mines), stores and shelves in the
-  back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it with
+  counter on the east side, the clerk's desk on the west side and behind it
+  the Stonewright's work bay (Round 70: the grinder and the burning smelting
+  furnace against the west wall, fronts to the hall, the Stonewright between
+  them behind his desk, a one-node aisle at his back), the leader's desk at
+  the back under a frieze of the six tier stones (the depths the guild
+  mines), stores and shelves in the back corners. Highcourt, Dur Brannoc, Lethariel and Nhal Veyr roof it with
   a gable to the street in their civic roof; Gor Drazhak and Kezamba with a
   flat deck behind a breastwork (merlons in Gor Drazhak). Kezamba builds it
   in the basalt of its civic halls, Nhal Veyr in its crypt stone.
@@ -677,7 +684,7 @@ the same ids in all six capitals:
 | `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it; since Round 59 the one giver of its capital's hub `<capital key>_guild` (chapter 1's second story quest, [quests.md](quests.md) "Chapter 1 in the capitals"). |
 | `miners_guild/miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the Miner's Guild Exchange (`grug_traders:guild_exchange`): the socket is taken over as the service role `guild_exchange` (`grug_traders/vendors.lua`, the socket id read from `GUILD_HALL.exchange`), as the Crownbinder takes his; a guild vendor of the capital's faction that opens on Trade-in and buys like every vendor, without the camp vendor's reputation page or repair. |
 | `miners_guild/miners_guild_clerk` | `idle`, inhabited, tag `work` | the Expedition Registrar (Round 71, `grug_expeditions/registrar.lua`): the socket is taken over as the service role `expedition_registrar`, a villager of the capital's race and faction; its window lists the Expeditions and enters a run. |
-| `miners_guild/miners_guild_sorter` | `idle`, tag `work` | a resident at the sample table |
+| `miners_guild/miners_guild_sorter` | `idle`, inhabited, tag `work`, between the grinder and the furnace behind his desk | the Stonewright (`grug_traders:stonewright`, Round 70): the socket is taken over as the service role `stonewright` (the socket id read from `GUILD_HALL.stonewright`), a guild service of the capital's faction ([miners_guild.md](miners_guild.md) §5.3). |
 | `miners_guild/miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
 
 Like every district plot it also publishes `miners_guild/miners_guild_gate_idle`,
@@ -890,20 +897,31 @@ it) at its centre, in the cell of the settlement's `travel_waypoint` socket
   course (`dressing.waypoint_pad`): a cross and the diamond round it in the
   start palette's signature stone, the diamond's inside paved with the lane
   material, the waystone in the middle. It is laid on open ground after the
-  buildings and lights and before the trees and flora. Since Round 58 (the
-  user's ruling of 2026-10-22) it lies at the town's centre next to the
-  Quartermaster (the race vendor), on open ground that carries no authored
-  pattern (pad centre in start-local x/z; the Quartermaster stands at about
-  (7, −4)):
+  buildings and lights and before the trees and flora. Since Round 70 (the
+  user's ruling of 2026-11-07, replacing the ruling of 2026-10-22 that kept
+  it beside the Quartermaster) it lies near the town's centre, off the road
+  from the gate, in a **pocket of 13 × 13 nodes** that holds nothing but the
+  stone and the mailbox, so all four arrival sides stay open and a traveller
+  arrives off the main walking line. The centre around it grew a little
+  ([land-use study](../../tools/r70_design/REPORT.md)); the town's envelope,
+  spawn, gate axis, Quartermaster and quest, home and cook sockets stayed.
+  Pad centre in start-local x/z:
 
   | Start | Centre | Where |
   |---|---|---|
-  | Hearthpine | (2, −2) | the arrival plaza beside the spawn, west of the market stall and the Quartermaster at its end |
-  | Dawnmere | (2, −3) | the green's south walk, west of the Quartermaster |
-  | Silverleaf | (10, −3) | the court east of the crescent, beside the Quartermaster |
-  | Stillgrave | (2, −4) | the court, west of the Quartermaster |
-  | Sunscar | (6, −3) | the yard, north-west of the Quartermaster |
-  | Kapok Cradle | (4, −6) | the clearing east of the boardwalk road, south-west of the Quartermaster |
+  | Hearthpine | (−9, 7) | the north-west of the arrival square, across it from the market stall and the Quartermaster |
+  | Dawnmere | (−9, −8) | the green's south-west edge, its one paved place |
+  | Silverleaf | (13, 8) | the court's clearing east of the crescent, on the east avenue |
+  | Stillgrave | (−12, −2) | the court's west, off the chapel axis; the memorials stand north of it |
+  | Sunscar | (−11, 2) | the yard's quiet west side; trade and arms are east |
+  | Kapok Cradle | (−10, −7) | a plank pocket in the clearing west of the boardwalk road |
+
+  The centres, as built (x and z, walls and paving included): Hearthpine's
+  square −16…18, −12…16; Dawnmere's green −17…17, −14…10 between the south
+  lane and the hall walk, turf but for the pocket and the walks; Silverleaf's
+  court −13…21, −12…16; Stillgrave's court −20…18, −12…16, the road on to the
+  chapel door; Sunscar's yard −19…20, −13…18; Kapok's clearing −18…17, −15…19,
+  bare mud under the boardwalk.
 
 ## Housing Stewards (Round 25)
 

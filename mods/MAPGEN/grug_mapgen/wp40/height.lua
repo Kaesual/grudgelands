@@ -1578,7 +1578,7 @@ local function height_factory(dependencies)
 		local CORE_EASE = 16
 		-- True on a capital's civic core blueprint: the civic square and the
 		-- ring its core wall and gate piers stand on, one node beyond it on
-		-- every side (the blueprint's authorized footprint, +-49 around the
+		-- every side (the blueprint's authorized footprint, the pad around the
 		-- anchor, `r7_settlement.lua` BOUNDS.capital_core). The capital's
 		-- streets end there (the core gate owns the passage), as network roads
 		-- end CORE_GAP outside a village's core.
