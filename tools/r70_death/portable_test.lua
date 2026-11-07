@@ -361,7 +361,8 @@ do
 	eq(wear_of(p, "grug_trinket1"), 0, "W a trinket does not wear")
 	eq(wear_of(p, "main"), 0, "W a tool in the hotbar is not equipped")
 	eq(#changes, 1, "W one equipment change for the whole set")
-	eq(changes[1].reason, nil, "W ...a full one")
+	eq(changes[1].list, nil, "W ...naming no list")
+	eq(changes[1].reason, "durability_metadata", "W ...pure wear while nothing broke")
 	eq(cues, 0, "W no break, no cue")
 	local line = p.lists.grug_chest[1]:get_meta():get_string("description")
 	check(line:find("Durability: 900 / 1000", 1, true) ~= nil, "W the tooltip line follows: " .. line)
@@ -377,8 +378,11 @@ do
 		eq(grug_repair.durability(q.lists.grug_weapon[1]), 2500 - 250 * death, "W death " .. death)
 	end
 	cues = 0
+	changes = {}
 	die(q)
 	check(grug_core.equipment_is_broken(q.lists.grug_weapon[1]), "W the tenth death breaks a fresh item")
+	eq(#changes, 1, "W one notification")
+	eq(changes[1].reason, nil, "W a break is a full change")
 	eq(wear_of(q, "grug_weapon"), 65535, "W ...at exactly the sentinel")
 	eq(q.lists.grug_weapon[1].name, "t:sword4", "W the stack stays")
 	eq(cues, 1, "W two items broke: one cue")

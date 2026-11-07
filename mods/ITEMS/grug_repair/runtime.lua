@@ -173,7 +173,8 @@ end)
 -- The death penalty (Round 70, durability_repair.md): every equipped item
 -- that wears loses this share of its maximum durability, down to 0. Which
 -- items that is, is `eligible`'s answer; trinkets never are. One event for
--- the whole set: one full equipment change, one break cue.
+-- the whole set: one equipment notification, pure wear (it names no list, so
+-- every cache drops) unless an item broke, and one break cue.
 grug_repair.DEATH_WEAR_PERCENT = 10
 
 function grug_repair.wear_death(player)
@@ -191,7 +192,10 @@ function grug_repair.wear_death(player)
 		end
 	end
 	if broke then grug_sounds.play("gear_break", player) end
-	if worn then grug_inventory.equipment_changed(player) end
+	if worn then
+		grug_inventory.equipment_changed(player, nil,
+			not broke and "durability_metadata" or nil)
+	end
 	return worn
 end
 

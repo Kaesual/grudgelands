@@ -53,7 +53,8 @@ eligibility and flag".
   path); at join it is recomputed from the position (ocean keeps the stored
   value). Timers are absolute times (`os.time()`), so offline time counts.
   Stored in player meta: the location flag, the button and contact times,
-  a pending logout death and the counters (§5).
+  a pending logout death with its answer on durability (§3) and the counters
+  (§5).
 
 ## 3. Combat
 
@@ -84,6 +85,12 @@ eligibility and flag".
 - **Kill credit:** every online enemy player who landed damage on the victim
   in the last 15 s gets a player kill; the owner of the lethal hit also gets
   the killing blow (a logout death has none).
+- **A PvP death costs no durability** (Round 70): a death counts as PvP when
+  an enemy player landed a hit on the victim in the last **30 s**, a window of
+  its own beside the 15 s kill credit; the rule and what counts are in
+  [durability_repair.md](durability_repair.md). A logout death is decided at
+  the logout and saved with its mark: `1` (a PvP death, and every mark from
+  before Round 70) or `wear`.
 - **Flight is unchanged** ([mounts.md](mounts.md) §4): own peaceful land to
   contested ground and back is seamless; enemy peaceful land and the islands
   dismount with the existing warning band. Riding and boats work everywhere.
