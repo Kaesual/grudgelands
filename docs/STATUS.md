@@ -1,6 +1,43 @@
 # Project status
 
-Updated 2026-11-04. This is the delivery pointer, not another game specification.
+Updated 2026-11-07. This is the delivery pointer, not another game specification.
+
+**0.70.0 / Round 70 is complete on 2026-11-07; not pushed, GUI test open.** From
+player reports and the user's notes: **sources** that really exist (Rock Salt on
+whole beaches, measured 93 / 156 per world on two seeds; Stormkelp up to 10 nodes
+from water with height limit 4, 176 / 163; Frost Melon 89 / 49 on new river hosts;
+Cocoa, Bamboo and Cane raised; renewal reads the same rules, shore rows four
+times the chance); the **Stonewright** in all six guild houses (rank-locked
+stone recipes, five ornamented stones, grinder, an always burning furnace with
+the shipped loop; the rule "no copper route into reputation" is gone); **castles**
+in form A Crownward in all six capitals with civic radius 56 from one source,
+throne 5 × 3 × 7, Lethariel's lake 14 north with no crossing, Kezamba's cenote 18
+north with one boardwalk; six **start towns** on the study with 13 × 13 waystone
+pockets; **wayposts** at road junctions, 6–13 stacks a world; **decorative plants**
+that drop themselves and can be placed; **varied crop growth** (160–240 s), the
+hoe's pickup, corn on the ground, **potions to the belt first**; the **death
+penalty** (10% durability, nothing after an enemy hit within 30 s, two HUD hints);
+**Kings** at 70, the **crown** at top + 10 with a cap of 70, **dragons** at 70 with
+30,000 HP, the rift boss's item level 60, and the **level malus**
+`max(0.25, 1 − 0.05 × gap)`. **Map reset,** the thirteenth, no step: SPAWN, the
+GUILD templates, TOWNS and the capitals; PLANTS, FARMFIX, DEATH and LEVELS are
+compatible, ART, DESIGN and CASTLE tools only. Reviews: every lane reviewed
+independently (MERGE or MERGE AFTER FIXES, fixed; the Astra lanes checked by Opus,
+FIX FIRST and passes); the capitals split into CAP0 and five lanes; ENDFIX took what
+the round-end gates caught. Merges from `0a7acf25` to `c998ea93`, then this
+documentation lane D. **313 portable fixtures** (seven new); on main `c998ea93`
+313 of 313, boot PASS; the full seed fleet on `ed771e28` 302 of 304, both failures
+fixed by ENDFIX and those two seeds rerun OK, not repeated under the user's CPU
+rule. **Open for the user:** the
+[GUI checklist](planning/round70-plan.md#gui-checklist-desktop-and-web), first what
+no run has touched: the map reset on a real world, the real king fight in each
+capital, a real right-click on the Stonewright, the audible furnace
+([completion, numbers and decisions](planning/round70-plan.md#completion-2026-11-07);
+[carry-overs](../BACKLOG.md#round-70--spawns-stonewright-castles-start-towns-death-penalty-gui-test-open)).
+**The joint GUI test of 0.57–0.66 is still pending.** **Production runs 0.65.0;** an
+update to 0.70.0 crosses this one map reset and runs the steps 0.67.0 and 0.69.0.
+origin/main is `829be5dd` (0.69.0); Round 70 is **not pushed**. Round 71 runs beside
+it on branch `round71`.
 
 **0.69.0 / Round 69 is GUI-accepted by the user on 2026-11-04 (the whole Round 69 checklist) and pushed (2026-11-04).** From
 player reports and the user's notes: a **Trash box** in the Inventory tab

@@ -6,6 +6,80 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 70 — spawns, Stonewright, castles, start towns, death penalty (GUI test open)
+
+Delivered in 0.70.0 (**map reset**, the thirteenth, no step): the six sources and
+renewal, the Stonewright, castles in six capitals with civic radius 56, six start
+towns, mapgen wayposts, decorative plants, varied growth, the potion belt first,
+the death penalty, Kings at 70, the crown at top + 10, the new level malus
+([completion](docs/planning/round70-plan.md#completion-2026-11-07)). The desktop/web
+[GUI checklist](docs/planning/round70-plan.md#gui-checklist-desktop-and-web) is
+open. Each note was checked at its place at `c998ea93`. Carry-overs:
+
+- **For the user at the playtest:** Rock Salt 93 / 156 and Stormkelp's production
+  seed 163 stay under the plan's counts; non-island `exclude:coast:channel_*`
+  envelopes block about 12,500 beach and 7,000 Stormkelp columns (about +12 and
+  +28 plants), deliberately per `world_zones.md`. Frostbarrow keeps 4–10 melons
+  (ruled); seed 12345 starts with 4 against the quest's 5 and leans on renewal.
+  Stormkelp inland share: option B would add each biome's main ground from some
+  distance on, with a lower density and a new digest. Seagrass and coral 24 or more
+  nodes offshore cannot be dug (protected water). Nhal Veyr's graves 114 → 529
+  trim in one line of the field list. Secondary roads only give about nine waypost
+  stacks a world; trails would add about 60. A short feed line at a costly death.
+- **SPAWN:** renewal's first test reads columns outside `VOLUME_BUDGET` (6.5 ms
+  median, 14 ms max; a walking player's worst case 18 ms median, 69 ms max per 5 s
+  service; `renewal.lua`); `SHORE_REACH` and `SHORE_HEIGHT` live in
+  `habitat_registry.lua`, which no digest covers; up to 10 written nodes per source
+  and seed lie outside renewal (`writer_bare`, harmless);
+  `census.lua --rings` is not named in `tools/README.md`.
+- **PLANTS:** a placed hanging piece stays when the block above goes, like placed
+  leaves; the tooltip "no recipe uses it" stands beside the fuel rows of fern, marram
+  and `group:leaves`; `decor_description` is written three times (the fixture pins
+  the line); `r70_plants` part G checks names only.
+- **FARMFIX:** the corn foot: an optional one-pixel touch-up closes the last optical
+  break (`corn_3_segment_0.png` col 8 row 10, `corn_4_segment_0.png` col 8 row 7);
+  one-row bottom gaps in bamboo stages 1–2 and wild onion stage 2; a hoe still
+  cannot dig or hit (no punch); sell rows carry no belt marker.
+- **DEATH:** a victim who leaves 11–30 s after a hit (no logout death), rejoins
+  inside the window and dies pays: the hit record is runtime only; no term for
+  deaths in `income.py`.
+- **LEVELS:** the King's and dragon's names keys stay as they were
+  (`tools/r38_names/inventory.py:705,712,718,722` say level 65 and `L65-65`,
+  harmless); a comment in `r33_c4` predates the numbers.
+- **GUILD:** a 99 stack with no free slot refuses a lot (nothing lost); `PANE_CONNECTS`
+  (`parts.lua:309`) lacks the five stones, no pane touches one today; Item source
+  pages do not list the Stonewright; the `r58` tuning page shows no fields for the
+  new keys; no Buy or Sell at the Stonewright; a `group:stone` recipe accepts the
+  stones, as it does Stone Block; the Abyssal Steel line at 1024 wide, GUI 2 (GUI 5);
+  Round 71 merge: keep both roles in `SERVICE_ROLES`, `settlements.md`,
+  `module-guide.md` and `tools/README.md`.
+- **TOWNS:** `cook_oven` is a socket with no furnace node at (4,±13) in any start
+  town (older than this round); `wayposts.lua:58` `short_label` gives "Last" for
+  Last Hedge Redoubt (the longest fitting prefix would give "Last Hedge").
+- **ENDFIX (the review's notes):** `reserved` also covers 20 fixed anchors the fleet
+  does not check, so a stack there vanishes and spacing may admit a later one (a
+  fleet failure needs two lost on a minimum of 5, floor 4; unmeasured);
+  `wayposts.lua:19` "a camp may be placed right beside one" is loose, placement
+  precedes routing; `is_seat` in `r36_w2` would ignore a future stair bench whose
+  only floor for feet is slabs (none today).
+  `tools/r70_design/data/socket-schedules.json` holds the old facings of the four
+  turned sockets (no reader).
+- **Capitals, tools:** `tools/r70_design/verify.py` fails on the stale citation
+  `CORE = 48`, so its regressions do not run; `tools/r70_design/lake_variant.lua`
+  shifts the chain twice if rerun; the shared probe
+  (`tools/r70_cap/grug_probe_r70_cap/init.lua:188`) joins as Accord, dies to guards in
+  Throng capitals and needs a fallback guard for Kezamba's one patrol guard; its leg
+  stage stands the player at the anchor, so far corners can log pending.
+  `layout.free_area` (`layout.lua:220`) counts paving as free, so a candidate list
+  can land on a new street with no error.
+- **Capitals, game:** `mere_mourning` lands far west at (−181,25) on seed 177135…,
+  an old outlier (the review); Gor Drazhak's platform takes the avenue's last column
+  at z 3..8, and the comment at `gor_drazhak.lua:504` says waypoints where they are
+  guard posts; Nhal Veyr's watch corner faces (`nhal_veyr.lua:273-275`) and a doorstep
+  lane with no door (`:126`); new unrouted plots beside streets on Highcourt 1,
+  Lethariel 2, Kezamba 2 of 6 seeds, every required plot reached; the cache's 1–2
+  `none` legs per capital are no core patrol, not traced.
+
 ## Round 69 — trash box, home respawn, camp sites (GUI-accepted)
 
 Delivered in 0.69.0 (**migrate**, no map reset: step 0.69.0 and the online box
@@ -15,7 +89,7 @@ in tooltips and the talent tree, markers and a source line for the 14 quests
 that name their drop, the camp sites in Wallwright
 ([completion](docs/planning/round69-plan.md#completion-2026-11-04)). The
 desktop/web [GUI checklist](docs/planning/round69-plan.md#gui-checklist-desktop-and-web)
-is open. Carry-overs:
+was accepted by the user on 2026-11-04. Carry-overs:
 
 - **Decided:** the user keeps the straw mats in Wallwright's tents (2026-11-04),
   with `r58_camps` narrowed to real beds and `pvp.md`'s wording.
@@ -58,9 +132,6 @@ The user accepted the whole desktop/web
 [GUI checklist](docs/planning/round68-plan.md#gui-checklist-desktop-and-web)
 on 2026-10-31. Carry-overs:
 
-- **Mapgen wayposts:** with the next change that needs a map reset (the
-  Round 67 entry [below](#round-67--playtest-feedback-gui-accepted)); the
-  player-placed `grug_signs:waypost` is the node to place.
 - **First-look defaults** to tune after the GUI test: floor and ceiling
   wall signs read upright only for a reader facing +z (the vendored sign
   has no vertical wallmounted rotation); the waypost's arrow follows the
@@ -102,10 +173,6 @@ The user accepted the whole
 [GUI checklist](docs/planning/round67-plan.md#gui-checklist-desktop-and-web)
 on 2026-10-31. Carry-overs:
 
-- **Wayposts in world generation (the user, 2026-10-31):** wayposts
-  (arrow signs with readable town names) start as player-placed nodes; with
-  the next change that needs a map reset anyway, the mapgen places them at
-  road junctions pointing to the settlements.
 - **Deploy note:** production runs 0.65.0 (user, 2026-10-31); its update
   to 0.67.0 crosses no map reset (the last is 0.63.0), so the CHANGELOG's
   host instructions (the migration tool without `--map-reset`) apply as

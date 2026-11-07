@@ -12,19 +12,30 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.69.0, Round 69 (the Trash box in the Inventory tab
+**Current state:** 0.70.0, Round 70 (the six source rules and renewal; the
+Stonewright at the guild house with its recipes, ornamented stones and
+burning furnace; form A Crownward in six capitals with civic radius 56, the
+lakes of Lethariel and Kezamba moved; six reworked start towns and wayposts
+at road junctions; decorative plants that drop themselves; varied crop
+growth, the potion belt first, the hoe's pickup; the 10% death penalty with
+the PvP exemption and HUD hints; Kings at 70, the crown at top + 10, dragons
+at 30,000 HP and the new level malus), complete on 2026-11-07. **Map reset**,
+the thirteenth, no step
+([completion and checklist](docs/planning/round70-plan.md#completion-2026-11-07)).
+**Not pushed; the GUI test is open.** Round 71 runs beside it on `round71`.
+Production runs **0.65.0**; its update to 0.70.0 crosses this one map reset
+and runs the steps 0.67.0 and 0.69.0.
+Previous: 0.69.0, Round 69 (the Trash box in the Inventory tab
 with Undo and the professions' order; respawn goes to the home, Claim Stone
 included; exact "N damage" on every damage skill and in the talent tree;
 rings and the source line for the 14 quests that name their drop; the six
 camps under construction in the user's pick, Wallwright), GUI-accepted by
-the user on 2026-11-04 (the whole Round 69 checklist) and **pushed**.
-**Migrate**, no map reset: the step 0.69.0
+the user on 2026-11-04 (the whole Round 69 checklist) and **pushed**;
+**migrate**, no map reset: the step 0.69.0
 only sets a world marker and the game rewrites each camp's box online, the
 user's documented exception
 ([upgrade contract §5.9](docs/technical/upgrade-contract.md#59-a-protected-composition-rewritten-online);
 [completion and checklist](docs/planning/round69-plan.md#completion-2026-11-04)).
-Production runs **0.65.0**; its update to 0.69.0 crosses no map reset and
-runs the steps 0.67.0 and 0.69.0.
 Previous: 0.68.0, Round 68 readable text in the world
 (`grug_text`: one unsaved text entity per written surface from CC0
 glyphs; wall sign text on calm boards, chest labels on the front; the

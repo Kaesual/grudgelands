@@ -97,6 +97,16 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.70.0** gives every King a castle in a larger capital, with a new throne
+room; rebuilds the six start towns around a free waystone; adds the
+Stonewright, who turns stone by guild rank and makes ornamented blocks;
+puts wayposts at road junctions and makes Rock Salt, Stormkelp and other
+rare sources easy to find. Decorative plants can be picked up and placed,
+potions go to the belt first, a death wears your gear by 10% unless an
+enemy player hit you just before, Kings rise to level 70, and fighting
+above your level costs damage from the first level. This update needs a
+map reset; desktop and web acceptance is pending.
+
 **0.69.0** adds a Trash box to the Inventory tab, with Undo for the last
 item; you now respawn at your home, a Claim Stone included; every damaging
 skill shows its exact number, in the talent tree too, even before you learn
