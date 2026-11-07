@@ -595,9 +595,11 @@ rewrite records the WP40 model it replaced.
   its lake (no trough across the lake bed). Civic water and Moonfall's
   crescent lake are authored lakes in the same format.
 - **Civic water (Round 22, D26, D34, D42).** Authored lakes sit on the fitted
-  terrain (`wp40/water_authored.lua`): the Kezamba cenote and the Lethariel
+  terrain (`wp40/water_authored.lua`): the Kezamba cenote (18 nodes farther
+  north of its anchor since Round 70) and the Lethariel
   crown lake two nodes below their civic pads, inside the civic core exactly
-  on the committed blueprint footprints (the Kezamba lagoon mask, the
+  on the committed blueprint footprints (the Kezamba lagoon mask, cut from the
+  real water by `tools/r70_cap/kezamba_mask.lua`, the
   Lethariel `MERE`), outside it with warped coves and points, a carved bed
   (the cenote's in ledges) and shores shaped into banks and low natural dams;
   Highcourt's two blueprint river arms and their outflow as one civic canal

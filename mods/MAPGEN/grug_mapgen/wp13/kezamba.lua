@@ -2,10 +2,10 @@
 -- a lake in it.
 --
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
--- contract.md section 2.1 -- the 96 x 96 civic core, anchor-relative exactly
--- like a start, inside the contract's bounds of x/z [-47, 47] and y [-2, 40] --
--- plus the run specifications the overlay turns into the four avenues, the ring
--- street and the four gate thresholds.
+-- contract.md section 2.1 -- the civic core, 115 x 115 since Round 70
+-- (`precinct_ring.lua`), anchor-relative exactly like a start, inside bounds of
+-- x/z [-57, 57] and y [-2, 40] -- plus the run specifications the overlay turns
+-- into the four avenues, the ring street and the four gate thresholds.
 --
 -- Contract section 2.4, the troll row, quoted in full because everything below
 -- is an answer to it: "Kezamba | troll | stilted cenote terrace, step 3 | stilt
@@ -17,38 +17,36 @@
 --
 -- WHAT IS DIFFERENT HERE, AND IT IS NOT A STYLE CHOICE
 -- ---------------------------------------------------
--- The contract's section 1 says "the 96 x 96 civic core is flat at the fitted
--- reference height". At Kezamba that is true of 6 380 of its 9 025 columns and
--- false of the other 2 645, and the since-deleted
--- `tools/wp13/kezamba_water.lua` was the measurement rather than the
--- impression:
+-- The contract's section 1 says "the civic core is flat at the fitted reference
+-- height". At Kezamba that is true of 10 616 of its 13 225 columns and false of
+-- the other 2 609:
 --
---   * 2 645 columns are the CENOTE, the authored lake `kezamba_cenote` of
---     `wp40/water_authored.lua` (Round 22 Phase 5), whose north-east wedge
---     reaches into the core. Its surface stands two nodes below the fitted
---     reference on every seed: the piers below (y -2..-1) stand in it and
---     the decks (y 0) keep a node of air over it.
+--   * 2 609 columns are the CENOTE, the authored lake `kezamba_cenote` of
+--     `wp40/water_authored.lua` (Round 22 Phase 5), whose northern wedge
+--     reaches into the core; Round 70 moved it 18 nodes north of the anchor to
+--     free the land for the castle's neighbours. Its surface stands two nodes
+--     below the fitted reference on every seed: the piers below (y -2..-1)
+--     stand in it and the decks (y 0) keep a node of air over it.
 --   * ZERO columns are a RAVINE, since main `f5583e13`. Until WP40's routes
 --     were taught to end at the capital gates, 188 to 273 columns were one
 --     diagonal cut running into the pad from its south-west edge, up to 26
 --     nodes deep, and this composition was built around it as a gorge. It was
---     a graded ROUTE CORRIDOR. `--verify` caught its disappearance on the
---     rebase; the mask, the refusals and the counters stay as the guard that
---     will catch its return.
+--     a graded ROUTE CORRIDOR; the mask, the refusals and the counters stay as
+--     the guard that will catch its return.
 --
--- Both masks are committed in `wp13/kezamba_lagoon.lua`, generated and verified
--- by that tool against the planner on nine seeds. THE COMPOSITION LAYS NO
--- GROUND IN EITHER. A ground course written at y = 0 over the lake would fill
--- the cenote with mud, and over a ravine it would be a slab hanging in the
--- air; both are refused at construction time by `pad_area`, loudly, naming the
--- column.
+-- Both masks are committed in `wp13/kezamba_lagoon.lua`, cut from the real
+-- water by `tools/r70_cap/kezamba_mask.lua`. THE COMPOSITION LAYS NO GROUND IN
+-- EITHER. A ground course written at y = 0 over the lake would fill the cenote
+-- with mud, and over a ravine it would be a slab hanging in the air; both are
+-- refused at construction time by `pad_area`, loudly, naming the column.
 --
--- What that buys is the capital the contract asked for. The city stands on the
--- dry south-west of its own pad; the lake is its north-east quarter; the east
--- and north avenues leave the crossing and become JUNGLEWOOD BOARDWALKS ON
--- BASALT PIERS the moment they reach the water, which is the "stilt halls on
--- basalt platforms, junglewood walkways" of the contract built out of the
--- terrain instead of on top of it.
+-- What that buys is the capital the contract asked for. The castle stands on
+-- the dry southern terrace, the quarters on the west, and the lake is the
+-- pad's northern wedge. Only the north avenue crosses it: it leaves the crossing
+-- on land and becomes a JUNGLEWOOD BOARDWALK ON BASALT PIERS the moment it
+-- reaches the water, which is the "stilt halls on basalt platforms, junglewood
+-- walkways" of the contract built out of the terrain instead of on top of it.
+-- The east avenue lost its boardwalk with the lake's move in Round 70.
 --
 --   * `M.core()` returns the core composition in the exact shape of a start
 --     composition, plus `landmarks.sockets`.
@@ -77,14 +75,18 @@ local function loader(directory)
 	-- The travel plaza (WP17), the waystone at its pad's centre.
 	local PLAZA = {x1 = -44, z1 = -30, x2 = -32, z2 = -18}
 
+	-- The castle's forecourt on the dry terrace north of it (Round 70): paved
+	-- from the castle's own apron to the east avenue's kerb, the great door at
+	-- x 27 on its axis line.
+	local COURT = {x1 = 6, z1 = -17, x2 = 32, z2 = -3}
+	local DOOR_X = 27
+
 	-- THE STREETS. The four avenues are five wide on the two axes; the lanes
 	-- are the quarters' own. Every run is checked against the ravine mask at
-	-- construction time, because a lane laid across a 26-node gorge is a lane
-	-- hanging in the air. That mask is EMPTY since WP40's routes stopped
-	-- grading through the envelope (`kezamba_lagoon.lua`'s header), so the
-	-- check now passes everywhere; the lane positions below are the ones the
-	-- gorge dictated and they stay, because moving a street that works buys
-	-- nothing and costs every digest in the evidence.
+	-- construction time, because a lane laid across a gorge is a lane hanging
+	-- in the air. That mask is EMPTY since WP40's routes stopped grading through
+	-- the envelope (`kezamba_lagoon.lua`'s header), so the check now passes
+	-- everywhere.
 	local STREETS = {
 		{-2, -RADIUS, 2, -3, "avenue", "z"},
 		{-2, 3, 2, RADIUS, "avenue", "z"},
@@ -92,23 +94,22 @@ local function loader(directory)
 		{3, -2, RADIUS, 2, "avenue", "x"},
 		-- The crossing itself.
 		{-2, -2, 2, 2, "avenue"},
-		-- The king's forecourt, a strip along the hall's west front off the
-		-- south avenue's east kerb.
-		{3, -40, 5, -22, "lane", "z"},
-		-- The market walk, from the crossing west to the travel plaza. It runs
-		-- at z -20..-16 and not further south because the RAVINE reaches z =
-		-- -21: a lane one node south of here would be a lane over a gorge, and
-		-- the composition refuses one.
+		-- The market walk, from the south avenue west to the travel plaza.
 		{-31, -20, -3, -16, "lane", "x"},
 		{-32, -20, -30, -16, "lane", "z"},
-		-- The quay walk, north along the lake's west bank, and its two links
-		-- back to the avenues.
-		{-20, 6, -16, 44, "lane", "z"},
-		{-16, 6, -3, 10, "lane", "x"},
-		{-16, 32, -3, 36, "lane", "x"},
-		-- The east quarter's lanes.
-		{24, -22, 44, -18, "lane", "x"},
-		{36, -30, 40, -22, "lane", "z"},
+		-- The forecourt's way in, off the south avenue.
+		{3, -14, 5, -10, "lane", "x"},
+		-- The moved houses' doorsteps: the lane house off the forecourt, the
+		-- gate house off the market walk, the granary off the west avenue.
+		{33, -9, 34, -7, "lane", "x"},
+		{-15, -23, -14, -21, "lane", "z"},
+		{-31, 3, -30, 8, "lane", "z"},
+		-- The quay walk, north along the lake's west bank to the moot house's
+		-- flight, and its link to the north avenue.
+		{-19, 16, -17, 43, "lane", "z"},
+		{-27, 41, -20, 43, "lane", "x"},
+		{-27, 44, -25, 51, "lane", "z"},
+		{-16, 16, -3, 18, "lane", "x"},
 		-- The west quarter's lane, from the west avenue to the shrine walk.
 		{-44, 6, -40, 24, "lane", "z"},
 	}
@@ -119,16 +120,13 @@ local function loader(directory)
 	-- it is built with (`building_templates/layouts/kezamba.roster`: `town`
 	-- the plain troll timber, `basalt` the civic stone).
 	local PLOTS = {
-		-- 1. The king's hall, east of the throne approach with its great door
-		-- looking west onto it. It is NOT on the axis, and that was the
-		-- ravine's doing rather than a choice: the approach has to reach the
-		-- south gate and the gorge took the ground west of it from z = -47 to
-		-- z = -21. The gorge is gone (it was a route corridor, see step 6), and
-		-- the hall stays where the gorge put it: an off-axis hall facing its
-		-- own approach is a better forecourt than a symmetrical one, and
-		-- re-centring it would move the whole south quarter.
+		-- 1. The castle (Round 70, form A), on the southern terrace, its great
+		-- door looking north onto the forecourt. It stays off the axis: the
+		-- south avenue passes beside it and turns into its court. Turn 2 is
+		-- the form's own front to the north; the basalt palette builds it and
+		-- roofs it, the roster's binding for this template.
 		{id = "kings_hall", template = "kezamba_kings_hall",
-			x = 8, z = -42, turns = 3, handle = "basalt",
+			x = 5, z = -52, turns = 2, handle = "basalt", roof = "basalt",
 			drop = {waypoint = true}},
 
 		-- 2. The moot house: a stilt hall STRADDLING THE LAKE'S WEST BANK, its
@@ -138,8 +136,11 @@ local function loader(directory)
 		-- lake is left alone rather than filled. `turns = 1` puts the flight at
 		-- the -x end, which is the bank.
 		{id = "moot_house", template = "kezamba_moot_house",
-			x = -24, z = 30, turns = 1, handle = "basalt",
-			water = true, land_rows = 4},
+			x = -24, z = 45, turns = 1, handle = "basalt",
+			water = true, land_rows = 4,
+			-- The walkway's two legs (plot-relative x, z): the template has no
+			-- pier under them, so the composition drives theirs into the lake.
+			legs = {{15, 5}, {18, 5}}},
 
 		-- 3. The cauldron court: the troll market, in the south-west corner.
 		{id = "cauldron_court", template = "kezamba_cauldron_court",
@@ -154,17 +155,19 @@ local function loader(directory)
 		{id = "carver_yard", template = "kezamba_carver_yard",
 			x = -46, z = -16, turns = 0, handle = "town"},
 
-		-- 6. The granary and the pack stable of the east quarter.
+		-- 6. The granary in the western clearing, its doors looking west; the
+		-- pack stable on the land the lake gave back north of the crossing, its
+		-- doors on the north avenue.
 		{id = "granary", template = "kezamba_granary",
-			x = 6, z = -16, turns = 1, handle = "town"},
+			x = -29, z = 4, turns = 1, handle = "town"},
 		{id = "stable", template = "kezamba_stable",
-			x = 35, z = -45, turns = 1, handle = "town"},
+			x = 3, z = 3, turns = 1, handle = "town"},
 
 		-- 7. Four houses on the outer ground.
 		{id = "gate_house_south", template = "kezamba_gate_house_south",
-			x = 24, z = -16, turns = 1, handle = "town"},
+			x = -12, z = -29, turns = 1, handle = "town"},
 		{id = "lane_house", template = "kezamba_lane_house",
-			x = 36, z = -24, turns = 1, handle = "town"},
+			x = 36, z = -14, turns = 1, handle = "town"},
 		{id = "west_house", template = "kezamba_west_house",
 			x = -29, z = -44, turns = 1, handle = "town"},
 		{id = "shore_house", template = "kezamba_shore_house",
@@ -184,10 +187,10 @@ local function loader(directory)
 
 	-- The city loop's corner waypoints, on the open ground between quarters.
 	local CORNERS = {
-		{id = "watch_south_west", x = -34, z = -44, face = 0, order = 6},
-		{id = "watch_south_east", x = 44, z = -44, face = 0, order = 7},
-		{id = "watch_crossing", x = -8, z = -8, face = 2, order = 8},
-		{id = "watch_quay", x = -24, z = 20, face = 1, order = 9},
+		{id = "watch_south_west", x = -30, z = -44, face = 0, order = 6},
+		{id = "watch_south_east", x = 0, z = -44, face = 0, order = 7},
+		{id = "watch_crossing", x = -4, z = -8, face = 2, order = 8},
+		{id = "watch_quay", x = -24, z = 38, face = 1, order = 9},
 	}
 
 	-- The city around the core -- its outline, streets, walls or planted
@@ -274,9 +277,8 @@ local function loader(directory)
 		-- A RAIL BELONGS ON A FLANK AND NEVER ON AN END.
 		--
 		-- The first version of this routine railed every column of the run's
-		-- whole bounding box, and the east and north avenues END over open
-		-- water -- so the rail was laid straight ACROSS the carriageway at
-		-- x = 47 and z = 47. `default:fence_*` is walkable with a raised
+		-- whole bounding box, and a deck that ENDS over open water had its rail
+		-- laid straight ACROSS the carriageway at the pad's edge. `default:fence_*` is walkable with a raised
 		-- collision box precisely so it cannot be jumped, and either side of
 		-- the deck is cenote, so the road was closed at exactly the point the
 		-- research note sends the player. The KAT checked the deck and not the
@@ -337,6 +339,20 @@ local function loader(directory)
 			street(run[1], run[2], run[3], run[4], run[5], run[6])
 		end
 
+		-- 2b. THE FORECOURT: laid in one piece with the streets, so the castle's
+		-- apron and the great door's steps meet paving. Its kerb is drawn into
+		-- the ground course, broken only by the axis line to the door.
+		for z = COURT.z1, COURT.z2 do
+			for x = COURT.x1, COURT.x2 do
+				buf:put(x, 0, z, PAVE)
+			end
+		end
+		buf:clear(COURT.x1, 1, COURT.z1, COURT.x2, 5, COURT.z2)
+		dressing.inlay(buf, timber, COURT.x1, COURT.z1, COURT.x2, COURT.z2)
+		for z = COURT.z1, COURT.z2 do
+			buf:put(DOOR_X, 0, z, timber.maybe("signature") or KERB)
+		end
+
 		-- 3. THE TRAVEL PLAZA (WP17): paving, two kerb rings and nothing
 		-- above the ground course but the waystone and its mailbox (step 10b).
 		do
@@ -366,7 +382,7 @@ local function loader(directory)
 
 		-- 4. THE PLOTS.
 		for _, plot in ipairs(PLOTS) do
-			local part = CAPITAL.part(plot.template, plot.id, plot.handle)
+			local part = CAPITAL.part(plot.template, plot.id, plot.handle, plot.roof)
 			local turns = plot.turns % 4
 			local rw = (turns % 2 == 1) and part.d or part.w
 			local rd = (turns % 2 == 1) and part.w or part.d
@@ -413,11 +429,11 @@ local function loader(directory)
 			--
 			-- And no plot may leave the core's own envelope. That is not
 			-- paranoia: several templates carry authored cells at NEGATIVE
-			-- local coordinates -- the king's hall's forecourt steps reach
-			-- x -3 and z -3 of its own frame -- so a part's real extent is
-			-- wider than the `w` and `d` it declares, and under a quarter turn
-			-- the overhang moves to another side. The first layout of this
-			-- composition put 408 cells outside +-47 for exactly that reason.
+			-- local coordinates -- the houses' aprons and eaves reach x -1 and
+			-- z -1 of their own frame -- so a part's real extent is wider than
+			-- the `w` and `d` it declares, and under a quarter turn the overhang
+			-- moves to another side. The first layout of this composition put
+			-- 408 cells outside the core for exactly that reason.
 			local source, count = part.buffer:cells()
 			for index = 1, count do
 				local cell = source[index]
@@ -447,6 +463,12 @@ local function loader(directory)
 					local rx, rz = parts.rotate_footprint(cell.x, cell.z,
 						part.w, part.d, turns)
 					claim_water(plot.x + rx, cell.y, plot.z + rz)
+				end
+				for _, leg in ipairs(plot.legs or {}) do
+					for y = -2, 0 do
+						buf:put(plot.x + leg[1], y, plot.z + leg[2], PIER)
+						claim_water(plot.x + leg[1], y, plot.z + leg[2])
+					end
 				end
 			end
 			local footprint = points.footprint[1]
@@ -590,24 +612,25 @@ local function loader(directory)
 					dressing.stall(buf, timber, booth.x, booth.z, 0)
 				end)
 		end
-		local crates = scatter("crate stack", {{-22, 12}, {-22, 42},
-			{-30, -8}, {-28, -6}, {26, -20}, {44, -20}, {-14, -18},
-			{20, -8}, {-34, 8}, {-22, 28}}, 5, function(spot)
+		local crates = scatter("crate stack", {{-22, 30}, {-23, 36},
+			{-30, -8}, {-28, -6}, {46, -15}, {-34, 16},
+			{-22, 20}, {16, 8}, {-30, 40}}, 5, function(spot)
 				dressing.crates(buf, timber, spot[1], spot[2], 2)
 			end)
-		local benches = scatter("bench", {{-8, 4, -6, 4}, {4, 4, 6, 4},
-			{-30, -10, -28, -10}, {-26, 8, -24, 8}, {-14, -22, -12, -22},
-			{22, -12, 24, -12}}, 4, function(spot)
+		local benches = scatter("bench", {{-8, -4, -6, -4}, {6, -4, 8, -4},
+			{-30, -10, -28, -10}, {-26, 16, -24, 16}, {-8, 4, -6, 4},
+			{32, 4, 34, 4}}, 4, function(spot)
 				dressing.bench(buf, timber, spot[1], spot[2],
 					(spot[2] > 0) and 2 or 0, 3, "x")
 			end)
 		local lamps_placed = scatter("street lamp",
 			{{PLAZA.x1, PLAZA.z1}, {PLAZA.x2, PLAZA.z1}, {PLAZA.x1, PLAZA.z2},
-			{PLAZA.x2, PLAZA.z2}, {-6, -6}, {6, -6}, {-6, 6}, {-26, -6},
-			{26, -6}, {-40, -6}, {40, -6}, {-19, 14}, {-19, 26}, {-19, 42},
-			{-6, -34}, {-34, -34}, {44, -12}, {14, -34}, {-22, -16},
-			{-36, -14}, {-6, -16}, {6, -16}, {34, -16}, {-42, 26},
-			{-22, 34}, {-4, 4}, {4, -4}}, 14, function(spot)
+			{PLAZA.x2, PLAZA.z2}, {-6, -6}, {4, -4},
+			{COURT.x1, COURT.z1}, {COURT.x2, COURT.z1}, {COURT.x2, COURT.z2},
+			{-6, 6}, {-30, -6}, {-40, -6}, {16, 4}, {28, 4}, {40, 4}, {46, -4},
+			{-16, 20}, {-16, 30}, {-16, 40}, {-4, 12}, {-4, 24}, {-6, -34},
+			{-34, -34}, {-4, -48}, {52, -16}, {-22, -16}, {-6, -16},
+			{-42, 26}, {-22, 34}}, 14, function(spot)
 				dressing.path_light(buf, timber, spot[1], spot[2])
 			end)
 
@@ -615,8 +638,8 @@ local function loader(directory)
 		-- than stamped as a part.
 		--
 		-- There is no troll landing template, and the reason is geometry:
-		-- Kezamba's shoreline runs DIAGONALLY across the pad -- from (39, -7) to
-		-- (-16, 47) -- so a rectangular apron with a jetty off one face either
+		-- Kezamba's shoreline runs DIAGONALLY across the pad -- from (39, 11) to
+		-- (-14, 57) -- so a rectangular apron with a jetty off one face either
 		-- has its apron in the water or its jetty on the land, at every position
 		-- and every rotation. Four were tried against the committed mask before
 		-- this was written down.
@@ -627,11 +650,11 @@ local function loader(directory)
 		-- three-node reach of where they look, which is exactly what section
 		-- 8.1's `fish` rule asks and what the KAT re-measures against the mask.
 		do
-			paved_prop("fish_counter", -25, 22, -22, 22, function()
-				dressing.counter(buf, timber, -25, 22, 4, "x")
+			paved_prop("fish_counter", -25, 40, -22, 40, function()
+				dressing.counter(buf, timber, -25, 40, 4, "x")
 			end)
-			scatter("drying rack", {{-28, 14, -28, 18}, {-28, 26, -28, 30},
-				{-28, 36, -28, 40}, {-24, 6, -24, 10}}, 3, function(spot)
+			scatter("drying rack", {{-28, 24, -28, 28}, {-28, 32, -28, 36},
+				{-28, 44, -28, 48}, {-24, 24, -24, 28}}, 3, function(spot)
 					dressing.drying_rack(buf, timber, spot[1], spot[2], 5, "z")
 				end)
 		end
@@ -650,6 +673,11 @@ local function loader(directory)
 			end
 		end
 
+		-- 8b. The forecourt's two totems, flanking the way to the great door.
+		for _, x in ipairs({DOOR_X - 4, DOOR_X + 4}) do
+			dressing.totem(buf, timber, x, COURT.z1 + 1, 6)
+		end
+
 		-- 9. EMERGENT TREES ARE KEPT (contract section 2.4). The pad's own
 		-- kapoks: five emergents on the open litter, plus jungle trees and
 		-- basin flora on whatever the city has not built on. `plant_jungle`
@@ -657,9 +685,9 @@ local function loader(directory)
 		-- is checked against the mask first.
 		local emergents = 0
 		for _, spot in ipairs({{-25, -30, 16}, {-6, -42, 15}, {-32, -8, 16},
-				{-30, 16, 15}, {-28, 44, 16}, {40, -12, 15}, {-12, 8, 16},
-				{-38, 20, 15}, {44, -20, 16}, {-36, 30, 15}, {-16, -26, 16},
-				{-42, -20, 15}, {16, -8, 16}, {-40, 44, 15}}) do
+				{-30, 16, 15}, {-34, 46, 16}, {24, 10, 15}, {-12, 8, 16},
+				{-38, 20, 15}, {52, -30, 16}, {-16, -26, 16}, {-50, -20, 15},
+				{36, 6, 16}, {-50, 44, 15}, {-50, 8, 15}, {44, 6, 16}}) do
 			if mask.pad_area(spot[1] - 3, spot[2] - 3, spot[1] + 3, spot[2] + 3)
 					and layout.tree_room(buf, spot[1], spot[2]) then
 				if dressing.emergent(buf, timber, spot[1], spot[2], spot[3]) then
@@ -672,12 +700,11 @@ local function loader(directory)
 				" emergent kapoks found open ground", 0)
 		end
 		local canopy = 0
-		for _, spot in ipairs({{-44, -26, 8}, {-36, -26, 9}, {-8, -20, 8},
-				{-24, 4, 9}, {-44, 20, 8}, {-30, 24, 9}, {-28, 40, 8},
-				{44, -40, 9}, {-8, -36, 8}, {-12, -4, 9}, {-34, 44, 8},
-				{44, -8, 9}, {36, -10, 8}, {-22, -28, 9}, {-40, 12, 8},
-				{-6, -28, 9}, {12, -8, 8}, {-16, 16, 9}, {-24, 16, 8},
-				{-38, 40, 9}, {-44, 36, 8}, {28, -8, 9}}) do
+		for _, spot in ipairs({{-52, -26, 8}, {-22, 24, 9}, {-44, 20, 8},
+				{-30, 24, 9}, {-34, 40, 8}, {52, -44, 9}, {-8, -36, 8},
+				{-12, 24, 9}, {-44, 46, 8}, {52, -8, 9}, {50, 4, 8},
+				{18, 11, 8}, {-10, 30, 9}, {-24, 30, 8}, {-52, 36, 8},
+				{30, 8, 9}}) do
 			if mask.pad_area(spot[1] - 2, spot[2] - 2, spot[1] + 2, spot[2] + 2)
 					and layout.tree_room(buf, spot[1], spot[2]) then
 				if dressing.jungle_tree(buf, timber, spot[1], spot[2], spot[3]) then
@@ -689,7 +716,8 @@ local function loader(directory)
 		-- 10. Basin flora on the litter the city has not taken, in the four
 		-- quadrants of the pad, never over the water.
 		for _, area in ipairs({{-RADIUS, -RADIUS, -1, -1},
-				{1, -RADIUS, RADIUS, -1}, {-RADIUS, 1, -1, RADIUS}}) do
+				{1, -RADIUS, RADIUS, -1}, {-RADIUS, 1, -1, RADIUS},
+				{1, 1, RADIUS, RADIUS}}) do
 			-- Round 51 follow-up FT: in patches and gaps, far thinner
 			-- (`dressing.patch_keep`; the user: too dense, too even).
 			dressing.basin_flora(buf, timber, area[1], area[2], area[3],
@@ -746,37 +774,36 @@ local function loader(directory)
 		-- The fishmonger behind his counter and his `stall` workplace beside
 		-- him. `stall` is answered geometrically -- "a counter (any solid node
 		-- at waist height)" -- and the counter is exactly that.
-		socket("vendor_fishmonger", "vendor", -25, 1, 21, 0,
+		socket("vendor_fishmonger", "vendor", -25, 1, 39, 0,
 			{kind = "fishmonger"})
-		socket("quay_stall", "work", -22, 1, 21, 0, {activity = "stall"})
+		socket("quay_stall", "work", -22, 1, 39, 0, {activity = "stall"})
 		-- THE THREE ANGLERS, on shore columns of the committed mask, each
 		-- looking east into the cenote. Every one of them has open water within
 		-- three nodes of where it looks, which the KAT re-measures.
-		-- The third angler stood at (-13, 32) and looked straight into one of
-		-- the moot house's own legs -- open water at reach two, a jungletree at
-		-- reach one. (-11, 28) is the last pad column of its own row, so the
-		-- cenote is at reach one and nothing stands between.
-		for index, spot in ipairs({{-5, 20}, {-9, 26}, {-11, 28}}) do
+		-- No angler may look through another or through a leg of the moot house
+		-- at reach one: each stands on the last pad column of its own row, so
+		-- the cenote is at reach one and nothing stands between.
+		for index, spot in ipairs({{-5, 38}, {-9, 44}, {-8, 41}}) do
 			socket("cenote_fish_" .. index, "work", spot[1], 1, spot[2], 1,
 				{activity = "fish"})
 		end
-		socket("quay_idle_north", "idle", -18, 1, 30, 1, {tags = {"work"}})
-		socket("quay_idle_south", "idle", -18, 1, 14, 1, {tags = {"work"}})
+		socket("quay_idle_north", "idle", -18, 1, 45, 1, {tags = {"work"}})
+		socket("quay_idle_south", "idle", -18, 1, 32, 1, {tags = {"work"}})
 		-- The two crossing spots sit ON their benches: a seat is a walkable node
 		-- and the villager stands on top of it, which is why y is 2.
-		socket("crossing_idle_west", "idle", -7, 2, 4, 2, {tags = {"bench"}})
-		socket("crossing_idle_east", "idle", 5, 2, 4, 2, {tags = {"bench"}})
+		socket("crossing_idle_west", "idle", -7, 2, -4, 0, {tags = {"bench"}})
+		socket("crossing_idle_east", "idle", 7, 2, -4, 0, {tags = {"bench"}})
 		socket("plaza_idle", "idle", PLAZA.x2 - 2, 1, PLAZA.z1 + 2, 3,
 			{tags = {"work"}})
-		socket("forecourt_idle", "idle", 5, 1, -24, 3, {tags = {"door"}})
+		socket("forecourt_idle", "idle", 7, 1, -16, 3, {tags = {"door"}})
 		-- Two SPARE spots. `spawn = false` is the sockets contract's own word
 		-- for them (section 6): a real authored standing position that reaches
 		-- every consumer and that NOBODY IS PLACED ON, so a villager's amble
 		-- has somewhere to go that is not another villager's doorstep. No tag:
 		-- a tag is what the spoken line and the facing rule read, and a spare
 		-- has neither a line nor a door.
-		socket("shore_walk_north", "idle", -18, 1, 40, 0, {spawn = false})
-		socket("shore_walk_south", "idle", -18, 1, 8, 2, {spawn = false})
+		socket("shore_walk_north", "idle", -18, 1, 55, 2, {spawn = false})
+		socket("shore_walk_south", "idle", -18, 1, 26, 2, {spawn = false})
 
 		-- 11b. GROUND COVER GIVES WAY TO A STANDING POSITION.
 		--
@@ -808,10 +835,10 @@ local function loader(directory)
 			end
 		end
 
-		-- 11c. THE PROTECTED DRY EDGE. Water is this open capital's north-east
-		-- boundary; everywhere else the junglewood palisade is the civic ring.
-		-- It is written after every building, prop and plant so none can cut it,
-		-- while the shared mask leaves the four totem thresholds open.
+		-- 11c. THE PROTECTED DRY EDGE. Water is this open capital's north and
+		-- north-east boundary; everywhere else the junglewood palisade is the
+		-- civic ring. It is written after every building, prop and plant so none
+		-- can cut it, while the shared mask leaves the four totem thresholds open.
 		local palisade_columns = 0
 		precinct_ring.walk(function(x, z)
 			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)
@@ -925,7 +952,7 @@ local function loader(directory)
 				waypoint_plaza = {min = {x = PLAZA.x1 + 1, y = 0,
 						z = PLAZA.z1 + 1},
 					max = {x = PLAZA.x2 - 1, y = 4, z = PLAZA.z2 - 1}},
-				cenote = {min = {x = -16, y = -2, z = -8},
+				cenote = {min = {x = -14, y = -2, z = 10},
 					max = {x = RADIUS, y = 1, z = RADIUS}},
 				kings_hall = box("kings_hall", 2, 2),
 				kings_hall_door = door_of("kings_hall"),

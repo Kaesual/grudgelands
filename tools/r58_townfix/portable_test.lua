@@ -364,7 +364,7 @@ local HALLS = {
 	-- the next capital
 	{"gor_drazhak", "gor_drazhak_warlord_hall", "ors", "ors"},
 	-- the next capital
-	{"kezamba", "kezamba_kings_hall", "basalt"},
+	{"kezamba", "kezamba_kings_hall", "basalt", "basalt"},
 }
 for _, hall in ipairs(HALLS) do
 	local _, part = part_cells(hall[1], hall[2], hall[2], hall[3], hall[4])
