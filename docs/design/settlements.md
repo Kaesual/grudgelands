@@ -428,9 +428,12 @@ dwellings are adobe; and its four quarters are a bazaar of five trades (a
 butcher, a tanner, a brewer, an armourer and a smith, each standing at the work
 he sells), a war yard round a sunken fighting arena, a quarter of bone halls
 with a totem court, a burial barrow and a quarry face cut into the mesa, and a
-warren of clan lodges round a cook court and a story fire. In front of the
-warlord's hall stands a raised **fighting platform** with its own breastwork,
-its own stair and two guard posts on it.
+warren of clan lodges round a cook court and a story fire. Since Round 70 the
+warlord sits in the castle at the head of the throne approach, a nine-wide avenue
+from the south gate, built of ors stone inside the earth bank; a five-wide bypass
+runs up both flanks and behind the castle to the north gate, and the muster court
+lies east of it. Beside the castle's great door stands a raised **fighting
+platform** with its own breastwork, its own stair and two guard posts on it.
 
 **The capital with a lake in it.** How a capital with a lake in its core is
 laid out is the third capital's own lane, 2026-09-15/16, and is open to the
