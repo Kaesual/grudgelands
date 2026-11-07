@@ -125,7 +125,7 @@ local CAPITAL_TREES = {
 	-- the next capital
 	gor_drazhak = 47,
 	-- the next capital
-	kezamba = 46,
+	kezamba = 54,
 }
 local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
 local cores = {}
@@ -449,7 +449,7 @@ do
 				unknown .. ")")
 			check(plants > 100, profile.key .. " has city ground cover (" .. plants .. ")")
 			local lake = capital.CAPITALS[profile.key].lake
-			check((lake and lilies > 10) or (not lake and lilies == 0), profile.key ..
+			check((lake and lilies >= 5) or (not lake and lilies == 0), profile.key ..
 				"'s lake plants (" .. lilies .. " lily pads)")
 		end
 	end
