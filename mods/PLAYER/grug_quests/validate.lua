@@ -1260,6 +1260,8 @@ end
 local function role_range(world, zone, level, role, area_ref)
 	local leader = world.leader(role)
 	if leader then return leader.level, leader.level end
+	local expedition = V.EXPEDITION_TARGETS[role]
+	if expedition then return expedition, expedition end
 	if area_ref then
 		local zone_id, area_id = area_ref:match("^([^/]+)/(.+)$")
 		local area = zone_id and world.area(zone_id, area_id)

@@ -5,7 +5,7 @@
 # touched. Run it through the shared Lua queue (2 slots).
 #
 # Usage: XVFB=/path/to/Xvfb tools/r71_l20/run.sh OUT_DIR
-#   TIMEOUT=<server seconds, default 295>, SEED (default 42), XVFB_DRIVERS (default
+#   TIMEOUT=<server seconds, default 295>, VIEWING_RANGE (default 190), SEED (default 42), XVFB_DRIVERS (default
 #   /usr/lib64/dri). Writes probe.txt (the probe's lines), server.log, client.log and
 #   one <name>.png per BURST line of the probe.
 set -euo pipefail
@@ -68,7 +68,7 @@ screen_w = 960
 screen_h = 540
 fullscreen = false
 enable_sound = false
-viewing_range = 60
+viewing_range = ${VIEWING_RANGE:-190}
 fps_max = 15
 hud_scaling = 1
 gui_scaling = 1
