@@ -1,13 +1,17 @@
-# Round 70 DESIGN — pass 2
+# Round 70 DESIGN — pass 3
 
 Date: 2026-11-07. Branch: `r70-design`. Base game code:
-`55aa7708a2d6b28fbd3c87ad3e47b72cfea24a0d`; pass 1: `3a715b08`.
+`55aa7708a2d6b28fbd3c87ad3e47b72cfea24a0d`; pass 1: `3a715b08`;
+pass 2: `7eddf6b9`.
 
-The [self-contained page](page.html) now addresses the completed Opus check,
-whose verdict on pass 1 was **FIX FIRST**. Its complete report is preserved in
-[data/design-check.md](data/design-check.md). This revision is for the
-coordinator's delta review and the user's land-use decision; it does not claim
-independent acceptance of its own corrections.
+The [self-contained page](page.html) addresses the pass-2 re-check, which
+confirmed the layouts and all prior must-fix corrections. Its remaining verdict
+was **FIX FIRST, text only**, on the 48/56 comparison and hall-area basis. Both
+checks are preserved in [data/design-check.md](data/design-check.md). Pass 3
+changes explanatory text and citations only; all layouts and measured inputs
+stay unchanged. This revision is for the coordinator's delta review and the
+user's land-use decision; it does not claim independent acceptance of its own
+corrections.
 
 Only `tools/r70_design/` changes. Classification: **compatible, tools only**.
 Implementing these layouts is a **map reset**, as the Round 70 plan declares.
@@ -22,11 +26,16 @@ remain unchanged. The twelve recommended layouts retain their original town
 centre and waystone reservation sizes.
 
 The throne-room reservation grows from pass 1's **345** to **805 nodes² (35 × 23)**
-in every castle. The checker measured today's reachable hall floor as **684**
-in five capitals and **402** in Kezamba. The new target gains **121 / 17.7%** and
-**403 / 100.2%**, respectively. These baseline flood-fill measurements are
-attributed to the checker; this pass did not reproduce that floor probe. The
-comparison is explicit in all six capital sections and in one shared table.
+in every castle. Today's **gross hall in five capitals is 29 × 25 = 725**:
+the new reservation adds **80 nodes², about 11%**, while **depth shrinks from
+25 to 23**. The checker measured today's reachable floor as **684** in those
+five capitals and **402** in Kezamba. Comparing 805 with those net areas gives
+**121 / 17.7%** and **403 / 100.2%**, respectively, but compares **new gross
+with old net floor**, not measured gains in reachable space. These baseline
+flood-fill measurements remain attributed to the checker; this pass did not
+repeat that probe. The gross dimensions were checked against the five templates
+and their exported footprints. The comparison is explicit in the shared text,
+the table note and the capital sections.
 
 The land budget is now explicit: two-node outer wall band **304**, hall
 floor reservation **805**, one-node hall wall ring **120**, foyer/service/stair/circulation
@@ -45,29 +54,70 @@ forecourt and bypass. The page now shows a concrete **48 alternative** for each:
 
 - Same castle at (−22,4)…(22,38), six nodes south of the recommended placement.
 - Existing gates remain; approach width 9 → 5 and bypass width 5 → 3.
-- Only z=3 remains between the crossing and the great door: a doorstep, not a
-  gathering forecourt. Eastern work buildings move six nodes, not eight;
+- Only z=3 remains between the crossing and the great door. Today's ascent uses
+  two stair rows at **z=7 and 8**; the one compact row is already Dur Brannoc's
+  kerb, so **stairs must enter the foyer**. Eastern work buildings move six
+  nodes, not eight;
   Highcourt's yard also moves one north. Markets and colonnades keep their
   existing tight spacing.
 - Highcourt moves its chapel eight west and retires `north_house` and
   `chapel_house`. This is an explicit loss of two houses, not hidden crowding.
+- In all four capitals, the north gate's watch rectangle at **x=−4…4,
+  z=37…41** overlaps the castle (through z=38) and bypass (z=39…41), so its
+  patrol must be rerouted.
 
 These four alternatives pass footprint, door-exit and full-width street checks
 inside ±49. They are **land alternatives, without a second socket/furniture
-schedule**. The user would need that schedule before choosing them for a build.
-Lethariel and Kezamba's current proposed castle boxes reach beyond ±49; a 48
-option there requires a different placement. A mixed choice would avoid the
-four cities' radius-induced district cost, but growing the other two could
-still change rivers world-wide.
+schedule**; stairs and watch routes remain unresolved. That schedule is needed
+before implementation. **Only these four capitals have optional growth as
+drawn. Lethariel and Kezamba need growth as placed:** with five-node avenues
+kept, a quadrant ending at ±46 offers only 44 nodes (3…46), shorter than the
+castle's 45-node side. A 48 option there would have to straddle an axis or hug
+the ring; neither is drawn.
+
+**48's main saving is dropping most of C003 for the cores kept at 48:**
+gatehouse relocation, ring-street and boundary expansion, changes to `RADIUS`,
+`civic_width` and `BOUNDS`, the larger collar, moved landing scan and
+`city_green` expansion. It also avoids their radius-induced district land loss.
+Castle, socket and furniture work remains; shared machinery still needs changes
+if any core grows. A **mixed 48/56 choice is unmeasured**: the 40-seed table
+measures **all six at 56** and cannot predict that mix.
 
 I recommend **56**, because it provides the civic space requested around the
-larger hall. This is a design tradeoff, not a geometric necessity for those four
-castles. The unchanged nominal-square gain is **3,328 nodes² / 36.1%**; the outer
+larger hall. Keeping 48 **departs from §2.7's ruling that the civic core grows
+somewhat**; the user may still choose it. Growth remains a design tradeoff for
+the four castles above. The unchanged nominal-square gain is **3,328 nodes² /
+36.1%**; the outer
 512-node capital reservation does not grow. The larger river keep-out is
 **99.9 → 111.2 nodes** (`48*sqrt(2)+32` versus `56*sqrt(2)+32`): changing it changes
-river planning throughout the world.
+river planning throughout the world. **Both choices already join Round 70's
+map reset**; the river consequence costs **one full seed-fleet run within that
+work**, with no additional reset. Rivers stay unchanged by civic growth only if
+**all six capitals stay at 48**.
 
-## Findings checked and corrections
+## Pass-3 findings checked at source
+
+- C003's coordinated radius edits were re-read in the six core compositions,
+  `precinct_ring.lua`, `city_green.lua`, `capital_planner.lua`, `r7_settlement.lua`,
+  `r7_capitals.lua`, `height.lua` and the six `simple_map.lua` profiles. C091 now
+  names the corresponding saving at 48.
+- The river formula in `height.lua:333` reads each capital's `civic_width`;
+  the reset is already ruled in Round 70 §2.7. The 40-seed input contains
+  all six capitals under `civic112`, with no mixed-radius run.
+- The two off-axis castle boxes and five-node avenues were checked in
+  `proposals.py`; 45 exceeds the quadrant's 44 available nodes at ±46.
+  The text also names the departure from §2.7's growth ruling.
+- The committed geometry has entrance stairs at `(0,1,7)` and `(0,2,8)`
+  before the great door at z=9 in all four compact-option capitals.
+  `dur_brannoc.lua:323–325` places the crossing kerb at z=3. The current
+  `gate_watch.lua:30` rectangle exports to x=−4…4, z=37…41 in all four,
+  overlapping the compact castle and bypass. No geometry was changed to
+  resolve these implementation costs.
+- The five templates have a 31 × 27 pivot with a one-node outer hall wall,
+  giving today's 29 × 25 gross interior. C087 and the repeated page text
+  now distinguish that area from the checker's reachable-floor measurement.
+
+## Retained pass-2 findings and corrections
 
 All substantive findings were accepted after source inspection. One additional
 Highcourt move was necessary: moving the chapel eight west alone makes its eave
@@ -167,8 +217,9 @@ CORE/GATE/KEEP 56/57/60 but **civic_width=96 and today's terrain/cores**.
 | Nhal Veyr | 49→47; 49→48; 48→47 | 45; 48; 46 | 3,648 |
 | Kezamba | 51→49; 49→50; 51→49 | 49; 46; 47 | 2,464 |
 
-The checker's **40 fleet seeds** also changed **civic_width to 112**, with the
-same 56/57/60 planner parameters, **today's authored cores and landing detector**.
+The checker's **40 fleet seeds** also changed **all six capitals to radius 56
+and civic_width to 112**, with the same 56/57/60 planner parameters,
+**today's authored cores and landing detector**.
 Its existing scratch exports were available: their 40 exact seed strings,
 per-capital counts/failures, source JSON hashes and recomputed aggregates are
 preserved in [data/checker-fleet.json](data/checker-fleet.json). No planner job
@@ -195,7 +246,24 @@ Neither experiment certifies the future cores. The implementing lane must run
 civic width affects every seed and world-wide river planning. Forty seeds are
 supporting evidence, not a substitute for that gate.
 
-## Verification and limits
+## Pass-3 verification
+
+- `python3 tools/r70_design/build.py`: rebuilt the page and claims ledger;
+  91 cited claims and 12 geometry schedules checked.
+- `python3 tools/r70_design/verify.py`: passed all 12 places, 28 SVGs,
+  8 collision regressions, 659 socket rows, room/wall arithmetic, 40-seed
+  aggregates, 91 claim links, embedded data, Python and JavaScript syntax.
+- Compared the generated HTML with `7eddf6b9`: all **28 SVG elements**, the
+  embedded CSS and both script elements are identical. Layout definitions,
+  geometry exports, socket schedules, metrics and fleet inputs are byte-identical.
+- Local Markdown links resolve; all 91 claims have identical wording in the
+  HTML ledger and `claims.md`. `git diff --check` passes.
+- No new fixture, Lua execution, planner/fleet run or engine/browser run was
+  needed for this text-only pass. The checks above do not certify the unresolved
+  compact stairs/watch routes or the later implementation. The coordinator's
+  delta review and the user's land-use choice remain pending.
+
+## Retained pass-2 verification and limits
 
 - `build.py`: 12 recommended schedules; no template written-column overlap;
   bounds, arrival pockets, shared room/footprint, sampled existing water checked.
@@ -220,7 +288,7 @@ supporting evidence, not a substitute for that gate.
   main SVGs plus four compact SVGs, inline assets, internal links and syntax.
 - `bash tools/check_lua.sh tools/r70_design/export.lua`: plain Lua 5.1 parser,
   globals and sweeps pass. Execution used LuaJIT, at most one process at a time
-  in this pass; the reuse/export queue remains capped at two.
+  in pass 2; the reuse/export queue remains capped at two.
 - Inline SVGs rendered with librsvg in light and dark themes for visual review.
 
 Still unverified: browser layout/events and phone behaviour (browsers could not

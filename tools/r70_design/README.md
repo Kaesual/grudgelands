@@ -4,8 +4,9 @@ Open **[page.html](page.html)** directly in a browser. It is one standalone file
 CSS, JavaScript, SVG and all selectable planner data are inline. It makes no
 external requests. Nothing is published by this lane.
 
-This is a **2D land reservation proposal** revised after the completed Opus check
-of pass 1 (FIX FIRST), for the coordinator's delta review and the user's decision. It is not a castle model, a voxel blueprint,
+This is a **2D land reservation proposal**. The pass-2 re-check confirmed the
+layouts and prior fixes; pass 3 addresses its remaining text-only findings, for
+the coordinator's delta review and the user's decision. It is not a castle model, a voxel blueprint,
 a game change or runtime acceptance. See [REPORT.md](REPORT.md) for recommendations,
 measurements and limitations, and [claims.md](claims.md) for the numbered source ledger.
 
@@ -15,17 +16,22 @@ measurements and limitations, and [claims.md](claims.md) for the numbered source
   and **proposed** plans at the same scale, a 20-node scale bar, building key,
   exact movement schedules and all **659** socket rows, implementation costs and a decision question.
 - One 45 × 35 castle reservation in six placements; a 35 × 23 = **805 nodes² hall-floor reservation**
-  inside each, versus the checker’s 684 / 402 reachable floor today. Wall and
+  inside each. Today's gross hall in five capitals is **29 × 25 = 725**:
+  about **11%** more reserved area, with depth **25 → 23**. The checker's
+  684 / 402 reachable floor is a separate net measurement. Wall and
   supporting-space budgets are shown separately. Lethariel faces east on its dry western shoulder;
   Kezamba faces north on the dry southern terrace. The other four face south.
 - Nominal civic radius 48 → 56 (96 → 112 nominal width), with gates/keep-out
   parameter sensitivity. Each start gets a 13 × 13 clear waystone pocket around
   its existing reach-3 pad, without increasing the town envelope.
-- Four drawn radius-48 land alternatives retain the same castle, with narrower
-  approaches, a one-row doorstep and (Highcourt) two fewer houses. Recommendation:
-  **56 for civic space**, not because the four castle boxes need the larger core.
-- The checker’s **40-seed civic_width=112** evidence, labelled as measured with
-  today’s cores, alongside the original **mask-only** comparison below. All 40
+- Four drawn radius-48 land alternatives save most of the coordinated core-growth
+  work. They retain the same castle with narrower approaches, stairs entering
+  the foyer, north-watch conflicts to resolve and (Highcourt) two fewer houses.
+  Lethariel and Kezamba need growth as placed. Keeping 48 departs from §2.7's
+  growth ruling; the user may still choose it. Recommendation: **56 for civic space**.
+- The checker’s **40-seed civic_width=112** evidence measures **all six at 56**
+  with today’s cores; a mixed 48/56 choice is unmeasured. It sits alongside the
+  original **mask-only** comparison below. All 40
   exact seeds, per-seed counts/failures and input hashes are retained.
 - Whole-capital comparisons for exact seed strings `12345`,
   `3684797457838814663` and `17713522922938657774`, all from
@@ -72,7 +78,7 @@ experiment measures sensitivity, not the final implementation or its feasibility
 The exporter does not hide missing required plots with stand-ins. The 40-seed
 checker study additionally changed civic_width to 112; it still used the old
 cores and landing detector. Neither study substitutes for the **full seed fleet**
-required after implementation. No planner jobs were rerun in pass 2.
+required after implementation. No planner jobs were rerun in passes 2 or 3.
 
 Optional SVG visual inspection (system PyGObject, librsvg and cairo):
 

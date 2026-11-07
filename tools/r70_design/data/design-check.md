@@ -48,3 +48,26 @@ Seven unrouted-street cases appear, three disappear. `infeasible` seeds: Kezamba
 ## Could not verify
 
 Walkability on built geometry, deck landings, browser and phone behaviour, the castle's real shape. No Luanti server. Fixtures: none, no claim needed one. The page still says this check is pending. Worktree untouched.
+
+---
+
+# Pass 2 re-check (7eddf6b9, read-only)
+
+**Verdict: FIX FIRST, text only.** The layouts stand; the 48/56 paragraph (C091) misleads. No geometry change; the coordinator can check it.
+
+**Fixed, independently rechecked:** all five must-fix items and the weak claims.
+- Cell-level rerun of all 659 schedule rows: no socket in a wall, fence or castle; the two flagged cells are pads on displaced furniture the page names.
+- Highcourt's chapel doors and bypass clear. Budget 304+805+120+346 = 1,575 holds.
+- `verify.py` passes.
+
+**Fix in C091 and the shared text:**
+1. **48's main saving is unnamed.** It drops most of C003 (gatehouses, rings, `RADIUS`, civic_width, `BOUNDS`, collar, landing scan, `city_green`). The page names only district and river change.
+2. **River cost overstates 56.** Both options need the map reset; rivers then cost a fleet run. Rivers stay unchanged only if all six stay at 48.
+3. **Two capitals are not a free choice.** A 45-long side exceeds a quadrant at ±46 with avenues kept (my search: no placement). At 48 they would have to straddle an axis or hug the ring. Say: as placed, Lethariel and Kezamba need growth; only the four are optional. The mixed choice is unmeasured; the 40-seed table is all-six 56.
+4. **48 ignores the ruling.** §2.7 says the core "grows somewhat"; say that 48 departs from it.
+5. **Compact costs missing:**
+   - Today's great door climbs two stair rows (z=7, 8). Compact has only z=3, which Dur Brannoc uses as kerb, so stairs enter the foyer.
+   - The north gate's watch rectangle (z 37–41) collides with castle and bypass in all four.
+6. **+17.7% compares gross with net.** Today's gross hall is 29×25 = 725 (+11%), and depth shrinks 25→23. Add this.
+
+Fixtures: none.
