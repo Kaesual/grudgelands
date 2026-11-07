@@ -1,12 +1,12 @@
 # The Stilled Seam — level 20 Expedition
 
-**Draft for approval, 2026-11-07.** Next: Opus review, then user approval
+**Draft for approval, 2026-11-07.** Opus-reviewed; the user approves it
 before L20 builds it. Bound by the [concept](round71-expeditions-concept.md).
 **Compatible:** documentation and drawing tool only; no game changes.
 
 ## Story and place
 
-The Miner's Guild followed a gold seam into a pocket of living stone.
+Each Miner's Guild followed the same gold seam into a pocket of living stone.
 Golems broke the timber supports, and spiders spread into the abandoned
 workrooms. The crew escaped and sealed the survey cuts. **Flintback**, the
 golem that drove them out, still holds the last working face. The guild
@@ -19,15 +19,17 @@ the sealed cuts stay scenery. No destructible tunnel is needed.
 
 For **The Accord**, The Charter of Stone must honour its supply contracts
 without spending another crew. For **The Throng**, The Oathdelvers must keep
-their promise to the smiths and their workers. Guild markings and quest
+their promise to the goldsmiths and to their own crew. Guild markings and quest
 voice differ; layout, enemies and rewards are identical. Each faction acts
-independently. Beside the capital story at 19–20, this shows the guild
+independently: the two guilds work the same seam from opposite ends, and
+neither text mentions the other. Beside the capital story at 19–20, this shows the guild
 protecting its workers; no chapter prerequisite or early Undertithe reveal.
 
 ## Route and encounters
 
-One continuous floor, **0 → 1 → 2 → 3 → 4 → 5**, for **three players in
-10–20 minutes**. Unmeasured target: 15 minutes, roughly 8 for the four
+One continuous floor, **0 → 1 → 2 → 3 → 4 → 5**, for **at most three players,
+10–20 minutes**. Fewer may enter, solo included; the fights stay balanced for
+three, the level 20 cap of the concept's 3–4. Unmeasured target: 15 minutes, roughly 8 for the four
 packs, 3 for Flintback and 4 for walking, recovery and rewards.
 
 Use the existing **spider and golem families**, both present underground at
@@ -35,7 +37,9 @@ level 20: Crevice Spider and Stone Golem as roster references. Shown names
 may follow the level band; only **Flintback** keeps a fixed name. Every mob
 and the boss uses the selected level **20–29**. Keep pack sizes, space and
 attack cues; tune combat for three players throughout, including +9.
-Every mob's drops use its selected level too.
+Every mob's gear and materials use its selected level too. Golems and Flintback
+drop no ore or gems here: their usual Iron Lump and Rough Citrine rows go, so the
+marked nodes stay the only source.
 
 | Room | What waits there | What the players do |
 |---|---|---|
@@ -126,9 +130,9 @@ Small grid of the same plan (one cell represents about eight nodes):
 ############3..#
 ############.c.#
 ############...#
-#5..##4...##.###
-#ggg##....##...#
-#.Cj.D..B....d.#
+#5.g##4...##.###
+#g.g##....##...#
+#jC..D..B....d.#
 #gEj##....##...#
 ################
 ```
@@ -152,6 +156,11 @@ Grounding: [guild and its voice](../design/miners_guild.md),
   looks; keep direct Undertithe clues for later Expeditions.
 - **Size and pacing:** start with four packs; measure at 20 and 29 before
   fixing dimensions or stats. Shrink empty travel first.
+- **Who opens the chest:** kill credit follows damage and healing, never party
+  membership, and a member can enter after the kill. Recommend: everyone of the
+  owner who has entered this run opens their own inventory once.
+- **A full wipe:** evading heals a mob. Recommend: Flintback resets to full health,
+  dead packs stay dead, and the run goes on.
 - **Payout:** start with eight nodes and the weight-4 quest. L20 should
   price the chest through the income check and check mob XP at +9 before
   choosing quantities and coin amounts.

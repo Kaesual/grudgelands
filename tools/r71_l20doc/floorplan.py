@@ -42,8 +42,8 @@ FEATURES = (
     ("c", 108, 76), ("d", 108, 108),
     ("B", 68, 108), ("D", 44, 108),
     ("C", 20, 108), ("E", 20, 116),
-    ("g", 12, 100), ("g", 20, 100), ("g", 28, 100),
-    ("g", 12, 116), ("j", 28, 108), ("j", 28, 116),
+    ("g", 12, 100), ("g", 28, 92), ("g", 28, 100),
+    ("g", 12, 116), ("j", 12, 108), ("j", 28, 116),
 )
 
 
@@ -96,7 +96,7 @@ def render():
             label((px, py), symbol, 17, "white", "mm")
         elif symbol == "D":
             draw.rectangle((px - 7, py - 32, px + 7, py + 31), fill="#8E4333")
-            label((px, py - 49), "D", 20, "#8E4333", "mm")
+            label((px, py - 49), "D", 20, "#FFFFFF", "mm")
         else:
             fill = ("#247568" if symbol in "SE" else
                     "#9C6A0C" if symbol == "C" else "#8E4333")
@@ -117,7 +117,7 @@ def render():
                       (x1 - ux * 12 + uy * 6, y1 - uy * 12 - ux * 6)], fill=ink)
 
     label((56, 32), "THE STILLED SEAM", 40)
-    label((56, 87), "Level 20 Expedition  /  three players  /  one main floor", 24)
+    label((56, 87), "Level 20 Expedition  /  at most three players  /  one main floor", 24)
     label((56, 125), "PROPOSAL - for review and user approval before building", 19, muted)
 
     box((0, 0, EXTENT, EXTENT), rock)
