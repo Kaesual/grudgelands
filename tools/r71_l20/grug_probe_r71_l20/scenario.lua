@@ -38,34 +38,34 @@ local function shot(lib, player, name)
 	lib.wait(1)
 end
 
--- Wakes every room, holds the mobs against the document, kills all but the boss.
+-- Wakes the rooms in order, holds their mobs against the document and kills them,
+-- room by room: objects_in_area sees only active mobs, so the far rooms come to it
+-- one at a time.
 local function prove_rooms(lib, player, run, level)
+	local tally, names = {normal = 0, elite = 0}, {}
 	for _, row in ipairs(ROOMS) do
 		go(lib, player, run, row[2], row[3])
-		lib.wait(1.5)
-	end
-	local tally, names = {normal = 0, elite = 0, boss = 0}, {}
-	for _, ent in ipairs(mobs_in(run)) do
-		local tier = ent._grug_boss_id and "boss" or ent._grug_tier
-		tally[tier] = tally[tier] + 1
-		names[#names + 1] = ent.description or "?"
-		lib.check(ent._grug_level == level, ("%s at level %s"):format(ent.name, tostring(ent._grug_level)))
-		lib.check(ent.hp_max == HP[level][tier], ("%s HP %s"):format(ent.name, tostring(ent.hp_max)))
-	end
-	table.sort(names)
-	lib.logf("rooms at level %d: %d normal, %d elite, %d boss: %s", level, tally.normal, tally.elite,
-		tally.boss, table.concat(names, ", "))
-	lib.check(tally.normal == 12 and tally.elite == 3 and tally.boss == 1, "the document's counts")
-	local killed = 0
-	for _, ent in ipairs(mobs_in(run)) do
-		if not ent._grug_boss_id then
-			ent.health = 0
-			ent:check_for_death({type = "unknown"})
-			killed = killed + 1
+		lib.wait(2.5)
+		for _, ent in ipairs(mobs_in(run)) do
+			local tier = ent._grug_boss_id and "boss" or ent._grug_tier
+			lib.check(ent._grug_level == level, ("%s at level %s"):format(ent.name, tostring(ent._grug_level)))
+			lib.check(ent.hp_max == HP[level][tier], ("%s HP %s"):format(ent.name, tostring(ent.hp_max)))
+			if tier ~= "boss" then
+				tally[tier] = tally[tier] + 1
+				names[ent.description or "?"] = true
+				ent.health = 0
+				ent:check_for_death({type = "unknown"})
+			end
 		end
+		lib.wait(1)
 	end
-	lib.wait(1)
-	return killed
+	local list = {}
+	for name in pairs(names) do list[#list + 1] = name end
+	table.sort(list)
+	lib.logf("rooms at level %d: %d normal, %d elite, names %s", level, tally.normal, tally.elite,
+		table.concat(list, ", "))
+	lib.check(tally.normal == 12 and tally.elite == 3, "the document's counts")
+	lib.check(boss_of(run) ~= nil, "Flintback stands alone")
 end
 
 -- How far mobs walk on their own while the party stands apart. A mob that went for
@@ -140,11 +140,13 @@ local function hit_boss(lib, player, run)
 	grug_core.deal_ability_damage(player, boss.object, 50)
 	lib.wait(0.5)
 	lib.check(boss.health < boss.hp_max, "the boss is hurt")
-	-- A punch's damage is 16 bits: as often as its HP need.
-	for _ = 1, 3 do
-		if boss.object:get_pos() then grug_core.deal_ability_damage(player, boss.object, 30000) end
-		lib.wait(0.4)
+	-- A punch's damage is 16 bits, after the player's own scale: small hits.
+	for _ = 1, 30 do
+		if not boss.object:get_pos() then break end
+		grug_core.deal_ability_damage(player, boss.object, 2000)
+		lib.wait(0.2)
 	end
+	lib.wait(0.5)
 	lib.check(boss_of(run) == nil, "the boss is dead")
 end
 
@@ -191,9 +193,7 @@ return function(lib, player)
 	go(lib, player, run, 50, 108, -math.pi / 2)
 	shot(lib, player, "room4")
 	lib.logf("wander, furthest: %.1f / %.1f nodes", a, b)
-	local killed = prove_rooms(lib, player, run, 20)
-	lib.logf("killed %d", killed)
-	lib.check(killed == 15, "twelve spiders and three elites: " .. killed)
+	prove_rooms(lib, player, run, 20)
 
 	lib.check(not E.rewards_open(run), "the chest is sealed before the kill")
 	lib.check(core.get_node(places.door).name == "grug_expeditions:reward_door", "the door still stands")
@@ -252,10 +252,10 @@ return function(lib, player)
 	lib.check(E.enter(player, "highcourt"), "enter starts")
 	lib.wait_for(function() return E.run_inside(player) == high end, 40)
 	lib.check(E.run_inside(player) == high, "inside at level 29")
-	killed = prove_rooms(lib, player, high, 29)
-	lib.check(killed == 15, "twelve spiders and three elites at 29: " .. killed)
+	prove_rooms(lib, player, high, 29)
 	hit_boss(lib, player, high)
 	lib.check(#kills == 2 and kills[2] == "expedition:stilled_seam", "the second credit")
+	lib.check(Q.status(player, QUEST) ~= "ready", "the quest is done once, the Expedition repeats")
 	open_chest(lib, player, high, 29)
 	lib.keep_alive = nil
 end

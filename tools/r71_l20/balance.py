@@ -158,8 +158,11 @@ def main():
         print("| %d | %dc | %dc | %.0fc | %.0fc | %dc | %dc |" % (
             level, COPPER_BAND[level], coins, INCOME_H[level] / 4, gear, coins * 4, INCOME_H[level]))
     print()
-    copper = int(0.08 * n.P(20) * 4 + 0.5)
-    print("Quest: weight 4 at level 20 pays %d XP and %dc, once." % (4 * (25 + 5 * 20), copper))
+    registry = (ROOT / "mods/PLAYER/grug_quests/registry.lua").read_text()
+    prices = re.search(r"COPPER_PRICE = \{([\d, ]+)\}", registry).group(1).split(",")
+    copper = (8 * int(prices[1]) * 4 + 50) // 100  # grug_quests.quest_copper, tier 2
+    print("Quest: weight 4 at level 20 pays %d XP and %dc, once (the human's +10 %% XP on top)."
+          % (4 * (25 + 5 * 20), copper))
 
 
 main()
