@@ -50,7 +50,7 @@ columns times density.
 | Source | Today (per world) | Ruled change | Expected after |
 |---|---|---|---|
 | Rock Salt | 0–1 | whole `grug_beach` biome of the three zones, on sand, gravel or stone, **no water contact**; density stays 1/1024 | about 170–240 |
-| Stormkelp | 0–1 | up to 3 nodes from water, on sand, gravel or stone, all five zones; density 1/256 | about 170–205 |
+| Stormkelp | 0–1 | up to 10 nodes from water with a height limit (user, 2026-11-07, replacing 3 nodes without one), on sand, gravel or stone, all five zones; density set so the count stays | about 170–205 |
 | Frost Melon | 5–13 | four times the density; check the hosts in Frostbarrow and Ossuary Reach | about 53–56 |
 | Wild Cocoa | about 110–130 | effective 1/1024, no halving | about 230 |
 | Bamboo Shoot | about 16–33 | effective 1/64 | about 200–260 |
