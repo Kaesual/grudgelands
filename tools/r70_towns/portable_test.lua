@@ -46,7 +46,14 @@ local SCHEDULE = json.parse(read("tools/r70_design/data/socket-schedules.json"))
 local settlement = dofile(wp40 .. "/r7_settlement.lua")
 
 local REACH = 6 -- the pocket: 13 x 13 around the stone
-local DEVIATIONS = {}
+-- Where the built town leaves the schedule (the coordinator's answer to the
+-- lane's report, 2026-11-07): three sockets go with their moved hosts.
+local DEVIATIONS = {
+	kapok = {idle_smoker = {x = 19, z = 26}, idle_drying_shed = {x = -25, z = 29}},
+	sunscar = {idle_beast_pen = {x = -33, z = 8}},
+}
+-- Each of them looks at its host, a wall within WORK_REACH nodes ahead.
+local WORK_REACH = 4
 
 -- What a walker meets: a node it can stand on, walk through, or neither.
 local function solid(cell)
@@ -175,6 +182,23 @@ for _, profile in ipairs(towns) do
 			check(walk.reached(socket.x, y, socket.z),
 				("%s %s: not reached on foot from the spawn"):format(key, row.id))
 		end
+	end
+
+	-- A socket that went with its host stands at it and faces it.
+	for id in pairs(deviation) do
+		local socket = by_id[id]
+		local plot = bp.landmarks[id == "idle_smoker" and "fish_smoker" or
+			id == "idle_drying_shed" and "drying_shed" or "beast_pen"]
+		local faced = false
+		for reach = 1, WORK_REACH do
+			local x = socket.x + socket.dir.x * reach
+			local z = socket.z + socket.dir.z * reach
+			if plot and x >= plot.min.x and x <= plot.max.x and
+					z >= plot.min.z and z <= plot.max.z then
+				faced = true
+			end
+		end
+		check(faced, key .. " " .. id .. ": faces its host")
 	end
 
 	-- The watch's loop, in order: every leg walks without a great detour.
