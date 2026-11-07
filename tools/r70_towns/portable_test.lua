@@ -1,0 +1,384 @@
+-- Round 70 lane TOWNS portable test (LuaJIT; round70-plan.md §2.8, §4 TOWNS,
+-- the user-accepted land-use study tools/r70_design). Builds the six start
+-- towns through the game's own compositions and checks the built result:
+--
+--   S  the study's schedule: every exported socket stands where
+--      tools/r70_design/data/socket-schedules.json says, id, role and order
+--      unchanged, except the deviations this test names (DEVIATIONS);
+--   P  the waystone: the 13 x 13 pocket holds only the stone and its mailbox,
+--      the pad's four arrival sides are free;
+--   B  the buildings: no two written footprints overlap, all inside the
+--      authored +-63, spawn and the gate axis as they were;
+--   W  a walk: from the spawn a body two nodes high that climbs one node
+--      reaches every standing socket (adapter rows too), the cell before every
+--      door and the stone's arrival sides; the five legs of the watch's loop
+--      walk without a great detour;
+--   J  the wayposts (wp40/wayposts.lua): the junctions that get a stack, its
+--      column, the arrows' turns and the names on the boards.
+--
+-- Usage (repo root): luajit tools/r70_towns/portable_test.lua [REPO]
+-- Prints "R70 TOWNS PORTABLE PASS checks=<n>" or the failures.
+
+local repo = arg and arg[1] or "."
+_G.core = _G.core or {}
+local checks, failures = 0, 0
+local function check(ok, label)
+	checks = checks + 1
+	if not ok then
+		failures = failures + 1
+		print("FAIL " .. label)
+	end
+	return ok
+end
+
+local function read(path)
+	local file = assert(io.open(repo .. "/" .. path, "rb"), path)
+	local text = file:read("*a")
+	file:close()
+	return text
+end
+
+local wp13 = repo .. "/mods/MAPGEN/grug_mapgen/wp13"
+local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
+local json = dofile(repo .. "/tools/r28_b1/json.lua")
+local NODES = json.parse(read("tools/building_templates/nodes.json")).nodes
+local SCHEDULE = json.parse(read("tools/r70_design/data/socket-schedules.json"))
+local settlement = dofile(wp40 .. "/r7_settlement.lua")
+
+local REACH = 6 -- the pocket: 13 x 13 around the stone
+-- Where the built town leaves the schedule (the coordinator's answer to the
+-- lane's report, 2026-11-07): three sockets go with their moved hosts.
+local DEVIATIONS = {
+	kapok = {idle_smoker = {x = 19, z = 26}, idle_drying_shed = {x = -25, z = 29}},
+	sunscar = {idle_beast_pen = {x = -33, z = 8}},
+}
+-- Each of them looks at its host, a wall within WORK_REACH nodes ahead.
+local WORK_REACH = 4
+
+-- What a walker meets: a node it can stand on, walk through, or neither.
+local function solid(cell)
+	if cell == nil or cell.name == "air" then return false end
+	if cell.name:match("^doors:") then return false end
+	local def = NODES[cell.name]
+	if def == nil then return true end
+	return def.walkable ~= false
+end
+local function rail(cell)
+	if cell == nil then return false end
+	return cell.name:match("fence") ~= nil or cell.name:match("^walls:") ~= nil or
+		cell.name:match("^xpanes:") ~= nil
+end
+
+local function walker(bp)
+	local at = {}
+	for _, cell in ipairs(bp.cells) do
+		at[cell.x .. ":" .. cell.y .. ":" .. cell.z] = cell
+	end
+	local function get(x, y, z) return at[x .. ":" .. y .. ":" .. z] end
+	local function stands(x, y, z)
+		local floor = get(x, y - 1, z)
+		return solid(floor) and not rail(floor) and not solid(get(x, y, z)) and
+			not solid(get(x, y + 1, z))
+	end
+	local seen = {}
+	local function key(x, y, z) return x .. ":" .. y .. ":" .. z end
+	local queue, head = {{0, 1, 0}}, 1
+	seen[key(0, 1, 0)] = true
+	while head <= #queue do
+		local p = queue[head]
+		head = head + 1
+		for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+			local nx, nz = p[1] + d[1], p[3] + d[2]
+			if math.abs(nx) <= 63 and math.abs(nz) <= 63 then
+				for dy = -3, 1 do
+					local ny = p[2] + dy
+					-- The head clears the higher of the two cells.
+					if stands(nx, ny, nz) and not seen[key(nx, ny, nz)] and
+							(dy <= 0 or not solid(get(p[1], p[2] + 2, p[3]))) then
+						seen[key(nx, ny, nz)] = true
+						queue[#queue + 1] = {nx, ny, nz}
+					end
+				end
+			end
+		end
+	end
+	-- Steps on foot from one standing cell to another, nil if none.
+	local function steps(from, to)
+		local goal = key(to.x, to.y, to.z)
+		local start = key(from.x, from.y, from.z)
+		local dist = {[start] = 0}
+		local list, first = {{from.x, from.y, from.z}}, 1
+		while first <= #list do
+			local p = list[first]
+			first = first + 1
+			local here = dist[key(p[1], p[2], p[3])]
+			if key(p[1], p[2], p[3]) == goal then return here end
+			for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+				local nx, nz = p[1] + d[1], p[3] + d[2]
+				if math.abs(nx) <= 63 and math.abs(nz) <= 63 then
+					for dy = -3, 1 do
+						local ny = p[2] + dy
+						local k = key(nx, ny, nz)
+						if seen[k] and not dist[k] and stands(nx, ny, nz) and
+								(dy <= 0 or not solid(get(p[1], p[2] + 2, p[3]))) then
+							dist[k] = here + 1
+							list[#list + 1] = {nx, ny, nz}
+						end
+					end
+				end
+			end
+		end
+		return nil
+	end
+	return {get = get, stands = stands, steps = steps, reached = function(x, y, z)
+		return seen[key(x, y, z)] == true
+	end}
+end
+
+local FACE = {[0] = {0, -1}, [1] = {-1, 0}, [2] = {0, 1}, [3] = {1, 0}}
+
+local towns = {}
+for _, profile in ipairs(settlement.roster) do
+	if profile.slot == "start" then towns[#towns + 1] = profile end
+end
+check(#towns == 6, "six start towns")
+
+for _, profile in ipairs(towns) do
+	local key = profile.key
+	local bp = dofile(wp40 .. "/" .. profile.blueprint_file)()
+	local walk = walker(bp)
+	local by_id = {}
+	for index, socket in ipairs(bp.landmarks.sockets) do
+		by_id[socket.id] = socket
+		socket.index = index
+	end
+
+	-- S: the schedule, row by row.
+	local rows = SCHEDULE[key]
+	check(#rows == #bp.landmarks.sockets + 3, key .. ": the schedule's row count")
+	local deviation = DEVIATIONS[key] or {}
+	for index, row in ipairs(rows) do
+		local socket = by_id[row.id]
+		if socket then
+			check(socket.index == index, key .. " " .. row.id .. ": socket order")
+			check(socket.role == row.role, key .. " " .. row.id .. ": role")
+			local want = deviation[row.id] or row
+			check(socket.x == want.x and socket.z == want.z,
+				("%s %s: at %d,%d, the schedule says %d,%d"):format(key, row.id,
+					socket.x, socket.z, want.x, want.z))
+		end
+	end
+
+	-- W and F: every standing socket, adapter rows included.
+	local cells_taken = {}
+	for _, row in ipairs(rows) do
+		local socket = by_id[row.id] or row
+		cells_taken[socket.x .. ":" .. socket.z] = true
+		if socket.role ~= "waypoint" and row.role ~= "public_station" then
+			local y = socket.y or 1
+			check(walk.stands(socket.x, y, socket.z),
+				("%s %s: no place to stand at %d,%d,%d"):format(key, row.id,
+					socket.x, y, socket.z))
+			check(walk.reached(socket.x, y, socket.z),
+				("%s %s: not reached on foot from the spawn"):format(key, row.id))
+		end
+	end
+
+	-- A socket that went with its host stands at it and faces it.
+	for id in pairs(deviation) do
+		local socket = by_id[id]
+		local plot = bp.landmarks[id == "idle_smoker" and "fish_smoker" or
+			id == "idle_drying_shed" and "drying_shed" or "beast_pen"]
+		local faced = false
+		for reach = 1, WORK_REACH do
+			local x = socket.x + socket.dir.x * reach
+			local z = socket.z + socket.dir.z * reach
+			if plot and x >= plot.min.x and x <= plot.max.x and
+					z >= plot.min.z and z <= plot.max.z then
+				faced = true
+			end
+		end
+		check(faced, key .. " " .. id .. ": faces its host")
+	end
+
+	-- The watch's loop, in order: every leg walks without a great detour.
+	local loop = {}
+	for _, socket in ipairs(bp.landmarks.sockets) do
+		if socket.role == "guard_patrol" then loop[socket.order] = socket end
+	end
+	check(#loop == 5, key .. ": five patrol waypoints")
+	for index, socket in ipairs(loop) do
+		local goal = loop[index % #loop + 1]
+		local straight = math.abs(goal.x - socket.x) + math.abs(goal.z - socket.z)
+		local walked = walk.steps(socket, goal)
+		check(walked ~= nil and walked <= 2 * straight + 8,
+			("%s: patrol leg %s to %s walks %s steps, %d in a straight line"):format(key,
+				socket.id, goal.id, tostring(walked), straight))
+	end
+
+	-- Doors: the cell before each door.
+	for _, door in ipairs(bp.landmarks.doors) do
+		local face = FACE[door.face]
+		local fx, fz = door.x + face[1], door.z + face[2]
+		local reached = walk.reached(fx, door.y, fz) or
+			walk.reached(fx + face[1], door.y, fz + face[2])
+		check(reached, ("%s door of %s at %d,%d,%d: its front is not reached"):format(
+			key, door.id, door.x, door.y, door.z))
+	end
+
+	-- P: the pocket.
+	local stone = by_id.travel_waypoint
+	local stone_cell = walk.get(stone.x, 1, stone.z)
+	check(stone_cell and stone_cell.name == "grug_mapgen:waystone",
+		key .. ": the waystone stands in its socket")
+	local box = walk.get(stone.x + 2, 1, stone.z + 1)
+	check(box and box.name == "grug_mapgen:mailbox", key .. ": the mailbox")
+	for dz = -REACH, REACH do
+		for dx = -REACH, REACH do
+			local x, z = stone.x + dx, stone.z + dz
+			local ground = walk.get(x, 0, z)
+			check(ground ~= nil and ground.name ~= "air",
+				("%s pocket: no ground at %d,%d"):format(key, x, z))
+			for y = 1, 3 do
+				local cell = walk.get(x, y, z)
+				local allowed = (dx == 0 and dz == 0) or (dx == 2 and dz == 1)
+				if not allowed and cell and cell.name ~= "air" and
+						NODES[cell.name] and NODES[cell.name].walkable ~= false then
+					check(false, ("%s pocket: %s at %d,%d,%d"):format(key, cell.name, x, y, z))
+				end
+			end
+		end
+	end
+	for _, side in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+		check(walk.reached(stone.x + side[1], 1, stone.z + side[2]),
+			("%s: the stone's arrival side %d,%d"):format(key, side[1], side[2]))
+	end
+
+	-- B: spawn, gate axis, bounds.
+	local spawn = bp.landmarks.spawn
+	check(spawn.x == 0 and spawn.y == 1 and spawn.z == 0, key .. ": the spawn stays")
+	check(bp.bounds.min.x >= -63 and bp.bounds.max.x <= 63 and
+		bp.bounds.min.z >= -63 and bp.bounds.max.z <= 63, key .. ": the envelope stays")
+	local gate = bp.landmarks.gate
+	local step = gate.z > 0 and 1 or -1
+	for z = 0, gate.z - step, step do
+		local cell = walk.get(0, 0, z)
+		check(cell ~= nil and walk.reached(0, 1, z) or
+			walk.stands(0, 1, z), ("%s: the gate axis at z %d"):format(key, z))
+	end
+end
+
+-- J. The wayposts (wp40/wayposts.lua), on a small road network of known shape.
+do
+	local wayposts = dofile(wp40 .. "/wayposts.lua")
+	check(wayposts.short_label("Dawnmere") == "Dawnmere", "J a short name stays")
+	check(wayposts.short_label("Tarnwatch Fold") == "Tarnwatch Fold", "J 14 characters fit")
+	check(wayposts.short_label("Whitebridge Market Close") == "Whitebridge",
+		"J a long name keeps its first word")
+	-- degrotate: param2 120 leaves the arrow on +z, the look of yaw 0 turned
+	-- half a turn from the model's -z (grug_signs `place_waypost`).
+	check(wayposts.param2(0, 1) == 120, "J arrow north")
+	check(wayposts.param2(-1, 0) == 180, "J arrow west (yaw 90 degrees)")
+	check(wayposts.param2(0, -1) % 240 == 0, "J arrow south")
+	check(wayposts.param2(1, 0) == 60, "J arrow east")
+
+	-- A primary road west to east along z = 0, half width 3; a secondary road
+	-- joins it from the north at point 300.
+	local function line(x1, z1, x2, z2, kind, a, b, parent, parent_idx)
+		local road = {X = {}, Z = {}, kind = kind, a = a, b = b, hw = 3,
+			parent = parent, parent_idx = parent_idx}
+		local n = math.max(math.abs(x2 - x1), math.abs(z2 - z1))
+		for i = 0, n do
+			road.X[i + 1] = x1 + (x2 - x1) * i / n
+			road.Z[i + 1] = z1 + (z2 - z1) * i / n
+		end
+		return road
+	end
+	local function network()
+		return {
+			[1] = line(1, 0, 600, 0, "primary", "cap_a", "cap_b"),
+			[2] = line(300, 120, 300, 4, "secondary", "village", "road:1", 1, 300),
+			-- too close to the primary road's end
+			[3] = line(40, 120, 40, 4, "secondary", "village", "road:1", 1, 40),
+			-- a trail gets none
+			[4] = line(450, 120, 450, 4, "trail", "village", "road:1", 1, 450),
+		}
+	end
+	local LABELS = {cap_a = "Dur Brannoc", cap_b = "Whitebridge Market Close",
+		village = "Copperfell Village"}
+	local module = {deserialize = function(text) return {roads = text()} end}
+	local water, level = {}, {}
+	local function columns(x, z)
+		if water[x .. ":" .. z] then return "sea" end
+		return "land", nil, nil, nil, nil, level[x .. ":" .. z] or 5, nil
+	end
+	local function roads_at(x, z)
+		if math.abs(z) <= 3 then return "surface", 5.5, 5, "grade" end
+		if z > 0 and math.abs(x - 300) <= 3 then return "surface", 5.5, 5, "grade" end
+		return nil
+	end
+	local rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	check(#rows == 1, "J one stack, at the secondary junction away from the ends: " .. #rows)
+	local row = rows[1]
+	if row then
+		check(row.x == 300 and row.z == -4 and row.y == 6,
+			("J opposite the mouth, one node off the road: %d,%d,%d"):format(row.x, row.y, row.z))
+		check(#row.arms == 3, "J three arrows")
+		check(row.arms[1].text == "Dur Brannoc" and row.arms[1].param2 == 180,
+			"J the primary road's first end, west")
+		check(row.arms[2].text == "Whitebridge" and row.arms[2].param2 == 60,
+			"J its second end, east, the long name cut")
+		check(row.arms[3].text == "Copperfell" and row.arms[3].param2 == 120,
+			"J the village up the secondary road")
+		-- Main's text pass: the three nodes bottom to top, a chunk's own only.
+		local written = {}
+		local function write(pos, text) written[pos.y] = text end
+		local function always() return true end
+		wayposts.write_texts(rows, {x = 288, y = 0, z = -16}, {x = 367, y = 79, z = 63},
+			always, write)
+		check(written[6] == "Dur Brannoc" and written[7] == "Whitebridge" and
+			written[8] == "Copperfell", "J the texts, bottom to top")
+		written = {}
+		wayposts.write_texts(rows, {x = 288, y = 7, z = -16}, {x = 367, y = 86, z = 63},
+			always, write)
+		check(written[6] == nil and written[7] ~= nil, "J a chunk writes its own nodes only")
+		written = {}
+		wayposts.write_texts(rows, {x = 288, y = 0, z = 0}, {x = 367, y = 79, z = 79},
+			always, write)
+		check(next(written) == nil, "J another column's chunk writes nothing")
+		wayposts.write_texts(rows, {x = 288, y = 0, z = -16}, {x = 367, y = 79, z = 63},
+			function() return false end, write)
+		check(next(written) == nil, "J no text without the node")
+	end
+	-- A later junction with no good column is skipped, the earlier stack kept
+	-- (found by the seed fleet: the spacing test read the missing column).
+	local function with_wet_junction()
+		local roads = network()
+		roads[5] = line(150, 120, 150, 4, "secondary", "village", "road:1", 1, 150)
+		return roads
+	end
+	for x = 130, 170 do
+		for z = 4, 8 do
+			water[x .. ":" .. z], water[x .. ":" .. -z] = true, true
+		end
+	end
+	rows = wayposts.rows(module, with_wet_junction, LABELS, columns, roads_at)
+	check(#rows == 1 and rows[1].x == 300, "J a wet junction after a good one gets no stack")
+	-- Water opposite the mouth: the mouth's corner instead.
+	for x = 280, 320 do
+		for z = -8, -4 do water[x .. ":" .. z] = true end
+	end
+	rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	check(rows[1] ~= nil and rows[1].z == 4 and math.abs(rows[1].x - 300) > 3,
+		"J the mouth's corner where the far side is wet")
+	-- A sheer drop beside the road anywhere near: no stack.
+	for x = 280, 320 do
+		for z = 4, 8 do level[x .. ":" .. z] = 12 end
+	end
+	rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	check(#rows == 0, "J no stack without a good column")
+end
+
+print(("R70 TOWNS portable test: %d checks, %d failures"):format(checks, failures))
+if failures > 0 then error("R70 TOWNS PORTABLE FAIL", 0) end
+print("R70 TOWNS PORTABLE PASS checks=" .. checks)

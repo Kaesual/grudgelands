@@ -28,7 +28,7 @@
 --
 -- Prints one line, "OK <seed> <seconds> <roster sha256> chunks=<n>
 -- chunk_seconds=<s> trees=<the generated tree templates' roll-up, 16 hex>
--- places=<recipe quest places checked> place_seconds=<s>" or
+-- places=<recipe quest places checked> place_seconds=<s> wayposts=<stacks>" or
 -- "FAIL <seed> <seconds> <error>" and then raises (a non-zero exit). A failure
 -- in the per-chunk path names the chunk.
 local repo, seed = arg[1], arg[2]
@@ -289,12 +289,61 @@ if ok then
 		ok, err = false, "generated tree templates missing from the manifest"
 	end
 end
+-- The wayposts at the road junctions (Round 70, wp40/wayposts.lua): on every
+-- seed some stand, each off the road surface on dry land inside the road's
+-- vegetation exclusion, outside every settlement's reservation, its names fit
+-- the board. The first one's chunk joins the sample.
+local function wayposts()
+	local rows = R.main.waypost_rows(R.planner_source)
+	if #rows < 4 then error("only " .. #rows .. " wayposts stand", 0) end
+	local q = R.planner_source
+	local reserved = {}
+	local profile = {}
+	for _, p in ipairs(SOURCE.anchor_profiles) do profile[p.id] = p end
+	local by_id = {}
+	for _, a in ipairs(SOURCE.anchors) do by_id[a.id] = a end
+	for id, x, z in R.main.placement_layout_text():gmatch("(anchor_%d+) (%-?%d+) (%-?%d+)") do
+		local a = by_id[id]
+		local half = a.slot_id == "capital" and 256 or a.slot_id == "start" and 80 or
+			(profile[a.template_id].building_core_width or 16) / 2 + 10
+		reserved[#reserved + 1] = {id = id, x = tonumber(x), z = tonumber(z), half = half}
+	end
+	for _, row in ipairs(rows) do
+		local where = ("waypost %d,%d,%d: "):format(row.x, row.y, row.z)
+		if q.road_column_at(row.x, row.z) == "surface" then error(where .. "on the road", 0) end
+		local class = q.column_values_at(row.x, row.z)
+		if class ~= "land" then error(where .. "on " .. tostring(class), 0) end
+		if q.overlay_exclusion_at(row.x, row.z) ~= "road_corridor" then
+			error(where .. "outside the road's exclusion", 0)
+		end
+		if #row.arms ~= 3 then error(where .. #row.arms .. " arrows", 0) end
+		for _, arm in ipairs(row.arms) do
+			if #arm.text > 14 or #arm.text < 1 then error(where .. arm.text, 0) end
+		end
+		for _, r in ipairs(reserved) do
+			if math.max(math.abs(row.x - r.x), math.abs(row.z - r.z)) <= r.half then
+				error(where .. "inside the reservation of " .. r.id, 0)
+			end
+		end
+	end
+	return rows
+end
+local posts = 0
 local chunks, chunk_seconds = 0, 0
 if ok then
 	local started = os.clock()
-	local columns
+	local columns, rows
 	ok, err = pcall(sample)
 	if ok then columns = err end
+	if ok then
+		ok, rows = pcall(wayposts)
+		if ok then
+			posts = #rows
+			columns[#columns + 1] = {"a waypost", rows[1].x, rows[1].z}
+		else
+			err = rows
+		end
+	end
 	for _, column in ipairs(ok and columns or {}) do
 		local label, x, z = column[1], column[2], column[3]
 		local minp = {x = R.origin(x), y = R.origin(math.max(R.ground_at(x, z), 1)),
@@ -322,7 +371,8 @@ local seconds = ("%.1f"):format(os.clock() - t0)
 if ok then
 	print("OK", seed, seconds, roster, "chunks=" .. chunks,
 		("chunk_seconds=%.1f"):format(chunk_seconds), "trees=" .. trees:sub(1, 16),
-		"places=" .. places, ("place_seconds=%.1f"):format(place_seconds))
+		"places=" .. places, ("place_seconds=%.1f"):format(place_seconds),
+		"wayposts=" .. posts)
 else
 	print("FAIL", seed, seconds, (tostring(err):gsub("[\t\n]", " ")))
 	error("seed " .. seed .. " failed", 0)

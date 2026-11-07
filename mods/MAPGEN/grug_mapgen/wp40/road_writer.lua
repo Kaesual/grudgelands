@@ -22,7 +22,9 @@
 -- The same pass builds the piers of the dragon-island boat landings (Round
 -- 30 lane L, boats.md §7) from the landing zone's bridge planks, rail fence
 -- and post trunk (`source` is `source/simple_map.lua`).
-return function(core_api, source)
+-- The last step stands the wayposts at the junctions (Round 70,
+-- `wayposts.lua`): `waypost_rows(context)`, optional, answers them.
+return function(core_api, source, waypost_rows)
 	local function fail(message) error("WP40 road writer: " .. message, 0) end
 	if type(core_api) ~= "table" or type(core_api.get_content_id) ~= "function" or
 			type(core_api.registered_nodes) ~= "table" or type(source) ~= "table" or
@@ -72,6 +74,7 @@ return function(core_api, source)
 		resolved[race] = r
 	end
 	local air = core_api.CONTENT_AIR or cid("air")
+	local waypost = waypost_rows and cid("grug_signs:waypost")
 	-- Liquids are never cleared (a ford's water stays).
 	local liquid_by_cid = {}
 	local function is_liquid(c)
@@ -230,6 +233,21 @@ return function(core_api, source)
 			if pier.min_x <= context.max_x and pier.max_x >= context.min_x and
 					pier.min_z <= context.max_z and pier.max_z >= context.min_z then
 				dress_pier(context, pier, put)
+			end
+		end
+		if waypost_rows then
+			local rows = waypost_rows(context)
+			for index = 1, #rows do
+				local row = rows[index]
+				if row.x >= context.min_x and row.x <= context.max_x and
+						row.z >= context.min_z and row.z <= context.max_z then
+					for arm = 1, #row.arms do
+						local y = row.y + arm - 1
+						if y >= min_y and y <= max_y then
+							write(row.x, y, row.z, waypost, row.arms[arm].param2)
+						end
+					end
+				end
 			end
 		end
 		return count

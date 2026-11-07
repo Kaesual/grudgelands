@@ -3,9 +3,9 @@ grudgelands-town-layout 1
 town sunscar
 race orc
 
-place warlord_hall template=sunscar_warlord_hall x=-7 y=0 z=14 turns=0
-place armoury template=sunscar_armoury x=22 y=0 z=-7 turns=0
-place beast_pen template=sunscar_beast_pen x=-40 y=0 z=-8 turns=0
+place warlord_hall template=sunscar_warlord_hall x=-7 y=0 z=22 turns=0
+place armoury template=sunscar_armoury x=30 y=0 z=-7 turns=0
+place beast_pen template=sunscar_beast_pen x=-48 y=0 z=2 turns=0
 place chief_lodge template=sunscar_chief_lodge x=-36 y=0 z=16 turns=0
 place spear_lodge template=sunscar_spear_lodge x=-34 y=0 z=-34 turns=0
 place tusk_lodge template=sunscar_tusk_lodge x=-16 y=0 z=-34 turns=0

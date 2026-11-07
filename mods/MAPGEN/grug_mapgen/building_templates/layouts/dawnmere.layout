@@ -5,8 +5,8 @@ race human
 
 palette tile race=human roof_ridge=default:brick roof_slab=stairs:slab_brick roof_stair=stairs:stair_brick roof_stair_inner=stairs:stair_inner_brick roof_stair_outer=stairs:stair_outer_brick
 
-place meeting_hall template=dawnmere_meeting_hall x=-16 y=0 z=10 turns=0 roof=tile
-place harvest_inn template=dawnmere_harvest_inn x=6 y=0 z=10 turns=0
+place meeting_hall template=dawnmere_meeting_hall x=-23 y=0 z=14 turns=0 roof=tile
+place harvest_inn template=dawnmere_harvest_inn x=13 y=0 z=14 turns=0
 place great_barn template=dawnmere_great_barn x=-33 y=0 z=-6 turns=0
 place smithy template=dawnmere_smithy x=24 y=0 z=-6 turns=0 roof=tile
 place orchard_cottage template=dawnmere_orchard_cottage x=-30 y=0 z=-26 turns=0

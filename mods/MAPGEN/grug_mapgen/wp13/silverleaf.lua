@@ -32,7 +32,7 @@ local function loader(directory)
 	-- spawn, with the crescent inlaid in pale block. Everything else hangs
 	-- off two avenues that leave it east and west, and off the five-wide
 	-- north road the contract reserves, which carries no plot.
-	local COURT = {x1 = -13, z1 = -10, x2 = 13, z2 = 7}
+	local COURT = {x1 = -13, z1 = -12, x2 = 21, z2 = 16}
 	local CRESCENT = {x = 0, z = -2, outer = 40, inner = 30, offset = 4,
 		reach = 7}
 
@@ -40,13 +40,19 @@ local function loader(directory)
 		{-2, 0, 2, RADIUS},        -- the road, court to gate
 		{-2, -22, 2, -10},         -- the road's southern continuation
 		{-24, 8, -3, 10},          -- west avenue
-		{3, 8, 24, 10},            -- east avenue
+		{3, 8, 27, 10},            -- east avenue
 		{-23, 11, -19, 14},        -- shrine approach, between the colonnade
 		{-27, 15, -15, 17},        -- shrine forecourt
-		{19, 11, 23, 15},          -- lore hall doorstep
-		{-26, -22, -24, 10},       -- west lane
-		{24, -22, 26, 10},         -- east lane
-		{-40, -24, 40, -22},       -- south lane
+		{25, 11, 27, 21},          -- lore hall walk
+		{-20, -30, -18, 10},       -- west lane
+		{18, -30, 20, 10},         -- east lane
+		{-20, -24, 20, -22},       -- south lane
+		{-40, -24, -30, -22},      -- west glade house lane
+		{30, -24, 40, -22},        -- east glade house lane
+		-- Round the raised houses' podiums: past the foot of each stair to
+		-- the glade house lane.
+		{-31, -30, -21, -28}, {-31, -27, -30, -25},
+		{21, -30, 31, -28}, {30, -27, 31, -25},
 		{-31, -2, -14, 0},         -- market spur
 		{14, -2, 29, 0},           -- bowyer spur
 		{3, 51, 4, 53},            -- lookout doorstep
@@ -83,10 +89,10 @@ local function loader(directory)
 		{-6, 30, 11}, {6, 34, 13}, {-34, -8, 12}, {34, -14, 11},
 	}
 
-	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
-	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
-	-- on the court east of the crescent, beside the Quartermaster.
-	local WAYPOINT = {x = 10, z = -3}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, near the town's
+	-- centre (Round 70, the user's ruling of 2026-11-07): the court's 13 x 13
+	-- clearing east of the crescent, whose cells end at x = 6.
+	local WAYPOINT = {x = 13, z = 8}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
@@ -109,11 +115,11 @@ local function loader(directory)
 		{id = "watch_avenue", role = "guard_patrol", group = "glade",
 			order = 2, x = 0, y = 1, z = 24, dir = {x = 0, z = -1}},
 		{id = "watch_court_west", role = "guard_patrol", group = "glade",
-			order = 3, x = -10, y = 1, z = 0, dir = {x = -1, z = 0}},
+			order = 3, x = -12, y = 1, z = 0, dir = {x = -1, z = 0}},
 		{id = "watch_court_south", role = "guard_patrol", group = "glade",
-			order = 4, x = 0, y = 1, z = -7, dir = {x = 0, z = -1}},
+			order = 4, x = 0, y = 1, z = -9, dir = {x = 0, z = -1}},
 		{id = "watch_court_east", role = "guard_patrol", group = "glade",
-			order = 5, x = 10, y = 1, z = 0, dir = {x = 1, z = 0}},
+			order = 5, x = 19, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "court_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
 		-- Round 17: The existing west glade house hosts guests; the shrine keeps its own role.
@@ -164,13 +170,13 @@ local function loader(directory)
 		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
-		-- the slate brick east of the walk
-		{id = "idle_spare_1", role = "idle", spawn = false, x = 7,
-			y = 1, z = 7, dir = {x = -1, z = 0}},
-		-- the silver litter to the south
+		-- the court's east edge, beside the waystone's clearing
+		{id = "idle_spare_1", role = "idle", spawn = false, x = 20,
+			y = 1, z = 8, dir = {x = -1, z = 0}},
+		-- the court's south kerb
 		{id = "idle_spare_2", role = "idle", spawn = false, x = -5,
 			y = 1, z = -12, dir = {x = 0, z = 1}},
-		-- the silver litter to the north
+		-- the court's north-west
 		{id = "idle_spare_3", role = "idle", spawn = false, x = -7,
 			y = 1, z = 12, dir = {x = 0, z = -1}},
 	}
@@ -365,19 +371,26 @@ local function loader(directory)
 
 		-- 9. The court: lantern standards, flower beds on marble kerbs,
 		-- benches and a notice post under the crescent.
-		for _, spot in ipairs({{-11, -8}, {11, -8}, {-11, 5}, {11, 5}}) do
+		for _, spot in ipairs({{-11, -8}, {11, -8}, {-11, 5}, {19, 15}}) do
 			paved_prop("lantern_post", spot[1], spot[2], spot[1] + 1, spot[2],
 				function()
 					dressing.lantern_post(buf, palette, spot[1], spot[2])
 				end)
 		end
 		for _, bed in ipairs({{-11, -19, -8, -16}, {8, -19, 11, -16},
-				{-11, 12, -8, 15}, {8, 12, 11, 15}}) do
+				{22, 12, 24, 15}}) do
 			prop("flower_bed", bed[1], bed[2], bed[3], bed[4], function()
 				dressing.flower_bed(buf, palette, bed[1], bed[2], bed[3], bed[4])
 			end)
 		end
-		for _, seat in ipairs({{-8, 4, 2}, {6, 4, 2}, {-8, -9, 2}, {6, -9, 2}}) do
+		paved_prop("flower_bed", -11, 12, -8, 15, function()
+			dressing.flower_bed(buf, palette, -11, 12, -8, 15)
+		end)
+		-- The gardener's planter, in front of the work_planters socket.
+		paved_prop("planter", 3, 12, 5, 12, function()
+			dressing.planter(buf, palette, 3, 12, 5, 12)
+		end)
+		for _, seat in ipairs({{-8, 4, 2}, {3, 4, 2}, {-8, -9, 2}, {6, -9, 2}}) do
 			paved_prop("bench", seat[1], seat[2], seat[1] + 2, seat[2],
 				function()
 					dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "x")
@@ -387,7 +400,7 @@ local function loader(directory)
 			dressing.signpost(buf, palette, -6, -1)
 		end)
 		-- The four lantern pillars that mark the corners of the court.
-		for _, pillar in ipairs({{-8, 1}, {8, 1}, {-8, -7}, {8, -7}}) do
+		for _, pillar in ipairs({{-8, 1}, {8, 0}, {-8, -7}, {8, -7}}) do
 			paved_prop("lantern_pillar", pillar[1] - 1, pillar[2] - 1,
 				pillar[1] + 1, pillar[2] + 1, function()
 					dressing.lantern_pillar(buf, palette, pillar[1], pillar[2])
@@ -395,8 +408,8 @@ local function loader(directory)
 		end
 
 		-- 10. Planters and crates along the avenues and outside the market.
-		for _, bed in ipairs({{-19, 4, -17, 6}, {17, 4, 19, 6},
-				{-13, -14, -11, -12}, {11, -14, 13, -12}}) do
+		for _, bed in ipairs({{-23, 3, -21, 5}, {22, 3, 24, 5},
+				{-16, -16, -14, -14}, {14, -16, 16, -14}}) do
 			prop("planter", bed[1], bed[2], bed[3], bed[4], function()
 				dressing.planter(buf, palette, bed[1], bed[2], bed[3], bed[4])
 			end)
@@ -419,8 +432,8 @@ local function loader(directory)
 
 		-- 11. Low silverwood railings where a lane runs along a drop or a
 		-- grove edge, and stepping stones off the paving into the trees.
-		for _, line in ipairs({{-40, -26, -28, -26}, {28, -26, 40, -26},
-				{-28, 12, -28, 20}, {28, 16, 28, 24}}) do
+		for _, line in ipairs({{-40, -26, -32, -26}, {32, -26, 40, -26},
+				{-28, 12, -28, 20}, {34, 22, 34, 30}}) do
 			prop("fence_line", math.min(line[1], line[3]),
 				math.min(line[2], line[4]), math.max(line[1], line[3]),
 				math.max(line[2], line[4]), function()
@@ -431,9 +444,9 @@ local function loader(directory)
 		-- Stepping stones off the paving into the litter. Each run is four
 		-- cells of open ground, and `blueprint_kat` counts the lot, so a run
 		-- that walks under a later prop shows up as a number there.
-		local STEPPING = {{-16, 2, -16, 5}, {16, 2, 16, 5},
+		local STEPPING = {{-16, 2, -16, 5}, {23, -7, 23, -4},
 			{-9, -14, -6, -14}, {6, -14, 9, -14},
-			{-16, 12, -13, 12}, {13, 12, 16, 12}}
+			{-17, 12, -14, 12}, {21, 17, 24, 17}}
 		local stepping_stones = 0
 		for _, run in ipairs(STEPPING) do
 			prop("stepping_line", math.min(run[1], run[3]),
@@ -447,8 +460,8 @@ local function loader(directory)
 
 		-- 12. Route lighting: the road, the avenues and the lanes.
 		layout.street_lamps(buf, palette, 0, 2, 56, 7, outdoors)
-		for _, spot in ipairs({{-16, 9}, {16, 9}, {-25, 6}, {25, 6},
-				{-25, -12}, {25, -12}, {-25, -20}, {25, -20},
+		for _, spot in ipairs({{-16, 9}, {22, 11}, {-25, 6}, {24, 6},
+				{-17, -11}, {17, -11}, {-17, -20}, {17, -20},
 				{-14, -21}, {14, -21}, {-30, -21}, {30, -21},
 				{-42, -21}, {42, -21}, {-28, 0}, {28, 4},
 				{-19, 18}, {19, 16}}) do
