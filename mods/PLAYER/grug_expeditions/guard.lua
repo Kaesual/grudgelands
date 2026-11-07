@@ -10,8 +10,10 @@ local HINT = "Expedition – protected"
 -- random mob's nametag through a wall. An ABM spawns within 80 nodes of a player
 -- (active_block_range 4), so nothing spawns for a player in a box. A client gets
 -- objects within 128 nodes (active_object_send_range_blocks 8), so a mob spawned
--- for someone out at sea must first walk 192 nodes, inside that player's active
--- blocks, at the idle pace of 2.5 at most, within its 180 s life.
+-- outside the field must cross 192 nodes of it. A mob stays active only in a
+-- player's active blocks and is culled at 128 nodes from every player
+-- (remove_far_mobs), so that takes a second player leading it in. Measured wander
+-- without a lure: at most 37 nodes in a cave, 55 for a chasing Kraken at sea.
 local SPAWN_MARGIN = 320
 local first = M.slot_box(1)
 local _, last = M.slot_box(M.catalogue.SLOTS)
