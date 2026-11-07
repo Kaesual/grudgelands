@@ -22,7 +22,7 @@ smallest district lot (Lethariel's, 23 x 23 with the plot's two-node ring):
     frieze of the six tier stones; since Round 70 the Stonewright's work bay
     (lane GUILD) on the west side behind the clerk: the grinder and the
     smelting furnace against the west wall, fronts to the hall, the
-    Stonewright between them behind his table;
+    Stonewright between them behind his desk;
   * the ORE YARD on the east, 6 wide, open to the street: a HEADFRAME over a
     grated shaft collar, four timber legs 15 high with three rings of beams,
     two sheave wheels on its head beam and the rope down to a tub, the
@@ -117,7 +117,7 @@ HANGING = "node grug_decor:xdecor_lantern_hanging"
 # The Stonewright's work bay (Round 70, lane GUILD), lane ART's 5 x 3 x 3:
 # along the west wall the grinder (z 9-10) and the furnace (z 12-13), each
 # 2 deep with its front to the east (facedir 3), a one-node aisle between
-# them (z 11) with the Stonewright standing in it, the front cells at BAY_X.
+# them (z 11) with the Stonewright in front of it, the front cells at BAY_X.
 # The furnace takes the north side: it is 3 high and the west window is at z 9
 # and 10.
 BAY_X = 2
@@ -283,12 +283,14 @@ def build(spec):
     put(w - 2, 1, zc - 2, "node default:coalblock")
     put(w - 2, 2, zc - 2, "node grug_materials:copper_block")
     counter(2, zc + 1)
-    # The work bay: the machines, the Stonewright's table in front of him,
-    # the storage behind him in the aisle between them.
+    # The work bay: the machines, the Stonewright's desk in front of him (at
+    # waist height, so he is seen and clicked over it, like the exchange's
+    # keeper), the storage behind him in the aisle between them.
     for machine, z0 in (("grinder", GRINDER_Z), ("furnace", FURNACE_Z)):
         for (x, y, z), entry in machine_cells(machine, z0).items():
             put(x, y, z, entry)
-    counter(STONEWRIGHT[0] + 1, STONEWRIGHT[1])
+    desk([(STONEWRIGHT[0] + 1, z) for z in (STONEWRIGHT[1] - 1, STONEWRIGHT[1],
+                                            STONEWRIGHT[1] + 1)])
     put(1, 1, STONEWRIGHT[1], "role storage o=facedir:1")
     zl = hz1 - 1
     desk([(x, zl) for x in (cx - 1, cx, cx + 1)])
