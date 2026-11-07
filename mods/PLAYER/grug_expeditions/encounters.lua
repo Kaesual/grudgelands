@@ -156,6 +156,11 @@ M.register_on_end(function(run)
 	local state = states[run]
 	if state and state.boss_id then grug_mobs.boss_attempt_reset(state.boss_id) end
 	states[run] = nil
+	-- Live objects go with the run, a step before any new preparation's delete_area,
+	-- which would leave the engine their saved copies to look for.
+	for object in core.objects_in_area(run.minp, run.maxp) do
+		if not object:is_player() then object:remove() end
+	end
 end)
 
 local function boss_died(self)

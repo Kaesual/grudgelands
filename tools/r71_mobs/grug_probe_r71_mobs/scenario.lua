@@ -143,8 +143,10 @@ return function(lib, player)
 	lib.logf("boss after a hit %s/%s", tostring(boss.health), tostring(boss.hp_max))
 	lib.check(boss.health < boss.hp_max, "the boss is hurt")
 	grug_mobs.leash_reset(boss)
-	lib.check(boss.health == boss.hp_max and #mobs_in(run) == 3 and run.state == "running",
-		"evading healed it, the run goes on")
+	lib.logf("after the reset %s/%s, mobs %d, state %s, evading %s", tostring(boss.health),
+		tostring(boss.hp_max), #mobs_in(run), run.state, tostring(boss.temp.grug_evading))
+	lib.check(boss.health == boss.hp_max, "evading healed it")
+	lib.check(#mobs_in(run) == 3 and run.state == "running", "the run goes on, its dead stay dead")
 	lib.check(not E.rewards_open(run), "the chest stays shut")
 	lib.wait(1)
 
@@ -173,7 +175,10 @@ return function(lib, player)
 	local ground = 0
 	for object in core.objects_in_area(run.minp, run.maxp) do
 		local ent = object:get_luaentity()
-		if ent and ent.name == "__builtin:item" then ground = ground + 1 end
+		if ent and ent.name == "__builtin:item" then
+			ground = ground + 1
+			lib.logf("on the ground %s at %s", ent.itemstring, core.pos_to_string(object:get_pos()))
+		end
 	end
 	lib.logf("items on the ground %d", ground)
 	lib.check(ground == 0, "the boss dropped nothing")
@@ -200,6 +205,11 @@ return function(lib, player)
 	E.end_run(run, "probe")
 	lib.check(core.get_inventory({type = "detached", name = name}) == nil, "the list ended with the run")
 	lib.wait(1)
+	local left = 0
+	for object in core.objects_in_area(run.minp, run.maxp) do
+		if not object:is_player() then left = left + 1 end
+	end
+	lib.check(left == 0, "nothing live stays in the box: " .. left)
 	local second = assert(E.create(player, "test_vault", 0))
 	lib.wait_for(function() return second.state == "ready" end, 90)
 	lib.check(second.state == "ready" and #mobs_in(second) == 0, "a new run finds no mob of the old one")

@@ -44,6 +44,16 @@ core = {
 	register_on_mods_loaded = function(fn) on_loaded[#on_loaded + 1] = fn end,
 	register_node = function(name, def) core.registered_nodes[name] = def end,
 	load_area = function() end,
+	objects_in_area = function()
+		local gone = {is_player = function() return false end,
+			remove = function() core.objects_removed = (core.objects_removed or 0) + 1 end}
+		local player = {is_player = function() return true end}
+		local list, at = {player, gone}, 0
+		return function()
+			at = at + 1
+			return list[at]
+		end
+	end,
 	get_node_or_nil = function(pos) return {name = world[key(pos)] or "air"} end,
 	get_player_by_name = function(name) return players[name] end,
 	add_entity = function(pos, name, data)
@@ -312,6 +322,7 @@ for _, fn in ipairs(ended) do fn(run, "released") end
 runs_at[1000] = nil
 check(#removed_boxes == 2 and next(detached) == nil, "D the run's lists end with it")
 check(resets[1] == boss._grug_boss_id, "B a run's end clears its ledger")
+check(core.objects_removed == 1, "B a run's end takes its live objects, no player")
 check(not open(ana, run.places.chest) and feeds[#feeds] == "This Expedition has ended.",
 	"D an ended run opens nothing")
 
