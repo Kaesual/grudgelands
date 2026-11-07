@@ -7,8 +7,9 @@ import json
 import math
 import re
 from collections import defaultdict
+import geometry as G
 from pathlib import Path
-from proposals import CAPITALS, TOWNS, NAMES, FACTION, P, FURNITURE
+from proposals import CAPITALS, TOWNS, NAMES, FACTION, P, FURNITURE, COMPACT
 from claims import Claims, ROOT, WP, W40, MOBS, HOME, QUEST
 
 HERE = Path(__file__).resolve().parent
@@ -17,6 +18,7 @@ BIND = json.loads((HERE/'data/bindings.json').read_text())
 SEEDS = ['12345', '3684797457838814663', '17713522922938657774']
 PLANS = {seed:{v:json.loads((HERE/f'data/{seed}-{v}.json').read_text())['capitals']
               for v in ['today','proposed']} for seed in SEEDS}
+FLEET = json.loads((HERE/'data/checker-fleet.json').read_text())
 C = Claims()
 E = html.escape
 
@@ -74,18 +76,96 @@ def sockets(key, proposed=False):
     owner={s['id']:b['id'] for b in BP[key]['buildings'] for s in b['sockets']}
     for s in rows:
         sid=s['id']
+        s['origin']='template' if sid in owner else 'Lua / adapter'
+        # Generated gate-watch loops and booth aliases are not template points.
+        if sid not in owner:
+            for b in BP[key]['buildings']:
+                if sid.startswith(b['id']+'_watch_') or sid.startswith(b['id']+'_booth_'):
+                    owner[sid]=b['id']
+            if sid not in owner and s['role'] not in ['guard_patrol','waypoint','vendor'] and sid not in ['trainer_cooking','quest_cook','cook_oven']:
+                near=sorted((G.distance(box(b),s['x'],s['z']),b['id']) for b in BP[key]['buildings'])
+                if near and near[0][0]<=2: owner[sid]=near[0][1]
+        s['owner']=owner.get(sid)
+        s['affected_by']=', '.join(sorted({b['id'] for pr in [False,True] for b in buildings(key,pr)
+            if (b['id'] in p['shifts'] or b['id'] in p.get('replace',[])+p.get('remove',[]))
+            and G.contains(box(b),s['x'],s['z'],2)} | ({'castle'} if key in CAPITALS and G.contains(p['castle'],s['x'],s['z'],2) else set())))
+    for s in rows:
+        sid=s['id']
         shift=p.get('sockets',{}).get(sid, p['shifts'].get(owner.get(sid),[0,0]))
         s['x']+=shift[0];s['z']+=shift[1]
         if sid=='travel_waypoint' and p.get('waypoint'):s['x'],s['z']=p['waypoint']
         if key in CAPITALS:
-            if sid=='king': s['x'],s['z']=p['throne']
-            if sid.startswith('throne_guard_'):
-                side=-3 if sid.endswith('west') else 3
-                x,z=p['throne'];s['x'],s['z']=(x,z+side) if p['facing']=='east' else (x+side,z)
+            if sid in p['castle_sockets']: s['x'],s['z']=p['castle_sockets'][sid]
             if sid in p['watch_ids']:s['x'],s['z']=p['watch'][p['watch_ids'].index(sid)]
         elif s['role']=='guard_patrol':
             s['x'],s['z']=p['watch'][s['order']-1]
+        if sid in p.get('socket_positions',{}): s['x'],s['z']=p['socket_positions'][sid]
+        nearby=set(filter(None,s['affected_by'].split(', ')))
+        for pr in [False,True]:
+            for b in buildings(key,pr):
+                if (b['id'] in p['shifts'] or b['id'] in p.get('replace',[])+p.get('remove',[])) and G.contains(box(b),s['x'],s['z'],2):nearby.add(b['id'])
+        if key in CAPITALS and G.contains(p['castle'],s['x'],s['z'],2):nearby.add('castle')
+        s['affected_by']=', '.join(sorted(nearby))
     return rows
+
+
+def clearance_errors(key, check_sockets=True):
+    p=P[key];bs=buildings(key,True);errors=[]
+    old_boxes=[[b['cells_box'][n] for n in ['x1','z1','x2','z2']] for b in buildings(key)]
+    # Full street widths, not just the centreline. Only actual gate tunnels
+    # may cross a template footprint; their cell clearance is checked too.
+    for road in G.road_boxes(p['roads']):
+        for b in bs:
+            if not overlap(road,box(b)):continue
+            if b['id'] not in ['gate_north','gate_south','gate_east','gate_west']:
+                errors.append((key,'road crosses footprint',road,b['id']));continue
+            r=box(b)
+            for x in range(max(road[0],r[0]),min(road[2],r[2])+1):
+                for z in range(max(road[1],r[1]),min(road[3],r[3])+1):
+                    if any(G.blocked(key,b,x,y,z,p['shifts']) for y in [1,2]):
+                        errors.append((key,'road crosses gate wall',b['id'],x,z))
+        if key in CAPITALS and overlap(road,p['castle']):
+            # A road ends immediately outside the future great door.
+            errors.append((key,'road crosses castle',road))
+    for b in bs:
+        dx,dz=p['shifts'].get(b['id'],(0,0))
+        for d in b['doors']:
+            ux,uz=[(0,-1),(-1,0),(0,1),(1,0)][d['face']]
+            for step in [1,2]:
+                x,z=d['x']+dx+step*ux,d['z']+dz+step*uz
+                if key in CAPITALS and G.contains(p['castle'],x,z):
+                    errors.append((key,'door opens into castle wall',b['id'],x,z))
+                for other in bs:
+                    if other['id']==b['id']:continue
+                    if any(G.blocked(key,other,x,y,z,p['shifts']) for y in [d['y'],d['y']+1]):
+                        errors.append((key,'door opens into wall',b['id'],other['id'],x,z))
+    for s in sockets(key,True) if check_sockets else []:
+        x,y,z=s['x'],s['y'],s['z']
+        # Existing loose fences/walls/furniture remain evidence outside the
+        # re-authored template boxes, castle, old perimeter and cleared pad.
+        # This catches the Hearthpine fence, absent from template geometry.
+        if (s['id'] not in p.get('castle_sockets',{}) and s['id'] not in ['travel_waypoint','cook_oven']
+                and not any(G.contains(b,x,z) for b in old_boxes)
+                and not (key in CAPITALS and max(abs(x),abs(z))>=47)):
+            for yy in [y,y+1]:
+                node=G.composition(key).get((x,yy,z))
+                if G.solid(node):errors.append((key,'socket in retained composition wall/fence',s['id'],x,yy,z,node))
+        if key in CAPITALS and G.contains(p['castle'],x,z):
+            if s['id'] not in p['castle_sockets']:
+                errors.append((key,'socket in castle footprint',s['id'],x,z))
+            else:
+                # Two-node outer walls; room wall ring and service/foyer budget.
+                r=p['castle'];inside=[r[0]+2,r[1]+2,r[2]-2,r[3]-2]
+                rm=p['room'];ring=[rm[0]-1,rm[1]-1,rm[2]+1,rm[3]+1]
+                if not G.contains(inside,x,z) or (G.contains(ring,x,z) and not G.contains(rm,x,z)):
+                    errors.append((key,'socket in reserved castle wall',s['id'],x,z))
+        for b in bs:
+            if G.contains(box(b),x,z) and s['owner']!=b['id']:
+                errors.append((key,'foreign socket in footprint',s['id'],b['id'],x,z))
+            for yy in [y,y+1]:
+                node=G.blocked(key,b,x,yy,z,p['shifts'])
+                if node:errors.append((key,'socket in wall/fence',s['id'],b['id'],x,yy,z,node))
+    return errors
 
 
 def validate_geometry():
@@ -109,7 +189,7 @@ def validate_geometry():
                     assert not(abs(socket['x']-x)<=6 and abs(socket['z']-z)<=6),(key,socket['id'],'socket in clear arrival reservation')
         if key in CAPITALS:
             b=P[key]['castle']; assert sorted([b[2]-b[0]+1,b[3]-b[1]+1])==[35,45]
-            assert area(P[key]['room'])==345
+            assert area(P[key]['room'])==805
             # Sample the *existing* fitted terrain under the proposed castle
             # on all three seeds. New earthwork is explicitly not simulated.
             for seed in SEEDS:
@@ -120,6 +200,8 @@ def validate_geometry():
                         assert w is False or w<=h,(key,seed,x,z,'castle reaches sampled water')
         else:
             assert BP[key]['landmarks']['spawn']=={'x':0,'y':1,'z':0}
+        errors=clearance_errors(key)
+        assert not errors, errors[:8]
         count+=1
     return count
 
@@ -129,17 +211,17 @@ shared.append(C.add('The enlarged core consumes district land: CORE/CORE_GATE/CO
     [(W40+'capital_planner.lua','CORE = 48'),(W40+'capital_planner.lua','BUILD[k] = not WET[k]'),('tools/r70_design/export.lua','opt.CORE, opt.CORE_GATE')]))
 shared.append(C.add('This is a planner sensitivity experiment: real world assembly and capital planning, with only those three options enlarged. Existing civic_width=96, terrain, buildings and the old core_landing detector remain. Final earthwork, landing heights, collision-free generated streets and performance are not verified.',
     [('tools/r70_design/export.lua','Sensitivity experiment ONLY'),(W40+'r7_capitals.lua','along >= 46 and along <= 49'),(W40+'source/simple_map.lua','id="capital_dwarf"')], 'Measured scope / limitations'))
-shared.append(C.add('Implementation must coordinate civic_width (96 to 112), the flat-core/collar fitting and road exclusion, BOUNDS.capital_core (currently ±49), and the separate hard-coded ±49 exclusion in plot-collar writing. Changing the planner alone does not enlarge a buildable civic core.',
-    [(W40+'source/simple_map.lua','id="capital_dwarf"'),(W40+'height.lua','profile.civic_width)'),(W40+'height.lua','local reach = fitting.profile.civic_width / 2 + 1'),(W40+'r7_settlement.lua','capital_core ='),(W40+'r7_settlement.lua','math.abs(lx) > 49')]))
+shared.append(C.add('Implementation must coordinate civic_width 96→112; CORE/CORE_GATE/CORE_KEEP 48/49/52→56/57/60; RADIUS=49 in all six Lua compositions; precinct_ring.RADIUS=48; the ±47 corner towers in Dur Brannoc, Gor Drazhak and Nhal Veyr; city_green.CORE_HALF=49; the flat-core/collar and road fitting; BOUNDS.capital_core ±49→±57 and the separate ±49 plot-collar exclusion; r7_capitals core_landing 46…49 and built=96*96. The river keep-out formula grows from 99.9 to 111.2 nodes: it changes rivers throughout the world, not just paving beside these cities. The outer capital reservation stays 512 nodes.',
+    [(W40+'source/simple_map.lua','id="capital_dwarf"'),(W40+'height.lua','profile.civic_width)'),(W40+'height.lua','local reach = fitting.profile.civic_width / 2 + 1'),(W40+'r7_settlement.lua','capital_core ='),(W40+'r7_settlement.lua','math.abs(lx) > 49'),(WP+'precinct_ring.lua','M.RADIUS = 48'),(WP+'city_green.lua','CORE_HALF = 49'),(W40+'r7_capitals.lua','local built = 96 * 96'),(W40+'height.lua','r = profiles[a.template_id].civic_width / 2'),(W40+'terrain_data.lua','capital_keepout_margin = 32'),*[(WP+k+'.lua','local RADIUS = 49') for k in CAPITALS],*[(WP+k+'.lua','for _, corner in ipairs({{-47') for k in ['dur_brannoc','gor_drazhak','nhal_veyr']]]))
 shared.append(C.add('All six cities have four planned OUTER gates. Core entries differ: four authored gatehouses in Dur Brannoc, Highcourt, Gor Drazhak and Nhal Veyr; three in Lethariel; no such gatehouse kit in Kezamba. Extend the dry core entries by eight nodes, rebuild boundary rings and connect each avenue; do not add a northern gatehouse across Lethariel’s lake.',
     [(W40+'capital_planner.lua','for c = 1, 4 do'),(WP+'gate_watch.lua','open core has no gatehouse'),(WP+'lethariel.lua','id = "gate_east"'),(WP+'precinct_ring.lua','function')]))
 shared.append(C.add('The avenue starts at CORE_GATE+1; when its core landing is wet it searches for a dry shore start. core_landing still scans along 46…49 and y −1…1. New dry thresholds and Kezamba’s deck extensions need a corresponding landing scan and height check; the lake edge must not silently acquire a land bridge.',
     [(W40+'capital_planner.lua','local a0 = {dx * (P.CORE_GATE + 1)'),(W40+'capital_planner.lua','if not landed then'),(W40+'r7_capitals.lua','along >= 46 and along <= 49')]))
 shared.append(C.add('Patrol routes cache each fixed leg by settlement and body class in memory. Longer capital patrol legs may follow generated streets (street reach 24, rise 6); failed legs can remain unavailable until restart. Re-author waypoint groups/order and test doors, stairs and clear walking corridors; there is no saved route-cache migration to design.',
     [(MOBS+'routes.lua','Kept in memory only'),(MOBS+'routes.lua','STREET_REACH = 24'),(MOBS+'routes.lua','until the server restarts'),(MOBS+'routes.lua','function grug_mobs.route_settlement')]))
-shared.append(C.add('Source conflict for Opus: world_zones.md specifies FOUR royal guards, but ROYAL_GUARD_SOCKET binds only throne_guard_west and throne_guard_east. The maps reserve those two posts three nodes from king and two unbound spare positions; they do not claim four current royal slots or authorize an encounter change.',
-    [('docs/design/world_zones.md','king has exactly four'),(MOBS+'start_npcs.lua','local ROYAL_GUARD_SOCKET'),(MOBS+'start_npcs.lua','ROYAL_GUARD_SOCKET[socket.id]')], 'Verified source conflict'))
-shared.append(C.add('The 60-node rule is a 3D reward-participation distance to the king’s death position (with a separate 60-second death grace). king_def instead sets a 30-node chase leash; aggro measures it from the chase anchor. Royal guards have no independent leash and use a 5-node follow distance. Keep combat within the reserved 23×15 throne room; neither a whole-core arena nor a larger leash is approved.',
+shared.append(C.add('Exactly two royal guards is deliberate, since commit 494a6073: only throne_guard_west/east bind to the king. door_guard_west/east remain ordinary guard posts at the great door; all four positions are shown. There are no unbound spare guards. Later documentation cleanup must correct world.md:497–498, world_zones.md:1869/1876/1886–1888/1898, biomes_mobs.md:849 and the comment in start_npcs.lua:921. These stale four-guard and five-NPC statements do not authorize changing the encounter.',
+    [(MOBS+'start_npcs.lua','local ROYAL_GUARD_SOCKET'),('tools/r70_design/data/royal-binding.txt','door guard still resolves as a royal guard'),('docs/design/world.md','rules are implemented by the six'),('docs/design/world_zones.md','king has exactly four'),('docs/design/world_zones.md','five-NPC royal encounter'),('docs/design/biomes_mobs.md','four fixed L60 elite royal guards'),(MOBS+'start_npcs.lua',"A royal group: a capital's king and his four")], 'Verified code / stale documentation'))
+shared.append(C.add('The 60-node rule is a 3D reward-participation distance to the king’s death position (with a separate 60-second death grace). king_def instead sets a 30-node chase leash; aggro measures it from the chase anchor. Royal guards have no independent leash and use a 5-node follow distance. The new room is an 805-node² floor reservation, not a combat boundary: the king can chase out of it and the chase anchor can move between pulls. No existing mechanism keeps combat in the room; this proposal changes neither leash nor encounter rules.',
     [(MOBS+'bosses.lua','local LEDGER_RANGE = 60'),(MOBS+'bosses.lua','near = dx * dx + dy * dy'),(MOBS+'bosses.lua','_grug_tier = "elite", _grug_leash_range = 30'),(MOBS+'aggro.lua','vector.distance(pos, anchor) > range'),(MOBS+'bosses.lua','local ROYAL_FOLLOW_DISTANCE = 5'),(MOBS+'bosses.lua','guard._grug_no_leash = true')]))
 shared.append(C.add('Required capital plots are the eight service plots, the inn and miners_guild. Moving a plot moves its rotated sockets with it; ids keep the plot_id/socket_id prefix. The service annexes list the concrete bindings to preserve, including guild leader/exchange/clerk/sorter/porter, innkeeper, Housing Steward, Crownbinder and Decor Merchant.',
     [(W40+'r7_capitals.lua','local function required_of'),(W40+'r7_settlement.lua','prefix = descriptor.plot_id'),(WP+'capital_services.lua','M.PLOTS ='),(WP+'capital_services.lua','M.GUILD_HALL ='),(HOME+'locations.lua','id="dur_brannoc"'),('docs/design/settlements.md','## Housing Stewards'),('docs/design/settlements.md','## Crownbinders')]))
@@ -164,7 +246,7 @@ def place_claims(key):
     if key in CAPITALS:
         costs.append(C.add(f'{NAMES[key]}: reserve the shared castle at {point(*p["castle"][:2])}–{point(*p["castle"][2:])}, facing {p["facing"]}. Relocate {len(moved)} core templates; '+
             ('retire '+', '.join(p['remove'])+' as freestanding strips; ' if p['remove'] else '')+
-            'the coordinate schedule gives every move. Existing template cell envelopes are checked for overlap; future castle cells and route clearance remain unverified.',refs+[('tools/r70_design/proposals.py',f"P['{key}']"),('tools/r70_design/build.py','def validate_geometry')], 'Proposal / 2D checked'))
+            f'the full export also contains {len([s for s in sockets(key,True) if s["origin"]=="Lua / adapter"])} Lua-authored or generated sockets outside template ownership, among {len(sockets(key))} exported points, in a {len((ROOT/source).read_text().splitlines())}-line composition. Those points, their furniture and duplicate coordinates all need review; this is not merely a template translation. The schedule includes every exported socket. Template envelopes, door exits, full road widths and socket collisions against exported template cells are checked; final 3D routes remain unverified.',refs+[('tools/r70_design/proposals.py',f"P['{key}']"),('tools/r70_design/build.py','def validate_geometry')], 'Proposal / 2D checked'))
         gate='four inner gatehouses' if key not in ['lethariel','kezamba'] else ('three inner gatehouses and the open lake shore' if key=='lethariel' else 'south/west ground posts and east/north boardwalk thresholds')
         costs.append(C.add(f'{NAMES[key]}: move the {gate} with the expanded boundary. The four outer gates and their avenues are replanned per seed; their measured positions are in the city views. Update core_landing, boundary masking and the road/collar exclusions together.',refs+[(W40+'r7_capitals.lua','local function core_landing'),(W40+'capital_planner.lua','local a0 = {dx * (P.CORE_GATE + 1)')]))
         costs.append(C.add(f'{NAMES[key]}: re-author {", ".join(p["watch_ids"])} in {key}_watch; the proposed points are in the socket schedule. '+
@@ -175,10 +257,10 @@ def place_claims(key):
         old=next(s for s in v['landmarks']['sockets'] if s['id']=='king')
         hall=next(b for b in v['buildings'] if b['id'] in p['replace'])
         hall_file='mods/MAPGEN/grug_mapgen/building_templates/templates/'+hall['template']+'.tpl'
-        costs.append(C.add(f'{NAMES[key]}: king moves from {point(old["x"],old["z"])} to {point(*p["throne"])}; throne_guard_west/east follow to posts three nodes away. Preserve their ids and royal binding, then author their y and facing from the actual throne floor. The 60-node reward sphere follows the death position; it is not a core boundary. Resolve the two-versus-four guard conflict before adding slots.',[(source,'id = "'+hall['id']+'"'),(hall_file,'id=king role=king'),(hall_file,'id=throne_guard_west'),(MOBS+'start_npcs.lua','local ROYAL_GUARD_SOCKET'),(MOBS+'bosses.lua','near = dx * dx + dy * dy')]))
+        costs.append(C.add(f'{NAMES[key]}: king moves from {point(old["x"],old["z"])} to {point(*p["throne"])}; throne_guard_west/east follow to posts three nodes away. Preserve their ids and royal binding, then author their y and facing from the actual throne floor. The 60-node reward sphere follows the death position; it is not a core boundary. Keep door_guard_west/east as ordinary guards at the great door, and carry hall_idle_west/east/service and hall_waypoint into the new floor allocation; add no guard slots.',[(source,'id = "'+hall['id']+'"'),(hall_file,'id=king role=king'),(hall_file,'id=throne_guard_west'),(MOBS+'start_npcs.lua','local ROYAL_GUARD_SOCKET'),(MOBS+'bosses.lua','near = dx * dx + dy * dy')]))
         qs=next(s for s in v['landmarks']['sockets'] if s['role']=='quest')
         wp=next(s for s in sockets(key,True) if s['id']=='travel_waypoint')
-        costs.append(C.add(f'{NAMES[key]}: preserve {qs["id"]} at its named public building and preserve vendor_race/vendor_general when their stalls move. travel_waypoint is proposed at {point(wp["x"],wp["z"])}; keep its mailbox and arrival cells with it. All ten required district plots and the concrete service sockets listed below must survive replanning; no service is transferred to the castle.',refs+[(WP+'capital_services.lua',key+' ='),(W40+'r7_capitals.lua','local function required_of'),(QUEST+'npcs.lua',f'"{key}"')]))
+        costs.append(C.add(f'{NAMES[key]}: preserve {qs["id"]} at its named public building and {('keep vendor_race/vendor_general at their unchanged positions' if key=='lethariel' else 'carry vendor_race/vendor_general with their stalls where moved')}. travel_waypoint is proposed at {point(wp["x"],wp["z"])}; keep its mailbox and arrival cells with it. All ten required district plots and the concrete service sockets listed below must survive replanning; no service is transferred to the castle.',refs+[(WP+'capital_services.lua',key+' ='),(W40+'r7_capitals.lua','local function required_of'),(QUEST+'npcs.lua',f'"{key}"')]))
         if key=='lethariel':
             text='Lethariel: preserve the MERE wedge and its one-node shore margin, including the tip at (0,22); enlarge on the dry south-west. The mere district remains pinned toward lethariel_crown_lake. Extend the authored mask from the water source if the core boundary changes; do not extrapolate the present finite MERE table blindly.'
             r=[(WP+'lethariel.lua','local MERE_FIRST = 22'),(WP+'lethariel.lua','local SHORE_MARGIN = 1'),(W40+'r7_capital_blueprint.lua','lake = "lethariel_crown_lake"')]
@@ -196,7 +278,7 @@ def place_claims(key):
         costs.append(C.add(f'{NAMES[key]}: travel_waypoint moves {point(old["x"],old["z"])} → {point(*wp)}. Its reach-3 pad gains a 13×13 clear reservation; the mailbox moves to {point(wp[0]+2,wp[1]+1)}. Preserve all four arrival sides and leave the Quartermaster at its current vendor socket.',[(source,'local WAYPOINT ='),(source,'id = "travel_waypoint"'),(WP+'dressing.lua','function M.waystone'),(HOME+'waypoints.lua','local function arrival_at')]))
         qs=next(s for s in sockets(key,True) if s['id']=='hall_quest')
         home=re.search(r'\{id="'+key+r'"[^\n]*socket="([^"]+)"',(ROOT/HOME/'locations.lua').read_text()).group(1)
-        costs.append(C.add(f'{NAMES[key]}: hall_quest follows its host to {point(qs["x"],qs["z"])}; quest_cook and cook_oven keep their projection-adapter positions. Keep the inn/home binding {home}, both quest giver ids and their quest data. Recheck the oven, home arrival and all idle_spare_* points; listed displaced spares move to the clearing’s edge.',refs+[(W40+'r7_settlement.lua','rows[#rows+1]={id="quest_cook"'),(HOME+'locations.lua',f'id="{key}"'),(QUEST+'npcs.lua',f'"{key}", "hall_quest"')]))
+        costs.append(C.add(f'{NAMES[key]}: {("hall_quest stays at (−28,26); the workyard is kept south of its doorstep, with two clear rows before the hall" if key=="hearthpine" else "hall_quest follows its host to "+point(qs["x"],qs["z"]))}; quest_cook and cook_oven keep their projection-adapter positions. Keep the inn/home binding {home}, both quest giver ids and their quest data. Recheck the oven, home arrival and all idle_spare_* points; listed displaced spares move to the clearing’s edge.',refs+[(W40+'r7_settlement.lua','rows[#rows+1]={id="quest_cook"'),(HOME+'locations.lua',f'id="{key}"'),(QUEST+'npcs.lua',f'"{key}", "hall_quest"')]))
         watches=[s['id'] for s in sockets(key) if s['role']=='guard_patrol']
         costs.append(C.add(f'{NAMES[key]}: retain the five-point patrol group and order ({", ".join(watches)}), re-author its centre points as listed, and rebuild its cached legs after restart. Keep gate guards at their existing posts. Door routes, furniture clearance and the moved building approaches need desktop/web walking checks; no runtime path is certified by the lines on this page.',refs+[(MOBS+'routes.lua','Kept in memory only'),(MOBS+'start_npcs.lua','local function standing')]))
         costs.append(C.add(FURNITURE[key],refs+[(WP+key+'.lua','local SOCKETS ='),('tools/r70_design/proposals.py','FURNITURE =')], 'Proposal / source geometry read'))
@@ -312,16 +394,13 @@ def map_svg(key,proposed=False):
         for d in b['doors']:
             out += [f'<circle cx="{d["x"]+dx}" cy="{-d["z"]-dz}" r=".9" class="door"><title>{E(b["id"])} door</title></circle>']
     if proposed and capital:
-        r=p['castle'];out += [rect(r,'castle'),rect(p['room'],'throne-room')]
-        out += [label((r[0]+r[2])/2,r[3]-4 if p['facing']=='east' else (r[1]+r[3])/2,'CASTLE','castle-label')]
+        r=p['castle'];rm=p['room'];out += [rect(r,'castle'),rect([r[0]+2,r[1]+2,r[2]-2,r[3]-2],'castle-inner'),rect([rm[0]-1,rm[1]-1,rm[2]+1,rm[3]+1],'room-wall'),rect(rm,'throne-room')]
+        out += [label((r[0]+r[2])/2,r[1]+1 if p['facing']=='north' else r[3]-3,'CASTLE','castle-label')]
         rm=p['room'];out += [label((rm[0]+rm[2])/2,(rm[1]+rm[3])/2-2,'THRONE','room-label')]
         x,z=p['throne'];out += [f'<circle cx="{x}" cy="{-z}" r="60" class="reward-radius"><title>60-node reward radius if the king dies at the proposed seat; horizontal slice, not a leash.</title></circle>']
-        # Two explicitly unbound possible posts, not invented live NPC sockets.
-        for sx,sz in [(x,z-3),(x,z+3)] if p['facing']!='east' else [(x-3,z),(x+3,z)]:
-            out += [f'<circle cx="{sx}" cy="{-sz}" r=".9" class="spare-guard"><title>Unbound spare guard position; resolve guard count first.</title></circle>']
         # Entry marker only, no architecture.
         ex,ez=((r[0]+r[2])/2,r[1]) if p['facing']=='south' else (((r[0]+r[2])/2,r[3]) if p['facing']=='north' else (r[2],(r[1]+r[3])/2))
-        out += [f'<circle cx="{ex}" cy="{-ez}" r="1.5" class="entry"/>',label(ex,ez-3,'entry','small-label')]
+        out += [f'<circle cx="{ex}" cy="{-ez}" r="1.5" class="entry"/>',label(ex,ez+3 if p['facing']=='north' else ez-3,'entry','small-label')]
     if not capital:
         out += [f'<circle cx="0" cy="0" r="1.5" class="spawn"/><path d="M-2 0H2M0 -2V2" class="spawn-cross"/>']
         out += [label(0,-5,'spawn','small-label')]
@@ -340,8 +419,8 @@ def map_svg(key,proposed=False):
             txt='Q' if role=='quest' else ('O' if role=='public_station' else 'V')
             out += [f'<g class="service-mark"><title>{E(sid)} {point(x,z)}</title><circle cx="{x}" cy="{-z}" r="1.7" class="service {role}"/>',label(x,z-.7,txt,'socket-letter'),'</g>']
         elif role!='waypoint':
-            royal=sid.startswith('throne_guard_')
-            out += [f'<circle cx="{x}" cy="{-z}" r="{.85 if royal else .65}" class="socket-dot {"royal" if royal else "optional-socket"}"><title>{E(sid)} · {role} {point(x,z)} y={s["y"]}'+(' (proposed x/z; y not designed)' if proposed else '')+'</title></circle>']
+            royal=sid.startswith('throne_guard_');door_guard=sid.startswith('door_guard_')
+            out += [f'<circle cx="{x}" cy="{-z}" r="{.85 if royal else 1.05 if door_guard else .65}" class="socket-dot {"royal" if royal else "door-guard" if door_guard else "optional-socket"}"><title>{E(sid)} · {role} {point(x,z)} y={s["y"]}'+(' (proposed x/z; y not designed)' if proposed else '')+'</title></circle>']
     out += [label(-72,69,'N ↑ +z','axis'), label(65,-69,'+x →','axis'),
         '<path d="M-70 67v2h20v-2M-60 67v2" class="scale"/>',label(-60,-65,'20 nodes','scale-label')]
     if key in ['lethariel','kezamba']:
@@ -364,9 +443,10 @@ def schedule(key):
     before={s['id']:s for s in sockets(key)}; sr=[]
     for s in sockets(key,True):
         old=before[s['id']]; changed=old['x']!=s['x'] or old['z']!=s['z']
-        if changed or s['role'] in ['quest','king','waypoint'] or s['id'] in ['cook_oven','home_innkeeper']:
-            sr.append(f'<tr><td><code>{s["id"]}</code></td><td>{s["role"]}</td><td>{point(old["x"],old["z"])}</td><td>{point(s["x"],s["z"])}</td></tr>')
-    out+='<details><summary>Named sockets · moves and retained services</summary><p>Horizontal reservations only. Retain stable ids; re-author y, facing and the associated furniture with the final floor. Small dots on the maps show every exported point; no runtime route is implied.</p><div class="table-scroll"><table><thead><tr><th>Socket</th><th>Role</th><th>Today</th><th>Proposed</th></tr></thead><tbody>'+''.join(sr)+'</tbody></table></div></details>'
+        note=('MOVE; ' if changed else 'retain; ')+(s['affected_by'] or 'outside moved footprints')
+        if s['id'] in p.get('castle_sockets',{}):note='new castle floor; '+note
+        sr.append(f'<tr data-socket="{key}:{s["id"]}"><td><code>{s["id"]}</code></td><td>{s["role"]}<br>{s["origin"]}</td><td>{point(old["x"],old["z"])}</td><td>{point(s["x"],s["z"])}</td><td>{E(note)}</td></tr>')
+    out+=f'<details><summary>All {len(sr)} exported sockets · complete horizontal schedule</summary><p>Every exported point and the three start cooking points, including unchanged ones. The last column finds old/new footprints within two nodes; nothing is filtered out. Template points, gate-watch loops and booth aliases follow their hosts. Other loose points within two nodes follow the nearest host unless explicitly placed; these are proposed furniture attachments, not new runtime bindings. Retain ids and roles. Re-author y, facing and attached furniture with the final floor; no runtime route is implied.</p><div class="table-scroll"><table><thead><tr><th>Socket</th><th>Role / origin</th><th>Today</th><th>Proposed</th><th>Change / nearby footprint</th></tr></thead><tbody>'+''.join(sr)+'</tbody></table></div></details>'
     return out
 
 
@@ -398,11 +478,11 @@ def seed_metrics(key,seed):
 
 def seed_section(key):
     metrics=[seed_metrics(key,s) for s in SEEDS]
-    c=C.add(f'{NAMES[key]}: the three seeds {", ".join(SEEDS)} placed all {metrics[0]["required"]} required district plots in the enlarged-mask experiment. Plot totals changed '+
+    c=C.add(f'{NAMES[key]}: the three seeds {", ".join(SEEDS)} placed all {metrics[0]["required"]} required district plots in the MASK-ONLY experiment (civic_width=96 and today’s terrain). Plot totals changed '+
         ', '.join(f'{m["before"]}→{m["after"]}' for m in metrics)+', and '+', '.join(str(m['moved']) for m in metrics)+
         ' surviving plots changed x/z, y or orientation. The removed buildable band is approximately '+str(metrics[0]['lost_area'])+
         ' square nodes on the 2-node sample grid; this is sampled eligible ground, not a sum of lost building footprints.',
-        [('tools/r70_design/export.lua','out.lost_band_buildable ='),('tools/r70_design/build.py','def seed_metrics')]+[(f'tools/r70_design/data/{s}-proposed.json','"capitals"') for s in SEEDS], 'Measured / limited to three seeds')
+        [('tools/r70_design/export.lua','out.lost_band_buildable ='),('tools/r70_design/build.py','def seed_metrics')]+[(f'tools/r70_design/data/{s}-proposed.json','"capitals"') for s in SEEDS], 'Measured / mask only, three seeds')
     rows=[];lost=[]
     for seed,m in zip(SEEDS,metrics):
         rows.append(f'<tr><td><code>{seed}</code></td><td>{m["before"]} → {m["after"]}</td><td>{m["moved"]}</td><td>{m["required"]}/{m["required"]}</td><td>{m["area_before"]:,} → {m["area_after"]:,}</td></tr>')
@@ -422,14 +502,15 @@ def section(key,n):
     h+='<div class="pair">'+''.join('<figure><figcaption><span>'+('PROPOSED' if pr else 'TODAY')+'</span>'+('Land reservation · decision pending' if pr else '0.69.0 · exported from code')+'</figcaption>'+map_svg(key,pr)+'</figure>' for pr in [False,True])+'</div>'
     if capital:
         old=next(b for b in BP[key]['buildings'] if b['id'] in p['replace']);a=old['w']*old['d']
-        h+=f'<div class="metrics"><span><b>{old["w"]}×{old["d"]} → 45×35</b>royal footprint · {a:,} → 1,575 nodes²</span><span><b>+8 nodes / side</b>nominal civic radius 48 → 56</span><span><b>23×15</b>throne-room land inside castle</span></div>'
+        h+=f'<div class="metrics"><span><b>{old["w"]}×{old["d"]} → 45×35</b>royal footprint · {a:,} → 1,575 nodes²</span><span><b>+8 nodes / side</b>nominal civic radius 48 → 56</span><span><b>35×23 = 805</b>hall-floor reservation · walls separate</span></div>'
+        h+=f'<p class="small">Today’s reachable hall floor (checker): {402 if key=="kezamba" else 684} nodes² → hall-floor reservation 805 (+{"100.2" if key=="kezamba" else "17.7"}%). The former 345-node² reservation is replaced. Walls, foyer and service circulation have separate budgets above.</p>'
     else:
         w=p['centre'][2]-p['centre'][0]+1;d=p['centre'][3]-p['centre'][1]+1
         h+=f'<div class="metrics"><span><b>13×13</b>clear waystone pocket · pad stays 7×7</span><span><b>{w}×{d}</b>proposed centre envelope · mixed paving/ground</span><span><b>+0</b>growth of the town’s total envelope</span></div>'
     h+='<p>'+E(p['intent'])+'</p>'
     if capital and key not in ['lethariel','kezamba']:
         h+='<p>The western market shifts five nodes outward, its edge house shifts seven, and the statue moves three nodes east so the wider colonnades have room.</p>'
-    h+='<div class="legend"><span class="legend-castle">Castle reserve</span><span class="legend-move">Moved building</span><span class="legend-pad">Waystone / arrival</span><span>Q quest · V vendor · O oven · dots: sockets</span></div>'
+    h+='<div class="legend"><span class="legend-castle">Castle reserve</span><span class="legend-move">Moved building</span><span class="legend-pad">Waystone / arrival</span><span>Q quest · V vendor · O oven · dark royal posts · red door guards</span></div>'
     h+='<div class="building-key">'+''.join(f'<span><b>{b["number"]}</b> {E(b["id"].replace("_"," "))}</span>' for b in buildings(key))+'</div>'
     h+=schedule(key)
     h+='<div class="cost-card"><h4>What this commits the implementation to</h4><ul>'+''.join(cost(c) for c in costs)+'</ul></div>'
@@ -438,21 +519,86 @@ def section(key,n):
     return h
 
 
+def compact_svg(key):
+    """A compared land budget, deliberately without a second socket schedule."""
+    old=P[key];P[key]=COMPACT[key]
+    try:
+        p=P[key]
+        out=[f'<svg class="compact-plan" viewBox="-80 -80 160 160" role="img" aria-label="{NAMES[key]} radius 48 alternative">',
+             '<title>Radius 48 alternative: same castle, tighter streets and one-row doorstep</title>',
+             '<rect x="-80" y="-80" width="160" height="160" class="map-ground"/>',
+             rect([-48,-48,48,48],'old-boundary')]
+        for flat,width in p['roads']:out.append(poly(list(zip(flat[::2],flat[1::2])),'road',f'style="stroke-width:{width}"'))
+        for b in buildings(key,True):
+            out.extend([rect(box(b),'building changed' if b['changed'] else 'building'),label(b['x']+(b['w']-1)/2,b['z']+(b['d']-1)/2,b['number'],'building-number')])
+        out.extend([rect(p['castle'],'castle'),rect(p['room'],'throne-room'),label(0,24,'CASTLE','castle-label'),
+            label(0,8,'doorstep only','small-label'),label(-65,65,'N ↑ +z','axis'),
+            '<path d="M-70 67v2h20v-2" class="scale"/>',label(-60,-65,'20 nodes','scale-label'),'</svg>'])
+        return ''.join(out)
+    finally:P[key]=old
+
+
+def validate_compact():
+    for key in COMPACT:
+        old=P[key];P[key]=COMPACT[key]
+        try:
+            boxes=[(b['id'],[b['cells_box'][k] for k in ['x1','z1','x2','z2']]) for b in buildings(key,True)]+[('castle',P[key]['castle'])]
+            for i,(name,b) in enumerate(boxes):
+                assert max(abs(n) for n in b)<=49,(key,name,'compact envelope')
+                for name2,c in boxes[i+1:]:assert not overlap(b,c),(key,name,name2,'compact overlap')
+            assert not clearance_errors(key,False),clearance_errors(key,False)
+        finally:P[key]=old
+    return len(COMPACT)
+
+
+def comparisons():
+    room=C.add('The shared castle stays 45×35 = 1,575 nodes². The former proposal reserved only 23×15 = 345 for its throne room. The checker measured today’s reachable hall floor as 684 in five capitals and 402 in Kezamba. The new hall-floor reservation is 35×23 = 805 in every castle: +121 (+17.7%) or +403 (+100.2%). Its walls are outside that area: 304 nodes² for the two-node outer wall band, 120 for the one-node hall wall ring, and 346 for foyer, stairs, service space and circulation. Together they use exactly 1,575. This is a compact hall-led castle; no separate ground-level courtyard is promised. The later architecture must keep this room reservation and provide more reachable floor than today after placing the throne and furnishings; 805 is the reserved floor area, not a measured furnished result.',
+        [('tools/r70_design/data/design-check.md','reachable hall floor'),('tools/r70_design/proposals.py','one common internal allocation'),('tools/r70_design/build.py','assert area(P[key]')], 'Proposal / reported baseline measurement')
+    template=C.add('The castle requires new templates and roster use entries, preserving all live socket ids and roles. Format §6.1 fixes an existing template’s box, pivot and point ids/groups/order/faces against BASELINE; the larger castle cannot be delivered by silently resizing the old hall. Plan the BASELINE move with the coordinator under §6.2 and run the full building-template gate (format, nodes/palettes, point structure, standing/reachability and all compositions). Update tools/r58_townfix/portable_test.lua HALLS for the replacement templates; keeping only the old hall tests would miss the castles.',
+        [('docs/technical/building-template-format.md','### 6.1'),('docs/technical/building-template-format.md','moves it with the coordinator'),('tools/building_templates/check.py','def validate('),('tools/r58_townfix/portable_test.lua','local HALLS =')])
+    height=C.add('The castle must stay within BOUNDS.capital_core y=−2…40; today’s highest core top is 31 (Kezamba: 30). Growing horizontally grants no extra height. The 96×96 rule needs coordinated documentation changes in settlements.md and world_zones.md:721/810/1741/1765 (also the 96-node wording at 1865). Duplicated composition coordinates need updating too: for example Sunscar’s BREASTWORKS still names the original hall and armoury boxes separately from their layout placements.',
+        [(W40+'r7_settlement.lua','capital_core ='),(WP+'highcourt.lua','it reaches y 31'),('docs/design/settlements.md','96'),('docs/design/world_zones.md','flat 96-node civic core'),('docs/design/world_zones.md','capital only the 96'),('docs/design/world_zones.md','dry capital-owned 96'),('docs/design/world_zones.md','A fixed 96'),(WP+'sunscar.lua','local BREASTWORKS =')])
+    fleet=C.add('The checker measured 40 fleet seeds with civic_width=112 and CORE/CORE_GATE/CORE_KEEP=56/57/60, using today’s authored cores and landing detector. All 240 proposed capitals placed every required plot, with no load failure; castle samples were dry and flat. Seven capital/seed unrouted-street cases appeared and three disappeared. Infeasible seeds: Kezamba 3→3, Lethariel 0→2, Gor Drazhak 2→0; the others 0→0. This differs from the three-seed MASK-ONLY experiment, which retains civic_width=96. On seed 12345 the proposed plot totals are Dur Brannoc 50 (mask only) versus 47 (civic112), and Kezamba 49 versus 51. Neither experiment builds the new cores. The implementation must run tools/seed_fleet/run.sh full, not just these 40 seeds, because civic_width changes terrain and river planning for every seed.',
+        [('tools/r70_design/data/design-check.md','New measurement'),('tools/r70_design/data/checker-fleet.json','scope'),('tools/r70_design/export.lua','Sensitivity experiment ONLY'),('tools/seed_fleet/run.sh','full')], 'Measured by checker / aggregates rechecked, today’s cores')
+    choice=C.add('The Dur Brannoc, Highcourt, Gor Drazhak and Nhal Veyr castle boxes already fit inside today’s ±49. Radius 56 chiefly buys room for moved neighbours, a forecourt and the bypass; the castle alone does not require it. A checked radius-48 land alternative moves the same castle six nodes south to (−22,4)…(22,38), keeps the old gatehouses, narrows the main approach 9→5 and bypass 5→3, and leaves only the z=3 doorstep between the crossing and great door. The eastern work buildings move six nodes, rather than eight (Highcourt’s yard also one north). Highcourt must also move its chapel west and retire north_house and chapel_house in this alternative. Markets and colonnades retain their present spacing. This saves the radius-induced district and river change in those four cities, but gives up the generous civic arrival and squeezes service circulation. Lethariel and Kezamba’s proposed boxes extend beyond ±49; staying at 48 there needs a different arrangement. Recommendation: 56 for the civic space, with the district/river cost explicitly accepted. The compact alternative has footprint, street-width and door checks only; it needs its own socket/furniture schedule before implementation. If only two cities grow, their keep-outs can still change rivers world-wide.',
+        [('tools/r70_design/proposals.py','COMPACT={}'),('tools/r70_design/build.py','def validate_compact'),(W40+'r7_settlement.lua','capital_core ='),(W40+'height.lua','r = profiles[a.template_id].civic_width / 2')], 'Alternative / bounded 2D checked')
+    out='<section class="comparisons"><div class="eyebrow">THE TWO DECISIONS</div><h2>A larger hall. Space around it.</h2><p>'+E(room['text'])+' '+ref(room)+'</p>'
+    out+='<div class="table-scroll"><table><thead><tr><th>Capital</th><th>Old royal footprint</th><th>New footprint</th><th>Today’s reachable hall*</th><th>New floor reservation</th></tr></thead><tbody>'
+    for key in CAPITALS:
+        out+=f'<tr><td>{NAMES[key]}</td><td>{529 if key=="kezamba" else 837}</td><td>1,575</td><td>{402 if key=="kezamba" else 684}</td><td>805</td></tr>'
+    out+='</tbody></table></div><p class="small">Areas in nodes². *The checker’s flood-fill measurement of today’s template cells, not the old 345-node² proposal reservation. The 805 is reserved room floor before furnishing; future reachable floor must exceed today. Architecture and headroom are not yet built.</p>'
+    out+='<div class="cost-card"><ul>'+cost(template)+cost(height)+'</ul></div><h3>48 or 56: what the extra land buys</h3><p>'+E(choice['text'])+' '+ref(choice)+'</p><div class="compact-grid">'
+    for key in COMPACT:
+        out+=f'<figure><figcaption>{NAMES[key]} · RADIUS 48 alternative</figcaption>'+compact_svg(key)+'</figure>'
+    out+='</div><p class="small">Same scale as the twelve main plan pairs. These are land alternatives, without socket or furniture layouts. Building numbers match each capital’s main key. The recommended 56 layouts appear below.</p>'
+    out+='<h3>40 fleet seeds · measured with today’s cores</h3><p>'+E(fleet['text'])+' '+ref(fleet)+'</p><div class="table-scroll"><table><thead><tr><th>Capital</th><th>Mean plot change</th><th>Worst seed</th><th>Unrouted cases new / gone</th><th>Seeds reporting infeasible</th></tr></thead><tbody>'
+    for key in ['gor_drazhak','highcourt','kezamba','nhal_veyr','dur_brannoc','lethariel']:
+        m=FLEET['summary'][key]
+        # Preserve the check report’s rounded mean; exact means in the data ledger.
+        mean=format(m['mean_delta'],'.2f' if key=='nhal_veyr' else '.1f')
+        out+=f'<tr><td>{NAMES[key]}</td><td>{mean}</td><td>{m["worst_delta"]}</td><td>{m["new_unrouted_cases"]} / {m["removed_unrouted_cases"]}</td><td>{m["infeasible"]["today"]} → {m["infeasible"]["civic112"]}</td></tr>'
+    out+='</tbody></table></div><details><summary>The 40 exact seed strings</summary><p>'+', '.join('<code>'+r['seed']+'</code>' for r in FLEET['rows'])+'</p></details></section>'
+    return out
+
+
 def main():
     count=validate_geometry()
+    validate_compact()
     sections=''.join(section(key,n+1) for n,key in enumerate(CAPITALS+TOWNS))
+    comparison=comparisons()
     source_cards=''.join(f'<article id="claim-{c["id"]}"><h4>{c["id"]} · {E(c["status"])}</h4><p>{E(c["text"])}</p><ul>'+''.join(f'<li><code>{E(s["file"])}:{s["line"]}</code></li>' for s in c['sources'])+'</ul></article>' for c in C.rows)
     nav=''.join(f'<a href="#{key}">{NAMES[key]}</a>' for key in CAPITALS+TOWNS)
     data={seed:{variant:{key:{field:p[field] for field in ['outline','streets','plots','gates','core','keep']} for key,p in vals.items()} for variant,vals in runs.items()} for seed,runs in PLANS.items()}
     intro='''<header class="hero"><div class="eyebrow">GRUDGELANDS / ROUND 70 / LAND USE STUDY</div><h1>Room for a crown.<br><em>Room to arrive.</em></h1><p class="lead">Six capital cores. Six start towns. One shared castle reservation, twelve places with their own character.</p><div class="hero-bottom"><span>2D proposal · GPT-6 Astra</span><span>07 November 2026</span><span>Base 55aa7708</span></div></header>
-    <section class="intro"><div><h2>Reserve the land.<br>Decide the buildings later.</h2><p>The recommendation is a 45 × 35-node castle reservation, turned to suit each capital, inside a civic core expanded by eight nodes per side. Lethariel keeps the castle on its dry western shoulder; Kezamba keeps it on the dry southern terrace.</p><p>At the starts, give each waystone a clear 13 × 13 pocket near the centre. Move the closest buildings and furniture to make space, while keeping the town envelope, spawn and gate axis.</p></div><aside><strong>Proposal, not an approved build</strong><p>No castle architecture is designed here. Gold shapes reserve land, including future overhangs. Existing buildings and sockets come from the real template/composition code.</p><p>The coordinator’s Opus cost check is pending. Desktop and web walking, final heights, 3D collisions and combat are not verified.</p><p>Shared footprint: 1,575 square nodes. Throne room: 23 × 15 within it. Two actual royal posts, plus two unbound spare positions pending the source conflict below.</p></aside></section>
+    <section class="intro"><div><h2>Reserve the land.<br>Decide the buildings later.</h2><p>The recommendation is a 45 × 35-node castle reservation, turned to suit each capital, inside a civic core expanded by eight nodes per side. Lethariel keeps the castle on its dry western shoulder; Kezamba keeps it on the dry southern terrace.</p><p>At the starts, give each waystone a clear 13 × 13 pocket near the centre. Move the closest buildings and furniture to make space, while keeping the town envelope, spawn and gate axis.</p></div><aside><strong>Proposal, not an approved build</strong><p>No castle architecture is designed here. Gold shapes reserve land, including future overhangs. Existing buildings and sockets come from the real template/composition code.</p><p>The Opus check of pass 1 is complete; this revision addresses its findings. Desktop and web walking, final heights, future 3D geometry and combat remain unverified.</p><p>Shared footprint: 1,575 square nodes. Hall-floor reservation: 35 × 23 = 805 within it. Two royal posts beside the throne and two ordinary door guards at the great door. No extra guards.</p></aside></section>
     <section class="reading"><h3>Reading the plans</h3><p>North (+z) is up; +x is right. All twelve plan pairs use the same 160-node window and a 20-node scale bar. Solid blocks are exported template pivots; faint outlines include eaves and other written columns. Numbers match the coordinate schedules. Q marks a quest giver, V a vendor, O the public oven. Click or focus a numbered building to highlight it in both views.</p><p>Today’s background is a schematic projection of actual authored cells, with trees and paving. The proposed background keeps surrounding planting schematically and shows land reservations and principal walking connections; it is not a new voxel blueprint. Existing lake samples are from seed 12345; all three seeds were checked beneath the castle reservations.</p></section>'''
-    constraints='<section class="constraints" id="constraints"><div class="eyebrow">BEFORE A BUILD</div><h2>The dependencies behind the lines</h2><div class="conflict"><strong>Two points for the independent checker</strong><p>The documents describe four royal guards; the current binding table names two. The 60-node distance concerns reward participation; the king’s chase leash is 30. The design keeps the current ids and exposes the discrepancy.</p></div><details><summary>Read the 14 shared dependencies and evidence links</summary><ul>'+''.join(cost(c) for c in shared)+'</ul></details></section>'
-    footer='<section id="sources" class="sources"><div class="eyebrow">EVIDENCE LEDGER</div><h2>Claims and source locations</h2><p>These are exact repository locations for the checker, pinned to base 55aa7708. The accompanying claims.md repeats every numbered cost claim. Source inspection is not an independent review.</p><details><summary>Open all '+str(len(C.rows))+' claims</summary>'+source_cards+'</details></section><footer>Grudgelands · Round 70 DESIGN · Nothing built. Nothing published by this lane.</footer>'
+    constraints='<section class="constraints" id="constraints"><div class="eyebrow">BEFORE A BUILD</div><h2>The dependencies behind the lines</h2><div class="conflict"><strong>Verified encounter rules</strong><p>Two royal guards are deliberate. Both door guards are ordinary guards. The four-guard documentation is stale. The 60-node distance concerns rewards; the king’s 30-node leash starts where a chase began and cannot confine combat to this room.</p></div><details><summary>Read the 14 shared dependencies and evidence links</summary><ul>'+''.join(cost(c) for c in shared)+'</ul></details></section>'
+    footer='<section id="sources" class="sources"><div class="eyebrow">EVIDENCE LEDGER</div><h2>Claims and source locations</h2><p>Game-code locations are pinned to base 55aa7708; design-tool citations refer to this revision. The accompanying claims.md repeats every numbered cost claim. Source inspection is not an independent review.</p><details><summary>Open all '+str(len(C.rows))+' claims</summary>'+source_cards+'</details></section><footer>Grudgelands · Round 70 DESIGN · Nothing built. Nothing published by this lane.</footer>'
     template=(HERE/'shell.html').read_text()
-    page=template.replace('@@CSS@@',(HERE/'style.css').read_text()).replace('@@NAV@@',nav).replace('@@BODY@@',intro+constraints+sections+footer).replace('@@DATA@@',json.dumps(data,separators=(',',':')).replace('<','\\u003c')).replace('@@JS@@',(HERE/'page.js').read_text())
+    page=template.replace('@@CSS@@',(HERE/'style.css').read_text()).replace('@@NAV@@',nav).replace('@@BODY@@',intro+comparison+constraints+sections+footer).replace('@@DATA@@',json.dumps(data,separators=(',',':')).replace('<','\\u003c')).replace('@@JS@@',(HERE/'page.js').read_text())
     (HERE/'page.html').write_text(page)
     C.write(HERE/'claims.md')
+    (HERE/'data/socket-schedules.json').write_text(json.dumps({k:sockets(k,True) for k in NAMES},indent=2)+'\n')
     (HERE/'data/metrics.json').write_text(json.dumps({k:{s:seed_metrics(k,s) for s in SEEDS} for k in CAPITALS},indent=2)+'\n')
     print(f'Built {len(page):,} characters; {len(C.rows)} cited claims; {count} geometry schedules checked.')
 

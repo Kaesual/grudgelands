@@ -28,9 +28,10 @@ def main():
         palette.update(dict(re.findall(r'(--[\w-]+):([^;}]+)',css.split(':root[data-theme=dark]{',1)[1].split('}',1)[0])))
     css = re.sub(r'var\((--[\w-]+)\)', lambda m: palette[m[1]], css)
     args.output.mkdir(parents=True, exist_ok=True)
-    for section in doc.xpath('//section[contains(@class,"place")]'):
-        svgs = section.xpath('.//svg')
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1280, 640)
+    groups=[(s.get('id'),s.xpath('.//svg')) for s in doc.xpath('//section[contains(@class,"place")]')]
+    groups += [('compact-'+str(i+1),[s]) for i,s in enumerate(doc.xpath('//svg[@class="compact-plan"]'))]
+    for name,svgs in groups:
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 640*len(svgs), 640)
         ctx = cairo.Context(surface)
         for i,svg in enumerate(svgs):
             raw = html.tostring(svg, encoding='unicode')
@@ -41,8 +42,8 @@ def main():
             handle=Rsvg.Handle.new_from_data(raw.encode())
             viewport=Rsvg.Rectangle();viewport.x=i*640;viewport.y=0;viewport.width=640;viewport.height=640
             handle.render_document(ctx,viewport)
-        surface.write_to_png(str(args.output/(section.get('id')+'.png')))
-    print('Rendered 12 pairs with librsvg; this is not a browser layout test.')
+        surface.write_to_png(str(args.output/(name+'.png')))
+    print('Rendered 12 pairs and 4 compact alternatives with librsvg; this is not a browser layout test.')
 
 
 if __name__=='__main__':main()

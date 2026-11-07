@@ -36,8 +36,30 @@ end
 local function write(v)
  local f = assert(io.open(output, "w")); f:write(json(v), "\n"); f:close()
 end
-if mode == "blueprints" then
+if mode == "blueprints" or mode == "geometry" then
  local capture
+ local names, name_ids = {}, {}
+ local function runs(cells)
+  local sorted, out = {}, {}
+  for _, c in ipairs(cells) do
+   if c.name ~= 'air' then sorted[#sorted + 1] = c end
+  end
+  table.sort(sorted, function(a, b)
+   if a.y ~= b.y then return a.y < b.y end
+   if a.z ~= b.z then return a.z < b.z end
+   return a.x < b.x
+  end)
+  for _, c in ipairs(sorted) do
+   if not name_ids[c.name] then
+    names[#names + 1] = c.name; name_ids[c.name] = #names
+   end
+   local id, last = name_ids[c.name], out[#out]
+   if last and last[2] + 1 == c.x and last[3] == c.y and last[4] == c.z and last[5] == id then
+    last[2] = c.x
+   else out[#out + 1] = {c.x, c.x, c.y, c.z, id} end
+  end
+  return out
+ end
  -- Observe the actual template loader and stamping path; never parse a
  -- placement out of comments and never substitute an authored composition.
  _G.dofile = function(path)
@@ -70,6 +92,14 @@ if mode == "blueprints" then
      capture[#capture + 1] = {id = part.design_id, template = part.design_template,
       x = x, y = y, z = z, w = fp.w, d = fp.d, turns = turns, cells_box = box,
       doors = points.doors or {}, sockets = points.sockets or {}}
+     if mode == 'geometry' then
+      local cells = {}
+      for _, c in ipairs(part.buffer:cells()) do
+       local rx, rz = m.rotate_footprint(c.x, c.z, part.w, part.d, turns)
+       cells[#cells + 1] = {x = x + rx, y = y + c.y, z = z + rz, name = c.name}
+      end
+      capture[#capture].runs = runs(cells)
+     end
     end
     return points
    end
@@ -112,11 +142,14 @@ if mode == "blueprints" then
   end
   result[key] = {kind = i <= 6 and 'capital' or 'town', bounds = bp.bounds,
    buildings = capture, landmarks = bp.landmarks, raster = raster}
+  if mode == 'geometry' then
+   result[key] = {buildings = capture, top = bp.bounds.max.y, composition_runs = runs(bp.cells)}
+  end
   io.stderr:write(key, ': ', #capture, ' templates, ', #bp.landmarks.sockets, ' sockets\n')
   capture = nil
  end
  _G.dofile = raw_dofile
- write(result)
+ if mode == 'geometry' then write({names = names, places = result}) else write(result) end
 elseif mode == "bindings" then
  local services = dofile(dir .. '/capital_services.lua')
  local result = {plots = services.PLOTS, inns = services.INNS, guild = services.GUILD_HALL, sockets = {}}

@@ -10,11 +10,11 @@ for key, hall, east1, east2, west in [
     ('highcourt','kings_hall','service_yard','service_store','chapel'),
     ('gor_drazhak','warlord_hall','host_store','beast_shed','skull_hall'),
     ('nhal_veyr','mausoleum','bone_works','charnel_yard','vigil_hall')]:
-    P[key] = dict(castle=[-22,10,22,44], facing='south', throne=[0,39], room=[-11,28,11,42],
+    P[key] = dict(castle=[-22,10,22,44], facing='south',
         replace=[hall], remove=[], shifts={east1:[8,0], east2:[8,0], 'colonnade_west':[-3,0], 'colonnade_east':[3,0],
         'gate_south':[0,-8], 'gate_north':[0,8], 'gate_west':[-8,0], 'gate_east':[8,0]},
         sockets={'vendor_race':[8,0], 'vendor_general':[8,0], 'colonnade_west_walk':[-3,0], 'colonnade_east_walk':[3,0]},
-        roads=[([0,-57,0,8],9), ([-57,0,57,0],5), ([-27,0,-27,48,27,48,27,0],5), ([0,48,0,57],5)],
+        roads=[([0,-49,0,8],9), ([0,-57,0,-49],5), ([-57,0,57,0],5), ([-27,0,-27,48,27,48,27,0],5), ([0,48,0,57],5)],
         court=[-18,3,18,8], watch=[[-27,-35],[-27,48],[50,39],[24,-40]],
         watch_ids=['watch_south_west','watch_north_west','watch_north_east','watch_south_east'],
         waypoint=None, quest_building=west)
@@ -43,7 +43,7 @@ P['nhal_veyr'].update(title='A sovereign precinct in the necropolis',
     intent='Bone Works and the Charnel Yard move east. The existing close patrol around the mausoleum must be replaced by a loop around the enlarged precinct.',
     character='Funerary court · iron boundary · western vigil hall',
     question='Keep the vigil hall separate from the castle, as proposed, to retain a distinct public quest destination?')
-P['lethariel'] = dict(castle=[-52,-51,-18,-7], facing='east', throne=[-47,-29], room=[-50,-40,-36,-18],
+P['lethariel'] = dict(castle=[-52,-51,-18,-7], facing='east',
     replace=['kings_hall'], remove=['colonnade_west','colonnade_east'],
     shifts={'gate_south':[0,-8],'gate_west':[-8,0],'gate_east':[8,0]},
     sockets={'colonnade_west_walk':[-7,-12], 'colonnade_east_walk':[0,-12]},
@@ -55,7 +55,7 @@ P['lethariel'] = dict(castle=[-52,-51,-18,-7], facing='east', throne=[-47,-29], 
     intent='Retire the two narrow colonnades as freestanding strips and give their land to the arrival court. The star hall, sacred grove and lake shrines keep their places. No new north gatehouse or causeway is proposed.',
     character='Lake edge · dry western castle · open grove',
     question='Approve the western castle and east-facing court, with the lake and open northern shore kept intact?')
-P['kezamba'] = dict(castle=[5,-52,49,-18], facing='north', throne=[27,-47], room=[16,-50,38,-36],
+P['kezamba'] = dict(castle=[5,-52,49,-18], facing='north',
     replace=['kings_hall'], remove=[],
     shifts={'stable':[-60,-8], 'lane_house':[-61,-10], 'west_house':[-20,15], 'granary':[-59,21],
         'shore_house':[15,-1], 'gate_house_south':[-36,-13]},
@@ -71,9 +71,9 @@ P['kezamba'] = dict(castle=[5,-52,49,-18], facing='north', throne=[27,-47], room
     question='Approve the southern castle and the waystone near the quay, accepting six civic building relocations?')
 
 P['hearthpine'] = dict(waypoint=[-9,7], centre=[-16,-12,18,16],
-    shifts={'forge_hall':[0,-4],'west_home':[-7,-2],'east_home':[6,0],'east_gable_home':[8,-4],'workyard':[-7,3]},
+    shifts={'forge_hall':[0,-4],'west_home':[-7,-2],'east_home':[6,0],'east_gable_home':[8,-4],'workyard':[-7,1]},
     roads=[([0,63,0,-12],5), ([-29,0,23,0],3), ([-9,0,-9,7],3), ([-29,27,0,27],3)],
-    watch=[(0,52),(0,24),(-18,0),(0,-11),(16,0)],
+    watch=[(0,52),(0,24),(-17,0),(0,-11),(16,0)],
     title='A breathing space between homes and forge',
     lead='Pull the two closest homes apart and set the waystone in a western pocket of the arrival square. The forge steps back four nodes.',
     intent='Keep the market stall and Quartermaster to the east. The direct gate-to-spawn route stays clear; the western workyard moves with the home beside it.',
@@ -142,5 +142,63 @@ FURNITURE = {
  'dawnmere': 'Dawnmere: the new arrival pocket displaces the well at (−6,−3), the handcart near (−10,−3), the south-west flower bed and western/southern benches. Reserve (−10,7) for the well and re-author the cart, beds and seating along the green’s outer edge; keep the green mostly turf.',
  'silverleaf': 'Silverleaf: preserve the actual crescent cells (centre (0,−2), squared radii 40/30, cut offset 4). The proposed 13×13 waystone clearing starts at x=7, beyond the crescent’s x=6 maximum. Move the displaced eastern corner lamp/flower furniture and idle_spare_1 to the new eastern edge; carry both +3 house podiums and their stairs with the houses.',
  'stillgrave': 'Stillgrave: move the court’s western settle and idle_court_settle to the outer western edge, and idle_spare_1 south-west of the pocket. Re-author any grave furniture that falls under the larger court, keeping the burial margins readable.',
- 'sunscar': 'Sunscar: move the acacia work feature and work_acacia from (−14,−1) to the west near (−24,−1), outside the arrival pocket. The new west yard edge owns the tree, its work spot and approach together.',
+ 'sunscar': 'Sunscar: move the acacia work feature and work_acacia from (−14,−1) to the west near (−24,−1). All eight drill posts at x=−11/−9/−7/−5, z=3/6 also occupy the new pocket: move both ranks to x=−31/−29/−27/−25, z=5/8. Keep their approach clear of the relocated beast pen. The new west yard edge owns the tree, posts, work spot and approach together.',
  'kapok': 'Kapok Cradle: move idle_spare_1 from the arrival pocket to (−19,−13). Re-author the lodge terrace, its stall and benches with the six-node lodge move; the moved stilt-house approaches on the western/eastern margins still need final stair and headroom checks.'}
+
+# Pass 2: one common internal allocation, rotated with the outer reservation.
+# Local u is across the front; v runs from the great door into the castle.
+def castle_point(key, u, v):
+    x1,z1,x2,z2=P[key]['castle']
+    if P[key]['facing']=='south': return [(x1+x2)//2+u,z1+v]
+    if P[key]['facing']=='north': return [(x1+x2)//2-u,z2-v]
+    return [x2-v,(z1+z2)//2+u]
+
+for key in CAPITALS:
+    a=castle_point(key,-17,8); b=castle_point(key,17,30)
+    P[key]['room']=[min(a[0],b[0]),min(a[1],b[1]),max(a[0],b[0]),max(a[1],b[1])]
+    P[key]['throne']=castle_point(key,0,28)
+    P[key]['castle_sockets']={sid:castle_point(key,u,v) for sid,u,v in [
+        ('king',0,28),('throne_guard_west',-3,28),('throne_guard_east',3,28),
+        ('door_guard_west',-3,3),('door_guard_east',4,3),('hall_waypoint',0,4),
+        ('hall_idle_west',-16,12),('hall_idle_east',16,12),('hall_idle_service',-16,25)]}
+P['highcourt']['shifts'].update(chapel=[-8,0],north_house=[-8,0],chapel_house=[-8,0])
+P['highcourt']['intent']='The service yard and store move eight nodes east; chapel, north house and chapel house move eight west, carrying chapel_quest and leaving its east doors clear. A five-node west bypass now passes between chapel and castle and joins the north gate behind the castle.'
+
+# Explicit destinations for loose points swallowed by new reservations; the
+# complete schedule and automatic nearby/owned translations come from export.
+P['dur_brannoc']['socket_positions']={'citadel_walk_north':[20,47]}
+P['highcourt']['socket_positions']={'core_spare_hall_green':[25,13],
+    'core_spare_west_lane':[-27,16],'core_spare_north_court':[20,47]}
+P['highcourt']['watch'][0]=[-27,-32]
+P['highcourt']['watch'][3]=[34,-31]
+P['gor_drazhak']['socket_positions']={'court_work_fire':[45,19],'precinct_walk_north':[-27,46]}
+P['nhal_veyr']['socket_positions']={'core_spare_hall_green':[25,13],'core_spare_north_court':[20,47]}
+P['lethariel']['socket_positions']={'colonnade_west_idle_a':[-15,-42],
+    'colonnade_west_idle_b':[-15,-16],'colonnade_east_idle_a':[-4,-42],'colonnade_east_idle_b':[-4,-16]}
+P['kezamba']['socket_positions']={'forecourt_idle':[7,-16]}
+P['kezamba']['watch'][2]=[-4,-8]
+P['kezamba']['roads'][2]=([0,-12,27,-12,27,-17],5)
+P['kezamba']['roads'][3]=([-18,15,-18,26,-1,26,-1,44],3)
+P['hearthpine']['roads'][1]=([-17,0,19,0],3)
+P['hearthpine']['roads'][3]=([-29,26,0,26],3)
+
+
+# The radius-48 alternative keeps the same castle but brings it six nodes
+# toward the crossing; the three-node bypass then fits before the old north gate.
+COMPACT={}
+import copy
+for key in ['dur_brannoc','highcourt','gor_drazhak','nhal_veyr']:
+    q=copy.deepcopy(P[key]);COMPACT[key]=q
+    q['castle']=[-22,4,22,38]
+    q['room']=[-17,12,17,34]
+    q['shifts']={ident:[6,0] for ident in P[key]['shifts']
+                 if ident in ['great_forge','smelting_yard','service_yard','service_store',
+                              'host_store','beast_shed','bone_works','charnel_yard']}
+    q['roads']=[([0,-49,0,3],5),([-49,0,49,0],5),
+                ([-27,0,-27,40,27,40,27,0],3),([0,40,0,49],5)]
+    q['court']=[-18,3,18,3]
+    if key=='highcourt':
+        q['shifts']['chapel']=[-8,0]
+        q['remove']=['north_house','chapel_house']
+COMPACT['highcourt']['shifts']['service_yard']=[6,1]
+P['gor_drazhak']['socket_positions'].update(court_work_spar_a=[38,25],court_work_spar_b=[39,25])

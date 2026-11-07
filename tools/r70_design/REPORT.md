@@ -1,195 +1,235 @@
-# Round 70 DESIGN — land-use proposal
+# Round 70 DESIGN — pass 2
 
-Date: 2026-11-07. Base: `55aa7708a2d6b28fbd3c87ad3e47b72cfea24a0d`.
-Branch: `r70-design`. Author: GPT-6 Astra.
+Date: 2026-11-07. Branch: `r70-design`. Base game code:
+`55aa7708a2d6b28fbd3c87ad3e47b72cfea24a0d`; pass 1: `3a715b08`.
 
-**Delivered for the coordinator's Opus evidence check, then the user's decision.**
-Open [page.html](page.html). The page is self-contained and has not been published.
-It contains twelve equal-scale today/proposed pairs, exact building and socket
-movement schedules, six selectable whole-city seed comparisons, decision questions
-and 86 numbered cost claims. [claims.md](claims.md) repeats those claims with
-source locations. [README.md](README.md) explains reproduction and data provenance.
+The [self-contained page](page.html) now addresses the completed Opus check,
+whose verdict on pass 1 was **FIX FIRST**. Its complete report is preserved in
+[data/design-check.md](data/design-check.md). This revision is for the
+coordinator's delta review and the user's land-use decision; it does not claim
+independent acceptance of its own corrections.
 
-This lane changes only `tools/r70_design/`. Its upgrade classification is
-**compatible, tools-only**. Implementing a selected layout would change map
-generation and belongs to Round 70's declared **map reset**. No migration, game
-implementation, castle architecture or world changes are included.
+Only `tools/r70_design/` changes. Classification: **compatible, tools only**.
+Implementing these layouts is a **map reset**, as the Round 70 plan declares.
+No game code, server, world, other worktree, merge, push or other agent was used.
 
-## Recommended land reservations
+## Footprint and recommendation
 
-Reserve **45 × 35 nodes** for the same basic castle form in all six capitals,
-including its future overhangs. Reserve **23 × 15 nodes** inside it for the throne
-room. The royal footprint grows from 837 to 1,575 square nodes in five capitals,
-and from 529 to 1,575 in Kezamba. Its mass closes an approach or faces a distinct
-forecourt, rather than occupying a larger anonymous square.
+**45 × 35 holds; radius 56 remains the recommendation.** The shared castle still
+reserves 1,575 nodes², versus today's royal footprints of 837 in five capitals
+and 529 in Kezamba. All six castle placements and the original planner numbers
+remain unchanged. The twelve recommended layouts retain their original town
+centre and waystone reservation sizes.
 
-Increase the nominal civic radius from **48 to 56**, the inner gate parameter
-from 49 to 57 and the district keep-out from 52 to 60. This is eight nodes per
-side, or 96 to 112 nominal width. The nominal square gains 3,328 square nodes
-(36.1%). The outer 512-node capital reservation stays the same. The relatively
-small width increase has a substantial district cost; it should be a conscious
-choice, especially in Highcourt and Gor Drazhak.
+The throne-room reservation grows from pass 1's **345** to **805 nodes² (35 × 23)**
+in every castle. The checker measured today's reachable hall floor as **684**
+in five capitals and **402** in Kezamba. The new target gains **121 / 17.7%** and
+**403 / 100.2%**, respectively. These baseline flood-fill measurements are
+attributed to the checker; this pass did not reproduce that floor probe. The
+comparison is explicit in all six capital sections and in one shared table.
 
-Coordinates below are anchor-relative x/z, +z north; rectangle endpoints are
-inclusive. These are reservations, not an approved building design.
+The land budget is now explicit: two-node outer wall band **304**, hall
+floor reservation **805**, one-node hall wall ring **120**, foyer/service/stair/circulation
+space **346**; sum **1,575**. Inside the outer band is 41 × 31; the hall including
+its own walls is 37 × 25. In the south-facing version the foyer is five rows deep,
+with two-node side strips and a rear strip. This reserves a compact castle
+centred on its hall, without promising a separate ground-floor courtyard. The
+future architecture must keep the room reservation and exceed today’s reachable
+floor after furnishing. The 805 is a floor reservation before the throne and
+ornaments, not a measured furnished result. It must
+also stay below **y max 40**; today's highest core top is 31 (Kezamba 30).
 
-| Capital | Castle reserve; front | Recommended arrangement and principal cost |
-|---|---|---|
-| Dur Brannoc | (−22,10)–(22,44); south | Keep the forge visible east of the royal approach and the ancestor precinct west. Move the working court east, broaden the approach and retain a rear bypass. Eleven existing templates move, including four gatehouses. |
-| Highcourt | (−22,10)–(22,44); south | Keep the chapel and southern orchards; move the service yard/store east. Eleven templates move. Accept fewer optional district plots if this size is chosen. |
-| Lethariel | (−52,−51)–(−18,−7); east | Turn the shared footprint onto the dry western shoulder. Give the two separate colonnades' land to the forecourt; move three gatehouses. Preserve the lake's intrusion, shrines and grove. No northern gatehouse or new land bridge. |
-| Gor Drazhak | (−22,10)–(22,44); south | Put the stronghold at the head of the open approach, with stores/beasts east and the skull hall west. Keep the earth/timber boundary character. Eleven templates move; this has the largest optional-plot loss in the sample. |
-| Nhal Veyr | (−22,10)–(22,44); south | Replace the small mausoleum reservation, preserve the separate vigil hall, move Bone Works/Charnel Yard east and move the fallen house out of the enlarged approach. Twelve templates move. Replace the close mausoleum patrol with the wider precinct loop. |
-| Kezamba | (5,−52)–(49,−18); north | Keep the castle on the dry southern terrace. Relocate six civic buildings to the western service strip, move the waystone to (−12,8) and reconnect the quay. Preserve the lower cenote and supported decks; their extensions require height/landing work. |
+The castles at Dur Brannoc, Highcourt, Gor Drazhak and Nhal Veyr already fit in
+**today's ±49**. The increase 48 → 56 chiefly serves their moved neighbours,
+forecourt and bypass. The page now shows a concrete **48 alternative** for each:
 
-For the starts, give the existing reach-3 waystone pad a **13 × 13 clear arrival
-pocket** near the centre. Keep the Quartermaster at its present vendor socket,
-spawn at (0,1,0), the main gate axis and the existing total envelope. Each town
-keeps its 128-node fitting and rounded 12-node protected band; authored buildings
-stay within ±63. The expanded centre is a mixture of paths and local ground,
-not a requirement to pave one large rectangle.
+- Same castle at (−22,4)…(22,38), six nodes south of the recommended placement.
+- Existing gates remain; approach width 9 → 5 and bypass width 5 → 3.
+- Only z=3 remains between the crossing and the great door: a doorstep, not a
+  gathering forecourt. Eastern work buildings move six nodes, not eight;
+  Highcourt's yard also moves one north. Markets and colonnades keep their
+  existing tight spacing.
+- Highcourt moves its chapel eight west and retires `north_house` and
+  `chapel_house`. This is an explicit loss of two houses, not hidden crowding.
 
-| Start town | New waystone x/z | Recommended move |
-|---|---|---|
-| Hearthpine | (−9,7) | Spread the closest homes and workyard; set the forge back four nodes. Five templates move. |
-| Dawnmere | (−9,−8) | Spread the hall and inn and step them back. Only two templates move. Keep a grassy green; move the displaced well to (−10,7). |
-| Silverleaf | (13,8) | Preserve the actual crescent cells. Spread the two raised houses and move the lore hall north-east, with both +3 podiums and their stairs. Three templates move. |
-| Stillgrave | (−12,−2) | Move the chapel and northern row back six nodes; move Bone Works east. Six templates move. Preserve the burial margins and move the displaced settle/spare standing spots. |
-| Sunscar | (−11,2) | Move the hall back, armoury east and beast pen north-west. Three templates move. Move the acacia work feature and its socket together. |
-| Kapok Cradle | (−10,−7) | Spread the near stilt houses; move the lodge and northern work buildings to frame one clearing. Five templates move. Carry stairs, landings and terrace furniture with them. |
+These four alternatives pass footprint, door-exit and full-width street checks
+inside ±49. They are **land alternatives, without a second socket/furniture
+schedule**. The user would need that schedule before choosing them for a build.
+Lethariel and Kezamba's current proposed castle boxes reach beyond ±49; a 48
+option there requires a different placement. A mixed choice would avoid the
+four cities' radius-induced district cost, but growing the other two could
+still change rivers world-wide.
 
-One recommended layout is supplied per place. The questions on the page ask about
-specific choices within those layouts; no second fully developed option is claimed.
+I recommend **56**, because it provides the civic space requested around the
+larger hall. This is a design tradeoff, not a geometric necessity for those four
+castles. The unchanged nominal-square gain is **3,328 nodes² / 36.1%**; the outer
+512-node capital reservation does not grow. The larger river keep-out is
+**99.9 → 111.2 nodes** (`48*sqrt(2)+32` versus `56*sqrt(2)+32`): changing it changes
+river planning throughout the world.
 
-## Real planner experiment
+## Findings checked and corrections
 
-The exporter executes the real compositions and template loader, and the actual
-capital planner through shared world assembly. It uses no fixture or replacement
-planner. The six planner jobs ran at idle CPU/I/O priority, with at most two
-LuaJIT processes. Each job has its own committed JSON and log. Existing results
-are reused by `run.py`; identical planning work need not run again.
+All substantive findings were accepted after source inspection. One additional
+Highcourt move was necessary: moving the chapel eight west alone makes its eave
+columns touch `chapel_house`. Moving the chapel south instead conflicts with the
+well court. The recommendation therefore moves **chapel, north_house and
+chapel_house eight west**. `chapel_quest` follows from (−22,27) to (−30,27), the
+east doors clear the castle, and the five-node bypass at x=−27 clears the chapel.
+Highcourt now moves **14**, not 11, templates.
 
-Seeds are exact strings from `tools/seed_fleet/seeds.txt`, in the following order:
+The generated schedule includes **all 659 exported sockets**, including the
+three adapter cooking points in each town. Nothing is filtered out: before/after
+coordinates, role, origin and nearby affected footprints are shown. The schedule
+is also committed as [data/socket-schedules.json](data/socket-schedules.json).
+Template points follow their host; generated gate watches and booth aliases
+follow their gate/market; other nearby loose points follow the nearest host
+within two nodes unless explicitly placed. That is a proposed furniture
+attachment, not a claim about a runtime ownership API. The schedule includes:
 
-1. `12345`
-2. `3684797457838814663`
-3. `17713522922938657774`
+- Every `door_guard_*`, `hall_idle_*`, `hall_waypoint`, Lethariel's four removed
+  colonnade idle points, the four moving markets' booth points, and displaced
+  `citadel_walk_north`, `precinct_walk_north`, `core_spare_*`, `forecourt_idle`.
+- Gor Drazhak's `court_idle_wain` → (45,31), `court_idle_store` → (44,20),
+  `court_work_fire` → (45,19), `precinct_walk_court` → (42,29). The spar points
+  move to (38,25)/(39,25) to avoid an existing tree; their work features follow.
+- Hearthpine's `watch_plaza_west` → (−17,0), between the fence at x=−18 and the
+  stone furniture at x=−16. `hall_quest` **stays (−28,26)**. Its workyard now moves
+  (−7,+1), leaving two clear rows before the hall and clearing the three-node
+  walk. The western/eastern cross-street endpoints stop before the houses.
+- Kezamba's western walk goes around the moved shore house and the moot house;
+  its watch crossing moves off `trade_shed`, and the castle approach ends outside
+  the future door.
+- Lethariel's two vendors remain unchanged. Sunscar's new arrival pocket
+  displaces **all eight drill posts**, as well as the acacia feature; the new
+  ranks are at x=−31/−29/−27/−25, z=5/8. `BREASTWORKS` is a separate authored
+  coordinate table that must follow its moved hall and armoury.
 
-For each seed, one run uses the original parameters and one changes only
-CORE/CORE_GATE/CORE_KEEP to 56/57/60 in memory. All six capitals are exported in
-each run: **36 plans**, with outlines, streets, plots, four outer gates and
-terrain/mask samples. The page embeds the exact planner geometry for selection.
+**Guards:** commit `494a6073` deliberately removed the door posts from the royal
+binding, with an explicit assertion and 2 × 6 census. The historical evidence is
+in [data/royal-binding.txt](data/royal-binding.txt). Two royal guards stay beside
+the throne; two ordinary guards stay at the great door, visibly distinguished on
+the page. No spare guards or encounter-count decision remains.
 
-| Capital | Plot totals, today → proposed, in seed order | Surviving plots changing position, height or rotation | Sampled eligible land removed by the larger keep-out |
-|---|---|---|---|
-| Dur Brannoc | 48 → 50; 51 → 49; 51 → 52 | 48; 48; 51 | approximately 3,648 square nodes |
-| Highcourt | 49 → 47; 51 → 47; 53 → 48 | 47; 47; 47 | approximately 3,648 square nodes |
-| Lethariel | 45 → 45; 44 → 43; 40 → 41 | 45; 42; 39 | approximately 2,752 square nodes |
-| Gor Drazhak | 52 → 46; 51 → 47; 50 → 46 | 45; 47; 46 | approximately 3,648 square nodes |
-| Nhal Veyr | 49 → 47; 49 → 48; 48 → 47 | 45; 48; 46 | approximately 3,648 square nodes |
-| Kezamba | 51 → 49; 49 → 50; 51 → 49 | 49; 46; 47 | approximately 2,464 square nodes |
+Later lanes must correct the stale statements at `docs/design/world.md:497–498`,
+`docs/design/world_zones.md:1869`, `:1876` (five-NPC group), `:1886–1888`, `:1898`,
+`docs/design/biomes_mobs.md:849` and the comment in
+`mods/ENTITIES/grug_mobs/start_npcs.lua:921`. This lane does not edit those owners.
 
-All ten required plots (eight service plots, inn, miners_guild) are present in
-every baseline and proposed plan. Optional-plot losses and gains are named in the
-page and [data/metrics.json](data/metrics.json). The removed-land estimate is a
-two-node-grid sample multiplied by four, not exact polygon area or lost building
-floor area. Repacking can increase the total number of plots despite taking land
-away from the planner. It also changes the generated outer outline and gate
-locations within the unchanged reservation.
+**Combat:** C008 now says plainly that no mechanism confines combat to the room.
+The king's 30-node leash measures from the chase anchor, not the throne. The
+60-node rule is reward participation around the death position. Neither changes.
+C033, C059 and C081 have the vendor, unchanged quest point and drill-post fixes;
+C021/28/35/42/49/56 now explicitly say **mask only**.
 
-Lethariel and Kezamba report `ring1/q1 ring2/q1` as `no_route` in both variants of
-all three seeds. These are existing reported gaps, not newly attributed failures.
-No timing or performance conclusion is drawn.
+## Honest implementation scope
 
-**Scope limit:** the experiment retains existing civic_width=96, fitted terrain,
-authored buildings and the old core-landing detector. It measures the planner's
-response to the enlarged exclusion, not a finished 112-node civic implementation.
-The proposed castle reserves sample dry on all three *existing* terrains. This
-does not certify final earthwork, new landing heights or generated-street clearance.
-See C001–C005 and each city's measured claim in [claims.md](claims.md).
+Counts derive from the actual export. “Lua sockets” means points outside template
+ownership, including generated gate-watch loops. They all need review, not all
+need translation. Each core also contains its streets, furniture and boundary.
 
-## Consequences the implementation must own
+| Capital | Templates moved | Lua sockets | All exported sockets | Composition lines |
+|---|---:|---:|---:|---:|
+| Dur Brannoc | 11 | 50 | 85 | 799 |
+| Highcourt | 14 | 57 | 95 | 844 |
+| Lethariel | 3, plus 2 retired | 60 | 98 | 945 |
+| Gor Drazhak | 11 | 63 | 99 | 1,005 |
+| Nhal Veyr | 12 | 61 | 96 | 1,005 |
+| Kezamba | 6 | 22 | 54 | 963 |
 
-The page names the exact affected sockets and bindings for each place. The shared
-dependencies are not limited to translating the visible buildings:
+C003 enumerates the coordinated edits: six `civic_width` profiles; planner
+48/49/52 → 56/57/60; each composition's `RADIUS=49`; `precinct_ring.RADIUS=48`;
+the ±47 corner towers in Dur Brannoc, Gor Drazhak and Nhal Veyr;
+`city_green.CORE_HALF=49`; height fitting/collar and road exclusion;
+`BOUNDS.capital_core`; the separate ±49 plot-collar exclusion;
+`r7_capitals.core_landing` 46…49, its `built=96*96` statistic; and the river
+keep-out formula. Gate watches, service bindings, in-memory route caches and
+lake/deck constraints remain on the page.
 
-- Coordinate `civic_width`, terrain fitting/collar, `BOUNDS.capital_core`, the
-  separate hard-coded ±49 plot-collar exclusion and the 46…49 landing scan with
-  the planner parameters. Preserve Lethariel's lake wedge and Kezamba's terrain
-  categories and deck landings. The current Kezamba ravine mask is empty.
-- Rebuild each core boundary and avenue connection. Distinguish the four outer
-  planner gates in every capital from authored inner gatehouses: four in four
-  capitals, three in Lethariel and no standard inner gatehouse kit in Kezamba.
-- Re-author the named patrol corners, gate watches and standing spots. Route
-  legs are cached in memory and failed legs can remain unavailable until restart;
-  there is no persistent route-cache migration. Final door/stair walking remains
-  an engine check.
-- Keep `king`, `throne_guard_west`, `throne_guard_east`, public quest sockets and
-  service bindings. The district annexes list the actual plot-prefixed sockets,
-  including the guild, inn, Housing Steward, Crownbinder and Decor Merchant.
-- At each start, move `travel_waypoint`, its pad, stone and mailbox together;
-  retain arrival sides. Keep `hall_quest`, `quest_cook`, `cook_oven`, the home
-  binding and Quartermaster identity. Cooking sockets come from the projection
-  adapter after composition; the tool includes them. Template-owned quest/home
-  sockets move with the template, while loose furniture and displaced spare
-  standing points require explicit re-authoring.
+C088 adds the **template gate**. New castle templates and roster `use` entries
+are needed; format §6.1 freezes old box/pivot and point ids/groups/order/faces.
+The later lane must plan a coordinator-approved **BASELINE** move under §6.2,
+run the whole template gate and update `tools/r58_townfix/portable_test.lua`'s
+`HALLS` table. Height cap and duplicate 96×96 documentation are in C089:
+`settlements.md`, `world_zones.md:721/810/1741/1765` and the wording at 1865.
 
-Two encounter facts require particular attention in the independent check:
+## Evidence retained and added
 
-1. **Source conflict:** `world_zones.md` specifies four royal guards, while
-   `ROYAL_GUARD_SOCKET` binds only the two named throne posts. The proposal reserves
-   those two actual posts and two unbound spare positions. It does not decide to
-   add guards. See C007 and the six encounter claims.
-2. **60 is not the chase boundary:** the 60-node rule measures 3D reward
-   participation from the king's death position, with a separate 60-second death
-   grace. The king's chase leash is 30 from its chase anchor; royal guards have
-   a five-node follow distance and no independent leash. The optional map circle
-   is only a horizontal reference slice around the planned throne, not a combat
-   boundary. See C008.
+The original three-seed comparison is unchanged: exact seeds `12345`,
+`3684797457838814663`, `17713522922938657774`; real planner, **mask only**,
+CORE/GATE/KEEP 56/57/60 but **civic_width=96 and today's terrain/cores**.
 
-## Validation completed and limits
+| Capital | Plot totals in seed order | Moved surviving plots | Sampled eligible band removed |
+|---|---|---|---:|
+| Dur Brannoc | 48→50; 51→49; 51→52 | 48; 48; 51 | 3,648 |
+| Highcourt | 49→47; 51→47; 53→48 | 47; 47; 47 | 3,648 |
+| Lethariel | 45→45; 44→43; 40→41 | 45; 42; 39 | 2,752 |
+| Gor Drazhak | 52→46; 51→47; 50→46 | 45; 47; 46 | 3,648 |
+| Nhal Veyr | 49→47; 49→48; 48→47 | 45; 48; 46 | 3,648 |
+| Kezamba | 51→49; 49→50; 51→49 | 49; 46; 47 | 2,464 |
 
-- Plain Lua 5.1 syntax/SETGLOBAL/sweeps: `bash tools/check_lua.sh
-  tools/r70_design/export.lua` passed. Executable exports used LuaJIT.
-- `build.py` checked all twelve geometry schedules: translated template
-  written-column envelopes do not overlap, stay within the proposed core/existing
-  town bounds, and leave new arrival pockets free of templates and unrelated
-  sockets. Castle and throne-room reservation dimensions are shared. Current
-  spawn positions are unchanged. These checks are conservative 2D checks, not
-  collision tests of future castle geometry.
-- `verify.py` checked Python/JavaScript syntax, twelve sections, 24 equal-scale
-  plans with scale bars, unique ids, internal anchors, 86 matching claim ids,
-  inline assets without external requests, exact seed strings and agreement of
-  embedded city geometry with the raw exports. All 36 plans have four outer
-  gates and all required plots.
-- The embedded SVG plans were rendered directly with librsvg in light and dark
-  colours for visual inspection. This validates the plan graphics only.
+The checker's **40 fleet seeds** also changed **civic_width to 112**, with the
+same 56/57/60 planner parameters, **today's authored cores and landing detector**.
+Its existing scratch exports were available: their 40 exact seed strings,
+per-capital counts/failures, source JSON hashes and recomputed aggregates are
+preserved in [data/checker-fleet.json](data/checker-fleet.json). No planner job
+was rerun in this pass. The page lists all 40 seeds and the checker's rounded means.
 
-**Not verified:** complete browser layout or JavaScript interactions. Chromium
-failed to start in this sandbox (crashpad `setsockopt: Operation not permitted`,
-exit 133); Firefox also failed at startup (exit 139). Responsive CSS and theme
-controls are supplied, but browser/mobile acceptance remains open. No attempt to
-bypass sandbox permissions was made.
+| Capital | Mean plot change | Worst seed | New / removed unrouted cases | Infeasible seeds |
+|---|---:|---:|---:|---:|
+| Gor Drazhak | −2.1 | −5 | 0 / 0 | 2→0 |
+| Highcourt | −1.9 | −6 | 2 / 0 | 0→0 |
+| Kezamba | −1.2 | −8 | 3 / 1 | 3→3 |
+| Nhal Veyr | −1.15 | −5 | 0 / 0 | 0→0 |
+| Dur Brannoc | −1.1 | −5 | 2 / 0 | 0→0 |
+| Lethariel | −0.1 | −4 | 0 / 2 | 0→2 |
 
-**Also open:** the coordinator's Opus cost review, the user's land-use decision,
-all castle architecture, final terrain/shore/deck construction, full pathfinding,
-standing/headroom, combat and desktop/web engine acceptance. No Luanti server or
-whole-world voxel generation was run. No other agent, other worktree, merge or
-push was used.
+Exact means before the report's rounding: Kezamba −1.225, Dur Brannoc −1.125,
+Lethariel −0.075. All 240 proposed capitals place all required plots; no load
+failure. Seven unrouted capital/seed cases appear, three disappear. The checker
+also reports dry, flat castle samples on all 40 seeds; that terrain probe was
+not rerun here. Individual seeds differ from mask only: seed 12345 yields
+Dur Brannoc **50 versus 47**, Kezamba **49 versus 51**.
 
-## Review and later GUI checklist
+Neither experiment certifies the future cores. The implementing lane must run
+**`tools/seed_fleet/run.sh full`**, including its usual acceptance checks, because
+civic width affects every seed and world-wide river planning. Forty seeds are
+supporting evidence, not a substitute for that gate.
 
-- [ ] Opus: verify the 86 numbered claims against the base code, especially the
-  two/four royal-guard conflict, the 60-node rule and the landing/collar exclusions.
-- [ ] Browser: open the standalone page locally with networking disabled; inspect
-  every section at desktop and phone widths in light, dark and system themes.
-- [ ] Browser: switch every seed selector, toggle socket/range overlays, focus
-  buildings with the keyboard and follow a cost link through its closed accordion.
-- [ ] User: decide the shared castle reservation, civic growth and twelve
-  per-place layout questions before 3D design begins.
-- [ ] Later implementation, desktop and web: check all spawn/waystone arrival
-  sides, mailbox use, quest/home/service NPC standing and interactions, gate and
-  patrol routes, stairs and deck approaches.
-- [ ] Later implementation, desktop and web: check throne-room combat, king and
-  bodyguard positions, chase behaviour and reward participation without increasing
-  their existing rules as an incidental layout change.
+## Verification and limits
+
+- `build.py`: 12 recommended schedules; no template written-column overlap;
+  bounds, arrival pockets, shared room/footprint, sampled existing water checked.
+  New tests cover full-width streets against footprints, door exits against
+  other template walls/castles, and every socket against foreign footprints,
+  template solids and retained composition obstacles. Gate tunnels are checked
+  against actual cells. Own indoor sockets remain legal if their cells are clear.
+- `geometry.json` exports actual stamped template cells and composition cells as
+  compact row runs, plus top heights. Solid-cell checking is conservative using
+  the editor node registry (unknown nodes count solid); the documented non-solid
+  grass/fern/junglegrass families are handled explicitly. The two-cell test is
+  **not** a full entity collisionbox/headroom or engine path test.
+- The loose-obstacle check excludes old template boxes that are re-authored,
+  the future castle, old perimeter at |x| or |z| ≥47, and explicitly rebuilt
+  waystone/cooking furniture. Final fencing, planting and moved furniture need
+  the implementation's full geometry checks. No claim of a complete future
+  voxel map is made.
+- Four compact alternatives pass bounds/footprint/road/door checks. Their sockets
+  and furniture are explicitly outside that alternative's validation scope.
+- `verify.py`: **8 rejection regressions**, all 659 schedule rows, fixed cooking
+  points, room/wall arithmetic, 40-seed aggregates, 91 claim links, 24 equal-scale
+  main SVGs plus four compact SVGs, inline assets, internal links and syntax.
+- `bash tools/check_lua.sh tools/r70_design/export.lua`: plain Lua 5.1 parser,
+  globals and sweeps pass. Execution used LuaJIT, at most one process at a time
+  in this pass; the reuse/export queue remains capped at two.
+- Inline SVGs rendered with librsvg in light and dark themes for visual review.
+
+Still unverified: browser layout/events and phone behaviour (browsers could not
+start in the pass-1 sandbox); the castle's actual architecture; final terrain,
+deck landings, furniture, entity headroom, walking/pathfinding, combat, and desktop
+and web engine acceptance. No performance result is claimed. The user's layout
+choice and the coordinator's independent delta review remain required.
+
+Later checklist: run the template gate and **full** seed fleet; test every arrival
+side and mailbox; quest/home/service standing and interactions; ordinary and royal
+guard posts; all patrols, gates, stairs and deck approaches; then throne-room combat,
+chase behaviour and reward participation on desktop and web.

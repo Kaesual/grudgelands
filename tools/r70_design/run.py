@@ -33,6 +33,7 @@ def main():
     args = parser.parse_args()
     (HERE / 'data').mkdir(exist_ok=True)
     export(('blueprints', 'blueprints.json'))
+    export(('geometry', 'geometry.json'))
     export(('bindings', 'bindings.json'))
     if not args.blueprints_only:
         fleet = set((ROOT / 'tools/seed_fleet/seeds.txt').read_text().splitlines())
