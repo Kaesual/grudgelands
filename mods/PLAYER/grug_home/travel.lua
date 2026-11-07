@@ -257,8 +257,9 @@ end
 -- the destination stone, `trip.check(player)` runs on the server step after
 -- the emerge, `trip.arrival(player)` returns a validated arrival position or
 -- nil (and optionally its own message), and `trip.unavailable` is the message
--- for a failed preparation: the player then stays where they are. Nothing is charged and the home cooldown
--- is not touched. Returns false while another trip is being prepared.
+-- for a failed preparation: the player then stays where they are, or with
+-- `trip.fallback(player)` that decides instead. Nothing is charged and the home
+-- cooldown is not touched. Returns false while another trip is being prepared.
 function grug_home.travel(player, trip)
  local name = name_of(player)
  if pending[name] then return false end
@@ -267,11 +268,17 @@ function grug_home.travel(player, trip)
   arrive=function(p, failed)
    local arrival, message
    if not failed then arrival, message = trip.arrival(p) end
-   if not arrival then return notify(p, message or trip.unavailable) end
+   if not arrival then
+    if trip.fallback then return trip.fallback(p) end
+    return notify(p, message or trip.unavailable)
+   end
    teleport(p, arrival)
    grug_sounds.play("travel", p)
   end,
-  timeout=function(p) notify(p, trip.unavailable) end})
+  timeout=function(p)
+   if trip.fallback then return trip.fallback(p) end
+   notify(p, trip.unavailable)
+  end})
  return true
 end
 

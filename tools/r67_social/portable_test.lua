@@ -582,6 +582,34 @@ local function bytes_with(count)
 end
 local b1, b10, b50 = bytes_with(1), bytes_with(10), bytes_with(50)
 
+-- Round 71: who left which party, and the last member when it dissolved. An
+-- offline member goes the same way (kick).
+local left_rows = {}
+grug_parties.register_on_member_left(function(name, id, last)
+	left_rows[#left_rows + 1] = {name = name, id = id, last = last}
+end)
+local solo_a, solo_b, solo_c = make_player("ra", "accord", "mage", "human", 5),
+	make_player("rb", "accord", "mage", "human", 5), make_player("rc", "accord", "mage", "human", 5)
+join(solo_a) join(solo_b) join(solo_c)
+step(1.1)
+grug_parties.invite(solo_a, "rb")
+grug_parties.accept(solo_b, "ra")
+step(1.1)
+grug_parties.invite(solo_a, "rc")
+grug_parties.accept(solo_c, "ra")
+local party_id = grug_parties.view(solo_a).id
+leave(solo_c)
+grug_parties.kick(solo_a, "rc")
+eq(#left_rows, 1, "R71 a kick reports")
+eq(left_rows[1].name, "rc", "R71 ...the offline member")
+eq(left_rows[1].id, party_id, "R71 ...the party")
+eq(left_rows[1].last, nil, "R71 ...which goes on")
+grug_parties.leave(solo_b)
+eq(left_rows[2].name, "rb", "R71 the leaver of a party of two")
+eq(left_rows[2].last, "ra", "R71 ...and the last member")
+eq(grug_parties.view("ra"), nil, "R71 ...with no party any more")
+eq(grug_parties.view(solo_a), nil, "R71 view takes a name or a player")
+
 print(("Social tab bytes (page body, no PvP section): 1 player %d, 10 players %d, 50 players %d")
 	:format(b1, b10, b50))
 print(("%d checks, %d failures"):format(checks, failures))

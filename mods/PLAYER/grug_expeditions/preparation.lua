@@ -1,51 +1,42 @@
--- Preparing a slot (Round 71, the sequence lane SPIKE measured): one preparation
--- at a time, driven by a core.after(0) chain that runs only while one is under
--- way, so an idle server pays nothing.
+-- Preparing a slot (Round 71, the sequence lane SPIKE measured, corrected by its
+-- review): one preparation at a time, driven by a core.after(0) chain that runs
+-- only while one is under way, so an idle server pays nothing. Every phase's work
+-- is counted, BLOCKS_PER_STEP mapblocks per server step, never a clock.
 --
--- 1. Live objects out and core.delete_area: stale nodes, meta, timers and saved
---    mobs are gone, also after a restart. delete_area keeps live objects
---    (l_env.cpp ModApiEnv::l_delete_area), so they go first.
--- 2. Generate the box +- 16, one chunk at a time, each asked by one block, so a
---    player's own emerge waits for at most that chunk. A chunk that comes back
---    cancelled is asked again.
--- 3. The clearing pass: every mapblock of the box solid. Slices opening air
---    beside natural cave water let it flow; the water guard then leaves
+-- 1. Live objects out: core.delete_area keeps them (l_env.cpp ModApiEnv::l_delete_area).
+-- 2. core.delete_area, mapblock by mapblock: stale nodes, meta, timers and saved
+--    mobs go, also after a restart. One call over the box would be 256 synchronous
+--    database round trips in one server step (upstream-workarounds.md).
+-- 3. Generate the box +- 16, one chunk at a time, each asked by the one block at its
+--    centre, so a player's own emerge waits for at most that chunk. A chunk that
+--    comes back cancelled (being generated for someone else) is asked again. A
+--    deleted block alone makes the engine generate its chunk: an asked block still
+--    in the map would answer at once and leave the deleted ones empty, so every
+--    chunk holding a block of the box must have its centre in the box.
+--    catalogue.chunks_of and the fixture hold this for all 100 slots.
+-- 4. The gate: every block of the box +- 16 is asked once more and must answer as
+--    already generated (emerge.cpp EmergeThread::run calls back after finishGen and
+--    getBlockOrStartGen answers memory or disk only for a generated block). A chunk
+--    generated after the template would write its one block border into the box:
+--    all chunks round the box are done before the first write.
+-- 5. The clearing pass: every mapblock of the box solid. Slices opening air beside
+--    natural cave water let it flow; the water guard then leaves
 --    grug_core:water_barrier nodes in the box.
--- 4. The template, mapblock by mapblock.
+-- 6. The template, mapblock by mapblock.
 --
--- Steps 3 and 4 write BLOCKS_PER_STEP mapblocks per server step, each through its
--- own VoxelManip, with the engine's own light. VoxelManip writes no meta and no
--- timers: on_ready's listeners set theirs after the last block.
+-- Each write has its own VoxelManip and the engine's own light. VoxelManip writes no
+-- meta and no timers: on_ready's listeners set theirs after the last block.
 local M = {}
 local catalogue, send_out
 
--- Gives up on one chunk after this many refusals in a row.
+-- Gives up on a chunk, or on the gate, after this many answers in a row.
 local MAX_EMERGE_TRIES = 30
--- chunksize 5 (minetest.conf): a mapchunk is 80 nodes, its corner at 80 k - 32.
-local CHUNK = 80
-
 local queue = {}
 local job -- the one preparation under way
 local running = false
 
 function M.init(rows, on_player_in_box)
 	catalogue, send_out = rows, on_player_in_box
-end
-
-local function chunk_index(v) return math.floor((v + 32) / CHUNK) end
-
--- One block in the middle of every chunk of the box and its margin.
-local function chunks_of(minp, maxp)
-	local margin, list = catalogue.EMERGE_MARGIN, {}
-	for kz = chunk_index(minp.z - margin), chunk_index(maxp.z + margin) do
-		for ky = chunk_index(minp.y - margin), chunk_index(maxp.y + margin) do
-			for kx = chunk_index(minp.x - margin), chunk_index(maxp.x + margin) do
-				list[#list + 1] = {x = CHUNK * kx - 32 + 40, y = CHUNK * ky - 32 + 40,
-					z = CHUNK * kz - 32 + 40}
-			end
-		end
-	end
-	return list
 end
 
 -- The mapblocks from minp over `size` nodes, as corners.
@@ -101,33 +92,55 @@ local function write_block(tpl, minp, area)
 	vm:write_to_map(true)
 end
 
-local function clear_box(minp, maxp)
-	for object in core.objects_in_area(minp, maxp) do
-		if object:is_player() then send_out(object) else object:remove() end
-	end
-	-- false only says a block could not go; generation and both passes still run.
-	if not core.delete_area(minp, maxp) then
-		core.log("warning", "[grug_expeditions] delete_area incomplete at " ..
-			core.pos_to_string(minp))
-	end
-end
-
 -- One server step of a job, by its phase; "done" or "failed" ends the job.
 local PHASES = {}
 
 function PHASES.clear(work)
 	local run = work.run
-	clear_box(run.minp, run.maxp)
-	work.chunks, work.chunk = chunks_of(run.minp, run.maxp), 1
-	work.phase = "generate"
+	for object in core.objects_in_area(run.minp, run.maxp) do
+		if object:is_player() then send_out(object) else object:remove() end
+	end
+	work.blocks, work.block = blocks_of(run.minp, catalogue.BOX), 1
+	work.phase = "delete"
+end
+
+function PHASES.delete(work)
+	for _ = 1, catalogue.BLOCKS_PER_STEP do
+		local area = work.blocks[work.block]
+		if not area then
+			work.chunks, work.chunk = catalogue.chunks_of(work.run.slot), 1
+			work.blocks, work.block = nil, nil
+			work.phase = "generate"
+			return
+		end
+		if not core.delete_area(area[1], area[2]) then
+			core.log("warning", "[grug_expeditions] delete_area refused " ..
+				core.pos_to_string(area[1]))
+		end
+		work.block = work.block + 1
+	end
+end
+
+-- Asks for p1..p2 once. Only flags in the callback: it runs on the emerge thread.
+local function ask(p1, p2)
+	local request = {}
+	core.emerge_area(p1, p2, function(_, action, left)
+		if action == core.EMERGE_CANCELLED or action == core.EMERGE_ERRORED then
+			request.refused = true
+		elseif action == core.EMERGE_GENERATED then
+			request.generated = true
+		end
+		request.left = left
+	end)
+	return request
 end
 
 function PHASES.generate(work)
-	local ask = work.ask
-	if ask then
-		if ask.left ~= 0 then return end -- the callback has not finished the chunk
-		work.ask = nil
-		if ask.refused then
+	local request = work.request
+	if request then
+		if request.left ~= 0 then return end
+		work.request = nil
+		if request.refused then
 			work.tries = work.tries + 1
 			if work.tries >= MAX_EMERGE_TRIES then return "failed" end
 		else
@@ -135,20 +148,29 @@ function PHASES.generate(work)
 		end
 	end
 	local at = work.chunks[work.chunk]
-	if not at then
-		work.blocks, work.block = blocks_of(work.run.minp, catalogue.BOX), 1
-		work.phase = "seal"
-		return
+	if at then
+		work.request = ask(at, at)
+	else
+		work.phase = "gate"
 	end
-	local request = {}
-	work.ask = request
-	-- Only flags here: the callback is not the place to act on the map.
-	core.emerge_area(at, at, function(_, action, left)
-		if action == core.EMERGE_CANCELLED or action == core.EMERGE_ERRORED then
-			request.refused = true
+end
+
+function PHASES.gate(work)
+	local request = work.request
+	if request then
+		if request.left ~= 0 then return end
+		work.request = nil
+		if not request.refused and not request.generated then
+			work.blocks, work.block = blocks_of(work.run.minp, catalogue.BOX), 1
+			work.phase = "seal"
+			return
 		end
-		request.left = left
-	end)
+		work.gates = work.gates + 1
+		if work.gates >= MAX_EMERGE_TRIES then return "failed" end
+	end
+	local margin = catalogue.EMERGE_MARGIN
+	work.request = ask(vector.offset(work.run.minp, -margin, -margin, -margin),
+		vector.offset(work.run.maxp, margin, margin, margin))
 end
 
 function PHASES.seal(work)
@@ -185,6 +207,8 @@ local function pump()
 	local result = PHASES[work.phase](work)
 	if result then
 		job = nil
+		core.log("action", ("[grug_expeditions] slot %d %s, %d more gate passes"):format(
+			work.run.slot, result == "done" and "prepared" or "NOT prepared", work.gates))
 		work.finish(result == "done")
 	end
 	core.after(0, pump)
@@ -193,7 +217,7 @@ end
 -- Starts preparing `run` (minp, maxp) from `tpl`. finish(ok) runs on a server
 -- step after the last block, or with false when the map refused the box.
 function M.enqueue(run, tpl, finish)
-	queue[#queue + 1] = {run = run, tpl = tpl, finish = finish, phase = "clear", tries = 0}
+	queue[#queue + 1] = {run = run, tpl = tpl, finish = finish, phase = "clear", tries = 0, gates = 0}
 	if not running then
 		running = true
 		core.after(0, pump)
@@ -212,10 +236,12 @@ function M.cancel(run)
 end
 
 -- How far `run` is: {waiting = preparations before it} or {phase, done, total}
--- ("clear", "generate", "seal", "write"), nil when none is under way for it.
+-- ("clear", "delete", "generate", "gate", "seal", "write"), nil when none is under
+-- way for it.
 function M.status(run)
 	if job and job.run == run then
-		local total = job.blocks and #job.blocks or job.chunks and #job.chunks or 0
+		local list = job.blocks or job.chunks
+		local total = list and #list or 0
 		return {phase = job.phase, done = (job.block or job.chunk or 1) - 1, total = total}
 	end
 	for index, work in ipairs(queue) do

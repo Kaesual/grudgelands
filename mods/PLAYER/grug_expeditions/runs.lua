@@ -184,16 +184,90 @@ function M.can_enter(player, run)
 	return true
 end
 
+-- ---- The release clock --------------------------------------------------------
+-- One core.after per stretch nobody of the owner is inside, from ready on: no
+-- polling. A later stretch makes an earlier timer a no-op.
+
+local function start_clock(run)
+	run.clock = run.clock + 1
+	local stretch = run.clock
+	core.after(catalogue.RESERVE_SECONDS, function()
+		if run.clock == stretch then M.end_run(run, "empty") end
+	end)
+end
+
+local function stop_clock(run)
+	run.clock = run.clock + 1
+end
+
+-- ---- Who stands inside ----------------------------------------------------------
+
+local function mark_inside(run, name)
+	run.inside[name] = true
+	inside_of[name] = run
+	if run.state == "ready" then run.state = "running" end
+	stop_clock(run)
+	fire("entered", run, name)
+end
+
+local function mark_left(run, name, reason)
+	run.inside[name] = nil
+	inside_of[name] = nil
+	if run.state ~= "ended" and not next(run.inside) then start_clock(run) end
+	fire("left", run, name, reason)
+end
+
+-- A forced way out, whatever the player's combat: to the capital they came from,
+-- else home by the respawn path, which always ends somewhere. A dead player stays:
+-- their respawn finds no run of theirs and goes home.
+local function send_out(player, origin)
+	if player:get_hp() <= 0 then return end
+	grug_home.cancel(player)
+	local way = origin and grug_home.waystone_pos(origin)
+	if not way then return grug_home.respawn(player) end
+	grug_home.travel(player, {
+		pos = way,
+		unavailable = "The way back could not be prepared.",
+		check = function(p) return p:get_hp() > 0 end,
+		arrival = function() return grug_home.waystone_arrival(origin) end,
+		fallback = grug_home.respawn})
+end
+
+-- `name` holds no place any more; out of the box when inside. Offline, the login
+-- rule sends them home.
+local function expel(run, name, notice)
+	run.entered[name] = nil
+	local origin = run.origins[name]
+	run.origins[name] = nil
+	if inside_of[name] ~= run then return end
+	mark_left(run, name, "expelled")
+	local player = core.get_player_by_name(name)
+	if player then
+		core.chat_send_player(name, notice)
+		send_out(player, origin)
+	end
+end
+
 -- ---- Life of a run --------------------------------------------------------------
 
 function M.end_run(run, reason)
 	if run.state == "ended" then return end
 	preparation.cancel(run)
 	run.state = "ended"
+	stop_clock(run)
 	unbind_owner(run)
 	slots[run.slot] = nil
-	for name in pairs(run.inside) do
-		inside_of[name] = nil
+	local names = {}
+	for name in pairs(run.inside) do names[#names + 1] = name end
+	table.sort(names)
+	for _, name in ipairs(names) do
+		local origin = run.origins[name]
+		mark_left(run, name, "ended")
+		local player = core.get_player_by_name(name)
+		if player then
+			core.chat_send_player(name, "Your Expedition has ended.")
+			send_out(player, origin)
+		end
 	end
 	fire("ended", run, reason)
 end
@@ -205,6 +279,7 @@ local function prepared(run, ok)
 		return M.end_run(run, "failed")
 	end
 	run.state = "ready"
+	start_clock(run)
 	fire("ready", run)
 end
 
@@ -225,7 +300,8 @@ function M.create(player, id, bonus)
 	local run = {id = next_id, slot = slot, expedition = id, level = def.level + bonus,
 		bonus = bonus, max_players = def.max_players, creator = name, minp = minp, maxp = maxp,
 		owner = party and {kind = "party", id = party.id} or {kind = "player", name = name},
-		state = "preparing", entered = {}, inside = {}, origins = {}, places = {}, encounters = {}}
+		state = "preparing", entered = {}, inside = {}, origins = {}, places = {}, encounters = {},
+		clock = 0}
 	for place, cell in pairs(tpl.places) do run.places[place] = absolute(minp, cell) end
 	for index, row in ipairs(tpl.encounters) do
 		run.encounters[index] = {room = row.room, mob = row.mob, count = row.count,
@@ -235,19 +311,6 @@ function M.create(player, id, bonus)
 	bind_owner(run)
 	preparation.enqueue(run, tpl, function(done) prepared(run, done) end)
 	return run
-end
-
-local function mark_inside(run, name)
-	run.inside[name] = true
-	inside_of[name] = run
-	if run.state == "ready" then run.state = "running" end
-	fire("entered", run, name)
-end
-
-local function mark_left(run, name, reason)
-	run.inside[name] = nil
-	inside_of[name] = nil
-	fire("left", run, name, reason)
 end
 
 -- The one place that learns where a player went: every teleport of the game ends
@@ -262,15 +325,66 @@ grug_home.register_on_teleport(function(player)
 	if now then mark_inside(now, name) end
 end)
 
+-- An offline member does not count as inside.
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	local run = inside_of[name]
 	if run then mark_left(run, name, "logout") end
 end)
 
+-- The login rule: in a box without a live run that holds this player's place, the
+-- run is over (a restart ended it, or the slot has a new run): straight home.
+-- Nothing is stored for this: the saved position is all it needs. A dead player's
+-- respawn goes home by itself.
+core.register_on_joinplayer(function(player)
+	local pos = player:get_pos()
+	if not catalogue.slot_at(pos) then return end
+	local name = player:get_player_name()
+	local run = M.run_at(pos)
+	if run and run.entered[name] then return mark_inside(run, name) end
+	core.after(0, function()
+		local p = core.get_player_by_name(name)
+		if not p or p:get_hp() <= 0 then return end
+		core.chat_send_player(name, "Your Expedition has ended.")
+		grug_home.respawn(p)
+	end)
+end)
+
+-- ---- Changes of owner -----------------------------------------------------------
+
+-- A member left the party, whoever made them. The place goes with them. A party
+-- fallen to one member leaves its Expedition to that member.
+grug_parties.register_on_member_left(function(name, party_id, last)
+	local run = by_party[party_id]
+	if not run then return end
+	if last then
+		unbind_owner(run)
+		run.owner = {kind = "player", name = last}
+		bind_owner(run)
+	end
+	expel(run, name, "You left the party, and so its Expedition.")
+end)
+
+-- A solo owner in a party now: leading it (they invited someone), the Expedition
+-- becomes the party's; a member of a foreign one, it ends and stays ended.
+grug_parties.register_on_change(function(name, reason)
+	local run = by_player[name]
+	if not run or reason ~= "membership" then return end
+	local party = party_of(name)
+	if not party then return end
+	if party.leader == name then
+		unbind_owner(run)
+		run.owner = {kind = "party", id = party.id}
+		bind_owner(run)
+	else
+		M.end_run(run, "joined_party")
+	end
+end)
+
 function M.enter(player, capital)
 	local ok, reason = M.can_enter(player)
 	if not ok then return false, reason end
+	if not grug_home.waystone_pos(capital) then return false, "That is no way in." end
 	local name = name_of(player)
 	local run = M.run_of(player)
 	local started = grug_home.travel(player, {
