@@ -3,6 +3,7 @@ local COOLDOWN = 1800
 -- gravity, until the home area is emerged (Round 28 ruling 16).
 local RESPAWN_HOLD = "grug_home:respawn"
 local pending, sessions = {}, {}
+local teleport_callbacks = {}
 local function name_of(player) return player:get_player_name() end
 local function notify(player, message) core.chat_send_player(name_of(player), message) end
 -- A teleport only writes the position. It never adds a velocity derived from
@@ -15,6 +16,12 @@ local function teleport(player, position)
  grug_mounts.dismount(player, nil, true)
  grug_core.invalidate_combat_identity(player)
  player:set_pos(position)
+ for _, callback in ipairs(teleport_callbacks) do callback(player) end
+end
+-- callback(player) after every teleport of this file, the player at the new
+-- position (Round 71: how grug_expeditions learns who stands in a box).
+function grug_home.register_on_teleport(callback)
+ teleport_callbacks[#teleport_callbacks + 1] = callback
 end
 function grug_home.cancel(player)
  local name = name_of(player)

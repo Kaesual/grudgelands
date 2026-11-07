@@ -1,0 +1,127 @@
+-- The Expedition template file (Round 71). tools/expedition_templates/build.py
+-- writes it; docs/technical/expedition-template-format.md is the format. The
+-- text head is read here; the packed cells stay strings of one byte per node.
+--
+--   grudgelands-expedition-template 1
+--   name test_vault
+--   size 48 32 48                     multiples of 16, at most the slot's box
+--   node default:stone                the palette, one line per byte value from 0
+--   place arrival 8 5 8               a named cell, box-relative
+--   encounter hall grug_mobs:spider 2 normal 30 5 30    room, mob, count, tier, cell
+--   data 1234                         the bytes of the zlib stream after this line
+--
+-- The stream holds sx * sy * sz palette bytes in VoxelManip order
+-- (z * sy * sx + y * sx + x + 1), then as many param2 bytes.
+local M = {}
+M.EXTENSION = ".exp"
+local MAGIC = "grudgelands-expedition-template 1"
+
+-- `decompress(bytes)` is core.decompress in the game. `source` names the file in
+-- errors: a malformed template stops the server at load, never in a preparation.
+function M.parse(text, decompress, source)
+	local function fail(reason)
+		error("[grug_expeditions] template " .. source .. ": " .. reason, 0)
+	end
+	local tpl = {nodes = {}, places = {}, encounters = {}}
+	local at, number, stream = 1, 0, nil
+	while not stream do
+		local stop = text:find("\n", at, true)
+		if not stop then fail("the data line is missing") end
+		local line = text:sub(at, stop - 1)
+		at, number = stop + 1, number + 1
+		local word, rest = line:match("^(%S+)%s*(.*)$")
+		local function bad() fail("line " .. number .. " is malformed: " .. line) end
+		if number == 1 then
+			if line ~= MAGIC then fail("not a version 1 template") end
+		elseif word == "name" then
+			tpl.name = rest
+		elseif word == "size" then
+			local sx, sy, sz = rest:match("^(%d+) (%d+) (%d+)$")
+			if not sx then bad() end
+			tpl.size = {x = tonumber(sx), y = tonumber(sy), z = tonumber(sz)}
+		elseif word == "node" then
+			if rest == "" then bad() end
+			tpl.nodes[#tpl.nodes + 1] = rest
+		elseif word == "place" then
+			local place, x, y, z = rest:match("^(%S+) (%d+) (%d+) (%d+)$")
+			if not place then bad() end
+			tpl.places[place] = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}
+		elseif word == "encounter" then
+			local room, mob, count, tier, x, y, z =
+				rest:match("^(%S+) (%S+) (%d+) (%S+) (%d+) (%d+) (%d+)$")
+			if not room then bad() end
+			tpl.encounters[#tpl.encounters + 1] = {room = room, mob = mob,
+				count = tonumber(count), tier = tier,
+				pos = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}}
+		elseif word == "data" then
+			local bytes = tonumber(rest)
+			if not bytes then bad() end
+			stream = text:sub(at, at + bytes - 1)
+			if #stream ~= bytes then fail("the data is cut short") end
+		else
+			bad()
+		end
+	end
+	if not tpl.size then fail("no size") end
+	if #tpl.nodes == 0 then fail("no palette") end
+	local size = tpl.size
+	local total = size.x * size.y * size.z
+	local cells = decompress(stream)
+	if #cells ~= 2 * total then fail("the data does not fit the size") end
+	tpl.cells = cells
+	return tpl
+end
+
+-- A template fits a slot: mapblock multiples for the writer, inside the box, its
+-- named cells inside itself and the `required` places present.
+function M.check_fits(tpl, box, required, source)
+	local function fail(reason)
+		error("[grug_expeditions] template " .. source .. ": " .. reason, 0)
+	end
+	local size = tpl.size
+	for _, axis in ipairs({"x", "y", "z"}) do
+		if size[axis] % 16 ~= 0 or size[axis] > box[axis] or size[axis] == 0 then
+			fail("size " .. axis .. " must be a multiple of 16 within the box")
+		end
+	end
+	local function inside(pos)
+		return pos.x < size.x and pos.y < size.y and pos.z < size.z
+	end
+	for name, pos in pairs(tpl.places) do
+		if not inside(pos) then fail("place " .. name .. " lies outside") end
+	end
+	for _, row in ipairs(tpl.encounters) do
+		if not inside(row.pos) then fail("encounter " .. row.room .. " lies outside") end
+	end
+	for _, name in ipairs(required) do
+		if not tpl.places[name] then fail("place " .. name .. " is missing") end
+	end
+end
+
+function M.load(path, name, box, required)
+	local file = io.open(path, "rb")
+	if not file then error("[grug_expeditions] template file missing: " .. path, 0) end
+	local text = file:read("*a")
+	file:close()
+	local tpl = M.parse(text, function(bytes) return core.decompress(bytes, "deflate") end, name)
+	if tpl.name ~= name then
+		error("[grug_expeditions] template " .. name .. ": the file names " .. tostring(tpl.name), 0)
+	end
+	M.check_fits(tpl, box, required, name)
+	return tpl
+end
+
+-- Content ids exist once every mod has registered its nodes; an unknown node
+-- stops the server there.
+function M.resolve(tpl)
+	local ids = {}
+	for index, name in ipairs(tpl.nodes) do
+		if not core.registered_nodes[name] then
+			error("[grug_expeditions] template " .. tpl.name .. ": unknown node " .. name, 0)
+		end
+		ids[index - 1] = core.get_content_id(name)
+	end
+	tpl.ids = ids
+end
+
+return M
