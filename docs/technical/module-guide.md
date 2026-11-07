@@ -24,7 +24,8 @@ voices](#mob-voices), [Dawn departure](#dawn-departure), [Mobs in
 water](#mobs-in-water), [Enchantments](#enchantments), [Materials and
 tier-rock gating](#materials-and-tier-rock-gating), [Traders and
 money](#traders-and-money), [Quests](#quests), [Parties](#parties),
-[Mail](#mail), [Housing](#housing), [Travel](#travel), [Atlas](#atlas),
+[Mail](#mail), [Housing](#housing), [Travel](#travel),
+[Expeditions](#expeditions), [Atlas](#atlas),
 [Preparation](#preparation), [World version and
 migrations](#world-version-and-migrations), [Performance log
 lines](#performance-log-lines), [Fishing](#fishing), [Mapgen and
@@ -2286,6 +2287,79 @@ tools](#player-meta-read-by-external-tools).
   Fuel arithmetic is fixed in housing.md §4 (26 160 s per lump; displayed
   stack `ceil`, pick-up return `floor`). Road and POI protection (Lane E)
   lives in the zone authority and `grug_core`, not in `grug_housing`.
+
+## Expeditions
+
+Rules: [expeditions.md](../design/expeditions.md). `mods/PLAYER/grug_expeditions/`, files
+in the [mod map](mod-map.md); **the public interface is the header of `init.lua`**, and a
+`run` row is read-only for other mods.
+
+- **Nothing about a run is saved.** `runs.lua` holds the runs in memory, so a restart ends
+  them all. Two player meta keys outlive a run: `grug_expeditions:origin` (the capital's
+  location id of the last way in, for a login or respawn in a box whose run is gone) and
+  `grug_expeditions:logout_death` (a pending death, set at the leave, spent at the next
+  join). Mob fields sit in box blocks, which preparation wipes. Neither key is map-bound.
+  Credit goes out under the stable `expedition:<catalogue id>`, never a per-run id:
+  `grug_achievements` keeps a saved counter per id.
+- **No per-tick pass over players.** "Inside" follows `grug_home.register_on_teleport` and
+  the leave and join callbacks (every player teleport ends in `travel.lua`); the release
+  clock is one `core.after` per empty stretch; `encounters.lua`'s one-second pass runs only
+  while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled;
+  preparation's `core.after(0)` chain only while one is under way. An admin `/teleport` out
+  is not noticed: the player counts as inside until logout.
+- **Preparation** (`preparation.lua`, its header has the order and why): objects out,
+  `delete_area` mapblock by mapblock
+  ([workaround 9](upstream-workarounds.md#9-coredelete_area-commits-each-mapblock-on-its-own)),
+  box ± 16 generated one chunk at a time, the gate, the clearing pass, the template. The
+  clearing pass is not optional: slices opening air beside natural cave water leave
+  `grug_core:water_barrier` nodes. VoxelManip writes no meta or timers, so
+  `register_on_ready` sets them. Every chunk holding a box block must have its centre in
+  the box (`catalogue.chunks_of`; the fixture holds this for all 100 slots).
+- **Seams in other mods** (each a small hook; Expedition logic stays here):
+  `grug_core.register_world_exception` (`protection.lua`: only places the world rule
+  refused ask; `interaction_protected`, `world_alterable` and `ground_effect_protected` do
+  not), `grug_mounts.register_summon_guard`, `grug_home.register_respawn_home` (asked on
+  every look at the home, so a row must survive the look on arrival, outside the box:
+  `guard.lua`'s `to_capital`), `grug_home.register_on_teleport`, `trip.fallback`,
+  `grug_home.waystone_pos`, `waystone_arrival`, `grug_mobs.set_spawn_free_field` (first
+  check of `spawn_policy_allows`), `grug_parties.register_on_member_left` (it can tell a
+  leaver from the last member, which `register_on_change` cannot),
+  `grug_parties.invitation_warning`, `settle_boss`'s `credit_as` (`bosses.lua`),
+  `roll_mob_gear`'s lift on `_grug_expedition` and `grug_items.roll_gear_item`
+  (`grug_quality`). The registrar's role is one `SERVICE_ROLES` entry; an old world's clerk
+  gives way through `start_npc_claim`: an NPC whose saved role differs from its socket's
+  removes itself, for every socket.
+- **Mobs** spawn through `core.add_entity` (`packs.lua`), not `mobs:add_mob`, which the
+  active-mob limit can refuse. Everything sits in the first staticdata (`encounters.lua`'s header):
+  `_grug_spawn_level`, `_grug_expedition`, `_grug_authored`, `_grug_pack`, and a lifetimer
+  above 20000 so `remove_far_mobs` leaves a skipped pack alone. Not `static_save = false`:
+  such a mob goes with its block. `add_entity` skips a definition's `on_spawn`: spider
+  and golem have none, but bear, ape, zombie and weevil set state there, so check them
+  before a roster uses them. A boss is an elite with a ledger id, never the flat `boss`
+  tier of `levels.lua`. `encounters.lua` wraps `grug_mobs.settle_mob_death` and
+  `_item_drop_filter`, so `grug_mobs` holds no Expedition code. Removal loops skip attached
+  objects: they are a player's tag and wield.
+- **Packs** (`packs.lua`, its header proves that nobody is held with nothing able to reach
+  them). `_grug_pack` is the one field `grug_mobs` reads: leash, evade and give-up in
+  `aggro.lua`, stuck and dawn cleanup through `mob_bound`, every accepted `do_attack` in
+  `init.lua`. It wraps `grug_core.engage_mob`, `settle_mob_death`, `live_claim` and
+  `core.calculate_knockback`: a pack's hit pushes level, because a pack swings as one and
+  the downward pushes of one step add up to a fall. Jumps stand on the feet's cell,
+  `floor(y + 0.5)`: `math.round` takes a floor below y 0 into the floor's own cell.
+- **Adding an Expedition:** a source in `tools/expedition_templates/sources/` and
+  `build.py` ([format](expedition-template-format.md); `t.dig` for ore); a catalogue row; a
+  `loot.TABLES` row (the load stops without one, and refuses a table naming an ore or
+  gem); the boss's definition with `_grug_hp_scale` and a fixed name in a world slot of
+  `data/names.json` (`world/<boss>/L<lo>-<hi>`, plus `tools/r38_names`, `disposition.lua`
+  and `grug_achievements/creatures.lua`); its quest with a row in `EXPEDITION_TARGETS` in
+  **both** validators (`grug_quests/validate.lua`, `tools/r28_design/validate.py`) and
+  `tools/r60_capitals/build_structure.py`'s `optional` and `group`. Sight counts as a pull,
+  so keep a template's arrival beyond a pack's view range + 8. On a slab floor a jump lands
+  on the player's own cell. Lava flows in a box (`water_guard.lua` guards water only): the level 60 proposal needs a guard
+  first. `income.py --check` has no Expedition term, so its pass says nothing about a chest.
+- **Fixtures and probes:** `tools/README.md`, "Round 71". The fixtures' stubs need
+  `get_attach` on objects and meta on players. `r71_frame` stubs the party seam: the real
+  `remove_member` is in `r67_social`, the real respawn path in `r69_home`.
 
 ## Atlas
 
