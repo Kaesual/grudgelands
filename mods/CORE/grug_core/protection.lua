@@ -84,6 +84,27 @@ function grug_core.world_alterable(pos)
 	return not grug_core.world_alteration_guarded(pos)
 end
 
+-- Exceptions from the world rule (Round 71). A place the world rule refuses can
+-- belong to a mod that answers for it instead. A provider is fn(pos, name) -> nil
+-- when the place is not its own; true when this player may change it after all;
+-- false and a hint when the world rule stands, the hint naming why. Only refused
+-- places ask, so the rest of the world pays nothing, and placing meets the same
+-- answer as digging: a provider says yes only for what stands there now.
+local world_exceptions = {}
+
+function grug_core.register_world_exception(provider)
+	assert(type(provider) == "function", "world exception must be a function")
+	world_exceptions[#world_exceptions + 1] = provider
+end
+
+local function world_exception(pos, name)
+	for index = 1, #world_exceptions do
+		local allowed, hint = world_exceptions[index](pos, name)
+		if allowed ~= nil then return allowed, hint end
+	end
+	return false
+end
+
 function core.is_protected(pos, name)
 	-- Preserve the existing bypass behavior: Grudgelands adds no restriction,
 	-- but another handler may still object.
@@ -99,7 +120,8 @@ function core.is_protected(pos, name)
 	end
 
 	local faction = grug_core.get_player_faction(name)
-	if grug_core.world_protected_for_faction(pos, faction) then
+	if grug_core.world_protected_for_faction(pos, faction) and
+			not world_exception(pos, name) then
 		return true
 	end
 	return previous_is_protected(pos, name)
@@ -219,6 +241,8 @@ function grug_core.protection_reason(pos, name)
 	-- faction; own home territory refused by a claim is not a territory
 	-- refusal.
 	if grug_core.world_protected_for_faction(pos, faction) then
+		local _, hint = world_exception(pos, name)
+		if hint then return "world_exception", hint end
 		local kind = grug_zones.hard_protection_kind_at(pos)
 		if kind == "town" or kind == "landmark" or kind == "guild_room" then return kind end
 		-- Roads and settlement cores protect for everyone (Round 25 rulings

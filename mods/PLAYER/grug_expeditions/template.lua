@@ -6,6 +6,7 @@
 --   name test_vault
 --   size 48 32 48                     multiples of 16, at most the slot's box
 --   node default:stone                the palette, one line per byte value from 0
+--   dig default:stone_with_tin        a palette node players may dig in a run
 --   place arrival 8 5 8               a named cell, box-relative
 --   encounter hall grug_mobs:spider 2 normal 30 5 30    room, mob, count, tier, cell
 --   data 1234                         the bytes of the zlib stream after this line
@@ -22,7 +23,7 @@ function M.parse(text, decompress, source)
 	local function fail(reason)
 		error("[grug_expeditions] template " .. source .. ": " .. reason, 0)
 	end
-	local tpl = {nodes = {}, places = {}, encounters = {}}
+	local tpl = {nodes = {}, dig = {}, places = {}, encounters = {}}
 	local at, number, stream = 1, 0, nil
 	while not stream do
 		local stop = text:find("\n", at, true)
@@ -42,6 +43,9 @@ function M.parse(text, decompress, source)
 		elseif word == "node" then
 			if rest == "" then bad() end
 			tpl.nodes[#tpl.nodes + 1] = rest
+		elseif word == "dig" then
+			if rest == "" then bad() end
+			tpl.dig[rest] = true
 		elseif word == "place" then
 			local place, x, y, z = rest:match("^(%S+) (%d+) (%d+) (%d+)$")
 			if not place then bad() end
@@ -64,6 +68,11 @@ function M.parse(text, decompress, source)
 	end
 	if not tpl.size then fail("no size") end
 	if #tpl.nodes == 0 then fail("no palette") end
+	local palette = {}
+	for _, name in ipairs(tpl.nodes) do palette[name] = true end
+	for name in pairs(tpl.dig) do
+		if not palette[name] then fail("dig names " .. name .. ", not in the palette") end
+	end
 	local size = tpl.size
 	local total = size.x * size.y * size.z
 	local cells = decompress(stream)

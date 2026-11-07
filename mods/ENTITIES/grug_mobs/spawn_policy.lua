@@ -827,8 +827,22 @@ end
 -- once outside the rooms' few y bands.
 local guild_rooms = rawget(_G, "grug_mapgen") and grug_mapgen.guild_rooms
 
+-- A rectangle no natural mob spawns in, at any y, the sea's own rows included
+-- (Round 71, the user's ruling: no random mob's nametag through an Expedition's
+-- wall). grug_expeditions sets it; empty until then. One comparison on the map.
+local free_min_x, free_max_x, free_min_z, free_max_z =
+	math.huge, -math.huge, math.huge, -math.huge
+
+function grug_mobs.set_spawn_free_field(min_x, max_x, min_z, max_z)
+	free_min_x, free_max_x, free_min_z, free_max_z = min_x, max_x, min_z, max_z
+end
+
 -- Allocation-free spawn policy. Unknown ABM families fail closed.
 function grug_mobs.spawn_policy_allows(mob_name, pos)
+	if pos.x >= free_min_x and pos.x <= free_max_x and
+			pos.z >= free_min_z and pos.z <= free_max_z then
+		return false
+	end
 	-- Before every other authority, the Kraken's included: a start footprint
 	-- refuses each hostile row outright, the zombie's 24 h blight row inside
 	-- Stillgrave Hollow among them. Passive critters keep spawning there.

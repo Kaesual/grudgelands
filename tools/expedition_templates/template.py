@@ -23,6 +23,7 @@ class Template:
         self.sx, self.sy, self.sz = sx, sy, sz
         self.cells = bytearray(sx * sy * sz)
         self.param2 = bytearray(sx * sy * sz)
+        self.digs = set()
         self.places = {}
         self.encounters = []
 
@@ -54,6 +55,10 @@ class Template:
                 for x in range(x0, x1 + 1):
                     self.set(x, y, z, node, param2)
 
+    def dig(self, node):
+        """Marks a node as meant to be dug: every cell of it, in a live run, by its players."""
+        self.digs.add(node)
+
     def place(self, name, x, y, z):
         """Names a cell for the game: a waystone, the chest, the door, ..."""
         self.index(x, y, z)
@@ -69,6 +74,7 @@ class Template:
     def head(self, data_bytes):
         lines = [MAGIC, f"name {self.name}", f"size {self.sx} {self.sy} {self.sz}"]
         lines += [f"node {node}" for node in self.palette]
+        lines += [f"dig {node}" for node in sorted(self.digs)]
         lines += [f"place {name} {x} {y} {z}" for name, (x, y, z) in sorted(self.places.items())]
         lines += ["encounter %s %s %d %s %d %d %d" % row for row in self.encounters]
         lines.append(f"data {data_bytes}")
@@ -99,12 +105,18 @@ class Template:
         for dy in (0, 1):
             if walkable(self.get(x, y + dy, z)):
                 found.append("arrival: no head room")
-        # Nothing open on the template's outer shell: the world beyond is not ours.
+        for node in sorted(self.digs):
+            if node not in self.ids:
+                found.append(f"dig {node}: not in the palette")
+            elif not walkable(node):
+                found.append(f"dig {node}: not a solid node")
+        # Nothing open on the template's outer shell, and nothing there to dig open:
+        # the world beyond is not ours.
         for z in range(self.sz):
             for y in range(self.sy):
                 for x in range(self.sx):
                     edge = x in (0, self.sx - 1) or y in (0, self.sy - 1) or z in (0, self.sz - 1)
-                    if edge and not walkable(self.get(x, y, z)):
+                    if edge and (not walkable(self.get(x, y, z)) or self.get(x, y, z) in self.digs):
                         found.append(f"open hull at {x},{y},{z}")
                         return found
         return found

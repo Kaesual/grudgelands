@@ -497,6 +497,35 @@ grug_core.player_in_creation_stasis = function() return true end
 check(respawn() == true and #trail == 0 and not held(), "H creation stasis: nothing moves")
 grug_core.player_in_creation_stasis = nil
 
+-- ---------------------------------------------------------------------------
+-- R: a respawn row (Round 71, an Expedition's start waystone)
+-- ---------------------------------------------------------------------------
+local ROW_FEET = vnew(8000, 100.51, 8000)
+local row_live = false
+home.register_respawn_home(function()
+ if row_live then return {id="expedition:1", pos=vnew(8000, 102, 8000), arrival=ROW_FEET} end
+end)
+reset(); new_player({["grug_home:id"]="highcourt"})
+row_live = true
+check(respawn() and same(player.pos, ROW_FEET) and held(), "R the respawn goes to the row, held")
+finish()
+ended("R row", ROW_FEET)
+-- The row lapses during the emerge: the ordinary home takes over, still held.
+reset(); new_player({["grug_home:id"]="highcourt"})
+check(respawn() and same(player.pos, ROW_FEET), "R the row again")
+row_live = false
+finish()
+check(same(player.pos, highcourt.arrival) and held(), "R a lapsed row follows the home")
+finish()
+ended("R lapsed", highcourt.arrival)
+-- A return home never asks the row.
+reset(); new_player({["grug_home:id"]="highcourt"})
+row_live = true
+check(home.return_home(player), "R return request")
+finish()
+check(same(player.pos, highcourt.arrival), "R return home ignores the row")
+row_live = false
+
 if #failures > 0 then
  for _, label in ipairs(failures) do print("FAIL " .. label) end
  error(("R69 HOME FAIL %d/%d"):format(#failures, checks), 0)

@@ -811,6 +811,15 @@ local function on_ground(pos)
 	return false
 end
 
+-- Places no mount or boat goes (Round 71: an Expedition's box). A guard is
+-- fn(player, pos) -> the refusal to show, or nil. Every summon asks here.
+local summon_guards = {}
+
+function grug_mounts.register_summon_guard(guard)
+	assert(type(guard) == "function", "summon guard must be a function")
+	summon_guards[#summon_guards + 1] = guard
+end
+
 -- Where tier_id may be summoned for this player right now, or nil and why.
 local function summon_position(player, tier_id)
 	if grug_core.in_combat(player) then return nil, "You cannot mount while in combat." end
@@ -818,6 +827,10 @@ local function summon_position(player, tier_id)
 	local pos = player:get_pos()
 	if not tier or not pos or player:get_hp() <= 0 then
 		return nil, "The mount cannot be summoned."
+	end
+	for index = 1, #summon_guards do
+		local refusal = summon_guards[index](player, pos)
+		if refusal then return nil, refusal end
 	end
 	if tier.mode == "water" then
 		-- On a boat the player's position is the boat's, on the water surface:
