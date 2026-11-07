@@ -194,7 +194,7 @@ return function(lib, player)
 	core.load_area(run.minp, run.maxp)
 	local places = E.places(run)
 	lib.check(core.get_node(places.door).name == "grug_expeditions:reward_door", "the door stands")
-	lib.check(#core.find_nodes_in_area(run.minp, run.maxp, "default:stone_with_gold") == 5, "five Gold")
+	lib.check(#core.find_nodes_in_area(run.minp, run.maxp, "grug_materials:stone_with_anthracite") == 5, "five Anthracite")
 	lib.check(#core.find_nodes_in_area(run.minp, run.maxp, "grug_materials:stone_with_jade") == 3, "three Jade")
 	lib.check(#mobs_in(run) == 0, "no mob before anyone enters")
 	lib.check(E.enter(player, "highcourt"), "enter starts")
@@ -232,9 +232,9 @@ return function(lib, player)
 	shot(lib, player, "room5")
 	open_chest(lib, player, run, 20)
 
-	-- A marked Gold node by the ordinary path.
+	-- A marked Anthracite node by the ordinary path.
 	local gold = rel(run, 31, FEET + 1, 92)
-	lib.check(core.get_node(gold).name == "default:stone_with_gold", "the Gold of the store")
+	lib.check(core.get_node(gold).name == "grug_materials:stone_with_anthracite", "the Anthracite of the store")
 	go(lib, player, run, 29, 92, -math.pi / 2)
 	lib.wait(1)
 	player:set_wielded_item(ItemStack("grug_materials:pick_steel"))
@@ -246,10 +246,11 @@ return function(lib, player)
 		end
 		return total
 	end
-	local lumps = count("default:gold_lump")
+	local lumps = count("grug_materials:anthracite")
 	core.registered_nodes[node.name].on_dig(gold, node, player)
 	lib.check(core.get_node(gold).name == "air", "a marked node is dug")
-	lib.check(count("default:gold_lump") > lumps, "its Gold in the bags: " .. count("default:gold_lump"))
+	lib.check(count("grug_materials:anthracite") > lumps, "its Anthracite in the bags: " ..
+		count("grug_materials:anthracite"))
 	local rock = rel(run, 32, FEET + 1, 92)
 	node = core.get_node(rock)
 	core.registered_nodes[node.name].on_dig(rock, node, player)

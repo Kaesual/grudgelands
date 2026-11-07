@@ -40,13 +40,13 @@ M.EXPEDITIONS = {
 
 -- Every 10 levels the tier follows (concept section 9): the ore and gem nodes, the
 -- chest's materials (loot.lua) and the item level. The ore is what the tier's rock
--- is mined for, the next metal's input (items_crafting.md section 3.0.1), but T2's
--- Gold: The Stilled Seam is a gold working. A template is written with the T2
+-- is mined for, the next metal's input (items_crafting.md section 3.0.1; T2's
+-- Anthracite, the Steel input, user 2026-11-07). A template is written with the T2
 -- nodes; a run of another tier writes its own in their places (swaps).
-M.TEMPLATE_ORE, M.TEMPLATE_GEM = "default:stone_with_gold", "grug_materials:stone_with_jade"
+M.TEMPLATE_ORE, M.TEMPLATE_GEM = "grug_materials:stone_with_anthracite", "grug_materials:stone_with_jade"
 M.TIERS = {
 	{tier = 2, min_level = 20, max_level = 29,
-		ore = "default:stone_with_gold", gem = "grug_materials:stone_with_jade"},
+		ore = "grug_materials:stone_with_anthracite", gem = "grug_materials:stone_with_jade"},
 	{tier = 3, min_level = 30, max_level = 39,
 		ore = "grug_materials:stone_with_silver", gem = "grug_materials:stone_with_garnet"},
 	{tier = 4, min_level = 40, max_level = 49,

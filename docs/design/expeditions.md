@@ -30,12 +30,12 @@ Three Expeditions, each over a wide level range (user, 2026-11-07, [concept
 | The Last Mint | 60–69 | 4 | designed, built in Round 72 |
 
 **Every 10 levels the tier follows:** the reward, the ore and the gem. The ore is what that
-tier's rock is mined for, the next metal's input ([items](items_crafting.md) §3.0.1), but
-T2's: The Stilled Seam is a gold working.
+tier's rock is mined for, the next metal's input ([items](items_crafting.md) §3.0.1): T2's
+Anthracite is the Steel input (user, 2026-11-07; the story keeps its gold working).
 
 | Tier | Mob levels | Ore | Gem |
 |---|---|---|---|
-| T2 | 20–29 | Gold | Jade |
+| T2 | 20–29 | Anthracite | Jade |
 | T3 | 30–39 | Silver | Garnet |
 | T4 | 40–49 | Emberglass | Sapphire |
 | T5 | 50–59 | Abyssal Crystal | Ruby |
@@ -226,11 +226,11 @@ story, the floor plan and the texts.
 | Room | Holds |
 |---|---|
 | 0 Arrival | start waystone |
-| 1 Cart bay | pack a: 4 spiders; 1 Gold |
-| 2 Prop room | pack b: 2 spiders, 1 elite golem; 1 Jade |
+| 1 Cart bay | pack a: 4 spiders; 1 ore |
+| 2 Prop room | pack b: 2 spiders, 1 elite golem; 1 gem |
 | 3 Sorting floor | packs c and d behind a rock screen: 3 spiders and 1 elite golem each |
 | 4 Working face | [Flintback](biomes_mobs.md), alone |
-| 5 Store | chest, end waystone; 4 Gold, 2 Jade |
+| 5 Store | chest, end waystone; 4 ore, 2 gem |
 
 - **Mobs:** 12 spiders, 3 elite golems and the boss. Spiders have 384 HP at 20, 2,696 at 60
   and 3,507 at 69; elites 1,152, 8,088 and 10,522; Flintback 8 × an elite's: 9,216, 64,704

@@ -7,7 +7,7 @@ local E = grug_expeditions
 local QUEST, GIVER = "capital_stilled_seam", "r58_guild_leader_highcourt"
 local FEET = 5
 local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 100, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
-local T2_ORE, T2_GEM = "default:stone_with_gold", "grug_materials:stone_with_jade"
+local T2_ORE, T2_GEM = "grug_materials:stone_with_anthracite", "grug_materials:stone_with_jade"
 -- Two ore places and one gem place of the store, each with a cell to stand on.
 local ORE_AT, GEM_AT = {{31, 92, 29}, {31, 100, 29}}, {8, 108, 10}
 

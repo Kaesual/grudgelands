@@ -19,7 +19,8 @@ LANTERN, ROPE = "grug_decor:xdecor_lantern_hanging", "grug_decor:xdecor_rope"
 RAIL, CART = "grug_mapgen:mine_rail", "grug_mapgen:mine_cart"
 TABLE, BENCH = "grug_decor:cottages_table", "grug_decor:cottages_bench"
 BARREL = "grug_decor:cottages_barrel"
-GOLD, JADE = "default:stone_with_gold", "grug_materials:stone_with_jade"
+# The ore places hold Anthracite (user, 2026-11-07): the story keeps its gold working.
+ORE, JADE = "grug_materials:stone_with_anthracite", "grug_materials:stone_with_jade"
 DOOR, CHEST = "grug_expeditions:reward_door", "grug_expeditions:reward_chest"
 WAYSTONE = "grug_expeditions:waystone"
 SPIDER, GOLEM, BOSS = "grug_mobs:giant_spider", "grug_mobs:stone_golem", "grug_mobs:flintback"
@@ -176,7 +177,7 @@ def cart_bay(t):
     for x, z in ((49, 9), (50, 9), (49, 10), (78, 9), (77, 9)):
         t.set(x, FEET, z, BARREL)
     sealed_cut(t, 60, 67, z0 - 1, NORTH)
-    ore(t, GOLD, 79, 36)
+    ore(t, ORE, 79, 36)
     t.set(77, 8, 39, TORCH, SOUTH)
 
 
@@ -239,7 +240,7 @@ def store(t):
     t.place("chest", 20, FEET, 108)
     t.set(20, FEET, 116, WAYSTONE)
     t.place("end_waystone", 20, FEET, 116)
-    for x, z, node in ((8, 100, GOLD), (31, 92, GOLD), (31, 100, GOLD), (8, 116, GOLD),
+    for x, z, node in ((8, 100, ORE), (31, 92, ORE), (31, 100, ORE), (8, 116, ORE),
                        (8, 108, JADE), (31, 116, JADE)):
         ore(t, node, x, z)
 
@@ -278,6 +279,6 @@ def build():
     rooms(t)
     door(t)
     packs(t)
-    t.dig(GOLD)
+    t.dig(ORE)
     t.dig(JADE)
     return t

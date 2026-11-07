@@ -94,7 +94,7 @@ MINING_SEEN = 8
 # Host nodes per resource node in the tier's own rock (world_zones.md section 11,
 # Round 21 table; a half row counts its lower half, where a miner of it goes).
 DENSITY = {
-    2: {"default:stone_with_gold": 512, "grug_materials:stone_with_jade": 512},
+    2: {"grug_materials:stone_with_anthracite": 256, "grug_materials:stone_with_jade": 512},
     3: {"grug_materials:stone_with_silver": 256, "grug_materials:stone_with_garnet": 512},
     4: {"grug_materials:stone_with_emberglass": 256, "grug_materials:stone_with_sapphire": 512},
     5: {"grug_materials:abyssal_crystal_ore": 512, "grug_materials:stone_with_ruby": 512},
