@@ -176,6 +176,10 @@ comment in `grug_traders/stock.lua` and the check `tools/r58_guildspec`.
 - **Mason:** stays as it is; it does not sell Cobblestone or Gravel again.
 - **Shapes:** decorative blocks start as full blocks only, no stairs or slabs.
 
+**Fees (user, 2026-11-07):** as the lane proposed (`grug_guild/catalog.lua`,
+`stonewright`): 10 → 10 for 1–2c; ornamented stones 8 Cobblestone + 1 bar → 8 for
+5c, 10c, 25c, 60c and 1s 50c.
+
 **Art (GPT-6 Astra):** a grinder and a smelting furnace behind the Stonewright,
 and the decorative blocks.
 
