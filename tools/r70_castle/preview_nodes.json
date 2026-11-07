@@ -1,0 +1,52 @@
+{
+  "grug_guild:ornamented_iron": {
+    "drawtype": "normal",
+    "walkable": true,
+    "tiles": [
+      "grug_guild_ornamented_iron.png"
+    ],
+    "groups": {},
+    "paramtype2": "none",
+    "light_source": 0
+  },
+  "grug_guild:ornamented_steel": {
+    "drawtype": "normal",
+    "walkable": true,
+    "tiles": [
+      "grug_guild_ornamented_steel.png"
+    ],
+    "groups": {},
+    "paramtype2": "none",
+    "light_source": 0
+  },
+  "grug_guild:ornamented_silversteel": {
+    "drawtype": "normal",
+    "walkable": true,
+    "tiles": [
+      "grug_guild_ornamented_silversteel.png"
+    ],
+    "groups": {},
+    "paramtype2": "none",
+    "light_source": 0
+  },
+  "grug_guild:ornamented_embersteel": {
+    "drawtype": "normal",
+    "walkable": true,
+    "tiles": [
+      "grug_guild_ornamented_embersteel.png"
+    ],
+    "groups": {},
+    "paramtype2": "none",
+    "light_source": 0
+  },
+  "grug_guild:ornamented_abyssal_steel": {
+    "drawtype": "normal",
+    "walkable": true,
+    "tiles": [
+      "grug_guild_ornamented_abyssal_steel.png"
+    ],
+    "groups": {},
+    "paramtype2": "none",
+    "light_source": 0
+  }
+}
