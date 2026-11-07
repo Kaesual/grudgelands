@@ -44,6 +44,12 @@
 --     profile and raster), pinned to the road's end height and the gate
 --     floor; a second road end at the same gate joins the first connector.
 --  (9. canal: see `canal` below; dropped first if it grows.)
+local info = debug and debug.getinfo and debug.getinfo(1, "S")
+local here = type(info) == "table" and type(info.source) == "string" and
+	info.source:sub(1, 1) == "@" and info.source:sub(2):match("^(.*)[/\\][^/\\]*$")
+if not here or here == "" then here = core.get_modpath("grug_mapgen") .. "/wp40" end
+local RING = dofile(here .. "/../wp13/precinct_ring.lua")
+
 local M = {}
 local floor, ceil, sqrt, abs, min, max = math.floor, math.ceil, math.sqrt, math.abs, math.min, math.max
 local atan2, cos, sin, pi = math.atan2, math.cos, math.sin, math.pi
@@ -53,9 +59,9 @@ M.DEFAULTS = {
 	EXT = 284,            -- sampled half extent (road ends lie up to 272 out)
 	G = 2,                -- sample spacing
 	HALF = 256,           -- reserved area half width (D59)
-	CORE = 48,            -- civic core half width (96 x 96)
-	CORE_GATE = 49,       -- core gatehouse radius on the axes
-	CORE_KEEP = 52,       -- streets and plots keep this Chebyshev distance
+	CORE = RING.RADIUS,   -- civic core half width (`wp13/precinct_ring.lua`)
+	CORE_GATE = RING.PAD, -- core gatehouse radius on the axes
+	CORE_KEEP = RING.PAD + 3, -- streets and plots keep this Chebyshev distance
 	TARGET_AREA = 100000, -- city footprint target (D70: ~100 k m2 first)
 	R_MIN = 118, BAND = 26,   -- outline radius floor; wall-to-reserved-edge band
 	NRAY = 180, SMOOTH_PASSES = 2, SMOOTH_W = 3,

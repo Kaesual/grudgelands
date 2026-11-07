@@ -68,6 +68,7 @@ local camp_catalog = dofile(module_dir.."/r58_camp_catalog.lua")
 local plot_approach = dofile(module_dir.."/../wp13/plot_approach.lua")
 local approach_palettes = dofile(module_dir.."/../wp13/palette.lua")
 local parts = dofile(module_dir.."/../wp13/parts.lua")
+local CORE_PAD = dofile(module_dir.."/../wp13/precinct_ring.lua").PAD
 local rot = plot_approach.rot
 
 -- The authorized volume per blueprint kind (contract sections 2.1 and 2.2).
@@ -75,7 +76,8 @@ local rot = plot_approach.rot
 -- three places; they are data now and nothing else changed about them.
 M.BOUNDS = {
 	start = {min = {x = -63, y = -2, z = -63}, max = {x = 63, y = 24, z = 63}},
-	capital_core = {min = {x = -49, y = -2, z = -49}, max = {x = 49, y = 40, z = 49}},
+	capital_core = {min = {x = -CORE_PAD, y = -2, z = -CORE_PAD},
+		max = {x = CORE_PAD, y = 40, z = CORE_PAD}},
 	capital_plot = {min = {x = -15, y = -6, z = -15}, max = {x = 15, y = 24, z = 15}},
 	-- Authored POIs stay inside the exact half-open flat terrain cores.
 	poi = {min = {x = -12, y = 0, z = -12}, max = {x = 11, y = 8, z = 11}},
@@ -306,7 +308,7 @@ M.roster = {
 	},
 	-- The elf capital: open until Round 23, now a light stone curtain with
 	-- four gatehouses on the planner's outline. It is also the only
-	-- capital whose 96 x 96 civic core is not a full pad: WP40's authored crown
+	-- capital whose civic core is not a full pad: WP40's authored crown
 	-- lake (`wp40/water_authored.lua`) reaches into it, and the composition
 	-- writes nothing over the water. See `wp13/lethariel.lua`.
 	{
@@ -1631,7 +1633,7 @@ function M.config(prepared, content, raw_sha256)
 						-- (the civic core shapes its own ground)
 						if lx > sq_min_x and lx < sq_max_x and
 								lz > sq_min_z and lz < sq_max_z and
-								(math.abs(lx) > 49 or math.abs(lz) > 49) then
+								(math.abs(lx) > CORE_PAD or math.abs(lz) > CORE_PAD) then
 							-- Probe membership cheaply before querying terrain.
 							local _, record = fittings.surface(x, z, 0)
 							if record then

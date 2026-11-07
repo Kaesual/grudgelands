@@ -55,7 +55,7 @@ local function loader(directory)
 
 	local M = {}
 
-	local RADIUS = 49
+	local RADIUS = precinct_ring.PAD
 	local SCHEMA = "grug_wp13_lethariel_core_v1"
 
 	-- The city's own patrol loop.
@@ -75,14 +75,14 @@ local function loader(directory)
 	local MERE_FIRST = 22
 	local MERE = {
 		[22] = {0, 0}, [23] = {-8, 8}, [24] = {-12, 12}, [25] = {-14, 14},
-		[26] = {-16, 16}, [27] = {-18, 18}, [28] = {-20, 20},
-		[29] = {-21, 21}, [30] = {-23, 23}, [31] = {-24, 24},
-		[32] = {-25, 25}, [33] = {-26, 26}, [34] = {-27, 27},
-		[35] = {-28, 28}, [36] = {-29, 29}, [37] = {-30, 30},
-		[38] = {-30, 32}, [39] = {-31, 34}, [40] = {-32, 35},
-		[41] = {-32, 37}, [42] = {-33, 39}, [43] = {-33, 40},
-		[44] = {-34, 42}, [45] = {-34, 44}, [46] = {-35, 46},
-		[47] = {-35, 47}, [48] = {-36, 49}, [49] = {-36, 49},
+		[26] = {-16, 16}, [27] = {-18, 18}, [28] = {-20, 20}, [29] = {-21, 21},
+		[30] = {-23, 23}, [31] = {-24, 24}, [32] = {-25, 25}, [33] = {-26, 26},
+		[34] = {-27, 27}, [35] = {-28, 28}, [36] = {-29, 29}, [37] = {-30, 30},
+		[38] = {-30, 32}, [39] = {-31, 34}, [40] = {-32, 35}, [41] = {-32, 37},
+		[42] = {-33, 39}, [43] = {-33, 40}, [44] = {-34, 42}, [45] = {-34, 44},
+		[46] = {-35, 46}, [47] = {-35, 47}, [48] = {-36, 49}, [49] = {-36, 57},
+		[50] = {-36, 57}, [51] = {-36, 57}, [52] = {-37, 57}, [53] = {-37, 57},
+		[54] = {-37, 57}, [55] = {-37, 57}, [56] = {-37, 57}, [57] = {-37, 57},
 	}
 	-- One node of natural shore between anything this composition lays and the
 	-- water itself, so a rounding difference in a future WP40 revision costs a
@@ -199,7 +199,7 @@ local function loader(directory)
 		{id = "gate_west", template = "lethariel_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "pale", roof = "pale"},
 		{id = "gate_east", template = "lethariel_gate_south", watch = true,
-			x = 43, z = -6, turns = 3, palette = "pale", roof = "pale"},
+			x = RADIUS - 6, z = -6, turns = 3, palette = "pale", roof = "pale"},
 
 		-- 3. The market square, east of the approach in the south quarter.
 		{id = "market", template = "lethariel_market",

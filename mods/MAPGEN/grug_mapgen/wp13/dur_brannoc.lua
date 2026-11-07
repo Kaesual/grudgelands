@@ -1,11 +1,11 @@
 -- Dur Brannoc: the dwarf capital, and the first WALLED capital of the game.
 --
 -- This file is the CORE composition of docs/research/wp13-capitals-pois-
--- contract.md section 2.1 -- the 96 x 96 civic core, anchor-relative exactly
--- like a start, flat at y = 0 by construction, inside the contract's bounds of
--- x/z [-47, 47] and y [-2, 40]. The city round it (outline, streets, curtain
--- wall, placed plots) is the capital planner's per-world layout (Round 22,
--- `wp40/capital_planner.lua`, `wp13/city_edge.lua`).
+-- contract.md section 2.1 -- the civic core (radius 56 since Round 70,
+-- `precinct_ring.lua` owns the size), anchor-relative exactly like a start,
+-- flat at y = 0 by construction, inside `BOUNDS.capital_core`. The city round
+-- it (outline, streets, curtain wall, placed plots) is the capital planner's
+-- per-world layout (Round 22, `wp40/capital_planner.lua`, `wp13/city_edge.lua`).
 --
 -- Dur Brannoc is the dwarf capital of the contract's section 2.4 table: a
 -- stone-block citadel on the WP40 granite terrace, with pillars and arrowslits,
@@ -51,7 +51,7 @@ local function loader(directory)
 
 	local M = {}
 
-	local RADIUS = 49
+	local RADIUS = precinct_ring.PAD
 	local SCHEMA = "grug_wp13_dur_brannoc_core_v1"
 
 	-- The city's own patrol loop. The four gatehouses keep a two-waypoint
@@ -69,43 +69,52 @@ local function loader(directory)
 
 	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
 	-- everything above its paving but the waystone and its mailbox.
-	-- x1 is 11 and not 8: the east colonnade's eaves oversail its own footprint
-	-- to x = 9, and a plaza that starts there has ten slabs hanging over the
-	-- square the pad is kept clear for.
-	local PLAZA = {x1 = 11, z1 = -32, x2 = 27, z2 = -12}
+	-- x1 is 13 and not 10: the east colonnade's eaves oversail its own footprint
+	-- to x = 12, and a plaza that starts there has ten slabs hanging over the
+	-- square the pad is kept clear for. Centred on the waystone's column.
+	local PLAZA = {x1 = 13, z1 = -32, x2 = 25, z2 = -12}
 
-	-- The forge court: the whole north-east quarter, paved in one piece with
-	-- the streets so a building stamped into it keeps its own apron.
-	local COURT = {x1 = 22, z1 = 5, x2 = 45, z2 = 43}
+	-- The forge court: the whole north-east quarter east of the castle's
+	-- bypass, paved in one piece with the streets so a building stamped into
+	-- it keeps its own apron. COURT_X is how far Round 70 moved it east: every
+	-- prop of step 6 is written in the old court's coordinates plus this.
+	local COURT_X = 8
+	local COURT = {x1 = 22 + COURT_X, z1 = 5, x2 = 45 + COURT_X, z2 = 43}
+
+	-- The castle (Round 70, form A): 45 x 35, its great door on the axis
+	-- looking down the approach, the bypass round its three other sides.
+	local CASTLE = {x = -22, z = 10, w = 45, d = 35}
 
 	local STREETS = {
-		-- The throne approach, from the south gate through the crossing to the
-		-- hall's forecourt.
-		{-2, -RADIUS, 2, 5, "avenue"},
-		-- The service avenue behind the hall, out to the north gate.
-		{-2, 38, 2, RADIUS, "avenue"},
+		-- The throne approach: nine wide from the south gate's forecourt
+		-- through the crossing to the castle's forecourt, five wide in the gate.
+		{-4, -(RADIUS - 8), 4, 8, "avenue"},
+		{-2, -RADIUS, 2, -(RADIUS - 8), "avenue"},
 		-- The east-west avenue, gate to gate through the same crossing.
 		{-RADIUS, -2, RADIUS, 2, "avenue"},
-		-- The two flank lanes past the hall and the back lane joining them.
-		{-24, 0, -22, 42, "lane"},
-		{19, 0, 21, 42, "lane"},
-		{-24, 38, 21, 40, "lane"},
-		-- The hall's forecourt.
-		{-10, 3, 10, 5, "lane"},
+		-- The bypass: five wide up both flanks of the castle and behind it,
+		-- so everyday traffic reaches the north gate without the throne room.
+		{-29, 0, -25, 50, "lane"},
+		{-29, 46, 29, 50, "lane"},
+		{25, 0, 29, 50, "lane"},
+		-- The north avenue, from the bypass out through the north gate.
+		{-2, 46, 2, RADIUS, "avenue"},
+		-- The castle's forecourt.
+		{-18, 3, 18, 9, "avenue"},
 		-- The gate forecourts: a gate chamber's door is in its city face and
-		-- its doorstep is one node beyond the part's own footprint. The north
-		-- gate's forecourt is the back lane, which already reaches it.
-		{-8, -(RADIUS - 7), 8, -38, "lane"},
-		{-8, 38, 8, RADIUS - 7, "lane"},
-		{38, -8, RADIUS - 7, 8, "lane"},
-		{-(RADIUS - 7), -8, -38, 8, "lane"},
+		-- its doorstep is one node beyond the part's own footprint, and the
+		-- ground watch walks here (`gate_watch.lua`).
+		{-8, -(RADIUS - 7), 8, -(RADIUS - 12), "lane"},
+		{-8, RADIUS - 12, 8, RADIUS - 7, "lane"},
+		{RADIUS - 12, -8, RADIUS - 7, 8, "lane"},
+		{-(RADIUS - 7), -8, -(RADIUS - 12), 8, "lane"},
 		-- The travel plaza's approach off the east avenue.
-		{4, -13, 11, -11, "lane"},
+		{5, -13, 12, -11, "lane"},
 		-- The west quarter: the cistern court's walk and the temple's.
-		{-34, 14, -25, 16, "lane"},
+		{-34, 14, -30, 16, "lane"},
 		{-38, 17, -36, 23, "lane"},
 		-- The doorsteps of the outer houses and the guild.
-		{-36, -17, -34, -15, "lane"},
+		{-43, -17, -41, -15, "lane"},
 		{-31, -38, -29, -36, "lane"},
 		{34, -14, 36, -12, "lane"},
 		{26, -40, 28, -38, "lane"},
@@ -127,31 +136,29 @@ local function loader(directory)
 	-- have: one throne, one travel pad for WP17 and exactly two vendor families
 	-- in `grug_traders`. The KAT asserts the resulting multiset.
 	local PLOTS = {
-		-- 1. The king's hall, on the axis, its great door looking down the
-		-- approach to the south gate. Built with the slate palette as well as
-		-- roofed with it: a lucarne takes its hood from the main palette's own
-		-- `roof_slab`, so a hall built with the plain one would wear plank
-		-- hoods on a slate roof.
+		-- 1. The castle, on the axis, its great door looking down the approach
+		-- to the south gate. Built with the slate palette as well as roofed
+		-- with it, the roster's binding for this template.
 		{id = "kings_hall", template = "dur_brannoc_kings_hall",
-			x = -15, z = 9, turns = 0, palette = "slate", roof = "slate",
+			x = CASTLE.x, z = CASTLE.z, turns = 0, palette = "slate", roof = "slate",
 			drop = {waypoint = true}},
 
 		-- 2. The four inner gatehouses, where the avenues leave the citadel
-		-- precinct. Dur Brannoc's curtain wall is 209 nodes further out, so
+		-- precinct. Dur Brannoc's curtain wall is about 200 nodes further out, so
 		-- these are the citadel's own gates and not the city's.
 		{id = "gate_south", template = "dur_brannoc_gate_south", watch = true,
 			x = -6, z = -RADIUS, turns = 0, palette = "town", roof = "slate"},
 		{id = "gate_west", template = "dur_brannoc_gate_south", watch = true,
 			x = -RADIUS, z = -6, turns = 1, palette = "town", roof = "slate"},
 		{id = "gate_north", template = "dur_brannoc_gate_south", watch = true,
-			x = -6, z = 43, turns = 2, palette = "town", roof = "slate"},
+			x = -6, z = RADIUS - 6, turns = 2, palette = "town", roof = "slate"},
 		{id = "gate_east", template = "dur_brannoc_gate_south", watch = true,
-			x = 43, z = -6, turns = 3, palette = "town", roof = "slate"},
+			x = RADIUS - 6, z = -6, turns = 3, palette = "town", roof = "slate"},
 
 		-- 3. The market square, west of the approach, its north apron on the
 		-- great avenue's own kerb.
 		{id = "market", template = "highcourt_market",
-			x = -35, z = -28, turns = 0, palette = "town",
+			x = -40, z = -28, turns = 0, palette = "town",
 			drop = {waypoint = true},
 			-- A booth without a trader is a flair NPC's work spot, and its id
 			-- has to say booth: `market_vendor_1` with the role `idle` is a
@@ -161,14 +168,14 @@ local function loader(directory)
 
 		-- 4. The two colonnades flanking the approach.
 		{id = "colonnade_west", template = "dur_brannoc_colonnade_west",
-			x = -9, z = -21, turns = 1, palette = "town"},
+			x = -12, z = -21, turns = 1, palette = "town"},
 		{id = "colonnade_east", template = "dur_brannoc_colonnade_east",
-			x = 4, z = -21, turns = 3, palette = "town"},
+			x = 7, z = -21, turns = 3, palette = "town"},
 
 		-- 5. The civic furniture: the king's statue east of the crossing and
 		-- the cistern court in the west quarter.
 		{id = "statue", template = "highcourt_statue",
-			x = 12, z = -11, turns = 0, palette = "town"},
+			x = 15, z = -11, turns = 0, palette = "town"},
 		{id = "cistern_court", template = "highcourt_well_court",
 			x = -45, z = 9, turns = 0, palette = "town"},
 
@@ -191,9 +198,9 @@ local function loader(directory)
 		-- chimney stack stands on the middle cell of that same wall and is
 		-- written after the door.
 		{id = "great_forge", template = "dur_brannoc_great_forge",
-			x = 24, z = 8, turns = 0, palette = "town"},
+			x = 24 + COURT_X, z = 8, turns = 0, palette = "town"},
 		{id = "smelting_yard", template = "highcourt_service_yard",
-			x = 24, z = 27, turns = 0, palette = "town"},
+			x = 24 + COURT_X, z = 27, turns = 0, palette = "town"},
 
 		-- 8. The masons' guild, in the south-east corner.
 		{id = "masons_guild", template = "dur_brannoc_masons_guild",
@@ -204,7 +211,7 @@ local function loader(directory)
 		-- face their ground instead: the `home` kit furnishes the cell behind
 		-- every other wall and only the z- doorway is authored clear of it.
 		{id = "market_house", template = "dur_brannoc_market_house",
-			x = -45, z = -20, turns = 3, palette = "town"},
+			x = -52, z = -20, turns = 3, palette = "town"},
 		{id = "south_house", template = "dur_brannoc_south_house",
 			x = -41, z = -41, turns = 1, palette = "town"},
 		{id = "lane_house", template = "dur_brannoc_lane_house",
@@ -223,10 +230,10 @@ local function loader(directory)
 	-- outer plots, so the walk along the precinct wall has something to follow
 	-- between one quarter and the next.
 	local CORNERS = {
-		{id = "watch_south_west", x = -30, z = -35, face = 0, order = 2},
-		{id = "watch_north_west", x = -28, z = 44, face = 2, order = 3},
-		{id = "watch_north_east", x = 43, z = 33, face = 2, order = 4},
-		{id = "watch_south_east", x = 22, z = -40, face = 0, order = 5},
+		{id = "watch_south_west", x = -27, z = -35, face = 0, order = 2},
+		{id = "watch_north_west", x = -27, z = 48, face = 2, order = 3},
+		{id = "watch_north_east", x = 50, z = 39, face = 2, order = 4},
+		{id = "watch_south_east", x = 24, z = -40, face = 0, order = 5},
 	}
 
 	-- The city around the core -- its outline, streets, walls or planted
@@ -320,8 +327,7 @@ local function loader(directory)
 		end
 		pave(AVENUE, COURT.x1, COURT.z1, COURT.x2, COURT.z2, 5)
 		dressing.inlay(buf, dwarf, COURT.x1, COURT.z1, COURT.x2, COURT.z2)
-		for _, kerb in ipairs({{-3, -RADIUS, -3, 7}, {3, -RADIUS, 3, 7},
-				{-3, 40, -3, RADIUS}, {3, 40, 3, RADIUS},
+		for _, kerb in ipairs({{-5, -(RADIUS - 8), -5, 2}, {5, -(RADIUS - 8), 5, 2},
 				{-RADIUS, -3, RADIUS, -3}, {-RADIUS, 3, RADIUS, 3}}) do
 			for z = kerb[2], kerb[4] do
 				for x = kerb[1], kerb[3] do
@@ -382,7 +388,7 @@ local function loader(directory)
 			local points = parts.stamp(buf, part, plot.x, 0, plot.z, plot.turns)
 			local footprint = points.footprint[1]
 			placed[plot.id] = {x = plot.x, z = plot.z, w = footprint.w,
-				d = footprint.d, peak = part.peak, nave_floor = part.nave_floor}
+				d = footprint.d, peak = part.peak}
 			plot_order[#plot_order + 1] = placed[plot.id]
 			for _, door in ipairs(points.doors or {}) do
 				doorways[#doorways + 1] = {x = door.x, y = door.y, z = door.z,
@@ -447,8 +453,8 @@ local function loader(directory)
 		-- and the court's own lamps. This is where the two fixed vendor
 		-- offsets of `grug_traders/vendors.lua` come to rest.
 		local VENDORS = {
-			{id = "vendor_race", kind = "race", x = 42, z = 10},
-			{id = "vendor_general", kind = "general", x = 42, z = 17},
+			{id = "vendor_race", kind = "race", x = 42 + COURT_X, z = 10},
+			{id = "vendor_general", kind = "general", x = 42 + COURT_X, z = 17},
 		}
 		for _, booth in ipairs(VENDORS) do
 			paved_prop("booth", booth.x - 1, booth.z - 1, booth.x + 3,
@@ -459,20 +465,20 @@ local function loader(directory)
 		for _, pile in ipairs({{23, 38, 4, "z"}, {26, 38, 4, "z"},
 				{42, 24, 4, "z"}, {30, 38, 4, "z"}, {34, 38, 4, "z"},
 				{22, 12, 4, "z"}}) do
-			local x2 = (pile[4] == "x") and pile[1] + pile[3] - 1 or pile[1]
+			local x1 = pile[1] + COURT_X
+			local x2 = (pile[4] == "x") and x1 + pile[3] - 1 or x1
 			local z2 = (pile[4] == "z") and pile[2] + pile[3] - 1 or pile[2]
-			paved_prop("charcoal_stack", pile[1], pile[2], x2, z2, function()
-				dressing.wood_pile(buf, dwarf, pile[1], pile[2], pile[3],
-					pile[4])
+			paved_prop("charcoal_stack", x1, pile[2], x2, z2, function()
+				dressing.wood_pile(buf, dwarf, x1, pile[2], pile[3], pile[4])
 			end)
 		end
 		for _, stack in ipairs({{23, 23}, {24, 23}, {42, 30}, {42, 31},
 				{42, 33}, {38, 41}, {39, 41}, {41, 41}, {44, 26}, {44, 27},
 				{44, 34}, {22, 20}}) do
-			paved_prop("ore_crates", stack[1], stack[2], stack[1], stack[2],
-				function()
-					dressing.crates(buf, dwarf, stack[1], stack[2], 2)
-				end)
+			local x = stack[1] + COURT_X
+			paved_prop("ore_crates", x, stack[2], x, stack[2], function()
+				dressing.crates(buf, dwarf, x, stack[2], 2)
+			end)
 		end
 		-- The quenching cauldrons and the anvil line: the palette's own hearth
 		-- and workbench roles, stood in the open between the forge and the
@@ -480,37 +486,37 @@ local function loader(directory)
 		-- (`workbench` is an iron block in this palette and an anvil in two
 		-- others; either reads as the same thing on a paved court.)
 		for _, spot in ipairs({{30, 23}, {32, 23}, {34, 23}}) do
-			paved_prop("cauldron", spot[1], spot[2], spot[1], spot[2],
-				function()
-					buf:put(spot[1], 1, spot[2], dwarf.node("hearth"))
-				end)
+			local x = spot[1] + COURT_X
+			paved_prop("cauldron", x, spot[2], x, spot[2], function()
+				buf:put(x, 1, spot[2], dwarf.node("hearth"))
+			end)
 		end
 		for _, spot in ipairs({{26, 23}, {28, 23}, {36, 23}, {38, 23}}) do
-			paved_prop("anvil", spot[1], spot[2], spot[1], spot[2],
-				function()
-					buf:put(spot[1], 1, spot[2], dwarf.node("workbench"))
-				end)
+			local x = spot[1] + COURT_X
+			paved_prop("anvil", x, spot[2], x, spot[2], function()
+				buf:put(x, 1, spot[2], dwarf.node("workbench"))
+			end)
 		end
 		for _, seat in ipairs({{44, 36, 3, "z"}, {22, 28, 3, "z"}}) do
-			local x2 = (seat[4] == "x") and seat[1] + 2 or seat[1]
+			local x1 = seat[1] + COURT_X
+			local x2 = (seat[4] == "x") and x1 + 2 or x1
 			local z2 = (seat[4] == "z") and seat[2] + 2 or seat[2]
-			paved_prop("court_bench", seat[1], seat[2], x2, z2, function()
-				dressing.bench(buf, dwarf, seat[1], seat[2], seat[3], 3,
-					seat[4])
+			paved_prop("court_bench", x1, seat[2], x2, z2, function()
+				dressing.bench(buf, dwarf, x1, seat[2], seat[3], 3, seat[4])
 			end)
 		end
 		for _, lamp in ipairs({{22, 7}, {38, 6}, {22, 42}, {45, 42},
 				{42, 22}, {22, 24}}) do
-			paved_prop("court_lamp", lamp[1], lamp[2], lamp[1], lamp[2],
-				function()
-					dressing.path_light(buf, dwarf, lamp[1], lamp[2])
-				end)
+			local x = lamp[1] + COURT_X
+			paved_prop("court_lamp", x, lamp[2], x, lamp[2], function()
+				dressing.path_light(buf, dwarf, x, lamp[2])
+			end)
 		end
 
 		-- 7. The plaza's kerb lamps and the street lighting. The great
-		-- avenue's lamp line stops one node short of the crossing: a standard
-		-- on the kerb at x = +-3 is on the verge of one avenue and in the
-		-- CARRIAGEWAY of the other.
+		-- avenue's lamp line stands on its kerb at x = +-5 and stops short of
+		-- the crossing: there a standard would stand in the CARRIAGEWAY of the
+		-- other avenue.
 		for _, lamp in ipairs({{PLAZA.x1, PLAZA.z1}, {PLAZA.x2, PLAZA.z1},
 				{PLAZA.x1, PLAZA.z2}, {PLAZA.x2, PLAZA.z2}}) do
 			paved_prop("plaza_lamp", lamp[1], lamp[2], lamp[1], lamp[2],
@@ -518,13 +524,20 @@ local function loader(directory)
 					dressing.path_light(buf, dwarf, lamp[1], lamp[2])
 				end)
 		end
-		layout.street_lamps(buf, dwarf, 0, -44, -6, 8, outdoors)
-		layout.street_lamps(buf, dwarf, 0, 42, RADIUS - 2, 8, outdoors)
+		for z = -(RADIUS - 13), -6, 8 do
+			for _, x in ipairs({-5, 5}) do
+				if outdoors(x, z) and layout.free(buf, x, z, 3) then
+					dressing.path_light(buf, dwarf, x, z)
+				end
+			end
+		end
+		layout.street_lamps(buf, dwarf, 0, RADIUS - 7, RADIUS - 2, 8, outdoors)
 		for _, spot in ipairs({{-6, -6}, {6, -6}, {-6, 6}, {6, 6},
-				{-25, -6}, {-25, 6}, {25, -6}, {25, 6},
-				{-40, -6}, {-40, 6}, {40, -6}, {40, 6},
-				{-25, 18}, {-25, 30}, {28, -16}, {-16, -6}, {16, -6},
-				{-34, -8}, {34, 4}}) do
+				{-25, -6}, {-24, 6}, {25, -6}, {24, 6},
+				{-44, -6}, {-44, 6}, {44, -6}, {44, 6},
+				{-24, 18}, {-24, 30}, {24, 18}, {24, 30},
+				{-30, 44}, {30, 44}, {-14, 45}, {14, 45},
+				{28, -16}, {-16, -3}, {14, -4}, {34, 4}}) do
 			if outdoors(spot[1], spot[2]) and
 					layout.free(buf, spot[1], spot[2], 4) then
 				paved_prop("street_lamp", spot[1], spot[2], spot[1], spot[2],
@@ -535,8 +548,8 @@ local function loader(directory)
 		end
 
 		-- 8. Benches at the crossing and on the hall's forecourt.
-		for _, seat in ipairs({{-6, -4, 0, "x"}, {4, -4, 0, "x"},
-				{-6, 4, 2, "x"}, {4, 4, 2, "x"}}) do
+		for _, seat in ipairs({{-8, -4, 0, "x"}, {6, -4, 0, "x"},
+				{-8, 4, 2, "x"}, {6, 4, 2, "x"}}) do
 			paved_prop("bench", seat[1], seat[2], seat[1] + 2, seat[2],
 				function()
 					dressing.bench(buf, dwarf, seat[1], seat[2], seat[3], 3,
@@ -558,11 +571,11 @@ local function loader(directory)
 		-- under it and hangs needles on the merlon cap. The KAT's shape rule
 		-- (a bottom slab carries nothing) is what found that.
 		local pines = layout.plant_pines(buf, dwarf, {
-			{-28, -42, 9}, {-20, -38, 10}, {-14, -42, 9}, {-26, -34, 9},
-			{22, -42, 9}, {22, -36, 8}, {5, -38, 10}, {5, -26, 9},
-			{5, -18, 8}, {31, -20, 9}, {31, -12, 8}, {-16, 42, 9},
-			{12, 42, 10}, {-30, 6, 8}, {-34, 4, 9}, {-8, -34, 9},
-			{-32, -20, 8}, {16, -38, 9}, {-20, -28, 9}, {26, -34, 8},
+			{-28, -42, 9}, {-20, -38, 10}, {-14, -42, 9}, {-23, -34, 9},
+			{20, -42, 9}, {22, -36, 8}, {7, -38, 10}, {7, -27, 9},
+			{31, -20, 9}, {31, -12, 8}, {-52, 40, 9}, {-52, 28, 10},
+			{-31, 6, 8}, {-34, 4, 9}, {-8, -34, 9}, {-32, -35, 8},
+			{16, -38, 9}, {-20, -31, 9}, {28, -34, 8},
 		})
 		if pines < 12 then
 			error("wp13 dur brannoc: only " .. pines ..
@@ -577,7 +590,8 @@ local function loader(directory)
 		-- detour and the first parapet column beyond the skip joins straight into
 		-- it. This is an authored corner substitution, not an occupied-cell stop.
 		local drums = 0
-		for _, corner in ipairs({{-47, -47}, {47, -47}, {-47, 47}, {47, 47}}) do
+		local C = precinct_ring.CORNER
+		for _, corner in ipairs({{-C, -C}, {C, -C}, {-C, C}, {C, C}}) do
 			local cx, cz = corner[1], corner[2]
 			if layout.free_area(buf, cx - 2, cz - 2, cx + 2, cz + 2, 8) then
 				buf:ring(cx - 2, cz - 2, cx + 2, cz + 2, 1, 7, STONE)
@@ -641,9 +655,9 @@ local function loader(directory)
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
 				corner.face, {group = WATCH, order = corner.order})
 		end
-		socket("court_idle_forge", "idle", 41, 1, 23, 3, {tags = {"work"}})
-		socket("court_idle_yard", "idle", 28, 1, 24, 0, {tags = {"work"}})
-		socket("court_idle_fire", "idle", 35, 1, 39, 0, {tags = {"fire"}})
+		socket("court_idle_forge", "idle", 41 + COURT_X, 1, 23, 3, {tags = {"work"}})
+		socket("court_idle_yard", "idle", 28 + COURT_X, 1, 24, 0, {tags = {"work"}})
+		socket("court_idle_fire", "idle", 35 + COURT_X, 1, 39, 0, {tags = {"fire"}})
 		socket("forecourt_idle_west", "idle", -6, 1, 3, 1, {tags = {"bench"}})
 		socket("forecourt_idle_east", "idle", 7, 1, 3, 3, {tags = {"bench"}})
 		-- Two SPARE spots. `spawn = false` is the sockets contract's own word
@@ -665,7 +679,7 @@ local function loader(directory)
 		-- nor a door: `spawn = false` is the whole of what it is, which is the
 		-- shape lane 3's spares settled on.
 		socket("citadel_walk_west", "idle", -23, 1, 20, 0, {spawn = false})
-		socket("citadel_walk_north", "idle", 20, 1, 30, 2, {spawn = false})
+		socket("citadel_walk_north", "idle", 20, 1, 47, 2, {spawn = false})
 
 		-- 13. Pane shapes, settled once over the finished pad.
 		parts.resolve_panes(buf)
@@ -757,17 +771,17 @@ local function loader(directory)
 				gate_east = {x = RADIUS, y = 1, z = 0},
 				gate_west = {x = -RADIUS, y = 1, z = 0},
 				main_street = {min = {x = -2, y = 0, z = -RADIUS},
-					max = {x = 2, y = 5, z = 5}},
+					max = {x = 2, y = 5, z = 8}},
 				avenue_south = {min = {x = -2, y = 0, z = -RADIUS},
-					max = {x = 2, y = 5, z = 5}},
-				avenue_north = {min = {x = -2, y = 0, z = 38},
+					max = {x = 2, y = 5, z = 8}},
+				avenue_north = {min = {x = -2, y = 0, z = 46},
 					max = {x = 2, y = 5, z = RADIUS}},
 				avenue_west = {min = {x = -RADIUS, y = 0, z = -2},
 					max = {x = -3, y = 5, z = 2}},
 				avenue_east = {min = {x = 3, y = 0, z = -2},
 					max = {x = RADIUS, y = 5, z = 2}},
-				throne_approach = {min = {x = -2, y = 2, z = 9},
-					max = {x = 2, y = 8, z = 33}},
+				throne_approach = {min = {x = -2, y = 2, z = CASTLE.z},
+					max = {x = 2, y = 8, z = CASTLE.z + 26}},
 				-- The reserved square is the plaza INSIDE its kerb: the four
 				-- lamp standards stand on the kerb ring itself.
 				waypoint_plaza = {min = {x = PLAZA.x1 + 1, y = 0,
@@ -788,7 +802,6 @@ local function loader(directory)
 				parapet_columns = parapet,
 				corner_drums = drums,
 				pines = pines,
-				nave_floor = placed.kings_hall.nave_floor,
 			},
 		}
 	end
