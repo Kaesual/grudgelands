@@ -249,6 +249,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	local function waypost_rows(context)
 		if not waypost_cache then
 			waypost_cache = wayposts.rows(roads.module, roads.cache.text, waypost_labels,
+				roads.module.inputs(source).reserved,
 				context.column_values_at, context.road_column_at)
 		end
 		return waypost_cache

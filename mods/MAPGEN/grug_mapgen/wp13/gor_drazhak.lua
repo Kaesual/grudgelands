@@ -855,7 +855,7 @@ local function loader(directory)
 		-- turned it to the wall.
 		socket("forecourt_idle_east", "idle", 3, 1, 4, 1, {tags = {"door"}})
 		socket("crossing_idle_west", "idle", -5, 1, -4, 0, {tags = {"bench"}})
-		socket("crossing_idle_east", "idle", 5, 1, -4, 2, {tags = {"bench"}})
+		socket("crossing_idle_east", "idle", 5, 1, -4, 0, {tags = {"bench"}}) -- Round 70: 2 faced a tree
 		-- SPARE SPOTS. `spawn = false` is the sockets contract's own word for
 		-- them (playtest round 2, 2026-09-15): a real authored standing position
 		-- that reaches every consumer and that NOBODY IS PLACED ON, so a

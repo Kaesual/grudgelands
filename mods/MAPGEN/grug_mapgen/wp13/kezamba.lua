@@ -618,10 +618,11 @@ local function loader(directory)
 				dressing.crates(buf, timber, spot[1], spot[2], 2)
 			end)
 		local benches = scatter("bench", {{-8, -4, -6, -4}, {6, -4, 8, -4},
-			{-30, -10, -28, -10}, {-26, 16, -24, 16}, {-8, 4, -6, 4},
+			-- Round 70: this one has its back to the wall south of it.
+			{-30, -10, -28, -10}, {-26, 16, -24, 16, face = 0}, {-8, 4, -6, 4},
 			{32, 4, 34, 4}}, 4, function(spot)
 				dressing.bench(buf, timber, spot[1], spot[2],
-					(spot[2] > 0) and 2 or 0, 3, "x")
+					spot.face or (spot[2] > 0) and 2 or 0, 3, "x")
 			end)
 		local lamps_placed = scatter("street lamp",
 			{{PLAZA.x1, PLAZA.z1}, {PLAZA.x2, PLAZA.z1}, {PLAZA.x1, PLAZA.z2},

@@ -848,10 +848,11 @@ local function loader(directory)
 		local SPARES = {
 			{"core_spare_crossing_east", 12, -4, 3},
 			{"core_spare_crossing_west", -16, -1, 1},
-			{"core_spare_quay_west", -28, 44, 2}, -- Round 47: 0 faced a tree
+			-- Round 47: 0 faced a tree; Round 70: 2 faced the lantern, now over the quay
+			{"core_spare_quay_west", -28, 44, 1},
 			{"core_spare_quay_east", 24, 38, 0},
 			{"core_spare_approach", 5, 25, 0},
-			{"core_spare_market_walk", 12, 20, 0},
+			{"core_spare_market_walk", 12, 20, 1}, -- Round 70: 0 faced the lantern
 			{"core_spare_west_avenue", -34, -5, 1},
 			{"core_spare_east_avenue", 34, 5, 3},
 			{"core_spare_grove", 25, 2, 2},
