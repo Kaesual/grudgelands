@@ -59,8 +59,9 @@ local function clear_stage(base)
 	end
 end
 
--- The real on_use of a hoe at a real item entity lying beside the player.
+-- The real on_use of a wielded hoe at a real item entity beside the player.
 local function use_at_drop(player, hoe, itemstring)
+	player:set_wielded_item(ItemStack(hoe))
 	local at = vector.offset(player:get_pos(), 1, 1, 0)
 	local object = core.add_item(at, itemstring)
 	local definition = ItemStack(hoe):get_definition()
@@ -105,9 +106,13 @@ local function run_checks(player, base)
 
 	local under = {x = base.x + 3, y = base.y - 1, z = base.z + 1}
 	core.set_node(under, {name = "default:dirt"})
+	-- The start town is protected; the hoe's own refusal is not the question.
+	local is_protected = core.is_protected
+	core.is_protected = function() return false end
 	local hoe = ItemStack("grug_farming:hoe")
 	hoe = hoe:get_definition().on_use(hoe, player, {type = "node", under = under,
 		above = {x = under.x, y = under.y + 1, z = under.z}})
+	core.is_protected = is_protected
 	check("a hoe still tills", core.get_node(under).name == grug_farming.SOIL_DRY and
 		hoe:get_wear() > 0, core.get_node(under).name)
 
@@ -125,6 +130,7 @@ local function run_checks(player, base)
 		same = same and timer:get_timeout() == wanted
 	end
 	check("planted crops run their own stage lengths", same, table.concat(lengths, " "))
+	player:set_wielded_item(ItemStack(""))
 end
 
 -- Left to right as seen: corn stage 2, 3, 4, wild corn, on wet soil and grass.
@@ -144,9 +150,9 @@ local function stage_corn(base)
 	core.set_node(at(base.x, base.y), {name = "grug_farming:corn_4"})
 	core.set_node(at(base.x, base.y + 1), {name = "grug_farming:corn_4_upper_1"})
 	core.set_node(at(base.x, base.y + 2), {name = "grug_farming:corn_4_upper_2"})
-	core.set_node(at(base.x - 1, base.y), {name = "grug_mapgen:corn_source"})
+	core.set_node(at(base.x - 1, base.y), {name = "grug_gathering:corn_source"})
 	log("corn at " .. core.pos_to_string(at(base.x, base.y)) .. ", wild: " ..
-		tostring(core.registered_nodes["grug_mapgen:corn_source"] ~= nil))
+		tostring(core.registered_nodes["grug_gathering:corn_source"] ~= nil))
 end
 
 local function show(player, shot)
