@@ -82,6 +82,8 @@ invitations, a box with the party icon stands at the party HUD's place:
 shows the newest invitation, whatever the Party HUD switch says, and goes
 when the invitation is accepted, declined or expires. There is no chat
 command to answer; the chat line at the invitation names the Social tab.
+While the player owns an Expedition alone, the box and the Social tab beside
+Accept add one line: "Accepting ends your Expedition." (Round 71).
 The atlas shows online member positions and headings in its current view; this
 does not introduce any shared XP, quest or teleport authority.
 

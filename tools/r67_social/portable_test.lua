@@ -382,6 +382,24 @@ eq(hud_count(bob), 5, "H the box: panel, icon and three lines")
 has(hud_texts(bob), "alice has invited you to join their | ", "H the inviter's sentence, wrapped")
 has(hud_texts(bob), "party.", "H ...its end on the next line")
 has(hud_texts(bob), "Open Social to answer (120 s)", "H the seconds and the note")
+lacks(hud_texts(bob), "Accepting ends", "H no Expedition, no warning")
+lacks(fs, "Accepting ends", "B no Expedition, no warning")
+-- Round 71: while the invited player owns an Expedition alone, one line more in
+-- the box and beside Accept; a party's Expedition says nothing.
+local run_owner = {kind = "player", name = "bob"}
+rawset(_G, "grug_expeditions", {run_of = function(name)
+	return name == "bob" and {owner = run_owner} or nil
+end})
+step(0.6)
+has(hud_texts(bob), "Accepting ends your Expedition.", "H the warning in the box")
+eq(hud_count(bob), 6, "H ...one line more")
+has(resend(bob), "Accepting ends your Expedition.", "B the warning on the tab")
+run_owner = {kind = "party", id = 1}
+step(0.6)
+lacks(hud_texts(bob), "Accepting ends", "H not for a party's Expedition")
+rawset(_G, "grug_expeditions", nil)
+step(0.6)
+eq(hud_count(bob), 5, "H the box goes back")
 step(1.1)
 grug_parties.invite(carl, "bob")
 step(0.6)

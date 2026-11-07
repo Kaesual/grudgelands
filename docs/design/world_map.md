@@ -114,7 +114,11 @@ party arrows carry the member's name as tooltip (the viewer's own arrow
 none); markers take no clicks. Both arrows show in every layer and in
 quest mode; when the world map sends them is the
 [Map window](#map-window)'s refresh rule. Closed maps receive no formspec
-refreshes.
+refreshes. A player beyond the map's bounds (inside an Expedition, far out at
+sea; Round 71) keeps an arrow at the nearest place on the map, 200 nodes inside
+its edge; other markers there stay undrawn. The minimap needs no such rule:
+beyond the bounds it holds no tile, so its sea disc shows, and it places party
+members by their real positions, rim arrows included.
 
 Round 16 (approved 2026-09-22): authored quest givers have individual icon
 markers with the same per-player ready/available/active/locked precedence as
@@ -897,6 +901,8 @@ were in, and quest texts and level routes now name zones.
   column the text is "Open sea". The town still belongs to its zone for
   everything else. The minimap line, the entry banner and the map window's
   "Current:" label show the same text.
+- **Expeditions** (Round 71): inside the box of a live Expedition the text is
+  that Expedition's name.
 - **Claims** (0.50.2 lane HOME, the user's rulings H1–H2): inside a Claim
   Stone's claim the text is **"Your Home"** for its owner and
   **"<owner>'s Home"** for everybody else (permission holders included;
