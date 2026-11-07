@@ -131,21 +131,22 @@ check(not pcall(templates.sockets, {{id = "b", building = "other"}}, collected()
 -- Identity SHA-256 and point digest of each start town as the building
 -- generators built it at 1ac0688b (tools/building_templates/town_identity.lua);
 -- since Round 58 (TOWNFIX, a declared map reset: every start's waystone and
--- mailbox at its centre, Silverleaf's terrace stair with its last tread) the
+-- mailbox at its centre, Silverleaf's terrace stair with its last tread) and
+-- Round 70 (TOWNS, a declared map reset: the six towns' reworked layouts) the
 -- towns' new values.
 local FROZEN = {
-	hearthpine = {"f103a810d0cf52c2955655240f9c70489adc7c0323095b7ee1eee861479a51f5",
-		"20a3a20b9b9a0df947f2cb3c10a8854538a5b32f576e28773cac61ee057bfb5c"},
-	dawnmere = {"12a9b1a28c727ba2eeed2737ad5433c8892ab1291c960a3c252686b0c618f5a2",
-		"801c78d4595af142353fbc19fe3ac8009044b0e5ac60ca22c264cf0dcbbe4823"},
-	silverleaf = {"488fa5fd19e5d20db1551c8183551efd2ea5a43c67e5feec241c1d8a11310560",
-		"b87b68898cba60cdc4e2116d66a7506be0da44f8223c3cb5a81d2fb1b72efa0d"},
-	stillgrave = {"c634b2d3985793ea4f68a66469f59ca0393e1187411f3d04368958882fc78a9c",
-		"767e7511c26822f408202a2da7a8542990c189c4ce41c4cccd4027c1db9eef4b"},
-	sunscar = {"7c7ab0cfcbf30eb6e0c2362c831384a88046b50e0be0f31fec324e74fafcd9d3",
-		"a8b030359a488310f156aa352b721adee633d8c31f24c68a289dd1c01c0ac1ec"},
-	kapok = {"2f19edbfc60cf387b7c7b151272b4ffce36da7cd122b71e0eb9cdbf18b4e9fdb",
-		"38d46d93553e84b7f8feaab41ea95732e84f2fb1849f429f6bcf2f1abeb93780"},
+	hearthpine = {"b3273d20345458ac026409630a5a8c5a1d612a1d0f46acf3db55c14b3bca33f6",
+		"f7001bfdf74d0f89b7d5ad5697b10a6228fc863d19208baafc7c072207c3ea1b"},
+	dawnmere = {"72e2180154b0dc992a13e34514995f8793fc056e5d0c26f79bded4648ba8998c",
+		"ac96af25b169c03921a61a377ff6aeb1b03ae5aeaec28a4b863e45b1442db92b"},
+	silverleaf = {"572b4a0ae25389bab4bf01897a10dbdd06bda36484e6ae9c6e1bd07c66d9bbbd",
+		"02b07a52fe59fe91d6c8d8094f681fd789bcdbd9d74aa4142aca572130a30f6f"},
+	stillgrave = {"f14c45271b092b43946f65eed875b2ebfd7f63f9a1eff600102e7bd47e68fd4f",
+		"9c818115f1656ccb5b6f5b3aa2f77c08362e707d4a8075119eab083e023943c5"},
+	sunscar = {"f6568969dd2f0f3de735222190bc7ed2afa86f66ed107cb2e47fcd95b5cbce78",
+		"66b459ad6a56c648d1ae826af4c8f9e6cf45503279596798b695ddb56bee3cd8"},
+	kapok = {"93db99ec73a466ecd3319e00b7d4a96246aae7098b58b4fa435bcc5d74aba353",
+		"44d761c0783c1458f344d6602ef82d9c32570dbaaac2068d6a4bd84bd1dc9506"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()

@@ -635,6 +635,11 @@ local function loader(directory)
 
 		-- 12. Acacias on the flats, the woodcutter's first: always written,
 		-- whatever share of the rest the start keeps.
+		for z = WORK_ACACIA.z - 1, WORK_ACACIA.z do
+			for x = WORK_ACACIA.x - 1, WORK_ACACIA.x + 1 do
+				buf:put(x, 0, z, palette.node("ground"))
+			end
+		end
 		local share = buf.tree_share
 		buf.tree_share = nil
 		if not dressing.acacia(buf, palette, WORK_ACACIA.x, WORK_ACACIA.z) then

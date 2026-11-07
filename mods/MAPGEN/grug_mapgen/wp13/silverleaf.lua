@@ -386,6 +386,10 @@ local function loader(directory)
 		paved_prop("flower_bed", -11, 12, -8, 15, function()
 			dressing.flower_bed(buf, palette, -11, 12, -8, 15)
 		end)
+		-- The gardener's planter, in front of the work_planters socket.
+		paved_prop("planter", 3, 12, 5, 12, function()
+			dressing.planter(buf, palette, 3, 12, 5, 12)
+		end)
 		for _, seat in ipairs({{-8, 4, 2}, {3, 4, 2}, {-8, -9, 2}, {6, -9, 2}}) do
 			paved_prop("bench", seat[1], seat[2], seat[1] + 2, seat[2],
 				function()

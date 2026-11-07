@@ -359,6 +359,9 @@ local function loader(directory)
 			{palette.node("foundation"), palette.node("path"), palette.maybe("ground_straw")})
 
 		dressing.vale_undergrowth(buf, palette, -RADIUS, -RADIUS, RADIUS, RADIUS, 5)
+		-- The gardener's tuft, in front of the work_garden socket.
+		local tuft = palette.node("grass_tuft")
+		buf:put(-25, 1, 22, tuft, parts.place_param2(tuft))
 
 		-- 9. Pane shapes. `xpanes` settles a pane's node and param2 from its
 		-- horizontal neighbours in `update_pane`, which the engine runs from

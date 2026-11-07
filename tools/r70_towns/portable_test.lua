@@ -11,7 +11,8 @@
 --      authored +-63, spawn and the gate axis as they were;
 --   W  a walk: from the spawn a body two nodes high that climbs one node
 --      reaches every standing socket (adapter rows too), the cell before every
---      door, the stone's arrival sides and every patrol waypoint;
+--      door and the stone's arrival sides; the five legs of the watch's loop
+--      walk without a great detour;
 --   J  the wayposts (wp40/wayposts.lua): the junctions that get a stack, its
 --      column, the arrows' turns and the names on the boards.
 --
@@ -94,7 +95,35 @@ local function walker(bp)
 			end
 		end
 	end
-	return {get = get, stands = stands, reached = function(x, y, z)
+	-- Steps on foot from one standing cell to another, nil if none.
+	local function steps(from, to)
+		local goal = key(to.x, to.y, to.z)
+		local start = key(from.x, from.y, from.z)
+		local dist = {[start] = 0}
+		local list, first = {{from.x, from.y, from.z}}, 1
+		while first <= #list do
+			local p = list[first]
+			first = first + 1
+			local here = dist[key(p[1], p[2], p[3])]
+			if key(p[1], p[2], p[3]) == goal then return here end
+			for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+				local nx, nz = p[1] + d[1], p[3] + d[2]
+				if math.abs(nx) <= 63 and math.abs(nz) <= 63 then
+					for dy = -3, 1 do
+						local ny = p[2] + dy
+						local k = key(nx, ny, nz)
+						if seen[k] and not dist[k] and stands(nx, ny, nz) and
+								(dy <= 0 or not solid(get(p[1], p[2] + 2, p[3]))) then
+							dist[k] = here + 1
+							list[#list + 1] = {nx, ny, nz}
+						end
+					end
+				end
+			end
+		end
+		return nil
+	end
+	return {get = get, stands = stands, steps = steps, reached = function(x, y, z)
 		return seen[key(x, y, z)] == true
 	end}
 end
@@ -146,6 +175,21 @@ for _, profile in ipairs(towns) do
 			check(walk.reached(socket.x, y, socket.z),
 				("%s %s: not reached on foot from the spawn"):format(key, row.id))
 		end
+	end
+
+	-- The watch's loop, in order: every leg walks without a great detour.
+	local loop = {}
+	for _, socket in ipairs(bp.landmarks.sockets) do
+		if socket.role == "guard_patrol" then loop[socket.order] = socket end
+	end
+	check(#loop == 5, key .. ": five patrol waypoints")
+	for index, socket in ipairs(loop) do
+		local goal = loop[index % #loop + 1]
+		local straight = math.abs(goal.x - socket.x) + math.abs(goal.z - socket.z)
+		local walked = walk.steps(socket, goal)
+		check(walked ~= nil and walked <= 2 * straight + 8,
+			("%s: patrol leg %s to %s walks %s steps, %d in a straight line"):format(key,
+				socket.id, goal.id, tostring(walked), straight))
 	end
 
 	-- Doors: the cell before each door.
