@@ -213,3 +213,7 @@ These rulings replace the first set of five and the +0 to +9 dropdown of §2 and
      for the rest of that run after its first firing (coordinator default).
   2. **Wall projectile:** fires on a fixed period, always, a clearly visible fireball
      that deals area damage where it hits a player.
+- **Ore at T6 is Abyssal Crystal**, the gem Diamond (user, 2026-11-07): an ore place holds
+  the ore its tier's rock is mined for.
+- **Expeditions support mining, they do not replace it (user, 2026-11-07):** a run's ore
+  and gems stay clearly below what the same time of ordinary mining in that tier yields.
