@@ -793,7 +793,7 @@ local function loader(directory)
 		-- has somewhere to go that is not another villager's doorstep. No tag:
 		-- a tag is what the spoken line and the facing rule read, and a spare
 		-- has neither a line nor a door.
-		socket("shore_walk_north", "idle", -18, 1, 55, 0, {spawn = false})
+		socket("shore_walk_north", "idle", -18, 1, 55, 2, {spawn = false})
 		socket("shore_walk_south", "idle", -18, 1, 26, 2, {spawn = false})
 
 		-- 11b. GROUND COVER GIVES WAY TO A STANDING POSITION.
