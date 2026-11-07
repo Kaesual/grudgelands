@@ -218,6 +218,11 @@ bindings hang on sockets.
 **Ruling (user, 2026-11-07):** one shared basic form for the castles, not six
 individual designs.
 
+**Rulings on the DESIGN review (user, 2026-11-07):** the land-use proposal
+(`tools/r70_design`) stands, with its per-place recommendations. The civic core
+grows from radius 48 to **56** in all six capitals. Kezamba and Lethariel may move
+the core a little away from their lake, so the buildings there have more room.
+
 ### 2.8 Start towns (user, 2026-11-07; needs the map reset)
 
 - Rework the layout of the six start towns. The waystone looks squeezed in.
