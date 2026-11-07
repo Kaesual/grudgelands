@@ -102,14 +102,18 @@ local function patrol_legs(by_id)
 	return legs
 end
 
+-- The patrolling guard nearest the anchor: the shots may have unloaded one.
 local function find_guard(anchor)
-	for _, object in ipairs(core.get_objects_inside_radius(anchor, 90)) do
+	local best, near
+	for _, object in ipairs(core.get_objects_inside_radius(anchor, 70)) do
 		local entity = object:get_luaentity()
 		if entity and entity.name and entity.name:find("guard", 1, true) and
 				entity._grug_patrol_route then
-			return entity
+			local distance = vector.distance(object:get_pos(), anchor)
+			if not near or distance < near then best, near = entity, distance end
 		end
 	end
+	return best
 end
 
 local function census(anchor, by_id)
@@ -155,9 +159,18 @@ core.register_globalstep(function(dtime)
 		-- the slot, so the entry is read right after the call).
 		local leg, guard = state.legs[state.leg], state.guard
 		local pos = guard.object and guard.object:get_pos()
+		if not pos then
+			guard = find_guard(state.anchor) or guard
+			state.guard = guard
+			pos = guard.object and guard.object:get_pos()
+		end
 		if leg and pos then
-			pcall(grug_mobs.route_walk, guard, dtime, pos, CAPITAL, leg.a.pos, leg.b.pos,
-				"r70cap", true)
+			local ok, err = pcall(grug_mobs.route_walk, guard, dtime, pos, CAPITAL, leg.a.pos,
+				leg.b.pos, "r70cap", true)
+			if not ok and not state.complained then
+				state.complained = true
+				log("route_walk: " .. tostring(err))
+			end
 			local held = guard.temp and guard.temp.grug_leg
 			if held and held.owner == "r70cap" then state.entry = held.entry end
 		end
@@ -198,8 +211,6 @@ core.register_globalstep(function(dtime)
 		state.waited = state.waited + step
 		if state.waited >= 25 then
 			census(state.anchor, state.by_id)
-			state.guard = find_guard(state.anchor)
-			log("check patrol guard " .. tostring(state.guard and state.guard.name))
 			state.phase = "shots"
 		end
 	elseif state.phase == "legs" then
@@ -232,6 +243,9 @@ core.register_globalstep(function(dtime)
 		local shot = state.shots[state.shot]
 		if not shot then
 			core.set_timeofday(0.5)
+			player:set_pos(vector.offset(state.anchor, 0, 12, 0))
+			state.guard = find_guard(state.anchor)
+			log("check patrol guard " .. tostring(state.guard and state.guard.name))
 			state.legs = state.guard and patrol_legs(state.by_id) or {}
 			state.leg, state.waited = 1, 0
 			log("check legs " .. #state.legs)
