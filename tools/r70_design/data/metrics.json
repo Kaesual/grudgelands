@@ -1,0 +1,332 @@
+{
+  "dur_brannoc": {
+    "12345": {
+      "before": 48,
+      "after": 50,
+      "moved": 48,
+      "lost": [],
+      "gained": [
+        "deep_mushroom_garden",
+        "forge_charcoal_field"
+      ],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 99960,
+      "area_after": 100841,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "3684797457838814663": {
+      "before": 51,
+      "after": 49,
+      "moved": 48,
+      "lost": [
+        "deep_barrow_terrace",
+        "terrace_brew_court"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 100699,
+      "area_after": 99834,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "17713522922938657774": {
+      "before": 51,
+      "after": 52,
+      "moved": 51,
+      "lost": [],
+      "gained": [
+        "terrace_kitchen_garden"
+      ],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 100447,
+      "area_after": 100008,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    }
+  },
+  "highcourt": {
+    "12345": {
+      "before": 49,
+      "after": 47,
+      "moved": 47,
+      "lost": [
+        "market_orchard_close",
+        "market_pond"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 99902,
+      "area_after": 99829,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "3684797457838814663": {
+      "before": 51,
+      "after": 47,
+      "moved": 47,
+      "lost": [
+        "homes_goose_green",
+        "market_orchard_close",
+        "market_pond",
+        "martial_muster_field"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 100094,
+      "area_after": 100049,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "17713522922938657774": {
+      "before": 53,
+      "after": 48,
+      "moved": 47,
+      "lost": [
+        "homes_goose_green",
+        "lore_chapel_yard",
+        "lore_physic_field",
+        "market_orchard_close",
+        "martial_remount_pasture"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 100438,
+      "area_after": 100306,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    }
+  },
+  "lethariel": {
+    "12345": {
+      "before": 45,
+      "after": 45,
+      "moved": 45,
+      "lost": [],
+      "gained": [],
+      "lost_area": 2752,
+      "required": 10,
+      "missing": [],
+      "area_before": 100120,
+      "area_after": 100020,
+      "no_route_before": " ring1/q1 ring2/q1",
+      "no_route_after": " ring1/q1 ring2/q1"
+    },
+    "3684797457838814663": {
+      "before": 44,
+      "after": 43,
+      "moved": 42,
+      "lost": [
+        "martial_lawn"
+      ],
+      "gained": [],
+      "lost_area": 2752,
+      "required": 10,
+      "missing": [],
+      "area_before": 99368,
+      "area_after": 99995,
+      "no_route_before": " ring1/q1 ring2/q1",
+      "no_route_after": " ring1/q1 ring2/q1"
+    },
+    "17713522922938657774": {
+      "before": 40,
+      "after": 41,
+      "moved": 39,
+      "lost": [],
+      "gained": [
+        "homes_gardens"
+      ],
+      "lost_area": 2752,
+      "required": 10,
+      "missing": [],
+      "area_before": 99975,
+      "area_after": 100018,
+      "no_route_before": " ring1/q1 ring2/q1",
+      "no_route_after": " ring1/q1 ring2/q1"
+    }
+  },
+  "gor_drazhak": {
+    "12345": {
+      "before": 52,
+      "after": 46,
+      "moved": 45,
+      "lost": [
+        "bazaar_drying_floor",
+        "bazaar_stock_pen",
+        "bone_ancestor_field",
+        "war_remount_paddock",
+        "warren_clan_ground",
+        "warren_dry_garden"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 99861,
+      "area_after": 100086,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "3684797457838814663": {
+      "before": 51,
+      "after": 47,
+      "moved": 47,
+      "lost": [
+        "bone_ancestor_field",
+        "bone_scrub_garden",
+        "war_muster_field",
+        "war_remount_paddock"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 99950,
+      "area_after": 100187,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "17713522922938657774": {
+      "before": 50,
+      "after": 46,
+      "moved": 46,
+      "lost": [
+        "bazaar_drying_floor",
+        "bone_ancestor_field",
+        "war_muster_field",
+        "war_remount_paddock"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 99683,
+      "area_after": 99619,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    }
+  },
+  "nhal_veyr": {
+    "12345": {
+      "before": 49,
+      "after": 47,
+      "moved": 45,
+      "lost": [
+        "watch_bone_rampart",
+        "watch_muster_field"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 100155,
+      "area_after": 100114,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "3684797457838814663": {
+      "before": 49,
+      "after": 48,
+      "moved": 48,
+      "lost": [
+        "vigil_ruin_close"
+      ],
+      "gained": [],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 99898,
+      "area_after": 99873,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    },
+    "17713522922938657774": {
+      "before": 48,
+      "after": 47,
+      "moved": 46,
+      "lost": [
+        "vigil_burial_ground",
+        "watch_muster_field"
+      ],
+      "gained": [
+        "market_bone_yard"
+      ],
+      "lost_area": 3648,
+      "required": 10,
+      "missing": [],
+      "area_before": 99856,
+      "area_after": 99798,
+      "no_route_before": "none",
+      "no_route_after": "none"
+    }
+  },
+  "kezamba": {
+    "12345": {
+      "before": 51,
+      "after": 49,
+      "moved": 49,
+      "lost": [
+        "vine_common",
+        "vine_terraces"
+      ],
+      "gained": [],
+      "lost_area": 2464,
+      "required": 10,
+      "missing": [],
+      "area_before": 99486,
+      "area_after": 99554,
+      "no_route_before": " ring1/q1 ring2/q1",
+      "no_route_after": " ring1/q1 ring2/q1"
+    },
+    "3684797457838814663": {
+      "before": 49,
+      "after": 50,
+      "moved": 46,
+      "lost": [],
+      "gained": [
+        "canopy_muster"
+      ],
+      "lost_area": 2464,
+      "required": 10,
+      "missing": [],
+      "area_before": 99503,
+      "area_after": 99497,
+      "no_route_before": " ring1/q1 ring2/q1",
+      "no_route_after": " ring1/q1 ring2/q1"
+    },
+    "17713522922938657774": {
+      "before": 51,
+      "after": 49,
+      "moved": 47,
+      "lost": [
+        "canopy_muster",
+        "canopy_pasture",
+        "totem_graves",
+        "totem_grove"
+      ],
+      "gained": [
+        "shore_gardens",
+        "shore_vineyard"
+      ],
+      "lost_area": 2464,
+      "required": 10,
+      "missing": [],
+      "area_before": 98994,
+      "area_after": 98891,
+      "no_route_before": " ring1/q1 ring2/q1",
+      "no_route_after": " ring1/q1 ring2/q1"
+    }
+  }
+}
