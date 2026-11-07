@@ -1,10 +1,22 @@
 {
   "all_candidates_native_16px": true,
+  "animated_cell_fronts": 4,
   "browser_or_game_acceptance": "not claimed",
-  "candidate_textures": 28,
+  "candidate_textures": 155,
   "choice_groups": 8,
   "choices": 24,
-  "html_images_decoded": 125,
+  "confirmed_picks": {
+    "abyssal_steel": "A",
+    "embersteel": "A",
+    "furnace": "A",
+    "grinder": "B",
+    "iron": "A",
+    "silversteel": "A",
+    "steel": "A",
+    "thread": "A"
+  },
+  "final_files": 128,
+  "html_images_decoded": 126,
   "machine_geometry_files": 6,
   "static_html_resource_audit": "pass"
 }

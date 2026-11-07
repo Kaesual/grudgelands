@@ -8,9 +8,136 @@ Context sources: [vendored attribution](../../mods/BASE/default/README.txt), [ve
 
 | File | Author / source | Licence | Modification |
 |---|---|---|---|
+| [candidates/final/grug_guild_furnace_0_0_0_back.png](candidates/final/grug_guild_furnace_0_0_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_0_bottom.png](candidates/final/grug_guild_furnace_0_0_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_0_front.png](candidates/final/grug_guild_furnace_0_0_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_0_left.png](candidates/final/grug_guild_furnace_0_0_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_0_right.png](candidates/final/grug_guild_furnace_0_0_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_0_top.png](candidates/final/grug_guild_furnace_0_0_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_1_back.png](candidates/final/grug_guild_furnace_0_0_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_1_bottom.png](candidates/final/grug_guild_furnace_0_0_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_1_front.png](candidates/final/grug_guild_furnace_0_0_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_1_left.png](candidates/final/grug_guild_furnace_0_0_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_1_right.png](candidates/final/grug_guild_furnace_0_0_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_0_1_top.png](candidates/final/grug_guild_furnace_0_0_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_0_back.png](candidates/final/grug_guild_furnace_0_1_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_0_bottom.png](candidates/final/grug_guild_furnace_0_1_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_0_front.png](candidates/final/grug_guild_furnace_0_1_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_0_left.png](candidates/final/grug_guild_furnace_0_1_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_0_right.png](candidates/final/grug_guild_furnace_0_1_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_0_top.png](candidates/final/grug_guild_furnace_0_1_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_1_back.png](candidates/final/grug_guild_furnace_0_1_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_1_bottom.png](candidates/final/grug_guild_furnace_0_1_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_1_front.png](candidates/final/grug_guild_furnace_0_1_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_1_left.png](candidates/final/grug_guild_furnace_0_1_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_1_right.png](candidates/final/grug_guild_furnace_0_1_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_1_1_top.png](candidates/final/grug_guild_furnace_0_1_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_0_back.png](candidates/final/grug_guild_furnace_0_2_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_0_bottom.png](candidates/final/grug_guild_furnace_0_2_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_0_front.png](candidates/final/grug_guild_furnace_0_2_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_0_left.png](candidates/final/grug_guild_furnace_0_2_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_0_right.png](candidates/final/grug_guild_furnace_0_2_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_0_top.png](candidates/final/grug_guild_furnace_0_2_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_1_back.png](candidates/final/grug_guild_furnace_0_2_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_1_bottom.png](candidates/final/grug_guild_furnace_0_2_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_1_front.png](candidates/final/grug_guild_furnace_0_2_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_1_left.png](candidates/final/grug_guild_furnace_0_2_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_1_right.png](candidates/final/grug_guild_furnace_0_2_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_0_2_1_top.png](candidates/final/grug_guild_furnace_0_2_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_0_back.png](candidates/final/grug_guild_furnace_1_0_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_0_bottom.png](candidates/final/grug_guild_furnace_1_0_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_0_front.png](candidates/final/grug_guild_furnace_1_0_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_0_left.png](candidates/final/grug_guild_furnace_1_0_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_0_right.png](candidates/final/grug_guild_furnace_1_0_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_0_top.png](candidates/final/grug_guild_furnace_1_0_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_1_back.png](candidates/final/grug_guild_furnace_1_0_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_1_bottom.png](candidates/final/grug_guild_furnace_1_0_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_1_front.png](candidates/final/grug_guild_furnace_1_0_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_1_left.png](candidates/final/grug_guild_furnace_1_0_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_1_right.png](candidates/final/grug_guild_furnace_1_0_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_0_1_top.png](candidates/final/grug_guild_furnace_1_0_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_0_back.png](candidates/final/grug_guild_furnace_1_1_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_0_bottom.png](candidates/final/grug_guild_furnace_1_1_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_0_front.png](candidates/final/grug_guild_furnace_1_1_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_0_left.png](candidates/final/grug_guild_furnace_1_1_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_0_right.png](candidates/final/grug_guild_furnace_1_1_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_0_top.png](candidates/final/grug_guild_furnace_1_1_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_1_back.png](candidates/final/grug_guild_furnace_1_1_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_1_bottom.png](candidates/final/grug_guild_furnace_1_1_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_1_front.png](candidates/final/grug_guild_furnace_1_1_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_1_left.png](candidates/final/grug_guild_furnace_1_1_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_1_right.png](candidates/final/grug_guild_furnace_1_1_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_1_1_top.png](candidates/final/grug_guild_furnace_1_1_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_0_back.png](candidates/final/grug_guild_furnace_1_2_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_0_bottom.png](candidates/final/grug_guild_furnace_1_2_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_0_front.png](candidates/final/grug_guild_furnace_1_2_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_0_left.png](candidates/final/grug_guild_furnace_1_2_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_0_right.png](candidates/final/grug_guild_furnace_1_2_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_0_top.png](candidates/final/grug_guild_furnace_1_2_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_1_back.png](candidates/final/grug_guild_furnace_1_2_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_1_bottom.png](candidates/final/grug_guild_furnace_1_2_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_1_front.png](candidates/final/grug_guild_furnace_1_2_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_1_left.png](candidates/final/grug_guild_furnace_1_2_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_1_right.png](candidates/final/grug_guild_furnace_1_2_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_furnace_1_2_1_top.png](candidates/final/grug_guild_furnace_1_2_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_0_back.png](candidates/final/grug_guild_grinder_0_0_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_0_bottom.png](candidates/final/grug_guild_grinder_0_0_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_0_front.png](candidates/final/grug_guild_grinder_0_0_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_0_left.png](candidates/final/grug_guild_grinder_0_0_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_0_right.png](candidates/final/grug_guild_grinder_0_0_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_0_top.png](candidates/final/grug_guild_grinder_0_0_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_1_back.png](candidates/final/grug_guild_grinder_0_0_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_1_bottom.png](candidates/final/grug_guild_grinder_0_0_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_1_front.png](candidates/final/grug_guild_grinder_0_0_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_1_left.png](candidates/final/grug_guild_grinder_0_0_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_1_right.png](candidates/final/grug_guild_grinder_0_0_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_0_1_top.png](candidates/final/grug_guild_grinder_0_0_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_0_back.png](candidates/final/grug_guild_grinder_0_1_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_0_bottom.png](candidates/final/grug_guild_grinder_0_1_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_0_front.png](candidates/final/grug_guild_grinder_0_1_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_0_left.png](candidates/final/grug_guild_grinder_0_1_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_0_right.png](candidates/final/grug_guild_grinder_0_1_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_0_top.png](candidates/final/grug_guild_grinder_0_1_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_1_back.png](candidates/final/grug_guild_grinder_0_1_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_1_bottom.png](candidates/final/grug_guild_grinder_0_1_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_1_front.png](candidates/final/grug_guild_grinder_0_1_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_1_left.png](candidates/final/grug_guild_grinder_0_1_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_1_right.png](candidates/final/grug_guild_grinder_0_1_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_0_1_1_top.png](candidates/final/grug_guild_grinder_0_1_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_0_back.png](candidates/final/grug_guild_grinder_1_0_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_0_bottom.png](candidates/final/grug_guild_grinder_1_0_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_0_front.png](candidates/final/grug_guild_grinder_1_0_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_0_left.png](candidates/final/grug_guild_grinder_1_0_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_0_right.png](candidates/final/grug_guild_grinder_1_0_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_0_top.png](candidates/final/grug_guild_grinder_1_0_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_1_back.png](candidates/final/grug_guild_grinder_1_0_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_1_bottom.png](candidates/final/grug_guild_grinder_1_0_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_1_front.png](candidates/final/grug_guild_grinder_1_0_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_1_left.png](candidates/final/grug_guild_grinder_1_0_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_1_right.png](candidates/final/grug_guild_grinder_1_0_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_0_1_top.png](candidates/final/grug_guild_grinder_1_0_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_0_back.png](candidates/final/grug_guild_grinder_1_1_0_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_0_bottom.png](candidates/final/grug_guild_grinder_1_1_0_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_0_front.png](candidates/final/grug_guild_grinder_1_1_0_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_0_left.png](candidates/final/grug_guild_grinder_1_1_0_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_0_right.png](candidates/final/grug_guild_grinder_1_1_0_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_0_top.png](candidates/final/grug_guild_grinder_1_1_0_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_1_back.png](candidates/final/grug_guild_grinder_1_1_1_back.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_1_bottom.png](candidates/final/grug_guild_grinder_1_1_1_bottom.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_1_front.png](candidates/final/grug_guild_grinder_1_1_1_front.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_1_left.png](candidates/final/grug_guild_grinder_1_1_1_left.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_1_right.png](candidates/final/grug_guild_grinder_1_1_1_right.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_grinder_1_1_1_top.png](candidates/final/grug_guild_grinder_1_1_1_top.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_ornamented_abyssal_steel.png](candidates/final/grug_guild_ornamented_abyssal_steel.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_ornamented_embersteel.png](candidates/final/grug_guild_ornamented_embersteel.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_ornamented_iron.png](candidates/final/grug_guild_ornamented_iron.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_ornamented_silversteel.png](candidates/final/grug_guild_ornamented_silversteel.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_guild_ornamented_steel.png](candidates/final/grug_guild_ornamented_steel.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/final/grug_professions_thread.png](candidates/final/grug_professions_thread.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
 | [candidates/machines/textures/dressed_stone.png](candidates/machines/textures/dressed_stone.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
 | [candidates/machines/textures/firebrick.png](candidates/machines/textures/firebrick.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
 | [candidates/machines/textures/grindstone.png](candidates/machines/textures/grindstone.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
+| [candidates/machines/textures/hearth_fire.png](candidates/machines/textures/hearth_fire.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
 | [candidates/machines/textures/iron.png](candidates/machines/textures/iron.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
 | [candidates/machines/textures/leather.png](candidates/machines/textures/leather.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
 | [candidates/machines/textures/rubble.png](candidates/machines/textures/rubble.png) | GPT-6 Astra / original coordinates in build.py | CC0-1.0 | Original work |
@@ -50,8 +177,12 @@ Context sources: [vendored attribution](../../mods/BASE/default/README.txt), [ve
 | [context/stone_brick.png](context/stone_brick.png) | paramat / default_stone_brick.png | CC BY-SA 3.0 | Decoded and re-encoded, pixels unchanged |
 | [context/thread_today.png](context/thread_today.png) | Gambit / default_paper.png | CC BY-SA 3.0 | Current Thread tint #d8d1bd, ratio 115/255 |
 | [context/wood.png](context/wood.png) | BlockMen / default_wood.png | CC BY-SA 3.0 | Decoded and re-encoded, pixels unchanged |
+| [previews/furnace_a_dim.png](previews/furnace_a_dim.png) | GPT-6 Astra; Cisoun, Neuromancer / Brane praefect, BlockMen (embedded hall textures) | CC BY-SA 3.0 | Original geometry with shaded, tiled source textures; overview also scales and arranges candidates |
+| [previews/furnace_a_dim_animation.png](previews/furnace_a_dim_animation.png) | GPT-6 Astra; Cisoun, Neuromancer / Brane praefect, BlockMen (embedded hall textures) | CC BY-SA 3.0 | Original geometry with shaded, tiled source textures; overview also scales and arranges candidates |
 | [previews/furnace_a_front.png](previews/furnace_a_front.png) | GPT-6 Astra / original candidates | CC0-1.0 | Nearest-sampled rendering or identical-tile wall |
+| [previews/furnace_a_front_animation.png](previews/furnace_a_front_animation.png) | GPT-6 Astra / original candidates | CC0-1.0 | Nearest-sampled rendering or identical-tile wall |
 | [previews/furnace_a_hall.png](previews/furnace_a_hall.png) | GPT-6 Astra; Cisoun, Neuromancer / Brane praefect, BlockMen (embedded hall textures) | CC BY-SA 3.0 | Original geometry with shaded, tiled source textures; overview also scales and arranges candidates |
+| [previews/furnace_a_hall_animation.png](previews/furnace_a_hall_animation.png) | GPT-6 Astra; Cisoun, Neuromancer / Brane praefect, BlockMen (embedded hall textures) | CC BY-SA 3.0 | Original geometry with shaded, tiled source textures; overview also scales and arranges candidates |
 | [previews/furnace_b_front.png](previews/furnace_b_front.png) | GPT-6 Astra / original candidates | CC0-1.0 | Nearest-sampled rendering or identical-tile wall |
 | [previews/furnace_b_hall.png](previews/furnace_b_hall.png) | GPT-6 Astra; Cisoun, Neuromancer / Brane praefect, BlockMen (embedded hall textures) | CC BY-SA 3.0 | Original geometry with shaded, tiled source textures; overview also scales and arranges candidates |
 | [previews/furnace_c_front.png](previews/furnace_c_front.png) | GPT-6 Astra / original candidates | CC0-1.0 | Nearest-sampled rendering or identical-tile wall |

@@ -12,7 +12,10 @@ import html
 import io
 import json
 import math
+import sys
 from pathlib import Path
+
+sys.dont_write_bytecode = True
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -22,6 +25,10 @@ ROOT = HERE.parent.parent
 NEAREST = Image.Resampling.NEAREST
 TIERS = ('iron', 'steel', 'silversteel', 'embersteel', 'abyssal_steel')
 NAMES = ('Iron', 'Steel', 'Silversteel', 'Embersteel', 'Abyssal Steel')
+PICKS = dict(thread='A', grinder='B', furnace='A', **{key:'A' for key in TIERS})
+FIRE_FRAMES = 8
+FIRE_FRAME_TIME = 0.1875
+FIRE_LIGHT = 8
 # Exact ramps of the shipped Round 68 A bars (art.py METAL).
 METALS = {
     'iron': '302e2b 3e3c3a 686460 86817c b0aaa4',
@@ -225,6 +232,27 @@ def machine_textures():
     for x,y in ((2,2),(9,1),(5,7),(12,8),(1,12),(9,13)):
         d.polygon([(x,y),(x+3,y-1),(x+4,y+1),(x+2,y+3),(x,y+2)],fill='#7d796d',outline='#42413c')
     tex['rubble']=rubble
+    # Original flame tongues on the same 16-texel/node grid as the masonry.
+    # Coordinates wrap across the four hearth cells, without a seam at x/y=1.
+    fire=Image.new('RGBA',(16,16*FIRE_FRAMES))
+    heights=(5,7,9,7,4,6,8,10,7,5,8,6)
+    flicker=(0,1,2,1,0,-1,-2,-1)
+    for frame in range(FIRE_FRAMES):
+        for y in range(16):
+            for x in range(16):
+                u,v=(x-10)%16,(y-11)%16
+                col=(42,24,20)
+                if u<12 and v<13:
+                    height=heights[u]+flicker[(frame+u*2)%8]
+                    if v>=12-height:
+                        col=(180,62,22)
+                        if v>=14-height: col=(237,116,28)
+                        if v>=16-height: col=(255,184,53)
+                        if v>=18-height: col=(255,225,126)
+                    if v>=11:
+                        col=((126,40,21),(221,82,23),(255,158,38))[(u+frame//2+v)%3]
+                fire.putpixel((x,y+16*frame),col+(255,))
+    tex['hearth_fire']=fire
     return tex
 
 
@@ -305,15 +333,17 @@ def machine(kind, variant):
         b(.48,2.16,.86,1.52,2.65,1.7,'firebrick','shoulder')
         b(.62,2.65,1,1.38,3,1.64,'firebrick','capped flue')
         b(.62,2.91,.99,1.38,3,1.65,'iron','flue rim')
-        b(.64,.55,.55,1.36,1.28,.6,'soot','cold firebox recess')
-        for x in (.5,1.36):
-            b(x,.48,.43,x+.14,1.42,.64,'dressed_stone','firebox jamb')
-        b(.5,1.28,.43,1.5,1.43,.66,'dressed_stone','firebox lintel')
-        for x in (.74,.98,1.22):
-            b(x,.58,.5,x+.04,1.23,.56,'iron','grate bar')
+        # Align the opening and grate to the native texel grid. Each dark bar
+        # occupies one texel instead of straddling two flame columns.
+        b(.625,.5625,.55,1.375,1.3125,.6,'hearth_fire','burning firebox recess')
+        for x in (.5,1.375):
+            b(x,.48,.43,x+.125,1.4375,.64,'dressed_stone','firebox jamb')
+        b(.5,1.3125,.43,1.5,1.4375,.66,'dressed_stone','firebox lintel')
+        for x in (.75,1,1.25):
+            b(x,.5625,.5,x+.0625,1.25,.56,'iron','grate bar')
         for y in (.4,1.83):
             b(.18,y,.55,1.82,y+.12,1.87,'iron','shaft band')
-        b(.86,.3,.22,1.14,.45,.62,'slag','cold pouring lip')
+        b(.86,.3,.22,1.14,.45,.62,'slag','hot pouring lip')
         b(.57,.28,.04,1.47,.34,.38,'iron','ingot mould')
         b(.72,.34,.1,1.29,.4,.27,'iron','cooled casting')
     elif kind=='furnace' and variant=='b':
@@ -365,11 +395,40 @@ def machine(kind, variant):
             'reserved_cells':math.prod(dims),'occupied_cells':len(occupied),
             'occupied_cell_coordinates':sorted(occupied),'boxes':boxes,
             'textures':{key:'../textures/'+key+'.png' for key in sorted({b['texture'] for b in boxes})},
-            'runtime':'Static decorative nodes only. No light, fire, particles, sound, animation, timers or interaction.',
+            'runtime':('Always burning static decoration; 8 vertical frames, 0.1875 s/frame, 1.5 s loop; light_source 8 in the four front hearth cells. Shipped furnace loop belongs to installation; no particles, timers or interaction.' if kind=='furnace' and variant=='a' else 'Static decorative nodes only. No light, fire, particles, sound, animation, timers or interaction.'),
+            **({'animation':{'type':'vertical_frames','aspect_w':16,'aspect_h':16,'length':1.5},
+                'frame_count':FIRE_FRAMES,'frame_time':FIRE_FRAME_TIME,'light_source':FIRE_LIGHT,
+                'lit_cells':[(x,y,0) for x in range(2) for y in range(2)]} if kind=='furnace' and variant=='a' else {}),
             'uv':'16 texels per node, repeating in world-aligned face planes; see README for integration limits.'}
 
 
-def render(boxes, textures, size=(420,360), camera=(6,4,-8), focus=(1,1,1), span=4):
+def material_pixels(item, points, axes, signs, textures, frame=0, heat=False):
+    """Original material sampling, shared by studies and engine face baking."""
+    tx=np.where(axes==0,points[:,2],points[:,0])
+    ty=np.where(axes==1,points[:,2],-points[:,1])
+    tex=np.asarray(textures[item['texture']])
+    pixels=tex[(np.floor(ty*16).astype(int)%16)+(16*frame if len(tex)>16 else 0),
+               np.floor(tx*16).astype(int)%16].copy()
+    fire=(item['texture']=='hearth_fire') & (axes==2) & (signs==-1)
+    if item['texture']=='hearth_fire':
+        pixels[~fire]=[44,29,23,255]
+    if heat and item['texture']!='hearth_fire':
+        # Firelight is painted into nearby original surfaces. Luanti's node
+        # light itself is neutral; the corner study does not promise RGB light.
+        dist=np.sqrt(((points[:,0]-1)*1.1)**2+((points[:,1]-.87)*.9)**2)
+        strength=np.maximum(0,1-dist/1.05)*np.maximum(0,1-np.abs(points[:,2]-.5)/.55)
+        strength*=np.where((axes==2)&(signs==1),0,.38)
+        if item['part']=='grate bar': strength*=.4
+        warm=np.array([206,113,45])
+        pixels[:,:3]=(pixels[:,:3]*(1-strength[:,None])+warm*strength[:,None]).astype(np.uint8)
+        if item['part']=='hot pouring lip':
+            hot=(axes==1)&(signs==1)&(np.abs(points[:,0]-1)<.09)
+            pixels[hot,:3]=[197,77,28]  # Residual dull heat, no flowing metal.
+    return pixels, fire
+
+
+def render(boxes, textures, size=(420,360), camera=(6,4,-8), focus=(1,1,1), span=4,
+           frame=0, heat=False, dim=False, offset=(0,0,0)):
     """Orthographic ray/box render of the JSON geometry; nearest texture lookup."""
     cam=np.array(camera,dtype=float)
     forward=-cam/np.linalg.norm(cam)
@@ -402,23 +461,40 @@ def render(boxes, textures, size=(420,360), camera=(6,4,-8), focus=(1,1,1), span
             continue
         p=origin[hit]+enter[hit,None]*forward
         a=axis[hit]
-        tx=np.where(a==0,p[:,2],p[:,0])
-        ty=np.where(a==1,p[:,2],-p[:,1])
-        tex=np.asarray(textures[item['texture']])
-        pixels=tex[(np.floor(ty*16).astype(int)%16), (np.floor(tx*16).astype(int)%16)].copy()
+        signs=-np.sign(forward[a])
+        local=p-np.array(offset) if heat and item.get('machine') else p
+        if 'tiles' in item:
+            q=p-np.array(offset)-np.array(item['cell'])
+            face=np.where(a==1,np.where(signs>0,0,1),np.where(a==0,np.where(signs>0,2,3),np.where(signs>0,4,5)))
+            pixels=np.zeros((len(p),4),dtype=np.uint8)
+            for f,tile in enumerate(item['tiles']):
+                hitface=face==f
+                if not hitface.any(): continue
+                x,y,z=q[hitface].T
+                u,v=((x,1-z),(x,z),(z,1-y),(1-z,1-y),(1-x,1-y),(x,1-y))[f]
+                im=np.asarray(IMAGES['candidates/final/'+tile['name']])
+                pixels[hitface]=im[np.clip(np.floor(v*16).astype(int),0,15)+(16*frame if 'animation' in tile else 0),
+                                   np.clip(np.floor(u*16).astype(int),0,15)]
+            fire=(face==5)&(pixels[:,0]>180)&(pixels[:,1]>65)&(pixels[:,2]<160)&heat
+        else:
+            pixels,fire=material_pixels(item,local,a,signs,textures,frame,heat and (item.get('machine') or offset==(0,0,0)))
         shade=np.where(a==1,1.08,np.where(a==0,.72,.91))
+        if dim:
+            distance=np.linalg.norm(p-(np.array(offset)+[1,.85,.4]),axis=1)
+            shade*=.25+.62*np.maximum(0,1-distance/3.2)
+        shade=np.where(fire,1,shade)
         pixels[:,:3]=np.clip(pixels[:,:3]*shade[:,None],0,255).astype(np.uint8)
         result[hit]=pixels; depth[hit]=enter[hit]
     return Image.fromarray(result)
 
 
-def hall_scene(spec, textures, shipped):
+def hall_scene(spec, textures, shipped, frame=0, dim=False):
     dims=spec['dimensions_xyz']
     offset=(.3,0,.6)
     boxes=[]
     for item in spec['boxes']:
         shifted=[v+offset[i%3] for i,v in enumerate(item['bounds'])]
-        boxes.append(box(shifted,item['texture'],item['part']))
+        boxes.append(dict(item,bounds=shifted,machine=True))
     boxes.extend([
         box((-1,-.2,-.6,4.8,0,3.5),'existing_stone','hall floor'),
         box((-1,0,3.1,4.8,2,3.4),'existing_cobble','two-course stone plinth'),
@@ -436,7 +512,8 @@ def hall_scene(spec, textures, shipped):
         boxes.append(box(bounds,'scale_figure','1.8-node scale figure'))
     all_tex=dict(textures,existing_stone=shipped['stone'],existing_cobble=shipped['cobble'],
                  existing_wood=shipped['wood'],scale_figure=rock(0,(147,134,109),5))
-    return render(boxes,all_tex,(560,420),focus=(1.7,1.35,1.4),span=7.6)
+    return render(boxes,all_tex,(560,420),focus=(1.7,1.35,1.4),span=7.6,
+                  frame=frame,heat='animation' in spec,dim=dim,offset=offset)
 
 
 def wall(im, count=5):
@@ -455,10 +532,31 @@ def tag(im, alt, width=None, cls=''):
             +base64.b64encode(png(im)).decode()+'">')
 
 
+def animated_tag(key, alt, width):
+    im=IMAGES['previews/'+key+'_animation.png']
+    return (f'<div class="animation" data-frames="8" style="aspect-ratio:{im.width}/{im.height//8}">'
+            +tag(im,alt,width)+'</div>')
+
+
+def installed_boxes(manifest):
+    boxes=[]
+    for cell in manifest['cells']:
+        for bounds in cell['node_box']:
+            boxes.append(dict(bounds=[v+cell['offset'][i%3]+.5 for i,v in enumerate(bounds)],
+                              tiles=cell['tiles'],cell=cell['offset'],part='installed node box'))
+    return boxes
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check',action='store_true')
     args=parser.parse_args()
+    # Reference sheets are inspected/hashed only; none of their pixels is used.
+    for path in ('mods/BASE/default/textures/default_furnace_front_active.png',
+                 'mods/ITEMS/grug_smelting/textures/grug_smelting_dual_furnace_front_active.png'):
+        assert source(path).size==(16,128)
+    source_text('mods/BASE/default/furnace.lua')
+    source_text('mods/ITEMS/grug_smelting/node.lua')
     shipped={k:source('mods/BASE/default/textures/default_'+k+'.png')
              for k in ('stone','stone_brick','cobble','wood','gravel','sand','paper','stick')}
     for k in TIERS:
@@ -492,15 +590,32 @@ def main():
         for v in 'abc':
             spec=machine(kind,v); specs[kind+'_'+v]=spec
             emit(f'candidates/machines/{kind}_{v}/geometry.json',json_text(spec))
-            w,h,d=spec['dimensions_xyz']
-            emit(f'previews/{kind}_{v}_front.png',render(spec['boxes'],textures,(320,320),
-                camera=(0,0,-1),focus=(w/2,1.45,d/2),span=3.5))
-            emit(f'previews/{kind}_{v}_hall.png',hall_scene(spec,textures,shipped))
+    import installation
+    installed=installation.build(sys.modules[__name__],specs,textures)
+    for key,spec in specs.items():
+        display=dict(spec)
+        if key in ('grinder_b','furnace_a'):
+            display['boxes']=installed_boxes(installed[spec['kind']])
+        w,h,d=spec['dimensions_xyz']
+        emit(f'previews/{key}_front.png',render(display['boxes'],textures,(320,320),
+            camera=(0,0,-1),focus=(w/2,1.45,d/2),span=3.5,heat=key=='furnace_a'))
+        emit(f'previews/{key}_hall.png',hall_scene(display,textures,shipped))
+        if key=='furnace_a':
+            for view in ('front','hall','dim'):
+                frames=[]
+                for frame in range(FIRE_FRAMES):
+                    im=(render(display['boxes'],textures,(320,320),camera=(0,0,-1),focus=(w/2,1.45,d/2),span=3.5,frame=frame,heat=True)
+                        if view=='front' else hall_scene(display,textures,shipped,frame,view=='dim'))
+                    frames.append(im)
+                sheet=Image.new('RGBA',(frames[0].width,frames[0].height*FIRE_FRAMES))
+                for frame,im in enumerate(frames): sheet.paste(im,(0,im.height*frame))
+                emit(f'previews/furnace_a_{view}_animation.png',sheet)
+                if view=='dim': emit('previews/furnace_a_dim.png',frames[0])
     build_page(shipped,specs,textures)
     build_contact_sheet()
     build_licences()
     emit('source_manifest.json',json_text(SOURCES))
-    validate(specs)
+    validate(specs,installed)
     # The manifest covers the generated files, excluding itself to avoid recursion.
     emit('manifest.json',json_text({p:hashlib.sha256(data).hexdigest() for p,data in sorted(OUTPUTS.items())}))
     bad=[]
@@ -521,7 +636,7 @@ def main():
     if bad:
         raise SystemExit('\n'.join(bad))
     print(f'{"CHECK PASS" if args.check else "BUILT"}: {len(OUTPUTS)} files; '
-          f'28 candidate textures; 6 node-box proposals; 24 choices; standalone HTML.')
+          f'8 confirmed picks; 6 node-box proposals retained; standalone animated HTML.')
 
 
 # Page generation and local validation are below; candidates never depend on HTML.
@@ -538,8 +653,8 @@ MACHINE_COPY = {
                   'The mechanism reads clearly from the front; the timber frame competes more with the hall posts.'),
     'grinder_c': ('Stamp mill', 'Two iron-shod stamps hang at different heights over a stone mortar. A tall timber gantry frames the work.',
                   'The strongest distant silhouette, but taller and visually busier behind a service NPC.'),
-    'furnace_a': ('Banded shaft', 'A heavy firebrick shaft with iron straps, a recessed cold grate and a pouring lip over an ingot mould.',
-                  'The shaft, grate and casting mould identify a smelting furnace immediately, with a compact footprint.'),
+    'furnace_a': ('Banded shaft · always burning', 'Yellow-orange fire moves behind the iron grate. Warm stone edges and a dull-hot pouring lip make the working hearth readable in a dim hall.',
+                  'The shaft and mould keep their geometry; the opening and grate align to the 16px grid. Eight frames at 0.1875 s each; steady light level 8 in the four hearth cells.'),
     'furnace_b': ('Crucible hearth', 'An open, cold crucible below a short rear hood, with closed bellows and two cooled castings at the front.',
                   'The clearest metalworking detail from above. Its bowl is harder to read from a level front view.'),
     'furnace_c': ('Vaulted hearth', 'A broad stepped arch, a low hood and an attached mould bench. Soot and the worn hearth lip suggest long use.',
@@ -556,9 +671,10 @@ STONE_COPY = {
 
 
 def pick(group, variant, recommended=False):
-    return (f'<label class="pick-control"><input type="radio" name="{group}" value="{variant.upper()}">'
-            f'<span>Choose {variant.upper()}</span></label>'
-            + ('<span class="recommend">My pick</span>' if recommended else ''))
+    chosen=PICKS[group]==variant.upper()
+    return (f'<label class="pick-control"><input type="radio" name="{group}" value="{variant.upper()}" disabled'+(' checked' if chosen else '')+'>'
+            f'<span>{"User’s pick" if chosen else "Proposal"} {variant.upper()}</span></label>'
+            + ('<span class="recommend">Pass 1 recommendation</span>' if recommended else ''))
 
 
 def title(letter, name):
@@ -578,7 +694,8 @@ def build_page(shipped, specs, textures):
          '<label class="theme">Appearance <select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>',
          '<div class="hero" id="top"><p class="eyebrow">The Stonewright studies · 07 November 2026</p>',
          '<h1>Stone, metal<br>&amp; thread.</h1>',
-         '<p class="lede">Tools for the mining hall. Ornament earned in the depths.<br>Three directions for each piece, ready for your choice.</p>',
+         '<p class="lede">The chosen set, with a furnace that always burns.<br>All proposals preserved for the record.</p>',
+         '<div class="confirmed"><strong>User’s picks · 07 November 2026</strong><p>Thread A · Grinder B · Smelting furnace A<br>Iron A · Steel A · Silversteel A · Embersteel A · Abyssal Steel A</p></div>',
          '<div class="hero-materials">',
          tag(shipped['stone'],'Existing plain stone',64),
          *[tag(shipped[k],n+' Bar, shipped palette',48) for k,n in zip(TIERS,NAMES)],
@@ -586,8 +703,8 @@ def build_page(shipped, specs, textures):
          '</div><p class="caption">Existing stone and metal bars · original Thread study</p>',
          '</div><nav aria-label="Sections"><a href="#thread">01 Thread</a><a href="#grinder">02 Grinder</a>',
          '<a href="#furnace">03 Smelting furnace</a><a href="#stone">04 Ornamented stones</a><a href="#selection">Your choices</a></nav></header><main>',
-         '<p class="intro">All candidates are proposals. The badges show my recommendations; no choice is preselected. ',
-         'Pick each piece independently. Every view is embedded in this page and works offline.</p>',
+         '<p class="intro">The user’s confirmed choices are marked throughout. The smaller badges preserve the pass 1 recommendations. ',
+         'Furnace A now burns; B and C retain their original cold designs. Every view is embedded and works offline.</p>',
          '<section id="thread"><div class="section-heading"><p class="eyebrow">01 / Inventory</p><h2>Thread</h2></div>',
          '<p>Pale flax, warm wood, a dark outline. Three silhouettes drawn directly at the game’s native 16 × 16 px. ',
          'Each strip places the candidate between the shipped Stick and Iron Bar.</p>',
@@ -606,25 +723,27 @@ def build_page(shipped, specs, textures):
         out.extend([f'<section id="{kind}"><div class="section-heading"><p class="eyebrow">{number} / Mining hall</p><h2>{label}</h2></div>',
                     '<p>Front elevation at a shared scale, then a hall-corner study in existing stone, cobble and timber. ',
                     'The small wooden figure is 1.8 nodes tall. These are software studies of the proposed geometry, not game captures.</p>',
+                    ('<div class="fire-control"><button type="button" id="fire-toggle" aria-pressed="false">Pause fire</button><span id="fire-status" role="status">8 frames · 0.1875 s per frame · light 8. Reduced motion shows a still frame.</span></div>' if kind=='furnace' else ''),
                     '<div class="three-up machines">'])
         for v in 'abc':
             key=kind+'_'+v; spec=specs[key]
             name,desc,judgement=MACHINE_COPY[key]
             w,h,d=spec['dimensions_xyz']
             out.extend(['<article class="card">',title(v,name),'<p>'+desc+'</p>',
-                        '<figure class="front">',tag(IMAGES[f'previews/{key}_front.png'],label+' '+v.upper()+' front elevation',320),
+                        '<figure class="front">',(animated_tag(key+'_front','Burning furnace A, front elevation',320) if key=='furnace_a' else tag(IMAGES[f'previews/{key}_front.png'],label+' '+v.upper()+' front elevation',320)),
                         '<figcaption>Front · same scale</figcaption></figure>',
-                        '<figure class="hall">',tag(IMAGES[f'previews/{key}_hall.png'],label+' '+v.upper()+' in a hall corner',560),
+                        '<figure class="hall">',(animated_tag(key+'_hall','Burning furnace A in the hall corner',560) if key=='furnace_a' else tag(IMAGES[f'previews/{key}_hall.png'],label+' '+v.upper()+' in a hall corner',560)),
                         '<figcaption>Hall corner · 1.8-node figure</figcaption></figure>',
+                        ('<figure class="hall dim">'+animated_tag(key+'_dim','Burning furnace A in a dim hall, same camera and scale',560)+'<figcaption>Dim hall · same scale · illustrative light</figcaption></figure>' if key=='furnace_a' else ''),
                         f'<p class="dimensions"><strong>{w} wide × {d} deep × {h} high</strong><br>{spec["occupied_cells"]} occupied cells / {spec["reserved_cells"]} reserved</p>',
                         '<p class="judgement">'+judgement+'</p>',
                         '<details><summary>Construction &amp; textures</summary>',
                         f'<p>Static node boxes in {spec["occupied_cells"]} cells, cut at cell boundaries. {len(spec["boxes"])} authored boxes before cell splitting. No mesh needed. ',
                         'Reserve the stated bounding box plus an open approach in front.</p>',
                         '<p>New 16 × 16 faces, shared where named: '+', '.join(k.replace('_',' ') for k in spec['textures'])+'.</p>',
-                        '<p>All textures are opaque. No light source, flames, glow, smoke, particles, movement, sound or service logic. Furnace interiors are cold soot and slag.</p>',
+                        ('<p>Opaque 16 × 128 sheets: eight vertical 16 × 16 frames, 0.1875 s/frame, 1.5 s/loop. Only the front faces of the four hearth cells animate; these cells have light_source 8. Static warm surround and pouring lip. No particles or service logic; installation reuses the shipped furnace sound loop once per assembly.</p>' if key=='furnace_a' else '<p>Opaque 16 × 16 textures. Static decoration with no light, fire, particles or animation. Furnace B and C keep their cold soot and slag.</p>'),
                         '</details><div class="pick-row">',pick(kind,v,v=='a'),'</div></article>'])
-        out.extend(['</div><p class="reason"><strong>My recommendation: A.</strong> ',MACHINE_COPY[kind+'_a'][2],'</p></section>'])
+        out.extend(['</div><p class="reason"><strong>User’s pick: '+PICKS[kind]+'.</strong> ',MACHINE_COPY[kind+'_'+PICKS[kind].lower()][2],'</p></section>'])
     out.extend(['<section id="stone"><div class="section-heading"><p class="eyebrow">04 / Prestige masonry</p><h2>Five metals.<br>One family.</h2></div>',
                 '<p>Full blocks only. All three directions use the same new, unframed stone ground and the exact colour ramps of the shipped bars. ',
                 'The ornament grows with rank: Iron 4, Steel 5, Silversteel 6, Embersteel 7, Abyssal Steel 8.</p>',
@@ -645,13 +764,13 @@ def build_page(shipped, specs, textures):
                         '<figcaption>5 × 5 wall</figcaption></figure>',
                         '<div class="pick-row">',pick(k,v,v=='a'),'</div></article>'])
         out.extend(['</div><p class="reason">'+reason+'</p></div>'])
-    out.extend(['</section><section id="selection"><div class="section-heading"><p class="eyebrow">Your choices</p><h2>The set you want.</h2></div>',
-                '<p>Selections stay in this browser when storage is available. Copy the summary and send it with your feedback. ',
-                'This page sends nothing and installs nothing.</p><noscript><p>JavaScript is off. You can still inspect every proposal; record your choices manually.</p></noscript>',
+    out.extend(['</section><section id="selection"><div class="section-heading"><p class="eyebrow">Confirmed choices</p><h2>The selected set.</h2></div>',
+                '<p>The user’s picks are recorded here and in the installation package. Copy this summary for the installation lane. ',
+                'This page sends nothing and installs nothing.</p><noscript><p>JavaScript is off. Every proposal and confirmed pick remains visible; the fire shows its first frame.</p></noscript>',
                 '<div class="selection-grid" id="selection-list"></div>',
                 '<label class="summary-label" for="pick-summary">Selection summary</label>',
-                '<textarea id="pick-summary" rows="10" readonly>Thread: —\nGrinder: —\nSmelting furnace: —\nIron: —\nSteel: —\nSilversteel: —\nEmbersteel: —\nAbyssal Steel: —</textarea>',
-                '<div class="actions"><button type="button" id="copy">Copy choices</button><button type="button" id="reset" class="secondary">Clear choices</button><span id="feedback" role="status" aria-live="polite"></span></div>',
+                '<textarea id="pick-summary" rows="10" readonly>Thread: A\nGrinder: B\nSmelting furnace: A (always burning)\nIron: A\nSteel: A\nSilversteel: A\nEmbersteel: A\nAbyssal Steel: A</textarea>',
+                '<div class="actions"><button type="button" id="copy">Copy confirmed choices</button><span id="feedback" role="status" aria-live="polite"></span></div>',
                 '</section><section class="notes" id="notes"><p class="eyebrow">About these studies</p>',
                 '<p><strong>Compatible, tools only.</strong> No game assets, Lua, recipes, world state or hall templates change in this lane. ',
                 'Placement in the six real halls and desktop/web acceptance belong to the installation lane. ',
@@ -671,7 +790,7 @@ def build_page(shipped, specs, textures):
                 'Source: github.com/luanti-org/minetest_game, vendored commit b5243f3. No external resources are requested by this page.</p>',
                 '<p>Rebuild from the repository root: <code>python3 tools/r70_art/build.py</code>; verify with <code>--check</code>. ',
                 'Every candidate, geometry file, comparison, render and this page is reproduced byte for byte. ',
-                'Fronts and hall views are an orthographic renderer of the same JSON boxes. They do not simulate game lighting or final node-box UVs.</p>',
+                'Fronts and hall views are orthographic studies. Selected machines use the final cell boxes and engine-oriented face tiles; alternatives use the original material studies. The dim view illustrates readability and does not simulate the engine light curve.</p>',
                 '<details><summary>Full vendored media notice</summary><pre>',html.escape(source_text('mods/BASE/default/license.txt')),
                 '</pre></details></details></section></main><footer>GRUDGELANDS · ROUND 70 ART · PROPOSALS BY GPT-6 ASTRA</footer><script>',js,'</script></body></html>'])
     emit('page.html',''.join(out))
@@ -736,7 +855,7 @@ def build_licences():
                 who='Gambit / default_paper.png';lic='CC BY-SA 3.0';change='Current Thread tint #d8d1bd, ratio 115/255'
             else:
                 who,lic=context[key];who+=f' / default_{key}.png';change='Decoded and re-encoded, pixels unchanged'
-        elif key.endswith('_hall') or key=='overview':
+        elif '_hall' in key or '_dim' in key or key=='overview':
             who='GPT-6 Astra; Cisoun, Neuromancer / Brane praefect, BlockMen (embedded hall textures)'
             lic='CC BY-SA 3.0';change='Original geometry with shaded, tiled source textures; overview also scales and arranges candidates'
         else:
@@ -746,11 +865,11 @@ def build_licences():
     emit('LICENSE-media.md',''.join(rows))
 
 
-def validate(specs):
+def validate(specs,installed):
     from html.parser import HTMLParser
     class Audit(HTMLParser):
         def __init__(self):
-            super().__init__(); self.ids=set(); self.anchors=[]; self.images=0; self.radios={}
+            super().__init__(); self.ids=set(); self.anchors=[]; self.images=0; self.radios={}; self.picks={}
         def handle_starttag(self,tag,attrs):
             a=dict(attrs)
             if 'id' in a:
@@ -768,22 +887,47 @@ def validate(specs):
                 self.images+=1
             if tag=='input' and a.get('type')=='radio':
                 self.radios.setdefault(a['name'],[]).append(a['value'])
-                assert 'checked' not in a
+                assert 'disabled' in a
+                if 'checked' in a: self.picks[a['name']]=a['value']
             assert tag not in ('iframe','object','embed','link'),tag
     audit=Audit();audit.feed(OUTPUTS['page.html'].decode())
     assert set(audit.anchors)<=audit.ids
     assert len(audit.radios)==8 and all(sorted(v)==list('ABC') for v in audit.radios.values())
+    assert audit.picks==PICKS
     for path,im in IMAGES.items():
         if not path.startswith('candidates/'):
             continue
-        assert im.size==(16,16) and im.mode=='RGBA',path
+        assert im.size in ((16,16),(16,128)) and im.mode=='RGBA',path
         alpha=set(im.getchannel('A').tobytes())
-        assert alpha==({0,255} if '/thread/' in path else {255}),path
+        assert alpha==({0,255} if '/thread/' in path or path.endswith('/grug_professions_thread.png') else {255}),path
     for spec in specs.values():
         for path in spec['textures'].values():
             assert 'candidates/machines/'+path.removeprefix('../') in OUTPUTS
+    final_files=set()
+    animated=[]
+    for kind,manifest in installed.items():
+        assert len(manifest['cells'])==(8 if kind=='grinder' else 12)
+        for cell in manifest['cells']:
+            for bounds in cell['node_box']:
+                assert all(-.5<=bounds[a]<bounds[a+3]<=.5 for a in range(3))
+            assert len(cell['tiles'])==6
+            for face,tile in enumerate(cell['tiles']):
+                path='candidates/final/'+tile['name'];final_files.add(path)
+                assert path in OUTPUTS
+                im=IMAGES[path]
+                if 'animation' in tile:
+                    assert tile['animation']==dict(type='vertical_frames',aspect_w=16,aspect_h=16,length=1.5)
+                    assert im.size==(16,128) and cell['light_source']==8 and face==5
+                    assert len({im.crop((0,f*16,16,f*16+16)).tobytes() for f in range(8)})>1
+                    animated.append((kind,tuple(cell['offset'])))
+                else: assert im.size==(16,16)
+    assert sorted(animated)==[('furnace',(x,y,0)) for x in range(2) for y in range(2)]
+    final_files|={'candidates/final/'+name for name in ['grinder.json','furnace.json','grug_professions_thread.png']+[f'grug_guild_ornamented_{key}.png' for key in TIERS]}
+    assert final_files=={path for path in OUTPUTS if path.startswith('candidates/final/')}
     emit('audit.json',json_text({'html_images_decoded':audit.images,'choice_groups':8,
-        'choices':24,'all_candidates_native_16px':True,'candidate_textures':28,
+        'choices':24,'confirmed_picks':PICKS,'all_candidates_native_16px':True,
+        'candidate_textures':sum(path.startswith('candidates/') for path in IMAGES),
+        'final_files':len(final_files),'animated_cell_fronts':len(animated),
         'machine_geometry_files':6,'static_html_resource_audit':'pass',
         'browser_or_game_acceptance':'not claimed'}))
 
