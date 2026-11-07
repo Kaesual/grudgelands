@@ -168,9 +168,12 @@ for a gathering source, and a stack is worth 1c (tier 1, sold in lots;
   stays when the block above goes.
 - *Placed plants are the same nodes as wild ones.* Nothing tells them apart
   and nothing needs to: the renewal counts both, only ever adds and never
-  places in protected ground or a claim. Towns, landmarks and protected water
-  refuse placing and digging alike, so seagrass and coral farther than 24
-  nodes off the coast stay out of reach.
+  places in protected ground or a claim, with one exception: seagrass and
+  kelp regrow in protected bay, belt and channel water
+  (`grug_core.water_plant_renewal_allowed`), claims still refusing. For
+  players, towns, landmarks and protected water refuse placing and digging
+  alike, so seagrass and coral farther than 24 nodes off the coast stay out
+  of reach.
 
 **Land plants (Round 51 lane LP, picked in the land viewer).** Decoration
 only: none glows (land plan ruling 10), and none shares a name or a texture

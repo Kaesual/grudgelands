@@ -112,7 +112,8 @@ return function(api)
 				M.after_dig(pos, oldnode, digger)
 			end})
 		end
-		api.override_item(tip, {on_place = M.on_place})
+		-- No client guess: on_place decides the spot, and may refuse it.
+		api.override_item(tip, {on_place = M.on_place, node_placement_prediction = ""})
 		return pair
 	end
 

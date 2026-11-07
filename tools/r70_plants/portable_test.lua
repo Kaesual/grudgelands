@@ -260,6 +260,9 @@ nodes["default:sand"].on_rightclick = nil
 
 -- E. the hanging plants -----------------------------------------------------
 local LIANA, STRAND = "grug_trees:liana", "grug_trees:liana_strand"
+for _, name in ipairs({LIANA, "grug_trees:swamp_hanging_moss"}) do
+	eq(nodes[name].node_placement_prediction, "", "E no client guess of the spot for " .. name)
+end
 world = {}
 put(P(0, 10, 0), "default:jungleleaves")
 local below_it = P(0, 9, 0)
