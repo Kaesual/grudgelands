@@ -25,17 +25,19 @@ local function loader(directory)
 	local templates = dofile(directory .. "/templates.lua")(directory)
 	local TOWN = templates.town("hearthpine")
 
-	-- Paved approaches. The first row is the cross street that serves the
-	-- forge, the south-west home and the east gable home; the rest are short
-	-- branches from one doorstep to the street or the plaza. Every rectangle
-	-- stops one node short of the nearest wall course.
+	-- Paved approaches. The first row is the west lane to the south-west
+	-- home, the second the forge lane on to the east gable home; the rest are
+	-- short branches from one doorstep to the street or the square. Every
+	-- rectangle stops one node short of the nearest wall course.
 	local PATHS = {
-		{-36, -11, 37, -9},
-		{-17, 5, -10, 7},
-		{10, 0, 15, 2},
+		{-36, -11, -17, -9},
+		{-6, -15, 46, -13},
+		{-24, -1, -17, 1},
+		{-24, 2, -23, 3},
+		{19, 0, 21, 3},
 		{2, 19, 18, 21},
 		{-29, 25, -2, 27},
-		{-19, 17, -2, 19},
+		{-26, 17, -2, 19},
 		{-3, 53, -2, 55},
 	}
 
@@ -47,11 +49,11 @@ local function loader(directory)
 	-- The watchpost lookout keeps its historical destination id.
 	local DESTINATION_ID = {gatewatch = "gatewatch_roof"}
 
-	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
-	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
-	-- on the arrival plaza beside the spawn, west of the market stall and the
-	-- Quartermaster at its end.
-	local WAYPOINT = {x = 2, z = -2}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, near the town's
+	-- centre (Round 70, the user's ruling of 2026-11-07): in its own 13 x 13
+	-- pocket in the north-west of the arrival square, off the street from the
+	-- gate, with the market stall and the Quartermaster across the square.
+	local WAYPOINT = {x = -9, z = 7}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
@@ -76,11 +78,11 @@ local function loader(directory)
 		{id = "watch_street", role = "guard_patrol", group = "vale", order = 2,
 			x = 0, y = 1, z = 24, dir = {x = 0, z = -1}},
 		{id = "watch_plaza_west", role = "guard_patrol", group = "vale",
-			order = 3, x = -9, y = 1, z = 2, dir = {x = -1, z = 0}},
+			order = 3, x = -17, y = 1, z = 0, dir = {x = -1, z = 0}},
 		{id = "watch_forge", role = "guard_patrol", group = "vale", order = 4,
-			x = 0, y = 1, z = -6, dir = {x = 0, z = -1}},
+			x = 0, y = 1, z = -11, dir = {x = 0, z = -1}},
 		{id = "watch_plaza_east", role = "guard_patrol", group = "vale",
-			order = 5, x = 9, y = 1, z = 2, dir = {x = 1, z = 0}},
+			order = 5, x = 16, y = 1, z = 0, dir = {x = 1, z = 0}},
 		-- The race vendor stands beside the market stall on the arrival
 		-- plaza, facing across it.
 		{id = "plaza_vendor", role = "vendor", kind = "race", x = 7, y = 1,
@@ -91,11 +93,11 @@ local function loader(directory)
 			building = "west_home"},
 		{id = "idle_plaza_bench", role = "idle", tags = {"bench"}, x = 7, y = 1,
 			z = 1, dir = {x = 1, z = 0}},
-		{id = "idle_workyard", role = "idle", tags = {"work"}, x = -19, y = 1,
-			z = 17, dir = {x = -1, z = 0}},
+		{id = "idle_workyard", role = "idle", tags = {"work"}, x = -26, y = 1,
+			z = 18, dir = {x = -1, z = 0}},
 		-- Round 47: turned round to the plaza; it faced the forge's door post.
 		{id = "idle_forge_door", role = "idle", tags = {"fire"}, x = 2, y = 1,
-			z = -10, dir = {x = 0, z = 1}},
+			z = -14, dir = {x = 0, z = 1}},
 		--
 		-- WORKPLACES (playtest round 3, contract section 8.1). A `work` socket
 		-- is a spawn socket like an `idle` one and its resident never leaves
@@ -115,7 +117,7 @@ local function loader(directory)
 		-- feature test until that test learned to stop at an obstruction, and
 		-- in the engine was a gardener who could not walk back to its own spot.
 		{id = "work_garden", role = "work", activity = "tend", tags = {"work"},
-			x = -19, y = 1, z = 21, dir = {x = 1, z = 0}},
+			x = -26, y = 1, z = 22, dir = {x = 1, z = 0}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"},
@@ -138,12 +140,12 @@ local function loader(directory)
 		-- the litter east of the street
 		{id = "idle_spare_1", role = "idle", spawn = false, x = 7,
 			y = 1, z = 9, dir = {x = 0, z = -1}},
-		-- the litter west of the street
-		{id = "idle_spare_2", role = "idle", spawn = false, x = -8,
-			y = 1, z = 9, dir = {x = 0, z = -1}},
+		-- beside the bench on the square's west edge
+		{id = "idle_spare_2", role = "idle", spawn = false, x = -17,
+			y = 1, z = 12, dir = {x = 0, z = -1}},
 		-- the cobble south of the forge
 		{id = "idle_spare_3", role = "idle", spawn = false, x = -6,
-			y = 1, z = -13, dir = {x = 0, z = 1}},
+			y = 1, z = -17, dir = {x = 0, z = 1}},
 	}
 
 	return function()
@@ -193,9 +195,9 @@ local function loader(directory)
 		layout.ground(buf, palette, RADIUS)
 
 		-- 2. Arrival road, plaza and its masonry band.
-		layout.pave(buf, palette, -11, -10, 11, 7, "plaza_edge", 4)
-		layout.pave(buf, palette, -10, -9, 10, 6, "plaza", 4)
-		layout.pave(buf, palette, -2, -9, 2, RADIUS, "path", 3)
+		layout.pave(buf, palette, -16, -12, 18, 16, "plaza_edge", 4)
+		layout.pave(buf, palette, -15, -11, 17, 15, "plaza", 4)
+		layout.pave(buf, palette, -2, -15, 2, RADIUS, "path", 3)
 
 		-- 3. Buildings, the layout's placements in stamp order.
 		local stamped_sockets = {}
@@ -245,7 +247,7 @@ local function loader(directory)
 
 		-- 6. Exterior dressing between the plots. The arrival plaza first:
 		-- an inlaid band, the draw well, a market stall and seating.
-		dressing.inlay(buf, palette, -7, -6, 7, 3)
+		dressing.inlay(buf, palette, -13, -9, 15, 13)
 		dressing.well(buf, palette, -6, -4)
 		dressing.signpost(buf, palette, 8, -4)
 		paved_prop(3, -7, 7, -3, function()
@@ -257,25 +259,22 @@ local function loader(directory)
 		paved_prop(8, 0, 8, 2, function()
 			dressing.bench(buf, palette, 8, 0, 3, 3, "z")
 		end)
-		paved_prop(-8, 0, -8, 2, function()
-			dressing.bench(buf, palette, -8, 0, 1, 3, "z")
-		end)
 		paved_prop(8, -7, 8, -6, function()
 			dressing.crates(buf, palette, 8, -7, 3)
 			dressing.crates(buf, palette, 8, -6, 3)
 		end)
-		paved_prop(5, 2, 9, 5, function()
-			dressing.planter(buf, palette, 5, 2, 9, 5)
+		paved_prop(11, 10, 15, 13, function()
+			dressing.planter(buf, palette, 11, 10, 15, 13)
 		end)
-		paved_prop(-9, 2, -5, 5, function()
-			dressing.planter(buf, palette, -9, 2, -5, 5)
+		paved_prop(11, -8, 15, -5, function()
+			dressing.planter(buf, palette, 11, -8, 15, -5)
 		end)
 
 		-- Gardens, kerbs and yard goods around the plots.
 		local FENCES = {
-			{-28, 0, -18, 0}, {-28, 0, -28, 12}, {-28, 12, -18, 12},
-			{26, -6, 26, 8}, {16, 8, 26, 8},
-			{29, 2, 41, 2}, {42, -8, 42, 2},
+			{-35, -2, -25, -2}, {-35, -2, -35, 10}, {-35, 10, -25, 10},
+			{32, -6, 32, 8}, {22, 8, 32, 8},
+			{37, -2, 49, -2}, {50, -12, 50, -2},
 			{13, 36, 23, 36},
 		}
 		for _, line in ipairs(FENCES) do
@@ -285,7 +284,7 @@ local function loader(directory)
 		end
 		local KERBS = {
 			{-40, -21, -40, -11}, {-36, 27, -36, 43}, {-20, 44, -6, 44},
-			{12, 8, 12, 18},
+			{19, 8, 19, 18},
 		}
 		for _, line in ipairs(KERBS) do
 			prop(line[1], line[2], line[3], line[4], function()
@@ -294,8 +293,8 @@ local function loader(directory)
 			end)
 		end
 		local PILES = {
-			{-35, 16, 4, "z"}, {-35, 22, 3, "x"}, {-18, 14, 3, "z"},
-			{-6, -29, 4, "x"}, {24, 20, 3, "x"}, {8, 24, 3, "z"},
+			{-42, 17, 4, "z"}, {-42, 23, 3, "x"}, {-25, 14, 3, "z"},
+			{-6, -33, 4, "x"}, {24, 20, 3, "x"}, {8, 24, 3, "z"},
 		}
 		for _, pile in ipairs(PILES) do
 			local axis = pile[4]
@@ -305,31 +304,38 @@ local function loader(directory)
 				dressing.wood_pile(buf, palette, pile[1], pile[2], pile[3], axis)
 			end)
 		end
-		for _, crate in ipairs({{-18, 18, 1}, {-18, 19, 1}, {24, 18, 0},
+		for _, crate in ipairs({{-25, 20, 1}, {-25, 21, 1}, {24, 18, 0},
 				{-20, -29, 2}}) do
 			prop(crate[1], crate[2], crate[1], crate[2], function()
 				dressing.crates(buf, palette, crate[1], crate[2], crate[3])
 			end)
 		end
-		for _, bed in ipairs({{-16, 0, -13, 3}, {26, -5, 28, -2},
-				{-33, 44, -30, 47}, {12, 12, 15, 15}, {-45, -14, -42, -11}}) do
+		for _, bed in ipairs({{34, -6, 36, -4},
+				{-33, 44, -30, 47}, {-45, -14, -42, -11}}) do
 			prop(bed[1], bed[2], bed[3], bed[4], function()
 				dressing.planter(buf, palette, bed[1], bed[2], bed[3], bed[4])
 			end)
 		end
-		for _, seat in ipairs({{-33, 25, 2, "x"}, {12, 16, 2, "x"},
-				{-16, 12, 2, "x"}, {26, 10, 0, "x"}}) do
+		for _, seat in ipairs({{-33, 25, 2, "x"}, {32, 10, 0, "x"}}) do
 			prop(seat[1], seat[2], seat[1] + 2, seat[2], function()
 				dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3, "x")
 			end)
 		end
+		-- The plaza bench that gave way to the waypoint pocket, on the
+		-- square's west edge with its spare spot beside it.
+		prop(-18, 11, -18, 13, function()
+			dressing.bench(buf, palette, -18, 11, 1, 3, "z")
+		end)
 
 		-- 7. Warm route lighting.
-		layout.street_lamps(buf, palette, 0, 2, 62, 7, outdoors)
-		for _, spot in ipairs({{-9, -8}, {9, -8},
-				{-30, -10}, {30, -10},
-				{-17, 8}, {13, 1}, {-18, 16}, {12, 21},
-				{-30, 26}, {-6, 44}, {28, 1}, {-41, -11}}) do
+		-- The street's lamps start north of the square; on the square only its
+		-- east side keeps them, so the waypoint pocket stays clear.
+		layout.street_lamps(buf, palette, 0, 16, 62, 7, outdoors)
+		for _, spot in ipairs({{3, 2}, {3, 9}, {-9, -8}, {9, -8},
+				{-30, -10}, {30, -12},
+				{-17, 8}, {-14, 15}, {16, 15}, {-14, -10}, {16, -10},
+				{-25, 17}, {12, 21},
+				{-30, 26}, {-6, 44}, {34, 1}, {-41, -11}}) do
 			if outdoors(spot[1], spot[2]) and
 					layout.free(buf, spot[1], spot[2], 3) then
 				dressing.path_light(buf, palette, spot[1], spot[2])
@@ -433,8 +439,8 @@ local function loader(directory)
 				spawn = {x = 0, y = 1, z = 0},
 				arrival = {x = 0, y = 1, z = 0},
 				gate = {x = 0, y = 1, z = RADIUS},
-				arrival_plaza = {min = {x = -10, y = 0, z = -9},
-					max = {x = 10, y = 4, z = 6}},
+				arrival_plaza = {min = {x = -15, y = 0, z = -11},
+					max = {x = 17, y = 4, z = 15}},
 				main_street = {min = {x = -2, y = 0, z = 0},
 					max = {x = 2, y = 3, z = RADIUS}},
 				forge_hall = box("forge_hall", 2, 3),

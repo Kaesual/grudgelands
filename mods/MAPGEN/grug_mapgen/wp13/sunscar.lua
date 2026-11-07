@@ -40,17 +40,17 @@ local function loader(directory)
 	local EXIT = -1
 
 	-- The muster yard: beaten sand, the only paved open space in the camp.
-	local YARD = {x1 = -13, z1 = -9, x2 = 13, z2 = 11}
+	local YARD = {x1 = -19, z1 = -13, x2 = 20, z2 = 18}
 
 	-- Paved runs, in the order they are laid. The five wide road from the
 	-- yard to the gate is the contract's route and carries no plot.
 	local LANES = {
 		{-2, -RADIUS, 2, -9},            -- the road, yard to gate
 		{-5, -58, 5, -52},               -- the gate court between the towers
-		{-2, 11, 2, 13},                 -- yard to the warlord's hall
-		{-41, -1, -13, 1},               -- west lane, to the beast pen
-		{13, -3, 21, -1},                -- east lane, to the armoury
-		{-33, 13, -9, 15},               -- hall lane, on to the round lodge
+		{-2, 11, 2, 21},                 -- yard to the warlord's hall
+		{-41, -1, -19, 1},               -- west lane, to the beast pen
+		{20, -3, 29, -1},                -- east lane, to the armoury
+		{-33, 13, -19, 15},              -- hall lane, on to the round lodge
 		{-35, -24, 19, -22},             -- the lodges' lane
 		{-31, -25, -29, -23},            -- spear lodge doorstep
 		{-12, -25, -10, -23},            -- tusk lodge doorstep
@@ -84,10 +84,10 @@ local function loader(directory)
 	-- stands on the course above that and a warrior walks the deck between
 	-- the merlons.
 	local BREASTWORKS = {
-		{id = "warlord_hall", x1 = -7, z1 = 14, x2 = 7, z2 = 30, y = 9,
+		{id = "warlord_hall", x1 = -7, z1 = 22, x2 = 7, z2 = 38, y = 9,
 			step = 2},
-		{id = "armoury", x1 = 22, z1 = -7, x2 = 32, z2 = 5, y = 7, step = 2},
-		{id = "armoury_wing", x1 = 31, z1 = -4, x2 = 37, z2 = 2, y = 6,
+		{id = "armoury", x1 = 30, z1 = -7, x2 = 40, z2 = 5, y = 7, step = 2},
+		{id = "armoury_wing", x1 = 39, z1 = -4, x2 = 45, z2 = 2, y = 6,
 			step = 2},
 		{id = "chief_lodge", x1 = -35, z1 = 17, x2 = -29, z2 = 23, y = 7,
 			step = 2},
@@ -157,10 +157,16 @@ local function loader(directory)
 		{-34, -20, -20, -10, 9, 5}, {24, 14, 38, 30, 9, 5},
 	}
 
-	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
-	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
-	-- on the yard, north-west of the Quartermaster.
-	local WAYPOINT = {x = 6, z = -3}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, near the town's
+	-- centre (Round 70, the user's ruling of 2026-11-07): the 13 x 13 pocket
+	-- on the yard's quiet west side, trade and arms to the east.
+	local WAYPOINT = {x = -11, z = 2}
+
+	-- The west yard edge the pocket pushed out: both ranks of drill posts,
+	-- with the woodcutter's acacia on the lane beside them.
+	local DRILL_POSTS = {{-31, 5}, {-29, 5}, {-27, 5}, {-25, 5},
+		{-31, 8}, {-29, 8}, {-27, 8}, {-25, 8}}
+	local WORK_ACACIA = {x = -24, z = -2}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
@@ -183,11 +189,11 @@ local function loader(directory)
 		{id = "watch_road", role = "guard_patrol", group = "camp", order = 2,
 			x = 0, y = 1, z = -22, dir = {x = 0, z = 1}},
 		{id = "watch_yard_west", role = "guard_patrol", group = "camp",
-			order = 3, x = -11, y = 1, z = 0, dir = {x = -1, z = 0}},
+			order = 3, x = -20, y = 1, z = 0, dir = {x = -1, z = 0}},
 		{id = "watch_hall", role = "guard_patrol", group = "camp", order = 4,
-			x = -1, y = 1, z = 7, dir = {x = 0, z = 1}},
+			x = -1, y = 1, z = 17, dir = {x = 0, z = 1}},
 		{id = "watch_yard_east", role = "guard_patrol", group = "camp",
-			order = 5, x = 11, y = 1, z = 0, dir = {x = 1, z = 0}},
+			order = 5, x = 20, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "yard_vendor", role = "vendor", kind = "race", x = 8, y = 1,
 			z = -5, dir = {x = -1, z = 0}},
 		{id = "idle_tusk_door", role = "idle", tags = {"door"}, x = -11, y = 1,
@@ -209,9 +215,9 @@ local function loader(directory)
 		-- (a socket is never inside a room) -- and a woodcutter at the acacia
 		-- on the north lane.
 		{id = "work_forge", role = "work", activity = "smith", tags = {"fire"},
-			x = -34, y = 1, z = 2, dir = {x = 0, z = -1}},
+			x = -42, y = 1, z = 12, dir = {x = 0, z = -1}},
 		{id = "work_acacia", role = "work", activity = "chop", tags = {"work"},
-			x = -14, y = 1, z = -1, dir = {x = 0, z = -1}},
+			x = -24, y = 1, z = -1, dir = {x = 0, z = -1}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		-- `building`: the point stands at that building's door and is a point
@@ -241,7 +247,7 @@ local function loader(directory)
 			y = 1, z = -12, dir = {x = 0, z = 1}},
 		-- the desert cobble by the north lane
 		{id = "idle_spare_3", role = "idle", spawn = false, x = -8,
-			y = 1, z = 14, dir = {x = 0, z = -1}},
+			y = 1, z = 22, dir = {x = 0, z = -1}},
 	}
 
 	return function()
@@ -437,25 +443,25 @@ local function loader(directory)
 		-- connected nodebox, so daylight came straight down into the armoury
 		-- between the wall and its neighbours. That ring is cut too and the
 		-- deck laid across it.
-		buf:clear(32, 7, -4, 32, 8, 2)
-		buf:clear(31, 6, -4, 31, 7, 2)
+		buf:clear(40, 7, -4, 40, 8, 2)
+		buf:clear(39, 6, -4, 39, 7, 2)
 		-- The patch is the same course the rasteriser lays for a deck, so it
 		-- is the deck's full cube and not a bottom slab: a slab here would
 		-- put back exactly the half node of air the parapet fix removed.
 		for z = -4, 2 do
-			buf:put(31, 6, z, palette.node("roof_ridge"))
+			buf:put(39, 6, z, palette.node("roof_ridge"))
 		end
 
 		-- 5. The warlord's fighting top: an external stair off the east
 		-- apron and a gap cut in the breastwork where it lands, so the
 		-- platform (lit by the hall's own braziers) is reachable without a
 		-- ladder.
-		dressing.outer_stair(buf, palette, 8, 16, 8, "z", 0)
+		dressing.outer_stair(buf, palette, 8, 24, 8, "z", 0)
 		-- The flight climbs under the deck's own eave, so the eave is cut
 		-- away over it: without that a warrior halfway up has a slab where
 		-- his head is, and the platform is only reachable in theory.
-		buf:clear(8, 8, 16, 8, 8, 22)
-		buf:clear(7, 9, 22, 7, 10, 23)
+		buf:clear(8, 8, 24, 8, 8, 30)
+		buf:clear(7, 9, 30, 7, 10, 31)
 
 		-- 6. The gate: two desert-stone piers under an acacia lintel, torches
 		-- over the road and the stake line running out to either side.
@@ -511,8 +517,7 @@ local function loader(directory)
 		-- 8. The training yard: two ranks of drill posts, weapon racks, bale
 		-- targets, the war council's fire ring, two parked wagons and four
 		-- standards on the corners of the muster ground.
-		for _, post in ipairs({{-11, 3}, {-9, 3}, {-7, 3}, {-5, 3},
-				{-11, 6}, {-9, 6}, {-7, 6}, {-5, 6}}) do
+		for _, post in ipairs(DRILL_POSTS) do
 			paved_prop("drill_post", post[1], post[2], post[1], post[2],
 				function()
 					return dressing.drill_post(buf, palette, post[1], post[2], 3)
@@ -550,7 +555,7 @@ local function loader(directory)
 					return dressing.wagon(buf, palette, wain[1], wain[2], "x")
 				end)
 		end
-		for _, mast in ipairs({{-12, -8}, {12, -8}, {-12, 10}, {12, 10}}) do
+		for _, mast in ipairs({{-18, -12}, {19, -12}, {-18, 17}, {19, 17}}) do
 			paved_prop("yard_standard", mast[1], mast[2], mast[1], mast[2],
 				function()
 					dressing.standard(buf, palette, mast[1], mast[2], 4)
@@ -560,8 +565,8 @@ local function loader(directory)
 		-- 9. The beast pen: straw ground under the byre, paddock rails and a
 		-- gate, feed bales and a loaded wagon.
 		if palette.maybe("ground_straw") then
-			for z = -7, 1 do
-				for x = -39, -29 do
+			for z = 3, 11 do
+				for x = -47, -37 do
 					if layout.free(buf, x, z, 3) then
 						buf:put(x, 0, z, palette.node("ground_straw"))
 					end
@@ -600,7 +605,7 @@ local function loader(directory)
 
 		-- 10. Camp gear between the plots: timber, barrels and more wagons
 		-- (the wheels leaning on the walls are the buildings' own).
-		for _, pile in ipairs({{-22, 6, 4, "z"}, {20, 8, 3, "z"},
+		for _, pile in ipairs({{-22, 6, 4, "z"}, {21, 8, 3, "z"},
 				{-24, -30, 3, "x"}, {24, -30, 3, "x"}, {-12, 24, 3, "z"}}) do
 			local axis = pile[4]
 			local x2 = axis == "x" and pile[1] + pile[3] - 1 or pile[1]
@@ -610,14 +615,14 @@ local function loader(directory)
 					axis)
 			end)
 		end
-		for _, crate in ipairs({{20, 3, 3}, {20, 4, 3}, {-22, 2, 1},
-				{18, -20, 0}, {-20, -30, 0}, {-16, 12, 2}, {16, 16, 0}}) do
+		for _, crate in ipairs({{28, 3, 3}, {28, 4, 3}, {-22, 2, 1},
+				{18, -20, 0}, {-20, -30, 0}, {-23, 11, 2}, {21, 16, 0}}) do
 			prop("crates", crate[1], crate[2], crate[1], crate[2], function()
 				dressing.crates(buf, palette, crate[1], crate[2], crate[3])
 			end)
 		end
-		prop("hall_wagon", 26, 7, 28, 8, function()
-			return dressing.wagon(buf, palette, 26, 8, "x")
+		prop("hall_wagon", 34, 7, 36, 8, function()
+			return dressing.wagon(buf, palette, 34, 8, "x")
 		end)
 
 		-- 11. Standards down the road, where a war band would plant them.
@@ -628,7 +633,14 @@ local function loader(directory)
 			end)
 		end
 
-		-- 12. Acacias on the flats.
+		-- 12. Acacias on the flats, the woodcutter's first: always written,
+		-- whatever share of the rest the start keeps.
+		local share = buf.tree_share
+		buf.tree_share = nil
+		if not dressing.acacia(buf, palette, WORK_ACACIA.x, WORK_ACACIA.z) then
+			refuse("work_acacia", WORK_ACACIA.x, WORK_ACACIA.z, "no room for the tree")
+		end
+		buf.tree_share = share
 		local trees = 0
 		for _, block in ipairs(GROVES) do
 			trees = trees + layout.plant_orchard(buf, palette, block[1],
@@ -638,9 +650,9 @@ local function loader(directory)
 		-- 13. Route lighting: the road out to the gate, then the lanes and
 		-- the yard.
 		layout.street_lamps(buf, palette, 0, -60, -4, 7, outdoors)
-		for _, spot in ipairs({{-14, -2}, {14, -2}, {-14, 12}, {14, 12},
-				{-20, -2}, {20, -4}, {-30, -2}, {-34, 14}, {-24, 14},
-				{-12, 14}, {4, 12}, {-4, 12}, {-12, -21}, {12, -21},
+		for _, spot in ipairs({{-16, 10}, {14, -2}, {-14, 12}, {14, 12},
+				{-20, -2}, {21, -4}, {-30, -2}, {-34, 14}, {-24, 14},
+				{-12, 14}, {5, 20}, {-4, 20}, {-12, -21}, {12, -21},
 				{-24, -21}, {20, -21}, {-6, -25}, {6, -25},
 				{-12, -8}, {12, -8}, {-12, 10}, {12, 10}}) do
 			if outdoors(spot[1], spot[2]) and

@@ -24,20 +24,23 @@ local function loader(directory)
 	local RADIUS = 63
 	local SCHEMA = "grug_wp13_dawnmere_blueprint_v1"
 
-	-- The hamlet is organised on three lanes off the village green: the south
-	-- lane in front of the cottages, and a west and an east lane out to the
-	-- farmyard and the smithy. The north road to the gate is the contract's
-	-- five wide route and carries no plot.
-	local GREEN = {x1 = -11, z1 = -9, x2 = 11, z2 = 7}
+	-- The hamlet is organised on lanes round the village green: the south
+	-- lane in front of the cottages, the hall walk along the green's north
+	-- edge to the meeting hall and the inn, and a west and an east lane out to
+	-- the farmyard and the smithy, with the walk across the green between
+	-- them. The north road to the gate is the contract's five wide route and
+	-- carries no plot.
+	local GREEN = {x1 = -17, z1 = -14, x2 = 17, z2 = 10}
+	-- The waystone's pocket on the green's south-west edge: the green's one
+	-- paved place.
+	local POCKET = {x1 = -15, z1 = -14, x2 = -3, z2 = -2}
 	local LANES = {
 		{-2, -18, 2, RADIUS},            -- the road, green to gate
 		{-36, -17, 36, -15},             -- south lane
-		{-20, -17, -18, 34},             -- west lane
-		{18, -17, 20, 34},               -- east lane
-		{-18, -2, -11, 0},               -- green to west lane
-		{11, -2, 18, 0},                 -- green to east lane
-		{-13, 8, -9, 9},                 -- meeting hall doorstep
-		{9, 8, 13, 9},                   -- inn doorstep
+		{-20, -17, -18, 13},             -- west lane
+		{18, -17, 20, 13},               -- east lane
+		{-18, -1, 18, 1},                -- the walk across the green
+		{-18, 11, 18, 13},               -- the hall walk, meeting hall to inn
 		{21, -1, 23, 1},                 -- smithy doorstep
 		{3, 51, 4, 53},                  -- tollhouse doorstep
 	}
@@ -71,10 +74,10 @@ local function loader(directory)
 		{10, -60, 34, -44, "x"},
 	}
 
-	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
-	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
-	-- on the green's south walk, west of the Quartermaster.
-	local WAYPOINT = {x = 2, z = -3}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, near the town's
+	-- centre (Round 70, the user's ruling of 2026-11-07): the 13 x 13 pocket
+	-- at the green's south-west edge, off the road from the gate.
+	local WAYPOINT = {x = -9, z = -8}
 
 	-- Hedgerows on the outer boundaries of the fields.
 	local HEDGES = {
@@ -82,8 +85,8 @@ local function loader(directory)
 		{-62, -44, -38, -44}, {-38, -44, -38, -19},
 		{40, 14, 62, 14}, {62, -14, 62, 14},
 		{36, -44, 62, -44}, {36, -44, 36, -20},
-		{-44, 28, -14, 28}, {-44, 28, -44, 54},
-		{14, 28, 38, 28}, {38, 28, 38, 54},
+		{-44, 28, -24, 28}, {-44, 28, -44, 54},
+		{24, 28, 38, 28}, {38, 28, 38, 54},
 		{-36, -62, -8, -62}, {-36, -62, -36, -46},
 		{8, -62, 36, -62}, {36, -62, 36, -46},
 	}
@@ -107,13 +110,13 @@ local function loader(directory)
 		{id = "watch_gate", role = "guard_patrol", group = "fields", order = 1,
 			x = 0, y = 1, z = 52, dir = {x = 0, z = 1}},
 		{id = "watch_street", role = "guard_patrol", group = "fields",
-			order = 2, x = 0, y = 1, z = 24, dir = {x = 0, z = -1}},
+			order = 2, x = 0, y = 1, z = 28, dir = {x = 0, z = -1}},
 		{id = "watch_green_west", role = "guard_patrol", group = "fields",
-			order = 3, x = -9, y = 1, z = 0, dir = {x = -1, z = 0}},
+			order = 3, x = -18, y = 1, z = 0, dir = {x = -1, z = 0}},
 		{id = "watch_cottages", role = "guard_patrol", group = "fields",
-			order = 4, x = 0, y = 1, z = -6, dir = {x = 0, z = -1}},
+			order = 4, x = 0, y = 1, z = -15, dir = {x = 0, z = -1}},
 		{id = "watch_green_east", role = "guard_patrol", group = "fields",
-			order = 5, x = 10, y = 1, z = 0, dir = {x = 1, z = 0}},
+			order = 5, x = 18, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "green_vendor", role = "vendor", kind = "race", x = 6, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
 		-- Round 17: The existing Harvest Inn receives the former cottage-door resident.
@@ -148,7 +151,7 @@ local function loader(directory)
 		-- Round 47: it sat facing the house wall a node away; it looks out
 		-- over the green.
 		{id = "work_green_seat", role = "work", activity = "sit",
-			tags = {"bench"}, x = -5, y = 1, z = 15, dir = {x = 1, z = 0}},
+			tags = {"bench"}, x = -12, y = 1, z = 19, dir = {x = 1, z = 0}},
 		-- The elder stands ON the hall's doorstep, so its authored facing is
 		-- the door -- and `door` is what turns the NPC round to the street
 		-- (start_npcs.lua `socket_face_yaw`, playtest round 2).
@@ -176,8 +179,8 @@ local function loader(directory)
 		{id = "idle_spare_2", role = "idle", spawn = false, x = 4,
 			y = 1, z = -12, dir = {x = 0, z = 1}},
 		-- the cobble of the hall walk
-		{id = "idle_spare_3", role = "idle", spawn = false, x = -5,
-			y = 1, z = 14, dir = {x = 1, z = 0}}, -- Round 47: was 0,-1 (a shutter)
+		{id = "idle_spare_3", role = "idle", spawn = false, x = -12,
+			y = 1, z = 18, dir = {x = 1, z = 0}}, -- Round 47: was 0,-1 (a shutter)
 	}
 
 	return function()
@@ -279,6 +282,8 @@ local function loader(directory)
 		-- 2. The village green, its brick kerb, and the lanes off it. The
 		-- green itself stays turf: this hamlet has no paved plaza.
 		dressing.inlay(buf, palette, GREEN.x1, GREEN.z1, GREEN.x2, GREEN.z2)
+		layout.pave(buf, palette, POCKET.x1, POCKET.z1, POCKET.x2, POCKET.z2,
+			"path", 4)
 		for _, lane in ipairs(LANES) do
 			layout.pave(buf, palette, lane[1], lane[2], lane[3], lane[4],
 				"path", 4)
@@ -334,7 +339,7 @@ local function loader(directory)
 		-- 6. The green: the draw well, the market stall the carrier's wagon
 		-- pulls up to, the notice post, flower beds, settles and a hand cart
 		-- left where the carter left it.
-		dressing.well(buf, palette, -6, -3)
+		dressing.well(buf, palette, -10, 7)
 		dressing.signpost(buf, palette, 7, -4)
 		paved_prop("market_stall", 3, 2, 7, 6, function()
 			dressing.stall(buf, palette, 4, 3, 2)
@@ -343,7 +348,7 @@ local function loader(directory)
 		-- claimed area covers the wheel row at z - 1 as well as the two
 		-- bearers: a cart that shares a cell with a bed kerb loses its wheels
 		-- and its barrel, which is what used to happen here in silence.
-		for _, cart in ipairs({{8, 3}, {-10, -3}}) do
+		for _, cart in ipairs({{8, 3}, {12, -8}}) do
 			prop("handcart", cart[1], cart[2] - 1, cart[1] + 1, cart[2],
 				function()
 					return dressing.handcart(buf, palette, cart[1], cart[2], "x")
@@ -352,8 +357,8 @@ local function loader(directory)
 		prop("flower_bed", -10, 2, -6, 5, function()
 			dressing.flower_bed(buf, palette, -10, 2, -6, 5)
 		end)
-		prop("flower_bed", -10, -8, -8, -6, function()
-			dressing.flower_bed(buf, palette, -10, -8, -8, -6)
+		prop("flower_bed", -16, 3, -14, 5, function()
+			dressing.flower_bed(buf, palette, -16, 3, -14, 5)
 		end)
 		prop("flower_bed", 8, -8, 10, -6, function()
 			dressing.flower_bed(buf, palette, 8, -8, 10, -6)
@@ -362,10 +367,9 @@ local function loader(directory)
 		-- or the green's own brick kerb, which are not open ground.
 		-- A bench runs along its axis and looks across it (Round 36: the two
 		-- end settles were laid along x, so their stairs looked along the
-		-- bench and read as a stair, not a seat). The west end settle has two
-		-- seats: the green's west guard waypoint (-9, 0) looks at (-10, 0).
-		for _, seat in ipairs({{-7, 6, 2, "x", 3}, {-5, -8, 0, "x", 3},
-				{3, -8, 0, "x", 3}, {-10, -2, 1, "z", 2}, {8, -1, 3, "z", 3}}) do
+		-- bench and read as a stair, not a seat).
+		for _, seat in ipairs({{-7, 6, 2, "x", 3}, {3, -8, 0, "x", 3},
+				{-16, 7, 1, "z", 2}, {13, 2, 3, "z", 3}, {12, -12, 0, "x", 3}}) do
 			local len = seat[5]
 			local x2 = (seat[4] == "x") and seat[1] + len - 1 or seat[1]
 			local z2 = (seat[4] == "z") and seat[2] + len - 1 or seat[2]
@@ -375,13 +379,9 @@ local function loader(directory)
 		end
 		-- Stepping stones across the turf, from the green's kerb to the well
 		-- and on to the lanes, so the green reads as walked on.
-		dressing.stepping_line(buf, palette, -6, -1, -6, 1)
-		dressing.stepping_line(buf, palette, -5, 1, -3, 1)
-		dressing.stepping_line(buf, palette, 3, 1, 8, 1)
-		dressing.stepping_line(buf, palette, -6, -6, -6, -5)
-		dressing.stepping_line(buf, palette, -5, -6, -3, -6)
-		dressing.stepping_line(buf, palette, -11, 6, -8, 6)
-		dressing.stepping_line(buf, palette, 8, 6, 11, 6)
+		dressing.stepping_line(buf, palette, -4, 2, -4, 10)
+		dressing.stepping_line(buf, palette, 10, 2, 10, 10)
+		dressing.stepping_line(buf, palette, 8, 6, 9, 6)
 
 		-- 7. The farmyard around the barn: straw ground, bale stacks, barrels
 		-- and a paddock fence.
@@ -483,11 +483,11 @@ local function loader(directory)
 
 		-- 12. Route lighting: the road, the three lanes and the green.
 		layout.street_lamps(buf, palette, 0, 2, 56, 7, outdoors)
-		for _, spot in ipairs({{-12, -3}, {12, -3}, {-12, 8}, {12, 8},
-				{-19, -13}, {19, -13}, {-19, 12}, {19, 12},
-				{-19, 28}, {19, 28}, {-12, -16}, {12, -16},
-				{-30, -16}, {30, -16}, {-22, -2}, {-9, 8}, {9, 8},
-				{-6, -8}, {6, -8}}) do
+		for _, spot in ipairs({{-16, -3}, {12, -3}, {-12, 8}, {12, 8},
+				{-19, -13}, {19, -13}, {-21, 12}, {21, 12},
+				{-12, 14}, {12, 14}, {-12, -16}, {12, -16},
+				{-30, -16}, {30, -16}, {-22, -2}, {9, 8},
+				{6, -8}}) do
 			if outdoors(spot[1], spot[2]) and
 					layout.free(buf, spot[1], spot[2], 3) then
 				dressing.path_light(buf, palette, spot[1], spot[2])

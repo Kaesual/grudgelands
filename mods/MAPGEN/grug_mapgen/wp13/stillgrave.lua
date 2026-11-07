@@ -41,15 +41,13 @@ local function loader(directory)
 	-- closes its far side, the road leaves its near side toward the gate, and
 	-- a lane runs off each flank to the works, the burial grounds and the
 	-- home lane behind the chapel.
-	local COURT = {x1 = -11, z1 = -7, x2 = 11, z2 = 11}
+	local COURT = {x1 = -20, z1 = -12, x2 = 18, z2 = 16}
 	local LANES = {
-		{-2, ROAD * RADIUS, 2, -6},      -- the road, court to gate
-		{-36, 30, 32, 32},               -- the home lane
-		{-20, -22, -18, 32},             -- west lane
-		{18, -22, 20, 32},               -- east lane
-		{-18, 0, -11, 2},                -- court to west lane
-		{11, 0, 18, 2},                  -- court to east lane
-		{21, -2, 22, 0},                 -- bone works doorstep
+		{-2, ROAD * RADIUS, 2, 17},      -- the road, chapel door to gate
+		{-36, 36, 32, 38},               -- the home lane
+		{-20, -22, -18, 38},             -- west lane
+		{18, -22, 20, 38},               -- east lane
+		{21, -2, 29, 0},                 -- on to the bone works door
 		{3, -50, 3, -48},                -- watchtower link off the road
 		{-26, -16, -21, -14},            -- old burial ground gate
 		{21, 16, 25, 18},                -- new burial ground gate
@@ -122,10 +120,10 @@ local function loader(directory)
 		{40, 46, 60, 60, 6},
 	}
 
-	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
-	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
-	-- on the court, west of the Quartermaster.
-	local WAYPOINT = {x = 2, z = -4}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, near the town's
+	-- centre (Round 70, the user's ruling of 2026-11-07): the 13 x 13 pocket
+	-- in the court's west, off the chapel axis.
+	local WAYPOINT = {x = -12, z = -2}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
@@ -148,18 +146,18 @@ local function loader(directory)
 		{id = "watch_road", role = "guard_patrol", group = "hollow", order = 2,
 			x = 0, y = 1, z = -24, dir = {x = 0, z = 1}},
 		{id = "watch_court_west", role = "guard_patrol", group = "hollow",
-			order = 3, x = -9, y = 1, z = 0, dir = {x = -1, z = 0}},
+			order = 3, x = -20, y = 1, z = 0, dir = {x = -1, z = 0}},
 		{id = "watch_chapel", role = "guard_patrol", group = "hollow",
-			order = 4, x = 0, y = 1, z = 6, dir = {x = 0, z = 1}},
+			order = 4, x = 0, y = 1, z = 14, dir = {x = 0, z = 1}},
 		{id = "watch_court_east", role = "guard_patrol", group = "hollow",
-			order = 5, x = 9, y = 1, z = 0, dir = {x = 1, z = 0}},
+			order = 5, x = 18, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "court_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -5, dir = {x = -1, z = 0}},
 		-- `building`: the point stands at that building's door and is a point
 		-- of its template (Round 56); the position comes from the stamp.
 		{id = "idle_warden_door", role = "idle", tags = {"door"},
 			building = "warden_house"},
-		{id = "idle_court_settle", role = "idle", tags = {"bench"}, x = -10,
+		{id = "idle_court_settle", role = "idle", tags = {"bench"}, x = -20,
 			y = 1, z = 4, dir = {x = 0, z = -1}},
 		-- Round 47: `door`, it stands before the bone works' door.
 		{id = "idle_bone_works", role = "idle", tags = {"work", "door"},
@@ -198,9 +196,9 @@ local function loader(directory)
 		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
-		-- the obsidian brick west of the lane
-		{id = "idle_spare_1", role = "idle", spawn = false, x = -7,
-			y = 1, z = -7, dir = {x = 1, z = 0}},
+		-- the blight south-west of the waystone's pocket
+		{id = "idle_spare_1", role = "idle", spawn = false, x = -21,
+			y = 1, z = -9, dir = {x = 1, z = 0}},
 		-- the blighted ground to the south
 		{id = "idle_spare_2", role = "idle", spawn = false, x = 7,
 			y = 1, z = -12, dir = {x = 0, z = 1}},
@@ -369,7 +367,7 @@ local function loader(directory)
 
 		-- 5. The gravecourt: the dry well, the offering stall, the notice
 		-- post, bone cairns, stone settles and the stones worn across it.
-		dressing.well(buf, palette, -7, 3)
+		dressing.well(buf, palette, -11, 8)
 		dressing.signpost(buf, palette, -4, -5)
 		-- Two nodes east of where it first stood. (4, -2) is the east lamp of
 		-- the pair that flanks the court mouth, and the stall's roof slab
@@ -393,7 +391,7 @@ local function loader(directory)
 			end
 		end)
 		-- Six older plots kept inside the paving itself, kerbed in obsidian.
-		for _, plot in ipairs({{-10, -3}, {-10, -1}, {-10, 1},
+		for _, plot in ipairs({{-16, 6}, {-16, 8}, {-16, 10},
 				{10, 3}, {10, 5}, {10, 7}}) do
 			paved_prop("court plot", plot[1], plot[2], plot[1], plot[2],
 				function()
@@ -401,7 +399,7 @@ local function loader(directory)
 					buf:put(plot[1], 1, plot[2], palette.node("low_wall"))
 				end)
 		end
-		for _, cairn in ipairs({{-10, -5, 2}, {-9, -5, 1}, {-9, 9, 2},
+		for _, cairn in ipairs({{-14, 12, 2}, {-13, 12, 1}, {-9, 11, 2},
 				{9, 9, 1}, {10, -4, 1}}) do
 			paved_prop("bone cairn", cairn[1], cairn[2], cairn[1], cairn[2],
 				function()
@@ -412,8 +410,8 @@ local function loader(directory)
 		-- A settle runs along its axis and looks across it (Round 36: the two
 		-- end settles were laid along x and read as a stair; the court settle
 		-- now looks at its idle socket, the east one runs along z).
-		for _, seat in ipairs({{-5, 10, 2, "x"}, {-6, -6, 0, "x"},
-				{4, -6, 0, "x"}, {-10, 3, 0, "x"}, {9, 1, 3, "z"}}) do
+		for _, seat in ipairs({{-5, 10, 2, "x"}, {-5, -6, 0, "x"},
+				{4, -6, 0, "x"}, {-21, 3, 0, "x"}, {9, 1, 3, "z"}}) do
 			local x2 = (seat[4] == "x") and seat[1] + 1 or seat[1]
 			local z2 = (seat[4] == "z") and seat[2] + 1 or seat[2]
 			paved_prop("stone settle", seat[1], seat[2], x2, z2,
@@ -425,7 +423,7 @@ local function loader(directory)
 		stepping(-6, 5, -6, 8)
 		stepping(-5, 8, -3, 8)
 		stepping(3, 8, 5, 8)
-		stepping(-8, 0, -5, 0)
+		stepping(-5, 0, -3, 0)
 		stepping(5, 0, 8, 0)
 
 		-- 6. The burial grounds and their low walls.
@@ -488,7 +486,7 @@ local function loader(directory)
 		end
 		-- (-22, 2) is a route lamp; the crate that used to stand there stands
 		-- one node west of it now.
-		for _, crate in ipairs({{22, -6, 3}, {22, -5, 3}, {-23, 2, 1},
+		for _, crate in ipairs({{28, -6, 3}, {28, -5, 3}, {-23, 2, 1},
 				{16, -20, 2}, {-14, 26, 0}}) do
 			prop("crate stack", crate[1], crate[2], crate[1], crate[2],
 				function()
@@ -496,8 +494,8 @@ local function loader(directory)
 				end)
 		end
 		for _, heap in ipairs({{14, 27, 2}, {15, 27, 1}, {-24, 27, 2},
-				{31, 34, 1}, {-38, 32, 2}, {0, 28, 1}, {12, 12, 2},
-				{-14, 8, 1}}) do
+				{31, 34, 1}, {-38, 32, 2}, {0, 34, 1}, {12, 19, 2},
+				{-14, 18, 1}}) do
 			prop("rubble heap", heap[1], heap[2], heap[1], heap[2], function()
 				dressing.rubble_heap(buf, palette, heap[1], heap[2], heap[3])
 			end)
@@ -524,15 +522,15 @@ local function loader(directory)
 		-- The Hollow burns few open flames: the road lamps, the gate braziers
 		-- and the candles on the buildings. These are the road's own.
 		for _, spot in ipairs({{-4, -2}, {4, -2},
-				{-12, 3}, {12, 3}, {-12, -6}, {12, -6},
+				{-12, 6}, {12, 3}, {-12, -10}, {12, -6},
 				{-19, -18}, {19, -18}, {-19, 10}, {19, 10},
-				{-19, 26}, {19, 26}, {-12, 30}, {12, 30},
-				{-30, 30}, {30, 30}, {-22, 2}, {-9, -6}, {9, -6},
+				{-19, 26}, {19, 26}, {-12, 36}, {12, 36},
+				{-30, 36}, {30, 36}, {-22, 2}, {-9, -10}, {9, -6},
 				-- (17, 34), not (19, 34): the sunken ruin's footprint starts
 				-- at x = 18, and a lamp authored inside a plot is a lamp that
 				-- never stood. Its mirror (-19, 34) sits west of the warden
 				-- house the same way.
-				{-6, 10}, {6, 10}, {-19, 34}, {17, 34}}) do
+				{-6, 16}, {6, 16}, {-19, 40}, {17, 40}}) do
 			if not outdoors(spot[1], spot[2]) then
 				refuse("path lamp", spot[1], spot[2], "the spot is indoors")
 			end

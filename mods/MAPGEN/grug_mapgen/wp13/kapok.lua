@@ -48,15 +48,20 @@ local function loader(directory)
 
 	-- The lodge terrace: the only masonry in the village, and the only floor
 	-- in it that is neither plank nor mud.
-	local PLATFORM = {x1 = -13, z1 = 19, x2 = 13, z2 = 38}
+	local PLATFORM = {x1 = -13, z1 = 25, x2 = 13, z2 = 44}
+
+	-- The clearing the boardwalk runs through: bare mud, so no tree roots
+	-- in it. The waystone's pocket is its one floor of plank.
+	local CLEARING = {x1 = -18, z1 = -15, x2 = 17, z2 = 19}
+	local POCKET = {x1 = -16, z1 = -13, x2 = -4, z2 = -1}
 
 	-- Boardwalk. Every lane is plank over mud; there is no paved street.
 	local LANES = {
 		{-2, -RADIUS, 2, 0},         -- the road, village to the south gate
-		{-2, 0, 2, 19},              -- the spine, spawn to the lodge door
+		{-2, 0, 2, 25},              -- the spine, spawn to the lodge door
 		{-34, -10, 34, -8},          -- south lane: the elder and river stairs
-		{-34, -2, 34, 0},            -- mid lane: the weaver and reed stairs
-		{-28, 16, 21, 18},           -- north lane: drying shed and smoker
+		{-38, -1, 38, 1},            -- mid lane: the weaver and reed stairs
+		{-29, 22, 30, 24},           -- north lane: drying shed and smoker
 		{2, -49, 4, -47},            -- watchpost doorstep
 	}
 
@@ -83,34 +88,33 @@ local function loader(directory)
 	-- building them high.
 	local BRIDGES = {
 		{x = -20, z = -18, len = 41},
-		{x = -20, z = 10, len = 41},
+		{x = -29, z = 13, len = 59},
 	}
 
 	-- Totem posts round the lodge terrace.
-	local TOTEMS = {{-12, 20, 7}, {12, 20, 7}, {-12, 37, 7}, {12, 37, 7}}
+	local TOTEMS = {{-12, 26, 7}, {12, 26, 7}, {-12, 43, 7}, {12, 43, 7}}
 
 	-- Rope falling from the underside of the four verandas.
 	local ROPES = {{-31, -13}, {-21, -13}, {-31, -23}, {-21, -23},
 		{21, -13}, {31, -13}, {21, -23}, {31, -23},
-		{-31, 3}, {-21, 3}, {-31, 13}, {-21, 13},
-		{21, 3}, {31, 3}, {21, 13}, {31, 13}}
+		{-40, 6}, {-30, 6}, {-40, 16}, {-30, 16},
+		{30, 6}, {40, 6}, {30, 16}, {40, 16}}
 
 	-- Lanterns under the bridges and the verandas. The bridge cells avoid the
 	-- pier line, which is every third cell from the bridge's own origin.
 	local LANTERNS = {{-15, -18}, {-6, -18}, {6, -18}, {15, -18},
-		{-15, 10}, {-6, 10}, {6, 10}, {15, 10},
+		{-15, 13}, {-6, 13}, {6, 13}, {15, 13},
 		{-31, -18}, {-21, -18}, {21, -18}, {31, -18},
-		{-31, 8}, {-21, 8}, {21, 8}, {31, 8}}
+		{-40, 11}, {-30, 11}, {30, 11}, {40, 11}}
 
 	-- Drying racks of split fish on the shed's working ground.
-	local RACKS = {{-37, 20, 7, "z"}, {-37, 30, 6, "z"},
-		{-17, 20, 7, "z"}, {-17, 30, 6, "z"}}
+	local RACKS = {{-42, 25, 7, "z"}, {-42, 35, 6, "z"},
+		{-25, 25, 7, "z"}, {-25, 35, 6, "z"}}
 
-	-- The waypoint pad (Round 29, WP17) and its mailbox, at the town's centre
-	-- next to the Quartermaster (Round 58, the user's ruling of 2026-10-22):
-	-- in the clearing east of the boardwalk road, south-west of the
-	-- Quartermaster.
-	local WAYPOINT = {x = 4, z = -6}
+	-- The waypoint pad (Round 29, WP17) and its mailbox, near the town's
+	-- centre (Round 70, the user's ruling of 2026-11-07): the dry 13 x 13
+	-- pocket west of the boardwalk road, off the first arrival's walking line.
+	local WAYPOINT = {x = -10, z = -7}
 
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
@@ -129,15 +133,15 @@ local function loader(directory)
 		{id = "gate_east", role = "guard_post", x = 4, y = 1, z = -45,
 			dir = {x = 0, z = -1}},
 		{id = "watch_gate", role = "guard_patrol", group = "cradle", order = 1,
-			x = 0, y = 1, z = -36, dir = {x = 0, z = -1}},
+			x = 0, y = 1, z = -44, dir = {x = 0, z = -1}},
 		{id = "watch_road", role = "guard_patrol", group = "cradle", order = 2,
-			x = 0, y = 1, z = -18, dir = {x = 0, z = 1}},
+			x = 0, y = 1, z = -24, dir = {x = 0, z = 1}},
 		{id = "watch_clearing_west", role = "guard_patrol", group = "cradle",
-			order = 3, x = -10, y = 1, z = 0, dir = {x = -1, z = 0}},
+			order = 3, x = -19, y = 1, z = 0, dir = {x = -1, z = 0}},
 		{id = "watch_terrace", role = "guard_patrol", group = "cradle",
-			order = 4, x = 0, y = 1, z = 10, dir = {x = 0, z = 1}},
+			order = 4, x = 0, y = 1, z = 20, dir = {x = 0, z = 1}},
 		{id = "watch_clearing_east", role = "guard_patrol", group = "cradle",
-			order = 5, x = 10, y = 1, z = 0, dir = {x = 1, z = 0}},
+			order = 5, x = 19, y = 1, z = 0, dir = {x = 1, z = 0}},
 		{id = "clearing_vendor", role = "vendor", kind = "race", x = 7, y = 1,
 			z = -4, dir = {x = -1, z = 0}},
 		-- `building`: the point stands at that building's door and is a point
@@ -163,7 +167,7 @@ local function loader(directory)
 		-- the river is generated terrain outside the pad, so a fishing socket
 		-- would be authored against something the composition cannot promise.
 		{id = "work_jungle", role = "work", activity = "chop", tags = {"work"},
-			x = -29, y = 1, z = 13, dir = {x = 0, z = 1}},
+			x = -38, y = 1, z = 16, dir = {x = 0, z = 1}},
 		{id = "work_terrace", role = "work", activity = "sit",
 			tags = {"bench"}, x = -16, y = 1, z = 24, dir = {x = 1, z = 0}},
 		-- `door`: the elder faces the hall door it stands at, and the consumer
@@ -185,9 +189,9 @@ local function loader(directory)
 		-- on foot -- measured by the retired WP13 blueprint KAT's socket test,
 		-- and no tag, because a spare is a place to stand rather than a feature to
 		-- talk about.
-		-- the mud west of the clearing
-		{id = "idle_spare_1", role = "idle", spawn = false, x = -7,
-			y = 1, z = -7, dir = {x = 1, z = 0}},
+		-- the mud south-west of the clearing
+		{id = "idle_spare_1", role = "idle", spawn = false, x = -19,
+			y = 1, z = -13, dir = {x = 1, z = 0}},
 		-- the rainforest floor south-east
 		{id = "idle_spare_2", role = "idle", spawn = false, x = 7,
 			y = 1, z = -11, dir = {x = 0, z = 1}},
@@ -295,7 +299,11 @@ local function loader(directory)
 		-- 1. Basin floor: rainforest litter blotched with swamp mud.
 		layout.basin(buf, palette, RADIUS)
 
-		-- 2. The lodge terrace and the boardwalk.
+		-- 2. The clearing, the lodge terrace and the boardwalk.
+		buf:fill(CLEARING.x1, 0, CLEARING.z1, CLEARING.x2, 0, CLEARING.z2,
+			palette.node("ground_patch"))
+		layout.pave(buf, palette, POCKET.x1, POCKET.z1, POCKET.x2, POCKET.z2,
+			"path", 4)
 		layout.pave(buf, palette, PLATFORM.x1, PLATFORM.z1, PLATFORM.x2,
 			PLATFORM.z2, "plaza", 4)
 		dressing.inlay(buf, palette, PLATFORM.x1, PLATFORM.z1, PLATFORM.x2,
@@ -366,21 +374,21 @@ local function loader(directory)
 
 		-- 7. The terrace itself: a notice post, a fish stall, low walls down
 		-- the approach and settles where the throng sits.
-		paved_prop("notice_post", 11, 22, 11, 22, function()
-			dressing.signpost(buf, palette, 11, 22)
+		paved_prop("notice_post", 11, 30, 11, 30, function()
+			dressing.signpost(buf, palette, 11, 30)
 		end)
-		paved_prop("fish_stall", -13, 21, -9, 25, function()
-			dressing.stall(buf, palette, -12, 22, 1)
+		paved_prop("fish_stall", -13, 33, -9, 37, function()
+			dressing.stall(buf, palette, -12, 34, 1)
 		end)
-		for _, kerb in ipairs({{-13, 19, -9, 19}, {9, 19, 13, 19}}) do
+		for _, kerb in ipairs({{-13, 25, -9, 25}, {9, 25, 13, 25}}) do
 			paved_prop("terrace_kerb", kerb[1], kerb[2], kerb[3], kerb[4],
 				function()
 					dressing.low_wall_line(buf, palette, kerb[1], kerb[2],
 						kerb[3], kerb[4])
 				end)
 		end
-		for _, seat in ipairs({{-11, 26, 1}, {-11, 32, 1}, {11, 26, 3},
-				{11, 32, 3}}) do
+		for _, seat in ipairs({{-11, 26, 1}, {-11, 38, 1}, {11, 26, 3},
+				{11, 38, 3}}) do
 			paved_prop("settle", seat[1], seat[2], seat[1], seat[2] + 2,
 				function()
 					dressing.bench(buf, palette, seat[1], seat[2], seat[3], 3,
@@ -392,8 +400,8 @@ local function loader(directory)
 		-- split fish, stacked timber and crates.
 		local straw = palette.maybe("ground_straw")
 		if straw then
-			for z = 19, 29 do
-				for x = -33, -19 do
+			for z = 24, 34 do
+				for x = -41, -27 do
 					if layout.natural(buf, x, z) and layout.free(buf, x, z, 3) then
 						buf:put(x, 0, z, straw)
 					end
@@ -409,7 +417,7 @@ local function loader(directory)
 							rack[3], rack[4])
 				end)
 		end
-		for _, pile in ipairs({{-40, 24, 4, "z"}, {36, 24, 4, "z"},
+		for _, pile in ipairs({{-40, 35, 4, "z"}, {44, 29, 4, "z"},
 				{-40, -24, 3, "z"}, {36, -24, 3, "z"}}) do
 			local x2 = pile[4] == "x" and pile[1] + pile[3] - 1 or pile[1]
 			local z2 = pile[4] == "z" and pile[2] + pile[3] - 1 or pile[2]
@@ -418,7 +426,7 @@ local function loader(directory)
 					pile[4])
 			end)
 		end
-		for _, crate in ipairs({{-18, 22, 0}, {-18, 23, 0}, {-18, 26, 2}}) do
+		for _, crate in ipairs({{-26, 27, 0}, {-26, 28, 0}, {-26, 31, 2}}) do
 			prop("crates", crate[1], crate[2], crate[1], crate[2], function()
 				dressing.crates(buf, palette, crate[1], crate[2], crate[3])
 			end)
@@ -447,11 +455,10 @@ local function loader(directory)
 		-- other prop does: a line that lays half its stones is a path that
 		-- stops in the mud, and nothing downstream would notice.
 		local stepping = 0
-		for _, line in ipairs({{-6, 1, -6, 3}, {6, 1, 6, 3},
-				{-6, -13, -6, -11}, {6, -13, 6, -11},
-				{-12, -7, -8, -7}, {8, -7, 12, -7},
-				{-12, 1, -8, 1}, {8, 1, 12, 1},
-				{-18, 19, -14, 19}, {14, 19, 18, 19}}) do
+		for _, line in ipairs({{-6, 2, -6, 4}, {6, 2, 6, 4},
+				{6, -13, 6, -11}, {8, -7, 12, -7},
+				{-12, 2, -8, 2}, {8, 2, 12, 2},
+				{-18, 25, -14, 25}, {14, 25, 18, 25}}) do
 			local wanted = (math.abs(line[3] - line[1]) + 1) *
 				(math.abs(line[4] - line[2]) + 1)
 			local laid = dressing.stepping_line(buf, palette, line[1], line[2],
@@ -469,11 +476,11 @@ local function loader(directory)
 		if road_lamps ~= 18 then
 			error("wp13 kapok: the road lost a lamp: " .. road_lamps, 0)
 		end
-		for _, spot in ipairs({{-16, -9}, {16, -9}, {-16, -1}, {16, -1},
-				{-36, -9}, {36, -9}, {-36, -1}, {36, -1},
-				{-15, 17}, {15, 17}, {-26, 17},
-				{-12, 29}, {12, 29}, {-12, 34}, {12, 34},
-				{-6, 39}, {6, 39}}) do
+		for _, spot in ipairs({{-17, -9}, {16, -9}, {-17, 2}, {16, 2},
+				{-36, -9}, {36, -9}, {-40, 1}, {40, 1},
+				{-15, 23}, {15, 23}, {-26, 23},
+				{-12, 30}, {12, 31}, {-12, 41}, {12, 41},
+				{-6, 45}, {6, 45}}) do
 			paved_prop("path_light", spot[1], spot[2], spot[1], spot[2],
 				function()
 					dressing.path_light(buf, palette, spot[1], spot[2])
