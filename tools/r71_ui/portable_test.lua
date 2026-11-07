@@ -7,7 +7,8 @@
 --      member warns and stops nobody, a member who is not the leader cannot
 --      create, a run shows Enter, a refusal shows runs.lua's text, a level below
 --      the entry level is refused at Enter;
---   N  the notices: the feed, never chat, to the owner's online members;
+--   N  the notices: the feed, never chat, to the owner's online members; a line of
+--      its own for each end and each forced way out, none for a player's own way;
 --   I  the invitation warning: only while the player owns an Expedition alone;
 --   L  the location line and the map's bounds: the box's name, an arrow at the edge,
 --      a minimap off the map holds no tile and places party members.
@@ -63,8 +64,9 @@ _G.core = {
 }
 
 local parties = {}
-_G.grug_parties = {register_on_change = function() end,
-	register_on_member_left = function() end,
+local party_change, member_left
+_G.grug_parties = {register_on_change = function(fn) party_change = fn end,
+	register_on_member_left = function(fn) member_left = fn end,
 	view = function(player)
 		local name = type(player) == "string" and player or player:get_player_name()
 		return parties[name]
@@ -75,9 +77,11 @@ _G.grug_xp = {get_level = function(player)
 end}
 _G.grug_factions = {serves = function(faction, player) return player.faction == faction end}
 _G.grug_sounds = {play = function() end}
-local trip
+local trip, teleported
 _G.grug_home = {
-	register_on_teleport = function() end,
+	register_on_teleport = function(fn) teleported = fn end,
+	cancel = function() end,
+	respawn = function() end,
 	travel = function(_, row) trip = row; return true end,
 	waystone_pos = function() return {x = 0, y = 0, z = 0} end,
 	location = function(id)
@@ -347,6 +351,69 @@ feed = {}
 M.end_run(M.run_of(second), "failed")
 check(feed[1].text == "Your Expedition could not be prepared. Try again soon.", "N a failed run")
 check(#chat == 0, "N never chat at the end either")
+
+-- Each reason a player meets, in its own words.
+do
+	local ana, bea = player("Ana", 20), player("Bea", 20)
+	local function ready(who)
+		local new_run = assert(M.create(who, "test_vault", 0))
+		queue[#queue].finish(true)
+		queue[#queue] = nil
+		feed = {}
+		return new_run
+	end
+	local function step_in(who, into)
+		into.entered[who.name] = true
+		who.pos = into.places.arrival
+		teleported(who)
+		check(M.run_inside(who) == into, "N " .. who.name .. " stands inside")
+		feed = {}
+	end
+	local function line(key)
+		for _, row in ipairs(feed) do
+			if row.key == key then return row.name .. ": " .. row.text end
+		end
+	end
+
+	-- Ten minutes with nobody inside: the clock's own call.
+	local empty = ready(ana)
+	afters[#afters][2]()
+	check(empty.state == "ended" and #feed == 1, "N the empty run, one line")
+	check(line("expedition") == "Ana: Your Expedition has ended: nobody was inside for 10 minutes.",
+		"N empty: " .. tostring(line("expedition")))
+
+	-- The solo owner, inside, joins a foreign party.
+	local joined = ready(ana)
+	step_in(ana, joined)
+	parties.Ana = {id = "foreign", leader = "Bea", members = {}}
+	party_change("Ana", "membership")
+	parties.Ana = nil
+	check(joined.state == "ended" and #feed == 2, "N joined a party, two lines")
+	check(line("expedition") == "Ana: You joined a party, so your Expedition has ended.",
+		"N joined_party: " .. tostring(line("expedition")))
+	check(line("expedition_left") == "Ana: You are on your way back.",
+		"N ended, on leaving: " .. tostring(line("expedition_left")))
+
+	-- A member inside leaves the party; the run goes on and only they hear of it.
+	party("Ana", "Bea")
+	local shared = ready(ana)
+	step_in(bea, shared)
+	step_in(ana, shared)
+	parties.Bea = nil
+	member_left("Bea", "Ana", nil)
+	check(shared.state ~= "ended" and #feed == 1, "N the leaver alone is told")
+	check(line("expedition_left") == "Bea: You are no longer in the party, so you left its Expedition.",
+		"N expelled: " .. tostring(line("expedition_left")))
+
+	-- A player's own way out says nothing.
+	feed = {}
+	ana.pos = {x = 0, y = 0, z = 0}
+	teleported(ana)
+	check(M.run_inside(ana) == nil and #feed == 0, "N the waystone needs no line")
+	parties.Ana = nil
+	M.end_run(shared, "released")
+	check(#chat == 0, "N none of it in chat")
+end
 
 -- With nothing on offer the window stands.
 M.list = function() return {} end
