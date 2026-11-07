@@ -1,41 +1,61 @@
 # The Second Shift — levels 40–69 Expedition
 
-**Draft for decision, 2026-11-07; four players.** Build in Round 72 after the
+**Revised draft, 2026-11-07; four players.** Build in Round 72 after the
 Round 71 GUI test. [Concept §9](round71-expeditions-concept.md#9-after-the-build-three-expeditions-user-2026-11-07)
-overrides the older outline and the range/tier lines in the
-[built rules](../design/expeditions.md). **Compatible:** documents and drawing
-tool only. Independent Opus review with whole replacement texts follows;
-this draft is not approval to implement.
+and the [built rules](../design/expeditions.md) set the frame. Applies the
+Opus review and the user's decisions of 2026-11-07; room dressing is a
+Round 72 build target. **Compatible:** documents and drawing tool only.
 
 ## Story and place
 
-A guild crew broke into an old payroll working: lamps tended, benches
-occupied, every name on the shift board belonging to someone dead.
-**Auditor Nemm** pays them with branded battlefield coin. Each payment renews
-a shift that death cannot end. The crew withdrew before accepting wages.
+A guild crew found a working mine whose entire shift was dead. **Auditor
+Nemm** pays the workers in branded battlefield coin; each payment renews
+their duty. The crew withdrew before accepting wages.
 
 **The Accord's** Charter of Stone wants the workers' names freed from a
-fraudulent account. **The Throng's** Oathdelvers will not let a paymaster buy
-the dead's promises. Each guild acts independently. The Tithe-Brand appears
-as a broken circle with two hooks; its creditor stays unnamed. This is one
-stolen workforce, separate from the Undead people's old blight. No earlier
-Expedition or story chapter is needed.
+fraudulent account; **The Throng's** Oathdelvers want the dead's promises
+freed. Each guild acts independently. The broken circle and two hooks appear,
+but their creditor stays unnamed. This stolen workforce is separate from the
+Undead people's old blight. No earlier Expedition or story chapter is needed.
 
-Use existing props, carts, pay benches and signs. One board reads
-**“SECOND SHIFT / SAME NAMES / STILL DUE”**. No new item, model or story tunnel.
+One board reads **“SECOND SHIFT / SAME NAMES / STILL DUE”**. No new item,
+model or story tunnel.
+
+## Character and decoration
+
+The route borrows The Stilled Seam's envelopes, **mirrored on x**; the drawing
+cuts them into a rough-hewn mine. Existing nodes only, from the
+[Seam palette](../../tools/expedition_templates/sources/stilled_seam.py) and
+[node catalogue](../../tools/building_templates/nodes.json):
+
+| Room | What the player sees on entering; palette |
+|---|---|
+| **0** | A bent refuge, boarded collapse and low beams around the waystone. **Stone, Cobblestone, Reinforced Wood, Pine Wood Planks, log posts, benches.** |
+| **1** | A desk niche and lit shift board; a cart siding ends in crushed rock. **Stone, Gravel, tables, Wooden Sign, Mine Rail, Ore Cart.** |
+| **2** | A jagged cutting, tally alcoves and roof ribs; broken beams lie flush underfoot. **Stone, Cobblestone, log posts, Pine Wood Planks.** |
+| **3** | Unequal pay bays fold round the rock screen; benches and lanterns disappear behind the bend. **Stone, Gravel, tables, benches, closed barrels.** |
+| **4** | A stepped-edge cavern opens around Nemm's one-node dais; high roof ribs converge above it. **Stone, Cobblestone, Pine Wood Planks, Hanging Lanterns.** |
+| **5** | A pocket store, mineral alcoves and a timber-lined chest recess. **Stone, wood planks, closed barrels, Hanging Lanterns.** |
+
+Lanterns on ropes light all bays; broken timber and gravel are floor inlays.
+Wall props stay outside the six-node clear routes, with no climbable safe
+perch. Floors have no holes; the dais has a broad one-node step on every
+side, reachable by mobs. Roof ribs vary height above clear headroom.
+Exact dressing is Round 72 work; the drawn rock cuts and pack screen stay.
 
 ## Route and encounters
 
-**0 → 1 → 2 → 3 → 4 → 5**, one floor; target **15 minutes at 40**: 8 for
-packs, 3 for Nemm, 4 for travel/recovery/rewards, unmeasured. Balance for
-**Warrior, Priest and two others** at the selected level, without requiring
+**0 → 1 → 2 → 3 → 4 → 5**, one main floor; target **10–20 minutes at 40**,
+measured in the build. Balance for **Warrior, Priest and two others** at the selected level, without requiring
 particular talents. Players cap at 60; 61–69 is deliberately hard. Entry is
 `min(run level − 2, 60)`; fewer players do not reduce encounters.
 
-Use existing **Skeleton Raider** and **zombie/Buried Miner** families, present
-through level 60. The Expedition levelling path extends those bodies through
-69; normal names follow band data, Nemm keeps his name. Raiders shoot at
-range and strike up close; retain the zombie family's racial behaviour.
+Use existing **Skeleton Raider** guards and **zombie/Buried Miner** workers;
+Expedition levelling carries them through 69. Add **world name slots for
+`skeleton_raider` at 40–49 / 50–59 / 60–69**, through the naming gate; cover
+miners through 69 too. Nemm keeps his name. Raiders shoot and strike up close.
+**Expedition mobs ignore the Undead truce** (user, 2026-11-07): an encounter
+flag and one check in `grug_mobs`' `truce_active`, small build work.
 
 | Room | Encounter | Role and movement task |
 |---|---|---|
@@ -46,8 +66,10 @@ range and strike up close; retain the zombie family's racial behaviour.
 | **4 · Audit court** | **Auditor Nemm**, one elite boss, alone; 2 floor traps. | Tank keeps Nemm close; healer follows in sight; others avoid the last marked spot. |
 | **5 · Store** | Personal chest inventory, six mining places, end waystone. | Share mining, loot and return. |
 
-**8 normal raiders, 2 normal miners, 3 elite miners, 1 boss.** Packs pull
-whole and never give up; a wipe restores an unfinished pack, fully dead
+**Starting roster: 8 normal raiders, 2 normal miners, 3 elite miners, 1 boss.**
+The build's `balance.py` at **four players** sets final counts: add one normal
+per pack before raising HP. Packs pull whole and never give up; a wipe
+restores an unfinished pack, fully dead
 packs stay dead. Death returns to room 0 with the normal penalty; the walk
 back stays open. Sealed box far under the sea, no building/riding/flying;
 only marked ore and gems can be dug.
@@ -59,9 +81,9 @@ without replacement within each group; choices and revealed marks survive
 wipes. Unchosen floor candidates are ordinary floor.
 
 - **Floor:** **6 of 12**, grouped in the plan. Invisible trigger, muted red
-  ring for **1.5 s**, strong damage, rearm **10 s after firing**, then visible
-  for the run. Propose radius **0.6 trigger / 2 damage**, damage **45% of the
-  run level's neutral HP pool** before ordinary mitigation. In occupied rooms,
+  ring for **1.5 s**, strong damage, rearm **10 s after firing**; visible
+  **from its first firing** for the run. Propose radius **0.6 trigger / 2 damage**,
+  damage **45% of the run level's neutral HP pool** before ordinary mitigation. In occupied rooms,
   move the fight onto known clear floor instead of circling blindly.
 - **Wall:** **1 of W1–W2**, every **8 s**, always, **+z** across the room 1–2
   passage. Visible fireball: speed **8**, height **y=8.5**, radius-2 burst on
@@ -72,17 +94,14 @@ wipes. Unchosen floor candidates are ordinary floor.
 **Auditor Nemm** reuses the raider's body, bow and attacks, plus the existing
 elite wind-up. Every **12 s of combat**, mark the current target's floor
 position once and use the floor trap's **same 1.5 s ring and damage** there.
-The Warrior moves without losing melee pressure; the group leaves the old
-spot clear. **One position, one delayed hit** preserves the remembered blow;
-no four-player history, replay, adds or new animation.
+The Warrior keeps melee pressure as the group leaves the old spot clear:
+**one position, one delayed hit**.
 
-This is a boss attack using the trap helper, not another armed trap; its
-ring ends with the hit. The six placed traps keep their normal rearm and
-persistent marks. Cancel the pending hit on reset/death. Fallback: existing
-attacks among the placed traps, whose revealed positions remember footsteps.
+This boss attack uses the trap helper; its ring ends with the hit, cancelled
+on reset/death. Placed traps retain their rearm and persistent marks.
 
-The **solid, connected 32 × 32 court is Nemm's range**. No passage pursuit or
-safe ledge. A wipe or **15 s without an attack** heals and resets Nemm;
+The **solid, connected court inside its 32 × 32 envelope is Nemm's range**.
+No passage pursuit or safe ledge. A wipe or **15 s without an attack** heals and resets Nemm;
 room traps cannot refresh that timer. His death opens the store, gives
 participation credit through damage/healing and no ground loot.
 
@@ -91,14 +110,17 @@ participation credit through damage/healing and no ground loot.
 **Eight shared places:** ore after a, gem after b; four ore and two gems in
 the store, all reachable from dry floor with solid backing. Preparation fills
 **ore/gem markers** at **T4 for 40–49, T5 for 50–59, T6 for 60–69**; no named
-mineral baked into the template. At T6 both labels may resolve to one resource.
+mineral baked into the template. At T6 an ore place holds Abyssal Crystal and a gem place Diamond (user, 2026-11-07).
 Mobs/chest supply no raw ore or gems; retain the Expedition drop filter.
 
 The chest behind Nemm gives a separate inventory to each eligible player,
 including a member entering after the kill. Proposed starting payout follows
 The Stilled Seam: **1 Uncommon item, 25% chance of 1 Rare item, a Bag of Coins
-worth ten kill bags, 3–5 Heavy Cloth, 1–2 Linen Scrap**. Gear uses run level
-and tier; the build checks income/XP before fixing amounts. End waystone
+worth ten kill bags**, plus **3–5 bone and 1–2 flesh** by band:
+**T4 Drilled Bone + Leathery Flesh; T5 Siege Bone + Scorched Flesh;
+T6 Unquiet Bone + Salt-Cured Flesh**. Gear uses run level and tier;
+the build checks income/XP before fixing amounts. Mining must stay clearly
+below the same time of ordinary mining per player. End waystone
 beside the chest; both waystones return to the departure capital. Return
 Home follows its usual rules; both travel methods refuse combat.
 
@@ -112,15 +134,15 @@ Entry/repeat runs need no quest.
 Guild-house givers/turn-ins: **Alis Cartwright, Hadrin Beamset, Caelir
 Veinward** for The Accord; **Drava Flintshoulder, Iven Lastshift, Ombali
 Ropekeeper** for The Throng. Six capital variants of one quest, two faction
-texts; return to the giver. Registrar handles entry. Each block is replaceable whole.
+texts; return to the giver. The registrar handles entry.
 
 **The Accord — offer**
 
-> Our crew found dead miners still at their benches. Auditor Nemm pays them in coin burned with a broken circle and two hooks. Each payment puts their names down for another shift. The Charter of Stone will not recognise that account. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.
+> Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.
 
 **The Accord — completion**
 
-> Auditor Nemm is dead. We can close that payroll and put the names on a memorial. The crew will leave the branded pay for people who can handle it safely. They asked whether the lost shifts should be entered as unpaid leave. I told them to enter the names, and stop counting.
+> Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours.
 
 **The Throng — offer**
 
@@ -128,22 +150,25 @@ texts; return to the giver. Registrar handles entry. Each block is replaceable w
 
 **The Throng — completion**
 
-> Auditor Nemm will call no more shifts. We will take the names off that payroll and remember them properly. Leave the burned pay for people who know how to handle it. The crew have offered to finish the abandoned working. This time, everyone comes home when the shift is done.
+> Auditor Nemm will call no more shifts. We are taking the names off his board and cutting them into the guild hall's stone, beside the living, where they belong. Leave the burned pay where it lies; a coin that will not let go of your hand is no wage. The crew have asked to finish the old working themselves, and this time everyone comes home when the shift is done.
 
 ## Cost and open questions
 
-Beyond the two shared traps: **small** template/roster/quest/loot work,
-**small** Nemm adapter (one coordinate and delayed hit), **small** static
-payroll dressing. No large system or custom art. Fallback: omit the adapter.
-Room boundaries and the 15 s reset belong to Round 72's shared boss work.
+Beyond the two shared traps, all work is **small**: mirror The Stilled Seam's
+route on x, carve its silhouettes and dress it; roster/world names, quest and
+banded loot; Nemm's one-coordinate delayed hit; the truce flag/check.
+The **shift board** needs a named `place` and a `register_on_ready` callback
+writing its text to node metadata. Room boundaries and the 15 s reset are
+shared Round 72 boss work. No custom art or medium/large mechanic.
 
-- **Remembered blow:** recommend the single hit above; omit the old replay.
-- **Tuning:** recommend the proposed trap values and eight mining places.
-  Measure 40/49/50/59/60/69, starting with shipped boss HP scaling; adjust
-  health before adding mechanics. Keep 61–69 hard.
-- **GUI, desktop/web:** readable silent cues; tank/healer dodging; enough
-  space for every selection; pack wipe, boss reset, death return, separate
-  chest inventories. These checks remain the user's; none ran in this lane.
+- **Recommended build defaults:** the single remembered hit, shared trap
+  values and eight mining places. Fallback: omit Nemm's adapter, retain the
+  placed traps. Simplify wall dressing if needed, keeping room silhouettes.
+- **Tuning:** model 40/49/50/59/60/69 with four players; set pack counts
+  before HP. Keep 61–69 hard. Durations and payout remain unmeasured.
+- **GUI, desktop/web:** silent cues, mobs reaching every floor position and
+  the dais, separate pulls, both factions' truce behaviour, wipe/reset/death
+  return and separate chest inventories. These are the user's tests.
 
 ## Floor plan and build coordinates
 
@@ -159,63 +184,70 @@ included, in the hundreds of simultaneous particles.
 All coordinates are **local node indices**; rectangles `[x0,z0,x1,z1)` exclude
 upper bounds, as in the [built source](../../tools/expedition_templates/sources/stilled_seam.py).
 Box `128 × 64 × 128`; first air cell **y=8**, solid floor at y=7; rooms clear
-through y=18, court through y=22, passages through y=13. Decor stays against
-walls; keep passages at least six nodes clear. Full-height screen
-`[104,88,120,96)` leaves the eight-node bypass in room 3.
-Room rectangles are printed on the image and stored in the generator.
+through y=18, court through y=22, passages through y=13; roof ribs may
+lower room ceilings by one node. Keep passages at least six nodes clear.
+The screen leaves an eight-node bypass in room 3. Room envelopes are printed
+on the image; the generator's `cuts` are solid full-height rock within them.
+All coordinates below already include **x → 127 − x** (exclusive rectangle
+bounds transform as `[x0,x1) → [128−x1,128−x0)`).
 
+<!-- floorplan-coordinates:start -->
 | Places | Coordinates (x,z), in listed order |
 |---|---|
-| Pack anchors a / b / c / d; boss | (60,28) / (108,28) / (108,72) / (108,108); (64,104) |
-| F1–F4; pick 2 | (100,20), (116,20), (100,32), (116,32) |
-| F5–F6; pick 1; F7–F8; pick 1 | (100,76), (116,80); (100,104), (116,112) |
-| F9–F12; pick 2 | (56,96), (72,96), (56,112), (72,112) |
-| W1–W2; pick 1 | wall socket (84,15) or (92,15), +z to wall at z=24; crosses floor z=16–23 |
-| Ore / gem on route | (76,36) / (116,36) |
-| Store ore / gems | (12,96), (28,92), (28,100), (12,116) / (12,108), (28,116) |
-| Start / arrival / chest / end | (20,28) / (20,24) / (20,104) / (20,112) |
-| Reward door | x=44, z=104–111, y=8–13; marker (44,10,108) |
-| Passages | [32,16,48,24), [80,16,96,24), [104,40,112,64), [80,104,96,112), [32,104,48,112) |
+| Pack anchors a / b / c / d; boss | (67,28), (19,28), (19,72), (19,108); (63,104) |
+| F1–F4; pick 2 | (27,20), (11,20), (27,32), (11,32) |
+| F5–F6; pick 1; F7–F8; pick 1 | (27,76), (11,80); (27,104), (11,112) |
+| F9–F12; pick 2 | (71,96), (55,96), (71,112), (55,112) |
+| W1 / W2; pick 1 | (43,15) → (43,24), +z / (35,15) → (35,24), +z |
+| Ore / gem on route | (48,36), (8,36) |
+| Store ore / gems | (119,96), (96,92), (96,100), (119,116) / (119,108), (96,116) |
+| Start / arrival / chest / end | (107,28), (107,24), (107,104), (107,112) |
+| Reward door | x=83, z=104–111, y=8–13; marker (83,10,108) |
+| Passages, in route order | [80,16,96,24), [32,16,48,24), [16,40,24,64), [32,104,48,112), [80,104,96,112) |
+| Boss dais; top node y | [60,100,68,108); y=8 (one step) |
+| Full-height rock screen | [8,88,24,96) |
+<!-- floorplan-coordinates:end -->
 
 Wall muzzles sit just inside the passage at z=15.6, y=8.5; the socket
 coordinates identify the wall, not a projectile spawned inside stone.
 
 Pack anchors are centres, not piles of mobs: place the members 2–3 nodes
 apart inside their bay, with clear headroom and no contact with the next
-pack. Put mining nodes at y=9 on solid plinths; waystones/chest at y=8.
+pack. Mining nodes at y=9 have a plinth below and the hull immediately behind;
+waystones/chest stand at y=8, Nemm at y=9 on the dais.
 
 <!-- floorplan-grid:start -->
 ```text
 ################################
 ################################
-##0.....####1.......####2.....##
-##......####........#w#w......##
+###2..########1...#######0..####
+##......w#w#........####....####
 ##............................##
-##.......................f...f##
+##f...f.......................##
 ##......####........####......##
-##...S..####...a....####...b..##
-############........####.f...f##
-############.......o####.....g##
-##########################..####
-##########################..####
-##########################..####
-##########################..####
-##########################..####
-##########################..####
-########################3.....##
-########################......##
-########################...c..##
-########################.f....##
-########################.....f##
-########################......##
-##5.....####4.......####..######
-##.....o####........####..######
-##.o....####..f...f.####......##
-##.....o####........####......##
-##...C..........B........f....##
-##.g.......D...............d..##
-##...E..####..f...f.####.....f##
-##.o...g####........####......##
+##..b...####....a...####..S..###
+##f...f.####......##############
+##g....#####o....###############
+####..##########################
+####..##########################
+####..##########################
+####..##########################
+####..##########################
+####..##########################
+###3...#########################
+##......########################
+##..c...########################
+##....f.########################
+##f.....########################
+###.....########################
+######..######4...######.5..####
+######..#####......#####o.....##
+##......####.f...f..####.....o##
+##......####...^^...####o.....##
+##....f........B^.........C...##
+##..d...............D........g##
+##f.....#####f...f.#####..E...##
+###...########....######g....o##
 ################################
 ################################
 ```
@@ -223,12 +255,12 @@ pack. Put mining nodes at y=9 on solid plinths; waystones/chest at y=8.
 
 One grid cell is **4 × 4 nodes**, sampled coarsely. `#` rock, `.` floor,
 `0–5` rooms, `a–d` packs, `f/w` trap candidates, `o/g` mining places,
-`B` boss, `D` door, `C` chest, `S/E` waystones. Image and coordinate table
-resolve exact positions.
+`B` boss, `^` one-node dais, `D` door, `C` chest, `S/E` waystones.
+Image and coordinate table resolve exact positions.
 
 Regenerate both plans and the lake section with
-`python3 tools/r72_rework/floorplan.py`; `--grid` prints both grids and
-`--check` compares the three PNGs and embedded grids. Python 3 and Pillow.
+`python3 tools/r72_rework/floorplan.py` (also updates tables and grids);
+`--grid` prints both grids; `--check` compares all generated content. Python 3 and Pillow.
 Grounding: [guild](../design/miners_guild.md), [story](../design/story.md),
 [story bible](round36/story-bible.md), [mobs](../design/biomes_mobs.md),
 [classes](../design/classes.md), [quests](../design/quests.md).
