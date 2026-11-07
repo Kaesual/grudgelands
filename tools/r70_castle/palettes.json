@@ -1,0 +1,119 @@
+{
+  "dwarf": {
+    "main": {
+      "roof_ridge": "grug_decor:darkage_slate_tile",
+      "roof_slab": "grug_decor:darkage_slate_tile_slab",
+      "roof_stair": "grug_decor:darkage_slate_tile_stair",
+      "roof_stair_inner": "grug_decor:darkage_slate_tile_stair_inner",
+      "roof_stair_outer": "grug_decor:darkage_slate_tile_stair_outer"
+    },
+    "roof": {
+      "roof_ridge": "grug_decor:darkage_slate_tile",
+      "roof_slab": "grug_decor:darkage_slate_tile_slab",
+      "roof_stair": "grug_decor:darkage_slate_tile_stair",
+      "roof_stair_inner": "grug_decor:darkage_slate_tile_stair_inner",
+      "roof_stair_outer": "grug_decor:darkage_slate_tile_stair_outer"
+    }
+  },
+  "human": {
+    "main": {
+      "roof_ridge": "grug_decor:darkage_slate_tile",
+      "roof_slab": "grug_decor:darkage_slate_tile_slab",
+      "roof_stair": "grug_decor:darkage_slate_tile_stair",
+      "roof_stair_inner": "grug_decor:darkage_slate_tile_stair_inner",
+      "roof_stair_outer": "grug_decor:darkage_slate_tile_stair_outer",
+      "signature": "grug_decor:darkage_marble",
+      "signature_slab": "grug_decor:darkage_marble_slab",
+      "signature_stair": "grug_decor:darkage_marble_stair"
+    },
+    "roof": {
+      "roof_ridge": "grug_decor:darkage_slate_tile",
+      "roof_slab": "grug_decor:darkage_slate_tile_slab",
+      "roof_stair": "grug_decor:darkage_slate_tile_stair",
+      "roof_stair_inner": "grug_decor:darkage_slate_tile_stair_inner",
+      "roof_stair_outer": "grug_decor:darkage_slate_tile_stair_outer",
+      "signature": "grug_decor:darkage_marble",
+      "signature_slab": "grug_decor:darkage_marble_slab",
+      "signature_stair": "grug_decor:darkage_marble_stair"
+    }
+  },
+  "elf": {
+    "main": {
+      "castle_wall": "default:silver_sandstone_brick",
+      "castle_wall_slab": "stairs:slab_silver_sandstone_brick",
+      "castle_wall_stair": "stairs:stair_silver_sandstone_brick",
+      "crop": "default:junglegrass",
+      "crop_soil": "grug_farming:soil",
+      "hedge": "grug_trees:silverwood_leaves",
+      "hedge_stem": "grug_trees:silverwood_tree",
+      "roof_ridge": "default:silver_sandstone_brick",
+      "roof_slab": "stairs:slab_silver_sandstone_brick",
+      "roof_stair": "stairs:stair_silver_sandstone_brick",
+      "roof_stair_inner": "stairs:stair_inner_silver_sandstone_brick",
+      "roof_stair_outer": "stairs:stair_outer_silver_sandstone_brick",
+      "water": "default:river_water_source"
+    },
+    "roof": {
+      "castle_wall": "default:silver_sandstone_brick",
+      "castle_wall_slab": "stairs:slab_silver_sandstone_brick",
+      "castle_wall_stair": "stairs:stair_silver_sandstone_brick",
+      "crop": "default:junglegrass",
+      "crop_soil": "grug_farming:soil",
+      "hedge": "grug_trees:silverwood_leaves",
+      "hedge_stem": "grug_trees:silverwood_tree",
+      "roof_ridge": "default:silver_sandstone_brick",
+      "roof_slab": "stairs:slab_silver_sandstone_brick",
+      "roof_stair": "stairs:stair_silver_sandstone_brick",
+      "roof_stair_inner": "stairs:stair_inner_silver_sandstone_brick",
+      "roof_stair_outer": "stairs:stair_outer_silver_sandstone_brick",
+      "water": "default:river_water_source"
+    }
+  },
+  "orc": {
+    "main": {
+      "wall": "grug_decor:darkage_ors_block",
+      "wall_infill": "grug_decor:darkage_adobe"
+    },
+    "roof": {
+      "wall": "grug_decor:darkage_ors_block",
+      "wall_infill": "grug_decor:darkage_adobe"
+    }
+  },
+  "undead": {
+    "main": {
+      "ceiling": "grug_decor:castle_dungeon_stone",
+      "floor": "grug_decor:castle_pavement_brick",
+      "wall": "grug_decor:castle_dungeon_stone",
+      "wall_accent": "default:obsidianbrick"
+    },
+    "roof": {
+      "ceiling": "grug_decor:castle_dungeon_stone",
+      "floor": "grug_decor:castle_pavement_brick",
+      "roof_ridge": "default:stonebrick",
+      "roof_slab": "stairs:slab_stonebrick",
+      "roof_stair": "stairs:stair_stonebrick",
+      "roof_stair_inner": "stairs:stair_inner_stonebrick",
+      "roof_stair_outer": "stairs:stair_outer_stonebrick",
+      "wall": "grug_decor:castle_dungeon_stone",
+      "wall_accent": "default:obsidianbrick"
+    }
+  },
+  "troll": {
+    "main": {
+      "castle_paving": "grug_decor:darkage_basalt_brick",
+      "castle_wall": "grug_decor:darkage_basalt",
+      "castle_wall_slab": "grug_decor:darkage_basalt_slab",
+      "castle_wall_stair": "grug_decor:darkage_basalt_stair",
+      "wall": "grug_decor:darkage_basalt",
+      "wall_accent": "grug_decor:darkage_basalt_brick"
+    },
+    "roof": {
+      "castle_paving": "grug_decor:darkage_basalt_brick",
+      "castle_wall": "grug_decor:darkage_basalt",
+      "castle_wall_slab": "grug_decor:darkage_basalt_slab",
+      "castle_wall_stair": "grug_decor:darkage_basalt_stair",
+      "wall": "grug_decor:darkage_basalt",
+      "wall_accent": "grug_decor:darkage_basalt_brick"
+    }
+  }
+}

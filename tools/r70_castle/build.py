@@ -7,6 +7,7 @@ import argparse
 import base64
 from collections import deque
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -40,12 +41,12 @@ FORMS = {
   'tradeoff': 'The most dramatic arrival. More of the visible mass sits at the front, so the throne relies on its rear screen and overhead light to reclaim attention.'},
 }
 DRESS = {
- 'dwarf': 'Dur Brannoc: stone-block piers, pine roof tones and brown/red cloth. Later: restrained carvers’ reliefs and metal clan seals on the outer buttresses.',
- 'human': 'Highcourt: brick, timber and blue/gold cloth. Later: The Accord’s hart standards and carved civic shields above the foyer.',
- 'elf': 'Lethariel: marble, silverwood, slate and pale cloth. Later: serpentine inlays and leaf reliefs at the window heads, without changing the castle form.',
- 'orc': 'Gor Drazhak: adobe, red sandstone, acacia and red/black cloth. Later: The Throng’s boar standards and iron bands on the gate piers.',
- 'undead': 'Nhal Veyr: obsidian, dungeon stone, gravewood and purple/black cloth. Later: incised memorial panels and silver funerary emblems.',
- 'troll': 'Kezamba: basalt, junglewood and orange/brown cloth. Later: woven valances, carved masks and rope bindings high on the piers; the form stays the same.',
+ 'dwarf': 'Dur Brannoc: stone-block piers, slate roofs and brown/red cloth. Later: restrained carvers’ reliefs and metal clan seals on the outer buttresses.',
+ 'human': 'Highcourt: marble, slate and red/white cloth. Later: The Accord’s hart standards and carved civic shields above the foyer.',
+ 'elf': 'Lethariel: marble, pale sandstone and green/white cloth. Later: serpentine inlays and leaf reliefs at the window heads, without changing the castle form.',
+ 'orc': 'Gor Drazhak: adobe, red sandstone, acacia and red/brown cloth. Later: The Throng’s boar standards and iron bands on the gate piers.',
+ 'undead': 'Nhal Veyr: obsidian, dungeon stone, gravewood and black/grey cloth. Later: incised memorial panels and silver funerary emblems.',
+ 'troll': 'Kezamba: basalt, junglewood and green cloth with straw edging. Later: woven valances, carved masks and rope bindings high on the piers; the form stays the same.',
 }
 # Preserve the existing socket order, faces, ids, roles and idle tags.
 SOCKETS = [
@@ -63,7 +64,7 @@ ORNAMENTS = ('iron','steel','silversteel','embersteel','abyssal_steel')
 
 
 def role(name, facing=None):
-    return 'role '+name+(f' o=facedir:{facing}' if facing is not None else '')
+    return 'role '+name+(' channel=roof' if name.startswith('roof_') else '')+(f' o=facedir:{facing}' if facing is not None else '')
 
 
 def node(name, facing=None):
@@ -101,6 +102,7 @@ class Castle:
     def roof(self,x0,z0,x1,z1,eave):
         # Stepped pitched vault: underside is open; the roof has no hidden floor.
         half=(x1-x0)//2
+        for x in (x0,x1): self.fill(x,17,z0,x,eave-1,z1,role('signature'))
         for x in range(x0,x1+1):
             rise=min(x-x0,x1-x)//2
             y=eave+rise
@@ -133,6 +135,7 @@ class Castle:
             top=9+(3-abs(x-22))
             self.fill(x,5,30,x,top,30,role('signature'))
             self.put(x,top+1,30,role('signature_slab'))
+        self.fill(21,6,30,23,7,30,role('rug_accent'))
         self.fill(20,5,29,24,5,29,role('signature'))
         self.fill(21,5,29,23,5,29,role('rug_accent'))
         for x in (19,25):
@@ -142,7 +145,7 @@ class Castle:
             self.put(x,8,30,node('grug_guild:ornamented_'+metal))
         for x in (18,26):
             self.fill(x,5,30,x,9,30,role('castle_wall'))
-            self.put(x,10,30,node('grug_materials:emberglass_lamp'))
+            self.put(x,10,30,'role light_beacon else=LAMP')
         # No node at the king or either guard's feet/head. The chair is behind them.
 
 
@@ -158,9 +161,9 @@ def composition(form):
     c.fill(19,1,1,25,1,1,role('castle_wall_stair',0))
     c.fill(19,2,2,25,2,2,role('castle_wall_stair',0))
     for z in (10,23): c.fill(19,2,z,25,2,z,role('signature'))
-    c.ring(0,0,44,34,3,10,role('castle_wall'))
-    c.ring(1,1,43,33,3,8,role('castle_wall'))
-    c.battlement(0,0,44,34,11)
+    c.ring(0,0,44,34,3,6,role('castle_wall'))
+    c.ring(1,1,43,33,3,5,role('castle_wall'))
+    c.battlement(0,0,44,34,7)
     # The reserved 35 x 23 hall, with its own one-node wall band.
     c.ring(4,8,40,32,3,16,role('signature'))
     for y in (3,11,16): c.ring(4,8,40,32,y,y,role('castle_wall'))
@@ -172,6 +175,8 @@ def composition(form):
         for x in (2,42): c.fill(x,3,z-2,x,17,z-2,role('signature'))
     # Clerestory behind the crown, five tall lights.
     for x in (10,16,22,28,34): c.fill(x,8,32,x,14,32,node('default:glass'))
+    c.fill(17,7,32,27,15,32,node('default:glass'))
+    for x in (18,22,26): c.fill(x,7,32,x,15,32,role('window_frame'))
     if form=='crownward':
         for x in (0,36): c.tower(x,0,x+8,7,25)
         for x in (0,40): c.tower(x,30,x+4,34,33)
@@ -213,17 +218,20 @@ def composition(form):
     for z in (0,1,8): c.portal(z,doors=z==8)
     # A broad arch above a pair of doors: the side aisles stay open for a group.
     for x in (4,40): c.fill(x,3,19,x,6,21,'node air')
-    c.fill(17,3,32,19,6,32,'node air')
     for x in (6,38):
         for z in (14,20): c.put(x,3,z,role('seat',1 if x==6 else 3))
     # Static placed lamps, with supports. No flame, timer or construction callback.
     for x in (5,39):
         for z in (11,17,23,29):
             c.put(x,6,z,role('signature_slab',20))
-            c.put(x,7,z,node('grug_materials:emberglass_lamp'))
+            c.put(x,7,z,'role light_beacon else=LAMP')
     for x in (17,27):
         c.fill(x,3,3,x,5,3,role('signature'))
-        c.put(x,6,3,node('grug_materials:emberglass_lamp'))
+        c.put(x,6,3,'role light_beacon else=LAMP')
+    # High cross-beams carry lamps over the carpet without floor pillars.
+    for z in (13,21):
+        c.fill(4,12,z,40,12,z,role('beam',12))
+        for x in (13,22,31): c.put(x,11,z,'role light_beacon else=LAMP')
     c.throne()
     return c
 
@@ -237,9 +245,9 @@ def template(form,race):
     m.head=[f'# Round 70 {form}; generated by tools/r70_castle/build.py.', 'name '+m.name,
             'pivot 45 35','origin 0 0 0',f'size 45 {peak+1} 35','cell 1',
             f'meta extent=[0,0,44,34] peak={peak} top={peak}','races '+race]
-    entries=sorted(set(c.cells.values())); assert len(entries)<=len(tplfile.ALPHABET)
+    entries=sorted(set(c.cells.values())|{node('grug_materials:emberglass_lamp')}); assert len(entries)<=len(tplfile.ALPHABET)
     keys={e:tplfile.ALPHABET[i] for i,e in enumerate(entries)}
-    m.legend=[[keys[e],e] for e in entries]
+    m.legend=[[keys[e],e.replace('else=LAMP','else='+keys[node('grug_materials:emberglass_lamp')])] for e in entries]
     m.layers=[[''.join(keys.get(c.cells.get((x,y,z)),'.') for x in range(45))
                for z in range(35)] for y in range(peak+1)]
     m.points=[['doors',22,1,0,'face=2 id=approach'],['doors',21,3,8,'face=2 id=great_door'],
@@ -269,7 +277,7 @@ def validate(text,path,palettes,registry):
     GATE.parse_template(text,str(path),path.stem)
     t=T.parse_template(str(path),text)
     assert t.pivot==(45,35) and t.origin==(0,0,0) and t.size[0::2]==(45,35)
-    cells,bad=T.resolved_cells(t,T.resolve(t,palettes,{'main':palettes.bind(t.races[0])}),palettes)
+    cells,bad=T.resolved_cells(t,T.resolve(t,palettes,capital_binding(palettes,t.races[0])),palettes)
     assert not bad,bad
     assert T.UNCHANGED not in t.cells.values()
     for (x,y,z),(n,p2) in cells.items():
@@ -285,6 +293,10 @@ def validate(text,path,palettes,registry):
     actual=[(dict(p['attrs'])['id'],p['x'],p['y'],p['z'],p['face'],dict(p['attrs'])['role'])
             for p in t.points if p['group']=='sockets']
     assert actual==[s[:6] for s in SOCKETS],actual
+    old=T.parse_template(str(ROOT/'mods/MAPGEN/grug_mapgen/building_templates/templates'/(OLD[t.races[0]]+'.tpl')))
+    old_points=[(p['group'],p['face'],p['attrs']) for p in old.points if p['group']=='sockets']
+    new_points=[(p['group'],p['face'],p['attrs']) for p in t.points if p['group']=='sockets']
+    assert old_points==new_points, 'socket identity/order/face/role/tags changed'
     start=(22,1,0); assert standing(cells,registry,start)
     seen={start}; queue=deque([start])
     while queue:
@@ -301,12 +313,28 @@ def validate(text,path,palettes,registry):
         assert (x,y,z) in seen,('unreachable socket',path,x,y,z)
         assert cells[x,y,z][0]=='air' and cells[x,y+1,z][0]=='air'
     # Unique reachable columns on hall floor or dais only, not furniture/roofs.
-    hall={(x,z) for x,y,z in seen if 5<=x<=39 and 9<=z<=31 and y in (3,4,5)}
+    def floor_feet(x,z):
+        if 15<=x<=29 and 25<=z<=31: return 4 if z==25 else 5
+        return 3
+    hall={(x,z) for x,y,z in seen if 5<=x<=39 and 9<=z<=31 and y==floor_feet(x,z)}
     assert len(hall)>684,(path,len(hall))
     assert all((x,3,z) in seen for x in range(8,37) for z in range(10,25)), 'battle rectangle'
     return t,cells,{'hall_gross':805,'hall_reachable':len(hall),'clear_battle_rectangle':'29 x 15 = 435',
-                    'reachable_total_columns':len({(x,z) for x,y,z in seen if y<=5}),
+                    'reachable_total_columns':len({(x,z) for x,y,z in seen if y== (z+1 if 19<=x<=25 and z<=1 else floor_feet(x,z))}),
                     'peak':t.meta['peak'],'sockets':actual}
+
+
+def capital_profile(race):
+    base=ROOT/'mods/MAPGEN/grug_mapgen/building_templates'
+    lay=T.parse_layout(str(base/'layouts'/(TOWNS[race]+'.roster')))
+    rec=next(r for r in lay.uses if r['template']==OLD[race])
+    main=lay.palettes[rec.get('main') or 'town'][1]
+    roof=lay.palettes[rec['channels']['roof']][1] if 'roof' in rec['channels'] else main
+    return {'main':main,'roof':roof}
+
+
+def capital_binding(palettes,race):
+    return {channel:palettes.bind(race,roles) for channel,roles in capital_profile(race).items()}
 
 
 def lua_check(lua,outputs):
@@ -328,8 +356,11 @@ local pal=dofile(wp.."/palette.lua")
 for path in io.read("*a"):gmatch("%S+") do
  local f=assert(io.open(path,"rb")); local text=f:read("*a"); f:close()
  local t=loader.parse_template(text,path,path:match("([^/]+)%.tpl$"))
- local p=pal.new(t.races[1])
- local part=loader.part(t,"castle",t.races[1],function() return p end)
+ local profiles=PROFILES
+ local profile=profiles[t.races[1]]
+ local p=pal.new(t.races[1],profile.main)
+ local roof=pal.new(t.races[1],profile.roof)
+ local part=loader.part(t,"castle",t.races[1],function(channel) return channel=="roof" and roof or p end)
  for turn=0,3 do
   local b=parts.buffer(); local moved=parts.stamp(b,part,0,0,0,turn)
   local cells,n=b:cells(); assert(n==45*35*(part.peak+1), tostring(n).." count vs "..tostring(part.peak))
@@ -346,6 +377,9 @@ for path in io.read("*a"):gmatch("%S+") do
  end
 end
 '''
+            def lua_table(d):
+                return '{'+','.join('['+json.dumps(k)+']='+ (lua_table(v) if isinstance(v,dict) else json.dumps(v)) for k,v in sorted(d.items()))+'}'
+            script=script.replace('PROFILES',lua_table({r:capital_profile(r) for r in RACES}))
             p=subprocess.run([lua,'-e',script],cwd=ROOT,input='\n'.join(str(base/n) for n in names),
                              text=True,capture_output=True)
             assert p.returncode==0,p.stderr
@@ -363,6 +397,15 @@ def current(palettes,race):
     points={dict(p['attrs']).get('id',p['group']):[p['x']+dx,p['y'],p['z']]
             for p in t.points if p['group']=='sockets'}
     return {(x+dx,y,z):v for (x,y,z),v in cells.items()},points
+
+
+def render_digest(payload,key):
+    content={'scene':payload['scenes'][key],'types':payload['types'],
+             'textures':payload['textures'],'meshes':payload['meshes']}
+    h=hashlib.sha256(json.dumps(content,sort_keys=True,separators=(',',':')).encode())
+    for p in (HERE/'render.py',HERE/'geometry.js',VIEWER/'renderer.js',HERE.parent/'r69_camp_art/render.py'):
+        h.update(p.read_bytes())
+    return h.hexdigest()
 
 
 def page(scenes,registry,aliases,check,metrics):
@@ -388,6 +431,12 @@ def page(scenes,registry,aliases,check,metrics):
     html=html.replace('__ORBIT__',(ROOT/'tools/r69_camp_art/orbit.js').read_text())
     html=html.replace('__LICENSE__',(ROOT/'tools/r69_camp_art/THREE-LICENSE.txt').read_text())
     html=html.replace('__PAYLOAD__',json.dumps(payload,separators=(',',':')).replace('</','<\\/'))
+    if check:
+        for form in FORMS:
+            receipt=json.loads((HERE/'renders'/f'{form}_human.receipt.json').read_text())
+            assert receipt['inputs']==render_digest(payload,'human/'+form), 'stale render inputs: '+form
+            for filename,digest in receipt['files'].items():
+                assert hashlib.sha256((HERE/'renders'/filename).read_bytes()).hexdigest()==digest, filename
     stills=''
     for form in FORMS:
         stills+='<h3>'+FORMS[form]['name']+'</h3><div class="stills">'
@@ -409,6 +458,7 @@ def main():
         'tiles':[f'grug_guild_ornamented_{m}.png'],'groups':{},'paramtype2':'none','light_source':0}
         for m in ORNAMENTS}
     reg['nodes'].update(additions)
+    write(HERE/'palettes.json',json.dumps({r:capital_profile(r) for r in RACES},indent=2)+'\n',a.check)
     write(HERE/'preview_nodes.json',json.dumps(additions,indent=2)+'\n',a.check)
     lua=V.find_lua(); palettes=T.Palettes(G.load_palettes(lua,set(reg['nodes'])|set(reg.get('aliases',{}))))
     scenes={}; outputs={}; metrics={}; inventory={}
