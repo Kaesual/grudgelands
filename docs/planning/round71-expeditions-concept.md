@@ -21,6 +21,10 @@ Plans: [Round 71](round71-plan.md), [Round 70](round70-plan.md). Round 70 §2.10
   Anything destructible is so on purpose: a tunnel the story asks for, or ore
   and gem nodes.
 - Lasts 10–20 minutes, balanced for 3–4 players, linear at first.
+- **Every Expedition needs a tank and a healer (user, 2026-11-07).** The Warrior need not
+  be skilled defensively and the healer need not be skilled for healing, but without a
+  Warrior and a healer an Expedition is hard or impossible. Balance is for a Warrior, a
+  Priest and the rest of the party at player level = Expedition level.
 - The first Expeditions are planned as 2D floor plans on one main floor (user and
   coordinator, 2026-11-07). Several y levels stay out for now; the template format
   stays 3D.

@@ -35,6 +35,8 @@ M.RESERVE_SECONDS = 600
 M.EXPEDITIONS = {
 	{id = "test_vault", name = "Test Vault", level = 20, max_players = 3,
 		template = "test_vault", hidden = true},
+	{id = "stilled_seam", name = "The Stilled Seam", level = 20, max_players = 3,
+		template = "stilled_seam"},
 }
 
 local by_id = {}

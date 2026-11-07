@@ -790,6 +790,21 @@ class Model:
         self.source("rift_boss", "the rift boss name and site", r.cite(MOBS + "/rift.lua",
                     r'names\.required\("rift_boss"\)') + ", " + r.cite(core_rel, r"M\.SITE = "))
 
+        # The Expedition boss (Round 71): an entity of its own, its name fixed over
+        # the Expedition's levels, placed off the map, so a world slot.
+        golem = MOBS + "/golem.lua"
+        self.add_slot({"key": "world/flintback/L20-29", "zone": None, "source": "boss",
+                       "name": self.file_name("world/flintback/L20-29", "flintback"),
+                       "name_source": "names.json (golem.lua)",
+                       "name_where": r.cite(golem, r'register_mob\("grug_mobs:flintback"'),
+                       "entity": "grug_mobs:flintback", "role": "flintback", "family": "flintback",
+                       "base": "grug_mobs:stone_golem", "tier": "boss", "authored_tier": "elite",
+                       "leader": False, "disposition": "aggressive", "size": 1.0, "drops": None,
+                       "role_levels": [20, 29], "levels": [20, 29], "clocks": ["any"],
+                       "notes": ["The Stilled Seam's boss: an elite at the run's level 20-29, boss ledger"]})
+        self.source("expedition_boss", "the Expedition boss's name", r.cite(golem,
+                    r'register_mob\("grug_mobs:flintback"'))
+
         # Guards: settlements and outposts (one name per faction everywhere).
         gtext = r.text(MOBS + "/guard.lua")
         self.source("guards", "faction guards of settlements and outposts (guard level field 20..70, "
