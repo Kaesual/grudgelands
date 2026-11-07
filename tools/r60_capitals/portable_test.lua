@@ -128,6 +128,9 @@ local SHARED = {
 		capitals = {"highcourt", "dur_brannoc", "lethariel", "gor_drazhak", "kezamba", "nhal_veyr"}},
 	capital_raw_meat = {giver = cook, line = "provisions",
 		capitals = {"lethariel", "gor_drazhak", "kezamba", "nhal_veyr"}},
+	-- Round 71 L20: the Expedition's quest, one more shared quest of all six.
+	capital_stilled_seam = {giver = leader, line = "guild",
+		capitals = {"highcourt", "dur_brannoc", "lethariel", "gor_drazhak", "kezamba", "nhal_veyr"}},
 }
 -- Round 61 BANDQUESTS: chapter 3's two foremen (round61-plan.md §2a point 4).
 local TITLES = {mining_camp_frostbarrow_shelf = "Brodd Deeppeg", mining_camp_ossuary_reach = "Rellis Shalemark",

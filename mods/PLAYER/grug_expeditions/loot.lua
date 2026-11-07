@@ -20,6 +20,17 @@ M.TABLES = {
 			{item = "grug_mobs:coarse_spider_silk", min = 1, max = 2, level = {21, 30}},
 		},
 	},
+	-- Level 20-29. Priced by tools/r71_l20/balance.py: the coins are about a quarter
+	-- hour of the band's income, the length of a run.
+	stilled_seam = {
+		gear = {{quality = 2}, {quality = 3, chance = 25}},
+		coin_bags = {{factor = 10}},
+		materials = {
+			{item = "grug_mobs:spider_silk", min = 3, max = 5},
+			{item = "grug_mobs:coarse_spider_silk", min = 1, max = 2, level = {21, 29}},
+			{item = "grug_mobs:venom_gland", min = 1, max = 2, chance = 50},
+		},
+	},
 }
 
 -- The chest's slots: at least this, in full rows of 8 when a plan is longer.

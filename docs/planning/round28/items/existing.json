@@ -1967,6 +1967,7 @@
     "grug_mobs:elder_troll": {"type": "npc", "description": "Cradle Elder", "disposition": null, "drops": []},
     "grug_mobs:elder_undead": {"type": "npc", "description": "Hollow Warden", "disposition": null, "drops": []},
     "grug_mobs:ember_wisp": {"type": "monster", "description": "Ember Wisp", "disposition": "aggressive", "drops": [{"chance": 4, "item": "grug_materials:emberglass", "max": 1, "min": 1}]},
+    "grug_mobs:flintback": {"type": "monster", "description": "Flintback", "disposition": "aggressive", "drops": []},
     "grug_mobs:fox": {"type": "monster", "description": "Fox", "disposition": "aggressive", "drops": [{"chance": 1, "item": "mobs:meat_raw", "max": 1, "min": 1}, {"chance": 2, "item": "mobs:leather", "max": 1, "min": 1}, {"chance": 3, "item": "grug_mobs:fang", "max": 1, "min": 1}]},
     "grug_mobs:frog": {"type": "monster", "description": "Frog", "disposition": "aggressive", "drops": [{"chance": 1, "item": "grug_mobs:raw_fish", "max": 1, "min": 1}]},
     "grug_mobs:frost_stray": {"type": "monster", "description": "Frost Stray", "disposition": "aggressive", "drops": [{"chance": 1, "item": "grug_mobs:bone", "max": 1, "min": 1}, {"chance": 2, "item": "grug_mobs:linen_scrap", "max": 1, "min": 1}]},

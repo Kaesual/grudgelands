@@ -17,6 +17,10 @@ Q.validate = V
 -- A kill target's level range [lo, hi] fits a quest of reward level L when
 -- every level lies within L +- LEVEL_SLACK (containment).
 V.LEVEL_SLACK = 3
+-- A role that stands in an Expedition, no zone hosts it: role -> the Expedition's
+-- level, what its level range is read as, the +0 to +9 of a run being the player's
+-- choice. As in tools/r28_design/validate.py.
+V.EXPEDITION_TARGETS = {flintback = 20}
 V.MAX_GIVERS_PER_HUB = 2
 V.MAX_LINES_PER_GIVER = 2
 V.FRONT_LINE = "front"
@@ -868,9 +872,12 @@ end
 -- The level range a kill or drop target is met at: a named leader's fixed
 -- level (a leader has no area), else the referenced area's levels, else the
 -- levels of all areas of the quest's zone hosting the role, else the role's
--- own levels; nil when unknown (no check).
+-- own levels; nil when unknown (no check). A role of an Expedition is met
+-- there, at its level.
 local function target_levels(add, where, world, zone, name, area_ref)
 	local role = name:match("^grug_mobs:(.+)$") or name
+	local expedition = V.EXPEDITION_TARGETS[role]
+	if expedition then return expedition, expedition end
 	local leader = world.leader(role)
 	if leader then
 		if area_ref then
@@ -958,7 +965,7 @@ local function check_recipe_targets(warn, where, world, zone, objective)
 	if #areas == 0 then return end
 	for _, name in ipairs(V.target_names(objective)) do
 		local role = name:match("^grug_mobs:(.+)$") or name
-		if world.leader(role) then return end
+		if world.leader(role) or V.EXPEDITION_TARGETS[role] then return end
 		for _, area in ipairs(areas) do
 			if area.roles[role] then return end
 		end

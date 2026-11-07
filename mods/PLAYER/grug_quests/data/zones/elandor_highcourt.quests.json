@@ -412,6 +412,82 @@
       "notes": "Round 60 CAPITALS. Plan §2 point 6, §2a points 4-5, draft §4 'Die Alchemy-Aufgabe' and K13 A: one shared quest, one elixir everywhere (Precision I: Sunleaf, Boar Tusk, Glass Bottle), each envoy's own playful occasion; the text names the trainer's plot in words and sends the player back where they started by their start settlement's waystone, never naming the start zone. The one quest the r45_st check lets ask for a grug_alchemy item."
     },
     {
+      "id": "capital_stilled_seam",
+      "line": "guild",
+      "level": 20,
+      "requires": [],
+      "title": "Party: The Stilled Seam",
+      "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+      "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "flintback"
+          ],
+          "count": 1
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_highcourt",
+          "givers": [
+            "r58_guild_leader_highcourt"
+          ],
+          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+          "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+          "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again."
+        },
+        {
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r58_guild_leader_lethariel"
+          ],
+          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+          "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again."
+        },
+        {
+          "zone": "kragmar_gor_drazhak",
+          "givers": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
+          "completion": "You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns, and we can keep our word to the goldsmiths with everyone still on their feet. The registrar will hold the way open; that rock got up once, and I do not trust it to stay down."
+        },
+        {
+          "zone": "kragmar_kezamba",
+          "givers": [
+            "r58_guild_leader_kezamba"
+          ],
+          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
+          "completion": "You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns, and we can keep our word to the goldsmiths with everyone still on their feet. The registrar will hold the way open; that rock got up once, and I do not trust it to stay down."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
+          "completion": "You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns, and we can keep our word to the goldsmiths with everyone still on their feet. The registrar will hold the way open; that rock got up once, and I do not trust it to stay down."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "lesson": "Optional group quest: the registrar's Expedition, killing its boss at any level.",
+      "duration_min": 15,
+      "notes": "Round 60 CAPITALS. Round 71 L20: round71-l20-description.md, its four approved texts, one per faction; free, no follow-up, the Expedition stays repeatable after the turn-in.",
+      "optional": true,
+      "group": true
+    },
+    {
       "id": "highcourt_penn",
       "line": "envoy",
       "giver": "r20_human_capital_envoy",
