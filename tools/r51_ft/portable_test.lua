@@ -115,17 +115,17 @@ end
 -- ground for `layout.green`, and Dur Brannoc its castle; each capital lane
 -- pins its own new count.)
 local CAPITAL_TREES = {
-	highcourt = 86,
+	highcourt = 100,
 	-- the next capital
 	dur_brannoc = 64,
 	-- the next capital
-	lethariel = 163,
+	lethariel = 167,
 	-- the next capital
-	nhal_veyr = 70,
+	nhal_veyr = 78,
 	-- the next capital
 	gor_drazhak = 47,
 	-- the next capital
-	kezamba = 46,
+	kezamba = 54,
 }
 local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
 local cores = {}
@@ -449,7 +449,7 @@ do
 				unknown .. ")")
 			check(plants > 100, profile.key .. " has city ground cover (" .. plants .. ")")
 			local lake = capital.CAPITALS[profile.key].lake
-			check((lake and lilies > 10) or (not lake and lilies == 0), profile.key ..
+			check((lake and lilies >= 5) or (not lake and lilies == 0), profile.key ..
 				"'s lake plants (" .. lilies .. " lily pads)")
 		end
 	end

@@ -477,7 +477,7 @@ from y = −501.
 - All six capitals are walled (Round 23 ruling 2026-09-28, which walled
   Lethariel and Kezamba as well; `settlements.md`).
 - Its guards and important faction NPCs are level 60; the killable race king
-  is the explicit level-70 elite exception and is protected by four level-60
+  is the explicit level-70 elite exception and is protected by two level-60
   elite royal guards (`world_zones.md` §12).
 - Its center has four cardinal gates facing level 10–20 home territory,
   medium-level heartland and the high-level contested front; roads reach it

@@ -353,7 +353,7 @@ end
 
 -- STONEWRIGHT: one row per recipe, {id, rank, output, output_count, fee,
 -- inputs = {{item, count}, ...}}; an ornamented one also {tier, name}.
--- ORNAMENTED: those rows, the blocks the guild registers (items.lua).
+-- ORNAMENTED: those rows, the blocks the guild registers (nodes.lua).
 M.STONEWRIGHT = {}
 M.STONEWRIGHT_BY_ID = {}
 M.ORNAMENTED = {}

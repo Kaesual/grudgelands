@@ -317,7 +317,7 @@ do
 		if z > 0 and math.abs(x - 300) <= 3 then return "surface", 5.5, 5, "grade" end
 		return nil
 	end
-	local rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	local rows = wayposts.rows(module, network, LABELS, {}, columns, roads_at)
 	check(#rows == 1, "J one stack, at the secondary junction away from the ends: " .. #rows)
 	local row = rows[1]
 	if row then
@@ -350,6 +350,16 @@ do
 			function() return false end, write)
 		check(next(written) == nil, "J no text without the node")
 	end
+	-- A junction far from the road's ends beside a settlement: a stack inside
+	-- the reservation's box gets none, the corner of the box too, where the
+	-- road grid's circle (`round`) lets a road pass (found by the seed fleet);
+	-- the same box a node further off leaves it standing.
+	local BESIDE = {{id = "camp", x = 278, z = -14, half = 22, round = true}}
+	rows = wayposts.rows(module, network, LABELS, BESIDE, columns, roads_at)
+	check(#rows == 0, "J no stack in the corner of a reservation's box: " .. #rows)
+	BESIDE[1].x = 277
+	rows = wayposts.rows(module, network, LABELS, BESIDE, columns, roads_at)
+	check(#rows == 1 and rows[1].x == 300, "J a stack just outside the box stands")
 	-- A later junction with no good column is skipped, the earlier stack kept
 	-- (found by the seed fleet: the spacing test read the missing column).
 	local function with_wet_junction()
@@ -362,20 +372,20 @@ do
 			water[x .. ":" .. z], water[x .. ":" .. -z] = true, true
 		end
 	end
-	rows = wayposts.rows(module, with_wet_junction, LABELS, columns, roads_at)
+	rows = wayposts.rows(module, with_wet_junction, LABELS, {}, columns, roads_at)
 	check(#rows == 1 and rows[1].x == 300, "J a wet junction after a good one gets no stack")
 	-- Water opposite the mouth: the mouth's corner instead.
 	for x = 280, 320 do
 		for z = -8, -4 do water[x .. ":" .. z] = true end
 	end
-	rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	rows = wayposts.rows(module, network, LABELS, {}, columns, roads_at)
 	check(rows[1] ~= nil and rows[1].z == 4 and math.abs(rows[1].x - 300) > 3,
 		"J the mouth's corner where the far side is wet")
 	-- A sheer drop beside the road anywhere near: no stack.
 	for x = 280, 320 do
 		for z = 4, 8 do level[x .. ":" .. z] = 12 end
 	end
-	rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	rows = wayposts.rows(module, network, LABELS, {}, columns, roads_at)
 	check(#rows == 0, "J no stack without a good column")
 end
 

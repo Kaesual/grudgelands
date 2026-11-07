@@ -63,6 +63,7 @@ for _, race in ipairs(RACES) do
 end
 local function open(name) return name == nil or name == "air" end
 local function stair(name) return name ~= nil and name:find("stairs:stair", 1, true) ~= nil end
+local function slab(name) return name ~= nil and name:find("slab", 1, true) ~= nil end
 -- Solid to sit against or to look at: anything but air, plants, pots, mats
 -- and lights.
 local function solid(name)
@@ -84,7 +85,8 @@ local function benches(label, bp)
 	end
 	-- A seat: open above, on a floor, not a step of a stairway (the next
 	-- stair one up on its raised side), and a stair only with room for feet
-	-- beside it (a roof's stairs have none).
+	-- beside it (a roof's stairs have none: the slab of a stepped roof's
+	-- lower course is no floor).
 	local function is_seat(c)
 		if not SEAT[c.name] or (c.param2 or 0) >= 4 then return false end
 		local below = at(c.x, c.y - 1, c.z)
@@ -96,7 +98,8 @@ local function benches(label, bp)
 			local x, z = c.x + d[1], c.z + d[2]
 			local floor = at(x, c.y - 1, z)
 			if open(at(x, c.y, z)) and open(at(x, c.y + 1, z)) and
-					((floor == nil and c.y == 1) or (not open(floor) and not stair(floor))) then
+					((floor == nil and c.y == 1) or
+						(not open(floor) and not stair(floor) and not slab(floor))) then
 				return true
 			end
 		end
@@ -313,6 +316,25 @@ do
 	fails = benches("scene", scene(0, 0, {x = 0, z = 1}))
 	check(#fails == 1 and fails[1]:find("sits on the seat", 1, true) ~= nil,
 		"a sitter facing the backrest fails: " .. table.concat(fails, "; "))
+	-- A gable's roof stair on the gable wall, its lower course's slab beside
+	-- it, a turret two ahead: no seat. The same stair over a floor is one.
+	local function gable(floor)
+		local function cell(x, y, z, name, param2)
+			return {x = x, y = y, z = z, name = name, param2 = param2 or 0}
+		end
+		local cells = {cell(0, 19, 0, p.node("seat"), 1), cell(0, 18, 0, p.node("wall")),
+			cell(-1, 18, 0, floor)}
+		for z = -2, 2 do
+			cells[#cells + 1] = cell(-2, 19, z, p.node("wall"))
+			cells[#cells + 1] = cell(-2, 20, z, p.node("wall"))
+		end
+		return {cells = cells, landmarks = {sockets = {}}}
+	end
+	fails = benches("scene", gable("stairs:slab_wood"))
+	check(#fails == 0, "a roof's stair beside its slab is no bench: " .. table.concat(fails, "; "))
+	fails = benches("scene", gable(p.node("wall")))
+	check(#fails == 1 and fails[1]:find("faces a wall 2 ahead", 1, true) ~= nil,
+		"a seat beside a full floor still counts: " .. table.concat(fails, "; "))
 end
 
 print(("r36_w2 portable test: %d checks passed (%d compositions, %d benches)"):format(checks, #comps, total))

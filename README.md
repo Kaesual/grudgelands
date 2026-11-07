@@ -82,7 +82,9 @@ To create a local world or host a server, see
    to see its targets. Press `E` for the quickbar: mounts, boats, your
    potion belt and Return home.
 5. **Set a home at an innkeeper:** Return home brings you back after a
-   journey. Death costs no items, money or XP; you respawn at your home.
+   journey. Dying wears your equipped items by 10% of their durability,
+   unless an enemy player hit you in the last 30 s; you keep your items
+   and XP and respawn at your home.
 
 Press `I` for your inventory. Its **Help** tab explains equipment, crafting,
 professions, travel and combat, and includes the sound controls.
@@ -94,6 +96,16 @@ levels 21–40 and leads you to your faction's fortress at 40; from 41 your
 Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
+
+**0.70.0** gives every King a castle in a larger capital, with a new throne
+room; rebuilds the six start towns around a free waystone; adds the
+Stonewright, who turns stone by guild rank and makes ornamented blocks;
+puts wayposts at road junctions and makes Rock Salt, Stormkelp and other
+rare sources easy to find. Decorative plants can be picked up and placed,
+potions go to the belt first, a death wears your gear by 10% unless an
+enemy player hit you just before, Kings rise to level 70, and fighting
+above your level costs damage from the first level. This update needs a
+map reset; desktop and web acceptance is pending.
 
 **0.69.0** adds a Trash box to the Inventory tab, with Undo for the last
 item; you now respawn at your home, a Claim Stone included; every damaging

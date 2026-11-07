@@ -595,9 +595,11 @@ rewrite records the WP40 model it replaced.
   its lake (no trough across the lake bed). Civic water and Moonfall's
   crescent lake are authored lakes in the same format.
 - **Civic water (Round 22, D26, D34, D42).** Authored lakes sit on the fitted
-  terrain (`wp40/water_authored.lua`): the Kezamba cenote and the Lethariel
+  terrain (`wp40/water_authored.lua`): the Kezamba cenote (18 nodes farther
+  north of its anchor since Round 70) and the Lethariel
   crown lake two nodes below their civic pads, inside the civic core exactly
-  on the committed blueprint footprints (the Kezamba lagoon mask, the
+  on the committed blueprint footprints (the Kezamba lagoon mask, cut from the
+  real water by `tools/r70_cap/kezamba_mask.lua`, the
   Lethariel `MERE`), outside it with warped coves and points, a carved bed
   (the cenote's in ledges) and shores shaped into banks and low natural dams;
   Highcourt's two blueprint river arms and their outflow as one civic canal
@@ -1434,9 +1436,9 @@ graph requirement may shape a zone, and nothing may require a graph to be
   the road, opposite the mouth, with an arrow and name for each end of the
   primary road and for the secondary road's settlement (a name over the
   board's 14 characters keeps its first word). Few on purpose, about a dozen
-  a world: no stack at a trail, a capital street, a bridge, a deep cut or
-  within 96 road nodes of a primary road's end, and none within 96 nodes of
-  another. The stack takes no road column, stands in the road's corridor, so
+  a world: no stack at a trail, a capital street, a bridge, a deep cut,
+  inside a settlement's reservation or within 96 road nodes of a primary
+  road's end, and none within 96 nodes of another. The stack takes no road column, stands in the road's corridor, so
   it is protected and nothing grows there, and comes from the road layout,
   the same in main and emerge. The emerge writer places the nodes; a text is
   metadata only main can write, so main's `on_generated` writes it as soon as

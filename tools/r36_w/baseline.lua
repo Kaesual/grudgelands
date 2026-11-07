@@ -35,7 +35,9 @@
 -- the six starts' reworked layouts: their sockets, bounds as they fall; and by
 -- Round 70 lane CAP0 (a declared map reset) for the core's radius 56: the six
 -- cores' bounds, airspace and gate sockets, Dur Brannoc's core with its
--- castle. Each capital lane rewrites its core's line. As a module:
+-- castle. Each capital lane rewrites its core's line; and Round 70 lane
+-- ENDFIX, four socket facings (lethariel, nhal_veyr, gor_drazhak), nothing
+-- else. As a module:
 -- `dofile(path)(repo)` returns the lines.
 local function record(repo)
 	_G.core = _G.core or {}

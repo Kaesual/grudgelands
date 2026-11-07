@@ -7,7 +7,7 @@ race elf
 palette elf race=elf crop=default:junglegrass crop_soil=grug_farming:soil hedge=grug_trees:silverwood_leaves hedge_stem=grug_trees:silverwood_tree water=default:river_water_source
 palette pale race=elf castle_wall=default:silver_sandstone_brick castle_wall_slab=stairs:slab_silver_sandstone_brick castle_wall_stair=stairs:stair_silver_sandstone_brick crop=default:junglegrass crop_soil=grug_farming:soil hedge=grug_trees:silverwood_leaves hedge_stem=grug_trees:silverwood_tree roof_ridge=default:silver_sandstone_brick roof_slab=stairs:slab_silver_sandstone_brick roof_stair=stairs:stair_silver_sandstone_brick roof_stair_inner=stairs:stair_inner_silver_sandstone_brick roof_stair_outer=stairs:stair_outer_silver_sandstone_brick water=default:river_water_source
 
-use lethariel_kings_hall count=1 main=pale
+use lethariel_kings_hall count=1 main=pale roof=pale
 use lethariel_gate_south count=3 main=pale
 use lethariel_market count=1 main=elf
 use lethariel_colonnade_west count=1 main=pale

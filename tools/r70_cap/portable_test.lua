@@ -8,7 +8,7 @@
 --   B  every cell inside BOUNDS.capital_core;
 --   T  every socket of the core a standing point inside the pad.
 -- A capital in DONE (a capital lane adds its key when its core is finished):
---   R  the protected ring closed, every gate on it;
+--   R  the protected ring closed, every gate on it; Kezamba's mask the water;
 --   W  every socket reached on foot from the crossing, doors passable;
 --   C  the castle: 45 x 35, the two royal guards at their posts, the door
 --      guards ordinary posts at the great door, the throne within the seat's
@@ -62,35 +62,44 @@ local settlement = dofile(wp40 .. "/r7_settlement.lua")
 -- These tables keep one row per capital with a comment line between rows, so
 -- parallel lanes do not touch adjacent lines.
 local DONE = {
-	highcourt = false,
+	highcourt = true,
 	-- the next capital
 	dur_brannoc = true,
 	-- the next capital
-	lethariel = false,
+	lethariel = true,
 	-- the next capital
-	nhal_veyr = false,
+	nhal_veyr = true,
 	-- the next capital
-	gor_drazhak = false,
+	gor_drazhak = true,
 	-- the next capital
-	kezamba = false,
+	kezamba = true,
 }
 -- The castle's placement: anchor, turns, per capital.
 local CASTLE = {
-	highcourt = false,
+	highcourt = {plot = "kings_hall", x = -22, z = 10, turns = 0},
 	-- the next capital
 	dur_brannoc = {plot = "kings_hall", x = -22, z = 10, turns = 0},
 	-- the next capital
-	lethariel = false,
+	lethariel = {plot = "kings_hall", x = -52, z = -51, turns = 3},
 	-- the next capital
-	nhal_veyr = false,
+	nhal_veyr = {plot = "mausoleum", x = -22, z = 10, turns = 0},
 	-- the next capital
-	gor_drazhak = false,
+	gor_drazhak = {plot = "warlord_hall", x = -22, z = 10, turns = 0},
 	-- the next capital
-	kezamba = false,
+	kezamba = {plot = "kings_hall", x = 5, z = -52, turns = 2},
 }
 -- Rows of the study's schedule the build moved on purpose, id -> reason.
 local MOVED = {
-	highcourt = {},
+	highcourt = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+		-- The study moved template rows only: the court's well went east with
+		-- the store, and this one stands at it.
+		court_idle_well = "court",
+	},
 	-- the next capital
 	dur_brannoc = {
 		-- The castle's own rows follow the picked template, not the 2D study.
@@ -103,13 +112,47 @@ local MOVED = {
 		court_idle_forge = "court", court_idle_yard = "court", court_idle_fire = "court",
 	},
 	-- the next capital
-	lethariel = {},
+	lethariel = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+	},
 	-- the next capital
-	nhal_veyr = {},
+	nhal_veyr = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+		-- The study moved template rows only: the court's furniture went east
+		-- with the works, and these stand at it.
+		court_idle_works = "court", court_idle_yard = "court", court_idle_fire = "court",
+		court_work_slab = "court", court_work_pot = "court",
+	},
 	-- the next capital
-	gor_drazhak = {},
+	gor_drazhak = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+		-- The study left it on the old rack, which is the new bypass: it goes
+		-- east with the racks.
+		court_work_rack = "court",
+	},
 	-- the next capital
-	kezamba = {},
+	kezamba = {
+		-- Its row (z 56) is the ring: it keeps its old place under the moot
+		-- house's last row, which moved 15.
+		shore_walk_north = "ring",
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+	},
 }
 
 local CAPITALS = {"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak", "kezamba"}
@@ -324,6 +367,36 @@ local function capital_tests(capital)
 		end
 	end
 	if not DONE[capital] then return end
+
+	-- Kezamba: the mask the composition builds round is the real water.
+	if capital == "kezamba" then
+		local mask = dofile(wp13 .. "/kezamba_lagoon.lua")()
+		for _, row in ipairs(dofile(wp40 .. "/water_authored.lua")({LAKE_PROXY = 40})) do
+			if row.id == "kezamba_cenote" then
+				local wrong = 0
+				for z = -ring.PAD, ring.PAD do
+					for x = -ring.PAD, ring.PAD do
+						if (row.indicator(1800 + x, 1500 + z) >= 0.5) ~= mask.lagoon(x, z) then
+							wrong = wrong + 1
+						end
+					end
+				end
+				check(wrong == 0, "R " .. label .. "the mask is the water (" .. wrong .. " columns differ)")
+				-- What stands over the lake stands on something: a leg runs
+				-- down into the water, it does not end in the air.
+				local hanging = 0
+				for z = -ring.PAD, ring.PAD do
+					for x = -ring.PAD, ring.PAD do
+						if mask.lagoon(x, z) and walk.node(x, 1, z) and not walk.node(x, 0, z) then
+							hanging = hanging + 1
+							print("note " .. label .. "nothing under the cell at " .. x .. ",1," .. z)
+						end
+					end
+				end
+				check(hanging == 0, "R " .. label .. "no stilt hangs over the lake (" .. hanging .. ")")
+			end
+		end
+	end
 
 	-- R
 	local columns, gaps = 0, 0

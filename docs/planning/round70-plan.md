@@ -1,10 +1,18 @@
 # Round 70 — spawns, Stonewright, castles, start towns, death penalty
 
-Planned with the user on 2026-11-07 from player reports and the user's notes.
-**Not started:** the round starts on the user's "go". Routing (user, 2026-11-07):
-Opus 5.5 coordinates, implements and reviews; GPT-6 Astra makes the art proposals,
-the quest texts and the 2D drafts of the new capital cores. Version **0.70.0**,
-classification **map reset**.
+Planned with the user on 2026-11-07 from player reports and the user's notes;
+started on the user's "go" the same day. Routing (user, 2026-11-07): Opus 5.5
+coordinates, implements and reviews; GPT-6 Astra makes the art proposals, the quest
+texts and the 2D drafts of the new capital cores.
+**Complete on 2026-11-07:** all lanes merged, then this documentation lane D; main
+`c998ea93`: 313 of 313 fixtures, boot PASS, full seed fleet 302 of 304 with both
+failures fixed and those seeds rerun OK. The user's picks: Thread A, Grinder B,
+Furnace A, all stones A, castle form A. **Not pushed; the GUI test is
+[open](#gui-checklist-desktop-and-web)** ([completion](#completion-2026-11-07)).
+Version **0.70.0**, classification **map reset**. §2 is the current ruling; what
+changed from the first plan is under
+[decisions](#decisions-during-the-round). Delivery state:
+[STATUS](../STATUS.md).
 
 [Round 71](round71-plan.md) runs beside this round (§7).
 
@@ -405,26 +413,174 @@ prices change. Round end: one smoke boot of main, sync, then the user's test.
 
 ### GUI checklist (desktop and web)
 
-Lane D expands this list.
+Written by lane D from the lanes' excerpts and the reviewers' notes. Each item on
+the desktop client and on the web client. Items marked *look* ask for the user's
+verdict on a first-look default. A new 0.70.0 world serves every item except item 1.
 
-- Rock Salt, Stormkelp, Wild Cocoa, Frost Melon, Bamboo and Sugar Cane can be found
-  where the rules say.
-- A harvested shore plant returns while a player stays nearby.
-- A crop field ripens spread out, not at once.
-- Every plant of §2.3 can be picked up and placed; Waterlily, Seagrass, Liana,
-  Hanging Moss and Waterweed sit correctly.
-- Thread shows its new icon. Corn touches the ground. A hoe picks up items.
-- Crafted and picked-up potions reach the belt first.
-- Stonewright: each rank's recipes, lots, fee, the grinder and furnace, each block.
-- Death lowers durability by 10%, can break an item, costs nothing after PvP; both
-  HUD hints appear and clear.
-- Kings at 70, dragons at 70 with 30,000 HP, the rift boss's item level, the crown's
-  results and refusals.
-- The new level malus: fights 1–3 levels above you, elite group quests, Generals.
-- Each capital: core, castle, throne room, gates, patrols, king fight.
-- Each start town: centre, waystone, a walk from spawn to the first quests.
-- Wayposts at road junctions show readable town names.
-- Web client: the new art and the HUD hints.
+**What no run has touched yet (first)**
+
+1. **The map reset on a real world.** On a world with characters: stop the server, back
+   up the world, run `python3 tools/migrate.py --world <dir> --map-reset` from the
+   checkout, delete `map.sqlite` (`map_meta.txt` stays), raise `grug_reset_world` above
+   the world's record, start. Characters, gear, money, quests, professions and waypoints stay;
+   the map regenerates; the first boot logs no `[GRUG-SEVERE]`. Lanes booted fresh
+   worlds only.
+2. **The real king fight in each capital.** In all six (Dur Brannoc, Highcourt,
+   Gor Drazhak, Nhal Veyr, Lethariel, Kezamba): pull the King, lead him to the
+   great door, cross the leash (30 from where the chase began; the door is 27.3
+   from the seat), he walks home up the dais and the two royal guards follow. Lanes
+   proved this on a body model and an engine path only.
+3. **A real right-click on the Stonewright over the desk** in each of the six
+   guild houses, from the front of the waist-height desk. Captures opened the
+   window from a script.
+4. **The furnace:** one audible loop at the Stonewright's smelting furnace, no
+   doubling beside it, fading with distance; the fire reads in a dim hall. No
+   capture has sound, and the guild "night" shots look barely darker.
+5. **The "1" button at 1024 wide, GUI scale 2:** on the Abyssal Steel row the cost
+   line runs into the button and Embersteel's touches it. Click it on both rows.
+6. **Hoe and potion at a drop:** click a dropped item with a hoe in hand: it is
+   picked up (a broken hoe too); on dirt it still tills. With a potion in hand a
+   click picks up and does not drink; with a completely full inventory it drinks
+   and the drop stays.
+7. **Sale from the belt:** sell a belt potion at a vendor, with no marker on the
+   row. Read in code, never run (`r48_sell` stubs the lists).
+8. **Waypost arrows** at a road junction: names readable on both sides, each arrow
+   points the way its road really goes. The direction is computed; nobody has
+   checked it by eye. Long names keep their first word ("Last" for Last Hedge
+   Redoubt).
+
+**Level malus and bosses (LEVELS)**
+
+9. **Everyday levelling** with mobs 1–3 levels above you: the ruled 5 points per
+   level is felt here; the model says about 18% longer fights and 18% more HP lost
+   at +3 at every level. Is it too much?
+10. **A level 10 player against a mob 3 levels up:** one kill costs about 1.10 of
+    your own pool before armor (modelled). Survivable with normal play?
+11. **Elite group quests** at their usual levels with a group: still fair.
+12. **Generals** (level 65, item level 65): level-60 players lose 25% of their
+    damage; model 16 s and 1.7 pools with three players.
+13. **Kings** at level 70: malus 50%; model 27 s and 3.2 pools with three players.
+    The malus halves damage threat but **not heal threat**: does a healer lose the
+    King to their own healing?
+14. **Dragons:** Lv 70, 30,000 HP, model 59 s and 3.7 pools with three players
+    (ground fight only, no dive, whelps or hazards).
+15. **Drops:** King, General, dragon and rift boss give item level 70, 65, 70 and
+    60, "Requires level 60".
+16. **Crownbinder:** T5 to 60, T6 to 70, a General's 65 to 70, a 61–69 item to 70;
+    a King's and a dragon's 70 refused with "The crown works only on items below
+    item level 70."; Help reads "top + 10, 70 at most".
+
+**Capitals (CAP0 and the five capital lanes)**
+
+Each capital: south gate up the approach, forecourt, stairs, hall, dais; the bypass
+round the castle to the north gate; the north watch behind the castle; booths,
+travel plaza, waystone and mailbox.
+
+17. *Look:* hall and throne by night in each capital: enough light? The computed
+    median is 7, the king's head 12; shots are software-rendered.
+18. **Dur Brannoc:** forge court, booths; the travel plaza narrowed to 13 wide.
+19. **Highcourt:** the bypass west between chapel and castle; chapel doors open
+    east, the elder on the doorstep; market walk to the west gate; service court and
+    well. *Look:* the orchard belt inside the wall: too dense? **Frame rate:** leaves
+    4,840 → 7,121 (+47%), watch it on a weak client and the web.
+20. **Gor Drazhak:** the fighting platform beside the door (east stair, breastwork,
+    view of the approach); muster court with booths, drill posts, racks, shed.
+    *Look:* does the castle's front read right behind the platform?
+21. **Nhal Veyr:** the processional walk to the north gate; the vigil hall reads as
+    public and apart; ossuary court; the watch's walk through the graves, the leg
+    of 48 corners, stele clearance. *Look:* **graves 114 → 529** (the lane's gut
+    version; the field list trims it in one line) and 29 gravewood stands.
+22. **Lethariel:** the south avenue, court, great door: does the court read as an
+    arrival? **The north promenade between the colonnades to the quay's head, and
+    the quay both ways, wall ends at the water: no shot shows these, and the shots
+    predate the quay's last fix.** Shrine, then the lane to the quay; real fishing
+    and the NPCs on the quay; the mere precinct's distance (26–51 off shore, was
+    18–35); the north avenue starting at the shore; no crossing.
+23. **Kezamba:** east avenue to the forecourt and great door (the east gate on
+    land); south avenue past the castle; north boardwalk to the pad's edge, the rail
+    never crossing it; moot house flight from the quay walk; fishmonger, the three
+    anglers' spots; stable and granary doors. *Look:* **lilies 31 → 9** on the one
+    measured seed (only `r51_ft` counts them): enough?
+24. **Rivers and POIs** near the moved lakes: nothing odd where the lake's new
+    strip meets a POI (the reviewer's scan was inconclusive; the full fleet passed).
+
+**Start towns and wayposts (TOWNS)**
+
+25. **Each of the six towns:** centre and pocket: the waystone stands free in its
+    13 × 13 pocket with only the mailbox, reachable from four sides; a walk from
+    spawn to the first quests; patrols after a restart.
+26. **Silverleaf's** terrace stairs; **Kapok's** stilt approaches, north bridge and
+    terrace.
+27. *Look:* wayposts at about nine stacks a world on secondary road junctions:
+    enough, or also at trails (about 60 more)?
+
+**The Stonewright (GUILD)**
+
+28. **Each rank's rows:** rank 1 Gravel, 2 Sand twice, 3 Stone, 4–8 one ornamented
+    stone each, locked rows above your rank; lots 1 / 5 / 10 / All; the fee taken;
+    All with a full bag works from its own stacks; a refusal changes nothing.
+29. *Look:* machine fronts and seams in each house, the grinder before the west
+    window; the five stones alone and in walls; the throne's top row of the five.
+30. Thread at 16 and 32 px in a bag and on a tooltip.
+
+**Spawns and renewal (SPAWN)**
+
+31. **Rock Salt** on the beaches of Gravesalt, Wyrmglass and Stormscale, never
+    touching water; **Frost Melon** at river margins in Frostbarrow and Ossuary
+    Reach; more Wild Cocoa, Bamboo Shoot and Sugar Cane where they grew.
+32. **Stormkelp** on sand, gravel or stone in all five zones, a few nodes inland
+    on low ground, none on a cliff top. *Look:* the spread inland: 26–35% stand at
+    the first node, 28–39% four or more inland. Enough, or should it reach the
+    biome's main ground (needs a lower density)?
+33. **Quests:** `ashveil_rock_salt` (6, level 53), the Stormvault Heights one
+    (8 Stormkelp, level 48), `frostbarrow_melons` (5, level 21; a world can start
+    with 4 there, so it may lean on renewal), the Lethariel one (6 Wild Cocoa).
+34. A harvested shore plant returns while you stay nearby: about 15–30 min per
+    Bamboo plant at a good shore (calculated).
+
+**Plants (PLANTS)**
+
+35. Each plant of §2.3 digs into itself, shows the decoration line and sells at
+    1c per 50. Felled tree: decaying leaves and hanging plants drop nothing.
+36. **Lily** on a lake and a river, refused on ground and flowing water. **Web:
+    pointing at water works.**
+37. **Seagrass and Waterweed** on sand under water; dug, the sand stays; refused on
+    dirt, and in water 1 deep for the weed.
+38. **Liana and Hanging Moss** under leaves or stone; pointing at a run extends it
+    at the bottom; dig the middle. Digging the ground under an attached plant throws
+    it as an item.
+39. Protected ground refuses with the usual hint. Seagrass and coral 24 or more
+    nodes offshore cannot be dug (protected water): acceptable?
+
+**Farming and the belt (FARMFIX)**
+
+40. A field ripens spread out (a 9 × 9 field 495–696 s); leave and return: stages
+    caught up. The salt pan stays at 200 s per stage.
+41. Corn stages 3 and 4 touch the ground (*look:* the shorter plant); wild corn
+    unchanged.
+42. Crafted and picked-up potions go to the belt first, then the bags; with
+    everything full the drop stays; the quickbar shows new potions; a quest reward
+    potion lands on the belt.
+43. Mail, purchases, loot and a chest shift-click put potions on the belt too (the
+    coordinator's default): fine? Turn in Elixir of Precision I from the belt.
+
+**Death (DEATH)**
+
+44. Die to a mob: each equipped item shows 10% less, trinkets unchanged. Ten deaths
+    on fresh gear: items break. Help and the README read right.
+45. Hit by a flagged enemy, then fall within 30 s: nothing lost; after 31 s: 10%.
+46. Hit, log out in PvP combat, rejoin: dead, nothing lost. Strike only, log out,
+    rejoin: dead, 10% (the ruling read literally: does it stay?).
+47. Below 15%: the amber "Gear almost broken"; a break: the red "Broken gear
+    equipped"; repair or swap clears them, relog redraws them; readable on bright
+    ground, web too. *Look:* no line in the feed says a death cost durability: leave
+    it so? Repair per death costs an Uncommon set about 10–11 minutes of band income,
+    a Rare one 19–23 (calculated).
+
+**Web client**
+
+48. The new art (machines, stones, Thread), the HUD hints and the join time with
+    the new textures. No lane ran the web client.
 
 ## 7. Orchestration notes
 
@@ -440,3 +596,228 @@ Lane D expands this list.
 - **Round 71 runs beside this one:** rules in
   [its plan](round71-plan.md#7-orchestration-notes). Main stays this round's. The
   limit of 8 Lua runs is shared, and the user's GUI test takes one round at a time.
+
+## Completion (2026-11-07)
+
+All lanes are merged on main; this lane D (completion, GUI checklist, status
+owners) follows on main `c998ea93`. **0.70.0 is a map reset, the thirteenth**
+(SPAWN's declaration, verified: `check_upgrade.py` passes,
+[upgrade contract](../technical/upgrade-contract.md)). **By lane:** SPAWN, the GUILD
+templates, TOWNS and the capitals (CAP0 and five lanes) are the map reset; PLANTS,
+FARMFIX, DEATH and LEVELS are compatible on their own; ART, DESIGN and CASTLE touch
+tools only. **Saved state:** no step and no new mod storage. `grug_pvp:logout_death`
+gains the value `"wear"` (a 0.69.0 mark reads as a free death); generated wayposts
+hold `text` in node meta, part of the map. **Push:** not pushed; origin/main is
+`829be5dd` (0.69.0). **Production** runs 0.65.0; its update to 0.70.0 crosses this
+one map reset and runs the steps 0.67.0 and 0.69.0. **GUI test:**
+[open](#gui-checklist-desktop-and-web). **Sync:** by the coordinator after the
+merges. [Round 71](round71-plan.md) goes on beside it on branch `round71`.
+
+### Lanes
+
+Main's first-parent merges from the plan `55aa7708` (lane tip in brackets), in
+merge order. Reviews are independent Opus reviews; the Astra lanes had an Opus check
+or the coordinator's.
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| ART | `0a7acf25` (`27bb5809`) | GPT-6 Astra's `tools/r70_art/`: pick page, then the picks; pass 2 the burning furnace (8 frames, 0.1875 s, light 8), 128 final files, `INSTALL.md` | coordinator: `--check` PASS twice |
+| SPAWN | `cb4cc1b9` (`23a37c5c`) | Six source rows; `near_water` and `no_water` shared by writer and renewal; Rock Salt on whole beaches; Frost Melon gravel and sand hosts in the three river biomes; `SHORE_RESOURCE_FACTOR = 4`; version 0.70.0 and the map-reset declaration; `tools/r70_spawn/` census | MERGE (one stale line, fixed); the height note went to the user |
+| PLANTS | `e9cfbb7b` (`ccf293db`) | 25 carried items drop themselves; `grug_decor_plant` (tier 1, 1c per 50), tooltip "Decoration: no recipe uses it."; own placement for lily, seagrass, weed, liana, moss; `tools/r70_plants` | MERGE, two Lows fixed; 400,000-operation conservation test, 0 violations |
+| FARMFIX | `1b75812a` (`31f0c1b8`) | `stage_seconds` 160–240 by position hash; every `on_use` item picks up a pointed drop; corn lowered by `[combine`, no new art; potions to the belt first, quest rewards too; `consume_lists` ends with the belt | MERGE, then delta MERGE AFTER FIXES (a comment); fall-through for a drop that cannot be taken added on the review |
+| DEATH | `8367943e` (`d734b9bb`) | `wear_death` 10%; `R.PVP_DEATH_SECONDS = 30`, `R.pvp_death`, `register_on_death`, the logout mark; `hints.lua`, the free anchor `gear_hints`; `tools/r70_death` | MERGE; five mutations caught |
+| LEVELS | `c9b5a2b0` (`43be9c48`) | Kings 70, Generals 65, dragons 70 with 30,000 HP, `BOSS_DROPS` 70/65/70/60, `CROWN_CAP`, the malus in `level_malus`; `tools/r70_levels` | MERGE AFTER FIXES (text, by the coordinator) |
+| DESIGN | `2b67b428` (`c3612f30`), `4139ee4d` (`ae03e821`) | GPT-6 Astra's land-use study `tools/r70_design`: six cores, six towns, 659 schedule rows; five passes | Opus check FIX FIRST on passes 1, 2 and 4, each fixed; `verify.py` PASS at the merge; the user's review |
+| CASTLE | `935f18fc` (`a9145b2b`) | GPT-6 Astra's `tools/r70_castle`: three forms, the pick Crownward, the smaller throne, `INSTALL.md` | Opus check FIX FIRST (dark hall, door, stairs, gate), fixed; the user's pick |
+| SPAWN2 | `ed320c96` (`a51ec60b`) | Stormkelp `SHORE_REACH = 10`, `SHORE_HEIGHT = 4`, density kept; `p9g_water_rule`; water in 8 × 8 blocks | MERGE AFTER FIXES (a doc line, by the coordinator); 470,450 determinism tests, 0 mismatches |
+| GUILD | `14a18e61` (`cb62beaf`) | `grug_traders:stonewright` on the sorter socket, desk, grinder, furnace in six templates; `stonewright.lua`, `nodes.lua`, the Thread icon; the copper rule removed; `tools/r70_guild` | MERGE, no fixes |
+| TOWNS | `9b08f88a` (`cad10849`) | Six towns on the study (132 rows), 13 × 13 pockets; `wp40/wayposts.lua`, main writes the text in `on_generated`; `tools/r70_towns` | MERGE after the lane's delta; merge conflict in the `r36_w` baseline resolved by the coordinator |
+| CAP0 | `9b77b9ee` (`0d28ed4c`) | `precinct_ring.lua` one source (56, 57, 112, 55), Dur Brannoc complete, `tools/r70_cap` with the guide and shared test | MERGE AFTER FIXES (test, guide, merge rows, a hidden 48 in `atmosphere_zones.lua`, probe) |
+| NHAL | `4d328259` (`3dbb2f69`) | Nhal Veyr: castle in crypt, plots on the study, precinct loop, burial ground | MERGE |
+| HIGHCOURT | `d13b35a4` (`e21333be`) | Highcourt: castle in white slate, chapel moved 8 west, doors on the bypass, orchards | MERGE AFTER FIXES (a comment, by the coordinator) |
+| GOR | `1336a1ce` (`26111311`) | Gor Drazhak: castle in `ors`, muster court 8 east, platform kept | MERGE, two items sent back and fixed |
+| LETHARIEL | `90a3409d` (`23064736`) | Lethariel: castle at the west facing east, lake 14 north, quay three wide written outward, no crossing | MERGE AFTER FIXES (both quay arms were severed), delta MERGE |
+| KEZAMBA | `ed771e28` (`f8ff7509`) | Kezamba: castle on the terrace at turn 2, cenote 18 north, mask regenerated, one boardwalk | MERGE AFTER FIXES (stilts, forecourt, a comment), fixed |
+| ENDFIX | `c998ea93` (`dd3834c3`) | What the round-end gates caught: four NPC facings, one bench, `wayposts.lua` skips a stack in a reserved box (the road grid's circle missed the camp box's corners), `is_seat` in `r36_w2` | delta review approved; three notes in BACKLOG |
+| D | this section | Completion, checklist, STATUS, AGENTS, BACKLOG, README, CHANGELOG, ROADMAP, the upgrade contract's Round 70 entry, Help's two lines, comments and design lines the reviews named | independent review |
+
+Plan commits between them: `6d7629ec`, `975a75a0`, `a75b71e2`, `87821252`, `f936ae33`;
+the CHANGELOG stub `3a6bc984`.
+
+Main has **313** portable fixtures, seven new (`r70_spawn`, `r70_plants`,
+`r70_death`, `r70_levels`, `r70_guild`, `r70_towns`, `r70_cap`); FARMFIX extended
+owners' fixtures and has a capture. `mods/` against the plan commit (measured,
+`git diff --shortstat 55aa7708 c998ea93 -- mods`): 230 files, +12614 −10033: 74 Lua
+files, 126 PNG, 13 templates, 6 layouts, 5 rosters.
+
+### Decisions during the round
+
+**The user** (rulings of §2, then):
+
+- **Art:** Thread A, Grinder B, Smelting furnace A, all five stones A. **The furnace
+  always burns,** with animated fire and the shipped furnace loop (no new sound).
+- **Dragons stay level 70** and item level 70 with 30,000 HP, loot unchanged, **no
+  item level 75**. The first plan had level 75 and item level 75; the change came
+  after the numbers of the old malus.
+- **Level malus** `max(0.25, 1 − 0.05 × gap)`, every mob, replacing "free up to 5
+  levels, then 10 points, floor 10%"; not in the first plan.
+- **Land use:** the study stands with its per-place recommendations; civic radius
+  **56** in all six; the first plan said only "grows somewhat".
+- **Lakes:** Lethariel's lake 14 north, no crossing; Kezamba's cenote 18 north
+  without the east boardwalk; neither in the first plan.
+- **Castle form A,** Crownward, with a smaller throne (5 × 3 × 7, seat 3 × 2).
+- **Stonewright fees** as proposed: 10 → 10 for 1–2c; 8 Cobblestone + 1 bar → 8 for
+  5c, 10c, 25c, 60c, 1s 50c.
+- **Stormkelp** up to 10 nodes from water with a height limit, replacing 3 nodes
+  without one; target unchanged.
+- **Frostbarrow as it is:** 4–10 melons.
+- **CPU rule (2026-11-07):** no hours of CPU for repeats; no per-lane full run or
+  fleet in the capital batch, one of each on main after it.
+
+**The coordinator** (answers to lane questions; the user may overrule):
+
+- FARMFIX: quest-reward potions land on the belt first (built); mail, purchases,
+  loot and chest shift-click landing on the belt stay; the belt stays sellable and
+  countable.
+- PLANTS' three recommendations: tooltip and price on Cyan, Green and Pink Coral too;
+  one item per fallen hanging piece; the creative-inventory flags.
+- DEATH: a broken item shows only the broken hint; exactly 15% shows nothing; no
+  feed line at a costly death until the playtest; a logout death with no enemy hit
+  pays (the ruling read literally, for the user at the checklist).
+- TOWNS: idle sockets move with their hosts (three schedule deviations); secondary
+  roads only, about nine stacks a world.
+- SPAWN: Rock Salt and Stormkelp stay under the plan's counts, for the playtest; the
+  Stormkelp hosts stay sand, gravel and stone.
+- Capitals: court sockets stay off their rows with their furniture (Dur Brannoc 3,
+  Nhal Veyr 5, Gor Drazhak `court_work_rack`, Highcourt `court_idle_well`); Lethariel's
+  patrol order and quay head stay; Nhal Veyr's 529 graves stay until the GUI test;
+  `r51_ft`'s lily check is `>= 5`; no pin tuning for `mere_mourning`, an old outlier
+  (the review); `is_seat` tightened instead of changing Kezamba's roof.
+
+### Deviations from the plan
+
+- **CAPITALS split** into CAP0 (shared values, Dur Brannoc, guide, shared test) and
+  five lanes, one per capital: six capitals were too big for one context.
+- **TOWNS started ahead of its wave,** with GUILD from `2b67b428`: it needed only the
+  DESIGN review.
+- **The CPU rule** ended the capital lanes' full runs and fleets; each lane ran its
+  selection, main ran one full run and one full fleet after the batch.
+- **ENDFIX is a new lane:** the round-end gates found what the capital lanes'
+  selections did not (`r47_nz`, `r36_w2`, two fleet seeds).
+- **Thread icon** was installed by GUILD; the plan named no lane.
+- **SPAWN follow-up (SPAWN2):** the user's ruling on Stormkelp reopened a merged lane.
+  Density stayed 1/256, against the brief's expectation: the height limit removes the
+  cliff columns, so the eligible count hardly grew.
+- **Wayposts' text:** the emerge environment has no `get_meta`; an LBM missed blocks
+  that went active as empty shells (found by a capture), so main's `on_generated`
+  writes the text.
+- **Plan's and briefs' code facts:** no capital guild house has a lift; the planner
+  turns plots; no Lethariel crossing exists today (`settlements.md` was stale); the
+  study's castle rows are older than the picked form, so the built king is at
+  (0,5,37), not (0,6,38), and eight castle rows are in `MOVED`; `BREASTWORKS` is a
+  start town's.
+- **Engine captures:** Highcourt, Gor Drazhak, Nhal Veyr and Kezamba ran two, one over
+  budget: the shared probe joined as Accord and guards killed it in Throng capitals,
+  and Highcourt's far legs stayed pending from the anchor. Each second run was also
+  the lane's smoke boot.
+- **The study's drawings,** changed by the lanes (each in its report): Silverleaf's
+  lanes, Dawnmere's lanes and hedges, Hearthpine's cross street, Kapok's terrace,
+  Highcourt's plaza, forecourt and chapel `inside`, plazas narrowed to 13 wide,
+  Kezamba's wider forecourt.
+
+### Numbers worth keeping
+
+From the lanes' reports; measured unless marked.
+
+**Sources, nodes written per world** (seeds 12345 / 3684797457838814663;
+`tools/r70_spawn/census.lua`):
+
+| Source | Before | After | Plan |
+|---|---:|---:|---:|
+| Rock Salt | 1 / 0 | **93 / 156** | 170–240 |
+| Stormkelp, reach 10 | 1 / 0 | **176 / 163** | 170–205 |
+| Frost Melon | 13 / 7 | **89 / 49** | 53–56 |
+| Wild Cocoa | 143 / 97 | **257 / 195** | ~230 |
+| Bamboo Shoot | 22 / 29 | **257 / 235** | 200–260 |
+| Sugar Cane | 79 / 84 | **393 / 398** | 370–445 |
+
+Rock Salt's miss is the world: seed 12345 has only 113,967 beach land columns.
+Frost Melon in Frostbarrow 4 / 10, close to the quest's 5. The plan's "expected
+after" counted all matching columns; claims and bare ground remove some. Writer in
+the five zones about +12% (2.67–2.76 s → 3.01–3.09 s on 20 chunks), unchanged by
+SPAWN2. Renewal: first test 6.5 ms median, 14 ms max; a walking player's worst case
+18 ms median, 69 ms max per 5 s service (review). Stormkelp: 26–35% at the first
+node, 28–39% at four or more, 90–91% at most 2 above water. Cave Cap and Ember Moss
+match their densities (one engine run).
+
+**Growth:** 270,000 stages in each of four regions, 160–240, mean 199.93–200.06
+(review, five regions: 199.97–200.04); a row of nine carrots ripens over 545–688 s.
+
+**Bosses (modelled, `tools/r70_levels/numbers.py`; level-60 players, three players,
+time / tank damage in pools):** King 65 before 12 s / 1.2, King 70 **27 s / 3.2**;
+General before 12 s / 1.2, now **16 s / 1.7**; dragon 18,000 HP 36 s / 2.2, 30,000 HP
+**59 s / 3.7**, ground fight only. A normal mob at +3: about 18% longer and 18% more
+HP lost at every level; a level 10 player 1.10 pools raw per kill.
+
+**Death (calculated):** one death's repair, six-piece set: Common 13c at 1–10 to 950c
+at 51–60, Uncommon 34c to 2850c, Rare 63c to 5700c; Uncommon about 10–11 minutes of
+band income, Rare 19–23. A real death in the engine: chest 2000 → 1800.
+
+**Capitals:** core cells and non-air (Dur Brannoc 99,649 → 129,674, non-air +35%;
+Highcourt non-air +17%; Nhal Veyr +14%). King's seat to door 27.3 against leash 30 on
+all six; Dur Brannoc's peak 33 ≤ 40. Plots against the study's today, 40 seeds on old cores
+(CAP0): mean −0.17 to −2.10, worst −9, required missing 0; on the finished cores,
+6 seeds: Highcourt −3.00, Gor Drazhak −1.67, Nhal Veyr −0.83, Lethariel −1.00,
+Kezamba +1.17; every required plot reached. Core patrol legs ok: Dur Brannoc, Gor
+Drazhak and Nhal Veyr 38 of 38, Highcourt 42, Lethariel 30, Kezamba 9 (seed 12345).
+Cache `none` legs (1–2 per capital) are no core patrol, not traced. Dur Brannoc
+`core()` 0.12 → 0.17 s, heap 25.1 → 32.6 MB (review). Highcourt leaves 4,840 → 7,121;
+Nhal Veyr graves 114 → 529; Kezamba lilies 31 → 9 on one seed.
+
+**Towns:** 132 schedule rows, three named deviations; 6–13 waypost stacks a world
+over 98 seeds, typically 9; working them out 0.02 s per environment.
+
+**Stonewright:** fees in §2.6; a stack costs about 10–20c, small against T1's 1s 72c
+per hour (model); selling never recovers the cost (fixture).
+
+### Checks
+
+- SPAWN: `check_lua`, `check_fresh_server`, `check_upgrade`, `validate.py --game`,
+  `income.py --check`; `r70_spawn`, `r48_farm`, `r51_terrain`, `r49_ore`, `r60_herbs`;
+  full 305/2 (fixed; `r37_dc` waited for the CHANGELOG stub); fleet `quick` 100/100;
+  boot. SPAWN2: full 310/0, fleet `quick` 100/100, boot.
+- PLANTS: `r70_plants`, `r47_sw`, `r51_lg`, `r51_lp`, `r51_fw`, `r29_e1`, `r48_world`;
+  full 305/2 fixed inside the selection; boot with 38 engine checks.
+- FARMFIX: `r48_farm`, `r44_ih`, `r35_f`, `r50_hotbar`, `r56_small`, `r37_ix`,
+  `r48_sell`; full 306/0; engine capture on real objects; boot.
+- DEATH: `r70_death` (173), `r31_pvp`, `r37_cb`, `r35_f`; full 307/0;
+  `income.py --check`; two capture boots; boot.
+- LEVELS: `r70_levels`, `r36_k`, `r36_r`, `r33_c1`, `r33_c4`, `r33_c5`, `r45_eu`,
+  `r31_g`; full 307/0; `income.py --check`; boot with a probe.
+- GUILD: `r70_guild` (3,981), `r58_guildspec`, `r58_rep`, `r58_campnpc`, `r58_halls`,
+  `r36_w`, `r34_s2`, `r45_pt8`, `r58_lift`; `check.py`, art `--check`, `write_doc
+  --check`, `income.py --check`; full 310/1 (digest, fixed); boot; shots.
+- TOWNS: `r70_towns` and 14 fixtures pinning layout, waystones or mail; `check.py`;
+  full 309/2 fixed, then full 311/0 on `ab3ce2d8`; fleet `quick` 98/100, the bug
+  fixed and both seeds rerun; capture with shots, refreshed; boot.
+- CAP0: `check.py`, viewer 56, editor 656; `r70_cap` and the 29 fixtures that build
+  the cores; full 311/1 (a river pin, fixed); fleet `quick` 100/100; four boots.
+- Capital lanes: `r70_cap <capital>`, the pins `r36_w`, `r51_ft`,
+  `r56_freeze_capitals`, `r58_townfix`, `check.py`, plus their own selections (each
+  report names them); `plan_seeds` 6 seeds; capture, also the boot.
+- ENDFIX: `r47_nz`, `r36_w2`, `r70_towns`, `r70_cap`, `r36_w`, `r56_freeze_capitals`,
+  `check.py`, the two failed seeds through `tools/seed_fleet/seed.lua`, both OK. Review:
+  rows, reservations and road text identical in main and emerge on one seed.
+- **Round-end gates:** on `ed771e28` boot, `check.py`, fresh server, upgrade,
+  validate and income green, full 311/2 (`r47_nz`, `r36_w2`), fleet `full` 302 of 304
+  (a waypost in a mining camp's box, two seeds); both caught by ENDFIX, the two seeds
+  rerun OK. On `c998ea93`: **full 313 of 313**, boot PASS, sync done. The fleet was not
+  repeated (the CPU rule; ENDFIX's skip cannot put a stack inside a box).
+- **This lane:** `check_upgrade.py`, `check_fresh_server`, `check_lua` on the six
+  changed Lua files, `write_doc --check` PASS; `r37_dc` (CHANGELOG, README, version),
+  `r70_guild` (reads AGENTS and the guild spec), `r58_guildspec` (the spec), `r41_up`
+  (the upgrade contract's rules); the link and anchor check of the touched documents
+  (1281 links, 0 bad). No fixture pins the two Help lines. No full run: the
+  coordinator's.
+- **Not run by anyone:** a real king fight, the web client, the map reset on a real
+  world, audio.

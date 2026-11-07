@@ -235,7 +235,7 @@ same rule are:
 | Gor Drazhak | Three-course earth bank (two of dug earth, a beaten crest) with an acacia stake and point every other column; closed timber corner towers replace its corner columns. |
 | Nhal Veyr | Two-course dungeon-stone parapet with a capped merlon every fourth column and flat iron bars filling the three columns between two merlons; the four closed corner drums replace its corner columns. |
 | Lethariel | Light wall on every dry edge: two courses of silver sandstone brick, a marble coping at the height of the pale gatehouses' marble band, and a low merlon (one brick under a marble slab) on every other column; the authored mere is the boundary where it reaches the north edge. |
-| Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north-east edge. |
+| Kezamba | Three-course junglewood palisade on every dry edge; the authored cenote is the boundary where it reaches the north and north-east edges. |
 
 **Streets are roads.** Since Round 22 every capital street, lane and connector
 follows the road rule of `world_zones.md` §9: at most half a node between
@@ -376,6 +376,15 @@ the palette now carries a tilled crop and a planted bed, and a planter is cut
 deep enough to have soil between its two kerbs rather than being all kerb
 ([wp13-kezamba.md](../research/wp13-kezamba.md)).
 
+**The human capital.** Since Round 70 Highcourt's king sits in the castle at
+the head of the throne approach, a nine-wide avenue from the south gate between
+the two colonnades, with the market west of it and the travel plaza east. A
+five-wide bypass runs up both flanks and behind the castle to the north gate;
+on the west it passes between the castle and the chapel, whose doors open onto
+it. The chapel and its two houses stand west of the bypass, the service court
+with the two royal booths east of it, and the orchard belt fills the open
+ground inside the precinct wall.
+
 **The dwarf capital.** Decided 2026-09-15 with Dur Brannoc's four quarters. Its
 citadel is stone block, its halls are pine under slate, and its city stands
 on the granite ground round the flat civic core. Since Round 70 the king sits
@@ -406,9 +415,14 @@ Lethariel also shows what happens when the map does not give a capital four
 usable quarters. Its crown lake reaches into the civic core itself, so the
 **lore and spiritual district is the mere precinct** and the planner keeps it
 beside the lake, where it has room for three plots and two dressings; the
-other three districts take the quarters with room. The civic core stops at the
-water's edge and meets it with a marble quay, and an avenue that crosses the
-lake does so as a bridge.
+other three districts take the quarters with room. Since Round 70 the lake lies
+14 nodes farther north, so its tip stands at z 36 of the core and the precinct
+sits farther inland than before. The civic core stops at the water's edge and
+meets it with a three-wide marble quay, one node of natural shore outside the
+water. Nothing crosses the lake: the north avenue begins on the far shore, and
+inside the core a promenade between the two colonnades ends at the quay's head.
+The king's castle stands on the dry western shoulder, turned once so that its
+great door looks east across a paved court to the south avenue.
 
 **Not every wall is masonry.** Added 2026-09-15 with the third capital, Gor
 Drazhak. What a walled capital has on its envelope edge is decided by the race
@@ -433,9 +447,12 @@ dwellings are adobe; and its four quarters are a bazaar of five trades (a
 butcher, a tanner, a brewer, an armourer and a smith, each standing at the work
 he sells), a war yard round a sunken fighting arena, a quarter of bone halls
 with a totem court, a burial barrow and a quarry face cut into the mesa, and a
-warren of clan lodges round a cook court and a story fire. In front of the
-warlord's hall stands a raised **fighting platform** with its own breastwork,
-its own stair and two guard posts on it.
+warren of clan lodges round a cook court and a story fire. Since Round 70 the
+warlord sits in a castle of adobe and desert stone block inside the earth bank, at
+the head of the throne approach, a nine-wide avenue from the south gate; a five-wide
+bypass runs up both flanks and behind the castle to the north gate, and the muster court
+lies east of it. Beside the castle's great door stands a raised **fighting
+platform** with its own breastwork, its own stair and two guard posts on it.
 
 **The capital with a lake in it.** How a capital with a lake in its core is
 laid out is the third capital's own lane, 2026-09-15/16, and is open to the
@@ -443,22 +460,28 @@ user's correction like any other design. (Kezamba was open until Round 23;
 its city edge is now the troll palisade described above.)
 
 Kezamba is also the one capital whose **civic core is not flat**, and that is
-the map's doing rather than the city's: a deep cenote fills its north-eastern
-quarter and reaches into the core itself. The city is built round it. Its two
-great avenues leave the crossing and become **timber boardwalks on basalt piers**
-the moment they reach the water; its moot house stands on stilts half on the bank
-and half over the lake, with a flight up to it from the shore; a quay follows the
-waterline, its anglers fish the cenote itself and the fishmonger keeps a counter
-behind them. The lake is never filled in and never floored over: the ground the
-city lays stops at the waterline.
+the map's doing rather than the city's: a deep cenote fills the land north and
+north-east of the crossing and reaches into the core itself. The city is built
+round it. Round 70 moved the lake 18 nodes north of the anchor, which gave the
+castle's neighbours their land and took the water away from the east avenue, so
+**one great avenue crosses water**, not two: the north avenue leaves the crossing
+and becomes a **timber boardwalk on basalt piers** the moment it reaches the water,
+and the east avenue runs on land to its gate. The castle stands on the dry southern
+terrace at (5, −52)–(49, −18), its great door looking north onto a paved forecourt
+that opens on the east avenue; the south avenue passes beside it. The stable took
+the newly dry ground north of the crossing, the granary the western clearing. The
+moot house stands on stilts half on the bank and half over the lake, with a flight
+up to it from the shore; a quay follows the waterline, its anglers fish the cenote
+itself and the fishmonger keeps a counter behind them. The lake is never filled in
+and never floored over: the ground the city lays stops at the waterline.
 
 For a while there was a second hole in that pad — a narrow gorge cutting in from
 the south-west, which the city railed along the rim and crossed with one plank
 bridge. It was a ROAD: a long-distance route grading its way across the civic
 pad. Now that routes stop at a capital's gate points, the pad is whole, and the
 bridge and the rail are gone with the gorge. The measurement that found it is
-kept as a gate, because the next terrain change that cuts a capital's pad should
-turn a light red rather than become part of the architecture.
+kept as a guard, because the next terrain change that cuts a capital's pad should
+be refused rather than become part of the architecture.
 
 Where the water takes most of a quarter — Kezamba's cenote in every world —
 the district that belongs by the water keeps its place there: the **shore
@@ -478,7 +501,13 @@ Its civic buildings are dungeon stone under a pale stone roof and everything a
 citizen built is gravewood board; its own two parts, which no other capital has,
 are a walk-in mausoleum on a stepped plinth and a candle court with an altar at
 its centre. Its curtain wall and its four districts are laid out by the capital
-planner like every capital's.
+planner like every capital's. Since Round 70 the king sits in the castle at the
+head of the throne approach, a nine-wide avenue from the south gate; a five-wide
+processional walk runs up both flanks and behind the castle to the north gate,
+and the city watch walks a loop round the whole precinct. The vigil hall stands
+apart across the walk in the west quarter, a public quest place; the ossuary
+court with the Bone Works and the Charnel Yard lies east of the walk, and the
+burial ground takes the open ground round the quarters.
 
 It is also the first capital to place the WAVE-2 activities of the NPC socket
 contract: its residents mourn at grave markers, pray at candles, tend the

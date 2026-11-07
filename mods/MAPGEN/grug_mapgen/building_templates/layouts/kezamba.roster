@@ -11,7 +11,7 @@ palette basalt_water race=troll castle_paving=grug_decor:darkage_basalt_brick ca
 palette vine race=troll fern=default:junglegrass grass_tuft=default:junglegrass
 palette crop race=troll crop=default:papyrus crop_soil=grug_farming:soil
 
-use kezamba_kings_hall count=1 main=basalt
+use kezamba_kings_hall count=1 main=basalt roof=basalt
 use kezamba_moot_house count=1 main=basalt
 use kezamba_cauldron_court count=1
 use kezamba_shrine count=1

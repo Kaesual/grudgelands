@@ -1,1060 +1,1284 @@
 grudgelands-building-template 1
-# Frozen from the building generators (Round 56): kezamba:kings_hall
+# Round 70 CASTLE form A (tools/r70_castle, troll palette), placed by Round 70 lane Kezamba.
 name kezamba_kings_hall
-pivot 23 23
-origin -3 -2 -3
-size 28 33 28
+pivot 45 35
+origin 0 0 0
+size 45 34 35
 cell 1
-meta arcade_bays=10 arrowslits=32 benches=2 buttresses=6 corbels=28 dormers=2 extent=[-3,-3,24,24] merlons=20 peak=30 top=30
+meta extent=[0,0,44,34] peak=33 top=33
 races troll
 
 legend
-A role beam
-B role castle_paving
-C role castle_paving else=4
-D role castle_paving else=air
-E role castle_slit else=I
-F role castle_slit o=facedir:1 else=I
-G role castle_slit o=facedir:2 else=I
-H role castle_slit o=facedir:3 else=I
-I role castle_wall
-J role castle_wall else=B
-K role castle_wall else=I
-L role castle_wall else=l
-M role castle_wall else=n
-N role castle_wall else=w
-O role castle_wall else=4
-P role castle_wall else=9
-Q role castle_wall else=air
-R role chimney_cap o=facedir:20
-S role door variant=_a
-T role door variant=_a o=facedir:1
-U role door variant=_b
-V role door_hidden
-W role door_hidden o=facedir:1
-X role door_hidden o=facedir:3
-Y role floor
-Z role light_post o=wallmounted:1
-a role light_wall o=wallmounted:2
-b role light_wall o=wallmounted:3
-c role light_wall o=wallmounted:4
-d role pillar variant=_bottom
-e role pillar variant=_bottom else=air
-f role pillar variant=_middle else=air
-g role pillar variant=_top else=air
-h role post
-i role railing
-j role roof_slab
-k role roof_stair
-l role roof_stair o=facedir:1
-m role roof_stair o=facedir:2
-n role roof_stair o=facedir:3
-o role roof_stair_outer
-p role roof_stair_outer o=facedir:1
-q role roof_stair_outer o=facedir:2
-r role roof_stair_outer o=facedir:3
-s role rug
-t role rug_accent
-u role seat o=facedir:1
-v role seat o=facedir:3
-w role signature
-x role signature else=I
-y role signature else=d
-z role signature else=l
-0 role signature else=n
-1 role signature else=w
-2 role signature else=4
-3 role signature else=air
-4 role signature_slab
-5 role signature_slab else=air
-6 role signature_stair else=air
-7 role signature_stair o=facedir:1 else=air
-8 role throne else=air
-9 role window
+A node default:glass
+B node grug_guild:ornamented_abyssal_steel
+C node grug_guild:ornamented_embersteel
+D node grug_guild:ornamented_iron
+E node grug_guild:ornamented_silversteel
+F node grug_guild:ornamented_steel
+G node grug_materials:bronze_block
+H node grug_materials:emberglass_lamp
+I node grug_materials:slab_bronze_block
+J role beam
+K role castle_paving
+L role castle_slit o=facedir:0
+M role castle_wall
+N role ceiling
+O role foundation
+P role light_beacon else=H
+Q role roof_ridge channel=roof
+R role roof_slab channel=roof o=facedir:20
+S role roof_stair channel=roof o=facedir:1
+T role roof_stair channel=roof o=facedir:3
+U role rug
+V role rug_accent
+W role seat o=facedir:1
+X role seat o=facedir:3
+Y role signature
+Z role signature_slab o=facedir:20
+a role signature_stair o=facedir:0
+b role window_frame
 end
 
-layer -2
-|                            |
-|                            |
-|  IIIIIIIIIIIIIIIIIIIIIIIII |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  IIIIIIIIIIIIIIIIIIIIIIIII |
-|                            |
-layer -1
-|                            |
-|                            |
-|  IIIIIIIIIIIIIIIIIIIIIIIII |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  I                       I |
-|  IIIIIIIIIIIIIIIIIIIIIIIII |
-|                            |
 layer 0
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
-|BBBBBBBBBBBBBBBBBBBBBBBBBBBB|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
 layer 1
-|............................|
-|............666666..........|
-|..5555555555222222555555555.|
-|..5NNN33333333333333333NNN5.|
-|..5NNN33333333333333333NNN5.|
-|..5NNN33333333333333333NNN5.|
-|..5333333333333333333333335.|
-|..O33333333333333333333333O.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..O33333333333333333333333O.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|.7C333333333333333333333335.|
-|..O33333333333333333333333O.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..5333333333333333333333335.|
-|..5NNN33333333333333333NNN5.|
-|..5NNN33333333333333333NNN5.|
-|..5NNN33333333333333333NNN5.|
-|..5555555555555555555555555.|
-|............................|
+|OOOOOOOOOOOOOOOOOOO.......OOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOaaaaaaaOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
 layer 2
-|............................|
-|............................|
-|............666666..........|
-|...JJJDDDDDDDDDDDDDDDDDJJJ..|
-|...JJJDDDDDDDtttDDDDDDDJJJ..|
-|...JJJDDDDDDDtttDDDDDDDJJJ..|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|..QDDDDDDDDDDtttDDDDDDDDDDQ.|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|..QDDDDDDDDDDtttDDDDDDDDDDQ.|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|...DDDDDDDDDDtttDDDDDDDDDD..|
-|...DDDDDDDDDDDDDDDDDDDDDDD..|
-|..7DDDDDDDDDDDDDDDDDDDDDDD..|
-|..QDDDDDDDDDDDDDDDDDDDDDDDQ.|
-|...DDDDDDDDDDDDDDDDDDDDDDD..|
-|...DDDDDDDDDDDDDDDDDDDDDDD..|
-|...DDDDDDDDDDDDDDDDDDDDDDD..|
-|...JJJDDDDDDDDDDDDDDDDDJJJ..|
-|...JJJDDDDDDDDDDDDDDDDDJJJ..|
-|...JJJDDDDDDDDDDDDDDDDDJJJ..|
-|............................|
-|............................|
+|OOOOOOOOOOOOOOOOOOO.......OOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOO.......OOOOOOOOOOOOOOOOOOO|
+|OOKKKKKKKKKKKKKKKKKaaaaaaaKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKYYYYYYYKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKYYYYYYYKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKUVVVVVUKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
+|OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO|
 layer 3
-|............................|
-|............................|
-|............................|
-|...11133333333SU3333333111..|
-|...1.3.................3.1..|
-|...133.................331..|
-|...1.....................1..|
-|..Q3....e...........e....3Q.|
-|...1.....................1..|
-|...3.....................3..|
-|...1.....................1..|
-|...3v..Ze...........eZ..u3..|
-|...1v...................u1..|
-|..Q3v...................u3Q.|
-|...1.....................1..|
-|...3....e...........e....3..|
-|...1...666666666666666...1..|
-|...3...333333333333333...3..|
-|...T...333333333333333...1..|
-|..Q3...3y33333333333y3...3Q.|
-|...1...333333333333333...1..|
-|...3...333333333333333...3..|
-|...1...333333333333333...1..|
-|...133.3y33333333333y3.331..|
-|...1.3.333333333333333.3.1..|
-|...11133333333333333333111..|
-|............................|
-|............................|
+|YYYYYYYYYMMMMMMMYYY.......YYYMMMMMMMYYYYYYYYY|
+|YMMMMMMMYMMMMMMMY.Y.......Y.YMMMMMMMYMMMMMMMY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......YY.........YY.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YYYYYYYYY...........................YYYYYYYYY|
+|MM..MMMMMMMMMMMMMMY.......YMMMMMMMMMMMMMM..MM|
+|MM..M...................................M..MM|
+|MMY.M...................................M.YMM|
+|MM..M...................................M..MM|
+|MM..M...................................M..MM|
+|MM..M...................................M..MM|
+|MM..M.X...............................W.M..MM|
+|MM..M...................................M..MM|
+|MMY.M...................................M.YMM|
+|MM..M...................................M..MM|
+|MM..M...................................M..MM|
+|MM.........................................MM|
+|MM....X...............................W....MM|
+|MM.........................................MM|
+|MMY.M...................................M.YMM|
+|MM..M...................................M..MM|
+|MM..M...................................M..MM|
+|MM..M..........aaaaaaaaaaaaaaa..........M..MM|
+|MM..M..........KKKKKKKKKKKKKKK..........M..MM|
+|MMY.M..........KKKKKKKKKKKKKKK..........M.YMM|
+|MM..M..........KKKKKKKKKKKKKKK..........M..MM|
+|MM..M..........KKKKKKKKKKKKKKK..........M..MM|
+|YYYYY..........KKKKKKKKKKKKKKK..........YYYYY|
+|YM..Y..........KKKKKKKKKKKKKKK..........Y..MY|
+|YM..YMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMY..MY|
+|YMMMYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYMMMY|
+|YYYYYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYYYYY|
 layer 4
-|............................|
-|............................|
-|............................|
-|...KKKQQQQQQQQVXQQQQQQQKKK..|
-|...N.Q.................Q.N..|
-|...PQQ.................QQP..|
-|...x.....................x..|
-|..QQ....f...........f....QQ.|
-|...x.....................x..|
-|...9.....................9..|
-|...x.....................x..|
-|...Q....f...........f....Q..|
-|...x.....................x..|
-|..Q9.....................9Q.|
-|...x.....................x..|
-|...Q....f...........f....Q..|
-|...x.....................x..|
-|...9.....66666666666.....9..|
-|...W.....33333333333.....x..|
-|..QQ....f33333333333f....QQ.|
-|...x.....33333333333.....x..|
-|...9.....33333333333.....9..|
-|...x.....33333333333.....x..|
-|...KQQ..f33333333333f..QQK..|
-|...K.Q...33333333333...Q.K..|
-|...KKKQQQQQQQQQQQQQQQQQKKK..|
-|............................|
-|............................|
+|YYYYYYYYYMMMMMMMYYY.......YYYMMMMMMMYYYYYYYYY|
+|YMMMMMMMYMMMMMMMY.Y.......Y.YMMMMMMMYMMMMMMMY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......YY.........YY.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YYYYYYYYY...........................YYYYYYYYY|
+|MM..YYYYYYYYYYYYYYY.......YYYYYYYYYYYYYYY..MM|
+|MM..Y...................................Y..MM|
+|MMY.Y...................................Y.YMM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MMY.Y...................................Y.YMM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM.........................................MM|
+|MM.........................................MM|
+|MM.........................................MM|
+|MMY.Y...................................Y.YMM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y..........aaaaaaaaaaaaaaa..........Y..MM|
+|MMY.Y..........KKKKKKKPKKKKKKK..........Y.YMM|
+|MM..Y..........KKKKKKKKKKKKKKK..........Y..MM|
+|MM..Y..........KKKKKKKKKKKKKKK..........Y..MM|
+|YYYYY..........KKKKKKKKKKKKKKK..........YYYYY|
+|YM..Y..........KKKKKKKKKKKKKKK..........Y..MY|
+|YM..YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY..MY|
+|YMMMYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYMMMY|
+|YYYYYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYYYYY|
 layer 5
-|............................|
-|............................|
-|............c....c..........|
-|...KKKQQQQQQQQQQQQQQQQQKKK..|
-|...N.Q.................Q.N..|
-|...PQQ.................QQP..|
-|...x.....................x..|
-|..QQ....f...........f....QQ.|
-|...x.....................x..|
-|...9.....................9..|
-|...xb...................ax..|
-|...Q....f...........f....Q..|
-|...x.....................x..|
-|..Q9.....................9Q.|
-|...x.....................x..|
-|...Q....f...........f....Q..|
-|...x.....................x..|
-|...9.....................9..|
-|...xb......6666666......ax..|
-|..QQ....f..3333333..f....QQ.|
-|...x.......3333333.......x..|
-|...9.......3333333.......9..|
-|...x.......3333333.......x..|
-|...KQQ..f..3333333..f..QQK..|
-|...K.Q.....3333333.....Q.K..|
-|...KKKQQQQQQQQQQQQQQQQQKKK..|
-|............................|
-|............................|
+|YYYYYYYYYMMMMMMMYYY.......YYYMMMMMMMYYYYYYYYY|
+|YMMMMMMMYMMMMMMMY.Y.......Y.YMMMMMMMYMMMMMMMY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......YY.........YY.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YM......Y.......Y...........Y.......Y......MY|
+|YYYYYYYYY...........................YYYYYYYYY|
+|MM..YYYYYYYYYYYYYYY.......YYYYYYYYYYYYYYY..MM|
+|MM..Y...................................Y..MM|
+|MMY.Y...................................Y.YMM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MMY.Y...................................Y.YMM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM.........................................MM|
+|MM.........................................MM|
+|MM.........................................MM|
+|MMY.Y...................................Y.YMM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MM..Y...................................Y..MM|
+|MMY.Y...................................Y.YMM|
+|MM..Y...............GGGGG...............Y..MM|
+|MM..Y...............GGGGG...............Y..MM|
+|YYYYY.............M.GGGGG.M.............YYYYY|
+|YM..Y...................................Y..MY|
+|YM..YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY..MY|
+|YMMMYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYMMMY|
+|YYYYYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYYYYY|
 layer 6
-|............................|
-|............................|
-|..l.......................n.|
-|..lKGKQQQQQQxxxxxxQQQQQKGKn.|
-|..lH.Q.................Q.Fn.|
-|..lKQQ.................QQKn.|
-|..lx.....................xn.|
-|..lQ....f...........f....Qn.|
-|..lx.....................xn.|
-|..lQ.....................Qn.|
-|..lx.....................xn.|
-|..lQ....f...........f....Qn.|
-|..lx.....................xn.|
-|..lQ.....................Qn.|
-|..lx.....................xn.|
-|..lQ....f...........f....Qn.|
-|..lx.....................xn.|
-|..lQ.....................Qn.|
-|..lx.....................xn.|
-|..lQ....f...........f....Qn.|
-|..lx.....................xn.|
-|..lQ.....................Qn.|
-|..lx.......Z.....Z.......xn.|
-|..lKQQ..f...e.8.e...f..QQKn.|
-|..lH.Q.......333.......Q.Fn.|
-|..lKEKQQQQQxxxxxxxQQQQQKEKn.|
-|..l.......................n.|
-|............................|
+|YYYYYYYYYMMMMMMMYYY.......YYYMMMMMMMYYYYYYYYY|
+|Y.......Y.......Y.Y.......Y.Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......YP.........PY.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|M...YYYYYYYYYYYYYYY.......YYYYYYYYYYYYYYY...M|
+|M...Y...................................Y...M|
+|M.Y.Y...................................Y.Y.M|
+|M...YZ.................................ZY...M|
+|M...Y...................................Y...M|
+|M...Y...................................Y...M|
+|M...Y...................................Y...M|
+|M...Y...................................Y...M|
+|M.Y.Y...................................Y.Y.M|
+|M...YZ.................................ZY...M|
+|M...Y...................................Y...M|
+|M...........................................M|
+|M...........................................M|
+|M...........................................M|
+|M.Y.Y...................................Y.Y.M|
+|M...YZ.................................ZY...M|
+|M...Y...................................Y...M|
+|M...Y...................................Y...M|
+|M...Y...................................Y...M|
+|M.Y.Y...................................Y.Y.M|
+|M...Y...............GVVVG...............Y...M|
+|M...YZ...............VVV...............ZY...M|
+|YYYYY.............M.GGGGG.M.............YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYYYYY|
 layer 7
-|............................|
-|............................|
-|...l.....................n..|
-|...LKKQQQQQQx9999xQQQQQKKM..|
-|...L.Q.................Q.M..|
-|...LQQ.................QQM..|
-|...l.....................n..|
-|...l....f...........f....n..|
-|...l.....................n..|
-|...l.....................n..|
-|...l.....................n..|
-|...l....f...........f....n..|
-|...l.....................n..|
-|...l.....................n..|
-|...l.....................n..|
-|...l....f...........f....n..|
-|...l.....................n..|
-|...l.....................n..|
-|...l.....................n..|
-|...l....f...........f....n..|
-|...l.....................n..|
-|...l.....................n..|
-|...l.....................n..|
-|...LQQ..f...f...f...f..QQM..|
-|...L.Q.....t.333.t.....Q.M..|
-|...LKKQQQQQx9x9x9xQQQQQKKM..|
-|...l.....................n..|
-|............................|
+|YYYYYYYYYMMMMMMMYYY.......YYYMMMMMMMYYYYYYYYY|
+|Y.......Y.......Y.Y.......Y.Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|M...YYYYYYYYYYYYYYY.......YYYYYYYYYYYYYYY...M|
+|M...Y...................................Y...M|
+|M.Y.Y...................................Y.Y.M|
+|M...AP.................................PA...M|
+|M...A...................................A...M|
+|M...A...................................A...M|
+|M...Y...................................Y...M|
+|M...Y...................................Y...M|
+|M.Y.Y...................................Y.Y.M|
+|M...AP.................................PA...M|
+|M...A...................................A...M|
+|M...A...................................A...M|
+|M...Y...................................Y...M|
+|M...Y...................................Y...M|
+|M.Y.Y...................................Y.Y.M|
+|M...AP.................................PA...M|
+|M...A...................................A...M|
+|M...A...................................A...M|
+|M...Y...................................Y...M|
+|M.Y.Y...................................Y.Y.M|
+|M...A...............G...G...............A...M|
+|M...AP..............G...G..............PA...M|
+|YYYYY.............M.GVVVG.M.............YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYYYYYYYYAbAAAbAAAbAYYYYYYYYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYYMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMYYYYY|
 layer 8
-|............................|
-|............................|
-|....l...................n...|
-|...QLKQQQQQQx9999xQQQQQKMQ..|
-|...Q.Q.................Q.Q..|
-|...QLQ.................QMQ..|
-|....l...................n...|
-|....l...g...........g...n...|
-|....l...................n...|
-|....l...................n...|
-|....l...................n...|
-|....l...g...........g...n...|
-|....l...................n...|
-|....l...................n...|
-|....l...................n...|
-|....l...g...........g...n...|
-|....l...................n...|
-|....l...................n...|
-|....l...................n...|
-|....l...g...........g...n...|
-|....l...................n...|
-|....l...................n...|
-|....l...................n...|
-|...QLQ..g...f...f...g..QMQ..|
-|...Q.Q.....t.333.t.....Q.Q..|
-|...QLKQQQQQx9x9x9xQQQQQKMQ..|
-|....l...................n...|
-|............................|
+|YYYYYYYYYY.YY.YYYYY.......YYYYY.YY.YYYYYYYYYY|
+|Y.......Y.......Y.Y.......Y.Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|Y...YYYYYYYYYYYYYYY.......YYYYYYYYYYYYYYY....|
+|Y...Y...................................Y...Y|
+|..Y.Y...................................Y.Y.Y|
+|Y...A...................................A....|
+|Y...A...................................A...Y|
+|....A...................................A...Y|
+|Y...Y...................................Y....|
+|Y...Y...................................Y...Y|
+|..Y.Y...................................Y.Y.Y|
+|Y...A..P....P....P....P....P....P....P..A....|
+|Y...A...................................A...Y|
+|....A...................................A...Y|
+|Y...Y...................................Y....|
+|Y...Y...................................Y...Y|
+|..Y.Y...................................Y.Y.Y|
+|Y...A...................................A....|
+|Y...A...................................A...Y|
+|....A...................................A...Y|
+|Y...Y..P....P....P.........P....P....P..Y....|
+|Y.Y.Y...................................Y.Y.Y|
+|....A...............I...I...............A...Y|
+|Y...A...............I...I...............A....|
+|YYYYY.............M.GVVVG.M.............YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYAYYYYYAAbAAAbAAAbAAYYYYYAYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYYY.YY.YY.YY.YY.YY.YY.YY.YY.YY.YY.YY.YYYYY|
 layer 9
-|............................|
-|............................|
-|.....l.................n....|
-|...33z33333319999133333033..|
-|...3.z..3...........3..0.3..|
-|...33z..3...........3..033..|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|.....l..3...........3..n....|
-|...33z..3...g...g...3..033..|
-|...3.z..3..t..5..t..3..0.3..|
-|...33z33333191919133333033..|
-|.....l.................n....|
-|............................|
+|MMMMMMMMM.......MMMYYYYYYYMMM.......MMMMMMMMM|
+|M.......M.......M..YYYYYYY..M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......MMMMMMMMMMMMM.......M.......M|
+|MMMMMMMMM...........................MMMMMMMMM|
+|....YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....JJJJJJJJJJJJJJ.........JJJJJJJJJJJJJJ....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|MMMMM.............M.GVVVG.M.............MMMMM|
+|M...M...................................M...M|
+|M...MYYYYYAYYYYYAAbAAAbAAAbAAYYYYYAYYYYYM...M|
+|M...M...................................M...M|
+|MMMMM...................................MMMMM|
 layer 10
-|............................|
-|............................|
-|......l...............n.....|
-|...QGQlQQQQQxxxxxxQQQQnQGQ..|
-|...H.Ql.Q...........Q.nQ.F..|
-|...QQQl.Q...........Q.nQQQ..|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|......l.Q...........Q.n.....|
-|...QQQl.Q...33333...Q.nQQQ..|
-|...H.Ql.Q..t.....t..Q.nQ.F..|
-|...QEQlQQQQx9x9x9xQQQQnQEQ..|
-|......l...............n.....|
-|............................|
+|YYYYYYYYY.......YYYYMMMMMYYYY.......YYYYYYYYY|
+|Y.......Y.......Y...MMMMM...Y.......Y.......Y|
+|Y.NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.Y|
+|Y.NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.Y|
+|Y.NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.Y|
+|Y.NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.Y|
+|Y.NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.Y|
+|YYNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNYY|
+|....YYYYYYYYYYYYYYYYMMMMMYYYYYYYYYYYYYYYY....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|YYYYY.............P.DFECB.P.............YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYAYYYYYAAbAAAbAAAbAAYYYYYAYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 11
-|............................|
-|............................|
-|.......l.............n......|
-|...QQQ.lQQQQQx99xQQQQn.QQQ..|
-|...Q.Q.lQ...........Qn.Q.Q..|
-|...QQQ.lQ...........Qn.QQQ..|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|.......lQ...........Qn......|
-|...QQQ.lQ...........Qn.QQQ..|
-|...Q.Q.lQ..s.....s..Qn.Q.Q..|
-|...QQQ.lQQQx9x9x9xQQQn.QQQ..|
-|.......l.............n......|
-|............................|
+|YYYYYYYYY.......YYYYYYLYYYYYY.......YYYYYYYYY|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......YYYYYYYYYYYYY.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|....MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM....|
+|....M...................................M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|....M........P........P........P........M....|
+|....M...................................M....|
+|....M...................................M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M........P........P........P........M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|YYYYY...............IIGII...............YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YMMMMMAMMMMMAAbAAAbAAAbAAMMMMMAMMMMMY...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 12
-|............................|
-|............................|
-|............................|
-|...QQQ..QQQQQx99xQQQQ..QQQ..|
-|...Q.Q..Q...........Q..Q.Q..|
-|...QQQ..Q...........Q..QQQ..|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|...QQQ..Q...........Q..QQQ..|
-|...Q.Q..Q...........Q..Q.Q..|
-|...QQQ..QQQxxxxxxxQQQ..QQQ..|
-|............................|
-|............................|
+|YYYYYYYYY.......YYYYYYYYYYYYY.......YYYYYYYYY|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......YYYYYYYYYYYYY.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|....YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|YYYYY...................................YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYAYYYYYAAbAAAbAAAbAAYYYYYAYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 13
-|............................|
-|............................|
-|............................|
-|...QQQ..QQQQQx99xQQQQ..QQQ..|
-|...Q.Q..Q...........Q..Q.Q..|
-|...QQQ..9...........9..QQQ..|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|...QQQ..Q...........Q..QQQ..|
-|...Q.Q..Q...........Q..Q.Q..|
-|...QQQ..QQQQQQQQQQQQQ..QQQ..|
-|............................|
-|............................|
+|YYYYYYYYY.......YYYYYYYYYYYYY.......YYYYYYYYY|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......YYYYYYYYYYYYY.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|....YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|YYYYY...................................YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYAYYYYYAAbAAAbAAAbAAYYYYYAYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 14
-|............................|
-|............................|
-|............................|
-|...QGQ..QQQQQx99xQQQQ..QGQ..|
-|...H.Q..Q...........Q..Q.F..|
-|...QQQ..9...........9..QQQ..|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........9...........9.......|
-|........Q...........Q.......|
-|...QQQ..Q...........Q..QQQ..|
-|...H.Q..Q...........Q..Q.F..|
-|...QEQ..QQQQQQQQQQQQQ..QEQ..|
-|............................|
-|............................|
+|YYYYYYYYY.......MMMMMMMMMMMMM.......YYYYYYYYY|
+|Y.......Y.......M...........M.......Y.......Y|
+|Y.......Y.......M...........M.......Y.......Y|
+|Y.......Y.......M...........M.......Y.......Y|
+|Y.......Y.......M...........M.......Y.......Y|
+|Y.......Y.......M...........M.......Y.......Y|
+|Y.......Y.......MMMMMMMMMMMMM.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|....YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|....A...................................A....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....A...................................A....|
+|....A...................................A....|
+|YYYYY...................................YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYAYYYYYAAbAAAbAAAbAAYYYYYAYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 15
-|............................|
-|............................|
-|............................|
-|...QQQ..QQQQQQQQQQQQQ..QQQ..|
-|...Q.Q..Q...........Q..Q.Q..|
-|...QQQ..Q...........Q..QQQ..|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|........Q...........Q.......|
-|...QQQ..Q...........Q..QQQ..|
-|...Q.Q..Q...........Q..Q.Q..|
-|...QQQ..QQQQQQQQQQQQQ..QQQ..|
-|............................|
-|............................|
+|YYYYLYYYY.......YYYYYYYYYYYYY.......YYYYLYYYY|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......YYYYYYYYYYYYY.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|....YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|YYYYY...................................YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YYYYYYYYYYYYYAbAAAbAAAbAYYYYYYYYYYYYY...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 16
-|............................|
-|............................|
-|........l...........n.......|
-|...QQQ..lQQQQQQQQQQQn..QQQ..|
-|...Q.Q..l...........n..Q.Q..|
-|...QQQ..l...........n..QQQ..|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|........l...........n.......|
-|...QQQ..l...........n..QQQ..|
-|...Q.Q..l...........n..Q.Q..|
-|...QQQ..lQQQQQQQQQQQn..QQQ..|
-|........l...........n.......|
-|............................|
+|YYYYLYYYY.......KKKKKKKKKKKKK.......YYYYLYYYY|
+|Y.......Y.......KKKKKKKKKKKKK.......Y.......Y|
+|Y.......Y.......KKKKKKKKKKKKK.......Y.......Y|
+|Y.......Y.......KKKKKKKKKKKKK.......Y.......Y|
+|Y.......Y.......KKKKKKKKKKKKK.......Y.......Y|
+|Y.......Y.......KKKKKKKKKKKKK.......Y.......Y|
+|Y.......Y.......KKKKKKKKKKKKK.......Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|....MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM....|
+|....M...................................M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|....M...................................M....|
+|..Y.M...................................M.Y..|
+|....M...................................M....|
+|....M...................................M....|
+|YYYYY...................................YYYYY|
+|Y...Y...................................Y...Y|
+|Y...YMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMY...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 17
-|............................|
-|............................|
-|.........l.........n........|
-|...QQQ...lQQQQQQQQQn...QQQ..|
-|...Q.Q...l.........n...Q.Q..|
-|...QQQ...l.........n...QQQ..|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|.........l.........n........|
-|...QQQ...l.........n...QQQ..|
-|...Q.Q...l.........n...Q.Q..|
-|...QQQ...lQQQQQQQQQn...QQQ..|
-|.........l.........n........|
-|............................|
+|MMMMLMMMM.......MMMMMMMMMMMMM.......MMMMLMMMM|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......M...........M.......M.......M|
+|M.......M.......MMMMMMMMMMMMM.......M.......M|
+|MMMMMMMMM...........................MMMMMMMMM|
+|....YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|..Y.Y...................................Y.Y..|
+|....Y...................................Y....|
+|....Y...................................Y....|
+|MMMMY...................................YMMMM|
+|M...Y...................................Y...M|
+|M...YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY...M|
+|M...M...................................M...M|
+|MMMMM...................................MMMMM|
 layer 18
-|............................|
-|............................|
-|..........l.......n.........|
-|...QGQ....lQQQQQQQn....QGQ..|
-|...H.Q....l.......n....Q.F..|
-|...QQQ....l.......n....QQQ..|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|..........l.......n.........|
-|...QQQ....l.......n....QQQ..|
-|...H.Q....l.......n....Q.F..|
-|...QEQ....lQQQQQQQn....QEQ..|
-|..........l.......n.........|
-|............................|
+|YYYYLYYYY........YY.YY.YY.YY........YYYYLYYYY|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y.......Y...........Y.......Y.......Y|
+|Y.......Y........YY.YY.YY.YY........Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|....SRYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYRT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|....SR.................................RT....|
+|YYYYSR.................................RTYYYY|
+|Y...SR.................................RT...Y|
+|Y...SRYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYRT...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 19
-|............................|
-|............................|
-|...........l.....n..........|
-|...QQQ.....lQQQQQn.....QQQ..|
-|...Q.Q.....l.....n.....Q.Q..|
-|...QQQ.....l.....n.....QQQ..|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|..........3l.....n3.........|
-|..........3l.....n3.........|
-|..........3l.....n3.........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...QQQ.....l.....n.....QQQ..|
-|...Q.Q.....l.....n.....Q.Q..|
-|...QQQ.....lQQQQQn.....QQQ..|
-|...........l.....n..........|
-|............................|
+|YYYYYYYYY...........................YYYYYYYYY|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|......SRYYYYYYYYYYYYYYYYYYYYYYYYYYYYYRT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|......SR.............................RT......|
+|YYYYY.SR.............................RT.YYYYY|
+|Y...Y.SR.............................RT.Y...Y|
+|Y...Y.SRYYYYYYYYYYYYYYYYYYYYYYYYYYYYYRT.Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 20
-|............................|
-|............................|
-|............l...n...........|
-|...QQQ......lQQQn......QQQ..|
-|...Q.Q......l...n......Q.Q..|
-|...QQQ......l...n......QQQ..|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|..........3.l...n.3.........|
-|..........9.l...n.9.........|
-|..........3.l...n.3.........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|...QQQ......l...n......QQQ..|
-|...Q.Q......l...n......Q.Q..|
-|...QQQ......lQQQn......QQQ..|
-|............l...n...........|
-|............................|
+|YYYYYYYYY...........................YYYYYYYYY|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|........SRYYYYYYYYYYYYYYYYYYYYYYYYYRT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|........SR.........................RT........|
+|YYYYY...SR.........................RT...YYYYY|
+|Y...Y...SR.........................RT...Y...Y|
+|Y...Y...SRYYYYYYYYYYYYYYYYYYYYYYYYYRT...Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 21
-|............................|
-|............................|
-|..5555.......l.n.......5555.|
-|..5QQQ.......lQn.......QQQ5.|
-|..5Q.Q.......l.n.......Q.Q5.|
-|..5QQQ.......l.n.......QQQ5.|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|..........j..l.n..j.........|
-|..........j..l.n..j.........|
-|..........j..l.n..j.........|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|.............l.n............|
-|..5QQQ.......l.n.......QQQ5.|
-|..5Q.Q.......l.n.......Q.Q5.|
-|..5QQQ.......lQn.......QQQ5.|
-|..5555.......l.n.......5555.|
-|............................|
+|MMMMMMMMM...........................MMMMMMMMM|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|MMMMMMMMM...........................MMMMMMMMM|
+|..........SRYYYYYYYYYYYYYYYYYYYYYRT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|..........SR.....................RT..........|
+|YYYYY.....SR.....................RT.....YYYYY|
+|Y...Y.....SR.....................RT.....Y...Y|
+|Y...Y.....SRYYYYYYYYYYYYYYYYYYYYYRT.....Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 22
-|............................|
-|............................|
-|..............j.............|
-|...333........j........333..|
-|...333........j........333..|
-|...333........j........333..|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|..............j.............|
-|............YYYYY...........|
-|............YYYYY...........|
-|............YYYYY...........|
-|............YYYYY...........|
-|............YYYYY...........|
-|..............j.............|
-|..............j.............|
-|...333........j........333..|
-|...333........j........333..|
-|...333........j........333..|
-|..............j.............|
-|............................|
+|YYYYYYYYY...........................YYYYYYYYY|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|Y.......Y...........................Y.......Y|
+|YYYYYYYYY...........................YYYYYYYYY|
+|............SRYYYYYYYYYYYYYYYYYRT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|............SR.................RT............|
+|YYYYY.......SR.................RT.......YYYYY|
+|Y...Y.......SR.................RT.......Y...Y|
+|Y...Y.......SRYYYYYYYYYYYYYYYYYRT.......Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 23
-|............................|
-|............................|
-|............................|
-|...Q.Q.................Q.Q..|
-|....Q...................Q...|
-|...Q.Q.................Q.Q..|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............hiiih...........|
-|............i...i...........|
-|............i.Z.i...........|
-|............i...i...........|
-|............hiiih...........|
-|............................|
-|............................|
-|...Q.Q.................Q.Q..|
-|....Q...................Q...|
-|...Q.Q.................Q.Q..|
-|............................|
-|............................|
+|KKKKKKKKK...........................KKKKKKKKK|
+|KKKKKKKKK...........................KKKKKKKKK|
+|KKKKKKKKK...........................KKKKKKKKK|
+|KKKKKKKKK...........................KKKKKKKKK|
+|KKKKKKKKK...........................KKKKKKKKK|
+|KKKKKKKKK...........................KKKKKKKKK|
+|KKKKKKKKK...........................KKKKKKKKK|
+|KKKKKKKKK...........................KKKKKKKKK|
+|..............SRYYYYYYYYYYYYYRT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|..............SR.............RT..............|
+|YYLYY.........SR.............RT.........YYLYY|
+|Y...Y.........SR.............RT.........Y...Y|
+|Y...Y.........SRYYYYYYYYYYYYYRT.........Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 24
-|............................|
-|............................|
-|............................|
-|...5.5.................5.5..|
-|....5...................5...|
-|...5.5.................5.5..|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............h...h...........|
-|............................|
-|............................|
-|............................|
-|............h...h...........|
-|............................|
-|............................|
-|...5.5.................5.5..|
-|....5...................5...|
-|...5.5.................5.5..|
-|............................|
-|............................|
+|MMMMMMMMM...........................MMMMMMMMM|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|M.......M...........................M.......M|
+|MMMMMMMMM...........................MMMMMMMMM|
+|................SRYYYYYYYYYRT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|................SR.........RT................|
+|YYLYY...........SR.........RT...........YYLYY|
+|Y...Y...........SR.........RT...........Y...Y|
+|Y...Y...........SRYYYYYYYYYRT...........Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 25
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............h...h...........|
-|............................|
-|..............R.............|
-|............................|
-|............h...h...........|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
+|Y.YY.YY.Y...........................Y.YY.YY.Y|
+|........Y...................................Y|
+|Y...................................Y........|
+|Y.......Y...........................Y.......Y|
+|........Y...................................Y|
+|Y...................................Y........|
+|Y.......Y...........................Y.......Y|
+|.YY.YY.YY............................YY.YY.YY|
+|..................SRYYYYYRT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|..................SR.....RT..................|
+|YYLYY.............SR.....RT.............YYLYY|
+|Y...Y.............SR.....RT.............Y...Y|
+|Y...Y.............SRYYYYYRT.............Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 26
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............hAAAh...........|
-|............A...A...........|
-|............AAAAA...........|
-|............A...A...........|
-|............hAAAh...........|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|....................SRYRT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|....................SR.RT....................|
+|YYLYY...............SR.RT...............YYLYY|
+|Y...Y...............SR.RT...............Y...Y|
+|Y...Y...............SRYRT...............Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 27
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|...........pkkkkko..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........l.....n..........|
-|...........qmmmmmr..........|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|......................R......................|
+|YYYYY.................R.................YYYYY|
+|Y...Y.................R.................Y...Y|
+|Y...Y.................R.................Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 28
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............pkkko...........|
-|............l...n...........|
-|............l...n...........|
-|............l...n...........|
-|............qmmmr...........|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
-|............................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|......................Q......................|
+|YYYYY.................Q.................YYYYY|
+|Y...Y.................Q.................Y...Y|
+|Y...Y.................Q.................Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
 layer 29
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|             pko            |
-|             l n            |
-|             qmr            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|MMMMM...................................MMMMM|
+|M...M...................................M...M|
+|M...M...................................M...M|
+|M...M...................................M...M|
+|MMMMM...................................MMMMM|
 layer 30
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|              j             |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
-|                            |
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|YYYYY...................................YYYYY|
+|Y...Y...................................Y...Y|
+|Y...Y...................................Y...Y|
+|Y...Y...................................Y...Y|
+|YYYYY...................................YYYYY|
+layer 31
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|KKKKK...................................KKKKK|
+|KKKKK...................................KKKKK|
+|KKKKK...................................KKKKK|
+|KKKKK...................................KKKKK|
+|KKKKK...................................KKKKK|
+layer 32
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|MMMMM...................................MMMMM|
+|M...M...................................M...M|
+|M...M...................................M...M|
+|M...M...................................M...M|
+|MMMMM...................................MMMMM|
+layer 33
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|.............................................|
+|Y.YY.....................................YY.Y|
+|....Y...................................Y...Y|
+|Y...Y...................................Y....|
+|Y...........................................Y|
+|.YY.Y...................................YY.YY|
 
 points
-doors 11 3 0 face=0
-doors 12 3 0 face=0
-doors 0 3 15 face=1
-inside 11 3 6 id={id}
-room_corner 1 2 1 closed=true id={id} top=6
-room_corner 21 2 21
-lights 9 5 -1
-lights 14 5 -1
-lights 8 6 19
-lights 14 6 19
-lights 4 3 8
-lights 18 3 8
-lights 1 5 7
-lights 21 5 7
-lights 1 5 15
-lights 21 5 15
-sockets 11 6 19 face=2 id=king role=king
-sockets 8 6 19 face=2 id=throne_guard_west role=guard_post
-sockets 14 6 19 face=2 id=throne_guard_east role=guard_post
-sockets 8 3 2 face=0 id=door_guard_west role=guard_post
-sockets 15 3 2 face=0 id=door_guard_east role=guard_post
-sockets 11 3 4 face=0 id=hall_waypoint role=waypoint
-sockets 2 3 10 face=1 id=hall_idle_west role=idle tags=[bench]
-sockets 20 3 10 face=3 id=hall_idle_east role=idle tags=[bench]
-sockets 2 3 15 face=3 id=hall_idle_service role=idle tags=[door]
+doors 22 1 0 face=2 id=approach
+doors 22 3 8 face=2 id=hall_arch
+doors 4 3 20 face=3 id=service_west
+doors 40 3 20 face=1 id=service_east
+inside 22 3 12 id=hall
+room_corner 5 2 9 top=16 closed=true id=hall
+room_corner 39 2 31
+sockets 22 5 27 face=2 id=king role=king
+sockets 19 5 27 face=2 id=throne_guard_west role=guard_post
+sockets 25 5 27 face=2 id=throne_guard_east role=guard_post
+sockets 18 3 4 face=0 id=door_guard_west role=guard_post
+sockets 26 3 4 face=0 id=door_guard_east role=guard_post
+sockets 22 3 6 face=0 id=hall_waypoint role=waypoint
+sockets 7 3 17 face=1 id=hall_idle_west role=idle tags=[bench]
+sockets 37 3 17 face=3 id=hall_idle_east role=idle tags=[bench]
+sockets 7 3 23 face=3 id=hall_idle_service role=idle tags=[door]
 end

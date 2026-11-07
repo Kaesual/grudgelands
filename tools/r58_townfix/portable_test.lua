@@ -354,17 +354,17 @@ end
 -- R. The royal guards' posts beside the king.
 ------------------------------------------------------------------------------
 local HALLS = {
-	{"highcourt", "highcourt_kings_hall", "white_slate"},
+	{"highcourt", "highcourt_kings_hall", "white_slate", "white_slate"},
 	-- the next capital
 	{"dur_brannoc", "dur_brannoc_kings_hall", "slate", "slate"},
 	-- the next capital
-	{"lethariel", "lethariel_kings_hall", "pale"},
+	{"lethariel", "lethariel_kings_hall", "pale", "pale"},
 	-- the next capital
 	{"nhal_veyr", "nhal_veyr_mausoleum", "crypt", "crypt_vault"},
 	-- the next capital
-	{"gor_drazhak", "gor_drazhak_warlord_hall", "ors"},
+	{"gor_drazhak", "gor_drazhak_warlord_hall", "ors", "ors"},
 	-- the next capital
-	{"kezamba", "kezamba_kings_hall", "basalt"},
+	{"kezamba", "kezamba_kings_hall", "basalt", "basalt"},
 }
 for _, hall in ipairs(HALLS) do
 	local _, part = part_cells(hall[1], hall[2], hall[2], hall[3], hall[4])
