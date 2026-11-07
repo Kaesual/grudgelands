@@ -811,7 +811,11 @@ per hour (model); selling never recovers the cost (fixture).
   (a waypost in a mining camp's box, two seeds); both caught by ENDFIX, the two seeds
   rerun OK. On `c998ea93`: **full 313 of 313**, boot PASS, sync done. The fleet was not
   repeated (the CPU rule; ENDFIX's skip cannot put a stack inside a box).
-- **This lane:** `check_upgrade.py` PASS, `r37_dc` and the fixtures that pin the texts
-  it changed; the link and anchor check of the touched documents.
+- **This lane:** `check_upgrade.py`, `check_fresh_server`, `check_lua` on the six
+  changed Lua files, `write_doc --check` PASS; `r37_dc` (CHANGELOG, README, version),
+  `r70_guild` (reads AGENTS and the guild spec), `r58_guildspec` (the spec), `r41_up`
+  (the upgrade contract's rules); the link and anchor check of the touched documents
+  (1281 links, 0 bad). No fixture pins the two Help lines. No full run: the
+  coordinator's.
 - **Not run by anyone:** a real king fight, the web client, the map reset on a real
   world, audio.

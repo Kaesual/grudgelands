@@ -45,7 +45,7 @@ open. Each note was checked at its place at `c998ea93`. Carry-overs:
   deaths in `income.py`.
 - **LEVELS:** the King's and dragon's names keys stay as they were
   (`tools/r38_names/inventory.py:705,712,718,722` say level 65 and `L65-65`,
-  harmless); a comment in `r33_c4` predates the numbers.
+  harmless).
 - **GUILD:** a 99 stack with no free slot refuses a lot (nothing lost); `PANE_CONNECTS`
   (`parts.lua:309`) lacks the five stones, no pane touches one today; Item source
   pages do not list the Stonewright; the `r58` tuning page shows no fields for the
@@ -76,8 +76,8 @@ open. Each note was checked at its place at `c998ea93`. Carry-overs:
   an old outlier (the review); Gor Drazhak's platform takes the avenue's last column
   at z 3..8, and the comment at `gor_drazhak.lua:504` says waypoints where they are
   guard posts; Nhal Veyr's watch corner faces (`nhal_veyr.lua:273-275`) and a doorstep
-  lane with no door (`:126`); new unrouted plots beside streets on Highcourt 1,
-  Lethariel 2, Kezamba 2 of 6 seeds, every required plot reached; the cache's 1–2
+  lane with no door (`:126`); new unrouted street quarters on 6 seeds: Highcourt 1,
+  Lethariel 2, Kezamba 2, every required plot reached; the cache's 1–2
   `none` legs per capital are no core patrol, not traced.
 
 ## Round 69 — trash box, home respawn, camp sites (GUI-accepted)
