@@ -23,6 +23,30 @@ or spellbook (never a weapon carried in the offhand). Pure absorb grants,
 fully absorbed hits and Creative do not spend wear. Existing combat settlement
 semantics remain; no extra fall/environmental wear hook is added.
 
+**A death wears the whole set** (Round 70, the user's ruling of 2026-11-07,
+reversing Round 18's "no extra durability-on-death",
+[progression.md](progression.md) §3): every equipped item that wears loses
+10 % of its maximum durability (`grug_repair.DEATH_WEAR_PERCENT`), down to 0, so
+a death can break an item and ten deaths break a fresh one. That covers the
+Weapon and offhand slots and the four armor slots, by the same `eligible` test
+as all other wear: trinkets do not wear, and a tool or hoe in the hotbar is not
+equipped. Every kind of death counts, a fall or a drowning too; a broken item
+stays broken and Creative spends nothing. It is one event: one equipment
+notification (a full change only if an item broke) and one break cue for the
+whole set.
+
+**A PvP death costs nothing:** no durability is lost when an enemy player
+landed a hit on the victim in the last 30 s, whatever finished the victim (a
+mob, a fall, drowning) and whether or not that enemy is still online. The
+window is its own value (`R.PVP_DEATH_SECONDS`), separate from the 15 s kill
+credit, and only `grug_pvp` holds the hits: it decides before settling the
+death and reports through `grug_pvp.register_on_death`. An own-faction hit, a
+dodged hit or a hit on a party member does not count. A logout death is decided
+when the player leaves and saved with its mark, so the answer survives any
+time offline: a player who was hit keeps the exemption, one who only struck or
+healed in PvP combat was not hit by an enemy and pays
+([pvp.md](pvp.md) §3).
+
 Tool/hoe budgets are
 30/60/300/600/1000/1500/2000/3000 from Wood through Abyssal Steel. There is
 no mining depth penalty: a pick too weak for a tier rock cannot dig it at all
@@ -109,6 +133,14 @@ future design topics, not approved WP22 behavior. V1 does not anticipate them
 with extra rules or hidden profession benefits.
 
 ## Wear presentation
+
+Two small permanent lines stand left of the HUD's bars (Round 70,
+`grug_repair/hints.lua`, `hud_layout.gear_hint`): red "Broken gear equipped"
+while a broken item is equipped and amber "Gear almost broken" while an equipped
+item is below 15 % of its maximum durability. A broken item shows only the first.
+Exactly 15 % shows nothing. They follow the shared equipment notifier
+(equip, wear, a repair, a death, join): a use reads the one slot it wore and
+sends nothing unless a line changes.
 
 Tooltips show whole remaining durability against the authoritative item lifetime,
 including the fractional wear remainder, rounded upward. Each use rewrites only

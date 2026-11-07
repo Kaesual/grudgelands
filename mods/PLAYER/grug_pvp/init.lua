@@ -30,10 +30,13 @@
 --   grug_pvp.count_npc_kill(player, kind): kind "guard" | "captain" |
 --     "general" | "king"; enemy guards, royal guards and kings are counted
 --     here already (grug_mobs' eligible-kill hook).
+--   grug_pvp.register_on_death(fn(player, pvp)): after every death; `pvp` is
+--     true for a PvP death (R.pvp_death). A logout death reports the answer
+--     taken when the player left (grug_repair's death wear reads it).
 --
 -- Persistence (player meta): the location flag on change and at leave, the
--- button on press, the contact at leave, the logout death at leave, the
--- counters on every kill and death.
+-- button on press, the contact at leave, the logout death and whether it was
+-- a PvP death at leave, the counters on every kill and death.
 
 grug_pvp = {}
 
@@ -45,6 +48,10 @@ local META_BUTTON = "grug_pvp:button_until"
 local META_CONTACT = "grug_pvp:contact_at"
 local META_LOGOUT_DEATH = "grug_pvp:logout_death"
 local META_STAT = "grug_pvp:stat_"
+-- The pending logout death's values: "1" a PvP death (and every mark a world
+-- from before Round 70 still holds: that death cost nothing then), "wear" a
+-- death without an enemy's hit in the window (R.pvp_death).
+local LOGOUT_PVP, LOGOUT_WEAR = "1", "wear"
 
 -- Location sampling period (s); grug_map/location.lua samples at the same
 -- once-a-second cadence.
@@ -332,13 +339,25 @@ local function settle_death(victim, killer)
 	damagers[victim_name] = nil
 end
 
+local death_callbacks = {}
+
+function grug_pvp.register_on_death(fn)
+	death_callbacks[#death_callbacks + 1] = fn
+end
+
 core.register_on_dieplayer(function(player, reason)
 	local rec = record_of(player)
 	if not rec then
 		return
 	end
-	-- A logout death was settled when the player left (below).
-	if not (reason and reason.custom_type == grug_core.LOGOUT_DEATH_CUSTOM_TYPE) then
+	local pvp
+	-- A logout death was settled when the player left (below); its reason
+	-- carries the answer taken then.
+	if reason and reason.custom_type == grug_core.LOGOUT_DEATH_CUSTOM_TYPE then
+		pvp = reason.pvp_death
+	else
+		-- Before settle_death clears the record.
+		pvp = R.pvp_death(damagers[player:get_player_name()], now())
 		local killer = reason and reason.type == "punch" and
 			grug_core.damage_source(reason.object) or nil
 		settle_death(player, killer)
@@ -346,6 +365,9 @@ core.register_on_dieplayer(function(player, reason)
 	R.clear(rec)
 	save_timers(player, rec)
 	notify(player)
+	for index = 1, #death_callbacks do
+		death_callbacks[index](player, pvp)
+	end
 end)
 
 -- Ruling 9: leaving (or a disconnect) in PvP combat while flagged is death.
@@ -354,11 +376,14 @@ end)
 -- shutdown is no logout.
 local function logout_death(player, rec)
 	local name = player:get_player_name()
+	-- The death happens at the next join, after the window and the record
+	-- are gone: the answer is taken now and saved with the mark.
+	local pvp = R.pvp_death(damagers[name], now())
 	settle_death(player, nil)
 	local _, message = grug_core.death_message(name,
 		{type = "set_hp", custom_type = grug_core.LOGOUT_DEATH_CUSTOM_TYPE})
 	core.chat_send_all(message)
-	player:get_meta():set_string(META_LOGOUT_DEATH, "1")
+	player:get_meta():set_string(META_LOGOUT_DEATH, pvp and LOGOUT_PVP or LOGOUT_WEAR)
 	R.clear(rec)
 end
 
@@ -368,7 +393,8 @@ core.register_on_joinplayer(function(player)
 	records[name] = rec
 	reported[name] = nil
 	local meta = player:get_meta()
-	if meta:get_string(META_LOGOUT_DEATH) == "1" then
+	local logout_mark = meta:get_string(META_LOGOUT_DEATH)
+	if logout_mark ~= "" then
 		meta:set_string(META_LOGOUT_DEATH, "")
 		R.clear(rec)
 		save_timers(player, rec)
@@ -378,7 +404,8 @@ core.register_on_joinplayer(function(player)
 			local p = core.get_player_by_name(name)
 			if p and p:get_hp() > 0 then
 				p:set_hp(0, {type = "set_hp",
-					custom_type = grug_core.LOGOUT_DEATH_CUSTOM_TYPE})
+					custom_type = grug_core.LOGOUT_DEATH_CUSTOM_TYPE,
+					pvp_death = logout_mark ~= LOGOUT_WEAR})
 			end
 		end)
 	elseif samplable(player) then

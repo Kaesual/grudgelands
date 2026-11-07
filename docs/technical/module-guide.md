@@ -89,8 +89,11 @@ tools](#player-meta-read-by-external-tools).
   `grug_abilities` gates `valid_target`, the swing handler and support
   (`support_refused`: a refusal costs nothing). PvP contact arms
   `mark_in_combat(player, grug_core.PVP_COMBAT_TIMEOUT)`. Logout death:
-  credited at leave, applied at the next join (`grug_pvp:logout_death`);
-  a shutdown sets no mark. NPC kills count through `_grug_pvp_kind` on the
+  credited at leave, applied at the next join (`grug_pvp:logout_death`, `1`
+  or, without an enemy's hit in the 30 s of `R.pvp_death`, `wear`; the set_hp
+  reason's `pvp_death` carries it to the death);
+  a shutdown sets no mark. `register_on_death(fn(player, pvp))` runs after every
+  death; `grug_repair`'s init.lua calls `wear_death` on a non-PvP one. NPC kills count through `_grug_pvp_kind` on the
   garrison prototypes and grug_mobs' eligible-kill hook. `page.lua` (sfinv
   page after Party; texts in the pure `view.lua`) and `hud.lua` (one status
   source) are P2's; the zone banner's territory line and colour ask
@@ -644,6 +647,8 @@ tools](#player-meta-read-by-external-tools).
   dropped), and the stats, look, Character page and ability mana/HUD/
   description/skin consumers return at once; grug_repair writes only the
   tooltip's "Durability: N / M" line (`grug_repair.refresh_durability`).
+  The HUD's durability hints (`grug_repair/hints.lua`) read the worn slot on
+  that reason and every equipment slot on any other change.
   Held swings refresh their usable same-item snapshot without restarting
   cadence; actual swaps and broken/unbroken transitions still reset.
   **Swing skills use native interaction plus an authoritative held clock**
