@@ -177,3 +177,39 @@ Plans: [Round 71](round71-plan.md), [Round 70](round70-plan.md). Round 70 §2.10
 - `tools/r29_e4/income.py --check`, because the chests hold coins.
 - The rule for group quests below level 51 (Round 61) holds, because these quests
   are optional.
+
+## 9. After the build: three Expeditions (user, 2026-11-07)
+
+These rulings replace the first set of five and the +0 to +9 dropdown of §2 and §3.
+
+- **Three Expeditions instead of five**, each selectable over a wide level range:
+
+| Expedition | Mob levels | Players |
+|---|---|---|
+| The Stilled Seam | 20–69 | 3 at every level |
+| The Second Shift | 40–69 | 4 |
+| The Last Mint | 60–69 | 4 |
+
+- **Every 10 levels the tier follows:** reward, ore and gem nodes are T2 at 20–29,
+  T3 at 30–39, T4 at 40–49, T5 at 50–59, T6 at 60–69.
+- **Selection in two steps:** a tier dropdown, which also names the tier's ore and
+  gems, then a level dropdown inside that tier.
+- **A player may create exactly what they may enter:** entry level min(level − 2, 60),
+  so level 29 creates up to 31, level 59 up to 61, level 60 everything. This is the
+  built rule; only the dropdown changes.
+- Balance stays at player level = Expedition level. Players are capped at 60, so 61–69
+  is played at 60 with the level malus: the top of each range is meant to be hard.
+- The Stilled Seam is widened in Round 71 (lane RANGE). The Second Shift and The Last
+  Mint are designed now and built in Round 72, after the user's GUI test of Rounds 70
+  and 71.
+- **Low effort first:** no big new mechanics. Level 60 must also be dangerous by its
+  mechanics: The Last Mint has lava pillars in a lava lake; a fall is death, there is no
+  way out of the lake. Lava already takes 20 % of the pool per second.
+- **Traps, two types only**, never hurting or noticing mobs, their spots chosen at random
+  on each creation:
+  1. **Floor trap:** an invisible trigger. Stepping on it shows a muted red particle ring
+     for 1.5 s, like the Mage's Meteor warning and distinct from player effects, then
+     deals strong damage inside the ring. It rearms 10 s after firing and stays visible
+     for the rest of that run after its first firing (coordinator default).
+  2. **Wall projectile:** fires on a fixed period, always, a clearly visible fireball
+     that deals area damage where it hits a player.
