@@ -59,13 +59,39 @@ local planner = dofile(wp40 .. "/capital_planner.lua")
 local settlement = dofile(wp40 .. "/r7_settlement.lua")
 
 -- The capitals whose core a lane has finished; a capital lane adds its key.
-local DONE = {dur_brannoc = true}
+-- These tables keep one row per capital with a comment line between rows, so
+-- parallel lanes do not touch adjacent lines.
+local DONE = {
+	highcourt = false,
+	-- the next capital
+	dur_brannoc = true,
+	-- the next capital
+	lethariel = false,
+	-- the next capital
+	nhal_veyr = false,
+	-- the next capital
+	gor_drazhak = false,
+	-- the next capital
+	kezamba = false,
+}
 -- The castle's placement: anchor, turns, per capital.
 local CASTLE = {
+	highcourt = false,
+	-- the next capital
 	dur_brannoc = {plot = "kings_hall", x = -22, z = 10, turns = 0},
+	-- the next capital
+	lethariel = false,
+	-- the next capital
+	nhal_veyr = false,
+	-- the next capital
+	gor_drazhak = false,
+	-- the next capital
+	kezamba = false,
 }
 -- Rows of the study's schedule the build moved on purpose, id -> reason.
 local MOVED = {
+	highcourt = {},
+	-- the next capital
 	dur_brannoc = {
 		-- The castle's own rows follow the picked template, not the 2D study.
 		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
@@ -76,6 +102,14 @@ local MOVED = {
 		-- with the forge, and these three stand at it.
 		court_idle_forge = "court", court_idle_yard = "court", court_idle_fire = "court",
 	},
+	-- the next capital
+	lethariel = {},
+	-- the next capital
+	nhal_veyr = {},
+	-- the next capital
+	gor_drazhak = {},
+	-- the next capital
+	kezamba = {},
 }
 
 local CAPITALS = {"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak", "kezamba"}
@@ -225,6 +259,17 @@ do
 		end
 	end
 	check(widths == 6, "S six capital profiles")
+	-- The two copies that cannot read the module: the lakes' calm squares
+	-- and the cloud base's samples.
+	local calm = 0
+	for half in read("mods/MAPGEN/grug_mapgen/wp40/water_authored.lua"):gmatch(
+			"keep = {x = 1800, z = %-?1500, half = (%d+)") do
+		calm = calm + 1
+		check(tonumber(half) == ring.PAD, "S a civic lake's calm square is the pad")
+	end
+	check(calm == 2, "S two civic lakes")
+	check(tonumber(read("mods/CORE/grug_core/atmosphere_zones.lua"):match(
+		"local CIVIC_HALF = (%d+)")) == ring.RADIUS, "S atmosphere_zones' CIVIC_HALF is the ring")
 end
 
 ------------------------------------------------------------------------------
@@ -283,13 +328,15 @@ local function capital_tests(capital)
 	-- R
 	local columns, gaps = 0, 0
 	ring.walk(function(x, z)
+		-- The core writes nothing over water: only columns with ground count.
+		if not walk.node(x, 0, z) then return end
 		columns = columns + 1
 		if not walk.node(x, 1, z) then
 			gaps = gaps + 1
 			print("note " .. label .. "ring gap at " .. x .. "," .. z)
 		end
 	end, {skip = ring.is_corner})
-	check(columns > 300 and gaps == 0, "R " .. label .. "the ring is closed (" .. gaps .. " gaps)")
+	check(columns > 200 and gaps == 0, "R " .. label .. "the ring is closed (" .. gaps .. " gaps)")
 
 	-- W
 	local start = {x = 0, z = 0, s = 0.5, support = 0}
@@ -326,13 +373,13 @@ local function capital_tests(capital)
 		check(royal ~= nil and royal:find("throne_guard_west", 1, true) ~= nil and
 			royal:find("door_guard", 1, true) == nil,
 			"C only the throne guards bind to the king")
-		local door = lm.kings_hall_door
+		local door = lm[castle.plot .. "_door"] or lm.kings_hall_door
 		for _, id in ipairs({"door_guard_west", "door_guard_east"}) do
 			check(by_id[id] and by_id[id].role == "guard_post" and
-				math.abs(by_id[id].x - door.x) <= 6 and by_id[id].z - door.z <= 6,
+				math.max(math.abs(by_id[id].x - door.x), math.abs(by_id[id].z - door.z)) <= 6,
 				"C " .. label .. id .. " an ordinary post at the great door")
 		end
-		check(lm.kings_hall.max.y <= bounds.max.y + 2,
+		check((lm[castle.plot] or lm.kings_hall).max.y <= bounds.max.y + 2,
 			"C " .. label .. "the castle's top inside the core's height")
 
 		-- The king's real body: the player box at 8/7, the elite scale 1.4.
@@ -367,7 +414,7 @@ local function capital_tests(capital)
 		for offset = -7, 7 do
 			for back = 0, 1 do
 				local fx, fz = parts.facedir_step(king.face)
-				local x = king.x + (fz ~= 0 and offset or 0) + fx * -back * -1
+				local x = king.x + (fz ~= 0 and offset or 0) + fx * back
 				local z = king.z + (fx ~= 0 and offset or 0) + fz * back
 				if body.node(x, king.y - 1, z) and not body.node(x, king.y, z) then
 					dais = dais + 1

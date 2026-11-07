@@ -355,10 +355,15 @@ end
 ------------------------------------------------------------------------------
 local HALLS = {
 	{"highcourt", "highcourt_kings_hall", "white_slate"},
+	-- the next capital
 	{"dur_brannoc", "dur_brannoc_kings_hall", "slate", "slate"},
+	-- the next capital
 	{"lethariel", "lethariel_kings_hall", "pale"},
+	-- the next capital
 	{"nhal_veyr", "nhal_veyr_mausoleum", "crypt", "crypt_vault"},
+	-- the next capital
 	{"gor_drazhak", "gor_drazhak_warlord_hall", "ors"},
+	-- the next capital
 	{"kezamba", "kezamba_kings_hall", "basalt"},
 }
 for _, hall in ipairs(HALLS) do

@@ -136,8 +136,9 @@ local function census(anchor, by_id)
 	local king = by_id.king.pos
 	local door_guard = by_id.door_guard_west.pos
 	local dir = by_id.king.dir or {x = 0, z = -1}
-	local front = vector.offset(door_guard, (by_id.king.pos.x - door_guard.x), -2,
-		dir.z * 6)
+	-- Six nodes past the door guards along the hall's axis, on the ground.
+	local along = (door_guard.x - king.x) * dir.x + (door_guard.z - king.z) * dir.z + 6
+	local front = vector.offset(king, dir.x * along, door_guard.y - 2 - king.y, dir.z * along)
 	local path = core.find_path(king, front, 64, 1, 4, "A*_noprefetch")
 	log(("check engine path seat %s to the door's front %s: %s"):format(
 		core.pos_to_string(king), core.pos_to_string(front),

@@ -114,8 +114,19 @@ end
 -- (Round 70: the core grew to radius 56, so the old layouts have more open
 -- ground for `layout.green`, and Dur Brannoc its castle; each capital lane
 -- pins its own new count.)
-local CAPITAL_TREES = {highcourt = 86, dur_brannoc = 64, lethariel = 163, nhal_veyr = 70,
-	gor_drazhak = 47, kezamba = 46}
+local CAPITAL_TREES = {
+	highcourt = 86,
+	-- the next capital
+	dur_brannoc = 64,
+	-- the next capital
+	lethariel = 163,
+	-- the next capital
+	nhal_veyr = 70,
+	-- the next capital
+	gor_drazhak = 47,
+	-- the next capital
+	kezamba = 46,
+}
 local capital = dofile(wp40 .. "/r7_capital_blueprint.lua")
 local cores = {}
 for _, key in ipairs({"highcourt", "dur_brannoc", "lethariel", "nhal_veyr", "gor_drazhak",
