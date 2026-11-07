@@ -1,21 +1,113 @@
 -- Round 51 lane LP: the land plants the user picked in the land viewer
 -- (tools/r47_sw/land.js ITEMS, land plan §4; art ARTL, tools/r51_land/plants).
 --
--- Every plant here is decoration (round plan §3.6): it drops nothing, like
--- the bone pile and the hanging moss, so a player never mistakes one for a
--- gathering source (land plan ruling 11) and never carries a stack of them.
+-- Every plant here is decoration. Since Round 70 (round70-plan.md §2.3, which
+-- ends land plan ruling 11) each drops itself and can be placed where it
+-- grows. The two reasons of the old rule stay answered: the tooltip says it
+-- is decoration and no recipe uses it, so nobody takes one for a gathering
+-- source, and a stack is worth 1c (group `grug_decor_plant`: tier 1, a bulk
+-- good of grug_traders/prices.lua, economy.md §2), so nobody farms them.
 -- None glows (ruling 10). The world generator places them as decoration rows
 -- (wp40/r7_r6_manifest.lua, the Round 51 LP block) and the wild renewal
 -- brings them back (grug_farming/renewal.lua through the vegetation
 -- authority, ruling 18). The jungle's lianas are grug_trees' (they belong to
--- their trees).
+-- their trees); the water plants are grug_mapgen's (world_nodes.lua), placed
+-- by the two functions below.
+
+-- The tooltip of a carried plant: its name, the one decoration line and how
+-- it is placed. grug_trees writes the same line (it loads first).
+function grug_nodes.decor_description(description, how)
+	return description .. "\nDecoration: no recipe uses it.\n" .. how
+end
+local decor_description = grug_nodes.decor_description
+
+local ON_GROUND = "Plant it on the ground."
+local AS_BLOCK = "Place it like a block."
+
+-- Whether the player may change every position; a refusal reports itself.
+local function may_change(placer, positions)
+	local name = placer and placer:get_player_name() or ""
+	for _, pos in ipairs(positions) do
+		if core.is_protected(pos, name) then
+			core.record_protection_violation(pos, name)
+			return false
+		end
+	end
+	return true
+end
+
+local function spend(itemstack, placer)
+	if not core.is_creative_enabled(placer and placer:get_player_name() or "") then
+		itemstack:take_item()
+	end
+	return itemstack
+end
+
+local function water_source(pos)
+	local name = core.get_node(pos).name
+	local def = core.registered_nodes[name]
+	return def ~= nil and def.liquidtype == "source" and core.get_item_group(name, "water") > 0
+end
+
+-- The waterlily's on_place: it stands in the air over the source water the
+-- player points at (the item has liquids_pointable), turned at random as the
+-- generator turns it.
+function grug_nodes.place_waterlily(itemstack, placer, pointed)
+	local clicked = grug_core.node_rightclick(itemstack, placer, pointed)
+	if clicked then return clicked end
+	if pointed.type ~= "node" then return itemstack end
+	local water = pointed.under
+	local pos = {x = water.x, y = water.y + 1, z = water.z}
+	if not water_source(water) or core.get_node(pos).name ~= "air" or
+			not may_change(placer, {pos}) then
+		return itemstack
+	end
+	core.set_node(pos, {name = itemstack:get_name(), param2 = math.random(0, 3)})
+	return spend(itemstack, placer)
+end
+
+-- A rooted water plant's on_place: the plant replaces the plain sand bed the
+-- player points at, as the generator's does, so it needs that bed under
+-- source water; digging it leaves the bed again. choose(depth) names the node
+-- and its param2 for that many water nodes above the bed (counted up to
+-- WATER_LOOKUP), or nil when the water is too shallow.
+local WATER_LOOKUP = 5
+function grug_nodes.place_rooted(itemstack, placer, pointed, choose)
+	local clicked = grug_core.node_rightclick(itemstack, placer, pointed)
+	if clicked then return clicked end
+	if pointed.type ~= "node" then return itemstack end
+	local bed = pointed.under
+	if core.get_node(bed).name ~= "default:sand" then return itemstack end
+	local depth = 0
+	while depth < WATER_LOOKUP and
+			water_source({x = bed.x, y = bed.y + depth + 1, z = bed.z}) do
+		depth = depth + 1
+	end
+	local name, param2 = choose(depth)
+	if not name then return itemstack end
+	-- `leveled`: a rooted plant's param2 is its height in sixteenths.
+	local top = {x = bed.x, y = bed.y + math.max(1, param2 / 16), z = bed.z}
+	if not may_change(placer, {bed, top}) then return itemstack end
+	core.set_node(bed, {name = name, param2 = param2})
+	return spend(itemstack, placer)
+end
+
+-- The on_place of a plant with variants (default's fern does the same): any
+-- of the nodes grows, the carried item stays the first.
+local function place_variant(names)
+	return function(itemstack, placer, pointed)
+		local stack = ItemStack(names[math.random(1, #names)])
+		local ret = core.item_place(stack, placer, pointed)
+		return ItemStack(names[1] .. " " .. itemstack:get_count() - (1 - ret:get_count()))
+	end
+end
 
 -- A small plant on the ground: plantlike, not walkable, anything may be built
 -- into it, it goes with its ground. `low` (sixteenths): the height of its
 -- selection box above the node's floor.
 local function ground_plant(name, description, texture, low)
 	core.register_node("grug_nodes:" .. name, {
-		description = description,
+		description = decor_description(description, ON_GROUND),
 		drawtype = "plantlike",
 		waving = 1,
 		tiles = {texture},
@@ -26,10 +118,9 @@ local function ground_plant(name, description, texture, low)
 		walkable = false,
 		buildable_to = true,
 		is_ground_content = false,
-		drop = "",
 		selection_box = {type = "fixed",
 			fixed = {-5 / 16, -0.5, -5 / 16, 5 / 16, -0.5 + low / 16, 5 / 16}},
-		groups = {snappy = 3, flammable = 2, attached_node = 1},
+		groups = {snappy = 3, flammable = 2, attached_node = 1, grug_decor_plant = 1},
 		sounds = default.node_sound_leaves_defaults(),
 	})
 end
@@ -48,10 +139,13 @@ ground_plant("alpine_windshrub", "Alpine Windshrub", "grug_nodes_alpine_windshru
 
 -- Lichen: a crust on gravel and stone, a carpet 1/16 high like the moss
 -- carpet, in two variants (the generator alternates them); its texture is
--- mostly open, so the ground shows through (alpha clip).
-local function lichen(name, texture)
-	core.register_node("grug_nodes:" .. name, {
-		description = "Lichen",
+-- mostly open, so the ground shows through (alpha clip). Both variants drop
+-- the first, which places either, so they share one stack.
+local LICHEN = {"grug_nodes:lichen_carpet", "grug_nodes:lichen_carpet_b"}
+local function lichen(name, texture, groups, on_place)
+	groups.snappy, groups.attached_node, groups.flammable = 3, 3, 2
+	core.register_node(name, {
+		description = decor_description("Lichen", ON_GROUND),
 		drawtype = "nodebox",
 		tiles = {texture},
 		inventory_image = texture,
@@ -63,31 +157,32 @@ local function lichen(name, texture)
 		buildable_to = true,
 		floodable = true,
 		is_ground_content = false,
-		drop = "",
+		drop = LICHEN[1],
 		node_box = {type = "fixed", fixed = {-0.5, -0.5, -0.5, 0.5, -7 / 16, 0.5}},
-		groups = {snappy = 3, attached_node = 3, flammable = 2},
+		groups = groups,
 		sounds = default.node_sound_leaves_defaults(),
+		on_place = on_place,
 	})
 end
-lichen("lichen_carpet", "grug_nodes_lichen_carpet_top.png")
-lichen("lichen_carpet_b", "grug_nodes_lichen_carpet_top_b.png")
+lichen(LICHEN[1], "grug_nodes_lichen_carpet_top.png", {grug_decor_plant = 1}, place_variant(LICHEN))
+lichen(LICHEN[2], "grug_nodes_lichen_carpet_top_b.png", {not_in_creative_inventory = 1})
 
 -- Bush foliage on the default bush shapes: the jungle's large-leaved bush
 -- (bush.mts) and the badlands' withered bush (acacia_bush.mts). The leaves
--- drop nothing (no sapling grows these bushes); the stems stay default's
--- and drop themselves. They decay with their stem like the default bush
--- leaves (radius 1); default.register_leafdecay replaces a stem's
+-- drop themselves (no sapling grows these bushes), but not when they decay:
+-- leaf decay skips a drop that is one of its own leaves. The stems stay
+-- default's and drop themselves. They decay with their stem like the default
+-- bush leaves (radius 1); default.register_leafdecay replaces a stem's
 -- after_destruct, so each stem lists its default leaves too.
 local function bush_leaves(name, description, texture)
 	core.register_node("grug_nodes:" .. name, {
-		description = description,
+		description = decor_description(description, AS_BLOCK),
 		drawtype = "allfaces_optional",
 		waving = 1,
 		tiles = {texture},
 		paramtype = "light",
 		is_ground_content = false,
-		drop = "",
-		groups = {snappy = 3, flammable = 2, leaves = 1},
+		groups = {snappy = 3, flammable = 2, leaves = 1, grug_decor_plant = 1},
 		sounds = default.node_sound_leaves_defaults(),
 		after_place_node = default.after_place_leaves,
 	})
@@ -105,9 +200,20 @@ default.register_leafdecay({
 	radius = 1,
 })
 
--- Ferns and marram grass are default's nodes; as decoration (§3.6) they
--- drop nothing, wherever they grow.
-for i = 1, 3 do
-	core.override_item("default:fern_" .. i, {drop = ""})
-	core.override_item("default:marram_grass_" .. i, {drop = ""})
+-- What default registers: ferns and marram grass (their variants drop the
+-- first, as upstream) and the corals, which join the decoration by their
+-- tooltip and price; Cyan, Green and Pink stand on a skeleton under water.
+local function decor_item(name, how)
+	local def = core.registered_nodes[name]
+	local groups = table.copy(def.groups)
+	groups.grug_decor_plant = 1
+	core.override_item(name, {description = decor_description(def.description, how),
+		groups = groups})
+end
+decor_item("default:fern_1", ON_GROUND)
+decor_item("default:marram_grass_1", ON_GROUND)
+decor_item("default:coral_brown", AS_BLOCK)
+decor_item("default:coral_orange", AS_BLOCK)
+for _, colour in ipairs({"cyan", "green", "pink"}) do
+	decor_item("default:coral_" .. colour, "Place it on a Coral Skeleton under water.")
 end
