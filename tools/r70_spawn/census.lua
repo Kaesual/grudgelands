@@ -3,7 +3,7 @@
 -- writer, no engine).
 --
 --   luajit tools/r70_spawn/census.lua REPO SEED [--keys a,b,c] [--part I/N]
---       [--estimate CHUNKS] [--out FILE]
+--       [--estimate CHUNKS] [--out FILE] [--rings]
 --
 -- REPO is the tree measured, so a checkout of an older commit can be counted
 -- with this script. Every column of the world's bounds is read once from the
@@ -22,6 +22,11 @@
 --             habitat, so only `writer_bare` columns may land here (a few on
 --             the two islands, on the base too: renewal keeps off them).
 --
+-- --rings adds, for a `near_water` row, lines "#ring source D eligible written"
+-- (D: the distance in nodes, as a square, to the nearest water the ground may
+-- count) and "#rise source H eligible written" (H: the ground's height above
+-- the highest water in reach, clamped at 0).
+--
 -- --part I/N takes every N-th chunk (a seed's run split over processes; add
 -- the parts with tools/r70_spawn/table.py). --estimate K writes K evenly
 -- spaced chunks only and prints the projected seconds of the full pass. A
@@ -30,12 +35,15 @@ local repo, seed = arg[1], arg[2]
 assert(repo and seed and seed:match("^%d+$"), "usage: census.lua REPO SEED [options]")
 local KEYS = {"bamboo_shoot", "frost_melon", "rock_salt", "stormkelp", "sugar_cane",
 	"wild_cocoa"}
-local part, parts, estimate, out_path = 1, 1, nil, nil
+local part, parts, estimate, out_path, rings = 1, 1, nil, nil, false
 do
 	local index = 3
 	while arg[index] do
 		local name, value = arg[index], arg[index + 1]
-		if name == "--keys" then
+		if name == "--rings" then
+			rings = true
+			index = index - 1
+		elseif name == "--keys" then
 			KEYS = {}
 			for key in value:gmatch("[^,]+") do KEYS[#KEYS + 1] = key end
 		elseif name == "--part" then
@@ -67,6 +75,7 @@ local CHUNK = 80
 -- The rows counted: their zones and biomes (nil: any) and the neighbour
 -- reach of a shore rule (0: none needs water beside it).
 local targets, by_key, by_node = {}, {}, {}
+local near_keys = {}
 local function reach_of(predicate)
 	if predicate == "none" then return 0 end
 	if predicate == "no_water" then return 0 end
@@ -88,6 +97,7 @@ for _, row in ipairs(gathering.p9g_sources()) do
 		for _, zone in ipairs(row.zones) do zones[zone] = true end
 		for _, host in ipairs(row.hosts) do biomes[host.biome] = true end
 		add_target(row.key, row.source_node, zones, biomes, reach_of(row.shore_predicate))
+		if row.shore_predicate == "near_water" then near_keys[row.key] = {rings = {}, rises = {}} end
 	end
 end
 for _, row in ipairs(world_catalog.plants) do
@@ -216,6 +226,31 @@ local function accepted(key, x, y, z, support)
 	io.stderr:write(("outside: %s at %d,%d,%d on %s: %s\n"):format(key, x, y, z, support, reason))
 	return false
 end
+-- The nearest ring and the rise of a column under the near_water rule.
+local function tally_rings(key, x, z, ground, field)
+	local reach, height = habitat.VEGETATION.SHORE_REACH, habitat.VEGETATION.SHORE_HEIGHT
+	local nearest, highest
+	for dz = -reach, reach do
+		for dx = -reach, reach do
+			local _, _, _, _, _, _, level = column_values_at(x + dx, z + dz)
+			if level then
+				highest = math.max(highest or level, level)
+				local ring = math.max(math.abs(dx), math.abs(dz))
+				if ground - level <= height and (not nearest or ring < nearest) then nearest = ring end
+			end
+		end
+	end
+	local tally = near_keys[key]
+	if nearest then
+		tally.rings[nearest] = tally.rings[nearest] or {eligible = 0, written = 0}
+		tally.rings[nearest][field] = tally.rings[nearest][field] + 1
+	end
+	if highest then
+		local rise = math.max(0, ground - highest)
+		tally.rises[rise] = tally.rises[rise] or {eligible = 0, written = 0}
+		tally.rises[rise][field] = tally.rises[rise][field] + 1
+	end
+end
 local cid_target = {}
 for _, target in ipairs(targets) do cid_target[R.fake.get_content_id(target.node)] = target end
 local name_of = R.fake.get_name_from_content_id
@@ -242,7 +277,12 @@ for position = offset, #chunk_keys, stride do
 			for k = 1, #categories do
 				local category = categories[k]
 				local target = category.class == "resource" and by_key[category.key]
-				if target then count(target, zone, "eligible") end
+				if target then
+					count(target, zone, "eligible")
+					if rings and near_keys[category.key] then
+						tally_rings(category.key, x, z, ground, "eligible")
+					end
+				end
 			end
 		end
 	end
@@ -254,6 +294,9 @@ for position = offset, #chunk_keys, stride do
 				if target then
 					local _, _, zone = column_values_at(x, z)
 					count(target, zone, "written")
+					if rings and near_keys[target.key] then
+						tally_rings(target.key, x, z, y - 1, "written")
+					end
 					if y > minp.y and not accepted(target.key, x, y, z, name_of(data[i - 112])) then
 						count(target, zone, "outside")
 					end
@@ -275,6 +318,16 @@ for _, target in ipairs(targets) do
 		local row = target.zone_counts[zone]
 		lines[#lines + 1] = ("%s %s %d %d %d"):format(target.key, zone, row.eligible, row.written,
 			row.outside)
+	end
+end
+if rings then
+	for key, tally in pairs(near_keys) do
+		for name, rows_of in pairs({ring = tally.rings, rise = tally.rises}) do
+			for value, row in pairs(rows_of) do
+				lines[#lines + 1] = ("#%s %s %d %d %d"):format(name, key, value, row.eligible,
+					row.written)
+			end
+		end
 	end
 end
 local text = table.concat(lines, "\n") .. "\n"

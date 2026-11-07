@@ -495,8 +495,9 @@ Cooking — which costs no main slot — and never farmed, Round 48 ruling 5):
 **sunleaf T1** (the six start zones and every 11–20 zone, on the six home
 biomes, Round 60), **marshbloom T2** (swamp), **stormkelp T3** (the exact
 near-water predicate in `world_zones.md` §11). Marshbloom sits on the swamp's
-mud; Stormkelp's natural source grows on sand, gravel or stone within three
-nodes of water in its five named zones, in any biome (Round 70).
+mud; Stormkelp's natural source grows on sand, gravel or stone within ten nodes
+of water and at most four above it in its five named zones, in any biome
+(Round 70).
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
 own T1–T6 recipes, `items_crafting.md`; the tiers tie to
