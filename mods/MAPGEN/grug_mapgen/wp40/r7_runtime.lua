@@ -720,7 +720,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	function module.road_module()
 		return roads.module
 	end
-	-- Main's read of the wayposts (the LBM's texts): the `wayposts.lua` rows.
+	-- Main's read of the wayposts (the texts main writes on generation): the `wayposts.lua` rows.
 	function module.waypost_rows(planner_source)
 		return waypost_rows(planner_source)
 	end
