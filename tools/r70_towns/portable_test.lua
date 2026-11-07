@@ -310,6 +310,20 @@ do
 		check(texts["300:6:-4"] == "Dur Brannoc" and texts["300:8:-4"] == "Copperfell",
 			"J the LBM's table, bottom to top")
 	end
+	-- A later junction with no good column is skipped, the earlier stack kept
+	-- (found by the seed fleet: the spacing test read the missing column).
+	local function with_wet_junction()
+		local roads = network()
+		roads[5] = line(150, 120, 150, 4, "secondary", "village", "road:1", 1, 150)
+		return roads
+	end
+	for x = 130, 170 do
+		for z = 4, 8 do
+			water[x .. ":" .. z], water[x .. ":" .. -z] = true, true
+		end
+	end
+	rows = wayposts.rows(module, with_wet_junction, LABELS, columns, roads_at)
+	check(#rows == 1 and rows[1].x == 300, "J a wet junction after a good one gets no stack")
 	-- Water opposite the mouth: the mouth's corner instead.
 	for x = 280, 320 do
 		for z = -8, -4 do water[x .. ":" .. z] = true end

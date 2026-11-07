@@ -127,9 +127,9 @@ function M.rows(road_module, road_text, labels, column_values_at, road_column_at
 			local first = (-pz * bx + px * bz) > 0 and -1 or 1
 			local spot = stand(parent, index, first, column_values_at, road_column_at)
 			local clear = spot ~= nil
-			for _, other in ipairs(rows) do
+			for _, other in ipairs(clear and rows or {}) do
 				local dx, dz = other.x - spot.x, other.z - spot.z
-				if clear and dx * dx + dz * dz < SPACING * SPACING then clear = false end
+				if dx * dx + dz * dz < SPACING * SPACING then clear = false end
 			end
 			if clear then
 				spot.arms = {
