@@ -62,35 +62,44 @@ local settlement = dofile(wp40 .. "/r7_settlement.lua")
 -- These tables keep one row per capital with a comment line between rows, so
 -- parallel lanes do not touch adjacent lines.
 local DONE = {
-	highcourt = false,
+	highcourt = true,
 	-- the next capital
 	dur_brannoc = true,
 	-- the next capital
-	lethariel = false,
+	lethariel = true,
 	-- the next capital
-	nhal_veyr = false,
+	nhal_veyr = true,
 	-- the next capital
-	gor_drazhak = false,
+	gor_drazhak = true,
 	-- the next capital
 	kezamba = true,
 }
 -- The castle's placement: anchor, turns, per capital.
 local CASTLE = {
-	highcourt = false,
+	highcourt = {plot = "kings_hall", x = -22, z = 10, turns = 0},
 	-- the next capital
 	dur_brannoc = {plot = "kings_hall", x = -22, z = 10, turns = 0},
 	-- the next capital
-	lethariel = false,
+	lethariel = {plot = "kings_hall", x = -52, z = -51, turns = 3},
 	-- the next capital
-	nhal_veyr = false,
+	nhal_veyr = {plot = "mausoleum", x = -22, z = 10, turns = 0},
 	-- the next capital
-	gor_drazhak = false,
+	gor_drazhak = {plot = "warlord_hall", x = -22, z = 10, turns = 0},
 	-- the next capital
 	kezamba = {plot = "kings_hall", x = 5, z = -52, turns = 2},
 }
 -- Rows of the study's schedule the build moved on purpose, id -> reason.
 local MOVED = {
-	highcourt = {},
+	highcourt = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+		-- The study moved template rows only: the court's well went east with
+		-- the store, and this one stands at it.
+		court_idle_well = "court",
+	},
 	-- the next capital
 	dur_brannoc = {
 		-- The castle's own rows follow the picked template, not the 2D study.
@@ -103,11 +112,36 @@ local MOVED = {
 		court_idle_forge = "court", court_idle_yard = "court", court_idle_fire = "court",
 	},
 	-- the next capital
-	lethariel = {},
+	lethariel = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+	},
 	-- the next capital
-	nhal_veyr = {},
+	nhal_veyr = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+		-- The study moved template rows only: the court's furniture went east
+		-- with the works, and these stand at it.
+		court_idle_works = "court", court_idle_yard = "court", court_idle_fire = "court",
+		court_work_slab = "court", court_work_pot = "court",
+	},
 	-- the next capital
-	gor_drazhak = {},
+	gor_drazhak = {
+		-- The castle's own rows follow the picked template, not the 2D study.
+		king = "castle", throne_guard_west = "castle", throne_guard_east = "castle",
+		door_guard_west = "castle", door_guard_east = "castle",
+		hall_idle_west = "castle", hall_idle_east = "castle",
+		hall_idle_service = "castle",
+		-- The study left it on the old rack, which is the new bypass: it goes
+		-- east with the racks.
+		court_work_rack = "court",
+	},
 	-- the next capital
 	kezamba = {
 		-- Its row (z 56) is the ring: it keeps its old place under the moot
