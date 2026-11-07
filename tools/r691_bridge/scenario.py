@@ -302,6 +302,14 @@ def boot_main(bridge):
                   "invalid_args", "over the stack")
     driver.expect("action.give_item", {"name": PLAYER, "item": "no:such", "count": 1},
                   "unknown_target", "unknown")
+    driver.expect("action.give_item", {"name": PLAYER, "item": "mapgen_stone", "count": 1},
+                  "unknown_target", "an alias")
+    server.probe("fill", name=PLAYER)
+    driver.expect("action.give_item", {"name": PLAYER, "item": "default:dirt", "count": 99},
+                  "refused", "no room")
+    server.probe("fill", name=PLAYER, clear=True)
+    check(server.probe("state", name=PLAYER)["dirt"] == before["dirt"] + 7,
+          "no room: nothing half delivered")
     driver.expect("action.grant_priv", {"name": PLAYER, "priv": "fly"}, "ok", "success")
     check("fly" in server.probe("state", name=PLAYER)["privs"], "the privilege arrived")
     driver.expect("action.grant_priv", {"name": PLAYER, "priv": "nope"}, "unknown_target", "unknown")
@@ -377,7 +385,13 @@ def boot_main(bridge):
     check(end["ticket_ids"] == [tid], "resync: the ticket ids", end)
     check(end.get("broadcast_ids") in (None, []), "resync: no announcements left", end)
 
-    # Refusals of the frame.
+    # A stray byte from a modified client: the link goes on, the text is valid.
+    server.probe("ticket", name=PLAYER, subject="Stray", stray=True)
+    stray = driver.event("mail.ticket", lambda e: e["ticket"]["subject"] == "Stray",
+                         "a stray byte: the ticket arrives")["ticket"]
+    check(stray["body"] == "bad\ufffdbyte", "a stray byte: replaced", stray["body"])
+    driver.expect("mail.delete", {"ticket_id": stray["id"], "admin": "Jan"}, "ok", "the link goes on")
+
     driver.expect("no.such", {}, "unsupported", "unknown type")
     driver.expect("action.give_money", {"name": PLAYER, "copper": 5}, "expired", "past its time",
                   expires=int(time.time()) - 1)

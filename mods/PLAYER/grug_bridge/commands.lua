@@ -232,7 +232,8 @@ TYPES["action.give_item"] = function(args)
 	if not player then return code, message end
 	local item = args.item
 	if type(item) ~= "string" then return invalid("item") end
-	if NOT_GIVEN[item] or not core.registered_items[item] then
+	-- rawget: the table's index answers an alias with the item behind it.
+	if NOT_GIVEN[item] or not rawget(core.registered_items, item) then
 		return "unknown_target", "There is no item called " .. item .. "."
 	end
 	if core.get_item_group(item, "grug_bound_skill") > 0 or item == grug_money.BAG then

@@ -46,7 +46,8 @@ Content-Type: application/json
 - Any other answer than `200` with a readable body of this `protocol` counts as a
   failed request.
 - A request body is at most 256 KiB. A response is at most 1 MiB.
-- All times are Unix seconds. All text is UTF-8.
+- All times are Unix seconds. All text is UTF-8: a stray byte in an event, which a
+  modified client can put into a ticket, arrives as U+FFFD.
 - Both sides accept `null` wherever an empty array is expected, because
   `core.write_json` writes an empty Lua table as `null`.
 
@@ -124,7 +125,8 @@ Each event has `seq`, `time` and `type`. `seq` starts at 1 per boot and increase
 one. The mod resends unacknowledged events in order, at most 100 per request and
 fewer when the request would pass 256 KiB (a ticket with a reported letter runs to
 tens of KiB). The bridge ignores a `(boot, seq)` it has already stored. The queue
-holds 1000 events; beyond that the oldest are dropped and counted.
+holds 1000 events; beyond that the oldest are dropped and counted, and so is an
+event over 128 KiB, which no game text reaches.
 
 | Type | Fields | Sent when |
 | --- | --- | --- |
@@ -209,10 +211,10 @@ down.
 - Chat and kick text from the website is untrusted: the mod removes colour escapes
   and control characters, and a line break becomes a space. An empty `text` is
   `invalid_args`; an empty `reason` is no reason.
-- `mail.*`: an empty or over-long `subject` (60 characters) or `body` (4000) is
-  `invalid_args`, never cut. `grug_mail.send_system` would cut, so the mod checks
-  first, as the Admin Mail tab does. A closed ticket is `refused`, a gone one
-  `unknown_target`.
+- `mail.*`: an empty or over-long `subject` (60 characters), `body` (4000) or `to`
+  (40) is `invalid_args`, never cut. `grug_mail.send_system` would cut, so the mod
+  checks first, as the Admin Mail tab does. `mail.answer` and `mail.close` on a
+  closed ticket are `refused`; a ticket that is gone is `unknown_target`.
 - `action.*` targets must be online. A grant of money, XP or an item to a character
   still being created is `refused`: creation stores nothing. Offline grants do not
   exist (the user, 2026-11-07).
@@ -249,14 +251,25 @@ the proxy's address, so an IP ban would lock out all of them.
 
 ## Amendments 2026-11-07
 
-The contract check before the mod was built, accepted by the user. What this copy
-adds to the platform's first version:
+The contract check before the mod was built and its review, accepted by the user.
+What this copy adds to or changes in the platform's first version:
 
-- `faction` is `accord` or `throng`; the first example named a heraldry.
-- When a result is forgotten, and that the bridge takes results by `id`.
-- The bridge answers every new `boot` and a rising `dropped_events` with a `resync`.
-- Events per request are bound by bytes too.
-- An expired ticket or announcement is reported as removed, at a read.
-- The refusals: a character in creation, the items no grant hands out, an empty
-  subject or body, a privilege the server's admin keeps.
-- A ban disconnects through `core.disconnect_player`, and a kick reads `Kicked: `.
+- **Values:** `faction` is `accord` or `throng`, where the first example named a
+  heraldry; the sets of `class` and `race`.
+- **The exchange:** `next_ms` outside its bounds is held to them; what counts as a
+  failed request; invalid UTF-8 arrives as U+FFFD; a mod without its settings
+  registers no hook at all, stricter than the first version's "no hooks that change
+  behaviour".
+- **Results and events:** when a result is forgotten and that the bridge takes
+  results by `id`; events per request are bound by bytes too; an event over 128 KiB
+  is lost and counted; an expired ticket or announcement is reported as removed, at
+  a read.
+- **The bridge's part:** it answers every new `boot` and a rising `dropped_events`
+  with a `resync`.
+- **`online`:** "every change" is a join, a leave, a level change or an arrival.
+- **Commands:** `admin` at most 64 characters, `to` at most 40; website text is
+  cleaned of escapes and control characters; the refusals of a character in
+  creation, of the items no grant hands out, of an empty subject or body and of a
+  privilege the server's admin keeps; money and item grants show in the feed; a
+  privilege's callbacks run; `kick` reads `Kicked: `.
+- **Bans:** a ban disconnects through `core.disconnect_player`; the date's format.

@@ -2198,7 +2198,9 @@ nothing and logs one line, so local and browser worlds play as without it.
   `bans.lua`; `init.lua` passes in what they need, so `tools/r691_bridge` runs the
   shipped files. Events are encoded when queued: one that cannot be written is lost
   alone and never blocks the queue. The request is assembled from those strings,
-  which also keeps its byte bound exact and writes empty lists as `[]`.
+  which also keeps its byte bound exact and writes empty lists as `[]`. A queued
+  event is valid UTF-8 (`L.valid_utf8`): the JSON writer copies bytes, `M.clean`
+  keeps a stray lead byte, and a bridge refusing that body would stop the queue.
 - **Errors** never reach the engine: `core.after` and the HTTP callback run in the
   server step, where an uncaught error ends the server, so every hook, command and
   callback is caught and the exchange goes on. Requests set `quiet`: otherwise the

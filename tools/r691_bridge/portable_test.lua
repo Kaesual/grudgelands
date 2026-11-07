@@ -209,6 +209,7 @@ _G.core = {
 		["default:dirt"] = {stack = 99}, ["default:sword"] = {stack = 1},
 		["grug_abilities:strike"] = {stack = 1, skill = true},
 		["grug_money:bag_of_coins"] = {stack = 1}},
+	registered_aliases = {mapgen_stone = "default:dirt"},
 	get_item_group = function(name, group)
 		local def = core.registered_items[name]
 		return group == "grug_bound_skill" and def and def.skill and 1 or 0
@@ -241,6 +242,9 @@ _G.core = {
 	request_http_api = function() return world.http end,
 	after = function(delay, func) world.after[#world.after + 1] = {delay, func} end,
 }
+setmetatable(core.registered_items, {__index = function(items, name)
+	return rawget(items, core.registered_aliases[name])
+end})
 for _, name in ipairs({"register_on_joinplayer", "register_on_leaveplayer",
 		"register_on_prejoinplayer", "register_on_chat_message"}) do
 	core[name] = function(func)
@@ -383,6 +387,11 @@ do
 	link:finish(reply({}))
 
 	local fail = {completed = true, succeeded = false, code = 0, data = ""}
+	link:online_changed()
+	check(link:request():find('"online":', 1, true), "A a change is due")
+	link:finish(fail)
+	check(link:request():find('"online":', 1, true), "A a failed request sends it again")
+	link:finish(reply({}))
 	local logged = #world.logs
 	for index, wait in ipairs({5, 10, 20, 40, 60, 60}) do
 		link:request()
@@ -451,6 +460,22 @@ do
 		"B an event that can never fit is lost")
 	check(big:push({type = "bad", value = function() end}) == false,
 		"B an unwritable event is lost")
+	for input, wanted in pairs({
+		["plain"] = "plain",
+		["caf\195\169 \240\159\144\151"] = "caf\195\169 \240\159\144\151",
+		["a\194b"] = "a\239\191\189b",               -- a lead byte alone
+		["\224\128c"] = "\239\191\189\239\191\189c", -- overlong
+		["\237\160\128"] = "\239\191\189\239\191\189\239\191\189", -- a surrogate
+		["\244\144\128\128"] = "\239\191\189\239\191\189\239\191\189\239\191\189", -- past U+10FFFF
+		["\192\255"] = "\239\191\189\239\191\189",   -- never valid
+		["end\240\159"] = "end\239\191\189\239\191\189", -- cut off
+	}) do
+		eq(L.valid_utf8(input), wanted, "B valid UTF-8")
+	end
+	local stray = new_link()
+	stray:push({type = "mail.ticket", ticket = {body = "bad\194byte"}})
+	eq(decode(stray:request()).events[1].ticket.body, "bad\239\191\189byte", "B a queued event is valid")
+
 	local seq = big.next_seq
 	eq(big.dropped, 2, "B both counted")
 	big:push({type = "chat", name = "A", text = "after"})
@@ -511,6 +536,28 @@ do
 	eq(#state.commands, 5, "C not past its time")
 	link:request()
 	link:finish(reply({}))
+
+	-- Only an answer forgets a result: never a refusal or a failure.
+	local kept = new_link()
+	kept:command({id = "k", type = "x"})
+	for _, res in ipairs({{completed = true, succeeded = true, code = 401, data = ""},
+			{completed = true, succeeded = true, code = 409, data = ""},
+			{completed = true, succeeded = true, code = 500, data = ""},
+			{completed = true, succeeded = true, code = 200, data = "not json"},
+			{completed = true, succeeded = false, code = 0, data = ""}}) do
+		kept:request()
+		kept:finish(res)
+		eq(#kept.results, 1, "C a result stays after status " .. res.code)
+	end
+
+	-- One failing part of an answer leaves the others alone.
+	local partly, parts = new_link({
+		on_banlist = function() error("banlist") end,
+		on_resync = function() error("resync") end})
+	partly:request()
+	eq(partly:finish(reply({ack_seq = 0, banlist = {version = 1}, resync = {"mail"},
+		commands = {{id = "p", type = "x"}}, next_ms = 4000})), 4, "C the answer is read to its end")
+	eq(parts.commands[1], "p", "C the command ran")
 
 	local boom = new_link({run_command = function() error("kaboom") end})
 	boom:request()
@@ -632,6 +679,7 @@ do
 		eq(run("action.give_item", {name = "Rowan", item = item, count = 1}), "unknown_target", "D the engine's own")
 	end
 	eq(run("action.give_item", {name = "Rowan", item = "default:dirt 99", count = 1}), "unknown_target", "D an item string")
+	eq(run("action.give_item", {name = "Rowan", item = "mapgen_stone", count = 1}), "unknown_target", "D an alias")
 	eq(run("action.give_item", {name = "Rowan", item = "grug_abilities:strike", count = 1}), "refused", "D a skill item")
 	eq(run("action.give_item", {name = "Rowan", item = "grug_money:bag_of_coins", count = 1}), "refused", "D an empty bag")
 	eq(run("action.give_item", {name = "Rowan", item = "default:sword", count = 2}), "invalid_args", "D over the stack")
@@ -862,9 +910,18 @@ do
 	world.after[1][2]()
 	fetches[1].callback(nil)
 	eq(world.after[2][1], 60, "G a broken answer tries again")
-	-- The hooks fail without taking the server down.
-	local level = world.hooks.level
-	check(pcall(level), "G a hook is safe")
+	-- No hook lets an error reach the engine.
+	eq(world.hooks.register_on_joinplayer[1](nil), nil, "G the join hook survives")
+	eq(world.hooks.register_on_leaveplayer[1](nil), nil, "G the leave hook survives")
+	eq(world.hooks.register_on_prejoinplayer[1](nil), nil, "G the ban check survives")
+	local privs_check = core.check_player_privs
+	core.check_player_privs = function() error("no") end
+	eq(world.hooks.register_on_chat_message[1]("Rowan", "x"), nil, "G the chat hook survives")
+	core.check_player_privs = privs_check
+	local logged = #world.logs
+	grug_mail.store.save_tickets({5}) -- not a ticket: the mirror raises, the save stands
+	check(#world.logs > logged and world.logs[#world.logs][1] == "error", "G the mirror's error is logged")
+	eq(world.logs[#world.logs][2]:find("the mail mirror", 1, true) ~= nil, true, "G by its name")
 end
 
 os.time = real_time -- luacheck: ignore

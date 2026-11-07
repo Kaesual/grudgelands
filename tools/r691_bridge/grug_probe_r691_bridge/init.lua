@@ -69,10 +69,31 @@ function OPS.state(request)
 		letters = #grug_mail.store.box(request.name).letters}
 end
 
+-- `stray` puts a lead byte without its continuation into the body, as a
+-- modified client can.
 function OPS.ticket(request)
 	local player = core.get_player_by_name(request.name)
-	local ok, message = grug_mail.send_ticket(player, "Question", request.subject, "Body", "Probe")
+	local body = request.stray and "bad\194byte" or "Body"
+	local ok, message = grug_mail.send_ticket(player, "Question", request.subject, body, "Probe")
 	return {ok = ok, message = message}
+end
+
+-- Fills every free carried slot with sticks, or takes them out again.
+local filled = {}
+function OPS.fill(request)
+	local inv = core.get_player_by_name(request.name):get_inventory()
+	for _, list in ipairs(grug_inventory.carried_lists(inv)) do
+		for index, stack in ipairs(inv:get_list(list) or {}) do
+			if request.clear then
+				if filled[list .. index] then inv:set_stack(list, index, "") end
+			elseif stack:is_empty() then
+				inv:set_stack(list, index, "default:stick 99")
+				filled[list .. index] = true
+			end
+		end
+	end
+	if request.clear then filled = {} end
+	return {}
 end
 
 -- As Server::handleChat: the hooks in order, until one returns true.

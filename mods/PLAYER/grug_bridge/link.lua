@@ -24,6 +24,48 @@ L.MESSAGE_MAX = 200           -- characters of a result's message
 -- ticket holding a reported letter stays far below this.
 L.EVENT_MAX = L.MAX_REQUEST / 2
 
+local REPLACEMENT = "\239\191\189" -- U+FFFD
+
+-- `text` as valid UTF-8, each stray byte replaced. The JSON writer copies bytes
+-- as they are, and M.clean keeps a lead byte without its continuation, which a
+-- modified client can place in a ticket: a bridge that refuses such a body
+-- would never acknowledge the event, and the queue would stand still.
+function L.valid_utf8(text)
+	if not text:find("[\128-\255]") then return text end
+	local out, at, length = {}, 1, #text
+	while at <= length do
+		local byte = text:byte(at)
+		local size, low, high = 1, 128, 191
+		if byte >= 128 then
+			if byte >= 194 and byte <= 223 then size = 2
+			elseif byte >= 224 and byte <= 239 then
+				size = 3
+				if byte == 224 then low = 160 elseif byte == 237 then high = 159 end
+			elseif byte >= 240 and byte <= 244 then
+				size = 4
+				if byte == 240 then low = 144 elseif byte == 244 then high = 143 end
+			else size = 0 end
+		end
+		local valid = size > 0
+		for index = 1, size - 1 do
+			local next_byte = text:byte(at + index)
+			if not next_byte or next_byte < (index == 1 and low or 128) or
+					next_byte > (index == 1 and high or 191) then
+				valid = false
+				break
+			end
+		end
+		if valid then
+			out[#out + 1] = text:sub(at, at + size - 1)
+			at = at + size
+		else
+			out[#out + 1] = REPLACEMENT
+			at = at + 1
+		end
+	end
+	return table.concat(out)
+end
+
 local Link = {}
 Link.__index = Link
 
@@ -64,7 +106,7 @@ function Link:push(event)
 	end
 	self.next_seq = self.next_seq + 1
 	self.last = self.last + 1
-	self.events[self.last] = {seq = event.seq, json = json}
+	self.events[self.last] = {seq = event.seq, json = L.valid_utf8(json)}
 	if self:queued() > L.QUEUE_MAX then
 		self:forget_oldest()
 		self.dropped = self.dropped + 1
