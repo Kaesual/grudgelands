@@ -12,11 +12,15 @@
 -- The stack stands just off the road surface, opposite the mouth if it can
 -- (the mouth's corner if not), at most ROAD_SIDE nodes from the road's edge:
 -- no road column is taken, the road corridor's vegetation exclusion keeps
--- plants off the cell, and world protection covers it. Roads keep out of
--- every settlement's reservation but the ones they end at, so a junction far
--- enough from its road's ends is clear of them too (tools/seed_fleet checks
--- it on every seed). A junction with no good column (a bridge, a deep cut,
--- water) gets no stack; both environments skip the same one.
+-- plants off the cell, and world protection covers it. A junction far from
+-- its road's ends can still lie beside a settlement: the road grid only keeps
+-- a POI's reservation as a circle, read at its 16-node cells' centres, so a
+-- primary road may pass through the corner of the square the settlement
+-- stands in, and a camp may be placed right beside one. A junction whose
+-- stack would stand inside a reservation's box gets no stack (tools/seed_fleet
+-- checks it on every seed), and neither does one with no good column (a
+-- bridge, a deep cut, water); both environments skip the same ones, the
+-- reservations coming from the placed source each of them holds.
 --
 -- The node's text is metadata, which the emerge environment cannot write: the
 -- writer places the nodes, and main's on_generated (grug_mapgen/init.lua)
@@ -41,6 +45,7 @@ local SLIP = 12
 local ROAD_SIDE = 1
 
 local floor, sqrt, deg, atan2 = math.floor, math.sqrt, math.deg, math.atan2
+local abs, max = math.abs, math.max
 
 local function unit(dx, dz)
 	local d = sqrt(dx * dx + dz * dz)
@@ -73,7 +78,7 @@ local function ground_at(x, z, cx, cz, column_values_at, road_column_at)
 	if here ~= nil and not SLOPE[here] then return nil end
 	local water_class, _, _, _, _, terrain_y, water_y = column_values_at(x, z)
 	if water_class ~= "land" or (water_y ~= nil and water_y > terrain_y) then return nil end
-	if math.abs(terrain_y - floor(road_y)) > 1 then return nil end
+	if abs(terrain_y - floor(road_y)) > 1 then return nil end
 	return terrain_y
 end
 
@@ -106,10 +111,20 @@ local function stand(road, index, first, column_values_at, road_column_at)
 	return nil
 end
 
+-- Inside a reservation's box, whatever its shape for the road grid: a
+-- settlement's ground is square.
+local function reserved_at(reserved, x, z)
+	for _, r in ipairs(reserved) do
+		if max(abs(x - r.x), abs(z - r.z)) <= r.half then return true end
+	end
+	return false
+end
+
 -- Every stack of the world, in road id order:
 --   {x, y, z, arms = {{param2 =, text =}, ...}} with y the lowest node's;
--- arms bottom to top. `labels`: anchor id -> settlement name.
-function M.rows(road_module, road_text, labels, column_values_at, road_column_at)
+-- arms bottom to top. `labels`: anchor id -> settlement name; `reserved`: the
+-- settlements' areas, {x, z, half} (`road_layout.inputs(source).reserved`).
+function M.rows(road_module, road_text, labels, reserved, column_values_at, road_column_at)
 	local roads = road_module.deserialize(road_text).roads
 	local ids = {}
 	for id in pairs(roads) do ids[#ids + 1] = id end
@@ -130,7 +145,7 @@ function M.rows(road_module, road_text, labels, column_values_at, road_column_at
 			-- The side of the primary road away from the mouth.
 			local first = (-pz * bx + px * bz) > 0 and -1 or 1
 			local spot = stand(parent, index, first, column_values_at, road_column_at)
-			local clear = spot ~= nil
+			local clear = spot ~= nil and not reserved_at(reserved, spot.x, spot.z)
 			for _, other in ipairs(clear and rows or {}) do
 				local dx, dz = other.x - spot.x, other.z - spot.z
 				if dx * dx + dz * dz < SPACING * SPACING then clear = false end

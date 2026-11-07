@@ -322,7 +322,7 @@ local function loader(directory)
 		{id = "core_spare_hall_green", x = 25, z = 13, face = 3},
 		{id = "core_spare_market_walk", x = -20, z = -20, face = 0},
 		{id = "core_spare_approach", x = 2, z = -26, face = 0},
-		{id = "core_spare_west_lane", x = -23, z = 16, face = 1},
+		{id = "core_spare_west_lane", x = -23, z = 16, face = 3}, -- Round 70: 1 faced the castle
 		{id = "core_spare_east_avenue", x = 30, z = -1, face = 3},
 		{id = "core_spare_west_avenue", x = -31, z = 1, face = 1},
 		{id = "core_spare_north_court", x = 20, z = 47, face = 2},
