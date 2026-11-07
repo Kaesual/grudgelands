@@ -1,4 +1,5 @@
--- Round 71 lane UI portable test (LuaJIT): the Expedition Registrar.
+-- Round 71 lane UI portable test (LuaJIT): the Expedition Registrar (the warning's
+-- lines in the box and on the tab: tools/r67_social; the role change: tools/r451_nq).
 --   A  the socket: the real registry takes the role on all six clerk sockets, and
 --      only there; the resolver gives the capital's villager;
 --   D  the dialog's rows on the REAL runs.lua, the real catalogue and the real
