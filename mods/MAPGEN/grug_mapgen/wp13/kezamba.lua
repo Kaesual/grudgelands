@@ -513,16 +513,6 @@ local function loader(directory)
 
 		templates.all_used(stamped, "kezamba")
 
-		-- 4b. THE CASTLE'S TWO EAVE ENDS (Round 70). The timber roof's stair is
-		-- this capital's seat node, and where the gable end's second course
-		-- stops one node short of a turret it stands on the gable wall, with
-		-- the first course's slab as a floor beside it: a bench to the facing
-		-- check (tools/r36_w2), looking at the turret's wall. A corner stair
-		-- closes each end instead; the other courses keep their straight stair.
-		local eave = timber.node("roof_stair_outer")
-		buf:put(11, 19, -50, eave, 1)
-		buf:put(43, 19, -50, eave, 0)
-
 		-- 5. THE QUAY. Every pad column on the water's edge that the city has
 		-- not already built on gets a course of basalt kerb, which is what
 		-- keeps the shoreline from reading as grass stopping at water.

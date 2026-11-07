@@ -133,9 +133,9 @@ local FROZEN = {
 		"b659f3b315c5b6e4ace96d001afb3a8392389bd14b28b222b2de181abe12d6ae",
 		"c4534ad062d64b7ce07a529392054cc1505d067908151a9e6767fcb3bfe25b14"},
 	-- the next capital
-	kezamba = {"aca21ebe2af611a3e5ed3a32d339807ec0dabf99293abf8d159aa2e6652eab89",
+	kezamba = {"5a126c84e45ae2288d3d540d11c4bba5b0e31b9c77ac25084782f2e982a511ed",
 		"30a4cee70bec78dd0bd9b8e45455e570dd522ff1ddcaf3cedffa6006e7a99c5f",
-		"9fec6f82cf4f00c1a13664b6c299518dd859a03ea6367c22693753b081fd16f5"},
+		"43226372dde0b77c79717b1733e5840df8829d14477ae46138484d73ec1a0356"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()
