@@ -80,7 +80,13 @@ end
 -- A cell beside the player, with a floor, that the player can see, else their own:
 -- always one a mob can stand on and strike from, never a fall.
 local function beside(player)
-	local at = vector.round(player:get_pos())
+	-- The cell of the feet. vector.round takes a half away from zero, so on a floor
+	-- below y 0 (every box), where the feet stand at an exact half, it names the floor
+	-- itself: no side is free, and the pack lands on the player, whose client then
+	-- reports the lift as a fatal fall.
+	local feet = player:get_pos()
+	local at = {x = math.floor(feet.x + 0.5), y = math.floor(feet.y + 0.5),
+		z = math.floor(feet.z + 0.5)}
 	local eye = {x = at.x, y = at.y + 1, z = at.z}
 	for _, side in ipairs(SIDES) do
 		local pos = {x = at.x + side[1], y = at.y, z = at.z + side[2]}

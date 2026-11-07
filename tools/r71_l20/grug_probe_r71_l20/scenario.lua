@@ -1,6 +1,7 @@
--- The one scenario, on the real template: a run at level 20 from create to the store,
--- with the quest, and the rooms again at level 29. Mobs are killed by the probe; the
--- boss by the character's own hits, for the kill credit.
+-- The one scenario, on the real template with the pack rule on: a run at level 20 from
+-- create to the store, with the quest, and the rooms again at level 29. A pulled pack
+-- follows the probe's teleports by its jumps, as it follows a runner. Mobs are killed
+-- by the probe; the boss by the character's own hits, for the kill credit.
 local E = grug_expeditions
 local QUEST, GIVER = "capital_stilled_seam", "r58_guild_leader_highcourt"
 local FEET = 5
@@ -26,7 +27,22 @@ local function boss_of(run)
 	end
 end
 
+-- What a failure needs: the character's state, and where its pack's mobs stand.
+local function status(lib, player, run, label)
+	local at, near, stacked = player:get_pos(), 0, 0
+	for _, ent in ipairs(mobs_in(run)) do
+		local pos = ent.object:get_pos()
+		if vector.distance(pos, at) <= 16 then near = near + 1 end
+		if math.abs(pos.x - at.x) < 0.6 and math.abs(pos.z - at.z) < 0.6 then stacked = stacked + 1 end
+	end
+	lib.logf("%s: hp %d at %s, inside %s, in combat %s, %d mobs within 16, %d on the player's cell",
+		label, player:get_hp(), core.pos_to_string(at, 2), tostring(E.run_inside(player) == run),
+		tostring(grug_core.in_combat(player)), near, stacked)
+end
+
 local function go(lib, player, run, x, z, yaw)
+	status(lib, player, run, "leaving for " .. x .. "," .. z)
+	lib.check(player:get_hp() > 0, "the character lives")
 	player:set_pos(feet(rel(run, x, FEET, z)))
 	if yaw then player:set_look_horizontal(yaw) end
 	player:set_look_vertical(0.05)
@@ -132,8 +148,7 @@ end
 
 local function hit_boss(lib, player, run)
 	local boss = assert(boss_of(run))
-	local at = vector.round(boss.object:get_pos())
-	player:set_pos({x = at.x, y = at.y, z = at.z - 4})
+	status(lib, player, run, "to the boss")
 	lib.logf("boss %s: name %q tier %s level %s HP %s/%s id %s tag %q", boss.name, tostring(boss.description),
 		tostring(boss._grug_tier), tostring(boss._grug_level), tostring(boss.health), tostring(boss.hp_max),
 		tostring(boss._grug_boss_id), tostring(grug_mobs.tag_text(boss)))
@@ -152,6 +167,12 @@ end
 
 return function(lib, player)
 	lib.keep_alive = player
+	core.register_on_dieplayer(function(_, reason)
+		lib.logf("DIED %s %s", tostring(reason and reason.type), core.pos_to_string(player:get_pos(), 2))
+	end)
+	core.register_on_player_hpchange(function(_, change, reason)
+		if reason.type == "fall" then lib.logf("FALL %d", change) end
+	end, false)
 	local kills = {}
 	grug_mobs.register_on_boss_kill(function(_, id) kills[#kills + 1] = id end)
 	local Q = grug_quests

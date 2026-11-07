@@ -34,8 +34,11 @@ vector = {
 	add = function(a, n) return {x = a.x + n, y = a.y + n, z = a.z + n} end,
 	subtract = function(a, n) return {x = a.x - n, y = a.y - n, z = a.z - n} end,
 	distance = distance,
-	round = function(p) return {x = math.floor(p.x + 0.5), y = math.floor(p.y + 0.5),
-		z = math.floor(p.z + 0.5)} end,
+	-- The engine's math.round: halves away from zero, so -107.5 is -108.
+	round = function(p)
+		local function round(v) return v < 0 and -math.floor(-v + 0.5) or math.floor(v + 0.5) end
+		return {x = round(p.x), y = round(p.y), z = round(p.z)}
+	end,
 }
 
 local mob_objects = {}
@@ -455,6 +458,29 @@ do
 	for _, ent in ipairs(living()) do ent.object.go_inactive() end
 	advance(1)
 	check(idle.alive == 0 and next(idle.players) == nil, "C a refused body frees the list")
+	reset_world()
+end
+
+-- A player standing on a floor below y 0: every Expedition. Their feet are at an exact
+-- half, the top of the floor's cell, and the jump's cells are those of the feet, not of
+-- the floor under them: a mob on the player's own cell lifts them, and the fall kills.
+do
+	local run = new_run()
+	local pack = mixed(run)
+	local ana = fake_player("ana", run)
+	local bodies = living()
+	hit(bodies[1], ana)
+	ana.at = {x = 100, y = -107.5, z = 0}
+	for x = 96, 104 do
+		for z = -4, 4 do walls[key({x = x, y = -108, z = z})] = "stone" end
+	end
+	advance(1)
+	for _, ent in ipairs(bodies) do
+		local at = ent.object:get_pos()
+		check(at.y == -107, "C the jump stands on the floor, not in it")
+		check(distance(at, {x = 100, y = -107, z = 0}) >= 2 and distance(at, ana.at) <= 3,
+			"C below y 0 it lands beside the player, not on them")
+	end
 	reset_world()
 end
 

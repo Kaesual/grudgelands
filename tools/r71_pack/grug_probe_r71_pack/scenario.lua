@@ -393,9 +393,18 @@ return function(lib, player)
 	lib.phase("run gone")
 	stand(player, cell(run, WATCH))
 	lib.wait_for(function() return by_room(run, SPLIT[1])[1] ~= nil end, 8)
-	lib.wait(4)
+	-- Woken away from home it runs back, and an evader takes no hit. The probe's rooms
+	-- are sealed from each other, so here that is the 40 s snap (aggro.lua EVADE_TIMEOUT).
+	local function settled()
+		local mob = by_room(run, SPLIT[1])[1]
+		return mob and not (mob.temp and mob.temp.grug_evading)
+	end
+	local settled_after = lib.wait_for(settled, 45)
 	local rest = by_room(run, SPLIT[1])
 	lib.check(#rest >= 1, "a living pack to log out of")
+	lib.logf("settled after %s s; the mob %s state %s at %s, home %s", tostring(settled_after), rest[1].name,
+		tostring(rest[1].state), core.pos_to_string(rest[1].object:get_pos(), 1),
+		core.pos_to_string(rest[1]._grug_home, 1))
 	grug_core.deal_ability_damage(player, rest[1].object, 5)
 	lib.wait(1)
 	lib.check(grug_core.in_combat(player), "in combat with it")
