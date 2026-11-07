@@ -78,7 +78,7 @@ local function loader(directory)
 	-- The castle's forecourt on the dry terrace north of it (Round 70): paved
 	-- from the castle's own apron to the east avenue's kerb, the great door at
 	-- x 27 on its axis line.
-	local COURT = {x1 = 6, z1 = -17, x2 = 32, z2 = -4}
+	local COURT = {x1 = 6, z1 = -17, x2 = 32, z2 = -3}
 	local DOOR_X = 27
 
 	-- THE STREETS. The four avenues are five wide on the two axes; the lanes
@@ -137,7 +137,10 @@ local function loader(directory)
 		-- the -x end, which is the bank.
 		{id = "moot_house", template = "kezamba_moot_house",
 			x = -24, z = 45, turns = 1, handle = "basalt",
-			water = true, land_rows = 4},
+			water = true, land_rows = 4,
+			-- The walkway's two legs (plot-relative x, z): the template has no
+			-- pier under them, so the composition drives theirs into the lake.
+			legs = {{15, 5}, {18, 5}}},
 
 		-- 3. The cauldron court: the troll market, in the south-west corner.
 		{id = "cauldron_court", template = "kezamba_cauldron_court",
@@ -460,6 +463,12 @@ local function loader(directory)
 					local rx, rz = parts.rotate_footprint(cell.x, cell.z,
 						part.w, part.d, turns)
 					claim_water(plot.x + rx, cell.y, plot.z + rz)
+				end
+				for _, leg in ipairs(plot.legs or {}) do
+					for y = -2, 0 do
+						buf:put(plot.x + leg[1], y, plot.z + leg[2], PIER)
+						claim_water(plot.x + leg[1], y, plot.z + leg[2])
+					end
 				end
 			end
 			local footprint = points.footprint[1]
@@ -826,10 +835,10 @@ local function loader(directory)
 			end
 		end
 
-		-- 11c. THE PROTECTED DRY EDGE. Water is this open capital's north-east
-		-- boundary; everywhere else the junglewood palisade is the civic ring.
-		-- It is written after every building, prop and plant so none can cut it,
-		-- while the shared mask leaves the four totem thresholds open.
+		-- 11c. THE PROTECTED DRY EDGE. Water is this open capital's north and
+		-- north-east boundary; everywhere else the junglewood palisade is the
+		-- civic ring. It is written after every building, prop and plant so none
+		-- can cut it, while the shared mask leaves the four totem thresholds open.
 		local palisade_columns = 0
 		precinct_ring.walk(function(x, z)
 			precinct_ring.clear_wallmounted(buf, parts, x, z, 4)

@@ -348,6 +348,18 @@ local function capital_tests(capital)
 					end
 				end
 				check(wrong == 0, "R " .. label .. "the mask is the water (" .. wrong .. " columns differ)")
+				-- What stands over the lake stands on something: a leg runs
+				-- down into the water, it does not end in the air.
+				local hanging = 0
+				for z = -ring.PAD, ring.PAD do
+					for x = -ring.PAD, ring.PAD do
+						if mask.lagoon(x, z) and walk.node(x, 1, z) and not walk.node(x, 0, z) then
+							hanging = hanging + 1
+							print("note " .. label .. "nothing under the cell at " .. x .. ",1," .. z)
+						end
+					end
+				end
+				check(hanging == 0, "R " .. label .. "no stilt hangs over the lake (" .. hanging .. ")")
 			end
 		end
 	end
