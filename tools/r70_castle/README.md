@@ -1,8 +1,10 @@
 # Round 70 CASTLE — the seat of the king
 
-Three castle forms and one monumental throne, in all six capital palettes.
-**A — Crownward is recommended.** Open [page.html](page.html) directly: it is a
-single, self-contained file, including the shared building viewer, all textures,
+Three castle forms in all six capital palettes.
+**The user picked A — Crownward (2026-11-07).** Its pass-3 throne has a
+3 × 2 seat within a 5 × 3 × 7 bronze body; B and C retain their pass-2 throne.
+Open [page.html](page.html) directly: it is a single, self-contained file,
+including the shared building viewer, all textures,
 24 scenes, floor plans and 18 WebP still previews. No network requests are needed.
 
 Compare today's hall with any proposal at the same scale. Switch culture and
@@ -11,9 +13,10 @@ the selected hall at player eye height. The plans show the main floor, raised
 dais and roof projection; socket numbers match their coordinate table.
 The page follows the system theme and also has a light/dark switch.
 
-The [report](REPORT.md) owns the recommendation, measurements, socket schedule,
-integration instructions, provenance, publication state and verification limits.
-These are proposals for the user's pick and the coordinator's independent review.
+The [report](REPORT.md) records the pick, measurements, provenance, publication
+state and verification limits. [INSTALL.md](INSTALL.md) gives CAPITALS the
+selected files, palette/roster bindings and socket schedule. The coordinator’s
+independent review of pass 3 remains pending.
 
 ## Reproduce
 
@@ -39,7 +42,8 @@ HTML byte for byte. It also verifies the stills' input and output hashes.
 page embeds the 18 Human stills and offers all six cultures interactively.
 Separate form/race jobs have distinct output files and can run independently.
 `verify.py` checks all 18 night light banks against the shipped Highcourt
-benchmark, the throne sightlines, inline JavaScript, offline references, media
+benchmark, Crownward’s throne size, ornament row, sightlines and full king/guard
+body clearance, inline JavaScript, offline references, media
 decoding and all 24 geometry exports, with at most two Node processes.
 Bright views are geometry studies, not daylight; the night model is not an
 engine screenshot and does not reproduce client shaders, moonlight or bloom.

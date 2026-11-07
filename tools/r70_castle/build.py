@@ -34,7 +34,7 @@ OLD = dict(zip(RACES, ('dur_brannoc_kings_hall', 'highcourt_kings_hall', 'lethar
 FORMS = {
  'crownward': {'name': 'Crownward', 'letter': 'A', 'peak': 33,
   'rationale': 'Four towers hold a long, rising hall. A low gate gives way to a vaulted chamber and a high rear crown framing the throne. The layered silhouette reads as a royal castle from several streets.',
-  'tradeoff': 'Recommended: the strongest balance of fortress, ceremonial approach and a clear, spacious battle floor. The rear towers are solid architectural turrets, not extra playable storeys.'},
+  'tradeoff': 'Picked by the user on 2026-11-07. Pass 3 reduces the bronze throne to a three-wide seat and a seven-node-high body. The rear towers are solid architectural turrets, not extra playable storeys.'},
  'high_seat': {'name': 'High Seat', 'letter': 'B', 'peak': 38,
   'rationale': 'One monumental keep rises in three setbacks above a low enclosing wall. A deep front portal compresses the approach before a tall, bright hall opens beneath the central lantern.',
   'tradeoff': 'The most dominant skyline and the tallest interior. Its broad stepped mass is more severe; the upper tiers are a roof lantern, not additional rooms.'},
@@ -122,7 +122,7 @@ class Castle:
         for x in (18,26): self.fill(x,3,z,x,8,z,role('signature'))
         self.fill(19,9,z,25,9,z,role('signature'))
         self.fill(20,10,z,24,10,z,role('castle_wall'))
-    def throne(self):
+    def throne(self,form):
         # Full-width shallow steps, then a flat dais with two side approaches.
         self.fill(15,3,25,29,3,31,role('castle_paving'))
         self.fill(15,4,26,29,4,31,role('castle_paving'))
@@ -133,20 +133,38 @@ class Castle:
         # the open gaps under the arms make the seat/back/arm silhouette explicit.
         bronze=node('grug_materials:bronze_block')
         cap=node('grug_materials:slab_bronze_block')
-        self.fill(19,5,28,25,5,30,bronze)
-        self.fill(20,6,28,24,6,29,role('rug_accent'))
-        self.fill(19,6,30,25,12,30,bronze)
-        self.fill(20,7,30,24,11,30,role('rug_accent'))
-        for x in (19,25):
-            self.fill(x,6,28,x,8,28,bronze)
-            self.fill(x,8,29,x,8,29,bronze)
-            self.fill(x,9,28,x,9,29,cap)
-            self.put(x,13,30,cap)
-        for x,metal in zip(range(20,25),ORNAMENTS):
-            self.put(x,12,30,node('grug_guild:ornamented_'+metal))
-            self.put(x,13,30,cap)
-        self.fill(21,13,30,23,13,30,bronze)
-        self.put(22,14,30,cap)
+        if form=='crownward':
+            # The picked form: 3-wide upholstery within a 5 x 3 x 7 chair.
+            # Keep the raised seat visible from the far end and all five stones
+            # across the back; lower the arms and the crown with the width.
+            self.fill(20,5,28,24,5,30,bronze)
+            self.fill(21,6,28,23,6,29,role('rug_accent'))
+            self.fill(20,6,30,24,9,30,bronze)
+            self.fill(21,7,30,23,9,30,role('rug_accent'))
+            for x in (20,24):
+                self.fill(x,6,28,x,7,28,bronze)
+                self.put(x,7,29,bronze)
+                self.fill(x,8,28,x,8,29,cap)
+            for x,metal in zip(range(20,25),ORNAMENTS):
+                self.put(x,10,30,node('grug_guild:ornamented_'+metal))
+                self.put(x,11,30,cap)
+            self.put(22,11,30,bronze)
+        else:
+            # B and C retain their pass-2 throne for the proposal record.
+            self.fill(19,5,28,25,5,30,bronze)
+            self.fill(20,6,28,24,6,29,role('rug_accent'))
+            self.fill(19,6,30,25,12,30,bronze)
+            self.fill(20,7,30,24,11,30,role('rug_accent'))
+            for x in (19,25):
+                self.fill(x,6,28,x,8,28,bronze)
+                self.fill(x,8,29,x,8,29,bronze)
+                self.fill(x,9,28,x,9,29,cap)
+                self.put(x,13,30,cap)
+            for x,metal in zip(range(20,25),ORNAMENTS):
+                self.put(x,12,30,node('grug_guild:ornamented_'+metal))
+                self.put(x,13,30,cap)
+            self.fill(21,13,30,23,13,30,bronze)
+            self.put(22,14,30,cap)
         for x in (18,26):
             self.fill(x,5,30,x,9,30,role('castle_wall'))
             self.put(x,10,30,'role light_beacon else=LAMP')
@@ -238,7 +256,7 @@ def composition(form):
     for z in (17,26):
         c.fill(4,9,z,40,9,z,role('beam'))
         for x in (7,12,17,22,27,32,37): c.put(x,8,z,'role light_beacon else=LAMP')
-    c.throne()
+    c.throne(form)
     # The rear light brackets stop beside the throne's sightline. The seventh
     # rear light is flush with the dais under the king, not across the chair.
     c.fill(18,9,26,26,9,26,'.')
@@ -468,7 +486,8 @@ def page(scenes,registry,aliases,check,metrics):
                 assert hashlib.sha256((HERE/'renders'/filename).read_bytes()).hexdigest()==digest, filename
     stills=''
     for form in FORMS:
-        stills+='<h3>'+FORMS[form]['name']+'</h3><div class="stills">'
+        status=' — picked, pass 3' if form=='crownward' else ' — retained, pass 2'
+        stills+='<h3>'+FORMS[form]['name']+status+'</h3><div class="stills">'
         for view,label in (('hall','Hall · bright study (not daylight)'),
                            ('night','Hall · night light model, same camera'),
                            ('entrance','Open entrance arch · viewed from the foyer'),
