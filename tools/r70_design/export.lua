@@ -1,7 +1,8 @@
 -- Round 70 DESIGN: read-only composition and capital-planner export.
 -- Run from the repository root; no engine, nodes, world or server is created.
 -- luajit tools/r70_design/export.lua blueprints OUTPUT
--- luajit tools/r70_design/export.lua planner OUTPUT SEED today|proposed
+-- luajit tools/r70_design/export.lua planner OUTPUT SEED today|proposed|lake0|lake_shift
+-- luajit tools/r70_design/export.lua lakes OUTPUT
 local mode, output = assert(arg[1]), assert(arg[2])
 local base = "mods/MAPGEN/grug_mapgen/"
 local dir = base .. "wp13"
@@ -168,9 +169,69 @@ elseif mode == "bindings" then
   result.sockets[key] = list
  end
  write(result)
+elseif mode == "lakes" then
+ local variant = dofile('tools/r70_design/lake_variant.lua')
+ local result = {}
+ local lagoon = dofile(dir .. '/kezamba_lagoon.lua')()
+ local f = assert(io.open(dir .. '/lethariel.lua'))
+ local source = f:read('*a'); f:close()
+ local mere = assert(loadstring('return ' .. assert(source:match('local MERE = (%b{})'))))()
+ for _, shifted in ipairs({false, true}) do
+  for _, row in ipairs(variant.factory(base .. 'wp40/water_authored.lua', shifted)({LAKE_PROXY = 40})) do
+   if variant.shifts[row.id] then
+    local key = row.id == 'kezamba_cenote' and 'kezamba' or 'lethariel'
+    local az = key == 'kezamba' and 1500 or -1500
+    result[key] = result[key] or {}
+    local wet = {}
+    for z = -80, 80 do
+     for x = -80, 80 do
+      if row.indicator(1800 + x, az + z) >= 0.5 then wet[#wet + 1] = {x,z} end
+     end
+    end
+    result[key][shifted and 'shifted' or 'unshifted'] = wet
+    if not shifted then
+     local count, mismatch = 0, 0
+     for z = -47,47 do
+      for x = -47,47 do
+       local span = mere[z]
+       local authored = key == 'kezamba' and lagoon.lagoon(x,z) or
+        (key == 'lethariel' and span ~= nil and x >= span[1] and x <= span[2])
+       local actual = row.indicator(1800+x,az+z) >= 0.5
+       if actual then count = count+1 end
+       if actual ~= authored then mismatch = mismatch+1 end
+      end
+     end
+     result[key].baseline_mask_half = 47
+     result[key].baseline_mask_columns = count
+     result[key].baseline_mask_mismatches = mismatch
+     assert(mismatch == 0, key .. ': old composition mask differs from water')
+    end
+   end
+  end
+ end
+ write(result)
 elseif mode == "planner" then
  local seed, variant = assert(arg[3]), assert(arg[4])
- assert(variant == 'today' or variant == 'proposed')
+ assert(variant == 'today' or variant == 'proposed' or variant == 'lake0' or variant == 'lake_shift')
+ local lake_study = variant == 'lake0' or variant == 'lake_shift'
+ if lake_study then
+  local lake_variant = dofile('tools/r70_design/lake_variant.lua')
+  _G.dofile = function(path)
+   if path:match('/water_authored.lua$') then
+    return lake_variant.factory(path, variant == 'lake_shift')
+   end
+   local value = raw_dofile(path)
+   if path:match('/source/simple_map.lua$') then
+    local function widen(t)
+     if type(t) ~= 'table' then return end
+     if t.civic_width == 96 then t.civic_width = 112 end
+     for _, v in pairs(t) do widen(v) end
+    end
+    widen(value)
+   end
+   return value
+  end
+ end
  _G.core = {}
  local common = dofile('tools/wp40/r6/common.lua')
  local A = dofile(base .. 'wp40/world_assembly.lua')(base .. 'wp40', common.new_sha256())
@@ -181,9 +242,10 @@ elseif mode == "planner" then
  for _, p in ipairs(A.capital_profiles) do by_anchor[p.anchor_id] = p.key end
  local result = {seed = seed, variant = variant, capitals = {}}
  planner.plan = function(s, I, opt)
-  if variant == 'proposed' then
-   -- Sensitivity experiment ONLY: old terrain, old landing detector,
-   -- real planner with a larger reserved core. Not a built proposal.
+  if variant == 'proposed' or lake_study then
+   -- Sensitivity experiment ONLY: today's core cells and landing detector.
+   -- Proposed keeps old terrain; lake studies widen the fitting and change
+   -- authored water in memory above. Neither builds the future core.
    opt.CORE, opt.CORE_GATE, opt.CORE_KEEP = 56, 57, 60
   end
   local p = original(s, I, opt)
@@ -235,6 +297,22 @@ elseif mode == "planner" then
     row[#row+1] = {h,w or false}
    end
    out.terrain[#out.terrain+1] = row
+  end
+  if lake_study and (by_anchor[I.anchor.id] == 'lethariel' or by_anchor[I.anchor.id] == 'kezamba') then
+   out.core_wet, out.castle_wet, out.core_columns = 0, 0, 115 * 115
+   local key = by_anchor[I.anchor.id]
+   local castle = key == 'lethariel' and {-52,-51,-18,-7} or {5,-52,49,-18}
+   for z = -57,57 do
+    for x = -57,57 do
+     local h,w = I.sample(p.anchor.x+x,p.anchor.z+z)
+     if w and w > h then
+      out.core_wet = out.core_wet + 1
+      if x >= castle[1] and x <= castle[3] and z >= castle[2] and z <= castle[4] then
+       out.castle_wet = out.castle_wet + 1
+      end
+     end
+    end
+   end
   end
   result.capitals[by_anchor[I.anchor.id]] = out
   io.stderr:write(seed, ' ', variant, ' ', by_anchor[I.anchor.id], ': ', #out.plots,

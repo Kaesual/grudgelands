@@ -29,7 +29,6 @@ def main():
     css = re.sub(r'var\((--[\w-]+)\)', lambda m: palette[m[1]], css)
     args.output.mkdir(parents=True, exist_ok=True)
     groups=[(s.get('id'),s.xpath('.//svg')) for s in doc.xpath('//section[contains(@class,"place")]')]
-    groups += [('compact-'+str(i+1),[s]) for i,s in enumerate(doc.xpath('//svg[@class="compact-plan"]'))]
     for name,svgs in groups:
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 640*len(svgs), 640)
         ctx = cairo.Context(surface)
@@ -43,7 +42,7 @@ def main():
             viewport=Rsvg.Rectangle();viewport.x=i*640;viewport.y=0;viewport.width=640;viewport.height=640
             handle.render_document(ctx,viewport)
         surface.write_to_png(str(args.output/(name+'.png')))
-    print('Rendered 12 pairs and 4 compact alternatives with librsvg; this is not a browser layout test.')
+    print('Rendered 12 pairs with librsvg; this is not a browser layout test.')
 
 
 if __name__=='__main__':main()

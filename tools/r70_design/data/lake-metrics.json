@@ -1,0 +1,125 @@
+{
+  "kezamba": {
+    "shift": 18,
+    "core_columns": 13225,
+    "today_dry": 6913,
+    "unshifted_dry": 9280,
+    "shifted_dry": 10616,
+    "gain": 1336,
+    "candidates": [
+      {
+        "shift": 0,
+        "dry_gain": 0,
+        "wet_columns": 153,
+        "wet_with_margin": 191
+      },
+      {
+        "shift": 8,
+        "dry_gain": 600,
+        "wet_columns": 50,
+        "wet_with_margin": 72
+      },
+      {
+        "shift": 12,
+        "dry_gain": 897,
+        "wet_columns": 15,
+        "wet_with_margin": 28
+      },
+      {
+        "shift": 16,
+        "dry_gain": 1191,
+        "wet_columns": 0,
+        "wet_with_margin": 4
+      },
+      {
+        "shift": 17,
+        "dry_gain": 1264,
+        "wet_columns": 0,
+        "wet_with_margin": 1
+      },
+      {
+        "shift": 18,
+        "dry_gain": 1336,
+        "wet_columns": 0,
+        "wet_with_margin": 0
+      },
+      {
+        "shift": 24,
+        "dry_gain": 1763,
+        "wet_columns": 0,
+        "wet_with_margin": 0
+      }
+    ],
+    "northern_castle_probe": {
+      "box": [
+        5,
+        5,
+        49,
+        39
+      ],
+      "minimum_shift_with_buffer": 49,
+      "buildings_hit": []
+    }
+  },
+  "lethariel": {
+    "shift": 14,
+    "core_columns": 13225,
+    "today_dry": 8236,
+    "unshifted_dry": 10894,
+    "shifted_dry": 12153,
+    "gain": 1259,
+    "candidates": [
+      {
+        "shift": 0,
+        "dry_gain": 0,
+        "wet_columns": 177,
+        "wet_with_margin": 245
+      },
+      {
+        "shift": 8,
+        "dry_gain": 758,
+        "wet_columns": 65,
+        "wet_with_margin": 101
+      },
+      {
+        "shift": 12,
+        "dry_gain": 1103,
+        "wet_columns": 9,
+        "wet_with_margin": 29
+      },
+      {
+        "shift": 13,
+        "dry_gain": 1182,
+        "wet_columns": 0,
+        "wet_with_margin": 11
+      },
+      {
+        "shift": 14,
+        "dry_gain": 1259,
+        "wet_columns": 0,
+        "wet_with_margin": 0
+      },
+      {
+        "shift": 24,
+        "dry_gain": 1905,
+        "wet_columns": 0,
+        "wet_with_margin": 0
+      }
+    ],
+    "northern_castle_probe": {
+      "box": [
+        -22,
+        10,
+        22,
+        44
+      ],
+      "minimum_shift_with_buffer": 24,
+      "buildings_hit": [
+        "statue",
+        "star_hall",
+        "mere_shrine",
+        "bough_west"
+      ]
+    }
+  }
+}

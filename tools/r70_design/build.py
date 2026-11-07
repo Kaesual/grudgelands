@@ -9,7 +9,7 @@ import re
 from collections import defaultdict
 import geometry as G
 from pathlib import Path
-from proposals import CAPITALS, TOWNS, NAMES, FACTION, P, FURNITURE, COMPACT
+from proposals import CAPITALS, TOWNS, NAMES, FACTION, P, FURNITURE
 from claims import Claims, ROOT, WP, W40, MOBS, HOME, QUEST
 
 HERE = Path(__file__).resolve().parent
@@ -18,6 +18,12 @@ BIND = json.loads((HERE/'data/bindings.json').read_text())
 SEEDS = ['12345', '3684797457838814663', '17713522922938657774']
 PLANS = {seed:{v:json.loads((HERE/f'data/{seed}-{v}.json').read_text())['capitals']
               for v in ['today','proposed']} for seed in SEEDS}
+LAKES = json.loads((HERE/'data/lakes.json').read_text())
+LAKE_PLANS = {seed:{v:json.loads((HERE/f'data/{seed}-{v}.json').read_text())['capitals']
+                   for v in ['lake0','lake_shift']} for seed in SEEDS}
+for seed in SEEDS:
+    for key in LAKES:
+        PLANS[seed]['proposed'][key] = LAKE_PLANS[seed]['lake_shift'][key]
 FLEET = json.loads((HERE/'data/checker-fleet.json').read_text())
 C = Claims()
 E = html.escape
@@ -209,9 +215,9 @@ def validate_geometry():
 shared=[]
 shared.append(C.add('The enlarged core consumes district land: CORE/CORE_GATE/CORE_KEEP change from 48/49/52 to 56/57/60. The buildable mask also excludes wet, bank-adjacent and rough samples. The nominal civic square gains 3,328 square nodes (+36.1%); the outer 512-node reservation is unchanged.',
     [(W40+'capital_planner.lua','CORE = 48'),(W40+'capital_planner.lua','BUILD[k] = not WET[k]'),('tools/r70_design/export.lua','opt.CORE, opt.CORE_GATE')]))
-shared.append(C.add('This is a planner sensitivity experiment: real world assembly and capital planning, with only those three options enlarged. Existing civic_width=96, terrain, buildings and the old core_landing detector remain. Final earthwork, landing heights, collision-free generated streets and performance are not verified.',
+shared.append(C.add('The original MASK-ONLY study, retained in the other four city views, runs real world assembly and capital planning with only those three options enlarged. Existing civic_width=96, terrain, buildings and the old core_landing detector remain in that study; the two lake amendments separately measure civic_width=112 and shifted water. Final earthwork, landing heights, collision-free generated streets and performance are not verified.',
     [('tools/r70_design/export.lua','Sensitivity experiment ONLY'),(W40+'r7_capitals.lua','along >= 46 and along <= 49'),(W40+'source/simple_map.lua','id="capital_dwarf"')], 'Measured scope / limitations'))
-shared.append(C.add('Implementation of radius 56 must coordinate civic_width 96→112; CORE/CORE_GATE/CORE_KEEP 48/49/52→56/57/60; RADIUS=49 in all six Lua compositions; precinct_ring.RADIUS=48; the ±47 corner towers in Dur Brannoc, Gor Drazhak and Nhal Veyr; city_green.CORE_HALF=49; the flat-core/collar and road fitting; BOUNDS.capital_core ±49→±57 and the separate ±49 plot-collar exclusion; r7_capitals core_landing 46…49 and built=96*96. The river keep-out formula grows from 99.9 to 111.2 nodes and can change rivers world-wide. Both radius choices already join Round 70’s map reset; the river consequence needs one full seed-fleet run within that work, with no additional reset. Rivers stay unchanged by civic growth only if all six capitals stay at 48. The outer capital reservation stays 512 nodes.',
+shared.append(C.add('Implementation of radius 56 must coordinate civic_width 96→112; CORE/CORE_GATE/CORE_KEEP 48/49/52→56/57/60; RADIUS=49 in all six Lua compositions; precinct_ring.RADIUS=48; the ±47 corner towers in Dur Brannoc, Gor Drazhak and Nhal Veyr; city_green.CORE_HALF=49; the flat-core/collar and road fitting; BOUNDS.capital_core ±49→±57 and the separate ±49 plot-collar exclusion; r7_capitals core_landing 46…49 and built=96*96. The river keep-out formula grows from 99.9 to 111.2 nodes and can change rivers world-wide. The accepted radius 56 joins Round 70’s map reset; the river consequence needs one full seed-fleet run within that work, with no additional reset. The outer capital reservation stays 512 nodes.',
     [(W40+'source/simple_map.lua','id="capital_dwarf"'),(W40+'height.lua','profile.civic_width)'),(W40+'height.lua','local reach = fitting.profile.civic_width / 2 + 1'),(W40+'r7_settlement.lua','capital_core ='),(W40+'r7_settlement.lua','math.abs(lx) > 49'),(WP+'precinct_ring.lua','M.RADIUS = 48'),(WP+'city_green.lua','CORE_HALF = 49'),(W40+'r7_capitals.lua','local built = 96 * 96'),(W40+'height.lua','r = profiles[a.template_id].civic_width / 2'),(W40+'terrain_data.lua','capital_keepout_margin = 32'),*[(WP+k+'.lua','local RADIUS = 49') for k in CAPITALS],*[(WP+k+'.lua','for _, corner in ipairs({{-47') for k in ['dur_brannoc','gor_drazhak','nhal_veyr']]]))
 shared.append(C.add('All six cities have four planned OUTER gates. Core entries differ: four authored gatehouses in Dur Brannoc, Highcourt, Gor Drazhak and Nhal Veyr; three in Lethariel; no such gatehouse kit in Kezamba. Extend the dry core entries by eight nodes, rebuild boundary rings and connect each avenue; do not add a northern gatehouse across Lethariel’s lake.',
     [(W40+'capital_planner.lua','for c = 1, 4 do'),(WP+'gate_watch.lua','open core has no gatehouse'),(WP+'lethariel.lua','id = "gate_east"'),(WP+'precinct_ring.lua','function')]))
@@ -252,7 +258,7 @@ def place_claims(key):
         costs.append(C.add(f'{NAMES[key]}: re-author {", ".join(p["watch_ids"])} in {key}_watch; the proposed points are in the socket schedule. '+
             ('Regenerate each moved gate_watch rectangle and tower post from its stamped gate.' if key not in ['lethariel','kezamba'] else
              'Keep Lethariel’s quay patrol dry and regenerate the three gate watches.' if key=='lethariel' else
-             'Keep the quay walk on dry ground and the existing deck crossings; do not draw a ground loop across the cenote.')+
+             'Keep the quay walk on dry ground and the north deck crossing; rebuild the now-dry east avenue as ground paving.')+
             ' Rebuild the in-memory route legs after restart and test them on the finished geometry.',[(source,'local WATCH ='),(source,'id = "watch_south_west"'),(MOBS+'routes.lua','STREET_REACH = 24'),(WP+'gate_watch.lua','function M.apply')]))
         old=next(s for s in v['landmarks']['sockets'] if s['id']=='king')
         hall=next(b for b in v['buildings'] if b['id'] in p['replace'])
@@ -262,15 +268,19 @@ def place_claims(key):
         wp=next(s for s in sockets(key,True) if s['id']=='travel_waypoint')
         costs.append(C.add(f'{NAMES[key]}: preserve {qs["id"]} at its named public building and {('keep vendor_race/vendor_general at their unchanged positions' if key=='lethariel' else 'carry vendor_race/vendor_general with their stalls where moved')}. travel_waypoint is proposed at {point(wp["x"],wp["z"])}; keep its mailbox and arrival cells with it. All ten required district plots and the concrete service sockets listed below must survive replanning; no service is transferred to the castle.',refs+[(WP+'capital_services.lua',key+' ='),(W40+'r7_capitals.lua','local function required_of'),(QUEST+'npcs.lua',f'"{key}"')]))
         if key=='lethariel':
-            text='Lethariel: preserve the MERE wedge and its one-node shore margin, including the tip at (0,22); enlarge on the dry south-west. The mere district remains pinned toward lethariel_crown_lake. Extend the authored mask from the water source if the core boundary changes; do not extrapolate the present finite MERE table blindly.'
-            r=[(WP+'lethariel.lua','local MERE_FIRST = 22'),(WP+'lethariel.lua','local SHORE_MARGIN = 1'),(W40+'r7_capital_blueprint.lua','lake = "lethariel_crown_lake"')]
+            text='Lethariel: shift every crown-lake capsule point 14 nodes north (+z), leaving anchor_009 at (1800,−1500). Recut MERE through ±57 from that same water function; MERE_FIRST and CAUSEWAY_FROM become 36, and the quay head moves from z=18…21 to 32…35. Narrow that head from x=−6…6 to −3…3 so it clears the relocated colonnades. Reserve a three-node marble quay outside the one-node shore margin, with the seven-node north causeway continuing across the lake. The existing quay loop steps inward into SHORE_MARGIN and dry() retains only its first column; write the proposed three-column band outward instead. Coordinate the core apron and planner continuation into a complete north crossing to the far shore, without duplicate writes; today’s cells and landing detector do not certify that connection. Move mere_shrine 14 north with its sockets; the generated mere precinct remains pinned to the same lake id. Six templates move (three gates, two colonnades, the shrine), versus three gates and two retired colonnades in the accepted plan: this saves both colonnades, not relocation work. Keep the accepted western castle: the small shift does not make a 45×35 northern castle with its court fit without moving the public quarter.'
+            r=[(WP+'lethariel.lua','local MERE_FIRST = 22'),(WP+'lethariel.lua','local CAUSEWAY_FROM = 22'),(WP+'lethariel.lua','local QUAY_WIDTH = 3'),(W40+'water_authored.lua','id = "lethariel_crown_lake"'),(W40+'r7_capital_blueprint.lua','lake = "lethariel_crown_lake"'),('tools/r70_design/proposals.py','lake_shift=[0,14]')]
         elif key=='kezamba':
-            text='Kezamba: preserve the cenote below the dry terrace and its supported decks; do not flatten the whole square. The lagoon mask distinguishes pad, water and ravine (the current ravine mask is empty). Extend dry south/west land only, recheck new deck landings, and keep the shore district pinned toward kezamba_cenote. The sampled castles are dry on all three existing terrains; final grading is unverified.'
-            r=[(WP+'kezamba.lua','local mask ='),(WP+'kezamba_lagoon.lua','M.RAVINE_COLUMNS = 0'),(W40+'r7_capital_blueprint.lua','lake = "kezamba_cenote"'),('tools/r70_design/build.py','castle reaches sampled water')]
+            text='Kezamba: shift every cenote capsule point 18 nodes north (+z), leaving anchor_012 at (1800,1500). Recut kezamba_lagoon from the same water function, including its pad/shore helpers; the ravine stays empty. Five buildings move instead of six: stable (−32,+48), granary (−35,+20), lane_house (0,+10), gate_house_south (−36,−13), moot_house (0,+15). Both western houses and the original waystone plaza stay. The moot house still straddles land and water with all four western landing columns dry; its written envelope ends at z=55. The north deck follows the new shore (first wet columns in its five-wide band at z=30, centre at 32); the east avenue is now dry inside the core. Recut quay, boardwalk piers, rails and landings rather than leaving decks on dry ground. Fish and quay sockets follow the shore; cenote_fish_3 instead moves to (−10,44) to clear the moot-house rope, with water within two nodes. The accepted southern castle still fits best: the recovered northern strip is too shallow for it, and a western move would displace the market and shrine quarter.'
+            r=[(WP+'kezamba.lua','local mask ='),(WP+'kezamba.lua','local rows = plot.land_rows'),(WP+'kezamba.lua','socket("cenote_fish_"'),(WP+'kezamba_lagoon.lua','function M.shore'),(W40+'water_authored.lua','id = "kezamba_cenote"'),('tools/r70_design/proposals.py','lake_shift=[0,18]')]
         else:
             text=f'{NAMES[key]}: carry the larger core onto the fitted civic ground, keeping its own boundary character. civic_width, authorized core bounds and road/plot-collar exclusions must change together; the three-seed comparison does not include this earthwork.'
             r=refs+[(W40+'source/simple_map.lua','civic_width=96'),(W40+'r7_settlement.lua','capital_core =')]
         costs.append(C.add(text,r))
+        if key in LAKES:
+            costs.append(C.add(f'{NAMES[key]}: moving the lake chain is the smaller implementation change. Its anchor supplies water HEIGHT; capsule points supply horizontal position. Moving the anchor would also move the city fitting, core origin, road endpoints and district frame; moving only the core would require a second origin throughout those consumers. Keep the anchor, level_offset=−2, radii, depth and lake id; translate the points only, with the calm/warp and bank-suppression square centred on the unchanged anchor and expanded from half=47 to 57. This relocates the complete lake rather than shrinking or filling it. Regenerate the core mask, dry-edge wall ends and water-side furniture together. The real planner reads fitted_values_at and the shifted lake indicator for shore distance, district pinning and outer wall runs; rerun its bridges and quays too. The proposal changes settlements.md’s city-specific lake/core paragraphs, dry-edge boundary table and old 96×96 wording in the implementation lane. The current study runs the real planner against shifted water and civic_width=112, but retains today’s core cells and 46…49 landing scan: final writer seams, piers, bank geometry, route reachability and full-fleet feasibility are unbuilt.',
+                [(W40+'water_authored.lua','local sdf = chain(spec.points)'),(W40+'water_authored.lua','spec.keep'),(W40+'r7_capitals.lua','sample = session.fitted_values_at'),(W40+'r7_capitals.lua','shore_distance = function'),(W40+'capital_planner.lua','M.shore_flags'),(W40+'r7_capitals.lua','along >= 46 and along <= 49'),('docs/design/settlements.md','a marble quay'),('docs/design/settlements.md','half over the lake'),('tools/r70_design/lake_variant.lua','spec.keep.half = 57')], 'Read / proposed coordinated change, real planner sensitivity'))
+
     else:
         costs.append(C.add(f'{NAMES[key]}: move {", ".join(moved)} with their stairs, doors and attached standing points. Keep the authored ±63 bounds, the same 128-node pad and 12-node protected band. Spawn remains (0,1,0); the main_street and gate axis remain. Move intersecting furniture and vegetation to the margins before paving the enlarged centre.',refs+[(f'mods/MAPGEN/grug_mapgen/building_templates/layouts/{key}.layout','place '),(W40+'source/simple_map.lua','id="hard_start_town_v1"')]))
         old=next(s for s in v['landmarks']['sockets'] if s['id']=='travel_waypoint')
@@ -333,18 +343,90 @@ def retained_land(key):
             x=xs+ix;kind=item[0]
             if kind in ['ground','empty','water'] or (key in CAPITALS and kind!='tree'):continue
             if changed(x,z):continue
+            if key in LAKES and z>=14:continue # Shore furniture/planting is re-authored.
             paths[kind].append(f'M{x-.5},{-z-.5}h1v1h-1z')
     return ''.join(f'<path d="{"".join(path)}" class="raster retained {kind}"/>' for kind,path in paths.items())
 
 
-def water_paths(key):
+def water_paths(key, proposed=False):
     if key not in ['lethariel','kezamba']:return ''
+    if proposed:
+        return '<path class="water-land" d="'+''.join(f'M{x-.5},{-z-.5}h1v1h-1z' for x,z in LAKES[key]['shifted'])+'"/>'
     t=PLANS['12345']['today'][key]['terrain'];path=[]
     for iz,row in enumerate(t):
         for ix,(h,w) in enumerate(row):
             if w is not False and w>h:
                 x,z=-76+ix*2,-76+iz*2;path.append(f'M{x-1},{-z-1}h2v2h-2z')
     return '<path class="water-land" d="'+''.join(path)+'"/>'
+
+def lake_overlay(key):
+    wet=set(map(tuple,LAKES[key]['shifted'])); paving=set()
+    if key=='lethariel':
+        for z in range(36,58):
+            row=[x for x,zz in wet if zz==z]
+            for edge,side in [(min(row)-2,-1),(max(row)+2,1)]:
+                for step in range(3):
+                    x=edge+side*step
+                    if abs(x)<=57 and abs(x)>3:paving.add((x,z))
+        paving.update((x,z) for x in range(-3,4) for z in range(32,36))
+    else:
+        for z in range(-57,58):
+            for x in range(-57,58):
+                if (x,z) not in wet and any((x+dx,z+dz) in wet for dx in [-1,0,1] for dz in [-1,0,1]):
+                    if not any(G.contains(box(b),x,z) for b in buildings(key,True)):paving.add((x,z))
+    return '<path class="court" d="'+''.join(f'M{x-.5},{-z-.5}h1v1h-1z' for x,z in sorted(paving))+'"/>'
+
+def lake_metrics(key):
+    wet0=set(map(tuple,LAKES[key]['unshifted']));wet=set(map(tuple,LAKES[key]['shifted']))
+    within=lambda cells,r:sum(max(abs(x),abs(z))<=r for x,z in cells)
+    chosen=P[key]['lake_shift'][1]
+    focus=['colonnade_west','colonnade_east'] if key=='lethariel' else ['stable']
+    occupied=set()
+    for b in buildings(key,True):
+        if b['id'] in focus:
+            r=b['cells_box']
+            occupied.update((x,z) for x in range(r['x1'],r['x2']+1) for z in range(r['z1'],r['z2']+1))
+    margin={(x+dx,z+dz) for x,z in occupied for dx in [-1,0,1] for dz in [-1,0,1]}
+    candidates=[]
+    for n in sorted({0,8,12,chosen-2,chosen-1,chosen,24}):
+        shifted={(x,z+n) for x,z in wet0}
+        candidates.append(dict(shift=n,dry_gain=within(wet0,57)-within(shifted,57),
+            wet_columns=len(occupied&shifted),wet_with_margin=len(margin&shifted)))
+    north_box=[-22,10,22,44] if key=='lethariel' else [5,5,49,39]
+    reserve={(x,z) for x in range(north_box[0]-1,north_box[2]+2) for z in range(north_box[1]-1,north_box[3]+2)}
+    north_min=next(n for n in range(65) if not reserve&{(x,z+n) for x,z in wet0})
+    collisions=[b['id'] for b in buildings(key) if b['id'] not in P[key]['replace'] and
+                overlap(north_box,[b['cells_box'][n] for n in ['x1','z1','x2','z2']])]
+    return dict(shift=chosen,core_columns=115*115,today_dry=99*99-within(wet0,49),
+        unshifted_dry=115*115-within(wet0,57),shifted_dry=115*115-within(wet,57),
+        gain=within(wet0,57)-within(wet,57),candidates=candidates,
+        northern_castle_probe=dict(box=north_box,minimum_shift_with_buffer=north_min,buildings_hit=collisions))
+
+def validate_lakes():
+    for key in LAKES:
+        assert LAKES[key]['baseline_mask_mismatches']==0
+        wet=set(map(tuple,LAKES[key]['shifted']));m=lake_metrics(key)
+        candidate=next(c for c in m['candidates'] if c['shift']==m['shift'])
+        previous=next(c for c in m['candidates'] if c['shift']==m['shift']-1)
+        assert candidate['wet_with_margin']==0 and previous['wet_with_margin']>0,(key,candidate,previous)
+        for seed in SEEDS:
+            for variant,field in [('lake0','unshifted_dry'),('lake_shift','shifted_dry')]:
+                p=LAKE_PLANS[seed][variant][key]
+                assert p['core']==56 and not p['missing_required']
+                assert p['core_columns']-p['core_wet']==m[field],(key,seed,variant)
+                assert p['castle_wet']==0
+        for b in buildings(key,True):
+            r=b['cells_box'];cols={(x,z) for x in range(r['x1'],r['x2']+1) for z in range(r['z1'],r['z2']+1)}
+            if b['id']=='moot_house':
+                assert cols&wet and cols-wet
+                assert not any((x,z) in wet for x in range(b['x'],b['x']+4) for z in range(b['z'],b['z']+b['d']))
+            else:assert not cols&wet,(key,b['id'],'written columns over shifted water')
+        for s in sockets(key,True):
+            if s['owner']=='moot_house':continue # Its exported platform carries these points.
+            assert (s['x'],s['z']) not in wet,(key,s['id'],'standing in shifted water')
+            if s['id'].startswith('cenote_fish_'):
+                assert any((s['x']+dx,s['z']+dz) in wet for dx in range(-2,3) for dz in range(-2,3)),s
+    return {key:lake_metrics(key) for key in LAKES}
 
 def map_svg(key,proposed=False):
     p=P[key]; v=BP[key]; capital=key in CAPITALS
@@ -356,18 +438,22 @@ def map_svg(key,proposed=False):
         f'<rect x="-80" y="-80" width="160" height="160" fill="url(#grid-{ident})"/>']
     if capital:
         out+=[rect([-56,-56,56,56],'expansion' if proposed else 'future-boundary'),rect([-48,-48,48,48],'old-boundary')]
-        out+=[water_paths(key)]
+        out+=[water_paths(key,proposed)]
     else:
         out+=['<rect x="-76" y="-76" width="152" height="152" rx="12" class="protection"/>',rect([-63,-63,63,63],'town-edge')]
     if not proposed:out += [raster_paths(key)]
     else:
         out += [retained_land(key)]
+        if key in LAKES: out += [lake_overlay(key)]
         if capital:
             out += [rect(p['court'],'court')]
         else:out += [rect(p['centre'],'court garden' if key=='dawnmere' else 'court')]
         for flat,width in p['roads']:
-            pts=list(zip(flat[::2],flat[1::2]));css='road deck' if key=='kezamba' and flat in [[0,0,0,57],[0,0,57,0]] else 'road'
+            pts=list(zip(flat[::2],flat[1::2]));css='road'
             out += [poly(pts,css,f'style="stroke-width:{width}"')]
+        if key in LAKES:
+            out += [poly([(0,36 if key=='lethariel' else 30),(0,57)],'road deck',
+                         f'style="stroke-width:{7 if key=="lethariel" else 5}"')]
     if key=='silverleaf':
         # Exact authored crescent, read from its one source.
         src=(ROOT/WP/'silverleaf.lua').read_text()
@@ -425,7 +511,7 @@ def map_svg(key,proposed=False):
         '<path d="M-70 67v2h20v-2M-60 67v2" class="scale"/>',label(-60,-65,'20 nodes','scale-label')]
     if key in ['lethariel','kezamba']:
         out += [label(31,61,'water −2 / dry terrace 0','water-label')]
-        if key=='kezamba' and proposed:out += [label(7,53,'deck','small-label'),label(53,-5,'deck','small-label')]
+        if proposed:out += [label(7,53,'bridge' if key=='lethariel' else 'deck','small-label'),label(31,68,'lake +'+str(p['lake_shift'][1])+' north','water-label')]
     out += ['</svg>']
     return ''.join(out)
 
@@ -477,6 +563,7 @@ def seed_metrics(key,seed):
 
 
 def seed_section(key):
+    if key in LAKES:return lake_section(key)
     metrics=[seed_metrics(key,s) for s in SEEDS]
     c=C.add(f'{NAMES[key]}: the three seeds {", ".join(SEEDS)} placed all {metrics[0]["required"]} required district plots in the MASK-ONLY experiment (civic_width=96 and today’s terrain). Plot totals changed '+
         ', '.join(f'{m["before"]}→{m["after"]}' for m in metrics)+', and '+', '.join(str(m['moved']) for m in metrics)+
@@ -495,11 +582,47 @@ def seed_section(key):
     return out
 
 
+def lake_section(key):
+    m=lake_metrics(key)
+    counts=lambda v:', '.join(str(len(LAKE_PLANS[s][v][key]['plots'])) for s in SEEDS)
+    c=C.add(f'{NAMES[key]}: the shifted-water experiment gives {m["gain"]:,} additional dry columns inside the same ±57 cell boundary: {m["unshifted_dry"]:,} → {m["shifted_dry"]:,}, out of 13,225. Today’s ±49 boundary has {m["today_dry"]:,} dry columns. These are land columns, including streets and occupied land, not empty building plots. All three seeds agree with the exact authored-water mask. Real planner totals with radius 56, civic_width=112 and the calm square at half=57 are {counts("lake0")} before the shift and {counts("lake_shift")} after it, in the listed seed order; every required plot survives. Both castle boxes have zero wet columns on all three seeds. These gains depend on the unbuilt lake change; the current game has not gained land. The chosen north shift is the smallest integer shift clearing the illustrated new colonnades (Lethariel) or stable (Kezamba), their full written-column envelopes and a one-node shore buffer. It is a minimum for this layout and axis, not a global optimum over every possible rearrangement.',
+        [('tools/r70_design/export.lua','out.core_wet, out.castle_wet'),('tools/r70_design/lake_variant.lua','M.shifts'),('tools/r70_design/build.py','def lake_metrics'),*[(f'tools/r70_design/data/{s}-lake_shift.json','"core_wet"') for s in SEEDS]], 'Measured / shifted-water sensitivity, unbuilt core')
+    out='<div class="seed-study"><h4>The lake amendment · measured land and planner costs</h4><p>'+E(c['text'])+' '+ref(c)+'</p>'
+    out+='<div class="table-scroll"><table><thead><tr><th>Lake shift north</th><th>Dry land returned at radius 56</th><th>Wet building columns*</th><th>Wet columns including buffer*</th></tr></thead><tbody>'
+    for row in m['candidates']:
+        out+=f'<tr><td>{row["shift"]}'+(' · proposed' if row['shift']==m['shift'] else '')+f'</td><td>+{row["dry_gain"]:,}</td><td>{row["wet_columns"]}</td><td>{row["wet_with_margin"]}</td></tr>'
+    out+='</tbody></table></div><p class="small">*The two moved colonnades in Lethariel; the new stable position in Kezamba. Other dry buildings also clear the shifted water. Larger shifts buy more land but are unnecessary for these placements. These counts use the real capsule indicator inside its calm square.</p>'
+    probe=m['northern_castle_probe']
+    out+=f'<p><strong>Can the castle take a better place?</strong> A northern 45×35 reservation at {point(*probe["box"][:2])}–{point(*probe["box"][2:])} only clears water and a one-node buffer after a {probe["minimum_shift_with_buffer"]}-node north shift.'
+    out+=(' It also overlaps '+E(', '.join(probe['buildings_hit']))+'.' if probe['buildings_hit'] else '')
+    out+=' That land test does not include a new court or service schedule. Keep the accepted castle position and use the smaller lake move to loosen the civic quarter.</p>'
+    water_source=(ROOT/W40/'water_authored.lua').read_text()
+    lake_id='lethariel_crown_lake' if key=='lethariel' else 'kezamba_cenote'
+    block=water_source.split('lake({id = "'+lake_id+'"',1)[1].split('warp =',1)[0]
+    chain=[tuple(map(int,p)) for p in re.findall(r'\{(\d+), (-?\d+), (\d+)\}',block)]
+    az=-1500 if key=='lethariel' else 1500
+    out+='<details><summary>Exact lake-chain schedule · coordinates relative to the unchanged city anchor</summary><div class="table-scroll"><table><thead><tr><th>Point</th><th>Today x/z</th><th>Proposed x/z</th><th>Radius retained</th></tr></thead><tbody>'
+    for i,(x,z,r) in enumerate(chain,1):
+        out+=f'<tr><td>{i}</td><td>{point(x-1800,z-az)}</td><td>{point(x-1800,z-az+m["shift"])}</td><td>{r}</td></tr>'
+    out+='</tbody></table></div><p>Anchor, lake id, depth and level_offset=−2 stay. The calm square remains at the city anchor and grows to half=57 in both comparison runs. Recut the composition mask from the shifted shape through ±57; the exported mask lives in data/lakes.json. Outside that square the existing warp still applies, so this is a translated capsule chain, not a byte-identical translation of every distant shore cell.</p></details>'
+    out+=f'<label>Show seed <select class="seed-select" data-capital="{key}">'+''.join(f'<option>{seed}</option>' for seed in SEEDS)+'</select></label>'
+    out+=f'<div class="city-pair" data-capital="{key}"><figure><figcaption>Today · whole capital</figcaption><div class="city-map today"></div></figure><figure><figcaption>Radius 56 + shifted lake · real planner sensitivity</figcaption><div class="city-map proposed"></div></figure></div>'
+    out+='<div class="table-scroll"><table><thead><tr><th>Seed</th><th>Today plots</th><th>56, lake unshifted</th><th>56, lake shifted</th><th>Moved since today*</th><th>Required</th></tr></thead><tbody>'
+    details=[]
+    for seed in SEEDS:
+        a=PLANS[seed]['today'][key];b=LAKE_PLANS[seed]['lake0'][key];c=LAKE_PLANS[seed]['lake_shift'][key]
+        out+=f'<tr><td><code>{seed}</code></td><td>{len(a["plots"])}</td><td>{len(b["plots"])}</td><td>{len(c["plots"])}</td><td>{seed_metrics(key,seed)["moved"]}</td><td>{c["required"]}/{c["required"]}</td></tr>'
+        details.append(f'<li><code>{seed}</code>: '+E(' → '.join(str(q['failures']) for q in [a,b,c]))+'</li>')
+    out+='</tbody></table></div><p class="small">*Position, height or orientation of surviving plots. The middle column isolates the lake change: both new runs expand all six civic_width profiles and the two calm squares equally. Current core cells and the old landing scan remain. The other ten place proposals and their page inputs are unchanged; the older 40-seed table above does not validate these shifted lakes.</p>'
+    out+='<details><summary>Unrouted, connector and infeasible labels · today → 56 unshifted → shifted</summary><ul>'+''.join(details)+'</ul></details></div>'
+    return out
+
+
 def section(key,n):
     p=P[key]; capital=key in CAPITALS
     costs=place_claims(key)
     h=f'<section class="place" id="{key}"><div class="eyebrow">{n:02} / {"CAPITAL" if capital else "START TOWN"} · {FACTION[key]}</div><h2>{NAMES[key]}</h2><h3>{E(p["title"])}</h3><p class="lead">{E(p["lead"])}</p><p class="character">{E(p["character"])}</p>'
-    h+='<div class="pair">'+''.join('<figure><figcaption><span>'+('PROPOSED' if pr else 'TODAY')+'</span>'+('Land reservation · decision pending' if pr else '0.69.0 · exported from code')+'</figcaption>'+map_svg(key,pr)+'</figure>' for pr in [False,True])+'</div>'
+    h+='<div class="pair">'+''.join('<figure><figcaption><span>'+('PROPOSED' if pr else 'TODAY')+'</span>'+(('Lake amendment · decision pending' if key in LAKES else 'Land reservation · accepted') if pr else '0.69.0 · exported from code')+'</figcaption>'+map_svg(key,pr)+'</figure>' for pr in [False,True])+'</div>'
     if capital:
         old=next(b for b in BP[key]['buildings'] if b['id'] in p['replace']);a=old['w']*old['d']
         h+=f'<div class="metrics"><span><b>{old["w"]}×{old["d"]} → 45×35</b>royal footprint · {a:,} → 1,575 nodes²</span><span><b>+8 nodes / side</b>nominal civic radius 48 → 56</span><span><b>35×23 = 805</b>hall-floor reservation · walls separate</span></div>'
@@ -516,40 +639,8 @@ def section(key,n):
     h+=schedule(key)
     h+='<div class="cost-card"><h4>What this commits the implementation to</h4><ul>'+''.join(cost(c) for c in costs)+'</ul></div>'
     if capital:h+=service_annex(key)+seed_section(key)
-    h+=f'<div class="decision"><span>FOR YOUR DECISION</span><p>{E(p["question"])}</p></div></section>'
+    h+=(f'<div class="decision"><span>LAKE AMENDMENT FOR YOUR DECISION</span><p>{E(p["question"])}</p></div>' if key in LAKES else '<div class="decision"><span>ACCEPTED</span><p>The user accepted this recommendation on 07 November 2026.</p></div>')+'</section>'
     return h
-
-
-def compact_svg(key):
-    """A compared land budget, deliberately without a second socket schedule."""
-    old=P[key];P[key]=COMPACT[key]
-    try:
-        p=P[key]
-        out=[f'<svg class="compact-plan" viewBox="-80 -80 160 160" role="img" aria-label="{NAMES[key]} radius 48 alternative">',
-             '<title>Radius 48 alternative: same castle, tighter streets and one-row doorstep</title>',
-             '<rect x="-80" y="-80" width="160" height="160" class="map-ground"/>',
-             rect([-48,-48,48,48],'old-boundary')]
-        for flat,width in p['roads']:out.append(poly(list(zip(flat[::2],flat[1::2])),'road',f'style="stroke-width:{width}"'))
-        for b in buildings(key,True):
-            out.extend([rect(box(b),'building changed' if b['changed'] else 'building'),label(b['x']+(b['w']-1)/2,b['z']+(b['d']-1)/2,b['number'],'building-number')])
-        out.extend([rect(p['castle'],'castle'),rect(p['room'],'throne-room'),label(0,24,'CASTLE','castle-label'),
-            label(0,8,'doorstep only','small-label'),label(-65,65,'N ↑ +z','axis'),
-            '<path d="M-70 67v2h20v-2" class="scale"/>',label(-60,-65,'20 nodes','scale-label'),'</svg>'])
-        return ''.join(out)
-    finally:P[key]=old
-
-
-def validate_compact():
-    for key in COMPACT:
-        old=P[key];P[key]=COMPACT[key]
-        try:
-            boxes=[(b['id'],[b['cells_box'][k] for k in ['x1','z1','x2','z2']]) for b in buildings(key,True)]+[('castle',P[key]['castle'])]
-            for i,(name,b) in enumerate(boxes):
-                assert max(abs(n) for n in b)<=49,(key,name,'compact envelope')
-                for name2,c in boxes[i+1:]:assert not overlap(b,c),(key,name,name2,'compact overlap')
-            assert not clearance_errors(key,False),clearance_errors(key,False)
-        finally:P[key]=old
-    return len(COMPACT)
 
 
 def comparisons():
@@ -559,19 +650,16 @@ def comparisons():
         [('docs/technical/building-template-format.md','### 6.1'),('docs/technical/building-template-format.md','moves it with the coordinator'),('tools/building_templates/check.py','def validate('),('tools/r58_townfix/portable_test.lua','local HALLS =')])
     height=C.add('The castle must stay within BOUNDS.capital_core y=−2…40; today’s highest core top is 31 (Kezamba: 30). Growing horizontally grants no extra height. The 96×96 rule needs coordinated documentation changes in settlements.md and world_zones.md:721/810/1741/1765 (also the 96-node wording at 1865). Duplicated composition coordinates need updating too: for example Sunscar’s BREASTWORKS still names the original hall and armoury boxes separately from their layout placements.',
         [(W40+'r7_settlement.lua','capital_core ='),(WP+'highcourt.lua','it reaches y 31'),('docs/design/settlements.md','96'),('docs/design/world_zones.md','flat 96-node civic core'),('docs/design/world_zones.md','capital only the 96'),('docs/design/world_zones.md','dry capital-owned 96'),('docs/design/world_zones.md','A fixed 96'),(WP+'sunscar.lua','local BREASTWORKS =')])
-    fleet=C.add('The checker measured 40 fleet seeds with all six capitals at radius 56: civic_width=112 and CORE/CORE_GATE/CORE_KEEP=56/57/60, using today’s authored cores and landing detector. A mixed 48/56 choice is unmeasured; this table does not predict it. All 240 proposed capitals placed every required plot, with no load failure; castle samples were dry and flat. Seven capital/seed unrouted-street cases appeared and three disappeared. Infeasible seeds: Kezamba 3→3, Lethariel 0→2, Gor Drazhak 2→0; the others 0→0. This differs from the three-seed MASK-ONLY experiment, which retains civic_width=96. On seed 12345 the proposed plot totals are Dur Brannoc 50 (mask only) versus 47 (civic112), and Kezamba 49 versus 51. Neither experiment builds the new cores. The implementation must run tools/seed_fleet/run.sh full, not just these 40 seeds, because civic_width changes terrain and river planning for every seed.',
+    fleet=C.add('The checker measured 40 fleet seeds with all six capitals at radius 56: civic_width=112 and CORE/CORE_GATE/CORE_KEEP=56/57/60, using today’s authored cores and landing detector. This historical table uses the unshifted lakes; it does not predict the pass-4 lake amendments. All 240 proposed capitals placed every required plot, with no load failure; castle samples were dry and flat. Seven capital/seed unrouted-street cases appeared and three disappeared. Infeasible seeds: Kezamba 3→3, Lethariel 0→2, Gor Drazhak 2→0; the others 0→0. This differs from the three-seed MASK-ONLY experiment, which retains civic_width=96. On seed 12345 the proposed plot totals are Dur Brannoc 50 (mask only) versus 47 (civic112), and Kezamba 49 versus 51. Neither experiment builds the new cores. The implementation must run tools/seed_fleet/run.sh full, not just these 40 seeds, because civic_width changes terrain and river planning for every seed.',
         [('tools/r70_design/data/design-check.md','New measurement'),('tools/r70_design/data/checker-fleet.json','scope'),('tools/r70_design/export.lua','Sensitivity experiment ONLY'),('tools/seed_fleet/run.sh','full')], 'Measured by checker / aggregates rechecked, today’s cores')
-    choice=C.add('The Dur Brannoc, Highcourt, Gor Drazhak and Nhal Veyr castle boxes already fit inside today’s ±49. Only these four capitals have an optional growth choice as drawn. Lethariel and Kezamba need growth as placed: with the five-node avenues kept, a quadrant ending at ±46 offers only 44 nodes (3…46), shorter than the castle’s 45-node side. Staying at 48 there would require straddling an axis or hugging the ring; neither is proposed here. For the four compact alternatives, 48’s main saving is dropping most of C003 for cores kept at that radius: gatehouse relocation, ring-street and boundary expansion, changes to RADIUS, civic_width and BOUNDS, the larger collar, moved landing scan and city_green expansion. It also avoids their radius-induced district land loss. Shared machinery still needs changes if any core grows; castle, socket and furniture work remains. The compact castle moves six nodes south to (−22,4)…(22,38), keeps the old gatehouses, narrows the approach 9→5 and bypass 5→3, and leaves only z=3 between crossing and great door. Today’s great-door ascent uses two stair rows at z=7 and 8; the one compact row is already Dur Brannoc’s kerb, so stairs must enter the foyer. In all four capitals the north gate’s watch rectangle (x=−4…4, z=37…41) overlaps the castle and bypass and needs rerouting. Eastern work buildings move six nodes (Highcourt’s yard also one north); Highcourt moves its chapel west and retires north_house and chapel_house. Markets and colonnades keep their present spacing. These alternatives pass footprint, street-width and door-exit checks only; their stairs and watch routes remain unresolved and they need their own socket/furniture schedules. Both radius choices join Round 70’s already required map reset. Changed rivers cost one full seed-fleet run within that work, with no additional reset. Rivers stay unchanged by civic growth only if all six capitals stay at 48. The 40-seed table measures all six at 56; a mixed 48/56 choice is unmeasured. Keeping 48 departs from §2.7’s ruling that the civic core grows somewhat; the user may still choose it. Recommendation: 56 for moved neighbours, the forecourt and bypass, accepting the coordinated implementation work above.',
-        [('tools/r70_design/proposals.py','COMPACT={}'),('tools/r70_design/proposals.py',"P['lethariel'] ="),('tools/r70_design/proposals.py',"P['kezamba'] ="),('tools/r70_design/build.py','def validate_compact'),(WP+'gate_watch.lua','M.RECT ='),(WP+'dur_brannoc.lua','{-RADIUS, -3, RADIUS, -3}'),('mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_kings_hall.tpl','layer 1'),('tools/r70_design/data/geometry.json','"places"'),(W40+'r7_settlement.lua','capital_core ='),(W40+'height.lua','r = profiles[a.template_id].civic_width / 2'),('tools/r70_design/data/checker-fleet.json','scope'),('docs/planning/round70-plan.md','The civic core is reworked and grows somewhat too.')], 'Alternative / bounded 2D checked, stairs and watch routes unresolved')
-    out='<section class="comparisons"><div class="eyebrow">THE TWO DECISIONS</div><h2>A larger hall. Space around it.</h2><p>'+E(room['text'])+' '+ref(room)+'</p>'
+    choice=C.add('Accepted by the user on 2026-11-07: radius 56 for all six capitals and every pass-3 per-place recommendation. Only the two lake amendments below await a new decision. Historical note: radius 48 was considered and not selected; its compact drawings are retired.',
+        [('tools/r70_design/REPORT.md','radius 56')], 'User decision / pass 4 brief')
+    out='<section class="comparisons"><div class="eyebrow">THE ACCEPTED RESERVATIONS</div><h2>A larger hall. Space around it.</h2><p>'+E(room['text'])+' '+ref(room)+'</p>'
     out+='<div class="table-scroll"><table><thead><tr><th>Capital</th><th>Old royal footprint</th><th>New footprint</th><th>Today’s reachable hall*</th><th>New floor reservation</th></tr></thead><tbody>'
     for key in CAPITALS:
         out+=f'<tr><td>{NAMES[key]}</td><td>{529 if key=="kezamba" else 837}</td><td>1,575</td><td>{402 if key=="kezamba" else 684}</td><td>805</td></tr>'
     out+='</tbody></table></div><p class="small">Areas in nodes². *The checker’s flood-fill measurement is net reachable floor. Today’s gross hall in five capitals is 29 × 25 = 725; the new 35 × 23 = 805 is about 11% larger and two nodes shallower. The 805 is reserved room floor before furnishing; future reachable floor must exceed today. Architecture and headroom are not yet built.</p>'
-    out+='<div class="cost-card"><ul>'+cost(template)+cost(height)+'</ul></div><h3>48 or 56: what the extra land buys</h3><p>'+E(choice['text'])+' '+ref(choice)+'</p><div class="compact-grid">'
-    for key in COMPACT:
-        out+=f'<figure><figcaption>{NAMES[key]} · RADIUS 48 alternative</figcaption>'+compact_svg(key)+'</figure>'
-    out+='</div><p class="small">Same scale as the twelve main plan pairs. These are land alternatives, without socket or furniture layouts. Building numbers match each capital’s main key. The recommended 56 layouts appear below.</p>'
+    out+='<div class="cost-card"><ul>'+cost(template)+cost(height)+'</ul></div>'
     out+='<h3>40 fleet seeds · all six at 56, with today’s cores</h3><p>'+E(fleet['text'])+' '+ref(fleet)+'</p><div class="table-scroll"><table><thead><tr><th>Capital</th><th>Mean plot change</th><th>Worst seed</th><th>Unrouted cases new / gone</th><th>Seeds reporting infeasible</th></tr></thead><tbody>'
     for key in ['gor_drazhak','highcourt','kezamba','nhal_veyr','dur_brannoc','lethariel']:
         m=FLEET['summary'][key]
@@ -584,15 +672,16 @@ def comparisons():
 
 def main():
     count=validate_geometry()
-    validate_compact()
+    lake_evidence=validate_lakes()
     sections=''.join(section(key,n+1) for n,key in enumerate(CAPITALS+TOWNS))
     comparison=comparisons()
     source_cards=''.join(f'<article id="claim-{c["id"]}"><h4>{c["id"]} · {E(c["status"])}</h4><p>{E(c["text"])}</p><ul>'+''.join(f'<li><code>{E(s["file"])}:{s["line"]}</code></li>' for s in c['sources'])+'</ul></article>' for c in C.rows)
     nav=''.join(f'<a href="#{key}">{NAMES[key]}</a>' for key in CAPITALS+TOWNS)
     data={seed:{variant:{key:{field:p[field] for field in ['outline','streets','plots','gates','core','keep']} for key,p in vals.items()} for variant,vals in runs.items()} for seed,runs in PLANS.items()}
     intro='''<header class="hero"><div class="eyebrow">GRUDGELANDS / ROUND 70 / LAND USE STUDY</div><h1>Room for a crown.<br><em>Room to arrive.</em></h1><p class="lead">Six capital cores. Six start towns. One shared castle reservation, twelve places with their own character.</p><div class="hero-bottom"><span>2D proposal · GPT-6 Astra</span><span>07 November 2026</span><span>Base 55aa7708</span></div></header>
-    <section class="intro"><div><h2>Reserve the land.<br>Decide the buildings later.</h2><p>The recommendation is a 45 × 35-node castle reservation, turned to suit each capital, inside a civic core expanded by eight nodes per side. Lethariel keeps the castle on its dry western shoulder; Kezamba keeps it on the dry southern terrace.</p><p>At the starts, give each waystone a clear 13 × 13 pocket near the centre. Move the closest buildings and furniture to make space, while keeping the town envelope, spawn and gate axis.</p></div><aside><strong>Proposal, not an approved build</strong><p>No castle architecture is designed here. Gold shapes reserve land, including future overhangs. Existing buildings and sockets come from the real template/composition code.</p><p>An independent check confirmed the layouts and cost claims against the code. Desktop and web walking, final heights, future 3D geometry and combat remain unverified.</p><p>Shared footprint: 1,575 square nodes. Hall-floor reservation: 35 × 23 = 805 within it. Two royal posts beside the throne and two ordinary door guards at the great door. No extra guards.</p></aside></section>
-    <section class="reading"><h3>Reading the plans</h3><p>North (+z) is up; +x is right. All twelve plan pairs use the same 160-node window and a 20-node scale bar. Solid blocks are exported template pivots; faint outlines include eaves and other written columns. Numbers match the coordinate schedules. Q marks a quest giver, V a vendor, O the public oven. Click or focus a numbered building to highlight it in both views.</p><p>Today’s background is a schematic projection of actual authored cells, with trees and paving. The proposed background keeps surrounding planting schematically and shows land reservations and principal walking connections; it is not a new voxel blueprint. Existing lake samples are from seed 12345; all three seeds were checked beneath the castle reservations.</p></section>'''
+    <section class="reading" id="decision-record"><h2>Decision recorded · 07 November 2026</h2><p><strong>The user accepted the page: radius 56 for all six capitals and every per-place recommendation.</strong> The other ten places remain unchanged. This pass proposes only the two lake amendments below.</p><p class="small">Historical note: radius 48 was considered and not selected. Its compact alternatives are retired.</p></section>
+    <section class="intro"><div><h2>Reserve the land.<br>Decide the buildings later.</h2><p>The accepted plan is a 45 × 35-node castle reservation, turned to suit each capital, inside a civic core expanded by eight nodes per side. Lethariel keeps the castle on its dry western shoulder; Kezamba keeps it on the dry southern terrace.</p><p>At the starts, give each waystone a clear 13 × 13 pocket near the centre. Move the closest buildings and furniture to make space, while keeping the town envelope, spawn and gate axis.</p></div><aside><strong>Land use accepted; lake amendments proposed</strong><p>No castle architecture is designed here. Gold shapes reserve land, including future overhangs. Existing buildings and sockets come from the real template/composition code.</p><p>An independent check covered the prior layouts. The two new lake amendments still need the coordinator’s independent check. Desktop and web walking, final heights, future 3D geometry and combat remain unverified.</p><p>Shared footprint: 1,575 square nodes. Hall-floor reservation: 35 × 23 = 805 within it. Two royal posts beside the throne and two ordinary door guards at the great door. No extra guards.</p></aside></section>
+    <section class="reading"><h3>Reading the plans</h3><p>North (+z) is up; +x is right. All twelve plan pairs use the same 160-node window and a 20-node scale bar. Solid blocks are exported template pivots; faint outlines include eaves and other written columns. Numbers match the coordinate schedules. Q marks a quest giver, V a vendor, O the public oven. Click or focus a numbered building to highlight it in both views.</p><p>Today’s background is a schematic projection of actual authored cells, with trees and paving. The proposed background keeps surrounding planting schematically and shows land reservations and principal walking connections; it is not a new voxel blueprint. Today’s lake samples are from seed 12345. The two proposed lakes use the real authored-water function with shifted capsule chains and an expanded calm square; their full core wet-column counts agree with fitted terrain on three seeds. New shore paving is a 2D reservation. The old composition and landing detector still run in the planner experiment.</p></section>'''
     constraints='<section class="constraints" id="constraints"><div class="eyebrow">BEFORE A BUILD</div><h2>The dependencies behind the lines</h2><div class="conflict"><strong>Verified encounter rules</strong><p>Two royal guards are deliberate. Both door guards are ordinary guards. The four-guard documentation is stale. The 60-node distance concerns rewards; the king’s 30-node leash starts where a chase began and cannot confine combat to this room.</p></div><details><summary>Read the 14 shared dependencies and evidence links</summary><ul>'+''.join(cost(c) for c in shared)+'</ul></details></section>'
     footer='<section id="sources" class="sources"><div class="eyebrow">EVIDENCE LEDGER</div><h2>Claims and source locations</h2><p>Game-code locations are pinned to base 55aa7708; design-tool citations refer to this revision. The accompanying claims.md repeats every numbered cost claim. Source inspection is not an independent review.</p><details><summary>Open all '+str(len(C.rows))+' claims</summary>'+source_cards+'</details></section><footer>Grudgelands · Round 70 DESIGN · Nothing built. Nothing published by this lane.</footer>'
     template=(HERE/'shell.html').read_text()
@@ -600,6 +689,7 @@ def main():
     (HERE/'page.html').write_text(page)
     C.write(HERE/'claims.md')
     (HERE/'data/socket-schedules.json').write_text(json.dumps({k:sockets(k,True) for k in NAMES},indent=2)+'\n')
+    (HERE/'data/lake-metrics.json').write_text(json.dumps(lake_evidence,indent=2)+'\n')
     (HERE/'data/metrics.json').write_text(json.dumps({k:{s:seed_metrics(k,s) for s in SEEDS} for k in CAPITALS},indent=2)+'\n')
     print(f'Built {len(page):,} characters; {len(C.rows)} cited claims; {count} geometry schedules checked.')
 
