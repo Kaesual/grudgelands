@@ -142,6 +142,7 @@ grug_core = {feed = function(_, _, text) feeds[#feeds + 1] = text end,
 local runs_at = {}
 grug_expeditions = {
 	templates = {},
+	catalogue = {EXPEDITIONS = {{id = "test_vault"}}},
 	register_on_ready = function(fn) ready[#ready + 1] = fn end,
 	register_on_end = function(fn) ended[#ended + 1] = fn end,
 	register_on_enter = function(fn) entered[#entered + 1] = fn end,
@@ -347,6 +348,8 @@ check(not load_fails({{mob = "grug_mobs:spider", tier = "elite", count = 1}}), "
 check(load_fails({{mob = "grug_mobs:none", tier = "elite", count = 1}}), "F an unknown mob stops the load")
 check(load_fails({{mob = "grug_mobs:spider", tier = "king", count = 1}}), "F an unknown tier stops it")
 check(load_fails({{mob = "grug_mobs:golem", tier = "boss", count = 2}}), "F two bosses stop it")
+M.catalogue.EXPEDITIONS[2] = {id = "no_table"}
+check(load_fails({}), "F an Expedition without a loot table stops it")
 
 -- ---- G. A boss's fixed name ----------------------------------------------------
 local NC = dofile(repo .. "/mods/ENTITIES/grug_mobs/names_core.lua")

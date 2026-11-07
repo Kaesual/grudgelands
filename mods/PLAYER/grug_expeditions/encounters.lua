@@ -195,6 +195,9 @@ end
 -- A broken marker stops the server here, not in a run.
 core.register_on_mods_loaded(function()
 	loot.check(ores)
+	for _, row in ipairs(M.catalogue.EXPEDITIONS) do
+		if not loot.TABLES[row.id] then error("[grug_expeditions] no loot table for " .. row.id, 0) end
+	end
 	for name, tpl in pairs(M.templates) do
 		local bosses = 0
 		for _, row in ipairs(tpl.encounters) do

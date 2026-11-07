@@ -39,7 +39,13 @@ data 342
 - `place <name> x y z`: a named cell. `arrival` (the cell a player stands in, the start waystone beside it),
   `start_waystone` and `end_waystone` are required; `chest`, `door` and any other name are for the lanes that read them
   through `grug_expeditions.places(run)`.
-- `encounter <room> <mob> <count> <tier> x y z`: one marker, in file order. `room` and `tier` are single words.
+- `encounter <room> <mob> <count> <tier> x y z`: one marker, in file order, the cell a mob stands in; markers with one
+  `room` spawn together. `tier` is `normal`, `elite` or `boss`: at most one `boss`, count 1, an elite with the run's
+  ledger (its HP from its definition's `_grug_hp_scale`, never the flat `boss` tier). An unknown mob or tier stops the
+  server at load.
+- The reward room's nodes are in the template: `grug_expeditions:reward_door` fills the opening, every such node within
+  8 cells of the `door` place goes when the boss dies; `grug_expeditions:reward_chest` stands on the `chest` place. An
+  Expedition's chest contents live in `grug_expeditions/loot.lua`, by catalogue id.
 - `data <bytes>`: the length of the stream that follows the line. The stream unpacks to `sx * sy * sz` palette bytes in
   VoxelManip order (`z * sy * sx + y * sx + x + 1`), then as many param2 bytes.
 
