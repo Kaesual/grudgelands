@@ -545,8 +545,12 @@ local function render_stonewright(parts, player, session)
 	if not guild_lines(parts, player) then return end
 	local rows = grug_guild.stonewright_rows(player)
 	session.stone_rows = rows
+	-- The cost line in the smaller size, so the longest one stays clear of the
+	-- lots on a small screen (the Trade-in's rows have one short line).
+	local name_size = "style_type[label;font_size=" .. grug_core.ui.font_size(0.85, parts.growth) .. "]"
+	local cost_size = "style_type[label;font_size=" .. grug_core.ui.font_size(0.75, parts.growth) .. "]"
 	for index, row in ipairs(rows) do
-		local y = 2.5 + (index - 1) * 0.8
+		local y = 2.5 + (index - 1) * 0.77
 		local recipe = row.recipe
 		parts[#parts + 1] = grug_core.ui.panel(0.4, y - 0.03, 15.2, 0.76)
 		local function text(value)
@@ -556,7 +560,8 @@ local function render_stonewright(parts, player, session)
 		parts[#parts + 1] = ("tooltip[0.7,%.2f;0.7,0.7;%s]"):format(y, esc(full_desc(recipe.output)))
 		parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.2,
 			text(recipe.output_count .. " " .. short_desc(recipe.output)))
-		parts[#parts + 1] = ("label[1.7,%.2f;%s]"):format(y + 0.52, text(recipe_cost(recipe)))
+		parts[#parts + 1] = cost_size .. ("label[1.7,%.2f;%s]"):format(y + 0.52,
+			text(recipe_cost(recipe))) .. name_size
 		if not row.unlocked then
 			parts[#parts + 1] = ("label[10.0,%.2f;%s]"):format(y + 0.35,
 				text(("Reach Reputation Rank %d"):format(recipe.rank)))
