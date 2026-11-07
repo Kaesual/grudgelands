@@ -243,12 +243,12 @@ real fight or PostgreSQL. So:
 49. Pick T4: levels 40–49, 40 selected; 47 and Open give "Level 47, 0 of 3 places taken".
 50. A level 29 character sees only T2 and T3; T3's label says 30-39 though only 30–31 are
     offered (acceptable?). A leader's member rows sit below both dropdowns.
-51. A T6 run at 65: Abyssal Crystal and Diamond in the walls, no Gold or Jade; the Abyssal Steel
+51. A T6 run at 65: Abyssal Crystal and Diamond in the walls, no Anthracite or Jade; the Abyssal Steel
     pick digs both, the Embersteel pick is refused on Diamond. Nametags at Lv 65 read Crevice
     Spider, Stone Golem, Flintback; the chest holds item level 65 gear and Glass Spider Silk.
 52. **Mining support:** a timed 10-minute dig at T2 depth with an Iron pick, against the run's
-    Gold (the model assumes a fast miner: if a real one is half as fast, the run's Gold is
-    about 70 % of mining instead of 35 %).
+    Anthracite (the model assumes a fast miner: the run's Anthracite is about 18 % of mining;
+    a miner half as fast doubles that). A T2 run shows Anthracite and Jade, no Gold.
 
 ## 7. Orchestration notes
 
@@ -422,12 +422,12 @@ From the lanes' reports, measured there unless marked; comparisons, not targets.
 
 The user ruled three Expeditions ([concept §9](round71-expeditions-concept.md#9-after-the-build-three-expeditions-user-2026-11-07)).
 RANGE widened The Stilled Seam to levels 20–69 (merged `6a96eab4`, review MERGE): a level range
-per catalogue row, a tier then level dropdown, the template's Gold and Jade swapped per tier
-(T3 Silver/Garnet, T4 Emberglass/Sapphire, T5 Abyssal Crystal/Ruby, T6 Abyssal Crystal/Diamond),
+per catalogue row, a tier then level dropdown, T2 Anthracite and Jade (Anthracite replaced Gold by the user's
+ruling, `7f2a04a8`, delta review MERGE), swapped per tier (T3 Silver/Garnet, T4 Emberglass/Sapphire, T5 Abyssal Crystal/Ruby, T6 Abyssal Crystal/Diamond),
 chest materials by the spiders' drop bands, names through 69. Full run 320/0, engine T4 at 47 and
 T6 at 65 82 PASS. Model: levels 20–60 alike (8.7 min), 65 10.6 min, 69 13.5 min with level 60
-players. Mining estimate per player and run against the same minutes of mining: ore 12–35 %,
-gems 15–21 % (estimated, optimistic on miner speed). The Second Shift and The Last Mint are
+players. Mining estimate per player and run against the same minutes of mining: ore 12–28 % (T2 Anthracite 18 %),
+gems 9–21 % (estimated, optimistic on miner speed). The Second Shift and The Last Mint are
 planned for Round 72 (`round72-second-shift.md`, `round72-last-mint.md`).
 
 ### Open notes
