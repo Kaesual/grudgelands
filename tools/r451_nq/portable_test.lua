@@ -448,6 +448,28 @@ set(0, 13, 0, "default:dirt")
 set(0, 14, 0, "default:dirt")
 eq(grug_mobs.start_npc_standing_cell({x = 0, y = 11, z = 0}), nil, "R none within the lift of two")
 
+-- S. A socket that took a new role (Round 71): the NPC an older world saved on
+-- it gives way at its activation, wherever it stood, and the ordinary strikes
+-- free the marker and place the socket's NPC. Only a differing saved role does:
+-- every NPC above came back with its own.
+core.compare_block_status = function() return true end
+world[key3(0, 12, 0)], world[key3(0, 13, 0)], world[key3(0, 14, 0)] = nil, nil, nil
+logs = {}
+save(back.ok, {x = 2, y = 11, z = 1})
+stored[1].data._grug_socket_role = "work"
+local gone = reload().ok
+eq(gone.object.valid, false, "S the old resident is removed at its activation")
+eq(holder("ok"), nil, "S ...and holds nothing")
+eq(count_logs("gave way"), 1, "S ...with one log line")
+heartbeat()
+heartbeat()
+eq(holder("ok"), nil, "S the marker waits for its strikes")
+heartbeat()
+local fresh = holder("ok")
+check(fresh ~= nil, "S the socket's NPC is placed")
+eq(fresh and fresh._grug_socket_role, "idle", "S ...with the socket's role")
+eq(count_logs("is marked but empty"), 1, "S ...freed by the ordinary strike rule")
+
 if failures > 0 then
 	print(("%d checks, %d failures"):format(checks, failures))
 	os.exit(1)

@@ -12,9 +12,10 @@ never in a preparation. Slots, box and step size: `grug_expeditions/catalogue.lu
 | Their sources (edit these) | `tools/expedition_templates/sources/<name>.py` |
 | The tool | `tools/expedition_templates/build.py` (`--check`: every file matches its source) |
 
-A source has `build()` returning a `Template` (`tools/expedition_templates/template.py`): `box`, `set`, `place`,
+A source has `build()` returning a `Template` (`tools/expedition_templates/template.py`): `box`, `set`, `dig`, `place`,
 `encounter`. The tool refuses a template without the required places, a waystone place holding no waystone, an arrival
-without floor or head room, an unknown node, or an open cell on the template's outer shell.
+without floor or head room, an unknown node, an open or diggable cell on the template's outer shell, or a `dig` node
+that is not solid.
 
 ## The file
 
@@ -26,6 +27,7 @@ name test_vault
 size 48 32 48
 node default:stonebrick
 node air
+dig default:stone_with_tin
 place arrival 8 5 8
 place start_waystone 8 5 6
 encounter hall grug_mobs:giant_spider 2 normal 30 5 12
@@ -36,6 +38,9 @@ data 342
 - `size`: multiples of 16, at most the box (128 64 128). A smaller template sits in the box's lowest corner; the
   clearing pass's solid stone fills the rest. The format is 3D; several floors need nothing new.
 - `node`: the palette, at most 256 lines, in byte order from 0.
+- `dig <node>`: a palette node meant to be dug. Every cell of it can be dug in a running Expedition by a player who
+  belongs to it, through the ordinary mining path; everything else in the box stays refused for everyone
+  (`grug_expeditions/guard.lua`). The mark is by node, so a template keeps its diggable nodes out of its walls.
 - `place <name> x y z`: a named cell. `arrival` (the cell a player stands in, the start waystone beside it),
   `start_waystone` and `end_waystone` are required; `chest`, `door` and any other name are for the lanes that read them
   through `grug_expeditions.places(run)`.

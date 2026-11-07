@@ -38,6 +38,7 @@
 --   start_arrival(run)      the position a player stands at beside the start
 --                           waystone: arrival and respawn
 --   preparation(run)        nil, {waiting = n} or {phase, done, total}, for notices
+--                           (run.state "preparing" alone is enough for most)
 --
 -- Eligibility (a refusal is `false, text to show`):
 --   offered_levels(player, id)     {{bonus, level}, ...} the player may enter
@@ -55,13 +56,15 @@
 --
 -- Hooks:
 --   register_on_ready(function(run))           the box is written; set meta here
---   register_on_end(function(run, reason))     "failed", more in phase 2
+--   register_on_end(function(run, reason))     "empty" (10 minutes), "joined_party"
+--                                              (the solo owner), "failed" (preparation)
 --   register_on_enter(function(run, name))     stands in the box now
---   register_on_leave(function(run, name, reason))  "travel", "logout"
+--   register_on_leave(function(run, name, reason))  "travel", "logout", "expelled"
+--                                              (left the party), "ended"
 --
--- NOT BUILT YET (lane FRAME phase 2; the interface above does not change for it):
--- changes of owner on party events, teleporting out whoever no longer belongs, the
--- 10-minute release, the login rule. Until then a run ends only through end_run.
+-- Ownership follows grug_parties' events, the release clock is one core.after per
+-- empty stretch, and "inside" follows grug_home's teleports: none of it looks at
+-- every player. Rulings: docs/planning/round71-expeditions-concept.md section 4.
 grug_expeditions = {}
 
 local path = core.get_modpath(core.get_current_modname())
@@ -85,6 +88,8 @@ end)
 
 assert(loadfile(path .. "/runs.lua"))(catalogue, preparation)
 dofile(path .. "/encounters.lua")
+dofile(path .. "/guard.lua")
+dofile(path .. "/registrar.lua")
 
 -- The two stones inside: the capital's waystone in look, the way back in function.
 core.register_node("grug_expeditions:waystone", {

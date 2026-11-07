@@ -66,6 +66,25 @@ function M.slot_box(index)
 	return minp, {x = minp.x + M.BOX.x - 1, y = minp.y + M.BOX.y - 1, z = minp.z + M.BOX.z - 1}
 end
 
+-- chunksize 5 (minetest.conf): a mapchunk is 80 nodes, its corner at 80 k - 32.
+local CHUNK = 80
+local function chunk_index(v) return math.floor((v + 32) / CHUNK) end
+
+-- The chunks a preparation generates, as the node at each one's centre: every chunk
+-- of the box and its margin. The preparation's header says why centres matter.
+function M.chunks_of(slot)
+	local minp, maxp = M.slot_box(slot)
+	local margin, list = M.EMERGE_MARGIN, {}
+	for kz = chunk_index(minp.z - margin), chunk_index(maxp.z + margin) do
+		for ky = chunk_index(minp.y - margin), chunk_index(maxp.y + margin) do
+			for kx = chunk_index(minp.x - margin), chunk_index(maxp.x + margin) do
+				list[#list + 1] = {x = CHUNK * kx + 8, y = CHUNK * ky + 8, z = CHUNK * kz + 8}
+			end
+		end
+	end
+	return list
+end
+
 -- The slot whose box holds `pos`, or nil: arithmetic only, safe for hot paths.
 -- A float position counts by the node it rounds to.
 function M.slot_at(pos)

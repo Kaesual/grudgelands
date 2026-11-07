@@ -1804,7 +1804,9 @@ tools](#player-meta-read-by-external-tools).
     Miner's Guild Exchange (`grug_traders:guild_exchange`) takes over each
     capital's `capital_services.GUILD_HALL.exchange` socket as the service
     role `guild_exchange` (`grug_core` `SERVICE_ROLES`), like the
-    Crownbinder.
+    Crownbinder. The Expedition Registrar takes the same house's clerk socket
+    (`grug_expeditions/registrar.lua`, role `expedition_registrar`), a villager
+    like the Housing Steward.
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached

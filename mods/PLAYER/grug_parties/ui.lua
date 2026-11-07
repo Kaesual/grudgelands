@@ -231,6 +231,18 @@ local function selected_member(view, context)
 	return view.members[1]
 end
 
+-- The one line under an invitation while the player owns an Expedition alone
+-- (Round 71, concept section 4): accepting a foreign party ends it for good, nil
+-- otherwise. grug_expeditions depends on this mod, so it is read at call time.
+function grug_parties.invitation_warning(name)
+	local expeditions = rawget(_G, "grug_expeditions")
+	local run = expeditions and expeditions.run_of(name)
+	if run and run.owner.kind == "player" then
+		return "Accepting ends your Expedition."
+	end
+	return nil
+end
+
 -- "0 Pending Invitations", "1 Pending Invitation", "2 Pending Invitations".
 function grug_parties.pending_heading(count)
 	return ("%d Pending Invitation%s"):format(count, count == 1 and "" or "s")
@@ -272,7 +284,7 @@ local function party_members(fs, player, context, view, scale)
 	fs[#fs + 1] = ("button[0.50,%.2f;1.8,0.58;grug_party_leave;Leave]"):format(buttons_y)
 end
 
-local function party_invitations(fs, context, pending, scale)
+local function party_invitations(fs, name, context, pending, scale)
 	fs[#fs + 1] = grug_core.ui.heading(0.5, BOX_Y + 0.35,
 		grug_parties.pending_heading(#pending), scale)
 	context.grug_party_invite_rows = {}
@@ -298,6 +310,11 @@ local function party_invitations(fs, context, pending, scale)
 		:format(BOX_Y + 0.75, table.concat(invites, ","), selected_index)
 	fs[#fs + 1] = ("button[0.50,%.2f;1.8,0.58;grug_party_accept;Accept]"):format(BOX_Y + 4.25)
 	fs[#fs + 1] = ("button[2.50,%.2f;1.8,0.58;grug_party_decline;Decline]"):format(BOX_Y + 4.25)
+	local warning = grug_parties.invitation_warning(name)
+	if warning then
+		fs[#fs + 1] = ("label[4.45,%.2f;%s]"):format(BOX_Y + 4.54,
+			esc(core.colorize(grug_core.ui.colors.accent, warning)))
+	end
 end
 
 local function content(player, context)
@@ -327,7 +344,8 @@ local function content(player, context)
 	if view then
 		party_members(fs, player, context, view, scale)
 	else
-		party_invitations(fs, context, grug_parties.pending(player), scale)
+		party_invitations(fs, player:get_player_name(), context,
+			grug_parties.pending(player), scale)
 	end
 	if context.grug_party_notice then
 		fs[#fs + 1] = grug_core.ui.prose(0.5, BOX_Y + 5.0, 9.1, 0.7, context.grug_party_notice, false, scale)

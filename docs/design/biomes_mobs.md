@@ -1165,6 +1165,11 @@ and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
 (§4.2), the Reef Lurker only as its 51–60 shore sub-type.
 Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
 
+**The Expedition slots** (Round 71, the user's ruling): no natural mob spawns over
+the slot field plus 320 nodes on every side, at any y, the water rows included, so
+that no random mob's nametag shows through an Expedition's wall. `grug_expeditions`
+sets the rectangle (`grug_mobs.set_spawn_free_field`).
+
 **Registered but placed nowhere** (open questions, [BACKLOG "Audit 2026-10
 open questions"](../../BACKLOG.md#audit-2026-10-open-questions)): the ambient
 War Construct sub-types `causeway_construct` and `siege_war_construct` are in

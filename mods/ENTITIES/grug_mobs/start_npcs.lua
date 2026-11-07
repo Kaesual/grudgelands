@@ -570,6 +570,24 @@ function grug_mobs.start_npc_claim(entity)
 		install_mender(entity, entity._grug_profession, title)
 		if grug_mobs.start_npc_retag then grug_mobs.start_npc_retag(entity) end
 	end
+	-- A SOCKET THAT TOOK A NEW ROLE (Round 71, the Expedition Registrar on the
+	-- clerk's socket): `assign_service_socket` changes the socket, not the NPC an
+	-- older world saved on it, which still carries the role `install` wrote and
+	-- would hold the socket for good. It goes here, whether at home or on a walk;
+	-- the marker then reads as empty and `serve` frees it by the ordinary strikes
+	-- and places the new NPC. No saved state changes hands.
+	local row = by_key[key]
+	local booked = row and row.by_socket[socket_id]
+	if booked and entity._grug_socket_role ~= nil and
+			entity._grug_socket_role ~= booked.role then
+		core.log("action", "[grug_mobs] start npcs " .. key .. ": socket " .. socket_id ..
+			" is now " .. booked.role .. ", its " ..
+			tostring(entity._grug_socket_role) .. " resident gave way")
+		if entity.object then
+			remove_socket_holder(entity)
+		end
+		return false
+	end
 	local slots = claims_of(key)
 	local other = slots[socket_id]
 	if other ~= nil and other ~= entity and
@@ -1571,6 +1589,9 @@ local function install(entity, row, slot)
 		entity._grug_walker = false
 	elseif slot.role == "housing_manager" then
 		entity._grug_npc_name = "Housing Steward"
+		entity._grug_walker = false
+	elseif slot.role == "expedition_registrar" then
+		entity._grug_npc_name = "Expedition Registrar"
 		entity._grug_walker = false
 	elseif slot.role == "trainer" then
 		local title = mender_title(slot.profession)

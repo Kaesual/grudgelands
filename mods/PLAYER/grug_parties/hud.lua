@@ -88,10 +88,13 @@ local function wrap(text, chars)
 	lines[#lines + 1] = line
 	return lines
 end
-local function invite_lines(info, chars)
+local function invite_lines(info, chars, warning)
 	local lines = wrap(info.inviter .. " has invited you to join their party.", chars)
 	local colors = {}
 	for i = 1, #lines do colors[i] = invite_text end
+	for _, line in ipairs(warning and wrap(warning, chars) or {}) do
+		lines[#lines + 1], colors[#lines + 1] = line, INVITE_NOTE
+	end
 	lines[#lines + 1], colors[#lines + 1] =
 		("Open Social to answer (%d s)"):format(info.seconds), INVITE_NOTE
 	if info.more > 0 then
@@ -116,7 +119,8 @@ local function draw_invite(player, record, info)
 	end
 	local layout = grug_core.hud_layout
 	local window = core.get_player_window_information(player:get_player_name())
-	local lines, colors = invite_lines(info, layout.side_text_width(window))
+	local lines, colors = invite_lines(info, layout.side_text_width(window),
+		grug_parties.invitation_warning(player:get_player_name()))
 	local key = layout_key(window, #lines)
 	local box = record.invite
 	if box and box.key ~= key then remove_invite(player, record); box = nil end

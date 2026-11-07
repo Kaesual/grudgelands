@@ -162,6 +162,18 @@ function M.world_to_screen(view, position, x, y, width, height)
 	return sx, sy
 end
 
+-- World nodes an arrow stays inside the edge, so all of it is drawn at 1x.
+local EDGE_MARGIN = 200
+
+-- `position`, or the nearest place on the map for a position beyond its bounds:
+-- where the map window draws the arrow of a player in an Expedition, whose box
+-- lies far out at sea (Round 71). Any other marker there stays undrawn.
+function M.on_map(view, position)
+	if type(position) ~= "table" or M.contains(view, position) then return position end
+	return {x = math.max(view.min_x + EDGE_MARGIN, math.min(view.max_x - EDGE_MARGIN, position.x)),
+		z = math.max(view.min_z + EDGE_MARGIN, math.min(view.max_z - EDGE_MARGIN, position.z))}
+end
+
 function M.register_marker_provider(name, callback)
 	assert(type(name) == "string" and name ~= "" and
 		type(callback) == "function", "[grug_map] invalid marker provider")

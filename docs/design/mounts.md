@@ -438,6 +438,12 @@ warning and forced dismount are separate consumer states derived from
 `grug_zones.water_class_at(x,z)` and the horizontal
 `grug_zones.at(pos).territory_rule` record.
 
+### 4.0 Expeditions
+
+No mount or boat is summoned inside an Expedition's box, by any path: every summon
+asks `grug_mounts.register_summon_guard`, which `grug_expeditions/guard.lua` fills,
+and the refusal goes to the message feed. A rider is dismounted by the teleport in.
+
 ### 4.1 Ocean: warned edge, then forced flight dismount
 
 - Flying is forbidden over every authored ocean column: the coastal-water

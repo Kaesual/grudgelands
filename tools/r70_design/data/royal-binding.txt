@@ -1,0 +1,16 @@
+Historical evidence: git show 494a607342d7d98d24c04a86d35324d4408f428b:tools/r8_mob1/bosses_kat.lua
+575: 	local royal_region = assert(start_text:match(
+576: 		"local ROYAL_GUARD_SOCKET = %b{}"))
+577: 	for _, id in ipairs({"throne_guard_west", "throne_guard_east"}) do
+578: 		assert(royal_region:find(id, 1, true), "missing royal socket " .. id)
+579: 	end
+580: 	assert(not royal_region:find("door_guard_", 1, true),
+581: 		"door guard still resolves as a royal guard")
+582: 	local capital_file = assert(io.open(root ..
+583: 		"/mods/MAPGEN/grug_mapgen/wp13/capitals.lua", "rb"))
+584: 	local capital_text = assert(capital_file:read("*a"))
+585: 	capital_file:close()
+586: 	for _, id in ipairs({"door_guard_west", "door_guard_east"}) do
+587: 		assert(capital_text:find(id, 1, true), "authored door socket disappeared: " .. id)
+588: 	end
+589: 	assert(2 * 6 == 12, "royal guard census changed")

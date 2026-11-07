@@ -23,6 +23,21 @@ end
 function grug_home.register_on_teleport(callback)
  teleport_callbacks[#teleport_callbacks + 1] = callback
 end
+-- callback(player) -> a home row {id, pos, arrival} this respawn goes to instead
+-- of grug_home.get, or nil (Round 71: a death inside a running Expedition). Asked
+-- on every look at the home, so a row that lapses meanwhile hands the respawn
+-- back to the ordinary home, as a home lost on the way does.
+local respawn_homes = {}
+function grug_home.register_respawn_home(callback)
+ respawn_homes[#respawn_homes + 1] = callback
+end
+local function respawn_home(player)
+ for _, callback in ipairs(respawn_homes) do
+  local row = callback(player)
+  if row then return row end
+ end
+ return grug_home.get(player)
+end
 function grug_home.cancel(player)
  local name = name_of(player)
  pending[name] = nil
@@ -135,7 +150,8 @@ end
 -- at the start pocket. It is held from the first teleport until the last.
 local function request(player, respawn)
  local name = name_of(player)
- local row = grug_home.get(player)
+ local home_of = respawn and respawn_home or grug_home.get
+ local row = home_of(player)
  if not row then return false end
  if pending[name] then return false end
  if not respawn then
@@ -233,7 +249,7 @@ local function request(player, respawn)
   prepare(name, {pos=target.pos, check=check,
    timeout=function(q) timed_out(q, fallback) end,
    arrive=function(q, failed)
-    local current = grug_home.get(q)
+    local current = home_of(q)
     -- A home lost or replaced on the way: a respawn follows it.
     if respawn and not current then return unavailable(q) end
     if respawn and current.id ~= target.id then return go_home(q, current) end
@@ -257,8 +273,9 @@ end
 -- the destination stone, `trip.check(player)` runs on the server step after
 -- the emerge, `trip.arrival(player)` returns a validated arrival position or
 -- nil (and optionally its own message), and `trip.unavailable` is the message
--- for a failed preparation: the player then stays where they are. Nothing is charged and the home cooldown
--- is not touched. Returns false while another trip is being prepared.
+-- for a failed preparation: the player then stays where they are, or with
+-- `trip.fallback(player)` that decides instead. Nothing is charged and the home
+-- cooldown is not touched. Returns false while another trip is being prepared.
 function grug_home.travel(player, trip)
  local name = name_of(player)
  if pending[name] then return false end
@@ -267,11 +284,17 @@ function grug_home.travel(player, trip)
   arrive=function(p, failed)
    local arrival, message
    if not failed then arrival, message = trip.arrival(p) end
-   if not arrival then return notify(p, message or trip.unavailable) end
+   if not arrival then
+    if trip.fallback then return trip.fallback(p) end
+    return notify(p, message or trip.unavailable)
+   end
    teleport(p, arrival)
    grug_sounds.play("travel", p)
   end,
-  timeout=function(p) notify(p, trip.unavailable) end})
+  timeout=function(p)
+   if trip.fallback then return trip.fallback(p) end
+   notify(p, trip.unavailable)
+  end})
  return true
 end
 
