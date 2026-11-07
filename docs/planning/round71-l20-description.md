@@ -1,7 +1,7 @@
 # The Stilled Seam — level 20 Expedition
 
-**Draft for approval, 2026-11-07.** Opus-reviewed; the user approves it
-before L20 builds it. Bound by the [concept](round71-expeditions-concept.md).
+**Approved by the user, 2026-11-07,** with every recommendation below. Lane L20
+builds it. Bound by the [concept](round71-expeditions-concept.md).
 **Compatible:** documentation and drawing tool only; no game changes.
 
 ## Story and place
@@ -91,19 +91,19 @@ or quest object. Each text block is replaceable whole.
 
 **The Accord — offer**
 
-> The Charter of Stone opened a gold seam and struck living stone. Flintback drove the crew out; everyone is accounted for, but the working is closed. Speak to this guild house's registrar for The Stilled Seam Expedition and take two companions. Kill Flintback so our miners can work there again.
+> The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.
 
 **The Accord — completion**
 
-> Flintback is dead, and the crew can begin checking the supports. I will keep the working closed until the foreman has inspected it. The smiths can wait another day for their Gold.
+> Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again.
 
 **The Throng — offer**
 
-> The Oathdelvers promised a load of Gold, and Flintback drove us off the seam before we could finish it. The crew got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition and take two companions. Kill Flintback so we can return to the working.
+> The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.
 
 **The Throng — completion**
 
-> You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns. We can keep our word to the smiths with everyone still on their feet.
+> You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns, and we can keep our word to the goldsmiths with everyone still on their feet. The registrar will hold the way open; that rock got up once, and I do not trust it to stay down.
 
 ## Floor plan
 
@@ -150,17 +150,18 @@ Grounding: [guild and its voice](../design/miners_guild.md),
 [quest rules and givers](../design/quests.md),
 [mob families and naming](../design/biomes_mobs.md).
 
-## Open decisions and recommendations
+## Decisions (user, 2026-11-07)
 
-- **Story and texts:** approve this local mining accident and existing mob
-  looks; keep direct Undertithe clues for later Expeditions.
-- **Size and pacing:** start with four packs; measure at 20 and 29 before
-  fixing dimensions or stats. Shrink empty travel first.
+- **Story and texts:** this local mining accident and existing mob looks; keep direct Undertithe clues for later Expeditions.
+- **Size and pacing:** start with four packs; L20 measures at 20 and 29 before
+  fixing dimensions or stats, and shrinks empty travel first.
 - **Who opens the chest:** kill credit follows damage and healing, never party
-  membership, and a member can enter after the kill. Recommend: everyone of the
-  owner who has entered this run opens their own inventory once.
-- **A full wipe:** evading heals a mob. Recommend: Flintback resets to full health,
-  dead packs stay dead, and the run goes on.
+  membership, and a member can enter after the kill. Everyone of the owner who has
+  entered this run opens their own inventory once.
+- **A full wipe:** evading heals a mob. Flintback resets to full health, dead
+  packs stay dead, and the run goes on.
+- **Names:** Flintback stays, beside Drava Flintshoulder.
+- **Golems:** they drop no ore or gems here (see "Route and encounters").
 - **Payout:** start with eight nodes and the weight-4 quest. L20 should
   price the chest through the income check and check mob XP at +9 before
   choosing quantities and coin amounts.
