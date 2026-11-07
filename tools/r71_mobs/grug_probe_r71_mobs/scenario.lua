@@ -114,10 +114,8 @@ return function(lib, player)
 	for _, row in ipairs(grug_mobs._item_drop_filter(golem, core.registered_entities[golem.name].drops or {})) do
 		names[#names + 1] = row.name
 	end
-	lib.logf("golem rows in the Expedition: %s", table.concat(names, " "))
-	for _, item in ipairs(names) do
-		lib.check(item ~= "default:iron_lump" and item ~= "grug_materials:rough_citrine", "no ore: " .. item)
-	end
+	-- Both of the golem's rows are ore or gem: nothing stays.
+	lib.check(#names == 0, "a golem's rows: " .. table.concat(names, " "))
 	golem.object:remove()
 	local function ilvls(ent)
 		local seen = {}
@@ -140,7 +138,7 @@ return function(lib, player)
 
 	-- A wipe: the boss heals and stands, the rest of the run is untouched.
 	boss = assert(boss_of(run))
-	boss.object:punch(player, 1, {full_punch_interval = 1, damage_groups = {fleshy = 50}}, nil)
+	grug_core.deal_ability_damage(player, boss.object, 50)
 	lib.wait(1)
 	lib.logf("boss after a hit %s/%s", tostring(boss.health), tostring(boss.hp_max))
 	lib.check(boss.health < boss.hp_max, "the boss is hurt")
@@ -158,9 +156,9 @@ return function(lib, player)
 	boss = assert(boss_of(run))
 	local pos_of_boss = vector.round(boss.object:get_pos())
 	player:set_pos({x = pos_of_boss.x, y = pos_of_boss.y + 2, z = pos_of_boss.z - 4})
-	boss.object:punch(player, 1, {full_punch_interval = 1, damage_groups = {fleshy = 50}}, nil)
+	grug_core.deal_ability_damage(player, boss.object, 50)
 	lib.wait(0.5)
-	boss.object:punch(player, 1, {full_punch_interval = 1, damage_groups = {fleshy = 1000000}}, nil)
+	grug_core.deal_ability_damage(player, boss.object, 1000000)
 	lib.wait(1)
 	lib.check(boss_of(run) == nil, "the boss is dead")
 	lib.logf("kill credit %s", table.concat(kills, " "))
