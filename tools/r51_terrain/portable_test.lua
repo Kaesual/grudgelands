@@ -496,7 +496,7 @@ local stormkelp
 for _, row in ipairs(catalog.p9g_sources()) do
 	if row.key == "stormkelp" then stormkelp = row end
 end
-check(stormkelp ~= nil and stormkelp.shore_predicate == "dry_cardinal",
+check(stormkelp ~= nil and stormkelp.shore_predicate == "near_water",
 	"C6 Stormkelp grows on dry shore ground")
 local shore
 for z = -800, 800, 4 do

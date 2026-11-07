@@ -251,7 +251,7 @@ placeholder.
 | grug_jungle_edge | jungle tree (generated) (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]`, gravemoss `[herb T1]`, dragonweed `[herb T2]` (in their zones) | |
 | grug_deep_jungle / grug_jungle_fringe | jungle tree + kapok (generated) (0.025; kapoks everywhere except zones of mountain relief); large-leaved bushes; papyrus at the warm shores (§2.1) | lianas, ferns and strong-coloured flowers (Round 51); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and ground: `grug_nodes:dirt_with_canopy_litter`, shipped as the fringe's top node by WP40 R7 (`r7_r6_manifest.lua`); only `grug_jungle_edge` still uses rainforest litter |
 | grug_swamp | swamp trees (generated, gravewood wood, olive leaves, hanging moss, short stilts; Round 47), dead bush (no papyrus since Round 51: the reeds and cattails do that job) | reeds, cattails, waterlilies, moss carpets, ferns, tall grass; marshbloom `[spice T2]`; mushrooms `[food]`; crimson lotus `[herb T3]` (in its zones, Round 60) | shallow water pools 1–2 deep (mud floor), Round 47 |
-| grug_beach | — | marram on dry sand (Round 51, every biome's sand shore); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
+| grug_beach | — | marram on dry sand (Round 51, every biome's sand shore); rock salt crust on coast-zone beaches `[found-only salt, inedible]`, regrowing in the wild (Round 48) | Stormkelp uses the cross-biome near-water predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 ### 2.1 WP40 surface and deterministic decoration projection
@@ -404,14 +404,21 @@ source is a low hand-gathered node and drops exactly one stable raw item; the
 three healing herbs first pass the fail-closed Alchemy authorization below.
 The exact named-zone and host rosters are `world_zones.md` Section 11; density
 is over eligible root columns, not all map columns.
-Rock Salt retains exactly Gravesalt, Stormscale and Wyrmglass. Its dry cardinal
-shore roots require logical Beach: sand in Gravesalt, stone or gravel on the
-two mountain islands. The final P7 support must match the zone-specific host;
-mountain beach sand is not retained to make the resource placeable. No other
-gathering source set, density or harvest rule changes.
+Rock Salt retains exactly Gravesalt, Stormscale and Wyrmglass. Round 70 (the
+user, 2026-11-07): it grows on the whole logical Beach of the three zones, on
+sand, gravel or stone, and never touches water. The final P7 support must match
+one of the hosts. Density is per eligible column, so a shore rule alone left a
+source with too few columns; see the census in
+[round70-plan.md](../planning/round70-plan.md) §2.1.
+
+The densities below are the catalog's. The world generates each source at half
+of it, except Rock Salt (`habitat_registry.lua` `initial_denominator`,
+[farming.md](farming.md) "Initial wild population"): Stormkelp at 1/256 and
+Wild Cocoa at 1/1024 (Round 70).
 
 | Source | Exact opportunity density | Classification | Farmable (Round 48) |
 |---|---:|---|---|
+| Stormkelp | 1/128 | universal spice T3 | no |
 | Potato | 1/256 | universal food | yes |
 | Corn | 1/256 | universal food | yes |
 | Sunleaf | 1/384 | universal spice T1 | no |
@@ -419,10 +426,9 @@ gathering source set, density or harvest rule changes.
 | Gravemoss | 1/512 | healing herb T1 | no |
 | Marshbloom | 1/512 | universal spice T2 | no |
 | Melon | 1/512 | universal food | yes |
+| Wild Cocoa | 1/512 | universal found-only food | no |
 | Dragonweed | 1/768 | healing herb T2 | no |
 | Crimson Lotus | 1/1024 | healing herb T3 | no |
-| Stormkelp | 1/1024 | universal spice T3 | no |
-| Wild Cocoa | 1/1024 | universal found-only food | no |
 | Rock Salt | 1/1024 | universal found-only food | no |
 
 The classification column is the WP33 catalog's, whose fields are hashed into
@@ -457,10 +463,9 @@ Skyglass Canopy, Stormscale Summit; deep forest, jungle floor, swamp).
 Cooking — which costs no main slot — and never farmed, Round 48 ruling 5):
 **sunleaf T1** (the six start zones and every 11–20 zone, on the six home
 biomes, Round 60), **marshbloom T2** (swamp), **stormkelp T3** (the exact
-cardinal dry-shore predicate in `world_zones.md` §11). Marshbloom sits on
-the swamp's mud; Stormkelp's natural source may use any accepted P7 dry
-support in its four named high/endpoint zones and does not require
-`grug_beach` or sand.
+near-water predicate in `world_zones.md` §11). Marshbloom sits on the swamp's
+mud; Stormkelp's natural source grows on sand, gravel or stone within three
+nodes of water in its five named zones, in any biome (Round 70).
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
 own T1–T6 recipes, `items_crafting.md`; the tiers tie to

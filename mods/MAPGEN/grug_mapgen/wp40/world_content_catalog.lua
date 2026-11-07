@@ -31,7 +31,7 @@ local function row(key,zones,support,min,max,shore,density,mode)
 end
 M.plants={
  row("bamboo_shoot",{}, {grug_jungle_edge={"default:sand","grug_nodes:mud"},
-  grug_deep_jungle={"default:sand","grug_nodes:mud"},grug_swamp={"default:sand","grug_nodes:mud"}},1,60,"any"),
+  grug_deep_jungle={"default:sand","grug_nodes:mud"},grug_swamp={"default:sand","grug_nodes:mud"}},1,60,"any",32),
  row("blightberry",{homes[4]},hosts({"blight"}),11,20),
  row("carrot",subset(starts,1,3),hosts({"meadows","pine_hills","elf_forest"}),1,6),
  row("cassava",subset(starts,4,6),hosts({"savanna","blight","jungle_edge"}),1,6),
@@ -42,16 +42,22 @@ M.plants={
  -- melon also roots in sand there, and the margin is a thin band, so its
  -- rate is four times the default (Round 22 Phase 5).
  -- Round 60 HERBS: two Throng 21-30 swamp zones too (Raw Marsh Roast, T4).
+ -- Round 70 (the user, 2026-11-07): four times the rate. Frostbarrow's rivers
+ -- run through its pine hills and Ossuary's through blight and bone forest,
+ -- so those biomes' margins host it too: the crags and the swamp held few or
+ -- none of the two zones' freshwater margins.
  row("frost_melon",{"elandor_frostbarrow_shelf","elandor_whitebridge_shire",
   "kragmar_ossuary_reach","kragmar_whispering_reedlands"},
-  {grug_crags={"default:gravel","default:sand"},grug_swamp={"grug_nodes:mud","default:sand"}},21,30,"fresh",64),
+  {grug_crags={"default:gravel","default:sand"},grug_swamp={"grug_nodes:mud","default:sand"},
+   grug_pine_hills={"default:gravel","default:sand"},grug_blight={"default:gravel","default:sand"},
+   grug_bone_forest={"default:gravel","default:sand"}},21,30,"fresh",16),
  row("jungle_berry",{homes[6]},hosts({"jungle_edge"}),11,20),
  -- Round 60 HERBS: the grounds of all six home zones (pine hills, elf
  -- forest and savanna added), as items_crafting.md documents.
  row("pumpkin",subset(homes,1,6),hosts({"meadows","swamp","blight","pine_hills",
   "elf_forest","savanna"}),11,20),
  row("salt_crust",{"front_shattered_line"},hosts({"badlands"}),44,50,"none",512),
- row("sugar_cane",{}, {any={"default:sand"}},1,60,"any"),
+ row("sugar_cane",{}, {any={"default:sand"}},1,60,"any",64),
  row("sunberry",{homes[5]},hosts({"savanna"}),11,20),
  row("wild_grain",subset(starts,1,6,homes),common,4,20),
  row("wild_onion",subset(starts,1,3,homes),hosts({"deep_forest","pine_hills","elf_forest"}),1,20,"none",512),

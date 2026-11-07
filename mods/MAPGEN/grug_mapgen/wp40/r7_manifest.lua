@@ -406,10 +406,12 @@ return function(canonical, raw_sha256, settlement_order)
 		end
 		local gathering = inputs.gathering_manifest
 		-- Round 60 HERBS moved the Alchemy herbs into their tiers' level
-		-- bands (was `1751733095a5cdb1...`).
+		-- bands (was `1751733095a5cdb1...`). Round 70 SPAWN: new habitats and
+		-- densities of Rock Salt, Stormkelp and Wild Cocoa (was
+		-- `e07dbb94b5bd0649...`).
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v3" or
 			gathering.sha256 ~=
-				"e07dbb94b5bd0649403ae4b50d57bf435a76da83cd71bf013fd86ed93f5d8d00" or
+				"120d1f208f9cae4aed469b44a37dabb523011c08f49747120e4abaecd0a4934f" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end

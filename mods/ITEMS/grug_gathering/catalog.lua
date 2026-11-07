@@ -9,7 +9,7 @@ local NODE_SOURCE_SHA256 =
 local HARVEST_SOURCE_SHA256 =
 	"23cec2bdb27a8aaf85652515326b5f2d688ff8a806a37ca1bf1cf631b82a10fe"
 local EXPECTED_MANIFEST_SHA256 =
-	"e07dbb94b5bd0649403ae4b50d57bf435a76da83cd71bf013fd86ed93f5d8d00"
+	"120d1f208f9cae4aed469b44a37dabb523011c08f49747120e4abaecd0a4934f"
 
 local PLACEMENT = {
 	schema = "P9G-1",
@@ -77,6 +77,21 @@ local function swamp_hosts(zone)
 	local result = {}
 	for _, support in ipairs(SWAMP_GROUND) do
 		result[#result + 1] = host("grug_swamp", support, zone)
+	end
+	return result
+end
+
+-- Bare ground of every biome (Round 70, the user, 2026-11-07): the sand, gravel
+-- and stone Stormkelp takes near water.
+local function bare_ground_hosts()
+	local result, seen = {}, {}
+	for _, value in ipairs(ALL_DRY_HOSTS) do
+		if not seen[value.biome] then
+			seen[value.biome] = true
+			for _, support in ipairs({"default:gravel", "default:sand", "default:stone"}) do
+				result[#result + 1] = host(value.biome, support)
+			end
+		end
 	end
 	return result
 end
@@ -222,25 +237,26 @@ local P9G = {
 		"front_broken_causeway",
 	}, {host("grug_meadows", "default:dirt_with_grass")}, "none", "food", nil,
 		true, "grug_gathering_potato.png"),
+	-- Round 70 (the user, 2026-11-07): the whole beach of the three zones, on
+	-- any of its grounds, and never touching water. The catalogue's value is
+	-- also its initial density (habitat_registry.lua FULL_INITIAL_DENSITY).
 	p9g("wp33_rock_salt_source_v1", "rock_salt", "Rock Salt", 1024, {
 		"front_gravesalt_escarpment", "front_stormscale_summit",
 		"front_wyrmglass_crown",
 	}, {
-		host("grug_beach", "default:sand", "front_gravesalt_escarpment"),
-		host("grug_beach", "default:gravel", "front_stormscale_summit"),
-		host("grug_beach", "default:stone", "front_stormscale_summit"),
-		host("grug_beach", "default:gravel", "front_wyrmglass_crown"),
-		host("grug_beach", "default:stone", "front_wyrmglass_crown"),
-	}, "salt_cardinal",
+		host("grug_beach", "default:gravel"),
+		host("grug_beach", "default:sand"),
+		host("grug_beach", "default:stone"),
+	}, "no_water",
 		"found_only_food", nil, false,
 		"default_clay_lump.png^[colorize:#f4efe2:155"),
-	p9g("wp33_stormkelp_source_v1", "stormkelp", "Stormkelp", 1024, {
+	-- Round 70 (the user, 2026-11-07): sand, gravel or stone near water in all
+	-- five zones, at an initial 1/256.
+	p9g("wp33_stormkelp_source_v1", "stormkelp", "Stormkelp", 128, {
 		"front_gravesalt_escarpment", "front_shattered_line",
 		"front_skyglass_canopy",
 		"front_stormscale_summit", "front_wyrmglass_crown",
-	}, extended_hosts({"front_gravesalt_escarpment", "front_skyglass_canopy",
-		"front_stormscale_summit", "front_wyrmglass_crown"},
-		ALL_DRY_HOSTS, "front_shattered_line"), "dry_cardinal", "spice", 3, true,
+	}, bare_ground_hosts(), "near_water", "spice", 3, true,
 		"default_marram_grass_3.png^[colorize:#3c8290:120"),
 	-- Sunleaf (T1 and T2): the six start zones and every 11-20 zone, on the
 	-- six home biomes.
@@ -254,7 +270,7 @@ local P9G = {
 	}, ground_hosts({"grug_blight", "grug_elf_forest", "grug_jungle_edge",
 		"grug_meadows", "grug_pine_hills", "grug_savanna"}), "none", "spice", 1, true,
 		"default_grass_3.png^[colorize:#e5d34a:105"),
-	p9g("wp33_wild_cocoa_source_v1", "wild_cocoa", "Wild Cocoa", 1024, {
+	p9g("wp33_wild_cocoa_source_v1", "wild_cocoa", "Wild Cocoa", 512, { -- Round 70: an initial 1/1024
 		"front_skyglass_canopy", "front_stormscale_summit",
 	}, {
 		host("grug_deep_jungle", "grug_nodes:dirt_with_canopy_litter"),

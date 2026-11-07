@@ -329,6 +329,12 @@ return function(deps)
 	local function add_resource(compiled, denominator)
 		compiled.p = habitat.natural_probability(compiled.key, denominator)
 		compiled.host_cache = {}
+		if compiled.kind == "p9g" then
+			local classes = compiled.shore_classes
+			compiled.water_at = function(x, z)
+				return classes[(column_values_at(x, z))] == true
+			end
+		end
 		resources[#resources + 1] = compiled
 		resource_by_node[compiled.node] = compiled
 		natural[compiled.node] = true
@@ -378,20 +384,20 @@ return function(deps)
 	local WORLD_SHORE_WATER = {coastal_shelf = true, deep_ocean = true,
 		immutable_dragon_channel = true}
 	local NEIGHBOUR_X, NEIGHBOUR_Z = {-1, 1, 0, 0}, {0, 0, -1, 1}
-	-- The writers' shore predicates on planned water (world_content.lua
-	-- `shore`, r7_p9g.lua `shore_matches`); `ground` is the support's y.
+	-- The writers' water rules: the world content's shore (world_content.lua
+	-- `shore`, on planned water; `ground` is the support's y) and the P9G
+	-- predicates (habitat_registry.lua, the writer's own function).
 	local function shore_ok(source, x, ground, z)
+		if source.kind ~= "world" then
+			return habitat.p9g_predicate_matches(source.predicate, source.water_at, x, z)
+		end
 		if source.shore == "none" then return true end
 		for direction = 1, 4 do
 			local water, _, _, _, _, bed, level = column_values_at(
 				x + NEIGHBOUR_X[direction], z + NEIGHBOUR_Z[direction])
-			if source.kind == "world" then
-				if level and bed < level and math.abs(ground - level) <= 1 and
-						(water == "planned_water" or (source.shore == "any" and
-							WORLD_SHORE_WATER[water])) then
-					return true
-				end
-			elseif source.shore_classes[water] then
+			if level and bed < level and math.abs(ground - level) <= 1 and
+					(water == "planned_water" or (source.shore == "any" and
+						WORLD_SHORE_WATER[water])) then
 				return true
 			end
 		end
@@ -571,7 +577,8 @@ return function(deps)
 	--   {class = "resource"|"cover"|"tree"|"shrub", key, p (expected plants
 	--    per eligible support), hosts (eligible support names), names (plant
 	--    or marker names counted as present), species (weighted placements),
-	--    shore (true for a shoreline row), divisor (tree and shrub: marker
+	--    shore (true for a shoreline row), shore_band (its band's width, when
+	--    it is not renewal's default), divisor (tree and shrub: marker
 	--    columns per plant)}.
 	-- Each class keeps its own writer's claim exclusions: resources the
 	-- writers' "gathering" rule (the static shapes as trees see them plus
@@ -652,6 +659,8 @@ return function(deps)
 					result[#result + 1] = {class = "resource", key = source.key,
 						p = source.p, hosts = host_list(source, biome, zone),
 						names = {source.node}, shore = source.shore ~= "none",
+						shore_band = source.shore == "near_water" and
+							habitat.VEGETATION.SHORE_REACH or nil,
 						species = {{node = source.node, param2 = 0, weight = 1}}}
 				end
 			end
