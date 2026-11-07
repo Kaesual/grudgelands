@@ -64,7 +64,7 @@ end
 local function objects_in(run)
 	local n, names = 0, {}
 	for object in core.objects_in_area(run.minp, run.maxp) do
-		if not object:is_player() then
+		if not object:is_player() and not object:get_attach() then -- a player's tag, wield
 			n = n + 1
 			local entity = object:get_luaentity()
 			names[#names + 1] = entity and entity.name or "?"
