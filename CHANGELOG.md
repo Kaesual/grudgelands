@@ -25,8 +25,9 @@ Stone's Belongings tab. No migration step of its own.
 - **Castles:** every King now rules from a castle in his people's stone,
   with a larger throne room, a carpet up the dais and a tall throne set with
   the five ornamented stones. The six capitals grew around it and their
-  quarters were laid out anew. Lethariel's lake moved north and the city
-  gained a quay and a promenade; Kezamba's cenote moved north too, so one
+  quarters were laid out anew. Lethariel's lake moved north, its quay follows
+  the new shore, and a promenade between the colonnades ends at the quay's
+  head; Kezamba's cenote moved north too, so one
   boardwalk crosses the water and the east avenue runs on land.
 - **The Stonewright:** a new NPC at the Miner's Guild house of all six
   capitals turns stone for a small fee by your guild rank: Cobblestone into

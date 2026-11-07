@@ -415,16 +415,18 @@ prices change. Round end: one smoke boot of main, sync, then the user's test.
 
 Written by lane D from the lanes' excerpts and the reviewers' notes. Each item on
 the desktop client and on the web client. Items marked *look* ask for the user's
-verdict on a first-look default. Start on a world built by the map reset (item 1).
+verdict on a first-look default. A new 0.70.0 world serves every item except item 1.
 
 **What no run has touched yet (first)**
 
-1. **The map reset on a real world.** Run the release's map reset on a world with
-   characters: characters, gear, money, quests, professions and waypoints stay;
+1. **The map reset on a real world.** On a world with characters: stop the server, back
+   up the world, run `python3 tools/migrate.py --world <dir> --map-reset` from the
+   checkout, delete `map.sqlite` (`map_meta.txt` stays), raise `grug_reset_world` above
+   the world's record, start. Characters, gear, money, quests, professions and waypoints stay;
    the map regenerates; the first boot logs no `[GRUG-SEVERE]`. Lanes booted fresh
    worlds only.
 2. **The real king fight in each capital.** In all six (Dur Brannoc, Highcourt,
-   Gor Drazhak, Nhal Veyr, Lethariel, Kezamba): pull the King, chase him to the
+   Gor Drazhak, Nhal Veyr, Lethariel, Kezamba): pull the King, lead him to the
    great door, cross the leash (30 from where the chase began; the door is 27.3
    from the seat), he walks home up the dais and the two royal guards follow. Lanes
    proved this on a body model and an engine path only.

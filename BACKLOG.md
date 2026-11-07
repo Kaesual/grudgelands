@@ -3530,11 +3530,7 @@ the [GUI checklist](docs/planning/round60-plan.md#gui-checklist-rounds-57-58-59-
   templates count every cell as edited); the `required_of` comment in
   `r7_capitals.lua` calls the list stable.
 - **Town fixes** (TOWNFIX, its review): `loop_reach` applies to every loop
-  (district loops' legs are longer than 8 m in practice, harmless);
-  `world.md` §3 ("their four level-60 royal guards"), `world_zones.md`
-  §12 ("exactly four") and `biomes_mobs.md`'s King row say four royal
-  guards where the hall templates seat two (wrong before this round too;
-  the 2026-10 playtest audit noted it).
+  (district loops' legs are longer than 8 m in practice, harmless).
 - **Guild quests** (GUILDQUESTS, its review, the text review): the quest
   log showed a shared quest's home zone to everyone (**done in Round 59**,
   QSYS3: the variant's zone); the ledger has no faction filter in the
