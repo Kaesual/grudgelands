@@ -482,7 +482,13 @@ Its civic buildings are dungeon stone under a pale stone roof and everything a
 citizen built is gravewood board; its own two parts, which no other capital has,
 are a walk-in mausoleum on a stepped plinth and a candle court with an altar at
 its centre. Its curtain wall and its four districts are laid out by the capital
-planner like every capital's.
+planner like every capital's. Since Round 70 the king sits in the castle at the
+head of the throne approach, a nine-wide avenue from the south gate; a five-wide
+processional walk runs up both flanks and behind the castle to the north gate,
+and the city watch walks a loop round the whole precinct. The vigil hall stands
+apart across the walk in the west quarter, a public quest place; the ossuary
+court with the Bone Works and the Charnel Yard lies east of the walk, and the
+burial ground takes the open ground round the quarters.
 
 It is also the first capital to place the WAVE-2 activities of the NPC socket
 contract: its residents mourn at grave markers, pray at candles, tend the
