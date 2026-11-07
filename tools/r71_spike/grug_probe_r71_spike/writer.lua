@@ -169,4 +169,25 @@ function M.verify(lib, label, slot, tpl, truth)
 	return got
 end
 
+-- The closures that fill a box with one node, block by block: the clearing
+-- pass. Solid, so no liquid in or round the box can move while it is written.
+function M.seal_job(slot, name)
+	local job = {}
+	local solid = core.get_content_id(name)
+	local buffer = {}
+	for i = 1, 4096 do buffer[i] = solid end
+	local zeros = {}
+	for i = 1, 4096 do zeros[i] = 0 end
+	for k, area in ipairs(M.blocks(slot)) do
+		job[k] = function()
+			local vm = VoxelManip()
+			vm:read_from_map(area[1], area[2])
+			vm:set_data(buffer)
+			vm:set_param2_data(zeros)
+			vm:write_to_map(true)
+		end
+	end
+	return job
+end
+
 return M

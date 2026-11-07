@@ -924,4 +924,128 @@ function S.spawns(lib, template, writer)
 	lib.logf("the gate refused %d spawn points", refused)
 end
 
+-- Q3: a first write right after generation. Water of natural caves is still in
+-- the liquid queue while the box is half written. Each slot once plain and once
+-- with the clearing pass before the template.
+function S.seal(lib, template, writer)
+	writer.init(lib)
+	local n = tonumber(core.settings:get("r71spike_n") or "") or 2
+	local s = SIZES.rec
+	local tpl = template.build(s[1], s[2], s[3], 1)
+	local truth = template.light(tpl)
+	for i = 1, 5 do
+		local plain = test_slot(lib, "rec", i, 13)
+		lib.emerge(lib.grown(plain, 16))
+		lib.phase("plain_" .. i)
+		writer.run(writer.vm_job(tpl, plain, writer.blocks(plain), "engine"), n)
+		lib.phase_end()
+		lib.wait(3)
+		writer.verify(lib, "plain_" .. i, plain, tpl, truth)
+
+		local sealed = test_slot(lib, "rec", i, 14)
+		lib.emerge(lib.grown(sealed, 16))
+		lib.phase("sealed_" .. i)
+		writer.run(writer.seal_job(sealed, "default:stone"), n)
+		writer.run(writer.vm_job(tpl, sealed, writer.blocks(sealed), "engine"), n)
+		lib.phase_end()
+		lib.wait(3)
+		writer.verify(lib, "sealed_" .. i, sealed, tpl, truth)
+	end
+end
+
+-- Q6: delete_area as the whole clear, after a restart. left1's box a and b hold
+-- nothing now; `left3a` leaves a saved mob, item, chest and timer in a box and
+-- stops; `left3b` deletes the area, generates it, writes it and looks.
+local function left3_box(lib)
+	return lib.slot(149, -1, 40, 48, 32, 48)
+end
+
+function S.left3a(lib)
+	local box = left3_box(lib)
+	lib.emerge(lib.grown(box, 16))
+	for z = box.minp.z, box.maxp.z do
+		for y = box.minp.y + 8, box.minp.y + 15 do
+			for x = box.minp.x, box.maxp.x do core.set_node({x = x, y = y, z = z}, {name = "air"}) end
+		end
+	end
+	local at = vector.add(box.minp, {x = 24, y = 9, z = 24})
+	lib.player():set_pos(at)
+	lib.wait(5)
+	spawn_leftovers(lib, at)
+	local chest = vector.add(at, {x = -3, y = 0, z = 0})
+	core.set_node(chest, {name = "default:chest"})
+	core.get_node_timer(chest):start(100000)
+	lib.wait(3)
+	lib.logf("before shutdown: %d %s", census(at, 16))
+end
+
+function S.left3b(lib)
+	local box = left3_box(lib)
+	local at = vector.add(box.minp, {x = 24, y = 9, z = 24})
+	local chest = vector.add(at, {x = -3, y = 0, z = 0})
+	lib.player():set_pos({x = 0, y = 40, z = -2550})
+	lib.wait(40)
+	lib.logf("box loaded %s", tostring(core.compare_block_status(at, "loaded")))
+	lib.phase("delete_area")
+	lib.timed(function() lib.logf("delete_area %s", tostring(core.delete_area(box.minp, box.maxp))) end)
+	lib.phase_end()
+	lib.phase("regenerate")
+	local t = lib.emerge(lib.grown(box, 16))
+	lib.phase_end(("emerge_s %.3f"):format(t))
+	lib.player():set_pos(at)
+	lib.wait(6)
+	lib.logf("after delete_area, player in the box: %d %s", census(at, 16))
+	lib.logf("chest pos: node %s, nodes with meta %d, timer %s", core.get_node(chest).name,
+		#core.find_nodes_with_meta(box.minp, box.maxp), tostring(core.get_node_timer(chest):is_started()))
+end
+
+-- The recommended preparation, whole: live objects out, delete_area, generate
+-- one chunk at a time, the clearing pass, the template, r71spike_n blocks a step.
+-- Ten in a row over five slots that earlier runs used, each verified.
+function S.final(lib, template, writer)
+	writer.init(lib)
+	local n = tonumber(core.settings:get("r71spike_n") or "") or 4
+	local s = SIZES.rec
+	local layouts = {template.build(s[1], s[2], s[3], 1), template.build(s[1], s[2], s[3], 2)}
+	local truths = {template.light(layouts[1]), template.light(layouts[2])}
+	lib.phase("baseline")
+	lib.wait(20)
+	lib.phase_end()
+	local map0 = lib.map_size()
+	local function prepare(slot, tpl, label)
+		local us = core.get_us_time
+		local t0 = us()
+		lib.timed(function()
+			for object in core.objects_in_area(slot.minp, slot.maxp) do
+				if not object:is_player() then object:remove() end
+			end
+			assert(core.delete_area(slot.minp, slot.maxp))
+		end)
+		local t1 = us()
+		local chunks = #lib.emerge_chunkwise(lib.grown(slot, 16))
+		local t2 = us()
+		writer.run(writer.seal_job(slot, "default:stone"), n)
+		lib.yield()
+		local t3 = us()
+		writer.run(writer.vm_job(tpl, slot, writer.blocks(slot), "engine"), n)
+		local t4 = us()
+		lib.logf("PREP %s total %.2f s: delete %.4f, emerge %.2f (%d chunks), clear %.2f, write %.2f", label,
+			(t4 - t0) / 1e6, (t1 - t0) / 1e6, (t2 - t1) / 1e6, chunks, (t3 - t2) / 1e6, (t4 - t3) / 1e6)
+	end
+	lib.phase("queue10")
+	local t0 = core.get_us_time()
+	for i = 1, 10 do
+		local which = i % 2 + 1
+		local slot = test_slot(lib, "rec", (i - 1) % 5 + 1, 11)
+		prepare(slot, layouts[which], "final_" .. i)
+		lib.pause_recording = true
+		writer.verify(lib, "final_" .. i, slot, layouts[which], truths[which])
+		lib.pause_recording = false
+		lib.yield()
+	end
+	lib.phase_end(("queue_s %.1f"):format((core.get_us_time() - t0) / 1e6))
+	lib.wait(7)
+	lib.logf("MAP size %d before, %d after ten preparations", map0, lib.map_size())
+end
+
 return S

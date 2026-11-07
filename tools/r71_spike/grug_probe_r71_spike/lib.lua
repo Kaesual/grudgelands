@@ -194,7 +194,8 @@ end
 local last
 core.register_globalstep(function()
 	local now = us()
-	if last and phase then
+	-- a check that reads a whole box back is the probe's, not the preparation's
+	if last and phase and not M.pause_recording then
 		phase.intervals[#phase.intervals + 1] = (now - last) / 1000
 	end
 	last = now
