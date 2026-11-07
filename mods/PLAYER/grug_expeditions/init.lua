@@ -100,7 +100,7 @@ end)
 -- {ids, dig}. Read by the dig rule (guard.lua).
 function grug_expeditions.written(run)
 	local tpl = grug_expeditions.templates[catalogue.definition(run.expedition).template]
-	return tpl.variants[catalogue.tier_of(run.level).tier] or tpl
+	return tpl.variants and tpl.variants[catalogue.tier_of(run.level).tier] or tpl
 end
 
 assert(loadfile(path .. "/runs.lua"))(catalogue, preparation)

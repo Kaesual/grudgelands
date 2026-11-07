@@ -37,7 +37,7 @@ check(not listed[1].hidden, "A not hidden")
 -- B. The loot table: at the run's level, no ore, no gem, what the brief asks.
 local tbl = L.TABLES.stilled_seam
 check(tbl and tbl.gear and tbl.coin_bags and tbl.materials, "B equipment, coins and materials")
-local ores = {["default:gold_lump"] = true, ["grug_materials:rough_jade"] = true,
+local ores = {["default:gold_lump"] = true, ["grug_materials:anthracite"] = true, ["grug_materials:rough_jade"] = true,
 	["grug_materials:cut_jade"] = true, ["default:iron_lump"] = true,
 	["grug_materials:rough_citrine"] = true, ["grug_materials:emberglass_shard"] = true}
 L.check(ores)
@@ -77,7 +77,7 @@ local OPEN = {air = 0, ["default:torch_wall"] = 12, ["grug_decor:xdecor_lantern_
 local LOW = {["grug_mapgen:mine_rail"] = true} -- under a step, light passes
 local SOLID = {["default:stone"] = true, ["default:cobble"] = true, ["default:gravel"] = true,
 	["default:tree"] = true, ["default:wood"] = true, ["default:pine_wood"] = true,
-	["default:stone_with_gold"] = true, ["grug_materials:stone_with_jade"] = true,
+	["grug_materials:stone_with_anthracite"] = true, ["grug_materials:stone_with_jade"] = true,
 	["grug_decor:darkage_reinforced_wood"] = true, ["grug_decor:cottages_table"] = true,
 	["grug_decor:cottages_bench"] = true, ["grug_decor:cottages_barrel"] = true,
 	["grug_mapgen:mine_cart"] = true, ["grug_expeditions:waystone"] = true,
@@ -95,7 +95,7 @@ local function inside(x, y, z)
 end
 local function name_at(x, y, z) return tpl.nodes[tpl.cells:byte(at(x, y, z)) + 1] end
 
-local DOOR, GOLD = "grug_expeditions:reward_door", "default:stone_with_gold"
+local DOOR, GOLD = "grug_expeditions:reward_door", "grug_materials:stone_with_anthracite" -- the T2 ore
 local JADE = "grug_materials:stone_with_jade"
 -- `changed`: cells read as air, the door and the ore gone.
 local function solid(x, y, z, changed)

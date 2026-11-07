@@ -242,7 +242,7 @@ has(spec, "The Other\\, Deep Vault", "D a name is escaped")
 has(spec, "Levels 20-29\\, up to 3 players", "D the row's levels and places")
 local items = dropdown_items(spec)
 check(items == "Level 20,Level 21", "D only the levels it may enter: " .. tostring(items))
-check(dropdown_items(spec, "tier") == "T2 (20-29): Gold\\, Jade", "D one tier, its ore and gem: " ..
+check(dropdown_items(spec, "tier") == "T2 (20-29): Anthracite\\, Jade", "D one tier, its ore and gem: " ..
 	tostring(dropdown_items(spec, "tier")))
 has(spec, ";open;", "D a solo player may open it")
 hasnt(spec, "WHO CAN ENTER", "D no rows without a party")
@@ -267,7 +267,7 @@ do
 	open(sixty)
 	local wide = press(sixty, {expeditions_row_3 = "x"})
 	has(wide, "Levels 20-69\\, up to 3 players", "D the wide row")
-	check(dropdown_items(wide, "tier") == "T2 (20-29): Gold\\, Jade,T3 (30-39): Silver\\, Garnet," ..
+	check(dropdown_items(wide, "tier") == "T2 (20-29): Anthracite\\, Jade,T3 (30-39): Silver\\, Garnet," ..
 		"T4 (40-49): Emberglass\\, Sapphire,T5 (50-59): Abyssal Crystal\\, Ruby," ..
 		"T6 (60-69): Abyssal Crystal\\, Diamond", "D every tier at 60: " .. tostring(dropdown_items(wide, "tier")))
 	check(dropdown_index(wide, "tier") == 5 and dropdown_items(wide) ==
@@ -296,7 +296,7 @@ do
 	local late = player("Late", 29)
 	open(late)
 	wide = press(late, {expeditions_row_3 = "x"})
-	check(dropdown_items(wide, "tier") == "T2 (20-29): Gold\\, Jade,T3 (30-39): Silver\\, Garnet",
+	check(dropdown_items(wide, "tier") == "T2 (20-29): Anthracite\\, Jade,T3 (30-39): Silver\\, Garnet",
 		"D two tiers at 29: " .. tostring(dropdown_items(wide, "tier")))
 	check(dropdown_index(wide, "tier") == 1 and dropdown_index(wide, "level") == 10, "D at 29 itself")
 	wide = press(late, {tier = "2", level = "10"})
