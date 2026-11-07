@@ -238,6 +238,22 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			roads = road_stats and road_stats.t_total or 0, capitals = capitals_seconds,
 			placement = placement_stats and placement_stats.seconds or 0}
 	end
+	-- The wayposts at the road junctions (Round 70, `wayposts.lua`), worked out
+	-- once on first use from the same pure queries in main and emerge.
+	local wayposts = dofile(wp40_directory .. "/wayposts.lua")
+	local waypost_labels, waypost_cache = {}, nil
+	for index = 1, #r7_settlement_module.roster do
+		local profile = r7_settlement_module.roster[index]
+		if profile.anchor_id then waypost_labels[profile.anchor_id] = profile.label end
+	end
+	local function waypost_rows(context)
+		if not waypost_cache then
+			waypost_cache = wayposts.rows(roads.module, roads.cache.text, waypost_labels,
+				context.column_values_at, context.road_column_at)
+		end
+		return waypost_cache
+	end
+
 	local settlements = {}
 	local settlement_palette, settlement_seen = {}, {}
 	local settlement_keys, settlement_order = {}, {}
@@ -384,7 +400,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				settlement_configs, settlement_keys,
 				world_factory(world_catalog, content_set.p9g, habitat_registry,
 					dofile(wp40_directory .. "/seabed.lua")),
-				dofile(wp40_directory .. "/road_writer.lua")(core_api, source),
+				dofile(wp40_directory .. "/road_writer.lua")(core_api, source,
+					waypost_rows),
 				dofile(wp40_directory .. "/arena_writer.lua")(core_api, source,
 					dofile(wp40_directory .. "/arena_layout.lua")),
 				swamp_writer.config(core_api),
@@ -702,6 +719,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 	end
 	function module.road_module()
 		return roads.module
+	end
+	-- Main's read of the wayposts (the LBM's texts): the `wayposts.lua` rows.
+	function module.waypost_rows(planner_source)
+		return waypost_rows(planner_source)
 	end
 	function module.build_authority(native_identities, expected_manifest_sha256)
 		return build(native_identities, expected_manifest_sha256, nil, true)

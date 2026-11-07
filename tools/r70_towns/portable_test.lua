@@ -12,7 +12,8 @@
 --   W  a walk: from the spawn a body two nodes high that climbs one node
 --      reaches every standing socket (adapter rows too), the cell before every
 --      door, the stone's arrival sides and every patrol waypoint;
---   F  furniture: nothing stands on a socket's cell.
+--   J  the wayposts (wp40/wayposts.lua): the junctions that get a stack, its
+--      column, the arrows' turns and the names on the boards.
 --
 -- Usage (repo root): luajit tools/r70_towns/portable_test.lua [REPO]
 -- Prints "R70 TOWNS PORTABLE PASS checks=<n>" or the failures.
@@ -197,6 +198,87 @@ for _, profile in ipairs(towns) do
 		check(cell ~= nil and walk.reached(0, 1, z) or
 			walk.stands(0, 1, z), ("%s: the gate axis at z %d"):format(key, z))
 	end
+end
+
+-- J. The wayposts (wp40/wayposts.lua), on a small road network of known shape.
+do
+	local wayposts = dofile(wp40 .. "/wayposts.lua")
+	check(wayposts.short_label("Dawnmere") == "Dawnmere", "J a short name stays")
+	check(wayposts.short_label("Tarnwatch Fold") == "Tarnwatch Fold", "J 14 characters fit")
+	check(wayposts.short_label("Whitebridge Market Close") == "Whitebridge",
+		"J a long name keeps its first word")
+	-- degrotate: param2 120 leaves the arrow on +z, the look of yaw 0 turned
+	-- half a turn from the model's -z (grug_signs `place_waypost`).
+	check(wayposts.param2(0, 1) == 120, "J arrow north")
+	check(wayposts.param2(-1, 0) == 180, "J arrow west (yaw 90 degrees)")
+	check(wayposts.param2(0, -1) % 240 == 0, "J arrow south")
+	check(wayposts.param2(1, 0) == 60, "J arrow east")
+
+	-- A primary road west to east along z = 0, half width 3; a secondary road
+	-- joins it from the north at point 300.
+	local function line(x1, z1, x2, z2, kind, a, b, parent, parent_idx)
+		local road = {X = {}, Z = {}, kind = kind, a = a, b = b, hw = 3,
+			parent = parent, parent_idx = parent_idx}
+		local n = math.max(math.abs(x2 - x1), math.abs(z2 - z1))
+		for i = 0, n do
+			road.X[i + 1] = x1 + (x2 - x1) * i / n
+			road.Z[i + 1] = z1 + (z2 - z1) * i / n
+		end
+		return road
+	end
+	local function network()
+		return {
+			[1] = line(1, 0, 600, 0, "primary", "cap_a", "cap_b"),
+			[2] = line(300, 120, 300, 4, "secondary", "village", "road:1", 1, 300),
+			-- too close to the primary road's end
+			[3] = line(40, 120, 40, 4, "secondary", "village", "road:1", 1, 40),
+			-- a trail gets none
+			[4] = line(450, 120, 450, 4, "trail", "village", "road:1", 1, 450),
+		}
+	end
+	local LABELS = {cap_a = "Dur Brannoc", cap_b = "Whitebridge Market Close",
+		village = "Copperfell Village"}
+	local module = {deserialize = function(text) return {roads = text()} end}
+	local water, level = {}, {}
+	local function columns(x, z)
+		if water[x .. ":" .. z] then return "sea" end
+		return "land", nil, nil, nil, nil, level[x .. ":" .. z] or 5, nil
+	end
+	local function roads_at(x, z)
+		if math.abs(z) <= 3 then return "surface", 5.5, 5, "grade" end
+		if z > 0 and math.abs(x - 300) <= 3 then return "surface", 5.5, 5, "grade" end
+		return nil
+	end
+	local rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	check(#rows == 1, "J one stack, at the secondary junction away from the ends: " .. #rows)
+	local row = rows[1]
+	if row then
+		check(row.x == 300 and row.z == -4 and row.y == 6,
+			("J opposite the mouth, one node off the road: %d,%d,%d"):format(row.x, row.y, row.z))
+		check(#row.arms == 3, "J three arrows")
+		check(row.arms[1].text == "Dur Brannoc" and row.arms[1].param2 == 180,
+			"J the primary road's first end, west")
+		check(row.arms[2].text == "Whitebridge" and row.arms[2].param2 == 60,
+			"J its second end, east, the long name cut")
+		check(row.arms[3].text == "Copperfell" and row.arms[3].param2 == 120,
+			"J the village up the secondary road")
+		local texts = wayposts.texts(rows)
+		check(texts["300:6:-4"] == "Dur Brannoc" and texts["300:8:-4"] == "Copperfell",
+			"J the LBM's table, bottom to top")
+	end
+	-- Water opposite the mouth: the mouth's corner instead.
+	for x = 280, 320 do
+		for z = -8, -4 do water[x .. ":" .. z] = true end
+	end
+	rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	check(rows[1] ~= nil and rows[1].z == 4 and math.abs(rows[1].x - 300) > 3,
+		"J the mouth's corner where the far side is wet")
+	-- A sheer drop beside the road anywhere near: no stack.
+	for x = 280, 320 do
+		for z = 4, 8 do level[x .. ":" .. z] = 12 end
+	end
+	rows = wayposts.rows(module, network, LABELS, columns, roads_at)
+	check(#rows == 0, "J no stack without a good column")
 end
 
 print(("R70 TOWNS portable test: %d checks, %d failures"):format(checks, failures))

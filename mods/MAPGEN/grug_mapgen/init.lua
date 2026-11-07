@@ -27,6 +27,30 @@ grug_mapgen.mining_camps = dofile(modpath .. "/wp40/r58_camps.lua").index(
 	{raw_sha256 = function(bytes) return core.sha256(bytes, true) end,
 		full_seed = grug_mapgen.wp40.full_seed})
 
+-- The wayposts the mapgen stands at the road junctions (Round 70): the emerge
+-- environment writes no metadata, so a stack's text comes here, when its
+-- block first loads. An empty text is the generated state (the world corridor
+-- protects the node, so no player clears it); a player's own waypost has no row.
+do
+	local texts = grug_mapgen.wp40.waypost_texts
+	core.register_lbm({
+		label = "Write the text of the generated wayposts",
+		name = "grug_mapgen:waypost_text",
+		nodenames = {"grug_signs:waypost"},
+		run_at_every_load = true,
+		action = function(pos)
+			local text = texts[pos.x .. ":" .. pos.y .. ":" .. pos.z]
+			if text then
+				local meta = core.get_meta(pos)
+				if meta:get_string("text") == "" then
+					meta:set_string("text", text)
+					grug_text.refresh(pos)
+				end
+			end
+		end,
+	})
+end
+
 -- The one-off rewrite of the camps under construction (Round 69): resumes a
 -- pending rewrite at this start, and the migration 0.69.0 requests it.
 grug_mapgen.camp_rewrite = dofile(modpath .. "/camp_rewrite.lua")(core,
