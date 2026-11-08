@@ -964,9 +964,13 @@ From the lanes' reports, measured unless marked; comparisons, not targets.
 
 ### Checks
 
-- **Round-end full run** on `7b37aef0` by the coordinator (JOBS=4, through the queue), log in
-  the orchestration folder (`r72/reports/integration/`); `check_fresh_server.py` PASS and
-  `build.py --check` OK on `7b37aef0`.
+- **Round-end full run** on `7b37aef0` by the coordinator (JOBS=4, through the queue; log in
+  the orchestration folder, `r72/reports/integration/`): **326 passed, 6 failed** (`r37_mp`,
+  `r41_mob`, `r46_xp`, `r62_frontquests`, `r69_questmap`, `r71_mobs`), fixtures no lane ran:
+  the retinue cut and leash pin after BOSSRESET (`r37_mp`, `r41_mob`), the quest count and
+  quest data after the two new quests (`r46_xp`: 393 against 391; `r62_frontquests`,
+  `r69_questmap`), the wall-sign hook in `encounters.lua` on `r71_mobs`' stub. They go to the coordinator's round-end fix before C6; this section is updated
+  then. `check_fresh_server.py` PASS and `build.py --check` OK on `7b37aef0`.
 - **Engine, real client on Xvfb:** The Second Shift 164 PASS, The Last Mint 185 PASS, The
   Stilled Seam 142 PASS, each 0 FAIL, after STYLE (PROOF); every lane's probe and smoke boot is
   in its report.

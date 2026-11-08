@@ -21,8 +21,8 @@ rooms no pack lets you walk round, proved per floor cell. **Compatible:** no ste
 saved: player meta `grug_mail:letter_registrar`, two quests, two boss ids, name slots. Reviews:
 EXPMOBS, MOUNTS, RANGED, GUARDNAV, SHIFT, STYLE, PROOF and both ruling changes MERGE; TAGS, FIGHT,
 WAYTAB, PLACE MERGE AFTER FIXES; BLADECRAFT, TRAPS, BOSSRESET, MINT MERGE AFTER FIXES, then MERGE on
-the delta. 332 portable fixtures (twelve new); the round-end full run on `7b37aef0` is the
-coordinator's; engine after STYLE: The Second Shift 164, The Last Mint 185, The Stilled Seam 142
+the delta. 332 portable fixtures (twelve new); the round-end full run on `7b37aef0`: 326 passed, 6
+failed (fixtures no lane ran, for the coordinator's fix before the merge); engine after STYLE: The Second Shift 164, The Last Mint 185, The Stilled Seam 142
 PASS, 0 FAIL. Modelled runs: Second Shift 10.2 minutes at 40–60, Last Mint 10.1 at 60, Seam 8.6
 at 20. **Open for the user:** the
 [GUI checklist](planning/round72-plan.md#gui-checklist-desktop-and-web), 50 items with two
