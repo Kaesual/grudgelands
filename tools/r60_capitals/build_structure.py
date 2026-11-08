@@ -276,6 +276,26 @@ SHARED = [
                                   "8 Raw Meat from the blightfields' game by day."},
         },
     },
+    # Round 71 lane L20: the Expedition's optional group quest, the capitals' only one.
+    {
+        "id": "capital_stilled_seam", "giver": "leader", "line": "guild", "min_level": 18, "level": 20,
+        "title": "Party: The Stilled Seam",
+        "objectives": [kill(["flintback"], 1)],
+        "rewards": {"weight": 4},
+        "lesson": "Optional group quest: the registrar's Expedition, killing its boss at any level.",
+        "duration_min": 15,
+        "optional": True, "group": True,
+        "notes": "Round 71 L20: round71-l20-description.md, its four approved texts, one per faction; "
+                 "free, no follow-up, the Expedition stays repeatable after the turn-in.",
+        "capitals": {
+            "highcourt": {"text": "Accord offer.", "completion": "Accord completion."},
+            "dur_brannoc": {"text": "Accord offer.", "completion": "Accord completion."},
+            "lethariel": {"text": "Accord offer.", "completion": "Accord completion."},
+            "gor_drazhak": {"text": "Throng offer.", "completion": "Throng completion."},
+            "kezamba": {"text": "Throng offer.", "completion": "Throng completion."},
+            "nhal_veyr": {"text": "Throng offer.", "completion": "Throng completion."},
+        },
+    },
 ]
 
 # ---------------------------------------------------------------- local
@@ -494,14 +514,17 @@ def shared_quests():
             row["text"] = ph(fields["text"].replace("{trainer}", TRAINER[capital]))
             if spec.get("completion"):
                 row["completion"] = ph(spec["completion"][capital])
+            elif fields.get("completion"):
+                row["completion"] = ph(fields["completion"])
             variants.append(row)
         quest = {"id": spec["id"], "line": spec["line"], "min_level": spec["min_level"],
                  "level": spec["level"], "requires": [], "title": PH + spec["title"], "text": variants[0]["text"]}
-        if spec.get("completion"):
+        if "completion" in variants[0]:
             quest["completion"] = variants[0]["completion"]
         quest.update({"objectives": [dict(o) for o in spec["objectives"]], "variants": variants,
                       "rewards": dict(spec["rewards"]), "lesson": spec["lesson"],
                       "duration_min": spec["duration_min"], "notes": "Round 60 CAPITALS. " + spec["notes"]})
+        quest.update({key: spec[key] for key in ("optional", "group") if key in spec})
         out.setdefault(ZONE[order[0]], []).append(quest)
     return out
 

@@ -293,6 +293,14 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
   with the job when the step's world can no longer occur.
 - **Affected versions:** 5.17.0 and `master` at `df0487906`.
 
+## 9. `core.delete_area` commits each mapblock on its own
+
+- **Upstream problem:** `ModApiEnv::l_delete_area` (`src/script/lua_api/l_env.cpp:1159`) calls `ServerMap::deleteBlock`
+  per mapblock outside `beginSave`/`endSave`, so each block is its own synchronous commit on the main thread. On
+  PostgreSQL, the production backend, one call over a box of 256 blocks is 256 round trips in one server step.
+- **What we do:** `grug_expeditions/preparation.lua` deletes `BLOCKS_PER_STEP` mapblocks per server step, one call each.
+- **Fixed when:** `l_delete_area` wraps its loop in one transaction. Then one call over the box may do.
+
 ## Checked and not listed
 
 - `mods/BASE/default/nodes.lua` (sign `on_receive_fields`: ignore fields

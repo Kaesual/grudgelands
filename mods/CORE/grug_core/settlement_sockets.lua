@@ -339,10 +339,11 @@ end
 -- the innkeeper (grug_home) and the Housing Steward (grug_housing).
 -- Round 33 adds the Crownbinder and the culture vendor (grug_traders),
 -- Round 58 the Miner's Guild Exchange of every capital's guild house
--- (grug_traders), Round 70 the Stonewright of the same house (grug_traders).
+-- (grug_traders), Round 70 the Stonewright of the same house (grug_traders),
+-- Round 71 the Expedition Registrar on its clerk socket (grug_expeditions).
 local SERVICE_ROLES = {innkeeper = true, housing_manager = true,
 	crownbinder = true, culture_vendor = true, guild_exchange = true,
-	stonewright = true}
+	stonewright = true, expedition_registrar = true}
 
 function grug_core.assign_service_socket(settlement_key, socket_id, role)
  if not SERVICE_ROLES[role] then fail("service role differs: " .. tostring(role)) end

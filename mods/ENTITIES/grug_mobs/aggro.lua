@@ -13,12 +13,19 @@
 -- Owner-bound actors and explicit bespoke no-leash actors retain their rules.
 -- Home remains permanent; the runtime damage clock never becomes a new home.
 
+--
+-- An Expedition's pack (`_grug_pack`, Round 71, grug_expeditions/packs.lua) follows
+-- none of this: pulled whole, it never gives up, and its packs.lua tick owns when
+-- it leaves combat. No reset of ours fires on such a mob while it fights: no leash
+-- (leash_tick), no give-up (give_up_target), and its chase range, patience and speed
+-- come with it as fields. Idle it is bound to its marker (roam_check).
+
 function grug_mobs.damage_pursuit(self)
 	return self._grug_damage_pursuit_candidate == true
 		and not (self._grug_camp_pos or self._grug_rare_id
 			or self._grug_boss_id or self._grug_royal_summon
 			or self._grug_boss_summon or self._grug_patrol_route
-			or self._grug_no_leash)
+			or self._grug_no_leash or self._grug_pack)
 end
 
 function grug_mobs.start_damage_pursuit(self)
@@ -162,7 +169,8 @@ function grug_mobs.apply_aggro_fields(self, cfg)
 	-- 45 EXTENDS its chase — but it runs its own hand-rolled open-sea leash
 	-- (strayed(), kraken.lua) and _grug_no_leash, so that leash still governs
 	-- when it turns around, exactly as before.
-	if self._grug_chase_range ~= grug_mobs.CHASE_RANGE then
+	-- A pack mob brings its own (packs.lua).
+	if self._grug_chase_range ~= grug_mobs.CHASE_RANGE and not self._grug_pack then
 		self._grug_chase_range = grug_mobs.CHASE_RANGE
 	end
 end
@@ -446,6 +454,12 @@ end
 --
 function grug_mobs.swimmer_reset(self)
 	grug_mobs.give_up_target(self)
+	grug_mobs.evade_home(self)
+end
+
+-- The evade run all the way home, from any distance beyond EVADE_ARRIVED, also
+-- from inside the radius leash_reset reads: a swimmer's reset, and a pack's wipe.
+function grug_mobs.evade_home(self)
 	self.temp = self.temp or {}
 	local home = self._grug_home
 	local pos = self.object and self.object:get_pos()
@@ -592,6 +606,8 @@ local GAVE_UP_SECONDS = 15
 -- point is flagged and removed once nobody watches (room.lua give_up_stuck,
 -- stuck_tick).
 function grug_mobs.give_up_target(self)
+	-- A pack never gives up: a mob that cannot get there jumps (packs.lua).
+	if self._grug_pack then return grug_mobs.pack_left_behind(self) end
 	grug_mobs.give_up_stuck(self)
 	local target = self.attack
 	local pos = target and target:get_pos()
@@ -676,6 +692,9 @@ local ROAM_RADIUS = 20
 -- summons, royals, bespoke no-leash actors (Kraken), NPCs (guards, villagers)
 -- and water-bound swimmers keep their own movement rules.
 grug_mobs.WANDER_RADIUS = 32
+-- An Expedition pack waits at its markers: packs are placed to be fought one at
+-- a time (Round 71), and a pack's mobs spread over about four nodes.
+local PACK_ROAM_RADIUS = 8
 
 function grug_mobs.free_roamer(self)
 	return self.type ~= "npc" and not (self._grug_camp_pos
@@ -689,7 +708,9 @@ local function roam_check(self)
 	-- Camp members keep the camp radius; free-roaming mobs take the wander
 	-- leash; every other mob (see grug_mobs.free_roamer) keeps its own rules.
 	local radius, wander
-	if self._grug_camp_pos then
+	if self._grug_pack then
+		radius = PACK_ROAM_RADIUS
+	elseif self._grug_camp_pos then
 		-- The designated patroller is §4's one exemption: being far from its
 		-- post is its entire job (same exemption as the evade above).
 		if self._grug_patrol_route then
@@ -819,7 +840,7 @@ function grug_mobs.leash_tick(self, dtime)
 	-- no-leash actors too (notably royal guards), while its own calm-state and
 	-- shared encounter gates prevent a transient target gap from healing them.
 	grug_mobs.idle_health_tick(self)
-	if self._grug_no_leash then
+	if self._grug_no_leash or self._grug_pack then
 		return
 	end
 	leash_check(self)

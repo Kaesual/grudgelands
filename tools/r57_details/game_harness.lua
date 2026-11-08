@@ -20,7 +20,9 @@
 --     poi_displays.lua, the guild's nodes.lua); the world construction is skipped, grug_zones.get
 --     answers from the mapgen's own zone source and grug_core gets the few
 --     seams the installed authority would give it. grug_map (the minimap's
---     bake, seconds at load) is skipped: it registers no item;
+--     bake, seconds at load) is skipped: it registers no item. So is
+--     grug_expeditions (Round 71): it wants grug_home's travel seams and a real
+--     template file, and no player ever holds its waystone;
 --   - a file that fails is skipped and listed in `failures` (today: the
 --     quest loader, which wants the world's NPC sockets, and grug_home);
 --   - mods-loaded callbacks run only for the files named in `callbacks`
@@ -383,6 +385,8 @@ return function(repo, options)
 			grug_core.assign_innkeeper_socket = function() return true end
 		elseif name == "grug_map" then
 			grug_map = permissive()
+		elseif name == "grug_expeditions" then
+			grug_expeditions = permissive()
 		else
 			dofile(mod.dir .. "/init.lua")
 		end

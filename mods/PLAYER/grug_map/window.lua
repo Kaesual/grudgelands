@@ -242,11 +242,11 @@ local function current_zone(player)
 	return zone and zone.display_name or "Open sea"
 end
 
--- An arrow's place on the zoomed map as whole ARROW_STEPs, or nil off the
--- map.
+-- An arrow's place on the zoomed map as whole ARROW_STEPs; beyond the map (an
+-- Expedition) at its edge.
 local function arrow_cell(view, position, layout, zoom)
-	local sx, sy = atlas.world_to_screen(view, position, 0, 0, layout.map_w * zoom,
-		layout.map_h * zoom)
+	local sx, sy = atlas.world_to_screen(view, atlas.on_map(view, position), 0, 0,
+		layout.map_w * zoom, layout.map_h * zoom)
 	if not sx then return nil end
 	return math.floor(sx / ARROW_STEP + 0.5), math.floor(sy / ARROW_STEP + 0.5)
 end

@@ -99,6 +99,17 @@ local function arrival_at(row)
  end
 end
 
+-- A stone by id and its validated arrival (or nil), for a trip through
+-- grug_home.travel from outside the network: the Expeditions' way back (Round 71).
+function grug_home.waystone_pos(id)
+ local row = by_id[id]
+ return row and vector.new(row.pos) or nil
+end
+function grug_home.waystone_arrival(id)
+ local row = by_id[id]
+ return row and arrival_at(row) or nil
+end
+
 local dialogs, serial = {}, 0
 local function form(player, origin)
  local entries = rules.entries(rows, grug_factions.get_faction(player),

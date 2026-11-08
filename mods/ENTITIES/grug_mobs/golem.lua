@@ -19,8 +19,8 @@
 -- Damage is stamped at FIRE time from the shooter's level-scaled `damage`
 -- (grug_mobs.stamp_arrow_damage, installed as arrow_override below), so an
 -- elite golem's rock hits for an elite golem's damage without a number in
--- this file. Slower than the skeleton's arrow (12 vs 16): a thrown boulder
--- should be dodgeable.
+-- this file. Slower than the skeleton's arrow (12 vs 16). A rock homes on its
+-- target like every shot (combat_stats.md): only cover before the throw avoids it.
 grug_mobs.register_simple_arrow("grug_mobs:rock_entity", {
 	label = "a hurled rock",
 	texture = "grug_mobs_rock.png",
@@ -253,6 +253,21 @@ mobs:spawn({
 	min_height = 0,
 	max_height = 600,
 })
+
+--
+-- Flintback (Round 71): the boss of The Stilled Seam, the level 20 Expedition
+-- (docs/planning/round71-l20-description.md), on the Stone Golem's body and
+-- attacks: no adds, no phases, no new look, no spawn row. grug_expeditions places
+-- it by its template's boss marker, as an elite at the run's level; only the HP
+-- factor sets it apart (tools/r71_l20/balance.py). It stands on the working face
+-- until someone comes, and drops nothing: the reward room pays.
+--
+
+local flintback = golem_def("Flintback", "grug_mobs_stone_golem.png")
+flintback._grug_hp_scale = 8
+flintback.walk_chance = 0
+flintback.drops = {}
+grug_mobs.register_mob("grug_mobs:flintback", flintback)
 
 --
 -- CAVE ROWS (WP6/T7) — §3.1's cave paragraph, §4 zone column "outer, coast,

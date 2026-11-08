@@ -265,7 +265,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   coastal belt (`coastal_shelf`), 250-350 nodes wide, which belongs to the
   zone on land and inherits its faction/PvP terrain rights; the open sea
   (`deep_ocean`) lies beyond it, immutable at every y (Round 51,
-  `world_zones.md` §7.4). The organic dragon channels override the belt and
+  `world_zones.md` §7.4; the one exception is the marked nodes of a running
+  Expedition, "Deep ocean" in §2b). The organic dragon channels override the belt and
   belong to their island. Bay, belt and channel water 24 nodes or more off
   the coast is protected: immutable at every y like the open sea; nearer,
   the shore follows its zone's rule. Every exterior-ocean class remains
@@ -287,7 +288,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   user ruling 2026-10-14): Rock Salt and Salt Crust regrow in the wild like
   the resource plants, at their unchanged initial density, and Salt Crust
   also comes from a crafted salt pan ([farming.md](farming.md) "The salt
-  pan"). Renewable ores are removed entirely, mining camps and the apex camps
+  pan"). **Expedition ore is the exception outside the open world** (Round 71,
+  user ruling 2026-11-07): the marked ore and gem nodes of an
+  [Expedition](expeditions.md#11-ore) are renewable through that Expedition's
+  reset only. A new run writes them anew in a box beyond the map; no timer
+  brings anything back, and no lockout applies, so the price stays danger and
+  travel. Everywhere else renewable ores are removed entirely, mining camps and the apex camps
   included (user decision 2026-09-29,
   [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) E5).
 - **R5 — Active Claim Stones**: a fuelled Claim Stone provides the only
@@ -390,6 +396,13 @@ occupying a position (`world_zones.md` §7):
   Kraken is a hand-set fixed entity outside those resolvers. Boat acquisition,
   summoning, movement and damage are decided in [boats.md](boats.md);
   what this world-geometry rule owns is the pursuit contract below.
+  **Expedition slots** (Round 71): the 100 boxes of the
+  [Expeditions](expeditions.md#6-slots-and-preparation) lie in this class, far
+  beyond the map and below the seabed. The immutability holds there too, with
+  one exception: a node its template marks may be dug, while the run is
+  running, by a player who belongs to it. No natural mob spawns over the slot
+  field plus 320 nodes on every side, at any y, the Kraken included, so no
+  random mob's nametag shows through an Expedition's wall.
 - **Dragon channels:** organic shallow straits between the mainland and the
   two offshore islands, 9-11 nodes deep (Round 51). They belong to their
   island's zone (level 60, no PvP rule); their water 24 nodes or more off the
@@ -407,7 +420,8 @@ the residual-allowance model decided 2026-08-13). The deep sea is dangerous
 because of what the Kraken does, not because water damages a boat:
 
 - The Kraken **spawns only in `deep_ocean`**. Neither the coastal shelf,
-  nor planned zone water, nor a dragon channel ever spawns one.
+  nor planned zone water, nor a dragon channel ever spawns one, nor the
+  spawn-free field round the Expedition slots.
 - **It swims 10 nodes/s while it stands in a deep-ocean column and 5 nodes/s
   everywhere else**, with a view range of 40. Ten is above the improved
   boat's 8, and any hit ejects a boat's rider into the water (`boats.md` §6),

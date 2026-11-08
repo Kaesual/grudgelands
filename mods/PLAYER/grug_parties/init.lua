@@ -5,7 +5,7 @@ local state = saved == "" and {next_id = 0, groups = {}} or core.deserialize(sav
 assert(type(state) == "table" and type(state.groups) == "table"
 	and type(state.next_id) == "number", "[grug_parties] Invalid party storage")
 local membership, incoming, last_send, connected = {}, {}, {}, {}
-local callbacks, roster_callbacks = {}, {}
+local callbacks, roster_callbacks, left_callbacks = {}, {}, {}
 local INVITES = "grug_parties:invites_off"
 local HUD = "grug_parties:hud_off"
 local HEALTH_COLORS = "grug_parties:health_colors"
@@ -137,11 +137,22 @@ local function remove_member(name)
 		group.leader = group.members[1]
 	end
 	persist()
+	-- The one place a member goes (leave, kick, a change of faction). After a
+	-- dissolving party both names look alike to register_on_change.
+	local last = not state.groups[id] and group.members[1] or nil
+	for _, callback in ipairs(left_callbacks) do callback(name, id, last) end
 	return changed
 end
 function grug_parties.register_on_change(callback)
 	assert(type(callback) == "function")
 	callbacks[#callbacks + 1] = callback
+end
+-- callback(name, party_id, last) after `name` left party `party_id`, before the
+-- change is emitted; `last` is the sole remaining member when that dissolved the
+-- party, else nil. `name` may be offline (Round 71: Expedition ownership).
+function grug_parties.register_on_member_left(callback)
+	assert(type(callback) == "function")
+	left_callbacks[#left_callbacks + 1] = callback
 end
 -- callback() after a change of the Social tab's player list (above); the
 -- callback coalesces.

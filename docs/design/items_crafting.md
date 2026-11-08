@@ -1318,7 +1318,9 @@ Drops obey the player-tag rule (combat_stats §3), the chances of §5.1 and
 the enchant values of §6.3, and use **gear-drop ilvl = min(mob level, 60)**.
 Bosses are the exception (Round 33, Round 70): the race Kings and the dragons
 drop item level **70**, the fortress Generals **65**, the rift boss **60**
-(§5.1). An ilvl above 60 feeds the same weapon base-damage curve as every other
+(§5.1). Expedition mobs too (Round 71): each drops at its own level, 61–69
+included, from the T6 pool, and no ore or gem; an Expedition's boss drops
+nothing, its chest pays. An ilvl above 60 feeds the same weapon base-damage curve as every other
 weapon, not a second combat multiplier, and those enchants are tier T7 (§6.3). The
 Kraken (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the enchant value and the
 enchant tier follow the item's ilvl, that one number is all a drop needs: a

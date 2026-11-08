@@ -9,6 +9,8 @@
 --     (grug_housing.claim_at, exact in 3D, every claim state; fix 0.50.2)
 --     "Your Home" for its owner and "<owner>'s Home" for everybody else,
 --     in place of the zone's name only;
+--   * inside a box of a live Expedition (grug_expeditions.run_at, arithmetic;
+--     Round 71) that Expedition's name, not "Open sea";
 --   * the Map tab's location line shows the same text (window.lua);
 --   * the line under the minimap shows it (minimap.lua reads text_of);
 --   * whether the player stands in a start town or capital (in_town, the
@@ -164,6 +166,10 @@ local function sample(player, rec)
 	-- zone handed to the discovery stays the column's.
 	local claim = housing and housing.claim_at(pos)
 	if claim then text = L.home_text(claim.owner, player:get_player_name()) end
+	-- grug_expeditions does not depend on this mod (nor this one on it).
+	local expeditions = rawget(_G, "grug_expeditions")
+	local run = expeditions and expeditions.run_at(pos)
+	if run then text = expeditions.definition(run.expedition).name end
 	local status = territory(player, pos)
 	M.stats.samples = M.stats.samples + 1
 	M.stats.us = M.stats.us + (core.get_us_time() - started)

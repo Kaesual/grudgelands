@@ -12,6 +12,37 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.71.0 — Expeditions and The Stilled Seam (2026-11-08)
+
+The first Expedition: repeatable group content for up to three players. Compatible: no map
+reset, no new world, nothing for the host to do.
+
+- **The Expedition Registrar:** the Miner's Guild needs fighters. In every capital's guild
+  house a registrar now stands in the clerk's place. A party leader, or a player without a
+  party, picks an Expedition and its level. The window warns which party members are too low
+  to enter.
+- **The Stilled Seam, levels 20 to 69:** an abandoned gold working held by spiders, golems and
+  Flintback, the rock the miners took for the seam's back wall. Pick a tier, then a level: mobs,
+  the boss, their drops and the rewards follow it, and every ten levels the ore and gems in the
+  walls follow the tier, from Anthracite and Jade at 20 to Abyssal Crystal and Diamond at 60. You may
+  enter up to two levels below it.
+- **Written for you:** every run is a fresh copy of the mine, far beyond the map. A party
+  has 10 minutes to go in, and the run ends after 10 minutes with nobody inside. Each
+  entry takes one of three places, and only leaving the party frees one.
+- **Packs fight as one:** engage one mob and the whole pack comes. It never gives up and
+  follows you anywhere inside; you stay in combat until it is dead, you are, or you leave the
+  party. After a wipe a partly killed pack stands whole again, a dead pack stays dead.
+  Logging out in combat with a pack counts as a death.
+- **Bring a Warrior and a healer.** Without them the Expedition is hard or impossible.
+- **Rules inside:** no mounts, no boats, no building. You respawn at the start waystone, with
+  the usual durability loss. Waystones at the start and in the reward room take you back to your
+  capital without a cooldown, out of combat; Return Home works too.
+- **Rewards:** Flintback's death opens the store. Its chest has its own contents for each
+  player: gear at the run's level, coins and crafting materials. Whatever you leave in it is
+  lost when the run ends. Ore and gems come only from the marked nodes along the way, and the
+  store holds most of them.
+- **Party: The Stilled Seam:** an optional group quest from the six guild leaders, from level 18.
+
 ## 0.70.0 — castles, the Stonewright, new start towns and a price for dying (2026-11-07)
 
 **Map reset** needed: the capitals, the start towns, the guild houses, the

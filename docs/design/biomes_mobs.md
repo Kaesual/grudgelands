@@ -885,6 +885,7 @@ spawn row or palette membership.
 | Dragon whelps (Ice Whelp, Wyvern Whelp) | any | two at a dragon's enrage, fixed **L60** normal (the user, 2026-10-06: until Round 38 a fixed L20 on the level-60 islands) | encounter adds: no gear, no bag, no drops; the island's level-60 kill XP each | the dragon's mesh, small |
 | Six race Kings | any | authored `king` socket in each capital, fixed L70 elite | one race-specific signature each; two fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d`, drawn from the race look layers with the royal tabard and crown ([character_visuals.md](character_visuals.md) §1.1) |
 | Rift boss (Round 36) | any | the rift's clash site (`world.md` §4b), fixed L60 elite, 2 × an elite's HP (no harder than a dragon, user) | spawned like a leader when a player with the finale active or done (or the main line finished) is within 48 nodes (none within 6 of its spot), never saved with the map; void bolts (`dogshoot`), the elite frontal wind-up, a void pulse every 14 s (2 s wind-up, ×2 hit to every player within 6 nodes, knockback); its own 24-node leash and evade home; back 5 min of wall-clock time after its death; loot through the boss ledger (`items_crafting.md` §5.3b) | the Dungeon Master's mesh with its own texture (Isquarre the Tithe-Eater, `grug_mobs_isquarre.png`); voice family `giant` |
+| Flintback (Round 71) | any | The Stilled Seam, the level 20 Expedition (no spawn row, no zone) | an elite at the run's level 20–69, 8 × an elite's HP; the Stone Golem's rocks and frontal wind-up, no adds, no phases; stands until someone comes; credit through the boss ledger, no lockout; drops nothing, the reward chest pays ([description](../planning/round71-l20-description.md)) | the Stone Golem's mesh and skin; its name a world slot, fixed over 20–69 |
 | Two fortress Generals (Round 31) | any | authored `general` socket of each PvP fortress, fixed L65 elite | the king chassis without a crown: the seat race's king's signature (Accord Rally, Throng Cleave); two fixed L60 elite bodyguards; the king's group reset and 15 min respawn; guard drops (war trophies to an enemy player's kill) plus two gear items at item level 65, each blue or gold at even odds (`items_crafting.md` §5.1), no reward ledger | `character.b3d`, one fixed look of the seat race with the royal tabard and no crown; the bodyguards any race of the faction in guard armour ([character_visuals.md](character_visuals.md) §1.1) |
 
 The current gear catalogue has sword, dagger, greataxe and staff visuals only;
@@ -1165,6 +1166,11 @@ Reed Angelfish, Bay and Abyssal Shark, Tide Goby). Every other surface row regis
 and the Reef Lurker's included: crabs spawn only as the recipes' crab roles
 (§4.2), the Reef Lurker only as its 51–60 shore sub-type.
 Camps and named rares never had ABM rows (§4.2 Camps, §3.3).
+
+**The Expedition slots** (Round 71, the user's ruling): no natural mob spawns over
+the slot field plus 320 nodes on every side, at any y, the water rows included, so
+that no random mob's nametag shows through an Expedition's wall. `grug_expeditions`
+sets the rectangle (`grug_mobs.set_spawn_free_field`).
 
 **Registered but placed nowhere** (open questions, [BACKLOG "Audit 2026-10
 open questions"](../../BACKLOG.md#audit-2026-10-open-questions)): the ambient

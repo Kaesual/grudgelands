@@ -605,7 +605,9 @@ Normal tier at level L:
   dragon breath and side shots; user ruling 2026-10-06) push. Riders are never pushed, nor is a player hit by the dragon's
   slam (it has its own arena push). Implementation: one
   `core.calculate_knockback` override, `grug_core.knockback_pushes`
-  (`grug_core/combat.lua`).
+  (`grug_core/combat.lua`). An Expedition pack's push is level, the same
+  push's horizontal share (`grug_expeditions/packs.lua`): its mobs swing as one, and the
+  downward share of a step's pushes would read as a fall on flat ground.
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing (the player's `collide_with_objects` in
@@ -1213,6 +1215,10 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   again.
 - Engagement is event-driven: it is recorded and dropped only on the hits,
   threat changes and mob lifecycle events above, never by scanning the world.
+- **An Expedition's pack** holds its own: from the pull on, whoever is on a
+  pack's list stays in combat, also through a pause in the hitting, until the
+  pack is dead or they leave its list ("Expedition packs" below). Being
+  targeted counts here.
 
 ### Recovery
 
@@ -1457,6 +1463,46 @@ every facing (Round 35; the engine's server raycast gets these boxes wrong,
 [upstream workarounds](../technical/upstream-workarounds.md) §1).
 There is no screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so a shot never causes long pursuit.
+
+## Expedition packs
+
+Round 71 (the user's rulings, [concept](../planning/round71-expeditions-concept.md)
+§2; `grug_expeditions/packs.lua`). The mobs of one encounter `room` are a **pack**.
+Everything else of §3 and §4 holds for them (threat, taunt, hysteresis, loot tag,
+XP); these rules replace the leash, the pursuit policy above and group alerts.
+
+- **Pulled whole.** A hit, a threat gain, a hit taken or a mob taking a player as its
+  target puts that player on the pack's **list** and sets every member on them,
+  whatever the family (golems too). Mobs of a pack call nobody else: no alert crosses
+  to another pack.
+- **No de-aggro.** No leash, no contact timeout, no give-up distance, no patience,
+  no soft de-aggro. A failed path search resets nothing.
+- **In combat.** Everybody on a list stays in combat (`in_combat`) until the pack is
+  dead or they leave the list, so a waystone and Return Home stay refused: a pulled
+  pack ends in a win, a death or a logout. It is a short timer the pack's once-a-second
+  tick renews, about three seconds after the last mob dies at most, and a list can
+  only hold players who are online, alive and inside.
+- **A dead player leaves the list**, and the mobs forget them: back at the start
+  waystone they are hunted only if they engage again.
+- **Wipe.** With nobody left on its list the pack leaves combat: the living forget
+  everything, heal and run home (the evade of §4, all the way to their marker), and its
+  dead stand at their place at once. A fully dead pack stays dead. A respawned mob pays
+  XP and drops like any other. The boss is a pack of one: a wipe heals it and sends it
+  home, and the credit of that attempt ends with it.
+- **Left behind.** A mob must never hold anyone with nothing able to reach them, and
+  a mob in an inactive block has no step. So the tick looks at every living member of
+  a pulled pack once a second. More than **32 nodes** from its target it jumps beside
+  them, inside the active blocks of a player near it (`active_block_range` 4). **8 s**
+  without getting a node closer, and not able to strike (in reach, or a shot, in sight):
+  it jumps; a failed path search jumps at once. Without a live body (its block went
+  inactive) a new body stands beside the player at the old health, and the old copy
+  removes itself when it wakes. A jump lands on a free cell with a floor that the player can see, else on
+  the player's own.
+- **Idle** a pack's mob stays within 8 nodes of its marker, so packs can be fought one
+  at a time.
+- **Logout.** Logging out on a list counts as a death with Round 70's penalty, once
+  ([durability](durability_repair.md)), and takes the player off the list; it happens
+  at the next login, and a shutdown is no logout (`home_travel.md`).
 
 ## Ambient pursuit policy
 

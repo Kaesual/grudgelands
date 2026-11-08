@@ -39,6 +39,10 @@ import r28common as C  # noqa: E402
 # A kill target's level range [lo, hi] fits a quest of level L when
 # lo - LEVEL_SLACK <= L <= hi + LEVEL_SLACK.
 LEVEL_SLACK = 3
+# A role that stands in an Expedition, no zone hosts it: role -> the Expedition's
+# first level, what its level range is read as, the run's level (up to 69) being the
+# player's choice. As in the game's validator (V.EXPEDITION_TARGETS).
+EXPEDITION_TARGETS = {"flintback": 20}
 MAX_GIVERS_PER_HUB = 2
 MAX_LINES_PER_GIVER = 2
 MAX_SIGNATURE_PER_BAND = 2
@@ -1531,7 +1535,9 @@ class Validator:
         has its fixed level and no area; an area (a kind or camp of the
         recipe) its levels, the union over its roles (as the game's quest
         validator), otherwise the zone's kinds and camps hosting the role,
-        else the role's levels."""
+        else the role's levels. A role of an Expedition is met there, at its level."""
+        if role in EXPEDITION_TARGETS:
+            return (EXPEDITION_TARGETS[role], EXPEDITION_TARGETS[role])
         found = self.d.find_leader(role, zone)
         if found is not None:
             leader_zone, leader = found
@@ -1698,7 +1704,7 @@ class Validator:
             spawned |= set(unit.get("roles") or ())
         bare = {r for r in roles if isinstance(r, str)}
         for r in bare:
-            if self.d.find_leader(r):
+            if self.d.find_leader(r) or r in EXPEDITION_TARGETS:
                 spawned.add(r)
         if not bare & spawned:
             self.W("W-recipe-target", file, path, "no kill target (%s) is spawned by %s's spawn recipe"

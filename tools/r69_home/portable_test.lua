@@ -497,6 +497,98 @@ grug_core.player_in_creation_stasis = function() return true end
 check(respawn() == true and #trail == 0 and not held(), "H creation stasis: nothing moves")
 grug_core.player_in_creation_stasis = nil
 
+-- ---------------------------------------------------------------------------
+-- R: a respawn row (Round 71, an Expedition's start waystone)
+-- ---------------------------------------------------------------------------
+local ROW_FEET = vnew(8000, 100.51, 8000)
+local row_live = false
+home.register_respawn_home(function()
+ if row_live then return {id="expedition:1", pos=vnew(8000, 102, 8000), arrival=ROW_FEET} end
+end)
+reset(); new_player({["grug_home:id"]="highcourt"})
+row_live = true
+check(respawn() and same(player.pos, ROW_FEET) and held(), "R the respawn goes to the row, held")
+finish()
+ended("R row", ROW_FEET)
+-- The row lapses during the emerge: the ordinary home takes over, still held.
+reset(); new_player({["grug_home:id"]="highcourt"})
+check(respawn() and same(player.pos, ROW_FEET), "R the row again")
+row_live = false
+finish()
+check(same(player.pos, highcourt.arrival) and held(), "R a lapsed row follows the home")
+finish()
+ended("R lapsed", highcourt.arrival)
+-- A return home never asks the row.
+reset(); new_player({["grug_home:id"]="highcourt"})
+row_live = true
+check(home.return_home(player), "R return request")
+finish()
+check(same(player.pos, highcourt.arrival), "R return home ignores the row")
+row_live = false
+
+-- ---------------------------------------------------------------------------
+-- G: the real grug_expeditions/guard.lua on this path: a death in a box whose run
+-- is gone ends in the capital the player came from, also through the look on
+-- arrival, which no longer stands in a box (ruling 7 of Round 71)
+-- ---------------------------------------------------------------------------
+local BOX = vnew(9000, 300, 9000)
+local guard_die = #callbacks.die + 1
+local guard_leave = #callbacks.leave + 1
+local live_run
+vector.add = function(a, n) return vnew(a.x + n, a.y + n, a.z + n) end
+vector.subtract = function(a, n) return vnew(a.x - n, a.y - n, a.z - n) end
+rawset(_G, "grug_expeditions", {
+ catalogue={SLOTS=100},
+ slot_box=function() return BOX, BOX end,
+ slot_at=function(pos) return pos.x >= 8900 and 1 or nil end,
+ run_at=function(pos) return pos.x >= 8900 and live_run or nil end,
+ belongs=function() return true end,
+ saved_origin=function(p)
+  local origin = p:get_meta():get_string("grug_expeditions:origin")
+  return origin ~= "" and origin or nil
+ end,
+})
+grug_mobs.set_spawn_free_field = function() end
+grug_mounts.register_summon_guard = function() end
+grug_core.register_world_exception = function() end
+dofile(repo .. "/mods/PLAYER/grug_expeditions/guard.lua")
+local capital_feet = home.waystone_arrival("highcourt")
+local function boxed(origin)
+ reset(); new_player({["grug_home:id"]="dawnmere", ["grug_expeditions:origin"]=origin})
+ player.pos = vnew(BOX)
+end
+boxed("highcourt")
+check(respawn() and same(player.pos, capital_feet) and held(), "G the first look: the capital, held")
+finish()
+ended("G capital", capital_feet)
+check(not same(capital_feet, dawnmere.arrival), "G the capital is not the home")
+-- It answers only for that respawn: a forced one from elsewhere goes home.
+player.pos = vnew(5000, 300, 5000)
+check(respawn() and same(player.pos, dawnmere.arrival), "G the answer does not outlive its trip")
+finish()
+ended("G later", dawnmere.arrival)
+-- A death or a leave between the looks forgets it.
+for _, event in ipairs({{"die", guard_die}, {"leave", guard_leave}}) do
+ boxed("highcourt")
+ check(respawn() and same(player.pos, capital_feet), "G " .. event[1] .. " request")
+ callbacks[event[1]][event[2]](player)
+ finish()
+ check(same(player.pos, dawnmere.arrival), "G " .. event[1] .. " between the looks: the home")
+ finish()
+ ended("G " .. event[1], dawnmere.arrival)
+end
+-- No saved capital: the ordinary home. A run of theirs: the start waystone, as ever.
+boxed(nil)
+check(respawn() and same(player.pos, dawnmere.arrival), "G nothing saved: the home")
+finish()
+ended("G no origin", dawnmere.arrival)
+boxed("highcourt")
+local ROW_START = vnew(9001, 300.51, 9001)
+live_run = {id=1, entered={tester=true}, places={arrival=vnew(9001, 301, 9001)}}
+grug_expeditions.start_arrival = function() return ROW_START end
+check(respawn() and same(player.pos, ROW_START) and held(), "G in a live run: the start waystone")
+live_run = nil
+
 if #failures > 0 then
  for _, label in ipairs(failures) do print("FAIL " .. label) end
  error(("R69 HOME FAIL %d/%d"):format(#failures, checks), 0)
