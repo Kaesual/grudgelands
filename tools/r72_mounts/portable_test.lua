@@ -68,7 +68,8 @@ local function world_node(pos)
 		if y == -1 or y == 0 then return "water" end
 		return y == -2 and "floor" or "air"
 	end
-	return y == -1 and "floor" or "air"
+	-- A cave floor 30 nodes down (U: below a town).
+	return (y == -1 or y == -31) and "floor" or "air"
 end
 
 local footprint_queries = 0
@@ -394,6 +395,30 @@ check((ride_through(orm, 1, 940, 1060, 20)), "D a Throng rider crosses the own s
 check((ride_through(ada, 2, 900, 1100, 1000 - HALF - 1)), "D along the throng capital's line, outside")
 check((ride_through(nil_player, 2, 940, 1060, 10)), "D a factionless rider crosses the throng start town")
 eq(town_lines("nobody"), 0, "D (no line for the factionless rider)")
+
+------------------------------------------------------------------------------
+-- U: below a town (user ruling 2026-11-08): more than 16 nodes under its
+-- anchor riding is free; the town begins 16 nodes down.
+------------------------------------------------------------------------------
+local function cave(x, z) return {x = x, y = GROUND - 30, z = z} end
+check((summon(ada, 2, cave(1000, 0))), "U a mount summoned in a cave 30 below the throng start town")
+feed = {}
+horse = ride(ada, 2, cave(940, 10))
+for x = 940, 1060, 0.5 do
+	step_at(horse, cave(x, 10))
+	if not grug_mounts.active.ada then break end
+end
+check(grug_mounts.active.ada ~= nil, "U a rider crosses under the throng start town, 30 down")
+eq(town_lines("ada"), 0, "U (no line)")
+-- Up a shaft in the same column: at 17 down still free, at 16 down the town.
+step_at(horse, {x = 1000, y = -17, z = 10})
+check(grug_mounts.active.ada ~= nil, "U 17 below the anchor: still under the town")
+step_at(horse, {x = 1000, y = -16, z = 10})
+eq(grug_mounts.active.ada, nil, "U 16 below the anchor: in the town, dismounted in the same column")
+eq(town_lines("ada"), 1, "U (its line)")
+eq(grug_mounts.enemy_town_at("accord", 1000, 0, -16), true, "U the town's floor is 16 below its anchor")
+eq(grug_mounts.enemy_town_at("accord", 1000, 0, -17), false, "U one deeper is under it")
+eq(grug_mounts.enemy_town_at("accord", 1000, 0), true, "U without y the column alone")
 
 ------------------------------------------------------------------------------
 -- C: cost.

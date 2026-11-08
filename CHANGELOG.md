@@ -46,7 +46,8 @@ way they look. Compatible: no map reset, no new world, nothing for the host to d
 - **Guards out of reach:** a guard or captain who cannot reach you heals and walks home
   untouchable within about a second. A ladder still gets you away.
 - **No mounts in enemy towns:** you cannot ride or sail in an enemy start town or capital,
-  and a rider who crosses into one is dismounted.
+  and a rider who crosses into one is dismounted. In caves and mines deep below a town you
+  may ride.
 - **Friend and foe:** nametags show green for your side and red for the other; people who
   never fight are light green or light red. The red tag appears only when an enemy is near.
 - **Bladecraft** now shows the bow in your hand after a shot and the blade after a swing.

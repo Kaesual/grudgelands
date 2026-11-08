@@ -26,8 +26,9 @@ failed, all six pins no lane ran (BOSSRESET's retinue, the two new quests, a stu
 coordinator and passing, so 332/0; engine after STYLE: The Second Shift 164, The Last Mint 185, The Stilled Seam 142
 PASS, 0 FAIL. Modelled runs: Second Shift 10.2 minutes at 40–60, Last Mint 10.1 at 60, Seam 8.6
 at 20. **Open for the user:** the
-[GUI checklist](planning/round72-plan.md#gui-checklist-desktop-and-web), 50 items with two
-questions (a jump over a floor trap; the enemy-town dismount underground)
+[GUI checklist](planning/round72-plan.md#gui-checklist-desktop-and-web), 50 items (the two
+questions answered by the user on 2026-11-08: a jump over a floor trap avoids it; riding is free
+more than 16 nodes below an enemy town)
 ([completion, numbers and decisions](planning/round72-plan.md#completion-2026-11-08);
 [carry-overs](../BACKLOG.md#round-72--fights-placement-travel-and-two-expeditions-gui-acceptance-pending)).
 

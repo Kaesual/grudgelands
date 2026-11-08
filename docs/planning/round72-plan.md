@@ -621,7 +621,7 @@ back by the tab; no tab inside; the letter at level 20 and late for a character 
 
 Written by lane D from the plan's list, the lanes' excerpts and the reviewers' notes. Each
 item on the desktop client and on the web client. *Look* asks for the user's verdict on a
-default; **Question** names one of the user's two open questions.
+default. The user answered the two questions on 2026-11-08 (items 28 and 44).
 
 **Only the user can prove these.** No lane ran the web client, a second real player or a
 real fight. So:
@@ -711,8 +711,9 @@ real fight. So:
 27. Your own start town and capital: nothing happens; the same for a Throng character the
     other way round. A flyer at an enemy home border sees the band and the dismount as
     before.
-28. **Question:** the rule holds at every height, so a rider in a tunnel or cave below an
-    enemy town is dismounted too. Default: keep.
+28. Below an enemy town riding is free (user ruling 2026-11-08): ride in a cave or mine more
+    than 16 nodes under a Throng start town, no dismount; come up a shaft and be dismounted
+    16 nodes below the town's ground.
 
 **Friend and foe nametags (TAGS)**
 
@@ -759,8 +760,8 @@ real fight. So:
     Shift's miners); outside, zombies still leave them alone. A level 60 character in a
     20–29 Stilled Seam is pulled from the far side of a room.
 44. Floor trap: the red ring reads apart from Meteor's orange, also on web; the red mark
-    after its first hit is visible but quiet. **Question:** a jump over a floor trap does not
-    set it off. Default: keep.
+    after its first hit is visible but quiet. A jump over a floor trap does not set it off
+    (user ruling 2026-11-08: keep).
 45. Wall trap: the fireball's head and tail show from about 20 nodes; it bursts on a player
     and stops at stone (The Second Shift's passage from room 1 to 2, The Last Mint's lake).
 46. Nemm: a red ring at your feet about every 12 s; stepping out avoids it. *Look:* a player
@@ -981,7 +982,9 @@ From the lanes' reports, measured unless marked; comparisons, not targets.
 
 ### Open notes
 
-- **For the user:** the two questions (checklist 28 and 44), the *look* items, and the
+- **For the user:** the *look* items (the two questions, checklist 28 and 44, were answered
+  on 2026-11-08: a jump over a floor trap avoids it; riding is free deep below an enemy
+  town, a follow-up fix after the merge), and the
   numbers only a real run gives: run lengths, Nemm's and Duewarden's HP, the coins, the
   mining share. The free wipe stays noted, not closed (§2.9).
 - **Carry-overs** are in [BACKLOG](../../BACKLOG.md#round-72--fights-placement-travel-and-two-expeditions-gui-acceptance-pending).
