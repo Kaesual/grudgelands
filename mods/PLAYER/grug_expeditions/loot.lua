@@ -55,6 +55,18 @@ M.TABLES = {
 			{item = "grug_mobs:salt_cured_flesh", min = 1, max = 2, level = {60, 69}},
 		},
 	},
+	-- Level 60-69 (Round 72 lane MINT, round72-last-mint.md "Ore and rewards"): the
+	-- Seam's gear and coins (tools/r72_mint/balance.py prices them against a run of about
+	-- ten minutes at 60), T6's Stone Core from the press's machinery, and Slime Gel from
+	-- the Seeps for flavour.
+	last_mint = {
+		gear = {{quality = 2}, {quality = 3, chance = 25}},
+		coin_bags = {{factor = 10}},
+		materials = {
+			{item = "grug_mobs:stone_core", min = 3, max = 5},
+			{item = "grug_mobs:slime_gel", min = 1, max = 2},
+		},
+	},
 }
 
 -- The chest's slots: at least this, in full rows of 8 when a plan is longer.

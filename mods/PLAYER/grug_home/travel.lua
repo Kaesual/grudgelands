@@ -23,6 +23,20 @@ end
 function grug_home.register_on_teleport(callback)
  teleport_callbacks[#teleport_callbacks + 1] = callback
 end
+-- callback(player) -> nil, or the text of a refusal: a return refused where the
+-- callback's mod says so, beside the combat rule (Round 72: lava inside an
+-- Expedition, grug_expeditions guard.lua). Asked at the request and on the trip's
+-- step, never for a respawn.
+local return_guards = {}
+function grug_home.register_return_guard(callback)
+ return_guards[#return_guards + 1] = callback
+end
+local function return_refused(player)
+ for _, callback in ipairs(return_guards) do
+  local text = callback(player)
+  if text then return text end
+ end
+end
 -- callback(player) -> a home row {id, pos, arrival} this respawn goes to instead
 -- of grug_home.get, or nil (Round 71: a death inside a running Expedition). Asked
 -- on every look at the home, so a row that lapses meanwhile hands the respawn
@@ -157,6 +171,8 @@ local function request(player, respawn)
  if not respawn then
   if player:get_hp() <= 0 then return false end
   if grug_core.in_combat(player) then notify(player, "Cannot return home in combat."); return false end
+  local refused = return_refused(player)
+  if refused then notify(player, refused); return false end
   if grug_home.remaining(player) > 0 then notify(player, "Return home is cooling down."); return false end
  end
  sessions[name] = sessions[name] or {}
@@ -201,7 +217,7 @@ local function request(player, respawn)
   if not current or current.id ~= identity.id or
     grug_factions.get_faction(p) ~= identity.faction or
     grug_core.get_player_race(name) ~= identity.race then return false end
-  if grug_core.in_combat(p) or grug_home.remaining(p) > 0 then
+  if grug_core.in_combat(p) or grug_home.remaining(p) > 0 or return_refused(p) then
    notify(p, "Return home canceled."); return false
   end
   return true

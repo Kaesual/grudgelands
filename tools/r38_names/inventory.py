@@ -804,6 +804,19 @@ class Model:
                        "notes": ["The Stilled Seam's boss: an elite at the run's level 20-69, boss ledger"]})
         self.source("expedition_boss", "the Expedition boss's name", r.cite(golem,
                     r'register_mob\("grug_mobs:flintback"'))
+        # The Last Mint's boss (Round 72): the Sentinel's body, its name fixed over 60-69.
+        sentinel = MOBS + "/land_guard.lua"
+        self.add_slot({"key": "world/duewarden/L60-69", "zone": None, "source": "boss",
+                       "name": self.file_name("world/duewarden/L60-69", "duewarden"),
+                       "name_source": "names.json (land_guard.lua)",
+                       "name_where": r.cite(sentinel, r'register_mob\("grug_mobs:duewarden"'),
+                       "entity": "grug_mobs:duewarden", "role": "duewarden", "family": "duewarden",
+                       "base": "grug_mobs:land_guard", "tier": "boss", "authored_tier": "elite",
+                       "leader": False, "disposition": "aggressive", "size": 1.0, "drops": None,
+                       "role_levels": [60, 69], "levels": [60, 69], "clocks": ["any"],
+                       "notes": ["The Last Mint's boss: an elite at the run's level 60-69, boss ledger"]})
+        self.source("expedition_boss_mint", "The Last Mint's boss's name", r.cite(sentinel,
+                    r'register_mob\("grug_mobs:duewarden"'))
 
         # The Second Shift (Round 72): Auditor Nemm, its boss, one fixed name like
         # Flintback's; its raiders by band, and its miners through 69, as world slots: an

@@ -45,6 +45,7 @@ LEVEL_SLACK = 3
 EXPEDITION_TARGETS = {"flintback": 20}
 # Round 72 SHIFT: The Second Shift's boss.
 EXPEDITION_TARGETS["auditor_nemm"] = 40
+EXPEDITION_TARGETS["duewarden"] = 60  # Round 72: The Last Mint
 MAX_GIVERS_PER_HUB = 2
 MAX_LINES_PER_GIVER = 2
 MAX_SIGNATURE_PER_BAND = 2

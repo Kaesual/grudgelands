@@ -27,7 +27,7 @@ Three Expeditions, each over a wide level range (user, 2026-11-07, [concept
 |---|---|---:|---|
 | The Stilled Seam | 20–69 | 3 at every level | implemented |
 | The Second Shift | 40–69 | 4 | implemented (Round 72) |
-| The Last Mint | 60–69 | 4 | designed, built in Round 72 |
+| The Last Mint | 60–69 | 4 | implemented in Round 72 (§15) |
 
 **Every 10 levels the tier follows:** the reward, the ore and the gem. The ore is what that
 tier's rock is mined for, the next metal's input ([items](items_crafting.md) §3.0.1): T2's
@@ -104,7 +104,11 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
   cooldown, refused in combat). The Expedition's waystones are never a destination. A
   trip out keeps the place and ends no run; the player leaves its packs' lists as they
   leave the box.
-- **Return Home** works inside, under its normal rules ([home travel](home_travel.md)).
+- **Return Home** works inside, under its normal rules ([home travel](home_travel.md)),
+  but not in lava (Round 72, the user's ruling for The Last Mint): standing in it, or
+  falling towards it, a player is refused ("Cannot return home from the lava."). A fall
+  into the lake is death with no way out. Logout is unchanged: a login stands where the
+  player was.
 - Neither way leaves the party.
 
 ## 5. Release, logout, restart
@@ -149,8 +153,10 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
 - **Hull:** the walls are indestructible. Anything destructible is so on purpose: a tunnel
   the story asks for, or ore and gem nodes. The open sea's rule refuses everything else
   ([world.md](world.md) R3).
-- **No building** at all, and no liquids. Short jump-and-run tasks may appear in the higher
-  Expeditions.
+- **No building** at all, and players place no liquids. A template's own lava is allowed
+  and stays where it was written (Round 72, `grug_core/lava_guard.lua`: every box holds its
+  lava; nothing flows in, out or away). Short jump-and-run tasks appear in the higher
+  Expeditions: The Last Mint's lake (§15).
 - **No mounts:** neither riding nor flying, and no boats ([mounts](mounts.md) §4.0).
 - **Death:** the player respawns at the start waystone. Round 70's death penalty applies
   ([durability](durability_repair.md)).
@@ -341,3 +347,56 @@ flat, no dais, and every pack room cut so that no pack can be walked round.
   2.9 times the damage of level 40 in pools.
 - **Quest:** "Party: The Second Shift", level 40, from the six guild leaders: kill Auditor
   Nemm once, at any of its levels. The Expedition stays repeatable after the turn-in.
+
+## 15. The Last Mint
+
+A buried branding works behind a furnace that became a lava lake, at mob levels 60–69,
+for four players (Round 72). Its [build plan](../planning/round72-last-mint.md) was
+approved by the user and has the story, the texts and the lake's section; the round's
+rulings changed two things ([Round 72](../planning/round72-plan.md) §2.9): every floor is
+flat (no dais), and no pack can be walked round.
+
+- **Size:** 128 × 64 × 128, The Stilled Seam's envelope mirrored on z, one floor at y 31
+  over a lake 24 nodes deep. Eight rooms in a line:
+
+| Room | Holds |
+|---|---|
+| 0 Arrival | start waystone |
+| 1 Salvage bins | pack a: 5 Lava Seeps; 1 ore |
+| 2 Furnace room | pack b: 3 Seeps, 1 elite Seep, 1 Ember Wisp; floor traps (2 of 4) |
+| L Lava crossing | two landings, five 4 × 4 pillars, six level gaps of 2 nodes; wall shots (1 of 2, twice) |
+| 3 Cooling room | pack c: 3 Seeps, 1 elite Seep, 1 Wisp; 1 gem |
+| 4 Press vestibule | pack d: 1 elite Bedrock Sentinel, 3 Wisps; floor traps (2 of 4) |
+| 5 Press floor | **Duewarden**, alone, before the static press and its brand; floor traps (2 of 4) |
+| 6 Store | chest, end waystone; 4 ore, 2 gems |
+
+- **Rooms a pack cannot be walked round** (user, 2026-11-08): from every floor cell of a
+  pack's room, at least one mob of that pack would notice the player (its view range: Seep
+  10, Wisp 16, Sentinel 14, and sight). The rooms are smaller than the plan's envelopes and
+  the members spread over them; no floor cell lies in the sight of two packs. Duewarden's
+  hall is larger: the reward door holds until he dies.
+- **The lake:** lava at y 2–7 under the basin, every top at y 31, gaps of two node rows
+  with no height change, tops four deep for the run-up: a walking jump carries about 2.65
+  nodes and needs no sprint or class skill. The sides are vertical walls: no ledge, shelf
+  or climb, and the tops are beyond one Blink from the lava. A fall is death: lava takes
+  20 % of the actual pool a second through every shield, five ticks for a full pool, and
+  Return Home is refused (§4). Two of four wall sockets fire across a gap's middle every
+  6 s, the second group 3 s after the first; every top and landing is clear of their
+  lines, so a player waits on a top, watches a shot pass, then jumps. A burst reaches
+  whoever stands within 2 of the one it hit: cross one at a time.
+- **Mobs:** 16 normal (11 Seeps, 5 Wisps), 3 elites (2 Seeps, 1 Sentinel) and the boss,
+  every one at the run's level, with its family's name at every level. Wisps keep within
+  the wisp rooms' seven nodes of air. The Seeps' Emberglass, the Wisps' Emberglass and the
+  Sentinel's Rough Diamond go through the Expedition's drop filter: Slime Gel and Heavy
+  Leather stay.
+- **Duewarden:** the Bedrock Sentinel's body, melee and signalled frontal slam (the elite
+  tier's), 14 × an elite's HP: 113,232 at 60, 147,308 at 69. No adds, no phases. His hall
+  inside the envelope (48, 8)–(79, 39) is his range; traps never hurt him and never count
+  as his attack. One fixed name over 60–69.
+- **Ore:** eight shared places, five ore and three gems: Abyssal Crystal and Diamond at T6.
+- **Chest, per player:** 1 Uncommon item, at 25 % a Rare item, both at the run's level, a
+  bag of 10 × a kill's coin bag, 3–5 Stone Core, 1–2 Slime Gel.
+- **Balance** (`tools/r72_mint/balance.py`, modelled): a run at 60 about 10 minutes, at 69
+  about 15, Duewarden about 2.5 and 6 minutes; traps and deaths come on top.
+- **Quest:** "Party: The Last Mint" at level 60, from the six guild leaders: kill Duewarden
+  once, at any of its levels.

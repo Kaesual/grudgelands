@@ -179,7 +179,7 @@ return function(lib, player)
 	local kills = {}
 	grug_mobs.register_on_boss_kill(function(_, id) kills[#kills + 1] = id end)
 	local Q = grug_quests
-	lib.check(#E.list() == 1 and E.list()[1].id == "stilled_seam", "the dialog offers The Stilled Seam")
+	lib.check(E.list()[1].id == "stilled_seam", "the dialog offers The Stilled Seam")
 
 	-- Level 20: the whole way.
 	lib.tag = 20

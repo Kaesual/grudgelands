@@ -2368,6 +2368,8 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   `guard.lua`'s `to_capital`), `grug_home.register_on_teleport`, `trip.fallback`,
   `grug_home.waystone_pos`, `waystone_arrival`, `grug_home.register_expedition_tab` and
   `show_waystones` (Round 72, `entry.lua`: the Expeditions tab and the stones inside),
+  `grug_home.register_return_guard` and `grug_core.register_lava_hold` (Round 72,
+  `guard.lua`: Return Home refused in or over lava in a box; every box holds its lava),
   `grug_mobs.set_spawn_free_field` (first
   check of `spawn_policy_allows`), `grug_parties.register_on_member_left` (it can tell a
   leaver from the last member, which `register_on_change` cannot),
@@ -2409,8 +2411,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   `grug_mobs.expedition_mark(self, pos)` and `expedition_unmark(handle)` (`traps.lua`, the
   strike helper; Auditor Nemm in `skeleton_raider.lua`). Sight counts as a pull,
   so keep a template's arrival beyond a pack's view range + 8. On a slab floor a jump lands
-  on the player's own cell. Lava flows in a box (`water_guard.lua` guards water only): the level 60 proposal needs a guard
-  first. `income.py --check` has no Expedition term, so its pass says nothing about a chest.
+  on the player's own cell. Lava a template writes stays put: every box holds it
+  (`grug_core/lava_guard.lua`), and a template's lava has nothing beside or below it to
+  flow into (`tools/r72_mint` proves The Last Mint's). `income.py --check` has no Expedition term, so its pass says nothing about a chest.
 - **Fixtures and probes:** `tools/README.md`, "Round 71". The fixtures' stubs need
   `get_attach` on objects and meta on players. `r71_frame` stubs the party seam: the real
   `remove_member` is in `r67_social`, the real respawn path in `r69_home`.

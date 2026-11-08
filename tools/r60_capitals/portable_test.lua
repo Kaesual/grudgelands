@@ -134,6 +134,9 @@ local SHARED = {
 	-- Round 72 SHIFT: The Second Shift's quest, the same six givers.
 	capital_second_shift = {giver = leader, line = "guild",
 		capitals = {"highcourt", "dur_brannoc", "lethariel", "gor_drazhak", "kezamba", "nhal_veyr"}},
+	-- Round 72 MINT: The Last Mint's quest, the same six.
+	capital_last_mint = {giver = leader, line = "guild",
+		capitals = {"highcourt", "dur_brannoc", "lethariel", "gor_drazhak", "kezamba", "nhal_veyr"}},
 }
 -- Round 61 BANDQUESTS: chapter 3's two foremen (round61-plan.md §2a point 4).
 local TITLES = {mining_camp_frostbarrow_shelf = "Brodd Deeppeg", mining_camp_ossuary_reach = "Rellis Shalemark",

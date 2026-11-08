@@ -23,6 +23,7 @@ V.LEVEL_SLACK = 3
 V.EXPEDITION_TARGETS = {flintback = 20}
 -- Round 72 SHIFT: The Second Shift's boss.
 V.EXPEDITION_TARGETS.auditor_nemm = 40
+V.EXPEDITION_TARGETS.duewarden = 60 -- Round 72: The Last Mint
 V.MAX_GIVERS_PER_HUB = 2
 V.MAX_LINES_PER_GIVER = 2
 V.FRONT_LINE = "front"

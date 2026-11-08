@@ -40,6 +40,9 @@ M.EXPEDITIONS = {
 	-- the text of a wall sign at a template place, written when the run is ready.
 	{id = "second_shift", name = "The Second Shift", level = 40, max_level = 69, max_players = 4,
 		template = "second_shift", signs = {shift_board = "SECOND SHIFT\nSAME NAMES\nSTILL DUE"}},
+	-- Round 72 lane MINT: the lava lake, 60-69, four players.
+	{id = "last_mint", name = "The Last Mint", level = 60, max_level = 69, max_players = 4,
+		template = "last_mint"},
 }
 
 -- Every 10 levels the tier follows (concept section 9): the ore and gem nodes, the

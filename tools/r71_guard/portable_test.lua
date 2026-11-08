@@ -94,8 +94,12 @@ _G.core.get_node_or_nil = function(pos) return nodes[pos] end
 _G.core.register_on_dieplayer = function() end
 _G.core.register_on_leaveplayer = function() end
 _G.grug_mounts = {register_summon_guard = function(fn) summon_guard = fn end}
-_G.grug_home = {register_respawn_home = function(fn) respawn_row = fn end}
+-- Round 72 (MINT): guard.lua also registers the lava hold and the Return Home refusal in
+-- lava; tools/r72_mint tests both.
+_G.grug_home = {register_respawn_home = function(fn) respawn_row = fn end,
+	register_return_guard = function() end}
 _G.grug_core.register_world_exception = function(fn) exception = fn end
+_G.grug_core.register_lava_hold = function() end
 dofile(repo .. "/mods/PLAYER/grug_expeditions/guard.lua")
 
 -- the field: the slots and the margin, at any y, every row

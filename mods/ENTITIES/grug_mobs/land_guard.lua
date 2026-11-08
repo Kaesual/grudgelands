@@ -29,6 +29,20 @@ local guard = {
 	water_damage = 0, lava_damage = 6, light_damage = 0,
 }
 
+-- Duewarden (Round 72): the boss of The Last Mint, the level 60 Expedition
+-- (docs/planning/round72-last-mint.md), on the Bedrock Sentinel's body, melee and
+-- signalled frontal slam (the elite tier's): no adds, no phases, no new look, no spawn
+-- row. grug_expeditions places it by its template's boss marker, as an elite at the
+-- run's level; only the HP factor sets it apart (tools/r72_mint/balance.py). It stands
+-- before the press until someone comes, and drops nothing: the reward room pays. Copied
+-- before the Sentinel's registration, which writes into its table.
+local duewarden = table.copy(guard)
+duewarden.description = "Duewarden"
+duewarden._grug_hp_scale = 14
+duewarden.walk_chance = 0
+duewarden.drops = {}
+
 grug_mobs.register_mob("grug_mobs:land_guard", guard)
+grug_mobs.register_mob("grug_mobs:duewarden", duewarden)
 -- No spawn row since Round 46 (lane DP, WP audit E4): the Bedrock Sentinel
 -- comes only with the depth pulse below y -1000 (depth_pulse.lua).

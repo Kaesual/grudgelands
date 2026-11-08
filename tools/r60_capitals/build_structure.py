@@ -316,6 +316,26 @@ SHARED = [
             "nhal_veyr": {"text": "Throng offer.", "completion": "Throng completion."},
         },
     },
+    # Round 72 lane MINT: The Last Mint's optional group quest.
+    {
+        "id": "capital_last_mint", "giver": "leader", "line": "guild", "min_level": 58, "level": 60,
+        "title": "Party: The Last Mint",
+        "objectives": [kill(["duewarden"], 1)],
+        "rewards": {"weight": 4},
+        "lesson": "Optional group quest: the registrar's Expedition, killing its boss at any level.",
+        "duration_min": 15,
+        "optional": True, "group": True,
+        "notes": "Round 72 MINT: round72-last-mint.md, its four approved texts, one per faction; "
+                 "free, no follow-up, the Expedition stays repeatable after the turn-in.",
+        "capitals": {
+            "highcourt": {"text": "Accord offer.", "completion": "Accord completion."},
+            "dur_brannoc": {"text": "Accord offer.", "completion": "Accord completion."},
+            "lethariel": {"text": "Accord offer.", "completion": "Accord completion."},
+            "gor_drazhak": {"text": "Throng offer.", "completion": "Throng completion."},
+            "kezamba": {"text": "Throng offer.", "completion": "Throng completion."},
+            "nhal_veyr": {"text": "Throng offer.", "completion": "Throng completion."},
+        },
+    },
 ]
 
 # ---------------------------------------------------------------- local

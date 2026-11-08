@@ -1,7 +1,8 @@
 -- The rules inside an Expedition (Round 71, concept sections 2 and 7): no mounts,
 -- a death respawns at the start waystone, and only what the template marks can be
--- dug. Each rule fills a seam of the mod that owns it. Building, liquids and flight
--- need nothing here: the open sea's rule refuses them in every box.
+-- dug; since Round 72 lava stays put and Return Home is refused in it. Each rule
+-- fills a seam of the mod that owns it. Building, liquids and flight need nothing
+-- here: the open sea's rule refuses them in every box.
 local M = grug_expeditions
 
 local HINT = "Expedition – protected"
@@ -22,6 +23,65 @@ grug_mobs.set_spawn_free_field(first.x - SPAWN_MARGIN, last.x + SPAWN_MARGIN,
 
 grug_mounts.register_summon_guard(function(_, pos)
 	if M.slot_at(pos) then return "Mounts cannot be used in an Expedition." end
+end)
+
+-- Lava stays where the template wrote it (Round 72, The Last Mint's lake): every box
+-- holds its lava (grug_core/lava_guard.lua). The templates' lava has nothing beside or
+-- below it to flow into; the hold covers whatever else could move it.
+grug_core.register_lava_hold(function(pos) return M.slot_at(pos) ~= nil end)
+
+-- Return Home is refused in lava inside an Expedition, and on the way down into it
+-- (Round 72, the user's ruling for The Last Mint): a fall there is death, with no
+-- way out. Standing on anything, at the edge of a top too, is no fall. Logging out
+-- stays as it is: a login stands where the player was. One look down a column, on
+-- a click only.
+local FALL_DEPTH = 32
+local FOOT = 0.3 -- the body's half width (the player's collision box)
+
+local function lava_at(pos)
+	local node = core.get_node_or_nil(pos)
+	return node ~= nil and core.get_item_group(node.name, "lava") > 0
+end
+
+local function walkable_at(pos)
+	local node = core.get_node_or_nil(pos)
+	local def = node and core.registered_nodes[node.name]
+	return not def or def.walkable ~= false
+end
+
+local function in_or_over_lava(pos)
+	local x, z = math.floor(pos.x + 0.5), math.floor(pos.z + 0.5)
+	local y = math.floor(pos.y + 0.5)
+	if lava_at({x = x, y = y, z = z}) or lava_at({x = x, y = y + 1, z = z}) then return true end
+	-- Standing: the feet at a node's top, and a corner of them on a walkable node right
+	-- below, open at the feet's own height. A body sliding down a pillar's face has a
+	-- corner on the face itself: that corner's cell beside the feet is the pillar, so it
+	-- stands on nothing.
+	local top = math.floor(pos.y + 0.55)
+	if math.abs(pos.y + 0.5 - top) < 0.05 then
+		for _, dx in ipairs({-FOOT, FOOT}) do
+			for _, dz in ipairs({-FOOT, FOOT}) do
+				local cx, cz = math.floor(pos.x + dx + 0.5), math.floor(pos.z + dz + 0.5)
+				if walkable_at({x = cx, y = top - 1, z = cz}) and
+						not walkable_at({x = cx, y = top, z = cz}) then
+					return false
+				end
+			end
+		end
+	end
+	for dy = 1, FALL_DEPTH do
+		local below = {x = x, y = y - dy, z = z}
+		if lava_at(below) then return true end
+		if walkable_at(below) then return false end
+	end
+	return false
+end
+
+grug_home.register_return_guard(function(player)
+	local pos = player:get_pos()
+	if pos and M.slot_at(pos) and in_or_over_lava(pos) then
+		return "Cannot return home from the lava."
+	end
 end)
 
 -- A player who died in a box. In their run: the start waystone. Their run gone, a
