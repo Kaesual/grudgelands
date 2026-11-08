@@ -57,7 +57,7 @@ return function(repo)
 		end,
 	})
 	_G.core, _G.minetest = core_stub, core_stub
-	_G.mobs = permissive({mob_class = permissive({}), spawning_mobs = {},
+	_G.mobs = permissive({mob_class = permissive({}), spawning_mobs = {}, grug_nav = {},
 		spawn = function(_, def) rows[#rows + 1] = def end})
 	_G.grug_mobs = permissive({})
 	-- Round 31: guard.lua and bosses.lua read the PvP garrison rules at load
