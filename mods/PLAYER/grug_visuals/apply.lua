@@ -460,6 +460,41 @@ end
 -- see it.
 local ABILITY_GROUP = "grug_ability"
 
+--
+-- BLADECRAFT'S LAST ATTACK (round72-plan.md §2.6), the one exception to case 1:
+-- a skill item with `_grug_ability_shot_slot` (Bladecraft's: the Scout's blade
+-- and bow on one slot) shows that slot's item while its last real attack was a
+-- shot, and its own slot otherwise, so the blade after a swing and after a
+-- join. One flag per player in memory, set by grug_abilities on a shot that
+-- flew and a swing at a foe (show_last_attack), never by a clock or a hotbar
+-- switch; read by the skin pass (first person) and shown_item below.
+--
+local shot_shown = {} -- player name -> true while the last attack was a shot
+
+-- Records the kind of the player's last real attack; true when it changed.
+function grug_visuals.show_shot(player, shot)
+	local name = player:get_player_name()
+	shot = shot == true or nil
+	if shot_shown[name] == shot then
+		return false
+	end
+	shot_shown[name] = shot
+	return true
+end
+
+-- The hand slot a skill item shows: `shot_slot` after a shot (above), else
+-- `slot`.
+function grug_visuals.hand_slot(player, slot, shot_slot)
+	if shot_slot and shot_shown[player:get_player_name()] then
+		return shot_slot
+	end
+	return slot
+end
+
+core.register_on_leaveplayer(function(player)
+	shot_shown[player:get_player_name()] = nil
+end)
+
 local function shown_item(player)
 	local wielded = player:get_wielded_item()
 	local name = wielded:get_name()
@@ -469,8 +504,9 @@ local function shown_item(player)
 	if core.get_item_group(name, ABILITY_GROUP) > 0 then
 		-- The cosmetic copy retains broken gear even while combat excludes it.
 		local def = core.registered_items[name]
-		return grug_inventory.get_cosmetic_hand(player,
-			def and def._grug_ability_slot or "weapon")
+		return grug_inventory.get_cosmetic_hand(player, def and
+			grug_visuals.hand_slot(player, def._grug_ability_slot,
+				def._grug_ability_shot_slot) or "weapon")
 	end
 	return wielded
 end

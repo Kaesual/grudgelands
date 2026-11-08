@@ -1060,6 +1060,12 @@ function grug_abilities.register_ability(def)
 	def.slot = def.slot or (def.melee and "melee" or "weapon")
 	assert(def.slot == "weapon" or def.slot == "offhand" or def.slot == "melee",
 		"ability slot must be \"weapon\", \"offhand\" or \"melee\"")
+	-- `shot_slot` (Bladecraft's alone, round72-plan.md §2.6): the slot whose
+	-- item the skill SHOWS after its last real attack was a shot. A look only:
+	-- damage and both clocks keep reading `slot` (show_last_attack below).
+	assert(def.shot_slot == nil or def.shot_slot == "weapon" or
+		def.shot_slot == "offhand" or def.shot_slot == "melee",
+		"shot_slot must be \"weapon\", \"offhand\" or \"melee\"")
 	grug_abilities.registered[def.id] = def
 	if base then
 		transforms_of[base.id] = transforms_of[base.id] or {}
@@ -1108,8 +1114,10 @@ function grug_abilities.register_ability(def)
 		range = 4, -- Native pointing/digging has hand reach; casts use server rays.
 		stack_max = 1,
 		groups = {grug_ability = 1, grug_bound_skill = 1, not_in_creative_inventory = 1},
-		-- The hand slot whose item the held skill shows (grug_visuals).
+		-- The hand slot whose item the held skill shows (grug_visuals), and
+		-- the one it shows after a shot (Bladecraft's; grug_visuals.hand_slot).
 		_grug_ability_slot = def.slot,
+		_grug_ability_shot_slot = def.shot_slot,
 		on_drop = function()
 			return ItemStack("")
 		end,
@@ -2221,12 +2229,20 @@ local function apply_swing_caps(stack, def, player)
 	return true
 end
 
+-- The hand slot whose item `def`'s stack shows: its `slot`, or for Bladecraft
+-- its `shot_slot` while its last real attack was a shot (the one display
+-- state, grug_visuals.hand_slot; round72-plan.md §2.6).
+local function shown_slot(player, def)
+	return def.shot_slot and grug_visuals.hand_slot(player, def.slot, def.shot_slot) or
+		def.slot
+end
+
 -- Resolve each hand at most once per pass, and only when a stack actually asks
 -- for it: the wield source and the weapon family, both from one read.
 local function skin_source_cache(player)
 	local sources, weapons = {}, {}
 	return function(def)
-		local slot = def.slot
+		local slot = shown_slot(player, def)
 		if not sources[slot] then
 			sources[slot], weapons[slot] = slot_source(player, slot)
 		end
@@ -2253,7 +2269,7 @@ local function sync_skins(player, hand_list)
 			local def = item_defs[stack:get_name()]
 			if def then
 				local changed = false
-				if hand_list == nil or list_of[def.slot] == hand_list then
+				if hand_list == nil or list_of[shown_slot(player, def)] == hand_list then
 					changed = apply_skin(stack, def, source_of(def))
 				end
 				if clock and def.slot ~= "offhand" and
@@ -2264,6 +2280,43 @@ local function sync_skins(player, hand_list)
 			end
 		end
 	end
+end
+
+-- Bladecraft shows the weapon of its last real attack (round72-plan.md §2.6):
+-- the bow after a shot that flew (`shot` true, scout.lua's bladecraft_shot),
+-- the blade after its swing at a foe (false, its swing callback). Only a change
+-- writes, and only the skills with a `shot_slot`, on both hotbar layouts
+-- (where skills live, grug_skills/bound_items.lua): the held stack through
+-- set_wielded_item(stack, true), which spares the client's re-raise of the
+-- first-person weapon (protocol 52, Luanti 5.16 and later; an older client
+-- plays it), the copy on the other layout through set_stack. The third-person
+-- hand and the Scout's back card follow at once, not at the wield poll.
+function grug_abilities.show_last_attack(player, shot)
+	if grug_visuals.show_shot(player, shot) ~= true then
+		return
+	end
+	local inv = player:get_inventory()
+	local source_of = skin_source_cache(player)
+	local held_list, held_index = player:get_wield_list(), player:get_wield_index()
+	local store = grug_inventory.HOTBAR_STORE
+	for _, listname in ipairs({"main", store}) do
+		local size = inv:get_size(listname)
+		if listname == "main" then
+			size = math.min(size, grug_inventory.HOTBAR_SIZE)
+		end
+		for i = 1, size do
+			local stack = inv:get_stack(listname, i)
+			local def = item_defs[stack:get_name()]
+			if def and def.shot_slot and apply_skin(stack, def, source_of(def)) then
+				if listname == held_list and i == held_index then
+					player:set_wielded_item(stack, true)
+				else
+					inv:set_stack(listname, i, stack)
+				end
+			end
+		end
+	end
+	grug_visuals.apply(player)
 end
 
 -- Level, talent, equipment and status changes can re-tune every numeric
