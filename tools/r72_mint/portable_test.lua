@@ -759,3 +759,540 @@ print(("light at eye height: %d cells, mean %.1f, %.0f %% at %d or more, darkest
 check(darkest >= LIGHT_MIN, "L no dark corner: " .. darkest .. " at " .. dark_at)
 check(usual / #floor_cells >= USUAL_SHARE, "L the rooms read: " .. usual / #floor_cells)
 check(tops_darkest >= LIGHT_USUAL, "L every top lit for the jump: " .. tops_darkest)
+
+-- ---- A. The catalogue row; who may create and enter (the real runs.lua) -----------------
+local row = C.definition(ID)
+check(row ~= nil, "A the row")
+eq(row.name, "The Last Mint", "A its name")
+eq(row.level, 60, "A from 60")
+eq(row.max_level, 69, "A to 69")
+eq(row.max_players, 4, "A four players")
+eq(row.template, ID, "A its template")
+check(not row.hidden, "A offered")
+local offered = false
+for _, r in ipairs(C.list()) do offered = offered or r.id == ID end
+check(offered, "A a dialog offers it")
+eq(C.entry_level(60), 58, "A 60 needs 58")
+eq(C.entry_level(61), 59, "A 61 needs 59")
+eq(C.entry_level(69), 60, "A 69 needs 60")
+do
+	local levels, parties, combat = {}, {}, {}
+	local function person(name, level)
+		levels[name] = level
+		return {get_player_name = function() return name end, get_hp = function() return 100 end}
+	end
+	_G.core = {after = function() end, register_on_leaveplayer = function() end,
+		register_on_joinplayer = function() end, log = function() end}
+	_G.grug_home = {register_on_teleport = function() end}
+	_G.grug_parties = {view = function(name) return parties[name] end,
+		register_on_member_left = function() end, register_on_change = function() end}
+	_G.grug_xp = {get_level = function(p) return levels[p:get_player_name()] end}
+	_G.grug_core = {feed = function() end, in_combat = function(p) return combat[p:get_player_name()] end}
+	_G.grug_expeditions = {templates = {[ID] = tpl}}
+	local E = grug_expeditions
+	local queue = {}
+	local preparation = {init = function() end, cancel = function() end, status = function() end,
+		enqueue = function(run, _, finish) queue[#queue + 1] = finish end}
+	assert(loadfile(repo .. "/mods/PLAYER/grug_expeditions/runs.lua"))(C, preparation)
+	local lead, mid, low, cap = person("lead", 60), person("mid", 58), person("low", 57), person("cap", 59)
+	local function bonuses(p)
+		local out = {}
+		for _, r in ipairs(E.offered_levels(p, ID)) do out[#out + 1] = r.level end
+		return table.concat(out, ",")
+	end
+	eq(bonuses(low), "", "A nothing at 57")
+	eq(bonuses(mid), "60", "A only 60 at 58")
+	eq(bonuses(cap), "60,61", "A 60 and 61 at 59")
+	eq(bonuses(lead), "60,61,62,63,64,65,66,67,68,69", "A every level at 60")
+	local ok, why = E.can_create(low, ID, 0)
+	check(not ok and why == "This level of the Expedition needs level 58.", "A 57 cannot create: " .. tostring(why))
+	check(E.can_create(lead, ID, 9), "A 60 creates at 69")
+	-- A party of five at 60: two at 60, one at 58, one at 57, one at 59.
+	local fifth, sixth = person("fifth", 60), person("sixth", 60)
+	local party = {id = 1, leader = "lead", members = {}}
+	for _, name in ipairs({"lead", "mid", "low", "cap", "fifth", "sixth"}) do
+		party.members[#party.members + 1] = {name = name, level = levels[name], online = true}
+		parties[name] = party
+	end
+	local run = assert(E.create(lead, ID, 0))
+	eq(run.level, 60, "A a run at 60")
+	eq(run.max_players, 4, "A four places")
+	check(not E.may_enter(mid, run), "A nobody enters while it is prepared")
+	queue[1](true)
+	eq(run.state, "ready", "A ready")
+	check(E.can_enter(lead, run) and E.can_enter(mid, run) and E.can_enter(cap, run), "A 60, 58 and 59 enter at 60")
+	ok, why = E.can_enter(low, run)
+	check(not ok and why == "This Expedition needs level 58.", "A 57 is refused at 60: " .. tostring(why))
+	combat.lead = true
+	ok, why = E.can_enter(lead, run)
+	check(not ok and why == "Cannot travel in combat.", "A not in combat")
+	combat.lead = nil
+	for _, name in ipairs({"lead", "mid", "cap", "fifth"}) do run.entered[name] = true end
+	ok, why = E.may_enter(sixth, run)
+	check(not ok and why == "This Expedition is full.", "A a fifth player finds it full")
+	check(E.may_enter(fifth, run), "A one who entered goes back in")
+	-- At 69: a solo player of 60 creates it; 59 is refused.
+	local solo, near = person("solo", 60), person("near", 59)
+	local high = assert(E.create(solo, ID, 9))
+	queue[2](true)
+	eq(high.level, 69, "A a run at 69")
+	check(E.can_enter(solo, high), "A 60 enters at 69")
+	parties.solo = {id = 2, leader = "solo", members = {{name = "solo", level = 60, online = true},
+		{name = "near", level = 59, online = true}}}
+	parties.near = parties.solo
+	high.owner = {kind = "party", id = 2}
+	ok, why = E.can_enter(near, high)
+	check(not ok and why == "This Expedition needs level 60.", "A 59 is refused at 69: " .. tostring(why))
+	_G.core, _G.grug_home, _G.grug_parties, _G.grug_xp, _G.grug_core, _G.grug_expeditions = nil
+end
+
+-- ---- B. The chest's table ----------------------------------------------------------------
+local registry = read_file("mods/ITEMS/grug_materials/registry.lua")
+local ORE_ITEMS = {["grug_materials:emberglass_shard"] = true}
+for item in registry:gmatch('raw_item = "([^"]+)"') do ORE_ITEMS[item] = true end
+for item in registry:gmatch('cut_item = "([^"]+)"') do ORE_ITEMS[item] = true end
+check(ORE_ITEMS["grug_materials:rough_diamond"] and ORE_ITEMS["grug_materials:emberglass"], "B the ore items")
+L.check(ORE_ITEMS)
+local tbl = assert(L.TABLES[ID], "B the table")
+local known = {}
+for name in read_file("mods/ENTITIES/grug_mobs/items.lua"):gmatch('material%("([%w_]+)"') do
+	known["grug_mobs:" .. name] = true
+end
+for _, level in ipairs({60, 65, 69}) do
+	local plan = L.plan(tbl, level, function(lo) return lo end, {80, 240})
+	local gear, coins, items = {}, 0, {}
+	for _, entry in ipairs(plan) do
+		if entry.quality then gear[#gear + 1] = entry.quality end
+		if entry.copper then coins = coins + entry.copper end
+		if entry.item then
+			check(known[entry.item] and not ORE_ITEMS[entry.item], "B a material, no ore: " .. entry.item)
+			items[entry.item] = entry.count
+		end
+	end
+	eq(table.concat(gear, ","), "2,3", "B an Uncommon and, at 25 %, a Rare at " .. level)
+	eq(coins, 800, "B ten kill bags at " .. level)
+	eq(items["grug_mobs:stone_core"], 3, "B Stone Core at " .. level)
+	eq(items["grug_mobs:slime_gel"], 1, "B Slime Gel at " .. level)
+	check(#plan <= L.slots(plan), "B the plan fits")
+end
+eq(tbl.gear[2].chance, 25, "B the Rare's chance")
+-- What the families drop, through the Expedition's filter (encounters.lua): every mineral
+-- goes, Slime Gel and Heavy Leather stay; Duewarden drops nothing.
+for _, file in ipairs({"lava_flan.lua", "ember_wisp.lua", "land_guard.lua"}) do
+	local text = read_file("mods/ENTITIES/grug_mobs/" .. file)
+	local drops = text:match("drops = (%b{})")
+	for item in drops:gmatch('name = "([^"]+)"') do
+		if item:find("^grug_materials:") then
+			check(ORE_ITEMS[item], "B the filter takes " .. item .. " from " .. file)
+		else
+			check(item == "grug_mobs:slime_gel" or item == "grug_mobs:heavy_leather", "B kept: " .. item)
+		end
+	end
+end
+
+-- ---- M. The traps on this template (the real traps.lua) ----------------------------------
+do
+	local clock, timers, objects, entity_defs, players, hooks = 0, {}, {}, {}, {}, {ready = {}, enter = {}, ended = {}}
+	local MINP = {x = 8064, y = -112, z = -1616}
+	local marks = {}
+	local function key(p) return p.x .. "," .. p.y .. "," .. p.z end
+	vector = {}
+	function vector.new(x, y, z) return {x = x, y = y, z = z} end
+	function vector.copy(v) return {x = v.x, y = v.y, z = v.z} end
+	function vector.add(a, b)
+		if type(b) == "number" then return {x = a.x + b, y = a.y + b, z = a.z + b} end
+		return {x = a.x + b.x, y = a.y + b.y, z = a.z + b.z}
+	end
+	function vector.multiply(a, s) return {x = a.x * s, y = a.y * s, z = a.z * s} end
+	function vector.distance(a, b) return math.sqrt((a.x - b.x) ^ 2 + (a.y - b.y) ^ 2 + (a.z - b.z) ^ 2) end
+	local function node_name(pos)
+		if marks[key(pos)] then return marks[key(pos)] end
+		local x, y, z = pos.x - MINP.x, pos.y - MINP.y, pos.z - MINP.z
+		if not inside(x, y, z) then return "default:stone" end
+		return name_at(x, y, z)
+	end
+	local registered = setmetatable({}, {__index = function(_, name)
+		return {walkable = SOLID[name] == true}
+	end})
+	_G.core = {
+		registered_nodes = registered,
+		get_modpath = function() return repo .. "/mods/PLAYER/grug_expeditions" end,
+		get_current_modname = function() return "grug_expeditions" end,
+		log = function(_, text) error("unexpected log: " .. tostring(text)) end,
+		after = function(seconds, fn, ...) timers[#timers + 1] = {at = clock + seconds, fn = fn, args = {...}} end,
+		register_node = function(name, def) rawset(registered, name, def) end,
+		register_entity = function(name, def) entity_defs[name] = def end,
+		get_node_or_nil = function(pos) return {name = node_name(pos)} end,
+		get_node = function(pos) return {name = node_name(pos)} end,
+		set_node = function(pos, node) marks[key(pos)] = node.name end,
+		add_particle = function() end,
+		get_player_by_name = function(name) return players[name] end,
+		-- Traps never look at objects: a mob is never asked about.
+		get_objects_inside_radius = function() error("a trap looked for objects") end,
+		objects_inside_radius = function() error("a trap looked for objects") end,
+	}
+	core.add_entity = function(pos, name)
+		local def = assert(entity_defs[name], "no entity " .. name)
+		local object = {pos = vector.copy(pos), velocity = {x = 0, y = 0, z = 0}}
+		local ent = setmetatable({object = object}, {__index = def})
+		function object.get_luaentity() return not object.removed and ent or nil end
+		function object.set_velocity(_, v) object.velocity = vector.copy(v) end
+		function object.get_pos() return not object.removed and vector.copy(object.pos) or nil end
+		function object.remove() object.removed = true end
+		objects[#objects + 1] = object
+		return object
+	end
+	_G.grug_core = {ARMOR_APPLIED_CUSTOM_TYPE = "grug_core:player_armor_applied",
+		particles = {register = function() end, play = function() end},
+		mono_time = function() return clock end,
+		base_pool = function(level)
+			level = math.max(1, math.min(60, level))
+			return math.floor(20 + 5 * level + 0.66 * level * level + 0.5)
+		end,
+		apply_player_armor = function(_, damage) return damage end}
+	_G.grug_expeditions = {templates = {[ID] = tpl}, definition = function() return {template = ID} end,
+		register_on_ready = function(fn) table.insert(hooks.ready, fn) end,
+		register_on_enter = function(fn) table.insert(hooks.enter, fn) end,
+		register_on_end = function(fn) table.insert(hooks.ended, fn) end}
+	dofile(repo .. "/mods/PLAYER/grug_expeditions/traps.lua")
+	local TR = grug_expeditions.traps
+	local function step()
+		clock = clock + 0.05
+		while true do
+			local first
+			for index, timer in ipairs(timers) do
+				if timer.at <= clock + 1e-9 and (not first or timer.at < timers[first].at) then first = index end
+			end
+			if not first then break end
+			local timer = table.remove(timers, first)
+			timer.fn(unpack(timer.args))
+		end
+		for _, object in ipairs(objects) do
+			if not object.removed then
+				object.pos = vector.add(object.pos, vector.multiply(object.velocity, 0.05))
+				object:get_luaentity():on_step(0.05)
+			end
+		end
+	end
+	local function run_for(seconds)
+		local stop = clock + seconds
+		while clock < stop - 1e-9 do step() end
+	end
+	local function new_player(name, x, y, z)
+		local p = {name = name, hp = 10000, hits = 0}
+		p.pos = {x = MINP.x + x, y = MINP.y + y, z = MINP.z + z}
+		function p.get_player_name() return name end
+		function p.get_pos() return vector.copy(p.pos) end
+		function p.get_hp() return p.hp end
+		function p.set_hp(_, hp) p.hits, p.hp = p.hits + 1, hp end
+		players[name] = p
+		return p
+	end
+	local next_id = 0
+	local function new_run(level)
+		next_id = next_id + 1
+		local run = {id = next_id, expedition = ID, level = level, minp = MINP, inside = {}, state = "ready"}
+		for _, fn in ipairs(hooks.ready) do fn(run) end
+		return run
+	end
+	local function end_run(run)
+		run.state = "ended"
+		for name in pairs(run.inside) do run.inside[name] = nil end
+		for _, fn in ipairs(hooks.ended) do fn(run, "empty") end
+		players = {}
+	end
+	-- The choice: per creation, two of each floor group's four, one of each wall group's two;
+	-- over many creations every candidate is armed sometimes.
+	math.randomseed(72)
+	local seen, cells = {}, {}
+	for _ = 1, 100 do
+		local run = new_run(60)
+		local chosen = TR.chosen(run)
+		local per = {}
+		for _, t in ipairs(chosen.floor) do
+			per[t.group] = (per[t.group] or 0) + 1
+			seen[t.group .. key(t.cell)] = true
+			check(not cells[key(t.cell)] or cells[key(t.cell)] == t.group, "M a cell in one group")
+			cells[key(t.cell)] = t.group
+		end
+		for _, w in ipairs(chosen.wall) do
+			per[w.group] = (per[w.group] or 0) + 1
+			seen[w.group .. key(w.muzzle)] = true
+		end
+		check(per.f1 == 2 and per.f2 == 2 and per.f3 == 2 and per.w1 == 1 and per.w2 == 1, "M the picks")
+		end_run(run)
+	end
+	local armed = 0
+	for _ in pairs(seen) do armed = armed + 1 end
+	eq(armed, 16, "M every candidate is armed in some creation")
+	-- A floor trap fires at a player: the ring, the hit 1.5 s later, the mark; nobody else.
+	local run = new_run(60)
+	local chosen = TR.chosen(run)
+	local trap = chosen.floor[1]
+	local rel = {x = trap.cell.x - MINP.x, y = trap.cell.y - MINP.y, z = trap.cell.z - MINP.z}
+	local victim = new_player("victim", rel.x, rel.y - 0.5, rel.z)
+	local far = new_player("far", places.arrival.x, F - 0.5, places.arrival.z)
+	run.inside.victim, run.inside.far = true, true
+	for _, fn in ipairs(hooks.enter) do fn(run, "victim") end
+	run_for(1.0)
+	eq(victim.hits, 0, "M nothing before the ring has run")
+	run_for(1.0)
+	eq(victim.hits, 1, "M the hit after 1.5 s")
+	eq(10000 - victim.hp, math.floor(0.45 * 2696 + 0.5), "M 45 % of the level 60 pool")
+	eq(far.hits, 0, "M nobody far away")
+	eq(marks[key(trap.cell)], "grug_expeditions:trap_mark", "M its mark")
+	end_run(run)
+	-- The lake: nobody waiting on a top or a landing is hit, at its middle or at its edge
+	-- (0.29 over it, the sneak's limit), over two periods of both groups; a player in a
+	-- gap's middle, on the line, is. A hit bursts on its player and reaches whoever stands
+	-- within 2 of it (traps.lua): so the plan's "cross separately".
+	local lines_hit = {}
+	for attempt = 1, 40 do
+		run = new_run(60)
+		chosen = TR.chosen(run)
+		local waiting = {}
+		for i, top in ipairs(TOPS) do
+			for _, z in ipairs({(top[2] + top[4] - 1) / 2, top[2] - 0.5 + 0.29, top[4] - 0.5 - 0.29}) do
+				for _, x in ipairs({106, 109.5}) do
+					local p = new_player(("w%d_%g_%g"):format(i, x, z), x, F - 0.5, z)
+					run.inside[p.name] = true
+					waiting[#waiting + 1] = p
+				end
+			end
+		end
+		for _, fn in ipairs(hooks.enter) do fn(run, waiting[1].name) end
+		local launched = #objects
+		run_for(12.5)
+		check(#objects - launched >= 4, "M both groups fired twice over the waiting")
+		for _, p in ipairs(waiting) do eq(p.hits, 0, "M nobody waiting on a top is hit: " .. p.name) end
+		for name in pairs(run.inside) do run.inside[name], players[name] = nil, nil end
+		local line = chosen.wall[1 + attempt % 2]
+		local jumper = new_player("jumper", 107.5, F - 0.5 + 0.6, line.muzzle.z - MINP.z)
+		run.inside.jumper = true
+		run_for(6.5)
+		check(jumper.hits >= 1, "M a player on the line is hit")
+		lines_hit[key(line.muzzle)] = true
+		end_run(run)
+	end
+	local covered = 0
+	for _ in pairs(lines_hit) do covered = covered + 1 end
+	eq(covered, 4, "M every shot line was tried")
+	_G.core, _G.grug_core, _G.grug_expeditions, _G.vector = nil
+end
+
+-- ---- N. Lava: five ticks kill; Return Home refused in it inside an Expedition only -----
+do
+	_G.core = {register_globalstep = function() end,
+		get_item_group = function(name, group)
+			return group == "lava" and (name == LAVA or name == "default:lava_flowing") and 3 or 0
+		end}
+	_G.grug_core = {}
+	dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
+	local reason = {type = "node_damage", from = "engine", node = LAVA}
+	check(grug_core.is_engine_lava_damage(reason), "N the engine's lava tick")
+	check(grug_core.bypasses_absorb(reason), "N no shield soaks it")
+	for _, hp in ipairs({2696, 3000, 4100, 5300}) do
+		local tick = grug_core.lava_damage(hp)
+		check(5 * tick >= hp and 4 * tick < hp, ("N five ticks kill a full %d"):format(hp))
+	end
+	-- The central modifier replaces the flat damage with that share (combat.lua).
+	local combat = read_file("mods/CORE/grug_core/combat.lua")
+	check(combat:find("if grug_core.is_engine_lava_damage(reason) then", 1, true) and
+		combat:find("hp_change = -grug_core.lava_damage(max_hp)", 1, true), "N combat.lua takes the share")
+	check(read_file("mods/BASE/default/nodes.lua"):match('"default:lava_source".-damage_per_second = 4 %* 2'),
+		"N the template's lava ticks")
+end
+do
+	local minp = C.slot_box(1)
+	local chat, combat, cooling = {}, false, true
+	local function node_name(pos)
+		local slot = C.slot_at(pos)
+		if slot then
+			local x, y, z = pos.x - minp.x, pos.y - minp.y, pos.z - minp.z
+			return slot == 1 and inside(x, y, z) and name_at(x, y, z) or "default:stone"
+		end
+		-- the map: a lava pool below y 1
+		return pos.y <= 0 and LAVA or "air"
+	end
+	local hold
+	_G.core = {get_node_or_nil = function(pos) return {name = node_name(pos)} end,
+		registered_nodes = setmetatable({}, {__index = function(_, name) return {walkable = SOLID[name] == true} end}),
+		get_item_group = function(name, group) return group == "lava" and name == LAVA and 3 or 0 end,
+		chat_send_player = function(_, text) chat[#chat + 1] = text end,
+		register_on_joinplayer = function() end, register_on_leaveplayer = function() end,
+		register_on_dieplayer = function() end}
+	_G.grug_home = {get = function() return {id = "inn", pos = {x = 0, y = 10, z = 0}} end}
+	_G.grug_core = {in_combat = function() return combat end, release_movement = function() end,
+		register_world_exception = function() end, register_lava_hold = function(fn) hold = fn end}
+	_G.grug_mounts = {register_summon_guard = function() end}
+	_G.grug_mobs = {set_spawn_free_field = function() end}
+	dofile(repo .. "/mods/PLAYER/grug_home/travel.lua")
+	_G.grug_expeditions = {slot_box = C.slot_box, slot_at = C.slot_at, catalogue = C}
+	dofile(repo .. "/mods/PLAYER/grug_expeditions/guard.lua")
+	-- The lava hold covers every box and nothing of the map.
+	check(hold and hold({x = minp.x + 100, y = minp.y + 5, z = minp.z + 60}), "N the box's lava is held")
+	local _, last = C.slot_box(C.SLOTS)
+	check(hold({x = last.x, y = last.y, z = last.z}), "N the last box's too")
+	check(not hold({x = 0, y = 0, z = 0}), "N the map's lava is not")
+	local function at_pos(x, y, z, on_map)
+		local pos = on_map and {x = x, y = y, z = z} or {x = minp.x + x, y = minp.y + y, z = minp.z + z}
+		return {get_player_name = function() return "ann" end, get_hp = function() return 100 end,
+			get_pos = function() return pos end,
+			get_meta = function()
+				return {get_string = function() return cooling and tostring(os.time() + 600) or "" end}
+			end}
+	end
+	local REFUSED, PASSED = "Cannot return home from the lava.", "Return home is cooling down."
+	local function asks(label, want, ...)
+		chat = {}
+		check(grug_home.return_home(at_pos(...)) == false, label .. ": no trip in this test")
+		eq(chat[1], want, label)
+	end
+	asks("N in the lake's lava", REFUSED, 100.5, 5.2, 60)
+	asks("N falling into it", REFUSED, 107.5, 20, 68.5)
+	asks("N jumping over a gap", REFUSED, 107.5, 32.2, 62.5)
+	asks("N standing on a pillar", PASSED, 107.5, 31.5, 72)
+	asks("N at a pillar's edge, the centre over the gap", PASSED, 107.5, 31.5, 69.25)
+	asks("N on a landing", PASSED, 100, 31.5, 78)
+	asks("N in a room", PASSED, places.arrival.x, F - 0.5, places.arrival.z)
+	asks("N lava outside an Expedition", PASSED, 0.5, -2, 0.5, true)
+	combat = true
+	asks("N combat first", "Cannot return home in combat.", 100.5, 5.2, 60)
+	combat = false
+	_G.core, _G.grug_home, _G.grug_core, _G.grug_mounts, _G.grug_mobs, _G.grug_expeditions = nil
+end
+
+-- ---- O. The lava guard (grug_core/lava_guard.lua) -----------------------------------------
+do
+	local minp = C.slot_box(1)
+	local box = {x = minp.x + 100, y = minp.y + 8, z = minp.z + 60}
+	local outside = {x = 0, y = -10, z = 0}
+	local loaded, transformed, swaps, nodes = {}, {}, {}, {}
+	local function key(p) return p.x .. "," .. p.y .. "," .. p.z end
+	local torch_flooded = 0
+	_G.core = {
+		registered_nodes = {
+			air = {},
+			[LAVA] = {groups = {lava = 3, liquid = 2}, liquidtype = "source"},
+			["default:lava_flowing"] = {groups = {lava = 3, liquid = 2}, liquidtype = "flowing"},
+			["default:water_flowing"] = {groups = {water = 3}, liquidtype = "flowing"},
+			["grug_core:water_barrier"] = {floodable = true},
+			["default:torch_wall"] = {floodable = true,
+				on_flood = function() torch_flooded = torch_flooded + 1 return false end},
+		},
+		register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end,
+		register_on_liquid_transformed = function(fn) transformed[#transformed + 1] = fn end,
+		override_item = function(name, fields)
+			for k, v in pairs(fields) do core.registered_nodes[name][k] = v end
+		end,
+		get_node_or_nil = function(pos) return {name = nodes[key(pos)] or "air"} end,
+		swap_node = function(pos, node) swaps[#swaps + 1] = {pos = pos, name = node.name}; nodes[key(pos)] = node.name end,
+	}
+	_G.grug_core = {WATER_BARRIER = "grug_core:water_barrier"}
+	dofile(repo .. "/mods/CORE/grug_core/lava_guard.lua")
+	grug_core.register_lava_hold(function(pos) return C.slot_at(pos) ~= nil end)
+	for _, fn in ipairs(loaded) do fn() end
+	local flood = core.registered_nodes["default:torch_wall"].on_flood
+	check(flood(box, {name = "default:torch_wall"}, {name = "default:lava_flowing"}) == true and torch_flooded == 0,
+		"O no lava floods a torch in a box")
+	check(flood(outside, {name = "default:torch_wall"}, {name = "default:lava_flowing"}) == false and torch_flooded == 1,
+		"O the map's lava floods as before")
+	check(flood(box, {name = "default:torch_wall"}, {name = "default:water_flowing"}) == false and torch_flooded == 2,
+		"O water is the water guard's")
+	check(core.registered_nodes["grug_core:water_barrier"].on_flood(box, {name = "grug_core:water_barrier"},
+		{name = LAVA}) == true, "O the barrier refuses lava in a box")
+	local function transform(pos, now, old)
+		nodes[key(pos)] = now
+		swaps = {}
+		for _, fn in ipairs(transformed) do fn({pos}, {{name = old}}) end
+		return nodes[key(pos)], #swaps
+	end
+	local now, n = transform(box, "default:lava_flowing", "air")
+	check(now == "grug_core:water_barrier" and n == 1, "O lava flowing into air in a box: set back, a barrier")
+	now, n = transform(box, "air", LAVA)
+	check(now == LAVA and n == 1, "O lava leaving its place in a box: put back")
+	now, n = transform(outside, "default:lava_flowing", "air")
+	check(now == "default:lava_flowing" and n == 0, "O the map's lava flows")
+	now, n = transform(box, "default:water_flowing", "air")
+	check(now == "default:water_flowing" and n == 0, "O water is the water guard's")
+	_G.core, _G.grug_core = nil
+end
+
+-- ---- P. Duewarden, the names, the quest ----------------------------------------------------
+local land_guard = read_file("mods/ENTITIES/grug_mobs/land_guard.lua")
+check(land_guard:find('register_mob("grug_mobs:duewarden", duewarden)', 1, true), "P Duewarden is registered")
+check(land_guard:find("local duewarden = table.copy(guard)", 1, true), "P on the Sentinel's body")
+check(land_guard:find("duewarden.drops = {}", 1, true) and land_guard:find("duewarden.walk_chance = 0", 1, true),
+	"P he drops nothing and stands")
+local HP_SCALE = tonumber(land_guard:match("duewarden%._grug_hp_scale = (%d+)"))
+eq(HP_SCALE, 10, "P his HP: ten elites' (balance.py)")
+check(read_file("mods/ENTITIES/grug_mobs/disposition.lua"):find('classify("aggressive", {"duewarden"})', 1, true),
+	"P aggressive")
+check(read_file("mods/PLAYER/grug_achievements/creatures.lua"):find('"duewarden",', 1, true), "P one of the others")
+local json = dofile(repo .. "/tools/r28_b4_quests/json.lua")
+local names_text = read_file("mods/ENTITIES/grug_mobs/data/names.json")
+check(names_text:find('"world/duewarden/L60-69": "Duewarden"', 1, true), "P his name's slot")
+local NC = dofile(repo .. "/mods/ENTITIES/grug_mobs/names_core.lua")
+local index = NC.build(json.decode(names_text).names)
+for level = row.level, row.max_level do
+	eq(NC.lookup(index, "duewarden", nil, level), "Duewarden", "P Duewarden at " .. level)
+	eq(NC.lookup(index, "lava_flan", nil, level), "Lava Seep", "P a Seep at " .. level)
+	eq(NC.lookup(index, "ember_wisp", nil, level), "Ember Wisp", "P a Wisp at " .. level)
+	eq(NC.lookup(index, "land_guard", nil, level), "Bedrock Sentinel", "P a Sentinel at " .. level)
+end
+eq(NC.lookup(index, "duewarden", nil, nil), "Duewarden", "P the kill objective's one name")
+-- The quest: the Seam's shape at 60, the four approved texts.
+local home = json.decode(read_file("mods/PLAYER/grug_quests/data/zones/elandor_highcourt.quests.json"))
+local quest
+for _, q in ipairs(home.quests) do
+	if q.id == "capital_last_mint" then quest = q end
+end
+check(quest ~= nil, "P the quest lives in its first variant's file")
+eq(quest.title, "Party: The Last Mint", "P the title")
+eq(quest.level, 60, "P level 60, open from 58")
+eq(quest.line, "guild", "P the guild leaders' line")
+check(quest.optional == true and quest.group == true, "P optional, a group quest")
+eq(quest.story, nil, "P no story flag")
+eq(#quest.requires, 0, "P it requires nothing")
+eq(quest.rewards.weight, 4, "P weight 4")
+eq(quest.rewards.items, nil, "P no item")
+eq(quest.rewards.reputation, nil, "P no reputation")
+eq(#quest.objectives, 1, "P one objective")
+eq(quest.objectives[1].type, "kill", "P a kill")
+eq(quest.objectives[1].roles[1], "duewarden", "P Duewarden")
+eq(quest.objectives[1].count, 1, "P once")
+eq(quest.objectives[1].area, nil, "P at any level, in no area")
+local doc = read_file("docs/planning/round72-last-mint.md")
+local function approved(head)
+	local at_head = assert(doc:find("**" .. head .. "**", 1, true), head)
+	return doc:match("\n> ([^\n]+)\n", at_head)
+end
+local TEXTS = {accord = {approved("The Accord \226\128\148 offer"), approved("The Accord \226\128\148 completion")},
+	throng = {approved("The Throng \226\128\148 offer"), approved("The Throng \226\128\148 completion")}}
+local VARIANTS = {
+	{"elandor_highcourt", "highcourt", "accord"}, {"elandor_dur_brannoc", "dur_brannoc", "accord"},
+	{"elandor_lethariel", "lethariel", "accord"}, {"kragmar_gor_drazhak", "gor_drazhak", "throng"},
+	{"kragmar_kezamba", "kezamba", "throng"}, {"kragmar_nhal_veyr", "nhal_veyr", "throng"},
+}
+eq(#quest.variants, #VARIANTS, "P six variants")
+for i, want in ipairs(VARIANTS) do
+	local v = quest.variants[i]
+	eq(v.zone, want[1], "P variant " .. i)
+	eq(v.givers[1], "r58_guild_leader_" .. want[2], "P the leader of " .. want[2])
+	eq(v.turnins, nil, "P turned in at the giver")
+	eq(v.text, TEXTS[want[3]][1], "P the offer in " .. want[2])
+	eq(v.completion, TEXTS[want[3]][2], "P the completion in " .. want[2])
+end
+-- The giver names the plan gives are the guild leaders'.
+local npcs = read_file("mods/PLAYER/grug_quests/npcs.lua")
+for _, title in ipairs({"Alis Cartwright", "Hadrin Beamset", "Caelir Veinward", "Drava Flintshoulder",
+		"Iven Lastshift", "Ombali Ropekeeper"}) do
+	check(npcs:find('title = "' .. title .. '"', 1, true), "P a guild leader: " .. title)
+end
+eq(tonumber(read_file("mods/PLAYER/grug_quests/validate.lua"):match("V%.EXPEDITION_TARGETS%.duewarden = (%d+)")),
+	row.level, "P the game's validator")
+eq(tonumber(read_file("tools/r28_design/validate.py"):match('EXPEDITION_TARGETS%["duewarden"%] = (%d+)')),
+	row.level, "P the design validator")
+check(read_file("tools/r60_capitals/build_structure.py"):find('"id": "capital_last_mint"', 1, true), "P the builder's row")
+
+print(("R72 MINT PORTABLE PASS checks=%d"):format(checks))
