@@ -1137,9 +1137,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
     whose give-up drops nothing for these bosses; a king stuck at a shut door
     falls to the 15 s rule. Without a floor (an Expedition template without
     an envelope) the navigation's give-up is the "no way".
-  - **The one-way window.** A target who has no way or left the range, also
-    by a teleport, has left, and so has one who logged out; a death is no
-    leaving. Their threat goes to zero at once, the boss drops them and
+  - **The one-way window.** The current target who has no way or left the
+    range, also by a teleport, has left, and so has one who logged out; a
+    death is no leaving, and a player the boss turned from on the floor (a
+    Taunt, a threat switch) can no longer leave. Their threat goes to zero at once, the boss drops them and
     ignores them for sight for 8 nodes or 15 s, and they leave its engagement
     (and an Expedition boss's list). With no other player engaged the reset
     comes at once. Otherwise only a **Taunt** by someone who did not leave

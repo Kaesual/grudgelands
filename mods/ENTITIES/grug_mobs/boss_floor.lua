@@ -35,8 +35,10 @@
 -- the body does not stand on, an Expedition without an envelope) the navigation's
 -- give-up is the "no way".
 --
--- THE ONE-WAY WINDOW. A target who has no way or left the range (also by a teleport),
--- or who logged out, has left; a death is no leaving. Their threat goes to zero at
+-- THE ONE-WAY WINDOW. The current target who has no way or left the range (also by a
+-- teleport), or who logged out, has left; a death is no leaving, and a player the
+-- boss turned from while they stood on the floor (a Taunt, a threat switch) cannot
+-- leave any more (watched every step). Their threat goes to zero at
 -- once, they are no target (aggro.lua's give-up veto keeps sight from taking them
 -- again: 8 nodes or 15 s), their engagement goes, and an Expedition boss's list loses
 -- them. With no other player engaged the reset comes at once. Otherwise only a Taunt
@@ -55,8 +57,9 @@
 -- grug_mobs.boss_attacked(self) is the hook for an attack of another kind.
 --
 -- Cost: a per-step field test for every mob with a boss id; for these bosses one
--- timer per step, once a second a field test or two, and the floor test only while a
--- player is their target (one table lookup on the floor, a few hundred off it). The
+-- timer and one target name compare per step, once a second a field test or two,
+-- and the floor test only while a player is their target (one table lookup on the
+-- floor, a few hundred off it). The
 -- fill runs once per boss and session. Everything is runtime state: nothing is saved.
 --
 local floor, ceil, max, min = math.floor, math.ceil, math.max, math.min
@@ -424,25 +427,36 @@ local function window_step(self, t, window)
 	return false
 end
 
--- The floor test, once a second. The previous target counts as well: a target the
--- boss lost by other means (a logout, a teleport out of sight) has left too.
-local function floor_test(self, t, cells)
-	local reach = self.reach or 3
-	local target = self.attack
+local function target_name(target)
 	local name = target and core.is_player(target) and target:get_player_name() or nil
-	if name == "" then name = nil end
+	return name ~= "" and name or nil
+end
+
+-- Every step: the target the boss had a step ago, if it is not the target any more,
+-- is tested at once, as it stood when the boss lost it. Gone (a logout) or off the
+-- floor (a teleport, a step out the boss saw last) it has left; dead it has not, and
+-- one the boss turned from on the floor (a Taunt, a threat switch) has not either,
+-- whatever it does later: only the current target can leave. True when it reset.
+local function target_watch(self, t, cells)
+	local name = target_name(self.attack)
 	local last = t.grug_boss_target
-	if last and last ~= name then
-		local player = core.get_player_by_name(last)
-		if not player then
-			if leave(self, t, last) then return end
-		elseif player:get_hp() > 0 and not F.holds(cells, player:get_pos(), reach) then
-			if leave(self, t, last) then return end
-		end
-	end
+	if last == name then return false end
 	t.grug_boss_target = name
-	local pos = name and target:get_pos()
-	if pos and not F.holds(cells, pos, reach) then leave(self, t, name) end
+	if not last then return false end
+	local player = core.get_player_by_name(last)
+	if not player then return leave(self, t, last) end
+	if cells and player:get_hp() > 0
+			and not F.holds(cells, player:get_pos(), self.reach or 3) then
+		return leave(self, t, last)
+	end
+	return false
+end
+
+-- The floor test of the current target, once a second (a dead one has not left).
+local function floor_test(self, t, cells)
+	local name = t.grug_boss_target
+	local pos = name and self.attack:get_hp() > 0 and self.attack:get_pos()
+	if pos and not F.holds(cells, pos, self.reach or 3) then leave(self, t, name) end
 end
 
 -- Every step of a mob with a boss id or a crown (aggro.lua leash_tick).
@@ -459,6 +473,7 @@ function grug_mobs.boss_tick(self, dtime)
 		t.grug_boss_window, t.grug_boss_attack_at, t.grug_boss_target = nil, nil, nil
 		return
 	end
+	if target_watch(self, t, cells) then return end
 	local window = t.grug_boss_window
 	if window and window_step(self, t, window) then return end
 	t.grug_boss_acc = (t.grug_boss_acc or 0) + dtime

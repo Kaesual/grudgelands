@@ -19,6 +19,9 @@
 --      elite, not a dragon;
 --   T  a tank swap by Taunt inside 3 s keeps the fight; without one, or a Taunt by the
 --      one who left, the reset comes at 3 s; the window is no evade;
+--   R  only the current target can leave: a Taunt or a threat switch just before the
+--      old target steps off keeps the fight, so does a quick respawn after a death;
+--      a target lost while off the floor has left;
 --   O  a logout counts as leaving (alone: reset at once), a death does not;
 --   G  a General in his room; an Expedition boss in its room (the template's
 --      envelope): the room is its range, the navigation's give-up jumps nothing, a
@@ -648,6 +651,48 @@ for _, case in ipairs({"taunt", "none", "leaver"}) do
 		check(not healthy(king), "T4 inside the 3 s nothing yet")
 		step(king, 1.25)
 		check(healthy(king) and king.attack == nil and evading(king), "T4 no Taunt: reset at 3 s")
+	end
+	players[a.name], players[b.name] = nil, nil
+end
+
+-- Review fix (Round 72): only the current target can leave. A player the king turned
+-- from on the floor (a Taunt, a threat switch) leaves nothing by stepping off later in
+-- the same second, and a dead target who respawns off the floor has not left; a
+-- target lost while off the floor still has.
+for _, case in ipairs({"taunt", "switch", "respawn", "lost"}) do
+	local king = fresh_king()
+	local a = new_player("ra_" .. case, vec(104, 0.5, 100))
+	local b = new_player("rb_" .. case, vec(96, 0.5, 100))
+	pull(king, b, 20)
+	pull(king, a, 80)
+	step(king, 1) -- a 1 Hz test just ran: the next is a second away
+	check(king.attack == a, "R0 " .. case .. ": a is the target")
+	if case == "taunt" then
+		step(king, 0.25)
+		taunt(king, b)
+		step(king, 0.25)
+		a.pos = vec(110, 4.5, 100)
+	elseif case == "switch" then
+		step(king, 0.25)
+		king:do_attack(b, true) -- check_switch's forced do_attack
+		step(king, 0.25)
+		a.pos = vec(110, 4.5, 100)
+	elseif case == "respawn" then
+		kill(a)
+		king:stop_attack() -- mobs_redo drops a dead target
+		step(king, 0.25)
+		a.hp, a.pos = 20, vec(110, 4.5, 100) -- back at once, somewhere off the floor
+	else
+		a.pos = vec(110, 4.5, 100)
+		king:stop_attack() -- lost out of sight before the 1 Hz test
+	end
+	step(king, 5)
+	if case == "lost" then
+		check(healthy(king) and evading(king), "R4 a target lost while off the floor has left")
+	else
+		check(not healthy(king) and not evading(king) and king.temp.grug_boss_window == nil,
+			"R" .. (case == "taunt" and 1 or case == "switch" and 2 or 3) .. " " .. case ..
+			": the former target cannot leave, the fight goes on")
 	end
 	players[a.name], players[b.name] = nil, nil
 end
