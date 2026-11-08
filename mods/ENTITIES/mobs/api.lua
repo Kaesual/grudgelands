@@ -2117,7 +2117,7 @@ end
 mobs.grug_shot_range = grug_shot_range
 
 -- Whether a ranged mob in its ranged phase (`shoot`, `dogshoot` outside its
--- melee phase, the ranged kings' ds_var 0 included) walks closer this step:
+-- melee phase, ds_var 0 of one without a switch included) walks closer this step:
 -- it starts beyond its shot range and walks until it is GRUG_CLOSE_IN inside,
 -- then stands (a shot's or a cast's clip keeps playing). Inside its shot
 -- range it also stops as soon as its navigation is in trouble (stuck, or a
@@ -2488,8 +2488,8 @@ function mob_class:do_states(dtime)
 		-- ground dogshoot mob in its ranged phase that cannot see its target
 		-- walks (and paths) the dogfight way until it sees it; then the shoot
 		-- branch stops it and shoots, so it never shoots without line of
-		-- sight. A dogshoot mob without one (ds_var 0: the ranged kings)
-		-- keeps upstream's branches. GRUG PATCH (Round 56 MOBAI, the user's
+		-- sight. A dogshoot mob without one (ds_var 0; none since Round 72,
+		-- when the ranged kings got one) keeps upstream's branches. GRUG PATCH (Round 56 MOBAI, the user's
 		-- answer of 2026-10-22): a flier without sight flies at its target the
 		-- same way (no search, fliers never path) instead of shooting arrows
 		-- its target lock refuses, and shoots again once it sees it.
@@ -2588,7 +2588,7 @@ function mob_class:do_states(dtime)
 			-- (Round 49 NAV2): a ground dogshoot mob with a ranged phase
 			-- (`dogshoot_switch`) searches too, in its melee phase and to
 			-- regain sight of its target (the shoot branch below ends its
-			-- episode); one without (the ranged kings) as before.
+			-- episode); one without (none since Round 72) as before.
 			local can_nav = self.pathfinding and pathfinding_enable
 				and not self.fly and (self.attack_type == "dogfight"
 					or (self.attack_type == "dogshoot" and self.dogshoot_switch ~= nil))

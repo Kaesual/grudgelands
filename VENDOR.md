@@ -970,6 +970,15 @@ Cyan, Green and Pink Coral.
 - `default/nodes.lua` (two markers): the `drop` of `default:coral_brown` and
   `default:coral_orange` is the node itself (upstream `default:coral_skeleton`).
 
+## Round 72 RANGED — the ranged kings have a ranged phase (2026-11-08)
+
+No code change in `mobs/api.lua`: the Elf, Undead and Troll kings now set
+`dogshoot_switch` (`grug_mobs/bosses.lua`), so the Round 49 and Round 56
+markers' paths for ground `dogshoot` mobs with a switch serve them too. The
+comments of three existing markers (`grug_ranged_closing`, the dogfight
+branch's condition, `can_nav`) no longer name the kings as the mobs without
+one; no registered mob is left without one.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world
