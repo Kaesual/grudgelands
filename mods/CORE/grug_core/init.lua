@@ -95,6 +95,7 @@ dofile(modpath .. "/protection.lua")
 -- The pointed node's on_rightclick for items with their own on_place.
 dofile(modpath .. "/node_rightclick.lua")
 dofile(modpath .. "/water_guard.lua")
+dofile(modpath .. "/lava_guard.lua")
 -- The one particle path and its effect catalogue (Round 40); every effect,
 -- combat.lua's crit and absorb included, plays through it.
 dofile(modpath .. "/particles.lua")

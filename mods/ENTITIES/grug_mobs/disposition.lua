@@ -45,6 +45,8 @@ classify("aggressive", {
 	-- Round 51: the water families (biomes_mobs.md, Round 51 section).
 	"abyssal_shark", "bay_shark", "frog", "stingray",
 })
+-- Round 72: The Last Mint's boss (land_guard.lua).
+classify("aggressive", {"duewarden"})
 
 -- Sub-types (subtypes.lua, Round 28 ruling 35) add their own entity names to
 -- the same table; a name that is already classified is an error.

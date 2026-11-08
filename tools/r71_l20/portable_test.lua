@@ -30,7 +30,8 @@ eq(row.max_level, 69, "A up to 69")
 eq(row.max_players, 3, "A at most three")
 eq(row.template, "stilled_seam", "A its template")
 local listed = C.list()
-eq(#listed, 1, "A one row a dialog may offer")
+-- Round 72: more Expeditions follow it in the list (The Last Mint).
+check(#listed >= 1, "A a row a dialog may offer")
 eq(listed[1].id, "stilled_seam", "A The Stilled Seam is it")
 check(not listed[1].hidden, "A not hidden")
 

@@ -21,6 +21,7 @@ V.LEVEL_SLACK = 3
 -- first level, what its level range is read as, the run's level (up to 69) being the
 -- player's choice. As in tools/r28_design/validate.py.
 V.EXPEDITION_TARGETS = {flintback = 20}
+V.EXPEDITION_TARGETS.duewarden = 60 -- Round 72: The Last Mint
 V.MAX_GIVERS_PER_HUB = 2
 V.MAX_LINES_PER_GIVER = 2
 V.FRONT_LINE = "front"

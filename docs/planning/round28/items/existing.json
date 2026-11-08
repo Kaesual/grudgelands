@@ -1959,6 +1959,7 @@
     "grug_mobs:crag_eagle": {"type": "monster", "description": "Crag Eagle", "disposition": "aggressive", "drops": [{"chance": 1, "item": "grug_mobs:sharp_feather", "max": 2, "min": 1}, {"chance": 2, "item": "mobs:meat_raw", "max": 1, "min": 1}]},
     "grug_mobs:crocodile": {"type": "monster", "description": "Crocodile", "disposition": "aggressive", "drops": [{"chance": 1, "item": "grug_mobs:scaled_hide", "max": 1, "min": 1}, {"chance": 1, "item": "mobs:meat_raw", "max": 1, "min": 1}]},
     "grug_mobs:crystal_shard": {"type": "monster", "description": "Crystal Shard", "disposition": "aggressive", "drops": [{"chance": 1, "item": "grug_materials:emberglass_shard", "max": 2, "min": 1}, {"chance": 6, "item": "grug_materials:emberglass", "max": 1, "min": 1}]},
+    "grug_mobs:duewarden": {"type": "monster", "description": "Duewarden", "disposition": "aggressive", "drops": []},
     "grug_mobs:dungeon_master": {"type": "monster", "description": "Fire Hurler", "disposition": "aggressive", "drops": [{"chance": 2, "item": "grug_materials:emberglass_shard", "max": 2, "min": 1}, {"chance": 8, "item": "grug_materials:rough_sapphire", "max": 1, "min": 1}]},
     "grug_mobs:elder_dwarf": {"type": "npc", "description": "Vale Elder", "disposition": null, "drops": []},
     "grug_mobs:elder_elf": {"type": "npc", "description": "Lore Keeper", "disposition": null, "drops": []},

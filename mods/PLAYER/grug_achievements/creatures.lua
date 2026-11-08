@@ -51,6 +51,8 @@ C.OTHERS = set({
 	"lava_flan", "mesa_golem", "mirefolk", "oerkki", "poacher", "rift_boss", "rift_spawn",
 	"skeleton_archer", "skeleton_raider", "stone_golem", "flintback", "storm_whelp",
 	"war_construct", "wisp",
+	-- Round 72: The Last Mint's boss, on the Bedrock Sentinel's body.
+	"duewarden",
 })
 
 -- Families an achievement counts, by base role (a sub-type joins its base's
