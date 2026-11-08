@@ -1,0 +1,15 @@
+# Round 72 RANGED probe run (2026-11-08)
+# `probe.txt`: one boot of `run.sh` on the lane's branch (commit 18380df1), the
+# Elf King against a standing dummy, 14 s per lane. Every ordinary shot shows as
+# `refused`: the dummy had no `health` field, which the arrows' lock
+# (`grug_core/homing.lua` `identity`) refuses for any entity; the shots were
+# fired with sight inside the shot range (a player passes that lock). The probe
+# now gives the dummy health; it was not run again. Movement, sight, the melee
+# phase and the navigation's searches are the real engine's.
+ACTION[Server]: [r72ranged] arena built
+ACTION[Server]: [r72ranged] LANE open shots=0 refused=3 first_sight=0.25 first_shot=nil moved=13.3 end_dist=1.7 melee_samples=12 gave_up=nil events={}
+ACTION[Server]: [r72ranged] LANE cover shots=0 refused=3 first_sight=3.25 first_shot=nil moved=17.4 end_dist=1.4 melee_samples=12 gave_up=nil events={found=2,leave_stuck=1,stuck=1}
+ACTION[Server]: [r72ranged] LANE ledge shots=0 refused=3 first_sight=0.25 first_shot=nil moved=9.0 end_dist=5.1 melee_samples=12 gave_up=nil events={no_path=2,stuck=1}
+ACTION[Server]: [r72ranged] LANE far shots=0 refused=3 first_sight=0.25 first_shot=nil moved=25.4 end_dist=4.6 melee_samples=12 gave_up=nil events={}
+ACTION[Server]: [r72ranged] NAV searches=4 found=2 cap_waits=0 largest_us=381
+ACTION[Server]: [r72ranged] RESULT DONE

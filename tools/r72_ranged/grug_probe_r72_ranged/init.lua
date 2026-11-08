@@ -45,6 +45,10 @@ core.register_entity(MOD .. ":dummy", {
 		visual_size = {x = 0.6, y = 1.77},
 		collisionbox = {-0.3, 0, -0.3, 0.3, 1.77, 0.3},
 	},
+	-- A live target for the arrows' lock (grug_core homing.lua `identity`
+	-- refuses an entity without health; the first run's every shot was
+	-- refused so).
+	health = 1000,
 	on_activate = function(self)
 		self.object:set_acceleration({x = 0, y = -9.81, z = 0})
 		self.object:set_armor_groups({fleshy = 0, immortal = 1})
