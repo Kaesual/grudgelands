@@ -118,13 +118,21 @@ local ARRIVAL = {8, 8, 32, 32}
 check(within(places.start_waystone, unpack(ARRIVAL)), "C the start waystone in room 0")
 check(within(places.end_waystone, unpack(STORE)) and within(places.chest, unpack(STORE)),
 	"C chest and end waystone in the store")
+-- Flintback's range (BOSSRESET): the court's envelope; Round 72 STYLE's smaller hall
+-- moved its first corner from 48,5,88 to 54,5,94. Section K holds it to the hall's floor.
+local bmin, bmax = assert(places.boss_room_min), assert(places.boss_room_max)
+eq(("%d,%d,%d %d,%d,%d"):format(bmin.x, bmin.y, bmin.z, bmax.x, bmax.y, bmax.z), "54,5,94 79,5,119",
+	"C Flintback's range")
 
--- The plan's grid, one cell for 8 nodes (round71-l20-description.md).
+-- The plan's grid, one cell for 8 nodes (round71-l20-description.md). Round 72 STYLE
+-- made the rooms smaller: nine cells by the rooms' old walls hold no floor now
+-- (52,12 60,12 68,12 76,12 100,12 52,92 76,92 52,100 52,116), and the room labels 1,
+-- 2 and 4 moved to an open cell of their room.
 local GRID = {
-	"################", "#0..##1...##2..#", "#..............#", "#.S.##.a..##.b.#",
+	"################", "#0..#########..#", "#.....1.....2..#", "#.S.##.a..##.b.#",
 	"######...g##..j#", "#############.##", "#############.##", "#############.##",
-	"############3..#", "############.c.#", "############...#", "#5.g##4...##.###",
-	"#g.g##....##...#", "#jC..D..B....d.#", "#gEj##....##...#", "################",
+	"############3..#", "############.c.#", "############...#", "#5.g###..###.###",
+	"#g.g###...##...#", "#jC..D4.B....d.#", "#gEj###...##...#", "################",
 }
 for row_index, line in ipairs(GRID) do
 	for col = 1, #line do
@@ -277,6 +285,14 @@ check(mob_steps ~= nil, "E a mob walks from the start to the store")
 check(walk(nil, 0, 2, start, goal) == nil, "E nobody walks there through the door")
 print(("route: %d steps for a player, %d for a mob"):format(player_steps, mob_steps))
 check(player_steps <= 320, "E the walk stays short: " .. player_steps)
+-- The balance model walks the same steps (Round 72 PROOF: STYLE's smaller rooms, 258 -> 254).
+local function read_text(path)
+	local handle = assert(io.open(repo .. "/" .. path, "r"))
+	local text = handle:read("*a")
+	handle:close()
+	return text
+end
+eq(tonumber(read_text("tools/r71_l20/balance.py"):match("WALK_STEPS = (%d+)")), player_steps, "E the balance model's walk")
 
 -- The other place: the walk back to the working face from the start waystone.
 local face
@@ -287,7 +303,13 @@ check(walk(nil, 0, 2, start, {face.pos.x, face.pos.z}), "E the cleared walk reac
 
 -- F. The roster and where it stands.
 local SPREAD = {{0, 0}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}, {3, 3}, {-3, 3}, {3, -3}, {-3, -3}} -- encounters.lua
-local VIEW = {["grug_mobs:giant_spider"] = 12, ["grug_mobs:stone_golem"] = 16, ["grug_mobs:flintback"] = 16}
+-- The view ranges from the mob files; Flintback is a golem's body (golem_def).
+local golem_text = read_text("mods/ENTITIES/grug_mobs/golem.lua")
+check(golem_text:find('local flintback = golem_def(', 1, true), "F Flintback is a golem")
+local VIEW = {["grug_mobs:giant_spider"] = tonumber(read_text("mods/ENTITIES/grug_mobs/spider.lua"):match("view_range = (%d+)")),
+	["grug_mobs:stone_golem"] = tonumber(golem_text:match("view_range = (%d+)"))}
+VIEW["grug_mobs:flintback"] = VIEW["grug_mobs:stone_golem"]
+check(VIEW["grug_mobs:giant_spider"] == 12 and VIEW["grug_mobs:stone_golem"] == 16, "F view ranges read")
 local count = {normal = 0, elite = 0, boss = 0}
 local by_family = {}
 local packs, spots = {}, {}
@@ -318,11 +340,25 @@ eq(#packs.pack_b, 3, "F pack b")
 eq(#packs.pack_c, 4, "F pack c")
 eq(#packs.pack_d, 4, "F pack d")
 eq(#packs.boss, 1, "F the boss alone")
-local PACK_ROOM = {pack_a = {48, 8, 80, 40}, pack_b = {96, 8, 120, 40}, pack_c = {96, 64, 120, 88},
-	pack_d = {96, 96, 120, 120}, boss = {48, 88, 80, 120}}
+-- The fighting chambers (Round 72 STYLE, stilled_seam.py ROOMS): every mob stands in its
+-- pack's, and section K proves them.
+local CHAMBERS = {
+	pack_a = {{55, 18, 66, 21}, {51, 21, 70, 24}, {49, 24, 73, 33}, {52, 33, 71, 36}, {56, 36, 66, 39}},
+	pack_b = {{104, 14, 116, 18}, {99, 18, 120, 23}, {99, 23, 119, 33}, {103, 33, 119, 38}, {104, 38, 114, 39}},
+	pack_c = {{102, 64, 114, 67}, {99, 67, 117, 78}, {100, 78, 117, 83}, {102, 83, 114, 85}},
+	pack_d = {{102, 100, 114, 102}, {99, 102, 118, 115}, {102, 115, 116, 119}},
+	boss = {{63, 94, 72, 97}, {59, 97, 76, 100}, {57, 100, 79, 104}, {54, 104, 80, 112}, {56, 112, 79, 115},
+		{60, 115, 76, 118}, {63, 118, 72, 120}},
+}
+local function in_rects(rects, x, z)
+	for _, r in ipairs(rects) do
+		if x >= r[1] and x < r[3] and z >= r[2] and z < r[4] then return true end
+	end
+	return false
+end
 for key, list in pairs(packs) do
 	for _, spot in ipairs(list) do
-		check(within(spot, unpack(PACK_ROOM[key])), "F " .. key .. " in its room")
+		check(in_rects(CHAMBERS[key], spot.x, spot.z), "F " .. key .. " in its chamber")
 	end
 end
 -- No mob, no ore on the way before pack a: rooms 0 and 5 hold no marker.
@@ -588,6 +624,74 @@ for level = row.level, row.max_level do
 		eq(got[item] == true, level >= band[1] and level <= band[2], ("J %s at %d"):format(item, level))
 	end
 	eq(got["grug_mobs:venom_sac"] == true, level >= 31 and level <= 50, "J venom sacs at " .. level)
+end
+
+-- K. The user's room rules (Round 72, round72-plan.md section 2.9), by the shared proofs
+-- (tools/expedition_templates/proofs.lua) on STYLE's shapes: compact fighting chambers
+-- and the short cuts and passages between them (stilled_seam.py ROOMS, CUTS, PASSAGES).
+local PR = dofile(repo .. "/tools/expedition_templates/proofs.lua")
+local map = PR.map(tpl, F)
+local pfloor, pset = PR.floor(map)
+local QUIET = {{12, 12, 27, 16}, {10, 16, 32, 24}, {12, 24, 29, 29}, {16, 29, 24, 31}, -- room 0
+	{12, 88, 28, 92}, {8, 92, 32, 120}, -- room 5
+	{32, 16, 48, 24}, {80, 16, 96, 24}, {104, 40, 112, 64}, {80, 104, 96, 112}, {32, 104, 48, 112}, -- passages
+	{48, 16, 55, 24}, {69, 16, 80, 24}, {71, 30, 79, 38}, {96, 16, 100, 24}, {104, 39, 112, 40}, -- cuts
+	{96, 80, 104, 112}, {48, 104, 54, 112}}
+for _, cell in ipairs(pfloor) do
+	local known = in_rects(QUIET, cell.x, cell.z)
+	for _, rects in pairs(CHAMBERS) do known = known or in_rects(rects, cell.x, cell.z) end
+	check(known, ("K floor only in the chambers, rooms 0 and 5, cuts and passages: %d,%d"):format(cell.x, cell.z))
+end
+-- Flintback's range holds exactly the hall's floor.
+local hall, ranged = 0, 0
+for _, cell in ipairs(pfloor) do
+	local inside_range = cell.x >= bmin.x and cell.x <= bmax.x and cell.z >= bmin.z and cell.z <= bmax.z
+	if inside_range then ranged = ranged + 1 end
+	if in_rects(CHAMBERS.boss, cell.x, cell.z) then
+		hall = hall + 1
+		check(inside_range, ("K the hall's floor in Flintback's range: %d,%d"):format(cell.x, cell.z))
+	end
+end
+eq(ranged, hall, "K Flintback's range holds the hall and nothing else")
+-- The free height: three nodes of air over every floor cell, the routes' included (a mob
+-- stands everywhere a player does: an elite golem is 2.4 tall; no lantern at a head).
+local lowest, low_at = PR.free_height(map, pfloor)
+check(lowest >= 3, ("K three nodes of air over every floor cell: %d at %s"):format(lowest, low_at))
+print(("free height: at least %d nodes of air over %d floor cells"):format(lowest, #pfloor))
+-- No perch: walking, jumping and falling reach no place off the floor but a waystone or
+-- the chest, and no rope; with the door shut, and with it open and the ore dug.
+for _, changed in ipairs({false, all}) do
+	local found, ropes, searched = PR.perches(map, {places.arrival.x, F, places.arrival.z}, changed or nil)
+	for _, line in ipairs(found) do print("perch: " .. line) end
+	for _, line in ipairs(ropes) do print("rope in reach: " .. line) end
+	check(#found == 0 and #ropes == 0, "K no perch and no rope in reach")
+	print(("perches: none in %d places a player reaches%s"):format(searched, changed and ", door open, ore dug" or ""))
+end
+-- No pack can be walked round (user, 2026-11-08): every floor cell of a chamber noticed by
+-- a mob of its pack with a node to spare, and no walk from the chamber's way in to its
+-- way on, or to the ore after it, that keeps out of every cell the pack notices.
+for _, key in ipairs({"pack_a", "pack_b", "pack_c", "pack_d", "boss"}) do
+	local cells, thinnest, missed = PR.coverage(pfloor, function(x, z) return in_rects(CHAMBERS[key], x, z) end,
+		packs[key], 1, sees)
+	for _, at_cell in ipairs(missed) do print(("unseen in %s: %s"):format(key, at_cell)) end
+	eq(#missed, 0, "K nobody walks round " .. key .. " in its chamber")
+	print(("%s: %d floor cells, every one noticed, the thinnest spare %.1f nodes"):format(key, cells, thinnest))
+end
+-- The ways in and on, cells of the passages and cuts no pack notices; the ore within a
+-- hand's reach (4 nodes). The boss's way on is the door's front, shut until he dies.
+local WAYS = {pack_a = {{40, 20}, {88, 20}, {79, 36}}, pack_b = {{88, 20}, {108, 52}, {119, 36}},
+	pack_c = {{108, 52}, {100, 90}}, pack_d = {{100, 90}, {88, 108}}, boss = {{88, 108}, {46, 108}}}
+for _, key in ipairs({"pack_a", "pack_b", "pack_c", "pack_d", "boss"}) do
+	local way = WAYS[key]
+	check(pset[way[2][2] * sx + way[2][1]] and not PR.noticed(packs[key], way[2][1], way[2][2], 1, sees),
+		"K " .. key .. "'s way on is floor nobody notices")
+	local targets = {way[2]}
+	if way[3] then
+		for _, t in ipairs(PR.within_reach(pset, sx, way[3][1], way[3][2], 4)) do targets[#targets + 1] = t end
+	end
+	local reached, kept, noticed = PR.walk_round(map, pset, way[1], targets, packs[key], 1, sees)
+	check(reached == nil, ("K %s walked round to %s"):format(key, reached and reached[1] .. "," .. reached[2] or "-"))
+	print(("%s: no way round its %d noticed cells to %d of %d targets"):format(key, noticed, kept, #targets))
 end
 
 print(("R71 L20 PORTABLE PASS checks=%d"):format(checks))
