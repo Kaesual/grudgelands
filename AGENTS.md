@@ -12,7 +12,13 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.70.0, Round 70 (the six source rules and renewal; the
+**Current state:** 0.71.0, Round 71 (Expeditions: 100 slots beyond the map, the Expedition
+Registrar in the six guild houses, The Stilled Seam at levels 20–69, packs pulled whole),
+not pushed. **Compatible**, no map reset
+([completion and checklist](docs/planning/round71-plan.md#completion-2026-11-07)); the GUI test
+is open. Production runs **0.65.0**; its update to 0.71.0 crosses
+the map reset of 0.70.0 and runs the steps 0.67.0 and 0.69.0.
+Previous: 0.70.0, Round 70 (the six source rules and renewal; the
 Stonewright at the guild house with its recipes, ornamented stones and
 burning furnace; form A Crownward in six capitals with civic radius 56, the
 lakes of Lethariel and Kezamba moved; six reworked start towns and wayposts
@@ -22,7 +28,7 @@ the PvP exemption and HUD hints; Kings at 70, the crown at top + 10, dragons
 at 30,000 HP and the new level malus), complete on 2026-11-07. **Map reset**,
 the thirteenth, no step
 ([completion and checklist](docs/planning/round70-plan.md#completion-2026-11-07)).
-**Not pushed; the GUI test is open.** Round 71 runs beside it on `round71`.
+**Not pushed; the GUI test is open.**
 Production runs **0.65.0**; its update to 0.70.0 crosses this one map reset
 and runs the steps 0.67.0 and 0.69.0.
 Previous: 0.69.0, Round 69 (the Trash box in the Inventory tab
@@ -564,6 +570,31 @@ The topic rules below name the one path to use; the
   icons, status icons and Remains overlay) and `python3
   tools/r58_lift/art/ship.py --check` (drop 02's lift faces, reputation
   icon and map markers).
+
+### Expeditions
+
+- **One mod owns them** (`grug_expeditions`): other mods get hooks, not Expedition logic. The
+  interface is `init.lua`'s header; rules and numbers are in
+  [expeditions.md](docs/design/expeditions.md), seams and pitfalls in the
+  [module guide](docs/technical/module-guide.md#expeditions).
+- **The word is Expedition,** for players, in docs, briefs and code. Never the old word.
+- **Nothing about a run is saved;** a restart ends every run. Do not add saved run state: the
+  capital of entry and a pending logout death alone outlive a run.
+- **The server alone fills a box:** no Expedition content from the map generator, so no
+  map reset. One clear and one template write; no journal of what was dug or killed.
+- **Preparation never competes with players:** one at a time, a count of mapblocks per step,
+  never a clock.
+- **A template is a repository file written by a tool** (`tools/expedition_templates`), and
+  the slots, box and step size live in `catalogue.lua`. What may be dug is marked in the
+  template; everything else is the open sea's immutable rule.
+- **Mobs carry everything in their first staticdata** and spawn through `core.add_entity`;
+  a boss is an elite with a ledger id, never the flat `boss` tier. A chest pays, a boss drops
+  nothing; ores and gems are nodes only.
+- **No per-tick pass over players:** events, one `core.after` clock per empty stretch, and
+  passes that run only while something waits.
+- **Balance is for a Warrior and a Priest at player level = Expedition level;** nothing is
+  tuned for a player at the entry limit. A new Expedition's fight needs a real test: the
+  probes' fights are scripted.
 
 ### Performance
 

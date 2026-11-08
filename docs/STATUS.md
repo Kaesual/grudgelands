@@ -1,6 +1,32 @@
 # Project status
 
-Updated 2026-11-07. This is the delivery pointer, not another game specification.
+Updated 2026-11-08. This is the delivery pointer, not another game specification.
+
+**0.71.0 / Round 71 is merged on main on 2026-11-08, not pushed; the GUI test is open,
+together with 0.70.0's.** **Expeditions:** repeatable group content in 100 generic slots beyond
+the map, the server clearing and writing a box for each run. The framework and the first
+Expedition, **The Stilled Seam** (levels 20–69; ore and gem follow the tier every ten levels,
+Anthracite and Jade at T2 to Abyssal Crystal and Diamond at T6; at most 3 players; optional
+quest): the Expedition Registrar with a tier and a level dropdown on the clerk's socket of all
+six guild houses; one owner, a player or a party, with every change of owner; a hard entry gate;
+a release after 10 minutes with nobody inside; the login, logout and restart rules; both
+waystones; no mounts or building; marked ore that a reset renews; packs pulled whole that never
+give up; a per-player chest behind the boss; an owner for the rules in
+[expeditions.md](design/expeditions.md). GPT-6 Astra wrote the story, the outline of levels
+30–60 and the build plans of The Second Shift (40–69) and The Last Mint (60–69) for Round 72,
+with the user's decisions. **Compatible:** no step, no map reset; saved: player meta
+`grug_expeditions:origin` and `:logout_death`, boss counters, one quest. Reviews: SPIKE RELY
+AFTER CORRECTIONS; FRAME, UI, FOLLOW, RANGE MERGE; GUARD, MOBS, L20 MERGE AFTER FIXES; PACK MERGE
+AFTER FIXES, then MERGE; the integration fix and RANGE's fix MERGE. Integration found one real
+bug the fixtures missed (a pack's hits killing by falls), fixed. 320 fixtures on `a085f838`, 0
+failed; engine on `7e43e00e`: `r71_l20` 141 PASS, `r71_pack` 62 PASS; RANGE's T4 and T6 runs 82
+PASS, 0 FAIL. Modelled run 8.7 minutes at 20–60, 13.5 at 69 with players capped at 60.
+**Open for the user:** the [GUI checklist](planning/round71-plan.md#gui-checklist-desktop-and-web),
+which alone can prove two or more real players, the web client, a real fight at 20 and 29, the
+pack's shove on a still player, the mining share, and PostgreSQL on the Rehearsal; the standing
+defaults, first the boss's ground drops; the chest's coins stay at factor 10 (user)
+([completion, numbers and decisions](planning/round71-plan.md#completion-2026-11-07);
+[carry-overs](../BACKLOG.md#round-71--expeditions-gui-acceptance-pending)).
 
 **0.70.0 / Round 70 is complete on 2026-11-07; not pushed, GUI test open.** From
 player reports and the user's notes: **sources** that really exist (Rock Salt on

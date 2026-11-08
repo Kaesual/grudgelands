@@ -35,6 +35,7 @@ return to a home you built yourself.
   toward a finale for a small party. Some quests let you choose your
   reward, and your map and quest log help you find the next step.
 - **Face greater dangers together.** Form a party to challenge bosses,
+  fight through Expeditions in sealed mines,
   raid enemy war camps or sail to distant dragon islands. Contested lands
   and enemy territory automatically flag you for faction PvP; you can also
   flag yourself elsewhere. Fighting other players requires both sides to
@@ -96,6 +97,11 @@ levels 21–40 and leads you to your faction's fortress at 40; from 41 your
 Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
+
+**0.71.0** adds Expeditions: repeatable group content in sealed mines beyond the map. The first
+is The Stilled Seam, levels 20 to 69: pick its level at the Expedition Registrar in your capital's
+guild house, bring a Warrior and a healer, fight packs that never give up, and take your own
+share of the chest behind Flintback. This update is compatible.
 
 **0.70.0** gives every King a castle in a larger capital, with a new throne
 room; rebuilds the six start towns around a free waystone; adds the
@@ -456,7 +462,7 @@ investigations and delivery records.
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit; [Miner's Guild](docs/design/miners_guild.md): mining camps, lifts, reputation and the guild's goods. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags, crafting stations and the approved UI presentation rules; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
-| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers, including the shared Round 64 icons and bounded placement. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [Expeditions](docs/design/expeditions.md): repeatable group content beyond the map, its levels, owners, packs and rewards; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers, including the shared Round 64 icons and bounded placement. |
 | Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 
