@@ -857,8 +857,9 @@ contact there is intended.
   `throng_main_final`, `accord_main_collector`, `accord_main_final`;
   `grug_quests.quest_held`), so a lone chapter-3 player at the site's
   tally-stone meets no group boss; once up, he stays for everyone. Its leash is its
-  own: dragged more than **24 nodes** from where its fight began, or 15 s
-  without contact, it resets (full health, threat and its ledger cleared, a
+  own: dragged more than **24 nodes** from where its fight began, 15 s
+  without contact, or 15 s in a fight without an attack of its own (Round 72,
+  `combat_stats.md` §4 "Kings and bosses"), it resets (full health, threat and its ledger cleared, a
   void pulse it was winding up cancelled) and runs home untouchable (the
   evade of `combat_stats.md` §4); idle it walks back to its spot as a fixed
   walk (§4a): a stuck run or walk finds a short local way round, and the

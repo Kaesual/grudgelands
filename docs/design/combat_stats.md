@@ -915,7 +915,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   location-bound rares and the bespoke ocean Kraken retain their previous
   home/post/encounter bounds and lifecycle. The old 40 m chase-origin drag,
   15-second contact and 45 m give-up rules apply only where these actors already
-  used them; explicit encounter overrides remain authoritative.
+  used them; explicit encounter overrides remain authoritative. Kings, Generals
+  and Expedition bosses have no chase leash since Round 72: the boss floor and
+  the 15 s rule replace it ("Kings and bosses" below).
 - **Evade:** reset clears threat, target and drop tag and heals the mob.
   Ambient (free, damage-pursuit) mobs reset **inside their 32-node wander
   radius** (`grug_mobs.WANDER_RADIUS`, below) only do that: no run, no
@@ -1101,9 +1103,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   group alert starts a new chase as usual. A target standing in a walkable
   node (a bottom slab, a lower stair step, snow dust) is searched for from
   the node above it, and a mob pressed into a fence searches from the open
-  cell next to it. Guards and rares follow the rule; the kings, like the
-  bespoke no-leash actors (Kraken, royal guards), only drop the target (no
-  heal, no royal encounter reset); the dragons and their whelps never give
+  cell next to it. Guards and rares follow the rule; the bespoke no-leash
+  actors (Kraken, royal guards) only drop the target (no heal); kings,
+  Generals and Expedition bosses hand it to their own reset rules ("Kings and
+  bosses" below); the dragons and their whelps never give
   up and only wait: their arena edge ends the fight instead (`world.md` §4b,
   Round 31). The fixed walks (patrols, posts, the royal follow, the evade;
   `world.md` §4a) share the search, the budget and the negative cache's
@@ -1111,6 +1114,46 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   stages decide (`mobs/grug_nav.lua`, `mobs/grug_obstacle.lua`,
   `grug_mobs/aggro.lua` `give_up_target`, `grug_mobs/patrol.lua`
   `walk_fixed`).
+- **Kings and bosses** (Round 72, the user's rulings of 2026-11-07, replacing
+  the Round 30 king give-up; `grug_mobs/boss_floor.lua`). One reset for every
+  reason: healed, threat and loot tag cleared, the encounter's ledger cleared,
+  the retinue restored (a King's or General's two guards, replaced only when
+  one is missing or hurt; the summons go), the target dropped, and the evade
+  to the seat from any distance beyond four nodes, untouchable (`aggro.lua`
+  `reset_home`; an Expedition boss's is its pack's wipe).
+  - **The boss floor** (kings, Generals, Expedition bosses): one flood fill
+    from the seat over the cells the boss's own body stands in, with the
+    navigation's cell test (head room of its 1.95 walking height, ground
+    below, damaging and unknown nodes blocked), its step up, its drop down,
+    diagonals past an open corner and its width; doors count as passable.
+    It is bounded by the range: the leash radius round the seat (30 nodes,
+    horizontal, the same height up and down) for a King or General, the
+    room for an Expedition boss (its template's envelope). It is computed
+    once per boss and server session, 400 cells a server step, the area
+    loaded first. Once a second the current target's ground must be on the
+    floor or within the boss's reach of it; otherwise the target has **no
+    way or left the range**, one case. Walking stays with the navigation,
+    whose give-up drops nothing for these bosses; a king stuck at a shut door
+    falls to the 15 s rule. Without a floor (an Expedition template without
+    an envelope) the navigation's give-up is the "no way".
+  - **The one-way window.** A target who has no way or left the range, also
+    by a teleport, has left, and so has one who logged out; a death is no
+    leaving. Their threat goes to zero at once, the boss drops them and
+    ignores them for sight for 8 nodes or 15 s, and they leave its engagement
+    (and an Expedition boss's list). With no other player engaged the reset
+    comes at once. Otherwise only a **Taunt** by someone who did not leave
+    within **3 s** (`TAUNT_FORCE_TIME`) keeps the fight, a tank swap;
+    without one the boss resets. Walking back saves nothing. The window is no
+    evade: the boss stays attackable and tauntable.
+  - **The 15 s rule** (kings, Generals, the rift boss, Expedition bosses; not
+    elites or ordinary mobs, whose kiting is part of the game, nor the
+    dragons, which keep their arena edge): a boss in a fight that made **no
+    attack for 15 s** resets. An attack is a melee swing at a target in
+    reach, a shot with sight or a signature that caught a player in its area,
+    a dodged one too: a hit of the boss or its projectile on a player, or a
+    projectile it locks on a target in sight. A cast alone is none, and a
+    trap is nobody's attack. The rift boss keeps its chase leash and the
+    navigation's give-up besides (its ground can change).
 - **A mob stuck in the rock leaves** (Round 67 ruling 26). A mob counts as
   stuck when its current (scaled) collision box overlaps the collision
   boxes of walkable nodes, not just its origin; a node box whose top is at
@@ -1195,8 +1238,8 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   engaged.
 - **A mob that targets but never reaches** (a king at a safe spot, a mob
   behind a wall) holds the player until it lets them go by its ordinary
-  rules: its navigation gives up (a few failed searches; a king only drops the
-  target and may take them again once they moved 8 nodes or after 15 s), its
+  rules: its navigation gives up (a few failed searches; kings and bosses
+  reset by their own rules, §4 "Kings and bosses"), its
   15 s contact leash runs out without a player hit (a leash reset), it loses
   sight for its patience or they leave its 45 m chase range, or it dies or
   unloads. An ambient (damage-pursuit) mob holds a fleeing player until its
@@ -1540,7 +1583,10 @@ XP); these rules replace the leash, the pursuit policy above and group alerts.
   everything, heal and run home (the evade of §4, all the way to their marker), and its
   dead stand at their place at once. A fully dead pack stays dead. A respawned mob pays
   XP and drops like any other. The boss is a pack of one: a wipe heals it and sends it
-  home, and the credit of that attempt ends with it.
+  home, and the credit of that attempt ends with it. Since Round 72 it also follows the
+  bosses' reset rules (§4 "Kings and bosses"): its room is its range, a player who
+  leaves the room leaves its list, 15 s without an attack reset it, and its reset is
+  the wipe. A failed path search does not move it.
 - **Left behind.** A mob must never hold anyone with nothing able to reach them, and
   a mob in an inactive block has no step. So the tick looks at every living member of
   a pulled pack once a second. More than **32 nodes** from its target it jumps beside

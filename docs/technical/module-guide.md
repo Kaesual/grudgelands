@@ -1225,7 +1225,10 @@ tools](#player-meta-read-by-external-tools).
     navigates through `mobs/grug_nav.lua` (`mobs.grug_nav`, Round 42: the
     stuck detector, the local search, the follower and the give-up rule of
     `combat_stats.md` "Navigation" and "Unreachable targets are given up",
-    `grug_mobs.give_up_target` in `aggro.lua`; Round 49 NAV2: `check_path`
+    `grug_mobs.give_up_target` in `aggro.lua`; kings, Generals and bosses
+    reset by `boss_floor.lua`, Round 72: the boss floor over `nav.cell`, the
+    one-way window, the 15 s rule, all ending in `grug_mobs.reset_home`;
+    Round 49 NAV2: `check_path`
     repairs a waypoint without head room or width from the cells round it,
     a stuck episode's searches pad 6, 12, then 16 (`PADDING_STEPS`), and
     ground `dogshoot` mobs with a ranged phase navigate too, to regain sight

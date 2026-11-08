@@ -183,6 +183,10 @@ local function stands(body, x, y, z)
 	return ground
 end
 
+-- The cell test for the boss floor (Round 72 BOSSRESET, grug_mobs/boss_floor.lua):
+-- its fill holds a body to the rules this walk uses, doors apart.
+nav.cell = cell
+
 -- The engine's own test for a search's ends: walkable, unknown counting as
 -- walkable.
 local function engine_walkable(pos)

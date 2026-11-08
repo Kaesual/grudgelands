@@ -12,9 +12,9 @@
 --      player under the undead truce (until provoked) and a player of the
 --      mob's own faction are not engaged.
 --   K  a king targeting a player on a ledge out of reach holds them in combat
---      until the 15 s contact leash resets him (then out at once); a king
---      whose navigation gives up drops the target (out at once) and ignores
---      the player for 15 s.
+--      until the bosses' 15 s rule resets him (then out at once); a king
+--      whose navigation gives up (no floor: the "no way") resets at once,
+--      the player out, and ignores the player for 15 s.
 --   L  leaving as before: stop_attack (the mob drops the target), the death
 --      boundary and the targetless backstop (prune_engagement, two ticks), a
 --      leash reset of a camp mob behind a wall (give-up), an ambient pursuit
@@ -142,6 +142,10 @@ grug_mobs.settle_mob_death = function() return true end
 grug_mobs.live_claim = function() return true end
 grug_mobs.boss_attempt_reset = function() end
 dofile(repo .. "/mods/ENTITIES/grug_mobs/aggro.lua")
+-- Round 72 BOSSRESET: a king's reset rules live in boss_floor.lua (its floor is
+-- tools/r72_bossreset's; K's king has no seat, so no floor).
+mobs = {grug_nav = {forget = function() end}}
+dofile(repo .. "/mods/ENTITIES/grug_mobs/boss_floor.lua")
 
 -- ---------------------------------------------------------------------------
 -- mobs_redo's do_attack and stop_attack, and grug_mobs' wrappers round them.
@@ -298,7 +302,7 @@ end
 do
 	local seat = vec(100, 0, 100)
 	local king = new_mob("grug_mobs:king_test", seat, {type = "npc", _grug_royal_king = true,
-		_grug_boss_id = "king:test", _grug_home = vec(100, 0, 100), _grug_leash_range = 30})
+		_grug_boss_id = "king:test", _grug_leash_range = 30})
 	-- A Mage on a ledge 20 nodes away and 6 up: he sees her, cannot reach her.
 	local mage = new_player("mage", vec(120, 6, 100))
 	king:do_attack(mage)
@@ -306,17 +310,19 @@ do
 		"K1 a king targeting a player out of reach puts them in combat, no hit")
 	ticks(king, 15)
 	check(in_combat(mage) and king.attack == mage, "K2 the target holds through 15 s of no contact")
-	-- The leash fires on the first tick more than 15 s after the pull's seed.
+	-- The 15 s rule (boss_floor.lua, Round 72) fires on the first tick more than
+	-- 15 s after the pull's seed, as the contact leash it replaced for kings did.
 	ticks(king, 1)
 	check(in_combat(mage), "K2 still at exactly 15 s")
 	ticks(king, 1)
 	check(not in_combat(mage) and king.attack == nil and king.health == king.hp_max,
-		"K3 the 15 s contact leash resets him and the player is out at once")
+		"K3 the 15 s rule resets him and the player is out at once")
 	check(boss_resets >= 1, "K3 through the encounter's own reset")
 	-- He sees her again on his next acquisition: combat again.
 	king:do_attack(mage)
 	check(in_combat(mage), "K4 a king who takes her again puts her back in combat")
-	-- A melee king's navigation gives up: the target goes, the player is out.
+	-- A melee king's navigation gives up: without a floor that is the "no way",
+	-- and alone she leaves and he resets (Round 72): the player is out.
 	grug_mobs.give_up_target(king)
 	check(king.attack == nil and not in_combat(mage), "K5 a give-up drops her at once")
 	check(grug_mobs.gave_up_on(king, mage), "K5 and keeps her out of acquisition for now")

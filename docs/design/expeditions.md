@@ -185,7 +185,13 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
     reach them.
   - **Wipe:** with nobody left on its list the pack goes home healed, and its dead stand
     at their place at once. A fully dead pack stays dead.
-- **The boss** is a pack of one: a wipe heals it and sends it home. Its death gives
+- **The boss** is a pack of one: a wipe heals it and sends it home. Its **room is its range**
+  (0.72.0, the user, 2026-11-07): its floor inside the template's envelope (the places
+  `boss_room_min` and `boss_room_max`), so it pursues nobody into a passage and a ledge is
+  no safe spot. A player who leaves the room leaves its list; alone they reset it at once,
+  otherwise only a Taunt within 3 s keeps the fight. **15 s without an attack** reset it
+  too; a trap's hit is no attack. Its reset is the wipe
+  ([full rules](combat_stats.md), §4 "Kings and bosses"). Its death gives
   **credit only**: no 24-hour lockout, no direct reward and no drops at all, coin bag
   included; the chest pays. There is no other lockout timer: the run's length is the
   limiter ([world.md](world.md) R4). Credit counts per Expedition, at any of its levels.

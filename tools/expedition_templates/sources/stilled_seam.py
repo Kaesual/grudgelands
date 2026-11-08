@@ -227,6 +227,9 @@ def court(t):
     for x, z in ((49, 89), (78, 118), (49, 118)):
         t.set(x, FEET, z, "default:cobble")
     t.set(77, 8, 119, TORCH, SOUTH)
+    # Flintback's range (Round 72 BOSSRESET): the court's envelope, two opposite corners.
+    t.place("boss_room_min", x0, FEET, z0)
+    t.place("boss_room_max", x1 - 1, FEET, z1 - 1)
 
 
 def store(t):
