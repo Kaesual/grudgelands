@@ -271,6 +271,15 @@ function doors.register(name, def)
 				return itemstack
 			end
 
+			-- GRUG PATCH (Round 72 PLACE): the placement rules of grug_core
+			-- (nothing that blocks in combat, never into a live body's cell)
+			-- for both cells the door writes.
+			local grug_core = rawget(_G, "grug_core")
+			if grug_core and grug_core.placement_refused and
+					grug_core.placement_refused(placer, doorname .. "_a", {pos, above}) then
+				return itemstack
+			end
+
 			local dir = placer and minetest.dir_to_facedir(placer:get_look_dir()) or 0
 
 			local ref = {
