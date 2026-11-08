@@ -39,7 +39,7 @@ return {
 	-- to write it; the plan holds the text.
 	registrar = {
 		subject = "A line in the guild's ledger",
-		body = "Your name has come up at the Miners' Guild, {player}.\n\n" ..
+		body = "Your name has come up at the Miner's Guild, {player}.\n\n" ..
 			"The old workings under our lands were sealed for good reasons, and the guild " ..
 			"sends small parties to open them again. Come to the guild house in {capital} " ..
 			"and ask for me; I will tell you which Expeditions your party may take on. " ..
