@@ -402,6 +402,20 @@ if not before then
 	settle_floor(stuck)
 	check(grug_mobs.boss_floor_of(stuck) == nil and grug_mobs.boss_floors["king:stuck"].count == 0,
 		"F12 a seat the body does not stand on gives no floor")
+	-- A fill that meets nodes not loaded (past the fake world's edge) is not used,
+	-- and runs again RETRY seconds later.
+	local edge = new_king("king:edge", feet(LIMIT - 10, 1, 0))
+	settle_floor(edge)
+	check(grug_mobs.boss_floor_of(edge) == nil and grug_mobs.boss_floors["king:edge"].retry ~= nil,
+		"F13 a fill that met unloaded nodes is not used")
+	LIMIT = LIMIT + 100
+	advance(5)
+	settle_floor(edge)
+	check(grug_mobs.boss_floor_of(edge) == nil, "F13 not before its retry")
+	advance(5)
+	settle_floor(edge)
+	check(grug_mobs.boss_floor_of(edge) ~= nil, "F13 loaded later: it runs again and is used")
+	LIMIT = LIMIT - 100
 end
 
 -- A flat arena for the rules: the seat at (100, 1, 100), a pillar 5 high at (110, *, 100).

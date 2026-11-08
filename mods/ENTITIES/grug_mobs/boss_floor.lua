@@ -23,8 +23,10 @@
 -- up and down), an Expedition boss's room (grug_mobs.expedition_boss_room, the
 -- template's envelope, grug_expeditions/encounters.lua). Computed once per boss and
 -- session, FILL_CELLS cells a server step, from the boss's first step on; the area is
--- loaded first (core.load_area, never generated). Floors above each other and steps
--- are why it is a fill and not a plan.
+-- loaded first (core.load_area, never generated). A fill that met a node not there
+-- (a neighbouring chunk not generated yet on a fresh map) is not used and runs again
+-- RETRY seconds later. Floors above each other and steps are why it is a fill and not
+-- a plan.
 --
 -- Once a second: is the current target's ground in the set, or within the boss's
 -- reach of a cell of it? No means "no way" or "out of range", one case. The floor only
@@ -64,6 +66,7 @@ local nav = mobs.grug_nav
 local QUIET = 15 -- s without an attack (§2.3)
 local CHECK = 1 -- s between floor tests and clock checks
 local FILL_CELLS = 400 -- floor cells a server step expands
+local RETRY = 10 -- s before an incomplete fill runs again
 local SEAT_BAND = {0, 1, -1, 2, -2} -- the seat's own cell first
 
 local F = {}
@@ -76,22 +79,29 @@ end
 F.key = key
 
 -- A door's cells (doors/init.lua: the leaf and the hidden top are walkable).
-local function door(x, y, z)
-	local node = core.get_node_or_nil({x = x, y = y, z = z})
-	local name = node and node.name
+local function door(name)
 	local doors = rawget(_G, "doors")
-	return name ~= nil and (name == "doors:hidden"
-		or (doors ~= nil and doors.registered_doors ~= nil and doors.registered_doors[name] == true))
+	return name == "doors:hidden"
+		or (doors ~= nil and doors.registered_doors ~= nil and doors.registered_doors[name] == true)
 end
 
 -- 1: a body may occupy the cell, 2: it can stand on it (both: wading water). Each node
--- is read once per fill.
+-- is read once per fill. A node not loaded (or not generated) blocks, as it does the
+-- navigation, and marks the fill `unknown`: such a floor is not used (below).
 local function class(st, x, y, z)
 	local k = key(x, y, z)
 	local c = st.memo[k]
 	if c then return c end
 	local open, ground = nav.cell(st.body, x, y, z)
-	if not open and door(x, y, z) then open, ground = true, false end
+	if not open then
+		local node = core.get_node_or_nil({x = x, y = y, z = z})
+		local name = node and node.name
+		if not name or name == "ignore" then
+			st.unknown = true
+		elseif door(name) then
+			open, ground = true, false
+		end
+	end
 	c = (open and 1 or 0) + (ground and 2 or 0)
 	st.memo[k] = c
 	return c
@@ -285,12 +295,17 @@ local function floor_entry(self)
 			if done then
 				local fill = entry.fill
 				entry.fill, entry.count, entry.steps = nil, fill.count, fill.steps
-				if not fill.failed then entry.cells = fill.cells end
-				core.log("action", ("[grug_mobs] boss floor %s: %d cells in %d steps, %d us")
-					:format(id, entry.count, entry.steps, entry.us))
+				if fill.unknown then
+					entry.retry = grug_core.mono_time() + RETRY
+				elseif not fill.failed then
+					entry.cells = fill.cells
+				end
+				core.log("action", ("[grug_mobs] boss floor %s: %d cells in %d steps, %d us%s")
+					:format(id, entry.count, entry.steps, entry.us,
+						fill.unknown and ", unloaded nodes met: not used, again later" or ""))
 			end
 		end
-		return entry
+		if not (entry.retry and grug_core.mono_time() >= entry.retry) then return entry end
 	end
 	entry = {x = home.x, y = home.y, z = home.z, us = 0, count = 0}
 	floors[id] = entry

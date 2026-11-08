@@ -1130,7 +1130,8 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
     horizontal, the same height up and down) for a King or General, the
     room for an Expedition boss (its template's envelope). It is computed
     once per boss and server session, 400 cells a server step, the area
-    loaded first. Once a second the current target's ground must be on the
+    loaded first; a fill that met nodes not generated yet is not used and
+    runs again 10 s later. Once a second the current target's ground must be on the
     floor or within the boss's reach of it; otherwise the target has **no
     way or left the range**, one case. Walking stays with the navigation,
     whose give-up drops nothing for these bosses; a king stuck at a shut door
