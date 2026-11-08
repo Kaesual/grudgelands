@@ -157,6 +157,8 @@ core.add_entity = function(pos, name)
 end
 
 grug_core = {ARMOR_APPLIED_CUSTOM_TYPE = "grug_core:player_armor_applied"}
+-- Round 72 SHIFT: traps.lua hangs Auditor Nemm's two hooks on grug_mobs.
+grug_mobs = {}
 dofile(repo .. "/mods/CORE/grug_core/particles.lua")
 local play = grug_core.particles.play
 grug_core.particles.play = function(id, frame)

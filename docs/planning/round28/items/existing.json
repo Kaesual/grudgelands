@@ -1936,6 +1936,7 @@
   "entities": {
     "grug_mobs:abyssal_shark": {"type": "monster", "description": "Abyssal Shark", "disposition": "aggressive", "drops": [{"chance": 1, "item": "grug_fishing:storm_tuna", "max": 6, "min": 3}, {"chance": 1, "item": "mobs:meat_raw", "max": 3, "min": 3}]},
     "grug_mobs:ashen_treant": {"type": "monster", "description": "Ashen Treant", "disposition": "aggressive", "drops": [{"chance": 4, "item": "default:apple", "max": 1, "min": 1}]},
+    "grug_mobs:auditor_nemm": {"type": "monster", "description": "Auditor Nemm", "disposition": "aggressive", "drops": []},
     "grug_mobs:bandit": {"type": "monster", "description": "Bandit", "disposition": "aggressive", "drops": []},
     "grug_mobs:bandit_archer": {"type": "monster", "description": "Bandit Archer", "disposition": "aggressive", "drops": []},
     "grug_mobs:bay_shark": {"type": "monster", "description": "Bay Shark", "disposition": "aggressive", "drops": [{"chance": 1, "item": "grug_fishing:mire_carp", "max": 2, "min": 1}, {"chance": 1, "item": "mobs:meat_raw", "max": 1, "min": 1}]},

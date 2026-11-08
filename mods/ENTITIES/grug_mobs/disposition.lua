@@ -28,7 +28,7 @@ classify("neutral", {
 })
 
 classify("aggressive", {
-	"ashen_treant", "bandit", "bandit_archer", "bear", "blightfang_wolf",
+	"ashen_treant", "auditor_nemm", "bandit", "bandit_archer", "bear", "blightfang_wolf",
 	"blood_bat", "bog_ooze", "bog_witch", "crag_eagle", "crocodile",
 	"crystal_shard", "dungeon_master", "ember_wisp", "flintback", "fox", "frost_stray",
 	"giant_rat", "giant_spider", "glowwing", "goblin_hound",
