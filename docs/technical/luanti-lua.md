@@ -1,9 +1,11 @@
 # The Lua environment inside Luanti
 
 Deeper reference for the AGENTS.md section "Lua & Luanti environment"; its
-rules are binding (moved here from `docs/research/` on 2026-10-05). All file
-references point into `reference_projects/luanti` (5.17.0-dev, commit
-`df04879`) unless a URL is given.
+rules are binding (moved here from `docs/research/` on 2026-10-05). File references
+were recorded against Luanti 5.17.0-dev, commit `df04879`, unless a URL is given.
+The reference checkout was updated to 5.18.0 (`e8f12bf1b`) on 2026-11-08;
+historical line numbers must be resolved by symbol before reuse. The language
+requirement remains Lua 5.1.
 
 **Planning note.** If you are briefing, scheduling or costing any task that
 *executes* Lua, read "Interpreter and test strategy" at the end of this file
@@ -15,7 +17,7 @@ uses LuaJIT, and there is no PUC runtime run during development (user ruling
 
 Two different version numbers are in play. Do not conflate them:
 
-- **Luanti 5.17.0-dev** is the *engine* version of the reference checkout
+- **Luanti 5.18.0** is the *engine* version of the reference checkout
   in `reference_projects/luanti`. It exists so every claim below can be
   quoted as `file:line` and re-checked. It is a **read-only source
   reference**, not an API floor we target.
@@ -24,7 +26,7 @@ Two different version numbers are in play. Do not conflate them:
   Lua 5.1.5 (`lib/lua/src/lua.h:20`). Bumping the engine checkout does not
   unlock `goto`, `//`, `table.unpack` or any other 5.2+/5.3+ syntax.
 
-So: "the engine is at 5.17" says nothing about which syntax is allowed.
+So: "the engine is at 5.18" says nothing about which syntax is allowed.
 The allowed syntax is fixed by the section "Language level & safe feature
 set" below, and it is Lua 5.1 — *plain* 5.1, not LuaJIT's superset,
 because the fallback build ships plain PUC 5.1.5 (see "Which Lua exactly").

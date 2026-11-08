@@ -438,7 +438,8 @@ scale, quaternion) before its subchunks, and `MESH` is followed by an
 **The frame count comes from the keys, not from `ANIM`.** The engine's B3D
 reader parses the `ANIM` chunk's frame count into a local variable that is
 explicitly marked *"not stored/used"* and discards it
-(`reference_projects/luanti/irr/src/CB3DMeshFileLoader.cpp:615-641`);
+(`reference_projects/luanti/irr/src/CB3DMeshFileLoader.cpp:655-680`, rechecked
+against 5.18.0, `e8f12bf1b`);
 `SkinnedMesh::getMaxFrameNumber` answers from the animation's `end_frame`
 (`irr/src/SkinnedMesh.cpp:43-46`), i.e. the last keyframe. Several
 `animalworld` meshes carry a *lower* `ANIM` count than they have keys

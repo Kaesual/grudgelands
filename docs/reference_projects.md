@@ -83,7 +83,7 @@ the existing `file:line` citations were written against.
 
 | Path | Upstream | Why we need it | Licence (code / media) |
 |------|----------|----------------|------------------------|
-| `luanti/` | https://github.com/luanti-org/luanti | **The** engine reference: `doc/lua_api.md` (~12,700 lines) plus the C++ whenever the docs are silent — mapgen order, biome selection, noise, nametag rendering, punch handling. Checkout is 5.17.0-dev | LGPL-2.1+ / CC BY-SA |
+| `luanti/` | https://github.com/luanti-org/luanti | **The** engine reference: `doc/lua_api.md` plus the C++ whenever the docs are silent — mapgen order, biome selection, noise, nametag rendering, punch handling. Checkout is release **5.18.0**, `e8f12bf1b93245cfc479ea21787beb1ec472cce9` (user-requested update, 2026-11-08) | LGPL-2.1+ / CC BY-SA |
 | `minetest_game/` | https://github.com/luanti-org/minetest_game | Minimal base game; `mods/default` is the origin of our node/tool palette and of the schematics we place | LGPL-2.1+ / CC BY-SA 3.0 |
 | `mobs_redo/` | https://codeberg.org/tenplus1/mobs_redo | The mob engine we vendored and patched (`mods/ENTITIES/mobs`, 32 GRUG PATCH sites — VENDOR.md) | MIT |
 | `VoxeLibre/` | https://git.minetest.land/VoxeLibre/VoxeLibre | Best architecture reference (XP, villager trading, map rendering, modpack structure) **and** our largest mob-media source via `mods/ENTITIES/mobs_mc`; since Round 68 the source of the CC0 sign font (`textures/_*.png`, `mods/ITEMS/mcl_signs/characters.tsv`; `tools/r68_text/import_font.py`) and the text-on-signs technique (`mcl_signs/api.lua`) | GPL-3.0+ / CC BY-SA 4.0 |
@@ -104,6 +104,16 @@ notably **paleotest** (code-only GPL, no media statement → the Raptor became
 the Jungle Lynx) and **water_life** (CC BY-NC-SA, incompatible).
 
 ## Rules when using them
+
+The Luanti reference update on 2026-11-08 replaces `df04879066de6eb94ca43996822a6dfacc74feca`
+(5.17.0-dev). It changes the source reference only, not the installed engine or
+the game's minimum engine version. Earlier reports' line numbers remain evidence
+against that old commit; resolve their named symbols in 5.18.0 before reusing
+them. This was not a repository-wide revalidation of historical engine claims.
+The pathfinder, async/map access and the active upstream-workaround sites were
+read again; see [the workaround check](technical/upstream-workarounds.md).
+No Luanti media was reimported or relicensed; the B3D reader citation in
+`mods/ENTITIES/grug_mobs/LICENSE-media.md` was rechecked and relocated.
 
 - **Never change anything inside `reference_projects/`.** A dirty submodule
   is a lie about what a citation refers to.

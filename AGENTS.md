@@ -444,7 +444,7 @@ tour; it never carries design or WP detail that does not already live in
   **never** a kill criterion (abort only on an intrinsic projection or lost
   liveness), timings under unintended contention are invalid, and the same work
   never runs twice. A round's queue script enforces the cap.
-- The reference checkout is **Luanti 5.17.0-dev**, a read-only source; a newer
+- The reference checkout is **Luanti 5.18.0**, a read-only source; a newer
   engine never unlocks newer Lua syntax. **Read the engine's Lua, never guess:**
   `reference_projects/luanti/builtin/`, `lib/lua/src/`,
   `src/script/lua_api/l_*.cpp`.

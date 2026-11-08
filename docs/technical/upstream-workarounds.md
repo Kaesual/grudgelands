@@ -10,6 +10,18 @@ the engine version we require.
 Engine reference for the line citations: `reference_projects/luanti` at
 `df0487906` (5.17.0-dev); the user plays on Luanti 5.17.0 (Flatpak).
 
+**Reference-only check, 2026-11-08:** the checkout is now release 5.18.0
+(`e8f12bf1b`); the version above identifies the original evidence, not a new
+observation of the installed client. Source inspection finds the degree/radian
+mismatch in §1 removed: `UnitSAO::getTotalRotation` and `boxLineCollision` now
+exchange quaternions. No runtime probe was run and the required engine version
+was not raised, so no game workaround was removed. The relevant mechanisms in
+§2, §3 and §6–§9 remain. §4 was already retired. In §5 the search dimensions now
+include the positive boundary (`pathfinder.cpp:633`, `+ v3s16(1)`), but A* still
+accesses a neighbour before checking its cost or index (`:1162–1164`); very small
+array-backed boxes are therefore not established safe. Keep the padding floor
+of 2. This source check does not replace the entries' runtime acceptance steps.
+
 ## 1. Server raycast misreads rotated selection boxes
 
 - **Upstream problem:** the server's raycast (`core.raycast(..., objects =
@@ -197,8 +209,12 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
   them onto the module). The navigation probe never searches below 2
   (`tools/r42_nv0/grug_probe_r42_nv0/init.lua` `MIN_PAD`).
 - **How to tell upstream fixed it:** the neighbour access in
-  `updateCostHeuristic` checks the index (or the cost) first, or the array
-  container is sized `(diff + 1)` per axis.
+  `updateCostHeuristic` checks the index and rejects an invalid edge before
+  accessing the array; the small-box probe must also pass. The 5.18.0
+  `(diff + 1)` sizing change fixes the positive-boundary mismatch alone,
+  not the unchecked neighbour access. The positive-edge exclusion described
+  in `grug_nav.lua`'s padding comment belongs to the earlier engine; 5.18.0
+  includes that edge. The floor of 2 remains conservative for both versions.
 - **What to remove then:** the floor of 2 on the search padding
   (`nav.MIN_PADDING` in `grug_nav.lua`).
 
