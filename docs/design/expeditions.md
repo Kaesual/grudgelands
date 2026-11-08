@@ -336,8 +336,8 @@ flat, no dais, and every pack room cut so that no pack can be walked round.
   Leathery Flesh at 40–49, Siege Bone and Scorched Flesh at 50–59, Unquiet Bone and
   Salt-Cured Flesh at 60–69.
 - **Balance** (`tools/r72_shift/balance.py`, modelled): one normal per pack was added to the
-  plan's roster, then Nemm's HP set the run: about 10.5 minutes at every level up to 60, the
-  boss about 3.9 of them; at 69 about 17.4 minutes, Nemm about 9.1, and the tank takes about
+  plan's roster, then Nemm's HP set the run: about 10 minutes at every level up to 60, the
+  boss about 3.9 of them; at 69 about 17 minutes, Nemm about 9.1, and the tank takes about
   2.9 times the damage of level 40 in pools.
 - **Quest:** "Party: The Second Shift", level 40, from the six guild leaders: kill Auditor
   Nemm once, at any of its levels. The Expedition stays repeatable after the turn-in.
