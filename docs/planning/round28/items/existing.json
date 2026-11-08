@@ -2006,7 +2006,7 @@
     "grug_mobs:king_troll": {"type": "npc", "description": "King of Kezamba", "disposition": "aggressive", "drops": []},
     "grug_mobs:king_undead": {"type": "npc", "description": "Nhal Veyr King", "disposition": "aggressive", "drops": []},
     "grug_mobs:kraken": {"type": "monster", "description": "Kraken", "disposition": "aggressive", "drops": []},
-    "grug_mobs:land_guard": {"type": "monster", "description": "Bedrock Sentinel", "disposition": null, "drops": [{"chance": 2, "item": "grug_mobs:heavy_leather", "max": 2, "min": 1}, {"chance": 4, "item": "grug_materials:rough_diamond", "max": 1, "min": 1}]},
+    "grug_mobs:land_guard": {"type": "monster", "description": "Bedrock Sentinel", "disposition": "aggressive", "drops": [{"chance": 2, "item": "grug_mobs:heavy_leather", "max": 2, "min": 1}, {"chance": 4, "item": "grug_materials:rough_diamond", "max": 1, "min": 1}]},
     "grug_mobs:lava_flan": {"type": "monster", "description": "Lava Seep", "disposition": "aggressive", "drops": [{"chance": 5, "item": "grug_materials:emberglass", "max": 1, "min": 1}, {"chance": 2, "item": "grug_mobs:slime_gel", "max": 1, "min": 1}]},
     "grug_mobs:mesa_golem": {"type": "monster", "description": "Mesa Golem", "disposition": "aggressive", "drops": [{"chance": 2, "item": "default:iron_lump", "max": 1, "min": 1}, {"chance": 8, "item": "grug_materials:rough_citrine", "max": 1, "min": 1}]},
     "grug_mobs:mirefolk": {"type": "monster", "description": "Mirefolk", "disposition": "aggressive", "drops": [{"chance": 2, "item": "grug_mobs:linen_cloth", "max": 1, "min": 1}, {"chance": 1, "item": "grug_mobs:raw_fish", "max": 1, "min": 1}, {"chance": 4, "item": "grug_mobs:shiny_scale", "max": 1, "min": 1}]},

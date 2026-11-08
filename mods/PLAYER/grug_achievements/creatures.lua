@@ -51,8 +51,9 @@ C.OTHERS = set({
 	"lava_flan", "mesa_golem", "mirefolk", "oerkki", "poacher", "rift_boss", "rift_spawn",
 	"skeleton_archer", "skeleton_raider", "stone_golem", "flintback", "storm_whelp",
 	"war_construct", "wisp",
-	-- Round 72: The Last Mint's boss, on the Bedrock Sentinel's body.
-	"duewarden",
+	-- Round 72: The Last Mint's boss, on the Bedrock Sentinel's body, and the
+	-- Sentinel itself (no longer a guard role, user ruling 2026-11-08).
+	"duewarden", "land_guard",
 })
 
 -- Families an achievement counts, by base role (a sub-type joins its base's
@@ -82,7 +83,7 @@ C.RARE_GROUPS = {
 
 -- Settlement and faction NPCs, by role name.
 local NPC_ROLES = {"^guard_", "^royal_guard_", "^king_", "^villager_",
-	"^elder_", "^captain_", "^commander_", "^general_", "^bodyguard_", "^land_guard$"}
+	"^elder_", "^captain_", "^commander_", "^general_", "^bodyguard_"}
 
 local function role_of(name)
 	return type(name) == "string" and name:match("^grug_mobs:(.+)$") or nil

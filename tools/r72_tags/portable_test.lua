@@ -299,7 +299,9 @@ grug_core.set_tag_carrier_text(wolf_tag, "Wolf")
 local stag = mob({name = "grug_mobs:stag", _grug_disposition = "neutral"}, 0)
 local stag_tag = grug_core.create_tag_carrier(stag.object)
 grug_core.set_tag_carrier_text(stag_tag, "Stag")
-local sentinel = mob({name = "grug_mobs:land_guard"}, 0)
+-- The Bedrock Sentinel left the guard role (user ruling 2026-11-08): its
+-- disposition makes it red like any aggressive mob.
+local sentinel = mob({name = "grug_mobs:land_guard", _grug_disposition = "aggressive"}, 0)
 local sentinel_tag = grug_core.create_tag_carrier(sentinel.object)
 grug_core.set_tag_carrier_text(sentinel_tag, "Bedrock Sentinel")
 local display = mob({name = "grug_mobs:capital_display", _grug_start = "highcourt",
@@ -309,7 +311,7 @@ grug_core.set_tag_carrier_text(display_tag, "Warhorse")
 pass()
 eq(wolf_tag.props.nametag_color, RED, "E: an aggressive mob stays red")
 eq(stag_tag.props.nametag_color, "#ffd447", "E: a neutral mob stays yellow")
-eq(sentinel_tag.props.nametag_color, "#b76cff", "E: the factionless Bedrock Sentinel keeps violet")
+eq(sentinel_tag.props.nametag_color, RED, "E: the Bedrock Sentinel is no guard: red like any aggressive mob")
 eq(display_tag.props.nametag_color, "#d8c5ff", "E: a capital display keeps lavender")
 for _, unit in ipairs({wolf, stag, sentinel, display}) do
 	eq(#children(unit), 1, "E: " .. unit.name .. " has one carrier with both sides near")

@@ -1246,7 +1246,7 @@ check(land_guard:find("duewarden.drops = {}", 1, true) and land_guard:find("duew
 	"P he drops nothing and stands")
 local HP_SCALE = tonumber(land_guard:match("duewarden%._grug_hp_scale = (%d+)"))
 eq(HP_SCALE, 14, "P his HP: fourteen elites' (balance.py)")
-check(read_file("mods/ENTITIES/grug_mobs/disposition.lua"):find('classify("aggressive", {"duewarden"})', 1, true),
+check(read_file("mods/ENTITIES/grug_mobs/disposition.lua"):find('classify("aggressive", {"duewarden"', 1, true),
 	"P aggressive")
 check(read_file("mods/PLAYER/grug_achievements/creatures.lua"):find('"duewarden",', 1, true), "P one of the others")
 local json = dofile(repo .. "/tools/r28_b4_quests/json.lua")

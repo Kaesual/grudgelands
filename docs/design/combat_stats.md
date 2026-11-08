@@ -1549,9 +1549,9 @@ King's faction counts as a faction unit too.
 
 Everything else keeps one colour for all viewers, with the existing 25/30 m
 observer hysteresis: mobs without a faction stay red when aggressive, yellow
-when neutral and white as critters; the factionless Bedrock Sentinel keeps
-the guard violet, a capital's mount and gear displays the NPC lavender, and a
-player without a faction stays white. Ten categories have configurable
+when neutral and white as critters (the Bedrock Sentinel is an aggressive
+mob, no guard, since Round 72), a capital's mount and gear displays the NPC
+lavender, and a player without a faction stays white. Ten categories have configurable
 foreground/background RGBA settings loaded once at server start: aggressive,
 neutral, guard, npc, player, critter, friend, foe, npc_friend, npc_foe.
 Defaults are red/yellow/violet/light lavender/white/white/green/red/light
