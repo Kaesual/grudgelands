@@ -663,7 +663,7 @@ Normal tier at level L:
   own **shot range**, by default `view_range + 4` (a `dogshoot` family's 16 →
   20; a definition may set `_grug_shot_range`), so a player can stand inside
   it without drawing aggro. A ranged mob (`shoot`, `dogshoot` outside its
-  melee phase, the ranged kings and fliers too) whose target is beyond its
+  melee phase, fliers too) whose target is beyond its
   shot range walks closer the way a ground ranged mob without sight walks
   (§4) and stops **3 m inside** it, so it does not hover at the edge, or
   earlier, once inside its shot range, when its way is blocked (stuck or a
@@ -1047,10 +1047,14 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   every ranged mob walks the same way until it is 3 m inside it. A flying
   `dogshoot` mob in its ranged phase flies at its target (straight, it never
   searches) while it is beyond its shot range or cannot see it, and shoots
-  once it sees it inside its shot range (the user, 2026-10-22); a `dogshoot` mob
-  without a ranged phase (no `dogshoot_switch`: the ranged kings) keeps
-  upstream's branches inside its shot range, walks closer (straight, without
-  a search) beyond it and never searches. This
+  once it sees it inside its shot range (the user, 2026-10-22). The ranged
+  kings (Elf, Undead, Troll; Round 72, the user's ruling of 2026-11-07:
+  every ranged mob, guard and boss without sight seeks it) are such ground
+  `dogshoot` mobs with the archers' rhythm (10 s ranged, 3 s melee): they shoot
+  their arrow (the Elf's arrow, the others' rock) at a target they see in
+  shot range, and walk and search towards one they cannot see until they
+  see it; their signatures are unchanged. No registered mob is a `dogshoot` mob without a
+  ranged phase any more. This
   replaces mobs_redo's stuck
   timer, the 1 s blocked-line-of-sight trigger and the sidestep of the
   close-cover ruling of 2026-09-17 and the walk-speed crawl of a wedged

@@ -1046,7 +1046,8 @@ do
 	-- its target instead of shooting arrows the lock refuses.
 	check(branch(wisp, 1, 10, false) == "dogfight" and branch(wisp, 1, 10, true) == "shoot",
 		"S2 a flier shoots with sight and flies closer without it")
-	-- S6 a dogshoot mob without a switch (ds_var 0: the ranged kings) keeps
+	-- S6 a dogshoot mob without a switch (ds_var 0: the ranged kings until
+	-- Round 72, none since; tools/r72_ranged) keeps
 	-- upstream's branches: melee in reach, otherwise none, seen or not.
 	local king = {attack_type = "dogshoot", reach = 3, pathfinding = 1}
 	check(branch(king, 0, 10, false) == nil and branch(king, 0, 10, true) == nil

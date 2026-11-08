@@ -603,6 +603,15 @@ local function king_def(race, row)
 			(ranged and "grug_mobs:rock_entity" or nil),
 		arrow_override = ranged and grug_mobs.stamp_arrow_damage or nil,
 		shoot_interval = 3, shoot_offset = 1.5,
+		-- The ranged kings are ordinary ground ranged mobs (Round 72, the
+		-- user's ruling of 2026-11-07): with a ranged phase they shoot their
+		-- arrow at a target they see in shot range and, without sight, walk
+		-- and search the shared navigation until they see it (mobs/api.lua
+		-- do_states). Without a `dogshoot_switch` they stood still inside
+		-- their shot range. The archers' rhythm: 10 s ranged, 3 s melee.
+		dogshoot_switch = ranged and 1 or nil,
+		dogshoot_count_max = ranged and 10 or nil,
+		dogshoot_count2_max = ranged and 3 or nil,
 		walk_velocity = 1.2, run_velocity = 4.6,
 		jump = true, jump_height = 4, stepheight = 1.1, fear_height = 4,
 		view_range = 18, owner = "",

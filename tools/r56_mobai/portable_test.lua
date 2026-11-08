@@ -497,7 +497,8 @@ do
 	check(step(fresh, 2, 30, true) == "walk" and fresh.temp.grug_closing == nil,
 		"W9 the melee phase is the dogfight branch, no closing state")
 	check(step(fresh, 1, 2, true) == "walk", "W10 in reach: melee")
-	-- The ranged kings (ds_var 0): walk beyond 22 m, then hold (no branch).
+	-- The ranged kings (ds_var 0) until Round 72, a dogshoot mob without a
+	-- switch (none since; tools/r72_ranged): walk beyond 22 m, then hold.
 	local king = archer({dogshoot_switch = nil, view_range = 18, animation_current = "shoot"})
 	check(step(king, 0, 25, true) == "walk", "W11 a ranged king closes in")
 	king.animation_current = "shoot" -- a cast's clip
