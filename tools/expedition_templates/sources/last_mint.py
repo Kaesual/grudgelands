@@ -340,6 +340,9 @@ def shape(t):
     for x in (56, 63, 70):
         t.box(x, 35, 93, x + 2, 40, 93, IRON)
         t.box(x, 41, 93, x + 2, 43, 93, BRICK)
+        # Full blocks in the floor, not raised rail nodes or a grate over a hole.
+        for rail_x in (x, x + 2):
+            t.box(rail_x, FLOOR_Y, 96, rail_x, FLOOR_Y, 103, IRON)
     # Cooling racks: bands in the back wall, not bars the player can climb.
     for y in (35, 37):
         t.box(101, y, 7, 114, y, 7, IRON)
@@ -347,6 +350,10 @@ def shape(t):
     for z in (54, 64):
         t.box(49, 35, z, 49, 37, z + 2, STEEL)
         t.box(78, 35, z, 78, 37, z + 2, STEEL)
+    for x in (61, 66):
+        t.box(x, FLOOR_Y, 13, x, FLOOR_Y, 36, STEEL)
+    for z in (54, 65):
+        t.box(53, FLOOR_Y, z, 74, FLOOR_Y, z, IRON)
     # The furnace throat keeps its basin, pillars and every shot cell untouched.
     # Alternating tall piers, pale tie courses and black masonry give it scale.
     for x in (95, 120):
