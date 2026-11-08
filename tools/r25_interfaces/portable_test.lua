@@ -476,6 +476,43 @@ do
 	grug_home = nil
 end
 
+-- Round 72 (tools/r72_waytab has the rules): the Expeditions tab after Waypoints,
+-- its rows and line from grug_home, Enter through grug_home.expedition_from_claim.
+do
+	local entries, line, asked = {}, "You have no Expedition to enter.", {}
+	grug_home = {known_waypoints = function() return {} end,
+		travel_from_claim = function() return true end,
+		expedition_rows = function() return entries, line end,
+		expedition_from_claim = function(_, id)
+			asked[#asked + 1] = id
+			if id == "8" then return false, "Cannot travel in combat." end
+			return true
+		end}
+	H.open_stone_interface(owner, claim)
+	has(last_shown("owner").fs, "stone_tab_3;Expeditions]", "R72 the Expeditions tab third")
+	has(last_shown("owner").fs, "button[7.20,0.15;3.3,0.6;stone_tab_3;",
+		"R72 three tabs keep their width")
+	submit(owner, "grug_housing:stone", {stone_tab_3 = "Expeditions"})
+	local ex = last_shown("owner").fs
+	has(ex, grug_core.ui.button_style("stone_tab_3", "selected"), "R72 Expeditions tab selected")
+	has(ex, "You have no Expedition to enter.", "R72 nothing to enter: the one line")
+	lacks(ex, "enter_", "R72 and no Enter button")
+	lacks(ex, "list[", "R72 no fuel slot or inventory on the Expeditions tab")
+	entries, line = {{id = "8", label = "Test Vault, level 24"}, {id = "9", label = "Other, level 30"}}, nil
+	submit(owner, "grug_housing:stone", {stone_tab_3 = "Expeditions"})
+	ex = last_shown("owner").fs
+	has(ex, "label[0.4,1.30;Test Vault\\, level 24]", "R72 a run listed")
+	has(ex, "enter_9;Enter]", "R72 an Enter button per run")
+	submit(owner, "grug_housing:stone", {enter_8 = "Enter"})
+	eq(asked[1], "8", "R72 Enter asks grug_home for that run")
+	has(last_shown("owner").fs, "Cannot travel in combat.", "R72 a refusal shows in the tab")
+	local closes = #closed
+	submit(owner, "grug_housing:stone", {enter_9 = "Enter"})
+	check(asked[2] == "9" and #closed == closes + 1, "R72 a started trip closes the form")
+	submit(owner, "grug_housing:stone", {quit = "true"})
+	grug_home = nil
+end
+
 --
 -- 4. Fuel slot: accept, refuse, partial, no take
 --

@@ -162,7 +162,7 @@ local function one_run(lib, player, level, player_level, picks, quest)
 		dig_with(player, rock, picks.fit)
 		lib.check(core.get_node(rock).name == hull, "the hull behind it stands")
 	end
-	E.use_waystone(player)
+	E.leave(player)
 	lib.wait_for(function() return E.run_inside(player) == nil end, 40)
 	E.end_run(run, "probe")
 end
