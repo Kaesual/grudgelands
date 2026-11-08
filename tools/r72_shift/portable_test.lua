@@ -1048,6 +1048,9 @@ do
 		end
 		local reached, kept, noticed = PR.walk_round(map, pset, way[1], targets, packs[key], 1, sees)
 		check(reached == nil, ("L %s walked round to %s"):format(key, reached and reached[1] .. "," .. reached[2] or "-"))
+		-- Not vacuous: with the pack gone the way on is reachable (PROOF review note 2).
+		check(PR.walk_round(map, pset, way[1], {way[2]}, {}, 1, sees) ~= nil,
+			"L " .. key .. "'s way on is reachable with the pack gone")
 		print(("%s: no way round its %d noticed cells to %d of %d targets"):format(key, noticed, kept, #targets))
 	end
 end
