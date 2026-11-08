@@ -67,12 +67,18 @@ local LIGHT = {air = 0, ["default:torch_wall"] = 12, ["grug_decor:xdecor_lantern
 	["grug_decor:xdecor_rope"] = 0}
 local LAVA = "default:lava_source"
 local SOLID = {["default:stone"] = true, ["default:stonebrick"] = true, ["default:stone_block"] = true,
-	["default:cobble"] = true, ["default:wood"] = true, ["default:steelblock"] = true,
+	["default:cobble"] = true, ["default:wood"] = true, ["grug_materials:steel_block"] = true,
 	["grug_decor:darkage_basalt_brick"] = true, ["grug_decor:darkage_slate_tile"] = true,
 	["grug_materials:iron_block"] = true,
 	["grug_materials:stone_with_anthracite"] = true, ["grug_materials:stone_with_jade"] = true,
 	["grug_expeditions:waystone"] = true, ["grug_expeditions:reward_chest"] = true,
 	["grug_expeditions:reward_door"] = true}
+-- The game removes some of default's nodes (grug_materials content_curation.lua): none
+-- of them may stand in the palette, or the server stops at load.
+local curated = read_file("mods/ITEMS/grug_materials/content_curation.lua")
+for _, name in ipairs(tpl.nodes) do
+	check(not curated:find('"' .. name .. '"', 1, true), "C a node the game has: " .. name)
+end
 local kinds = {}
 for index, name in ipairs(tpl.nodes) do
 	check(LIGHT[name] or SOLID[name] or name == LAVA, "C palette: " .. name)
