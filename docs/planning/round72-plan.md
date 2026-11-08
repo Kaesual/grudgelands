@@ -1,8 +1,10 @@
 # Round 72 — fights, placement, travel and two Expeditions
 
-**Planned, not started.** Collected from several planning sessions on 2026-11-07 and
-planned with the user on 2026-11-08, after their acceptance of Rounds 70 and 71. The
-round starts on the user's "go", after a compaction of the coordinator's context.
+Collected from several planning sessions on 2026-11-07 and planned with the user on
+2026-11-08, after their acceptance of Rounds 70 and 71. **Started** on the user's go,
+2026-11-08, on branch `round72`. **Complete** on `round72` on 2026-11-08 as 0.72.0
+(compatible): not yet on main, not pushed; the [GUI checklist](#gui-checklist-desktop-and-web)
+is open ([completion](#completion-2026-11-08)).
 Routing (user, 2026-11-08): one coordinator (Opus 5.5) for every lane; Opus 5.5
 implements and reviews; GPT-6 Astra shapes and dresses the three Expedition templates
 (lane STYLE). Version **0.72.0**, classification decided at the merge (expected
@@ -238,7 +240,7 @@ Ruled by the user on 2026-11-08:
 
   > **A line in the guild's ledger**
   >
-  > Your name has come up at the Miners' Guild, {player}.
+  > Your name has come up at the Miner's Guild, {player}.
   >
   > The old workings under our lands were sealed for good reasons, and the guild sends small
   > parties to open them again. Come to the guild house in {capital} and ask for me; I will
@@ -617,11 +619,162 @@ back by the tab; no tab inside; the letter at level 20 and late for a character 
 
 ### GUI checklist (desktop and web)
 
-To be written with the lanes. BLADECRAFT needs a look at flicker when left and right
-click alternate, in first and third person. TAGS needs a look at red against light red
-and green against light green at 25 m. WAYTAB needs the tab on desktop and web, and the
-way out and back in with a party of two. STYLE needs the user's look at every room of the
-three Expeditions.
+Written by lane D from the plan's list, the lanes' excerpts and the reviewers' notes. Each
+item on the desktop client and on the web client. *Look* asks for the user's verdict on a
+default; **Question** names one of the user's two open questions.
+
+**Only the user can prove these.** No lane ran the web client, a second real player or a
+real fight. So:
+
+- **Web:** the whole list. The lanes' clients were desktop builds on Xvfb.
+- **[2+]** needs two or more real players; parties, foes and friends ran on stand-ins and
+  in fixtures.
+- **[fight]** needs a real fight: the probes teleport and kill by script, and every run
+  length and boss fight is a model.
+
+**Combat starts at targeting (FIGHT)**
+
+1. Let a wolf or bandit spot you without hitting it: you are in combat as it charges, and a
+   mount summon, eating, Return Home and a waystone are refused. Kill it, or run past 45 m:
+   out of combat at once.
+2. Stand on a ledge in a King's sight: in combat while he targets you, out after his reset.
+3. As an Undead character near zombies outside an Expedition: no combat unless you provoke
+   one. Near your own faction's guards: never.
+4. *Look:* a wild animal that chases you without your hit keeps you from mounting for up to
+   about 15 s.
+5. *Look:* a guard that sees an enemy it cannot reach refuses that player's Return Home in
+   short spells (about 1 s every 16 s).
+
+**Placement (PLACE)**
+
+6. Out of combat a block, a ladder, a door, a bed and water place. Targeted by a wolf, a
+   block, a ladder, a door and water are refused with the grey line "Cannot place that in
+   combat."; a torch places, a chest opens, digging works.
+7. A block into a guard's feet or head cell, a half-covered cell, or **[2+]** another
+   player's cell is refused ("Cannot place a block where someone stands.").
+8. Sand dropped on a mob, or sand whose support you dig away above a player, drops as an
+   item. Town ground still shows the protection line.
+
+**Kings and bosses (RANGED, BOSSRESET)**
+
+9. At 15 m from the Elf, Undead and Troll King: a shot about every 3 s, and after about 10 s
+   he runs at you for about 3 s. Behind a pillar he walks round it and shoots; on a ledge he
+   cannot reach, in sight, he shoots. The shoot animation plays, and no arrow passes a wall.
+   The other Kings and the Generals fight as before.
+10. Hit a King from a pillar or a ledge: he resets within about a second, heals and walks
+    home untouchable; further hits gain nothing.
+11. *Look:* lead a King about 30 m from his seat, or stand outside his castle walls more than
+    about 3 nodes from the gate: he resets at once, and walking back saves nothing. His
+    floor is his castle (measured): does that read right?
+12. **[2+]** The King's target steps out of range and the tank taunts within 3 s: the fight
+    goes on. Without the taunt the King resets after 3 s.
+13. **[fight]** A King kited for more than 15 s without landing an attack resets.
+14. The Stilled Seam: Flintback resets when his only target steps into the passage; with a
+    party, the tank leaving the room resets him after 3 s unless someone taunts.
+
+**Guards out of reach (GUARDNAV)**
+
+15. Hit a Stakeguard or a captain from a pillar or a ladder top: about a second later it heals
+    and runs home, your hits show "Evading". Hit it again at home: it comes, resets again and
+    never dies to this. Its evade ends standing at its post, not past it.
+16. At a ladder top in a guard's sight you are out of combat right after its reset, and
+    Return Home works.
+17. On open ground, or behind a wall with a gap, the guard reaches you and does not reset.
+    *Look:* four guards on one reachable player in a narrow spot or a gate do not reset.
+18. A zone leader or a rare hit from a pillar resets the same way.
+19. *Look* **[2+]:** two enemy players on two ladder tops near one gate guard: how often each
+    is in combat while the guard turns between them.
+20. *Look:* a post guard that drops off a ledge it cannot climb is untouchable for up to
+    40 s, then appears at its post.
+
+**Bladecraft's hand (BLADECRAFT)**
+
+21. Bladecraft with a mob in reach: right click shows the bow in hand without a drop and
+    raise, left click the blade. Alternate the two quickly and watch for **flicker**, in
+    first person and in third person (F7). On web, a 0.25 s drop and raise at each switch
+    means the web client is older than protocol 52.
+22. The back card shows the other weapon at once. A right click with no target or no arrow
+    keeps the blade; a left click at the air or while digging keeps the bow.
+23. A hotbar slot switch and back, and a layout A/B switch, keep the bow; a relog shows the
+    blade. Take the bow off while it is shown: the blade; put it back on: the bow.
+24. True Draw with no arrows, left click at a mob: Strike swings, and Bladecraft keeps its
+    weapon.
+
+**No mounts in enemy towns (MOUNTS)**
+
+25. As an Accord character, ride a horse (both land tiers) from the land outside into a
+    Throng start town: dismounted at the edge with one feed line and no warning band; the
+    land just outside stays rideable.
+26. In that town and in a Throng capital, the quickbar's mount button and a tier switch are
+    refused with the feed line. A boat on water inside is refused; a boat sailed in from
+    outside is dismounted and its rider swims.
+27. Your own start town and capital: nothing happens; the same for a Throng character the
+    other way round. A flyer at an enemy home border sees the band and the dismount as
+    before.
+28. **Question:** the rule holds at every height, so a rider in a tunnel or cave below an
+    enemy town is dismounted too. Default: keep.
+
+**Friend and foe nametags (TAGS)**
+
+29. *Look:* from 25 m, **red against light red** (an enemy guard next to an enemy vendor)
+    and **green against light green** (your own guard next to your own vendor): easy to tell
+    apart, also on web?
+30. **[2+]** Two characters of different factions see each other's tag red; a friend of the
+    same faction sees it green.
+31. A new character at the start position, before picking a faction, sees guards green.
+32. **[2+]** An enemy walking up to a guard sees its red tag appear at 25 m and go past
+    30 m; a friend beside them keeps seeing green.
+33. A wounded guard's HP bar shows to both sides; quest markers still show for their own
+    faction.
+34. No NPC or guard shows violet or lavender, also right after it comes into view; the
+    Bedrock Sentinel is red; a capital's mount displays are light green or light red.
+
+**The Expeditions tab and the letter (WAYTAB)**
+
+35. Capital and start-town waystones open on Waystones, with an Expeditions tab; on web the
+    tab is readable and its one line not clipped.
+36. The Claim Stone's third tab is Expeditions; with Belongings (N) the four tabs fit.
+37. **[2+]** A party of two: the leader creates at the Registrar, the member enters from a
+    waystone's tab; both go out by an inner stone to different waystones and both come back
+    in by the tab; the run goes on and the places are kept.
+38. In combat the Enter click shows "Cannot travel in combat." in the window; an inner
+    stone's Travel refuses too.
+39. The letter "A line in the guild's ledger" at level 20, and at the next join for a
+    character already past 20.
+
+**The Expeditions (EXPMOBS, TRAPS, SHIFT, MINT, STYLE, PROOF)**
+
+40. **The user's walk through every room of the three Expeditions** (STYLE): shapes,
+    ceilings, palettes, the rooms that are cuboid on purpose. Screenshots per room at eye
+    height in `r72/shots/proof/{stilled_seam,second_shift,last_mint}/`, the geometry
+    previews in `r72/shots/style/` (orchestration folder). On The Second Shift step into the
+    desk's rail siding (z 36): it is unhooded since `7dab5a56`, after the desk shot.
+41. **[fight]** **[2+]** The run from the Registrar to the chest in **The Second Shift at
+    level 40** and **The Last Mint at level 60**: length (modelled about 10 minutes each) and
+    difficulty; at 69 both are meant to be hard. Nemm's 20 × and Duewarden's 14 × an elite's
+    HP are tuned here.
+42. In every pack room of all three, nobody gets past the pack unnoticed. The Second Shift:
+    leave room 3's bypass until bay c is dead.
+43. An Undead character in an Expedition is attacked by its mobs on sight (The Second
+    Shift's miners); outside, zombies still leave them alone. A level 60 character in a
+    20–29 Stilled Seam is pulled from the far side of a room.
+44. Floor trap: the red ring reads apart from Meteor's orange, also on web; the red mark
+    after its first hit is visible but quiet. **Question:** a jump over a floor trap does not
+    set it off. Default: keep.
+45. Wall trap: the fireball's head and tail show from about 20 nodes; it bursts on a player
+    and stops at stone (The Second Shift's passage from room 1 to 2, The Last Mint's lake).
+46. Nemm: a red ring at your feet about every 12 s; stepping out avoids it. *Look:* a player
+    entering the passage between rooms 3 and 4 is pulled and dropped once (he sees two
+    columns of it). The shift board's text is readable.
+47. The Last Mint's lake: the six jumps both ways at walking speed; wait on a top, a shot
+    passes, jump; a burst hits a neighbour within 2.
+48. A fall into the lava: dead in about 5 s, "Cannot return home from the lava."; logout and
+    login unchanged.
+49. The Last Mint: each pack pulls from anywhere in its room; Wisps reachable under the
+    seven-node ceilings. *Look:* the Wisps of packs b and c can follow a player over the
+    lake's air.
+50. The lake and the pillar tops read clearly; the press's brand is visible; the floor rings
+    in rooms 2, 4 and 5.
 
 ## 7. Orchestration notes
 
@@ -667,3 +820,163 @@ three Expeditions.
   `evade_home`), `init.lua` (the `do_attack` wrapper), `bosses.lua`, `protection.lua`.
   FIGHT and BOSSRESET sit on the same lines, so they start from its merge.
 - **No hotfix:** nothing goes to the live 0.69.0 first (user, 2026-11-07).
+
+## Completion (2026-11-08)
+
+Every planned lane is merged into the integration branch `round72` at `7b37aef0`, with two
+coordinator changes for the user's rulings during the round; this lane D follows on it.
+**Nothing is on main and nothing is pushed:** `round72` merges to main as 0.72.0 after the
+round's last checkpoint (C6) and the user's word. Every lane had an independent Opus review
+(table below).
+
+**0.72.0 is compatible:** no step, no map reset. Every lane report says compatible, and lane
+D's reading agrees: nothing touches world generation, and `check_upgrade.py --base
+5a8909a0` passes (the towns build as in 0.71.0; lane D). Saved state, all additive: player
+meta `grug_mail:letter_registrar` (set once; a character past 20 gets the letter at the next
+join); `grug_expeditions:origin` keeps its format and may now name any waystone; rares save a
+plain `_grug_reach_reset`; the entity `grug_mobs:auditor_nemm` and `grug_mobs:duewarden`,
+the quests `capital_second_shift` and `capital_last_mint`, and five name slots are new ids.
+Runs, traps, boss floors, the friend and foe carriers and the enemy-town table live in memory
+only. Nothing new is map-bound, so no reset clear.
+
+### Lanes
+
+`round72`'s first-parent merges from the start `f4325384` (lane tip in brackets), in order:
+
+| Lane | Commit | What | Review |
+|---|---|---|---|
+| EXPMOBS | `cf9fcd07` (`ccd7346e`) | Expedition mobs ignore the Undead truce and keep their full view range, through the existing mark `_grug_expedition` | MERGE |
+| MOUNTS | `bf71fcba` (`69dfe622`) | `grug_mounts.enemy_town_at`: summon refused and a per-column dismount in enemy start towns and capitals, every tier and boats | MERGE (`boats.md` by the coordinator, `19ca32b2`) |
+| TAGS | `40384c5b` (`bc8a5556`) | Friend and foe carriers, a foe carrier only on demand, four new colour settings pairs | MERGE AFTER FIXES (`r37_dc` pin, `81153450`) |
+| FIGHT | `03695b09` (`d145ad51`) | Engagement at targeting, one seam in the `do_attack` wrapper | MERGE AFTER FIXES (README line, `e603cf03`) |
+| BLADECRAFT | `d5b507b4` (`f5f47ee3`) | One display state: the bow after a flown shot, the blade after a swing, the blade with the Ranged slot empty | MERGE AFTER FIXES, delta MERGE |
+| RANGED | `28f3e436` (`55effdb1`) | The ranged kings get the archers' phase (10 s ranged, 3 s melee), shoot their arrows and seek sight | MERGE |
+| WAYTAB | `2177fcc5` (`354d25d1`) | The Expeditions tab on the waystones and the Claim Stone, the ordinary window inside, the Registrar's letter | MERGE AFTER FIXES (spelling, `a1a6b398`) |
+| TRAPS | `2c56006d` (`d11cb693`), `0a413460` (`52951196`) | `traps.lua`: floor trap, wall projectile, `strike`; the template's `trap` lines; the `test_vault` gallery | MERGE AFTER FIXES twice, delta MERGE (two harness fixes, `24f6d664`, `ba394f03`) |
+| PLACE | `dcd83a29` (`3e2a442d`) | `grug_core/placement.lua`: the seam, doors, beds, bucket, notice board, Claim Stone, falling nodes | MERGE AFTER FIXES (`r48_farm` stub, `415c5564`) |
+| BOSSRESET | `fbee9eda` (`e7a149bd`) | `boss_floor.lua`, `reset_home`, the one-way window, the 15 s rule, the Seam's room envelope | MERGE AFTER FIXES (tank swap and respawn), delta MERGE |
+| GUARDNAV | `a738063d` (`2d672de9`) | The probe, then `nav.strict` and `reach_reset` for guards, captains, commanders, the rift boss, leaders and rares; evades stop on arrival | MERGE (four Low notes, backlog) |
+| SHIFT | `0e09d43b` (`68dc985e`) | The Second Shift: template, Auditor Nemm, his marked spot, loot, names, quest, wall signs | MERGE (`grug_text` dependency `9fa4aa54`; roster stub `8f4f7eae`) |
+| MINT | `82d643c6` (`8340a989`) | The Last Mint: template, the lake, `lava_guard.lua`, Return Home refused in and over lava, Duewarden, loot, names, quest | MERGE AFTER FIXES (sliding down a pillar's face), delta MERGE (roster stub `74cd3f29`) |
+| Sentinel (added) | `5851dd71` | The user's ruling: the Bedrock Sentinel leaves the guard lists (aggressive, red, an "other" kill) | MERGE |
+| Friend or foe (added) | `b7012ec2`, `18c7900b` | The user's ruling: a faction set on activation, a capital's mount displays take its faction | MERGE |
+| STYLE | `e9a36ab8` (`b55eda78`) | GPT-6 Astra shaped and dressed all three templates; the Seam cut into smaller chambers | MERGE (two Low, fixed by the coordinator in `b55eda78`) |
+| PROOF | `7b37aef0` (`051ac041`) | `tools/expedition_templates/proofs.lua`: free height, perches, coverage and walk-round on all three; probes and engine runs | MERGE (Shift rail siding unhooded `7dab5a56`, a non-vacuous walk-round guard `051ac041`, both by the coordinator) |
+| D | this section | Design owners, completion, GUI checklist, backlog, release files, the Undead text | independent review |
+
+`mods/` against the start (measured, `git diff f4325384 7b37aef0 -- mods`): 52 files, +2929
+−242, 45 of them Lua. Twelve new portable fixtures (`r72_fight`, `r72_ranged`,
+`r72_bladecraft`, `r72_mounts`, `r72_tags`, `r72_traps`, `r72_waytab`, `r72_place`,
+`r72_bossreset`, `r72_guardnav`, `r72_shift`, `r72_mint`): 332 in all.
+
+### Decisions during the round
+
+**The user** (2026-11-08, after the planning rulings of §2):
+
+- **The Bedrock Sentinel is no guard:** an aggressive mob with a red tag (`5851dd71`).
+- **Every NPC and guard is friend or foe:** no violet or lavender in normal play; fighting
+  units green and red, non-combat NPCs light green and light red, the red tag only while an
+  enemy is near, a viewer without a faction sees green (`b7012ec2`).
+- **Claims reach only T1 depth,** so the Sentinel's road and claim push does nothing below
+  −1000.
+- **The raider band names** Shift Raider (40–49), Tallied Raider (50–59) and Overdue Raider
+  (60–69).
+- C1 skipped; C2 after all eight wave-1 lanes.
+
+**The coordinator's defaults, standing until the user says otherwise:**
+
+- TAGS: the carrier callers hold stays eager, only the foe carrier is made on demand; a quest
+  giver follows its settlement's faction. (Its third default, lavender capital displays, is
+  replaced by the user's friend-or-foe ruling.)
+- RANGED: the archers' 10 s / 3 s rhythm, not a purely ranged King.
+- BLADECRAFT: an empty Ranged slot while the bow is shown shows the blade.
+- WAYTAB: the way back after entering from the Claim Stone is the innkeeper home's waystone;
+  the letter writes "Miner's Guild", the game's spelling.
+- TRAPS: rearm counted from the hit; a one-node mark; a trap hit can be dodged and marks
+  combat for 5 s; a fireball launches only with a run player within 32 of its line; a
+  cancelled strike's ring stays.
+- PLACE: NPCs count as bodies.
+- BOSSRESET: the room envelope as two template places; a whole, healthy retinue stays on a
+  reset; the sight veto after a floor reset.
+- GUARDNAV: no camp has elite mobs, so the 12 elite leaders stand for them; war commanders
+  on; the patroller heals without immunity; about 1 s of combat every 16 s for a player who
+  stays in sight.
+- SHIFT: one raider more per pack, Nemm 20 × an elite's HP, the chest's coins at factor 10.
+- MINT: Return Home refused also while falling towards lava; rooms smaller than the plan's
+  envelopes, members spread; Duewarden 14 × an elite's HP.
+- STYLE: the Seam's fighting chambers and its cuts (approaches, exits, the cart bay's blind
+  ore cut) are separate floor; PROOF proved the cuts reachable only through noticed cells.
+- D: the Undead race text ends "(not in Expeditions)".
+
+### Deviations from the plan
+
+- **Two changes added** for the user's rulings (Sentinel, friend or foe), each with its own
+  delta review.
+- **§3.3's hypotheses:** GUARDNAV's probe refuted the first for the probed cases (the guard
+  stuck within 16 nodes and gave up after 6.7–7.6 s) and found the second plausible; there
+  was no immunity at all. §3.3's proposal was built as planned.
+- **The boss floor** cost 1.6–2.8 ms per seat, not the estimated 10–20 ms; a King's floor is
+  his castle, so a target outside the walls resets him at once (reviewer's measurement).
+- **Re-checks that changed the build:** settlement NPCs carry no faction field (TAGS reads
+  the settlement's); a guard's faction came only on its first tick (fixed by the friend or
+  foe change); the waystone trip has no ritual (WAYTAB used the travel path); Nemm's mark
+  did not count for the 15 s rule (SHIFT gave `strike` its `opts`); the Skeleton Raider had
+  no world name slot (SHIFT added three).
+- **The Stilled Seam's boss envelope moved** to (54, 94)–(79, 119) and its walk to 254 steps;
+  its model runs 8.6 minutes at 20 (was 8.7).
+- **The Shift's rail siding** had two nodes of air (PROOF); the coordinator unhooded it.
+- **Integration fixes on `round72`:** two `roster.lua` stubs for `r38_b2` (GUARDNAV's
+  `grug_nav`, MINT's `table.copy`), the `r48_farm` stub, the `r37_dc` pin, the `r72_waytab`
+  harness and the `r71_frame` probe after TRAPS.
+- **Engine runs:** PROOF ran a fourth (The Stilled Seam, after a probe fix), approved by the
+  coordinator. GUARDNAV booted once more than planned.
+
+### Numbers worth keeping
+
+From the lanes' reports, measured unless marked; comparisons, not targets.
+
+- **Guards out of reach:** first hit to reset 6.7–7.6 s before, 1.18 s after; health lost
+  23–30 % before, 5.6–6 % after; largest search 1.0–1.2 ms before, 1.4–1.6 ms after; a failing
+  search at padding 16, 1.1–1.5 ms.
+- **Boss floor:** Kings 1073–1084 cells in 3 steps, 1.55–1.74 ms; Generals 1314 cells in 4
+  steps, 2.3–2.8 ms; largest step ≤ 714 µs; the once-a-second test under 1 µs. Nemm's 796
+  cells, 1.4–2.3 ms.
+- **Ranged kings:** 4 searches in 4 lanes over 14 s, the largest 380 µs; damage at 70,
+  elite, 107 a second in the ranged phase, 83 over the rhythm (estimated).
+- **Nametags:** 30 carriers near a square, 42 with one foe at its edge; the central pass for
+  1000 units and 100 players 0.596 → 0.751 ms with half on each side; about 1 ms a second of
+  faction reads at 100 players (estimated).
+- **Enemy towns:** 0.16–0.24 µs per question; one per column a rider enters.
+- **Placement:** one area query, 0.41 µs with nobody near, 3.06 µs among ten bodies.
+- **Traps:** before armour 173 at level 20, 1213 at 60; ring to hit 1.54 s; rearm 10.15 s;
+  16 particles per warning, 8 per hit.
+- **The Second Shift** (modelled, `tools/r72_shift/balance.py`): a run about 10.2 minutes at
+  40–60 and 17.0 at 69; Nemm 231 s at 40, 546 s at 69; HP 76,560 at 40 and 210,440 at 69
+  (measured); chest coins 640c at 40 against 622c of a quarter hour's income; preparation
+  15.9–16.6 s (measured).
+- **The Last Mint** (modelled, `tools/r72_mint/balance.py`): about 10.1 minutes at 60, 15.2 at
+  69; Duewarden 2.5 and 5.8 minutes, 113,232 and 147,308 HP; chest 4,000c against 2,737c of
+  income in the run's time; ore 9 %, gem 10 % of the same time's mining; preparation 18.8 and
+  19.4 s, 12 of 12 jumps at 60 and 6 of 6 at 69, death in the lava after 5 ticks (measured).
+- **Rooms:** the Seam's floor 5743 → 4216 cells (−26.6 %); the Shift's 4943 and the Mint's
+  5300 unchanged by STYLE; every template has at least 3 nodes of air over each floor cell.
+- **The Stilled Seam** (modelled): 8.6 minutes at 20, 13.5 at 69.
+
+### Checks
+
+- **Round-end full run** on `7b37aef0` by the coordinator (JOBS=4, through the queue), log in
+  the orchestration folder (`r72/reports/integration/`); `check_fresh_server.py` PASS and
+  `build.py --check` OK on `7b37aef0`.
+- **Engine, real client on Xvfb:** The Second Shift 164 PASS, The Last Mint 185 PASS, The
+  Stilled Seam 142 PASS, each 0 FAIL, after STYLE (PROOF); every lane's probe and smoke boot is
+  in its report.
+- **Lane D:** docs, release files and one string; no fixture beyond `r37_dc` (it pins the
+  version and CHANGELOG lane D changes), no boot. `check_upgrade.py --base 5a8909a0` PASS,
+  `check_fresh_server.py` PASS, `check_lua.sh` on `grug_classes/init.lua` PASS.
+
+### Open notes
+
+- **For the user:** the two questions (checklist 28 and 44), the *look* items, and the
+  numbers only a real run gives: run lengths, Nemm's and Duewarden's HP, the coins, the
+  mining share. The free wipe stays noted, not closed (§2.9).
+- **Carry-overs** are in [BACKLOG](../../BACKLOG.md#round-72--fights-placement-travel-and-two-expeditions-gui-acceptance-pending).

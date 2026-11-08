@@ -2,6 +2,34 @@
 
 Updated 2026-11-08. This is the delivery pointer, not another game specification.
 
+**0.72.0 / Round 72 is complete on the integration branch `round72` (2026-11-08): not on main,
+not pushed, the GUI test open.** From player reports and the user's notes: **combat starts at
+targeting**; **placement** in combat refuses everything that blocks movement (ladders and liquids
+too), and nobody places a block into a body's cell, falling nodes tested where they land; **kings
+and bosses** reset on a boss floor computed once (no way or out of range, the one-way window with
+a Taunt within 3 s, 15 s without an attack); **guards out of reach** reset about 1.2 s after the
+first hit and go home untouchable; the **ranged kings** shoot and seek sight; **Bladecraft** shows
+the weapon of its last real attack; **no mounts or boats in enemy start towns and capitals**;
+**friend and foe nametags** (green and red, light for non-combat NPCs, the foe carrier only on
+demand; the Bedrock Sentinel an aggressive mob, every NPC and guard friend or foe, the user's
+rulings during the round). **Expeditions:** the two trap types in one module, Expedition mobs
+without the Undead truce or the shrinking aggro radius, the **Expeditions tab** on every outside
+waystone and the Claim Stone, the ordinary waystone window inside, the Registrar's letter at 20;
+**The Second Shift** (40–69, 4 players, Auditor Nemm) and **The Last Mint** (60–69, 4 players, the
+lava lake, Duewarden); all three templates shaped and dressed by GPT-6 Astra with flat floors and
+rooms no pack lets you walk round, proved per floor cell. **Compatible:** no step, no map reset;
+saved: player meta `grug_mail:letter_registrar`, two quests, two boss ids, name slots. Reviews:
+EXPMOBS, MOUNTS, RANGED, GUARDNAV, SHIFT, STYLE, PROOF and both ruling changes MERGE; TAGS, FIGHT,
+WAYTAB, PLACE MERGE AFTER FIXES; BLADECRAFT, TRAPS, BOSSRESET, MINT MERGE AFTER FIXES, then MERGE on
+the delta. 332 portable fixtures (twelve new); the round-end full run on `7b37aef0` is the
+coordinator's; engine after STYLE: The Second Shift 164, The Last Mint 185, The Stilled Seam 142
+PASS, 0 FAIL. Modelled runs: Second Shift 10.2 minutes at 40–60, Last Mint 10.1 at 60, Seam 8.6
+at 20. **Open for the user:** the
+[GUI checklist](planning/round72-plan.md#gui-checklist-desktop-and-web), 50 items with two
+questions (a jump over a floor trap; the enemy-town dismount underground)
+([completion, numbers and decisions](planning/round72-plan.md#completion-2026-11-08);
+[carry-overs](../BACKLOG.md#round-72--fights-placement-travel-and-two-expeditions-gui-acceptance-pending)).
+
 **0.71.0 / Round 71 is GUI-accepted by the user on 2026-11-08 together with 0.70.0 (the whole
 Round 71 checklist) and pushed (2026-11-08).** **Expeditions:** repeatable group content in 100 generic slots beyond
 the map, the server clearing and writing a box for each run. The framework and the first

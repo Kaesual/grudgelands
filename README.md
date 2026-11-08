@@ -98,10 +98,18 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.72.0** adds two Expeditions for four players, The Second Shift (levels 40 to 69) and
+The Last Mint (60 to 69, across a lava lake), with traps, reshapes The Stilled Seam, and lets
+you enter your Expedition from any waystone or your Claim Stone. Fights now start when a mob
+targets you; you cannot build in combat; Kings and bosses reset when they cannot reach you;
+guards you hit from out of reach heal and go home; the ranged Kings shoot; nobody rides in an
+enemy town; and nametags show friend and foe. This update is compatible; desktop and web
+acceptance is pending.
+
 **0.71.0** adds Expeditions: repeatable group content in sealed mines beyond the map. The first
 is The Stilled Seam, levels 20 to 69: pick its level at the Expedition Registrar in your capital's
 guild house, bring a Warrior and a healer, fight packs that never give up, and take your own
-share of the chest behind Flintback. This update is compatible.
+share of the chest behind Flintback. This update is compatible and accepted on desktop and web.
 
 **0.70.0** gives every King a castle in a larger capital, with a new throne
 room; rebuilds the six start towns around a free waystone; adds the
@@ -111,7 +119,7 @@ rare sources easy to find. Decorative plants can be picked up and placed,
 potions go to the belt first, a death wears your gear by 10% unless an
 enemy player hit you just before, Kings rise to level 70, and fighting
 above your level costs damage from the first level. This update needs a
-map reset; desktop and web acceptance is pending.
+map reset; it is accepted on desktop and web.
 
 **0.69.0** adds a Trash box to the Inventory tab, with Undo for the last
 item; you now respawn at your home, a Claim Stone included; every damaging
