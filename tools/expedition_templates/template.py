@@ -5,6 +5,7 @@ Python file with `build()` returning a Template; build.py writes the files the g
 reads. Cells stay plain bytearrays in VoxelManip order, so a whole box costs a
 second at most.
 """
+import math
 import zlib
 
 MAGIC = "grudgelands-expedition-template 1"
@@ -13,6 +14,7 @@ REQUIRED = ("arrival", "start_waystone", "end_waystone")
 WAYSTONE = "grug_expeditions:waystone"
 # The mod's own nodes, walkable all: the node registry does not list them.
 OWN_NODES = (WAYSTONE, "grug_expeditions:reward_chest", "grug_expeditions:reward_door")
+AXES = {"+x": (1, 0), "-x": (-1, 0), "+z": (0, 1), "-z": (0, -1)}
 
 
 class Template:
@@ -28,6 +30,7 @@ class Template:
         self.digs = set()
         self.places = {}
         self.encounters = []
+        self.traps = []
 
     def node_id(self, node):
         if node not in self.ids:
@@ -73,12 +76,29 @@ class Template:
         self.index(x, y, z)
         self.encounters.append((room, mob, count, tier, x, y, z))
 
+    def trap_floor(self, group, pick, x, y, z):
+        """A floor trap candidate: the cell a player stands in over it (Round 72).
+        A run arms `pick` of the group's candidates."""
+        self.index(x, y, z)
+        self.traps.append((group, pick, "floor", f"{x} {y} {z}"))
+
+    def trap_wall(self, group, pick, x, y, z, axis, period, offset):
+        """A wall trap candidate: its muzzle point in node coordinates (whole numbers are
+        node centres), the axis it shoots along (+x, -x, +z, -z), its period and the
+        first shot's offset after readiness, in seconds."""
+        self.index(*(int(math.floor(v + 0.5)) for v in (x, y, z)))
+        if axis not in AXES:
+            raise ValueError(f"{self.name}: trap axis {axis}")
+        self.traps.append((group, pick, "wall",
+                           f"{x:g} {y:g} {z:g} {axis} {period:g} {offset:g}", (x, y, z), axis))
+
     def head(self, data_bytes):
         lines = [MAGIC, f"name {self.name}", f"size {self.sx} {self.sy} {self.sz}"]
         lines += [f"node {node}" for node in self.palette]
         lines += [f"dig {node}" for node in sorted(self.digs)]
         lines += [f"place {name} {x} {y} {z}" for name, (x, y, z) in sorted(self.places.items())]
         lines += ["encounter %s %s %d %s %d %d %d" % row for row in self.encounters]
+        lines += [f"trap {row[0]} {row[1]} {row[2]} {row[3]}" for row in self.traps]
         lines.append(f"data {data_bytes}")
         return ("\n".join(lines) + "\n").encode()
 
@@ -112,6 +132,7 @@ class Template:
                 found.append(f"dig {node}: not in the palette")
             elif not walkable(node):
                 found.append(f"dig {node}: not a solid node")
+        found += self.trap_problems(walkable)
         # Nothing open on the template's outer shell, and nothing there to dig open:
         # the world beyond is not ours.
         for z in range(self.sz):
@@ -121,6 +142,32 @@ class Template:
                     if edge and (not walkable(self.get(x, y, z)) or self.get(x, y, z) in self.digs):
                         found.append(f"open hull at {x},{y},{z}")
                         return found
+        return found
+
+
+    def trap_problems(self, walkable):
+        """Trap groups agree with themselves; a floor trap stands on floor in an open
+        cell, a muzzle sits in an open cell with an open cell ahead (traps.lua)."""
+        found, groups = [], {}
+        for row in self.traps:
+            group, pick, kind = row[0], row[1], row[2]
+            key = (kind, pick) if kind == "floor" else (kind, pick) + tuple(row[3].split()[4:])
+            seen = groups.setdefault(group, [key, 0])
+            if seen[0] != key:
+                found.append(f"trap group {group} disagrees with itself")
+            seen[1] += 1
+            if kind == "floor":
+                x, y, z = (int(v) for v in row[3].split())
+                if walkable(self.get(x, y, z)) or not walkable(self.get(x, y - 1, z)):
+                    found.append(f"floor trap {group} at {x},{y},{z}: no open cell on a floor")
+            else:
+                (x, y, z), (dx, dz) = row[4], AXES[row[5]]
+                cx, cy, cz = (int(math.floor(v + 0.5)) for v in (x, y, z))
+                if walkable(self.get(cx, cy, cz)) or walkable(self.get(cx + dx, cy, cz + dz)):
+                    found.append(f"wall trap {group} at {x:g},{y:g},{z:g}: the muzzle is not open")
+        for group, (key, count) in sorted(groups.items()):
+            if key[1] < 1 or key[1] > count:
+                found.append(f"trap group {group} picks {key[1]} of {count}")
         return found
 
 

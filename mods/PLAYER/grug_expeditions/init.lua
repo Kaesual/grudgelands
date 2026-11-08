@@ -105,6 +105,7 @@ end
 
 assert(loadfile(path .. "/runs.lua"))(catalogue, preparation)
 dofile(path .. "/encounters.lua")
+dofile(path .. "/traps.lua")
 dofile(path .. "/guard.lua")
 dofile(path .. "/registrar.lua")
 
