@@ -2331,7 +2331,7 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
 - **No per-tick pass over players.** "Inside" follows `grug_home.register_on_teleport` and
   the leave and join callbacks (every player teleport ends in `travel.lua`); the release
   clock is one `core.after` per empty stretch; `encounters.lua`'s one-second pass runs only
-  while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled;
+  while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled; `traps.lua`'s pass (5 a second) only while a run with traps has a player inside, and its fireballs are entities that are never saved;
   preparation's `core.after(0)` chain only while one is under way. An admin `/teleport` out
   is not noticed: the player counts as inside until logout.
 - **Preparation** (`preparation.lua`, its header has the order and why): objects out,
