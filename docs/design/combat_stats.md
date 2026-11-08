@@ -1164,7 +1164,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
     way or left the range**, one case. Walking stays with the navigation,
     whose give-up drops nothing for these bosses; a king stuck at a shut door
     falls to the 15 s rule. Without a floor (an Expedition template without
-    an envelope) the navigation's give-up is the "no way".
+    an envelope) the navigation's give-up is the "no way". In practice a
+    King's floor is his castle (measured in Round 72): a target outside the walls, more
+    than about 3 nodes from the gate or from an inner floor cell, resets him
+    at once.
   - **The one-way window.** The current target who has no way or left the
     range, also by a teleport, has left, and so has one who logged out; a
     death is no leaving, and a player the boss turned from on the floor (a

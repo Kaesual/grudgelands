@@ -5,9 +5,11 @@ sealed mine far beyond the map, fights through it and takes the reward at its en
 Every run is written anew, so an Expedition can be played again and again.
 
 **Decided** by the user, 2026-11-07; the framework and The Stilled Seam (levels 20–69)
-are implemented in Round 71 (`grug_expeditions`). This file owns the game rules and their
-numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the record of
-the rulings; [Round 71](../planning/round71-plan.md) holds what shipped. How it is built:
+are implemented in Round 71 (`grug_expeditions`), The Second Shift, The Last Mint, the
+traps, the Expeditions tab and the reshaped rooms in Round 72. This file owns the game rules
+and their numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the
+record of the rulings; [Round 71](../planning/round71-plan.md) and
+[Round 72](../planning/round72-plan.md#completion-2026-11-08) hold what shipped. How it is built:
 [module guide](../technical/module-guide.md#expeditions),
 [template format](../technical/expedition-template-format.md).
 
@@ -25,8 +27,8 @@ Three Expeditions, each over a wide level range (user, 2026-11-07, [concept
 
 | Expedition | Mob levels | Most players inside | State |
 |---|---|---:|---|
-| The Stilled Seam | 20–69 | 3 at every level | implemented |
-| The Second Shift | 40–69 | 4 | implemented (Round 72) |
+| The Stilled Seam | 20–69 | 3 at every level | implemented in Round 71, reshaped in Round 72 (§13) |
+| The Second Shift | 40–69 | 4 | implemented in Round 72 (§14) |
 | The Last Mint | 60–69 | 4 | implemented in Round 72 (§15) |
 
 **Every 10 levels the tier follows:** the reward, the ore and the gem. The ore is what that
@@ -43,6 +45,16 @@ Anthracite is the Steel input (user, 2026-11-07; the story keeps its gold workin
 
 An Expedition lasts 10–20 minutes, is balanced for 3–4 players and runs in a line at
 first. Floor plans are 2D on one main floor for now; the template format stays 3D.
+
+**Rooms** (user, 2026-11-08): an Expedition must not read as a row of rectangular rooms.
+Walls and ceilings are irregular in plan and in height (overhangs, sloped or stepped
+ceilings, niches, ribs), and now and then a cuboid room reads as meant. **Floors are flat**
+in every room and at the bosses: no one-node step and no dais; a boss stands out by ceiling,
+pillars and light (The Last Mint's lava pillars are the mechanic, not decoration). **No pack
+can be walked round:** from every walkable floor cell of a pack's room at least one mob of
+that pack would notice the player (in its view range and in sight). Every template is
+proved for this, for at least three nodes of air over every floor cell and for no perch out
+of a pack's reach (`tools/expedition_templates/proofs.lua`).
 
 ## 2. Levels and entry
 
@@ -269,6 +281,9 @@ Every Expedition has a small storyline and a storyline quest whose goal is killi
 the Miner's Guild ran into trouble while mining and needs fighters. **All of these quests are
 optional, level 60 included:** free, not on the chained story path, without the `story` flag.
 So the rule for group quests below 51 holds ([quests](quests.md#group-quests-round-61)).
+
+Every character gets the **Expedition Registrar's letter** at level 20, always, or at the
+next login when already above it ([mail](mail.md) §8, Round 72).
 
 ## 13. The Stilled Seam
 

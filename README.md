@@ -98,10 +98,18 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.72.0** adds two Expeditions for four players, The Second Shift (levels 40 to 69) and
+The Last Mint (60 to 69, across a lava lake), with traps, reshapes The Stilled Seam, and lets
+you enter your Expedition from any waystone or your Claim Stone. Fights now start when a mob
+targets you; you cannot build in combat; Kings and bosses reset when they cannot reach you;
+guards you hit from out of reach heal and go home; the ranged Kings shoot; nobody rides in an
+enemy town; and nametags show friend and foe. This update is compatible; desktop and web
+acceptance is pending.
+
 **0.71.0** adds Expeditions: repeatable group content in sealed mines beyond the map. The first
 is The Stilled Seam, levels 20 to 69: pick its level at the Expedition Registrar in your capital's
 guild house, bring a Warrior and a healer, fight packs that never give up, and take your own
-share of the chest behind Flintback. This update is compatible.
+share of the chest behind Flintback. This update is compatible and accepted on desktop and web.
 
 **0.70.0** gives every King a castle in a larger capital, with a new throne
 room; rebuilds the six start towns around a free waystone; adds the
@@ -111,7 +119,7 @@ rare sources easy to find. Decorative plants can be picked up and placed,
 potions go to the belt first, a death wears your gear by 10% unless an
 enemy player hit you just before, Kings rise to level 70, and fighting
 above your level costs damage from the first level. This update needs a
-map reset; desktop and web acceptance is pending.
+map reset; it is accepted on desktop and web.
 
 **0.69.0** adds a Trash box to the Inventory tab, with Undo for the last
 item; you now respawn at your home, a Claim Stone included; every damaging
@@ -458,11 +466,11 @@ investigations and delivery records.
 | Area | Design documents |
 |------|------------------|
 | World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns, capitals and fortified mining camps; [story](docs/design/story.md): factions and the campaign. |
-| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
+| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses, combat state, boss resets and friend and foe nametags; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit; [Miner's Guild](docs/design/miners_guild.md): mining camps, lifts, reputation and the guild's goods. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags, crafting stations and the approved UI presentation rules; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
-| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [Expeditions](docs/design/expeditions.md): repeatable group content beyond the map, its levels, owners, packs and rewards; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers, including the shared Round 64 icons and bounded placement. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [Expeditions](docs/design/expeditions.md): repeatable group content beyond the map, its levels, owners, packs, traps and rewards, and the Expeditions tab on waystones; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers, including the shared Round 64 icons and bounded placement. |
 | Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 

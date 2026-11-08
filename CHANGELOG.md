@@ -12,6 +12,45 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.72.0 — two more Expeditions, fights that end fairly, friend and foe (2026-11-08)
+
+Two new Expeditions with traps, an easier way back in, and fights that start and end the
+way they look. Compatible: no map reset, no new world, nothing for the host to do.
+
+- **The Second Shift, levels 40 to 69, for four players:** a mine whose dead shift still
+  works for Auditor Nemm's branded pay. Skeleton raiders and buried miners hold it, and Nemm
+  marks the floor under his target every twelve seconds: step out of the red ring.
+- **The Last Mint, levels 60 to 69, for four players:** a branding works behind a furnace
+  that became a lava lake. Cross it by jumping from pillar to pillar between fireballs; a
+  fall is death, and you cannot return home from the lava. Duewarden waits at the press.
+- **Traps:** floor traps show a red ring for a moment before they strike and stay marked
+  once they have fired; wall traps fire a fireball on a fixed beat. They hurt players only.
+- **The Stilled Seam is reshaped:** smaller, shaped rooms, and in every Expedition the
+  ceilings and walls have character while the floors stay flat. No pack can be walked
+  past without it noticing you.
+- **Undead characters beware:** Expedition mobs ignore the zombies' truce, and they notice a
+  high-level player as early as anyone.
+- **The Expeditions tab:** every waystone and your Claim Stone now have a tab that lists the
+  Expedition you may enter and takes you in. The two waystones inside an Expedition take you
+  to any of your waystones. At level 20 a letter from the Expedition Registrar tells you
+  where to start. Each new Expedition has an optional party quest from the guild leaders.
+- **Combat starts when you are targeted:** a mob that has picked you is a fight, even before
+  it hits you, so you cannot mount, eat or travel away from it.
+- **No building in a fight:** in combat you cannot place blocks, ladders, doors or water;
+  torches still work. Nobody can place a block where someone stands, and sand that would
+  land on someone falls as an item.
+- **Kings and bosses:** a King who cannot reach you, or whom you lead too far from his
+  throne, resets: healed, his guards back, the fight gone, unless a party member taunts
+  him at once. A boss that has not attacked for 15 seconds resets too. The Elf, Undead and
+  Troll Kings now shoot and walk round cover to see you.
+- **Guards out of reach:** a guard or captain who cannot reach you heals and walks home
+  untouchable within about a second. A ladder still gets you away.
+- **No mounts in enemy towns:** you cannot ride or sail in an enemy start town or capital,
+  and a rider who crosses into one is dismounted.
+- **Friend and foe:** nametags show green for your side and red for the other; people who
+  never fight are light green or light red. The red tag appears only when an enemy is near.
+- **Bladecraft** now shows the bow in your hand after a shot and the blade after a swing.
+
 ## 0.71.0 — Expeditions and The Stilled Seam (2026-11-08)
 
 The first Expedition: repeatable group content for up to three players. Compatible: no map

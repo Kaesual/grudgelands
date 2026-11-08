@@ -204,7 +204,7 @@ grug_classes.register_race({
 grug_classes.register_race({
 	id = "undead", name = "Undead", faction = "throng",
 	description = "Risen from the blighted lands of the west.\n" ..
-		"Passive: zombies and husks leave you alone, day and night, unless attacked.",
+		"Passive: zombies and husks leave you alone, day and night, unless attacked (not in Expeditions).",
 	perks = {zombie_truce = true},
 })
 
