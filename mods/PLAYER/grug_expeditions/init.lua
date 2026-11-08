@@ -3,8 +3,9 @@
 -- file, the owner's players enter it, and it ends when nobody has been inside for
 -- 10 minutes. Rules: docs/planning/round71-expeditions-concept.md sections 2, 4, 5.
 -- Nothing about a run is saved: a restart ends every run, a login in a box whose
--- run is gone stands in the capital the player came from (one saved value, the
--- capital's id), else at home. Packs: packs.lua.
+-- run is gone stands at the waystone the player came in from (one saved value, its
+-- id; a registrar's capital, or since Round 72 any waystone of the Expeditions tab),
+-- else at home. Packs: packs.lua. The waystones in and out: entry.lua.
 --
 -- THE INTERFACE (other mods read it; a `run` row is read-only for them)
 --
@@ -51,13 +52,21 @@
 --   eligibility(player, id, bonus) one row per party member (or the player alone):
 --                                  {name, level, online, eligible, reason}
 --   can_create(player, id, bonus)  true, or false and why
---   can_enter(player[, run])       true, or false and why
+--   may_enter(player[, run])       the run's own rules (owner, state, level, places):
+--                                  true, or false and why; what the Expeditions tab lists
+--   can_enter(player[, run])       may_enter and the player's state (alive, out of
+--                                  combat): true, or false and why
 --
 -- Acting (the caller shows the refusal):
 --   create(player, id, bonus)  the run, or nil and why; the state is "preparing"
---   enter(player, capital_id)  starts the trip in, or false and why; capital_id is a
---                              grug_home location id, where the way back leads
---   leave(player)              the way out of both waystones
+--   enter(player, capital_id[, still])  starts the trip in, or false and why;
+--                              capital_id is a grug_home waystone id, where the way
+--                              back leads; still(player), when given, is one more
+--                              condition on the trip's step
+--   leave(player)              the way back to that waystone (scripted; the two stones
+--                              open the waystone window, entry.lua)
+--   use_waystone(player, pos)  a stone inside: the waystone window without the
+--                              Expeditions tab (Round 72)
 --   end_run(run, reason)       ends it at once
 --   open_door(run)             takes the reward door away and tells those inside
 --   open_registrar(player, entity)  the registrar's window; false for a player it
@@ -108,7 +117,8 @@ dofile(path .. "/encounters.lua")
 dofile(path .. "/guard.lua")
 dofile(path .. "/registrar.lua")
 
--- The two stones inside: the capital's waystone in look, the way back in function.
+-- The two stones inside: the capital's waystone in look, and since Round 72 the
+-- ordinary waystone window in function (entry.lua).
 core.register_node("grug_expeditions:waystone", {
 	description = "Waystone",
 	drawtype = "nodebox",
@@ -124,7 +134,9 @@ core.register_node("grug_expeditions:waystone", {
 	drop = "",
 	on_blast = function() end,
 	sounds = default.node_sound_stone_defaults(),
-	on_rightclick = function(_, _, clicker)
-		if clicker and clicker:is_player() then grug_expeditions.use_waystone(clicker) end
+	on_rightclick = function(pos, _, clicker)
+		if clicker and clicker:is_player() then grug_expeditions.use_waystone(clicker, pos) end
 	end,
 })
+
+dofile(path .. "/entry.lua")

@@ -961,7 +961,13 @@ WP17).
   it, discovers it with one flash and chat line "Waypoint discovered: <name>".
   The character's own start counts as discovered from creation.
 - **Right-click** opens the list of the seven own-faction waypoints: "You are
-  here", **Travel** (discovered) or a greyed "Not yet visited".
+  here", **Travel** (discovered) or a greyed "Not yet visited". Since Round 72
+  the window has two tabs, **Waystones** (this list, shown first) and
+  **Expeditions**: the Expedition the player may enter, with **Enter**, else one
+  line saying why or pointing to the Expedition Registrar
+  ([expeditions.md](expeditions.md) §4). The two waystones inside an Expedition
+  open the same list without the Expeditions tab and without "You are here";
+  they are never a destination themselves.
 - **The own Claim Stone** (Round 45 PT9): every list ends with "Your Claim
   Stone", a waypoint for its owner only, once the stone is activated (a draft
   is none); it stays one when its fuel runs out and goes with the stone

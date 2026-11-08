@@ -9,8 +9,9 @@ local by_party = {}       -- party id -> a party-owned run
 local inside_of = {}      -- name -> the run the player stands in
 local next_id = 0
 local hooks = {ready = {}, ended = {}, entered = {}, left = {}}
--- Saved player meta: the capital of the last way in, for a login or a respawn that
--- outlives the run; and a pending logout death (packs.lua).
+-- Saved player meta: the waystone of the last way in (a capital's at the registrar),
+-- for a login or a respawn that outlives the run; and a pending logout death
+-- (packs.lua).
 local META_ORIGIN = "grug_expeditions:origin"
 M.LOGOUT_DEATH = "grug_expeditions:logout_death"
 
@@ -173,7 +174,9 @@ function M.can_create(player, id, bonus)
 	return true
 end
 
-function M.can_enter(player, run)
+-- The run's own rules, whatever the player's state: owner, state, level and places.
+-- What the Expeditions tab lists (entry.lua); can_enter adds the player's state.
+function M.may_enter(player, run)
 	run = run or M.run_of(player)
 	if not run then return false, "You have no Expedition." end
 	local name = name_of(player)
@@ -187,6 +190,12 @@ function M.can_enter(player, run)
 	if not run.entered[name] and count(run.entered) >= run.max_players then
 		return false, "This Expedition is full."
 	end
+	return true
+end
+
+function M.can_enter(player, run)
+	local ok, why = M.may_enter(player, run)
+	if not ok then return false, why end
 	if player:get_hp() <= 0 then return false, "You cannot travel now." end
 	if grug_core.in_combat(player) then return false, "Cannot travel in combat." end
 	return true
@@ -390,7 +399,10 @@ grug_parties.register_on_change(function(name, reason)
 	end
 end)
 
-function M.enter(player, capital)
+-- `capital`: the waystone the way back leads to (a registrar's capital, or since
+-- Round 72 the waystone of the Expeditions tab). `still(player)`, when given, is one
+-- more condition asked on the trip's step (the tab's: still at the stone).
+function M.enter(player, capital, still)
 	local ok, reason = M.can_enter(player)
 	if not ok then return false, reason end
 	if not grug_home.waystone_pos(capital) then return false, "That is no way in." end
@@ -400,9 +412,10 @@ function M.enter(player, capital)
 		pos = run.places.arrival,
 		unavailable = "The way into the Expedition could not be prepared.",
 		check = function(p)
-			local still, why = M.can_enter(p, run)
-			if not still then notice(p, why) end
-			return still
+			local stands, why = M.can_enter(p, run)
+			if stands and still and not still(p) then stands, why = false, "Travel canceled." end
+			if not stands then notice(p, why) end
+			return stands
 		end,
 		arrival = function()
 			local arrival = grug_home.safe_arrival(M.start_arrival(run))
@@ -417,8 +430,9 @@ function M.enter(player, capital)
 	return true
 end
 
--- The way out of both waystones: to the capital the player came from, no
--- cooldown, through the same travel path.
+-- The way back to the capital the player came from, no cooldown, through the same
+-- travel path. Round 71's stones; since Round 72 they open the waystone window
+-- (entry.lua) and this stays the scripted way out.
 function M.leave(player)
 	local name = name_of(player)
 	local run = inside_of[name]
@@ -433,11 +447,6 @@ function M.leave(player)
 		arrival = function() return grug_home.waystone_arrival(origin) end})
 	if not started then return false, "Travel is already being prepared." end
 	return true
-end
-
-function M.use_waystone(player)
-	local ok, reason = M.leave(player)
-	if not ok then notice(player, reason) end
 end
 
 preparation.init(catalogue, function(player)

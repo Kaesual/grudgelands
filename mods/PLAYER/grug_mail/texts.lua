@@ -35,6 +35,18 @@ return {
 			"you can close behind you.\n\n" ..
 			"Housing Steward",
 	},
+	-- Round 72 (round72-plan.md section 2.10): the user asked the coordinator
+	-- to write it; the plan holds the text.
+	registrar = {
+		subject = "A line in the guild's ledger",
+		body = "Your name has come up at the Miners' Guild, {player}.\n\n" ..
+			"The old workings under our lands were sealed for good reasons, and the guild " ..
+			"sends small parties to open them again. Come to the guild house in {capital} " ..
+			"and ask for me; I will tell you which Expeditions your party may take on. " ..
+			"Bring companions you trust. The deep pays better than the surface, but it does " ..
+			"not forgive a lone miner.\n\n" ..
+			"Expedition Registrar",
+	},
 	quest = {
 		title = "Use a mailbox in one of the cities",
 		description = "Someone has written to you, and for once you needn't hunt anything to " ..
