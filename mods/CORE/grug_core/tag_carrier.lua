@@ -159,10 +159,11 @@ end
 -- Fills row.faction and row.kind: "combat" (green and red), "npc" (light
 -- green and light red) or nil (the category colour for every viewer).
 -- A player is read on every visit (the faction is chosen after joining);
--- a mob keeps its faction once known. A fighting mob carries _grug_faction,
--- set on its first do_custom tick, so a guard waits for it in its old colour
--- instead of reading the settlement; a peaceful resident (category npc)
--- belongs to its settlement's faction. A capital display is no unit.
+-- a mob keeps its faction once known. A fighting mob carries _grug_faction
+-- (grug_mobs sets it on activation, before its carrier exists); a peaceful
+-- resident (category npc), a capital's display included, belongs to its
+-- settlement's faction (user ruling 2026-11-08: every NPC and guard is friend
+-- or foe, no violet or lavender).
 local function resolve_unit(row)
 	if row.is_player then
 		local faction = grug_core.get_player_object_faction(row.parent)
@@ -174,7 +175,7 @@ local function resolve_unit(row)
 	if not entity then return end
 	if entity._grug_faction then
 		row.faction, row.kind = entity._grug_faction, "combat"
-	elseif row.category == "npc" and not entity._grug_capital_display then
+	elseif row.category == "npc" then
 		local faction = settlement_faction(entity._grug_start)
 		if faction then row.faction, row.kind = faction, "npc" end
 	end

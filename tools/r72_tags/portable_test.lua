@@ -282,7 +282,7 @@ players[1], players[2], players[3], players[4] = player("acc", "accord", 1),
 local fresh = mob({name = "grug_mobs:guard_accord", _grug_start = "highcourt"}, 0)
 local fresh_tag = grug_core.create_tag_carrier(fresh.object)
 grug_core.set_tag_carrier_text(fresh_tag, "Guard")
-eq(fresh_tag.props.nametag_color, "#b76cff", "E: a guard before its first tick keeps violet")
+eq(fresh_tag.props.nametag_color, "#b76cff", "E: a guard entity without a faction keeps violet (grug_mobs sets it on activation, so no guard in the game shows this)")
 pass()
 eq(#children(fresh), 1, "E: no foe tag before the faction is known")
 eq(names(fresh_tag.observers), "acc,thr", "E: everyone sees the one violet tag meanwhile")
@@ -312,10 +312,12 @@ pass()
 eq(wolf_tag.props.nametag_color, RED, "E: an aggressive mob stays red")
 eq(stag_tag.props.nametag_color, "#ffd447", "E: a neutral mob stays yellow")
 eq(sentinel_tag.props.nametag_color, RED, "E: the Bedrock Sentinel is no guard: red like any aggressive mob")
-eq(display_tag.props.nametag_color, "#d8c5ff", "E: a capital display keeps lavender")
-for _, unit in ipairs({wolf, stag, sentinel, display}) do
+-- User ruling 2026-11-08: a capital display belongs to its capital's faction.
+eq(display_tag.props.nametag_color, "#b9f5b0", "E: a capital display is light green for its own side")
+for _, unit in ipairs({wolf, stag, sentinel}) do
 	eq(#children(unit), 1, "E: " .. unit.name .. " has one carrier with both sides near")
 end
+eq(#children(display), 2, "E: a capital display has a foe tag for the other side")
 -- A king (aggressive by disposition) with a faction is a faction unit.
 local king = mob({name = "grug_mobs:king_human", _grug_disposition = "aggressive",
 	_grug_faction = "accord", health = 90}, 0)

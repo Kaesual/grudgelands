@@ -1543,15 +1543,18 @@ viewer of the other side is within tag range** and is made and removed by
 the same central pass, which reads each viewer's faction once per snapshot.
 The text reaches both carriers; the HP bar and the visibility callbacks see
 both sides' observers together. A fighting mob's faction is its
-`_grug_faction` (set on its first tick: until then a guard keeps the guard
-colour); a peaceful NPC's is its settlement's. A summoned add carrying its
-King's faction counts as a faction unit too.
+`_grug_faction` (from its definition, set when it activates, so a guard or
+King is never shown in another colour); a peaceful NPC's is its
+settlement's, a capital's mount and gear displays included. A summoned add
+carrying its King's faction counts as a faction unit too. Every NPC and
+guard is friend or foe (user ruling, Round 72): the guard violet and NPC
+lavender categories remain as settings but no NPC or guard shows them.
 
 Everything else keeps one colour for all viewers, with the existing 25/30 m
 observer hysteresis: mobs without a faction stay red when aggressive, yellow
 when neutral and white as critters (the Bedrock Sentinel is an aggressive
-mob, no guard, since Round 72), a capital's mount and gear displays the NPC
-lavender, and a player without a faction stays white. Ten categories have configurable
+mob, no guard, since Round 72), and a player without a faction stays white.
+Ten categories have configurable
 foreground/background RGBA settings loaded once at server start: aggressive,
 neutral, guard, npc, player, critter, friend, foe, npc_friend, npc_foe.
 Defaults are red/yellow/violet/light lavender/white/white/green/red/light

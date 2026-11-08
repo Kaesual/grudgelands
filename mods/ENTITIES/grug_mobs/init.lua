@@ -860,6 +860,12 @@ function grug_mobs.register_mob(name, def)
 		if old_tag_after_activate then
 			old_tag_after_activate(self, staticdata, mob_def, dtime)
 		end
+		-- The definition's faction from the first moment (do_custom stores it
+		-- again on the first tick): a guard or King never shows a colour
+		-- other than friend or foe (user ruling 2026-11-08).
+		if faction and not self._grug_faction then
+			self._grug_faction = faction
+		end
 		-- Round 67 ruling 25: no nametag on a critter (levels.lua).
 		if grug_mobs.wants_nametag(self) then
 			grug_mobs.ensure_tag_carrier(self)
