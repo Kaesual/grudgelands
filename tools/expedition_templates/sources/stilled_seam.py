@@ -128,6 +128,8 @@ def prop_room(t):
     # Pairs of heavy timbers are in the walls, never free-standing sight screens.
     for z in (20, 28, 35):
         for x in (98, 120):
+            if (x, z) == (98, 20):
+                continue  # the cut into the room stays clear (STYLE review)
             t.box(x, FEET, z, x, ROOM_TOP, z, POST)
         for x in range(99, 119):
             if (x, z) in cells_of(ROOMS["prop_room"]):

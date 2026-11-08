@@ -351,7 +351,8 @@ def shape(t):
     # Vestibule die cupboards, capped into the outer wall.
     for z in (54, 64):
         t.box(49, 35, z, 49, 37, z + 2, STEEL)
-        t.box(78, 35, z, 78, 37, z + 2, STEEL)
+        # The east cupboard stops short of the passage from z 56 (STYLE review).
+        t.box(78, 35, z, 78, 37, z + (1 if z == 54 else 2), STEEL)
     for x in (61, 66):
         t.box(x, FLOOR_Y, 13, x, FLOOR_Y, 36, STEEL)
     for z in (54, 65):
