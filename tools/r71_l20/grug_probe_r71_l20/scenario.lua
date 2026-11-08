@@ -7,7 +7,12 @@ local QUEST, GIVER = "capital_stilled_seam", "r58_guild_leader_highcourt"
 local FEET = 5
 local HP = {[20] = {normal = 384, elite = 1152, boss = 9216}, [29] = {normal = 720, elite = 2160, boss = 17280}}
 -- Where the probe stands to wake a room.
-local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 100, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
+-- Round 72 PROOF: pack c's 100,66 lies in rock since STYLE's smaller rooms; 104,66.
+local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 104, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
+-- One shot per room at eye height, facing what the room is about (Round 72 PROOF): the
+-- cleared chambers of packs a to d, after the chest, so no pulled pack follows the shots.
+local TOUR = {{"room1", 50, 20, -0.896}, {"room2", 100, 30, -1.736}, {"room3c", 108, 66, 0},
+	{"room3d", 100, 96, -0.519}}
 
 local function rel(run, x, y, z) return vector.add(run.minp, vector.new(x, y, z)) end
 local function feet(pos) return {x = pos.x, y = pos.y - 0.5, z = pos.z} end
@@ -203,16 +208,11 @@ return function(lib, player)
 	lib.logf("arrival %s; start %s", core.pos_to_string(vector.round(player:get_pos())),
 		core.pos_to_string(E.start_arrival(run)))
 
-	-- The look of each room, from its door, mobs asleep at the far end.
+	-- The look of the arrival towards its waystone, and of the working face from its cut,
+	-- Flintback asleep beyond his view; the other rooms once cleared (TOUR).
 	go(lib, player, run, 20, 12, 0)
 	shot(lib, player, "room0")
-	go(lib, player, run, 50, 20, -math.pi / 2)
-	shot(lib, player, "room1")
-	go(lib, player, run, 98, 30, -math.pi / 2)
-	shot(lib, player, "room2")
 	local a = prove_wander(lib, player, run, 108, 52, 30)
-	go(lib, player, run, 108, 66, math.pi)
-	shot(lib, player, "room3")
 	local b = prove_wander(lib, player, run, 88, 108, 30)
 	go(lib, player, run, 50, 108, -math.pi / 2)
 	shot(lib, player, "room4")
@@ -228,7 +228,7 @@ return function(lib, player)
 	lib.logf("quest status after the kill: %s", tostring(Q.status(player, QUEST)))
 	lib.check(core.get_node(places.door).name == "air" and
 		#core.find_nodes_in_area(run.minp, run.maxp, "grug_expeditions:reward_door") == 0, "the door opened")
-	go(lib, player, run, 30, 108, -math.pi / 2)
+	go(lib, player, run, 30, 108, math.pi / 2)
 	shot(lib, player, "room5")
 	open_chest(lib, player, run, 20)
 
@@ -255,6 +255,10 @@ return function(lib, player)
 	node = core.get_node(rock)
 	core.registered_nodes[node.name].on_dig(rock, node, player)
 	lib.check(core.get_node(rock).name == node.name, "the hull behind it stands")
+	for _, row in ipairs(TOUR) do
+		go(lib, player, run, row[2], row[3], row[4])
+		shot(lib, player, row[1])
+	end
 
 	-- The quest, turned in at its giver.
 	local xp, copper = grug_xp.get_xp(player), grug_money.get(player)

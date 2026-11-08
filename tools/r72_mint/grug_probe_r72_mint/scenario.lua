@@ -15,6 +15,11 @@ local FAR_ROOMS = {{"pack_c", 108, 20}, {"pack_d", 64, 60}, {"boss", 64, 34}}
 -- The tops in crossing order: the approach landing, five pillars, the exit landing (z).
 local TOPS = {{76, 80}, {70, 74}, {64, 68}, {58, 62}, {52, 56}, {46, 50}, {40, 44}}
 local CROSS_X = 107.5
+-- One shot per room at eye height, facing what the room is about (Round 72 PROOF), at 60
+-- once the room's pack is dead; the lake and the hall have their own.
+local NEAR_TOUR = {{"arrival", 31, 106, 1.571}, {"bins", 50, 108, -1.768}, {"furnace", 96, 108, -2.034}}
+-- The far rooms once Duewarden is dead too: no boss resets while the probe is away.
+local FAR_TOUR = {{"store", 31, 20, 1.340}, {"cooling", 108, 30, math.pi}, {"vestibule", 80, 60, math.pi / 2}}
 
 local function rel(run, x, y, z) return vector.add(run.minp, vector.new(x, y, z)) end
 local function feet_at(run, x, z) return rel(run, x, FEET - 0.5, z) end
@@ -45,6 +50,13 @@ local function shot(lib, name)
 	lib.wait(3)
 	lib.logf("BURST %s_%s", name, tostring(lib.tag))
 	lib.wait(1)
+end
+
+local function tour(lib, player, run, rows)
+	for _, row in ipairs(rows) do
+		go(lib, player, run, row[2], row[3], row[4])
+		shot(lib, row[1])
+	end
 end
 
 -- Wakes the rooms, holds their mobs against the template and kills them, room by room.
@@ -232,6 +244,8 @@ return function(lib, player)
 	lib.check(trap_hits >= 1, "a floor trap hits the character")
 	lib.check(core.get_node(trap.cell).name == "grug_expeditions:trap_mark", "its mark")
 
+	tour(lib, player, run, NEAR_TOUR)
+
 	-- The lake, from the approach landing, both ways.
 	go(lib, player, run, CROSS_X, 78.5, math.pi)
 	lib.wait(0.5)
@@ -261,6 +275,9 @@ return function(lib, player)
 	lib.check(player:get_hp() <= 0 and ticks + other <= 5 and ticks >= 4, "about five ticks kill a full pool")
 	lib.wait(1)
 	player:respawn()
+	-- The client keeps builtin's death screen open after a respawn from the server: it hid
+	-- the hall's shot in the lane's run (Round 72 PROOF).
+	core.close_formspec(lib.NAME, "__builtin:death")
 	lib.wait(3)
 	lib.check(E.run_inside(player) == run and
 		vector.distance(player:get_pos(), E.start_arrival(run)) < 2, "respawned at the start waystone")
@@ -280,6 +297,7 @@ return function(lib, player)
 	lib.check(core.get_node(places.door).name == "air", "the door opened")
 	lib.logf("quest status after the kill: %s", tostring(Q.status(player, QUEST)))
 	open_chest(lib, player, run, 60)
+	tour(lib, player, run, FAR_TOUR)
 	local diamond = rel(run, 31, FEET + 1, 11)
 	lib.check(core.get_node(diamond).name == "grug_materials:stone_with_diamond", "the store's Diamond")
 	go(lib, player, run, 29, 11, -math.pi / 2)
