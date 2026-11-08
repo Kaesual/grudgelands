@@ -6,7 +6,8 @@
 local E = grug_expeditions
 local QUEST, GIVER = "capital_stilled_seam", "r58_guild_leader_highcourt"
 local FEET = 5
-local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 100, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
+-- Round 72 PROOF: pack c's 100,66 lies in rock since STYLE's smaller rooms; 104,66.
+local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 104, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
 local T2_ORE, T2_GEM = "grug_materials:stone_with_anthracite", "grug_materials:stone_with_jade"
 -- Two ore places and one gem place of the store, each with a cell to stand on.
 local ORE_AT, GEM_AT = {{31, 92, 29}, {31, 100, 29}}, {8, 108, 10}
@@ -162,7 +163,7 @@ local function one_run(lib, player, level, player_level, picks, quest)
 		dig_with(player, rock, picks.fit)
 		lib.check(core.get_node(rock).name == hull, "the hull behind it stands")
 	end
-	E.use_waystone(player)
+	E.leave(player)
 	lib.wait_for(function() return E.run_inside(player) == nil end, 40)
 	E.end_run(run, "probe")
 end

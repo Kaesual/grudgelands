@@ -286,6 +286,50 @@ function grug_mounts.flight_state(player, pos)
 	return column_flight_state(grug_factions.get_faction(player), pos.x, pos.z)
 end
 
+-- No mount or boat in an enemy town (Round 72 ruling 2.7): a start town or
+-- capital city (its hard "town" footprint, grug_zones.hard_footprint_in) of
+-- the other faction. The summon refusal and the per-step dismount ask
+-- grug_mounts.enemy_town_at, for every tier. A town's faction is its
+-- settlement's: the race of the settlement whose anchor lies in the
+-- footprint (as grug_map location.lua finds a town), the race's faction from
+-- the start identities. Built at the first question, after every settlement
+-- is registered; without the world authority (a bare test world) there are
+-- no towns.
+local ENEMY_TOWN_REFUSAL = "Mounts and boats are forbidden in enemy towns."
+local ENEMY_TOWN_DISMOUNT = "You entered an enemy town and were dismounted."
+local town_factions
+
+local function town_faction_table()
+	if town_factions then return town_factions end
+	town_factions = {}
+	if not (grug_core.zone_authority_installed and grug_core.zone_authority_installed()) then
+		return town_factions
+	end
+	local faction_of_race = {}
+	for _, identity in ipairs(grug_core.start_identities()) do
+		faction_of_race[identity.race_id] = identity.faction_id
+	end
+	for _, row in ipairs(grug_core.settlement_socket_settlements()) do
+		local a = row.anchor
+		local id, kind = grug_zones.hard_footprint_in(a.x, a.z, a.x, a.z)
+		if kind == "town" and faction_of_race[row.race_id] then
+			town_factions[id] = faction_of_race[row.race_id]
+		end
+	end
+	return town_factions
+end
+
+-- Whether column (x, z) lies in a town of the other faction; never for a
+-- character without a faction.
+function grug_mounts.enemy_town_at(faction, x, z)
+	if faction ~= "accord" and faction ~= "throng" then return false end
+	local towns = town_faction_table()
+	if next(towns) == nil then return false end
+	local id = grug_zones.hard_footprint_in(x, z, x, z)
+	local town = id and towns[id]
+	return town ~= nil and town ~= faction
+end
+
 -- 16 directions x 7 distances; the rider's faction is read once per sweep
 -- (Round 30, perf review #14).
 function grug_mounts.warning_state(player, pos)
@@ -634,6 +678,17 @@ local entity_definition = {
 			grug_mounts.dismount(player, is_water(pos) and WATER_DISMOUNT or LAVA_DISMOUNT, true)
 			return
 		end
+		-- An enemy town (ruling 2.7), every tier: asked only when the mount
+		-- enters another column (the first step asks too). The rider stays
+		-- where the mount was; a boat's rider in the water.
+		local column_x, column_z = math.floor(pos.x + 0.5), math.floor(pos.z + 0.5)
+		if column_x ~= record.town_x or column_z ~= record.town_z then
+			record.town_x, record.town_z = column_x, column_z
+			if grug_mounts.enemy_town_at(grug_factions.get_faction(player), column_x, column_z) then
+				grug_mounts.dismount(player, ENEMY_TOWN_DISMOUNT, true)
+				return
+			end
+		end
 		if tier.mode == "flight" then
 			local legal = grug_mounts.flight_state(player, pos)
 			if not legal then
@@ -831,6 +886,10 @@ local function summon_position(player, tier_id)
 	for index = 1, #summon_guards do
 		local refusal = summon_guards[index](player, pos)
 		if refusal then return nil, refusal end
+	end
+	if grug_mounts.enemy_town_at(grug_factions.get_faction(player),
+			math.floor(pos.x + 0.5), math.floor(pos.z + 0.5)) then
+		return nil, ENEMY_TOWN_REFUSAL
 	end
 	if tier.mode == "water" then
 		-- On a boat the player's position is the boat's, on the water surface:

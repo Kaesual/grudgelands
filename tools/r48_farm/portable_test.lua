@@ -293,6 +293,8 @@ grug_mapgen = {wp40 = {planner_source = {}, vegetation = {
 grug_materials = {TIERS = {}}
 grug_core.natural_renewal_allowed = function() return true end
 grug_core.combat_eye_pos = function(player) return player:get_pos() end
+-- Round 72: the placement rules have their own fixture (tools/r72_place).
+grug_core.placement_refused = function() return false end
 real_dofile(repo .. "/mods/ITEMS/grug_farming/init.lua")
 for _, name in ipairs({grug_farming.SOIL_DRY, grug_farming.SOIL_WET}) do
 	C.register_node(name, {walkable = true, groups = {soil = 2, grug_crop_soil = 1},

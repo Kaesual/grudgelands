@@ -551,6 +551,8 @@ rawset(_G, "grug_expeditions", {
 grug_mobs.set_spawn_free_field = function() end
 grug_mounts.register_summon_guard = function() end
 grug_core.register_world_exception = function() end
+-- Round 72 (MINT): guard.lua also holds the boxes' lava; tools/r72_mint tests it.
+grug_core.register_lava_hold = function() end
 dofile(repo .. "/mods/PLAYER/grug_expeditions/guard.lua")
 local capital_feet = home.waystone_arrival("highcourt")
 local function boxed(origin)

@@ -530,6 +530,11 @@ tools](#player-meta-read-by-external-tools).
   Round 30 section H the riding-tier purchases at the shipped prices). The
   flight-border sweep reads the faction once and each column's zone id
   (`grug_zones.id_at`), never a copied zone record per sample (Round 30).
+  Since Round 72 `grug_mounts.enemy_town_at(faction, x, z)` (`entity.lua`) is
+  the one enemy-town rule (mounts.md §4.4): a lazily built table from the hard
+  `town` footprints to their settlement's faction, asked by `summon_position`
+  after the summon guards and by the mount's step when it enters another
+  column. Fixture `tools/r72_mounts`.
 
 ## R7 audit boundary
 
@@ -561,7 +566,14 @@ tools](#player-meta-read-by-external-tools).
   central dodge roll (hp-change modifier), `in_combat` (mob engagement via
   `engage_mob`/`disengage_mob`, a timer via `mark_in_combat(player, seconds)`:
   5 s for PvP hits and untracked sources, 10 s for PvP contact; combat_stats
-  §5). The PvP seam `grug_core.pvp_can_harm`/`pvp_hit_landed` is installed by
+  §5; since Round 72 a mob engages its target when it takes it, through the
+  `do_attack` wrapper in `grug_mobs.register_mob`, `holds_target`).
+  **Placement** (Round 72, `grug_core/placement.lua`, combat_stats.md
+  "Placement in combat and around bodies"): one wrapper round
+  `core.item_place_node` and one round the falling node's `try_place`; code that
+  writes a node with its own `set_node` (doors, beds, the bucket, the notice
+  board, the Claim Stone) asks `grug_core.placement_refused(placer, node_name,
+  cells)` itself, and `grug_core.body_in_cells` is the one area query. The PvP seam `grug_core.pvp_can_harm`/`pvp_hit_landed` is installed by
   `grug_pvp` (impact re-check, crosshair ray, landed-hit contact), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
   them). Crit/dodge accessors are grug_core stubs overridden by
   grug_classes (`get_crit_chance_raw`: 5 % + 0.05 % per Dexterity point
@@ -976,7 +988,16 @@ tools](#player-meta-read-by-external-tools).
     press only). Bladecraft's is the Loose shot (`scout.lua`
     `bladecraft_shot`, never registered: Loose's interval through
     `cooldown_key = "loose"`, `occupied_swing = "weapon"`, its id
-    Bladecraft's for the unlock check).
+    Bladecraft's for the unlock check). **`shot_slot`** (Round 72,
+    Bladecraft's alone, `"weapon"`): the slot the skill shows after its
+    last real attack was a shot. `grug_abilities.show_last_attack(player,
+    shot)` is called by the shot when it flew and by Bladecraft's swing
+    callback; it records the state in `grug_visuals.show_shot` (memory
+    only, cleared on leave), re-skins the skill's stacks on both hotbar
+    layouts (the held one through `set_wielded_item(stack, true)`, no
+    re-raise) and calls `grug_visuals.apply`. The skin pass and
+    `shown_item` ask `grug_visuals.hand_slot`; `slot`, damage and both
+    clocks stay the Melee blade's. Fixture `tools/r72_bladecraft`.
   - **Readiness windows** (B8, `grug_classes/talent_windows.lua`): keyed
     by any string id. `grug_classes.open_window(player, id, {duration,
     icd, value, label})` returns true when it opened (false while its ICD
@@ -1180,7 +1201,13 @@ tools](#player-meta-read-by-external-tools).
     decides who gets one: no carrier for a critter (`_grug_disposition`) or
     a settlement resident on an `idle`/`work` socket (`_grug_socket_role`);
     `update_tag`, the shared `after_activate` and the settlement NPCs'
-    `install_nametag` ask it. Fixture `tools/r67_world`.
+    `install_nametag` ask it. Fixture `tools/r67_world`. Since Round 72 a
+    faction unit has a second, foe carrier while a viewer of the other side is
+    in range (`resolve_unit` in `tag_carrier.lua` works out the unit's faction
+    and kind; the pass reads each viewer's faction once per snapshot through
+    the stub `grug_core.get_player_object_faction`, which `grug_factions`
+    fills); callers keep their one handle, and text, the HP bar and the
+    visibility callbacks reach both carriers. Fixture `tools/r72_tags`.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
@@ -1216,7 +1243,14 @@ tools](#player-meta-read-by-external-tools).
     navigates through `mobs/grug_nav.lua` (`mobs.grug_nav`, Round 42: the
     stuck detector, the local search, the follower and the give-up rule of
     `combat_stats.md` "Navigation" and "Unreachable targets are given up",
-    `grug_mobs.give_up_target` in `aggro.lua`; Round 49 NAV2: `check_path`
+    `grug_mobs.give_up_target` in `aggro.lua`; kings, Generals and bosses
+    reset by `boss_floor.lua`, Round 72: the boss floor over `nav.cell`, the
+    one-way window, the 15 s rule, all ending in `grug_mobs.reset_home`;
+    guards, captains, the rift boss, leaders and rares carry
+    `_grug_reach_reset`, read only by `grug_mobs.reach_reset` (`aggro.lua`),
+    which switches on `nav.strict` (search the target at the pull, padding 16,
+    two failures) and makes their give-up `reset_home`, Round 72 GUARDNAV;
+    Round 49 NAV2: `check_path`
     repairs a waypoint without head room or width from the cells round it,
     a stuck episode's searches pad 6, 12, then 16 (`PADDING_STEPS`), and
     ground `dogshoot` mobs with a ranged phase navigate too, to regain sight
@@ -2305,7 +2339,12 @@ nothing and logs one line, so local and browser worlds play as without it.
   (once a second) or right-click, keeps the per-character list in player
   meta (`grug_home.known_waypoints`) and opens the travel form
   (`grug_home.use_waystone`); the refusals are pure rules in
-  `waypoints_core.lua`. The node `grug_mapgen:waystone` is registered in
+  `waypoints_core.lua`. Since Round 72 the form has the tabs Waystones and
+  Expeditions; the second is filled by `grug_expeditions` through
+  `grug_home.register_expedition_tab` (rows and enter, every rule theirs) and
+  shown on the Claim Stone too (`expedition_rows`, `expedition_from_claim`);
+  `grug_home.show_waystones` opens the list from a stone outside the network
+  (an Expedition's), without tabs. The node `grug_mapgen:waystone` is registered in
   `grug_mapgen/world_nodes.lua` before the settlement content resolves.
   Fixture `tools/r29_w/portable_test.lua`, engine probe `tools/r29_w/probe.sh`.
   Rules: [world.md](../design/world.md) §6,
@@ -2322,8 +2361,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
 `run` row is read-only for other mods.
 
 - **Nothing about a run is saved.** `runs.lua` holds the runs in memory, so a restart ends
-  them all. Two player meta keys outlive a run: `grug_expeditions:origin` (the capital's
-  location id of the last way in, for a login or respawn in a box whose run is gone) and
+  them all. Two player meta keys outlive a run: `grug_expeditions:origin` (the waystone id
+  of the last way in, a capital's at the registrar, any network stone's since Round 72's
+  Expeditions tab; for a login or respawn in a box whose run is gone) and
   `grug_expeditions:logout_death` (a pending death, set at the leave, spent at the next
   join). Mob fields sit in box blocks, which preparation wipes. Neither key is map-bound.
   Credit goes out under the stable `expedition:<catalogue id>`, never a per-run id:
@@ -2331,7 +2371,7 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
 - **No per-tick pass over players.** "Inside" follows `grug_home.register_on_teleport` and
   the leave and join callbacks (every player teleport ends in `travel.lua`); the release
   clock is one `core.after` per empty stretch; `encounters.lua`'s one-second pass runs only
-  while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled;
+  while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled; `traps.lua`'s pass (5 a second) only while a run with traps has a player inside, and its fireballs are entities that are never saved;
   preparation's `core.after(0)` chain only while one is under way. An admin `/teleport` out
   is not noticed: the player counts as inside until logout.
 - **Preparation** (`preparation.lua`, its header has the order and why): objects out,
@@ -2348,7 +2388,11 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   not), `grug_mounts.register_summon_guard`, `grug_home.register_respawn_home` (asked on
   every look at the home, so a row must survive the look on arrival, outside the box:
   `guard.lua`'s `to_capital`), `grug_home.register_on_teleport`, `trip.fallback`,
-  `grug_home.waystone_pos`, `waystone_arrival`, `grug_mobs.set_spawn_free_field` (first
+  `grug_home.waystone_pos`, `waystone_arrival`, `grug_home.register_expedition_tab` and
+  `show_waystones` (Round 72, `entry.lua`: the Expeditions tab and the stones inside),
+  `grug_home.register_return_guard` and `grug_core.register_lava_hold` (Round 72,
+  `guard.lua`: Return Home refused in or over lava in a box; every box holds its lava),
+  `grug_mobs.set_spawn_free_field` (first
   check of `spawn_policy_allows`), `grug_parties.register_on_member_left` (it can tell a
   leaver from the last member, which `register_on_change` cannot),
   `grug_parties.invitation_warning`, `settle_boss`'s `credit_as` (`bosses.lua`),
@@ -2380,12 +2424,18 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   (`level = {lo, hi}`; the load stops without a table, and refuses one naming an ore or
   gem); the boss's definition with `_grug_hp_scale` and a fixed name in a world slot of
   `data/names.json` (`world/<boss>/L<lo>-<hi>`, plus `tools/r38_names`, `disposition.lua`
-  and `grug_achievements/creatures.lua`); its quest with a row in `EXPEDITION_TARGETS` in
+  and `grug_achievements/creatures.lua`, and a row in `docs/planning/round28/items/existing.json`
+  for the design validator); its quest with a row in `EXPEDITION_TARGETS` in
   **both** validators (`grug_quests/validate.lua`, `tools/r28_design/validate.py`) and
-  `tools/r60_capitals/build_structure.py`'s `optional` and `group`. Sight counts as a pull,
+  `tools/r60_capitals/build_structure.py`'s `optional` and `group`. A wall sign's text goes
+  in the catalogue row's `signs` (place name -> text, written on ready by `encounters.lua`;
+  The Second Shift's shift board). A boss's marked spot goes through
+  `grug_mobs.expedition_mark(self, pos)` and `expedition_unmark(handle)` (`traps.lua`, the
+  strike helper; Auditor Nemm in `skeleton_raider.lua`). Sight counts as a pull,
   so keep a template's arrival beyond a pack's view range + 8. On a slab floor a jump lands
-  on the player's own cell. Lava flows in a box (`water_guard.lua` guards water only): the level 60 proposal needs a guard
-  first. `income.py --check` has no Expedition term, so its pass says nothing about a chest.
+  on the player's own cell. Lava a template writes stays put: every box holds it
+  (`grug_core/lava_guard.lua`), and a template's lava has nothing beside or below it to
+  flow into (`tools/r72_mint` proves The Last Mint's). `income.py --check` has no Expedition term, so its pass says nothing about a chest.
 - **Fixtures and probes:** `tools/README.md`, "Round 71". The fixtures' stubs need
   `get_attach` on objects and meta on players. `r71_frame` stubs the party seam: the real
   `remove_member` is in `r67_social`, the real respawn path in `r69_home`.

@@ -14,6 +14,11 @@
 -- waystones to travel to (grug_home.travel_from_claim, the waystones' rules).
 -- A draft has no tabs.
 --
+-- Round 72 (round72-plan.md section 2.10): a tab "Expeditions" after it, the
+-- same as every waystone's: the Expeditions the owner may enter, entered from
+-- the stone (grug_home.expedition_rows, expedition_from_claim; the rules are
+-- grug_expeditions').
+--
 -- Round 50 (ruling 7): while the owner has belongings from an old map
 -- (recovered.lua), the activated stone's form has the tab "Belongings (N)",
 -- the Claim Stone inventory: take-only, scrollable, never in the draft's
@@ -175,13 +180,27 @@ local function travel_api()
 	end
 end
 
+-- grug_home, when it offers the Expeditions tab (Round 72): its rows decide.
+local function expedition_api()
+	local home = rawget(_G, "grug_home")
+	if home and type(home.expedition_rows) == "function" and
+			type(home.expedition_from_claim) == "function" then
+		return home
+	end
+end
+
 -- The tabs of the activated stone's form: the stone, Waypoints when grug_home
--- offers travel, Belongings while some wait. session.tab_ids keeps the shown
--- order for the tab index; buttons translate to that existing event below.
+-- offers travel, Expeditions when it offers that tab, Belongings while some
+-- wait. session.tab_ids keeps the shown order for the tab index; buttons
+-- translate to that existing event below. Four tabs share the width.
 local function tabs(player, session)
 	local ids, labels = {"main"}, {"Claim Stone"}
 	if travel_api() then
 		ids[#ids + 1], labels[#labels + 1] = "waypoints", "Waypoints"
+	end
+	local home = expedition_api()
+	if home and home.expedition_rows(player) then
+		ids[#ids + 1], labels[#labels + 1] = "expeditions", "Expeditions"
 	end
 	local waiting = grug_housing.recovered.count(player:get_player_name())
 	if waiting > 0 then
@@ -194,12 +213,14 @@ local function tabs(player, session)
 	end
 	session.tab = ids[selected]
 	local growth = theme.text_growth(player)
+	local width = #ids > 3 and (9.95 - 0.1 * (#ids - 1)) / #ids or 3.3
+	local size = #ids > 3 and ("%.2f"):format(width) or "3.3"
 	local fs = {}
 	for index, label in ipairs(labels) do
 		local field = "stone_tab_" .. index
 		fs[#fs + 1] = theme.button_style(field, index == selected and "selected" or "normal", growth)
-		fs[#fs + 1] = ("button[%.2f,0.15;3.3,0.6;%s;%s]"):format(
-			0.4 + (index - 1) * 3.4, field, ui.esc(label))
+		fs[#fs + 1] = ("button[%.2f,0.15;%s,0.6;%s;%s]"):format(
+			0.4 + (index - 1) * (width + 0.1), size, field, ui.esc(label))
 	end
 	return table.concat(fs)
 end
@@ -220,6 +241,33 @@ local function waypoints_formspec(player, session, home, header)
 	end
 	if #rows == 0 then
 		fs[#fs + 1] = "label[0.4,1.3;" .. ui.esc("No waystone discovered yet.") .. "]"
+	end
+	if session.message then
+		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(height - 1.35,
+			ui.text(session.message, session.message_color))
+	end
+	fs[#fs + 1] = ("button_exit[7.25,%.2f;3.1,0.8;close;Close]"):format(height - 1.0)
+	fs[#fs + 1] = "container_end[]"
+	return table.concat(fs)
+end
+
+-- The Expeditions tab: one Enter button per Expedition the owner may enter,
+-- else the one line saying why.
+local function expeditions_formspec(player, session, home, header)
+	local rows, line = home.expedition_rows(player)
+	rows = rows or {}
+	local height = 2.6 + (#rows > 0 and 0.7 * #rows or 1.1)
+	local growth = theme.text_growth(player, 10.75, height + TAB_OFFSET)
+	local fs = {theme.frame(10.75, height + TAB_OFFSET, nil, nil, player), header,
+		"container[0," .. TAB_OFFSET .. "]",
+		theme.heading(0.4, 0.5, "Enter an Expedition from your Claim Stone", growth)}
+	for index, row in ipairs(rows) do
+		local y = 0.6 + 0.7 * index
+		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, ui.esc(row.label))
+		fs[#fs + 1] = ("button[6.9,%.2f;3.45,0.6;enter_%s;Enter]"):format(y - 0.3, row.id)
+	end
+	if #rows == 0 then
+		fs[#fs + 1] = theme.prose(0.4, 1.0, 9.95, 1.0, line or "", true, growth)
 	end
 	if session.message then
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(height - 1.35,
@@ -301,6 +349,8 @@ local function main_formspec(player, claim, session)
 	local header = tabs(player, session)
 	if session.tab == "waypoints" then
 		return waypoints_formspec(player, session, home, header)
+	elseif session.tab == "expeditions" then
+		return expeditions_formspec(player, session, expedition_api(), header)
 	elseif session.tab == "belongings" then
 		return belongings_formspec(player, session, header)
 	end
@@ -606,10 +656,12 @@ local function pick_up(player, session)
 	show(player, session)
 end
 
--- The waystone id of a Travel button on the Waypoints tab, if one was pressed.
-local function travel_target(fields)
+-- The waystone id of a Travel button on the Waypoints tab, if one was pressed;
+-- the same for an Enter button of the Expeditions tab with "enter".
+local function travel_target(fields, kind)
+	local pattern = "^" .. (kind or "go") .. "_(.+)$"
 	for field in pairs(fields) do
-		local id = field:match("^go_(.+)$")
+		local id = field:match(pattern)
 		if id then return id end
 	end
 end
@@ -694,6 +746,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		-- The view's hotbar switch (Round 50): the re-show below.
 	elseif session.tab == "waypoints" and travel_target(fields) and travel_api() then
 		local ok, message = travel_api().travel_from_claim(player, travel_target(fields))
+		if ok then
+			sessions[name] = nil
+			core.close_formspec(name, FORMNAME)
+			return true
+		end
+		say(session, message or "You cannot travel now.", ui.RED)
+	elseif session.tab == "expeditions" and travel_target(fields, "enter") and expedition_api() then
+		local ok, message = expedition_api().expedition_from_claim(player,
+			travel_target(fields, "enter"))
 		if ok then
 			sessions[name] = nil
 			core.close_formspec(name, FORMNAME)

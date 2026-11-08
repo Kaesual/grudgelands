@@ -44,13 +44,16 @@ C.ZOMBIES = set({"zombie", "sun_dried_husk"})
 -- constructs, spirits, slimes, plants, and the dragons and their whelps
 -- (bosses and boss adds, user ruling 2026-10-04).
 C.OTHERS = set({
-	"ashen_treant", "bandit", "bandit_archer", "bog_ooze", "bog_witch",
+	"ashen_treant", "auditor_nemm", "bandit", "bandit_archer", "bog_ooze", "bog_witch",
 	"crystal_shard", "dungeon_master", "ember_wisp", "frost_stray",
 	"goblin_miner", "goblin_miner_slinger", "goblin_raider", "goblin_slinger",
 	"gravewood_treant", "ice_dragon", "ice_whelp", "jungle_wyvern",
 	"lava_flan", "mesa_golem", "mirefolk", "oerkki", "poacher", "rift_boss", "rift_spawn",
 	"skeleton_archer", "skeleton_raider", "stone_golem", "flintback", "storm_whelp",
 	"war_construct", "wisp",
+	-- Round 72: The Last Mint's boss, on the Bedrock Sentinel's body, and the
+	-- Sentinel itself (no longer a guard role, user ruling 2026-11-08).
+	"duewarden", "land_guard",
 })
 
 -- Families an achievement counts, by base role (a sub-type joins its base's
@@ -58,7 +61,7 @@ C.OTHERS = set({
 C.FAMILIES = {
 	boar = set({"boar", "plague_boar", "jungle_boar"}),
 	rat = set({"giant_rat"}),
-	skeleton = set({"skeleton_archer", "skeleton_raider", "frost_stray", "bog_witch"}),
+	skeleton = set({"skeleton_archer", "skeleton_raider", "auditor_nemm", "frost_stray", "bog_witch"}),
 	golem = set({"stone_golem", "mesa_golem", "flintback"}),
 	construct = set({"war_construct"}),
 }
@@ -80,7 +83,7 @@ C.RARE_GROUPS = {
 
 -- Settlement and faction NPCs, by role name.
 local NPC_ROLES = {"^guard_", "^royal_guard_", "^king_", "^villager_",
-	"^elder_", "^captain_", "^commander_", "^general_", "^bodyguard_", "^land_guard$"}
+	"^elder_", "^captain_", "^commander_", "^general_", "^bodyguard_"}
 
 local function role_of(name)
 	return type(name) == "string" and name:match("^grug_mobs:(.+)$") or nil

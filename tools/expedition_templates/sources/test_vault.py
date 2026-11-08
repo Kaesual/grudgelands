@@ -30,4 +30,17 @@ def build():
     t.encounter("hall", "grug_mobs:giant_spider", 2, "normal", 30, 5, 12)
     t.encounter("hall", "grug_mobs:giant_spider", 1, "elite", 38, 5, 22)
     t.encounter("court", "grug_mobs:stone_golem", 1, "boss", 34, 5, 24)
+    # The trap gallery (Round 72), closed: probes stand players in it. Floor traps
+    # pick 1 of 2 and 2 of 2; a wall pick 1 of 2 across it every 4 s, a second wall
+    # 2 s later.
+    t.box(4, 5, 24, 19, 9, 43, "air")
+    for x, z, wall in ((4, 28, 3), (19, 40, 2)):
+        t.set(x, 8, z, "default:torch_wall", wall)
+    t.trap_floor("f1", 1, 8, 5, 30)
+    t.trap_floor("f1", 1, 14, 5, 30)
+    t.trap_floor("f2", 2, 8, 5, 38)
+    t.trap_floor("f2", 2, 14, 5, 38)
+    t.trap_wall("w1", 1, 3.6, 5.5, 34, "+x", 4, 0)
+    t.trap_wall("w1", 1, 19.4, 5.5, 34, "-x", 4, 0)
+    t.trap_wall("w2", 1, 3.6, 5.5, 42, "+x", 4, 2)
     return t

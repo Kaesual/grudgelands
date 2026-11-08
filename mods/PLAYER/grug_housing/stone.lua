@@ -64,6 +64,8 @@ local function on_place(itemstack, placer, pointed_thing)
 		tell(placer, message)
 		return itemstack
 	end
+	-- Round 72: the placement rules (grug_core: in combat, a live body's cell).
+	if grug_core.placement_refused(placer, DRAFT, {pos}) then return itemstack end
 	-- A new claim is a draft until the owner activates it (R26 ruling 8).
 	core.set_node(pos, {name = DRAFT})
 	local claim = model.create(name, pos)

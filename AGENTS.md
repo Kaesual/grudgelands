@@ -12,25 +12,22 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.71.0, Round 71 (Expeditions: 100 slots beyond the map, the Expedition
+**Current state:** 0.72.0, Round 72 (combat at targeting; placement in combat and around
+bodies; the boss floor and the kings' and bosses' reset; guards out of reach reset at once;
+ranged kings shoot; Bladecraft's hand; no mounts in enemy towns; friend and foe nametags;
+the two trap types, the Expeditions tab, The Second Shift 40–69 and The Last Mint 60–69, all
+three Expeditions reshaped), complete on the branch `round72`, not on main, not pushed.
+**Compatible**, no map reset
+([completion and checklist](docs/planning/round72-plan.md#completion-2026-11-08)); the GUI test
+is open. Production runs **0.65.0**; its update crosses the map reset of 0.70.0 and runs the
+steps 0.67.0 and 0.69.0.
+Previous: 0.71.0, Round 71 (Expeditions: 100 slots beyond the map, the Expedition
 Registrar in the six guild houses, The Stilled Seam at levels 20–69, packs pulled whole),
-not pushed. **Compatible**, no map reset
-([completion and checklist](docs/planning/round71-plan.md#completion-2026-11-07)); the GUI test
-is open. Production runs **0.65.0**; its update to 0.71.0 crosses
-the map reset of 0.70.0 and runs the steps 0.67.0 and 0.69.0.
-Previous: 0.70.0, Round 70 (the six source rules and renewal; the
-Stonewright at the guild house with its recipes, ornamented stones and
-burning furnace; form A Crownward in six capitals with civic radius 56, the
-lakes of Lethariel and Kezamba moved; six reworked start towns and wayposts
-at road junctions; decorative plants that drop themselves; varied crop
-growth, the potion belt first, the hoe's pickup; the 10% death penalty with
-the PvP exemption and HUD hints; Kings at 70, the crown at top + 10, dragons
-at 30,000 HP and the new level malus), complete on 2026-11-07. **Map reset**,
-the thirteenth, no step
-([completion and checklist](docs/planning/round70-plan.md#completion-2026-11-07)).
-**Not pushed; the GUI test is open.**
-Production runs **0.65.0**; its update to 0.70.0 crosses this one map reset
-and runs the steps 0.67.0 and 0.69.0.
+and 0.70.0, Round 70 (sources and renewal, the Stonewright, castles, start towns and
+wayposts, the death penalty, Kings at 70; **map reset**, the thirteenth, no step), both
+GUI-accepted by the user on 2026-11-08 and **pushed** (origin/main `5a8909a0`)
+([Round 71](docs/planning/round71-plan.md#completion-2026-11-07),
+[Round 70](docs/planning/round70-plan.md#completion-2026-11-07)).
 Previous: 0.69.0, Round 69 (the Trash box in the Inventory tab
 with Undo and the professions' order; respawn goes to the home, Claim Stone
 included; exact "N damage" on every damage skill and in the talent tree;
@@ -592,6 +589,11 @@ The topic rules below name the one path to use; the
   nothing; ores and gems are nodes only.
 - **No per-tick pass over players:** events, one `core.after` clock per empty stretch, and
   passes that run only while something waits.
+- **Every Expedition mob spawns through `packs.lua`'s spawn,** which sets the mark
+  `_grug_expedition` (no truce, no shrinking aggro radius); a summon outside it needs the mark
+  in its staticdata. A new template carries the places `boss_room_min` and `boss_room_max`
+  (the boss's range), flat floors and passes `tools/expedition_templates/proofs.lua`
+  (free height, no perch, every pack-room cell noticed, no walk round).
 - **Balance is for a Warrior and a Priest at player level = Expedition level;** nothing is
   tuned for a player at the entry limit. A new Expedition's fight needs a real test: the
   probes' fights are scripted.
@@ -698,6 +700,14 @@ The topic rules below name the one path to use; the
   `grug_abilities.target_filter` (`valid_target`, the PvP flag). Support amounts multiply by
   `grug_classes.get_support_factor`; spells floor once after the level scalar
   ([combat_stats.md](docs/design/combat_stats.md) §2).
+- **Combat starts at targeting** through the one seam in `grug_mobs`' `do_attack` wrapper;
+  code that blocks something in combat asks `grug_core.in_combat`, never its own test. Code
+  that writes a walkable, climbable or liquid node with its own `set_node` asks
+  `grug_core.placement_refused` first (`grug_core/placement.lua`;
+  [combat_stats.md](docs/design/combat_stats.md#placement-in-combat-and-around-bodies)).
+- **A boss's reset is `grug_mobs.reset_home`** (kings, Generals, Expedition bosses through the
+  boss floor; guards and the other `_grug_reach_reset` mobs through their give-up); a new
+  boss or out-of-reach rule ends there, never in a second heal-and-evade path.
 - **Personal notices go to the message feed** (`grug_core.feed`), never chat;
   chat keeps deaths, rare sightings, boss and dragon warnings. Quest kill labels
   use the zone's mob name (`validate.py`).

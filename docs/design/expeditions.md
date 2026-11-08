@@ -5,9 +5,11 @@ sealed mine far beyond the map, fights through it and takes the reward at its en
 Every run is written anew, so an Expedition can be played again and again.
 
 **Decided** by the user, 2026-11-07; the framework and The Stilled Seam (levels 20–69)
-are implemented in Round 71 (`grug_expeditions`). This file owns the game rules and their
-numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the record of
-the rulings; [Round 71](../planning/round71-plan.md) holds what shipped. How it is built:
+are implemented in Round 71 (`grug_expeditions`), The Second Shift, The Last Mint, the
+traps, the Expeditions tab and the reshaped rooms in Round 72. This file owns the game rules
+and their numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the
+record of the rulings; [Round 71](../planning/round71-plan.md) and
+[Round 72](../planning/round72-plan.md#completion-2026-11-08) hold what shipped. How it is built:
 [module guide](../technical/module-guide.md#expeditions),
 [template format](../technical/expedition-template-format.md).
 
@@ -25,9 +27,9 @@ Three Expeditions, each over a wide level range (user, 2026-11-07, [concept
 
 | Expedition | Mob levels | Most players inside | State |
 |---|---|---:|---|
-| The Stilled Seam | 20–69 | 3 at every level | implemented |
-| The Second Shift | 40–69 | 4 | designed, built in Round 72 |
-| The Last Mint | 60–69 | 4 | designed, built in Round 72 |
+| The Stilled Seam | 20–69 | 3 at every level | implemented in Round 71, reshaped in Round 72 (§13) |
+| The Second Shift | 40–69 | 4 | implemented in Round 72 (§14) |
+| The Last Mint | 60–69 | 4 | implemented in Round 72 (§15) |
 
 **Every 10 levels the tier follows:** the reward, the ore and the gem. The ore is what that
 tier's rock is mined for, the next metal's input ([items](items_crafting.md) §3.0.1): T2's
@@ -43,6 +45,16 @@ Anthracite is the Steel input (user, 2026-11-07; the story keeps its gold workin
 
 An Expedition lasts 10–20 minutes, is balanced for 3–4 players and runs in a line at
 first. Floor plans are 2D on one main floor for now; the template format stays 3D.
+
+**Rooms** (user, 2026-11-08): an Expedition must not read as a row of rectangular rooms.
+Walls and ceilings are irregular in plan and in height (overhangs, sloped or stepped
+ceilings, niches, ribs), and now and then a cuboid room reads as meant. **Floors are flat**
+in every room and at the bosses: no one-node step and no dais; a boss stands out by ceiling,
+pillars and light (The Last Mint's lava pillars are the mechanic, not decoration). **No pack
+can be walked round:** from every walkable floor cell of a pack's room at least one mob of
+that pack would notice the player (in its view range and in sight). Every template is
+proved for this, for at least three nodes of air over every floor cell and for no perch out
+of a pack's reach (`tools/expedition_templates/proofs.lua`).
 
 ## 2. Levels and entry
 
@@ -84,14 +96,31 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
 
 - **Preparing:** creating shows "Your Expedition is being prepared...". Nobody can enter
   before it is ready; a notice says when it is.
-- **Enter** at a registrar of the player's faction. It is refused in combat. That capital
-  is where the way back leads.
+- **Enter** at a registrar of the player's faction, or (Round 72, user 2026-11-08) on the
+  **Expeditions tab** of every waystone outside the Expeditions and of the Claim Stone
+  ([world.md](world.md) §6, [housing](housing.md) §7.1). The tab lists the Expedition of
+  the player's owner while they may enter it (owner, ready or under way, level, places);
+  otherwise it says in one line why, or with no Expedition points to the Registrar.
+  Creating stays at the Registrar alone. Entering from the tab is a waystone trip by the
+  waystones' rules: standing at the stone, alive, and refused in combat, at the click and
+  again on arrival; it arrives at the start waystone as from the Registrar.
+- **The way back** of a forced exit or a login after the end leads to the waystone of
+  the last way in: the Registrar's capital, the waystone whose tab was used, or from the
+  Claim Stone the waystone of the player's innkeeper home.
 - **Places:** entering takes one, for as long as the player stays in the party. Leaving
   the box keeps it; the player can go back in. So a larger party is full after the first
   3 or 4 entries, and only leaving the party frees a place.
-- **Two waystones** stand inside: at the start, and in the reward room. Both lead to the
-  capital the player came from, without a cooldown, and both are refused in combat.
-- **Return Home** works inside, under its normal rules ([home travel](home_travel.md)).
+- **Two waystones** stand inside: at the start, and in the reward room. Since Round 72
+  both open the ordinary waystone window without the Expeditions tab: the player travels
+  to any of their discovered waystones or their Claim Stone, by the waystones' rules (no
+  cooldown, refused in combat). The Expedition's waystones are never a destination. A
+  trip out keeps the place and ends no run; the player leaves its packs' lists as they
+  leave the box.
+- **Return Home** works inside, under its normal rules ([home travel](home_travel.md)),
+  but not in lava (Round 72, the user's ruling for The Last Mint): standing in it, or
+  falling towards it, a player is refused ("Cannot return home from the lava."). A fall
+  into the lake is death with no way out. Logout is unchanged: a login stands where the
+  player was.
 - Neither way leaves the party.
 
 ## 5. Release, logout, restart
@@ -107,7 +136,8 @@ the start waystone, still inside.
   ([durability](durability_repair.md)), and takes the player off the list. The death
   happens at the next login, and they stand at the start waystone if the Expedition still
   belongs to them. A server shutdown is no logout.
-- **Whoever logs in after their Expedition ended** stands in the capital they came from.
+- **Whoever logs in after their Expedition ended** stands at the waystone of their last
+  way in (§4).
 - **A server restart ends every Expedition**, which then falls under the rule above.
   Nothing about a run is saved.
 
@@ -135,8 +165,10 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
 - **Hull:** the walls are indestructible. Anything destructible is so on purpose: a tunnel
   the story asks for, or ore and gem nodes. The open sea's rule refuses everything else
   ([world.md](world.md) R3).
-- **No building** at all, and no liquids. Short jump-and-run tasks may appear in the higher
-  Expeditions.
+- **No building** at all, and players place no liquids. A template's own lava is allowed
+  and stays where it was written (Round 72, `grug_core/lava_guard.lua`: every box holds its
+  lava; nothing flows in, out or away). Short jump-and-run tasks appear in the higher
+  Expeditions: The Last Mint's lake (§15).
 - **No mounts:** neither riding nor flying, and no boats ([mounts](mounts.md) §4.0).
 - **Death:** the player respawns at the start waystone. Round 70's death penalty applies
   ([durability](durability_repair.md)).
@@ -153,6 +185,10 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
   respawns but a partly killed pack (below).
 - Every mob is at the run's level through its own entity, whatever its spawn row says,
   and pays XP as usual.
+- **No easing for a high level or a race** (0.72.0, the user, 2026-11-07 and 2026-11-08):
+  an Expedition's mob notices a player of any level at its full view range (no shrinking
+  aggro radius by level gap), and the Undead truce does not hold against it. Every
+  Expedition's mob carries the mark, the boss included, whatever its Expedition.
 - **Drops:** each mob drops at its own level, 61–69 included, from the T6 pool, and no ore
   or gem ([items](items_crafting.md)). Refined bars stay.
 - **Packs** ([full rules](combat_stats.md#expedition-packs), the owner of the mob's side,
@@ -167,10 +203,41 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
     reach them.
   - **Wipe:** with nobody left on its list the pack goes home healed, and its dead stand
     at their place at once. A fully dead pack stays dead.
-- **The boss** is a pack of one: a wipe heals it and sends it home. Its death gives
+- **The boss** is a pack of one: a wipe heals it and sends it home. Its **room is its range**
+  (0.72.0, the user, 2026-11-07): its floor inside the template's envelope (the places
+  `boss_room_min` and `boss_room_max`), so it pursues nobody into a passage and a ledge is
+  no safe spot. A player who leaves the room leaves its list; alone they reset it at once,
+  otherwise only a Taunt within 3 s keeps the fight. **15 s without an attack** reset it
+  too; a trap's hit is no attack, the boss's own marked spot with a player in its area is.
+  Its reset is the wipe
+  ([full rules](combat_stats.md), §4 "Kings and bosses"). Its death gives
   **credit only**: no 24-hour lockout, no direct reward and no drops at all, coin bag
   included; the chest pays. There is no other lockout timer: the run's length is the
   limiter ([world.md](world.md) R4). Credit counts per Expedition, at any of its levels.
+
+### Traps
+
+Two trap types, the same in every Expedition (user, 2026-11-07, [Round 72](../planning/round72-plan.md)
+§2.9; built in Round 72, `grug_expeditions/traps.lua`). The numbers are the plans' proposals, tuned in the user's
+test.
+
+- **Spots:** the template names the candidates in groups, and each run arms a set number of each group's candidates
+  (say 2 of 4), drawn at random once per creation. The choice and the marks of fired traps last the run: a wipe
+  changes neither. An unchosen candidate is ordinary floor or wall.
+- **Players only:** traps never notice or hurt a mob, and a fireball flies through mobs. They are silent and never
+  damage the terrain or push anyone.
+- **Damage:** 45 % of the run level's neutral HP pool (that of level 60 above 60) per hit, through dodge, armor and
+  absorbs like a mob's hit. A trap's hit marks the player in combat.
+- **Floor trap:** invisible until it first fires. A player whose feet come within 0.6 of its spot on the floor starts
+  it (a jump over it does not): a muted red ring of radius 2 for 1.5 s, then the hit to every player within 2 nodes of
+  it and in sight of it. It rearms 10 s after the hit; standing on it then starts it again. From its first hit a red
+  mark shows its spot for the rest of the run.
+- **Wall trap:** a fireball on a fixed period (6 or 8 s in the plans), always, from its group's offset after the
+  Expedition is ready, along a fixed direction at 8 nodes a second; no targeting. Stone stops it. A player in its way
+  bursts it: the same hit to every player within 2 nodes. A shot with nobody of the run within 32 nodes of its line is
+  left out, the rhythm kept.
+- **A boss's marked spot** (The Second Shift's Auditor Nemm): the floor trap's ring and hit on one position, once;
+  his reset or death takes the hit back. One that had a player in its area is his attack for the 15 s rule.
 
 ## 9. Tank and healer
 
@@ -215,6 +282,9 @@ the Miner's Guild ran into trouble while mining and needs fighters. **All of the
 optional, level 60 included:** free, not on the chained story path, without the `story` flag.
 So the rule for group quests below 51 holds ([quests](quests.md#group-quests-round-61)).
 
+Every character gets the **Expedition Registrar's letter** at level 20, always, or at the
+next login when already above it ([mail](mail.md) §8, Round 72).
+
 ## 13. The Stilled Seam
 
 An abandoned gold working held by spiders and golems, at mob levels 20–69. Its
@@ -225,13 +295,21 @@ story, the floor plan and the texts.
 
 | Room | Holds |
 |---|---|
-| 0 Arrival | start waystone |
-| 1 Cart bay | pack a: 4 spiders; 1 ore |
-| 2 Prop room | pack b: 2 spiders, 1 elite golem; 1 gem |
-| 3 Sorting floor | packs c and d behind a rock screen: 3 spiders and 1 elite golem each |
-| 4 Working face | [Flintback](biomes_mobs.md), alone |
-| 5 Store | chest, end waystone; 4 ore, 2 gem |
+| 0 Arrival | small bent timber refuge, low sloping roof and boarded entrance; start waystone |
+| 1 Cart bay | compact cart chamber under a crooked rock vault, pine sleepers flush in the floor and a hooded cart recess; pack a: 4 spiders; 1 ore in the blind exit-side cut |
+| 2 Prop room | narrow leaning cleft with log posts embedded in the walls, pine ribs and a buried broken beam; pack b: 2 spiders, 1 elite golem; 1 gem |
+| 3 Sorting floor | two small sorting bays, one rising and one peaked, hooded wall tables and a low bend around the rock screen; packs c and d: 3 spiders and 1 elite golem each |
+| 4 Working face | smaller faceted cavern with a high fractured stone dome, cobble piers and a cluster of hanging lights; [Flintback](biomes_mobs.md), alone |
+| 5 Store | regular plank store beneath pine coffers, hooded barrels and capped mineral seams; chest, end waystone; 4 ore, 2 gem |
 
+- **Room cuts (Round 72):** the compact fighting chambers keep every pack at its original
+  place. Short low approaches and exits connect them to the unchanged passages; the cart
+  bay's fixed ore place is in a blind cut reached through the pack's sight. These cuts
+  are passage floor, separate from the fighting chambers: the old rectangular envelopes
+  extend beyond the packs' view ranges. Every fighting-chamber floor cell is in sight
+  and range of its own pack. Flintback's room envelope is now (54, 94)–(79, 119) in x/z;
+  the floor remains at y 4. Wall displays are capped into the roof, broken timber is flush
+  underfoot, and the eight mineral places, waystones, reward door and chest stay put.
 - **Mobs:** 12 spiders, 3 elite golems and the boss. Spiders have 384 HP at 20, 2,696 at 60
   and 3,507 at 69; elites 1,152, 8,088 and 10,522; Flintback 8 × an elite's: 9,216, 64,704
   and 84,176. Every mob keeps its name at every level; Flintback's is one fixed name.
@@ -248,3 +326,100 @@ story, the floor plan and the texts.
 - **Quest:** "Party: The Stilled Seam", from the six guild leaders
   ([quests](quests.md)): kill Flintback once, at any of its levels. The Expedition stays
   repeatable after the turn-in.
+
+## 14. The Second Shift
+
+A working mine whose whole shift is dead, kept at work by Auditor Nemm's branded pay, at
+mob levels 40–69 for four players. Its [build plan](../planning/round72-second-shift.md) was
+approved by the user and has the story, the floor plan and the quest texts; Round 72 built
+it with the user's room rulings ([Round 72](../planning/round72-plan.md) §2.9): every floor
+flat, no dais, and every pack room cut so that no pack can be walked round.
+
+- **Size:** 128 × 32 × 128, one floor (the first air cell at y 8), six rooms in a line: The
+  Stilled Seam's envelopes mirrored on x, cut smaller.
+
+| Room | Holds |
+|---|---|
+| 0 Arrival | bent refuge beneath a low, sloping timber roof; boarded collapse and hooded benches; start waystone |
+| 1 Timekeeper's desk | rising rock roof and transverse beams; hooded desk and cart siding; pack a: 3 raiders, 2 miners; the shift board; 1 ore |
+| 2 Marking floor | leaning, notched roof with timber ribs, reinforced tally panels and flush broken beams; pack b: 3 raiders, 1 elite miner; 2 of 4 floor traps; 1 gem |
+| 3 Wage room | low sloping pay bay c and peaked bay d, hooded wall furniture and lanterns around the rock screen; packs c and d, 3 raiders and 1 elite miner each; the 8-node bypass and 1 of 2 floor traps per bay |
+| 4 Audit court | faceted high rock canopy with converging pine ribs, four timber shoulders and hanging lights; Auditor Nemm, alone; 2 of 4 floor traps |
+| 5 Store | level timber coffers and reinforced storage hoods; chest, end waystone; 4 ore, 2 gem |
+
+- **The passage from room 1 to room 2** holds the wall trap: 1 of 2 muzzles, every 8 s.
+- **Mobs:** Skeleton Raiders and Buried Miners at the run's level: 12 raiders, 2 miners, 3
+  elite miners and the boss. Here the raiders are named by band (Shift Raider 40–49,
+  Tallied Raider 50–59, Overdue Raider 60–69), the miners Buried Miner throughout.
+- **No walking round** (proved on the template, `tools/r72_shift`): from every floor cell of
+  rooms 1–4 a mob of that room notices a player within its view range (raider 16, miner 14,
+  Nemm 20) and in sight. No pack sees another; only cells of room 3's bypass are seen by both
+  of its packs, so the party clears bay c before it walks there.
+- **Auditor Nemm:** an elite on the raider's body, bow and attacks, with 20 × an elite's HP:
+  76,560 at 40, 161,760 at 60, 210,440 at 69. Every 12 s of a fight he marks his target's
+  spot: the floor trap's ring and hit there 1.5 s later. He sees the whole court and drops
+  nothing.
+- **Ore:** eight shared places, five ore and three gem, of the run's tier (§1).
+- **Chest, per player:** 1 Uncommon item, at 25 % a Rare item, a bag of 10 × a kill's coin
+  bag at the run's level, 3–5 of the tier's bone and 1–2 of its flesh: Drilled Bone and
+  Leathery Flesh at 40–49, Siege Bone and Scorched Flesh at 50–59, Unquiet Bone and
+  Salt-Cured Flesh at 60–69.
+- **Balance** (`tools/r72_shift/balance.py`, modelled): one normal per pack was added to the
+  plan's roster, then Nemm's HP set the run: about 10 minutes at every level up to 60, the
+  boss about 3.9 of them; at 69 about 17 minutes, Nemm about 9.1, and the tank takes about
+  2.9 times the damage of level 40 in pools.
+- **Quest:** "Party: The Second Shift", level 40, from the six guild leaders: kill Auditor
+  Nemm once, at any of its levels. The Expedition stays repeatable after the turn-in.
+
+## 15. The Last Mint
+
+A buried branding works behind a furnace that became a lava lake, at mob levels 60–69,
+for four players (Round 72). Its [build plan](../planning/round72-last-mint.md) was
+approved by the user and has the story, the texts and the lake's section; the round's
+rulings changed two things ([Round 72](../planning/round72-plan.md) §2.9): every floor is
+flat (no dais), and no pack can be walked round.
+
+- **Size:** 128 × 64 × 128, The Stilled Seam's envelope mirrored on z, one floor at y 31
+  over a lake 24 nodes deep. Eight rooms in a line:
+
+| Room | Holds |
+|---|---|
+| 0 Arrival | stepped receiving vault, pale masonry courses and a sealed iron side arch; start waystone |
+| 1 Salvage bins | brick barrel vault, iron bin mouths and flush metal runners; pack a: 5 Lava Seeps; 1 ore |
+| 2 Furnace room | low basalt vault with iron ribs towards the crossing; pack b: 3 Seeps, 1 elite Seep, 1 Ember Wisp; floor traps (2 of 4) |
+| L Lava crossing | tall basalt furnace throat, iron uprights and pale tie courses; two landings, five 4 × 4 pillars, six level gaps of 2 nodes; wall shots (1 of 2, twice) |
+| 3 Cooling room | low slate ceiling, pale transverse ribs and iron rack bands in brick walls; pack c: 3 Seeps, 1 elite Seep, 1 Wisp; 1 gem |
+| 4 Press vestibule | low iron coffer ribs over basalt, steel die cupboards and flush metal ties; pack d: 1 elite Bedrock Sentinel, 3 Wisps; floor traps (2 of 4) |
+| 5 Press floor | high basalt nave on four columns, steel roof arches and flush runners; **Duewarden**, alone, before the static press and its pale iron brand; floor traps (2 of 4) |
+| 6 Store | a deliberately regular brick strongroom, iron ceiling bands and wood floor; chest, end waystone; 4 ore, 2 gems |
+
+- **Rooms a pack cannot be walked round** (user, 2026-11-08): from every floor cell of a
+  pack's room, at least one mob of that pack would notice the player (its view range: Seep
+  10, Wisp 16, Sentinel 14, and sight). The rooms are smaller than the plan's envelopes and
+  the members spread over them; no floor cell lies in the sight of two packs. Duewarden's
+  hall is larger: the reward door holds until he dies.
+- **The lake:** lava at y 2–7 under the basin, every top at y 31, gaps of two node rows
+  with no height change, tops four deep for the run-up: a walking jump carries about 2.65
+  nodes and needs no sprint or class skill. The sides are vertical walls: no ledge, shelf
+  or climb, and the tops are beyond one Blink from the lava. A fall is death: lava takes
+  20 % of the actual pool a second through every shield, five ticks for a full pool, and
+  Return Home is refused (§4). Two of four wall sockets fire across a gap's middle every
+  6 s, the second group 3 s after the first; every top and landing is clear of their
+  lines, so a player waits on a top, watches a shot pass, then jumps. A burst reaches
+  whoever stands within 2 of the one it hit: cross one at a time.
+- **Mobs:** 16 normal (11 Seeps, 5 Wisps), 3 elites (2 Seeps, 1 Sentinel) and the boss,
+  every one at the run's level, with its family's name at every level. Wisps keep within
+  the wisp rooms' seven nodes of air. The Seeps' Emberglass, the Wisps' Emberglass and the
+  Sentinel's Rough Diamond go through the Expedition's drop filter: Slime Gel and Heavy
+  Leather stay.
+- **Duewarden:** the Bedrock Sentinel's body, melee and signalled frontal slam (the elite
+  tier's), 14 × an elite's HP: 113,232 at 60, 147,308 at 69. No adds, no phases. His hall
+  inside the envelope (48, 8)–(79, 39) is his range; traps never hurt him and never count
+  as his attack. One fixed name over 60–69.
+- **Ore:** eight shared places, five ore and three gems: Abyssal Crystal and Diamond at T6.
+- **Chest, per player:** 1 Uncommon item, at 25 % a Rare item, both at the run's level, a
+  bag of 10 × a kill's coin bag, 3–5 Stone Core, 1–2 Slime Gel.
+- **Balance** (`tools/r72_mint/balance.py`, modelled): a run at 60 about 10 minutes, at 69
+  about 15, Duewarden about 2.5 and 6 minutes; traps and deaths come on top.
+- **Quest:** "Party: The Last Mint" at level 60, from the six guild leaders: kill Duewarden
+  once, at any of its levels.

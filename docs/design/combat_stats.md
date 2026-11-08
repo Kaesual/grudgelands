@@ -655,12 +655,15 @@ Normal tier at level L:
   fights back and the group alert (§4) is unchanged; guards, kings and every
   other mob of a faction, animals and NPCs keep their full view range, and so
   does every mob towards a mob target (`grug_mobs/aggro.lua`
-  `player_aggro_radius`, read by `general_attack` in `mobs/api.lua`).
+  `player_aggro_radius`, read by `general_attack` in `mobs/api.lua`). An
+  **Expedition's mob** keeps its full view range too (0.72.0, the user,
+  2026-11-08): a level 60 player in a 20–29 run is noticed at full view
+  range ([Expedition packs](#expedition-packs)).
 - **Shot range** (Round 56, ruling 3 and D1): a ranged mob shoots within its
   own **shot range**, by default `view_range + 4` (a `dogshoot` family's 16 →
   20; a definition may set `_grug_shot_range`), so a player can stand inside
   it without drawing aggro. A ranged mob (`shoot`, `dogshoot` outside its
-  melee phase, the ranged kings and fliers too) whose target is beyond its
+  melee phase, fliers too) whose target is beyond its
   shot range walks closer the way a ground ranged mob without sight walks
   (§4) and stops **3 m inside** it, so it does not hover at the edge, or
   earlier, once inside its shot range, when its way is blocked (stuck or a
@@ -912,7 +915,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   location-bound rares and the bespoke ocean Kraken retain their previous
   home/post/encounter bounds and lifecycle. The old 40 m chase-origin drag,
   15-second contact and 45 m give-up rules apply only where these actors already
-  used them; explicit encounter overrides remain authoritative.
+  used them; explicit encounter overrides remain authoritative. Kings, Generals
+  and Expedition bosses have no chase leash since Round 72: the boss floor and
+  the 15 s rule replace it ("Kings and bosses" below).
 - **Evade:** reset clears threat, target and drop tag and heals the mob.
   Ambient (free, damage-pursuit) mobs reset **inside their 32-node wander
   radius** (`grug_mobs.WANDER_RADIUS`, below) only do that: no run, no
@@ -1009,7 +1014,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   never below 2,
   [upstream workarounds](../technical/upstream-workarounds.md) §5; the
   engine's box reaches one node less on its positive side); no leg longer
-  than **32 nodes** goes to the engine. A mob searches at most once a second
+  than **32 nodes** goes to the engine (guards and the other mobs of "Out of
+  reach, reset at once" below search the target itself, at the pull and with
+  padding 16). A mob searches at most once a second
   in a fight; after a failed search the same two nodes wait **1, 2, 4 s**
   (the negative path cache); the server starts at most **20 searches in any
   one second**, and every search runs inside the A* budget below. A found
@@ -1044,10 +1051,14 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   every ranged mob walks the same way until it is 3 m inside it. A flying
   `dogshoot` mob in its ranged phase flies at its target (straight, it never
   searches) while it is beyond its shot range or cannot see it, and shoots
-  once it sees it inside its shot range (the user, 2026-10-22); a `dogshoot` mob
-  without a ranged phase (no `dogshoot_switch`: the ranged kings) keeps
-  upstream's branches inside its shot range, walks closer (straight, without
-  a search) beyond it and never searches. This
+  once it sees it inside its shot range (the user, 2026-10-22). The ranged
+  kings (Elf, Undead, Troll; Round 72, the user's ruling of 2026-11-07:
+  every ranged mob, guard and boss without sight seeks it) are such ground
+  `dogshoot` mobs with the archers' rhythm (10 s ranged, 3 s melee): they shoot
+  their arrow (the Elf's arrow, the others' rock) at a target they see in
+  shot range, and walk and search towards one they cannot see until they
+  see it; their signatures are unchanged. No registered mob is a `dogshoot` mob without a
+  ranged phase any more. This
   replaces mobs_redo's stuck
   timer, the 1 s blocked-line-of-sight trigger and the sidestep of the
   close-cover ruling of 2026-09-17 and the walk-speed crawl of a wedged
@@ -1094,9 +1105,11 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   group alert starts a new chase as usual. A target standing in a walkable
   node (a bottom slab, a lower stair step, snow dust) is searched for from
   the node above it, and a mob pressed into a fence searches from the open
-  cell next to it. Guards and rares follow the rule; the kings, like the
-  bespoke no-leash actors (Kraken, royal guards), only drop the target (no
-  heal, no royal encounter reset); the dragons and their whelps never give
+  cell next to it. Guards, captains, the rift boss, rares and leaders follow
+  the stricter rule below; the bespoke no-leash
+  actors (Kraken, royal guards) only drop the target (no heal); kings,
+  Generals and Expedition bosses hand it to their own reset rules ("Kings and
+  bosses" below); the dragons and their whelps never give
   up and only wait: their arena edge ends the fight instead (`world.md` §4b,
   Round 31). The fixed walks (patrols, posts, the royal follow, the evade;
   `world.md` §4a) share the search, the budget and the negative cache's
@@ -1104,6 +1117,76 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   stages decide (`mobs/grug_nav.lua`, `mobs/grug_obstacle.lua`,
   `grug_mobs/aggro.lua` `give_up_target`, `grug_mobs/patrol.lua`
   `walk_fixed`).
+- **Out of reach, reset at once** (Round 72, the user's rule of 2026-11-07,
+  `round72-plan.md` §2.5): guards, captains and war commanders (the guard
+  chassis), the rift boss, every leader and every named rare, switched on by
+  their definition (`_grug_reach_reset`, read by `grug_mobs.reach_reset`), notice
+  fast that they cannot reach their target. While the target is within
+  **32 nodes**: a pull whose straight line to the target is not walkable
+  searches at once, not after the mob got stuck; it searches the target itself,
+  never an intermediate point, with the box padded by **16**; a found path
+  counts only if its end is within the mob's reach of the target (the engine
+  lowers a goal hovering above the ground by up to the mob's jump); only a
+  strike clears the failures, not a path's end or a free walk; and **2
+  failures** give the target up, about a second after the pull. The give-up is
+  the reset of "Kings and bosses" below without its boss parts (`reset_home`):
+  healed at once, threat, tag and target cleared, and the evade home from any
+  distance beyond four nodes, untouchable (every punch is cancelled, and a
+  player's swing, cast and projectile reach a mob only as a punch) until it is
+  home at full health; a mob that resets at home is attackable at once. The
+  give-up veto above (8 nodes or 15 s) stops a reset loop at home; a hit still
+  starts a new chase, which resets again a second later. A ladder is a real escape: no mob climbs, the
+  engine's search does not know ladders, and the guard goes home healed. The
+  designated patroller heals without the run to its post. Beyond 32 nodes
+  the rule above applies. Kings, Generals and Expedition bosses stay on their
+  boss floor, the royal guards, bodyguards and an Expedition's packs on their
+  own rules, and every other mob (wildlife, for cost) on the rule above
+  (`grug_mobs/aggro.lua` `reach_reset`, `give_up_target`).
+- **Kings and bosses** (Round 72, the user's rulings of 2026-11-07, replacing
+  the Round 30 king give-up; `grug_mobs/boss_floor.lua`). One reset for every
+  reason: healed, threat and loot tag cleared, the encounter's ledger cleared,
+  the retinue restored (a King's or General's two guards, replaced only when
+  one is missing or hurt; the summons go), the target dropped, and the evade
+  to the seat from any distance beyond four nodes, untouchable (`aggro.lua`
+  `reset_home`; an Expedition boss's is its pack's wipe).
+  - **The boss floor** (kings, Generals, Expedition bosses): one flood fill
+    from the seat over the cells the boss's own body stands in, with the
+    navigation's cell test (head room of its 1.95 walking height, ground
+    below, damaging and unknown nodes blocked), its step up, its drop down,
+    diagonals past an open corner and its width; doors count as passable.
+    It is bounded by the range: the leash radius round the seat (30 nodes,
+    horizontal, the same height up and down) for a King or General, the
+    room for an Expedition boss (its template's envelope). It is computed
+    once per boss and server session, 400 cells a server step, the area
+    loaded first; a fill that met nodes not generated yet is not used and
+    runs again 10 s later. Once a second the current target's ground must be on the
+    floor or within the boss's reach of it; otherwise the target has **no
+    way or left the range**, one case. Walking stays with the navigation,
+    whose give-up drops nothing for these bosses; a king stuck at a shut door
+    falls to the 15 s rule. Without a floor (an Expedition template without
+    an envelope) the navigation's give-up is the "no way". In practice a
+    King's floor is his castle (measured in Round 72): a target outside the walls, more
+    than about 3 nodes from the gate or from an inner floor cell, resets him
+    at once.
+  - **The one-way window.** The current target who has no way or left the
+    range, also by a teleport, has left, and so has one who logged out; a
+    death is no leaving, and a player the boss turned from on the floor (a
+    Taunt, a threat switch) can no longer leave. Their threat goes to zero at once, the boss drops them and
+    ignores them for sight for 8 nodes or 15 s, and they leave its engagement
+    (and an Expedition boss's list). With no other player engaged the reset
+    comes at once. Otherwise only a **Taunt** by someone who did not leave
+    within **3 s** (`TAUNT_FORCE_TIME`) keeps the fight, a tank swap;
+    without one the boss resets. Walking back saves nothing. The window is no
+    evade: the boss stays attackable and tauntable.
+  - **The 15 s rule** (kings, Generals, the rift boss, Expedition bosses; not
+    elites or ordinary mobs, whose kiting is part of the game, nor the
+    dragons, which keep their arena edge): a boss in a fight that made **no
+    attack for 15 s** resets. An attack is a melee swing at a target in
+    reach, a shot with sight or a signature that caught a player in its area,
+    a dodged one too: a hit of the boss or its projectile on a player, or a
+    projectile it locks on a target in sight. A cast alone is none, and a
+    trap is nobody's attack. The rift boss keeps its chase leash and the
+    navigation's give-up besides (its ground can change).
 - **A mob stuck in the rock leaves** (Round 67 ruling 26). A mob counts as
   stuck when its current (scaled) collision box overlaps the collision
   boxes of walkable nodes, not just its origin; a node box whose top is at
@@ -1169,20 +1252,33 @@ and sub-types: `biomes_mobs.md` "Round 28 sub-types and loot by band".
 ### Combat state
 
 "In combat" gates food ticks, eating, rage decay, the mana regeneration rate,
-mounting and travel home. Decided 2026-09-28 (user
+mounting, travel home and placing nodes that block movement ("Placement in
+combat and around bodies" below). Decided 2026-09-28 (user
 playtest rulings); owned by `grug_core` (`in_combat`).
 
 - A player is **in combat** while at least one live mob is **engaged** with
   them, or while the timer runs (**5 s**, `COMBAT_TIMEOUT`; **10 s** after
   PvP contact).
-- **Engagement (mob combat).** A mob is engaged with a player from the first
-  hit between them in either direction (a landed or dodged hit of the mob or
-  its projectile, or an accepted player hit on it) and whenever the player
-  gains threat on it (§4: damage, healing threat, tank bonus, taunt). A mob
-  that attacks a player who never touched it therefore engages too.
-- Merely being targeted (sight aggro, a pack's group alert) is not
-  engagement: combat starts with the first hit or threat gain, so a chased
-  player who was never hit may still mount or eat.
+- **Engagement (mob combat).** A mob is engaged with a player from the moment
+  it takes them as its **target** (user ruling 2026-11-07, Round 72: sight
+  aggro, a group alert, retaliation, a threat switch, a taunt; guards, mobs,
+  bosses and kings alike), from the first hit between them in either direction
+  (a landed or dodged hit of the mob or its projectile, or an accepted player
+  hit on it) and whenever the player gains threat on it (§4: damage, healing
+  threat, tank bonus, taunt). A chased player who was never hit is therefore
+  in combat and cannot mount, eat or travel. Who may be targeted stays the
+  acquisition rules' decision (the undead truce, the faction vetoes, an
+  evading mob targets nobody); a target such a rule drops again at once is not
+  engaged.
+- **A mob that targets but never reaches** (a king at a safe spot, a mob
+  behind a wall) holds the player until it lets them go by its ordinary
+  rules: its navigation gives up (a few failed searches; kings and bosses
+  reset by their own rules, §4 "Kings and bosses"), its
+  15 s contact leash runs out without a player hit (a leash reset), it loses
+  sight for its patience or they leave its 45 m chase range, or it dies or
+  unloads. An ambient (damage-pursuit) mob holds a fleeing player until its
+  15 s damage clock has run out and they move on. A mob that still sees them
+  afterwards may take them again, and with that combat starts again.
 - **Engagement ends immediately**, with no grace period, when the mob dies,
   resets (leash/evade: its threat table is cleared) or leaves the active world
   (removal or unload) -- for every engaged player -- and, for that one player,
@@ -1210,15 +1306,36 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - **Death** clears both engagement and the timer at once. A dead player cannot
   be put back into combat by the killing blow's own bookkeeping, and the
   respawned player starts out of combat. Mobs keep their old threat entries,
-  so besides a new hit or threat gain, a threat-driven target switch onto the
-  respawned player (only possible within 40 m of such a mob) engages them
-  again.
-- Engagement is event-driven: it is recorded and dropped only on the hits,
-  threat changes and mob lifecycle events above, never by scanning the world.
+  so besides a mob taking them as its target by sight, a new hit or threat
+  gain, a threat-driven target switch onto the respawned player (only
+  possible within 40 m of such a mob) engages them again.
+- Engagement is event-driven: it is recorded and dropped only on the target
+  changes, hits, threat changes and mob lifecycle events above, never by
+  scanning the world.
 - **An Expedition's pack** holds its own: from the pull on, whoever is on a
   pack's list stays in combat, also through a pause in the hitting, until the
-  pack is dead or they leave its list ("Expedition packs" below). Being
-  targeted counts here.
+  pack is dead or they leave its list ("Expedition packs" below).
+
+### Placement in combat and around bodies
+
+Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
+
+- **In combat** a player places nothing that restricts movement: every
+  walkable or climbable node (blocks, ladders, doors, beds, the notice board,
+  the Claim Stone) and every liquid (the water bucket) is refused with the
+  grey feed line "Cannot place that in combat.". Torches, plants and other
+  nodes that block nobody stay allowed; digging and right-click interaction
+  stay allowed.
+- **In or out of combat** a walkable node is never placed into a cell that
+  overlaps the collision box of a live mob (guards, bosses, NPCs) or player,
+  the placer included; a body spans several cells, and a box that only
+  touches a cell's face does not count. The line is "Cannot place a block
+  where someone stands.". A protected cell keeps its protection line.
+- **A walkable falling node** (sand, gravel) is tested where it lands: when
+  the landing cell overlaps a live body it drops as an item instead, also
+  when its support was dug.
+- Ladders the world already has stay, and cages are accepted: a bystander
+  nobody targets may still wall a guard in.
 
 ### Recovery
 
@@ -1309,7 +1426,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   and writes no property when the text is unchanged. The numbers remain plain
   integers. A player never sees their own tag carrier.
 - Implementation: every tagged mob, tagged NPC, vendor and player owns one
-  invisible, non-pointable, non-physical, unsaved child entity. The parent's
+  invisible, non-pointable, non-physical, unsaved child entity, and a faction
+  unit a second one while a viewer of the other side is in range (friend and
+  foe, below). The parent's
   nametag stays empty (non-players) or alpha-zero (players). The child carries
   the text, inherits the parent's nametag height, and uses the engine's managed
   observer set for the per-viewer rule above. One central pass, spread over
@@ -1318,7 +1437,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   removes an orphan, while explicit parent lifecycle hooks remove the ordinary
   cases immediately.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
-  mob you look at/punch; nametags cannot be colored per viewer). The
+  mob you look at/punch; a nametag's colour is per side, not per level). The
   frame's **reach is 20 m** — our choice, not an engine constant: far
   enough past the 16 m view_range of our longest-sighted ground mobs to
   size up what is about to notice you, and inside the ability targeting
@@ -1413,16 +1532,42 @@ change HP, density, aggression range, armor, rewards or ability cadence.
 
 ## Nametag categories and injured health sprites
 
-All viewers see the same category colors; existing 25/30 m observer hysteresis
-still controls visibility independently. Six categories have configurable
+**Friend and foe** (Round 72, the user's ruling of 2026-11-07,
+[plan](../planning/round72-plan.md) §2.8). A faction unit (a player with a
+faction, a guard, royal guard, captain, commander, bodyguard, King, General,
+or a settlement NPC) shows **green to its own side and red to the other**;
+an NPC that never fights (villagers, elders, vendors, trainers, quest givers)
+shows **light green and light red**, so a player sees it will not attack. A
+viewer without a faction (only at the start position) sees the friend
+colour. Since a nametag's colour is one property for all viewers, a unit's
+two colours are two carriers: the one its callers hold serves its own side
+and every viewer without a faction; the **foe carrier exists only while a
+viewer of the other side is within tag range** and is made and removed by
+the same central pass, which reads each viewer's faction once per snapshot.
+The text reaches both carriers; the HP bar and the visibility callbacks see
+both sides' observers together. A fighting mob's faction is its
+`_grug_faction` (from its definition, set when it activates, so a guard or
+King is never shown in another colour); a peaceful NPC's is its
+settlement's, a capital's mount displays included (gear displays carry no tag). A summoned add
+carrying its King's faction counts as a faction unit too. Every NPC and
+guard is friend or foe (user ruling, Round 72): the guard violet and NPC
+lavender categories remain as settings but no NPC or guard shows them.
+
+Everything else keeps one colour for all viewers, with the existing 25/30 m
+observer hysteresis: mobs without a faction stay red when aggressive, yellow
+when neutral and white as critters (the Bedrock Sentinel is an aggressive
+mob, no guard, since Round 72), and a player without a faction stays white.
+Ten categories have configurable
 foreground/background RGBA settings loaded once at server start: aggressive,
-neutral, guard, npc, player, critter. Defaults are red/yellow/violet/light
-lavender/white/white respectively, with black background alpha 64/255 (about
-25%). Bosses, elites and adds reuse their behavior or faction-role category;
+neutral, guard, npc, player, critter, friend, foe, npc_friend, npc_foe.
+Defaults are red/yellow/violet/light lavender/white/white/green/red/light
+green/light red respectively, with black background alpha 64/255 (about
+25%). Other bosses, elites and adds reuse their behavior or faction-role category;
 mounts get no additional tags. A neutral animal stays yellow when provoked.
 
 A startup boolean (default on) enables a small green camera-facing sprite bar
-for living injured combat mobs, bosses and guards. Hide at full HP or death;
+for living injured combat mobs, bosses, guards and other fighting faction
+units, seen by both sides. Hide at full HP or death;
 no bars for players, critters or peaceful NPCs. Keep existing HP text. Reuse the
 nametag visibility pass and observers; update fill only when visible integer
 percentage changes. Bars are ephemeral/nonphysical/nonpointable and removed
@@ -1438,6 +1583,10 @@ Startup presentation settings:
 | NPC | `grug_nametag_npc_foreground` / `#d8c5ff` | `grug_nametag_npc_background` / `#00000040` |
 | Player | `grug_nametag_player_foreground` / `#ffffff` | `grug_nametag_player_background` / `#00000040` |
 | Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
+| Friend | `grug_nametag_friend_foreground` / `#4bdc4b` | `grug_nametag_friend_background` / `#00000040` |
+| Foe | `grug_nametag_foe_foreground` / `#ff4b4b` | `grug_nametag_foe_background` / `#00000040` |
+| NPC friend | `grug_nametag_npc_friend_foreground` / `#b9f5b0` | `grug_nametag_npc_friend_background` / `#00000040` |
+| NPC foe | `grug_nametag_npc_foe_foreground` / `#ffb3b3` | `grug_nametag_npc_foe_background` / `#00000040` |
 
 `grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
 category default. **Every bar is world-sized** (Round 28 ruling 10): an
@@ -1477,6 +1626,10 @@ XP); these rules replace the leash, the pursuit policy above and group alerts.
   to another pack.
 - **No de-aggro.** No leash, no contact timeout, no give-up distance, no patience,
   no soft de-aggro. A failed path search resets nothing.
+- **No easing of the pull** (0.72.0): the aggro radius by level gap does not shrink
+  for an Expedition's mob, and the Undead truce does not hold against it. Both read
+  one mark, `_grug_expedition`, which `packs.lua`'s spawn sets on every mob of every
+  pack, the boss included.
 - **In combat.** Everybody on a list stays in combat (`in_combat`) until the pack is
   dead or they leave the list, so a waystone and Return Home stay refused: a pulled
   pack ends in a win, a death or a logout. It is a short timer the pack's once-a-second
@@ -1488,7 +1641,10 @@ XP); these rules replace the leash, the pursuit policy above and group alerts.
   everything, heal and run home (the evade of §4, all the way to their marker), and its
   dead stand at their place at once. A fully dead pack stays dead. A respawned mob pays
   XP and drops like any other. The boss is a pack of one: a wipe heals it and sends it
-  home, and the credit of that attempt ends with it.
+  home, and the credit of that attempt ends with it. Since Round 72 it also follows the
+  bosses' reset rules (§4 "Kings and bosses"): its room is its range, a player who
+  leaves the room leaves its list, 15 s without an attack reset it, and its reset is
+  the wipe. A failed path search does not move it.
 - **Left behind.** A mob must never hold anyone with nothing able to reach them, and
   a mob in an inactive block has no step. So the tick looks at every living member of
   a pulled pack once a second. More than **32 nodes** from its target it jumps beside

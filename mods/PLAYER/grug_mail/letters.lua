@@ -6,11 +6,13 @@
 --   * the Riding Trainer's letter at level 15, only while the character
 --     owns no riding tier;
 --   * the Housing Steward's letter at level 20, only while the character
---     never had a Claim Stone.
+--     never had a Claim Stone;
+--   * the Expedition Registrar's letter at level 20, always (Round 72).
 -- The level letters follow grug_xp.register_on_level_change: once per jump
 -- (14 -> 21 sends both) and at every join, so an existing character gets a
--- letter late, and only while it is still useful. A letter that is no
--- longer useful is never sent (its flag is set without it).
+-- letter late, and only while it is still useful (the Registrar's always
+-- is). A letter that is no longer useful is never sent (its flag is set
+-- without it).
 
 local TEXTS = grug_mail.texts
 
@@ -39,6 +41,8 @@ local LEVEL_LETTERS = {
 			local _, state = grug_housing.player_claim(player:get_player_name())
 			return state == "never"
 		end},
+	{flag = "grug_mail:letter_registrar", level = 20, from = "Expedition Registrar",
+		text = TEXTS.registrar, useful = function() return true end},
 }
 grug_mail.LEVEL_LETTERS = LEVEL_LETTERS
 

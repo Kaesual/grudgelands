@@ -273,8 +273,11 @@ local function teleport(player, pos)
 	for _, fn in ipairs(teleports) do fn(player) end
 end
 local CAPITAL = {x = 100, y = 10, z = 100}
+local windows = {} -- Round 72: the waystone windows the inner stones open
 grug_home = {
 	register_on_teleport = function(fn) teleports[#teleports + 1] = fn end,
+	register_expedition_tab = function() end,
+	show_waystones = function(player, origin) windows[#windows + 1] = {player = player, origin = origin} end,
 	safe_arrival = function(pos) return pos end,
 	waystone_pos = function(id) return id == "highcourt" and CAPITAL or nil end,
 	waystone_arrival = function() return capital_open and CAPITAL or nil end,
@@ -378,10 +381,10 @@ local function feed_to(name)
 end
 
 -- The sister lanes' parts of the mod have their own fixtures (r71_guard, r71_ui,
--- r71_mobs) and need more of the game than this harness fakes.
+-- r71_mobs; traps.lua: r72_traps) and need more of the game than this harness fakes.
 local load_file = dofile
 local SISTERS = {["guard.lua"] = true, ["registrar.lua"] = true, ["encounters.lua"] = true,
-	["chest.lua"] = true, ["loot.lua"] = true}
+	["chest.lua"] = true, ["loot.lua"] = true, ["traps.lua"] = true}
 _G.dofile = function(file)
 	if not SISTERS[file:match("[^/]+$")] then return load_file(file) end
 end
@@ -762,16 +765,23 @@ do
 	check(E.start_arrival(run).x == run.places.arrival.x and
 		E.start_arrival(run).y == run.places.arrival.y - 0.49, "K the arrival stands on the floor")
 	check(not E.leave(p), "K nothing to leave")
+	-- Round 72: the stones open the ordinary waystone window (grug_home, whose rules
+	-- tools/r29_w and tools/r72_waytab test); leave stays the scripted way back.
+	E.use_waystone(p, run.places.start_waystone)
+	check(#windows == 0 and feed_to("walker") == "You are not in an Expedition.", "K a stone outside a run")
 	go_in(p, run)
+	core.registered_nodes["grug_expeditions:waystone"].on_rightclick(run.places.end_waystone, nil, p)
+	local window = windows[#windows]
+	check(window and window.player == p and window.origin.label == E.definition(run.expedition).name and
+		window.origin.pos.x == run.places.end_waystone.x, "K the stone opens the waystone window")
+	check(E.run_inside(p) == run, "K opening it moves nobody")
 	p.combat = true
-	E.use_waystone(p)
-	tick()
-	check(E.run_inside(p) == run and feed_to("walker"):find("combat", 1, true), "K the stones refuse in combat")
-	check(feeds[#feeds].kind == "notice" and feeds[#feeds].key == "expedition", "K a notice in the feed")
+	local refused, why = E.leave(p)
+	check(not refused and why == "Cannot travel in combat.", "K the way back refuses in combat")
 	p.combat = nil
-	core.registered_nodes["grug_expeditions:waystone"].on_rightclick(nil, nil, p)
+	check(E.leave(p), "K the way back")
 	tick()
-	check(p.pos.x == CAPITAL.x and E.run_inside(p) == nil, "K the stone leads to the capital")
+	check(p.pos.x == CAPITAL.x and E.run_inside(p) == nil, "K it leads to the capital")
 	check(saw("left walker travel"), "K the leave hook")
 	go_in(p, run)
 	grug_home.return_home(p)

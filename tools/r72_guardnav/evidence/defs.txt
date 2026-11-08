@@ -1,0 +1,9 @@
+switched on (not sub-types): grug_mobs:bodyguard_accord grug_mobs:bodyguard_throng grug_mobs:captain_accord grug_mobs:captain_throng grug_mobs:commander_accord grug_mobs:commander_throng grug_mobs:guard_accord grug_mobs:guard_throng grug_mobs:rift_boss grug_mobs:royal_guard_dwarf grug_mobs:royal_guard_elf grug_mobs:royal_guard_human grug_mobs:royal_guard_orc grug_mobs:royal_guard_troll grug_mobs:royal_guard_undead
+leader sub-types switched on: 45 of 45, other sub-types: 0
+grug_mobs:wolf false
+grug_mobs:boar false
+grug_mobs:bandit false
+grug_mobs:king_human false
+grug_mobs:general_accord false
+grug_mobs:bodyguard_accord true
+strict rule installed: true

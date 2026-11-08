@@ -17,7 +17,11 @@
 --     spawned like a leader when a player who may fight him comes near (the
 --     finale in his quest log or done, rift_core.lua's eligible), bound to the site by
 --     its own leash (aggro.lua's chase leash and evade home, with this boss's
---     radius) and an idle walk home, back about five minutes after its death;
+--     radius) and an idle walk home, and reset by the bosses' 15 s rule (Round 72,
+--     boss_floor.lua: 15 s in a fight without a swing, a bolt with sight or a pulse
+--     that caught a player; it keeps the chase leash and the navigation's give-up,
+--     no boss floor: the crack changes its ground), back about five minutes after
+--     its death;
 --     loot through bosses.lua's ledger and 24-hour lockout (boss loot once a
 --     day, an elite's roll inside the lockout; grug_quality), the kill
 --     through grug_mobs.register_on_boss_kill as "rift:<site key>".
@@ -343,6 +347,9 @@ grug_mobs.register_mob("grug_mobs:rift_boss", {
 	_grug_voice = "giant",
 	_grug_fixed_level = 60, _grug_tier = "elite",
 	_grug_hp_scale = HP_SCALE, _grug_leash_range = LEASH,
+	-- Out of reach, reset at once (Round 72 GUARDNAV, aggro.lua
+	-- grug_mobs.reach_reset), besides the 15 s rule (boss_floor.lua).
+	_grug_reach_reset = true,
 	-- Authored (Round 37 MP): his spawn never fails on mobs_redo's active-mob
 	-- limit and he does not count against it.
 	_grug_authored = true,

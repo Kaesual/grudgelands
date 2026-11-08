@@ -172,6 +172,8 @@ grug_expeditions = {
 	places = function(run) return run.places end,
 	run_at = function(pos) return runs_at[pos.z] end,
 	belongs = function(run, name) return run.owners[name] == true end,
+	-- Round 72 SHIFT: the catalogue row's wall signs (none for the test vault).
+	definition = function() return {} end,
 }
 local M = grug_expeditions
 

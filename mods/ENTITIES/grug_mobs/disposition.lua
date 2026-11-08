@@ -28,7 +28,7 @@ classify("neutral", {
 })
 
 classify("aggressive", {
-	"ashen_treant", "bandit", "bandit_archer", "bear", "blightfang_wolf",
+	"ashen_treant", "auditor_nemm", "bandit", "bandit_archer", "bear", "blightfang_wolf",
 	"blood_bat", "bog_ooze", "bog_witch", "crag_eagle", "crocodile",
 	"crystal_shard", "dungeon_master", "ember_wisp", "flintback", "fox", "frost_stray",
 	"giant_rat", "giant_spider", "glowwing", "goblin_hound",
@@ -45,6 +45,9 @@ classify("aggressive", {
 	-- Round 51: the water families (biomes_mobs.md, Round 51 section).
 	"abyssal_shark", "bay_shark", "frog", "stingray",
 })
+-- Round 72: The Last Mint's boss (land_guard.lua), and the Bedrock Sentinel
+-- itself, which left the guard role (user ruling 2026-11-08: it guards nothing).
+classify("aggressive", {"duewarden", "land_guard"})
 
 -- Sub-types (subtypes.lua, Round 28 ruling 35) add their own entity names to
 -- the same table; a name that is already classified is an error.
@@ -62,7 +65,6 @@ end
 -- Peaceful settlement residents bypass this wrapper.
 local function guard_role(name)
 	return name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
-		or name == "grug_mobs:land_guard"
 		or name:match("^grug_mobs:royal_guard_") ~= nil
 		or name:match("^grug_mobs:captain_") ~= nil
 		or name:match("^grug_mobs:commander_") ~= nil

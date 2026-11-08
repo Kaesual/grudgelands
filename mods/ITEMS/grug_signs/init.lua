@@ -344,6 +344,8 @@ local function place_board(itemstack, placer, pointed_thing)
 			return itemstack
 		end
 	end
+	-- Round 72: the placement rules (grug_core) for both halves.
+	if grug_core.placement_refused(placer, BOARD, {pos, main}) then return itemstack end
 	core.set_node(pos, {name = BOARD_PART, param2 = param2})
 	core.set_node(main, {name = BOARD, param2 = param2})
 	core.log("action", name .. " places node " .. BOARD .. " at " .. core.pos_to_string(main))

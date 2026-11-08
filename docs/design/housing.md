@@ -321,8 +321,11 @@ only when digging and placing; §6.3 covers the rest.
   mob whose spawn point lies on an active claim is pushed by no claim: it roams
   as before until the game removes it once no player stays near
   ([combat_stats.md](combat_stats.md), the push).
-- Falling nodes follow the normal engine rules. Because the claim is unbounded
-  upward, only permitted players can place anything above a home.
+- Falling nodes follow the normal engine rules, except that one never lands
+  in a live body's cell
+  ([combat_stats.md](combat_stats.md#placement-in-combat-and-around-bodies)).
+  Because the claim is unbounded upward, only permitted players can place
+  anything above a home.
 - Flying: there is no claim-specific flight rule. Home territory already
   restricts flying to the own faction (`mounts.md` §4.3).
 
@@ -343,6 +346,10 @@ Once activated:
 - Pick-up (§5).
 - A second tab, **Waypoints** (Round 45 PT9): the owner's discovered
   waystones, each with Travel (§8).
+- A tab **Expeditions** (Round 72): the Expedition the owner may enter, with
+  Enter from the stone (within the same reach), as on every waystone
+  ([expeditions.md](expeditions.md) §4); with none, one line saying why. With
+  four tabs they share the width.
 - While belongings from an old map wait, a tab **Belongings (N)** (Round
   50): the Claim Stone inventory (§3a), four rows visible and scrollable,
   above the player's combined bag; shift-click takes into the inventory.

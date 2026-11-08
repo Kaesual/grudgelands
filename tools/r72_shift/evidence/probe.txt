@@ -1,0 +1,218 @@
+ACTION[Server]: [r72shift] character complete at (0,37,-2550)
+ACTION[Server]: [r72shift] the character's dodge chance at 1: 0.010
+ACTION[Server]: [r72shift] PASS the dialog offers The Second Shift
+ACTION[Server]: [r72shift] T4 at level 40, character 40
+ACTION[Server]: [r72shift] PASS the guild leader gives the quest: nil
+ACTION[Server]: [r72shift] ready after 15.9 s, level 40, max players 4
+ACTION[Server]: [r72shift] PASS ready at level 40
+ACTION[Server]: [r72shift] nodes in the box: 5 grug_materials:stone_with_emberglass, 3 grug_materials:stone_with_sapphire, 0 of T2
+ACTION[Server]: [r72shift] PASS five ore and three gem places of the tier, no T2 node
+ACTION[Server]: [r72shift] PASS the door stands
+ACTION[Server]: [r72shift] PASS the shift board
+ACTION[Server]: [r72shift] PASS the board's text shows: 1
+ACTION[Server]: [r72shift] traps armed: f1 2, f5 1, f7 1, f9 2, wall at x 43
+ACTION[Server]: [r72shift] PASS the plan's traps armed
+ACTION[Server]: [r72shift] PASS no mob before anyone enters
+ACTION[Server]: [r72shift] PASS enter starts
+ACTION[Server]: [r72shift] PASS inside the box
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST board_40
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie elite HP 3828, want 3828
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie elite HP 3828, want 3828
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie elite HP 3828, want 3828
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 1276, want 1276
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [grug_mobs] boss floor expedition:second_shift:1: 796 cells in 2 steps, 1845 us
+ACTION[Server]: [r72shift] PASS grug_mobs:auditor_nemm at level 40
+ACTION[Server]: [r72shift] PASS grug_mobs:auditor_nemm boss HP 76560, want 76560
+ACTION[Server]: [r72shift] mob at 40: grug_mobs:auditor_nemm boss Auditor Nemm
+ACTION[Server]: [r72shift] mob at 40: grug_mobs:skeleton_raider normal Shift Raider
+ACTION[Server]: [r72shift] mob at 40: grug_mobs:zombie elite Buried Miner
+ACTION[Server]: [r72shift] mob at 40: grug_mobs:zombie normal Buried Miner
+ACTION[Server]: [r72shift] PASS fourteen normal, three elite: 14, 3
+ACTION[Server]: [r72shift] PASS the raiders' name at 40
+ACTION[Server]: [r72shift] PASS the elite miners' name
+ACTION[Server]: [r72shift] floor trap at (11,8,20): 1 hits 574
+ACTION[Server]: [r72shift] PASS the floor trap hits the character once
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] wall trap at x 43: 1 hits 574
+ACTION[Server]: [r72shift] PASS the fireball bursts on the character
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS Auditor Nemm, an elite at 40, HP 76560
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] Nemm marks (58.0,7.5,104.0)
+ACTION[Server]: [r72shift] Nemm: 1 marks, 1 marked hits 574, floor 796 cells, health 76560/76560
+ACTION[Server]: [r72shift] PASS Nemm marks the character's spot and the hit falls there
+ACTION[Server]: [r72shift] PASS Nemm has his floor
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST court_40
+ACTION[Server]: [r72shift] Nemm at (59,8,104), evading false
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS the kill credit at 40
+ACTION[Server]: [r72shift] PASS the kill counts for the quest
+ACTION[Server]: [r72shift] PASS the reward room opens
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] chest at 40: grug_gear:head_leather_scaled x1 ilvl 40
+ACTION[Server]: [r72shift] PASS the gear's item level 40
+ACTION[Server]: [r72shift] chest at 40: grug_gear:manawell_t4 x1 ilvl 40
+ACTION[Server]: [r72shift] PASS the gear's item level 40
+ACTION[Server]: [r72shift] chest at 40: grug_money:bag_of_coins x1 ilvl 0
+ACTION[Server]: [r72shift] a Bag of Coins of 720c
+ACTION[Server]: [r72shift] chest at 40: grug_mobs:marching_bone x5 ilvl 0
+ACTION[Server]: [r72shift] chest at 40: grug_mobs:leathery_flesh x1 ilvl 0
+ACTION[Server]: [r72shift] PASS gear and a bag
+ACTION[Server]: [r72shift] PASS the band's bone and flesh
+ACTION[Server]: [r72shift] BURST chest_40
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS a weaker pick leaves the gem
+ACTION[Server]: [r72shift] PASS the gem dug: grug_materials:rough_sapphire
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS the ore dug: grug_materials:emberglass
+ACTION[Server]: [r72shift] PASS the hull behind it stands
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST store_40
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST arrival_40
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST desk_40
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST marking_40
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST wage_c_40
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] BURST wage_d_40
+ACTION[Server]: [r72shift] turn in: true nil
+ACTION[Server]: [r72shift] PASS the quest is turned in
+ACTION[Server]: [r72shift] PASS the way out
+ACTION[Server]: [r72shift] T6 at level 69, character 60
+ACTION[Server]: [grug_mobs] boss floor king:human: 1084 cells in 3 steps, 3507 us
+ACTION[Server]: [r72shift] ready after 17.7 s, level 69, max players 4
+ACTION[Server]: [r72shift] PASS ready at level 69
+ACTION[Server]: [r72shift] nodes in the box: 5 grug_materials:abyssal_crystal_ore, 3 grug_materials:stone_with_diamond, 0 of T2
+ACTION[Server]: [r72shift] PASS five ore and three gem places of the tier, no T2 node
+ACTION[Server]: [r72shift] PASS the door stands
+ACTION[Server]: [r72shift] PASS the shift board
+ACTION[Server]: [r72shift] PASS the board's text shows: 1
+ACTION[Server]: [r72shift] traps armed: f1 2, f5 1, f7 1, f9 2, wall at x 43
+ACTION[Server]: [r72shift] PASS the plan's traps armed
+ACTION[Server]: [r72shift] PASS no mob before anyone enters
+ACTION[Server]: [r72shift] PASS enter starts
+ACTION[Server]: [r72shift] PASS inside the box
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie elite HP 10522, want 10522
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie elite HP 10522, want 10522
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:zombie elite HP 10522, want 10522
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:skeleton_raider normal HP 3507, want 3507
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [grug_mobs] boss floor expedition:second_shift:2: 796 cells in 2 steps, 1680 us
+ACTION[Server]: [r72shift] PASS grug_mobs:auditor_nemm at level 69
+ACTION[Server]: [r72shift] PASS grug_mobs:auditor_nemm boss HP 210440, want 210440
+ACTION[Server]: [r72shift] mob at 69: grug_mobs:auditor_nemm boss Auditor Nemm
+ACTION[Server]: [r72shift] mob at 69: grug_mobs:skeleton_raider normal Overdue Raider
+ACTION[Server]: [r72shift] mob at 69: grug_mobs:zombie elite Buried Miner
+ACTION[Server]: [r72shift] mob at 69: grug_mobs:zombie normal Buried Miner
+ACTION[Server]: [r72shift] PASS fourteen normal, three elite: 14, 3
+ACTION[Server]: [r72shift] PASS the raiders' name at 69
+ACTION[Server]: [r72shift] PASS the elite miners' name
+ACTION[Server]: [r72shift] floor trap at (27,8,32): 1 hits 1213
+ACTION[Server]: [r72shift] PASS the floor trap hits the character once
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] wall trap at x 43: 1 hits 1213
+ACTION[Server]: [r72shift] PASS the fireball bursts on the character
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS Auditor Nemm, an elite at 69, HP 210440
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] Nemm marks (58.0,7.5,104.0)
+ACTION[Server]: [r72shift] Nemm: 1 marks, 1 marked hits 1213, floor 796 cells, health 210440/210440
+ACTION[Server]: [r72shift] PASS Nemm marks the character's spot and the hit falls there
+ACTION[Server]: [r72shift] PASS Nemm has his floor
+ACTION[Server]: [r72shift] Nemm at (59,8,104), evading false
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS the kill credit at 69
+ACTION[Server]: [r72shift] PASS the reward room opens
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] chest at 69: grug_gear:mercy_seal_t6 x1 ilvl 69
+ACTION[Server]: [r72shift] PASS the gear's item level 69
+ACTION[Server]: [r72shift] chest at 69: grug_gear:greataxe_abyssal_steel x1 ilvl 69
+ACTION[Server]: [r72shift] PASS the gear's item level 69
+ACTION[Server]: [r72shift] chest at 69: grug_money:bag_of_coins x1 ilvl 0
+ACTION[Server]: [r72shift] a Bag of Coins of 3740c
+ACTION[Server]: [r72shift] chest at 69: grug_mobs:unquiet_bone x5 ilvl 0
+ACTION[Server]: [r72shift] chest at 69: grug_mobs:salt_cured_flesh x2 ilvl 0
+ACTION[Server]: [r72shift] PASS gear and a bag
+ACTION[Server]: [r72shift] PASS the band's bone and flesh
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS a weaker pick leaves the gem
+ACTION[Server]: [r72shift] PASS the gem dug: grug_materials:rough_diamond
+ACTION[Server]: [r72shift] PASS the character lives
+ACTION[Server]: [r72shift] PASS the ore dug: grug_materials:abyssal_crystal
+ACTION[Server]: [r72shift] PASS the hull behind it stands
+ACTION[Server]: [r72shift] PASS the way out
+ACTION[Server]: [r72shift] shutdown

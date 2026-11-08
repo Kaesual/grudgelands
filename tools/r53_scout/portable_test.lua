@@ -533,7 +533,9 @@ setfenv(assert(loadfile(ROOT .. "/" .. ABIL .. "init.lua")), env)()
 local G = env.grug_abilities
 local R = G.registered
 check(G and R.loose and R.bladecraft and G.input, "K the real init.lua loads with the kit and input")
-eq(#swing_callbacks, 1, "K the kit registers one swing callback (Close Dance)")
+-- Round 72 BLADECRAFT: Bladecraft's look (its swing shows the blade again,
+-- tools/r72_bladecraft) registers first, Close Dance's second.
+eq(#swing_callbacks, 2, "K the kit registers two swing callbacks (Bladecraft's look, Close Dance)")
 
 ------------------------------------------------------------------------------
 -- G: the graph data.
@@ -922,7 +924,7 @@ do
 	-- Close Dance: the shield, the window and the swing callback.
 	local c = scout("k6_dance")
 	c.ranks = {veil_close_dance = 1, veil_cutting_rhythm = 3, veil_bladecraft = 1}
-	local callback = swing_callbacks[1]
+	local callback = swing_callbacks[2]
 	eq(callback(c, {def = R.bladecraft, weapon_damage = ctx.weapon_damage}), nil,
 		"K6 no bonus before Close Dance")
 	reset_log()

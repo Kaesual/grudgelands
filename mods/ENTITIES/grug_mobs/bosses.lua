@@ -276,6 +276,9 @@ function grug_mobs.boss_leash_reset(self)
 		-- leash, heal and resume following, but must never clear participation
 		-- or recreate the retinue underneath a live king attempt.
 		if self._grug_royal_king and grug_mobs.royal_encounter_reset then
+			-- A signature winding up when he resets never lands (Round 72
+			-- BOSSRESET): the reset may come mid-cast now.
+			if self.temp then self.temp.grug_royal_cast = nil end
 			royal_reset(self)
 		end
 		return
@@ -436,10 +439,33 @@ local function bone_call(self, faction)
 	return summoned
 end
 
--- The encounter reset of a King or General (evade, leash): the retinue comes
--- back (start_npcs.lua) and the summons go.
+-- The encounter reset of a King or General (evade, leash, the reset rules of
+-- boss_floor.lua): the retinue comes back (start_npcs.lua) and the summons go.
+-- A retinue standing whole at full health stays as it is (Round 72 BOSSRESET): a
+-- reset may come every second while a player outside the floor keeps hitting,
+-- and replacing two healthy guards each time would only make them flicker. The
+-- ledger goes either way.
+local ROYAL_RETINUE = 2 -- a king's throne guards, a General's bodyguards
+
+local function retinue_whole(self)
+	local pos = self.object and self.object:get_pos()
+	if not pos then return false end
+	local count = 0
+	for _, ent in ipairs(royal_objects(self._grug_boss_id, 50, pos)) do
+		if not ent._grug_royal_king then
+			if (ent.health or 0) < (ent.hp_max or 0) then return false end
+			count = count + 1
+		end
+	end
+	return count >= ROYAL_RETINUE
+end
+
 royal_reset = function(self)
-	grug_mobs.royal_encounter_reset(self)
+	if retinue_whole(self) then
+		grug_mobs.boss_attempt_reset(self._grug_boss_id)
+	else
+		grug_mobs.royal_encounter_reset(self)
+	end
 	remove_royal_summons(self)
 end
 
@@ -603,6 +629,15 @@ local function king_def(race, row)
 			(ranged and "grug_mobs:rock_entity" or nil),
 		arrow_override = ranged and grug_mobs.stamp_arrow_damage or nil,
 		shoot_interval = 3, shoot_offset = 1.5,
+		-- The ranged kings are ordinary ground ranged mobs (Round 72, the
+		-- user's ruling of 2026-11-07): with a ranged phase they shoot their
+		-- arrow at a target they see in shot range and, without sight, walk
+		-- and search the shared navigation until they see it (mobs/api.lua
+		-- do_states). Without a `dogshoot_switch` they stood still inside
+		-- their shot range. The archers' rhythm: 10 s ranged, 3 s melee.
+		dogshoot_switch = ranged and 1 or nil,
+		dogshoot_count_max = ranged and 10 or nil,
+		dogshoot_count2_max = ranged and 3 or nil,
 		walk_velocity = 1.2, run_velocity = 4.6,
 		jump = true, jump_height = 4, stepheight = 1.1, fear_height = 4,
 		view_range = 18, owner = "",

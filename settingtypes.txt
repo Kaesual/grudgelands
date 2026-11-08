@@ -46,6 +46,17 @@ grug_nametag_player_background (Player nametag background) string #00000040
 grug_nametag_critter_foreground (Critter nametag foreground) string #ffffff
 grug_nametag_critter_background (Critter nametag background) string #00000040
 
+#    Faction units (players, guards, Kings, NPCs) are green to their own side
+#    and red to the other; NPCs that never fight are lighter.
+grug_nametag_friend_foreground (Friend nametag foreground) string #4bdc4b
+grug_nametag_friend_background (Friend nametag background) string #00000040
+grug_nametag_foe_foreground (Foe nametag foreground) string #ff4b4b
+grug_nametag_foe_background (Foe nametag background) string #00000040
+grug_nametag_npc_friend_foreground (Peaceful friendly NPC nametag foreground) string #b9f5b0
+grug_nametag_npc_friend_background (Peaceful friendly NPC nametag background) string #00000040
+grug_nametag_npc_foe_foreground (Peaceful enemy NPC nametag foreground) string #ffb3b3
+grug_nametag_npc_foe_background (Peaceful enemy NPC nametag background) string #00000040
+
 #    Show a small green health bar above injured aggressive and neutral
 #    creatures and guards. It appears and disappears at the same distance as
 #    their name tags.

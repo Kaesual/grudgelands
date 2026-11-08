@@ -1,0 +1,202 @@
+ACTION[Server]: [r71l20] character complete at (0,37,-2550)
+ACTION[Server]: [r71l20] PASS the dialog offers The Stilled Seam
+ACTION[Server]: [r71l20] PASS the leader gives the quest
+ACTION[Server]: [r71l20] ready after 15.9 s, level 20, max players 3
+ACTION[Server]: [r71l20] PASS ready at level 20
+ACTION[Server]: [r71l20] PASS the door stands
+ACTION[Server]: [r71l20] PASS five Anthracite
+ACTION[Server]: [r71l20] PASS three Jade
+ACTION[Server]: [r71l20] PASS no mob before anyone enters
+ACTION[Server]: [r71l20] PASS enter starts
+ACTION[Server]: [r71l20] PASS inside the box
+ACTION[Server]: [r71l20] arrival (8084,-107,-1590); start (8084,-107.49,-1590)
+ACTION[Server]: [r71l20] leaving for 20,12: hp 461 at (8084.00,-107.49,-1590.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] BURST room0_20
+ACTION[Server]: [r71l20] leaving for 108,52: hp 461 at (8084.00,-107.50,-1604.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] wander near 108,52: 11 mobs, 7 stayed idle, furthest of those 13.1 nodes in 30 s
+ACTION[Server]: [r71l20] leaving for 100,90: hp 461 at (8172.00,-107.50,-1563.99), inside true, in combat true, 4 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] wander near 100,90: 12 mobs, 3 stayed idle, furthest of those 4.8 nodes in 30 s
+ACTION[Server]: [r71l20] wander, furthest: 13.1 / 4.8 nodes
+ACTION[Server]: [r71l20] leaving for 54,20: hp 461 at (8120.80,-107.50,-1516.20), inside true, in combat true, 9 mobs within 16, 1 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback HP 9216
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem HP 1152
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem HP 1152
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem HP 1152
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 384
+ACTION[Server]: [r71l20] leaving for 100,20: hp 461 at (8113.37,-107.50,-1583.80), inside true, in combat true, 1 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback HP 9216
+ACTION[Server]: [r71l20] leaving for 104,66: hp 461 at (8164.00,-107.50,-1596.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback HP 9216
+ACTION[Server]: [r71l20] leaving for 100,98: hp 461 at (8168.00,-107.50,-1550.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] leaving for 84,108: hp 461 at (8164.00,-107.50,-1518.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback at level 20
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback HP 9216
+ACTION[Server]: [r71l20] rooms at level 20: 12 normal, 3 elite, names Crevice Spider, Stone Golem
+ACTION[Server]: [r71l20] PASS the document's counts
+ACTION[Server]: [r71l20] PASS Flintback stands alone
+ACTION[Server]: [r71l20] PASS the chest is sealed before the kill
+ACTION[Server]: [r71l20] PASS the door still stands
+ACTION[Server]: [r71l20] PASS the quest waits for Flintback
+ACTION[Server]: [r71l20] leaving for 60,108: hp 461 at (8148.00,-107.50,-1508.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] to the boss: hp 461 at (8124.00,-107.50,-1508.00), inside true, in combat true, 1 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] boss grug_mobs:flintback: name "Flintback" tier elite level 20 HP 9216/9216 id expedition:stilled_seam:1 tag "Elite Flintback [Lv 20] 9.2k/9.2k"
+ACTION[Server]: [r71l20] PASS the boss is hurt
+ACTION[Server]: [r71l20] PASS the boss is dead
+ACTION[Server]: [r71l20] kill credit expedition:stilled_seam
+ACTION[Server]: [r71l20] PASS one credit, the stable id
+ACTION[Server]: [r71l20] quest status after the kill: ready
+ACTION[Server]: [r71l20] PASS the door opened
+ACTION[Server]: [r71l20] leaving for 30,108: hp 461 at (8124.40,-107.50,-1508.00), inside true, in combat true, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] BURST room5_20
+ACTION[Server]: [r71l20] leaving for 23,108: hp 461 at (8094.00,-107.50,-1508.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS a list of the player's own
+ACTION[Server]: [r71l20] chest level 20: grug_gear:battlebeat_t2 x1 ilvl 20
+ACTION[Server]: [r71l20] PASS the gear's item level: 20
+ACTION[Server]: [r71l20] chest level 20: grug_money:bag_of_coins x1 ilvl 0
+ACTION[Server]: [r71l20] a Bag of Coins of 50c
+ACTION[Server]: [r71l20] chest level 20: grug_mobs:spider_silk x5 ilvl 0
+ACTION[Server]: [r71l20] PASS no ore, no gem: grug_mobs:spider_silk
+ACTION[Server]: [r71l20] chest level 20: grug_mobs:venom_gland x2 ilvl 0
+ACTION[Server]: [r71l20] PASS no ore, no gem: grug_mobs:venom_gland
+ACTION[Server]: [r71l20] PASS the chest pays: 1 gear, 1 bag, 2 stacks
+ACTION[Server]: [r71l20] BURST chest_20
+ACTION[Server]: [r71l20] PASS the Anthracite of the store
+ACTION[Server]: [r71l20] leaving for 29,92: hp 461 at (8087.00,-107.50,-1508.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS a marked node is dug
+ACTION[Server]: [r71l20] PASS its Anthracite in the bags: 1
+ACTION[Server]: [r71l20] PASS the hull behind it stands
+ACTION[Server]: [r71l20] leaving for 50,20: hp 461 at (8093.00,-107.50,-1524.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] BURST room1_20
+ACTION[Server]: [r71l20] leaving for 100,30: hp 461 at (8114.00,-107.50,-1596.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] BURST room2_20
+ACTION[Server]: [r71l20] leaving for 108,66: hp 461 at (8164.00,-107.50,-1586.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] BURST room3c_20
+ACTION[Server]: [r71l20] leaving for 100,96: hp 461 at (8172.00,-107.50,-1550.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] BURST room3d_20
+ACTION[Server]: [r71l20] leaving for 50,108: hp 461 at (8164.00,-107.50,-1520.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] BURST room4_20
+ACTION[Server]: [r71l20] turn in: true nil; XP +550, copper +21
+ACTION[Server]: [r71l20] PASS the quest is turned in
+ACTION[Server]: [r71l20] PASS done once
+ACTION[Server]: [r71l20] PASS the end waystone leads out
+ACTION[Server]: [r71l20] PASS ready at level 29
+ACTION[Server]: [r71l20] PASS enter starts
+ACTION[Server]: [r71l20] PASS inside at level 29
+ACTION[Server]: [r71l20] leaving for 54,20: hp 864 at (8084.00,-107.49,-1590.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] leaving for 100,20: hp 864 at (8117.52,-107.50,-1597.27), inside true, in combat true, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem HP 2160
+ACTION[Server]: [r71l20] leaving for 104,66: hp 864 at (8164.00,-107.50,-1596.00), inside true, in combat true, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem HP 2160
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:stone_golem HP 2160
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:giant_spider HP 720
+ACTION[Server]: [r71l20] leaving for 100,98: hp 864 at (8168.00,-107.50,-1550.00), inside true, in combat true, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback HP 17280
+ACTION[Server]: [r71l20] leaving for 84,108: hp 864 at (8164.00,-107.50,-1518.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback at level 29
+ACTION[Server]: [r71l20] PASS grug_mobs:flintback HP 17280
+ACTION[Server]: [r71l20] rooms at level 29: 12 normal, 3 elite, names Crevice Spider, Stone Golem
+ACTION[Server]: [r71l20] PASS the document's counts
+ACTION[Server]: [r71l20] PASS Flintback stands alone
+ACTION[Server]: [r71l20] leaving for 60,108: hp 864 at (8148.00,-107.50,-1508.00), inside true, in combat false, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] to the boss: hp 864 at (8124.00,-107.50,-1508.00), inside true, in combat true, 1 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] boss grug_mobs:flintback: name "Flintback" tier elite level 29 HP 17280/17280 id expedition:stilled_seam:2 tag "Elite Flintback [Lv 29] 17k/17k"
+ACTION[Server]: [r71l20] PASS the boss is hurt
+ACTION[Server]: [r71l20] PASS the boss is dead
+ACTION[Server]: [r71l20] PASS the second credit
+ACTION[Server]: [r71l20] PASS the quest is done once, the Expedition repeats
+ACTION[Server]: [r71l20] leaving for 23,108: hp 864 at (8124.48,-107.50,-1508.00), inside true, in combat true, 0 mobs within 16, 0 on the player's cell
+ACTION[Server]: [r71l20] PASS the character lives
+ACTION[Server]: [r71l20] PASS a list of the player's own
+ACTION[Server]: [r71l20] chest level 29: grug_gear:greataxe_steel x1 ilvl 29
+ACTION[Server]: [r71l20] PASS the gear's item level: 29
+ACTION[Server]: [r71l20] chest level 29: grug_money:bag_of_coins x1 ilvl 0
+ACTION[Server]: [r71l20] a Bag of Coins of 230c
+ACTION[Server]: [r71l20] chest level 29: grug_mobs:spider_silk x4 ilvl 0
+ACTION[Server]: [r71l20] PASS no ore, no gem: grug_mobs:spider_silk
+ACTION[Server]: [r71l20] chest level 29: grug_mobs:coarse_spider_silk x2 ilvl 0
+ACTION[Server]: [r71l20] PASS no ore, no gem: grug_mobs:coarse_spider_silk
+ACTION[Server]: [r71l20] chest level 29: grug_mobs:venom_gland x1 ilvl 0
+ACTION[Server]: [r71l20] PASS no ore, no gem: grug_mobs:venom_gland
+ACTION[Server]: [r71l20] PASS the chest pays: 1 gear, 1 bag, 3 stacks
+ACTION[Server]: [r71l20] BURST chest_29
+ACTION[Server]: [r71l20] PASS flat ground: no fall in two runs: nil
+ACTION[Server]: [r71l20] shutdown

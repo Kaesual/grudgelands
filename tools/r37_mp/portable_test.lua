@@ -635,8 +635,11 @@ local bone_source = "local royal_reset\n" ..
 	cut(bosses, "local BONE_CALL_CAP = 4", "\tremove_royal_summons(self)\nend\n", "bone call",
 		"royal_reset = function(self)") ..
 	"return bone_call, royal_reset\n"
+-- Round 72 BOSSRESET: a retinue standing whole stays; none stands here, so the
+-- reset restores it.
 local bone_call, royal_reset = load_in(bone_source, {grug_mobs = {
-	royal_encounter_reset = function() resets = resets + 1 end}}, "bone call")
+	royal_encounter_reset = function() resets = resets + 1 end},
+	royal_objects = function() return {} end}, "bone call")
 core.add_entity = function(pos, name)
 	local ent = {name = name, health = 30}
 	ent.object = new_object(pos, ent)

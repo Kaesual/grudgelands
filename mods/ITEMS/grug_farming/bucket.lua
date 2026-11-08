@@ -69,6 +69,8 @@ local function place(stack, user, pointed)
 	-- buildable plants/snow follow ordinary bucket placement semantics.
 	if not def or not def.buildable_to or
 			(def.liquidtype and def.liquidtype ~= "none") then return stack end
+	-- Round 72: no liquid is poured in combat (grug_core placement rules).
+	if grug_core.placement_refused(user, source, {pos}) then return stack end
 	if not core.set_node(pos, {name = source}) then return stack end
 	return ItemStack(EMPTY)
 end

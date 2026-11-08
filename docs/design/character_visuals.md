@@ -233,7 +233,17 @@ read off the hotbar, in three cases:
    Opening the sword or dagger from its Melee slot; every other class's
    skills show the Weapon slot. With nothing in that slot the character holds
    nothing, and the first-person view shows the bare hand, not the skill's orb
-   (Round 35);
+   (Round 35). **The one exception is Bladecraft** (Round 72, the user's
+   ruling of 2026-11-07): it swings and deals damage with the Melee blade,
+   but it **shows the weapon of its last real attack**, the bow after a shot
+   that flew and the blade after a swing at a foe. A refused shot, a click at
+   the air and digging switch nothing; no other skill switches (Strike, also
+   as the held fallback of a bow skill, keeps showing its own slot). The
+   shown weapon stays until Bladecraft's next real attack, with no timeout
+   and across hotbar switches; it is not stored, so after a relog Bladecraft
+   shows the blade. With the Ranged slot empty it shows the blade, and a bow
+   put back on before the next attack shows again. A switch changes the
+   first-person hand, the third-person hand and the back card at once;
 2. **any other item** in hand shows that item — a pickaxe is a pickaxe, a torch
    is a torch;
 3. an **empty hand** shows nothing.
@@ -316,7 +326,8 @@ as in 0.54.1, the new item icons kept):
   armour does (§5a);
 - a **Scout** carries its equipped weapon that the hand does not show as a
   flat **card on the back** with the item's image: the melee blade while
-  the hand shows the bow (a bow skill, the bow itself), otherwise the bow.
+  the hand shows the bow (a bow skill, the bow itself, Bladecraft after a
+  shot), otherwise the bow.
   The card hangs on the cloak when one is worn, else on the body; a Scout
   without a bow equipped shows none. It follows the hotbar through the
   one-second poll (§5) and is never stored. Other classes carry no back

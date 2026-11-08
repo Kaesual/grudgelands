@@ -3,6 +3,14 @@
 -- Object nametag properties are global. A transparent child entity gives the
 -- text its own managed observer set, so each connected player gets an
 -- independent 25/30-node hysteresis state while the parent stays unchanged.
+--
+-- Friend and foe (Round 72, round72-plan.md §2.8): a faction unit (a player,
+-- guard, captain, King, General or settlement NPC) is green for its own side
+-- and red for the other, lighter for an NPC that never fights. One colour is
+-- one object, so a unit has up to two carriers: the one its callers hold
+-- serves its own side and every viewer without a faction, and a second one
+-- serves the other side. That second carrier exists only while a viewer of
+-- the other side is within tag range; the same pass makes and removes it.
 
 local ENTITY_NAME = "grug_core:tag_carrier"
 local HP_ENTITY_NAME = "grug_core:injured_hp_bar"
@@ -22,6 +30,11 @@ local CATEGORY_DEFAULTS = {
 	npc = {foreground = "#d8c5ff", background = "#00000040"},
 	player = {foreground = "#ffffff", background = "#00000040"},
 	critter = {foreground = "#ffffff", background = "#00000040"},
+	-- Round 72: faction units by the viewer's side; npc_* never fight.
+	friend = {foreground = "#4bdc4b", background = "#00000040"},
+	foe = {foreground = "#ff4b4b", background = "#00000040"},
+	npc_friend = {foreground = "#b9f5b0", background = "#00000040"},
+	npc_foe = {foreground = "#ffb3b3", background = "#00000040"},
 }
 
 local function setting_color(name, fallback)
@@ -92,13 +105,14 @@ local function same_set(left, right)
 	return true
 end
 
+-- The colour a unit gets while its faction is unknown, and for good when it
+-- has none: a mob without a faction keeps these (§2.8).
 local function category_for(parent)
 	if parent:is_player() then return "player" end
 	local entity = parent:get_luaentity()
 	if not entity then return "npc" end
 	local name = entity.name or ""
 	if name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
-			or name == "grug_mobs:land_guard"
 			or name:match("^grug_mobs:royal_guard_")
 			-- Round 31 PvP garrisons: a camp captain, a General's bodyguard;
 			-- Round 36 a war camp's commander.
@@ -113,6 +127,68 @@ local function category_for(parent)
 		return entity._grug_disposition
 	end
 	return "npc"
+end
+
+-- A player's faction id or nil. grug_factions resolves it, the stub pattern
+-- of grug_core.get_player_faction: grug_core never depends on a player mod.
+function grug_core.get_player_object_faction(player)
+	return nil
+end
+
+-- Settlement key -> faction id, built once on first use from the socket
+-- registry and the start roster (both final after load).
+local settlement_factions
+local function settlement_faction(key)
+	if type(key) ~= "string" then return nil end
+	if not settlement_factions then
+		local identities = grug_core.start_identities and grug_core.start_identities()
+		if not identities or #identities == 0 then return nil end
+		local by_race = {}
+		for _, identity in ipairs(identities) do
+			by_race[identity.race_id] = identity.faction_id
+		end
+		settlement_factions = {}
+		for _, record in ipairs(grug_core.settlement_socket_settlements and
+				grug_core.settlement_socket_settlements() or {}) do
+			settlement_factions[record.key] = by_race[record.race_id]
+		end
+	end
+	return settlement_factions[key]
+end
+
+-- Fills row.faction and row.kind: "combat" (green and red), "npc" (light
+-- green and light red) or nil (the category colour for every viewer).
+-- A player is read on every visit (the faction is chosen after joining);
+-- a mob keeps its faction once known. A fighting mob carries _grug_faction
+-- (grug_mobs sets it on activation, before its carrier exists); a peaceful
+-- resident (category npc), a capital's display included, belongs to its
+-- settlement's faction (user ruling 2026-11-08: every NPC and guard is friend
+-- or foe, no violet or lavender).
+local function resolve_unit(row)
+	if row.is_player then
+		local faction = grug_core.get_player_object_faction(row.parent)
+		row.faction, row.kind = faction, faction and "combat" or nil
+		return
+	end
+	if row.faction then return end
+	local entity = row.parent:get_luaentity()
+	if not entity then return end
+	if entity._grug_faction then
+		row.faction, row.kind = entity._grug_faction, "combat"
+	elseif row.category == "npc" then
+		local faction = settlement_faction(entity._grug_start)
+		if faction then row.faction, row.kind = faction, "npc" end
+	end
+end
+
+local function own_category(row)
+	if row.kind == "combat" then return "friend" end
+	if row.kind == "npc" then return "npc_friend" end
+	return row.category
+end
+
+local function foe_category(row)
+	return row.kind == "npc" and "npc_foe" or "foe"
 end
 
 local function hp_texture(percent)
@@ -213,8 +289,9 @@ local function ensure_hp_bar(row)
 end
 
 local function refresh_hp_bar(row, observers)
-	if not HP_BARS_ENABLED or (row.category ~= "aggressive"
-			and row.category ~= "neutral" and row.category ~= "guard") then
+	if not HP_BARS_ENABLED or row.is_player or (row.kind ~= "combat"
+			and row.category ~= "aggressive" and row.category ~= "neutral"
+			and row.category ~= "guard") then
 		remove_hp_bar(row)
 		return
 	end
@@ -276,6 +353,8 @@ local function refresh_snapshot()
 			end
 			row.name = player:get_player_name()
 			row.x, row.y, row.z = pos.x, pos.y, pos.z
+			-- The viewer's side, read once per snapshot (Round 72).
+			row.faction = grug_core.get_player_object_faction(player)
 		end
 	end
 	player_count = count
@@ -302,6 +381,38 @@ core.register_entity(ENTITY_NAME, {
 	end,
 })
 
+-- The engine draws a nametag at its OWN object's selection-box max Y + 0.3, so
+-- the carrier wears a copy of its parent's box.
+local function copy_parent_box(carrier, parent)
+	local properties = parent:get_properties() or {}
+	carrier:set_properties({
+		selectionbox = properties.selectionbox or properties.collisionbox or
+			{0, 0, 0, 0, 0, 0},
+	})
+end
+
+-- Text and colour of one carrier; a write only when either changed.
+local function style_carrier(carrier, text, category)
+	local entity = carrier:get_luaentity()
+	if not entity or entity.name ~= ENTITY_NAME then return false end
+	if entity._grug_text == text and entity._grug_category == category then
+		return false
+	end
+	entity._grug_text, entity._grug_category = text, category
+	local colors = CATEGORY_COLORS[category] or CATEGORY_COLORS.npc
+	carrier:set_properties({nametag = text,
+		nametag_color = colors.foreground,
+		nametag_bgcolor = colors.background})
+	return true
+end
+
+local function remove_foe_carrier(row)
+	if row and row.foe then
+		if object_valid(row.foe) then row.foe:remove() end
+		row.foe = nil
+	end
+end
+
 local function forget_carrier(carrier, row)
 	if not carrier then return end
 	if row then
@@ -309,19 +420,43 @@ local function forget_carrier(carrier, row)
 	end
 	managed_carriers[carrier] = nil
 	remove_hp_bar(row)
+	remove_foe_carrier(row)
 	if row then carrier_slots[row.slot][carrier] = nil end
 	if row and carrier_by_parent[row.parent] == carrier then
 		carrier_by_parent[row.parent] = nil
 	end
 end
 
-local function update_observers(carrier, parent, owner_name)
-	local entity = carrier:get_luaentity()
-	if not entity or entity.name ~= ENTITY_NAME then return false end
+-- The other side's carrier, made when its first viewer comes in range.
+local function ensure_foe_carrier(row, text)
+	if object_valid(row.foe) then return row.foe end
+	local parent = row.parent
 	local pos = parent:get_pos()
-	if not pos then return false end
-	local previous = entity._grug_observers or {}
-	local observers = {}
+	local foe = pos and core.add_entity(pos, ENTITY_NAME)
+	if not foe then return nil end
+	copy_parent_box(foe, parent)
+	foe:set_attach(parent, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+	style_carrier(foe, text or "", foe_category(row))
+	row.foe = foe
+	return foe
+end
+
+local EMPTY = {}
+
+-- One walk over the snapshot splits the viewers in range by side: the held
+-- carrier gets its own side and every viewer without a faction, the foe
+-- carrier the other side. Returns both sides together (borrowed, read-only)
+-- and whether either set changed.
+local function update_observers(carrier, row)
+	local entity = carrier:get_luaentity()
+	if not entity or entity.name ~= ENTITY_NAME then return EMPTY, false end
+	local pos = row.parent:get_pos()
+	if not pos then return EMPTY, false end
+	local owner_name, faction = row.owner_name, row.faction
+	local previous = entity._grug_observers or EMPTY
+	local foe_entity = object_valid(row.foe) and row.foe:get_luaentity()
+	local previous_foe = foe_entity and foe_entity._grug_observers or EMPTY
+	local observers, foes = {}, nil
 	for index = 1, player_count do
 		local player = player_snapshot[index]
 		local name = player.name
@@ -330,15 +465,44 @@ local function update_observers(carrier, parent, owner_name)
 			local dy = pos.y - player.y
 			local dz = pos.z - player.z
 			local d2 = dx * dx + dy * dy + dz * dz
-			if d2 < SHOW_D2 or (d2 <= HIDE_D2 and previous[name]) then
-				observers[name] = true
+			if d2 < SHOW_D2 or (d2 <= HIDE_D2 and
+					(previous[name] or previous_foe[name])) then
+				local side = player.faction
+				if faction and side and side ~= faction then
+					foes = foes or {}
+					foes[name] = true
+				else
+					observers[name] = true
+				end
 			end
 		end
 	end
-	if same_set(previous, observers) then return false end
-	entity._grug_observers = observers
-	carrier:set_observers(observers)
-	return true
+	local changed = false
+	if same_set(previous, observers) then
+		observers = previous
+	else
+		entity._grug_observers = observers
+		carrier:set_observers(observers)
+		changed = true
+	end
+	if not foes then
+		if row.foe then
+			changed = changed or next(previous_foe) ~= nil
+			remove_foe_carrier(row)
+		end
+		return observers, changed
+	end
+	local foe = ensure_foe_carrier(row, entity._grug_text)
+	foe_entity = foe and foe:get_luaentity()
+	if foe_entity and not same_set(foe_entity._grug_observers or EMPTY, foes) then
+		foe_entity._grug_observers = foes
+		foe:set_observers(foes)
+		changed = true
+	end
+	local both = {}
+	for name in pairs(observers) do both[name] = true end
+	for name in pairs(foes) do both[name] = true end
+	return both, changed
 end
 
 local function manage_carrier(carrier, row)
@@ -349,8 +513,13 @@ local function manage_carrier(carrier, row)
 		forget_carrier(carrier, row)
 		carrier:remove()
 	else
-		local changed = update_observers(carrier, parent, row.owner_name)
-		local observers = carrier:get_luaentity()._grug_observers or {}
+		resolve_unit(row)
+		local entity = carrier:get_luaentity()
+		local category = own_category(row)
+		if entity and entity._grug_category ~= category then
+			style_carrier(carrier, entity._grug_text or "", category)
+		end
+		local observers, changed = update_observers(carrier, row)
 		refresh_hp_bar(row, observers)
 		if changed or next(observers) ~= nil then
 			for _, callback in ipairs(visibility_callbacks) do callback(parent, observers, false) end
@@ -380,16 +549,6 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
--- The engine draws a nametag at its OWN object's selection-box max Y + 0.3, so
--- the carrier wears a copy of its parent's box.
-local function copy_parent_box(carrier, parent)
-	local properties = parent:get_properties() or {}
-	carrier:set_properties({
-		selectionbox = properties.selectionbox or properties.collisionbox or
-			{0, 0, 0, 0, 0, 0},
-	})
-end
-
 -- A parent rescaled after its carrier exists (a tier promotion,
 -- grug_mobs levels.lua) re-copies its box so the tag rides on the new top.
 function grug_core.sync_tag_carrier_box(parent)
@@ -398,6 +557,8 @@ function grug_core.sync_tag_carrier_box(parent)
 		return false
 	end
 	copy_parent_box(carrier, parent)
+	local row = managed_carriers[carrier]
+	if row and object_valid(row.foe) then copy_parent_box(row.foe, parent) end
 	return true
 end
 
@@ -418,7 +579,9 @@ function grug_core.create_tag_carrier(parent, owner_name)
 		{x = 0, y = 0, z = 0})
 	last_slot = last_slot % SLOTS + 1
 	local row = {parent = parent, owner_name = owner_name,
-		category = category_for(parent), slot = last_slot}
+		category = category_for(parent), is_player = parent:is_player(),
+		slot = last_slot}
+	resolve_unit(row)
 	managed_carriers[carrier] = row
 	carrier_slots[last_slot][carrier] = row
 	carrier_by_parent[parent] = carrier
@@ -435,19 +598,17 @@ function grug_core.remove_tag_carrier(carrier)
 	end
 end
 
+-- The text reaches both sides' carriers; the colour is each carrier's own.
 function grug_core.set_tag_carrier_text(carrier, text)
 	if not object_valid(carrier) then return false end
-	local entity = carrier:get_luaentity()
-	if not entity or entity.name ~= ENTITY_NAME then return false end
 	text = type(text) == "string" and text or ""
-	if entity._grug_text == text then return false end
-	entity._grug_text = text
 	local row = managed_carriers[carrier]
-	local colors = CATEGORY_COLORS[row and row.category or "npc"]
-	carrier:set_properties({nametag = text,
-		nametag_color = colors.foreground,
-		nametag_bgcolor = colors.background})
-	return true
+	local changed = style_carrier(carrier, text,
+		row and own_category(row) or "npc")
+	if row and object_valid(row.foe) then
+		style_carrier(row.foe, text, foe_category(row))
+	end
+	return changed
 end
 
 function grug_core.nearest_tag_player_d2(pos)

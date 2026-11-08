@@ -25,7 +25,9 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   locations and the current home; the map window shows only the home
   (Round 44); a claim home has its own marker (below).
 - Return is immediate, without a cast time, and allowed only alive and outside
-  combat. It dismounts the player before arrival. There is no inventory item or
+  combat, and inside an Expedition not in lava or falling towards it (Round 72, The
+  Last Mint's lake: "Cannot return home from the lava."; `grug_home.register_return_guard`,
+  filled by `grug_expeditions/guard.lua`). It dismounts the player before arrival. There is no inventory item or
   skill. Initial range/interaction checks apply to binding, not return travel.
 - The personal cooldown is **30 minutes of real time**, including offline time
   and server restarts. It begins only on successful return. Rebinding, death,
@@ -44,13 +46,15 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
 - A death inside a running Expedition respawns at its start waystone, held like any
   respawn (`grug_home.register_respawn_home`, filled by `grug_expeditions/guard.lua`).
   A run that ended meanwhile hands the respawn on. In a box whose run is gone the same
-  row is the capital the player came from, else the home.
+  row is the waystone of the player's last way in, else the home.
 - **Logging in inside an Expedition (Round 71):** out of combat a logout costs nothing
   and the player stands where they stood. Logged out on a pack's list, they die at the
   login, with the death penalty once, and respawn as above. Whoever logs in after their
-  Expedition ended stands in the capital they came from, falling back to the respawn
-  path. The capital is one saved value, the id of the last way in
-  (`grug_expeditions:origin`), because a restart ends every run and forgets its memory.
+  Expedition ended stands at the waystone of their last way in (the Registrar's capital,
+  the waystone whose Expeditions tab they used, or from the Claim Stone their innkeeper
+  home's; [expeditions](expeditions.md) §4), falling back to the respawn path. It is one
+  saved value, that waystone's id (`grug_expeditions:origin`), because a restart ends
+  every run and forgets its memory.
 - **A respawn always ends somewhere, held until then** (Round 69). A blocked or
   unprepared Claim Stone goes on to the innkeeper, a failed or timed-out
   innkeeper to the starting town's saved start pocket, with a message. A claim

@@ -512,7 +512,7 @@ level-60 royal guards per capital. They consume the authored `king` and royal
 guard sockets; the king alone owns reset, death and group-respawn authority as
 specified in `world_zones.md` §12. A king holds his seat (Round 41): he never
 wanders, stands on his throne socket facing its authored direction and walks
-back to it after a fight or a leash reset; his guards follow him there. Since
+back to it after a fight or a reset; his guards follow him there. Since
 Round 58 (the user's ruling of 2026-10-22) his throne guards hold posts beside
 him: each its own socket, three nodes from the seat and so within the follow
 distance (5 m), facing its authored way, with no random walk; they follow him
@@ -857,8 +857,9 @@ contact there is intended.
   `throng_main_final`, `accord_main_collector`, `accord_main_final`;
   `grug_quests.quest_held`), so a lone chapter-3 player at the site's
   tally-stone meets no group boss; once up, he stays for everyone. Its leash is its
-  own: dragged more than **24 nodes** from where its fight began, or 15 s
-  without contact, it resets (full health, threat and its ledger cleared, a
+  own: dragged more than **24 nodes** from where its fight began, 15 s
+  without contact, or 15 s in a fight without an attack of its own (Round 72,
+  `combat_stats.md` §4 "Kings and bosses"), it resets (full health, threat and its ledger cleared, a
   void pulse it was winding up cancelled) and runs home untouchable (the
   evade of `combat_stats.md` §4); idle it walks back to its spot as a fixed
   walk (§4a): a stuck run or walk finds a short local way round, and the
@@ -961,7 +962,13 @@ WP17).
   it, discovers it with one flash and chat line "Waypoint discovered: <name>".
   The character's own start counts as discovered from creation.
 - **Right-click** opens the list of the seven own-faction waypoints: "You are
-  here", **Travel** (discovered) or a greyed "Not yet visited".
+  here", **Travel** (discovered) or a greyed "Not yet visited". Since Round 72
+  the window has two tabs, **Waystones** (this list, shown first) and
+  **Expeditions**: the Expedition the player may enter, with **Enter**, else one
+  line saying why or pointing to the Expedition Registrar
+  ([expeditions.md](expeditions.md) §4). The two waystones inside an Expedition
+  open the same list without the Expeditions tab and without "You are here";
+  they are never a destination themselves.
 - **The own Claim Stone** (Round 45 PT9): every list ends with "Your Claim
   Stone", a waypoint for its owner only, once the stone is activated (a draft
   is none); it stays one when its fuel runs out and goes with the stone
@@ -1103,7 +1110,9 @@ territory.
   player alone, day and night, unless attacked (0.53.1; the whole zombie
   family, the sun-dried husks and every sub-type included; provocation is
   per mob, so a zombie the player hit fights back; skeletons and other
-  undead are unchanged; before 0.53.1 only zombies, and only at night) ·
+  undead are unchanged; before 0.53.1 only zombies, and only at night;
+  an Expedition's mobs keep no truce, 0.72.0, [expeditions](expeditions.md)
+  §8) ·
   Orc +1 rage per hit taken ·
   Elf +3 m ability range (0.53.1, was +5 m; **ranged/spell abilities
   only** — melee abilities keep their own reach, `classes.md` §2b) · Human

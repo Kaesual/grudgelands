@@ -200,14 +200,18 @@ letters (lane QUEST). Seams and storage: the
 ## 8. System letters
 
 - The game itself sends admin-kind and NPC letters: the welcome letter and
-  the two level letters below (lane QUEST, Round 48), and the "Lost and
+  the level letters below (lane QUEST, Round 48; the Registrar's since Round
+  72), and the "Lost and
   Found" letters of the 0.48.0 bag migration, which carry the items that no
   longer fit the smaller bags as attachments
   ([inventory](inventory_equipment.md)). Only that migration sends items in
   a system letter.
-- Each of the three letters goes to a character **once**, and only to a
+- Each of these letters goes to a character **once**, and only to a
   created character (a player still creating one gets nothing yet). The
-  texts are the user's picks (2026-10-14); the player's name and the
+  texts are the user's picks (2026-10-14; the Registrar's was written by
+  the coordinator at the user's request,
+  [Round 72](../planning/round72-plan.md#210-getting-into-an-expedition));
+  the player's name and the
   capital of the player's race are filled in when the letter is sent, so no
   text names a fixed place.
   - The **welcome letter** ("Welcome to Grudgelands"), an admin letter, at
@@ -218,10 +222,13 @@ letters (lane QUEST). Seams and storage: the
     character owns no riding tier (a boat is not one).
   - The **Housing Steward's letter** at level **20**, only while the
     character never had a Claim Stone.
-  A jump over both levels (14 → 21) sends both. A character that is past
-  the level when 0.48.0 arrives gets the letter at its next join, but only
-  while it is still useful; a letter that is no longer useful is never sent
-  later.
+  - The **Expedition Registrar's letter** ("A line in the guild's ledger")
+    at level **20**, always (Round 72): it sends the player to the guild
+    house of their race's capital ([expeditions](expeditions.md)).
+  A jump over both levels (14 → 21) sends all three. A character that is past
+  the level when 0.48.0 (the Registrar's: 0.72.0) arrives gets the letter at
+  its next join, but only while it is still useful; a letter that is no
+  longer useful is never sent later.
 - **The starter quest** "Use a mailbox in one of the cities" (a system
   quest, [quests](quests.md) "System quests"): every character gets it once,
   at its arrival or at its next join; with a full quest log (20 quests) it

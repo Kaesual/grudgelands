@@ -16,7 +16,8 @@
 --      player's name;
 --   L  the level letters: once each, at 15 without a riding tier and at 20
 --      while the claim state is "never", both on a jump 14 -> 21, late at a
---      join, {player} and {capital} filled, never when no longer useful.
+--      join, {player} and {capital} filled, never when no longer useful;
+--      since Round 72 the Expedition Registrar's at 20, always.
 --
 --   luajit tools/r48_quest/portable_test.lua [REPO]
 -- Prints "R48 QUEST PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -685,20 +686,32 @@ do
 		"L {player} and {capital} filled")
 	has(housing[1].body, "Visit me in Dur Brannoc;", "L the steward names the race capital")
 	lacks(riding[1].body .. housing[1].body, "{", "L no placeholder left")
+	-- Round 72: the Expedition Registrar's letter at 20, no condition.
+	local registrar = letters_from("Rider", "Expedition Registrar")
+	eq(#registrar, 1, "L and the Expedition Registrar's")
+	eq(registrar[1].kind, "npc", "L the Registrar's is an NPC letter")
+	eq(registrar[1].subject, "A line in the guild's ledger", "L the Registrar's subject")
+	eq(registrar[1].body, (TEXTS.registrar.body:gsub("{player}", "Rider"):gsub("{capital}", "Dur Brannoc")),
+		"L the Registrar's text, {player} and {capital} filled")
+	has(registrar[1].body, "Come to the guild house in Dur Brannoc and ask for me;",
+		"L the Registrar names the race capital")
 	join(rider)
 	level_change(rider, 21, 22)
-	eq(#letters_from("Rider", "Riding Trainer") + #letters_from("Rider", "Housing Steward"), 2,
-		"L once each")
+	eq(#letters_from("Rider", "Riding Trainer") + #letters_from("Rider", "Housing Steward") +
+		#letters_from("Rider", "Expedition Registrar"), 3, "L once each")
 
 	local owner = new_player("Owner", {class = "mage", level = 22, tiers = {1}, claim = "placed"})
 	join(owner)
-	eq(#letters_of("Owner"), 1, "L an owned riding tier and a claim: no level letters")
+	-- Round 72: the Expedition Registrar's letter has no condition, so it is the one
+	-- level letter this character gets (late, at the join).
+	eq(#letters_of("Owner"), 2, "L an owned riding tier and a claim: no riding or steward letter")
+	eq(#letters_from("Owner", "Expedition Registrar"), 1, "L the Registrar's letter late, always")
 	check(owner.meta:get_string("grug_mail:letter_riding") ~= "" and
 		owner.meta:get_string("grug_mail:letter_housing") ~= "",
 		"L and they are settled for good")
 	owner.tiers, owner.claim = {}, "never"
 	join(owner)
-	eq(#letters_of("Owner"), 1, "L never sent later")
+	eq(#letters_of("Owner"), 2, "L never sent later")
 
 	local boater = new_player("Boater", {class = "mage", level = 16, tiers = {5}, race = "human"})
 	join(boater)
@@ -706,12 +719,17 @@ do
 	has(letters_from("Boater", "Riding Trainer")[1].body, "Come to Highcourt",
 		"L the human capital")
 	eq(#letters_from("Boater", "Housing Steward"), 0, "L no steward letter below 20")
-	level_change(boater, 16, 20)
+	eq(#letters_from("Boater", "Expedition Registrar"), 0, "L no Registrar's letter below 20")
+	level_change(boater, 16, 19)
+	eq(#letters_from("Boater", "Expedition Registrar"), 0, "L nor at 19")
+	level_change(boater, 19, 20)
 	eq(#letters_from("Boater", "Housing Steward"), 1, "L the steward's letter at 20")
+	eq(#letters_from("Boater", "Expedition Registrar"), 1, "L the Registrar's letter at 20")
 
 	local lost = new_player("Lost", {class = "mage", level = 25, tiers = {2}, claim = "needs_stone"})
 	join(lost)
 	eq(#letters_from("Lost", "Housing Steward"), 0, "L a character that had a stone gets no steward letter")
+	eq(#letters_from("Lost", "Expedition Registrar"), 1, "L a character above 20 gets the Registrar's late")
 
 	local drifter = new_player("Drifter", {class = "mage", level = 15, race = "unknown"})
 	join(drifter)

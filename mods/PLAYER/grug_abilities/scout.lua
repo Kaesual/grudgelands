@@ -475,7 +475,11 @@ local bladecraft_shot = {
 	tags = {"bow"}, range = 25, cast_interval = loose_interval,
 	occupied_cast = 0, occupied_swing = "weapon",
 	cast = function(user)
-		return loose_shot(user, grug_abilities.registered.loose)
+		local ok, err = loose_shot(user, grug_abilities.registered.loose)
+		-- A shot that flew shows the bow (round72-plan.md §2.6); a refused
+		-- one switches nothing.
+		if ok then grug_abilities.show_last_attack(user, true) end
+		return ok, err
 	end,
 }
 
@@ -484,6 +488,9 @@ grug_abilities.register_ability({
 	target_kind = "hostile", talent_gated = true, talent = "veil_bladecraft",
 	transforms = "loose", color = "#7a62b8", tags = {"blade"}, cost = {},
 	melee = true, range = 3,
+	-- Swings and hits with the Melee blade (`slot`); shows the Ranged bow
+	-- after a shot until its next swing at a foe (round72-plan.md §2.6).
+	shot_slot = "weapon",
 	secondary_cast = bladecraft_shot,
 	description = "Left click swings your Melee-slot blade; right click looses " ..
 		"an arrow at a visible hostile target. Both share one clock. " ..
@@ -500,6 +507,17 @@ grug_abilities.register_ability({
 				shown(player, loose_values(player, loose).damage))
 	end,
 })
+
+-- Bladecraft's swing at a foe shows the blade again (round72-plan.md §2.6).
+-- The swing callbacks run once per due swing with a live hostile target, so
+-- an air click and digging never reach this; a held fallback swings Strike,
+-- whose definition this is not. It adds nothing to the swing.
+grug_abilities.register_on_swing(function(player, swing)
+	if swing.def.id == "bladecraft" then
+		grug_abilities.show_last_attack(player, false)
+	end
+	return nil
+end)
 
 -- Opening's rear: the Scout is behind the target's facing (its back
 -- half-plane).

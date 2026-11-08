@@ -93,7 +93,10 @@ eligibility and flag".
   before Round 70) or `wear`.
 - **Flight is unchanged** ([mounts.md](mounts.md) §4): own peaceful land to
   contested ground and back is seamless; enemy peaceful land and the islands
-  dismount with the existing warning band. Riding and boats work everywhere.
+  dismount with the existing warning band. Riding and boats work everywhere
+  except in an enemy start town or capital (Round 72, [mounts.md](mounts.md)
+  §4.4): no mount or boat is summoned there, and a rider who crosses into one
+  is dismounted with one feed line.
 
 ## 4. NPCs and the map
 

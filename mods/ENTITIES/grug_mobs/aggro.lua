@@ -56,6 +56,10 @@ end
 -- AGGRO_MIN_RADIUS. A hit still draws retaliation and the group alert as
 -- before; guards, kings and every other mob of a faction, animals and NPCs
 -- keep their full view range, and so does every mob towards a mob target.
+-- An Expedition's mob (`_grug_expedition`, set on every body by
+-- grug_expeditions/packs.lua's spawn, the boss's too) keeps it as well: a level
+-- 60 player in a 20-29 run is noticed at full view range (round72-plan.md
+-- §2.9, the user, 2026-11-08).
 --
 grug_mobs.AGGRO_FULL_GAP = 5
 grug_mobs.AGGRO_STEP = 0.2
@@ -72,7 +76,8 @@ end
 -- full view range. Read by the general_attack GRUG PATCH in mobs/api.lua,
 -- before the line-of-sight ray, only for a player candidate in view.
 function grug_mobs.player_aggro_radius(self, player)
-	if self.type ~= "monster" or self._grug_faction or not self._grug_level then
+	if self.type ~= "monster" or self._grug_faction or self._grug_expedition
+			or not self._grug_level then
 		return nil
 	end
 	local gap = grug_core.get_player_level(player) - self._grug_level
@@ -128,7 +133,7 @@ local function no_target_acquisition() end
 -- mobs_redo's register_mob copies an EXPLICIT field list into the entity
 -- table (api.lua:3956-4112) and mob_activate only layers staticdata on top. So
 -- everything an api.lua patch reads off `self` must be installed at runtime
--- — the same reason _grug_faction is set in do_custom (init.lua). Called
+-- — the same reason _grug_faction is set on activation (init.lua). Called
 -- from the do_custom and do_punch wrappers; `cfg` is the per-registration
 -- upvalue table built in grug_mobs.register_mob.
 --
@@ -221,6 +226,11 @@ function grug_mobs.leash_reset(self)
 		-- The chase is over, so its drag anchor is too: the NEXT pull anchors
 		-- wherever the mob stands then (see leash_check).
 		self.temp.grug_chase_anchor = nil
+		-- And a boss's reset rules start over (boss_floor.lua): its one-way
+		-- window, the 15 s rule's clock, the target it watches.
+		self.temp.grug_boss_window = nil
+		self.temp.grug_boss_attack_at = nil
+		self.temp.grug_boss_target = nil
 	end
 	-- A reset mob is UNTAGGED (combat_stats §3, the documented "no seeding"
 	-- rule): it forgot the fight, healed to full and dropped the target, so
@@ -411,6 +421,16 @@ local function evade_tick(self, dtime)
 		-- restored by the next tick_speed_effects (init.lua).
 		self.temp.grug_evading = nil
 		grug_mobs.walk_clear(self, "evade")
+		-- And it stops where it arrived (Round 72 GUARDNAV): the run's velocity,
+		-- 1.5x its run speed, would otherwise carry it on until mobs_redo's walk
+		-- state renews it, up to a second later: seven nodes past its post, off a
+		-- tower's edge (the lane's engine probe lost a guard so). The out-of-reach
+		-- reset makes short evades common.
+		if type(self.set_velocity) == "function" then
+			self:set_velocity(0)
+			self.state = "stand"
+			self:set_animation("stand")
+		end
 		return
 	end
 	if grug_core.mono_time() - (ev.started or 0) > EVADE_TIMEOUT then
@@ -469,6 +489,26 @@ function grug_mobs.evade_home(self)
 			self.temp.grug_evading = {started = grug_core.mono_time()}
 		end
 	end
+end
+
+--
+-- THE RESET OF A BOSS (Round 72 BOSSRESET, round72-plan.md §2.3; combat_stats.md §4
+-- "Kings and bosses"): one outcome for every reason a king, a General, the rift boss or
+-- an Expedition's boss resets (no way to its target, the target out of range, the 15 s
+-- rule; boss_floor.lua). It heals, clears threat and loot tag, clears its encounter's
+-- ledger and restores its retinue (boss_leash_reset, bosses.lua's royal reset), drops
+-- the target, and runs the evade to its seat from any distance beyond EVADE_ARRIVED:
+-- untouchable and acquiring nobody until it is there. An Expedition's boss is a pack of
+-- one: the pack's wipe (grug_expeditions/packs.lua pack_reset) is this same outcome
+-- and empties its list as well. Not bound to bosses: Round 72 GUARDNAV builds §2.5's
+-- guard reset on it.
+--
+function grug_mobs.reset_home(self)
+	if self._grug_pack and grug_mobs.pack_reset and grug_mobs.pack_reset(self) then
+		return
+	end
+	grug_mobs.leash_reset(self)
+	grug_mobs.evade_home(self)
 end
 
 local function leash_check(self)
@@ -588,10 +628,12 @@ end
 -- (heal, forget threat and tags, run home when it stands beyond its radius);
 -- guards and rares included, since their own rules end such a chase only
 -- after the 15 s contact timeout or never. The bespoke no-leash actors
--- (Kraken, royal guards) and the kings (coordinator ruling, Round 30 review)
--- keep their encounter rules and only drop the target: no heal, no royal
--- encounter reset. The dragons and whelps never get here (they only wait,
--- api.lua do_states).
+-- (Kraken, royal guards) keep their encounter rules and only drop the target:
+-- no heal. The kings, Generals and an Expedition's boss hand it to their reset
+-- rules (Round 72 BOSSRESET, boss_floor.lua boss_no_way; it replaces the Round
+-- 30 king give-up): their boss floor decides "no way", the navigation only
+-- walks, and without a floor the give-up is the "no way". The dragons and
+-- whelps never get here (they only wait, api.lua do_states).
 --
 -- A player given up on is ignored by target acquisition until they moved
 -- GAVE_UP_NODES away from where they stood or GAVE_UP_SECONDS passed
@@ -599,26 +641,71 @@ end
 -- behind a fence cannot loop give-up and heal every few seconds. Being hit or
 -- a group alert still starts a new chase as usual.
 --
+-- OUT OF REACH, RESET AT ONCE (Round 72 GUARDNAV, round72-plan.md §2.5, the
+-- user's rule): a mob switched on by its definition (`_grug_reach_reset`: the
+-- guard chassis of guard.lua, so guards, captains and war commanders; the rift
+-- boss; every leader sub-type, subtypes.lua; every named rare, rares.lua) runs
+-- the navigation's strict rule (mobs/grug_nav.lua: a pull searches at once, the
+-- target itself, two failures and about a second) and its give-up is
+-- reset_home below: healed at once, threat, tag and target cleared, and the
+-- evade home, untouchable until it is there; a mob that reset at home is
+-- attackable again at full health. The designated patroller keeps leash_reset
+-- (healed, no run to the post: its route is its place). Kings, Generals and an
+-- Expedition's bosses stay on their boss floor, the bespoke no-leash actors
+-- (royal guards, bodyguards) and an Expedition's packs on their own rules, and
+-- every other mob (wildlife) on the three failures above. Read in one place:
+-- grug_mobs.reach_reset.
+--
 local GAVE_UP_NODES = 8
 local GAVE_UP_SECONDS = 15
+
+-- A king, a General or an Expedition's boss (an elite with a ledger id): the
+-- mobs under the boss floor's reset rules (boss_floor.lua).
+function grug_mobs.floor_boss(self)
+	return self._grug_royal_king == true
+		or (self._grug_expedition ~= nil and self._grug_boss_id ~= nil)
+end
+
+-- Whether `self` notices an unreachable target fast and resets (above).
+function grug_mobs.reach_reset(self)
+	return self._grug_reach_reset == true and not self._grug_no_leash
+		and not self._grug_pack and not grug_mobs.floor_boss(self)
+end
+if mobs and mobs.grug_nav then
+	mobs.grug_nav.strict = grug_mobs.reach_reset
+end
+
+-- Target acquisition ignores `player` for now (the veto below).
+function grug_mobs.mark_gave_up(self, player)
+	local pos = player:get_pos()
+	if not pos then return end
+	self.temp = self.temp or {}
+	self.temp.grug_gave_up = {name = player:get_player_name(),
+		x = pos.x, y = pos.y, z = pos.z,
+		until_time = grug_core.mono_time() + GAVE_UP_SECONDS}
+end
 
 -- Round 67 ruling 26: a mob whose body is stuck in walkable nodes at this
 -- point is flagged and removed once nobody watches (room.lua give_up_stuck,
 -- stuck_tick).
 function grug_mobs.give_up_target(self)
+	if grug_mobs.floor_boss(self) then
+		if grug_mobs.boss_no_way then grug_mobs.boss_no_way(self) end
+		return
+	end
 	-- A pack never gives up: a mob that cannot get there jumps (packs.lua).
 	if self._grug_pack then return grug_mobs.pack_left_behind(self) end
 	grug_mobs.give_up_stuck(self)
 	local target = self.attack
-	local pos = target and target:get_pos()
-	self.temp = self.temp or {}
-	if pos and core.is_player(target) then
-		self.temp.grug_gave_up = {name = target:get_player_name(),
-			x = pos.x, y = pos.y, z = pos.z,
-			until_time = grug_core.mono_time() + GAVE_UP_SECONDS}
+	if target and core.is_player(target) then
+		grug_mobs.mark_gave_up(self, target)
 	end
-	if self._grug_no_leash or self._grug_royal_king then
+	if self._grug_no_leash then
 		self:stop_attack()
+		return
+	end
+	if grug_mobs.reach_reset(self) and not self._grug_patrol_route then
+		grug_mobs.reset_home(self)
 		return
 	end
 	grug_mobs.leash_reset(self)
@@ -801,6 +888,12 @@ end
 function grug_mobs.leash_tick(self, dtime)
 	self.temp = self.temp or {}
 	local t = self.temp
+	-- The reset rules of kings, Generals and bosses, every step (boss_floor.lua:
+	-- the floor's fill, the one-way window, once a second the floor test and the
+	-- 15 s rule). Every other mob pays these two field tests.
+	if (self._grug_boss_id or self._grug_royal_king) and grug_mobs.boss_tick then
+		grug_mobs.boss_tick(self, dtime)
+	end
 	t.grug_leash_acc = (t.grug_leash_acc or 0) + dtime
 	if t.grug_leash_acc < LEASH_INTERVAL then
 		-- An evader's detour is steered every step (patrol.lua walk_follow).
@@ -840,7 +933,9 @@ function grug_mobs.leash_tick(self, dtime)
 	-- no-leash actors too (notably royal guards), while its own calm-state and
 	-- shared encounter gates prevent a transient target gap from healing them.
 	grug_mobs.idle_health_tick(self)
-	if self._grug_no_leash or self._grug_pack then
+	-- A king, a General or an Expedition's boss leaves no chase leash: the boss
+	-- floor and the 15 s rule replace it (boss_floor.lua).
+	if self._grug_no_leash or self._grug_pack or grug_mobs.floor_boss(self) then
 		return
 	end
 	leash_check(self)

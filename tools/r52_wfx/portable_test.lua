@@ -503,7 +503,10 @@ do
 	local appearance = src:match("\n(function grug_visuals%.wield_appearance%(stack%).-\nend)\n")
 	local shown = src:match("\n(local function shown_item%(player%).-\nend)\n")
 	local group = src:match('\n(local ABILITY_GROUP = "[%w_]+")')
-	check(appearance and shown and group, "T found in grug_visuals/apply.lua")
+	-- Round 72 BLADECRAFT: shown_item asks grug_visuals.hand_slot (the one
+	-- display state, tools/r72_bladecraft) which slot a skill shows.
+	local hand_slot = src:match("\n(local shot_shown = {}.-\nfunction grug_visuals%.hand_slot%(.-\nend)\n")
+	check(appearance and shown and group and hand_slot, "T found in grug_visuals/apply.lua")
 	local env = setmetatable({grug_visuals = {}, ItemStack = ItemStack,
 		core = {registered_items = registered_items,
 			get_item_group = function(name, g)
@@ -511,7 +514,8 @@ do
 			end},
 		grug_inventory = {get_cosmetic_hand = function(p, slot) return p.hands[slot] end}},
 		{__index = _G})
-	local chunk = assert(loadstring((group or "") .. "\n" .. (shown or "") .. "\n" ..
+	local chunk = assert(loadstring((group or "") .. "\n" .. (hand_slot or "") .. "\n" ..
+		(shown or "") .. "\n" ..
 		(appearance or "") .. "\nreturn shown_item"))
 	setfenv(chunk, env)
 	env.core.registered_items = setmetatable({["grug_abilities:fireball"] =
