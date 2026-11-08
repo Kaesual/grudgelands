@@ -1007,4 +1007,52 @@ eq(NC.lookup(index, "auditor_nemm", nil, nil), "Auditor Nemm", "J the kill objec
 -- The Undead King's raiders keep their zone's name.
 eq(NC.lookup(index, "skeleton_raider", "kragmar_nhal_veyr", 25), "Skeleton Raider", "J Nhal Veyr's raiders")
 
+-- L. The user's room rules (Round 72 PROOF, round72-plan.md section 2.9), by the shared
+-- proofs The Stilled Seam's and The Last Mint's fixtures run too
+-- (tools/expedition_templates/proofs.lua): the free height, no perch, and no walk round
+-- a pack (section G proves every floor cell of a pack room noticed).
+do
+	local PR = dofile(repo .. "/tools/expedition_templates/proofs.lua")
+	local map = PR.map(tpl, F)
+	local pfloor, pset = PR.floor(map)
+	-- Three nodes of air over every floor cell, a player's floor counting the rails (the
+	-- desk's rail siding lost STYLE's hood for this, Round 72 PROOF question 1).
+	local KNOWN_LOW = ""
+	local lowest, low_at, short = PR.free_height(map, pfloor, 3)
+	eq(table.concat(short, " "), KNOWN_LOW, "L three nodes of air over every floor cell")
+	print(("free height: %d floor cells, the lowest %d at %s, below three %d"):format(#pfloor,
+		lowest, low_at, #short))
+	-- No perch: walking, jumping and falling reach no place off the floor but a waystone
+	-- or the chest, and no rope; with the door shut, and with it open and the ore dug.
+	for _, changed in ipairs({false, {[DOOR] = true, [ORE] = true, [GEM] = true}}) do
+		local found, ropes, searched = PR.perches(map, {places.arrival.x, F, places.arrival.z}, changed or nil)
+		for _, line in ipairs(found) do print("perch: " .. line) end
+		for _, line in ipairs(ropes) do print("rope in reach: " .. line) end
+		check(#found == 0 and #ropes == 0, "L no perch and no rope in reach")
+		print(("perches: none in %d places a player reaches%s"):format(searched,
+			changed and ", door open, ore dug" or ""))
+	end
+	-- No walk from a pack room's way in to its way on, or to the ore after it (a hand's
+	-- reach, 4 nodes), keeps out of every cell the pack notices with a node to spare. The
+	-- ways are passage cells no pack notices; both wage packs between the wage room's.
+	-- Nemm is left out: the reward door holds until he dies.
+	local WAYS = {pack_a = {{88, 20}, {40, 20}, {48, 36}}, pack_b = {{40, 20}, {20, 52}, {8, 36}},
+		pack_c = {{20, 52}, {40, 108}}, pack_d = {{20, 52}, {40, 108}}}
+	for _, key in ipairs({"pack_a", "pack_b", "pack_c", "pack_d"}) do
+		local way = WAYS[key]
+		check(pset[way[2][2] * sx + way[2][1]] and not PR.noticed(packs[key], way[2][1], way[2][2], 1, sees),
+			"L " .. key .. "'s way on is floor nobody notices")
+		local targets = {way[2]}
+		if way[3] then
+			for _, t in ipairs(PR.within_reach(pset, sx, way[3][1], way[3][2], 4)) do targets[#targets + 1] = t end
+		end
+		local reached, kept, noticed = PR.walk_round(map, pset, way[1], targets, packs[key], 1, sees)
+		check(reached == nil, ("L %s walked round to %s"):format(key, reached and reached[1] .. "," .. reached[2] or "-"))
+		-- Not vacuous: with the pack gone the way on is reachable (PROOF review note 2).
+		check(PR.walk_round(map, pset, way[1], {way[2]}, {}, 1, sees) ~= nil,
+			"L " .. key .. "'s way on is reachable with the pack gone")
+		print(("%s: no way round its %d noticed cells to %d of %d targets"):format(key, noticed, kept, #targets))
+	end
+end
+
 print(("R72 SHIFT PORTABLE PASS checks=%d"):format(checks))

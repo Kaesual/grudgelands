@@ -278,7 +278,8 @@ def shape(t):
         walls(t, cells, FEET + 3, top,
               lambda x, y, z: POST if (x + z) % 7 == 0 else
               ("default:cobble" if y == 12 + (x // 4 + z // 5) % 3 else ROCK))
-        cap_props(t, cells, FEET, top, (TABLE, BENCH, BARREL, CART, RAIL, "default:gravel"), BOARD)
+        # Rails stay unhooded: a player stands on them, so a mob needs the full headroom there.
+        cap_props(t, cells, FEET, top, (TABLE, BENCH, BARREL, CART, "default:gravel"), BOARD)
     # The sign keeps its fixed place in the hooded desk niche.
     t.set(63, FEET + 1, 10, BOARD)
     t.set(63, 10, 10, SIGN, NORTH)

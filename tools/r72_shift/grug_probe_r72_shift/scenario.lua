@@ -11,6 +11,11 @@ local FEET = 8
 -- boss is a pack of one, and the probe's set_pos (no travel, so no leaving) would let his
 -- pack jump him after the character out of his room.
 local ROOMS = {{"pack_a", 76, 20}, {"pack_b", 30, 20}, {"pack_c", 20, 66}, {"pack_d", 28, 92}}
+-- One shot per room at eye height, facing what the room is about (Round 72 PROOF), at 40
+-- once every mob is dead: the store's coffers, the arrival's boarded collapse, the desk's
+-- niche, the marking floor, the wage room's two bays. The court is shot with Nemm.
+local TOUR = {{"store", 97, 104, -1.571}, {"arrival", 108, 26, 3.031}, {"desk", 76, 27, 2.428},
+	{"marking", 31, 20, 1.292}, {"wage_c", 20, 62, 0.124}, {"wage_d", 28, 92, 0.559}}
 local T2_ORE, T2_GEM = "grug_materials:stone_with_anthracite", "grug_materials:stone_with_jade"
 local NAMES = {[40] = "Shift Raider", [69] = "Overdue Raider"}
 local BAND = {[40] = {"grug_mobs:marching_bone", "grug_mobs:leathery_flesh"},
@@ -265,6 +270,12 @@ local function one_run(lib, player, level, player_level, picks, quest)
 	local hull = core.get_node(rock).name
 	dig_with(player, rock, picks.fit)
 	lib.check(core.get_node(rock).name == hull, "the hull behind it stands")
+	if level == 40 then
+		for _, row in ipairs(TOUR) do
+			go(lib, player, run, row[2], row[3], row[4])
+			shot(lib, row[1])
+		end
+	end
 
 	if quest then
 		local done, why = grug_quests.turn_in(player, QUEST)

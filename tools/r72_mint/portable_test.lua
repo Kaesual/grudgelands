@@ -1315,4 +1315,50 @@ eq(tonumber(read_file("tools/r28_design/validate.py"):match('EXPEDITION_TARGETS%
 	row.level, "P the design validator")
 check(read_file("tools/r60_capitals/build_structure.py"):find('"id": "capital_last_mint"', 1, true), "P the builder's row")
 
+-- ---- Q. The user's room rules, by the shared proofs ------------------------------------
+-- Round 72 PROOF (round72-plan.md section 2.9), the proofs The Stilled Seam's and The
+-- Second Shift's fixtures run too (tools/expedition_templates/proofs.lua): the free
+-- height, no perch, and no walk round a pack (section K proves every floor cell of a
+-- pack room noticed).
+do
+	local PR = dofile(repo .. "/tools/expedition_templates/proofs.lua")
+	local map = PR.map(tpl, F)
+	local pfloor, pset = PR.floor(map)
+	local lowest, low_at = PR.free_height(map, pfloor)
+	check(lowest >= 3, ("Q three nodes of air over every floor cell: %d at %s"):format(lowest, low_at))
+	print(("free height: at least %d nodes of air over %d floor cells"):format(lowest, #pfloor))
+	-- No perch: walking, jumping (the lake's level leaps too) and falling reach no place off
+	-- the floor but a waystone or the chest, and no rope; a fall into the lava ends the
+	-- search there. With the door shut, and with it open and the ore dug.
+	for _, changed in ipairs({false, ALL_OPEN}) do
+		local found, ropes, searched = PR.perches(map, {places.arrival.x, F, places.arrival.z}, changed or nil)
+		for _, line in ipairs(found) do print("perch: " .. line) end
+		for _, line in ipairs(ropes) do print("rope in reach: " .. line) end
+		check(#found == 0 and #ropes == 0, "Q no perch and no rope in reach")
+		print(("perches: none in %d places a player reaches%s"):format(searched,
+			changed and ", door open, ore dug" or ""))
+	end
+	-- No walk from a pack room's way in to its way on, or to the ore after it (a hand's
+	-- reach, 4 nodes), keeps out of every cell the pack notices with a node to spare. The
+	-- ways are passage cells no pack notices. Duewarden is left out: the reward door holds
+	-- until he dies (section K).
+	local WAYS = {pack_a = {{40, 108}, {90, 108}, {WANT[1][2], WANT[1][3]}}, pack_b = {{90, 108}, {108, 86}},
+		pack_c = {{108, 38}, {88, 40}, {WANT[2][2], WANT[2][3]}}, pack_d = {{88, 40}, {64, 40}}}
+	for _, key in ipairs({"pack_a", "pack_b", "pack_c", "pack_d"}) do
+		local way = WAYS[key]
+		check(pset[way[2][2] * sx + way[2][1]] and not PR.noticed(packs[key], way[2][1], way[2][2], 1, sees),
+			"Q " .. key .. "'s way on is floor nobody notices")
+		local targets = {way[2]}
+		if way[3] then
+			for _, t in ipairs(PR.within_reach(pset, sx, way[3][1], way[3][2], 4)) do targets[#targets + 1] = t end
+		end
+		local reached, kept, noticed = PR.walk_round(map, pset, way[1], targets, packs[key], 1, sees)
+		check(reached == nil, ("Q %s walked round to %s"):format(key, reached and reached[1] .. "," .. reached[2] or "-"))
+		-- Not vacuous: with the pack gone the way on is reachable (PROOF review note 2).
+		check(PR.walk_round(map, pset, way[1], {way[2]}, {}, 1, sees) ~= nil,
+			"Q " .. key .. "'s way on is reachable with the pack gone")
+		print(("%s: no way round its %d noticed cells to %d of %d targets"):format(key, noticed, kept, #targets))
+	end
+end
+
 print(("R72 MINT PORTABLE PASS checks=%d"):format(checks))
