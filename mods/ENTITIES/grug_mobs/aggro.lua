@@ -133,7 +133,7 @@ local function no_target_acquisition() end
 -- mobs_redo's register_mob copies an EXPLICIT field list into the entity
 -- table (api.lua:3956-4112) and mob_activate only layers staticdata on top. So
 -- everything an api.lua patch reads off `self` must be installed at runtime
--- — the same reason _grug_faction is set in do_custom (init.lua). Called
+-- — the same reason _grug_faction is set on activation (init.lua). Called
 -- from the do_custom and do_punch wrappers; `cfg` is the per-registration
 -- upvalue table built in grug_mobs.register_mob.
 --

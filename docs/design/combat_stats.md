@@ -1545,7 +1545,7 @@ The text reaches both carriers; the HP bar and the visibility callbacks see
 both sides' observers together. A fighting mob's faction is its
 `_grug_faction` (from its definition, set when it activates, so a guard or
 King is never shown in another colour); a peaceful NPC's is its
-settlement's, a capital's mount and gear displays included. A summoned add
+settlement's, a capital's mount displays included (gear displays carry no tag). A summoned add
 carrying its King's faction counts as a faction unit too. Every NPC and
 guard is friend or foe (user ruling, Round 72): the guard violet and NPC
 lavender categories remain as settings but no NPC or guard shows them.

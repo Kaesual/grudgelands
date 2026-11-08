@@ -160,9 +160,9 @@ local function guard_def(faction, description, texture)
 		-- level IS the tier here: the elite city watch of world.md §1 starts at
 		-- 60, which is exactly where grug_gear's sixth bracket starts, so a
 		-- promoted guard wears the Grand set without a second rule. `faction`
-		-- is read from the closure, not from `self`: mobs_redo installs
-		-- `_grug_faction` only on the first do_custom tick, which is later than
-		-- this.
+		-- is read from the closure, not from `self`: mobs_redo does not copy
+		-- `_grug_faction` into the entity, and grug_mobs sets it on activation
+		-- only after the visual is applied.
 		_grug_visual = function(self)
 			local race = grug_visuals.npc_race(self, faction)
 			return {
