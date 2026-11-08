@@ -336,6 +336,8 @@ default = {
 }
 grug_core = {
 	feed = function(_, kind, text) feeds[#feeds + 1] = text end,
+	-- Round 72: the placement rules have their own fixture (tools/r72_place).
+	placement_refused = function() return false end,
 	ui = {
 		colors = {muted = "#a9aea4"},
 		frame = function(w, h, title) return ("size[%s,%s]title[%s]"):format(w, h, title) end,

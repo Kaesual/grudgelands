@@ -323,6 +323,8 @@ local function load_farming()
 		mob_level_at = function() return 5 end,
 		item_name = function(n) return n end,
 		feed = function() end,
+		-- Round 72: the placement rules have their own fixture (tools/r72_place).
+		placement_refused = function() return false end,
 	}
 	real_dofile(path("mods/CORE/grug_core/node_rightclick.lua"))
 	grug_nodes = {bind_crop_soil_callbacks = function() end,

@@ -117,6 +117,15 @@ function beds.register_bed(name, def)
 				return itemstack
 			end
 
+			-- GRUG PATCH (Round 72 PLACE): the placement rules of grug_core
+			-- (nothing that blocks in combat, never into a live body's cell)
+			-- for both cells the bed writes.
+			local grug_core = rawget(_G, "grug_core")
+			if grug_core and grug_core.placement_refused and
+					grug_core.placement_refused(placer, name .. "_bottom", {pos, botpos}) then
+				return itemstack
+			end
+
 			minetest.set_node(pos, {name = name .. "_bottom", param2 = dir})
 			minetest.set_node(botpos, {name = name .. "_top", param2 = dir})
 

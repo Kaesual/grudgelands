@@ -321,8 +321,11 @@ only when digging and placing; §6.3 covers the rest.
   mob whose spawn point lies on an active claim is pushed by no claim: it roams
   as before until the game removes it once no player stays near
   ([combat_stats.md](combat_stats.md), the push).
-- Falling nodes follow the normal engine rules. Because the claim is unbounded
-  upward, only permitted players can place anything above a home.
+- Falling nodes follow the normal engine rules, except that one never lands
+  in a live body's cell
+  ([combat_stats.md](combat_stats.md#placement-in-combat-and-around-bodies)).
+  Because the claim is unbounded upward, only permitted players can place
+  anything above a home.
 - Flying: there is no claim-specific flight rule. Home territory already
   restricts flying to the own faction (`mounts.md` §4.3).
 

@@ -437,7 +437,9 @@ the press and never interacts with the pointed node or entity; engine place
 repeats during the hold do nothing, and placeable foods show no client
 placement preview. Pointing at nothing, a hold eats as well. In combat the
 hold is refused at the 0.35 s mark with "Cannot eat while in combat." (no
-visual, no slowdown); a click in combat still places or interacts. While
+visual, no slowdown); a click in combat still interacts, and it places only
+what blocks nobody, such as a torch or a plant ([placement in
+combat](combat_stats.md#placement-in-combat-and-around-bodies)). While
 eating, the wielded item hides, the food's image shows large at the bottom
 centre behind the HUD and bobs, crumbs fly from the head every 0.2 s, the
 eating sound loops at half gain and walk speed is ×0.35. The crosshair

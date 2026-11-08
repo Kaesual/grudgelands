@@ -110,6 +110,9 @@ dofile(modpath .. "/homing.lua")
 dofile(modpath .. "/combat_hud.lua")
 dofile(modpath .. "/death_messages.lua")
 dofile(modpath .. "/environment_damage.lua")
+-- The placement rules (Round 72): in combat and around live bodies; the seam
+-- round core.item_place_node and the falling node's landing.
+dofile(modpath .. "/placement.lua")
 -- After combat.lua: the aggregator reads grug_core.mono_time() (one clock for
 -- every combat timer, see there). It is the ONLY writer of a player's
 -- physics_override in the game -- grug_mobs, grug_abilities and grug_classes
