@@ -488,6 +488,82 @@
       "group": true
     },
     {
+      "id": "capital_second_shift",
+      "line": "guild",
+      "level": 40,
+      "requires": [],
+      "title": "Party: The Second Shift",
+      "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+      "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "auditor_nemm"
+          ],
+          "count": 1
+        }
+      ],
+      "variants": [
+        {
+          "zone": "elandor_highcourt",
+          "givers": [
+            "r58_guild_leader_highcourt"
+          ],
+          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+          "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours."
+        },
+        {
+          "zone": "elandor_dur_brannoc",
+          "givers": [
+            "r58_guild_leader_dur_brannoc"
+          ],
+          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+          "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours."
+        },
+        {
+          "zone": "elandor_lethariel",
+          "givers": [
+            "r58_guild_leader_lethariel"
+          ],
+          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+          "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours."
+        },
+        {
+          "zone": "kragmar_gor_drazhak",
+          "givers": [
+            "r58_guild_leader_gor_drazhak"
+          ],
+          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
+          "completion": "Auditor Nemm will call no more shifts. We are taking the names off his board and cutting them into the guild hall's stone, beside the living, where they belong. Leave the burned pay where it lies; a coin that will not let go of your hand is no wage. The crew have asked to finish the old working themselves, and this time everyone comes home when the shift is done."
+        },
+        {
+          "zone": "kragmar_kezamba",
+          "givers": [
+            "r58_guild_leader_kezamba"
+          ],
+          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
+          "completion": "Auditor Nemm will call no more shifts. We are taking the names off his board and cutting them into the guild hall's stone, beside the living, where they belong. Leave the burned pay where it lies; a coin that will not let go of your hand is no wage. The crew have asked to finish the old working themselves, and this time everyone comes home when the shift is done."
+        },
+        {
+          "zone": "kragmar_nhal_veyr",
+          "givers": [
+            "r58_guild_leader_nhal_veyr"
+          ],
+          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
+          "completion": "Auditor Nemm will call no more shifts. We are taking the names off his board and cutting them into the guild hall's stone, beside the living, where they belong. Leave the burned pay where it lies; a coin that will not let go of your hand is no wage. The crew have asked to finish the old working themselves, and this time everyone comes home when the shift is done."
+        }
+      ],
+      "rewards": {
+        "weight": 4
+      },
+      "lesson": "Optional group quest: the registrar's Expedition, killing its boss at any level.",
+      "duration_min": 15,
+      "notes": "Round 60 CAPITALS. Round 72 SHIFT: round72-second-shift.md, its four picked texts, one per faction; free, no follow-up, the Expedition stays repeatable after the turn-in.",
+      "optional": true,
+      "group": true
+    },
+    {
       "id": "highcourt_penn",
       "line": "envoy",
       "giver": "r20_human_capital_envoy",

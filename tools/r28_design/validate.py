@@ -43,6 +43,8 @@ LEVEL_SLACK = 3
 # first level, what its level range is read as, the run's level (up to 69) being the
 # player's choice. As in the game's validator (V.EXPEDITION_TARGETS).
 EXPEDITION_TARGETS = {"flintback": 20}
+# Round 72 SHIFT: The Second Shift's boss.
+EXPEDITION_TARGETS["auditor_nemm"] = 40
 MAX_GIVERS_PER_HUB = 2
 MAX_LINES_PER_GIVER = 2
 MAX_SIGNATURE_PER_BAND = 2
