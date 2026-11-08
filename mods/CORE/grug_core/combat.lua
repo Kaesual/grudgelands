@@ -461,11 +461,18 @@ local combat_until = {} -- player name -> us time the combat timer runs out
 -- in_combat only asks `next(engaged_mobs[name])`, so it stays O(1) however
 -- often the HUD and the regen ticks ask. Nothing ever scans objects for it.
 --
--- An edge is CREATED by an accepted player hit on the mob
--- (run_player_hit_mob), by every threat gain (add_threat: damage, heal threat,
--- tank bonus), by taunt, and by a hit the mob or its projectile lands on the
--- player (mark_player_hit) -- the last one covers a mob that attacks a player
--- who never touched it and therefore holds no threat entry for them.
+-- An edge is CREATED when the mob takes the player as its TARGET (Round 72,
+-- round72-plan.md §2.1: sight aggro, a group alert, retaliation, a threat
+-- switch, a taunt, kings and guards alike; the do_attack seam in
+-- grug_mobs.register_mob, the one place a grug mob's `attack` becomes a
+-- player), by an accepted player hit on the mob (run_player_hit_mob), by every
+-- threat gain (add_threat: damage, heal threat, tank bonus), by taunt, and by
+-- a hit the mob or its projectile lands on the player (mark_player_hit). So a
+-- chased player is in combat before the first blow, and a mob that targets
+-- but never reaches (a king at a safe spot, a mob behind a wall) holds them
+-- until one of the drops below: its give-up (stop_attack), its 15 s contact
+-- leash (clear_threat), out of sight or chase range (stop_attack), death or
+-- unload.
 -- All edges of a mob are DROPPED by disengage_mob -- the mob's death boundary
 -- (grug_mobs.settle_mob_death), on_deactivate (explicit removal and unload)
 -- and clear_threat (leash reset, evade). One edge goes by disengage_target
@@ -473,9 +480,8 @@ local combat_until = {} -- player name -> us time the combat timer runs out
 -- prune_engagement backstop (grug_mobs.leash_tick: a mob that stayed
 -- targetless for two ticks, or a player who left a fight that goes on
 -- without them) -- and all of a player's edges by their death or leave.
--- Plain target ACQUISITION (mobs_redo do_attack: sight aggro, group alert)
--- deliberately creates no edge: combat starts with the first hit or threat
--- gain (dealt or received damage), so a merely chased player may still mount.
+-- (Before Round 72 plain target acquisition created no edge, so a merely
+-- chased player could still mount; the user ruled that out on 2026-11-07.)
 -- The weak keys are only a last-resort backstop against a missed removal
 -- hook: a collected luaentity can never pin a player in combat.
 local engaged_mobs = {}
@@ -650,9 +656,10 @@ end
 -- Death ends combat at once (user ruling 2026-09-28) and the respawned player
 -- starts out of combat. Threat entries stay on the mobs -- valid_target
 -- already ignores a dead player -- but no edge survives. After the respawn a
--- new hit, a new threat gain, or a threat-driven target switch onto the
--- player (check_switch, possible when they respawn within 40 m of a mob that
--- still holds their old threat) puts them back into combat.
+-- mob taking them as its target (sight, or a threat-driven switch in
+-- check_switch, possible when they respawn within 40 m of a mob that still
+-- holds their old threat), a new hit or a new threat gain puts them back into
+-- combat.
 core.register_on_dieplayer(clear_combat)
 core.register_on_leaveplayer(clear_combat)
 

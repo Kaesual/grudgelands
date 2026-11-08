@@ -1175,14 +1175,26 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - A player is **in combat** while at least one live mob is **engaged** with
   them, or while the timer runs (**5 s**, `COMBAT_TIMEOUT`; **10 s** after
   PvP contact).
-- **Engagement (mob combat).** A mob is engaged with a player from the first
-  hit between them in either direction (a landed or dodged hit of the mob or
-  its projectile, or an accepted player hit on it) and whenever the player
-  gains threat on it (§4: damage, healing threat, tank bonus, taunt). A mob
-  that attacks a player who never touched it therefore engages too.
-- Merely being targeted (sight aggro, a pack's group alert) is not
-  engagement: combat starts with the first hit or threat gain, so a chased
-  player who was never hit may still mount or eat.
+- **Engagement (mob combat).** A mob is engaged with a player from the moment
+  it takes them as its **target** (user ruling 2026-11-07, Round 72: sight
+  aggro, a group alert, retaliation, a threat switch, a taunt; guards, mobs,
+  bosses and kings alike), from the first hit between them in either direction
+  (a landed or dodged hit of the mob or its projectile, or an accepted player
+  hit on it) and whenever the player gains threat on it (§4: damage, healing
+  threat, tank bonus, taunt). A chased player who was never hit is therefore
+  in combat and cannot mount, eat or travel. Who may be targeted stays the
+  acquisition rules' decision (the undead truce, the faction vetoes, an
+  evading mob targets nobody); a target such a rule drops again at once is not
+  engaged.
+- **A mob that targets but never reaches** (a king at a safe spot, a mob
+  behind a wall) holds the player until it lets them go by its ordinary
+  rules: its navigation gives up (a few failed searches; a king only drops the
+  target and may take them again once they moved 8 nodes or after 15 s), its
+  15 s contact leash runs out without a player hit (a leash reset), it loses
+  sight for its patience or they leave its 45 m chase range, or it dies or
+  unloads. An ambient (damage-pursuit) mob holds a fleeing player until its
+  15 s damage clock has run out and they move on. A mob that still sees them
+  afterwards may take them again, and with that combat starts again.
 - **Engagement ends immediately**, with no grace period, when the mob dies,
   resets (leash/evade: its threat table is cleared) or leaves the active world
   (removal or unload) -- for every engaged player -- and, for that one player,
@@ -1210,15 +1222,15 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - **Death** clears both engagement and the timer at once. A dead player cannot
   be put back into combat by the killing blow's own bookkeeping, and the
   respawned player starts out of combat. Mobs keep their old threat entries,
-  so besides a new hit or threat gain, a threat-driven target switch onto the
-  respawned player (only possible within 40 m of such a mob) engages them
-  again.
-- Engagement is event-driven: it is recorded and dropped only on the hits,
-  threat changes and mob lifecycle events above, never by scanning the world.
+  so besides a mob taking them as its target by sight, a new hit or threat
+  gain, a threat-driven target switch onto the respawned player (only
+  possible within 40 m of such a mob) engages them again.
+- Engagement is event-driven: it is recorded and dropped only on the target
+  changes, hits, threat changes and mob lifecycle events above, never by
+  scanning the world.
 - **An Expedition's pack** holds its own: from the pull on, whoever is on a
   pack's list stays in combat, also through a pause in the hitting, until the
-  pack is dead or they leave its list ("Expedition packs" below). Being
-  targeted counts here.
+  pack is dead or they leave its list ("Expedition packs" below).
 
 ### Recovery
 
