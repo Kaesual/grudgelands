@@ -117,6 +117,8 @@ def ore(t, node, x, z):
     """A marked node at reach on a plinth of rock, the hull behind it."""
     t.set(x, FEET, z, ROCK)
     t.set(x, EYE, z, node)
+    # Mining leaves no body-sized space over the one-node rock foot.
+    t.box(x, FEET + 2, z, x, ROOM_TOP, z, ROCK)
 
 
 def carve_all(t):

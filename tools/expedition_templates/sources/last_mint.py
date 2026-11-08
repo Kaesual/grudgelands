@@ -159,6 +159,8 @@ def ore(t, node, x, z):
     """A marked node at reach, on a lump of rock at the wall."""
     t.set(x, FEET, z, ROCK)
     t.set(x, EYE, z, node)
+    # The seam stays closed above its mineral, including after it is mined.
+    t.box(x, FEET + 2, z, x, ROOM_TOP, z, ROCK)
 
 
 def rooms(t):
