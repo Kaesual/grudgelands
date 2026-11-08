@@ -1009,9 +1009,33 @@ function grug_mobs.register_mob(name, def)
 	-- separate pursuit damage/contact clocks.
 	local prototype = core.registered_entities[name]
 	local native_do_attack = prototype.do_attack or mobs.mob_class.do_attack
+	-- Targeting is combat (Round 72, round72-plan.md §2.1): the player a
+	-- do_attack call leaves as `self.attack` is engaged with this mob from
+	-- that moment (grug_core.engage_mob), not only from the first hit or
+	-- threat gain. This wrapper is the one seam: mobs_redo sets `self.attack`
+	-- to a player nowhere else, and every way to a target calls it (sight in
+	-- general_attack, the group alert and retaliation in on_punch, the camp
+	-- and pack-hunter calls in verbs.lua, a threat switch, a taunt, a pack's
+	-- pull, kings and guards alike). mobs_redo's do_attack returns early for
+	-- a mob already attacking, so the test is the target the call left, not
+	-- the call. A target the next do_custom drops again is not engaged: an
+	-- evader's (aggro.lua evade_tick), a player under the truce, a player of
+	-- the mob's own faction (the sweeps in do_custom above). Leaving combat is
+	-- unchanged: stop_attack, prune_engagement, clear_threat, death, unload.
+	-- Cost: one comparison per do_attack call, an event, never a tick.
+	local function holds_target(self, target)
+		if self.attack ~= target or not core.is_player(target)
+				or (self.temp and self.temp.grug_evading)
+				or (truce_perk and truce_active(self, target)) then
+			return false
+		end
+		local own = faction or self._grug_faction
+		return not (own and grug_factions.get_object_faction(target) == own)
+	end
 	prototype.do_attack = function(self, target, force)
 		grug_mobs.touch_boss_activity(self)
 		local result = native_do_attack(self, target, force)
+		if holds_target(self, target) then grug_core.engage_mob(self, target) end
 		-- A mob of an Expedition's pack brings the whole pack (packs.lua).
 		if self._grug_pack then grug_mobs.pack_contact(self, target) end
 		return result
