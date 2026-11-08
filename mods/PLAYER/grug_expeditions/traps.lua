@@ -472,8 +472,11 @@ function T.chosen(run)
 	return out
 end
 
--- The marked-spot helper: the floor trap's ring at `pos` (a player's feet) now and
--- its hit there WARNING seconds later, once, for the run's players. Returns a handle
+-- The marked-spot helper: the floor trap's ring at `pos` now and its hit there
+-- WARNING seconds later, once, for the run's players. `pos` is a floor position: a
+-- standing player's feet (get_pos), where the ring lies; the hit counts from half a
+-- node above it, as a floor trap's. The caller (The Second Shift's Nemm) takes the
+-- target's position when it marks, and the hit stays there. Returns a handle
 -- for cancel(handle): a reset or a death of the caller takes the hit back (the ring's
 -- particles run out by themselves). The run's end cancels it too.
 function T.strike(run, pos)

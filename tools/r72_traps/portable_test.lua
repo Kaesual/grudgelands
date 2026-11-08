@@ -58,6 +58,16 @@ refused("trap f 1 floor 1 2 3\ntrap f 2 floor 4 2 3\n", "disagrees with itself")
 refused("trap f 1 floor 1 2 3\ntrap f 1 wall 4 2 3 +x 4 0\n", "disagrees with itself")
 refused("trap w 1 wall 1 2 3 +x 4 0\ntrap w 1 wall 4 2 3 +x 6 0\n", "disagrees with itself")
 refused("trap f 1 floor 1 2\n", "malformed")
+-- A floor trap's cell holds its mark later: air only (palette byte 0 is stone here).
+do
+	local head = "grudgelands-expedition-template 1\nname x\nsize 16 16 16\nnode default:stone\n" ..
+		"node air\ntrap f 1 floor 1 2 3\ndata 0\n"
+	local ok, message = pcall(T.parse, head, function() return string.rep("\0", 2 * 4096) end, "bad")
+	check(not ok and tostring(message):find("is not in air", 1, true), "A a floor trap in stone: " ..
+		tostring(message))
+	local open = head:gsub("node default:stone\nnode air", "node air\nnode default:stone")
+	check(pcall(T.parse, open, function() return string.rep("\0", 2 * 4096) end, "good"), "A in air it loads")
+end
 local small = {size = {x = 16, y = 16, z = 16}, places = {}, encounters = {},
 	traps = {{group = "w", pos = {x = 15.6, y = 2, z = 2}}}}
 check(not pcall(T.check_fits, small, {x = 128, y = 64, z = 128}, {}, "small"), "A a trap outside")

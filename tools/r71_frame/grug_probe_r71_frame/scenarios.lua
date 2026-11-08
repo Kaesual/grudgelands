@@ -64,9 +64,12 @@ end
 local function objects_in(run)
 	local n, names = 0, {}
 	for object in core.objects_in_area(run.minp, run.maxp) do
-		if not object:is_player() and not object:get_attach() then -- a player's tag, wield
+		local entity = object:get_luaentity()
+		-- Round 72: test_vault's trap gallery shoots while a player is inside; a
+		-- fireball is the run's own and never saved, no leftover.
+		if not object:is_player() and not object:get_attach() and -- a player's tag, wield
+				not (entity and entity.name == "grug_expeditions:trap_fireball") then
 			n = n + 1
-			local entity = object:get_luaentity()
 			names[#names + 1] = entity and entity.name or "?"
 		end
 	end

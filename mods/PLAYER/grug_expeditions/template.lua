@@ -141,6 +141,14 @@ function M.parse(text, decompress, source)
 	local cells = decompress(stream)
 	if #cells ~= 2 * total then fail("the data does not fit the size") end
 	tpl.cells = cells
+	-- A floor trap's mark goes into its cell: air only (template.py refuses the rest).
+	for _, row in ipairs(tpl.traps) do
+		local pos = row.pos
+		if row.kind == "floor" and pos.x < size.x and pos.y < size.y and pos.z < size.z and
+				tpl.nodes[cells:byte(pos.z * size.y * size.x + pos.y * size.x + pos.x + 1) + 1] ~= "air" then
+			fail("floor trap " .. row.group .. " is not in air")
+		end
+	end
 	return tpl
 end
 
