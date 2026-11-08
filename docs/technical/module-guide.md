@@ -530,6 +530,11 @@ tools](#player-meta-read-by-external-tools).
   Round 30 section H the riding-tier purchases at the shipped prices). The
   flight-border sweep reads the faction once and each column's zone id
   (`grug_zones.id_at`), never a copied zone record per sample (Round 30).
+  Since Round 72 `grug_mounts.enemy_town_at(faction, x, z)` (`entity.lua`) is
+  the one enemy-town rule (mounts.md §4.4): a lazily built table from the hard
+  `town` footprints to their settlement's faction, asked by `summon_position`
+  after the summon guards and by the mount's step when it enters another
+  column. Fixture `tools/r72_mounts`.
 
 ## R7 audit boundary
 
@@ -561,7 +566,14 @@ tools](#player-meta-read-by-external-tools).
   central dodge roll (hp-change modifier), `in_combat` (mob engagement via
   `engage_mob`/`disengage_mob`, a timer via `mark_in_combat(player, seconds)`:
   5 s for PvP hits and untracked sources, 10 s for PvP contact; combat_stats
-  §5). The PvP seam `grug_core.pvp_can_harm`/`pvp_hit_landed` is installed by
+  §5; since Round 72 a mob engages its target when it takes it, through the
+  `do_attack` wrapper in `grug_mobs.register_mob`, `holds_target`).
+  **Placement** (Round 72, `grug_core/placement.lua`, combat_stats.md
+  "Placement in combat and around bodies"): one wrapper round
+  `core.item_place_node` and one round the falling node's `try_place`; code that
+  writes a node with its own `set_node` (doors, beds, the bucket, the notice
+  board, the Claim Stone) asks `grug_core.placement_refused(placer, node_name,
+  cells)` itself, and `grug_core.body_in_cells` is the one area query. The PvP seam `grug_core.pvp_can_harm`/`pvp_hit_landed` is installed by
   `grug_pvp` (impact re-check, crosshair ray, landed-hit contact), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
   them). Crit/dodge accessors are grug_core stubs overridden by
   grug_classes (`get_crit_chance_raw`: 5 % + 0.05 % per Dexterity point
@@ -1189,7 +1201,13 @@ tools](#player-meta-read-by-external-tools).
     decides who gets one: no carrier for a critter (`_grug_disposition`) or
     a settlement resident on an `idle`/`work` socket (`_grug_socket_role`);
     `update_tag`, the shared `after_activate` and the settlement NPCs'
-    `install_nametag` ask it. Fixture `tools/r67_world`.
+    `install_nametag` ask it. Fixture `tools/r67_world`. Since Round 72 a
+    faction unit has a second, foe carrier while a viewer of the other side is
+    in range (`resolve_unit` in `tag_carrier.lua` works out the unit's faction
+    and kind; the pass reads each viewer's faction once per snapshot through
+    the stub `grug_core.get_player_object_faction`, which `grug_factions`
+    fills); callers keep their one handle, and text, the HP bar and the
+    visibility callbacks reach both carriers. Fixture `tools/r72_tags`.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
@@ -1228,6 +1246,10 @@ tools](#player-meta-read-by-external-tools).
     `grug_mobs.give_up_target` in `aggro.lua`; kings, Generals and bosses
     reset by `boss_floor.lua`, Round 72: the boss floor over `nav.cell`, the
     one-way window, the 15 s rule, all ending in `grug_mobs.reset_home`;
+    guards, captains, the rift boss, leaders and rares carry
+    `_grug_reach_reset`, read only by `grug_mobs.reach_reset` (`aggro.lua`),
+    which switches on `nav.strict` (search the target at the pull, padding 16,
+    two failures) and makes their give-up `reset_home`, Round 72 GUARDNAV;
     Round 49 NAV2: `check_path`
     repairs a waypoint without head room or width from the cells round it,
     a stuck episode's searches pad 6, 12, then 16 (`PADDING_STEPS`), and
