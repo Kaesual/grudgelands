@@ -5,11 +5,12 @@ portable_test.lua proves the route, the door, the ore, the packs, the traps, the
 sight and the light on the written file.
 
 The floor footprint, the route, the pack places, the trap places and the ore places
-are final; walls and ceilings stay plain for lane STYLE to shape (round72-plan.md
-§2.9). Every floor is flat: the first air cell is y 8 everywhere, with no step and no
+are final; the rough cuts, timber hoods and converging roof are the STYLE pass
+(round72-plan.md §2.9). Every floor is flat: the first air cell is y 8 everywhere, with no step and no
 dais. Every pack room is cut so that from each of its floor cells at least one mob of
 its pack notices a player (view range and sight): no pack can be walked round."""
 from template import Template
+from shaping import cap_props, cells_of, hang, roof, wall_lights, walls
 
 ROCK = "default:stone"
 FEET, EYE = 8, 9
@@ -94,10 +95,7 @@ def lanterns(t, rect_list, top, step):
             for x in range(x0, x1):
                 if (x - 2 - (row % 2) * (step // 2)) % step:
                     continue
-                if t.get(x, LANTERN_Y, z) != "air" or t.get(x, top + 1, z) == "air":
-                    continue
-                t.box(x, LANTERN_Y + 1, z, x, top, z, ROPE)
-                t.set(x, LANTERN_Y, z, LANTERN)
+                hang(t, x, z, LANTERN_Y, top)
 
 
 def frame_x(t, x, z0, z1, top):
@@ -249,8 +247,54 @@ def rooms(t):
     wage(t)
     court(t)
     store(t)
+    shape(t)
     for name, rect_list in ROOMS.items():
         lanterns(t, rect_list, COURT_TOP if name == "court" else ROOM_TOP, 6)
+    wall_lights(t, cells_of(sum((list(r) for r in ROOMS.values()), []) + list(PASSAGES)), FEET)
+
+
+def shape(t):
+    """Six different roof silhouettes over the proven floor and sight rows."""
+    profiles = {
+        "arrival": lambda x, z: 13 + min(3, max(0, (x - 96) // 4)) - (z >= 28),
+        "desk": lambda x, z: 14 + min(5, max(0, (z - 10) // 3)) - (x > 71),
+        "marking": lambda x, z: 13 + min(5, max(0, (x - 9) // 3)) - ((z // 5) % 2),
+        "wage": lambda x, z: (14 + min(3, (x - 9) // 5) if z < 88 else
+                               14 + max(0, 5 - abs(x - 21) // 2)),
+        "court": lambda x, z: 23 - max(abs(x - 63) // 2, abs(z - 104) // 2),
+        "store": lambda x, z: 15 if x % 6 == 0 or z % 8 == 0 else 17,
+    }
+    for name, rect_list in ROOMS.items():
+        cells = cells_of(rect_list)
+        top = COURT_TOP if name == "court" else ROOM_TOP
+        def material(x, z):
+            rib = (z % 7 == 0 if name in ("desk", "marking", "wage") else x % 7 == 0)
+            return BEAM if rib or name == "store" else ROCK
+        roof(t, cells, top, profiles[name], material)
+        # Strata and jammed timber rise into the overhang, rather than repeating a
+        # texture at one height. The ore's backing and the two sight rows stay rock.
+        walls(t, cells, FEET + 3, top,
+              lambda x, y, z: POST if (x + z) % 7 == 0 else
+              ("default:cobble" if y == 12 + (x // 4 + z // 5) % 3 else ROCK))
+        cap_props(t, cells, FEET, top, (TABLE, BENCH, BARREL, CART, RAIL, "default:gravel"), BOARD)
+    # The sign keeps its fixed place in the hooded desk niche.
+    t.set(63, FEET + 1, 10, BOARD)
+    t.set(63, 10, 10, SIGN, NORTH)
+    # Tally boards: flush wall panels, framed above eye level. No free shelf.
+    for z in (17, 25, 33):
+        t.box(8, 11, z, 8, 14, z + 2, BOARD)
+        for dz in (0, 2):
+            t.box(8, 11, z + dz, 8, 13, z + dz, BEAM)
+    # Pay bays have different lintels: low and pressed down in c, peaked in d.
+    for z in (74, 102):
+        for x in range(9, 31):
+            y = profiles["wage"](x, z)
+            t.set(x, y, z, BEAM)
+    # Nemm's four existing posts become splayed shoulders in the high roof.
+    for x, z in ((56, 89), (71, 89), (56, 118), (71, 118)):
+        t.box(x, 12, z, x, 22, z, POST)
+    for x in range(57, 71):
+        t.set(x, profiles["court"](x, 104), 104, BEAM)
 
 
 def door(t):
