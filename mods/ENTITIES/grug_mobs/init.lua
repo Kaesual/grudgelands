@@ -1063,6 +1063,11 @@ function grug_mobs.register_mob(name, def)
 	if def._grug_authored then
 		core.registered_entities[name]._grug_authored = true
 	end
+	-- Out of reach, reset at once, by definition (Round 72 GUARDNAV; read by
+	-- aggro.lua grug_mobs.reach_reset).
+	if def._grug_reach_reset then
+		core.registered_entities[name]._grug_reach_reset = true
+	end
 end
 
 local modpath = core.get_modpath(core.get_current_modname())

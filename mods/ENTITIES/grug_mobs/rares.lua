@@ -322,6 +322,11 @@ function grug_mobs.rare_tick(self, dtime)
 	if not spec then
 		return
 	end
+	-- Every named rare resets at once when it cannot reach its target (Round 72
+	-- GUARDNAV, aggro.lua grug_mobs.reach_reset). A rare is no registration of
+	-- its own, so its registration here switches it on, also on a rare saved
+	-- before 0.72.0.
+	if not self._grug_reach_reset then self._grug_reach_reset = true end
 	grug_mobs.route_tick(self, dtime, spec.route, self, "_grug_rare_wp")
 end
 
