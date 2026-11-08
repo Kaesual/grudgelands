@@ -421,6 +421,16 @@ local function evade_tick(self, dtime)
 		-- restored by the next tick_speed_effects (init.lua).
 		self.temp.grug_evading = nil
 		grug_mobs.walk_clear(self, "evade")
+		-- And it stops where it arrived (Round 72 GUARDNAV): the run's velocity,
+		-- 1.5x its run speed, would otherwise carry it on until mobs_redo's walk
+		-- state renews it, up to a second later: seven nodes past its post, off a
+		-- tower's edge (the lane's engine probe lost a guard so). The out-of-reach
+		-- reset makes short evades common.
+		if type(self.set_velocity) == "function" then
+			self:set_velocity(0)
+			self.state = "stand"
+			self:set_animation("stand")
+		end
 		return
 	end
 	if grug_core.mono_time() - (ev.started or 0) > EVADE_TIMEOUT then

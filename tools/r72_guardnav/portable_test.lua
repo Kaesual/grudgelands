@@ -236,6 +236,8 @@ function mob_class:stop_attack()
 	O.forget_no_path(self.temp)
 end
 function mob_class:update_tag() end
+function mob_class:set_velocity(v) self.velocity = v end
+function mob_class:set_animation(a) self.anim = a end
 
 local GUARD_BOX = {-0.3, 0, -0.3, 0.3, 1.7, 0.3}
 local function scaled(box, k)
@@ -507,6 +509,8 @@ for _, who in ipairs({{label = "guard"}, {label = "captain",
 		local at = m2.object:get_pos()
 		check(not evading(m2) and healthy(m2) and math.abs(at.x - home.x) <= 4,
 			"P5 " .. tag .. ": back home, untouchable until there, at full health")
+		check(m2.velocity == 0 and m2.state == "stand",
+			"P5 " .. tag .. ": it stops where it arrived (no carry past its post)")
 		check(hit(m2, p2, 38) == 38 and m2.attack == p2, "P5 " .. tag .. ": attackable again at home")
 		players[p2.name] = nil
 		players[r.player.name] = nil
