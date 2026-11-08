@@ -583,18 +583,23 @@ nodes/s, guards 4.6, so on foot the guards catch up.
   There is **no warning band**. The rider stays where the mount was; a boat's
   rider stays in the water.
 - **The town is its hard `town` footprint** (`grug_zones.hard_footprint_in`
-  on the column, horizontal at every height), the same outline that names the
-  town and protects it; villages, outposts and camps have none and stay open.
+  on the column), the same outline that names the town and protects it, from
+  15 nodes below the ground of each column (`grug_core.depth_below_surface`:
+  the graded ground or a water surface, so a capital's outer districts on
+  lower natural terrain count too) up to the sky. 16 or more below the
+  ground, in a cave or mine, riding is free (user ruling 2026-11-08); a rider
+  coming up a shaft is dismounted on reaching 15 below the ground.
+  Villages, outposts and camps have no footprint and stay open.
   The land round the towns stays open to riding, and the flight ban (§4.3) is
   unchanged.
 - **Whose town:** the faction of the settlement whose anchor lies in the
   footprint (its race's faction from the start identities), the way the
   location line finds a town. A character without a faction has no enemy
   town.
-- **One rule:** `grug_mounts.enemy_town_at(faction, x, z)` in
+- **One rule:** `grug_mounts.enemy_town_at(faction, x, z, y)` in
   `grug_mounts/entity.lua`, asked by the summon refusal and by the mount's
   step for every tier. The step asks only when the mount enters another
-  column (one footprint query, a few box tests), only for mounted riders.
+  node (one footprint query, a few box tests), only for mounted riders.
 
 ## 5. Reference implementations & licences
 

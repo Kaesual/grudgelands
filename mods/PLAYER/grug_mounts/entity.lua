@@ -294,7 +294,12 @@ end
 -- footprint (as grug_map location.lua finds a town), the race's faction from
 -- the start identities. Built at the first question, after every settlement
 -- is registered; without the world authority (a bare test world) there are
--- no towns.
+-- no towns. A town reaches down to UNDER_TOWN nodes below the ground of the
+-- column (grug_core.depth_below_surface: the graded ground, or a water
+-- surface): deeper, in a cave or a mine below it, riding is free (user ruling
+-- 2026-11-08). The ground, not the anchor: a capital's outer districts and
+-- wall stand on natural terrain well below its civic core (delta review).
+local UNDER_TOWN = 16
 local ENEMY_TOWN_REFUSAL = "Mounts and boats are forbidden in enemy towns."
 local ENEMY_TOWN_DISMOUNT = "You entered an enemy town and were dismounted."
 local town_factions
@@ -319,15 +324,19 @@ local function town_faction_table()
 	return town_factions
 end
 
--- Whether column (x, z) lies in a town of the other faction; never for a
--- character without a faction.
-function grug_mounts.enemy_town_at(faction, x, z)
+-- Whether node (x, y, z) lies in a town of the other faction (its column
+-- in the footprint, y not more than UNDER_TOWN below the column's ground;
+-- without y the column alone); never for a character without a faction.
+function grug_mounts.enemy_town_at(faction, x, z, y)
 	if faction ~= "accord" and faction ~= "throng" then return false end
 	local towns = town_faction_table()
 	if next(towns) == nil then return false end
 	local id = grug_zones.hard_footprint_in(x, z, x, z)
 	local town = id and towns[id]
-	return town ~= nil and town ~= faction
+	if town == nil or town == faction then return false end
+	local depth = y and grug_core.depth_below_surface and
+		grug_core.depth_below_surface({x = x, y = y, z = z})
+	return not (depth and depth > UNDER_TOWN)
 end
 
 -- 16 directions x 7 distances; the rider's faction is read once per sweep
@@ -679,12 +688,14 @@ local entity_definition = {
 			return
 		end
 		-- An enemy town (ruling 2.7), every tier: asked only when the mount
-		-- enters another column (the first step asks too). The rider stays
-		-- where the mount was; a boat's rider in the water.
+		-- enters another node (the first step asks too), so a rider coming up
+		-- from below the town is asked as well. The rider stays where the
+		-- mount was; a boat's rider in the water.
 		local column_x, column_z = math.floor(pos.x + 0.5), math.floor(pos.z + 0.5)
-		if column_x ~= record.town_x or column_z ~= record.town_z then
-			record.town_x, record.town_z = column_x, column_z
-			if grug_mounts.enemy_town_at(grug_factions.get_faction(player), column_x, column_z) then
+		local node_y = math.floor(pos.y + 0.5)
+		if column_x ~= record.town_x or column_z ~= record.town_z or node_y ~= record.town_y then
+			record.town_x, record.town_z, record.town_y = column_x, column_z, node_y
+			if grug_mounts.enemy_town_at(grug_factions.get_faction(player), column_x, column_z, node_y) then
 				grug_mounts.dismount(player, ENEMY_TOWN_DISMOUNT, true)
 				return
 			end
@@ -888,7 +899,7 @@ local function summon_position(player, tier_id)
 		if refusal then return nil, refusal end
 	end
 	if grug_mounts.enemy_town_at(grug_factions.get_faction(player),
-			math.floor(pos.x + 0.5), math.floor(pos.z + 0.5)) then
+			math.floor(pos.x + 0.5), math.floor(pos.z + 0.5), math.floor(pos.y + 0.5)) then
 		return nil, ENEMY_TOWN_REFUSAL
 	end
 	if tier.mode == "water" then

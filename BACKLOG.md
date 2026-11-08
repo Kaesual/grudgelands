@@ -15,9 +15,7 @@ Delivered in 0.72.0 (**compatible**) on the branch `round72`, not on main and no
 [GUI checklist](docs/planning/round72-plan.md#gui-checklist-desktop-and-web) is open.
 Carry-overs:
 
-- **For the user:** a jump over a floor trap does not set it off (5 Hz feet check; default
-  keep); the enemy-town dismount holds at every height, so also in tunnels below a town
-  (default keep); the Seam's fighting chambers and cuts as separate floor (STYLE's reading,
+- **For the user:** the Seam's fighting chambers and cuts as separate floor (STYLE's reading,
   default keep). Tuning from real runs: run lengths (Second Shift 10.2 minutes modelled at
   40–60, Last Mint 10.1 at 60), Nemm's 20 × and Duewarden's 14 × an elite's HP, the chest's
   coins (factor 10), the mining share (Shift 5–18 %, Mint 8–10 % of the same time's mining).
