@@ -1330,7 +1330,10 @@ guild leader alone (`guild`). 64 quests became 47.
   on `guild`, level 20, weight 4, turned in at the giver, one text per
   faction): kill Flintback in [the level 20
   Expedition](../planning/round71-l20-description.md), at any of its levels.
-  Optional and free, it follows "Group quests" above.
+  Optional and free, it follows "Group quests" above. Round 72 adds
+  `capital_last_mint` ("Party: The Last Mint", the same six leaders, level 60,
+  weight 4, one text per faction): kill Duewarden in [the level 60
+  Expedition](expeditions.md#14-the-last-mint), at any of its levels.
 - **Local quests**: each capital's climax, its named leader alone and free
   (Penn, Brakk, Rusk, Garr, Takka's `kezamba_offerings_04` and Hush's
   `nhal_veyr_vigil_03`, ids kept for the two whose objectives stayed or

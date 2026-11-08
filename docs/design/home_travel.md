@@ -25,7 +25,9 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   locations and the current home; the map window shows only the home
   (Round 44); a claim home has its own marker (below).
 - Return is immediate, without a cast time, and allowed only alive and outside
-  combat. It dismounts the player before arrival. There is no inventory item or
+  combat, and inside an Expedition not in lava or falling towards it (Round 72, The
+  Last Mint's lake: "Cannot return home from the lava."; `grug_home.register_return_guard`,
+  filled by `grug_expeditions/guard.lua`). It dismounts the player before arrival. There is no inventory item or
   skill. Initial range/interaction checks apply to binding, not return travel.
 - The personal cooldown is **30 minutes of real time**, including offline time
   and server restarts. It begins only on successful return. Rebinding, death,
