@@ -68,7 +68,7 @@ are not nudged into travelling by owning a boat.
   riding and flying mounts are refused in water and end where they enter
   it, `mounts.md` §3): the player's feet are
   in a `group:water` node — normal or river water, source or flowing. Every
-  water body works: rivers, lakes, bays, shelf, deep ocean, channels. There
+  water body outside an enemy town works: rivers, lakes, bays, shelf, deep ocean, channels. There
   are no docks; the only piers are the four island landings' (§7.1), and a
   boat needs none.
 - The boat appears on the surface of that water column, centred on its water
@@ -79,6 +79,9 @@ are not nudged into travelling by owning a boat.
   and a closed surface (ice, a roof) refuses as well. Every summon path keeps
   the rule (the quickbar's buttons, a switch from one boat to the other).
 - Summoning is also refused in combat (`grug_core.in_combat`) and while dead.
+- **Enemy towns** (Round 72): summoning is refused in an enemy start town or
+  capital, and a boat sailed into one is dismounted with its rider left in the
+  water (`mounts.md` §4.4).
 - **A boat that loses contact with water disappears** (ruling 8). Once per
   second each active boat checks its own node and the node below for
   `group:water`; if neither is water, the boat is removed and the rider
