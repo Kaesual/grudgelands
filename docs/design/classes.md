@@ -421,7 +421,10 @@ reach. **Bladecraft** (Veil V1), which replaces Loose in place, is the one
 skill with a right-click action: **LMB swings the Melee-slot blade, RMB looses
 the same Loose shot** at a hostile, on Loose's interval and the action clock
 (a shot pushes the next swing by one weapon interval, a swing holds the shot
-back as long). Its RMB press is neither food nor an interaction (an
+back as long). The hand shows the weapon of its last real attack, the bow
+after a shot that flew and the blade after a swing at a foe (Round 72, the
+user's ruling of 2026-11-07; [character visuals](character_visuals.md#4-the-weapon-in-hand));
+the swing stays equal to Strike at 1.00 M. Its RMB press is neither food nor an interaction (an
 interactive target within 4 m still opens instead); held, it shoots again
 whenever its clock allows. Other bow skills are LMB casts with their own
 ammunition and cooldowns.
