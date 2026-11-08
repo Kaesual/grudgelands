@@ -1015,15 +1015,12 @@ do
 	local PR = dofile(repo .. "/tools/expedition_templates/proofs.lua")
 	local map = PR.map(tpl, F)
 	local pfloor, pset = PR.floor(map)
-	-- Three nodes of air over every floor cell, a player's floor counting the rails. Known:
-	-- the hood STYLE closed over the desk's rail siding (second_shift.py, cap_props with
-	-- RAIL) leaves two over its eleven rail cells, where a player stands and an elite miner
-	-- does not; an open question (Round 72 PROOF report). Pinned exactly: a fix or one more
-	-- low cell fails here.
-	local KNOWN_LOW = "55,36 57,36 58,36 59,36 60,36 61,36 62,36 63,36 64,36 65,36 66,36"
+	-- Three nodes of air over every floor cell, a player's floor counting the rails (the
+	-- desk's rail siding lost STYLE's hood for this, Round 72 PROOF question 1).
+	local KNOWN_LOW = ""
 	local lowest, low_at, short = PR.free_height(map, pfloor, 3)
-	eq(table.concat(short, " "), KNOWN_LOW, "L three nodes of air over every floor cell but the known siding")
-	print(("free height: %d floor cells, the lowest %d at %s, below three only the siding's %d"):format(#pfloor,
+	eq(table.concat(short, " "), KNOWN_LOW, "L three nodes of air over every floor cell")
+	print(("free height: %d floor cells, the lowest %d at %s, below three %d"):format(#pfloor,
 		lowest, low_at, #short))
 	-- No perch: walking, jumping and falling reach no place off the floor but a waystone
 	-- or the chest, and no rope; with the door shut, and with it open and the ore dug.
