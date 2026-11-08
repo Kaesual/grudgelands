@@ -631,6 +631,21 @@ end
 -- behind a fence cannot loop give-up and heal every few seconds. Being hit or
 -- a group alert still starts a new chase as usual.
 --
+-- OUT OF REACH, RESET AT ONCE (Round 72 GUARDNAV, round72-plan.md §2.5, the
+-- user's rule): a mob switched on by its definition (`_grug_reach_reset`: the
+-- guard chassis of guard.lua, so guards, captains and war commanders; the rift
+-- boss; every leader sub-type, subtypes.lua; every named rare, rares.lua) runs
+-- the navigation's strict rule (mobs/grug_nav.lua: a pull searches at once, the
+-- target itself, two failures and about a second) and its give-up is
+-- reset_home below: healed at once, threat, tag and target cleared, and the
+-- evade home, untouchable until it is there; a mob that reset at home is
+-- attackable again at full health. The designated patroller keeps leash_reset
+-- (healed, no run to the post: its route is its place). Kings, Generals and an
+-- Expedition's bosses stay on their boss floor, the bespoke no-leash actors
+-- (royal guards, bodyguards) and an Expedition's packs on their own rules, and
+-- every other mob (wildlife) on the three failures above. Read in one place:
+-- grug_mobs.reach_reset.
+--
 local GAVE_UP_NODES = 8
 local GAVE_UP_SECONDS = 15
 
@@ -639,6 +654,15 @@ local GAVE_UP_SECONDS = 15
 function grug_mobs.floor_boss(self)
 	return self._grug_royal_king == true
 		or (self._grug_expedition ~= nil and self._grug_boss_id ~= nil)
+end
+
+-- Whether `self` notices an unreachable target fast and resets (above).
+function grug_mobs.reach_reset(self)
+	return self._grug_reach_reset == true and not self._grug_no_leash
+		and not self._grug_pack and not grug_mobs.floor_boss(self)
+end
+if mobs and mobs.grug_nav then
+	mobs.grug_nav.strict = grug_mobs.reach_reset
 end
 
 -- Target acquisition ignores `player` for now (the veto below).
@@ -668,6 +692,10 @@ function grug_mobs.give_up_target(self)
 	end
 	if self._grug_no_leash then
 		self:stop_attack()
+		return
+	end
+	if grug_mobs.reach_reset(self) and not self._grug_patrol_route then
+		grug_mobs.reset_home(self)
 		return
 	end
 	grug_mobs.leash_reset(self)

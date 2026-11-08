@@ -347,6 +347,9 @@ grug_mobs.register_mob("grug_mobs:rift_boss", {
 	_grug_voice = "giant",
 	_grug_fixed_level = 60, _grug_tier = "elite",
 	_grug_hp_scale = HP_SCALE, _grug_leash_range = LEASH,
+	-- Out of reach, reset at once (Round 72 GUARDNAV, aggro.lua
+	-- grug_mobs.reach_reset), besides the 15 s rule (boss_floor.lua).
+	_grug_reach_reset = true,
 	-- Authored (Round 37 MP): his spawn never fails on mobs_redo's active-mob
 	-- limit and he does not count against it.
 	_grug_authored = true,

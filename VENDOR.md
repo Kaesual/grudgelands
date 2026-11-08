@@ -988,6 +988,20 @@ rules his walk uses. Its one caller is ours. The navigation's give-up
 and Expedition bosses it now drops nothing when their floor is ready.
 Fixture `tools/r72_bossreset/portable_test.lua`.
 
+## Round 72 GUARDNAV — the strict rule of a mob out of reach (2026-11-08)
+
+`mobs/grug_nav.lua` (markers `GRUG PATCH (Round 72 GUARDNAV)`): round72-plan.md
+§2.5. `nav.strict(self)`, installed by `grug_mobs` (`aggro.lua`
+`grug_mobs.reach_reset`: guards, captains, the rift boss, rares, leaders), puts
+`combat_step` under a stricter search rule while the target is within `MAX_LEG`:
+a pull with no walkable straight line searches at once, the target itself at
+`STRICT_PADDING` (16); a found path whose end is out of the mob's reach of the
+target is a failed search (`ends_in_reach`); a path's end and a free walk no
+longer clear the failures (`progress`'s `keep_fails`), only a strike does; and
+`STRICT_GIVE_UP` (2) failures give the target up. With `nav.strict` unset, or
+false for a mob, every rule is as before. Fixtures
+`tools/r72_guardnav/portable_test.lua` and `tools/r42_nv1/portable_test.lua`.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world
