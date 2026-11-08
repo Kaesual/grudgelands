@@ -44,7 +44,7 @@ C.ZOMBIES = set({"zombie", "sun_dried_husk"})
 -- constructs, spirits, slimes, plants, and the dragons and their whelps
 -- (bosses and boss adds, user ruling 2026-10-04).
 C.OTHERS = set({
-	"ashen_treant", "bandit", "bandit_archer", "bog_ooze", "bog_witch",
+	"ashen_treant", "auditor_nemm", "bandit", "bandit_archer", "bog_ooze", "bog_witch",
 	"crystal_shard", "dungeon_master", "ember_wisp", "frost_stray",
 	"goblin_miner", "goblin_miner_slinger", "goblin_raider", "goblin_slinger",
 	"gravewood_treant", "ice_dragon", "ice_whelp", "jungle_wyvern",
@@ -58,7 +58,7 @@ C.OTHERS = set({
 C.FAMILIES = {
 	boar = set({"boar", "plague_boar", "jungle_boar"}),
 	rat = set({"giant_rat"}),
-	skeleton = set({"skeleton_archer", "skeleton_raider", "frost_stray", "bog_witch"}),
+	skeleton = set({"skeleton_archer", "skeleton_raider", "auditor_nemm", "frost_stray", "bog_witch"}),
 	golem = set({"stone_golem", "mesa_golem", "flintback"}),
 	construct = set({"war_construct"}),
 }

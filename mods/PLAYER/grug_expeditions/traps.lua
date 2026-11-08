@@ -20,7 +20,8 @@
 --   its cross-section touches stops it; a player in its way bursts it: the same
 --   damage to every player within RADIUS. A shot with nobody of the run within
 --   LAUNCH_RANGE of its line is skipped, the timing kept.
--- STRIKE (strike/cancel): the floor trap's ring and hit on one position, once.
+-- STRIKE (strike/cancel): the floor trap's ring and hit on one position, once; The
+--   Second Shift's Auditor Nemm marks his target's spot with it (grug_mobs.expedition_mark).
 --
 -- PLAYERS ONLY: no mob is ever looked at. The trigger and the fireball test the run's
 -- players inside, the hit goes to players. No knockback (set_hp, no puncher), no
@@ -216,24 +217,28 @@ local function hurt(player, amount, level)
 		custom_type = grug_core.ARMOR_APPLIED_CUSTOM_TYPE})
 end
 
--- Every living player of the run inside within RADIUS of `point` and in sight of it.
+-- Every living player of the run inside within RADIUS of `point` and in sight of it;
+-- returns how many, a dodge included.
 local function blast(run, point)
 	local amount = T.damage(run.level)
+	local count = 0
 	for name in pairs(run.inside) do
 		local player = core.get_player_by_name(name)
 		if player and player:get_hp() > 0 then
 			local distance, near = body_distance(point, player:get_pos())
 			if distance <= T.RADIUS and clear_between(point, near) then
+				count = count + 1
 				hurt(player, amount, run.level)
 			end
 		end
 	end
+	return count
 end
 
--- The floor's hit: the ring's centre half a node above the floor.
+-- The floor's hit: the ring's centre half a node above the floor. Returns blast's count.
 local function land(run, feet)
 	play("expedition_trap_hit", feet, T.RADIUS)
-	blast(run, {x = feet.x, y = feet.y + 0.5, z = feet.z})
+	return blast(run, {x = feet.x, y = feet.y + 0.5, z = feet.z})
 end
 
 -- ---- Runs ----------------------------------------------------------------------
@@ -478,15 +483,19 @@ end
 -- node above it, as a floor trap's. The caller (The Second Shift's Nemm) takes the
 -- target's position when it marks, and the hit stays there. Returns a handle
 -- for cancel(handle): a reset or a death of the caller takes the hit back (the ring's
--- particles run out by themselves). The run's end cancels it too.
-function T.strike(run, pos)
+-- particles run out by themselves). The run's end cancels it too. `opts`, optional:
+-- `still()` asked at the hit, false takes it back too (the caller is gone or dead);
+-- `landed(count)` after the hit, with the players it had in its area (a dodge counts).
+function T.strike(run, pos, opts)
 	local handle = {}
 	local feet = {x = pos.x, y = pos.y, z = pos.z}
 	play("expedition_trap_warning", feet, T.RADIUS, T.WARNING)
 	core.after(T.WARNING, function()
 		if handle.cancelled or run.state == "ended" then return end
+		if opts and opts.still and not opts.still() then return end
 		handle.done = true
-		land(run, feet)
+		local count = land(run, feet)
+		if opts and opts.landed then opts.landed(count) end
 	end)
 	return handle
 end
@@ -494,3 +503,26 @@ end
 function T.cancel(handle)
 	if handle then handle.cancelled = true end
 end
+
+-- Auditor Nemm's marked spot (The Second Shift; grug_mobs skeleton_raider.lua asks these
+-- two): a strike in the boss's own run at `pos`, or nil outside it. The hit is taken
+-- back when the boss is gone, dead or evading home by then; one that had a player in
+-- its area is an attack of the boss for the bosses' 15 s rule (grug_mobs.boss_attacked,
+-- round72-plan.md §3.1: a signature counts when it had a player in its area).
+function grug_mobs.expedition_mark(self, pos)
+	local run = pos and M.run_at(pos)
+	if not run or run.id ~= self._grug_expedition then return nil end
+	local object = self.object
+	local function live()
+		local ent = object and object:get_luaentity()
+		if ent and (ent.health or 0) > 0 and not (ent.temp and ent.temp.grug_evading) then
+			return ent
+		end
+	end
+	return T.strike(run, pos, {still = function() return live() ~= nil end,
+		landed = function(count)
+			local ent = count > 0 and live()
+			if ent then grug_mobs.boss_attacked(ent) end
+		end})
+end
+grug_mobs.expedition_unmark = T.cancel
