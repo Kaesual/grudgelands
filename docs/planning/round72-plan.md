@@ -644,6 +644,20 @@ three Expeditions.
   fixtures that are strictly needed, your own and those that really test the behaviour you
   change, as few times as possible; no full run (the coordinator runs it once at the round's
   end); name what you ran and why."
+- **Compaction checkpoints (user, 2026-11-08), to save tokens.** At each checkpoint the
+  coordinator pauses: no new launch and no merge. It brings `r72/HANDOVER.md` up to date and
+  gives the user a compaction prompt. The user compacts, then the round goes on with the next
+  step. Lanes that are still running keep running; the prompt names each with its branch,
+  worktree and brief.
+  - **C0** before the start (this planning).
+  - **C1** in wave 1, once about half of its eight lanes are merged, between two merges.
+  - **C2** at the end of wave 1: all eight merged, before PLACE and BOSSRESET start.
+  - **C3** at the end of wave 2, before GUARDNAV, SHIFT and MINT start.
+  - **C4** at the end of wave 3, before STYLE starts.
+  - **C5** after STYLE and PROOF are merged, before the round-end full run and D.
+  - **C6** after the round-end full run and D, before the merge to main and the user's GUI test.
+
+  An extra checkpoint between these only when a long fix round has filled the context.
 - **Parallel work outside this round (user, 2026-11-08):** another Opus session works on
   the character creation screen on its own branch from main, merged after Round 72. It
   shares the Lua queue and syncs to the user's Luanti folder only on the user's request
