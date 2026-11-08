@@ -60,7 +60,8 @@ data 342
   `-z`, the fireball's direction; the first shot comes `offset` seconds after readiness, then one every `period`
   seconds. A group's lines agree on kind, pick, period and offset, and pick at most as many as they are. The source
   calls `t.trap_floor(group, pick, x, y, z)` and `t.trap_wall(group, pick, x, y, z, axis, period, offset)`; the
-  tool refuses a floor cell that is not air on a floor, and a muzzle where a cell the ball touches (radius 0.4, so
+  tool refuses a pick that is not a whole number of at least 1, a period not above 0, a negative offset, a floor
+  cell that is not air on a floor (the reader refuses a floor cell that is not air too), and a muzzle where a cell the ball touches (radius 0.4, so
   a point at y 8.5 reaches the rows 8 and 9) is walkable at the muzzle or one cell ahead. In flight, every walkable
   node the ball touches stops it.
 - The reward room's nodes are in the template: `grug_expeditions:reward_door` fills the opening, every such node within

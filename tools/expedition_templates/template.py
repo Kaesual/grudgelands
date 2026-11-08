@@ -18,6 +18,12 @@ AXES = {"+x": (1, 0), "-x": (-1, 0), "+z": (0, 1), "-z": (0, -1)}
 BALL = 0.4  # a fireball's radius, traps.lua's BALL
 
 
+def check_pick(name, group, pick):
+    """A pick is a whole number of at least 1, the reader's `%d+`."""
+    if isinstance(pick, bool) or not isinstance(pick, int) or pick < 1:
+        raise ValueError(f"{name}: trap group {group}: pick {pick!r} is no whole number of at least 1")
+
+
 def ball_rows(v):
     """The rows of cells a ball centred at v touches on one coordinate."""
     return sorted({int(math.floor(v - BALL + 0.5)), int(math.floor(v + BALL + 0.5))})
@@ -86,6 +92,7 @@ class Template:
         """A floor trap candidate: the cell a player stands in over it (Round 72).
         A run arms `pick` of the group's candidates."""
         self.index(x, y, z)
+        check_pick(self.name, group, pick)
         self.traps.append((group, pick, "floor", f"{x} {y} {z}"))
 
     def trap_wall(self, group, pick, x, y, z, axis, period, offset):
@@ -95,6 +102,9 @@ class Template:
         self.index(*(int(math.floor(v + 0.5)) for v in (x, y, z)))
         if axis not in AXES:
             raise ValueError(f"{self.name}: trap axis {axis}")
+        check_pick(self.name, group, pick)
+        if not period > 0 or not offset >= 0:
+            raise ValueError(f"{self.name}: trap group {group}: period above 0, offset 0 or more")
         self.traps.append((group, pick, "wall",
                            f"{x:g} {y:g} {z:g} {axis} {period:g} {offset:g}", (x, y, z), axis))
 
