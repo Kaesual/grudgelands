@@ -6,19 +6,20 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
-## Round 71 — Expeditions (GUI acceptance pending)
+## Round 71 — Expeditions (GUI-accepted)
 
 Delivered in 0.71.0 (**compatible**): the framework and The Stilled Seam
 ([completion](docs/planning/round71-plan.md#completion-2026-11-07), rules in
 [expeditions.md](docs/design/expeditions.md)). The desktop/web
-[GUI checklist](docs/planning/round71-plan.md#gui-checklist-desktop-and-web) is open. Carry-overs:
+[GUI checklist](docs/planning/round71-plan.md#gui-checklist-desktop-and-web) is accepted by the
+user on 2026-11-08. Carry-overs:
 
 - **Next (Round 72):** The Second Shift (40–69) and The Last Mint (60–69) with the two trap types,
   from `docs/planning/round72-second-shift.md` and `round72-last-mint.md`; a lava guard for the
   lake (`water_guard.lua` guards water).
-- **For the user's decision:** the standing defaults (boss drops nothing on the ground, chest
+- **The standing defaults stay** (user, 2026-11-08): boss drops nothing on the ground, chest
   contents lost at the end, one roll, every mob authored, bars stay, sight as a pull, a list
-  holding only who engaged); leaving the party and re-entering is a free wipe.
+  holding only who engaged; leaving the party and re-entering is a free wipe (noted, not closed).
 - **Open-world mobs keep the fall mechanism** fixed for packs: mob hits push along the line
   from the mob's origin to the feet, so two mobs on a player's cell in one step pass the fall
   tolerance. Packs push level since `7e43e00e`
@@ -65,7 +66,7 @@ Delivered in 0.71.0 (**compatible**): the framework and The Stilled Seam
   before the mods load); a high-level player alone takes all eight nodes; no load check that a
   loot row's item is registered (fixture J covers the Seam). Mining share estimated, not measured.
 
-## Round 70 — spawns, Stonewright, castles, start towns, death penalty (GUI test open)
+## Round 70 — spawns, Stonewright, castles, start towns, death penalty (GUI-accepted)
 
 Delivered in 0.70.0 (**map reset**, the thirteenth, no step): the six sources and
 renewal, the Stonewright, castles in six capitals with civic radius 56, six start
@@ -73,7 +74,7 @@ towns, mapgen wayposts, decorative plants, varied growth, the potion belt first,
 the death penalty, Kings at 70, the crown at top + 10, the new level malus
 ([completion](docs/planning/round70-plan.md#completion-2026-11-07)). The desktop/web
 [GUI checklist](docs/planning/round70-plan.md#gui-checklist-desktop-and-web) is
-open. Each note was checked at its place at `c998ea93`. Carry-overs:
+accepted by the user on 2026-11-08. Each note was checked at its place at `c998ea93`. Carry-overs:
 
 - **For the user at the playtest:** Rock Salt 93 / 156 and Stormkelp's production
   seed 163 stay under the plan's counts; non-island `exclude:coast:channel_*`

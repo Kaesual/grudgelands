@@ -7,8 +7,9 @@ texts and the 2D drafts of the new capital cores.
 **Complete on 2026-11-07:** all lanes merged, then this documentation lane D; main
 `c998ea93`: 313 of 313 fixtures, boot PASS, full seed fleet 302 of 304 with both
 failures fixed and those seeds rerun OK. The user's picks: Thread A, Grinder B,
-Furnace A, all stones A, castle form A. **Not pushed; the GUI test is
-[open](#gui-checklist-desktop-and-web)** ([completion](#completion-2026-11-07)).
+Furnace A, all stones A, castle form A. GUI-accepted by the user on 2026-11-08 (the whole
+[checklist](#gui-checklist-desktop-and-web), together with Round 71) and pushed
+([completion](#completion-2026-11-07)).
 Version **0.70.0**, classification **map reset**. §2 is the current ruling; what
 changed from the first plan is under
 [decisions](#decisions-during-the-round). Delivery state:
@@ -607,10 +608,10 @@ templates, TOWNS and the capitals (CAP0 and five lanes) are the map reset; PLANT
 FARMFIX, DEATH and LEVELS are compatible on their own; ART, DESIGN and CASTLE touch
 tools only. **Saved state:** no step and no new mod storage. `grug_pvp:logout_death`
 gains the value `"wear"` (a 0.69.0 mark reads as a free death); generated wayposts
-hold `text` in node meta, part of the map. **Push:** not pushed; origin/main is
-`829be5dd` (0.69.0). **Production** runs 0.65.0; its update to 0.70.0 crosses this
+hold `text` in node meta, part of the map. **Push:** pushed on the user's word on 2026-11-08 with Round 71;
+origin/main is `5a8909a0` (0.71.0). **Production** runs 0.65.0; its update to 0.70.0 crosses this
 one map reset and runs the steps 0.67.0 and 0.69.0. **GUI test:**
-[open](#gui-checklist-desktop-and-web). **Sync:** by the coordinator after the
+[accepted on 2026-11-08](#gui-checklist-desktop-and-web). **Sync:** by the coordinator after the
 merges. [Round 71](round71-plan.md) goes on beside it on branch `round71`.
 
 ### Lanes

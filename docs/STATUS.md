@@ -2,8 +2,8 @@
 
 Updated 2026-11-08. This is the delivery pointer, not another game specification.
 
-**0.71.0 / Round 71 is merged on main on 2026-11-08, not pushed; the GUI test is open,
-together with 0.70.0's.** **Expeditions:** repeatable group content in 100 generic slots beyond
+**0.71.0 / Round 71 is GUI-accepted by the user on 2026-11-08 together with 0.70.0 (the whole
+Round 71 checklist) and pushed (2026-11-08).** **Expeditions:** repeatable group content in 100 generic slots beyond
 the map, the server clearing and writing a box for each run. The framework and the first
 Expedition, **The Stilled Seam** (levels 20–69; ore and gem follow the tier every ten levels,
 Anthracite and Jade at T2 to Abyssal Crystal and Diamond at T6; at most 3 players; optional
@@ -21,14 +21,14 @@ AFTER FIXES, then MERGE; the integration fix and RANGE's fix MERGE. Integration 
 bug the fixtures missed (a pack's hits killing by falls), fixed. 320 fixtures on `a085f838`, 0
 failed; engine on `7e43e00e`: `r71_l20` 141 PASS, `r71_pack` 62 PASS; RANGE's T4 and T6 runs 82
 PASS, 0 FAIL. Modelled run 8.7 minutes at 20–60, 13.5 at 69 with players capped at 60.
-**Open for the user:** the [GUI checklist](planning/round71-plan.md#gui-checklist-desktop-and-web),
-which alone can prove two or more real players, the web client, a real fight at 20 and 29, the
-pack's shove on a still player, the mining share, and PostgreSQL on the Rehearsal; the standing
-defaults, first the boss's ground drops; the chest's coins stay at factor 10 (user)
+**Accepted:** the [GUI checklist](planning/round71-plan.md#gui-checklist-desktop-and-web) on
+2026-11-08; the standing defaults stay (user, 2026-11-08); the chest's coins stay at factor 10
+(user). Round 72 takes the user's notes from the test: smaller, shaped rooms and a way back in
+from any waystone
 ([completion, numbers and decisions](planning/round71-plan.md#completion-2026-11-07);
-[carry-overs](../BACKLOG.md#round-71--expeditions-gui-acceptance-pending)).
+[carry-overs](../BACKLOG.md#round-71--expeditions-gui-accepted)).
 
-**0.70.0 / Round 70 is complete on 2026-11-07; not pushed, GUI test open.** From
+**0.70.0 / Round 70 is GUI-accepted by the user on 2026-11-08 (the whole Round 70 checklist) and pushed (2026-11-08).** From
 player reports and the user's notes: **sources** that really exist (Rock Salt on
 whole beaches, measured 93 / 156 per world on two seeds; Stormkelp up to 10 nodes
 from water with height limit 4, 176 / 163; Frost Melon 89 / 49 on new river hosts;
@@ -54,16 +54,13 @@ the round-end gates caught. Merges from `0a7acf25` to `c998ea93`, then this
 documentation lane D. **313 portable fixtures** (seven new); on main `c998ea93`
 313 of 313, boot PASS; the full seed fleet on `ed771e28` 302 of 304, both failures
 fixed by ENDFIX and those two seeds rerun OK, not repeated under the user's CPU
-rule. **Open for the user:** the
-[GUI checklist](planning/round70-plan.md#gui-checklist-desktop-and-web), first what
-no run has touched: the map reset on a real world, the real king fight in each
-capital, a real right-click on the Stonewright, the audible furnace
+rule. **Accepted:** the
+[GUI checklist](planning/round70-plan.md#gui-checklist-desktop-and-web) on 2026-11-08
 ([completion, numbers and decisions](planning/round70-plan.md#completion-2026-11-07);
-[carry-overs](../BACKLOG.md#round-70--spawns-stonewright-castles-start-towns-death-penalty-gui-test-open)).
+[carry-overs](../BACKLOG.md#round-70--spawns-stonewright-castles-start-towns-death-penalty-gui-accepted)).
 **The joint GUI test of 0.57–0.66 is still pending.** **Production runs 0.65.0;** an
 update to 0.70.0 crosses this one map reset and runs the steps 0.67.0 and 0.69.0.
-origin/main is `829be5dd` (0.69.0); Round 70 is **not pushed**. Round 71 runs beside
-it on branch `round71`.
+origin/main is `5a8909a0` (0.71.0, with 0.70.0), pushed on the user's word on 2026-11-08.
 
 **0.69.0 / Round 69 is GUI-accepted by the user on 2026-11-04 (the whole Round 69 checklist) and pushed (2026-11-04).** From
 player reports and the user's notes: a **Trash box** in the Inventory tab

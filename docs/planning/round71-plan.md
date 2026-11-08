@@ -4,6 +4,9 @@ Planned with the user on 2026-11-07. **Started** on the user's go, 2026-11-07, o
 branch `round71`. Routing (user, 2026-11-07): Opus 5.5 coordinates, implements and
 reviews in its own context; GPT-6 Astra writes the storyline and quest text and
 draws the art proposals. Version **0.71.0**, classification decided at its merge; no map reset is planned.
+**Complete:** merged to main as 0.71.0 (compatible) on 2026-11-08, GUI-accepted by the user on
+2026-11-08 (the whole [checklist](#gui-checklist-desktop-and-web), together with Round 70) and
+pushed ([completion](#completion-2026-11-07)).
 
 ## Why
 
@@ -285,7 +288,8 @@ merge base; measured by lane D). Saved state: new player meta `grug_expeditions:
 `boss:expedition:<id>`; quest state of `capital_stilled_seam`. None is map-bound, so no
 reset clear. Box contents are wiped by each preparation; slots add disk (Numbers).
 
-**Push:** not pushed. **GUI test:** [open](#gui-checklist-desktop-and-web). **Sync:** none
+**Push:** pushed on the user's word on 2026-11-08; origin/main is `5a8909a0` (0.71.0). **GUI
+test:** [accepted on 2026-11-08](#gui-checklist-desktop-and-web). **Sync:** none
 from `round71` unless the user asks. STATUS, BACKLOG, CHANGELOG, README, ROADMAP, the AGENTS
 pointer, `game.conf` and the upgrade declaration wait for the merge to main (§7); their
 texts are ready in the coordinator's `r71/merge-notes.md`, the README's design tour line
