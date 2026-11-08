@@ -976,7 +976,16 @@ tools](#player-meta-read-by-external-tools).
     press only). Bladecraft's is the Loose shot (`scout.lua`
     `bladecraft_shot`, never registered: Loose's interval through
     `cooldown_key = "loose"`, `occupied_swing = "weapon"`, its id
-    Bladecraft's for the unlock check).
+    Bladecraft's for the unlock check). **`shot_slot`** (Round 72,
+    Bladecraft's alone, `"weapon"`): the slot the skill shows after its
+    last real attack was a shot. `grug_abilities.show_last_attack(player,
+    shot)` is called by the shot when it flew and by Bladecraft's swing
+    callback; it records the state in `grug_visuals.show_shot` (memory
+    only, cleared on leave), re-skins the skill's stacks on both hotbar
+    layouts (the held one through `set_wielded_item(stack, true)`, no
+    re-raise) and calls `grug_visuals.apply`. The skin pass and
+    `shown_item` ask `grug_visuals.hand_slot`; `slot`, damage and both
+    clocks stay the Melee blade's. Fixture `tools/r72_bladecraft`.
   - **Readiness windows** (B8, `grug_classes/talent_windows.lua`): keyed
     by any string id. `grug_classes.open_window(player, id, {duration,
     icd, value, label})` returns true when it opened (false while its ICD
