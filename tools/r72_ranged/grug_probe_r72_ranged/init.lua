@@ -12,7 +12,8 @@
 -- definition's arrow_override, wrapped: locked or refused), when the king
 -- first saw the dummy, how far he moved, the ranged/melee phase, and the
 -- navigation's events for him; at the end the navigation's server-wide
--- counts (searches, found, the largest search in us). Every line carries
+-- counts (searches, found, the largest search in us); per lane the hits on
+-- the dummy (arrows apart from swings) and the damage. Every line carries
 -- "[r72ranged]"; the last one is "RESULT DONE".
 
 local MOD = core.get_current_modname()
@@ -35,11 +36,17 @@ local PITCH = 24
 
 local function lane_z(i) return (i - 1) * PITCH end
 
--- The dummy (a player's collision box), standing still under gravity.
+-- Which lane a dummy belongs to (by object).
+local by_dummy = {}
+local DUMMY_HP = 60000
+
+-- The dummy (a player's collision box), standing still under gravity. It
+-- takes damage (fleshy 100) and logs every punch: an arrow's (the arrow
+-- entity punches) or the king's own swing.
 core.register_entity(MOD .. ":dummy", {
 	initial_properties = {
 		physical = true, collide_with_objects = false, static_save = false,
-		hp_max = 1000, visual = "cube",
+		hp_max = DUMMY_HP, visual = "cube",
 		textures = {"default_stone.png", "default_stone.png", "default_stone.png",
 			"default_stone.png", "default_stone.png", "default_stone.png"},
 		visual_size = {x = 0.6, y = 1.77},
@@ -51,9 +58,20 @@ core.register_entity(MOD .. ":dummy", {
 	health = 1000,
 	on_activate = function(self)
 		self.object:set_acceleration({x = 0, y = -9.81, z = 0})
-		self.object:set_armor_groups({fleshy = 0, immortal = 1})
+		self.object:set_armor_groups({fleshy = 100})
+		self.object:set_hp(DUMMY_HP)
 	end,
-	on_punch = function() return true end,
+	on_punch = function(self, puncher, _, _, _, damage)
+		local lane = by_dummy[self.object]
+		if not lane then return end
+		local ent = puncher and puncher:get_luaentity()
+		local name = ent and ent.name or "?"
+		local key = (name == "grug_mobs:arrow_entity" or name == "grug_mobs:rock_entity")
+			and "arrow" or "other"
+		lane[key .. "_hits"] = lane[key .. "_hits"] + 1
+		lane[key .. "_damage"] = lane[key .. "_damage"] + (damage or 0)
+		if key == "arrow" and not lane.first_hit then lane.first_hit = lane.t end
+	end,
 })
 
 -- Which lane a king belongs to (by object).
@@ -116,11 +134,16 @@ local function report(lane)
 	local ev = {}
 	for kind, n in pairs(lane.events) do ev[#ev + 1] = kind .. "=" .. n end
 	table.sort(ev)
+	local hp = lane.dummy:get_hp() or 0
 	log(("LANE %s shots=%d refused=%d first_sight=%s first_shot=%s moved=%.1f "
 		.. "end_dist=%.1f melee_samples=%d gave_up=%s events={%s}"):format(lane.name,
 		lane.shots, lane.refused, tostring(lane.first_sight), tostring(lane.first_shot),
 		lane.moved, lane.end_dist or -1, lane.melee, tostring(lane.gave_up),
 		table.concat(ev, ",")))
+	log(("HITS %s arrow_hits=%d arrow_damage=%d first_hit=%s other_hits=%d "
+		.. "other_damage=%d hp_lost=%d"):format(lane.name, lane.arrow_hits,
+		lane.arrow_damage, tostring(lane.first_hit), lane.other_hits, lane.other_damage,
+		DUMMY_HP - hp))
 end
 
 local function start()
@@ -137,8 +160,10 @@ local function start()
 			return core.request_shutdown("r72ranged fail", false, 0)
 		end
 		local lane = {name = spec.name, obj = obj, dummy = dummy, shots = 0, refused = 0,
-			moved = 0, melee = 0, events = {}, t = 0}
+			moved = 0, melee = 0, events = {}, t = 0,
+			arrow_hits = 0, arrow_damage = 0, other_hits = 0, other_damage = 0}
 		by_object[obj] = lane
+		by_dummy[dummy] = lane
 		live[#live + 1] = lane
 	end
 	-- One second for activation (level, stats), then the attack.

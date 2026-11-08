@@ -1,11 +1,26 @@
-# Round 72 RANGED probe run (2026-11-08)
-# `probe.txt`: one boot of `run.sh` on the lane's branch (commit 18380df1), the
-# Elf King against a standing dummy, 14 s per lane. Every ordinary shot shows as
-# `refused`: the dummy had no `health` field, which the arrows' lock
-# (`grug_core/homing.lua` `identity`) refuses for any entity; the shots were
-# fired with sight inside the shot range (a player passes that lock). The probe
-# now gives the dummy health; it was not run again. Movement, sight, the melee
-# phase and the navigation's searches are the real engine's.
+# Round 72 RANGED probe runs (2026-11-08), the Elf King against a standing
+# dummy, 14 s per lane, each one boot of `run.sh` through the queue.
+#
+# Run 2 (commit after 8ed9877c: the dummy has `health` for the arrows' lock
+# and takes damage, fleshy 100, logging every punch). Each lane: 3 ordinary
+# shots locked, 0 refused; 4 arrow hits of 128 (the 3 shots and the Volley's
+# homing middle arrow), damage applied (hp_lost). `other` hits in open and
+# cover are the king's melee swings after his 3 s melee phase closed in.
+ACTION[Server]: [r72ranged] arena built
+ACTION[Server]: [r72ranged] LANE open shots=3 refused=0 first_sight=0.25 first_shot=2.75 moved=13.3 end_dist=1.7 melee_samples=12 gave_up=nil events={}
+ACTION[Server]: [r72ranged] HITS open arrow_hits=4 arrow_damage=512 first_hit=3.5 other_hits=3 other_damage=384 hp_lost=896
+ACTION[Server]: [r72ranged] LANE cover shots=3 refused=0 first_sight=3.25 first_shot=3.25 moved=17.4 end_dist=1.4 melee_samples=12 gave_up=nil events={found=2,leave_stuck=1,stuck=1}
+ACTION[Server]: [r72ranged] HITS cover arrow_hits=4 arrow_damage=512 first_hit=3.75 other_hits=3 other_damage=384 hp_lost=896
+ACTION[Server]: [r72ranged] LANE ledge shots=3 refused=0 first_sight=0.25 first_shot=2.75 moved=9.0 end_dist=5.1 melee_samples=12 gave_up=nil events={no_path=2,stuck=1}
+ACTION[Server]: [r72ranged] HITS ledge arrow_hits=4 arrow_damage=512 first_hit=3.25 other_hits=0 other_damage=0 hp_lost=512
+ACTION[Server]: [r72ranged] LANE far shots=3 refused=0 first_sight=0.25 first_shot=5.25 moved=25.4 end_dist=4.6 melee_samples=12 gave_up=nil events={}
+ACTION[Server]: [r72ranged] HITS far arrow_hits=4 arrow_damage=512 first_hit=5.75 other_hits=0 other_damage=0 hp_lost=512
+ACTION[Server]: [r72ranged] NAV searches=4 found=2 cap_waits=0 largest_us=380
+ACTION[Server]: [r72ranged] RESULT DONE
+#
+# Run 1 (commit 18380df1): the dummy had no `health` field, so the arrows'
+# lock (grug_core/homing.lua `identity`) refused every shot ("refused=3");
+# movement, sight, the melee phase and the searches are as in run 2.
 ACTION[Server]: [r72ranged] arena built
 ACTION[Server]: [r72ranged] LANE open shots=0 refused=3 first_sight=0.25 first_shot=nil moved=13.3 end_dist=1.7 melee_samples=12 gave_up=nil events={}
 ACTION[Server]: [r72ranged] LANE cover shots=0 refused=3 first_sight=3.25 first_shot=nil moved=17.4 end_dist=1.4 melee_samples=12 gave_up=nil events={found=2,leave_stuck=1,stuck=1}
