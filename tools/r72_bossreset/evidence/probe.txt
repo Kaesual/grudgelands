@@ -1,0 +1,19 @@
+ACTION[Server]: [r72bossreset] seats 8
+ACTION[Server]: [r72bossreset] king body: width 0.96, head 2, step 1, jump 1, drop 4
+ACTION[Emerge-0]: [r72bossreset] emerged general pvp_fortress_accord in 6.0 s
+ACTION[Server]: [r72bossreset] SEAT general pvp_fortress_accord at 305,87,-544: ok 1314 cells, 4 steps of 400, first fill 2793 us (load 41 us), largest step 690 us; floor test on 0.01 us, off 0.89 us
+ACTION[Emerge-0]: [r72bossreset] emerged general pvp_fortress_throng in 1.4 s
+ACTION[Server]: [r72bossreset] SEAT general pvp_fortress_throng at -449,88,640: ok 1314 cells, 4 steps of 400, first fill 2301 us (load 37 us), largest step 714 us; floor test on 0.00 us, off 0.94 us
+ACTION[Emerge-0]: [r72bossreset] emerged king dur_brannoc in 2.4 s
+ACTION[Server]: [r72bossreset] SEAT king dur_brannoc at -1800,76,-1463: ok 1084 cells, 3 steps of 400, first fill 1743 us (load 46 us), largest step 665 us; floor test on 0.00 us, off 0.88 us
+ACTION[Emerge-0]: [r72bossreset] emerged king gor_drazhak in 2.6 s
+ACTION[Server]: [r72bossreset] SEAT king gor_drazhak at 0,66,1537: ok 1080 cells, 3 steps of 400, first fill 1650 us (load 32 us), largest step 694 us; floor test on 0.00 us, off 0.85 us
+ACTION[Emerge-0]: [r72bossreset] emerged king highcourt in 2.3 s
+ACTION[Server]: [r72bossreset] SEAT king highcourt at 0,46,-1463: ok 1084 cells, 3 steps of 400, first fill 1676 us (load 43 us), largest step 584 us; floor test on 0.00 us, off 0.88 us
+ACTION[Emerge-0]: [r72bossreset] emerged king kezamba in 2.4 s
+ACTION[Server]: [r72bossreset] SEAT king kezamba at 1827,42,1455: ok 1073 cells, 3 steps of 400, first fill 1631 us (load 40 us), largest step 585 us; floor test on 0.00 us, off 0.83 us
+ACTION[Emerge-0]: [r72bossreset] emerged king lethariel in 3.2 s
+ACTION[Server]: [r72bossreset] SEAT king lethariel at 1755,61,-1529: ok 1078 cells, 3 steps of 400, first fill 1554 us (load 43 us), largest step 679 us; floor test on 0.00 us, off 0.81 us
+ACTION[Emerge-0]: [r72bossreset] emerged king nhal_veyr in 2.0 s
+ACTION[Server]: [r72bossreset] SEAT king nhal_veyr at -1800,51,1537: ok 1084 cells, 3 steps of 400, first fill 1651 us (load 37 us), largest step 687 us; floor test on 0.00 us, off 0.87 us
+ACTION[Server]: [r72bossreset] RESULT DONE
