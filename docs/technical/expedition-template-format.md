@@ -13,7 +13,7 @@ never in a preparation. Slots, box and step size: `grug_expeditions/catalogue.lu
 | The tool | `tools/expedition_templates/build.py` (`--check`: every file matches its source) |
 
 A source has `build()` returning a `Template` (`tools/expedition_templates/template.py`): `box`, `set`, `dig`, `place`,
-`encounter`. The tool refuses a template without the required places, a waystone place holding no waystone, an arrival
+`encounter`, `trap_floor`, `trap_wall`. The tool refuses a template without the required places, a waystone place holding no waystone, an arrival
 without floor or head room, an unknown node, an open or diggable cell on the template's outer shell, or a `dig` node
 that is not solid.
 
@@ -31,6 +31,8 @@ dig default:stone_with_tin
 place arrival 8 5 8
 place start_waystone 8 5 6
 encounter hall grug_mobs:giant_spider 2 normal 30 5 12
+trap f1 1 floor 8 5 30
+trap w1 1 wall 3.6 5.5 34 +x 4 0
 data 342
 <342 bytes>
 ```
@@ -50,6 +52,17 @@ data 342
   `room` spawn together. `tier` is `normal`, `elite` or `boss`: at most one `boss`, count 1, an elite with the run's
   ledger (its HP from its definition's `_grug_hp_scale`, never the flat `boss` tier). An unknown mob or tier stops the
   server at load.
+- `trap <group> <pick> floor x y z` and `trap <group> <pick> wall x y z <axis> <period> <offset>` (Round 72): one
+  trap candidate ([rules](../design/expeditions.md#traps), `grug_expeditions/traps.lua`). A run arms `pick` of each
+  group's lines, at random when it is ready. A floor line names the cell a player stands in over the trap: air (its mark
+  goes there, so no torch, plant or carpet), on a walkable floor. A wall line names the muzzle point in node coordinates, whole numbers being node centres and
+  decimals allowed (`43 8.5 15.6`: just inside the open cell in front of the wall); `axis` is `+x`, `-x`, `+z` or
+  `-z`, the fireball's direction; the first shot comes `offset` seconds after readiness, then one every `period`
+  seconds. A group's lines agree on kind, pick, period and offset, and pick at most as many as they are. The source
+  calls `t.trap_floor(group, pick, x, y, z)` and `t.trap_wall(group, pick, x, y, z, axis, period, offset)`; the
+  tool refuses a floor cell that is not air on a floor, and a muzzle where a cell the ball touches (radius 0.4, so
+  a point at y 8.5 reaches the rows 8 and 9) is walkable at the muzzle or one cell ahead. In flight, every walkable
+  node the ball touches stops it.
 - The reward room's nodes are in the template: `grug_expeditions:reward_door` fills the opening, every such node within
   8 cells of the `door` place goes when the boss dies; `grug_expeditions:reward_chest` stands on the `chest` place. An
   Expedition's chest contents live in `grug_expeditions/loot.lua`, by catalogue id.

@@ -190,6 +190,30 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
   included; the chest pays. There is no other lockout timer: the run's length is the
   limiter ([world.md](world.md) R4). Credit counts per Expedition, at any of its levels.
 
+### Traps
+
+Two trap types, the same in every Expedition (user, 2026-11-07, [Round 72](../planning/round72-plan.md)
+§2.9; built in Round 72, `grug_expeditions/traps.lua`). The numbers are the plans' proposals, tuned in the user's
+test.
+
+- **Spots:** the template names the candidates in groups, and each run arms a set number of each group's candidates
+  (say 2 of 4), drawn at random once per creation. The choice and the marks of fired traps last the run: a wipe
+  changes neither. An unchosen candidate is ordinary floor or wall.
+- **Players only:** traps never notice or hurt a mob, and a fireball flies through mobs. They are silent and never
+  damage the terrain or push anyone.
+- **Damage:** 45 % of the run level's neutral HP pool (that of level 60 above 60) per hit, through dodge, armor and
+  absorbs like a mob's hit. A trap's hit marks the player in combat.
+- **Floor trap:** invisible until it first fires. A player whose feet come within 0.6 of its spot on the floor starts
+  it (a jump over it does not): a muted red ring of radius 2 for 1.5 s, then the hit to every player within 2 nodes of
+  it and in sight of it. It rearms 10 s after the hit; standing on it then starts it again. From its first hit a red
+  mark shows its spot for the rest of the run.
+- **Wall trap:** a fireball on a fixed period (6 or 8 s in the plans), always, from its group's offset after the
+  Expedition is ready, along a fixed direction at 8 nodes a second; no targeting. Stone stops it. A player in its way
+  bursts it: the same hit to every player within 2 nodes. A shot with nobody of the run within 32 nodes of its line is
+  left out, the rhythm kept.
+- **A boss's marked spot** (The Second Shift's Auditor Nemm): the floor trap's ring and hit on one position, once;
+  his reset or death takes the hit back.
+
 ## 9. Tank and healer
 
 **Every Expedition needs a tank and a healer.** The Warrior need not be skilled defensively

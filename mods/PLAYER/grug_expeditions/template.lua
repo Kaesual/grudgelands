@@ -9,6 +9,8 @@
 --   dig default:stone_with_tin        a palette node players may dig in a run
 --   place arrival 8 5 8               a named cell, box-relative
 --   encounter hall grug_mobs:spider 2 normal 30 5 30    room, mob, count, tier, cell
+--   trap f1 2 floor 27 8 20           group, pick, a floor trap's cell (traps.lua)
+--   trap w1 1 wall 43 8.5 15.6 +z 8 0 group, pick, a muzzle point, axis, period, offset
 --   data 1234                         the bytes of the zlib stream after this line
 --
 -- The stream holds sx * sy * sz palette bytes in VoxelManip order
@@ -17,13 +19,68 @@ local M = {}
 M.EXTENSION = ".exp"
 local MAGIC = "grudgelands-expedition-template 1"
 
+-- The four directions a wall trap shoots along.
+M.AXES = {["+x"] = {x = 1, y = 0, z = 0}, ["-x"] = {x = -1, y = 0, z = 0},
+	["+z"] = {x = 0, y = 0, z = 1}, ["-z"] = {x = 0, y = 0, z = -1}}
+
+-- One trap candidate (Round 72), the text after `trap`, or nil when malformed:
+--   <group> <pick> floor <x> <y> <z>        the cell a player stands in over it
+--   <group> <pick> wall <x> <y> <z> <axis> <period> <offset>
+-- A wall's point is its muzzle in node coordinates (whole numbers are node
+-- centres), decimals allowed; axis +x, -x, +z or -z; period and offset in seconds,
+-- the first shot `offset` after readiness. A run arms `pick` of its group's lines.
+function M.parse_trap(rest)
+	local group, pick, kind, tail = rest:match("^(%S+) (%d+) (%S+) (.*)$")
+	if not group or tonumber(pick) < 1 then return nil end
+	local row = {group = group, pick = tonumber(pick), kind = kind}
+	if kind == "floor" then
+		local x, y, z = tail:match("^(%d+) (%d+) (%d+)$")
+		if not x then return nil end
+		row.pos = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}
+		return row
+	elseif kind == "wall" then
+		local num = "(%d+%.?%d*)"
+		local x, y, z, axis, period, offset = tail:match("^" .. num .. " " .. num .. " " .. num ..
+			" ([%+%-][xz]) " .. num .. " " .. num .. "$")
+		if not x or tonumber(period) <= 0 then return nil end
+		row.pos = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}
+		row.axis, row.period, row.offset = axis, tonumber(period), tonumber(offset)
+		return row
+	end
+	return nil
+end
+
+-- A group's lines agree on kind, pick, period and offset, and pick at most as many
+-- as they are: the first problem, else nil.
+function M.trap_groups_problem(traps)
+	local groups = {}
+	for _, row in ipairs(traps) do
+		local group = groups[row.group]
+		if not group then
+			groups[row.group] = {first = row, count = 1}
+		else
+			local first = group.first
+			if first.kind ~= row.kind or first.pick ~= row.pick or first.period ~= row.period or
+					first.offset ~= row.offset then
+				return "trap group " .. row.group .. " disagrees with itself"
+			end
+			group.count = group.count + 1
+		end
+	end
+	for name, group in pairs(groups) do
+		if group.first.pick > group.count then
+			return "trap group " .. name .. " picks more than it has"
+		end
+	end
+end
+
 -- `decompress(bytes)` is core.decompress in the game. `source` names the file in
 -- errors: a malformed template stops the server at load, never in a preparation.
 function M.parse(text, decompress, source)
 	local function fail(reason)
 		error("[grug_expeditions] template " .. source .. ": " .. reason, 0)
 	end
-	local tpl = {nodes = {}, dig = {}, places = {}, encounters = {}}
+	local tpl = {nodes = {}, dig = {}, places = {}, encounters = {}, traps = {}}
 	local at, number, stream = 1, 0, nil
 	while not stream do
 		local stop = text:find("\n", at, true)
@@ -57,6 +114,10 @@ function M.parse(text, decompress, source)
 			tpl.encounters[#tpl.encounters + 1] = {room = room, mob = mob,
 				count = tonumber(count), tier = tier,
 				pos = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}}
+		elseif word == "trap" then
+			local row = M.parse_trap(rest)
+			if not row then bad() end
+			tpl.traps[#tpl.traps + 1] = row
 		elseif word == "data" then
 			local bytes = tonumber(rest)
 			if not bytes then bad() end
@@ -68,6 +129,8 @@ function M.parse(text, decompress, source)
 	end
 	if not tpl.size then fail("no size") end
 	if #tpl.nodes == 0 then fail("no palette") end
+	local trap_problem = M.trap_groups_problem(tpl.traps)
+	if trap_problem then fail(trap_problem) end
 	local palette = {}
 	for _, name in ipairs(tpl.nodes) do palette[name] = true end
 	for name in pairs(tpl.dig) do
@@ -101,6 +164,11 @@ function M.check_fits(tpl, box, required, source)
 	end
 	for _, row in ipairs(tpl.encounters) do
 		if not inside(row.pos) then fail("encounter " .. row.room .. " lies outside") end
+	end
+	for _, row in ipairs(tpl.traps or {}) do
+		local cell = {x = math.floor(row.pos.x + 0.5), y = math.floor(row.pos.y + 0.5),
+			z = math.floor(row.pos.z + 0.5)}
+		if not inside(cell) then fail("trap group " .. row.group .. " lies outside") end
 	end
 	for _, name in ipairs(required) do
 		if not tpl.places[name] then fail("place " .. name .. " is missing") end
