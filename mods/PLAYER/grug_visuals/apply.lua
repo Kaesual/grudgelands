@@ -482,11 +482,15 @@ function grug_visuals.show_shot(player, shot)
 	return true
 end
 
--- The hand slot a skill item shows: `shot_slot` after a shot (above), else
--- `slot`.
+-- The hand slot a skill item shows: `shot_slot` after a shot (above) while
+-- that slot holds an item, else `slot`. A bow taken off shows the blade, and
+-- one put back on before the next attack shows again (the flag stays).
 function grug_visuals.hand_slot(player, slot, shot_slot)
 	if shot_slot and shot_shown[player:get_player_name()] then
-		return shot_slot
+		local stack = grug_inventory.get_cosmetic_hand(player, shot_slot)
+		if stack and not stack:is_empty() then
+			return shot_slot
+		end
 	end
 	return slot
 end

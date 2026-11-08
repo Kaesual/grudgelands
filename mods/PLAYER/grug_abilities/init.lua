@@ -2269,7 +2269,10 @@ local function sync_skins(player, hand_list)
 			local def = item_defs[stack:get_name()]
 			if def then
 				local changed = false
-				if hand_list == nil or list_of[shown_slot(player, def)] == hand_list then
+				-- A skill with a shot slot reads either hand: the shot slot's
+				-- change may move what it shows back to its own slot.
+				if hand_list == nil or list_of[def.slot] == hand_list or
+						(def.shot_slot and list_of[def.shot_slot] == hand_list) then
 					changed = apply_skin(stack, def, source_of(def))
 				end
 				if clock and def.slot ~= "offhand" and

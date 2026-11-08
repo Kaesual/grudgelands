@@ -241,8 +241,9 @@ read off the hotbar, in three cases:
    as the held fallback of a bow skill, keeps showing its own slot). The
    shown weapon stays until Bladecraft's next real attack, with no timeout
    and across hotbar switches; it is not stored, so after a relog Bladecraft
-   shows the blade. A switch changes the first-person hand, the third-person
-   hand and the back card at once;
+   shows the blade. With the Ranged slot empty it shows the blade, and a bow
+   put back on before the next attack shows again. A switch changes the
+   first-person hand, the third-person hand and the back card at once;
 2. **any other item** in hand shows that item — a pickaxe is a pickaxe, a torch
    is a torch;
 3. an **empty hand** shows nothing.

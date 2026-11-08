@@ -642,6 +642,12 @@ do
 	poll()
 	eq(held_by(scout), bow:get_name(), "S back to Bladecraft: still the bow")
 	eq(list_of(scout)[6], sword_image, "S ... the blade on the back")
+	-- The bow taken off: the blade in the hand (an empty card on the back),
+	-- put back on: the bow again.
+	equip(scout, "grug_weapon", ItemStack(""))
+	eq(held_by(scout), sword:get_name(), "S the bow taken off: the blade in the hand")
+	equip(scout, "grug_weapon", bow)
+	eq(held_by(scout), bow:get_name(), "S the bow put back on: the bow again")
 	check(V.show_shot(scout, false), "S a swing at a foe: the state changes")
 	V.apply(scout)
 	eq(held_by(scout), sword:get_name(), "S ... the blade in the hand at once")

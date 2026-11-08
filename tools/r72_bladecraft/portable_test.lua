@@ -24,7 +24,8 @@
 --   L7 the state outlives hotbar switches and has no timeout, but not a
 --      relog: after the leave hook the skin pass shows the blade;
 --   L8 the bow changed while the bow shows: the equipment hook re-skins
---      Bladecraft from the Ranged slot (sync_skins follows the shown slot).
+--      Bladecraft from the Ranged slot; the bow taken off shows the blade,
+--      put back on the bow again (sync_skins reads both hands).
 -- Prints "R72 BLADECRAFT PORTABLE PASS checks=<n>" or the failures (exit 1).
 
 local ROOT = arg and arg[1] or "."
@@ -402,7 +403,8 @@ local visuals = {applies = 0}
 function visuals.apply() visuals.applies = visuals.applies + 1 end
 visuals.play_pose = function() end
 setfenv(assert(loadstring((state_src or "") .. "\n" .. (leave_src or ""), "=apply.lua state")),
-	setmetatable({grug_visuals = visuals, core = fake_core}, {__index = _G}))()
+	setmetatable({grug_visuals = visuals, core = fake_core, grug_inventory = fake_inventory},
+		{__index = _G}))()
 
 local env = setmetatable({
 	core = fake_core, ItemStack = ItemStack, vector = vector,
@@ -700,6 +702,16 @@ do
 	reset_writes()
 	fire("equipment", p, "grug_offhand")
 	eq(wield_image(p, "main", 1), "grug_gear_bow_ash.png", "L8 a Melee slot change leaves the bow shown")
+	-- The bow taken off: the blade, not a bare hand; put back on before the
+	-- next attack: the bow again (the flag stays).
+	local ash = p.bow
+	p.bow = nil
+	fire("equipment", p, "grug_weapon")
+	eq(wield_image(p, "main", 1), SWORD_IMG, "L8 the bow taken off: the blade shows")
+	eq(wield_image(p, "grug_hotbar_store", 3), SWORD_IMG, "L8 ... on both layouts")
+	p.bow = ash
+	fire("equipment", p, "grug_weapon")
+	eq(wield_image(p, "main", 1), "grug_gear_bow_ash.png", "L8 the bow put back on: the bow again")
 end
 
 if failures > 0 then
