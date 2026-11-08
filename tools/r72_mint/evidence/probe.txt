@@ -1,0 +1,237 @@
+ACTION[Server]: [r72mint] character complete at (0,37,-2550)
+ACTION[Server]: [r72mint] PASS the dialog offers The Last Mint
+ACTION[Server]: [r72mint] PASS the leader gives the quest
+ACTION[Server]: [r72mint] ready after 18.8 s, level 60, max players 4
+ACTION[Server]: [r72mint] PASS ready at 60
+ACTION[Server]: [r72mint] PASS the door stands
+ACTION[Server]: [r72mint] T6 places: 5 Abyssal Crystal, 3 Diamond
+ACTION[Server]: [r72mint] PASS five Abyssal Crystal and three Diamond
+ACTION[Server]: [r72mint] PASS the lake's lava as written: 4128
+ACTION[Server]: [r72mint] PASS no mob before anyone enters
+ACTION[Server]: [r72mint] PASS enter starts
+ACTION[Server]: [r72mint] PASS inside the box
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan elite HP 8088
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:land_guard at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:land_guard elite HP 8088
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 2696
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] trap f1 at (8164,-80,-1521): 1 hit(s)
+ACTION[Server]: [r72mint] PASS a floor trap hits the character
+ACTION[Server]: [r72mint] PASS its mark
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] BURST lake_60
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 1 -1
+ACTION[Server]: [r72mint] JUMP from top 1 across: at z 72.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 1 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 2 -1
+ACTION[Server]: [r72mint] JUMP from top 2 across: at z 66.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 2 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 3 -1
+ACTION[Server]: [r72mint] JUMP from top 3 across: at z 60.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 3 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 4 -1
+ACTION[Server]: [r72mint] JUMP from top 4 across: at z 54.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 4 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 5 -1
+ACTION[Server]: [r72mint] JUMP from top 5 across: at z 48.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 5 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 6 -1
+ACTION[Server]: [r72mint] JUMP from top 6 across: at z 42.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 6 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 7 1
+ACTION[Server]: [r72mint] JUMP from top 7 back: at z 46.90 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 7 back
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 6 1
+ACTION[Server]: [r72mint] JUMP from top 6 back: at z 52.90 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 6 back
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 5 1
+ACTION[Server]: [r72mint] JUMP from top 5 back: at z 58.90 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 5 back
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 4 1
+ACTION[Server]: [r72mint] JUMP from top 4 back: at z 64.91 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 4 back
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 3 1
+ACTION[Server]: [r72mint] JUMP from top 3 back: at z 70.90 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 3 back
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 2 1
+ACTION[Server]: [r72mint] JUMP from top 2 back: at z 76.90 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 2 back
+ACTION[Server]: [r72mint] jumps at 60: 6 of 6 across, 6 of 6 back
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] CHAT Cannot return home from the lava.
+ACTION[Server]: [r72mint] PASS Return Home is refused in the lava
+ACTION[Server]: [r72mint] PASS with its line: Cannot return home from the lava.
+ACTION[Server]: [r72mint] DIED node_damage at (8164.50,-108.67,-1556.00)
+ACTION[Server]: [r72mint] the lava: hp_max 3235, 5 ticks to death, 0 other hits
+ACTION[Server]: [r72mint] PASS about five ticks kill a full pool
+ACTION[Server]: [r72mint] PASS respawned at the start waystone
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 2696
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden boss HP 113232
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan elite HP 8088
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden boss HP 113232
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden at level 60
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden boss HP 113232
+ACTION[Server]: [r72mint] rooms at level 60: 16 normal, 3 elite; tags Elite Bedrock Sentinel [Lv 60] 8.0k/8.0k | Elite Lava Seep [Lv 60] 8.0k/8.0k | Ember Wisp [Lv 60] 2.6k/2.6k | Lava Seep [Lv 60] 2.6k/2.6k
+ACTION[Server]: [r72mint] PASS the template's counts
+ACTION[Server]: [r72mint] PASS sealed before the kill
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] BURST hall_60
+ACTION[Server]: [r72mint] PASS Duewarden's room is the hall's envelope
+ACTION[Server]: [r72mint] boss grug_mobs:duewarden: tier elite level 60 HP 113232/113232 id expedition:last_mint:1 tag "Elite Duewarden [Lv 60] 113k/113k"
+ACTION[Server]: [r72mint] PASS Duewarden is dead
+ACTION[Server]: [r72mint] PASS one credit, the stable id
+ACTION[Server]: [r72mint] PASS the door opened
+ACTION[Server]: [r72mint] quest status after the kill: ready
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS a list of the player's own
+ACTION[Server]: [r72mint] PASS the gear's item level: 60
+ACTION[Server]: [r72mint] a Bag of Coins of 4480c
+ACTION[Server]: [r72mint] chest at 60: 1 gear, 1 bag, Stone Core 5, Slime Gel 2
+ACTION[Server]: [r72mint] PASS the chest pays
+ACTION[Server]: [r72mint] PASS the store's Diamond
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS a Diamond dug by the ordinary path
+ACTION[Server]: [r72mint] PASS the quest is turned in
+ACTION[Server]: [r72mint] CHAT Waypoint discovered: Highcourt
+ACTION[Server]: [r72mint] ready after 19.4 s, level 69, max players 4
+ACTION[Server]: [r72mint] PASS ready at 69
+ACTION[Server]: [r72mint] PASS enter starts
+ACTION[Server]: [r72mint] PASS inside the box
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan elite HP 10522
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:land_guard at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:land_guard elite HP 10522
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 1 -1
+ACTION[Server]: [r72mint] JUMP from top 1 across: at z 72.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 1 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 2 -1
+ACTION[Server]: [r72mint] JUMP from top 2 across: at z 66.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 2 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 3 -1
+ACTION[Server]: [r72mint] JUMP from top 3 across: at z 60.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 3 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 4 -1
+ACTION[Server]: [r72mint] JUMP from top 4 across: at z 54.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 4 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 5 -1
+ACTION[Server]: [r72mint] JUMP from top 5 across: at z 48.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 5 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] KEYS jump 6 -1
+ACTION[Server]: [r72mint] JUMP from top 6 across: at z 42.10 y 31.50, on the next top
+ACTION[Server]: [r72mint] PASS the jump from top 6 across
+ACTION[Server]: [r72mint] jumps at 69: 6 of 6 across
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan elite HP 10522
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:lava_flan normal HP 3507
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden boss HP 147308
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:ember_wisp normal HP 3507
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden boss HP 147308
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden at level 69
+ACTION[Server]: [r72mint] PASS grug_mobs:duewarden boss HP 147308
+ACTION[Server]: [r72mint] rooms at level 69: 16 normal, 3 elite; tags Elite Bedrock Sentinel [Lv 69] 11k/11k | Elite Lava Seep [Lv 69] 11k/11k | Ember Wisp [Lv 69] 3.5k/3.5k | Lava Seep [Lv 69] 3.5k/3.5k
+ACTION[Server]: [r72mint] PASS the template's counts
+ACTION[Server]: [r72mint] PASS Duewarden's room is the hall's envelope
+ACTION[Server]: [r72mint] boss grug_mobs:duewarden: tier elite level 69 HP 147308/147308 id expedition:last_mint:2 tag "Elite Duewarden [Lv 69] 147k/147k"
+ACTION[Server]: [r72mint] PASS Duewarden is dead
+ACTION[Server]: [r72mint] PASS the second credit
+ACTION[Server]: [r72mint] PASS the character lives
+ACTION[Server]: [r72mint] PASS a list of the player's own
+ACTION[Server]: [r72mint] PASS the gear's item level: 69
+ACTION[Server]: [r72mint] a Bag of Coins of 3500c
+ACTION[Server]: [r72mint] chest at 69: 1 gear, 1 bag, Stone Core 4, Slime Gel 2
+ACTION[Server]: [r72mint] PASS the chest pays
+ACTION[Server]: [r72mint] shutdown
