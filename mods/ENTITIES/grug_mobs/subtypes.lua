@@ -563,6 +563,9 @@ local function register_subtype(i, row)
 	end
 	if sub.leader then
 		def._grug_hp_scale = grug_mobs.LEADER.hp
+		-- A leader resets at once when it cannot reach its target (Round 72
+		-- GUARDNAV, aggro.lua grug_mobs.reach_reset).
+		def._grug_reach_reset = true
 	end
 	if sub.levels[2] <= START_BAND_MAX then
 		def.group_attack = false

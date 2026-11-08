@@ -39,6 +39,22 @@ M.TABLES = {
 			{item = "grug_mobs:glass_spider_silk", min = 1, max = 2, level = {51, 69}},
 		},
 	},
+	-- Round 72 SHIFT, level 40-69 (round72-second-shift.md "Ore and rewards"): the Seam's
+	-- gear and coins (tools/r72_shift/balance.py prices them), and its raiders' and
+	-- miners' signature bone and flesh by the run's tier: T4 at 40-49, T5 at 50-59, T6 at
+	-- 60-69.
+	second_shift = {
+		gear = {{quality = 2}, {quality = 3, chance = 25}},
+		coin_bags = {{factor = 10}},
+		materials = {
+			{item = "grug_mobs:marching_bone", min = 3, max = 5, level = {40, 49}},
+			{item = "grug_mobs:leathery_flesh", min = 1, max = 2, level = {40, 49}},
+			{item = "grug_mobs:siege_bone", min = 3, max = 5, level = {50, 59}},
+			{item = "grug_mobs:scorched_flesh", min = 1, max = 2, level = {50, 59}},
+			{item = "grug_mobs:unquiet_bone", min = 3, max = 5, level = {60, 69}},
+			{item = "grug_mobs:salt_cured_flesh", min = 1, max = 2, level = {60, 69}},
+		},
+	},
 	-- Level 60-69 (Round 72 lane MINT, round72-last-mint.md "Ore and rewards"): the
 	-- Seam's gear and coins (tools/r72_mint/balance.py prices them against a run of about
 	-- ten minutes at 60), T6's Stone Core from the press's machinery, and Slime Gel from

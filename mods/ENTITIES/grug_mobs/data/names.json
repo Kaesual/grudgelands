@@ -1184,6 +1184,7 @@
   "kragmar_whispering_reedlands/tortoise_t3/L28-30": "Knobshell Tortoise",
   "kragmar_whispering_reedlands/wandering_wisp/L21-23": "Marshlight",
   "world/abyssal_shark/L70-70": "Abyssal Shark",
+  "world/auditor_nemm/L40-69": "Auditor Nemm",
   "world/bay_shark/L30-30": "Bay Shark",
   "world/blood_bat/L6-60": "Blood Bat",
   "world/causeway_construct/L41-50": "Causeway War Construct",
@@ -1214,10 +1215,14 @@
   "world/seam_mesa_golem/L21-50": "Seam Mesa Golem",
   "world/seam_stone_golem/L21-40": "Seam Stone Golem",
   "world/siege_war_construct/L41-50": "Siege War Construct",
+  "world/skeleton_raider/L40-49": "Shift Raider",
+  "world/skeleton_raider/L50-59": "Tallied Raider",
+  "world/skeleton_raider/L60-69": "Overdue Raider",
   "world/spiderling/L1-60": "Spiderling",
   "world/stone_golem/L1-60": "Stone Golem",
   "world/stone_mite/L42-60": "Stone Mite",
-  "world/zombie/L3-60": "Buried Miner"
+  "world/zombie/L3-60": "Buried Miner",
+  "world/zombie/L61-69": "Buried Miner"
  },
  "notes": "Round 38: every mob name, one per slot key <scope>/<source>/L<lo>-<hi> (tools/r38_names/inventory.py). Written by tools/r38_b1/gen_names.py; the PvP captains, war commanders and Generals keep their names in pvp_names.json."
 }

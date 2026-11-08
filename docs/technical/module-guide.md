@@ -2402,9 +2402,14 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   (`level = {lo, hi}`; the load stops without a table, and refuses one naming an ore or
   gem); the boss's definition with `_grug_hp_scale` and a fixed name in a world slot of
   `data/names.json` (`world/<boss>/L<lo>-<hi>`, plus `tools/r38_names`, `disposition.lua`
-  and `grug_achievements/creatures.lua`); its quest with a row in `EXPEDITION_TARGETS` in
+  and `grug_achievements/creatures.lua`, and a row in `docs/planning/round28/items/existing.json`
+  for the design validator); its quest with a row in `EXPEDITION_TARGETS` in
   **both** validators (`grug_quests/validate.lua`, `tools/r28_design/validate.py`) and
-  `tools/r60_capitals/build_structure.py`'s `optional` and `group`. Sight counts as a pull,
+  `tools/r60_capitals/build_structure.py`'s `optional` and `group`. A wall sign's text goes
+  in the catalogue row's `signs` (place name -> text, written on ready by `encounters.lua`;
+  The Second Shift's shift board). A boss's marked spot goes through
+  `grug_mobs.expedition_mark(self, pos)` and `expedition_unmark(handle)` (`traps.lua`, the
+  strike helper; Auditor Nemm in `skeleton_raider.lua`). Sight counts as a pull,
   so keep a template's arrival beyond a pack's view range + 8. On a slab floor a jump lands
   on the player's own cell. Lava a template writes stays put: every box holds it
   (`grug_core/lava_guard.lua`), and a template's lava has nothing beside or below it to

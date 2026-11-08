@@ -1014,7 +1014,9 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   never below 2,
   [upstream workarounds](../technical/upstream-workarounds.md) §5; the
   engine's box reaches one node less on its positive side); no leg longer
-  than **32 nodes** goes to the engine. A mob searches at most once a second
+  than **32 nodes** goes to the engine (guards and the other mobs of "Out of
+  reach, reset at once" below search the target itself, at the pull and with
+  padding 16). A mob searches at most once a second
   in a fight; after a failed search the same two nodes wait **1, 2, 4 s**
   (the negative path cache); the server starts at most **20 searches in any
   one second**, and every search runs inside the A* budget below. A found
@@ -1103,7 +1105,8 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   group alert starts a new chase as usual. A target standing in a walkable
   node (a bottom slab, a lower stair step, snow dust) is searched for from
   the node above it, and a mob pressed into a fence searches from the open
-  cell next to it. Guards and rares follow the rule; the bespoke no-leash
+  cell next to it. Guards, captains, the rift boss, rares and leaders follow
+  the stricter rule below; the bespoke no-leash
   actors (Kraken, royal guards) only drop the target (no heal); kings,
   Generals and Expedition bosses hand it to their own reset rules ("Kings and
   bosses" below); the dragons and their whelps never give
@@ -1114,6 +1117,31 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   stages decide (`mobs/grug_nav.lua`, `mobs/grug_obstacle.lua`,
   `grug_mobs/aggro.lua` `give_up_target`, `grug_mobs/patrol.lua`
   `walk_fixed`).
+- **Out of reach, reset at once** (Round 72, the user's rule of 2026-11-07,
+  `round72-plan.md` §2.5): guards, captains and war commanders (the guard
+  chassis), the rift boss, every leader and every named rare, switched on by
+  their definition (`_grug_reach_reset`, read by `grug_mobs.reach_reset`), notice
+  fast that they cannot reach their target. While the target is within
+  **32 nodes**: a pull whose straight line to the target is not walkable
+  searches at once, not after the mob got stuck; it searches the target itself,
+  never an intermediate point, with the box padded by **16**; a found path
+  counts only if its end is within the mob's reach of the target (the engine
+  lowers a goal hovering above the ground by up to the mob's jump); only a
+  strike clears the failures, not a path's end or a free walk; and **2
+  failures** give the target up, about a second after the pull. The give-up is
+  the reset of "Kings and bosses" below without its boss parts (`reset_home`):
+  healed at once, threat, tag and target cleared, and the evade home from any
+  distance beyond four nodes, untouchable (every punch is cancelled, and a
+  player's swing, cast and projectile reach a mob only as a punch) until it is
+  home at full health; a mob that resets at home is attackable at once. The
+  give-up veto above (8 nodes or 15 s) stops a reset loop at home; a hit still
+  starts a new chase, which resets again a second later. A ladder is a real escape: no mob climbs, the
+  engine's search does not know ladders, and the guard goes home healed. The
+  designated patroller heals without the run to its post. Beyond 32 nodes
+  the rule above applies. Kings, Generals and Expedition bosses stay on their
+  boss floor, the royal guards, bodyguards and an Expedition's packs on their
+  own rules, and every other mob (wildlife, for cost) on the rule above
+  (`grug_mobs/aggro.lua` `reach_reset`, `give_up_target`).
 - **Kings and bosses** (Round 72, the user's rulings of 2026-11-07, replacing
   the Round 30 king give-up; `grug_mobs/boss_floor.lua`). One reset for every
   reason: healed, threat and loot tag cleared, the encounter's ledger cleared,

@@ -27,6 +27,15 @@
 --     refused one, and a path it got stuck on); GIVE_UP_AFTER of them give
 --     the target up (ruling 9), also when it is visible. Progress (a struck
 --     target, a path's end, a clear line) resets the count.
+--   * GRUG PATCH (Round 72 GUARDNAV, round72-plan.md §2.5): the strict rule of
+--     a mob that must notice fast that it cannot reach its target (`nav.strict`,
+--     installed by grug_mobs: guards, captains, the rift boss, rares, leaders),
+--     while its target is within MAX_LEG: a pull whose straight line is not
+--     walkable searches at once, not after the mob got stuck; the target
+--     itself, never an intermediate point, at padding STRICT_PADDING; a found
+--     path counts only if it ends within the mob's reach of the target; only a
+--     strike clears the failures (a path's end and a free walk do not); and
+--     STRICT_GIVE_UP failures give the target up (about a second).
 --   * Fixed walks (`nav.fixed_step`, ruling 5; for Round 42 NV2/NV3): the
 --     path is followed to its end; a mob more than OFF_ROUTE nodes off it
 --     searches again. Failures are counted and returned, never given up:
@@ -76,6 +85,9 @@ local nav = {
 	MAX_LEG = 32, -- nodes: no longer leg goes to the engine in one piece
 	CAP = 20, -- searches per second, server-wide (provisional)
 	GIVE_UP_AFTER = 3, -- failed searches in a row (ruling 9)
+	-- GRUG PATCH (Round 72 GUARDNAV): the strict rule's failures and padding.
+	STRICT_GIVE_UP = 2,
+	STRICT_PADDING = 16,
 	TARGET_DRIFT = 4, -- nodes the target may move from the planned end
 	OFF_ROUTE = 2, -- nodes off a fixed walk's path (ruling 5)
 	REACH_WP = 0.6, -- Manhattan distance that reaches a waypoint
@@ -103,6 +115,10 @@ end
 function nav.set_dangerous(fn)
 	dangerous = fn
 end
+
+-- GRUG PATCH (Round 72 GUARDNAV): nav.strict(self) -> true for a mob under the
+-- strict rule (set by grug_mobs, aggro.lua grug_mobs.reach_reset); nil: none.
+nav.strict = nil
 
 -- Optional observer (the navigation probe): nav.on_event(self, kind).
 nav.on_event = nil
@@ -562,9 +578,11 @@ function nav.forget(temp)
 end
 
 -- End a stuck episode: the count, the wish to search, the candidates, the
--- padding step.
-local function progress(self, nst)
-	nst.fails, nst.want, nst.ring, nst.angle, nst.point = 0, nil, nil, nil, nil
+-- padding step. GRUG PATCH (Round 72 GUARDNAV): `keep_fails` ends it without
+-- clearing the count (the strict rule: only a strike clears it).
+local function progress(self, nst, keep_fails)
+	if not keep_fails then nst.fails = 0 end
+	nst.want, nst.ring, nst.angle, nst.point = nil, nil, nil, nil
 	nst.line_left, nst.searches = nil, nil
 	obstacle.cancel_path_request(self.temp)
 end
@@ -701,6 +719,16 @@ local function take_path(nst, body, pos, steer)
 	smooth(nst, body, pos)
 end
 
+-- GRUG PATCH (Round 72 GUARDNAV): whether a mob standing on waypoint `p` (a feet
+-- cell) has `target_pos` (the target's object position) within its reach, as
+-- the strike measures it: object position to object position.
+local function ends_in_reach(self, body, p, target_pos)
+	local reach = self.reach or 3
+	local dx, dz = p.x - target_pos.x, p.z - target_pos.z
+	local dy = p.y - 0.5 - body.feet - target_pos.y
+	return dx * dx + dy * dy + dz * dz <= reach * reach
+end
+
 --
 -- One search attempt of a stuck mob. "found", "failed" (counts) or "wait"
 -- (lockout, negative cache, cap or budget; nothing counts).
@@ -749,16 +777,23 @@ local function attempt(self, nst, pos, goal_pos, key, mode, close, target, opts)
 	cap_take()
 	nst.capped, nst.point = nil, nil
 	nst.lock = t + nav.LOCKOUT[mode]
-	-- The episode's padding step (Round 49 NAV2).
+	-- The episode's padding step (Round 49 NAV2); the strict rule's one padding
+	-- (GRUG PATCH, Round 72 GUARDNAV).
 	local steps = nav.PADDING_STEPS
 	nst.searches = (nst.searches or 0) + 1
-	local path = nav.search(from, goal, steps[nst.searches] or steps[#steps],
-		body.jump, body.drop)
+	local path = nav.search(from, goal, nst.strict and nav.STRICT_PADDING
+		or steps[nst.searches] or steps[#steps], body.jump, body.drop)
 	local steer, repaired
 	if path then steer, repaired = nav.check_path(body, path) end
+	-- GRUG PATCH (Round 72 GUARDNAV): under the strict rule a path that ends out
+	-- of reach of the target (the engine lowers a hovering goal by up to the
+	-- mob's jump) is a failed search.
+	local short = steer ~= nil and nst.strict and target ~= nil
+		and not ends_in_reach(self, body, steer[#steer], goal_pos)
+	if short then steer = nil end
 	obstacle.note_search_result(self.temp, t, key, from, goal, steer ~= nil)
 	if not steer then
-		emit(self, path and "rejected" or "no_path")
+		emit(self, short and "short" or path and "rejected" or "no_path")
 		return "failed"
 	end
 	if repaired > 0 then emit(self, "repaired") end
@@ -771,7 +806,8 @@ end
 local function fail(self, nst, give_up)
 	nst.fails = nst.fails + 1
 	nst.want = true
-	if give_up and nst.fails >= nav.GIVE_UP_AFTER then
+	if give_up and nst.fails >= (nst.strict and nav.STRICT_GIVE_UP
+			or nav.GIVE_UP_AFTER) then
 		emit(self, "give_up")
 		nav.forget(self.temp)
 		return "give_up"
@@ -788,13 +824,21 @@ end
 function nav.combat_step(self, pos, dtime, target, target_pos, dist, striking,
 		never_give_up)
 	local nst = state(self)
+	-- GRUG PATCH (Round 72 GUARDNAV): the strict rule, while the target is
+	-- within MAX_LEG (beyond it the ring candidates and their rules stay).
+	local strict = not never_give_up and dist <= nav.MAX_LEG and nav.strict ~= nil
+		and nav.strict(self) == true
 	if nst.target ~= target then
 		nav.forget(self.temp)
 		nst = state(self)
 		nst.target = target
+		-- A pull: under the strict rule the first step decides at once.
+		nst.pull = strict or nil
 	end
+	nst.strict = strict
 	local seen = observe(nst, pos, dtime, nav.WINDOW.combat)
 	if striking then
+		nst.pull = nil
 		if nst.path or nst.want or nst.fails > 0 then
 			nst.path = nil
 			progress(self, nst)
@@ -832,7 +876,7 @@ function nav.combat_step(self, pos, dtime, target, target_pos, dist, striking,
 		if reason == "stuck" then
 			return nil, fail(self, nst, not never_give_up)
 		elseif reason == "end" then
-			progress(self, nst)
+			progress(self, nst, strict)
 		elseif reason == "line" then
 			-- Walk straight; progress once the straight walk proves free
 			-- (below); stuck before that, the line test was wrong: a failure.
@@ -852,17 +896,30 @@ function nav.combat_step(self, pos, dtime, target, target_pos, dist, striking,
 	elseif seen == "free" then
 		nst.line_left = nil
 		-- Moving freely with a clear way to the target: the episode is over.
-		if (nst.want or nst.fails > 0) and dist <= nav.MAX_LEG then
+		if (nst.want or (nst.fails > 0 and not strict)) and dist <= nav.MAX_LEG then
 			body = nav.body(self, nst)
 			if nav.line_walkable(body, feet_of(body, pos),
 					target_cell(target, target_pos), 1) then
-				progress(self, nst)
+				progress(self, nst, strict)
+			end
+		end
+	end
+	-- GRUG PATCH (Round 72 GUARDNAV): a strict pull whose straight line to the
+	-- target is not walkable searches now (a walkable one walks: no search).
+	if nst.pull then
+		nst.pull = nil
+		if strict and not nst.want then
+			body = body or nav.body(self, nst)
+			if not nav.line_walkable(body, feet_of(body, pos),
+					target_cell(target, target_pos), 1) then
+				nst.want = true
+				emit(self, "pull")
 			end
 		end
 	end
 	if not nst.want then return nil end
 	local result = attempt(self, nst, pos, target_pos, target, "combat",
-		nav.CLOSE, target)
+		strict and nav.MAX_LEG or nav.CLOSE, target)
 	if result == "found" then
 		nst.aim_x, nst.aim_z = target_pos.x, target_pos.z
 		return nst.path[nst.i]

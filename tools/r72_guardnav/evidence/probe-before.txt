@@ -1,0 +1,408 @@
+character complete at (0,37,-2550)
+arena (-2816,299,2816) - (-2772,310,2956) emerged in 0.3 s
+player level 40
+COST dist 17 (A*_noprefetch): pad 6 none 285 us, pad 12 none 741 us, pad 16 none 1138 us, pad 16 found 26 us
+COST dist 20 (A*_noprefetch): pad 6 none 334 us, pad 12 none 801 us, pad 16 none 1316 us, pad 16 found 32 us
+COST dist 24 (A*_noprefetch): pad 6 none 379 us, pad 12 none 1001 us, pad 16 none 1385 us, pad 16 found 37 us
+TRIAL open grug_mobs:guard_throng level 40 hp 1276 amount 7 (x5.195) home (-2810,300.5,2826) target (-2792,300.5,2826)
+RESULT open grug_mobs:guard_throng first_reset none by -, resets 0, lost_before_first_reset 792 (62.1 % of 1276), lost_total 792, died false, pulls 1, searches 0 found 0, largest_search_us 0, first_strike 3.44 s strikes 16, nav {}
+EV open grug_mobs:guard_throng 0.09 hit lost 36 hp 1240
+EV open grug_mobs:guard_throng 0.18 pull dist 18.1
+EV open grug_mobs:guard_throng 1.09 hit lost 72 hp 1168
+EV open grug_mobs:guard_throng 2.08 hit lost 36 hp 1132
+EV open grug_mobs:guard_throng 3.08 hit lost 36 hp 1096
+EV open grug_mobs:guard_throng 3.44 strike
+EV open grug_mobs:guard_throng 4.08 hit lost 36 hp 1060
+EV open grug_mobs:guard_throng 4.53 strike
+EV open grug_mobs:guard_throng 5.07 hit lost 36 hp 1024
+EV open grug_mobs:guard_throng 5.62 strike
+EV open grug_mobs:guard_throng 6.07 hit lost 36 hp 988
+EV open grug_mobs:guard_throng 6.70 strike
+EV open grug_mobs:guard_throng 7.06 hit lost 36 hp 952
+EV open grug_mobs:guard_throng 7.79 strike
+EV open grug_mobs:guard_throng 8.06 hit lost 36 hp 916
+EV open grug_mobs:guard_throng 8.88 strike
+EV open grug_mobs:guard_throng 9.06 hit lost 36 hp 880
+EV open grug_mobs:guard_throng 9.96 strike
+EV open grug_mobs:guard_throng 10.05 hit lost 36 hp 844
+EV open grug_mobs:guard_throng 11.05 hit lost 36 hp 808
+EV open grug_mobs:guard_throng 11.05 strike
+EV open grug_mobs:guard_throng 12.04 hit lost 36 hp 772
+EV open grug_mobs:guard_throng 12.14 strike
+EV open grug_mobs:guard_throng 13.04 hit lost 36 hp 736
+EV open grug_mobs:guard_throng 13.22 strike
+EV open grug_mobs:guard_throng 14.04 hit lost 36 hp 700
+EV open grug_mobs:guard_throng 14.31 strike
+EV open grug_mobs:guard_throng 15.03 hit lost 36 hp 664
+EV open grug_mobs:guard_throng 15.39 strike
+EV open grug_mobs:guard_throng 16.03 hit lost 36 hp 628
+EV open grug_mobs:guard_throng 16.48 strike
+EV open grug_mobs:guard_throng 17.02 hit lost 36 hp 592
+EV open grug_mobs:guard_throng 17.57 strike
+EV open grug_mobs:guard_throng 18.02 hit lost 36 hp 556
+EV open grug_mobs:guard_throng 18.65 strike
+EV open grug_mobs:guard_throng 19.01 hit lost 36 hp 520
+EV open grug_mobs:guard_throng 19.74 strike
+EV open grug_mobs:guard_throng 20.01 hit lost 36 hp 484
+TRIAL pillar grug_mobs:guard_throng level 40 hp 1276 amount 7 (x5.195) home (-2810,300.5,2850) target (-2792,304.5,2850)
+RESULT pillar grug_mobs:guard_throng first_reset 7.60 s by give_up_target, resets 8, lost_before_first_reset 324 (25.4 % of 1276), lost_total 792, died false, pulls 4, searches 12 found 0, largest_search_us 1165, first_strike none strikes 0, nav {give_up=4 no_path=12 stuck=4}
+RECHASE pillar grug_mobs:guard_throng hit at 8.06 after a reset: lost 36, new chase at once
+EV pillar grug_mobs:guard_throng 0.09 hit lost 36 hp 1240
+EV pillar grug_mobs:guard_throng 0.18 pull dist 18.4
+EV pillar grug_mobs:guard_throng 1.09 hit lost 36 hp 1204
+EV pillar grug_mobs:guard_throng 2.08 hit lost 36 hp 1168
+EV pillar grug_mobs:guard_throng 3.08 hit lost 36 hp 1132
+EV pillar grug_mobs:guard_throng 4.07 hit lost 36 hp 1096
+EV pillar grug_mobs:guard_throng 4.44 nav:stuck
+EV pillar grug_mobs:guard_throng 4.44 search pad 6 dist 1.0 dy 4 none 138 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 4.44 nav:no_path
+EV pillar grug_mobs:guard_throng 5.07 hit lost 36 hp 1060
+EV pillar grug_mobs:guard_throng 5.52 search pad 12 dist 1.0 dy 4 none 545 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 5.52 nav:no_path
+EV pillar grug_mobs:guard_throng 6.06 hit lost 72 hp 988
+EV pillar grug_mobs:guard_throng 7.06 hit lost 36 hp 952
+EV pillar grug_mobs:guard_throng 7.60 search pad 16 dist 1.0 dy 4 none 1165 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 7.60 nav:no_path
+EV pillar grug_mobs:guard_throng 7.60 nav:give_up
+EV pillar grug_mobs:guard_throng 7.60 give_up_target hp 952/1276 fails nil
+EV pillar grug_mobs:guard_throng 7.60 leash_reset hp 952/1276 fails nil
+EV pillar grug_mobs:guard_throng 7.69 dropped state stand
+EV pillar grug_mobs:guard_throng 8.06 hit lost 36 hp 1240
+EV pillar grug_mobs:guard_throng 8.15 pull dist 4.1
+EV pillar grug_mobs:guard_throng 8.60 nav:stuck
+EV pillar grug_mobs:guard_throng 8.60 search pad 6 dist 1.0 dy 4 none 142 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 8.60 nav:no_path
+EV pillar grug_mobs:guard_throng 9.05 hit lost 36 hp 1204
+EV pillar grug_mobs:guard_throng 9.69 search pad 12 dist 1.0 dy 4 none 553 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 9.69 nav:no_path
+EV pillar grug_mobs:guard_throng 10.05 hit lost 36 hp 1168
+EV pillar grug_mobs:guard_throng 11.05 hit lost 36 hp 1132
+EV pillar grug_mobs:guard_throng 11.77 search pad 16 dist 1.0 dy 4 none 997 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 11.77 nav:no_path
+EV pillar grug_mobs:guard_throng 11.77 nav:give_up
+EV pillar grug_mobs:guard_throng 11.77 give_up_target hp 1132/1276 fails nil
+EV pillar grug_mobs:guard_throng 11.77 leash_reset hp 1132/1276 fails nil
+EV pillar grug_mobs:guard_throng 11.86 dropped state stand
+EV pillar grug_mobs:guard_throng 12.04 hit lost 36 hp 1240
+EV pillar grug_mobs:guard_throng 12.13 pull dist 4.1
+EV pillar grug_mobs:guard_throng 12.58 nav:stuck
+EV pillar grug_mobs:guard_throng 12.58 search pad 6 dist 1.0 dy 4 none 135 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 12.58 nav:no_path
+EV pillar grug_mobs:guard_throng 13.04 hit lost 36 hp 1204
+EV pillar grug_mobs:guard_throng 13.67 search pad 12 dist 1.0 dy 4 none 637 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 13.67 nav:no_path
+EV pillar grug_mobs:guard_throng 14.03 hit lost 36 hp 1168
+EV pillar grug_mobs:guard_throng 15.03 hit lost 36 hp 1132
+EV pillar grug_mobs:guard_throng 15.75 search pad 16 dist 1.0 dy 4 none 987 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 15.75 nav:no_path
+EV pillar grug_mobs:guard_throng 15.75 nav:give_up
+EV pillar grug_mobs:guard_throng 15.75 give_up_target hp 1132/1276 fails nil
+EV pillar grug_mobs:guard_throng 15.75 leash_reset hp 1132/1276 fails nil
+EV pillar grug_mobs:guard_throng 15.84 dropped state stand
+EV pillar grug_mobs:guard_throng 16.02 hit lost 36 hp 1240
+EV pillar grug_mobs:guard_throng 16.11 pull dist 4.1
+EV pillar grug_mobs:guard_throng 16.57 nav:stuck
+EV pillar grug_mobs:guard_throng 16.57 search pad 6 dist 1.0 dy 4 none 136 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 16.57 nav:no_path
+EV pillar grug_mobs:guard_throng 17.02 hit lost 36 hp 1204
+EV pillar grug_mobs:guard_throng 17.66 search pad 12 dist 1.0 dy 4 none 529 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 17.66 nav:no_path
+EV pillar grug_mobs:guard_throng 18.02 hit lost 36 hp 1168
+EV pillar grug_mobs:guard_throng 19.01 hit lost 36 hp 1132
+EV pillar grug_mobs:guard_throng 19.74 search pad 16 dist 1.0 dy 4 none 987 us len 0 end_dy -
+EV pillar grug_mobs:guard_throng 19.74 nav:no_path
+EV pillar grug_mobs:guard_throng 19.74 nav:give_up
+EV pillar grug_mobs:guard_throng 19.74 give_up_target hp 1132/1276 fails nil
+EV pillar grug_mobs:guard_throng 19.74 leash_reset hp 1132/1276 fails nil
+EV pillar grug_mobs:guard_throng 19.83 dropped state stand
+EV pillar grug_mobs:guard_throng 20.01 hit lost 36 hp 1240
+TRIAL ladder_top grug_mobs:guard_throng level 40 hp 1276 amount 7 (x5.195) home (-2810,300.5,2874) target (-2790,304.5,2874)
+RESULT ladder_top grug_mobs:guard_throng first_reset 7.61 s by give_up_target, resets 8, lost_before_first_reset 288 (22.6 % of 1276), lost_total 792, died false, pulls 4, searches 12 found 0, largest_search_us 1095, first_strike none strikes 0, nav {give_up=4 no_path=12 stuck=4}
+RECHASE ladder_top grug_mobs:guard_throng hit at 8.06 after a reset: lost 36, new chase at once
+EV ladder_top grug_mobs:guard_throng 0.09 hit lost 36 hp 1240
+EV ladder_top grug_mobs:guard_throng 0.18 pull dist 20.2
+EV ladder_top grug_mobs:guard_throng 1.09 hit lost 36 hp 1204
+EV ladder_top grug_mobs:guard_throng 2.08 hit lost 36 hp 1168
+EV ladder_top grug_mobs:guard_throng 3.08 hit lost 36 hp 1132
+EV ladder_top grug_mobs:guard_throng 4.08 hit lost 36 hp 1096
+EV ladder_top grug_mobs:guard_throng 4.44 nav:stuck
+EV ladder_top grug_mobs:guard_throng 4.44 search pad 6 dist 2.0 dy 4 none 144 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 4.44 nav:no_path
+EV ladder_top grug_mobs:guard_throng 5.07 hit lost 36 hp 1060
+EV ladder_top grug_mobs:guard_throng 5.52 search pad 12 dist 2.0 dy 4 none 556 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 5.52 nav:no_path
+EV ladder_top grug_mobs:guard_throng 6.07 hit lost 36 hp 1024
+EV ladder_top grug_mobs:guard_throng 7.06 hit lost 36 hp 988
+EV ladder_top grug_mobs:guard_throng 7.61 search pad 16 dist 2.0 dy 4 none 1089 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 7.61 nav:no_path
+EV ladder_top grug_mobs:guard_throng 7.61 nav:give_up
+EV ladder_top grug_mobs:guard_throng 7.61 give_up_target hp 988/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 7.61 leash_reset hp 988/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 7.70 dropped state stand
+EV ladder_top grug_mobs:guard_throng 8.06 hit lost 36 hp 1240
+EV ladder_top grug_mobs:guard_throng 8.15 pull dist 4.4
+EV ladder_top grug_mobs:guard_throng 8.60 nav:stuck
+EV ladder_top grug_mobs:guard_throng 8.60 search pad 6 dist 2.0 dy 4 none 147 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 8.60 nav:no_path
+EV ladder_top grug_mobs:guard_throng 9.06 hit lost 36 hp 1204
+EV ladder_top grug_mobs:guard_throng 9.69 search pad 12 dist 2.0 dy 4 none 560 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 9.69 nav:no_path
+EV ladder_top grug_mobs:guard_throng 10.05 hit lost 36 hp 1168
+EV ladder_top grug_mobs:guard_throng 11.05 hit lost 36 hp 1132
+EV ladder_top grug_mobs:guard_throng 11.77 search pad 16 dist 2.0 dy 4 none 1090 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 11.77 nav:no_path
+EV ladder_top grug_mobs:guard_throng 11.77 nav:give_up
+EV ladder_top grug_mobs:guard_throng 11.77 give_up_target hp 1132/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 11.77 leash_reset hp 1132/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 11.86 dropped state stand
+EV ladder_top grug_mobs:guard_throng 12.04 hit lost 36 hp 1240
+EV ladder_top grug_mobs:guard_throng 12.13 pull dist 4.4
+EV ladder_top grug_mobs:guard_throng 12.59 nav:stuck
+EV ladder_top grug_mobs:guard_throng 12.59 search pad 6 dist 2.0 dy 4 none 146 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 12.59 nav:no_path
+EV ladder_top grug_mobs:guard_throng 13.04 hit lost 36 hp 1204
+EV ladder_top grug_mobs:guard_throng 13.67 search pad 12 dist 2.0 dy 4 none 627 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 13.67 nav:no_path
+EV ladder_top grug_mobs:guard_throng 14.03 hit lost 36 hp 1168
+EV ladder_top grug_mobs:guard_throng 15.03 hit lost 72 hp 1096
+EV ladder_top grug_mobs:guard_throng 15.76 search pad 16 dist 2.0 dy 4 none 1049 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 15.76 nav:no_path
+EV ladder_top grug_mobs:guard_throng 15.76 nav:give_up
+EV ladder_top grug_mobs:guard_throng 15.76 give_up_target hp 1096/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 15.76 leash_reset hp 1096/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 15.84 dropped state stand
+EV ladder_top grug_mobs:guard_throng 16.03 hit lost 36 hp 1240
+EV ladder_top grug_mobs:guard_throng 16.12 pull dist 4.4
+EV ladder_top grug_mobs:guard_throng 16.57 nav:stuck
+EV ladder_top grug_mobs:guard_throng 16.57 search pad 6 dist 2.0 dy 4 none 155 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 16.57 nav:no_path
+EV ladder_top grug_mobs:guard_throng 17.02 hit lost 36 hp 1204
+EV ladder_top grug_mobs:guard_throng 17.66 search pad 12 dist 2.0 dy 4 none 555 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 17.66 nav:no_path
+EV ladder_top grug_mobs:guard_throng 18.02 hit lost 36 hp 1168
+EV ladder_top grug_mobs:guard_throng 19.01 hit lost 36 hp 1132
+EV ladder_top grug_mobs:guard_throng 19.74 search pad 16 dist 2.0 dy 4 none 1095 us len 0 end_dy -
+EV ladder_top grug_mobs:guard_throng 19.74 nav:no_path
+EV ladder_top grug_mobs:guard_throng 19.74 nav:give_up
+EV ladder_top grug_mobs:guard_throng 19.74 give_up_target hp 1132/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 19.74 leash_reset hp 1132/1276 fails nil
+EV ladder_top grug_mobs:guard_throng 19.83 dropped state stand
+EV ladder_top grug_mobs:guard_throng 20.01 hit lost 36 hp 1240
+TRIAL ladder_hang grug_mobs:guard_throng level 40 hp 1276 amount 7 (x5.195) home (-2810,300.5,2898) target (-2793,304.5,2898)
+RESULT ladder_hang grug_mobs:guard_throng first_reset 6.70 s by give_up_target, resets 8, lost_before_first_reset 288 (22.6 % of 1276), lost_total 828, died false, pulls 4, searches 12 found 0, largest_search_us 7, first_strike none strikes 0, nav {give_up=4 no_path=12 stuck=4}
+RECHASE ladder_hang grug_mobs:guard_throng hit at 7.06 after a reset: lost 72, new chase at once
+EV ladder_hang grug_mobs:guard_throng 0.09 hit lost 36 hp 1240
+EV ladder_hang grug_mobs:guard_throng 0.18 pull dist 17.3
+EV ladder_hang grug_mobs:guard_throng 1.09 hit lost 36 hp 1204
+EV ladder_hang grug_mobs:guard_throng 2.08 hit lost 36 hp 1168
+EV ladder_hang grug_mobs:guard_throng 3.08 hit lost 72 hp 1096
+EV ladder_hang grug_mobs:guard_throng 4.07 hit lost 36 hp 1060
+EV ladder_hang grug_mobs:guard_throng 4.44 nav:stuck
+EV ladder_hang grug_mobs:guard_throng 4.44 search pad 6 dist 0.0 dy 4 none 6 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 4.44 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 5.07 hit lost 36 hp 1024
+EV ladder_hang grug_mobs:guard_throng 5.52 search pad 12 dist 0.0 dy 4 none 5 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 5.52 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 6.07 hit lost 36 hp 988
+EV ladder_hang grug_mobs:guard_throng 6.70 search pad 16 dist 1.0 dy 4 none 5 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 6.70 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 6.70 nav:give_up
+EV ladder_hang grug_mobs:guard_throng 6.70 give_up_target hp 988/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 6.70 leash_reset hp 988/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 6.79 dropped state stand
+EV ladder_hang grug_mobs:guard_throng 7.06 hit lost 72 hp 1204
+EV ladder_hang grug_mobs:guard_throng 7.15 pull dist 4.0
+EV ladder_hang grug_mobs:guard_throng 7.60 nav:stuck
+EV ladder_hang grug_mobs:guard_throng 7.60 search pad 6 dist 0.0 dy 4 none 6 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 7.60 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 8.06 hit lost 36 hp 1168
+EV ladder_hang grug_mobs:guard_throng 8.69 search pad 12 dist 0.0 dy 4 none 5 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 8.69 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 9.05 hit lost 36 hp 1132
+EV ladder_hang grug_mobs:guard_throng 10.05 hit lost 36 hp 1096
+EV ladder_hang grug_mobs:guard_throng 10.23 search pad 16 dist 1.0 dy 4 none 6 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 10.23 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 10.23 nav:give_up
+EV ladder_hang grug_mobs:guard_throng 10.23 give_up_target hp 1096/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 10.23 leash_reset hp 1096/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 10.32 dropped state stand
+EV ladder_hang grug_mobs:guard_throng 11.04 hit lost 36 hp 1240
+EV ladder_hang grug_mobs:guard_throng 11.13 pull dist 4.1
+EV ladder_hang grug_mobs:guard_throng 12.04 hit lost 36 hp 1204
+EV ladder_hang grug_mobs:guard_throng 12.13 nav:stuck
+EV ladder_hang grug_mobs:guard_throng 12.13 search pad 6 dist 0.0 dy 4 none 5 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 12.13 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 13.04 hit lost 36 hp 1168
+EV ladder_hang grug_mobs:guard_throng 13.22 search pad 12 dist 0.0 dy 4 none 6 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 13.22 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 14.03 hit lost 36 hp 1132
+EV ladder_hang grug_mobs:guard_throng 15.03 hit lost 36 hp 1096
+EV ladder_hang grug_mobs:guard_throng 15.30 search pad 16 dist 0.0 dy 4 none 6 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 15.30 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 15.30 nav:give_up
+EV ladder_hang grug_mobs:guard_throng 15.30 give_up_target hp 1096/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 15.30 leash_reset hp 1096/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 15.39 dropped state stand
+EV ladder_hang grug_mobs:guard_throng 16.03 hit lost 36 hp 1240
+EV ladder_hang grug_mobs:guard_throng 16.12 pull dist 4.0
+EV ladder_hang grug_mobs:guard_throng 16.57 nav:stuck
+EV ladder_hang grug_mobs:guard_throng 16.57 search pad 6 dist 0.0 dy 4 none 6 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 16.57 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 17.02 hit lost 36 hp 1204
+EV ladder_hang grug_mobs:guard_throng 17.66 search pad 12 dist 0.0 dy 4 none 6 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 17.66 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 18.02 hit lost 36 hp 1168
+EV ladder_hang grug_mobs:guard_throng 19.02 hit lost 36 hp 1132
+EV ladder_hang grug_mobs:guard_throng 19.74 search pad 16 dist 0.0 dy 4 none 7 us len 0 end_dy -
+EV ladder_hang grug_mobs:guard_throng 19.74 nav:no_path
+EV ladder_hang grug_mobs:guard_throng 19.74 nav:give_up
+EV ladder_hang grug_mobs:guard_throng 19.74 give_up_target hp 1132/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 19.74 leash_reset hp 1132/1276 fails nil
+EV ladder_hang grug_mobs:guard_throng 19.83 dropped state stand
+EV ladder_hang grug_mobs:guard_throng 20.01 hit lost 36 hp 1240
+TRIAL pillar grug_mobs:captain_throng level 40 hp 1914 amount 11 (x5.195) home (-2810,300.5,2850) target (-2792,304.5,2850)
+RESULT pillar grug_mobs:captain_throng first_reset 7.61 s by give_up_target, resets 8, lost_before_first_reset 570 (29.8 % of 1914), lost_total 1368, died false, pulls 4, searches 12 found 0, largest_search_us 1035, first_strike none strikes 0, nav {give_up=4 no_path=12 stuck=4}
+RECHASE pillar grug_mobs:captain_throng hit at 8.06 after a reset: lost 114, new chase at once
+EV pillar grug_mobs:captain_throng 0.09 hit lost 57 hp 1857
+EV pillar grug_mobs:captain_throng 0.18 pull dist 18.2
+EV pillar grug_mobs:captain_throng 1.09 hit lost 57 hp 1800
+EV pillar grug_mobs:captain_throng 2.08 hit lost 57 hp 1743
+EV pillar grug_mobs:captain_throng 3.08 hit lost 57 hp 1686
+EV pillar grug_mobs:captain_throng 4.07 hit lost 114 hp 1572
+EV pillar grug_mobs:captain_throng 4.44 nav:stuck
+EV pillar grug_mobs:captain_throng 4.44 search pad 6 dist 1.0 dy 4 none 139 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 4.44 nav:no_path
+EV pillar grug_mobs:captain_throng 5.07 hit lost 114 hp 1458
+EV pillar grug_mobs:captain_throng 5.52 search pad 12 dist 1.0 dy 4 none 565 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 5.52 nav:no_path
+EV pillar grug_mobs:captain_throng 6.07 hit lost 57 hp 1401
+EV pillar grug_mobs:captain_throng 7.06 hit lost 57 hp 1344
+EV pillar grug_mobs:captain_throng 7.61 search pad 16 dist 1.0 dy 4 none 1035 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 7.61 nav:no_path
+EV pillar grug_mobs:captain_throng 7.61 nav:give_up
+EV pillar grug_mobs:captain_throng 7.61 give_up_target hp 1344/1914 fails nil
+EV pillar grug_mobs:captain_throng 7.61 leash_reset hp 1344/1914 fails nil
+EV pillar grug_mobs:captain_throng 7.70 dropped state stand
+EV pillar grug_mobs:captain_throng 8.06 hit lost 114 hp 1800
+EV pillar grug_mobs:captain_throng 8.15 pull dist 4.1
+EV pillar grug_mobs:captain_throng 8.60 nav:stuck
+EV pillar grug_mobs:captain_throng 8.60 search pad 6 dist 1.0 dy 4 none 137 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 8.60 nav:no_path
+EV pillar grug_mobs:captain_throng 9.05 hit lost 57 hp 1743
+EV pillar grug_mobs:captain_throng 9.69 search pad 12 dist 1.0 dy 4 none 669 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 9.69 nav:no_path
+EV pillar grug_mobs:captain_throng 10.05 hit lost 57 hp 1686
+EV pillar grug_mobs:captain_throng 11.05 hit lost 57 hp 1629
+EV pillar grug_mobs:captain_throng 11.77 search pad 16 dist 1.0 dy 4 none 1003 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 11.77 nav:no_path
+EV pillar grug_mobs:captain_throng 11.77 nav:give_up
+EV pillar grug_mobs:captain_throng 11.77 give_up_target hp 1629/1914 fails nil
+EV pillar grug_mobs:captain_throng 11.77 leash_reset hp 1629/1914 fails nil
+EV pillar grug_mobs:captain_throng 11.86 dropped state stand
+EV pillar grug_mobs:captain_throng 12.04 hit lost 57 hp 1857
+EV pillar grug_mobs:captain_throng 12.13 pull dist 4.1
+EV pillar grug_mobs:captain_throng 12.59 nav:stuck
+EV pillar grug_mobs:captain_throng 12.59 search pad 6 dist 1.0 dy 4 none 137 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 12.59 nav:no_path
+EV pillar grug_mobs:captain_throng 13.04 hit lost 57 hp 1800
+EV pillar grug_mobs:captain_throng 13.67 search pad 12 dist 1.0 dy 4 none 571 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 13.67 nav:no_path
+EV pillar grug_mobs:captain_throng 14.03 hit lost 57 hp 1743
+EV pillar grug_mobs:captain_throng 15.03 hit lost 57 hp 1686
+EV pillar grug_mobs:captain_throng 15.76 search pad 16 dist 1.0 dy 4 none 1018 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 15.76 nav:no_path
+EV pillar grug_mobs:captain_throng 15.76 nav:give_up
+EV pillar grug_mobs:captain_throng 15.76 give_up_target hp 1686/1914 fails nil
+EV pillar grug_mobs:captain_throng 15.76 leash_reset hp 1686/1914 fails nil
+EV pillar grug_mobs:captain_throng 15.84 dropped state stand
+EV pillar grug_mobs:captain_throng 16.03 hit lost 57 hp 1857
+EV pillar grug_mobs:captain_throng 16.12 pull dist 4.1
+EV pillar grug_mobs:captain_throng 16.57 nav:stuck
+EV pillar grug_mobs:captain_throng 16.57 search pad 6 dist 1.0 dy 4 none 164 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 16.57 nav:no_path
+EV pillar grug_mobs:captain_throng 17.02 hit lost 57 hp 1800
+EV pillar grug_mobs:captain_throng 17.66 search pad 12 dist 1.0 dy 4 none 575 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 17.66 nav:no_path
+EV pillar grug_mobs:captain_throng 18.02 hit lost 57 hp 1743
+EV pillar grug_mobs:captain_throng 19.02 hit lost 57 hp 1686
+EV pillar grug_mobs:captain_throng 19.74 search pad 16 dist 1.0 dy 4 none 970 us len 0 end_dy -
+EV pillar grug_mobs:captain_throng 19.74 nav:no_path
+EV pillar grug_mobs:captain_throng 19.74 nav:give_up
+EV pillar grug_mobs:captain_throng 19.74 give_up_target hp 1686/1914 fails nil
+EV pillar grug_mobs:captain_throng 19.74 leash_reset hp 1686/1914 fails nil
+EV pillar grug_mobs:captain_throng 19.83 dropped state stand
+EV pillar grug_mobs:captain_throng 20.01 hit lost 57 hp 1857
+TRIAL ladder_top grug_mobs:captain_throng level 40 hp 1914 amount 11 (x5.195) home (-2810,300.5,2874) target (-2790,304.5,2874)
+RESULT ladder_top grug_mobs:captain_throng first_reset 7.61 s by give_up_target, resets 8, lost_before_first_reset 513 (26.8 % of 1914), lost_total 1311, died false, pulls 4, searches 12 found 0, largest_search_us 1119, first_strike none strikes 0, nav {give_up=4 no_path=12 stuck=4}
+RECHASE ladder_top grug_mobs:captain_throng hit at 8.06 after a reset: lost 57, new chase at once
+EV ladder_top grug_mobs:captain_throng 0.09 hit lost 57 hp 1857
+EV ladder_top grug_mobs:captain_throng 0.18 pull dist 20.2
+EV ladder_top grug_mobs:captain_throng 1.09 hit lost 57 hp 1800
+EV ladder_top grug_mobs:captain_throng 2.08 hit lost 57 hp 1743
+EV ladder_top grug_mobs:captain_throng 3.08 hit lost 57 hp 1686
+EV ladder_top grug_mobs:captain_throng 4.07 hit lost 57 hp 1629
+EV ladder_top grug_mobs:captain_throng 4.44 nav:stuck
+EV ladder_top grug_mobs:captain_throng 4.44 search pad 6 dist 2.0 dy 4 none 160 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 4.44 nav:no_path
+EV ladder_top grug_mobs:captain_throng 5.07 hit lost 57 hp 1572
+EV ladder_top grug_mobs:captain_throng 5.52 search pad 12 dist 2.0 dy 4 none 553 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 5.52 nav:no_path
+EV ladder_top grug_mobs:captain_throng 6.07 hit lost 114 hp 1458
+EV ladder_top grug_mobs:captain_throng 7.06 hit lost 57 hp 1401
+EV ladder_top grug_mobs:captain_throng 7.61 search pad 16 dist 2.0 dy 4 none 1102 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 7.61 nav:no_path
+EV ladder_top grug_mobs:captain_throng 7.61 nav:give_up
+EV ladder_top grug_mobs:captain_throng 7.61 give_up_target hp 1401/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 7.61 leash_reset hp 1401/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 7.69 dropped state stand
+EV ladder_top grug_mobs:captain_throng 8.06 hit lost 57 hp 1857
+EV ladder_top grug_mobs:captain_throng 8.15 pull dist 4.4
+EV ladder_top grug_mobs:captain_throng 8.60 nav:stuck
+EV ladder_top grug_mobs:captain_throng 8.60 search pad 6 dist 2.0 dy 4 none 152 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 8.60 nav:no_path
+EV ladder_top grug_mobs:captain_throng 9.05 hit lost 57 hp 1800
+EV ladder_top grug_mobs:captain_throng 9.69 search pad 12 dist 2.0 dy 4 none 570 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 9.69 nav:no_path
+EV ladder_top grug_mobs:captain_throng 10.05 hit lost 57 hp 1743
+EV ladder_top grug_mobs:captain_throng 11.04 hit lost 57 hp 1686
+EV ladder_top grug_mobs:captain_throng 11.77 search pad 16 dist 2.0 dy 4 none 1031 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 11.77 nav:no_path
+EV ladder_top grug_mobs:captain_throng 11.77 nav:give_up
+EV ladder_top grug_mobs:captain_throng 11.77 give_up_target hp 1686/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 11.77 leash_reset hp 1686/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 11.86 dropped state stand
+EV ladder_top grug_mobs:captain_throng 12.04 hit lost 114 hp 1800
+EV ladder_top grug_mobs:captain_throng 12.13 pull dist 4.4
+EV ladder_top grug_mobs:captain_throng 12.58 nav:stuck
+EV ladder_top grug_mobs:captain_throng 12.58 search pad 6 dist 2.0 dy 4 none 155 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 12.58 nav:no_path
+EV ladder_top grug_mobs:captain_throng 13.04 hit lost 57 hp 1743
+EV ladder_top grug_mobs:captain_throng 13.67 search pad 12 dist 2.0 dy 4 none 688 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 13.67 nav:no_path
+EV ladder_top grug_mobs:captain_throng 14.03 hit lost 57 hp 1686
+EV ladder_top grug_mobs:captain_throng 15.03 hit lost 57 hp 1629
+EV ladder_top grug_mobs:captain_throng 15.75 search pad 16 dist 2.0 dy 4 none 1119 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 15.75 nav:no_path
+EV ladder_top grug_mobs:captain_throng 15.75 nav:give_up
+EV ladder_top grug_mobs:captain_throng 15.75 give_up_target hp 1629/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 15.75 leash_reset hp 1629/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 15.84 dropped state stand
+EV ladder_top grug_mobs:captain_throng 16.02 hit lost 57 hp 1857
+EV ladder_top grug_mobs:captain_throng 16.11 pull dist 4.4
+EV ladder_top grug_mobs:captain_throng 16.57 nav:stuck
+EV ladder_top grug_mobs:captain_throng 16.57 search pad 6 dist 2.0 dy 4 none 148 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 16.57 nav:no_path
+EV ladder_top grug_mobs:captain_throng 17.02 hit lost 57 hp 1800
+EV ladder_top grug_mobs:captain_throng 17.65 search pad 12 dist 2.0 dy 4 none 590 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 17.65 nav:no_path
+EV ladder_top grug_mobs:captain_throng 18.01 hit lost 57 hp 1743
+EV ladder_top grug_mobs:captain_throng 19.01 hit lost 57 hp 1686
+EV ladder_top grug_mobs:captain_throng 19.73 search pad 16 dist 2.0 dy 4 none 1032 us len 0 end_dy -
+EV ladder_top grug_mobs:captain_throng 19.73 nav:no_path
+EV ladder_top grug_mobs:captain_throng 19.73 nav:give_up
+EV ladder_top grug_mobs:captain_throng 19.73 give_up_target hp 1686/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 19.73 leash_reset hp 1686/1914 fails nil
+EV ladder_top grug_mobs:captain_throng 19.82 dropped state stand
+EV ladder_top grug_mobs:captain_throng 20.00 hit lost 57 hp 1857
+RESULT DONE
+shutdown

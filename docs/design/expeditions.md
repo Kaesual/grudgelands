@@ -26,8 +26,8 @@ Three Expeditions, each over a wide level range (user, 2026-11-07, [concept
 | Expedition | Mob levels | Most players inside | State |
 |---|---|---:|---|
 | The Stilled Seam | 20–69 | 3 at every level | implemented |
-| The Second Shift | 40–69 | 4 | designed, built in Round 72 |
-| The Last Mint | 60–69 | 4 | implemented in Round 72 (§14) |
+| The Second Shift | 40–69 | 4 | implemented (Round 72) |
+| The Last Mint | 60–69 | 4 | implemented in Round 72 (§15) |
 
 **Every 10 levels the tier follows:** the reward, the ore and the gem. The ore is what that
 tier's rock is mined for, the next metal's input ([items](items_crafting.md) §3.0.1): T2's
@@ -156,7 +156,7 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
 - **No building** at all, and players place no liquids. A template's own lava is allowed
   and stays where it was written (Round 72, `grug_core/lava_guard.lua`: every box holds its
   lava; nothing flows in, out or away). Short jump-and-run tasks appear in the higher
-  Expeditions: The Last Mint's lake (§14).
+  Expeditions: The Last Mint's lake (§15).
 - **No mounts:** neither riding nor flying, and no boats ([mounts](mounts.md) §4.0).
 - **Death:** the player respawns at the start waystone. Round 70's death penalty applies
   ([durability](durability_repair.md)).
@@ -196,7 +196,8 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
   `boss_room_min` and `boss_room_max`), so it pursues nobody into a passage and a ledge is
   no safe spot. A player who leaves the room leaves its list; alone they reset it at once,
   otherwise only a Taunt within 3 s keeps the fight. **15 s without an attack** reset it
-  too; a trap's hit is no attack. Its reset is the wipe
+  too; a trap's hit is no attack, the boss's own marked spot with a player in its area is.
+  Its reset is the wipe
   ([full rules](combat_stats.md), §4 "Kings and bosses"). Its death gives
   **credit only**: no 24-hour lockout, no direct reward and no drops at all, coin bag
   included; the chest pays. There is no other lockout timer: the run's length is the
@@ -224,7 +225,7 @@ test.
   bursts it: the same hit to every player within 2 nodes. A shot with nobody of the run within 32 nodes of its line is
   left out, the rhythm kept.
 - **A boss's marked spot** (The Second Shift's Auditor Nemm): the floor trap's ring and hit on one position, once;
-  his reset or death takes the hit back.
+  his reset or death takes the hit back. One that had a player in its area is his attack for the 15 s rule.
 
 ## 9. Tank and healer
 
@@ -303,7 +304,51 @@ story, the floor plan and the texts.
   ([quests](quests.md)): kill Flintback once, at any of its levels. The Expedition stays
   repeatable after the turn-in.
 
-## 14. The Last Mint
+## 14. The Second Shift
+
+A working mine whose whole shift is dead, kept at work by Auditor Nemm's branded pay, at
+mob levels 40–69 for four players. Its [build plan](../planning/round72-second-shift.md) was
+approved by the user and has the story, the floor plan and the quest texts; Round 72 built
+it with the user's room rulings ([Round 72](../planning/round72-plan.md) §2.9): every floor
+flat, no dais, and every pack room cut so that no pack can be walked round.
+
+- **Size:** 128 × 32 × 128, one floor (the first air cell at y 8), six rooms in a line: The
+  Stilled Seam's envelopes mirrored on x, cut smaller.
+
+| Room | Holds |
+|---|---|
+| 0 Arrival | start waystone |
+| 1 Timekeeper's desk | pack a: 3 raiders, 2 miners; the shift board; 1 ore |
+| 2 Marking floor | pack b: 3 raiders, 1 elite miner; 2 of 4 floor traps; 1 gem |
+| 3 Wage room | packs c and d, 3 raiders and 1 elite miner each, a rock screen between them with an 8-node bypass; 1 of 2 floor traps per bay |
+| 4 Audit court | Auditor Nemm, alone; 2 of 4 floor traps |
+| 5 Store | chest, end waystone; 4 ore, 2 gem |
+
+- **The passage from room 1 to room 2** holds the wall trap: 1 of 2 muzzles, every 8 s.
+- **Mobs:** Skeleton Raiders and Buried Miners at the run's level: 12 raiders, 2 miners, 3
+  elite miners and the boss. Here the raiders are named by band (Shift Raider 40–49,
+  Tallied Raider 50–59, Overdue Raider 60–69), the miners Buried Miner throughout.
+- **No walking round** (proved on the template, `tools/r72_shift`): from every floor cell of
+  rooms 1–4 a mob of that room notices a player within its view range (raider 16, miner 14,
+  Nemm 20) and in sight. No pack sees another; only cells of room 3's bypass are seen by both
+  of its packs, so the party clears bay c before it walks there.
+- **Auditor Nemm:** an elite on the raider's body, bow and attacks, with 20 × an elite's HP:
+  76,560 at 40, 161,760 at 60, 210,440 at 69. Every 12 s of a fight he marks his target's
+  spot: the floor trap's ring and hit there 1.5 s later. He sees the whole court and drops
+  nothing.
+- **Ore:** eight shared places, five ore and three gem, of the run's tier (§1).
+- **Chest, per player:** 1 Uncommon item, at 25 % a Rare item, a bag of 10 × a kill's coin
+  bag at the run's level, 3–5 of the tier's bone and 1–2 of its flesh: Drilled Bone and
+  Leathery Flesh at 40–49, Siege Bone and Scorched Flesh at 50–59, Unquiet Bone and
+  Salt-Cured Flesh at 60–69.
+- **Balance** (`tools/r72_shift/balance.py`, modelled): one normal per pack was added to the
+  plan's roster, then Nemm's HP set the run: about 10 minutes at every level up to 60, the
+  boss about 3.9 of them; at 69 about 17 minutes, Nemm about 9.1, and the tank takes about
+  2.9 times the damage of level 40 in pools.
+- **Quest:** "Party: The Second Shift", level 40, from the six guild leaders: kill Auditor
+  Nemm once, at any of its levels. The Expedition stays repeatable after the turn-in.
+
+## 15. The Last Mint
 
 A buried branding works behind a furnace that became a lava lake, at mob levels 60–69,
 for four players (Round 72). Its [build plan](../planning/round72-last-mint.md) was

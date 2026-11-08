@@ -36,6 +36,10 @@ M.EXPEDITIONS = {
 		template = "test_vault", hidden = true},
 	{id = "stilled_seam", name = "The Stilled Seam", level = 20, max_level = 69, max_players = 3,
 		template = "stilled_seam"},
+	-- Round 72 SHIFT: the level 40-69 Expedition for four (round72-second-shift.md). `signs`:
+	-- the text of a wall sign at a template place, written when the run is ready.
+	{id = "second_shift", name = "The Second Shift", level = 40, max_level = 69, max_players = 4,
+		template = "second_shift", signs = {shift_board = "SECOND SHIFT\nSAME NAMES\nSTILL DUE"}},
 	-- Round 72 lane MINT: the lava lake, 60-69, four players.
 	{id = "last_mint", name = "The Last Mint", level = 60, max_level = 69, max_players = 4,
 		template = "last_mint"},

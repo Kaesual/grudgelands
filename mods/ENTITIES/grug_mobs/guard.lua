@@ -192,6 +192,12 @@ local function guard_def(faction, description, texture)
 		-- patroller is exempt from both halves — see PATROL_LEASH_RANGE and the
 		-- evade block in aggro.lua.
 		_grug_leash_range = 30,
+		-- Out of reach, reset at once (Round 72 GUARDNAV, round72-plan.md §2.5): a
+		-- guard that cannot reach its target notices it within about a second,
+		-- heals and runs home untouchable (aggro.lua grug_mobs.reach_reset). The
+		-- royal guards and bodyguards built on this chassis keep their no-leash
+		-- rules, the kings and Generals their boss floor.
+		_grug_reach_reset = true,
 
 		reach = 3,
 		attack_type = "dogfight",

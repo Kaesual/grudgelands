@@ -18,7 +18,8 @@
 --   belongs(run, player|name)
 --   slot_box(slot)          minp, maxp
 --   definition(id)          a catalogue row {id, name, level, max_level, max_players,
---                           template}: its mob levels run from level to max_level
+--                           template[, signs]}: its mob levels run from level to
+--                           max_level; signs, place -> a wall sign's text (Round 72)
 --   list()                  the rows a dialog may offer (hidden test rows left out)
 --   entry_level(level)      min(level - 2, 60)
 --   rewards_open(run)       the boss is dead, or the template has none

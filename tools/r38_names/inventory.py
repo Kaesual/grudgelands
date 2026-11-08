@@ -818,6 +818,40 @@ class Model:
         self.source("expedition_boss_mint", "The Last Mint's boss's name", r.cite(sentinel,
                     r'register_mob\("grug_mobs:duewarden"'))
 
+        # The Second Shift (Round 72): Auditor Nemm, its boss, one fixed name like
+        # Flintback's; its raiders by band, and its miners through 69, as world slots: an
+        # Expedition's mob stands off the map, in no zone (names_core: the world slots).
+        raider = MOBS + "/skeleton_raider.lua"
+        self.add_slot({"key": "world/auditor_nemm/L40-69", "zone": None, "source": "boss",
+                       "name": self.file_name("world/auditor_nemm/L40-69", "Auditor Nemm"),
+                       "name_source": "names.json (skeleton_raider.lua)",
+                       "name_where": r.cite(raider, r'register_mob\("grug_mobs:auditor_nemm"'),
+                       "entity": "grug_mobs:auditor_nemm", "role": "auditor_nemm", "family": "auditor_nemm",
+                       "base": "grug_mobs:skeleton_raider", "tier": "boss", "authored_tier": "elite",
+                       "leader": False, "disposition": "aggressive", "size": 1.0, "drops": None,
+                       "role_levels": [40, 69], "levels": [40, 69], "clocks": ["any"],
+                       "notes": ["The Second Shift's boss: an elite at the run's level 40-69, boss ledger"]})
+        for lo, hi, fallback in ((40, 49, "Shift Raider"), (50, 59, "Tallied Raider"), (60, 69, "Overdue Raider")):
+            key = "world/skeleton_raider/L%d-%d" % (lo, hi)
+            self.add_slot({"key": key, "zone": None, "source": "expedition",
+                           "name": self.file_name(key, fallback), "name_source": "names.json",
+                           "name_where": r.cite(raider, r'register_mob\("grug_mobs:skeleton_raider"'),
+                           "entity": "grug_mobs:skeleton_raider", "role": "skeleton_raider",
+                           "family": "skeleton_raider", "base": "grug_mobs:skeleton_raider", "tier": "normal",
+                           "authored_tier": "normal", "leader": False, "disposition": "aggressive",
+                           "size": 1.0, "drops": None, "role_levels": [lo, hi], "levels": [lo, hi],
+                           "clocks": ["any"], "notes": ["The Second Shift's raiders at run levels %d-%d" % (lo, hi)]})
+        self.add_slot({"key": "world/zombie/L61-69", "zone": None, "source": "expedition",
+                       "name": self.file_name("world/zombie/L61-69", "Buried Miner"), "name_source": "names.json",
+                       "name_where": r.cite(MOBS + "/zombie.lua", r'register_mob\("grug_mobs:zombie"'),
+                       "entity": "grug_mobs:zombie", "role": "zombie", "family": "zombie",
+                       "base": "grug_mobs:zombie", "tier": "normal", "authored_tier": "normal", "leader": False,
+                       "disposition": "aggressive", "size": 1.0, "drops": None, "role_levels": [61, 69],
+                       "levels": [61, 69], "clocks": ["any"],
+                       "notes": ["The Second Shift's miners above 60 (the underground slot ends at 60)"]})
+        self.source("expedition", "Expedition mobs above the world's levels (The Second Shift)",
+                    r.cite(raider, r'register_mob\("grug_mobs:auditor_nemm"'))
+
         # Guards: settlements and outposts (one name per faction everywhere).
         gtext = r.text(MOBS + "/guard.lua")
         self.source("guards", "faction guards of settlements and outposts (guard level field 20..70, "
