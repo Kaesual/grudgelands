@@ -1103,7 +1103,9 @@ territory.
   player alone, day and night, unless attacked (0.53.1; the whole zombie
   family, the sun-dried husks and every sub-type included; provocation is
   per mob, so a zombie the player hit fights back; skeletons and other
-  undead are unchanged; before 0.53.1 only zombies, and only at night) ·
+  undead are unchanged; before 0.53.1 only zombies, and only at night;
+  an Expedition's mobs keep no truce, 0.72.0, [expeditions](expeditions.md)
+  §8) ·
   Orc +1 rage per hit taken ·
   Elf +3 m ability range (0.53.1, was +5 m; **ranged/spell abilities
   only** — melee abilities keep their own reach, `classes.md` §2b) · Human
