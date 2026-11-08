@@ -1176,7 +1176,8 @@ and sub-types: `biomes_mobs.md` "Round 28 sub-types and loot by band".
 ### Combat state
 
 "In combat" gates food ticks, eating, rage decay, the mana regeneration rate,
-mounting and travel home. Decided 2026-09-28 (user
+mounting, travel home and placing nodes that block movement ("Placement in
+combat and around bodies" below). Decided 2026-09-28 (user
 playtest rulings); owned by `grug_core` (`in_combat`).
 
 - A player is **in combat** while at least one live mob is **engaged** with
@@ -1238,6 +1239,27 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - **An Expedition's pack** holds its own: from the pull on, whoever is on a
   pack's list stays in combat, also through a pause in the hitting, until the
   pack is dead or they leave its list ("Expedition packs" below).
+
+### Placement in combat and around bodies
+
+Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
+
+- **In combat** a player places nothing that restricts movement: every
+  walkable or climbable node (blocks, ladders, doors, beds, the notice board,
+  the Claim Stone) and every liquid (the water bucket) is refused with the
+  grey feed line "Cannot place that in combat.". Torches, plants and other
+  nodes that block nobody stay allowed; digging and right-click interaction
+  stay allowed.
+- **In or out of combat** a walkable node is never placed into a cell that
+  overlaps the collision box of a live mob (guards, bosses, NPCs) or player,
+  the placer included; a body spans several cells, and a box that only
+  touches a cell's face does not count. The line is "Cannot place a block
+  where someone stands.". A protected cell keeps its protection line.
+- **A walkable falling node** (sand, gravel) is tested where it lands: when
+  the landing cell overlaps a live body it drops as an item instead, also
+  when its support was dug.
+- Ladders the world already has stay, and cages are accepted: a bystander
+  nobody targets may still wall a guard in.
 
 ### Recovery
 
