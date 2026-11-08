@@ -94,7 +94,8 @@ character state:
   access. Master reaches +200% travel speed (user playtest ruling 2026-09-20).
 - **Flight buys terrain at home and over the shared Battlegrounds, not in enemy
   territory or across ocean.** The two land tiers remain legal in enemy
-  territory; §4 owns the complete geographic rule.
+  territory, except in its start towns and capitals (§4.4); §4 owns the
+  complete geographic rule.
 - Each exact character-level anchor is the purchase gate; below it the tier
   is listed greyed ("Requires level N", Round 28 ruling 19 above).
   Price is calibrated by reliable net earning time rather than preserving the
@@ -436,7 +437,8 @@ never from literal coordinates. Horizontal classification applies at every y:
 climbing above a boundary never changes its rule. Land riding, flight, ocean
 warning and forced dismount are separate consumer states derived from
 `grug_zones.water_class_at(x,z)` and the horizontal
-`grug_zones.at(pos).territory_rule` record.
+`grug_zones.at(pos).territory_rule` record; the enemy-town rule (§4.4) from
+the hard town footprints.
 
 ### 4.0 Expeditions
 
@@ -518,11 +520,12 @@ and the refusal goes to the message feed. A rider is dismounted by the teleport 
 
 ### 4.3 Enemy safe territory: land tiers yes, flying tiers no
 
-- **The two land tiers are allowed on enemy land.** A
+- **The two land tiers are allowed on enemy land**, outside its start towns
+  and capitals (§4.4). A
   rider on a horse still walks the ground, still meets whatever
   `guard_level_at` has put on it (`world.md` §1), and still has to use an
   authored land connection or another physical route. Nothing about a land
-  mount bypasses terrain, so nothing about it needs a rule.
+  mount bypasses terrain, so on the open land nothing about it needs a rule.
 - **Flying mounts are banned in enemy safe home territory, including capitals.** Two halves, both
   binding:
   - **A flying mount cannot be summoned there.** The mount action is
@@ -563,6 +566,35 @@ along a legal invasion path, the system is therefore own land → flyable
 Battlegrounds → warned enemy border → forced ground travel; the dragon islands
 instead require a boat because their ocean channel reaches the hard no-flight
 state first.
+
+### 4.4 Enemy towns: no mount and no boat (Round 72)
+
+No mount of any kind, the two land tiers, the two flying tiers and both
+boats, in an **enemy start town or capital** (user ruling 2026-11-07). A rider
+on a fast mount outran the guards to the King: land mounts run 6.4 and 8
+nodes/s, guards 4.6, so on foot the guards catch up.
+
+- **A mount or boat cannot be summoned there.** The summon is refused with
+  "Mounts and boats are forbidden in enemy towns." (message feed), before any
+  other place rule, so a boat on an enemy town's dry land gets this refusal
+  too. Changing tiers there is refused the same way.
+- **A rider who crosses into one is dismounted** at the first column of the
+  town, with one feed line ("You entered an enemy town and were dismounted.").
+  There is **no warning band**. The rider stays where the mount was; a boat's
+  rider stays in the water.
+- **The town is its hard `town` footprint** (`grug_zones.hard_footprint_in`
+  on the column, horizontal at every height), the same outline that names the
+  town and protects it; villages, outposts and camps have none and stay open.
+  The land round the towns stays open to riding, and the flight ban (§4.3) is
+  unchanged.
+- **Whose town:** the faction of the settlement whose anchor lies in the
+  footprint (its race's faction from the start identities), the way the
+  location line finds a town. A character without a faction has no enemy
+  town.
+- **One rule:** `grug_mounts.enemy_town_at(faction, x, z)` in
+  `grug_mounts/entity.lua`, asked by the summon refusal and by the mount's
+  step for every tier. The step asks only when the mount enters another
+  column (one footprint query, a few box tests), only for mounted riders.
 
 ## 5. Reference implementations & licences
 
