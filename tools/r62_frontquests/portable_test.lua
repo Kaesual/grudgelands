@@ -381,7 +381,9 @@ for id, givers in pairs(SHARED) do
 end
 local shared_count = 0
 for id, quest in pairs(by_id) do
-	if quest.level >= 41 and quest.variants and not id:find("^camp_") and not id:find("^guild_") then
+	-- capital_*: the Expeditions' group quests (Round 72's The Last Mint at 60), no front quest
+	if quest.level >= 41 and quest.variants and not id:find("^camp_") and not id:find("^guild_")
+			and not id:find("^capital_") then
 		shared_count = shared_count + 1
 		check(SHARED[id] ~= nil, "E " .. id .. ": a shared front quest of the draft")
 	end

@@ -541,10 +541,10 @@ end
 -- R. The royal follow.
 ------------------------------------------------------------------------------
 do
-	-- S's leash reset sent the retinue back to its slots; the heartbeat
-	-- places it again.
-	check(holder("r41_capital", "throne_guard_west") == nil,
-		"R the leash reset took the retinue off (start_npcs.lua)")
+	-- S's leash reset found the retinue standing whole at full health and left
+	-- it in place (Round 72 BOSSRESET: no flicker of healthy guards).
+	check(holder("r41_capital", "throne_guard_west") ~= nil,
+		"R the leash reset leaves a whole healthy retinue standing (bosses.lua)")
 	gametime = gametime + 5
 	for _, fn in ipairs(npc_steps) do fn(5) end
 	local king = holder("r41_capital", "king")
