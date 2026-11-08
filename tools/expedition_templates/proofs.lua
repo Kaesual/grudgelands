@@ -91,9 +91,9 @@ function P.floor(m, changed)
 end
 
 -- The free height over every floor cell: air from F up (a rail at F counts as floor).
--- Returns the lowest and where.
-function P.free_height(m, floor)
-	local lowest, where = math.huge, nil
+-- Returns the lowest, where, and the cells with less than `need` ("x,z", in floor order).
+function P.free_height(m, floor, need)
+	local lowest, where, short = math.huge, nil, {}
 	for _, cell in ipairs(floor) do
 		local h = 0
 		while true do
@@ -102,8 +102,9 @@ function P.free_height(m, floor)
 			h = h + 1
 		end
 		if h < lowest then lowest, where = h, cell.x .. "," .. cell.z end
+		if need and h < need then short[#short + 1] = cell.x .. "," .. cell.z end
 	end
-	return lowest, where
+	return lowest, where, short
 end
 
 -- Perches: a search over every place a player can stand, from `from` ({x, y, z}), by
