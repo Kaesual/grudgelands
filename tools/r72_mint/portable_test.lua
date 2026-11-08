@@ -960,6 +960,8 @@ do
 		register_on_ready = function(fn) table.insert(hooks.ready, fn) end,
 		register_on_enter = function(fn) table.insert(hooks.enter, fn) end,
 		register_on_end = function(fn) table.insert(hooks.ended, fn) end}
+	-- Round 72 SHIFT: traps.lua hangs Auditor Nemm's two hooks on grug_mobs.
+	_G.grug_mobs = {}
 	dofile(repo .. "/mods/PLAYER/grug_expeditions/traps.lua")
 	local TR = grug_expeditions.traps
 	local function step()
@@ -1083,7 +1085,7 @@ do
 	local covered = 0
 	for _ in pairs(lines_hit) do covered = covered + 1 end
 	eq(covered, 4, "M every shot line was tried")
-	_G.core, _G.grug_core, _G.grug_expeditions, _G.vector = nil
+	_G.core, _G.grug_core, _G.grug_expeditions, _G.vector, _G.grug_mobs = nil
 end
 
 -- ---- N. Lava: five ticks kill; Return Home refused in it inside an Expedition only -----
