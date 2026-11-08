@@ -20,8 +20,11 @@ local function king_body()
 	local c = def.initial_properties.collisionbox
 	local box = {}
 	for i = 1, 6 do box[i] = c[i] * 1.4 end -- the elite size (levels.lua)
-	local fake = {_grug_cbox = O.physics_box(box), initial_properties = {stepheight = 1.1},
-		jump_height = 4, fear_height = 4}
+	-- His definition's fields behind it: the navigation's danger test reads them
+	-- (water, lava and fire damage). The first run lacked them and stopped there.
+	local fake = setmetatable({_grug_cbox = O.physics_box(box),
+		initial_properties = {stepheight = 1.1}, jump_height = 4, fear_height = 4},
+		{__index = def})
 	return nav.body(fake)
 end
 
