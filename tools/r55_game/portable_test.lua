@@ -31,7 +31,8 @@
 --      the card and rewriting the texture list exactly once; an unchanged
 --      poll writes nothing; a cloak put on and taken off moves the card to
 --      the other half (one rewrite each); a Warrior and a Scout with the look
---      off never;
+--      off never; Bladecraft's hand and card after a shot and a swing
+--      (Round 72, grug_visuals.show_shot);
 --   W  the wings from a stub cloak source: on with a wing texture, blank
 --      without one and with the look off;
 --   P  the Character tab's preview: seven textures, the offhand layer, the
@@ -87,6 +88,15 @@ local modpaths = {
 local current_mod = "grug_gear"
 local serial = {}
 local joins, equipment_consumers, polls, connected = {}, {}, {}, {}
+local wield_entities = {}
+-- The item the player's live wield entity shows.
+local function held_by(player)
+	for index = #wield_entities, 1, -1 do
+		local obj = wield_entities[index]
+		if obj.parent == player and not obj.removed then return obj.item end
+	end
+	return nil
+end
 core = permissive({
 	registered_items = registered,
 	get_modpath = function(name) return modpaths[name] end,
@@ -113,12 +123,17 @@ core = permissive({
 	end,
 	get_connected_players = function() return connected end,
 	add_entity = function()
+		-- Round 72 BLADECRAFT: each wield entity records what it shows and
+		-- its parent (held_by below).
 		local obj = {}
-		function obj:set_properties() end
-		function obj:set_attach() end
+		function obj:set_properties(p)
+			if p.textures then self.item = p.textures[1] end
+		end
+		function obj:set_attach(parent) self.parent = parent end
 		function obj:get_attach() return true end
 		function obj:get_pos() return {x = 0, y = 0, z = 0} end
-		function obj:remove() end
+		function obj:remove() self.removed = true end
+		wield_entities[#wield_entities + 1] = obj
 		return obj
 	end,
 })
@@ -598,6 +613,45 @@ do
 	reads = hand_reads
 	poll()
 	eq(hand_reads - reads, 2, "S a Scout with a skill: the shown item's read and the card's")
+	-- Round 72 BLADECRAFT (round72-plan.md §2.6): Bladecraft shows the blade,
+	-- after a shot the bow until its next swing at a foe (grug_abilities sets
+	-- the state and calls apply at once); the back card follows; other skills
+	-- keep their own slot; hotbar switches and the poll keep the state.
+	registered["test:bladecraft"] = {groups = {grug_ability = 1},
+		_grug_ability_slot = "melee", _grug_ability_shot_slot = "weapon"}
+	scout._wielded = ItemStack("test:bladecraft")
+	poll()
+	eq(held_by(scout), sword:get_name(), "S Bladecraft: the blade in the hand")
+	eq(list_of(scout)[6], bow_image, "S ... the bow on the back")
+	check(V.show_shot(scout, true), "S a shot: the state changes")
+	V.apply(scout)
+	eq(held_by(scout), bow:get_name(), "S ... the bow in the hand at once")
+	eq(list_of(scout)[6], sword_image, "S ... the blade on the back")
+	check(not V.show_shot(scout, true), "S a second shot: no change")
+	before = scout.writes
+	poll()
+	eq(scout.writes, before, "S ... the poll keeps it, no write")
+	scout._wielded = ItemStack("test:strike")
+	poll()
+	eq(held_by(scout), sword:get_name(), "S Strike meanwhile: its own blade")
+	eq(list_of(scout)[6], bow_image, "S ... the bow on the back")
+	scout._wielded = ItemStack("test:bow_skill")
+	poll()
+	eq(held_by(scout), bow:get_name(), "S a bow skill: its own bow")
+	scout._wielded = ItemStack("test:bladecraft")
+	poll()
+	eq(held_by(scout), bow:get_name(), "S back to Bladecraft: still the bow")
+	eq(list_of(scout)[6], sword_image, "S ... the blade on the back")
+	-- The bow taken off: the blade in the hand (an empty card on the back),
+	-- put back on: the bow again.
+	equip(scout, "grug_weapon", ItemStack(""))
+	eq(held_by(scout), sword:get_name(), "S the bow taken off: the blade in the hand")
+	equip(scout, "grug_weapon", bow)
+	eq(held_by(scout), bow:get_name(), "S the bow put back on: the bow again")
+	check(V.show_shot(scout, false), "S a swing at a foe: the state changes")
+	V.apply(scout)
+	eq(held_by(scout), sword:get_name(), "S ... the blade in the hand at once")
+	eq(list_of(scout)[6], bow_image, "S ... the bow on the back")
 	connected[1] = nil
 end
 
