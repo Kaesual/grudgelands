@@ -2289,7 +2289,8 @@ end
 -- (where skills live, grug_skills/bound_items.lua): the held stack through
 -- set_wielded_item(stack, true), which spares the client's re-raise of the
 -- first-person weapon (protocol 52, Luanti 5.16 and later; an older client
--- plays it), the copy on the other layout through set_stack. The third-person
+-- plays it), the copy on the other layout through set_stack, first, so the
+-- one inventory packet set_wielded_item sends carries both. The third-person
 -- hand and the Scout's back card follow at once, not at the wield poll.
 function grug_abilities.show_last_attack(player, shot)
 	if grug_visuals.show_shot(player, shot) ~= true then
@@ -2298,8 +2299,7 @@ function grug_abilities.show_last_attack(player, shot)
 	local inv = player:get_inventory()
 	local source_of = skin_source_cache(player)
 	local held_list, held_index = player:get_wield_list(), player:get_wield_index()
-	local store = grug_inventory.HOTBAR_STORE
-	for _, listname in ipairs({"main", store}) do
+	for _, listname in ipairs({grug_inventory.HOTBAR_STORE, "main"}) do
 		local size = inv:get_size(listname)
 		if listname == "main" then
 			size = math.min(size, grug_inventory.HOTBAR_SIZE)

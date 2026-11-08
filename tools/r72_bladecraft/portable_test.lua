@@ -10,8 +10,8 @@
 -- are tools/r55_game's section S.
 --   L1 a shot that flew shows the bow: both hotbar layouts re-skinned (the
 --      held stack through set_wielded_item with skip_anim, the other copy
---      through set_stack), the Veil bow overlay, apply called once; a second
---      shot writes nothing;
+--      through set_stack, written first), the Veil bow overlay, apply
+--      called once; a second shot writes nothing;
 --   L2 a refused shot (no target, no arrow, no bow) switches nothing;
 --   L3 an air click (and so digging: no hostile under the crosshair) swings
 --      nothing and switches nothing;
@@ -515,6 +515,9 @@ do
 	eq(held, 1, "L1 the held stack: one set_wielded_item with skip_anim")
 	eq(other, 1, "L1 the other layout: one set_stack")
 	eq(strays, 0, "L1 no other inventory write")
+	-- The other layout first: set_wielded_item's one inventory packet then
+	-- carries both (serverenvironment.cpp sends a modified inventory once).
+	eq(writes[1] and writes[1].kind, "set_stack", "L1 ... the other layout written first")
 	eq(visuals.applies, 1, "L1 grug_visuals.apply once, at once")
 	release(p)
 	wait(2)
