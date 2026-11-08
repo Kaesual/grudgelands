@@ -60,6 +60,16 @@ return function(repo)
 	_G.mobs = permissive({mob_class = permissive({}), spawning_mobs = {}, grug_nav = {},
 		spawn = function(_, def) rows[#rows + 1] = def end})
 	_G.grug_mobs = permissive({})
+	-- Luanti's builtin deep copy (land_guard.lua copies the Sentinel for Duewarden).
+	if not table.copy then
+		local function copy(t)
+			if type(t) ~= "table" then return t end
+			local out = {}
+			for k, v in pairs(t) do out[k] = copy(v) end
+			return out
+		end
+		table.copy = copy
+	end
 	-- Round 31: guard.lua and bosses.lua read the PvP garrison rules at load
 	-- (init.lua builds them from lane S's catalogue and the Astra names).
 	do
