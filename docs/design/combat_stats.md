@@ -655,7 +655,10 @@ Normal tier at level L:
   fights back and the group alert (§4) is unchanged; guards, kings and every
   other mob of a faction, animals and NPCs keep their full view range, and so
   does every mob towards a mob target (`grug_mobs/aggro.lua`
-  `player_aggro_radius`, read by `general_attack` in `mobs/api.lua`).
+  `player_aggro_radius`, read by `general_attack` in `mobs/api.lua`). An
+  **Expedition's mob** keeps its full view range too (0.72.0, the user,
+  2026-11-08): a level 60 player in a 20–29 run is noticed at full view
+  range ([Expedition packs](#expedition-packs)).
 - **Shot range** (Round 56, ruling 3 and D1): a ranged mob shoots within its
   own **shot range**, by default `view_range + 4` (a `dogshoot` family's 16 →
   20; a definition may set `_grug_shot_range`), so a player can stand inside
@@ -1477,6 +1480,10 @@ XP); these rules replace the leash, the pursuit policy above and group alerts.
   to another pack.
 - **No de-aggro.** No leash, no contact timeout, no give-up distance, no patience,
   no soft de-aggro. A failed path search resets nothing.
+- **No easing of the pull** (0.72.0): the aggro radius by level gap does not shrink
+  for an Expedition's mob, and the Undead truce does not hold against it. Both read
+  one mark, `_grug_expedition`, which `packs.lua`'s spawn sets on every mob of every
+  pack, the boss included.
 - **In combat.** Everybody on a list stays in combat (`in_combat`) until the pack is
   dead or they leave the list, so a waystone and Return Home stay refused: a pulled
   pack ends in a win, a death or a logout. It is a short timer the pack's once-a-second

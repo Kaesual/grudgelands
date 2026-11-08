@@ -4,7 +4,8 @@
 -- grug_mobs/aggro.lua, on a small fake engine (a node grid and a raycast
 -- that samples the segment). Checks:
 --   R  the aggro radius by level gap: gaps 0, 5, 6, 7, 9, 10, 15 and the
---      1 m floor;
+--      1 m floor; an Expedition's mob keeps the full view range, and
+--      packs.lua's spawn marks every such mob (Round 72 EXPMOBS);
 --   F  general_attack's filter: a monster far below a player's level does not
 --      pick the player outside the radius (and casts no sight ray for it),
 --      picks it inside; guards, faction mobs and mob targets keep the full
@@ -172,6 +173,17 @@ do
 	check(grug_mobs.player_aggro_radius(mob({type = "animal"}), p) == nil, "R13 an animal: full view")
 	check(grug_mobs.player_aggro_radius(mob({_grug_level = false}), p) == nil,
 		"R14 a mob without a level (vanilla mobs_redo): full view")
+	-- Round 72 EXPMOBS (round72-plan.md §2.9): an Expedition's mob keeps its full
+	-- view range towards a player of any level.
+	check(grug_mobs.player_aggro_radius(mob({_grug_expedition = 7}), {level = 50}) == nil,
+		"R15 an Expedition's mob 40 below: full view")
+	-- ... and every Expedition mob carries the mark: packs.lua's spawn makes every
+	-- body of every pack, the boss's too, and its first staticdata holds the run's id.
+	local spawn_src = cut(read("mods/PLAYER/grug_expeditions/packs.lua"),
+		"local function spawn(member, pos, health)", "\nend\n", "packs spawn")
+	check(spawn_src:find("core.add_entity(pos, row.mob, core.serialize({", 1, true) ~= nil
+		and spawn_src:find("_grug_expedition = run.id,", 1, true) ~= nil,
+		"R16 packs.lua's spawn marks every Expedition mob")
 end
 
 -- ---------------------------------------------------------------------------
@@ -274,6 +286,17 @@ do
 	scene = {player, behind}
 	check(pick(behind, true) == nil, "F9 a wall still hides the player")
 	world = {}
+end
+do
+	-- Round 72 EXPMOBS: a level 60 player and two level 20 monsters at 15 m (gap
+	-- 40); the Expedition's mob notices them, the ordinary one does not.
+	local player = new_player("vera", {x = 0, y = 0, z = 0}, 60)
+	local wild = new_mob({_grug_level = 20}, {x = 15, y = 0, z = 0})
+	local expedition = new_mob({_grug_level = 20, _grug_expedition = 3}, {x = 0, y = 0, z = 15})
+	scene = {player, wild, expedition}
+	check(pick(wild, true) == nil, "F10 an ordinary mob 40 below does not pick the player at 15 m")
+	check(pick(expedition, true) == player,
+		"F11 an Expedition's mob 40 below picks the player at 15 m (full view range)")
 end
 
 -- ---------------------------------------------------------------------------

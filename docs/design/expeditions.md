@@ -153,6 +153,10 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
   respawns but a partly killed pack (below).
 - Every mob is at the run's level through its own entity, whatever its spawn row says,
   and pays XP as usual.
+- **No easing for a high level or a race** (0.72.0, the user, 2026-11-07 and 2026-11-08):
+  an Expedition's mob notices a player of any level at its full view range (no shrinking
+  aggro radius by level gap), and the Undead truce does not hold against it. Every
+  Expedition's mob carries the mark, the boss included, whatever its Expedition.
 - **Drops:** each mob drops at its own level, 61–69 included, from the T6 pool, and no ore
   or gem ([items](items_crafting.md)). Refined bars stay.
 - **Packs** ([full rules](combat_stats.md#expedition-packs), the owner of the mob's side,
