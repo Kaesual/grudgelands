@@ -57,6 +57,8 @@ function grug_factions.get_faction(player)
 	end
 	return nil
 end
+-- The friend and foe nametags read a unit's and a viewer's side through it.
+grug_core.get_player_object_faction = grug_factions.get_faction
 
 function grug_factions.get_faction_def(player)
 	local id = grug_factions.get_faction(player)

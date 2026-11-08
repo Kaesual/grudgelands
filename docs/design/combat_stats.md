@@ -1312,7 +1312,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   and writes no property when the text is unchanged. The numbers remain plain
   integers. A player never sees their own tag carrier.
 - Implementation: every tagged mob, tagged NPC, vendor and player owns one
-  invisible, non-pointable, non-physical, unsaved child entity. The parent's
+  invisible, non-pointable, non-physical, unsaved child entity, and a faction
+  unit a second one while a viewer of the other side is in range (friend and
+  foe, below). The parent's
   nametag stays empty (non-players) or alpha-zero (players). The child carries
   the text, inherits the parent's nametag height, and uses the engine's managed
   observer set for the per-viewer rule above. One central pass, spread over
@@ -1321,7 +1323,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   removes an orphan, while explicit parent lifecycle hooks remove the ordinary
   cases immediately.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
-  mob you look at/punch; nametags cannot be colored per viewer). The
+  mob you look at/punch; a nametag's colour is per side, not per level). The
   frame's **reach is 20 m** — our choice, not an engine constant: far
   enough past the 16 m view_range of our longest-sighted ground mobs to
   size up what is about to notice you, and inside the ability targeting
@@ -1416,16 +1418,39 @@ change HP, density, aggression range, armor, rewards or ability cadence.
 
 ## Nametag categories and injured health sprites
 
-All viewers see the same category colors; existing 25/30 m observer hysteresis
-still controls visibility independently. Six categories have configurable
+**Friend and foe** (Round 72, the user's ruling of 2026-11-07,
+[plan](../planning/round72-plan.md) §2.8). A faction unit (a player with a
+faction, a guard, royal guard, captain, commander, bodyguard, King, General,
+or a settlement NPC) shows **green to its own side and red to the other**;
+an NPC that never fights (villagers, elders, vendors, trainers, quest givers)
+shows **light green and light red**, so a player sees it will not attack. A
+viewer without a faction (only at the start position) sees the friend
+colour. Since a nametag's colour is one property for all viewers, a unit's
+two colours are two carriers: the one its callers hold serves its own side
+and every viewer without a faction; the **foe carrier exists only while a
+viewer of the other side is within tag range** and is made and removed by
+the same central pass, which reads each viewer's faction once per snapshot.
+The text reaches both carriers; the HP bar and the visibility callbacks see
+both sides' observers together. A fighting mob's faction is its
+`_grug_faction` (set on its first tick: until then a guard keeps the guard
+colour); a peaceful NPC's is its settlement's. A summoned add carrying its
+King's faction counts as a faction unit too.
+
+Everything else keeps one colour for all viewers, with the existing 25/30 m
+observer hysteresis: mobs without a faction stay red when aggressive, yellow
+when neutral and white as critters; the factionless Bedrock Sentinel keeps
+the guard violet, a capital's mount and gear displays the NPC lavender, and a
+player without a faction stays white. Ten categories have configurable
 foreground/background RGBA settings loaded once at server start: aggressive,
-neutral, guard, npc, player, critter. Defaults are red/yellow/violet/light
-lavender/white/white respectively, with black background alpha 64/255 (about
-25%). Bosses, elites and adds reuse their behavior or faction-role category;
+neutral, guard, npc, player, critter, friend, foe, npc_friend, npc_foe.
+Defaults are red/yellow/violet/light lavender/white/white/green/red/light
+green/light red respectively, with black background alpha 64/255 (about
+25%). Other bosses, elites and adds reuse their behavior or faction-role category;
 mounts get no additional tags. A neutral animal stays yellow when provoked.
 
 A startup boolean (default on) enables a small green camera-facing sprite bar
-for living injured combat mobs, bosses and guards. Hide at full HP or death;
+for living injured combat mobs, bosses, guards and other fighting faction
+units, seen by both sides. Hide at full HP or death;
 no bars for players, critters or peaceful NPCs. Keep existing HP text. Reuse the
 nametag visibility pass and observers; update fill only when visible integer
 percentage changes. Bars are ephemeral/nonphysical/nonpointable and removed
@@ -1441,6 +1466,10 @@ Startup presentation settings:
 | NPC | `grug_nametag_npc_foreground` / `#d8c5ff` | `grug_nametag_npc_background` / `#00000040` |
 | Player | `grug_nametag_player_foreground` / `#ffffff` | `grug_nametag_player_background` / `#00000040` |
 | Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
+| Friend | `grug_nametag_friend_foreground` / `#4bdc4b` | `grug_nametag_friend_background` / `#00000040` |
+| Foe | `grug_nametag_foe_foreground` / `#ff4b4b` | `grug_nametag_foe_background` / `#00000040` |
+| NPC friend | `grug_nametag_npc_friend_foreground` / `#b9f5b0` | `grug_nametag_npc_friend_background` / `#00000040` |
+| NPC foe | `grug_nametag_npc_foe_foreground` / `#ffb3b3` | `grug_nametag_npc_foe_background` / `#00000040` |
 
 `grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
 category default. **Every bar is world-sized** (Round 28 ruling 10): an
