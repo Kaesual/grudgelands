@@ -161,6 +161,19 @@ M.register_on_end(function(run)
 	end
 end)
 
+-- A catalogue row's wall signs (`signs`, place name -> text; The Second Shift's shift
+-- board): their text once the box is written. The text entity follows the node
+-- (grug_text), and the next preparation clears both.
+M.register_on_ready(function(run)
+	for place, text in pairs(M.definition(run.expedition).signs or {}) do
+		local pos = run.places[place]
+		if pos then
+			core.get_meta(pos):set_string("text", text)
+			grug_text.refresh(pos)
+		end
+	end
+end)
+
 -- The boss's room, the bounds of its floor (grug_mobs/boss_floor.lua): the envelope's
 -- columns over the whole box's height, or nil.
 function grug_mobs.expedition_boss_room(self)
