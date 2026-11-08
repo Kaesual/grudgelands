@@ -26,8 +26,9 @@
 --    Angelfish, the recipes' critters, the Rift Spawn's surface row; a
 --    palette zone keeps all), and the Rift Spawn's surface row keeps its
 --    stated chance and cap.
--- F. aggro.lua give_up_target: an ordinary mob runs the leash reset, a king
---    or no-leash actor only drops the target, a given-up player is ignored
+-- F. aggro.lua give_up_target: an ordinary mob runs the leash reset, a
+--    no-leash actor only drops the target, a king hands it to the boss rules
+--    (Round 72 BOSSRESET, boss_floor.lua), a given-up player is ignored
 --    until they moved 8 nodes or 15 s passed (Round 42 NV1; the detail is
 --    tools/r42_nv1 G7); the dragons only ever wait (api.lua).
 -- Prints "R30 P2 PORTABLE PASS checks=<n>" or raises.
@@ -490,10 +491,11 @@ do
 	local src = read("mods/ENTITIES/grug_mobs/aggro.lua")
 	local block = src:match("\n(local GAVE_UP_NODES = %d+.-\nfunction grug_mobs.gave_up_on%(self, player%).-\nend\n)")
 	check(block ~= nil, "F give_up_target block found")
-	local resets = 0
+	local resets, handed = 0, 0
 	-- Round 67: the give-up first flags a stuck mob (room.lua); none here.
 	local env = {grug_mobs = {leash_reset = function() resets = resets + 1 end,
-		give_up_stuck = function() return false end},
+		give_up_stuck = function() return false end,
+		boss_no_way = function() handed = handed + 1 end},
 		grug_core = {mono_time = function() return 0 end},
 		core = {is_player = function(o) return o.player == true end}}
 	local chunk = assert(loadstring(block))
@@ -513,7 +515,9 @@ do
 	check(resets == 1 and plain.stopped == 0, "F an ordinary mob runs the leash reset")
 	local king = mob({_grug_royal_king = true, _grug_boss_id = "king:human"})
 	G.give_up_target(king)
-	check(resets == 1 and king.stopped == 1, "F a king only drops the target")
+	-- Round 72 BOSSRESET replaced the Round 30 king rule: the boss rules decide.
+	check(resets == 1 and king.stopped == 0 and handed == 1,
+		"F a king hands the give-up to the boss rules (boss_floor.lua)")
 	local royal = mob({_grug_no_leash = true})
 	G.give_up_target(royal)
 	check(resets == 1 and royal.stopped == 1, "F a no-leash actor only drops the target")

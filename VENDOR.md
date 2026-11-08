@@ -979,6 +979,15 @@ comments of three existing markers (`grug_ranged_closing`, the dogfight
 branch's condition, `can_nav`) no longer name the kings as the mobs without
 one; no registered mob is left without one.
 
+## Round 72 BOSSRESET — the boss floor reads the cell test (2026-11-08)
+
+`mobs/grug_nav.lua` (no new marker): `nav.cell` publishes the navigation's cell
+test, so the boss floor (`grug_mobs/boss_floor.lua`) holds a king's body to the
+rules his walk uses. Its one caller is ours. The navigation's give-up
+(`combat_step`, `grug_mobs.give_up_target`) is unchanged; for kings, Generals
+and Expedition bosses it now drops nothing when their floor is ready.
+Fixture `tools/r72_bossreset/portable_test.lua`.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world

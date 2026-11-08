@@ -1083,6 +1083,8 @@ dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/dawn.lua")
 dofile(modpath .. "/roam_avoid.lua")
 dofile(modpath .. "/idle_health.lua")
+-- The reset rules of kings, Generals and bosses: the boss floor (Round 72).
+dofile(modpath .. "/boss_floor.lua")
 dofile(modpath .. "/flight.lua")
 dofile(modpath .. "/swimmer.lua")
 -- Round 28 rulings 5-7: environmental damage shares, separation, knockback.

@@ -1896,8 +1896,9 @@ one-cell settlement checks are unchanged.
   are delivered by separate passive, invulnerable NPCs and never depend on the
   king being alive.
 - A king is the authoritative entity for the three-NPC royal encounter. Its
-  throne anchor, ordinary chase/leash rules and 15-second no-contact rule own
-  the encounter state. The guards have no independent home target: while the
+  throne anchor and the bosses' reset rules own the encounter state (Round 72:
+  the boss floor round the throne and the 15 s rule, `combat_stats.md` §4
+  "Kings and bosses"). The guards have no independent home target: while the
   king lives they always path toward and follow its current position.
 - The king holds his throne (Round 41): no idle walking, the throne
   socket's authored facing, and a walk back to it after a fight.
@@ -1906,7 +1907,8 @@ one-cell settlement checks are unchanged.
   its anchor and both guards are moved with it in the same reset. A guard
   whose own path fails snaps to the king's current position; it never moves or
   overrides the king. A full reset restores both guard slots together, so
-  raiders cannot permanently dismantle the retinue one guard at a time. A
+  raiders cannot permanently dismantle the retinue one guard at a time; a
+  retinue standing whole at full health stays as it is (Round 72). A
   guard killed without either a reset or the king's death (picked off from
   beyond the king's view) returns on its own after 15 minutes, a persistent
   wall-clock time like the group's (Round 37).

@@ -28,7 +28,12 @@
 -- Its death settles credit only (bosses.lua, no lockout, no reward) and opens the
 -- door; it is a pack of one, so a wipe heals it and sends it home and its attempt
 -- starts over. Its registered definition names its fixed name: a world slot in
--- data/names.json.
+-- data/names.json. Since Round 72 it follows the bosses' reset rules
+-- (grug_mobs/boss_floor.lua): its room is its range, the floor its body walks from its
+-- marker inside the template's envelope (the places `boss_room_min` and
+-- `boss_room_max`, two opposite corners; a template without them leaves it to the
+-- navigation's give-up), a target who leaves the room leaves its list, and 15 s
+-- without an attack reset it; the reset is the wipe.
 local M = grug_expeditions
 local path = core.get_modpath(core.get_current_modname())
 local loot = dofile(path .. "/loot.lua")
@@ -142,7 +147,10 @@ M.register_on_ready(state_of)
 M.register_on_enter(start_pass)
 M.register_on_end(function(run)
 	local state = states[run]
-	if state and state.boss_id then grug_mobs.boss_attempt_reset(state.boss_id) end
+	if state and state.boss_id then
+		grug_mobs.boss_attempt_reset(state.boss_id)
+		if grug_mobs.boss_floor_forget then grug_mobs.boss_floor_forget(state.boss_id) end
+	end
 	states[run] = nil
 	-- Live objects go with the run, a step before any new preparation's delete_area,
 	-- which would leave the engine their saved copies to look for. Attached ones stay:
@@ -152,6 +160,18 @@ M.register_on_end(function(run)
 		if not object:is_player() and not object:get_attach() then object:remove() end
 	end
 end)
+
+-- The boss's room, the bounds of its floor (grug_mobs/boss_floor.lua): the envelope's
+-- columns over the whole box's height, or nil.
+function grug_mobs.expedition_boss_room(self)
+	local home = self._grug_home
+	local run = home and M.run_at(home)
+	if not run or run.id ~= self._grug_expedition then return nil end
+	local a, b = run.places.boss_room_min, run.places.boss_room_max
+	if not (a and b) then return nil end
+	return {x0 = math.min(a.x, b.x), x1 = math.max(a.x, b.x),
+		z0 = math.min(a.z, b.z), z1 = math.max(a.z, b.z), y0 = run.minp.y, y1 = run.maxp.y}
+end
 
 local function boss_died(self)
 	local pos = self.object and self.object:get_pos()

@@ -333,6 +333,31 @@ local function wipe(pack)
 	end
 end
 
+-- The boss's reset rules (Round 72 BOSSRESET, grug_mobs/boss_floor.lua): a player who
+-- left its room leaves its list and its threat, and its reset is the wipe, its list
+-- emptied first. False when `ent` is no member.
+function grug_mobs.pack_release(ent, name)
+	local member = bodies[ent._grug_pack]
+	if not member then return false end
+	local pack = member.pack
+	leave_list(pack, name)
+	for _, other in ipairs(pack.members) do
+		local body = live_entity(other)
+		local threat = body and body.temp and body.temp.grug_threat
+		if threat then threat[name] = nil end
+	end
+	return true
+end
+
+function grug_mobs.pack_reset(ent)
+	local member = bodies[ent._grug_pack]
+	if not member then return false end
+	local pack = member.pack
+	for name in pairs(pack.players) do leave_list(pack, name) end
+	wipe(pack)
+	return true
+end
+
 local function tick_pack(pack, now)
 	for name in pairs(pack.players) do
 		local player = core.get_player_by_name(name)
