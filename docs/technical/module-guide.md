@@ -2305,7 +2305,12 @@ nothing and logs one line, so local and browser worlds play as without it.
   (once a second) or right-click, keeps the per-character list in player
   meta (`grug_home.known_waypoints`) and opens the travel form
   (`grug_home.use_waystone`); the refusals are pure rules in
-  `waypoints_core.lua`. The node `grug_mapgen:waystone` is registered in
+  `waypoints_core.lua`. Since Round 72 the form has the tabs Waystones and
+  Expeditions; the second is filled by `grug_expeditions` through
+  `grug_home.register_expedition_tab` (rows and enter, every rule theirs) and
+  shown on the Claim Stone too (`expedition_rows`, `expedition_from_claim`);
+  `grug_home.show_waystones` opens the list from a stone outside the network
+  (an Expedition's), without tabs. The node `grug_mapgen:waystone` is registered in
   `grug_mapgen/world_nodes.lua` before the settlement content resolves.
   Fixture `tools/r29_w/portable_test.lua`, engine probe `tools/r29_w/probe.sh`.
   Rules: [world.md](../design/world.md) §6,
@@ -2322,8 +2327,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
 `run` row is read-only for other mods.
 
 - **Nothing about a run is saved.** `runs.lua` holds the runs in memory, so a restart ends
-  them all. Two player meta keys outlive a run: `grug_expeditions:origin` (the capital's
-  location id of the last way in, for a login or respawn in a box whose run is gone) and
+  them all. Two player meta keys outlive a run: `grug_expeditions:origin` (the waystone id
+  of the last way in, a capital's at the registrar, any network stone's since Round 72's
+  Expeditions tab; for a login or respawn in a box whose run is gone) and
   `grug_expeditions:logout_death` (a pending death, set at the leave, spent at the next
   join). Mob fields sit in box blocks, which preparation wipes. Neither key is map-bound.
   Credit goes out under the stable `expedition:<catalogue id>`, never a per-run id:
@@ -2348,7 +2354,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   not), `grug_mounts.register_summon_guard`, `grug_home.register_respawn_home` (asked on
   every look at the home, so a row must survive the look on arrival, outside the box:
   `guard.lua`'s `to_capital`), `grug_home.register_on_teleport`, `trip.fallback`,
-  `grug_home.waystone_pos`, `waystone_arrival`, `grug_mobs.set_spawn_free_field` (first
+  `grug_home.waystone_pos`, `waystone_arrival`, `grug_home.register_expedition_tab` and
+  `show_waystones` (Round 72, `entry.lua`: the Expeditions tab and the stones inside),
+  `grug_mobs.set_spawn_free_field` (first
   check of `spawn_policy_allows`), `grug_parties.register_on_member_left` (it can tell a
   leaver from the last member, which `register_on_change` cannot),
   `grug_parties.invitation_warning`, `settle_boss`'s `credit_as` (`bosses.lua`),

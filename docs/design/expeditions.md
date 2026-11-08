@@ -84,13 +84,26 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
 
 - **Preparing:** creating shows "Your Expedition is being prepared...". Nobody can enter
   before it is ready; a notice says when it is.
-- **Enter** at a registrar of the player's faction. It is refused in combat. That capital
-  is where the way back leads.
+- **Enter** at a registrar of the player's faction, or (Round 72, user 2026-11-08) on the
+  **Expeditions tab** of every waystone outside the Expeditions and of the Claim Stone
+  ([world.md](world.md) §6, [housing](housing.md) §7.1). The tab lists the Expedition of
+  the player's owner while they may enter it (owner, ready or under way, level, places);
+  otherwise it says in one line why, or with no Expedition points to the Registrar.
+  Creating stays at the Registrar alone. Entering from the tab is a waystone trip by the
+  waystones' rules: standing at the stone, alive, and refused in combat, at the click and
+  again on arrival; it arrives at the start waystone as from the Registrar.
+- **The way back** of a forced exit or a login after the end leads to the waystone of
+  the last way in: the Registrar's capital, the waystone whose tab was used, or from the
+  Claim Stone the waystone of the player's innkeeper home.
 - **Places:** entering takes one, for as long as the player stays in the party. Leaving
   the box keeps it; the player can go back in. So a larger party is full after the first
   3 or 4 entries, and only leaving the party frees a place.
-- **Two waystones** stand inside: at the start, and in the reward room. Both lead to the
-  capital the player came from, without a cooldown, and both are refused in combat.
+- **Two waystones** stand inside: at the start, and in the reward room. Since Round 72
+  both open the ordinary waystone window without the Expeditions tab: the player travels
+  to any of their discovered waystones or their Claim Stone, by the waystones' rules (no
+  cooldown, refused in combat). The Expedition's waystones are never a destination. A
+  trip out keeps the place and ends no run; the player leaves its packs' lists as they
+  leave the box.
 - **Return Home** works inside, under its normal rules ([home travel](home_travel.md)).
 - Neither way leaves the party.
 
@@ -107,7 +120,8 @@ the start waystone, still inside.
   ([durability](durability_repair.md)), and takes the player off the list. The death
   happens at the next login, and they stand at the start waystone if the Expedition still
   belongs to them. A server shutdown is no logout.
-- **Whoever logs in after their Expedition ended** stands in the capital they came from.
+- **Whoever logs in after their Expedition ended** stands at the waystone of their last
+  way in (§4).
 - **A server restart ends every Expedition**, which then falls under the rule above.
   Nothing about a run is saved.
 
