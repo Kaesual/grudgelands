@@ -56,6 +56,10 @@ end
 -- AGGRO_MIN_RADIUS. A hit still draws retaliation and the group alert as
 -- before; guards, kings and every other mob of a faction, animals and NPCs
 -- keep their full view range, and so does every mob towards a mob target.
+-- An Expedition's mob (`_grug_expedition`, set on every body by
+-- grug_expeditions/packs.lua's spawn, the boss's too) keeps it as well: a level
+-- 60 player in a 20-29 run is noticed at full view range (round72-plan.md
+-- §2.9, the user, 2026-11-08).
 --
 grug_mobs.AGGRO_FULL_GAP = 5
 grug_mobs.AGGRO_STEP = 0.2
@@ -72,7 +76,8 @@ end
 -- full view range. Read by the general_attack GRUG PATCH in mobs/api.lua,
 -- before the line-of-sight ray, only for a player candidate in view.
 function grug_mobs.player_aggro_radius(self, player)
-	if self.type ~= "monster" or self._grug_faction or not self._grug_level then
+	if self.type ~= "monster" or self._grug_faction or self._grug_expedition
+			or not self._grug_level then
 		return nil
 	end
 	local gap = grug_core.get_player_level(player) - self._grug_level

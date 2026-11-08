@@ -4,7 +4,8 @@
 --
 --   A. the undead truce (grug_mobs/init.lua `truce_active`, cut out and run):
 --      an unprovoked Undead player is spared by day and by night (no clock),
---      a provoked one is not, another race never is;
+--      a provoked one is not, another race never is; an Expedition's mob
+--      keeps no truce (Round 72 EXPMOBS);
 --   B. the truce flag: the Zombie (zombie.lua) and the Sun-Dried Husk
 --      (zero_asset_variants.lua) carry it, the skeletons do not, every
 --      shipped zombie-family sub-type copies one of the two bases, and the
@@ -97,6 +98,10 @@ for _, t in ipairs({0.0, 0.25, 0.5, 0.75, 0.9}) do
 end
 check(truce_active({temp = {grug_provoked = {other = true}}}, undead) == true,
 	"A4 another player's provocation does not end the truce")
+-- Round 72 EXPMOBS (round72-plan.md §2.9): an Expedition's mob keeps no truce,
+-- and the veto and the per-step drop both ask this one predicate (A6, A7).
+check(truce_active({_grug_expedition = 3}, undead) == false,
+	"A9 an Expedition's mob attacks an unprovoked Undead")
 check(not init:find("is_night", 1, true), "A5 no clock left in grug_mobs/init.lua")
 check(init:find("or (truce_perk and truce_active(s, player))", 1, true) ~= nil,
 	"A6 the target veto asks the truce")

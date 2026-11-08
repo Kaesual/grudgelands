@@ -814,8 +814,12 @@ function grug_mobs.register_mob(name, def)
 
 	-- Does the truce currently protect this player from this mob?
 	-- (truce perk race, and the player has not provoked THIS mob; no clock)
+	-- An Expedition's mob (`_grug_expedition`, grug_expeditions/packs.lua)
+	-- keeps no truce (round72-plan.md §2.9): one test here covers the target
+	-- veto and the per-step drop below.
 	local function truce_active(self, player)
-		return grug_core.get_race_perk(player, truce_perk) ~= nil
+		return not self._grug_expedition
+			and grug_core.get_race_perk(player, truce_perk) ~= nil
 			and not (self.temp and self.temp.grug_provoked
 				and self.temp.grug_provoked[player:get_player_name()])
 	end

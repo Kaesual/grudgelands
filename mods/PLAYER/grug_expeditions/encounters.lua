@@ -5,9 +5,14 @@
 -- dead). An idle server pays nothing: the one-second pass runs only while a run has
 -- a player inside and a room still waiting.
 --
--- Every mob carries in its first staticdata, so it holds from the first activation:
+-- Every mob carries in its first staticdata, so it holds from the first activation
+-- (packs.lua's spawn is the one place an Expedition's mob is made, boss included, so a
+-- new encounter or Expedition gets all of it without a line of its own):
 --   _grug_spawn_level  the run's level, before the first tick (levels.lua)
---   _grug_expedition   the run's id: item levels above 60 (grug_quality), no ore
+--   _grug_expedition   the run's id, and the mark of an Expedition's mob: item levels
+--                      above 60 (grug_quality), no ore; no undead truce (grug_mobs
+--                      init.lua truce_active) and the full view range towards a
+--                      player of any level (aggro.lua player_aggro_radius)
 --   lifetimer          above 20000: mobs_redo's far despawn leaves it alone, so a
 --                      pack the party walked past waits in its saved block. Not
 --                      static_save = false: such a mob goes with its block
