@@ -584,9 +584,11 @@ nodes/s, guards 4.6, so on foot the guards catch up.
   rider stays in the water.
 - **The town is its hard `town` footprint** (`grug_zones.hard_footprint_in`
   on the column), the same outline that names the town and protects it, from
-  16 nodes below the town's anchor (its fitted ground) up to the sky. Deeper,
-  in a cave or mine below the town, riding is free (user ruling 2026-11-08); a
-  rider coming up a shaft is dismounted on reaching 16 below the anchor.
+  15 nodes below the ground of each column (`grug_core.depth_below_surface`:
+  the graded ground or a water surface, so a capital's outer districts on
+  lower natural terrain count too) up to the sky. More than 16 below the
+  ground, in a cave or mine, riding is free (user ruling 2026-11-08); a rider
+  coming up a shaft is dismounted on reaching 15 below the ground.
   Villages, outposts and camps have no footprint and stay open.
   The land round the towns stays open to riding, and the flight ban (§4.3) is
   unchanged.

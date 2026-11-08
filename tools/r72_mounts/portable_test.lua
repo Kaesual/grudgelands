@@ -201,6 +201,14 @@ grug_core = {
 			{race_id = "orc", faction_id = "throng", anchor = {x = 1000, y = 0, z = 0}}}
 	end,
 	settlement_socket_settlements = function() return copy(SETTLEMENTS) end,
+	-- The ground is the floor's top (y -1), except a low district of the
+	-- Throng start town (z 30..40) at y -21, like a capital's outer wall on
+	-- natural terrain below its core (U).
+	depth_below_surface = function(pos)
+		local x, z = math.floor(pos.x + 0.5), math.floor(pos.z + 0.5)
+		local ref = (x >= 960 and x <= 1040 and z >= 30 and z <= 40) and -21 or -1
+		return ref + 0.5 - pos.y
+	end,
 }
 grug_sounds = {play = function() return false end, stop = function() return false end}
 grug_zones = {
@@ -397,8 +405,8 @@ check((ride_through(nil_player, 2, 940, 1060, 10)), "D a factionless rider cross
 eq(town_lines("nobody"), 0, "D (no line for the factionless rider)")
 
 ------------------------------------------------------------------------------
--- U: below a town (user ruling 2026-11-08): more than 16 nodes under its
--- anchor riding is free; the town begins 16 nodes down.
+-- U: below a town (user ruling 2026-11-08): more than 16 nodes under the
+-- column's ground riding is free; the town begins 16 nodes down.
 ------------------------------------------------------------------------------
 local function cave(x, z) return {x = x, y = GROUND - 30, z = z} end
 check((summon(ada, 2, cave(1000, 0))), "U a mount summoned in a cave 30 below the throng start town")
@@ -412,12 +420,15 @@ check(grug_mounts.active.ada ~= nil, "U a rider crosses under the throng start t
 eq(town_lines("ada"), 0, "U (no line)")
 -- Up a shaft in the same column: at 17 down still free, at 16 down the town.
 step_at(horse, {x = 1000, y = -17, z = 10})
-check(grug_mounts.active.ada ~= nil, "U 17 below the anchor: still under the town")
+check(grug_mounts.active.ada ~= nil, "U 16 below the ground: still under the town")
 step_at(horse, {x = 1000, y = -16, z = 10})
-eq(grug_mounts.active.ada, nil, "U 16 below the anchor: in the town, dismounted in the same column")
+eq(grug_mounts.active.ada, nil, "U 15 below the ground: in the town, dismounted in the same column")
 eq(town_lines("ada"), 1, "U (its line)")
-eq(grug_mounts.enemy_town_at("accord", 1000, 0, -16), true, "U the town's floor is 16 below its anchor")
+eq(grug_mounts.enemy_town_at("accord", 1000, 0, -16), true, "U the town reaches 15 below the ground")
 eq(grug_mounts.enemy_town_at("accord", 1000, 0, -17), false, "U one deeper is under it")
+-- The low district: the town follows its ground, not the town's anchor.
+eq(grug_mounts.enemy_town_at("accord", 1000, 35, -30), true, "U a low district 30 below the anchor is still the town")
+eq(grug_mounts.enemy_town_at("accord", 1000, 35, -38), false, "U and 17 below its own ground is under it")
 eq(grug_mounts.enemy_town_at("accord", 1000, 0), true, "U without y the column alone")
 
 ------------------------------------------------------------------------------

@@ -712,8 +712,8 @@ real fight. So:
     other way round. A flyer at an enemy home border sees the band and the dismount as
     before.
 28. Below an enemy town riding is free (user ruling 2026-11-08): ride in a cave or mine more
-    than 16 nodes under a Throng start town, no dismount; come up a shaft and be dismounted
-    16 nodes below the town's ground.
+    than 16 nodes under a Throng start town or the outer district of a Throng capital, no
+    dismount; come up a shaft and be dismounted 15 nodes below the ground.
 
 **Friend and foe nametags (TAGS)**
 
