@@ -118,7 +118,7 @@ user on 2026-11-08. Carry-overs:
   An admin `/teleport` out is not noticed.
 - **Run end:** a new run within 0.5 s of an end in the same slot can log one `ERROR` per mob
   ("Failed to emerge block"), coincidence only; `encounters.lua`'s comment "a step before"
-  overclaims. `use_waystone` is missing from `init.lua`'s header; `rewards_open` is also false
+  overclaims. `rewards_open` is also false
   for an ended run.
 - **Packs:** `packs.lua`'s `hunt` resets the clock on each re-target (invisibility, same-faction rows);
   a refused boss body leaves the door shut; a leftover DoT can relist a player; `can_strike`'s

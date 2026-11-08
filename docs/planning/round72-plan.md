@@ -835,7 +835,7 @@ D's reading agrees: nothing touches world generation, and `check_upgrade.py --ba
 meta `grug_mail:letter_registrar` (set once; a character past 20 gets the letter at the next
 join); `grug_expeditions:origin` keeps its format and may now name any waystone; rares save a
 plain `_grug_reach_reset`; the entity `grug_mobs:auditor_nemm` and `grug_mobs:duewarden`,
-the quests `capital_second_shift` and `capital_last_mint`, and five name slots are new ids.
+the quests `capital_second_shift` and `capital_last_mint`, and six name slots are new ids.
 Runs, traps, boss floors, the friend and foe carriers and the enemy-town table live in memory
 only. Nothing new is map-bound, so no reset clear.
 
@@ -867,7 +867,7 @@ only. Nothing new is map-bound, so no reset clear.
 `mods/` against the start (measured, `git diff f4325384 7b37aef0 -- mods`): 52 files, +2929
 −242, 45 of them Lua. Twelve new portable fixtures (`r72_fight`, `r72_ranged`,
 `r72_bladecraft`, `r72_mounts`, `r72_tags`, `r72_traps`, `r72_waytab`, `r72_place`,
-`r72_bossreset`, `r72_guardnav`, `r72_shift`, `r72_mint`): 332 in all.
+`r72_bossreset`, `r72_guardnav`, `r72_shift`, `r72_mint`); the suite now has 332.
 
 ### Decisions during the round
 
