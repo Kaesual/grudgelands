@@ -1157,7 +1157,19 @@ do
 	asks("N in the lake's lava", REFUSED, 100.5, 5.2, 60)
 	asks("N falling into it", REFUSED, 107.5, 20, 68.5)
 	asks("N jumping over a gap", REFUSED, 107.5, 32.2, 62.5)
+	-- Sliding down a pillar's face (the engine holds the body's centre 0.3 off it), the
+	-- foot's corner on the face itself, either side of it by a rounding, at a node's top
+	-- height and between: still a fall (review F1).
+	for _, y in ipairs({25.5, 20.3, 12.5}) do
+		for _, e in ipairs({0, 1e-6, -1e-6}) do
+			asks(("N sliding down P1's face, y %g, %g"):format(y, e), REFUSED, 107.5, y, 69.2 + e)
+			asks(("N sliding down P2's face, y %g, %g"):format(y, e), REFUSED, 107.5, y, 67.8 + e)
+			asks(("N sliding down P1's side, y %g, %g"):format(y, e), REFUSED, 105.2 + e, y, 72)
+		end
+	end
 	asks("N standing on a pillar", PASSED, 107.5, 31.5, 72)
+	asks("N standing, the feet a rounding below the top", PASSED, 107.5, 31.5 - 1e-6, 69.25)
+	asks("N standing, a rounding above", PASSED, 107.5, 31.5 + 1e-6, 69.25)
 	asks("N at a pillar's edge, the centre over the gap", PASSED, 107.5, 31.5, 69.25)
 	asks("N on a landing", PASSED, 100, 31.5, 78)
 	asks("N in a room", PASSED, places.arrival.x, F - 0.5, places.arrival.z)

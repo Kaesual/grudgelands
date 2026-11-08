@@ -53,12 +53,19 @@ local function in_or_over_lava(pos)
 	local x, z = math.floor(pos.x + 0.5), math.floor(pos.z + 0.5)
 	local y = math.floor(pos.y + 0.5)
 	if lava_at({x = x, y = y, z = z}) or lava_at({x = x, y = y + 1, z = z}) then return true end
-	-- Standing: a corner of the feet on a walkable node right below them.
-	for _, dx in ipairs({-FOOT, FOOT}) do
-		for _, dz in ipairs({-FOOT, FOOT}) do
-			if walkable_at({x = math.floor(pos.x + dx + 0.5), y = math.floor(pos.y - 0.05 + 0.5),
-					z = math.floor(pos.z + dz + 0.5)}) then
-				return false
+	-- Standing: the feet at a node's top, and a corner of them on a walkable node right
+	-- below, open at the feet's own height. A body sliding down a pillar's face has a
+	-- corner on the face itself: that corner's cell beside the feet is the pillar, so it
+	-- stands on nothing.
+	local top = math.floor(pos.y + 0.55)
+	if math.abs(pos.y + 0.5 - top) < 0.05 then
+		for _, dx in ipairs({-FOOT, FOOT}) do
+			for _, dz in ipairs({-FOOT, FOOT}) do
+				local cx, cz = math.floor(pos.x + dx + 0.5), math.floor(pos.z + dz + 0.5)
+				if walkable_at({x = cx, y = top - 1, z = cz}) and
+						not walkable_at({x = cx, y = top, z = cz}) then
+					return false
+				end
 			end
 		end
 	end
