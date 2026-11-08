@@ -15,6 +15,12 @@ WAYSTONE = "grug_expeditions:waystone"
 # The mod's own nodes, walkable all: the node registry does not list them.
 OWN_NODES = (WAYSTONE, "grug_expeditions:reward_chest", "grug_expeditions:reward_door")
 AXES = {"+x": (1, 0), "-x": (-1, 0), "+z": (0, 1), "-z": (0, -1)}
+BALL = 0.4  # a fireball's radius, traps.lua's BALL
+
+
+def ball_rows(v):
+    """The rows of cells a ball centred at v touches on one coordinate."""
+    return sorted({int(math.floor(v - BALL + 0.5)), int(math.floor(v + BALL + 0.5))})
 
 
 class Template:
@@ -146,8 +152,9 @@ class Template:
 
 
     def trap_problems(self, walkable):
-        """Trap groups agree with themselves; a floor trap stands on floor in an open
-        cell, a muzzle sits in an open cell with an open cell ahead (traps.lua)."""
+        """Trap groups agree with themselves; a floor trap's cell is air (its mark goes
+        there) on a walkable floor; every cell the ball's cross-section touches is open at
+        the muzzle and one cell ahead (traps.lua's flight_range)."""
         found, groups = [], {}
         for row in self.traps:
             group, pick, kind = row[0], row[1], row[2]
@@ -158,12 +165,16 @@ class Template:
             seen[1] += 1
             if kind == "floor":
                 x, y, z = (int(v) for v in row[3].split())
-                if walkable(self.get(x, y, z)) or not walkable(self.get(x, y - 1, z)):
-                    found.append(f"floor trap {group} at {x},{y},{z}: no open cell on a floor")
+                if self.get(x, y, z) != "air" or not walkable(self.get(x, y - 1, z)):
+                    found.append(f"floor trap {group} at {x},{y},{z}: no air cell on a floor")
             else:
                 (x, y, z), (dx, dz) = row[4], AXES[row[5]]
-                cx, cy, cz = (int(math.floor(v + 0.5)) for v in (x, y, z))
-                if walkable(self.get(cx, cy, cz)) or walkable(self.get(cx + dx, cy, cz + dz)):
+                cells = [(int(math.floor(x + 0.5)) + dx * k, cy, cz)
+                         for k in (0, 1) for cy in ball_rows(y)
+                         for cz in ball_rows(z)] if dx else \
+                        [(cx, cy, int(math.floor(z + 0.5)) + dz * k)
+                         for k in (0, 1) for cy in ball_rows(y) for cx in ball_rows(x)]
+                if any(walkable(self.get(*cell)) for cell in cells):
                     found.append(f"wall trap {group} at {x:g},{y:g},{z:g}: the muzzle is not open")
         for group, (key, count) in sorted(groups.items()):
             if key[1] < 1 or key[1] > count:

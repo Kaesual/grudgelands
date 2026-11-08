@@ -17,9 +17,9 @@
 --   after the hit. From its first hit a mark node shows its cell for the rest of the run.
 -- WALL TRAP: a fireball every `period` seconds from `offset` after readiness, along
 --   its axis at SPEED, whoever stands where: no targeting. The first walkable node
---   ahead stops it; a player in its way bursts it: the same damage to every player
---   within RADIUS. A shot with nobody of the run within LAUNCH_RANGE of the muzzle is
---   skipped, the timing kept.
+--   its cross-section touches stops it; a player in its way bursts it: the same
+--   damage to every player within RADIUS. A shot with nobody of the run within
+--   LAUNCH_RANGE of its line is skipped, the timing kept.
 -- STRIKE (strike/cancel): the floor trap's ring and hit on one position, once.
 --
 -- PLAYERS ONLY: no mob is ever looked at. The trigger and the fireball test the run's
@@ -148,18 +148,33 @@ local function body_distance(point, feet)
 	return vector.distance(point, near), near
 end
 
+-- The rows of nodes a ball centred at v touches on one coordinate: one or two.
+local function rows(v)
+	return math.floor(v - BALL + 0.5), math.floor(v + BALL + 0.5)
+end
+
 -- How far a fireball from `muzzle` flies along `axis` before its front meets a
--- walkable node.
+-- walkable node. Every node its cross-section touches counts (at most four per step:
+-- a muzzle at y 8.5 reaches into the rows 8 and 9), from the muzzle's own on: a ball
+-- that starts in a wall flies 0.
 local function flight_range(muzzle, axis)
 	local dir = AXES[axis]
 	local a = dir.x ~= 0 and "x" or "z"
+	local b = a == "x" and "z" or "x"
 	local sign = dir[a]
-	local cell = cell_of(muzzle)
-	for k = 1, T.MAX_RANGE do
-		local at = {x = cell.x, y = cell.y, z = cell.z}
-		at[a] = cell[a] + sign * k
-		if solid(at) then
-			return math.max(0, sign * (at[a] - sign * 0.5 - muzzle[a]) - BALL)
+	local start = cell_of(muzzle)[a]
+	local b0, b1 = rows(muzzle[b])
+	local y0, y1 = rows(muzzle.y)
+	for k = 0, T.MAX_RANGE do
+		local at = {}
+		at[a] = start + sign * k
+		for y = y0, y1 do
+			for side = b0, b1 do
+				at.y, at[b] = y, side
+				if solid(at) then
+					return math.max(0, sign * (at[a] - sign * 0.5 - muzzle[a]) - BALL)
+				end
+			end
 		end
 	end
 	return T.MAX_RANGE
@@ -288,9 +303,7 @@ local function treads(trap, p0, p1)
 	return dx * dx + dz * dz <= T.TRIGGER_RADIUS * T.TRIGGER_RADIUS
 end
 
-local function launch(state, wall)
-	local range = flight_range(wall.muzzle, wall.axis)
-	if range <= 0 then return end
+local function launch(state, wall, range)
 	local object = core.add_entity(wall.muzzle, FIREBALL)
 	local ent = object and object:get_luaentity()
 	if not ent then return end
@@ -299,9 +312,12 @@ local function launch(state, wall)
 	object:set_velocity(vector.multiply(wall.dir, T.SPEED))
 end
 
-local function someone_near(players, pos)
+-- A player of the run within LAUNCH_RANGE of any point of the flight.
+local function someone_near(players, wall, range)
+	local a = wall.dir.x ~= 0 and "x" or "z"
 	for _, row in ipairs(players) do
-		if vector.distance(row.pos, pos) <= T.LAUNCH_RANGE then return true end
+		local s = math.max(0, math.min(range, wall.dir[a] * (row.pos[a] - wall.muzzle[a])))
+		if vector.distance(row.pos, along(wall, s)) <= T.LAUNCH_RANGE then return true end
 	end
 	return false
 end
@@ -330,8 +346,9 @@ local function tick_run(state, now)
 	for _, row in ipairs(players) do state.last[row.name] = row.pos end
 	for _, wall in ipairs(state.walls) do
 		if now >= wall.next_at then
-			if now - wall.next_at < STALE and someone_near(players, wall.muzzle) then
-				launch(state, wall)
+			if now - wall.next_at < STALE and next(players) then
+				local range = flight_range(wall.muzzle, wall.axis)
+				if range > 0 and someone_near(players, wall, range) then launch(state, wall, range) end
 			end
 			wall.next_at = wall.next_at + wall.period * (math.floor((now - wall.next_at) / wall.period) + 1)
 		end

@@ -244,6 +244,25 @@ local function count(id, since)
 	return n
 end
 
+-- Every shipped template's floor candidates stand in air on a floor: the mark goes there.
+local catalogue = dofile(repo .. "/mods/PLAYER/grug_expeditions/catalogue.lua")
+for _, row in ipairs(catalogue.EXPEDITIONS) do
+	local handle = assert(io.open(repo .. "/mods/PLAYER/grug_expeditions/templates/" .. row.template ..
+		".exp", "rb"))
+	local each = T.parse(handle:read("*a"), inflate, row.template)
+	handle:close()
+	local function at(x, y, z)
+		return each.nodes[each.cells:byte(z * each.size.y * each.size.x + y * each.size.x + x + 1) + 1]
+	end
+	for _, trap_row in ipairs(each.traps) do
+		if trap_row.kind == "floor" then
+			local c = trap_row.pos
+			check(at(c.x, c.y, c.z) == "air" and at(c.x, c.y - 1, c.z) ~= "air",
+				"A " .. row.template .. " floor trap " .. trap_row.group .. " in air on a floor")
+		end
+	end
+end
+
 -- B. The choice.
 math.randomseed(72)
 local seen = {}
@@ -442,19 +461,43 @@ overrides[key({x = wall_x, y = MINP.y + 6, z = MINP.z + 34})] = "default:stonebr
 place(p, feet({x = 45, y = 5, z = 45}))
 place(q, feet({x = 12, y = 5, z = 45}))
 place(r, feet({x = 12, y = 5, z = 45}))
-local index = #objects
-run_for(ready_at + 20.5 - clock)
-local short = objects[index + 1]
+local function w1_shot(at)
+	for i = #objects, 1, -1 do
+		local object = objects[i]
+		if object.name and launches[i] and near(launches[i].at - ready_at, at, 0.21) and
+				near(launches[i].pos.z, w1row.muzzle.z) then
+			return object
+		end
+	end
+end
+run_for(ready_at + 18.5 - clock)
+local short = w1_shot(16)
 check(short and short.removed and math.abs(short.pos.x - wall_x) < 1.6, "D a stone block stops it")
 overrides[key({x = wall_x, y = MINP.y + 6, z = MINP.z + 34})] = nil
--- Nobody within 32 of a muzzle: skipped.
+-- The ball at y 5.5 reaches into the row below its centre's (5 and 6): a block in
+-- the lower row stops it too; one in the row above (7) does not.
+overrides[key({x = wall_x, y = MINP.y + 5, z = MINP.z + 34})] = "default:stonebrick"
+run_for(ready_at + 22.5 - clock)
+short = w1_shot(20)
+check(short and short.removed and math.abs(short.pos.x - wall_x) < 1.6, "D a block in the lower row stops it")
+overrides[key({x = wall_x, y = MINP.y + 5, z = MINP.z + 34})] = nil
+overrides[key({x = wall_x, y = MINP.y + 7, z = MINP.z + 34})] = "default:stonebrick"
+run_for(ready_at + 26.5 - clock)
+local full = w1_shot(24)
+local far_end = w1row.axis == "+x" and MINP.x + 19.1 or MINP.x + 3.9
+check(full and full.removed and math.abs(full.pos.x - far_end) < 1, "D a block above the ball does not")
+overrides[key({x = wall_x, y = MINP.y + 7, z = MINP.z + 34})] = nil
+-- Nobody within 32 of the line: skipped.
 for _, x in ipairs({p, q, r}) do place(x, feet({x = 45, y = 5, z = 100})) end
 local launched = #launches
-run_for(ready_at + 25.5 - clock)
+run_for(ready_at + 29.5 - clock)
 check(#launches == launched, "D nobody near, no shot")
+-- 30 beside the line's far end, 33.8 from the muzzle: the shot flies.
+place(p, {x = far_end, y = MINP.y + 4.5, z = MINP.z + 64})
+check(vector.distance(p.pos, w1row.muzzle) > 32, "D p is beyond 32 of the muzzle")
+run_for(ready_at + 32.3 - clock)
+check(w1_shot(32) ~= nil, "D within 32 of its line, it shoots")
 -- The run's end takes its fireballs along.
-place(p, feet({x = 12, y = 5, z = 45}))
-run_for(ready_at + 28.3 - clock)
 local flying = objects[#objects]
 check(not flying.removed, "D one in flight")
 end_run(run)

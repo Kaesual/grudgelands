@@ -54,13 +54,15 @@ data 342
   server at load.
 - `trap <group> <pick> floor x y z` and `trap <group> <pick> wall x y z <axis> <period> <offset>` (Round 72): one
   trap candidate ([rules](../design/expeditions.md#traps), `grug_expeditions/traps.lua`). A run arms `pick` of each
-  group's lines, at random when it is ready. A floor line names the cell a player stands in over the trap (open, on a
-  walkable floor). A wall line names the muzzle point in node coordinates, whole numbers being node centres and
+  group's lines, at random when it is ready. A floor line names the cell a player stands in over the trap: air (its mark
+  goes there, so no torch, plant or carpet), on a walkable floor. A wall line names the muzzle point in node coordinates, whole numbers being node centres and
   decimals allowed (`43 8.5 15.6`: just inside the open cell in front of the wall); `axis` is `+x`, `-x`, `+z` or
   `-z`, the fireball's direction; the first shot comes `offset` seconds after readiness, then one every `period`
   seconds. A group's lines agree on kind, pick, period and offset, and pick at most as many as they are. The source
   calls `t.trap_floor(group, pick, x, y, z)` and `t.trap_wall(group, pick, x, y, z, axis, period, offset)`; the
-  tool refuses a floor cell that is not open on a floor and a muzzle without open cells at it and ahead.
+  tool refuses a floor cell that is not air on a floor, and a muzzle where a cell the ball touches (radius 0.4, so
+  a point at y 8.5 reaches the rows 8 and 9) is walkable at the muzzle or one cell ahead. In flight, every walkable
+  node the ball touches stops it.
 - The reward room's nodes are in the template: `grug_expeditions:reward_door` fills the opening, every such node within
   8 cells of the `door` place goes when the boss dies; `grug_expeditions:reward_chest` stands on the `chest` place. An
   Expedition's chest contents live in `grug_expeditions/loot.lua`, by catalogue id.

@@ -191,8 +191,8 @@ test.
   mark shows its spot for the rest of the run.
 - **Wall trap:** a fireball on a fixed period (6 or 8 s in the plans), always, from its group's offset after the
   Expedition is ready, along a fixed direction at 8 nodes a second; no targeting. Stone stops it. A player in its way
-  bursts it: the same hit to every player within 2 nodes. A shot with nobody of the run within 32 nodes is left out,
-  the rhythm kept.
+  bursts it: the same hit to every player within 2 nodes. A shot with nobody of the run within 32 nodes of its line is
+  left out, the rhythm kept.
 - **A boss's marked spot** (The Second Shift's Auditor Nemm): the floor trap's ring and hit on one position, once;
   his reset or death takes the hit back.
 
