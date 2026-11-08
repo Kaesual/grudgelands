@@ -2,8 +2,8 @@
 
 Updated 2026-11-08. This is the delivery pointer, not another game specification.
 
-**0.72.0 / Round 72 is complete on the integration branch `round72` (2026-11-08): not on main,
-not pushed, the GUI test open.** From player reports and the user's notes: **combat starts at
+**0.72.0 / Round 72 is complete, merged into main and pushed (2026-11-08); the GUI test is
+open.** From player reports and the user's notes: **combat starts at
 targeting**; **placement** in combat refuses everything that blocks movement (ladders and liquids
 too), and nobody places a block into a body's cell, falling nodes tested where they land; **kings
 and bosses** reset on a boss floor computed once (no way or out of range, the one-way window with

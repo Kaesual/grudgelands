@@ -16,7 +16,7 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 bodies; the boss floor and the kings' and bosses' reset; guards out of reach reset at once;
 ranged kings shoot; Bladecraft's hand; no mounts in enemy towns; friend and foe nametags;
 the two trap types, the Expeditions tab, The Second Shift 40–69 and The Last Mint 60–69, all
-three Expeditions reshaped), complete on the branch `round72`, not on main, not pushed.
+three Expeditions reshaped), merged into main and pushed (2026-11-08).
 **Compatible**, no map reset
 ([completion and checklist](docs/planning/round72-plan.md#completion-2026-11-08)); the GUI test
 is open. Production runs **0.65.0**; its update crosses the map reset of 0.70.0 and runs the
