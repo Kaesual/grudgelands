@@ -1,8 +1,8 @@
 """The Last Mint, the level 60 Expedition (Round 72 lane MINT): the approved plan of
 docs/planning/round72-last-mint.md, The Stilled Seam's envelope mirrored on z, with the
 user's rulings of the round on top (round72-plan.md section 2.9): every floor flat (no
-step, no dais), and rooms small enough that no pack can be walked round. Walls and
-ceilings stay plain here; lane STYLE shapes and dresses them in the next wave, keeping
+step, no dais), and rooms small enough that no pack can be walked round. The STYLE
+pass gives each workshop its masonry vault and metalwork, keeping
 the floor footprint, the route, the pack places, the trap places, the pillars and the
 ore places. tools/r72_mint/portable_test.lua proves them on the written file.
 
@@ -10,6 +10,7 @@ The box is 128 x 64 x 128. Every walking cell stands on y 31, its first air at y
 the lake below is 24 nodes deep to its lava. The route runs
 0 > 1 (a) > 2 (b) > L > 3 (c) > 4 (d) > 5 (Duewarden) > 6."""
 from template import Template
+from shaping import hang, roof, walls
 
 ROCK = "default:stone"
 FLOOR_Y, FEET, EYE = 31, 32, 33
@@ -151,14 +152,15 @@ def lanterns(t, cells, top, step=6):
         for x in range(xs[0] + 3 + (row % 2) * (step // 2), xs[-1] - 1, step):
             near = all((x + dx, z + dz) in cells for dx in (-1, 0, 1) for dz in (-1, 0, 1))
             if near and t.get(x, LANTERN_Y, z) == "air":
-                t.box(x, LANTERN_Y + 1, z, x, top, z, ROPE)
-                t.set(x, LANTERN_Y, z, LANTERN)
+                hang(t, x, z, LANTERN_Y, top)
 
 
 def ore(t, node, x, z):
     """A marked node at reach, on a lump of rock at the wall."""
     t.set(x, FEET, z, ROCK)
     t.set(x, EYE, z, node)
+    # The seam stays closed above its mineral, including after it is mined.
+    t.box(x, FEET + 2, z, x, ROOM_TOP, z, ROCK)
 
 
 def rooms(t):
@@ -267,7 +269,8 @@ def wall_torches(t, step=3):
                 continue
             for dx, dz, face in ((-1, 0, WEST), (1, 0, EAST), (0, -1, NORTH), (0, 1, SOUTH)):
                 along = z if dx else x
-                if along % step == 0 and t.get(x + dx, FEET + 3, z + dz) == ROCK and \
+                if along % step == 0 and t.get(x + dx, FEET + 3, z + dz) in \
+                        (ROCK, BRICK, BLOCK, BASALT, SLATE, IRON, STEEL) and \
                         t.get(x, FEET + 3, z) == "air":
                     t.set(x, FEET + 3, z, TORCH, face)
 
@@ -276,6 +279,97 @@ def light(t):
     for name, room in ROOMS.items():
         lanterns(t, room_cells(room), room["top"])
     wall_torches(t)
+
+
+def shape(t):
+    """Masonry courses, closed wall displays and vaults over the unchanged floor.
+
+    Wisp rooms alternate first-solid rows 38/39 (six/seven clear nodes).
+    The press's pillars continue into the roof; no cornice has an open top.
+    """
+    profiles = {
+        "arrival": lambda x, z: 38 + min(4, max(0, (x - 8) // 3)) - (z > 111),
+        "bins": lambda x, z: 38 + min(6, max(0, (z - 94) // 2), max(0, (114 - z) // 2)),
+        "furnace": lambda x, z: 38 if z % 4 == 0 or x in (98, 117) else 39,
+        "cooling": lambda x, z: 38 if x % 4 == 0 or z in (9, 25) else 39,
+        "vestibule": lambda x, z: 38 if x % 6 in (0, 1) or z % 6 in (0, 1) else 39,
+        "press": lambda x, z: 48 - max(0, abs(2 * x - 127) // 4 - 1),
+        "store": lambda x, z: 40 if z % 6 == 0 else 42,
+    }
+    for name, room in ROOMS.items():
+        cells = room_cells(room)
+        def material(x, z):
+            if name == "furnace":
+                return IRON if z % 4 == 0 else BASALT
+            if name == "cooling":
+                return BLOCK if x % 4 == 0 else SLATE
+            if name == "vestibule":
+                return IRON if x % 6 in (0, 1) or z % 6 in (0, 1) else BASALT
+            if name == "press":
+                return STEEL if z in (18, 19, 28, 29) else BASALT
+            if name == "store":
+                return IRON if z % 6 == 0 else BRICK
+            return BLOCK if z % 6 == 0 else BRICK
+        roof(t, cells, room["top"], profiles[name], material)
+        def facing(x, y, z):
+            if name == "cooling":
+                return SLATE if y % 3 == 0 else BRICK
+            if name in ("furnace", "vestibule", "press"):
+                return IRON if (x + z) % 6 == 0 else BASALT
+            if name == "store":
+                return IRON if y == 36 or (x + z) % 8 == 0 else BRICK
+            return BLOCK if y % 4 == 0 else BRICK
+        # Leave the mineral's rock backing intact. The upper walls are dressed
+        # throughout; below, the stone jambs around each ore seam stay exposed.
+        walls(t, cells, FEET + 2, room["top"], facing)
+        for x, z in sorted(cells):
+            for dx, dz in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                nx, nz = x + dx, z + dz
+                minerals = [ROUTE_ORE, ROUTE_GEM] + STORE_ORE + STORE_GEM
+                if any(abs(nx - ox) + abs(nz - oz) <= 2 for ox, oz in minerals):
+                    continue
+                for y in (FEET, EYE):
+                    if t.get(nx, y, nz) == ROCK:
+                        t.set(nx, y, nz, facing(nx, y, nz))
+    # Receiving recess: a blind side arch, sealed with iron, its staggered crown
+    # reads in the wall without opening another room or making a shelf.
+    for z in range(102, 110):
+        crown = 39 - abs(z - 106) // 2
+        t.box(7, FEET, z, 7, crown, z, IRON)
+        t.set(7, crown + 1, z, BLOCK)
+    # The bins are closed wall pockets. Three iron mouths descend from the vault;
+    # their bottoms remain at least three nodes above the working floor.
+    for x in (56, 63, 70):
+        t.box(x, 35, 93, x + 2, 40, 93, IRON)
+        t.box(x, 41, 93, x + 2, 43, 93, BRICK)
+        # Full blocks in the floor, not raised rail nodes or a grate over a hole.
+        for rail_x in (x, x + 2):
+            t.box(rail_x, FLOOR_Y, 96, rail_x, FLOOR_Y, 103, IRON)
+    # Cooling racks: bands in the back wall, not bars the player can climb.
+    for y in (35, 37):
+        t.box(101, y, 7, 114, y, 7, IRON)
+    # Vestibule die cupboards, capped into the outer wall.
+    for z in (54, 64):
+        t.box(49, 35, z, 49, 37, z + 2, STEEL)
+        # The east cupboard stops short of the passage from z 56 (STYLE review).
+        t.box(78, 35, z, 78, 37, z + (1 if z == 54 else 2), STEEL)
+    for x in (61, 66):
+        t.box(x, FLOOR_Y, 13, x, FLOOR_Y, 36, STEEL)
+    for z in (54, 65):
+        t.box(53, FLOOR_Y, z, 74, FLOOR_Y, z, IRON)
+    # The furnace throat keeps its basin, pillars and every shot cell untouched.
+    # Alternating tall piers, pale tie courses and black masonry give it scale.
+    for x in (95, 120):
+        for z in range(44, 76):
+            for y in range(8, 61):
+                node = BLOCK if y in (30, 45, 59) else (IRON if z % 6 == 0 else BASALT)
+                t.set(x, y, z, node)
+    for z in (43, 76):
+        for x in range(96, 120):
+            for y in range(38, 61):
+                t.set(x, y, z, BLOCK if y in (45, 59) else BASALT)
+    for z in range(44, 76):
+        t.box(96, 60, z, 119, 60, z, IRON if z % 6 == 0 else BASALT)
 
 
 def build():
@@ -288,6 +382,7 @@ def build():
     door(t)
     ore(t, ORE, *ROUTE_ORE)
     ore(t, GEM, *ROUTE_GEM)
+    shape(t)
     light(t)
     traps(t)
     packs(t)

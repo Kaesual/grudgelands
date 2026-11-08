@@ -280,13 +280,21 @@ story, the floor plan and the texts.
 
 | Room | Holds |
 |---|---|
-| 0 Arrival | start waystone |
-| 1 Cart bay | pack a: 4 spiders; 1 ore |
-| 2 Prop room | pack b: 2 spiders, 1 elite golem; 1 gem |
-| 3 Sorting floor | packs c and d behind a rock screen: 3 spiders and 1 elite golem each |
-| 4 Working face | [Flintback](biomes_mobs.md), alone |
-| 5 Store | chest, end waystone; 4 ore, 2 gem |
+| 0 Arrival | small bent timber refuge, low sloping roof and boarded entrance; start waystone |
+| 1 Cart bay | compact cart chamber under a crooked rock vault, pine sleepers flush in the floor and a hooded cart recess; pack a: 4 spiders; 1 ore in the blind exit-side cut |
+| 2 Prop room | narrow leaning cleft with log posts embedded in the walls, pine ribs and a buried broken beam; pack b: 2 spiders, 1 elite golem; 1 gem |
+| 3 Sorting floor | two small sorting bays, one rising and one peaked, hooded wall tables and a low bend around the rock screen; packs c and d: 3 spiders and 1 elite golem each |
+| 4 Working face | smaller faceted cavern with a high fractured stone dome, cobble piers and a cluster of hanging lights; [Flintback](biomes_mobs.md), alone |
+| 5 Store | regular plank store beneath pine coffers, hooded barrels and capped mineral seams; chest, end waystone; 4 ore, 2 gem |
 
+- **Room cuts (Round 72):** the compact fighting chambers keep every pack at its original
+  place. Short low approaches and exits connect them to the unchanged passages; the cart
+  bay's fixed ore place is in a blind cut reached through the pack's sight. These cuts
+  are passage floor, separate from the fighting chambers: the old rectangular envelopes
+  extend beyond the packs' view ranges. Every fighting-chamber floor cell is in sight
+  and range of its own pack. Flintback's room envelope is now (54, 94)–(79, 119) in x/z;
+  the floor remains at y 4. Wall displays are capped into the roof, broken timber is flush
+  underfoot, and the eight mineral places, waystones, reward door and chest stay put.
 - **Mobs:** 12 spiders, 3 elite golems and the boss. Spiders have 384 HP at 20, 2,696 at 60
   and 3,507 at 69; elites 1,152, 8,088 and 10,522; Flintback 8 × an elite's: 9,216, 64,704
   and 84,176. Every mob keeps its name at every level; Flintback's is one fixed name.
@@ -317,12 +325,12 @@ flat, no dais, and every pack room cut so that no pack can be walked round.
 
 | Room | Holds |
 |---|---|
-| 0 Arrival | start waystone |
-| 1 Timekeeper's desk | pack a: 3 raiders, 2 miners; the shift board; 1 ore |
-| 2 Marking floor | pack b: 3 raiders, 1 elite miner; 2 of 4 floor traps; 1 gem |
-| 3 Wage room | packs c and d, 3 raiders and 1 elite miner each, a rock screen between them with an 8-node bypass; 1 of 2 floor traps per bay |
-| 4 Audit court | Auditor Nemm, alone; 2 of 4 floor traps |
-| 5 Store | chest, end waystone; 4 ore, 2 gem |
+| 0 Arrival | bent refuge beneath a low, sloping timber roof; boarded collapse and hooded benches; start waystone |
+| 1 Timekeeper's desk | rising rock roof and transverse beams; hooded desk and cart siding; pack a: 3 raiders, 2 miners; the shift board; 1 ore |
+| 2 Marking floor | leaning, notched roof with timber ribs, reinforced tally panels and flush broken beams; pack b: 3 raiders, 1 elite miner; 2 of 4 floor traps; 1 gem |
+| 3 Wage room | low sloping pay bay c and peaked bay d, hooded wall furniture and lanterns around the rock screen; packs c and d, 3 raiders and 1 elite miner each; the 8-node bypass and 1 of 2 floor traps per bay |
+| 4 Audit court | faceted high rock canopy with converging pine ribs, four timber shoulders and hanging lights; Auditor Nemm, alone; 2 of 4 floor traps |
+| 5 Store | level timber coffers and reinforced storage hoods; chest, end waystone; 4 ore, 2 gem |
 
 - **The passage from room 1 to room 2** holds the wall trap: 1 of 2 muzzles, every 8 s.
 - **Mobs:** Skeleton Raiders and Buried Miners at the run's level: 12 raiders, 2 miners, 3
@@ -361,14 +369,14 @@ flat (no dais), and no pack can be walked round.
 
 | Room | Holds |
 |---|---|
-| 0 Arrival | start waystone |
-| 1 Salvage bins | pack a: 5 Lava Seeps; 1 ore |
-| 2 Furnace room | pack b: 3 Seeps, 1 elite Seep, 1 Ember Wisp; floor traps (2 of 4) |
-| L Lava crossing | two landings, five 4 × 4 pillars, six level gaps of 2 nodes; wall shots (1 of 2, twice) |
-| 3 Cooling room | pack c: 3 Seeps, 1 elite Seep, 1 Wisp; 1 gem |
-| 4 Press vestibule | pack d: 1 elite Bedrock Sentinel, 3 Wisps; floor traps (2 of 4) |
-| 5 Press floor | **Duewarden**, alone, before the static press and its brand; floor traps (2 of 4) |
-| 6 Store | chest, end waystone; 4 ore, 2 gems |
+| 0 Arrival | stepped receiving vault, pale masonry courses and a sealed iron side arch; start waystone |
+| 1 Salvage bins | brick barrel vault, iron bin mouths and flush metal runners; pack a: 5 Lava Seeps; 1 ore |
+| 2 Furnace room | low basalt vault with iron ribs towards the crossing; pack b: 3 Seeps, 1 elite Seep, 1 Ember Wisp; floor traps (2 of 4) |
+| L Lava crossing | tall basalt furnace throat, iron uprights and pale tie courses; two landings, five 4 × 4 pillars, six level gaps of 2 nodes; wall shots (1 of 2, twice) |
+| 3 Cooling room | low slate ceiling, pale transverse ribs and iron rack bands in brick walls; pack c: 3 Seeps, 1 elite Seep, 1 Wisp; 1 gem |
+| 4 Press vestibule | low iron coffer ribs over basalt, steel die cupboards and flush metal ties; pack d: 1 elite Bedrock Sentinel, 3 Wisps; floor traps (2 of 4) |
+| 5 Press floor | high basalt nave on four columns, steel roof arches and flush runners; **Duewarden**, alone, before the static press and its pale iron brand; floor traps (2 of 4) |
+| 6 Store | a deliberately regular brick strongroom, iron ceiling bands and wood floor; chest, end waystone; 4 ore, 2 gems |
 
 - **Rooms a pack cannot be walked round** (user, 2026-11-08): from every floor cell of a
   pack's room, at least one mob of that pack would notice the player (its view range: Seep
