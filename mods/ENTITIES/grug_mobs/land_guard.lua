@@ -38,7 +38,7 @@ local guard = {
 -- before the Sentinel's registration, which writes into its table.
 local duewarden = table.copy(guard)
 duewarden.description = "Duewarden"
-duewarden._grug_hp_scale = 10
+duewarden._grug_hp_scale = 14
 duewarden.walk_chance = 0
 duewarden.drops = {}
 
