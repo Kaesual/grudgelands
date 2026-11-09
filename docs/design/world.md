@@ -966,9 +966,12 @@ WP17).
   the window has two tabs, **Waystones** (this list, shown first) and
   **Expeditions**: the Expedition the player may enter, with **Enter**, else one
   line saying why or pointing to the Expedition Registrar
-  ([expeditions.md](expeditions.md) §4). The two waystones inside an Expedition
-  open the same list without the Expeditions tab and without "You are here";
-  they are never a destination themselves.
+  ([expeditions.md](expeditions.md) §4); below it the player's own Expedition,
+  its state and its leader's **Finish** or **Cancel** (Round 72.1,
+  [expeditions.md](expeditions.md) §5). The two waystones inside an Expedition
+  open the same list without "You are here", and an Expeditions tab with that
+  state and those buttons alone, never Enter; they are never a destination
+  themselves.
 - **The own Claim Stone** (Round 45 PT9): every list ends with "Your Claim
   Stone", a waypoint for its owner only, once the stone is activated (a draft
   is none); it stays one when its fuel runs out and goes with the stone

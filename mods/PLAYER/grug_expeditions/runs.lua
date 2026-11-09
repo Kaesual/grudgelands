@@ -14,6 +14,9 @@ local hooks = {ready = {}, ended = {}, entered = {}, left = {}}
 -- (packs.lua).
 local META_ORIGIN = "grug_expeditions:origin"
 M.LOGOUT_DEATH = "grug_expeditions:logout_death"
+-- And since Round 72.1 the end of a Deserter's Mark: the wall clock's os.time(), so
+-- the mark runs on through a logout and a restart.
+M.DESERTER_META = "grug_expeditions:deserter_until"
 
 local function fire(event, ...)
 	for _, callback in ipairs(hooks[event]) do callback(...) end
@@ -148,6 +151,35 @@ function M.eligibility(player, id, bonus)
 	return rows
 end
 
+-- ---- The Deserter's Mark (Round 72.1) ------------------------------------------------
+-- Whoever cancels an Expedition, or leaves one unfinished for a foreign party, can
+-- neither open nor enter one for catalogue.DESERTER_SECONDS. name -> its end in
+-- os.time(), read from the meta at a join: the rules below ask no meta.
+local marks = {}
+
+-- The whole seconds the player's mark still runs, or nil.
+function M.deserter_left(player)
+	local name = name_of(player)
+	local ends = marks[name]
+	if not ends then return nil end
+	local left = ends - os.time()
+	if left > 0 then return left end
+	marks[name] = nil
+end
+
+local function deserter_text(left)
+	return ("Deserter's Mark: no Expeditions for %d:%02d."):format(math.floor(left / 60), left % 60)
+end
+
+local function mark_deserter(name)
+	local ends = os.time() + catalogue.DESERTER_SECONDS
+	marks[name] = ends
+	local player = core.get_player_by_name(name)
+	if not player then return end
+	player:get_meta():set_string(M.DESERTER_META, tostring(ends))
+	grug_core.feed(player, "notice", deserter_text(catalogue.DESERTER_SECONDS), "expedition_mark")
+end
+
 local function free_slot()
 	for slot = 1, catalogue.SLOTS do
 		if not slots[slot] then return slot end
@@ -157,6 +189,8 @@ end
 function M.can_create(player, id, bonus)
 	local level, def = run_level(id, bonus)
 	if not level then return false, def end
+	local marked = M.deserter_left(player)
+	if marked then return false, deserter_text(marked) end
 	local name = name_of(player)
 	local party = party_of(name)
 	if party and party.leader ~= name then
@@ -174,15 +208,33 @@ function M.can_create(player, id, bonus)
 	return true
 end
 
--- The run's own rules, whatever the player's state: owner, state, level and places.
--- What the Expeditions tab lists (entry.lua); can_enter adds the player's state.
+-- The seconds until a closing run ends (Round 72.1), rounded up: 0 only at its end.
+local function remaining(run)
+	return (run.closing.ends_at - core.get_us_time()) / 1e6
+end
+function M.closing_left(run)
+	if not run.closing then return nil end
+	return math.max(0, math.ceil(remaining(run)))
+end
+
+-- The run's own rules, whatever the player's state: owner, the Deserter's Mark,
+-- state, closing, level and places. What the Expeditions tab lists (entry.lua);
+-- can_enter adds the player's state.
 function M.may_enter(player, run)
 	run = run or M.run_of(player)
 	if not run then return false, "You have no Expedition." end
 	local name = name_of(player)
 	if run.state == "ended" then return false, "This Expedition has ended." end
 	if not belongs(run, name) then return false, "This Expedition belongs to someone else." end
+	local marked = M.deserter_left(player)
+	if marked then return false, deserter_text(marked) end
 	if run.state == "preparing" then return false, "Your Expedition is still being prepared." end
+	if run.closing then
+		if run.closing.reason == "cancelled" then return false, "This Expedition was cancelled." end
+		if M.closing_left(run) <= catalogue.CLOSED_SECONDS then
+			return false, "This Expedition is closing."
+		end
+	end
 	local needed = catalogue.entry_level(run.level)
 	if grug_xp.get_level(player) < needed then
 		return false, "This Expedition needs level " .. needed .. "."
@@ -217,6 +269,22 @@ local function stop_clock(run)
 	run.clock = run.clock + 1
 end
 
+-- ---- The countdown of a closing run (Round 72.1) -----------------------------------
+-- The banner line, once a second to everyone inside: each call replaces the text
+-- and restarts its clear, so it stands for the whole countdown.
+
+local function seconds_text(left)
+	return left == 1 and "1 second" or (left .. " seconds")
+end
+
+local function show_countdown(run, name, left)
+	local player = core.get_player_by_name(name)
+	if not player then return end
+	local text = run.closing.reason == "cancelled" and "This Expedition was cancelled. It ends in %s." or
+		"This Expedition ends in %s."
+	grug_core.banner(player, text:format(seconds_text(left)))
+end
+
 -- ---- Who stands inside ----------------------------------------------------------
 
 local function mark_inside(run, name)
@@ -224,6 +292,8 @@ local function mark_inside(run, name)
 	inside_of[name] = run
 	if run.state == "ready" then run.state = "running" end
 	stop_clock(run)
+	-- Whoever arrives during a countdown sees it from their arrival on.
+	if run.closing then show_countdown(run, name, M.closing_left(run)) end
 	fire("entered", run, name)
 end
 
@@ -289,6 +359,125 @@ function M.end_run(run, reason)
 	fire("ended", run, reason)
 end
 
+-- ---- Finish and Cancel (Round 72.1) ----------------------------------------------
+-- One closing path for both: run.closing = {reason, by, ends_at}, the end after
+-- catalogue.CLOSING_SECONDS through end_run, and one core.after a second while it
+-- counts down (each when the shown number drops). The owner still holds the run until then; the release clock goes on
+-- as before, and whichever end comes first wins.
+
+local function countdown(run)
+	if run.state == "ended" then return end
+	local rest = remaining(run)
+	if rest <= 0 then return M.end_run(run, run.closing.reason) end
+	local left = math.ceil(rest)
+	for name in pairs(run.inside) do show_countdown(run, name, left) end
+	-- The next call when the number drops, so a late step skips none.
+	core.after(rest - (left - 1), function() countdown(run) end)
+end
+
+-- The online players of the owner outside the box hear it once; those inside see
+-- the countdown.
+local function close(run, reason, by)
+	run.closing = {reason = reason, by = by,
+		ends_at = core.get_us_time() + catalogue.CLOSING_SECONDS * 1e6}
+	for _, player in ipairs(core.get_connected_players()) do
+		local name = player:get_player_name()
+		if not run.inside[name] and belongs(run, name) then
+			notice(player, ("%s %s the Expedition. It ends in %s."):format(
+				name == by and "You" or by, reason, seconds_text(catalogue.CLOSING_SECONDS)))
+		end
+	end
+	countdown(run)
+end
+
+-- Only the party's current leader, or the solo owner.
+local function leads(run, name)
+	if run.owner.kind == "player" then return run.owner.name == name end
+	local party = party_of(name)
+	return party ~= nil and party.id == run.owner.id and party.leader == name
+end
+
+-- What Finish and Cancel both ask: the player's run, led by them, ready or under way
+-- and not closing yet. The run, or nil and why.
+local function closable(player, run, verb)
+	run = run or M.run_of(player)
+	if not run or run.state == "ended" then return nil, "You have no Expedition." end
+	if not leads(run, name_of(player)) then
+		return nil, "Only your party leader can " .. verb .. " the Expedition."
+	end
+	if run.state == "preparing" then
+		return nil, "Your Expedition is still being prepared. Wait until it is ready."
+	end
+	if run.closing then return nil, "This Expedition is already closing." end
+	return run
+end
+
+-- Finish: once the boss is dead, or the template has none.
+function M.can_finish(player, run)
+	local why
+	run, why = closable(player, run, "finish")
+	if not run then return false, why end
+	if not M.rewards_open(run) then
+		return false, "The Expedition can be finished once its boss is dead."
+	end
+	return true
+end
+
+-- Cancel: any run that cannot be finished, ready and never entered too.
+function M.can_cancel(player, run)
+	local why
+	run, why = closable(player, run, "cancel")
+	if not run then return false, why end
+	if M.rewards_open(run) then return false, "The boss is dead: finish the Expedition instead." end
+	return true
+end
+
+-- What Cancel's confirmation says first.
+M.CANCEL_CONFIRM = ("Cancel this Expedition? You cannot open or enter an Expedition for %d minutes.")
+	:format(catalogue.DESERTER_SECONDS / 60)
+
+function M.finish(player)
+	local ok, why = M.can_finish(player)
+	if not ok then return false, why end
+	close(M.run_of(player), "finished", name_of(player))
+	return true
+end
+
+-- The canceller alone gets the Deserter's Mark, at the click. With nobody inside the
+-- run ends at once.
+function M.cancel(player)
+	local ok, why = M.can_cancel(player)
+	if not ok then return false, why end
+	local run, name = M.run_of(player), name_of(player)
+	mark_deserter(name)
+	if next(run.inside) then
+		close(run, "cancelled", name)
+	else
+		M.end_run(run, "cancelled")
+	end
+	return true
+end
+
+-- What a run's owner reads about its state: the registrar's window and the
+-- Expeditions tab.
+local PREPARING = "Your Expedition is being prepared..."
+function M.state_text(run)
+	if run.state == "preparing" then
+		local status = M.preparation(run)
+		local ahead = status and status.waiting or 0
+		if ahead > 0 then return ("%s %d ahead in the queue."):format(PREPARING, ahead) end
+		return PREPARING
+	end
+	if run.closing then
+		return ("%s It ends in %s."):format(run.closing.reason == "cancelled" and "Cancelled." or
+			"Finished.", seconds_text(M.closing_left(run)))
+	end
+	if run.state == "ready" then
+		return ("Ready. It waits %d minutes for you."):format(catalogue.RESERVE_SECONDS / 60)
+	end
+	return "Under way."
+end
+
 local function prepared(run, ok)
 	if run.state ~= "preparing" then return end
 	if not ok then
@@ -345,6 +534,7 @@ end)
 -- An offline member does not count as inside.
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
+	marks[name] = nil
 	local run = inside_of[name]
 	if run then mark_left(run, name, "logout") end
 end)
@@ -355,9 +545,17 @@ end)
 -- else home. A dead player's respawn asks the same (guard.lua), and so does a
 -- pending logout death's, which runs after this (packs.lua).
 core.register_on_joinplayer(function(player)
+	local name = player:get_player_name()
+	-- A Deserter's Mark still running is the rules' again; a spent one goes.
+	local meta = player:get_meta()
+	local ends = tonumber(meta:get_string(M.DESERTER_META))
+	if ends and ends > os.time() then
+		marks[name] = ends
+	elseif ends then
+		meta:set_string(M.DESERTER_META, "")
+	end
 	local pos = player:get_pos()
 	if not catalogue.slot_at(pos) then return end
-	local name = player:get_player_name()
 	local run = M.run_at(pos)
 	if run and run.entered[name] then return mark_inside(run, name) end
 	core.after(0, function()
@@ -395,7 +593,11 @@ grug_parties.register_on_change(function(name, reason)
 		run.owner = {kind = "party", id = party.id}
 		bind_owner(run)
 	else
+		-- A run left unfinished marks its owner (Round 72.1): not one the boss of is
+		-- dead, nor one already finished or cancelled.
+		local deserted = not run.closing and not M.rewards_open(run)
 		M.end_run(run, "joined_party")
+		if deserted then mark_deserter(name) end
 	end
 end)
 

@@ -128,6 +128,11 @@ icons.STATUS = {
 	-- A dragon fight's participant outside its arena (grug_mobs boss_dragons.lua).
 	dragon_wrath = def("debuff", "Dragon's Wrath", "Return to the dragon's arena",
 		art("scorched")),
+	-- Round 72.1: whoever cancels an Expedition (grug_expeditions registrar.lua, a
+	-- status source). No art of its own yet: the contested banner upside down and
+	-- muted, until the user picks a drawn icon.
+	deserter_mark = def("debuff", "Deserter's Mark", "Cannot open or enter Expeditions",
+		art("pvp_contested") .. "^[transformFY^[hsl:0:-40:0"),
 
 	-- Neither buff nor debuff. in_combat is drawn next to the health bar by
 	-- combat_hud.lua, not on the status row (ruling 19). The PvP flag

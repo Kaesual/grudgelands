@@ -18,7 +18,9 @@ The word is **Expedition**, for players, in docs and in code.
 A few details below are the coordinator's defaults, standing until the user rules on them
 ([completion](../planning/round71-plan.md#decisions-during-the-round)): sight as a pull, a list holding only who engaged, forced exits in combat, no boats, refined bars in drops, the
 black arrival, one chest roll, lost chest contents and a boss without
-ground drops.
+ground drops. Round 72.1's (§5): Cancel counts down like Finish while someone is inside,
+Finish and Cancel are refused while a run is prepared or already closing, and a run that
+can be finished offers Finish alone.
 
 ## 1. The set
 
@@ -76,7 +78,8 @@ of a pack's reach (`tools/expedition_templates/proofs.lua`).
 ## 3. Owner
 
 An Expedition has **one owner: one player or one party**, and an owner has one
-Expedition at a time. Anyone who does not belong to it is teleported out at once.
+Expedition at a time, until it ends: a run it no longer wants is finished or cancelled
+(§5). Anyone who does not belong to it is teleported out at once.
 
 - **Creating:** at the **Expedition Registrar**, in a capital's guild house
   ([settlements](settlements.md)). It serves its own faction. A party leader creates a
@@ -86,7 +89,9 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
   party's.
 - **A solo owner joins a foreign party:** the Expedition ends at once, the owner is
   teleported out if inside, and leaving that party does not win it back. The invitation
-  warns of this ([parties](parties.md)).
+  warns of this ([parties](parties.md)). Since Round 72.1 the owner also gets the
+  **Deserter's Mark** (§5), unless the run could be finished (its boss dead, or none) or
+  was already finished or cancelled.
 - **A party falls to one member:** that member becomes the owner.
 - **Leaving the party**, by choice, kicked or by a faction change: the player is
   teleported out at once, in combat too, and their place is free again. This also frees
@@ -99,8 +104,10 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
 - **Enter** at a registrar of the player's faction, or (Round 72, user 2026-11-08) on the
   **Expeditions tab** of every waystone outside the Expeditions and of the Claim Stone
   ([world.md](world.md) §6, [housing](housing.md) §7.1). The tab lists the Expedition of
-  the player's owner while they may enter it (owner, ready or under way, level, places);
-  otherwise it says in one line why, or with no Expedition points to the Registrar.
+  the player's owner while they may enter it (owner, the Deserter's Mark, ready or under
+  way, closing, level, places); otherwise it says in one line why, or with no Expedition
+  points to the Registrar. Below that, since Round 72.1, the run's state and, for its
+  leader, Finish or Cancel (§5), also when the leader cannot enter.
   Creating stays at the Registrar alone. Entering from the tab is a waystone trip by the
   waystones' rules: standing at the stone, alive, and refused in combat, at the click and
   again on arrival; it arrives at the start waystone as from the Registrar.
@@ -111,11 +118,12 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
   the box keeps it; the player can go back in. So a larger party is full after the first
   3 or 4 entries, and only leaving the party frees a place.
 - **Two waystones** stand inside: at the start, and in the reward room. Since Round 72
-  both open the ordinary waystone window without the Expeditions tab: the player travels
-  to any of their discovered waystones or their Claim Stone, by the waystones' rules (no
-  cooldown, refused in combat). The Expedition's waystones are never a destination. A
-  trip out keeps the place and ends no run; the player leaves its packs' lists as they
-  leave the box.
+  both open the ordinary waystone window: the player travels to any of their discovered
+  waystones or their Claim Stone, by the waystones' rules (no cooldown, refused in
+  combat). The Expedition's waystones are never a destination. A trip out keeps the place
+  and ends no run; the player leaves its packs' lists as they leave the box. Since Round
+  72.1 the window also has an Expeditions tab with the run's state and its leader's
+  Finish or Cancel alone, never Enter.
 - **Return Home** works inside, under its normal rules ([home travel](home_travel.md)),
   but not in lava (Round 72, the user's ruling for The Last Mint): standing in it, or
   falling towards it, a player is refused ("Cannot return home from the lava."). A fall
@@ -130,7 +138,40 @@ Expedition at a time. Anyone who does not belong to it is teleported out at once
   entered within 10 minutes. An offline member does not count as inside; a dead one does until they log out; a respawn stands them at
 the start waystone, still inside.
 - After those 10 minutes it **ends**: nobody can enter any more, and the slot is free.
-  A notice names the reason.
+  A notice names the reason. Letting a run lapse so gives no Deserter's Mark.
+- **Finish** (Round 72.1, the user, 2026-11-09) ends a run properly once its boss is dead,
+  or at once when its template has none. Only the party's **current leader**, or the solo
+  owner, may finish, at the Registrar, on the Expeditions tab of a waystone outside or of
+  the Claim Stone, or at a waystone inside; it needs no confirmation. The run ends **60
+  seconds** later:
+  - Everyone inside sees "This Expedition ends in N seconds." as the banner line, once a
+    second for the whole minute; whoever enters meanwhile sees it from their arrival on.
+    Members outside get one notice: "<leader> finished the Expedition. It ends in 60
+    seconds."
+  - Entering is refused for the last **10 seconds** ("This Expedition is closing."), at
+    the click and on the arrival of a trip already on its way.
+  - At the end everyone still inside goes to the waystone of their last way in, as at
+    every end; a dead player stays dead and respawns at home. What is left in the chest is
+    lost (§10).
+- **Cancel** ends a run that cannot be finished, in any state from ready on, never
+  entered included; the same leader, the same places. A run whose boss is dead offers
+  Finish alone. The first click asks: "Cancel this Expedition? You cannot open or enter an
+  Expedition for 5 minutes.", with Confirm and Back. With nobody inside the run ends at
+  once; otherwise it counts down 60 seconds like Finish, with the banner "This Expedition
+  was cancelled. It ends in N seconds.", and nobody can enter it from the click on.
+- Finish and Cancel are refused while a run is being prepared (about 15 seconds) and
+  once it is closing. During the minute the owner still holds the run, so a new one can
+  be opened only after its end; the 10-minute clock runs on, and whichever end comes
+  first ends it.
+- **The Deserter's Mark:** whoever cancels, and nobody else (party members are never
+  punished for their leader), can neither open nor enter any Expedition, their party's
+  included, for **5 minutes** of real time, from the click. A refusal names it with the
+  time left: "Deserter's Mark: no Expeditions for 4:12." It runs on through a logout and a
+  server restart (its end is saved player meta), and shows in the status row and the
+  Effects tab as "Deserter's Mark", "Cannot open or enter Expeditions"; its icon is the
+  contested banner upside down and muted until a drawn one is picked. The leader may hand
+  leadership on: a new leader without the mark may open a new run at once, which the
+  bearer cannot enter while the mark lasts.
 - **Logout out of combat** costs nothing: the player comes back where they stood.
 - **Logout on a pack's list** counts as a death, with Round 70's penalty once
   ([durability](durability_repair.md)), and takes the player off the list. The death

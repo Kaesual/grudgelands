@@ -387,7 +387,9 @@ lacks(fs, "Accepting ends", "B no Expedition, no warning")
 -- Round 71: while the invited player owns an Expedition alone, one line more in
 -- the box and beside Accept; a party's Expedition says nothing.
 local run_owner = {kind = "player", name = "bob"}
-rawset(_G, "grug_expeditions", {run_of = function(name)
+-- Round 72.1: a finished run (rewards open) keeps the short line; the mark's
+-- wording is tools/r71_ui's.
+rawset(_G, "grug_expeditions", {rewards_open = function() return true end, run_of = function(name)
 	return name == "bob" and {owner = run_owner} or nil
 end})
 step(0.6)

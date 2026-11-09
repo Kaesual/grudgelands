@@ -15,7 +15,8 @@
 --    sees the level refusal and a forged click is refused; a run being prepared says so.
 -- E. Combat and the stone's reach: refused at the click in the window, and on the
 --    trip's step in the feed.
--- F. The stones inside: the ordinary waystone window without tabs; a trip out to
+-- F. The stones inside: the ordinary waystone window, its Expeditions tab with the
+--    run's actions alone (Round 72.1); a trip out to
 --    another waystone keeps the place and the run, and the tab of that waystone
 --    takes the player back in.
 -- G. The Claim Stone's tab: listed and entered from the owner's activated stone, the
@@ -212,6 +213,8 @@ load_file(repo .. "/mods/PLAYER/grug_expeditions/init.lua")
 _G.dofile = load_file
 modname = "grug_home"
 local E = grug_expeditions
+-- Round 72.1: encounters.lua (left out) answers it; the fake template has no boss.
+E.rewards_open = function() return true end
 local left = {}
 E.register_on_leave(function(_, name, why) left[#left + 1] = name .. " " .. why end)
 
@@ -347,8 +350,12 @@ core.registered_nodes["grug_expeditions:waystone"].on_rightclick(inner, nil, eve
 fs = fs_of(eve)
 check(has(fs, "Test Vault Waystone") and has(fs, "go_highcourt") and has(fs, "go_dawnmere"),
  "F an inner stone lists the player's waystones")
-check(not has(fs, "waystone_tab_") and not has(fs, "enter_") and not has(fs, "You are here"),
- "F no Expeditions tab inside")
+-- Round 72.1: the inner stones gained the Expeditions tab, with the run's actions alone.
+check(has(fs, "waystone_tab_2;Expeditions]") and not has(fs, "enter_") and not has(fs, "You are here"),
+ "F the Expeditions tab inside, no Enter")
+fields(eve, {waystone_tab_2="Expeditions"})
+check(not has(fs_of(eve), "enter_") and has(fs_of(eve), "act_finish_" .. solo.id), "F its actions alone")
+fields(eve, {waystone_tab_1="Waystones"})
 in_combat.Eve = true
 fields(eve, {go_dawnmere="Travel"})
 check(#emerge == 0 and E.run_inside(eve) == solo, "F the normal rules refuse combat")

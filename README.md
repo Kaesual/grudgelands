@@ -98,6 +98,10 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.72.1** lets the party leader finish an Expedition once its boss is dead, with a minute's
+countdown for everyone inside, or cancel it earlier at the cost of the Deserter's Mark: five
+minutes without Expeditions. Compatible; desktop and web acceptance is pending.
+
 **0.72.0** adds two Expeditions for four players, The Second Shift (levels 40 to 69) and
 The Last Mint (60 to 69, across a lava lake), with traps, reshapes The Stilled Seam, and lets
 you enter your Expedition from any waystone or your Claim Stone. Fights now start when a mob

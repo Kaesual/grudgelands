@@ -391,6 +391,8 @@ end
 dofile(repo .. "/mods/PLAYER/grug_expeditions/init.lua")
 _G.dofile = load_file
 local E = grug_expeditions
+-- Round 72.1: encounters.lua (left out) answers it; the test templates have no boss.
+E.rewards_open = function() return true end
 callbacks.loaded()
 local events = {}
 E.register_on_ready(function(run) events[#events + 1] = "ready " .. run.id end)

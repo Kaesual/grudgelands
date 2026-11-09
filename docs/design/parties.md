@@ -83,7 +83,9 @@ shows the newest invitation, whatever the Party HUD switch says, and goes
 when the invitation is accepted, declined or expires. There is no chat
 command to answer; the chat line at the invitation names the Social tab.
 While the player owns an Expedition alone, the box and the Social tab beside
-Accept add one line: "Accepting ends your Expedition." (Round 71).
+Accept add one line: "Accepting ends your Expedition." (Round 71), or, while
+the run is unfinished, "Accepting ends your Expedition and gives you the
+Deserter's Mark." (Round 72.1, [expeditions](expeditions.md) §3).
 The atlas shows online member positions and headings in its current view; this
 does not introduce any shared XP, quest or teleport authority.
 

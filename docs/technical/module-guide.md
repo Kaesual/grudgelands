@@ -2341,10 +2341,13 @@ nothing and logs one line, so local and browser worlds play as without it.
   (`grug_home.use_waystone`); the refusals are pure rules in
   `waypoints_core.lua`. Since Round 72 the form has the tabs Waystones and
   Expeditions; the second is filled by `grug_expeditions` through
-  `grug_home.register_expedition_tab` (rows and enter, every rule theirs) and
-  shown on the Claim Stone too (`expedition_rows`, `expedition_from_claim`);
+  `grug_home.register_expedition_tab` (rows and enter, every rule theirs; since
+  Round 72.1 also `actions` and `act`, the owner's run below the rows with its
+  state and its leader's Finish or Cancel, a button's `confirm` asked first) and
+  shown on the Claim Stone too (`expedition_rows`, `expedition_from_claim`,
+  `expedition_actions`, `expedition_act`);
   `grug_home.show_waystones` opens the list from a stone outside the network
-  (an Expedition's), without tabs. The node `grug_mapgen:waystone` is registered in
+  (an Expedition's), since Round 72.1 with the Expeditions tab of the actions alone. The node `grug_mapgen:waystone` is registered in
   `grug_mapgen/world_nodes.lua` before the settlement content resolves.
   Fixture `tools/r29_w/portable_test.lua`, engine probe `tools/r29_w/probe.sh`.
   Rules: [world.md](../design/world.md) §6,
@@ -2365,12 +2368,18 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   of the last way in, a capital's at the registrar, any network stone's since Round 72's
   Expeditions tab; for a login or respawn in a box whose run is gone) and
   `grug_expeditions:logout_death` (a pending death, set at the leave, spent at the next
-  join). Mob fields sit in box blocks, which preparation wipes. Neither key is map-bound.
+  join). Since Round 72.1 a third: `grug_expeditions:deserter_until`, the end of a
+  Deserter's Mark in `os.time()` (wall clock, so it runs through a logout and a restart),
+  read into `runs.lua`'s table at a join and cleared at a join once spent; the rules ask
+  that table, never the meta. Mob fields sit in box blocks, which preparation wipes. None of
+  the keys is map-bound.
   Credit goes out under the stable `expedition:<catalogue id>`, never a per-run id:
   `grug_achievements` keeps a saved counter per id.
 - **No per-tick pass over players.** "Inside" follows `grug_home.register_on_teleport` and
   the leave and join callbacks (every player teleport ends in `travel.lua`); the release
-  clock is one `core.after` per empty stretch; `encounters.lua`'s one-second pass runs only
+  clock is one `core.after` per empty stretch; a closing run (Finish or Cancel, Round 72.1)
+  one `core.after` a second for its minute, the countdown through `grug_core.banner` to those
+  inside; `encounters.lua`'s one-second pass runs only
   while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled; `traps.lua`'s pass (5 a second) only while a run with traps has a player inside, and its fireballs are entities that are never saved;
   preparation's `core.after(0)` chain only while one is under way. An admin `/teleport` out
   is not noticed: the player counts as inside until logout.
@@ -2389,7 +2398,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   every look at the home, so a row must survive the look on arrival, outside the box:
   `guard.lua`'s `to_capital`), `grug_home.register_on_teleport`, `trip.fallback`,
   `grug_home.waystone_pos`, `waystone_arrival`, `grug_home.register_expedition_tab` and
-  `show_waystones` (Round 72, `entry.lua`: the Expeditions tab and the stones inside),
+  `show_waystones` (Round 72, `entry.lua`: the Expeditions tab and the stones inside; its
+  `actions` and `act` since Round 72.1), `grug_core.register_status_source` (Round 72.1,
+  `registrar.lua`: the Deserter's Mark, a source so a death does not clear it),
   `grug_home.register_return_guard` and `grug_core.register_lava_hold` (Round 72,
   `guard.lua`: Return Home refused in or over lava in a box; every box holds its lava),
   `grug_mobs.set_spawn_free_field` (first

@@ -107,6 +107,7 @@ _G.grug_core = {
 		feed[#feed + 1] = {name = player:get_player_name(), kind = kind, text = text, key = key}
 		return true
 	end,
+	register_status_source = function() end, -- Round 72.1: the Deserter's Mark (r721_finish)
 	ui_window = nil,
 }
 -- The real toolkit, without the viewport code: frame and text growth are its.
@@ -163,7 +164,8 @@ local preparation = {
 		end
 	end,
 }
-_G.grug_expeditions = {templates = {test_vault = {
+-- Round 72.1: rewards_open is encounters.lua's (left out); the test template has no boss.
+_G.grug_expeditions = {rewards_open = function() return true end, templates = {test_vault = {
 	places = {arrival = {x = 1, y = 1, z = 1}}, encounters = {}}}}
 local M = grug_expeditions
 assert(loadfile(repo .. "/mods/PLAYER/grug_expeditions/runs.lua"))(catalogue, preparation)
@@ -507,6 +509,19 @@ grug_parties.register_on_change = function() end
 dofile(repo .. "/mods/PLAYER/grug_parties/ui.lua")
 local warning = grug_parties.invitation_warning
 check(warning("Solo") == "Accepting ends your Expedition.", "I a solo owner")
+-- Round 72.1: an unfinished run names the Deserter's Mark; a finishable or
+-- closing one does not (runs.lua's joined-party rule).
+do
+	local open = grug_expeditions.rewards_open
+	grug_expeditions.rewards_open = function() return false end
+	check(warning("Solo") == "Accepting ends your Expedition and gives you the Deserter's Mark.",
+		"I an unfinished run names the mark")
+	local run = grug_expeditions.run_of("Solo")
+	run.closing = {reason = "cancelled"}
+	check(warning("Solo") == "Accepting ends your Expedition.", "I a closing run does not")
+	run.closing = nil
+	grug_expeditions.rewards_open = open
+end
 check(warning("Stranger") == nil, "I nobody else")
 parties.Solo = party("Solo", "Friend")
 check(warning("Solo") == nil, "I not when the party owns nothing")

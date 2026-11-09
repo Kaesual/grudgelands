@@ -348,8 +348,9 @@ Once activated:
   waystones, each with Travel (§8).
 - A tab **Expeditions** (Round 72): the Expedition the owner may enter, with
   Enter from the stone (within the same reach), as on every waystone
-  ([expeditions.md](expeditions.md) §4); with none, one line saying why. With
-  four tabs they share the width.
+  ([expeditions.md](expeditions.md) §4); with none, one line saying why. Below
+  it, since Round 72.1, the owner's Expedition with its state and its leader's
+  Finish or Cancel (§5 there). With four tabs they share the width.
 - While belongings from an old map wait, a tab **Belongings (N)** (Round
   50): the Claim Stone inventory (§3a), four rows visible and scrollable,
   above the player's combined bag; shift-click takes into the inventory.

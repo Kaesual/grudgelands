@@ -1,6 +1,24 @@
 # Project status
 
-Updated 2026-11-08. This is the delivery pointer, not another game specification.
+Updated 2026-11-09. This is the delivery pointer, not another game specification.
+
+**0.72.1 is complete on main as one squash commit (tag `round-72.1`, the first round under
+the one-commit-per-round rule), not pushed; the GUI test is open.** From the user's note
+that an Expedition could not be ended (rulings 2026-11-09): the party leader or solo owner
+**finishes** a run once `rewards_open` holds, at the Registrar, the Expeditions tab of every
+outside waystone and the Claim Stone, and the two stones inside (which now show a tab with
+the run's state and the leader's actions, never Enter); a 60 s countdown banner for everyone
+inside and late entrants, entry closed 10 s before the end, unlooted chests lost. **Cancel**
+works before that, in any state but preparing, after a confirmation, with the same countdown
+and entry refused at once; the canceller gets the **Deserter's Mark** (5 minutes, real time,
+saved in player meta `grug_expeditions:deserter_until`, shown as a status that survives death
+and relog; it blocks opening and entering). A solo owner who joins a foreign party gets it
+too unless the run was finishable; a lapse (10 minutes empty) gives none. **Compatible:** no
+step, no map reset; saved: one player meta key. Review MERGE (no findings to fix). Fixtures:
+the new `r721_finish` (103 checks) and the six it touches pass; the round-end full run in
+[completion](planning/round72-plan.md#0721-finish-and-cancel-2026-11-09); two engine probes
+(the first found the countdown ending 0.5 s early, fixed). **Open for the user:** the
+[0.72.1 GUI checklist](planning/round72-plan.md#gui-checklist-0721), 7 items.
 
 **0.72.0 / Round 72 is complete, merged into main and pushed (2026-11-08); the GUI test is
 open.** From player reports and the user's notes: **combat starts at

@@ -17,7 +17,9 @@
 -- Round 72 (round72-plan.md section 2.10): a tab "Expeditions" after it, the
 -- same as every waystone's: the Expeditions the owner may enter, entered from
 -- the stone (grug_home.expedition_rows, expedition_from_claim; the rules are
--- grug_expeditions').
+-- grug_expeditions'). Since Round 72.1 with the owner's run below: its state
+-- and its leader's Finish or Cancel, which asks first (expedition_actions,
+-- expedition_act).
 --
 -- Round 50 (ruling 7): while the owner has belongings from an old map
 -- (recovered.lua), the activated stone's form has the tab "Belongings (N)",
@@ -181,6 +183,11 @@ local function travel_api()
 end
 
 -- grug_home, when it offers the Expeditions tab (Round 72): its rows decide.
+-- Since Round 72.1 also the actions below them, when it offers those.
+local function actions_of(home, player)
+	if type(home.expedition_actions) == "function" then return home.expedition_actions(player) end
+end
+
 local function expedition_api()
 	local home = rawget(_G, "grug_home")
 	if home and type(home.expedition_rows) == "function" and
@@ -252,11 +259,18 @@ local function waypoints_formspec(player, session, home, header)
 end
 
 -- The Expeditions tab: one Enter button per Expedition the owner may enter,
--- else the one line saying why.
+-- else the one line saying why; below, the owner's run with its state and
+-- buttons, or the confirmation one of them asks.
 local function expeditions_formspec(player, session, home, header)
 	local rows, line = home.expedition_rows(player)
 	rows = rows or {}
-	local height = 2.6 + (#rows > 0 and 0.7 * #rows or 1.1)
+	local rows_h = #rows > 0 and 0.7 * #rows or 1.1
+	local block = actions_of(home, player)
+	local confirm = session.confirm and block and home.expedition_button(block, session.confirm.id,
+		session.confirm.action)
+	if not confirm then session.confirm = nil end
+	local block_h = block and (#block.buttons > 0 and 1.6 or 0.9) or 0
+	local height = 2.6 + rows_h + block_h
 	local growth = theme.text_growth(player, 10.75, height + TAB_OFFSET)
 	local fs = {theme.frame(10.75, height + TAB_OFFSET, nil, nil, player), header,
 		"container[0," .. TAB_OFFSET .. "]",
@@ -268,6 +282,20 @@ local function expeditions_formspec(player, session, home, header)
 	end
 	if #rows == 0 then
 		fs[#fs + 1] = theme.prose(0.4, 1.0, 9.95, 1.0, line or "", true, growth)
+	end
+	if block then
+		local y = 1.0 + rows_h
+		fs[#fs + 1] = theme.prose(0.4, y, 9.95, 0.8, confirm and confirm.confirm or block.text,
+			true, growth)
+		if confirm then
+			fs[#fs + 1] = ("button[3.4,%.2f;3.45,0.6;act_back;Back]"):format(y + 0.85)
+			fs[#fs + 1] = ("button[6.9,%.2f;3.45,0.6;act_confirm;Confirm]"):format(y + 0.85)
+		else
+			for index, button in ipairs(block.buttons) do
+				fs[#fs + 1] = ("button[%.2f,%.2f;3.45,0.6;act_%s_%s;%s]"):format(
+					6.9 - 3.5 * (index - 1), y + 0.85, button.action, block.id, ui.esc(button.label))
+			end
+		end
 	end
 	if session.message then
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(height - 1.35,
@@ -452,6 +480,39 @@ end
 local function say(session, message, color)
 	session.message = message
 	session.message_color = color
+end
+
+-- Round 72.1: an action button of the Expeditions tab, its Confirm or Back.
+-- Only what the tab offers acts; a button with a confirmation asks it first.
+local function expedition_action(player, session, fields)
+	local home = expedition_api()
+	local id, action
+	for field in pairs(fields) do
+		local a, i = field:match("^act_(%a+)_(.+)$")
+		if a then id, action = i, a end
+	end
+	local confirmed = fields.act_confirm ~= nil and session.confirm ~= nil
+	if confirmed then id, action = session.confirm.id, session.confirm.action end
+	session.confirm = nil
+	say(session, nil)
+	local block = actions_of(home, player)
+	if not id or not block then return end
+	local button = home.expedition_button(block, id, action)
+	if not button then return say(session, "That is no longer possible.", ui.RED) end
+	if button.confirm and not confirmed then
+		session.confirm = {id = id, action = action}
+		return
+	end
+	local ok, message = home.expedition_act(player, id, action)
+	if not ok then say(session, message or "That is not possible now.", ui.RED) end
+end
+
+local function is_expedition_action(fields)
+	if fields.act_confirm or fields.act_back then return true end
+	for field in pairs(fields) do
+		if field:match("^act_%a+_.") then return true end
+	end
+	return false
 end
 
 -- Return the part of a put that add_fuel did not accept: into the inventory
@@ -741,6 +802,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	elseif fields.stone_tab then
 		session.tab = session.tab_ids and session.tab_ids[tonumber(fields.stone_tab)] or "main"
+		session.confirm = nil
 		say(session, nil)
 	elseif grug_inventory.hotbar_switch_fields(player, fields) then
 		-- The view's hotbar switch (Round 50): the re-show below.
@@ -752,6 +814,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			return true
 		end
 		say(session, message or "You cannot travel now.", ui.RED)
+	elseif session.tab == "expeditions" and expedition_api() and is_expedition_action(fields) then
+		expedition_action(player, session, fields)
 	elseif session.tab == "expeditions" and travel_target(fields, "enter") and expedition_api() then
 		local ok, message = expedition_api().expedition_from_claim(player,
 			travel_target(fields, "enter"))

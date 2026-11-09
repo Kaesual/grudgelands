@@ -12,6 +12,24 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.72.1 — finish or cancel an Expedition (2026-11-09)
+
+Your Expedition no longer holds you for ten minutes after the boss. Compatible: no map reset,
+no new world, nothing for the host to do.
+
+- **Finish:** once the boss is dead, the party leader (or a player on their own) finishes the
+  Expedition at the Expedition Registrar, on the Expeditions tab of any waystone or the Claim
+  Stone, or at a waystone inside. Everyone inside sees "This Expedition ends in N seconds."
+  for a minute; you can still come in until ten seconds before the end, then everyone still
+  inside goes back to the waystone they came in by. What nobody took from the chest is lost.
+- **Cancel:** before the boss is dead the leader can cancel instead, after a confirmation.
+  It also counts down a minute for anyone inside, and nobody can enter any more.
+- **The Deserter's Mark:** whoever cancels, or leaves an unfinished Expedition of their own by
+  joining another party, cannot open or enter an Expedition for five minutes. The mark shows
+  in your status row and the Effects tab and keeps running while you are offline. Party
+  members are never marked for their leader. An Expedition left empty for ten minutes still
+  simply ends, with no mark.
+
 ## 0.72.0 — two more Expeditions, fights that end fairly, friend and foe (2026-11-08)
 
 Two new Expeditions with traps, an easier way back in, and fights that start and end the

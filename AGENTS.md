@@ -12,7 +12,8 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.72.0, Round 72 (combat at targeting; placement in combat and around
+**Current state:** 0.72.1 (finish and cancel an Expedition, the Deserter's Mark; compatible,
+one squash commit on main, tag `round-72.1`), on top of 0.72.0, Round 72 (combat at targeting; placement in combat and around
 bodies; the boss floor and the kings' and bosses' reset; guards out of reach reset at once;
 ranged kings shoot; Bladecraft's hand; no mounts in enemy towns; friend and foe nametags;
 the two trap types, the Expeditions tab, The Second Shift 40–69 and The Last Mint 60–69, all
@@ -586,7 +587,8 @@ The topic rules below name the one path to use; the
   [module guide](docs/technical/module-guide.md#expeditions).
 - **The word is Expedition,** for players, in docs, briefs and code. Never the old word.
 - **Nothing about a run is saved;** a restart ends every run. Do not add saved run state: the
-  capital of entry and a pending logout death alone outlive a run.
+  capital of entry, a pending logout death and the Deserter's Mark's end (0.72.1,
+  `grug_expeditions:deserter_until`) alone outlive a run.
 - **The server alone fills a box:** no Expedition content from the map generator, so no
   map reset. One clear and one template write; no journal of what was dug or killed.
 - **Preparation never competes with players:** one at a time, a count of mapblocks per step,

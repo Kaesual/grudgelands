@@ -513,6 +513,57 @@ do
 	grug_home = nil
 end
 
+-- Round 72.1 (tools/r721_finish has the rules): the owner's run below the rows, its
+-- state and its leader's button; Cancel asks first, with Confirm and Back.
+do
+	local block = {id = "8", text = "Under way.", buttons = {{action = "cancel", label = "Cancel",
+		confirm = "Cancel this Expedition?"}}}
+	local acted = {}
+	grug_home = {known_waypoints = function() return {} end,
+		travel_from_claim = function() return true end,
+		expedition_rows = function() return {}, "This Expedition is full." end,
+		expedition_from_claim = function() return true end,
+		expedition_actions = function() return block end,
+		expedition_button = function(b, id, action)
+			if not b or b.id ~= id then return nil end
+			for _, button in ipairs(b.buttons) do
+				if button.action == action then return button end
+			end
+		end,
+		expedition_act = function(_, id, action)
+			acted[#acted + 1] = id .. " " .. action
+			return false, "Refused here."
+		end}
+	H.open_stone_interface(owner, claim)
+	submit(owner, "grug_housing:stone", {stone_tab_3 = "Expeditions"})
+	local ex = last_shown("owner").fs
+	has(ex, "This Expedition is full.", "R72.1 the line stays")
+	has(ex, "Under way.", "R72.1 the run's state")
+	has(ex, "act_cancel_8;Cancel]", "R72.1 the leader's button")
+	submit(owner, "grug_housing:stone", {act_cancel_8 = "Cancel"})
+	ex = last_shown("owner").fs
+	check(#acted == 0, "R72.1 Cancel asks first")
+	has(ex, "Cancel this Expedition?", "R72.1 the confirmation")
+	has(ex, "act_confirm;Confirm]", "R72.1 Confirm")
+	has(ex, "act_back;Back]", "R72.1 Back")
+	lacks(ex, "act_cancel_8", "R72.1 instead of the button")
+	submit(owner, "grug_housing:stone", {act_back = "Back"})
+	has(last_shown("owner").fs, "act_cancel_8;Cancel]", "R72.1 Back shows the button again")
+	submit(owner, "grug_housing:stone", {act_confirm = "Confirm"})
+	check(#acted == 0, "R72.1 a Confirm without its question does nothing")
+	submit(owner, "grug_housing:stone", {act_cancel_8 = "Cancel"})
+	submit(owner, "grug_housing:stone", {act_confirm = "Confirm"})
+	eq(acted[1], "8 cancel", "R72.1 Confirm acts")
+	has(last_shown("owner").fs, "Refused here.", "R72.1 a refusal shows")
+	block.buttons = {{action = "finish", label = "Finish"}}
+	submit(owner, "grug_housing:stone", {act_finish_8 = "Finish"})
+	eq(acted[2], "8 finish", "R72.1 Finish needs no confirmation")
+	submit(owner, "grug_housing:stone", {act_finish_9 = "Finish"})
+	check(#acted == 2, "R72.1 only what the tab offers acts")
+	submit(owner, "grug_housing:stone", {quit = "true"})
+	grug_home = nil
+end
+
 --
 -- 4. Fuel slot: accept, refuse, partial, no take
 --

@@ -5,8 +5,9 @@
 --
 -- Without a run the window lists the Expeditions, the levels the player may enter
 -- in two steps (a tier, which names its ore and gem, then a level inside it) and one
--- row per party member, which warns and stops nobody; with one it shows that run and
--- Enter. Nothing here is saved.
+-- row per party member, which warns and stops nobody; with one it shows that run,
+-- Enter, and for its leader Finish or Cancel (Round 72.1; Cancel asks first). Nothing
+-- here is saved. Since Round 72.1 the Deserter's Mark shows here as a status too.
 --
 -- Takes over the socket like the Miner's Guild Exchange takes its counter
 -- (grug_traders/vendors.lua) and needs no template change. On a world older than
@@ -23,13 +24,14 @@ local GREEN, RED, WARN = "#8fdc7a", "#ff6060", "#d4b77d"
 -- The window without a run, and with one.
 local CHOICE_W, CHOICE_H, RUN_W, RUN_H = 13, 9.9, 9, 9.9
 local ROW_PITCH = 0.42
-local PREPARING = "Your Expedition is being prepared..."
 -- Why a run ended, for those it touches. A reason without a row reads as the last.
 local ENDED = {
 	failed = "Your Expedition could not be prepared. Try again soon.",
 	empty = ("Your Expedition has ended: nobody was inside for %d minutes."):format(
 		M.catalogue.RESERVE_SECONDS / 60),
 	joined_party = "You joined a party, so your Expedition has ended.",
+	finished = "Your Expedition has ended.",
+	cancelled = "Your Expedition was cancelled.",
 }
 local ENDED_OTHER = "Your Expedition has ended."
 -- Why a player is on the way out without having asked: a line of its own, beside
@@ -89,19 +91,7 @@ local function count(set)
 	return n
 end
 
--- What a run's owner reads about its state.
-local function state_text(run)
-	if run.state == "preparing" then
-		local status = M.preparation(run)
-		local ahead = status and status.waiting or 0
-		if ahead > 0 then return ("%s %d ahead in the queue."):format(PREPARING, ahead) end
-		return PREPARING
-	end
-	if run.state == "ready" then
-		return ("Ready. It waits %d minutes for you."):format(M.catalogue.RESERVE_SECONDS / 60)
-	end
-	return "Under way."
-end
+local state_text = M.state_text
 
 -- One row per member at x, y: name, level, whether they can enter. Returns the
 -- number of rows that cannot.
@@ -126,7 +116,8 @@ local function coloured_line(fs, y, color, text)
 end
 
 -- The player's own Expedition: its state, who can enter, and Enter. Enter stays
--- while the level or the places say no: the click gives the reason.
+-- while the level or the places say no: the click gives the reason. Its leader also
+-- sees Finish once it may end, else Cancel, which asks first (Round 72.1).
 local function run_form(player, session, run)
 	local def = M.definition(run.expedition)
 	local g = UI.text_growth(player, RUN_W, RUN_H)
@@ -138,10 +129,24 @@ local function run_form(player, session, run)
 		UI.prose(0.65, 2.7, 7.7, 0.9, state_text(run), false, g),
 		UI.heading(0.65, 3.8, "WHO CAN ENTER", g)}
 	eligibility_rows(fs, 0.65, 4.2, M.eligibility(player, run.expedition, run.bonus))
+	if session.confirm and M.can_cancel(player, run) then
+		coloured_line(fs, 8.8, WARN, M.CANCEL_CONFIRM)
+		fs[#fs + 1] = "button[2.3,9.15;3.1,0.6;cancel_back;Back]"
+		fs[#fs + 1] = UI.button_style("cancel_confirm", "selected", g)
+		fs[#fs + 1] = "button[5.6,9.15;3,0.6;cancel_confirm;Confirm]"
+		fs[#fs + 1] = "button_exit[0.4,9.15;1.7,0.6;close;Close]"
+		return table.concat(fs)
+	end
+	session.confirm = nil
 	if session.message then coloured_line(fs, 8.8, RED, session.message) end
 	if run.state ~= "preparing" then
 		fs[#fs + 1] = UI.button_style("enter", "selected", g)
 		fs[#fs + 1] = ("button[5.6,9.15;3,0.6;enter;Enter]")
+	end
+	if M.can_finish(player, run) then
+		fs[#fs + 1] = "button[2.3,9.15;3.1,0.6;finish;Finish]"
+	elseif M.can_cancel(player, run) then
+		fs[#fs + 1] = "button[2.3,9.15;3.1,0.6;cancel;Cancel]"
 	end
 	fs[#fs + 1] = "button_exit[0.4,9.15;1.7,0.6;close;Close]"
 	return table.concat(fs)
@@ -247,6 +252,7 @@ end
 local function form(player, session)
 	local run = M.run_of(player)
 	if run then return run_form(player, session, run) end
+	session.confirm = nil
 	return choice_form(player, session)
 end
 
@@ -319,6 +325,21 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			return true
 		end
 		session.message, changed = why, true
+	elseif fields.finish then
+		local _, why = M.finish(player)
+		session.message, changed = why, true
+	elseif fields.cancel then
+		local ok, why = M.can_cancel(player)
+		session.confirm, session.message, changed = ok or nil, why, true
+	elseif fields.cancel_confirm then
+		-- Only the Confirm of a question the window asked.
+		if session.confirm then
+			local _, why = M.cancel(player)
+			session.message = why
+		end
+		session.confirm, changed = nil, true
+	elseif fields.cancel_back then
+		session.confirm, session.message, changed = nil, nil, true
 	end
 	if changed then show(player, session) end
 	return true
@@ -367,6 +388,14 @@ M.register_on_enter(function(_, name)
 	core.after(CURTAIN_SECONDS, function()
 		if player:is_valid() then player:hud_remove(curtain) end
 	end)
+end)
+
+-- The Deserter's Mark (Round 72.1, runs.lua) in the status row and the Effects tab: a
+-- status source, so it shows again after a death, which clears the stored statuses,
+-- and after a login, which reads its end back (runs.lua).
+grug_core.register_status_source(function(player, now)
+	local left = M.deserter_left(player)
+	if left then return {{id = "deserter_mark", expiry_us = now + left * 1e6}} end
 end)
 
 -- For fixtures: the sessions and the window's text.

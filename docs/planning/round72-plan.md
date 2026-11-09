@@ -988,3 +988,66 @@ From the lanes' reports, measured unless marked; comparisons, not targets.
   numbers only a real run gives: run lengths, Nemm's and Duewarden's HP, the coins, the
   mining share. The free wipe stays noted, not closed (§2.9).
 - **Carry-overs** are in [BACKLOG](../../BACKLOG.md#round-72--fights-placement-travel-and-two-expeditions-gui-acceptance-pending).
+
+## 0.72.1: finish and cancel (2026-11-09)
+
+A one-lane follow-up from the user's note that an Expedition could not be ended: after the
+boss a party had to leave and wait ten minutes, and a member left inside kept the run open
+for good. Built on the round branch `round72.1` (lane FINISH), reviewed **MERGE**, landed on
+main as one squash commit and tagged `round-72.1`: the first round under the
+one-commit-per-round rule (AGENTS.md "Working method", user 2026-11-09). **Compatible:** no
+step, no map reset; saved: the player meta `grug_expeditions:deserter_until`.
+
+**The user's rulings (2026-11-09):** Finish once `rewards_open` holds (the boss is dead),
+by the current party leader or the solo owner, at the Registrar, the Expeditions tab of the
+outside waystones and the Claim Stone, and the stones inside; a 60 s countdown for everyone
+inside and for late entrants, updated each second; entry closed 10 s before the end; at the
+end everyone goes to the waystone of their way in; unlooted chest contents are lost. Cancel
+in any state, never-entered runs included (preparing costs the server time), after a
+confirmation; the canceller alone gets the **Deserter's Mark** for 5 minutes (no opening, no
+entering; real time, survives logout and restart; a status with its own icon in the status
+row and the Effects tab). A solo owner who joins a foreign party gets the mark unless the
+run was finished. A lapse (10 minutes empty) gives none. Party members are never marked for
+their leader.
+
+**Coordinator defaults built:** Cancel counts down 60 s too for anyone inside, entry refused
+at once, and ends at once with nobody inside; no Finish or Cancel while preparing or
+already closing; the end reasons `"finished"` and `"cancelled"`; the grug_home tab contract
+gains `actions`/`act` and stays rule-free; the countdown is `grug_core.banner` called once a
+second by one `core.after` chain per closing run (no globalstep); the mark's icon is a
+texture modifier until the user picks drawn art. **The lane's choices:** Cancel is refused
+once the boss is dead (the leader sees one button); closing is a field `run.closing`
+beside `run.state`, so the dig rule and ready → running stay as they were; the mark is a
+status source, because statuses clear on death. The coordinator made the invitation warning
+name the mark for an unfinished run.
+
+**Checks:** `r721_finish` (new, 103 checks), `r71_frame`, `r71_ui`, `r72_waytab`,
+`r26_status_icons`, `r25_interfaces`, `r67_social` pass; two engine probes on The Stilled
+Seam with a stubbed dead boss (the first found the run ending 0.5 s early, fixed; the second
+logged 60 to 1 and ended at 60.1 s; Cancel with nobody inside ended at once; the mark ran
+300 s and refused opening); check_lua and check_fresh_server pass; the round-end full run:
+333 fixtures, 0 failed.
+
+### GUI checklist 0.72.1
+
+Desktop and web; a party of two where it says so.
+
+1. Party of two, boss dead: the leader clicks **Finish** at the Registrar. The member inside
+   sees "This Expedition ends in N seconds." each second for the whole minute; a member
+   outside gets one feed line.
+2. A member enters with about 15 s left and sees the countdown from arrival; at 10 s or less
+   Enter says "This Expedition is closing."; at 0 everyone stands at the waystone of their
+   way in.
+3. A waystone inside: the Expeditions tab shows the state and Finish for the leader, the
+   state alone for a member, never Enter.
+4. Before the boss: **Cancel** on a waystone tab and on the Claim Stone asks first; Back
+   returns. Confirm counts down "was cancelled" and refuses entry at once. Cancel on a run
+   nobody entered ends it at once.
+5. The canceller: the **Deserter's Mark** icon with M:SS in the status row and a row in the
+   Effects tab, still there with the right time after a relog and after a death; the
+   Registrar refuses "Deserter's Mark: no Expeditions for 4:12."
+6. The leader cancels and hands leadership on: the new leader opens a run; the old leader
+   cannot enter it until the mark ends.
+7. An open Registrar or waystone window does not count down or redraw on Finish or Cancel
+   (the banner does): acceptable, or worth a redraw? And: should Cancel stay refused once the
+   boss is dead?

@@ -21,7 +21,8 @@ remain delivered foundations, with this refinement work still ahead.
 
 - **Expeditions:** the framework and The Stilled Seam (20–69) shipped in 0.71.0
   ([rules](docs/design/expeditions.md)); The Second Shift (40–69), The Last Mint (60–69), traps,
-  the Expeditions tab on waystones and shaped rooms in 0.72.0 (GUI test pending). Next: tuning
+  the Expeditions tab on waystones and shaped rooms in 0.72.0; finish, cancel and the
+  Deserter's Mark in 0.72.1 (GUI test pending). Next: tuning
   run length, bosses and coins from the user's runs.
 - **Fair fights** (0.72.0, from player reports): combat from the moment a mob targets you, no
   building in combat, kings and bosses that reset when they cannot reach their target, guards

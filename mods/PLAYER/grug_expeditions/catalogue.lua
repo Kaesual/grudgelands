@@ -25,6 +25,13 @@ M.CLEAR_NODE = "default:stone"
 M.ENTRY_CEILING = 60
 -- With nobody of the owner inside, an Expedition is released after this long.
 M.RESERVE_SECONDS = 600
+-- Finish and Cancel (Round 72.1): a closing run ends this long after the click, and
+-- takes nobody in for the last CLOSED_SECONDS of it (a cancelled one at once).
+M.CLOSING_SECONDS = 60
+M.CLOSED_SECONDS = 10
+-- The Deserter's Mark of whoever cancels: no Expedition opened or entered for this
+-- long, in real time.
+M.DESERTER_SECONDS = 300
 
 -- One row per Expedition: `id`, `name` (shown to players), `level` and `max_level`
 -- (the mob levels a creator may choose, concept section 9), `max_players` (the most

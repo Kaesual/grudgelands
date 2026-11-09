@@ -15,7 +15,8 @@
 -- entry reads "No claim stone". The stone is an origin too: its owner travels
 -- from it to the discovered waystones (grug_home.travel_from_claim, the stone
 -- form's Waypoints tab). Since Round 72 the window has an Expeditions tab and
--- the stones inside an Expedition open the list without it (below).
+-- the stones inside an Expedition open the list without it (below); since
+-- Round 72.1 with it, but only the run's state and its actions.
 local path = core.get_modpath(core.get_current_modname())
 local rules = dofile(path .. "/waypoints_core.lua")
 local KEY = "grug_home:waypoints"
@@ -117,16 +118,37 @@ end
 -- grug_home.register_expedition_tab and owns every rule of it, so this file
 -- only asks. The Claim Stone's form shows the same tab
 -- (grug_housing/stone_form.lua). A stone inside an Expedition opens the
--- waystone list without tabs (grug_home.show_waystones). Without a registered
--- tab the window has no tabs, as before.
+-- waystone list with the tab's actions alone (grug_home.show_waystones,
+-- Round 72.1). Without a registered tab the window has no tabs, as before.
 -- tab.rows(player) -> {{id, label}, ...}, and when empty the one line saying why
 -- tab.enter(player, id, waystone id or nil (the Claim Stone), still(player))
 --   -> true, or false and the refusal; `still` is asked again on the trip's step
+-- Round 72.1, the player's own Expedition below the rows:
+-- tab.actions(player) -> nil, or {id, text = its state line, buttons =
+--   {{action, label, confirm}, ...}}; `confirm`, when given, is shown first with
+--   Confirm and Back
+-- tab.act(player, id, action) -> true, or false and the refusal
 local expedition_tab
 function grug_home.register_expedition_tab(tab) expedition_tab = tab end
 -- The Expeditions tab's rows and line for `player`, or nil without the tab.
 function grug_home.expedition_rows(player)
  if expedition_tab then return expedition_tab.rows(player) end
+end
+-- Round 72.1: its actions block for `player` (above), or nil; and an action of
+-- it from the owner's Claim Stone, whose form checks the stone itself.
+function grug_home.expedition_actions(player)
+ if expedition_tab then return expedition_tab.actions(player) end
+end
+function grug_home.expedition_act(player, id, action)
+ if not expedition_tab then return false, "There is no Expedition here." end
+ return expedition_tab.act(player, id, action)
+end
+-- The button of `action` in `block`, or nil: only what the window offered acts.
+function grug_home.expedition_button(block, id, action)
+ if not block or block.id ~= id then return nil end
+ for _, button in ipairs(block.buttons) do
+  if button.action == action then return button end
+ end
 end
 
 local dialogs, serial = {}, 0
@@ -187,19 +209,44 @@ local function waystones_form(player, dialog)
 end
 
 -- The Expeditions tab: one row per Expedition the player may enter, else the
--- one line saying why; a refusal of the last click below.
+-- one line saying why (none inside an Expedition); below them the player's own
+-- run, its state and its buttons, or a confirmation; a refusal of the last
+-- click below.
 local function expeditions_form(player, dialog)
- local list, line = expedition_tab.rows(player)
- local body_h = #list > 0 and 0.7 * #list or 1.1
+ local list, line = {}, nil
+ if not dialog.actions_only then list, line = expedition_tab.rows(player) end
+ local block = expedition_tab.actions(player)
+ local rows_h = #list > 0 and 0.7 * #list or (line and 1.1 or 0)
+ local confirm = dialog.confirm and grug_home.expedition_button(block, dialog.confirm.id,
+  dialog.confirm.action)
+ dialog.confirm = confirm and dialog.confirm or nil
+ local block_h = block and (#block.buttons > 0 and 1.6 or 0.9) or 0
+ local body_h = math.max(rows_h + block_h, 0.9)
  local fs, growth = head(player, dialog, body_h + (dialog.message and 0.5 or 0),
-  "Expeditions you can enter")
+  dialog.actions_only and "Your Expedition" or "Expeditions you can enter")
  for index, row in ipairs(list) do
   local y = 1.15 + 0.7 * index
   fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y, core.formspec_escape(row.label))
   fs[#fs + 1] = ("button[6.8,%.2f;2.4,0.6;enter_%s;Enter]"):format(y - 0.3, row.id)
  end
- if #list == 0 then
-  fs[#fs + 1] = grug_core.ui.prose(0.4, 1.6, 9.2, 0.9, line or "", true, growth)
+ if #list == 0 and line then
+  fs[#fs + 1] = grug_core.ui.prose(0.4, 1.6, 9.2, 0.9, line, true, growth)
+ end
+ if block then
+  local y = 1.6 + rows_h
+  fs[#fs + 1] = grug_core.ui.prose(0.4, y, 9.2, 0.8,
+   confirm and confirm.confirm or block.text, true, growth)
+  if confirm then
+   fs[#fs + 1] = ("button[4.3,%.2f;2.4,0.6;act_back;Back]"):format(y + 0.85)
+   fs[#fs + 1] = ("button[6.8,%.2f;2.4,0.6;act_confirm;Confirm]"):format(y + 0.85)
+  else
+   for index, button in ipairs(block.buttons) do
+    fs[#fs + 1] = ("button[%.2f,%.2f;2.4,0.6;act_%s_%s;%s]"):format(6.8 - 2.5 * (index - 1),
+     y + 0.85, button.action, block.id, core.formspec_escape(button.label))
+   end
+  end
+ elseif #list == 0 and not line then
+  fs[#fs + 1] = grug_core.ui.prose(0.4, 1.6, 9.2, 0.9, "You have no Expedition.", true, growth)
  end
  if dialog.message then
   fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(1.75 + body_h,
@@ -220,11 +267,13 @@ local function show(player, dialog)
  core.show_formspec(player:get_player_name(), dialog.formname, form(player, dialog))
 end
 
+-- `tabs`: true for both tabs, "actions" for the Expeditions tab without its
+-- rows (a stone inside an Expedition), nil for none.
 local function open(player, origin, tabs)
  local name = player:get_player_name()
  serial = serial + 1
  local dialog = {formname="grug_home:waystone:" .. serial, origin=origin,
-  tabs=tabs and expedition_tab ~= nil, tab="waystones"}
+  tabs=tabs ~= nil and expedition_tab ~= nil, actions_only=tabs == "actions", tab="waystones"}
  dialogs[name] = dialog
  show(player, dialog)
 end
@@ -248,12 +297,12 @@ end
 -- Round 72: the window of a stone outside the network, an Expedition's
 -- (grug_expeditions.use_waystone): the same list of the player's waystones and
 -- Claim Stone, by the same rules from `origin` = {id, label, pos}, which
--- answers the faction of the player who opened it; without tabs and without a
--- "You are here".
+-- answers the faction of the player who opened it; without a "You are here".
+-- Since Round 72.1 with the Expeditions tab of the run's actions alone.
 function grug_home.show_waystones(player, origin)
  if player:get_hp() <= 0 then return end
  open(player, {id=origin.id, label=origin.label, pos=vector.new(origin.pos),
-  faction=grug_factions.get_faction(player)}, false)
+  faction=grug_factions.get_faction(player)}, "actions")
 end
 
 -- Whether the player stands at the origin: a waystone's reach, or that of
@@ -327,6 +376,25 @@ local function enter_expedition(player, origin, id)
  end)
 end
 
+-- Round 72.1: an action of the Expeditions tab from `origin` by the same
+-- stone rules as entering (alive, of its faction, standing at it); the
+-- action's own rules are grug_expeditions'. A button with a confirmation
+-- asks it first; `confirmed` is the Confirm click.
+local function expedition_action(player, dialog, id, action, confirmed)
+ local faction = grug_factions.get_faction(player)
+ if player:get_hp() <= 0 then return false, "You cannot do that now." end
+ if faction == nil or dialog.origin.faction ~= faction or not at_origin(player, dialog.origin) then
+  return false, "Stand at the waystone to do that."
+ end
+ local button = grug_home.expedition_button(expedition_tab.actions(player), id, action)
+ if not button then return false, "That is no longer possible." end
+ if button.confirm and not confirmed then
+  dialog.confirm = {id=id, action=action}
+  return true
+ end
+ return expedition_tab.act(player, id, action)
+end
+
 -- The Expeditions tab of the owner's Claim Stone (grug_housing/stone_form.lua).
 function grug_home.expedition_from_claim(player, id)
  if not expedition_tab then return false, "There is no Expedition to enter." end
@@ -344,7 +412,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
  if dialog.tabs then
   for index, tab in ipairs(TABS) do
    if fields["waystone_tab_" .. index] then
-    dialog.tab, dialog.message = tab.id, nil
+    dialog.tab, dialog.message, dialog.confirm = tab.id, nil, nil
     show(player, dialog)
     return true
    end
@@ -363,6 +431,25 @@ core.register_on_player_receive_fields(function(player, formname, fields)
    target = by_id[id]
   end
   expedition = expedition or field:match("^enter_(.+)$")
+ end
+ if dialog.tab == "expeditions" and expedition_tab then
+  local act_id, action, confirmed
+  for field in pairs(fields) do
+   local a, i = field:match("^act_(%a+)_(.+)$")
+   if a then act_id, action = i, a end
+  end
+  if fields.act_confirm and dialog.confirm then
+   act_id, action, confirmed = dialog.confirm.id, dialog.confirm.action, true
+  end
+  if act_id or fields.act_back then
+   dialog.confirm, dialog.message = nil, nil
+   if act_id then
+    local ok, refusal = expedition_action(player, dialog, act_id, action, confirmed)
+    dialog.message = not ok and refusal or nil
+   end
+   show(player, dialog)
+   return true
+  end
  end
  if expedition and dialog.tab == "expeditions" and expedition_tab then
   local ok, refusal = enter_expedition(player, dialog.origin, expedition)

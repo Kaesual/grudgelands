@@ -6,9 +6,27 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## 0.72.1 — finish and cancel an Expedition (GUI acceptance pending)
+
+Delivered 2026-11-09 (**compatible**) as one squash commit on main, tag `round-72.1`
+([completion and checklist](docs/planning/round72-plan.md#0721-finish-and-cancel-2026-11-09);
+rules in [expeditions.md](docs/design/expeditions.md) §3–5). Carry-overs:
+
+- **For the user:** Cancel is refused once the boss is dead (the lane's choice: the leader
+  sees one button, Finish); the strict reading of the ruling would allow Cancel there too.
+  The Deserter's Mark's icon is a texture modifier over the contested-PvP emblem; a drawn
+  `grug_status_deserter_mark.png` needs a pick page.
+- **Windows:** the Registrar's, waystones' and Claim Stone's Expeditions views show the time
+  left as of drawing, and members' open windows are not redrawn on Finish or Cancel; the
+  countdown banner is the live display.
+- **Registrar:** `session.confirm` is not tied to a run id: a stale Confirm after the leader
+  switches runs without a redraw would cancel the new run (contrived; store `run.id`).
+- **grug_home:** `waypoints.lua` calls `expedition_tab.actions` without a guard
+  (`stone_form.lua` guards); only matters for a foreign tab without `actions`.
+
 ## Round 72 — fights, placement, travel and two Expeditions (GUI acceptance pending)
 
-Delivered in 0.72.0 (**compatible**) on the branch `round72`, not on main and not pushed
+Delivered in 0.72.0 (**compatible**), merged into main and pushed on 2026-11-08
 ([completion](docs/planning/round72-plan.md#completion-2026-11-08); rules in
 [combat_stats.md](docs/design/combat_stats.md), [mounts.md](docs/design/mounts.md) §4.4,
 [expeditions.md](docs/design/expeditions.md)). The desktop/web

@@ -150,9 +150,14 @@ local EXPECTED_KIND = {
 	close_dance = "buff",
 	-- Round 58 (CONSUME): the Miner's Guild consumables' own slot.
 	mining_sense = "buff",
+	-- Round 72.1: the Deserter's Mark (grug_expeditions).
+	deserter_mark = "debuff",
 }
 
+-- A picture may be a texture modifier over a shipped emblem (Round 72.1, the
+-- Deserter's Mark): the emblem is checked.
 local function texture_ok(name, label)
+	name = name and name:match("^[^%^]+")
 	local path = textures[name]
 	check(path ~= nil, label .. ": texture " .. tostring(name) .. " exists")
 	if path then

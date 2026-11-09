@@ -1,7 +1,8 @@
 -- Expeditions (Round 71): repeatable group content in 100 generic slots beyond the
 -- map. A run is one activation: the server clears and fills a slot from a template
 -- file, the owner's players enter it, and it ends when nobody has been inside for
--- 10 minutes. Rules: docs/planning/round71-expeditions-concept.md sections 2, 4, 5.
+-- 10 minutes, or since Round 72.1 a minute after its leader finished or cancelled it.
+-- Rules: docs/planning/round71-expeditions-concept.md sections 2, 4, 5.
 -- Nothing about a run is saved: a restart ends every run, a login in a box whose
 -- run is gone stands at the waystone the player came in from (one saved value, its
 -- id; a registrar's capital, or since Round 72 any waystone of the Expeditions tab),
@@ -23,6 +24,8 @@
 --   list()                  the rows a dialog may offer (hidden test rows left out)
 --   entry_level(level)      min(level - 2, 60)
 --   rewards_open(run)       the boss is dead, or the template has none
+--   closing_left(run)       the seconds until a closing run ends, rounded up, or nil
+--   state_text(run)         its state in one line for its owner (Round 72.1)
 --   catalogue               catalogue.lua itself: BOX, ORIGIN, PITCH, TIERS, tier_of, ...
 --   written(run)            the template as the run's tier writes it: {ids, dig}, the
 --                           tier's ore and gem in the template's places
@@ -36,6 +39,9 @@
 --   owner       {kind = "player", name = ...} or {kind = "party", id = ...}
 --   creator     the name that opened it
 --   state       "preparing", "ready" (nobody entered yet), "running", "ended"
+--   closing     nil, or since Round 72.1 {reason = "finished" or "cancelled", by =
+--               the leader's name, ends_at = its end in core.get_us_time()}: the
+--               state stays, the run ends at ends_at
 --   entered     set of names holding a place (leaving the party frees it)
 --   inside      set of names in the box now, online
 --
@@ -53,10 +59,18 @@
 --   eligibility(player, id, bonus) one row per party member (or the player alone):
 --                                  {name, level, online, eligible, reason}
 --   can_create(player, id, bonus)  true, or false and why
---   may_enter(player[, run])       the run's own rules (owner, state, level, places):
---                                  true, or false and why; what the Expeditions tab lists
+--   may_enter(player[, run])       the run's own rules (owner, the Deserter's Mark,
+--                                  state, closing, level, places): true, or false and
+--                                  why; what the Expeditions tab lists
 --   can_enter(player[, run])       may_enter and the player's state (alive, out of
 --                                  combat): true, or false and why
+--   can_finish(player[, run])      the leader or solo owner, a ready or running run not
+--                                  closing, rewards_open: true, or false and why
+--   can_cancel(player[, run])      the same, but not rewards_open
+--   deserter_left(player|name)     the whole seconds of the player's Deserter's Mark,
+--                                  or nil: no Expedition opened or entered meanwhile
+--                                  (Round 72.1; its end is saved player meta,
+--                                  DESERTER_META, in os.time())
 --
 -- Acting (the caller shows the refusal):
 --   create(player, id, bonus)  the run, or nil and why; the state is "preparing"
@@ -66,9 +80,14 @@
 --                              condition on the trip's step
 --   leave(player)              the way back to that waystone (scripted; the two stones
 --                              open the waystone window, entry.lua)
---   use_waystone(player, pos)  a stone inside: the waystone window without the
---                              Expeditions tab (Round 72)
+--   use_waystone(player, pos)  a stone inside: the waystone window, its Expeditions
+--                              tab with the run's state and actions alone (Round 72.1)
 --   end_run(run, reason)       ends it at once
+--   finish(player)             Round 72.1: closes the run of the player's owner, which
+--                              ends catalogue.CLOSING_SECONDS later; true, or false and why
+--   cancel(player)             the same for an unfinished run, at once with nobody
+--                              inside; the player alone gets the Deserter's Mark.
+--                              CANCEL_CONFIRM is what its confirmation says
 --   open_door(run)             takes the reward door away and tells those inside
 --   open_registrar(player, entity)  the registrar's window; false for a player it
 --                              does not serve
@@ -76,7 +95,8 @@
 -- Hooks:
 --   register_on_ready(function(run))           the box is written; set meta here
 --   register_on_end(function(run, reason))     "empty" (10 minutes), "joined_party"
---                                              (the solo owner), "failed" (preparation)
+--                                              (the solo owner), "failed" (preparation),
+--                                              "finished", "cancelled" (Round 72.1)
 --   register_on_enter(function(run, name))     stands in the box now
 --   register_on_leave(function(run, name, reason))  "travel", "logout", "expelled"
 --                                              (left the party), "ended"

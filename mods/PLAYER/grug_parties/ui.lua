@@ -232,13 +232,18 @@ local function selected_member(view, context)
 end
 
 -- The one line under an invitation while the player owns an Expedition alone
--- (Round 71, concept section 4): accepting a foreign party ends it for good, nil
+-- (Round 71, concept section 4): accepting a foreign party ends it for good, and
+-- since Round 72.1 gives the Deserter's Mark unless it was finished; nil
 -- otherwise. grug_expeditions depends on this mod, so it is read at call time.
 function grug_parties.invitation_warning(name)
 	local expeditions = rawget(_G, "grug_expeditions")
 	local run = expeditions and expeditions.run_of(name)
 	if run and run.owner.kind == "player" then
-		return "Accepting ends your Expedition."
+		-- Round 72.1: the rule of runs.lua's joined-party end.
+		if run.closing or expeditions.rewards_open(run) then
+			return "Accepting ends your Expedition."
+		end
+		return "Accepting ends your Expedition and gives you the Deserter's Mark."
 	end
 	return nil
 end
