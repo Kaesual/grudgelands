@@ -12,8 +12,9 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.72.1 (finish and cancel an Expedition, the Deserter's Mark; compatible,
-one squash commit on main, tag `round-72.1`), on top of 0.72.0, Round 72 (combat at targeting; placement in combat and around
+**Current state:** 0.72.2 (Finish green, Cancel red, open Expedition windows redrawn once at
+a close or an end; compatible, tag `round-72.2`), on 0.72.1 (finish and cancel an Expedition,
+the Deserter's Mark; tag `round-72.1`), on top of 0.72.0, Round 72 (combat at targeting; placement in combat and around
 bodies; the boss floor and the kings' and bosses' reset; guards out of reach reset at once;
 ranged kings shoot; Bladecraft's hand; no mounts in enemy towns; friend and foe nametags;
 the two trap types, the Expeditions tab, The Second Shift 40–69 and The Last Mint 60–69, all

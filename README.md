@@ -98,6 +98,9 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.72.2** colours Finish green and Cancel red and refreshes open Expedition windows when a
+run starts closing or ends. Compatible.
+
 **0.72.1** lets the party leader finish an Expedition once its boss is dead, with a minute's
 countdown for everyone inside, or cancel it earlier at the cost of the Deserter's Mark: five
 minutes without Expeditions. Compatible; desktop and web acceptance is pending.

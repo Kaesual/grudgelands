@@ -289,11 +289,14 @@ local function expeditions_formspec(player, session, home, header)
 			true, growth)
 		if confirm then
 			fs[#fs + 1] = ("button[3.4,%.2f;3.45,0.6;act_back;Back]"):format(y + 0.85)
+			if confirm.role then fs[#fs + 1] = theme.button_style("act_confirm", confirm.role, growth) end
 			fs[#fs + 1] = ("button[6.9,%.2f;3.45,0.6;act_confirm;Confirm]"):format(y + 0.85)
 		else
 			for index, button in ipairs(block.buttons) do
-				fs[#fs + 1] = ("button[%.2f,%.2f;3.45,0.6;act_%s_%s;%s]"):format(
-					6.9 - 3.5 * (index - 1), y + 0.85, button.action, block.id, ui.esc(button.label))
+				local field = ("act_%s_%s"):format(button.action, block.id)
+				if button.role then fs[#fs + 1] = theme.button_style(field, button.role, growth) end
+				fs[#fs + 1] = ("button[%.2f,%.2f;3.45,0.6;%s;%s]"):format(
+					6.9 - 3.5 * (index - 1), y + 0.85, field, ui.esc(button.label))
 			end
 		end
 	end
@@ -894,6 +897,20 @@ core.register_globalstep(function(dtime)
 		end
 	end
 end)
+
+-- Round 72.2: grug_home.refresh_expeditions redraws, once, an open Expeditions
+-- tab of a player `wanted(player)` names when their run starts closing or ends.
+-- A session ends with any other form shown (above), so nothing pops back.
+function grug_housing.refresh_expeditions(wanted)
+	for name, session in pairs(sessions) do
+		local player = core.get_player_by_name(name)
+		if player and session.mode == "main" and session.tab == "expeditions" and
+				not session.busy and wanted(player) then
+			session.message, session.confirm = nil, nil
+			show(player, session)
+		end
+	end
+end
 
 -- Test seam for tools/r25_interfaces (read-only views of the session state).
 ui.stone_sessions = sessions

@@ -1048,6 +1048,38 @@ Desktop and web; a party of two where it says so.
    Registrar refuses "Deserter's Mark: no Expeditions for 4:12."
 6. The leader cancels and hands leadership on: the new leader opens a run; the old leader
    cannot enter it until the mark ends.
-7. An open Registrar or waystone window does not count down or redraw on Finish or Cancel
-   (the banner does): acceptable, or worth a redraw? And: should Cancel stay refused once the
-   boss is dead?
+7. Answered by the user on 2026-11-10 and built in 0.72.2 (below): one button at a time,
+   Cancel before the boss, Finish after; open windows redrawn once.
+
+## 0.72.2: the buttons and the redraw (2026-11-10)
+
+The user's answers to item 7 of the 0.72.1 checklist, built by the coordinator on the round
+branch `round72.2` and landed as one squash commit, tag `round-72.2`. **Compatible:** no
+step, no saved state.
+
+- **One button, coloured:** the leader sees Cancel before the boss is dead and Finish after,
+  never both (as 0.72.1 built it). Finish wears a new `grug_core.ui.button_style` role
+  "confirm" (green: the danger plate turned by `[hsl`, text `#b4dca4`, no new art); Cancel
+  and its Confirm wear "danger" (red), at the Registrar, the waystone tabs and the Claim
+  Stone. The tab contract's buttons carry the role.
+- **One redraw:** `grug_expeditions.register_on_close` (new hook, fired when Finish or
+  Cancel starts the countdown) and `register_on_end` redraw the Registrar windows
+  (`refresh`, as at ready and end before) and, through `grug_home.refresh_expeditions`,
+  every open Expeditions tab of the owner's players on a waystone (only while it is still
+  the form the server showed last, `default.node_formspec.shown_form`, and the player
+  stands at that stone; the Registrar's refresh got the same form check) and on the Claim Stone (`grug_housing.refresh_expeditions`; its
+  session ends with any other form). Never a per-second redraw: it would resend the whole
+  form each second and reset what the player is doing in it; the banner counts down.
+- **Checks:** `r721_finish` 106, `r72_waytab` 52, `r25_interfaces` 227, `r71_frame` (its stub
+  gained `refresh_expeditions`), `r71_ui`, `ui_navigation`, `r45_ui`, `r67_map`, `r451_nq`,
+  `r44_mq` pass; check_lua, check_fresh_server; delta review MERGE AFTER FIXES (the redraw now also asks
+  `shown_form`, the Registrar's too; `confirm` in ui-presentation.md), then MERGE; the
+  round-end full run 333 passed, 0 failed.
+
+### GUI checklist 0.72.2
+
+1. Finish is green and Cancel red (its Confirm red too) at the Registrar, a waystone's
+   Expeditions tab, the Claim Stone and a stone inside; only one of them at a time.
+2. Party of two: the member keeps a waystone's Expeditions tab open while the leader
+   finishes; the tab shows "Finished. It ends in ..." at once, and again at the end that
+   the Expedition has ended. A member who walked away from the stone gets no window back.

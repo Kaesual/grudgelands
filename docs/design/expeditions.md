@@ -159,6 +159,12 @@ the start waystone, still inside.
   Expedition for 5 minutes.", with Confirm and Back. With nobody inside the run ends at
   once; otherwise it counts down 60 seconds like Finish, with the banner "This Expedition
   was cancelled. It ends in N seconds.", and nobody can enter it from the click on.
+- **The buttons** (Round 72.2, the user, 2026-11-10): the leader only ever sees one of
+  them, Finish in green, Cancel in red (its Confirm red too). An open Registrar window or
+  Expeditions tab of the owner's players is redrawn **once** when Finish or Cancel starts
+  the countdown and once at the end; it does not count down itself (the banner does), and
+  a window the player left (walked away from its stone, or another form replaced it) does
+  not pop back.
 - Finish and Cancel are refused while a run is being prepared (about 15 seconds) and
   once it is closing. During the minute the owner still holds the run, so a new one can
   be opened only after its end; the 10-minute clock runs on, and whichever end comes

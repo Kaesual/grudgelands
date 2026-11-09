@@ -132,7 +132,7 @@ local function run_form(player, session, run)
 	if session.confirm and M.can_cancel(player, run) then
 		coloured_line(fs, 8.8, WARN, M.CANCEL_CONFIRM)
 		fs[#fs + 1] = "button[2.3,9.15;3.1,0.6;cancel_back;Back]"
-		fs[#fs + 1] = UI.button_style("cancel_confirm", "selected", g)
+		fs[#fs + 1] = UI.button_style("cancel_confirm", "danger", g)
 		fs[#fs + 1] = "button[5.6,9.15;3,0.6;cancel_confirm;Confirm]"
 		fs[#fs + 1] = "button_exit[0.4,9.15;1.7,0.6;close;Close]"
 		return table.concat(fs)
@@ -144,8 +144,10 @@ local function run_form(player, session, run)
 		fs[#fs + 1] = ("button[5.6,9.15;3,0.6;enter;Enter]")
 	end
 	if M.can_finish(player, run) then
+		fs[#fs + 1] = UI.button_style("finish", "confirm", g)
 		fs[#fs + 1] = "button[2.3,9.15;3.1,0.6;finish;Finish]"
 	elseif M.can_cancel(player, run) then
+		fs[#fs + 1] = UI.button_style("cancel", "danger", g)
 		fs[#fs + 1] = "button[2.3,9.15;3.1,0.6;cancel;Cancel]"
 	end
 	fs[#fs + 1] = "button_exit[0.4,9.15;1.7,0.6;close;Close]"
@@ -350,11 +352,15 @@ core.register_on_leaveplayer(forget)
 core.register_on_dieplayer(forget)
 
 -- A window open on `run` shows the news, and one waiting in the queue moves up.
+-- Round 72.2: only while it is still the form the server showed last, so a window
+-- another form replaced does not pop back (default/node_formspec.lua's shown_form).
 local function refresh(run)
+	local forms = rawget(_G, "default") and default.node_formspec
 	for name, session in pairs(sessions) do
 		local player = core.get_player_by_name(name)
 		local own = player and M.run_of(player)
-		if player and (M.belongs(run, player) or (own and own.state == "preparing")) then
+		if player and (not forms or forms.shown_form(name) == FORMNAME) and
+				(M.belongs(run, player) or (own and own.state == "preparing")) then
 			session.message = nil
 			show(player, session)
 		end
@@ -371,6 +377,10 @@ M.register_on_end(function(run, reason)
 	tell(run, ENDED[reason] or ENDED_OTHER)
 	refresh(run)
 end)
+
+-- Round 72.2: Finish or Cancel shows at once in an open window, once (the banner
+-- counts down; the window does not).
+M.register_on_close(function(run) refresh(run) end)
 
 M.register_on_leave(function(_, name, reason)
 	local player = LEFT[reason] and core.get_player_by_name(name)

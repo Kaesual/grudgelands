@@ -355,6 +355,31 @@ check(has(fs, "waystone_tab_2;Expeditions]") and not has(fs, "enter_") and not h
  "F the Expeditions tab inside, no Enter")
 fields(eve, {waystone_tab_2="Expeditions"})
 check(not has(fs_of(eve), "enter_") and has(fs_of(eve), "act_finish_" .. solo.id), "F its actions alone")
+-- Round 72.2: Finish wears the green role, and a close or an end redraws an open
+-- Expeditions tab once, only for the players named and only at the stone.
+check(has(fs_of(eve), "style[act_finish_" .. solo.id .. ";") and has(fs_of(eve), "#b4dca4"),
+ "F72.2 Finish is green")
+local before = shown.Eve
+grug_home.refresh_expeditions(function() return false end)
+check(shown.Eve == before, "F72.2 a player not named keeps the window")
+grug_home.refresh_expeditions(function(p) return p == eve end)
+check(shown.Eve ~= before and has(fs_of(eve), "act_finish_" .. solo.id), "F72.2 the open tab redrawn")
+before = shown.Eve
+local stood = eve.pos
+eve.pos = vnew(stood.x + 40, stood.y, stood.z)
+grug_home.refresh_expeditions(function() return true end)
+check(shown.Eve == before, "F72.2 away from the stone: no window pops back")
+eve.pos = stood
+-- ...nor over another form the server showed since (node_formspec's shown_form).
+local old_default = rawget(_G, "default")
+local last_form = shown.Eve.formname
+rawset(_G, "default", {node_formspec = {shown_form = function() return "other:form" end}})
+grug_home.refresh_expeditions(function() return true end)
+check(shown.Eve == before, "F72.2 another form shown since: no window pops back")
+rawset(_G, "default", {node_formspec = {shown_form = function() return last_form end}})
+grug_home.refresh_expeditions(function() return true end)
+check(shown.Eve ~= before, "F72.2 ...but still the waystone's form: redrawn")
+rawset(_G, "default", old_default)
 fields(eve, {waystone_tab_1="Waystones"})
 in_combat.Eve = true
 fields(eve, {go_dawnmere="Travel"})

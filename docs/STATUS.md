@@ -1,6 +1,16 @@
 # Project status
 
-Updated 2026-11-09. This is the delivery pointer, not another game specification.
+Updated 2026-11-10. This is the delivery pointer, not another game specification.
+
+**0.72.2 is complete on main as one squash commit (tag `round-72.2`), not pushed; GUI test
+open.** The user's answers to the 0.72.1 checklist's item 7 (2026-11-10): the leader only
+ever sees one of Finish and Cancel, Finish green and Cancel red (a new `grug_core.ui`
+button role "confirm", a texture modifier over the danger plate, no new art); open
+Registrar windows and Expeditions tabs of the owner's players are redrawn once when Finish
+or Cancel starts the countdown and once at the end, never every second (the banner counts
+down), and only at the stone, so a left window never pops back. **Compatible:** no step, no
+saved state. Delta review MERGE after one fix round; full run 333/0; details in the
+[plan](planning/round72-plan.md#0722-the-buttons-and-the-redraw-2026-11-10).
 
 **0.72.1 is complete on main as one squash commit (tag `round-72.1`, the first round under
 the one-commit-per-round rule), not pushed; the GUI test is open.** From the user's note

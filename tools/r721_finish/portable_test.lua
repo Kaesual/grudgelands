@@ -361,8 +361,19 @@ E.end_run(solo, "test")
 -- B. Finish at the registrar and the minute after it.
 enter_by_tab(bob, run, "dawnmere")
 feeds, banners = {}, {}
+-- Round 72.2: Dee keeps a waystone's Expeditions tab open; Finish redraws it once.
+local closes = {}
+E.register_on_close(function(r, reason, by) closes[#closes + 1] = {r, reason, by} end)
+expeditions_tab(dee, "dawnmere")
+local dee_before = fs_of(dee)
 registrar(ann)
+check(has(fs_of(ann), "style[cancel;") == false and has(fs_of(ann), "style[finish;") and
+ has(fs_of(ann), "#b4dca4"), "B72.2 Finish is green at the registrar")
 fields(ann, {finish="Finish"})
+check(#closes == 1 and closes[1][1] == run and closes[1][2] == "finished" and closes[1][3] == "Ann",
+ "B72.2 the close hook, once")
+check(dee_before ~= fs_of(dee) and has(fs_of(dee), "Finished. It ends in") and
+ not has(fs_of(dee), "act_finish_"), "B72.2 a member's open tab redrawn")
 check(run.closing and run.closing.reason == "finished" and run.closing.by == "Ann" and
  E.closing_left(run) == 60 and run.state == "running", "B closing, a minute left")
 check(has(fs_of(ann), "Finished. It ends in 60 seconds.") and not has(fs_of(ann), ";finish;"),

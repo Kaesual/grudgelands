@@ -277,6 +277,8 @@ local windows = {} -- Round 72: the waystone windows the inner stones open
 grug_home = {
 	register_on_teleport = function(fn) teleports[#teleports + 1] = fn end,
 	register_expedition_tab = function() end,
+	-- Round 72.2: entry.lua redraws open Expeditions tabs at a close or an end.
+	refresh_expeditions = function() end,
 	show_waystones = function(player, origin) windows[#windows + 1] = {player = player, origin = origin} end,
 	safe_arrival = function(pos) return pos end,
 	waystone_pos = function(id) return id == "highcourt" and CAPITAL or nil end,

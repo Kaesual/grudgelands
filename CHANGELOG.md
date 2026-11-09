@@ -12,6 +12,16 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.72.2 — clearer Finish and Cancel (2026-11-10)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Finish is green, Cancel is red**, and you only ever see one of them: Cancel before the
+  boss is dead, Finish after.
+- **Open windows catch up:** a Registrar window or a waystone's or Claim Stone's
+  Expeditions tab that is open when the leader finishes or cancels, or when the Expedition
+  ends, shows the news at once. The countdown itself stays the large line on screen.
+
 ## 0.72.1 — finish or cancel an Expedition (2026-11-09)
 
 Your Expedition no longer holds you for ten minutes after the boss. Compatible: no map reset,

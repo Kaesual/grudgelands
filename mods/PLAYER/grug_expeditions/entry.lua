@@ -44,9 +44,10 @@ grug_home.register_expedition_tab({
 		if not run or run.state == "preparing" then return nil end
 		local buttons = {}
 		if M.can_finish(player, run) then
-			buttons[1] = {action = "finish", label = "Finish"}
+			buttons[1] = {action = "finish", label = "Finish", role = "confirm"}
 		elseif M.can_cancel(player, run) then
-			buttons[1] = {action = "cancel", label = "Cancel", confirm = M.CANCEL_CONFIRM}
+			buttons[1] = {action = "cancel", label = "Cancel", role = "danger",
+				confirm = M.CANCEL_CONFIRM}
 		end
 		return {id = tostring(run.id), text = M.state_text(run), buttons = buttons}
 	end,
@@ -58,6 +59,15 @@ grug_home.register_expedition_tab({
 		return false, "That is not possible here."
 	end,
 })
+
+-- Round 72.2: a waystone's or the Claim Stone's open Expeditions tab shows Finish,
+-- Cancel and the end at once, redrawn once for the run's owner; the countdown is
+-- the banner's.
+local function refresh(run)
+	grug_home.refresh_expeditions(function(player) return M.belongs(run, player) end)
+end
+M.register_on_close(refresh)
+M.register_on_end(refresh)
 
 -- Both stones inside: the player's own waystones and Claim Stone, by the waystones'
 -- rules from this stone, and the Expeditions tab without its rows (Round 72.1): the

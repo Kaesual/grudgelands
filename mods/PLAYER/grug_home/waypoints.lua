@@ -125,8 +125,9 @@ end
 --   -> true, or false and the refusal; `still` is asked again on the trip's step
 -- Round 72.1, the player's own Expedition below the rows:
 -- tab.actions(player) -> nil, or {id, text = its state line, buttons =
---   {{action, label, confirm}, ...}}; `confirm`, when given, is shown first with
---   Confirm and Back
+--   {{action, label, confirm, role}, ...}}; `confirm`, when given, is shown first with
+--   Confirm and Back; `role` (Round 72.2), a grug_core.ui.button_style role for the
+--   button and its Confirm
 -- tab.act(player, id, action) -> true, or false and the refusal
 local expedition_tab
 function grug_home.register_expedition_tab(tab) expedition_tab = tab end
@@ -238,11 +239,14 @@ local function expeditions_form(player, dialog)
    confirm and confirm.confirm or block.text, true, growth)
   if confirm then
    fs[#fs + 1] = ("button[4.3,%.2f;2.4,0.6;act_back;Back]"):format(y + 0.85)
+   if confirm.role then fs[#fs + 1] = grug_core.ui.button_style("act_confirm", confirm.role, growth) end
    fs[#fs + 1] = ("button[6.8,%.2f;2.4,0.6;act_confirm;Confirm]"):format(y + 0.85)
   else
    for index, button in ipairs(block.buttons) do
-    fs[#fs + 1] = ("button[%.2f,%.2f;2.4,0.6;act_%s_%s;%s]"):format(6.8 - 2.5 * (index - 1),
-     y + 0.85, button.action, block.id, core.formspec_escape(button.label))
+    local field = ("act_%s_%s"):format(button.action, block.id)
+    if button.role then fs[#fs + 1] = grug_core.ui.button_style(field, button.role, growth) end
+    fs[#fs + 1] = ("button[%.2f,%.2f;2.4,0.6;%s;%s]"):format(6.8 - 2.5 * (index - 1),
+     y + 0.85, field, core.formspec_escape(button.label))
    end
   end
  elseif #list == 0 and not line then
@@ -313,6 +317,31 @@ local function at_origin(player, origin)
   if not current or current.id ~= origin.id then return false end
  end
  return rules.near(origin, player:get_pos())
+end
+
+-- Round 72.2: redraws, once, every open Expeditions tab whose player `wanted(player)`
+-- names, while it is still the form the server showed last (a window another
+-- form replaced without a quit must not pop back: default/node_formspec.lua's
+-- shown_form, Round 37 PLY-03) and the player still stands at its stone; and
+-- the owner's Claim Stone form (grug_housing, which checks its own stone).
+-- grug_expeditions calls it when a run starts closing or ends; nothing counts
+-- down here.
+function grug_home.refresh_expeditions(wanted)
+ local default = rawget(_G, "default")
+ local forms = default and default.node_formspec
+ for name, dialog in pairs(dialogs) do
+  local player = core.get_player_by_name(name)
+  if player and dialog.tab == "expeditions" and expedition_tab and player:get_hp() > 0 and
+    (not forms or forms.shown_form(name) == dialog.formname) and
+    at_origin(player, dialog.origin) and wanted(player) then
+   dialog.message, dialog.confirm = nil, nil
+   show(player, dialog)
+  end
+ end
+ local housing = rawget(_G, "grug_housing")
+ if housing and type(housing.refresh_expeditions) == "function" then
+  housing.refresh_expeditions(wanted)
+ end
 end
 
 -- Starts a trip from `origin` (a waystone, or the owner's Claim Stone) to

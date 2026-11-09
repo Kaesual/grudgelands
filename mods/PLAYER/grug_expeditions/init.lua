@@ -100,6 +100,9 @@
 --   register_on_enter(function(run, name))     stands in the box now
 --   register_on_leave(function(run, name, reason))  "travel", "logout", "expelled"
 --                                              (left the party), "ended"
+--   register_on_close(function(run, reason, by))  Finish or Cancel started the
+--                                              countdown: "finished" or "cancelled",
+--                                              `by` the leader's name (Round 72.2)
 --
 -- Ownership follows grug_parties' events, the release clock is one core.after per
 -- empty stretch, and "inside" follows grug_home's teleports: none of it looks at

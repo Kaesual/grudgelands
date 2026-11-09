@@ -517,7 +517,7 @@ end
 -- state and its leader's button; Cancel asks first, with Confirm and Back.
 do
 	local block = {id = "8", text = "Under way.", buttons = {{action = "cancel", label = "Cancel",
-		confirm = "Cancel this Expedition?"}}}
+		confirm = "Cancel this Expedition?", role = "danger"}}}
 	local acted = {}
 	grug_home = {known_waypoints = function() return {} end,
 		travel_from_claim = function() return true end,
@@ -540,11 +540,20 @@ do
 	has(ex, "This Expedition is full.", "R72.1 the line stays")
 	has(ex, "Under way.", "R72.1 the run's state")
 	has(ex, "act_cancel_8;Cancel]", "R72.1 the leader's button")
+	-- Round 72.2: a button's role styles it, and its Confirm too.
+	has(ex, "style[act_cancel_8;", "R72.2 Cancel wears its role")
+	has(ex, "#e0aca0", "R72.2 ...the danger colour")
+	local shown_before = last_shown("owner")
+	grug_housing.refresh_expeditions(function() return false end)
+	check(last_shown("owner") == shown_before, "R72.2 a player not named keeps the window")
+	grug_housing.refresh_expeditions(function() return true end)
+	check(last_shown("owner") ~= shown_before, "R72.2 the open Expeditions tab redrawn once")
 	submit(owner, "grug_housing:stone", {act_cancel_8 = "Cancel"})
 	ex = last_shown("owner").fs
 	check(#acted == 0, "R72.1 Cancel asks first")
 	has(ex, "Cancel this Expedition?", "R72.1 the confirmation")
 	has(ex, "act_confirm;Confirm]", "R72.1 Confirm")
+	has(ex, "style[act_confirm;", "R72.2 Confirm wears the Cancel's role")
 	has(ex, "act_back;Back]", "R72.1 Back")
 	lacks(ex, "act_cancel_8", "R72.1 instead of the button")
 	submit(owner, "grug_housing:stone", {act_back = "Back"})

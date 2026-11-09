@@ -50,7 +50,7 @@ out of the prepend and explicitly requests the opaque variant.
   muted subtitle and a thin gold rule at y 1.35; the owner's content starts
   below it.
 - `button_style(name, role, scale)` styles one existing field (`normal`, `selected`,
-  `danger`). Names are single fields, not comma-separated selector lists.
+  `danger`, and since Round 72.2 `confirm`: green, the danger plate turned by `[hsl`). Names are single fields, not comma-separated selector lists.
 - `frame(w, h, title, opaque, player)` opens a version-6 real-coordinate form;
   optional title at 0.4,0.45. The player supplies the current viewport report
   for the viewport ceiling. On a grown ceiling the frame also scopes the

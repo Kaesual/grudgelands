@@ -2343,7 +2343,12 @@ nothing and logs one line, so local and browser worlds play as without it.
   Expeditions; the second is filled by `grug_expeditions` through
   `grug_home.register_expedition_tab` (rows and enter, every rule theirs; since
   Round 72.1 also `actions` and `act`, the owner's run below the rows with its
-  state and its leader's Finish or Cancel, a button's `confirm` asked first) and
+  state and its leader's Finish or Cancel, a button's `confirm` asked first, and
+  since Round 72.2 its `role`, a `grug_core.ui.button_style` role: "confirm"
+  green, "danger" red; `grug_home.refresh_expeditions(wanted)` redraws open
+  tabs once, at the stone only, and `grug_housing.refresh_expeditions` the
+  Claim Stone's; `grug_expeditions` calls it from `register_on_close` and
+  `register_on_end`) and
   shown on the Claim Stone too (`expedition_rows`, `expedition_from_claim`,
   `expedition_actions`, `expedition_act`);
   `grug_home.show_waystones` opens the list from a stone outside the network

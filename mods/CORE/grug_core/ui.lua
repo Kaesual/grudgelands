@@ -108,14 +108,17 @@ end
 
 -- Role styles apply to specific existing fields. Set normal explicitly when
 -- a form reuses a name for an unselected state; no semantic color changes.
+-- "confirm" (Round 72.2) is the green of a good ending, the danger plate turned
+-- to green by a texture modifier.
+local ROLE_TEXTURES = {selected = "grug_ui_selected.png", danger = "grug_ui_danger.png",
+	confirm = "grug_ui_danger.png^[hsl:105:0:0"}
+local ROLE_COLORS = {selected = "#e6ca8d", danger = "#e0aca0", confirm = "#b4dca4"}
 function UI.button_style(name, role, scale)
-	local texture = role == "selected" and "selected" or
-		role == "danger" and "danger" or "button"
-	local color = role == "selected" and "#e6ca8d" or
-		role == "danger" and "#e0aca0" or "#e6e6dd"
-	return ("style[%s;border=false;bgcolor=#ffffff;bgimg=grug_ui_%s.png;" ..
+	local texture = ROLE_TEXTURES[role] or "grug_ui_button.png"
+	local color = ROLE_COLORS[role] or "#e6e6dd"
+	return ("style[%s;border=false;bgcolor=#ffffff;bgimg=%s;" ..
 		"bgimg_middle=6;padding=-4,-4,4,4;font_size=*%.3f;textcolor=%s;content_offset=0,0]"):
-		format(core.formspec_escape(name), texture, scale or 1, color)
+		format(core.formspec_escape(name), core.formspec_escape(texture), scale or 1, color)
 end
 
 -- Navigation is distinct from actions: clear text tabs or a flat side-menu

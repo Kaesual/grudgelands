@@ -6,19 +6,19 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
-## 0.72.1 — finish and cancel an Expedition (GUI acceptance pending)
+## 0.72.1 and 0.72.2 — finish and cancel an Expedition (GUI acceptance pending)
 
 Delivered 2026-11-09 (**compatible**) as one squash commit on main, tag `round-72.1`
 ([completion and checklist](docs/planning/round72-plan.md#0721-finish-and-cancel-2026-11-09);
 rules in [expeditions.md](docs/design/expeditions.md) §3–5). Carry-overs:
 
-- **For the user:** Cancel is refused once the boss is dead (the lane's choice: the leader
-  sees one button, Finish); the strict reading of the ruling would allow Cancel there too.
-  The Deserter's Mark's icon is a texture modifier over the contested-PvP emblem; a drawn
+- **Decided (user, 2026-11-10):** Cancel before the boss is dead, Finish after, never both
+  (0.72.2 colours them green and red). The Deserter's Mark's icon is a texture modifier over the contested-PvP emblem; a drawn
   `grug_status_deserter_mark.png` needs a pick page.
 - **Windows:** the Registrar's, waystones' and Claim Stone's Expeditions views show the time
-  left as of drawing, and members' open windows are not redrawn on Finish or Cancel; the
-  countdown banner is the live display.
+  left as of drawing (by design, user 2026-11-10: the banner counts down); since 0.72.2 they
+  are redrawn once at Finish, Cancel and the end. The waystone window's `dialogs` are not
+  cleared when another form replaces them; the redraw guards that by the stone's reach.
 - **Registrar:** `session.confirm` is not tied to a run id: a stale Confirm after the leader
   switches runs without a redraw would cancel the new run (contrived; store `run.id`).
 - **grug_home:** `waypoints.lua` calls `expedition_tab.actions` without a guard

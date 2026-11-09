@@ -8,7 +8,7 @@ local by_player = {}      -- owner's name -> a player-owned run
 local by_party = {}       -- party id -> a party-owned run
 local inside_of = {}      -- name -> the run the player stands in
 local next_id = 0
-local hooks = {ready = {}, ended = {}, entered = {}, left = {}}
+local hooks = {ready = {}, ended = {}, entered = {}, left = {}, closing = {}}
 -- Saved player meta: the waystone of the last way in (a capital's at the registrar),
 -- for a login or a respawn that outlives the run; and a pending logout death
 -- (packs.lua).
@@ -26,6 +26,8 @@ function M.register_on_ready(callback) hooks.ready[#hooks.ready + 1] = callback 
 function M.register_on_end(callback) hooks.ended[#hooks.ended + 1] = callback end
 function M.register_on_enter(callback) hooks.entered[#hooks.entered + 1] = callback end
 function M.register_on_leave(callback) hooks.left[#hooks.left + 1] = callback end
+-- Round 72.2: Finish or Cancel started the countdown (callback(run, reason, by)).
+function M.register_on_close(callback) hooks.closing[#hooks.closing + 1] = callback end
 
 local function name_of(player)
 	return type(player) == "string" and player or player:get_player_name()
@@ -388,6 +390,7 @@ local function close(run, reason, by)
 		end
 	end
 	countdown(run)
+	if run.state ~= "ended" then fire("closing", run, reason, by) end
 end
 
 -- Only the party's current leader, or the solo owner.
