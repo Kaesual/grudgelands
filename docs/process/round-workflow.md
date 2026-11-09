@@ -43,7 +43,9 @@ per session). Cross-provider CLI mechanics:
    that path and reports. Defaults the coordinator sets are marked as such
    and the user may overrule them.
 3. **Worktrees and briefs.** Per lane:
-   `git worktree add .claude/worktrees/r<NN>-<lane> -b r<NN>-<lane> main`,
+   `git worktree add .claude/worktrees/r<NN>-<lane> -b r<NN>-<lane> round<NN>`
+   (the round branch `round<NN>` comes from main in its own worktree,
+   `.claude/worktrees/round<NN>`; a one-lane round may work on it directly),
    then copy `tools/bin/` from the main checkout (gitignored; `lua51` and
    `luac51` come from `tools/build_lua51.sh`). Briefs, reports, pages and the
    handover log live in the private folder
@@ -61,11 +63,18 @@ per session). Cross-provider CLI mechanics:
    findings with file:line and a failure scenario. Fixes go back to the
    implementer's context; a Critical or High fix gets a focused re-review.
 6. **Merge.** The coordinator verifies the report and the fix round, then
-   `git merge --no-ff` on main in the plan's order. When a shared file
-   changed on main since the lane started, main is merged into the lane
-   (conflicts resolved there) before its review, so the reviewer sees the
-   integrated result.
-7. **Round-end gates** (§3) on main after the last merge.
+   `git merge --no-ff` into the round branch in the plan's order. When a
+   shared file changed on the round branch since the lane started, the
+   round branch is merged into the lane (conflicts resolved there) before its
+   review, so the reviewer sees the integrated result.
+7. **Round-end gates** (§3) on the round branch after the last merge. Then
+   the coordinator lands the round on main as **one squash commit**
+   (`git merge --squash round<NN>`, a message describing the round: release
+   and classification, what shipped, review verdicts, gates), tags the round
+   branch's tip `round-<NN>` and deletes the branch and its worktrees (user,
+   2026-11-09). Main gets one commit per round; the tag keeps the detailed
+   history and the hashes plans and reports cite. A follow-up after the GUI
+   test is its own small round with its own squash commit.
 8. **Lane D and the post-merge status step** (§4).
 9. **The user's GUI test** (desktop and the web build) on the synced game,
    then the user pushes. GUI findings become the next round's fix lane or a

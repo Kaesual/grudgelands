@@ -368,6 +368,16 @@ tour; it never carries design or WP detail that does not already live in
   `r<NN>-<lane>` branches in `.claude/worktrees/`, each independently reviewed
   and merged by the coordinator. Flow, gates, review checklist, brief rules and
   templates: [round workflow](docs/process/round-workflow.md).
+- **One commit per round on main (user, 2026-11-09):** every round, and every
+  follow-up release such as a fix round after the GUI test, is built on its
+  own local round branch `round<NN>` in its worktree. Lanes branch from it and
+  merge into it, never into main; a one-lane round may work on the round
+  branch itself. At the round's end the coordinator lands it on main as **one
+  squash commit** (`git merge --squash round<NN>`) whose message describes the
+  round: release and classification, what shipped, review verdicts and gates.
+  Before deleting the branch, the coordinator tags its tip `round-<NN>`, so the
+  detailed history and the commit hashes cited in plans and reports stay
+  reachable. The tag is pushed with main, on the user's word.
 - **Findings are hypotheses:** check a review finding, report claim or error
   message at the cited place before acting on it.
 - **Rough targets, not hard gates:** new rules are guide values; checks only
