@@ -1178,6 +1178,9 @@ tools](#player-meta-read-by-external-tools).
     L70 elite), the island dragons L70, the capital kings L70 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
+    The game's max HP is the Lua field `self.hp_max`; the engine's `hp_max`
+    property is u16, so it is written as at most 65535 and every reader asks
+    the field first (Round 73: the Expedition bosses and the dragons are above it).
     **Four tiers since WP36**: `critter` (added for the small animals —
     fixed L1, 1 HP, 0 XP, no fall damage, never promotable; the second
     documented exception to "stats derived") plus `normal`/`elite`/`rare`,
@@ -2385,7 +2388,7 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   clock is one `core.after` per empty stretch; a closing run (Finish or Cancel, Round 72.1)
   one `core.after` a second for its minute, the countdown through `grug_core.banner` to those
   inside; `encounters.lua`'s one-second pass runs only
-  while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled; `traps.lua`'s pass (5 a second) only while a run with traps has a player inside, and its fireballs are entities that are never saved;
+  while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled; `traps.lua`'s pass (5 a second) only while a run with traps has a player inside (since Round 73 it also tests an armed ambush: a segment from each player's last position against the zone, nothing once it fired), and its fireballs are entities that are never saved; `particles.lua` (Round 73) adds one endless spawner per `particles` line and player inside, sent to that player alone, deleted when they leave and at the end;
   preparation's `core.after(0)` chain only while one is under way. An admin `/teleport` out
   is not noticed: the player counts as inside until logout.
 - **Preparation** (`preparation.lua`, its header has the order and why): objects out,
@@ -2426,6 +2429,16 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   tier of `levels.lua`. `encounters.lua` wraps `grug_mobs.settle_mob_death` and
   `_item_drop_filter`, so `grug_mobs` holds no Expedition code. Removal loops skip attached
   objects: they are a player's tag and wield.
+- **Round 73 seams:** the ambush is a trap kind (`traps.lua`, chosen with the groups at
+  readiness) that hands its room to `encounters.lua`'s `M._spring_room(run, room, player)`;
+  such a room is never placed by proximity. A `critter` room is placed by proximity but is no
+  pack (`packs.add_critter`: no pull, no `engage_mob`, no drop), and `settle_mob_death` in
+  `grug_mobs/init.lua` settles nothing for a `_grug_scenery` mob. Lava immunity is
+  `lava_damage = 0` at spawn, in `add_critter` and again on every activation of a
+  `_grug_expedition` mob (`packs.lua`, `live_claim`), since the definition's value comes back
+  with each activation; lava stays a boundary through `is_node_dangerous`'s `node_damage`,
+  so `grug_nav`, the walk-edge probe and the boss floor are unchanged. A spread spawn spot
+  needs a floor, and a pack's jump to a player in lava lands on the basin's rim.
 - **Packs** (`packs.lua`, its header proves that nobody is held with nothing able to reach
   them). `_grug_pack` is the one field `grug_mobs` reads: leash, evade and give-up in
   `aggro.lua`, stuck and dawn cleanup through `mob_bound`, every accepted `do_attack` in
@@ -2451,7 +2464,12 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   so keep a template's arrival beyond a pack's view range + 8. On a slab floor a jump lands
   on the player's own cell. Lava a template writes stays put: every box holds it
   (`grug_core/lava_guard.lua`), and a template's lava has nothing beside or below it to
-  flow into (`tools/r72_mint` proves The Last Mint's). `income.py --check` has no Expedition term, so its pass says nothing about a chest.
+  flow into (the shared proof's `lava` rule). `income.py --check` has no Expedition term, so its pass says nothing about a chest.
+  Since Round 73 a source is written with the authoring helpers (relief, passages, light,
+  dressing, hazards: [format](expedition-template-format.md#authoring-helpers-round-73)), its
+  fixture runs the shared proof `tools/expedition_templates/proofs.lua` with every rule on
+  (a `report` switch per rule only for a template not yet built for it, and `mouths`, the
+  passages' mouths, whenever there is lava), and `preview.py` draws its rooms for the user's look.
 - **Fixtures and probes:** `tools/README.md`, "Round 71". The fixtures' stubs need
   `get_attach` on objects and meta on players. `r71_frame` stubs the party seam: the real
   `remove_member` is in `r67_social`, the real respawn path in `r69_home`.

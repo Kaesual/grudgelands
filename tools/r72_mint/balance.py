@@ -24,6 +24,10 @@ once a second, the raw hit before armour, dodge, absorbs and heals. On top of it
 The roster and Duewarden's HP factor are read from the shipped template and land_guard.lua;
 the rule for setting them (the brief): one normal more per pack before more HP.
 
+Round 73: the ambush (concept section 4.5), two candidates with one armed per run, each
+about half a room pack: its fight against the room packs' mean (time and raw damage), and
+one ambush's fight in the run's time. Critters are scenery and fight nobody.
+
 Ore and gem against mining (an ESTIMATE, as the Seam's): the template's places shared by
 the four, against the same minutes of a 1 x 2 tunnel in T6 rock with T6's pick.
 
@@ -70,7 +74,7 @@ PLAYERS = 4
 PARTY = (1 + 1 + 1 + 1 / 3) / 4  # Warrior, two damage dealers, a Priest healing half its time at 2/3
 UPTIME = 0.85
 RECOVERY_S = 30
-WALK_STEPS = 115 + 170 + 37  # tools/r72_mint/portable_test.lua: to the lake, from it, across it
+WALK_STEPS = 130 + 178 + 37  # tools/r72_mint/portable_test.lua: to the lake, from it, across it (Round 73)
 WALK_NPS = 4
 LAKE_S = 60
 REWARDS_S = 120
@@ -95,15 +99,18 @@ def template():
     palette = [line[5:] for line in lines if line.startswith("node ")]
     sx, sy, sz = (int(v) for v in re.search(r"size (\d+) (\d+) (\d+)", head.decode()).groups())
     cells = zlib.decompress(stream[:int(size)])[:sx * sy * sz]
-    packs = {}
+    packs, ambush = {}, {}
+    waits = {line.split()[3] for line in lines if line.startswith("ambush ")}
     for line in lines:
         if line.startswith("encounter "):
             _, room, mob, count, tier, *_ = line.split()
-            packs.setdefault(room, []).append((mob.split(":")[1], tier, int(count)))
-    return packs, cells.count(palette.index(TEMPLATE_ORE)), cells.count(palette.index(TEMPLATE_GEM))
+            if tier == "critter":
+                continue
+            (ambush if room in waits else packs).setdefault(room, []).append((mob.split(":")[1], tier, int(count)))
+    return packs, ambush, cells.count(palette.index(TEMPLATE_ORE)), cells.count(palette.index(TEMPLATE_GEM))
 
 
-PACKS, ORE_PLACES, GEM_PLACES = template()
+PACKS, AMBUSHES, ORE_PLACES, GEM_PLACES = template()
 
 
 def player_level(level):
@@ -192,16 +199,38 @@ def main():
             level, n.mob_hp(level, "normal"), n.mob_hit(level, "normal"), n.mob_hp(level, "elite"), hit, hp,
             ttk, tank / pool(level)))
     print()
-    print("| Level | Packs | + %d s each to eat | Duewarden | Walk | Lake | Rewards | Run |" % RECOVERY_S)
-    print("|---:|---:|---:|---:|---:|---:|---:|---:|")
+    def tally(rows):
+        counts = {}
+        for mob, tier, count in rows:
+            counts[(tier, mob)] = counts.get((tier, mob), 0) + count
+        return ", ".join("%d %s %s" % (c, t, m) for (t, m), c in sorted(counts.items()))
+    print("## The ambush: %s; one armed per run" % "; ".join(
+        "%s %s" % (room, tally(rows)) for room, rows in sorted(AMBUSHES.items())))
+    print()
+    print("| Level | Ambush fight | Room packs' mean | Share | Raw damage, pools | Room packs' mean | Share |")
+    print("|---:|---:|---:|---:|---:|---:|---:|")
+    ambush_s = {}
+    for level in LEVELS:
+        fights = [pack_fight(level, PACKS[room]) for room in rooms]
+        mean_t = sum(t for t, _ in fights) / len(fights)
+        mean_d = sum(d for _, d in fights) / len(fights)
+        t, d = max(pack_fight(level, rows) for rows in AMBUSHES.values()) if AMBUSHES else (0, 0)
+        ambush_s[level] = t
+        party = PLAYERS * pool(level)
+        print("| %d | %.0f s | %.0f s | %.2f | %.2f | %.2f | %.2f |" % (
+            level, t, mean_t, t / mean_t, d / party, mean_d / party, d / mean_d))
+    print()
+    print("| Level | Packs | + %d s each to eat | Ambush | Duewarden | Walk | Lake | Rewards | Run |" % RECOVERY_S)
+    print("|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     run_min = {}
     for level in LEVELS:
         packs = packs_s[level] + RECOVERY_S * len(rooms)
+        ambush = ambush_s[level] + (RECOVERY_S if AMBUSHES else 0)
         walk = WALK_STEPS / WALK_NPS
-        run = packs + boss_s[level] + walk + LAKE_S + REWARDS_S
+        run = packs + ambush + boss_s[level] + walk + LAKE_S + REWARDS_S
         run_min[level] = run / 60
-        print("| %d | %.1f min | %.1f min | %.1f min | %.1f min | %.1f min | %.1f min | %.1f min |" % (
-            level, packs_s[level] / 60, packs / 60, boss_s[level] / 60, walk / 60, LAKE_S / 60,
+        print("| %d | %.1f min | %.1f min | %.1f min | %.1f min | %.1f min | %.1f min | %.1f min | %.1f min |" % (
+            level, packs_s[level] / 60, packs / 60, ambush / 60, boss_s[level] / 60, walk / 60, LAKE_S / 60,
             REWARDS_S / 60, run / 60))
     lo, hi = TARGET_MIN
     verdict = "inside" if lo <= run_min[60] <= hi else "OUTSIDE"
@@ -209,7 +238,9 @@ def main():
     print("At 60 a run takes %.1f minutes, %s the target of %d-%d; at 69 %.1f (x%.2f)." % (
         run_min[60], verdict, lo, hi, run_min[69], run_min[69] / run_min[60]))
     print()
-    normals = sum(c for room in rooms for _, t, c in PACKS[room] if t == "normal")
+    # One ambush is armed per run: its normals count once.
+    normals = sum(c for room in rooms for _, t, c in PACKS[room] if t == "normal") + \
+        max((sum(c for _, _, c in rows) for rows in AMBUSHES.values()), default=0)
     elites = sum(c for room in rooms for _, t, c in PACKS[room] if t == "elite")
     ke = normals + 3 * elites + 4
     print("## XP: %d normal + %d elite + 1 boss = %d kill equivalents, shared by those present" % (

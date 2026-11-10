@@ -8,7 +8,6 @@ ROCK = "default:stone"
 AIR = "air"
 LANTERN = "grug_decor:xdecor_lantern_hanging"
 ROPE = "grug_decor:xdecor_rope"
-TORCH = "default:torch_wall"
 
 
 def cells_of(rects):
@@ -57,15 +56,3 @@ def cap_props(t, cells, feet, top, nodes, cap):
         if t.get(x, feet, z) in nodes:
             t.box(x, feet + 2, z, x, top, z, cap)
 
-
-def wall_lights(t, cells, feet, step=3):
-    """Side light beneath the overhangs; no source in the three body rows."""
-    for x, z in sorted(cells):
-        if t.get(x, feet, z) != AIR or t.get(x, feet + 3, z) != AIR:
-            continue
-        for dx, dz, face in ((-1, 0, 3), (1, 0, 2), (0, -1, 5), (0, 1, 4)):
-            if (z if dx else x) % step:
-                continue
-            if t.get(x + dx, feet + 3, z + dz) not in (AIR, ROPE, TORCH, LANTERN):
-                t.set(x, feet + 3, z, TORCH, face)
-                break

@@ -63,7 +63,8 @@ core = {
 			return list[at]
 		end
 	end,
-	get_node_or_nil = function(pos) return {name = world[key(pos)] or "air"} end,
+	-- Round 73 GAME: a spread spot needs a floor (encounters.lua spot), stone below y 5.
+	get_node_or_nil = function(pos) return {name = world[key(pos)] or (pos.y < 5 and "default:stone" or "air")} end,
 	get_player_by_name = function(name) return players[name] end,
 	add_entity = function(pos, name, data)
 		if refuse[name] then return nil end

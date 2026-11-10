@@ -22,6 +22,17 @@
 --   LAUNCH_RANGE of its line is skipped, the timing kept.
 -- STRIKE (strike/cancel): the floor trap's ring and hit on one position, once; The
 --   Second Shift's Auditor Nemm marks his target's spot with it (grug_mobs.expedition_mark).
+-- AMBUSH (Round 73, the template's `ambush` lines): a zone across a dark passage, armed
+--   with the trap groups (its group's `pick`, one name space with them). A living
+--   player of the run whose feet enter it or cross it between two passes, at any
+--   height up to AMBUSH_ABOVE over its floor and by any movement (a walk, a sprint, a
+--   jump, a Blink or a Charge, a knockback), springs it: a faint dust burst at each of
+--   its room's markers (the alcoves) and the room handed to encounters.lua
+--   (M._spring_room), whose mobs appear and take that player at once. Once per run: no
+--   ring, no mark, no damage of its own, no rearm, and a wipe changes nothing. A
+--   teleport (respawn, Return Home, the waystones, the way in: grug_home's one
+--   teleport path) and a move longer than AMBUSH_MOVE between two passes are no
+--   crossing, only where they end counts.
 --
 -- PLAYERS ONLY: no mob is ever looked at. The trigger and the fireball test the run's
 -- players inside, the hit goes to players. No knockback (set_hp, no puncher), no
@@ -29,8 +40,10 @@
 -- live tail particles per fireball; a mark is a node, nothing sent again.
 --
 -- COST: one TICK pass, only while a run with traps has a player inside: its players
--- against its armed floor traps, and its wall schedule. A fireball is an entity, never
--- saved, whose step tests the run's players inside.
+-- against its armed floor traps and its armed ambush (a segment test against the zone's
+-- rectangle from each player's last position, a dozen operations per player, none once it
+-- fired), and its wall schedule. A fireball is an entity, never saved, whose step tests
+-- the run's players inside. A teleport clears one name in each live run's last positions.
 local M = grug_expeditions
 local T = {}
 M.traps = T
@@ -52,6 +65,12 @@ local STALE = 0.5
 local FOOT_ABOVE, FOOT_BELOW = 0.6, 0.3
 -- A move longer than this between two passes is a teleport or a respawn, no walk.
 local WALK_LIMIT = 4
+-- An ambush counts longer moves: a Blink (10 m) and a Charge (24 m/s) cross a zone
+-- within one pass. Longer still is no crossing.
+local AMBUSH_MOVE = 16
+-- Feet this far above or below an ambush's floor are in its zone: any height a player
+-- reaches in a passage, a jump or a Blink onto a step included.
+local AMBUSH_ABOVE, AMBUSH_BELOW = 3, 0.5
 local BODY = 1.77
 local BALL = 0.4
 local REACH = BALL + 0.3
@@ -89,6 +108,12 @@ register("expedition_fireball_burst", function()
 		shape = {"sphere", {0, 0, 0}, 0.2, true}, radial = "reach", exp = {0.4, 0.4},
 		size = {2.5, 3.5}, glow = 14}}
 end, {reach = T.RADIUS})
+
+-- The ambush's only cue: a faint dust burst at an alcove, glowing a little so it
+-- shows in the dark. Silent.
+register("expedition_ambush_dust", {{kind = "single", n = 10, at = "target", color = "#9c907c",
+	mote = true, shape = {"sphere", {0, 0.9, 0}, 0.6, false}, radial = {0.3, 0.8},
+	vel = {{-0.2, -0.1, -0.2}, {0.2, 0.3, 0.2}}, exp = {1.2, 2}, size = {2, 3.5}, glow = 4}})
 
 local function play(id, pos, reach, time)
 	grug_core.particles.play(id, {target = pos, reach = reach, time = time})
@@ -243,7 +268,7 @@ end
 
 -- ---- Runs ----------------------------------------------------------------------
 
-local states = {} -- run -> {run, floors, walls, last}
+local states = {} -- run -> {run, floors, walls, ambushes, last}
 local ticking = false
 
 -- The armed candidates: per group, `pick` of its lines at random, in file order of
@@ -308,6 +333,45 @@ local function treads(trap, p0, p1)
 	return dx * dx + dz * dz <= T.TRIGGER_RADIUS * T.TRIGGER_RADIUS
 end
 
+-- Does the feet's way from p0 to p1 enter the ambush's zone? Its rectangle in x and z
+-- (a clipped segment, so a crossing between two passes counts as much as a step in),
+-- and the way's height band within the zone's.
+-- One side of the clip: the part [t0, t1] of the way inside it, or nil.
+local function clip(p, q, t0, t1)
+	if p == 0 then
+		if q < 0 then return nil end
+		return t0, t1
+	end
+	local r = q / p
+	if p < 0 then
+		if r > t1 then return nil end
+		if r > t0 then t0 = r end
+	else
+		if r < t0 then return nil end
+		if r < t1 then t1 = r end
+	end
+	return t0, t1
+end
+
+local function enters(ambush, p0, p1)
+	if math.min(p0.y, p1.y) > ambush.floor + AMBUSH_ABOVE or
+			math.max(p0.y, p1.y) < ambush.floor - AMBUSH_BELOW then
+		return false
+	end
+	local dx, dz = p1.x - p0.x, p1.z - p0.z
+	local t0, t1 = clip(-dx, p0.x - ambush.x0, 0, 1)
+	if t0 then t0, t1 = clip(dx, ambush.x1 - p0.x, t0, t1) end
+	if t0 then t0, t1 = clip(-dz, p0.z - ambush.z0, t0, t1) end
+	if t0 then t0 = clip(dz, ambush.z1 - p0.z, t0, t1) end
+	return t0 ~= nil
+end
+
+local function spring(state, ambush, player)
+	ambush.fired = true
+	for _, pos in ipairs(ambush.alcoves) do play("expedition_ambush_dust", pos) end
+	M._spring_room(state.run, ambush.room, player)
+end
+
 local function launch(state, wall, range)
 	local object = core.add_entity(wall.muzzle, FIREBALL)
 	local ent = object and object:get_luaentity()
@@ -332,7 +396,19 @@ local function tick_run(state, now)
 	for name in pairs(state.run.inside) do
 		local player = core.get_player_by_name(name)
 		if player and player:get_hp() > 0 then
-			players[#players + 1] = {name = name, pos = player:get_pos()}
+			players[#players + 1] = {name = name, pos = player:get_pos(), player = player}
+		end
+	end
+	for _, ambush in ipairs(state.ambushes) do
+		if not ambush.fired then
+			for _, row in ipairs(players) do
+				local before = state.last[row.name]
+				if not before or vector.distance(before, row.pos) > AMBUSH_MOVE then before = row.pos end
+				if enters(ambush, before, row.pos) then
+					spring(state, ambush, row.player)
+					break
+				end
+			end
 		end
 	end
 	for _, trap in ipairs(state.floors) do
@@ -385,15 +461,28 @@ end
 
 M.register_on_ready(function(run)
 	local tpl = M.templates[M.definition(run.expedition).template]
-	if not tpl.traps or #tpl.traps == 0 then return end
+	local rows = {}
+	for _, row in ipairs(tpl.traps or {}) do rows[#rows + 1] = row end
+	for _, row in ipairs(tpl.ambushes or {}) do rows[#rows + 1] = row end
+	if #rows == 0 then return end
 	local now = grug_core.mono_time()
-	local state = {run = run, floors = {}, walls = {}, last = {}}
-	for _, row in ipairs(choose(tpl.traps)) do
-		local pos = absolute(run.minp, row.pos)
+	local state = {run = run, floors = {}, walls = {}, ambushes = {}, last = {}}
+	for _, row in ipairs(choose(rows)) do
+		if row.kind == "ambush" then
+			local a, b = absolute(run.minp, row.min), absolute(run.minp, row.max)
+			local alcoves = {}
+			for _, marker in ipairs(tpl.encounters) do
+				if marker.room == row.room then alcoves[#alcoves + 1] = absolute(run.minp, marker.pos) end
+			end
+			state.ambushes[#state.ambushes + 1] = {group = row.group, room = row.room,
+				x0 = a.x - 0.5, x1 = b.x + 0.5, z0 = a.z - 0.5, z1 = b.z + 0.5, floor = a.y - 0.5,
+				alcoves = alcoves}
+		end
+		local pos = row.pos and absolute(run.minp, row.pos)
 		if row.kind == "floor" then
 			state.floors[#state.floors + 1] = {group = row.group, cell = pos,
 				feet = {x = pos.x, y = pos.y - 0.5, z = pos.z}, armed_at = 0}
-		else
+		elseif row.kind == "wall" then
 			state.walls[#state.walls + 1] = {group = row.group, muzzle = pos, axis = row.axis,
 				dir = AXES[row.axis], period = row.period, next_at = now + row.offset}
 		end
@@ -402,6 +491,14 @@ M.register_on_ready(function(run)
 end)
 M.register_on_enter(start_tick)
 M.register_on_end(function(run) states[run] = nil end)
+
+-- Every teleport of the game (grug_home's travel path: respawn, Return Home, the
+-- waystones, the way in and out): the next pass starts the player's way where they
+-- landed, so no teleport walks over a trap or crosses an ambush.
+grug_home.register_on_teleport(function(player)
+	local name = player:get_player_name()
+	for _, state in pairs(states) do state.last[name] = nil end
+end)
 
 -- ---- The fireball --------------------------------------------------------------
 
@@ -461,7 +558,8 @@ core.register_entity(FIREBALL, {
 -- ---- Reading and the helper ------------------------------------------------------
 
 -- The armed traps of a run, in map coordinates, or nil without traps:
--- {floor = {{group, cell, revealed}, ...}, wall = {{group, muzzle, axis}, ...}}.
+-- {floor = {{group, cell, revealed}, ...}, wall = {{group, muzzle, axis}, ...},
+-- ambush = {{group, room, fired}, ...}}.
 function T.chosen(run)
 	local state = states[run]
 	if not state then return nil end
@@ -473,6 +571,11 @@ function T.chosen(run)
 	for _, wall in ipairs(state.walls) do
 		out.wall[#out.wall + 1] = {group = wall.group, muzzle = vector.copy(wall.muzzle),
 			axis = wall.axis}
+	end
+	out.ambush = {}
+	for _, ambush in ipairs(state.ambushes) do
+		out.ambush[#out.ambush + 1] = {group = ambush.group, room = ambush.room,
+			fired = ambush.fired == true}
 	end
 	return out
 end

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Round 72 lane SHIFT: one engine proof on The Second Shift with the disposable probe
+# Round 72 lane SHIFT (Round 73 lane SHIFT: one level, the relief, the ambush, the lava): one engine proof on The Second Shift with the disposable probe
 # grug_probe_r72_shift and ONE real client on a private Xvfb display with its own
 # temp dir (method of tools/r71_frame/run.sh); the personal Luanti folder is never
 # touched. Run it through the shared Lua queue (2 slots).

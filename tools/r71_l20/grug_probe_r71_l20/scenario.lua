@@ -8,11 +8,14 @@ local FEET = 5
 local HP = {[20] = {normal = 384, elite = 1152, boss = 9216}, [29] = {normal = 720, elite = 2160, boss = 17280}}
 -- Where the probe stands to wake a room.
 -- Round 72 PROOF: pack c's 100,66 lies in rock since STYLE's smaller rooms; 104,66.
-local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 104, 66}, {"pack_d", 100, 98}, {"boss", 84, 108}}
+-- Round 73 SEAM: bay c's northern bay is rock now; 104,70. The floor has relief: the
+-- probe stands on y 5 cells (the mouths and the routes' flat parts); the Round 73
+-- questions are r73.lua's (SCENARIO=r73).
+local ROOMS = {{"pack_a", 54, 20}, {"pack_b", 100, 20}, {"pack_c", 104, 70}, {"pack_d", 100, 98}, {"boss", 84, 108}}
 -- One shot per room at eye height, facing what the room is about (Round 72 PROOF): the
 -- cleared chambers of packs a to d and the working face, after the chest, so no pulled
 -- pack or boss follows the shots.
-local TOUR = {{"room1", 50, 20, -0.896}, {"room2", 100, 30, -1.736}, {"room3c", 108, 66, 0},
+local TOUR = {{"room1", 50, 20, -0.896}, {"room2", 100, 30, -1.736}, {"room3c", 108, 70, 0},
 	{"room3d", 100, 96, -0.519}, {"room4", 50, 108, -math.pi / 2}}
 
 local function rel(run, x, y, z) return vector.add(run.minp, vector.new(x, y, z)) end
@@ -218,7 +221,7 @@ return function(lib, player)
 	-- The look of the arrival towards its waystone; the other rooms once cleared (TOUR).
 	go(lib, player, run, 20, 12, 0)
 	shot(lib, player, "room0")
-	local a = prove_wander(lib, player, run, 108, 52, 30)
+	local a = prove_wander(lib, player, run, 98, 44, 30) -- Round 73 SEAM: the drift's new line
 	-- Round 72 PROOF: the second wander moved from the court's passage (88,108) to the
 	-- cut between bays c and d: the lane's run saw pack d push the character through the
 	-- court there, and Flintback, pulled and led off his floor, reset out of reach.

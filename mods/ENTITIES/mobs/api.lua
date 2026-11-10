@@ -853,7 +853,9 @@ function mob_class:update_tag(newname)
 	end
 
 	self.infotext = (self.description and (self.description .. "\n") or "")
-		.. S("Health: @1", self.health) .. " / " .. prop.hp_max
+		-- GRUG PATCH (Round 73 HPCAP): the game's max (grug_mobs levels.lua),
+		-- not the engine's u16 property, which stops at 65535.
+		.. S("Health: @1", self.health) .. " / " .. (self.hp_max or prop.hp_max)
 		.. ("\n" .. S("Entity: @1", self.name))
 		.. ("\n" .. S("Type: @1", self.type))
 		.. (self.owner == "" and "" or "\n" .. S("Owner: @1", self.owner)) .. text
@@ -1013,7 +1015,12 @@ function mob_class:check_for_death(cmi_cause)
 		-- make sure health isn't higher than max
 		local prop = self.object:get_properties()
 
-		if self.health > prop.hp_max then self.health = prop.hp_max end
+		-- GRUG PATCH (Round 73 HPCAP): clamp to the game's max. The engine
+		-- property is u16 (65535), so an Expedition boss above it lost the rest
+		-- of its health on the first hit.
+		local max_hp = self.hp_max or prop.hp_max
+
+		if self.health > max_hp then self.health = max_hp end
 
 		self:update_tag() ; return
 	end
@@ -3710,6 +3717,11 @@ function mob_class:mob_activate(staticdata, def, dtime)
 				if is_property_name[_] then
 
 					self.object:set_properties({[_] = stat})
+
+					-- GRUG PATCH (Round 73 HPCAP): keep the saved max on self
+					-- too; the engine property stops at 65535, the game's
+					-- max (grug_mobs levels.lua) does not.
+					if _ == "hp_max" then self.hp_max = stat end
 				else
 					self[_] = stat
 				end
@@ -3757,7 +3769,8 @@ function mob_class:mob_activate(staticdata, def, dtime)
 	-- set mob size and textures
 	self.object:set_properties({textures = textures})
 
-	if self.health == 0 then self.health = random(self.hp_min, prop.hp_max) end
+	-- GRUG PATCH (Round 73 HPCAP): the game's max, see the staticdata loop.
+	if self.health == 0 then self.health = random(self.hp_min, self.hp_max or prop.hp_max) end
 
 	-- GRUG PATCH (Round 42 NV1): no `self.path`; the navigation state lives
 	-- in self.temp.grug_nav (grug_nav.lua).
@@ -5102,7 +5115,8 @@ function mobs:feed_tame(self, clicker, feed_count, breed, tame)
 
 		local prop = self.object:get_properties()
 
-		self.health = min(self.health + 4, prop.hp_max) -- increase health
+		-- GRUG PATCH (Round 73 HPCAP): the game's max, see check_for_death.
+		self.health = min(self.health + 4, self.hp_max or prop.hp_max) -- increase health
 
 		self.object:set_hp(self.health)
 

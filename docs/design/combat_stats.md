@@ -514,9 +514,11 @@ Normal tier at level L:
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 90 (×2.5 HP, ×1.4 dmg, ×2 XP; between normal and elite,
   Round 49 ruling 6)**, and the registered
-  **boss tier (30,000 HP flat; normal damage, XP and armor; no telegraph)**.
-  No mob uses the boss tier before
-  the round-6 king/dragon content. The single implementation table and formula
+  **boss tier (100,000 HP flat since Round 73, 30,000 before; normal damage,
+  XP and armor; no telegraph)**. Only the two dragons use the boss tier; a
+  king and a General are elites with three times an elite's HP (the
+  definition's `_grug_hp_scale`, Round 73: 32,436 at 70, 28,203 at 65); the
+  user's group sizes are five players for a dragon and four for a king. The single implementation table and formula
   are the `TIERS` table and `grug_mobs.stats_for` in
   `mods/ENTITIES/grug_mobs/levels.lua`. An underground row's spawn turns
   elite at **4 %** from level 5, never in a start footprint (Round 46,

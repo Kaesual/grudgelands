@@ -22,7 +22,8 @@ shooting once a second, the raw hit before armour, dodge, absorbs and heals. On 
   * RECOVERY_S after a pack, to eat; WALK_NPS walking; WALL_WAIT_S at the wall trap;
   * the counts come from the shipped template's encounter lines. The plan's rule:
     add one normal per pack before raising HP (round72-plan.md §4 SHIFT); then the
-    boss's HP factor brings the run at 40 into 10-20 minutes.
+    boss's HP factor brings the run at 40 into 10-20 minutes. Round 73 BOSSHP: the user
+    set the factor from 20 to 14 (2026-11-10), the run at 40 is now about 9 minutes.
 
 Ore and gem against mining is an ESTIMATE, the Seam's: the template's places shared by
 the four, against the same minutes of a 1 x 2 tunnel in the tier's own rock.
@@ -64,7 +65,7 @@ PARTY = (1 + 1 + 1 + 1 / 3) / 4  # Warrior, two damage dealers, a Priest healing
 UPTIME = 0.85
 MARK_STEP_S = 1
 RECOVERY_S = 30
-WALK_STEPS = 254  # tools/r72_shift/portable_test.lua prints it: start to chest
+WALK_STEPS = 284  # tools/r72_shift/portable_test.lua prints it: start to chest (Round 73: the drifts)
 WALK_NPS = 4
 WALL_WAIT_S = 4  # half the wall trap's 8 s period, once
 REWARDS_S = 120  # chest, eight nodes, the waystone
@@ -82,18 +83,21 @@ def read_template():
     palette = [line[5:] for line in lines if line.startswith("node ")]
     sx, sy, sz = (int(v) for v in re.search(r"size (\d+) (\d+) (\d+)", head.decode()).groups())
     cells = zlib.decompress(stream[:int(size)])[:sx * sy * sz]
-    packs = {}
+    packs, ambush = {}, {}
+    waits = {line.split()[3] for line in lines if line.startswith("ambush ")}
     for line in lines:
         if line.startswith("encounter "):
             _, room, _, count, tier = line.split()[:5]
-            row = packs.setdefault(room, {"normal": 0, "elite": 0, "boss": 0})
+            if tier == "critter":
+                continue  # Round 73: scenery, no fight
+            row = (ambush if room in waits else packs).setdefault(room, {"normal": 0, "elite": 0, "boss": 0})
             row[tier] += int(count)
     ore = cells.count(palette.index(seam.TEMPLATE_ORE))
     gem = cells.count(palette.index(seam.TEMPLATE_GEM))
-    return packs, ore, gem
+    return packs, ambush, ore, gem
 
 
-PACKS, ORE_PLACES, GEM_PLACES = read_template()
+PACKS, AMBUSH, ORE_PLACES, GEM_PLACES = read_template()
 FOUGHT = sorted(room for room in PACKS if room != "boss")
 
 
@@ -115,6 +119,29 @@ def pack_fight(level, normals, elites):
     normal_seconds = normal_s * normals * (normals + 1) / 2
     damage = normal_seconds * hit + total * elites * elite_hit
     return total, damage / (PARTY * UPTIME)
+
+
+def ambush_table():
+    """Round 73: an ambush candidate against a room pack, by the same fight model (a run
+    arms one candidate; its mobs come at once, so it is pulled whole like a pack)."""
+    print("## The ambush (Round 73): one of %d candidates armed per run" % len(AMBUSH))
+    print()
+    print("Each candidate: %s. Against the room packs' mean, in fighting time and raw damage taken." % (
+        "; ".join("%s %d normal" % (room, AMBUSH[room]["normal"]) for room in sorted(AMBUSH))))
+    print()
+    print("| Level | Ambush s | Room pack s (mean) | Time share | Ambush pools | Room pack pools (mean) | Damage share |")
+    print("|---:|---:|---:|---:|---:|---:|---:|")
+    room = sorted(AMBUSH)[0]
+    for level in LEVELS:
+        a_s, a_d = pack_fight(level, AMBUSH[room]["normal"], AMBUSH[room]["elite"])
+        rooms = [pack_fight(level, PACKS[r]["normal"], PACKS[r]["elite"]) for r in FOUGHT]
+        p_s = sum(r[0] for r in rooms) / len(rooms)
+        p_d = sum(r[1] for r in rooms) / len(rooms)
+        pools = PLAYERS * pool(level)
+        print("| %d | %.1f | %.1f | %.0f %% | %.2f | %.2f | %.0f %% |" % (
+            level, a_s / (PARTY * UPTIME), p_s / (PARTY * UPTIME), 100 * a_s / p_s, a_d / pools, p_d / pools,
+            100 * a_d / p_d))
+    print()
 
 
 def boss(level):
@@ -175,6 +202,7 @@ def main():
             level, packs_s[level] / 60, packs / 60, boss_s[level] / 60, walk / 60, REWARDS_S / 60, run / 60,
             packs_s[level] / packs_s[40], boss_s[level] / boss_s[40], tank_pools[level] / tank_pools[40]))
     print()
+    ambush_table()
     normals = sum(PACKS[room]["normal"] for room in FOUGHT)
     elites = sum(PACKS[room]["elite"] for room in FOUGHT)
     ke = normals + 4 * elites + 4

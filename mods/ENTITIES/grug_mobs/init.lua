@@ -310,6 +310,12 @@ function grug_mobs.settle_mob_death(self)
 		self.temp.grug_rare_death_sent = true
 		grug_mobs.rare_killed(self._grug_rare_id)
 	end
+	-- Scenery (`_grug_scenery`: an Expedition's critter, grug_expeditions packs.lua)
+	-- settles nothing: no loot hook, no XP, no quest credit, no participant drop.
+	if self._grug_scenery then
+		grug_mobs.cleanup_xp_participants(self)
+		return false
+	end
 	if not self.temp.grug_kill_loot_settled then
 		self.temp.grug_kill_loot_settled = true
 		local tagger = grug_mobs.player_drop_tagger

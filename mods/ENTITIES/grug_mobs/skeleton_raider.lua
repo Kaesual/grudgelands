@@ -123,7 +123,8 @@ grug_mobs.register_mob("grug_mobs:skeleton_raider", raider_def("Skeleton Raider"
 local nemm = raider_def("Auditor Nemm")
 nemm.clock = "any"
 nemm._grug_spawn_domains = nil
-nemm._grug_hp_scale = 20
+-- x14 since Round 73 BOSSHP (the user, 2026-11-10; it was x20).
+nemm._grug_hp_scale = 14
 nemm.walk_chance = 0
 nemm.view_range = 20
 nemm.drops = {}

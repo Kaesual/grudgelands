@@ -1,4 +1,4 @@
--- Disposable engine probe of Round 72 lane MINT. Never shipped: run.sh stages it
+-- Disposable engine probe of Round 72 lane MINT (Round 73 MINT: the redesign). Never shipped: run.sh stages it
 -- through tools/luanti_headless.sh (PROBE=) and connects one real client, whose keys
 -- run.sh presses for the jumps (keys.py). The scenario is a coroutine resumed once
 -- per server step.

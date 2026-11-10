@@ -6,10 +6,14 @@ Every run is written anew, so an Expedition can be played again and again.
 
 **Decided** by the user, 2026-11-07; the framework and The Stilled Seam (levels 20–69)
 are implemented in Round 71 (`grug_expeditions`), The Second Shift, The Last Mint, the
-traps, the Expeditions tab and the reshaped rooms in Round 72. This file owns the game rules
+traps, the Expeditions tab and the reshaped rooms in Round 72; Round 73 (0.73.0) redesigned all
+three: floors with stairs, bent passages, light from what belongs there, dark stretches, the
+ambush, lava falls, critters and particles. This file owns the game rules
 and their numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the
-record of the rulings; [Round 71](../planning/round71-plan.md) and
-[Round 72](../planning/round72-plan.md#completion-2026-11-08) hold what shipped. How it is built:
+record of the rulings, the [Round 73 concept](../planning/round73-expedition-redesign-concept.md)
+as that of the redesign's; [Round 71](../planning/round71-plan.md),
+[Round 72](../planning/round72-plan.md#completion-2026-11-08) and
+[Round 73](../planning/round73-plan.md#completion-2026-11-10) hold what shipped. How it is built:
 [module guide](../technical/module-guide.md#expeditions),
 [template format](../technical/expedition-template-format.md).
 
@@ -29,9 +33,9 @@ Three Expeditions, each over a wide level range (user, 2026-11-07, [concept
 
 | Expedition | Mob levels | Most players inside | State |
 |---|---|---:|---|
-| The Stilled Seam | 20–69 | 3 at every level | implemented in Round 71, reshaped in Round 72 (§13) |
-| The Second Shift | 40–69 | 4 | implemented in Round 72 (§14) |
-| The Last Mint | 60–69 | 4 | implemented in Round 72 (§15) |
+| The Stilled Seam | 20–69 | 3 at every level | implemented in Round 71, reshaped in Rounds 72 and 73 (§13) |
+| The Second Shift | 40–69 | 4 | implemented in Round 72, reshaped in Round 73 (§14) |
+| The Last Mint | 60–69 | 4 | implemented in Round 72, reshaped in Round 73 (§15) |
 
 **Every 10 levels the tier follows:** the reward, the ore and the gem. The ore is what that
 tier's rock is mined for, the next metal's input ([items](items_crafting.md) §3.0.1): T2's
@@ -50,13 +54,52 @@ first. Floor plans are 2D on one main floor for now; the template format stays 3
 
 **Rooms** (user, 2026-11-08): an Expedition must not read as a row of rectangular rooms.
 Walls and ceilings are irregular in plan and in height (overhangs, sloped or stepped
-ceilings, niches, ribs), and now and then a cuboid room reads as meant. **Floors are flat**
-in every room and at the bosses: no one-node step and no dais; a boss stands out by ceiling,
-pillars and light (The Last Mint's lava pillars are the mechanic, not decoration). **No pack
-can be walked round:** from every walkable floor cell of a pack's room at least one mob of
-that pack would notice the player (in its view range and in sight). Every template is
-proved for this, for at least three nodes of air over every floor cell and for no perch out
-of a pack's reach (`tools/expedition_templates/proofs.lua`).
+ceilings, niches, ribs), and now and then a cuboid room reads as meant. Since Round 73 each
+Expedition has its own few room types (a sunken floor with a stair ring, terraces, a
+collapse with a rubble ramp, a pillared hall, a square work room, a lava fall as the
+centrepiece), never one next to its own, and the dressing follows what happened in the room.
+**No pack can be walked round:** from every walkable floor cell of a pack's room at least
+one mob of that pack would notice the player (in its view range and in sight, over the
+relief), and no perch lies out of a pack's reach.
+
+**Floors** (Round 73, the user, 2026-11-09 and 2026-11-10; replaces Round 72's flat floors
+and "no dais"): every change of height is a stair (normal, inner or outer) of an existing
+stair set, so players and mobs walk it without a jump and finding a way stays a question of
+x and z. One walking surface per column, neighbours at most one node apart, no ridge or
+trench one node wide, and a trap's floor flat. **Height maps must not look even:** pits and
+rises of several levels with irregular outlines and uneven slopes, more than one feature in
+a larger room, and some rooms flat on purpose. Boss rooms may have relief too (a sunken
+arena, terraces). Every walking cell and stair has the free height of its Expedition's
+tallest mob plus one node over its own floor.
+
+**Passages** (Round 73) bend and change width, with a niche, a short dead end, a widening,
+a stair run or a lower stretch every 15–20 nodes or so; a niche never makes a way round a
+pack, a trap or an ambush. A straight passage is a choice: the dark ambush stretches.
+
+**Light** (Round 73) comes from things that belong there: a desk, a door, the ore, a lava
+fall, candles on crates, lamps set in the rock; never a grid, never a row along a wall. A
+hanging light sits at the feet plus the tallest mob plus one or higher, or in a wall cell,
+so no mob's head meets it. At eye height:
+
+| Where | Light |
+|---|---|
+| The fighting floor: every cell a pack or the boss fights on, the traps and their radius | 4 or more everywhere, 6 or more on 75 % (the user, 2026-11-10: pack rooms may be darker in patches) |
+| The arrival, the store, the waystones, the chest, the door | 6 or more |
+| Everywhere else: passages, niches, rooms without a pack | anything, 0 included, with a light in sight |
+| An ambush's zone and its alcoves | 0 |
+
+**Dark stretches:** from every floor cell below light 4 a light is in sight from the eye,
+within about 32 nodes, so a dark stretch is a nearly straight passage with a light at its
+end, never a maze.
+
+**Dressing** (Round 73): moss, mossy cobble, lichen, a few plants, bones and cobwebs in
+high corners, in clusters where they fit (damp places, low ceilings), not spread evenly.
+Nothing walkable and no cobweb lies on a walking cell, and no gathering source or crop
+anywhere: it would be loot outside the chest.
+
+Every written template is proved for all of this, the ambush, lava and particle rules
+included, by one shared proof (`tools/expedition_templates/proofs.lua`, 14 rules); the
+height maps' variety is left to the previews and the review.
 
 ## 2. Levels and entry
 
@@ -216,6 +259,17 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
   and stays where it was written (Round 72, `grug_core/lava_guard.lua`: every box holds its
   lava; nothing flows in, out or away). Short jump-and-run tasks appear in the higher
   Expeditions: The Last Mint's lake (§15).
+- **Lava** (Round 73, the user, 2026-11-10): one to three lava falls per Expedition (The Last Mint three besides its
+  lake). A fall runs from a source in a wall niche down a recess into a basin beside the floor, also in a
+  fighting area, lit by its own glow; none lies at a passage's mouth, at the foot of a stair run, in the dark or in an
+  ambush's stretch, and no lava cell is a walking cell. Stepping in, or being pushed in by a pack's hits, is the players' danger. Every mob of an Expedition
+  (bosses, ambushes and critters included) is immune to lava, and none walks into it by itself: its paths, its chase,
+  its way home and its spawn spot all keep lava a boundary, and a pack's jump to a player standing in a basin lands on
+  the basin's rim. A mob pushed in takes no damage and climbs out. The boss's floor (§8) has no lava cell, but a target
+  in a small basin stays within the boss's reach of its rim, so standing in the lava keeps the fight and burns.
+- **Particles** (Round 73): the template places a few spawners that fit the place (dripping water, dust, ash, paper
+  scraps, embers, sparks; [format](../technical/expedition-template-format.md)). Only the run's players inside see
+  them, only while they are inside, and they go with the run; a few hundred live particles per Expedition at most.
 - **No mounts:** neither riding nor flying, and no boats ([mounts](mounts.md) §4.0).
 - **Death:** the player respawns at the start waystone. Round 70's death penalty applies
   ([durability](durability_repair.md)).
@@ -229,7 +283,11 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
 ## 8. Mobs and packs
 
 - A room's mobs appear when a player of the run comes within 48 nodes, once. Nothing
-  respawns but a partly killed pack (below).
+  respawns but a partly killed pack (below). An ambush's room (Traps, below) waits for its zone instead.
+- **Critters** (Round 73): a few Cave Bats, Cave Crawlers and Bone Weevils, placed like a room's mobs but outside every
+  pack. Inside an Expedition they drop nothing, settle no kill (no XP, which the critter tier never pays, and no quest
+  credit), and hitting one starts no fight and pulls no pack; they keep fleeing. They never count for the door, the
+  boss or the chest, and nothing places them again.
 - Every mob is at the run's level through its own entity, whatever its spawn row says,
   and pays XP as usual.
 - **No easing for a high level or a race** (0.72.0, the user, 2026-11-07 and 2026-11-08):
@@ -264,7 +322,7 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
 
 ### Traps
 
-Two trap types, the same in every Expedition (user, 2026-11-07, [Round 72](../planning/round72-plan.md)
+Two trap types and, since Round 73, the ambush, the same in every Expedition (user, 2026-11-07, [Round 72](../planning/round72-plan.md)
 §2.9; built in Round 72, `grug_expeditions/traps.lua`). The numbers are the plans' proposals, tuned in the user's
 test.
 
@@ -285,6 +343,23 @@ test.
   left out, the rhythm kept.
 - **A boss's marked spot** (The Second Shift's Auditor Nemm): the floor trap's ring and hit on one position, once;
   his reset or death takes the hit back. One that had a player in its area is his attack for the 15 s rule.
+- **The ambush** (Round 73, the user, 2026-11-10; `traps.lua`, `encounters.lua`): an invisible zone across a long
+  dark passage, its alcoves in the walls beside it. The template names the candidates in groups as traps do (and in
+  the same name space), two per Expedition with one armed per run in the plans, chosen with the traps when the run is
+  ready. A living player of the run who enters or crosses the zone springs it, at any height in the passage and by
+  any movement: a walk, a sprint, a jump over it, a Blink or a Charge across it, a knockback. A respawn, Return Home,
+  waystone travel and the way in never do. It fires once per run: no ring, no mark, no damage of its own, no rearm,
+  and a wipe changes nothing. Its pack, normal tier and melee only, appears in its alcoves at that moment, never
+  earlier, and takes that player at once; the only cue is a faint dust burst at the alcoves. From then on it is a pack
+  like every other: after a wipe it waits in its alcoves, visible, and crossing again spawns nothing new. An unarmed
+  candidate stays quiet and its pack never appears. It gives no reward and opens nothing.
+  - **Placement** (proved on every template): the zone spans its passage wall to wall, two to three nodes deep on a
+    flat floor, so every walk to the end crosses it; its alcoves are dark, fit their mob and lead nowhere. It lies in
+    no pack or boss room, out of every pack's notice, out of sight of the arrival and the start waystone (where a
+    respawn stands, so a wipe's pack does not chase the party there), with no trap in its dark stretch, and **never as
+    the first fight** (the user, 2026-11-10): every walk from the arrival reaches it through a pack room first. Its
+    pack is about half a room pack by the Expedition's balance model, from its own roster (The Stilled Seam's two
+    spiders a third of its mean room pack, kept by the user, 2026-11-10).
 
 ## 9. Tank and healer
 
@@ -338,28 +413,43 @@ An abandoned gold working held by spiders and golems, at mob levels 20–69. Its
 [description](../planning/round71-l20-description.md) was approved by the user and has the
 story, the floor plan and the texts.
 
-- **Size:** 128 × 32 × 128, one floor, six rooms in a line.
+- **Size:** 128 × 32 × 128, one floor, six rooms in a line. Round 73 (lane SEAM) reshaped
+  every room and passage round the same places: the oldest and roughest mine of the three,
+  with the most moss and lichen, timber sets in the passages, rubble stairs, dripping water
+  and bats.
 
 | Room | Holds |
 |---|---|
-| 0 Arrival | small bent timber refuge, low sloping roof and boarded entrance; start waystone |
-| 1 Cart bay | compact cart chamber under a crooked rock vault, pine sleepers flush in the floor and a hooded cart recess; pack a: 4 spiders; 1 ore in the blind exit-side cut |
-| 2 Prop room | narrow leaning cleft with log posts embedded in the walls, pine ribs and a buried broken beam; pack b: 2 spiders, 1 elite golem; 1 gem |
-| 3 Sorting floor | two small sorting bays, one rising and one peaked, hooded wall tables and a low bend around the rock screen; packs c and d: 3 spiders and 1 elite golem each |
-| 4 Working face | smaller faceted cavern with a high fractured stone dome, cobble piers and a cluster of hanging lights; [Flintback](biomes_mobs.md), alone |
-| 5 Store | regular plank store beneath pine coffers, hooded barrels and capped mineral seams; chest, end waystone; 4 ore, 2 gem |
+| 0 Arrival | small timber refuge, a boarded entrance with a rubble slump two levels up beside it, lanterns over the start waystone |
+| 1 Cart bay | raised loading floor two levels up in the north-west, a sump a level down in the south, the old rails; a hooded cart with a candle; pack a: 4 spiders; 1 ore in the blind siding after the pack |
+| 2 Prop room | a collapse: a rubble ramp three levels up to the north-east under a broken roof, a scour in the south-west, timber pairs in the walls, a lava fall from a hot seam in the east wall; pack b: 2 spiders, 1 elite golem; 1 gem |
+| 3 Sorting floor | bay c a sunken sorting floor two levels deep beside a spoil heap, hooded tables with candles; bay d a square work room, flat on purpose; the rock screen between them; packs c and d: 3 spiders and 1 elite golem each |
+| 4 Working face | Flintback's court: a sunken arena of uneven levels (a broad hollow, a deeper pit off his place, a rim terrace, a spoil bank), a high fractured dome, cobble piers and a lava fall in the north-east wall; [Flintback](biomes_mobs.md), alone |
+| 5 Store | square plank store beneath pine coffers, flat on purpose, hooded barrels and capped mineral seams; chest, end waystone; 4 ore, 2 gem |
 
-- **Room cuts (Round 72):** the compact fighting chambers keep every pack at its original
-  place. Short low approaches and exits connect them to the unchanged passages; the cart
-  bay's fixed ore place is in a blind cut reached through the pack's sight. These cuts
-  are passage floor, separate from the fighting chambers: the old rectangular envelopes
-  extend beyond the packs' view ranges. Every fighting-chamber floor cell is in sight
-  and range of its own pack. Flintback's room envelope is now (54, 94)–(79, 119) in x/z;
-  the floor remains at y 4. Wall displays are capped into the roof, broken timber is flush
-  underfoot, and the eight mineral places, waystones, reward door and chest stay put.
-- **Mobs:** 12 spiders, 3 elite golems and the boss. Spiders have 384 HP at 20, 2,696 at 60
-  and 3,507 at 69; elites 1,152, 8,088 and 10,522; Flintback 8 × an elite's: 9,216, 64,704
-  and 84,176. Every mob keeps its name at every level; Flintback's is one fixed name.
+- **Floor and passages (Round 73):** the floor is one height map with every change of
+  height a stair (relief by stairs only; the first air is y 5, pits down to y 3, the ramp up
+  to y 8). The passages bend and change width, with niches, a rubble hump, stair runs down
+  and up and a widening without a pack; the two dark drifts are long and straight on
+  purpose. The court's range stays its envelope (54, 94)–(79, 119) in x/z.
+- **Light (Round 73):** from things in the mine: lanterns hung over the tallest mob's head
+  room, candles on the hooded tables, barrels and cart, miners' anthracite lamps in niches
+  cut into the rock, and the two lava falls. No grid. The fighting floors, the arrival,
+  the waystones, the chest and the door are lit; the passages have dark stretches with a
+  light in sight.
+- **Ambush (Round 73):** two candidates, one armed per run: the haulage drift between the
+  cart bay and the prop room, and the drift down from the prop room to the sorting floor.
+  Each is two spiders, one in a shallow alcove on each side of a dark zone across the
+  drift, after the first pack and out of every pack's and the arrival's sight.
+- **Lava (Round 73):** two falls, beside pack b's fighting floor and over Flintback's arena;
+  a pack's hits can push a player in.
+- **Critters and particles (Round 73):** two bats (the refuge, the store), two crawlers and
+  a weevil in the passages' niches; dripping water in the niches, the drift and over the
+  rubble ramp, dust motes in the refuge, the cart bay and the court (122 live particles at
+  most).
+- **Mobs:** 12 spiders, 3 elite golems and the boss, and the armed ambush's 2 spiders.
+  Spiders have 384 HP at 20, 2,696 at 60 and 3,507 at 69; elites 1,152, 8,088 and 10,522;
+  Flintback 8 × an elite's: 9,216, 64,704 and 84,176. Every mob keeps its name at every level; Flintback's is one fixed name.
 - **Ore:** eight shared places per run, five ore and three gem, of the run's tier (§1).
 - **Chest, per player:** 1 Uncommon (blue) item, at 25 % a Rare (yellow) item, both at the
   run's level as item level, and a bag of 10 × a kill's coin bag at the run's level. The
@@ -367,9 +457,10 @@ story, the floor plan and the texts.
   Glands at every level; 1–2 Coarse Spider Silk at 21–30, Layered Spider Web at 31–40, Glass
   Spider Silk at 51–69; 1–2 Venom Sacs at 50 % at 31–40 and always at 41–50.
 - **Balance** (`tools/r71_l20/balance.py`, modelled): up to 60 every level plays as 20 does,
-  a run about 9 minutes. At 61–69 the level malus stretches packs and boss: at 69 a run
-  is about 13.5 minutes, the boss about 4.8, and the tank takes about 2.9 times the
-  damage of level 20 in pools.
+  a run about 9.3 minutes with the ambush. At 61–69 the level malus stretches packs and
+  boss: at 69 a run is about 14.4 minutes, the boss about 4.8, and the tank takes about 2.9
+  times the damage of level 20 in pools. The ambush's two spiders take half the time of
+  pack a (a third of a mean room pack) and deal 30 % of its damage.
 - **Quest:** "Party: The Stilled Seam", from the six guild leaders
   ([quests](quests.md)): kill Flintback once, at any of its levels. The Expedition stays
   repeatable after the turn-in.
@@ -379,31 +470,54 @@ story, the floor plan and the texts.
 A working mine whose whole shift is dead, kept at work by Auditor Nemm's branded pay, at
 mob levels 40–69 for four players. Its [build plan](../planning/round72-second-shift.md) was
 approved by the user and has the story, the floor plan and the quest texts; Round 72 built
-it with the user's room rulings ([Round 72](../planning/round72-plan.md) §2.9): every floor
-flat, no dais, and every pack room cut so that no pack can be walked round.
+it with the user's room rulings ([Round 72](../planning/round72-plan.md) §2.9): every pack
+room cut so that no pack can be walked round. Round 73 reshaped it
+([concept](../planning/round73-expedition-redesign-concept.md) §4, §5): a mine still keeping
+its books, order gone sour.
 
-- **Size:** 128 × 32 × 128, one floor (the first air cell at y 8), six rooms in a line: The
-  Stilled Seam's envelopes mirrored on x, cut smaller.
+- **Size:** 128 × 32 × 128, six rooms in a line in The Stilled Seam's envelopes mirrored on x.
+  The floor is a height map with stairs (Round 73), from y 5 (bay d's pay floor) to y 10 (the
+  court's west gallery); the arrival, the chest and the waystones stand at y 8.
 
 | Room | Holds |
 |---|---|
-| 0 Arrival | bent refuge beneath a low, sloping timber roof; boarded collapse and hooded benches; start waystone |
-| 1 Timekeeper's desk | rising rock roof and transverse beams; hooded desk and cart siding; pack a: 3 raiders, 2 miners; the shift board; 1 ore |
-| 2 Marking floor | leaning, notched roof with timber ribs, reinforced tally panels and flush broken beams; pack b: 3 raiders, 1 elite miner; 2 of 4 floor traps; 1 gem |
-| 3 Wage room | low sloping pay bay c and peaked bay d, hooded wall furniture and lanterns around the rock screen; packs c and d, 3 raiders and 1 elite miner each; the 8-node bypass and 1 of 2 floor traps per bay |
-| 4 Audit court | faceted high rock canopy with converging pine ribs, four timber shoulders and hanging lights; Auditor Nemm, alone; 2 of 4 floor traps |
-| 5 Store | level timber coffers and reinforced storage hoods; chest, end waystone; 4 ore, 2 gem |
+| 0 Arrival | bent refuge beneath a low, sloping timber roof; boarded collapse, hooded benches, a raised bench along the east wall; start waystone under a lamp |
+| 1 Timekeeper's office | square and flat on purpose, plank floor and wainscot; the timekeeper's desk under shelves with the shift board, three rows of clerks' desks with candles, a sunken cart siding along the south wall, cobwebs; pack a: 3 raiders, 2 miners; 1 ore |
+| 2 Marking floor | terraces stepping down west in three levels, tally benches, a lava fall in the west wall; pack b: 3 raiders, 1 elite miner; 2 of 4 floor traps; 1 gem |
+| 3 Wage hall | bay c steps down a level from the entry, lit pay tables on the east wall; bay d's sunken pay floor two levels deep round the rock screen's south; bones; packs c and d, 3 raiders and 1 elite miner each; the bypass and 1 of 2 floor traps per bay |
+| 4 Audit court | a sunken audit floor round Nemm under a high ribbed canopy, the auditors' galleries west (two levels) and south; a lava fall in the north wall; Auditor Nemm, alone; 2 of 4 floor traps |
+| 5 Store | flat and square on purpose: plank floor, lamp niches, coffers; chest, end waystone; 4 ore, 2 gem |
 
-- **The passage from room 1 to room 2** holds the wall trap: 1 of 2 muzzles, every 8 s.
+- **Passages:** the arrival's cut bends over a hump with a niche; the trap gallery between
+  rooms 1 and 2 holds the wall trap (1 of 2 muzzles, every 8 s) and stays straight where the
+  fireball flies; the **grain drift** (room 2 to 3) and the **pay drift** (room 3 north, then
+  east under a low roof into the court) are long, straight and dark on purpose, mossy, each
+  dipping a node; the door's cut jogs into the store.
+- **The ambush** (Round 73): two candidates, one in each drift, one armed per run. Its zone
+  spans the drift; three Buried Miners (normal, melee) wait in two alcoves beside it, about
+  half a room pack (`tools/r72_shift/balance.py`: about 48 % of a room pack's fighting time,
+  35 % of its damage). It lies after the marking floor's and the wage hall's packs, out of
+  every pack's notice and of the arrival's sight; the light at the drift's far end is in sight
+  from the dark.
+- **Light** from things that belong there: candles on the desks, lamps on the pay tables and
+  coffers, lamp niches in the walls, torches at the trap gallery's muzzles and the door, posts
+  and lanterns hung at the feet plus four (Nemm's height plus one), two lava falls. The
+  fighting floor holds 4 everywhere and 6 on about 86 % (the build aims for 80 %, the proof asks 75 %).
+- **Lava:** two falls (marking floor, court), each into a basin beside the fighting floor.
+- **Critters:** two bats (arrival, store), two weevils (the arrival's cut, the trap gallery's
+  widening) and a crawler (the pay drift's niche). **Particles:** paper over the office's
+  desks and the pay tables, ash at both falls, dust in the arrival's cut and the store.
 - **Mobs:** Skeleton Raiders and Buried Miners at the run's level: 12 raiders, 2 miners, 3
-  elite miners and the boss. Here the raiders are named by band (Shift Raider 40–49,
-  Tallied Raider 50–59, Overdue Raider 60–69), the miners Buried Miner throughout.
-- **No walking round** (proved on the template, `tools/r72_shift`): from every floor cell of
-  rooms 1–4 a mob of that room notices a player within its view range (raider 16, miner 14,
-  Nemm 20) and in sight. No pack sees another; only cells of room 3's bypass are seen by both
-  of its packs, so the party clears bay c before it walks there.
-- **Auditor Nemm:** an elite on the raider's body, bow and attacks, with 20 × an elite's HP:
-  76,560 at 40, 161,760 at 60, 210,440 at 69. Every 12 s of a fight he marks his target's
+  elite miners and the boss, plus the ambush's 3 miners. Here the raiders are named by band
+  (Shift Raider 40–49, Tallied Raider 50–59, Overdue Raider 60–69), the miners Buried Miner
+  throughout.
+- **No walking round** (proved on the template, `tools/r72_shift` on the shared proof): from
+  every floor cell of rooms 1–4 a mob of that room notices a player within its view range
+  (raider 16, miner 14, Nemm 20) and in sight, over the relief. No pack sees another; only
+  cells of room 3's bypass are seen by both of its packs, so the party clears bay c before it
+  walks there.
+- **Auditor Nemm:** an elite on the raider's body, bow and attacks, with 14 × an elite's HP
+  (20 × until Round 73, the user, 2026-11-10): 53,592 at 40, 113,232 at 60, 147,308 at 69. Every 12 s of a fight he marks his target's
   spot: the floor trap's ring and hit there 1.5 s later. He sees the whole court and drops
   nothing.
 - **Ore:** eight shared places, five ore and three gem, of the run's tier (§1).
@@ -412,9 +526,10 @@ flat, no dais, and every pack room cut so that no pack can be walked round.
   Leathery Flesh at 40–49, Siege Bone and Scorched Flesh at 50–59, Unquiet Bone and
   Salt-Cured Flesh at 60–69.
 - **Balance** (`tools/r72_shift/balance.py`, modelled): one normal per pack was added to the
-  plan's roster, then Nemm's HP set the run: about 10 minutes at every level up to 60, the
-  boss about 3.9 of them; at 69 about 17 minutes, Nemm about 9.1, and the tank takes about
-  2.9 times the damage of level 40 in pools.
+  plan's roster, then Nemm's HP set the run. At 14 × (Round 73): about 9 minutes at every
+  level up to 60, the boss about 2.7 of them; at 69 about 14 minutes, Nemm about 6.4, and the
+  tank takes about 2.9 times the damage of level 40 in pools (at 20 × it was about 10
+  minutes with a 3.9-minute boss, and 17 with 9.1 at 69). Round 73's longer drifts add about 8 s of walk.
 - **Quest:** "Party: The Second Shift", level 40, from the six guild leaders: kill Auditor
   Nemm once, at any of its levels. The Expedition stays repeatable after the turn-in.
 
@@ -422,29 +537,58 @@ flat, no dais, and every pack room cut so that no pack can be walked round.
 
 A buried branding works behind a furnace that became a lava lake, at mob levels 60–69,
 for four players (Round 72). Its [build plan](../planning/round72-last-mint.md) was
-approved by the user and has the story, the texts and the lake's section; the round's
-rulings changed two things ([Round 72](../planning/round72-plan.md) §2.9): every floor is
-flat (no dais), and no pack can be walked round.
+approved by the user and has the story, the texts and the lake's section. Round 72's
+rulings ([Round 72](../planning/round72-plan.md) §2.9) made every floor flat and no pack
+walkable round; Round 73 ([concept](../planning/round73-expedition-redesign-concept.md),
+the user, 2026-11-09/10) gave it a floor of stairs, bent passages, light from what belongs
+there, two ambush candidates, three lava falls, dressing, critters and embers, and kept the
+route, the packs, the boss, the lake, the press, the traps, the ore, the door and the chest.
 
-- **Size:** 128 × 64 × 128, The Stilled Seam's envelope mirrored on z, one floor at y 31
-  over a lake 24 nodes deep. Eight rooms in a line:
+- **Size:** 128 × 64 × 128, The Stilled Seam's envelope mirrored on z. The floor is a
+  height map from y 29 to 35 (the first air row), every change a stair (normal, inner,
+  outer); the lake's tops and landings stand at 32, 24 nodes over its lava. Every walking
+  cell keeps 5 nodes of air (the tallest mob, an elite Sentinel or Duewarden at 3.66, plus
+  one), the wisp rooms 5 to 7. Eight rooms in a line, no room type next to its own:
 
 | Room | Holds |
 |---|---|
-| 0 Arrival | stepped receiving vault, pale masonry courses and a sealed iron side arch; start waystone |
-| 1 Salvage bins | brick barrel vault, iron bin mouths and flush metal runners; pack a: 5 Lava Seeps; 1 ore |
-| 2 Furnace room | low basalt vault with iron ribs towards the crossing; pack b: 3 Seeps, 1 elite Seep, 1 Ember Wisp; floor traps (2 of 4) |
-| L Lava crossing | tall basalt furnace throat, iron uprights and pale tie courses; two landings, five 4 × 4 pillars, six level gaps of 2 nodes; wall shots (1 of 2, twice) |
-| 3 Cooling room | low slate ceiling, pale transverse ribs and iron rack bands in brick walls; pack c: 3 Seeps, 1 elite Seep, 1 Wisp; 1 gem |
-| 4 Press vestibule | low iron coffer ribs over basalt, steel die cupboards and flush metal ties; pack d: 1 elite Bedrock Sentinel, 3 Wisps; floor traps (2 of 4) |
-| 5 Press floor | high basalt nave on four columns, steel roof arches and flush runners; **Duewarden**, alone, before the static press and its pale iron brand; floor traps (2 of 4) |
-| 6 Store | a deliberately regular brick strongroom, iron ceiling bands and wood floor; chest, end waystone; 4 ore, 2 gems |
+| 0 Arrival | stepped receiving vault: terraces climbing two steps west, a shallow dip in the south annex; the arrival and the start waystone on the upper terrace under lanterns |
+| 1 Salvage bins | brick barrel vault over a sunken sorting floor (two levels down, a long gentle side), iron bin mouths in the wall and runners in the floor; pack a: 5 Lava Seeps; 1 ore |
+| 2 Furnace room | low basalt vault with emberglass panels; a raised hearth with three furnace mouths of glowing coals along the east wall, a low rise by the way in, a lava fall in the south wall as its centrepiece; pack b: 3 Seeps, 1 elite Seep, 1 Ember Wisp; floor traps (2 of 4) |
+| L Lava crossing | unchanged: tall basalt furnace throat; two landings, five 4 × 4 pillars, six level gaps of 2 nodes; wall shots (1 of 2, twice); lamps in the piers at the landings |
+| 3 Cooling room | low slate vault; a slag heap of two levels against the iron rack bands, steep to the south; a small dip in the south-east; pack c: 3 Seeps, 1 elite Seep, 1 Wisp; 1 gem |
+| 4 Press vestibule | iron coffer over basalt with emberglass; terraces climbing two steps west, a trough by the east wall, steel die cupboards; pack d: 1 elite Bedrock Sentinel, 3 Wisps; floor traps (2 of 4, one in the trough) |
+| 5 Press floor | high basalt nave on four columns; **Duewarden** alone on a sunken arena, two rings down with a long side toward the door, lanterns round him, two emberglass eyes in the press's face, a lava fall in the east wall; floor traps (2 of 4) on the flat rim |
+| 6 Store | a deliberately regular brick strongroom, flat and square on purpose; wood floor, candles in wall niches, a ring of lanterns over the chest and the end waystone; 4 ore, 2 gems |
 
+- **Passages** bend, narrow and widen, with a niche or a stair run on the way: a step down
+  to the bins, a stair up from the lake to the cooling room and down again before the
+  vestibule, lower stretches under iron ties, mossy cobble in patches, bones in the niches.
+  Two are long and straight on purpose, the ambush candidates.
+- **Light:** emberglass lamps set in the masonry (walls and low vaults), lanterns on ropes
+  in the high vaults, the furnace mouths' coals, candles in niches, the lava. Nothing hangs
+  lower than 5 nodes over the floor; the rest sits in the walls. Every pack's floor has
+  light 4 or more and mostly 6; the passages keep a lamp at a bend and are dark between.
+- **The ambush** (§8, Traps): two candidates in one group, one armed per run. *The flue
+  run*, north out of the bins and a long straight dark run east toward the glow of a lava
+  fall at its end; *the drift*, a long straight dark run south between the cooling room and
+  the vestibule, a lamp at each end. Each zone lies across the full width at light 0 with
+  an alcove on either side; its pack is 3 Lava Seeps (normal, melee), about half a room
+  pack by the balance model (0.44 of a room pack's fighting time, 0.32 of its damage).
+  Both lie after pack a, out of every pack's notice and out of the arrival's sight.
+- **Lava falls:** three besides the lake and its pillars: at the end of the flue run, in the
+  furnace room's south wall, in the east wall of Duewarden's hall. Each runs down a recess
+  into a small basin beside the floor; a pack's hits can push a player in, and no mob
+  walks in (§7).
+- **Critters:** two Cave Bats in the arrival's and the store's vaults, a Cave Crawler in
+  the niche by the cooling room, a Bone Weevil in the niche before the reward door.
+- **Particles:** embers rising at the three falls and over the lake, sparks at the furnace
+  mouths and the press, dust in the arrival and the store: 200 live at most.
 - **Rooms a pack cannot be walked round** (user, 2026-11-08): from every floor cell of a
   pack's room, at least one mob of that pack would notice the player (its view range: Seep
-  10, Wisp 16, Sentinel 14, and sight). The rooms are smaller than the plan's envelopes and
-  the members spread over them; no floor cell lies in the sight of two packs. Duewarden's
-  hall is larger: the reward door holds until he dies.
+  10, Wisp 16, Sentinel 14, and sight over the relief). The relief lies mostly at the
+  rooms' edges, and a mob or two stands on the higher ground; no floor cell lies in the
+  sight of two packs. Duewarden's hall is larger: the reward door holds until he dies.
 - **The lake:** lava at y 2–7 under the basin, every top at y 31, gaps of two node rows
   with no height change, tops four deep for the run-up: a walking jump carries about 2.65
   nodes and needs no sprint or class skill. The sides are vertical walls: no ledge, shelf
@@ -454,7 +598,8 @@ flat (no dais), and no pack can be walked round.
   6 s, the second group 3 s after the first; every top and landing is clear of their
   lines, so a player waits on a top, watches a shot pass, then jumps. A burst reaches
   whoever stands within 2 of the one it hit: cross one at a time.
-- **Mobs:** 16 normal (11 Seeps, 5 Wisps), 3 elites (2 Seeps, 1 Sentinel) and the boss,
+- **Mobs:** 16 normal (11 Seeps, 5 Wisps), 3 elites (2 Seeps, 1 Sentinel) and the boss, and
+  the armed ambush's 3 Seeps,
   every one at the run's level, with its family's name at every level. Wisps keep within
   the wisp rooms' seven nodes of air. The Seeps' Emberglass, the Wisps' Emberglass and the
   Sentinel's Rough Diamond go through the Expedition's drop filter: Slime Gel and Heavy
@@ -466,7 +611,8 @@ flat (no dais), and no pack can be walked round.
 - **Ore:** eight shared places, five ore and three gems: Abyssal Crystal and Diamond at T6.
 - **Chest, per player:** 1 Uncommon item, at 25 % a Rare item, both at the run's level, a
   bag of 10 × a kill's coin bag, 3–5 Stone Core, 1–2 Slime Gel.
-- **Balance** (`tools/r72_mint/balance.py`, modelled): a run at 60 about 10 minutes, at 69
-  about 15, Duewarden about 2.5 and 6 minutes; traps and deaths come on top.
+- **Balance** (`tools/r72_mint/balance.py`, modelled): a run at 60 about 11 minutes, at 69
+  about 16, the ambush under a minute, Duewarden about 2.5 and 6 minutes; traps and deaths
+  come on top.
 - **Quest:** "Party: The Last Mint" at level 60, from the six guild leaders: kill Duewarden
   once, at any of its levels.

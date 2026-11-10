@@ -9,7 +9,8 @@
 --   damage = 2 + 0.3*L + 0.005*L^2   XP = grug_xp.mob_xp(L) = 25 + 5*L
 --   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.4, gold tint
 --   rare:  x2.5 HP, x1.4 dmg, x2 XP, armor 90, scale x2, violet tint
---   boss:  30000 HP flat (fixed apex encounter budget), normal damage and XP
+--   boss:  100000 HP flat (fixed apex encounter budget: the dragons, for five
+--          players, the user 2026-11-10), normal damage and XP
 --
 -- ENGINE vs. DEF CONTRACT (the one rule for the whole mod):
 --   * HP (hp_min/hp_max/health), damage and XP are ALWAYS engine-owned.
@@ -46,8 +47,9 @@
 -- Persistence note: mobs_redo serializes every plain entity field into
 -- staticdata (api.lua clean_staticdata:3546-3558,3626) and re-applies fields whose
 -- name is an object-property name (is_property_name:3630-3634,3669-3675) on activation.
--- So `self.hp_max` is not read by mobs_redo at runtime, but storing it
--- makes the raised max survive unload/reload for free. Function fields are
+-- mobs_redo reads `self.hp_max` first wherever it needs the max (the Round 73
+-- HPCAP patches in api.lua), and storing it makes the raised max survive
+-- unload/reload for free. Function fields are
 -- dropped by the serializer — anything callable must be re-installed on
 -- every activation (see ensure_init).
 --
@@ -82,8 +84,11 @@ local TIERS = {
 	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
 	rare = {hp = 2.5, dmg = 1.4, xp = 2, armor = 90, scale = 2,
 		tint = "#a64dff:90", prefix = "★ ", telegraph = true},
+	-- Only the dragons stand on this tier (boss_dragons.lua). 100,000 since
+	-- Round 73 BOSSHP (the user, 2026-11-10: a dragon for five players; it was
+	-- 30,000); above the engine's u16 limit, see ENGINE_HP_MAX.
 	boss = {hp = 1, dmg = 1, xp = 1, armor = nil, scale = 1,
-		hp_flat = 30000,
+		hp_flat = 100000,
 		tint = nil, prefix = "Boss "},
 }
 
@@ -250,6 +255,13 @@ local function derived_stats(self)
 	return hp, damage, xp
 end
 
+-- The engine keeps an object's `hp_max` property as u16 (object_properties.h), so
+-- the property is written no higher than this; `self.hp_max` stays the game's max
+-- and every reader asks it first (mobs/api.lua check_for_death, Round 73 HPCAP).
+-- Above it: the dragons (the boss tier's 100,000), the Duewarden at every level,
+-- Auditor Nemm from level 45 and Flintback from level 61.
+local ENGINE_HP_MAX = 65535
+
 local function apply_stats(self, keep_fraction)
 	if not self.object then
 		return
@@ -268,7 +280,7 @@ local function apply_stats(self, keep_fraction)
 	end
 	self.hp_max = hp
 	self.hp_min = hp -- mobs_redo rolls health in hp_min..hp_max (api.lua:3630-3717)
-	self.object:set_properties({hp_max = hp})
+	self.object:set_properties({hp_max = math.min(hp, ENGINE_HP_MAX)})
 	self.health = math.max(1, math.floor(hp * fraction + 0.5))
 	-- Keep mobs_redo's damage bookkeeping in sync so raising the max does
 	-- not read as "was healed" and trigger a spurious damage sound.
@@ -496,6 +508,9 @@ end
 --
 --   1. `self.hp_max` is nil for the whole of every activation after the first,
 --      so `tag_text` and aggro.lua's leash heal fall back to the property.
+--      (Since Round 73 HPCAP the staticdata loop keeps the saved `hp_max` on
+--      `self` as well, because the property stops at 65535; this function
+--      still re-derives it.)
 --   2. The NEXT save therefore carries no `hp_max` at all -- `clean_staticdata`
 --      serializes the fields that exist -- and on the activation after that the
 --      object keeps `initial_properties.hp_max`, which for a def that does not
@@ -519,7 +534,7 @@ local function reassert_max(self)
 	end
 	self.hp_max = hp
 	self.hp_min = hp
-	self.object:set_properties({hp_max = hp})
+	self.object:set_properties({hp_max = math.min(hp, ENGINE_HP_MAX)})
 	if (self.health or 0) > hp then
 		self.health = hp
 		self.old_health = hp

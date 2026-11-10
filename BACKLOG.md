@@ -6,6 +6,42 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 73 — the Expedition redesign (GUI acceptance pending)
+
+Delivered in 0.73.0 (**compatible**)
+([completion and checklist](docs/planning/round73-plan.md#completion-2026-11-10); rules in
+[expeditions.md](docs/design/expeditions.md), the helpers in the
+[template format](docs/technical/expedition-template-format.md#authoring-helpers-round-73)).
+Carry-overs:
+
+- **For the user's look:** the ambush's dust is faint (glow 2, alpha 0.55); The Last Mint's
+  emberglass in the low vaults; The Second Shift's lanterns still the bulk of its light.
+- **Probes not run again:** the engine probes' own bugs were fixed by reading only
+  (The Stilled Seam's `r73.lua`: vetoed punches, the trailing packs, the chest spot; The
+  Second Shift's pit, Nemm's reset spot and critter count; The Last Mint's pit exit and
+  ambush count, which need a filter per entity; GAME's critter hit and player push). Their
+  questions are GUI checklist items; the next engine run of each should use the fixed probe.
+- **Authoring helpers (TOOLS):** `hazards.alcove` asks a depth of the mob's width (3), the
+  proof's alcove sight exemption passes only 2 (the Seam built 2): align them;
+  `light.candle` writes param2 0, a ceiling candle (the Seam sets 1 itself); the relief's
+  two solid rows over the template's bottom are not proved.
+- **`preview.py`:** an unreachable ledge drawn as floor, rails drawn as rock, ambush and
+  particle overlays outside a sheet's bounds, light 4 and up in one colour (no gradient).
+- **The shared proof:** an ambush's light 0 is checked at the eye row and the markers' cells
+  only; the fixtures' mouth lists can go stale (the Seam passes room-box mouths only, The
+  Last Mint's `PASSAGE_MOUTHS` is printed from the source by hand): a `build.py --check`
+  comparison with `build.mouths`, or mouths in the format; `r73_tools`'s vault golem boss
+  eye is 2.4 where boss scale 1 gives 2.0; `r71_l20` section G's eye offset 1.
+- **Fixtures:** `r72_shift` dropped "digging the two ore places adds only their own cells"
+  without a reason; `r72_mint` no longer pins the arrival on the floor (the route covers it).
+- **Game side (GAME):** a Charge during a stall of more than about 0.7 s moves more than 16
+  nodes between two passes and skips the ambush; the critter roster is refused at server
+  load, not by `build.py`; a critter's static copy survives a restart in its box until the
+  next preparation (harmless); stale "10 XP" comments in `cave_bat.lua`, `cave_crawler.lua`
+  and `bone_weevil.lua` (the critter tier pays none).
+- **Balance models:** The Second Shift's leaves the ambush's 3 kills out of run time and XP
+  (+8.5 s, +3 kill equivalents).
+
 ## 0.72.1 and 0.72.2 — finish and cancel an Expedition (GUI acceptance pending)
 
 Delivered 2026-11-09 (**compatible**) as one squash commit on main, tag `round-72.1`
@@ -53,7 +89,8 @@ Carry-overs:
 - **Kings and bosses (RANGED, BOSSRESET):** a King or General without a ready floor has no
   range until the fill ends or during its 10 s retry (the give-up and the 15 s rule bound it);
   a pack's jump can carry an Expedition boss out of its room for about 1 s, also after an
-  admin `/teleport`; `test_vault` has no room envelope (its boss falls back to the give-up);
+  admin `/teleport` (seen again in the Seam's Round 73 probe, the boss reset where it landed:
+  the jump could skip a boss member); `test_vault` has no room envelope (its boss falls back to the give-up);
   the castle floors' extent is counted, not mapped. A ranged mob's phase state survives a
   reset (as the archers'); a ranged mob that loses sight at a ledge's foot searches a way to
   its target, not a spot with sight; a ranged King may shoot during the Volley's wind-up.
@@ -83,16 +120,16 @@ Carry-overs:
   x 43–44 between rooms 3 and 4 outside his floor, one pull-and-drop (GUI; a fixture check that
   he notices nothing beyond floor and reach); outside Nhal Veyr a raw Skeleton Raider would
   take the world slots ("Shift Raider" at 20–30, none exists); the coverage proof uses the
-  spawn spots, idle mobs drift about 8 nodes; the evidence and `desk_40.png` predate the
-  unhooded siding (`7dab5a56`).
+  spawn spots, idle mobs drift about 8 nodes. Closed in Round 73: the probe's evidence is
+  new (`tools/r72_shift/evidence/probe.txt`, after the redesign).
 - **The Last Mint:** the lava and water guards loop over the same transforms (one loop); the
   Wisps of packs b and c can follow over the lake (GUI); the sneak-limit case of the shot lines
   is not pinned (margin 0.006); the lava-cooling ABM is not guarded (no such node reaches a
   box); a slab on a pillar's edge would fool the standing test (theoretical, §2.9 freezes it).
-- **Template proofs (PROOF):** the Seam's sight model blocks only at F+1 (Shift's also at F; no
-  difference today); `proofs.lua`'s `walk_round` comment (about line 214) overstates (no
-  stepping over waystones or chests, no leaps); `tools/r71_l20` `range.lua` wakes Flintback from
-  (84, 108), outside his range, without waiting out the evade (fix before the next RANGE run).
+- **Template proofs (PROOF):** `tools/r71_l20` `range.lua` wakes Flintback from (84, 108),
+  outside his range, without waiting out the evade (fix before the next RANGE run). Closed in
+  Round 73: one shared sight model over node boxes for every template, and `walk_round`'s
+  comment rewritten.
 - **Docs:** the frozen Round 28 mob catalogue (`docs/planning/round28/mobs/catalogue.json`,
   `catalogue.md`) still gives the Bedrock Sentinel the guard role; history, left as it is.
 - **Later:** enemy towns on the minimap for riders (not asked; no warning band by ruling).
@@ -118,7 +155,7 @@ user on 2026-11-08. Carry-overs:
   review (private `r71/reports/integration-review.md`) noted that other mobs keep it.
 - **Coins:** factor 10 stays (user, 2026-11-07). `income.py --check` has no Expedition term and
   `loot.lua`'s comment still calls a quarter hour a run's length.
-- **Run length:** modelled 8.7 minutes (8.6 after Round 72's smaller rooms; packs 3.6 against 8), under the concept's 10–20. An HP
+- **Run length:** modelled 8.7 minutes (8.6 after Round 72's smaller rooms, 9.3 with Round 73's ambush; packs 3.6 against 8), under the concept's 10–20. An HP
   factor per pack if the test agrees. A pack on one target reads 4 raw pools at c and d.
 - **The pack's shove** on a still player (about 39 nodes in 30 s): drop pack pushes or vary
   landing sides if it reads badly. A jump is a plain teleport, no visual.

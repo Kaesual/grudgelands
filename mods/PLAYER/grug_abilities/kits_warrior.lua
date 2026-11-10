@@ -333,7 +333,8 @@ grug_abilities.register_ability({
 local function health_share(target)
 	local ent = mob_ent(target)
 	local hp = ent and ent.health or target:get_hp()
-	local max_hp = tonumber(target:get_properties().hp_max) or 0
+	-- A mob's own max first: the engine property stops at 65535 (levels.lua).
+	local max_hp = tonumber(ent and ent.hp_max or target:get_properties().hp_max) or 0
 	return max_hp > 0 and hp / max_hp or 1
 end
 

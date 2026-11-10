@@ -622,6 +622,10 @@ local function king_def(race, row)
 		_grug_voice = "humanoid",
 		_grug_faction = row.faction, _grug_fixed_level = 70,
 		_grug_tier = "elite", _grug_leash_range = 30,
+		-- Three times an elite of his level (Round 73 BOSSHP, the user,
+		-- 2026-11-10: a king for four players); the Generals copy this def and
+		-- the factor with it. The guards and bodyguards keep their own defs.
+		_grug_hp_scale = 3,
 		attack_type = ranged and "dogshoot" or "dogfight",
 		attack_players = true, attack_monsters = false, attack_npcs = false,
 		group_attack = true, pathfinding = 1, reach = 3,

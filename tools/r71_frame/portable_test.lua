@@ -72,8 +72,9 @@ file:close()
 local tpl = T.parse(text, inflate, "test_vault")
 T.check_fits(tpl, C.BOX, {"arrival", "start_waystone", "end_waystone"}, "test_vault")
 check(tpl.name == "test_vault" and tpl.size.x == 48 and tpl.size.y == 32 and tpl.size.z == 48, "D the head")
--- Three markers since lane MOBS added the test boss.
-check(tpl.places.start_waystone.x == 8 and #tpl.encounters == 3, "D places and markers")
+-- Three markers since lane MOBS added the test boss; seven since Round 73 GAME added the
+-- drift's ambush (two) and two critters after them.
+check(tpl.places.start_waystone.x == 8 and #tpl.encounters == 7, "D places and markers")
 check(tpl.encounters[1].mob == "grug_mobs:giant_spider" and tpl.encounters[1].count == 2 and
 	tpl.encounters[2].tier == "elite" and tpl.encounters[2].room == "hall", "D a marker's fields")
 local function cell(pos)
@@ -383,10 +384,11 @@ local function feed_to(name)
 end
 
 -- The sister lanes' parts of the mod have their own fixtures (r71_guard, r71_ui,
--- r71_mobs; traps.lua: r72_traps) and need more of the game than this harness fakes.
+-- r71_mobs; traps.lua: r72_traps; particles.lua: r73_game) and need more of the game
+-- than this harness fakes.
 local load_file = dofile
 local SISTERS = {["guard.lua"] = true, ["registrar.lua"] = true, ["encounters.lua"] = true,
-	["chest.lua"] = true, ["loot.lua"] = true, ["traps.lua"] = true}
+	["chest.lua"] = true, ["loot.lua"] = true, ["traps.lua"] = true, ["particles.lua"] = true}
 _G.dofile = function(file)
 	if not SISTERS[file:match("[^/]+$")] then return load_file(file) end
 end

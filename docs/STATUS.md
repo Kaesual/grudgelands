@@ -2,6 +2,27 @@
 
 Updated 2026-11-10. This is the delivery pointer, not another game specification.
 
+**0.73.0 / Round 73 is complete on main as one squash commit (tag `round-73`), not pushed;
+the GUI test is open.** The Expedition redesign from the user's test (rulings 2026-11-09 and
+2026-11-10, [concept](planning/round73-expedition-redesign-concept.md)): all three
+Expeditions reshaped with **floor relief by stairs only** (uneven height maps, some rooms
+flat on purpose, boss rooms with relief), bent passages, **light from things that belong
+there** (no grid; 4 everywhere and 6 on 75 % of the fighting floor; dark stretches with a
+light in sight), **the ambush** (two candidates per Expedition, one armed, once per run,
+never the first fight), lava falls beside the fighting floor with every Expedition mob
+immune and walking round them, moss and litter, critters and particles; the template's
+`ambush`, `critter` and `particles` lines, the authoring helpers and **one shared proof**
+(14 rules) for every template; **bosses above 65,535 HP** no longer drop to 65,535 on the
+first hit (lane HPCAP, live since 0.72.0); **dragons 100,000 HP** for five players, **Kings
+and Generals ×3** for four, Auditor Nemm ×14 (lane BOSSHP, the user's picks).
+**Compatible:** no step, no map reset, no new saved state. Reviews: GAME, SEAM, SHIFT
+MERGE; TOOLS and MINT MERGE AFTER FIXES, then MERGE on the delta; HPCAP MERGE; BOSSHP
+MERGE. Fixtures: the new `r73_game`, `r73_tools`,
+`r73_hpcap`; round-end full run 336 passed, 0 failed; one engine run each for GAME, SEAM,
+SHIFT and MINT. **Open for the user:** the
+[GUI checklist](planning/round73-plan.md#gui-checklist-desktop-and-web), 22 items
+([completion, numbers and decisions](planning/round73-plan.md#completion-2026-11-10)).
+
 **0.72.2 is complete on main as one squash commit (tag `round-72.2`), not pushed; GUI test
 open.** The user's answers to the 0.72.1 checklist's item 7 (2026-11-10): the leader only
 ever sees one of Finish and Cancel, Finish green and Cancel red (a new `grug_core.ui`

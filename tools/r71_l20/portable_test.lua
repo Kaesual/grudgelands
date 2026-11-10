@@ -72,11 +72,18 @@ local sx, sy, sz = tpl.size.x, tpl.size.y, tpl.size.z
 check(sx <= 128 and sz <= 128 and sy <= C.BOX.y, "C inside the box")
 
 -- Every palette node, by what it does to a walker and to light. A node missing here
--- stops the fixture: it has to be thought about.
+-- stops the fixture: it has to be thought about. Round 73 SEAM: the miners' anthracite
+-- lamps, candles, the lava falls, moss, bones and cobwebs (none walkable), and the
+-- stairs of the relief (walkable, so solid here; the shared proof reads their shapes).
 local OPEN = {air = 0, ["default:torch_wall"] = 12, ["grug_decor:xdecor_lantern_hanging"] = 13,
-	["grug_decor:xdecor_rope"] = 0}
+	["grug_decor:xdecor_rope"] = 0, ["grug_materials:anthracite_torch_wall"] = 14,
+	["grug_decor:xdecor_candle"] = 12, ["default:lava_source"] = 13, ["default:lava_flowing"] = 13,
+	["grug_nodes:moss_carpet"] = 0, ["grug_nodes:lichen_carpet"] = 0, ["grug_nodes:lichen_carpet_b"] = 0,
+	["grug_nodes:bone_pile"] = 0, ["grug_nodes:bones_fragments"] = 0, ["grug_nodes:skull_human"] = 0,
+	["grug_decor:xdecor_cobweb"] = 0, ["grug_trees:swamp_hanging_moss_strand"] = 0}
 local LOW = {["grug_mapgen:mine_rail"] = true} -- under a step, light passes
 local SOLID = {["default:stone"] = true, ["default:cobble"] = true, ["default:gravel"] = true,
+	["default:mossycobble"] = true,
 	["default:tree"] = true, ["default:wood"] = true, ["default:pine_wood"] = true,
 	["grug_materials:stone_with_anthracite"] = true, ["grug_materials:stone_with_jade"] = true,
 	["grug_decor:darkage_reinforced_wood"] = true, ["grug_decor:cottages_table"] = true,
@@ -85,7 +92,9 @@ local SOLID = {["default:stone"] = true, ["default:cobble"] = true, ["default:gr
 	["grug_expeditions:reward_chest"] = true, ["grug_expeditions:reward_door"] = true}
 local kinds = {}
 for index, name in ipairs(tpl.nodes) do
-	check(OPEN[name] or LOW[name] or SOLID[name], "C palette: " .. name)
+	local stair = name:match("^stairs:stair_") ~= nil
+	check(OPEN[name] or LOW[name] or SOLID[name] or stair, "C palette: " .. name)
+	if stair then SOLID[name] = true end
 	kinds[index - 1] = OPEN[name] and "open" or LOW[name] and "low" or "solid"
 end
 
@@ -127,12 +136,16 @@ eq(("%d,%d,%d %d,%d,%d"):format(bmin.x, bmin.y, bmin.z, bmax.x, bmax.y, bmax.z),
 -- The plan's grid, one cell for 8 nodes (round71-l20-description.md). Round 72 STYLE
 -- made the rooms smaller: nine cells by the rooms' old walls hold no floor now
 -- (52,12 60,12 68,12 76,12 100,12 52,92 76,92 52,100 52,116), and the room labels 1,
--- 2 and 4 moved to an open cell of their room.
+-- 2 and 4 moved to an open cell of their room. Round 73 SEAM: the bent passages, the
+-- drift re-routed west of its old line, the ambush alcoves, bay d as one square room and
+-- the store's bent way open sixteen more (36,12 84,12 36,28 44,28 84,28 100,44 92,52
+-- 100,52 92,60 100,60 92,68 92,92 108,92 36,100 92,100 92,116) and close three: the old
+-- drift's line (108,52 108,60) and the eye row of the prop room's rubble ramp (116,12).
 local GRID = {
-	"################", "#0..#########..#", "#.....1.....2..#", "#.S.##.a..##.b.#",
-	"######...g##..j#", "#############.##", "#############.##", "#############.##",
-	"############3..#", "############.c.#", "############...#", "#5.g###..###.###",
-	"#g.g###...##...#", "#jC..D4.B....d.#", "#gEj###...##...#", "################",
+	"################", "#0...#####.##.##", "#.....1.....2..#", "#.S....a...#.b.#", "######...g##..j#",
+	"############..##", "###########..###", "###########..###", "###########.3..#", "############.c.#",
+	"############...#", "#5.g###..##...##", "#g.g.##...#....#", "#jC..D4.B....d.#", "#gEj###...#....#",
+	"################",
 }
 for row_index, line in ipairs(GRID) do
 	for col = 1, #line do
@@ -244,30 +257,50 @@ for z = 0, sz - 1 do
 end
 
 -- A walk on the one floor. `wide` and `tall`: cells a walker needs round its middle.
+-- Round 73 SEAM: the floor is a height map, relief by stairs only. A column's floor is
+-- its lowest row with something solid under it and `tall` rows free over it; a walk
+-- steps to a neighbour whose floor is within one node (the shared proof's relief rule
+-- holds every such step to a stair), and a wide walker's columns all lie within one
+-- node of its middle's.
+local function floor_of(x, z, changed, tall)
+	if not inside(x, 1, z) then return nil end
+	for y = 1, sy - tall do
+		if solid(x, y - 1, z, changed) then
+			local free = true
+			for k = 0, tall - 1 do free = free and not solid(x, y + k, z, changed) end
+			if free then return y end
+		end
+	end
+	return nil
+end
 local function walk(changed, wide, tall, from, to)
-	local function free(x, z)
+	local heights = {}
+	local function h_at(x, z)
+		local key = z * sx + x
+		if heights[key] == nil then heights[key] = floor_of(x, z, changed, tall) or false end
+		return heights[key]
+	end
+	local function free(x, z, h)
 		for dz = -wide, wide do
 			for dx = -wide, wide do
-				if not inside(x + dx, F, z + dz) or not solid(x + dx, F - 1, z + dz, changed) then
-					return false
-				end
-				for y = F, F + tall - 1 do
-					if solid(x + dx, y, z + dz, changed) then return false end
-				end
+				local nh = h_at(x + dx, z + dz)
+				if not nh or math.abs(nh - h) > 1 then return false end
 			end
 		end
 		return true
 	end
-	local seen, queue, head = {[at(from[1], F, from[2])] = 0}, {from}, 1
+	local seen, queue, head = {[from[2] * sx + from[1]] = 0}, {from}, 1
 	while queue[head] do
 		local c = queue[head]
 		head = head + 1
-		local steps = seen[at(c[1], F, c[2])]
+		local steps = seen[c[2] * sx + c[1]]
 		if c[1] == to[1] and c[2] == to[2] then return steps end
+		local h = h_at(c[1], c[2])
 		for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
 			local x, z = c[1] + d[1], c[2] + d[2]
-			if seen[at(x, F, z)] == nil and free(x, z) then
-				seen[at(x, F, z)] = steps + 1
+			local nh = h and h_at(x, z)
+			if seen[z * sx + x] == nil and nh and math.abs(nh - h) <= 1 and free(x, z, nh) then
+				seen[z * sx + x] = steps + 1
 				queue[#queue + 1] = {x, z}
 			end
 		end
@@ -285,7 +318,8 @@ check(mob_steps ~= nil, "E a mob walks from the start to the store")
 check(walk(nil, 0, 2, start, goal) == nil, "E nobody walks there through the door")
 print(("route: %d steps for a player, %d for a mob"):format(player_steps, mob_steps))
 check(player_steps <= 320, "E the walk stays short: " .. player_steps)
--- The balance model walks the same steps (Round 72 PROOF: STYLE's smaller rooms, 258 -> 254).
+-- The balance model walks the same steps (Round 72 PROOF: STYLE's smaller rooms, 258 -> 254;
+-- Round 73 SEAM: the bent passages and the stair runs, 254 -> 260).
 local function read_text(path)
 	local handle = assert(io.open(repo .. "/" .. path, "r"))
 	local text = handle:read("*a")
@@ -310,23 +344,39 @@ local VIEW = {["grug_mobs:giant_spider"] = tonumber(read_text("mods/ENTITIES/gru
 	["grug_mobs:stone_golem"] = tonumber(golem_text:match("view_range = (%d+)"))}
 VIEW["grug_mobs:flintback"] = VIEW["grug_mobs:stone_golem"]
 check(VIEW["grug_mobs:giant_spider"] == 12 and VIEW["grug_mobs:stone_golem"] == 16, "F view ranges read")
+-- A mob's look starts at its object's place + 1: its feet less the collision box's floor
+-- (spider.lua -0.75; golem.lua -1, times 1.4 for an elite and the boss: levels.lua).
+local EYE = {["grug_mobs:giant_spider"] = 1.75, ["grug_mobs:stone_golem"] = 2.4, ["grug_mobs:flintback"] = 2.4}
 local count = {normal = 0, elite = 0, boss = 0}
 local by_family = {}
 local packs, spots = {}, {}
+-- Round 73 SEAM: an ambush's markers wait for its zone (section L) and critters are no
+-- pack (concept section 4.8); both are counted apart. Ambush spiders stand with the
+-- packs in G: no floor cell in sight of an ambush and a room pack.
+local ambush_room, ambush_spots, critters = {}, {}, {}
+for _, row in ipairs(tpl.ambushes) do ambush_room[row.room] = true end
 for _, row in ipairs(tpl.encounters) do
-	check(VIEW[row.mob], "F a known family: " .. row.mob)
-	count[row.tier] = count[row.tier] + row.count
-	by_family[row.mob .. "/" .. row.tier] = (by_family[row.mob .. "/" .. row.tier] or 0) + row.count
-	packs[row.room] = packs[row.room] or {}
-	for index = 1, row.count do
-		local offset = SPREAD[(index - 1) % #SPREAD + 1]
-		local spot = {x = row.pos.x + offset[1], z = row.pos.z + offset[2], view = VIEW[row.mob],
-			room = row.room, mob = row.mob}
-		for y = F, F + 2 do
-			check(not solid(spot.x, y, spot.z), ("F room for a mob at %d,%d"):format(spot.x, spot.z))
+	if row.tier == "critter" then
+		critters[#critters + 1] = row
+	else
+		check(VIEW[row.mob], "F a known family: " .. row.mob)
+		if not ambush_room[row.room] then
+			count[row.tier] = count[row.tier] + row.count
+			by_family[row.mob .. "/" .. row.tier] = (by_family[row.mob .. "/" .. row.tier] or 0) + row.count
+			packs[row.room] = packs[row.room] or {}
+		else
+			ambush_spots[row.room] = ambush_spots[row.room] or {}
 		end
-		table.insert(packs[row.room], spot)
-		spots[#spots + 1] = spot
+		for index = 1, row.count do
+			local offset = SPREAD[(index - 1) % #SPREAD + 1]
+			local spot = {x = row.pos.x + offset[1], z = row.pos.z + offset[2], view = VIEW[row.mob],
+				room = row.room, mob = row.mob, eye = EYE[row.mob]}
+			-- Room for a mob from its column's floor, within a stair of its marker's.
+			local h = floor_of(spot.x, spot.z, nil, 3)
+			check(h and math.abs(h - row.pos.y) <= 1, ("F room for a mob at %d,%d"):format(spot.x, spot.z))
+			table.insert(packs[row.room] or ambush_spots[row.room], spot)
+			spots[#spots + 1] = spot
+		end
 	end
 end
 eq(count.normal, 12, "F twelve spiders")
@@ -341,12 +391,15 @@ eq(#packs.pack_c, 4, "F pack c")
 eq(#packs.pack_d, 4, "F pack d")
 eq(#packs.boss, 1, "F the boss alone")
 -- The fighting chambers (Round 72 STYLE, stilled_seam.py ROOMS): every mob stands in its
--- pack's, and section K proves them.
+-- pack's, and section K proves them. Round 73 SEAM: the prop room's north-east corner
+-- is the rubble ramp's top, out of pack b's sight, and left out (116 -> 114); bay c's
+-- northern bay is rock (the drift comes in from the west, out of the pack's sight up
+-- it); bay d is one square work room.
 local CHAMBERS = {
 	pack_a = {{55, 18, 66, 21}, {51, 21, 70, 24}, {49, 24, 73, 33}, {52, 33, 71, 36}, {56, 36, 66, 39}},
-	pack_b = {{104, 14, 116, 18}, {99, 18, 120, 23}, {99, 23, 119, 33}, {103, 33, 119, 38}, {104, 38, 114, 39}},
-	pack_c = {{102, 64, 114, 67}, {99, 67, 117, 78}, {100, 78, 117, 83}, {102, 83, 114, 85}},
-	pack_d = {{102, 100, 114, 102}, {99, 102, 118, 115}, {102, 115, 116, 119}},
+	pack_b = {{104, 14, 114, 18}, {99, 18, 120, 23}, {99, 23, 119, 33}, {103, 33, 119, 38}, {104, 38, 114, 39}},
+	pack_c = {{99, 67, 117, 78}, {100, 78, 117, 83}, {102, 83, 114, 85}},
+	pack_d = {{99, 101, 118, 119}},
 	boss = {{63, 94, 72, 97}, {59, 97, 76, 100}, {57, 100, 79, 104}, {54, 104, 80, 112}, {56, 112, 79, 115},
 		{60, 115, 76, 118}, {63, 118, 72, 120}},
 }
@@ -366,17 +419,13 @@ for _, spot in ipairs(spots) do
 	check(not within(spot, unpack(ARRIVAL)) and not within(spot, unpack(STORE)), "F rooms 0 and 5 are empty")
 end
 
--- A straight look from eye to eye: walls stop it, lanterns and ropes do not.
-local function sees(x0, z0, x1, z1)
-	local dx, dz = x1 - x0, z1 - z0
-	local steps = math.ceil(math.sqrt(dx * dx + dz * dz) * 4)
-	for i = 1, steps - 1 do
-		local x = math.floor(x0 + dx * i / steps + 0.5)
-		local z = math.floor(z0 + dz * i / steps + 0.5)
-		if solid(x, F + 1, z) then return false end
-	end
-	return true
-end
+-- The shared proof (tools/expedition_templates/proofs.lua, Round 73 TOOLS): the floor as
+-- a height map from the written file (door open, ore dug), sight over its relief and the
+-- light. A straight look from feet + 1 to feet + 1 (mobs_redo): walkable nodes stop it by
+-- their boxes, lanterns and ropes do not.
+local PR = dofile(repo .. "/tools/expedition_templates/proofs.lua")
+local map = PR.map(tpl, PR.registry(repo), {open = all})
+local function sees(x0, z0, x1, z1) return PR.sees(map, x0, z0, x1, z1) end
 
 -- G. No pack links to the next: nobody in one pack sees anybody in another, and no
 -- cell of the floor lies in the sight of two packs, so a player standing anywhere
@@ -421,52 +470,7 @@ for _, a in ipairs(packs.pack_c) do
 	end
 end
 
--- H. The light, by the engine's rule: minus one per node from each source, stopped
--- by what is solid. A torch-lit mine at eye height: most of it bright enough to read
--- a telegraph, and no black corner.
-local LIGHT_MIN, LIGHT_USUAL, USUAL_SHARE = 4, 6, 0.9
-local light = {}
-local buckets = {}
-local function raise(index, x, y, z, value)
-	if value > (light[index] or 0) then
-		light[index] = value
-		buckets[value] = buckets[value] or {}
-		table.insert(buckets[value], {x, y, z})
-	end
-end
-for z = 0, sz - 1 do
-	for y = 0, sy - 1 do
-		for x = 0, sx - 1 do
-			local level = OPEN[name_at(x, y, z)]
-			if level and level > 0 then raise(at(x, y, z), x, y, z, level) end
-		end
-	end
-end
-for value = 14, 2, -1 do
-	local list = buckets[value] or {}
-	for _, c in ipairs(list) do
-		for _, d in ipairs({{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}}) do
-			local x, y, z = c[1] + d[1], c[2] + d[2], c[3] + d[3]
-			if inside(x, y, z) and not solid(x, y, z) then raise(at(x, y, z), x, y, z, value - 1) end
-		end
-	end
-end
-local darkest, total, cells, usual = 99, 0, 0, 0
-local dark_at
-for z = 0, sz - 1 do
-	for x = 0, sx - 1 do
-		if open_all[at(x, F + 1, z)] and not solid(x, F + 1, z) then
-			local value = light[at(x, F + 1, z)] or 0
-			cells, total = cells + 1, total + value
-			if value >= LIGHT_USUAL then usual = usual + 1 end
-			if value < darkest then darkest, dark_at = value, x .. "," .. z end
-		end
-	end
-end
-print(("light at eye height: %d cells, mean %.1f, %.0f %% at %d or more, darkest %d at %s"):format(cells,
-	total / cells, 100 * usual / cells, LIGHT_USUAL, darkest, dark_at))
-check(darkest >= LIGHT_MIN, "H no dark corner: " .. darkest .. " at " .. dark_at)
-check(usual / cells >= USUAL_SHARE, "H the rooms read: " .. usual / cells)
+-- H. The light: the shared proof's zones and line of sight (section K).
 
 -- I. The quest: the document's shape and its four approved texts.
 local json = dofile(repo .. "/tools/r28_b4_quests/json.lua")
@@ -626,17 +630,16 @@ for level = row.level, row.max_level do
 	eq(got["grug_mobs:venom_sac"] == true, level >= 31 and level <= 50, "J venom sacs at " .. level)
 end
 
--- K. The user's room rules (Round 72, round72-plan.md section 2.9), by the shared proofs
--- (tools/expedition_templates/proofs.lua) on STYLE's shapes: compact fighting chambers
--- and the short cuts and passages between them (stilled_seam.py ROOMS, CUTS, PASSAGES).
-local PR = dofile(repo .. "/tools/expedition_templates/proofs.lua")
-local map = PR.map(tpl, F)
-local pfloor, pset = PR.floor(map)
-local QUIET = {{12, 12, 27, 16}, {10, 16, 32, 24}, {12, 24, 29, 29}, {16, 29, 24, 31}, -- room 0
-	{12, 88, 28, 92}, {8, 92, 32, 120}, -- room 5
-	{32, 16, 48, 24}, {80, 16, 96, 24}, {104, 40, 112, 64}, {80, 104, 96, 112}, {32, 104, 48, 112}, -- passages
-	{48, 16, 55, 24}, {69, 16, 80, 24}, {71, 30, 79, 38}, {96, 16, 100, 24}, {104, 39, 112, 40}, -- cuts
-	{96, 80, 104, 112}, {48, 104, 54, 112}}
+-- K. The user's room rules (Round 72, round72-plan.md section 2.9; Round 73, the concept
+-- section 7) by the shared proof: compact fighting chambers and the bent passages
+-- between them (stilled_seam.py ROOMS and passage_plan, each passage's box with its
+-- niches and ambush alcoves).
+local pfloor = map.list
+local ROOM0 = {{12, 12, 27, 16}, {10, 16, 32, 24}, {12, 24, 29, 29}, {16, 29, 24, 31}}
+local ROOM5 = {{12, 88, 28, 92}, {8, 92, 32, 120}}
+local QUIET = {ROOM0[1], ROOM0[2], ROOM0[3], ROOM0[4], ROOM5[1], ROOM5[2],
+	{32, 15, 50, 30}, {71, 31, 80, 39}, {68, 15, 102, 25}, {94, 38, 108, 74}, -- p1, siding, haulage, drift
+	{95, 80, 105, 105}, {80, 102, 99, 114}, {32, 102, 54, 112}} -- the side way, to the face, past the door
 for _, cell in ipairs(pfloor) do
 	local known = in_rects(QUIET, cell.x, cell.z)
 	for _, rects in pairs(CHAMBERS) do known = known or in_rects(rects, cell.x, cell.z) end
@@ -653,48 +656,85 @@ for _, cell in ipairs(pfloor) do
 	end
 end
 eq(ranged, hall, "K Flintback's range holds the hall and nothing else")
--- The free height: three nodes of air over every floor cell, the routes' included (a mob
--- stands everywhere a player does: an elite golem is 2.4 tall; no lantern at a head).
-local lowest, low_at = PR.free_height(map, pfloor)
-check(lowest >= 3, ("K three nodes of air over every floor cell: %d at %s"):format(lowest, low_at))
-print(("free height: at least %d nodes of air over %d floor cells"):format(lowest, #pfloor))
--- No perch: walking, jumping and falling reach no place off the floor but a waystone or
--- the chest, and no rope; with the door shut, and with it open and the ore dug.
-for _, changed in ipairs({false, all}) do
-	local found, ropes, searched = PR.perches(map, {places.arrival.x, F, places.arrival.z}, changed or nil)
-	for _, line in ipairs(found) do print("perch: " .. line) end
-	for _, line in ipairs(ropes) do print("rope in reach: " .. line) end
-	check(#found == 0 and #ropes == 0, "K no perch and no rope in reach")
-	print(("perches: none in %d places a player reaches%s"):format(searched, changed and ", door open, ore dug" or ""))
+-- Every rule of the shared proof. No pack can be walked round (user, 2026-11-08): every
+-- floor cell of a chamber noticed by a mob of its pack with a node to spare, and no walk
+-- from the chamber's way in (a passage or cut cell no pack notices) to its way on, or to
+-- the ore after it (a hand's reach), keeps out of every cell the pack notices. The
+-- boss's way on is the door's front, shut until he dies.
+-- Round 73 SEAM: every rule on (no report switch). The ways run through the new
+-- passages; the mouths are the passage cells beside a room (no lava basin at one), and
+-- an ambush alcove fits a spider (spider.lua collisionbox, 2.1 x 0.75).
+local REPORT = {}
+local WAYS = {pack_a = {{40, 20}, {80, 20}, {79, 36}}, pack_b = {{80, 20}, {100, 44}, {119, 36}},
+	pack_c = {{100, 44}, {98, 90}}, pack_d = {{98, 90}, {88, 107}}, boss = {{88, 107}, {46, 108}}}
+local function in_a_room(x, z)
+	if in_rects(ROOM0, x, z) or in_rects(ROOM5, x, z) then return true end
+	for _, rects in pairs(CHAMBERS) do if in_rects(rects, x, z) then return true end end
+	return false
 end
--- No pack can be walked round (user, 2026-11-08): every floor cell of a chamber noticed by
--- a mob of its pack with a node to spare, and no walk from the chamber's way in to its
--- way on, or to the ore after it, that keeps out of every cell the pack notices.
-for _, key in ipairs({"pack_a", "pack_b", "pack_c", "pack_d", "boss"}) do
-	local cells, thinnest, missed = PR.coverage(pfloor, function(x, z) return in_rects(CHAMBERS[key], x, z) end,
-		packs[key], 1, sees)
-	for _, at_cell in ipairs(missed) do print(("unseen in %s: %s"):format(key, at_cell)) end
-	eq(#missed, 0, "K nobody walks round " .. key .. " in its chamber")
-	print(("%s: %d floor cells, every one noticed, the thinnest spare %.1f nodes"):format(key, cells, thinnest))
-end
--- The ways in and on, cells of the passages and cuts no pack notices; the ore within a
--- hand's reach (4 nodes). The boss's way on is the door's front, shut until he dies.
-local WAYS = {pack_a = {{40, 20}, {88, 20}, {79, 36}}, pack_b = {{88, 20}, {108, 52}, {119, 36}},
-	pack_c = {{108, 52}, {100, 90}}, pack_d = {{100, 90}, {88, 108}}, boss = {{88, 108}, {46, 108}}}
-for _, key in ipairs({"pack_a", "pack_b", "pack_c", "pack_d", "boss"}) do
-	local way = WAYS[key]
-	check(pset[way[2][2] * sx + way[2][1]] and not PR.noticed(packs[key], way[2][1], way[2][2], 1, sees),
-		"K " .. key .. "'s way on is floor nobody notices")
-	local targets = {way[2]}
-	if way[3] then
-		for _, t in ipairs(PR.within_reach(pset, sx, way[3][1], way[3][2], 4)) do targets[#targets + 1] = t end
+local mouths = {}
+for _, cell in ipairs(pfloor) do
+	if not in_a_room(cell.x, cell.z) then
+		for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+			if map.height(cell.x + d[1], cell.z + d[2]) and in_a_room(cell.x + d[1], cell.z + d[2]) then
+				mouths[#mouths + 1] = {cell.x, cell.z}
+				break
+			end
+		end
 	end
-	local reached, kept, noticed = PR.walk_round(map, pset, way[1], targets, packs[key], 1, sees)
-	check(reached == nil, ("K %s walked round to %s"):format(key, reached and reached[1] .. "," .. reached[2] or "-"))
-	-- Not vacuous: with the pack gone the way on is reachable (PROOF review note 2).
-	check(PR.walk_round(map, pset, way[1], {way[2]}, {}, 1, sees) ~= nil,
-		"K " .. key .. "'s way on is reachable with the pack gone")
-	print(("%s: no way round its %d noticed cells to %d of %d targets"):format(key, noticed, kept, #targets))
+end
+check(#mouths >= 14, "K the passages' mouths: " .. #mouths)
+local spec = {name = "stilled_seam", tallest = 1.7 * 1.4, ambushes = 2, packs = {}, report = REPORT,
+	mouths = mouths, sizes = {["grug_mobs:giant_spider"] = {2.1, 0.75}}}
+for _, key in ipairs({"pack_a", "pack_b", "pack_c", "pack_d", "boss"}) do
+	spec.packs[key] = {spots = packs[key], ways = WAYS[key],
+		room = function(x, z) return in_rects(CHAMBERS[key], x, z) end}
+end
+PR.enforce(PR.prove(map, spec), check, REPORT)
+
+-- L. Round 73 SEAM: what the Seam adds beyond the shared proof (its ambush rule judges
+-- the zones' darkness, the cut, the alcoves, the first fight and the respawn's sight).
+-- Two ambush candidates in one group, one armed per run (concept section 4.5), each of
+-- two normal spiders: about half a room pack by the balance model.
+eq(#tpl.ambushes, 2, "L two ambush candidates")
+local ambush_spiders = tonumber(read_text("tools/r71_l20/balance.py"):match("AMBUSH_SPIDERS = (%d+)"))
+for _, row in ipairs(tpl.ambushes) do
+	eq(row.group, "seam", "L one group")
+	eq(row.pick, 1, "L one armed per run")
+	local list = ambush_spots[row.room] or {}
+	eq(#list, ambush_spiders, "L the balance model's spiders in " .. row.room)
+	for _, spot in ipairs(list) do eq(spot.mob, "grug_mobs:giant_spider", "L " .. row.room .. "'s spiders") end
+end
+for _, row in ipairs(tpl.encounters) do
+	if ambush_room[row.room] then eq(row.tier, "normal", "L an ambush marker's tier") end
+end
+-- Three to six critters of the roster, on the floor, never in a pack's chamber.
+local ROSTER = {["grug_mobs:cave_bat"] = true, ["grug_mobs:cave_crawler"] = true, ["grug_mobs:bone_weevil"] = true}
+check(#critters >= 3 and #critters <= 6, "L three to six critters: " .. #critters)
+for _, row in ipairs(critters) do
+	check(ROSTER[row.mob], "L a critter of the roster: " .. row.mob)
+	eq(map.height(row.pos.x, row.pos.z), row.pos.y, "L a critter on the floor")
+	for key, rects in pairs(CHAMBERS) do
+		check(not in_rects(rects, row.pos.x, row.pos.z), "L a critter outside " .. key)
+	end
+end
+-- One or two lava falls (the brief: fewer than The Last Mint), each a falling column.
+local falls = {}
+for z = 0, sz - 1 do
+	for y = 0, sy - 1 do
+		for x = 0, sx - 1 do
+			if name_at(x, y, z) == "default:lava_flowing" and math.floor(map.param2(x, y, z) / 8) % 2 == 1 then
+				falls[z * sx + x] = true
+			end
+		end
+	end
+end
+local fall_count = 0
+for _ in pairs(falls) do fall_count = fall_count + 1 end
+eq(fall_count, 2, "L two lava falls")
+-- The setting's particles: dripping water and dust.
+for _, row in ipairs(tpl.particles) do
+	check(row.style == "drip" or row.style == "dust", "L the Seam's particles: " .. row.style)
 end
 
 print(("R71 L20 PORTABLE PASS checks=%d"):format(checks))

@@ -5,7 +5,8 @@
 # touched. Run it through the shared Lua queue (2 slots).
 #
 # Usage: XVFB=/path/to/Xvfb tools/r71_l20/run.sh OUT_DIR
-#   SCENARIO=range runs lane RANGE's range.lua (T4 at 47, T6 at 65) instead of scenario.lua.
+#   SCENARIO=range runs lane RANGE's range.lua (T4 at 47, T6 at 65) instead of scenario.lua;
+#   SCENARIO=r73 lane SEAM's r73.lua (Round 73: relief, ambush, lava, boss reset, critters).
 #   TIMEOUT=<server seconds, default 295>, VIEWING_RANGE (default 190), SEED (default 42), XVFB_DRIVERS (default
 #   /usr/lib64/dri). Writes probe.txt (the probe's lines), server.log, client.log and
 #   one <name>.png per BURST line of the probe.

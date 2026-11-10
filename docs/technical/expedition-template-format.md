@@ -13,7 +13,8 @@ never in a preparation. Slots, box and step size: `grug_expeditions/catalogue.lu
 | The tool | `tools/expedition_templates/build.py` (`--check`: every file matches its source) |
 
 A source has `build()` returning a `Template` (`tools/expedition_templates/template.py`): `box`, `set`, `dig`, `place`,
-`encounter`, `trap_floor`, `trap_wall`. The tool refuses a template without the required places, a waystone place holding no waystone, an arrival
+`encounter`, `trap_floor`, `trap_wall`, and since Round 73 `ambush` and `particles` (their signatures at the top of
+`template.py`). The tool refuses a template without the required places, a waystone place holding no waystone, an arrival
 without floor or head room, an unknown node, an open or diggable cell on the template's outer shell, or a `dig` node
 that is not solid.
 
@@ -33,6 +34,8 @@ place start_waystone 8 5 6
 encounter hall grug_mobs:giant_spider 2 normal 30 5 12
 trap f1 1 floor 8 5 30
 trap w1 1 wall 3.6 5.5 34 +x 4 0
+ambush a1 1 drift 11 5 18 13 20
+particles dust 5 5 5 14 9 14 24
 data 342
 <342 bytes>
 ```
@@ -49,9 +52,11 @@ data 342
   `start_waystone` and `end_waystone` are required; `chest`, `door` and any other name are for the lanes that read them
   through `grug_expeditions.places(run)`.
 - `encounter <room> <mob> <count> <tier> x y z`: one marker, in file order, the cell a mob stands in; markers with one
-  `room` spawn together. `tier` is `normal`, `elite` or `boss`: at most one `boss`, count 1, an elite with the run's
-  ledger (its HP from its definition's `_grug_hp_scale`, never the flat `boss` tier). An unknown mob or tier stops the
-  server at load.
+  `room` spawn together. `tier` is `normal`, `elite`, `boss` or (Round 73) `critter`: at most one `boss`, count 1, an
+  elite with the run's ledger (its HP from its definition's `_grug_hp_scale`, never the flat `boss` tier). A `critter`
+  marker names one of `grug_mobs:cave_bat`, `grug_mobs:cave_crawler`, `grug_mobs:bone_weevil`; its room holds critters
+  only and is no pack ([rules](../design/expeditions.md#8-mobs-and-packs)). An unknown mob or tier, or a critter off
+  that roster, stops the server at load.
 - `trap <group> <pick> floor x y z` and `trap <group> <pick> wall x y z <axis> <period> <offset>` (Round 72): one
   trap candidate ([rules](../design/expeditions.md#traps), `grug_expeditions/traps.lua`). A run arms `pick` of each
   group's lines, at random when it is ready. A floor line names the cell a player stands in over the trap: air (its mark
@@ -64,6 +69,25 @@ data 342
   cell that is not air on a floor (the reader refuses a floor cell that is not air too), and a muzzle where a cell the ball touches (radius 0.4, so
   a point at y 8.5 reaches the rows 8 and 9) is walkable at the muzzle or one cell ahead. In flight, every walkable
   node the ball touches stops it.
+- `ambush <group> <pick> <room> x0 y z0 x1 z1` (Round 73): one ambush candidate
+  ([rules](../design/expeditions.md#traps)). The zone is every cell from (x0, y, z0) to (x1, y, z1), both corners
+  included, in either order; `y` is the feet's row, the first air over the floor. Feet from half a node below to 3
+  nodes above that floor are in the zone (`traps.lua` `AMBUSH_ABOVE`), so no other floor runs over a zone that low. `room` names its markers: the
+  `encounter` lines of that room, `normal` only and melee only (no mob whose `attack_type` is `shoot` or `dogshoot`),
+  never placed by proximity; one ambush per room, and the room must have markers. Ambush and trap groups share one
+  name space: a group is all `trap` or all `ambush` lines, and its lines agree on `pick` (at most as many as they are).
+  A run arms `pick` of the group's candidates when it is ready, with the traps. The source calls
+  `t.ambush(group, pick, room, x0, y, z0, x1, z1)`.
+- `particles <style> x0 y0 z0 x1 y1 z1 <amount>` (Round 73): one particle spawner in the box between two corners,
+  both included. `style` is one of `drip`, `dust`, `ash`, `paper`, `ember`, `spark` (`template.PARTICLE_STYLES`,
+  drawn by `grug_expeditions/particles.lua`); `amount`, a whole number of at least 1, is the most live particles the
+  spawner keeps. A template's amounts add up to at most 300 (`template.PARTICLE_BUDGET`, `template.py`'s
+  `PARTICLE_BUDGET`). The source calls `t.particles(style, x0, y0, z0, x1, y1, z1, amount)`.
+- The reader (`template.lua`) refuses a malformed `ambush` or `particles` line, an unknown style, a group that
+  mixes kinds or disagrees on `pick`, an ambush room with another tier or without markers, two ambushes naming one
+  room, a room mixing critters with a pack, and particles over the budget, at load; `check_fits` refuses a zone or a
+  box outside the template. `template.py`'s writers and `problems()` refuse the same at build, and a tier it does not
+  know.
 - The reward room's nodes are in the template: `grug_expeditions:reward_door` fills the opening, every such node within
   8 cells of the `door` place goes when the boss dies; `grug_expeditions:reward_chest` stands on the `chest` place. An
   Expedition's chest contents live in `grug_expeditions/loot.lua`, by catalogue id.
@@ -72,6 +96,45 @@ data 342
 
 The file holds no node meta, no timers and no light: VoxelManip writes neither of the first two, listeners of
 `register_on_ready` set theirs, and the engine computes the light on write.
+
+## Authoring helpers (Round 73)
+
+Lane TOOLS's helpers in `tools/expedition_templates/`, each with a usage note at its top; the sources call them, the
+format above is unchanged by them.
+
+- **The floor is a height map** `{(x, z): h}`, `h` the first air row of a column (a player's feet). One map for the
+  whole floor, rooms and passages merged (`relief.merge` refuses a column with two heights).
+- **Stairs** (`relief.py`, the only writer of floor stairs): where a cell is higher than a neighbour (all eight count)
+  its floor node at `h - 1` is a stair of an existing set (`stairs:stair_<m>`, `stair_inner_<m>`, `stair_outer_<m>`,
+  upright, param2 0 to 3), shape and param2 derived from which of its four quarters touch a lower neighbour: two
+  adjacent low quarters a normal stair, one an inner, three an outer. Facedir p turns the node box's +z to +x
+  (`mapnode.cpp` `transformNodeBox`), so a normal stair's low side is -z at 0, -x at 1, +z at 2 and +x at 3. The helper
+  refuses a step of two, a ridge or trench one node wide, a peak or diagonal ridge no stair fits, a trap cell or its
+  neighbours not flat, a floor node below row 2, and a material with no stair set.
+- `passages.py`: polylines with a width profile (`s` 0 to 1 by length), niches, stair runs, mouths. `light.py`:
+  sources at authored points and a seeded spread with a minimum spacing, the engine's light (`levels`). `dressing.py`:
+  clusters by a seeded per-cell roll; nothing walkable, harvestable or a cobweb on a walking cell. `hazards.py`: the
+  lava fall written whole (the source behind a lip, the falling column at param2 15, the basin's sources two rows under
+  the feet with the floor's row flowing at the levels the engine settles on), ambush alcoves sized for their mob, the
+  ambush's line and its `normal` markers through `t.ambush` and `t.encounter` (`hazards.ambush`), a dark check.
+  `registry.py`: the node facts these need (walkable, light level, the 31 stair sets) from
+  `tools/building_templates/nodes.json`.
+- **Uneven by default:** `relief.vary(cells, base, features)` with `relief.pit`, `rise` and `terrace` gives seeded
+  irregular outlines and a gentle and a steep side (`gentle=False` for an even feature); kept cells (passage mouths,
+  traps) stay at the base, and the map is repaired where features meet. A flat room is a choice: `relief.flat`.
+- **Previews:** `preview.py` (Pillow) draws the written files, never a source: a plan of the relief (height shading,
+  stairs dark on their low side) and of the light at eye height (0, below 4, 4 and up), ambush zones, lava, critters
+  and particle boxes; per room a sheet with both plans and two sections (`ROOMS`, one entry per Expedition); a sheet
+  across every stair run. `--name`, `--file`, `--out` (default the uncommitted `style-previews/`).
+- **The proof** (`proofs.lua`) reads the written file, never a source: the floor is what a player walks to from the
+  arrival (a step level or down, up only onto a stair, a level leap over one or two open columns), light and sight see
+  the nodes as written (the door shut). Rules by id (`P.RULES`); a fixture's `report` set turns a rule's failures into
+  report lines for a template not yet built for it. The ambush rule reads the `ambush` lines: each zone on flat floor,
+  cutting the walk from the arrival to the end (no leap over it), at light 0 with its markers and two nodes round it,
+  never the first fight (taken out every pack room's fighting floor, no walk from the arrival reaches it), its markers
+  `normal`, melee and on the zone's floor with head room, out of every pack's notice and room and of the start
+  waystone's sight, no trap in its dark stretch; the floor within two nodes of its markers needs no light in sight. The
+  particles rule: the `particles` lines' amounts within 300, each box holding air.
 
 Why packed: a single `.mts` would have to be walked whole for each mapblock, and `.mts` per column makes 64 files per
 template. One stream unpacked at load costs one reader of about 40 lines and two bytes per node in memory.

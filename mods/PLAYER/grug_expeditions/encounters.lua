@@ -34,6 +34,17 @@
 -- `boss_room_max`, two opposite corners; a template without them leaves it to the
 -- navigation's give-up), a target who leaves the room leaves its list, and 15 s
 -- without an attack reset it; the reset is the wipe.
+--
+-- Round 73 adds two kinds of room:
+--   AMBUSH ROOM  named by a template's `ambush` line: never placed by proximity. It
+--                waits for its candidate's zone (traps.lua), which hands it over with
+--                M._spring_room(run, room, player): placed then, every mob set on that
+--                player at once (packs.lua pull), a pack like every other from then on.
+--                An unarmed candidate's room is never placed.
+--   CRITTERS     a room of `critter` markers (CRITTERS, the roster): placed by
+--                proximity like a room, but no pack (packs.lua add_critter): scenery
+--                that drops nothing, settles no kill, starts no fight and gates nothing.
+--                Never placed again; none spawn naturally (guard.lua).
 local M = grug_expeditions
 local path = core.get_modpath(core.get_current_modname())
 local loot = dofile(path .. "/loot.lua")
@@ -44,27 +55,46 @@ local PASS_SECONDS = 1
 -- One mob per offset round its marker, the marker's cell first.
 local SPREAD = {{0, 0}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}, {3, 3}, {-3, 3}, {3, -3}, {-3, -3}}
 local SPREAD_REACH = 4
-local TIERS = {normal = true, elite = true, boss = true}
+local TIERS = {normal = true, elite = true, boss = true, critter = true}
+-- The Expeditions' critters (Round 73, concept section 4.8): the critter tier of levels.lua.
+local CRITTERS = {["grug_mobs:cave_bat"] = true, ["grug_mobs:cave_crawler"] = true,
+	["grug_mobs:bone_weevil"] = true}
 
-local states = {} -- run -> {rooms, boss_id, boss_dead}
+local states = {} -- run -> {rooms, ambush, boss_id, boss_dead}
 local running = false
+
+-- The rooms the run's template names in `ambush` lines: room -> true.
+local function ambush_rooms(run)
+	local def = M.definition(run.expedition)
+	local tpl = def and def.template and M.templates[def.template]
+	local rooms = {}
+	for _, row in ipairs(tpl and tpl.ambushes or {}) do rooms[row.room] = true end
+	return rooms
+end
 
 local function state_of(run)
 	local state = states[run]
 	if state then return state end
-	state = {rooms = {}}
+	state = {rooms = {}, ambush = {}}
+	local waits = ambush_rooms(run)
 	for _, row in ipairs(M.encounters(run)) do
-		local room = state.rooms[row.room]
+		local set = waits[row.room] and state.ambush or state.rooms
+		local room = set[row.room]
 		if not room then
 			room = {}
-			state.rooms[row.room] = room
+			set[row.room] = room
 		end
 		room[#room + 1] = {row = row, left = row.count}
+		room.critter = row.tier == "critter"
 		if row.tier == "boss" then
 			state.boss_id = "expedition:" .. run.expedition .. ":" .. run.id
 		end
 	end
-	for _, room in pairs(state.rooms) do room.pack = packs.new(run, state.boss_id) end
+	for _, set in ipairs({state.rooms, state.ambush}) do
+		for _, room in pairs(set) do
+			if not room.critter then room.pack = packs.new(run, state.boss_id) end
+		end
+	end
 	states[run] = state
 	return state
 end
@@ -75,10 +105,13 @@ function M.rewards_open(run)
 	return state ~= nil and (state.boss_id == nil or state.boss_dead == true)
 end
 
+-- A spread cell needs room, no harm and a floor that holds (Round 73: no spread spot
+-- over a lava basin or a pit's edge); else the marker's own cell.
 local function spot(marker, index)
 	local offset = SPREAD[(index - 1) % #SPREAD + 1]
 	local pos = {x = marker.x + offset[1], y = marker.y, z = marker.z + offset[2]}
-	return packs.standable(pos) and pos or {x = marker.x, y = marker.y, z = marker.z}
+	return packs.standable(pos) and packs.has_floor(pos) and pos or
+		{x = marker.x, y = marker.y, z = marker.z}
 end
 
 -- Places what is still missing; true when the room is done. A mob the engine
@@ -89,7 +122,14 @@ local function spawn_room(run, room)
 		local row = entry.row
 		core.load_area(vector.subtract(row.pos, SPREAD_REACH), vector.add(row.pos, SPREAD_REACH))
 		while entry.left > 0 do
-			if not packs.add(room.pack, row, spot(row.pos, row.count - entry.left + 1)) then
+			local at = spot(row.pos, row.count - entry.left + 1)
+			local placed
+			if room.critter then
+				placed = packs.add_critter(run, row, at)
+			else
+				placed = packs.add(room.pack, row, at)
+			end
+			if not placed then
 				core.log("error", "[grug_expeditions] " .. row.mob .. " could not be placed in " ..
 					run.expedition)
 				done = false
@@ -141,6 +181,21 @@ pass = function()
 	else
 		running = false
 	end
+end
+
+-- The ambush's half here (traps.lua fires it): the waiting room `key` is placed now
+-- and set on `player` at once. A mob the engine refused joins the proximity pass.
+-- Once only: the room leaves the waiting set.
+function M._spring_room(run, key, player)
+	local state = states[run]
+	local room = state and state.ambush[key]
+	if not room then return end
+	state.ambush[key] = nil
+	if not spawn_room(run, room) then
+		state.rooms[key] = room
+		start_pass()
+	end
+	packs.pull(room.pack, player)
 end
 
 M.register_on_ready(state_of)
@@ -205,12 +260,12 @@ function grug_mobs.settle_mob_death(self)
 end
 
 -- Ores and gems come from nodes only, and the boss pays through the chest: it
--- drops nothing, the coin bag included.
+-- drops nothing, the coin bag included. Nor does a critter (Round 73).
 local ores = loot.ore_items(grug_materials.RESOURCES)
 local item_drop_filter = grug_mobs._item_drop_filter
 function grug_mobs._item_drop_filter(self, drops)
 	if not self._grug_expedition then return item_drop_filter(self, drops) end
-	if self._grug_boss_id then return nil end
+	if self._grug_boss_id or self._grug_scenery then return nil end
 	local rows = item_drop_filter(self, drops)
 	if not rows then return nil end
 	local kept = {}
@@ -228,11 +283,21 @@ core.register_on_mods_loaded(function()
 	end
 	for name, tpl in pairs(M.templates) do
 		local bosses = 0
+		local waits = {}
+		for _, row in ipairs(tpl.ambushes or {}) do waits[row.room] = true end
 		for _, row in ipairs(tpl.encounters) do
 			local where = "[grug_expeditions] template " .. name .. ": "
-			if not core.registered_entities[row.mob] then error(where .. "no mob " .. row.mob, 0) end
+			local def = core.registered_entities[row.mob]
+			if not def then error(where .. "no mob " .. row.mob, 0) end
 			if not TIERS[row.tier] then error(where .. "no tier " .. row.tier, 0) end
 			if row.tier == "boss" then bosses = bosses + row.count end
+			if row.tier == "critter" and not CRITTERS[row.mob] then
+				error(where .. row.mob .. " is no critter", 0)
+			end
+			-- An ambush fights in the dark: melee only, no shot from the black.
+			if waits[row.room] and (def.attack_type == "shoot" or def.attack_type == "dogshoot") then
+				error(where .. "the ambush " .. row.room .. " holds the archer " .. row.mob, 0)
+			end
 		end
 		if bosses > 1 then error("[grug_expeditions] template " .. name .. ": two bosses", 0) end
 	end

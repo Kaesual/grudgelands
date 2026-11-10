@@ -921,10 +921,16 @@ do
 	local text = file:read("*a")
 	file:close()
 	local rows = {}
-	for room, mob, count, tier, x, y, z in text:sub(1, text:find("\ndata ")):gmatch(
+	-- Round 73 SEAM: the ambushes' markers wait for their zones and critters are no pack;
+	-- the room packs are the eight rows as before.
+	local head, waiting = text:sub(1, text:find("\ndata ")), {}
+	for room in head:gmatch("ambush %S+ %d+ (%S+)") do waiting[room] = true end
+	for room, mob, count, tier, x, y, z in head:gmatch(
 			"encounter (%S+) (%S+) (%d+) (%S+) (%d+) (%d+) (%d+)") do
-		rows[#rows + 1] = {room = room, mob = mob, count = tonumber(count), tier = tier,
-			pos = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}}
+		if tier ~= "critter" and not waiting[room] then
+			rows[#rows + 1] = {room = room, mob = mob, count = tonumber(count), tier = tier,
+				pos = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}}
+		end
 	end
 	check(#rows == 8, "I the eight marker rows: " .. #rows)
 	local SPREAD = {{0, 0}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}, {3, 3}, {-3, 3}, {3, -3}, {-3, -3}}

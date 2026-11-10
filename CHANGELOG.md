@@ -12,6 +12,34 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.73.0 — the Expeditions redesigned (2026-11-10)
+
+The Stilled Seam, The Second Shift and The Last Mint, rebuilt to feel like places. Compatible:
+no map reset, no new world, nothing for the host to do.
+
+- **Floors that rise and fall:** sunken floors, terraces, rubble ramps and a pit or arena for
+  every boss, all joined by stairs you walk up and down without jumping. Some rooms stay
+  flat and square on purpose.
+- **Passages that wander:** they bend, narrow and widen, with niches and side bays on the
+  way.
+- **Light that belongs there:** candles on desks and crates, lamps set in the rock, a
+  lantern over a work place, the glow of lava; no more rows of torches. Some passages are
+  dark, but you always see the next light ahead.
+- **The ambush:** in a long dark passage, never before your first fight, a small pack steps
+  out of the walls when you cross. A faint puff of dust is the only warning. It happens once
+  per run; each Expedition has two such places and arms one of them.
+- **Lava falls** run down the walls into basins beside the floor, also where you fight. The
+  mobs never walk in and the lava does not hurt them, but their hits can push you in.
+- **Life in the mines:** moss, lichen, bones and cobwebs; a few bats, crawlers and weevils
+  that flee from you (hitting one starts no fight and drops nothing); drips, dust, ash,
+  paper scraps, embers and sparks in the air.
+- **Bosses keep their health:** since 0.72.0 a boss with more than 65,535 health fell to
+  65,535 on the first hit. Fixed; it matters for Duewarden at every level, Auditor Nemm from
+  level 45, Flintback above level 60 and now the dragons.
+- **Tougher apex bosses:** the dragons have 100,000 health (was 30,000) and are meant for
+  five players; the Kings and the fortress Generals have three times their old health and
+  are meant for four. Auditor Nemm is a little lighter (14 times an elite's health, was 20).
+
 ## 0.72.2 — clearer Finish and Cancel (2026-11-10)
 
 Compatible: no map reset, no new world, nothing for the host to do.

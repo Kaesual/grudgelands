@@ -34,7 +34,8 @@ file:close()
 T.check_fits(tpl, {x = 128, y = 64, z = 128}, {"arrival"}, "test_vault")
 
 -- A. The format.
-check(#tpl.traps == 7 and #tpl.encounters == 3, "A seven trap lines beside the markers")
+-- Seven markers since Round 73 GAME added the drift's ambush and two critters.
+check(#tpl.traps == 7 and #tpl.encounters == 7, "A seven trap lines beside the markers")
 local f1 = tpl.traps[1]
 check(f1.group == "f1" and f1.pick == 1 and f1.kind == "floor" and f1.pos.x == 8 and
 	f1.pos.y == 5 and f1.pos.z == 30, "A a floor line")
@@ -159,6 +160,8 @@ end
 grug_core = {ARMOR_APPLIED_CUSTOM_TYPE = "grug_core:player_armor_applied"}
 -- Round 72 SHIFT: traps.lua hangs Auditor Nemm's two hooks on grug_mobs.
 grug_mobs = {}
+-- Round 73 GAME: traps.lua hears every teleport (the ambush, tools/r73_game).
+grug_home = {register_on_teleport = function() end}
 dofile(repo .. "/mods/CORE/grug_core/particles.lua")
 local play = grug_core.particles.play
 grug_core.particles.play = function(id, frame)

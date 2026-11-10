@@ -73,6 +73,15 @@ New rules alone would reproduce the grid.
 - **Height maps must not look even.** Deeper pits and higher rises are allowed and
   wanted, as long as neighbouring cells differ by one at most (§4.1).
 
+2026-11-10, during wave 1:
+
+- **The ambush is never the first fight.** It comes at the earliest after the first real
+  pack room on the route: every walk from arrival to an ambush zone passes through a pack
+  room first.
+- **Pack rooms may be darker in patches.** The fighting floor keeps light 4 everywhere,
+  but light 6 is needed on 75 % of it, no longer 90 % (§4.4), so the light inside a room
+  can be uneven (asked after the look at The Second Shift's previews).
+
 ## 3. What stays
 
 The redesign changes shape, relief, light, dressing and hazards. These are contracts and
@@ -183,7 +192,7 @@ Zones, checked at eye height (floor plus one):
 
 | Zone | Rule |
 |---|---|
-| Pack rooms (every cell a pack fights on), boss room, Round 72 trap cells and their radius | at least 4 everywhere, at least 6 on about 90 % (today's numbers) |
+| Pack rooms (every cell a pack fights on), boss room, Round 72 trap cells and their radius | at least 4 everywhere, at least 6 on 75 % (user, 2026-11-10; was 90 %) |
 | Arrival, store, waystones, the chest, the door | at least 6 |
 | Everything else (passages, niches, rooms without a pack) | any light, also 0, as long as the line-of-sight rule holds |
 | Ambush zone and its alcoves | exactly 0 |
@@ -230,7 +239,10 @@ reports that.
 - **After a wipe** it is a pack like any other: healed, back to its alcoves, waiting
   there, and from then on it shows. What the party killed stays dead.
 - **Placement:** outside every room pack's notice range, so it never pulls a room pack
-  in; no Round 72 trap in the same dark stretch; not in a pack room or the boss room.
+  in; no Round 72 trap in the same dark stretch; not in a pack room or the boss room;
+  **never before the first pack room** (user, 2026-11-10): every walk from arrival to the
+  zone passes through a pack room's fighting area first. Out of sight of the respawn
+  waystone, so a wipe's pack does not chase the respawned party (Round 73 GAME review).
 - **Rewards and gates:** none of their own. The door and the chest still open on the
   boss alone.
 

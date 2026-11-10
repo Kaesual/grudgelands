@@ -19,7 +19,11 @@ second, the raw hit before armour, dodge, absorbs and heals. On top of it:
     a second and, undodged, the x3 wind-up every 12 s (numbers.py fight());
   * RECOVERY_S after a pack, to eat (no natural regeneration); WALK_NPS: walking speed;
   * damage is shown in the players' own pools, P(player level). Up to 60 every ratio
-    scales with P(L), so all levels of 20-60 read alike.
+    scales with P(L), so all levels of 20-60 read alike;
+  * the ambush (Round 73 SEAM, concept section 4.5): one of two candidates armed per run,
+    AMBUSH_SPIDERS normal spiders from the dark, fought like a pack and counted in the run
+    with its recovery. Its size is set against "about half a room pack": the table
+    compares its time and damage with the room packs' mean and with pack a alone.
 
 Ore and gem against mining (lane RANGE, an ESTIMATE, not measured): the shipped
 template's ore and gem places shared by the three, against the same minutes of a 1 x 2
@@ -74,10 +78,11 @@ PLAYERS = 3
 PARTY = (1 + 1 + 1 / 3) / 3  # Warrior, Mage, a Priest healing half its time at 2/3
 UPTIME = 0.85
 RECOVERY_S = 30
-WALK_STEPS = 254  # tools/r71_l20/portable_test.lua, start to chest
+WALK_STEPS = 260  # tools/r71_l20/portable_test.lua, start to chest (Round 73 SEAM: the bent passages)
 WALK_NPS = 4
 REWARDS_S = 120  # chest, eight nodes, the waystone
 PACKS = (("a", 4, 0), ("b", 2, 1), ("c", 3, 1), ("d", 3, 1))
+AMBUSH_SPIDERS = 2  # tools/r71_l20/portable_test.lua section L, per candidate
 ELITE_ARMOR = n.TIERS["elite"][2] / 100
 LEVELS = (20, 29, 39, 49, 59, 60, 65, 69)
 RUN_MIN = (10, 15)
@@ -175,10 +180,25 @@ def main():
             pure, damage = pack_fight(level, spiders, elites)
             times.append(pure / (PARTY * UPTIME))
             pools.append(damage / (PLAYERS * pool(level)))
-        packs_s[level] = sum(times)
+        packs_s[level] = sum(times) + pack_fight(level, AMBUSH_SPIDERS, 0)[0] / (PARTY * UPTIME)
         print("| %d | %d | %.2f | %s s | %s |" % (
             level, player_level(level), n.malus(player_level(level), level),
             " / ".join("%.1f" % t for t in times), " / ".join("%.2f" % d for d in pools)))
+    print()
+    print("## The ambush: %d spiders against a room pack" % AMBUSH_SPIDERS)
+    print()
+    print("| Level | Ambush s / pools | Room packs' mean s / pools | Pack a s / pools | Ambush / mean: time, damage |"
+          " Ambush / pack a: time, damage |")
+    print("|---:|---|---|---|---|---|")
+    for level in LEVELS:
+        a_s, a_d = pack_fight(level, AMBUSH_SPIDERS, 0)
+        rows = [pack_fight(level, spiders, elites) for _, spiders, elites in PACKS]
+        m_s, m_d = sum(r[0] for r in rows) / len(rows), sum(r[1] for r in rows) / len(rows)
+        p_s, p_d = rows[0]
+        pools = PLAYERS * pool(level)
+        print("| %d | %.1f / %.2f | %.1f / %.2f | %.1f / %.2f | %.0f %%, %.0f %% | %.0f %%, %.0f %% |" % (
+            level, a_s / (PARTY * UPTIME), a_d / pools, m_s / (PARTY * UPTIME), m_d / pools,
+            p_s / (PARTY * UPTIME), p_d / pools, 100 * a_s / m_s, 100 * a_d / m_d, 100 * a_s / p_s, 100 * a_d / p_d))
     print()
     print("| Level | Spider HP / hit | Elite HP / hit | Flintback HP | Party | Tank in melee, pools | Rocks only, pools |")
     print("|---:|---|---|---:|---:|---:|---:|")
@@ -193,12 +213,12 @@ def main():
     print("Flintback: the elite's HP x %d. A Priest's Heal alone is 25 %% of a pool every 5 s: %.1f pools "
           "in the fight at 20, %.1f at 69." % (HP_SCALE, 0.05 * boss_s[20], 0.05 * boss_s[69]))
     print()
-    print("| Level | Packs, fighting | Packs, with %d s recovery each | Flintback | Walk | Rewards | Run |"
+    print("| Level | Packs and ambush, fighting | With %d s recovery each | Flintback | Walk | Rewards | Run |"
           " Packs / boss / tank vs 20 |" % RECOVERY_S)
     print("|---:|---:|---:|---:|---:|---:|---:|---|")
     run_min = {}
     for level in LEVELS:
-        packs = packs_s[level] + RECOVERY_S * len(PACKS)
+        packs = packs_s[level] + RECOVERY_S * (len(PACKS) + 1)
         walk = WALK_STEPS / WALK_NPS
         run = packs + boss_s[level] + walk + REWARDS_S
         run_min[level] = run / 60
@@ -206,9 +226,10 @@ def main():
             level, packs_s[level] / 60, packs / 60, boss_s[level] / 60, walk / 60, REWARDS_S / 60, run / 60,
             packs_s[level] / packs_s[20], boss_s[level] / boss_s[20], tank_pools[level] / tank_pools[20]))
     print()
-    ke = 12 + 3 * 4 + 4
+    ke = 12 + AMBUSH_SPIDERS + 3 * 4 + 4
     bands = income.estimate(round33=True)
-    print("## XP: 12 normal + 3 elite + 1 boss = %d kill equivalents, shared by those present" % ke)
+    print("## XP: %d normal (the ambush's %d included) + 3 elite + 1 boss = %d kill equivalents, shared by those"
+          " present" % (12 + AMBUSH_SPIDERS, AMBUSH_SPIDERS, ke))
     print()
     print("| Run | Player | M(L) | XP per run, 3 players | KE each | KE/h at %s min | Band pace KE/h | Share of pace |"
           % " / ".join(str(m) for m in RUN_MIN))

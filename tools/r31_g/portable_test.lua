@@ -528,6 +528,22 @@ do
 	eq(fortress.general._grug_fixed_level, 65, "P the General is level 65")
 	eq(fortress.general.description, "General Haldren Ashward", "P the General's name")
 	eq(fortress.general._grug_tier, "elite", "P the General is an elite")
+	-- Round 73 BOSSHP: three times an elite's HP for a King and a General (the
+	-- user, 2026-11-10), copied with king_def; their guards keep an elite's.
+	eq(core.registered_entities[fortress.general.name]._grug_hp_scale, 3,
+		"P the General has three times the HP of his level")
+	eq(core.registered_entities[fortress.bodyguard_west.name]._grug_hp_scale, nil,
+		"P a bodyguard keeps an elite's HP")
+	local kings = 0
+	for name, def in pairs(core.registered_entities) do
+		if name:find("^grug_mobs:king_") then
+			kings = kings + 1
+			eq(def._grug_hp_scale, 3, "P " .. name .. " has three times the HP of his level")
+		elseif name:find("^grug_mobs:royal_guard") then
+			eq(def._grug_hp_scale, nil, "P " .. name .. " keeps an elite's HP")
+		end
+	end
+	check(kings > 0, "P the Kings are registered")
 	eq(fortress.bodyguard_west._grug_fixed_level, 60, "P a bodyguard is level 60")
 	eq(fortress.gate_west._grug_level, 60, "P a gate guard is level 60")
 	local camp = placed.pvp_camp_broken_causeway_accord_low

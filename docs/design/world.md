@@ -510,7 +510,8 @@ the world"). The king/royal-guard binding, reset, death and group-respawn
 rules are implemented by the six level-70 king entities and their two
 level-60 royal guards per capital. They consume the authored `king` and royal
 guard sockets; the king alone owns reset, death and group-respawn authority as
-specified in `world_zones.md` §12. A king holds his seat (Round 41): he never
+specified in `world_zones.md` §12. A king is a fight for four players, with
+three times an elite's HP (§4b, Round 73). A king holds his seat (Round 41): he never
 wanders, stands on his throne socket facing its authored direction and walks
 back to it after a fight or a reset; his guards follow him there. Since
 Round 58 (the user's ruling of 2026-10-22) his throne guards hold posts beside
@@ -687,6 +688,13 @@ uses that walk to sidestep pathfinding exploits). A blocked rest route stops,
 rests and retries another authored position on the existing cadence.
 Telegraphed attacks (the elite wind-up mechanic scaled up), respawn timer — but
 each has a **distinct skill set** so it threatens in its own way.
+
+**Health and group size** (Round 73, the user's picks of 2026-11-10): a dragon
+has **100,000 HP** (the boss tier's flat HP; 30,000 until Round 73) and is
+meant for **five players**. A king has **three times an elite's HP** of his
+level, 32,436 at 70 (10,812 before), and is meant for **four players**; a
+General shares the king's factor, 28,203 at 65. Their royal guards and
+bodyguards keep an elite's HP.
 
 A dragon may begin or finish a hostile skill only while it has a valid living
 hostile target. Peaceful players are excluded from acquisition; losing the

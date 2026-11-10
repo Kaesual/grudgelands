@@ -1002,6 +1002,17 @@ longer clear the failures (`progress`'s `keep_fails`), only a strike does; and
 false for a mob, every rule is as before. Fixtures
 `tools/r72_guardnav/portable_test.lua` and `tools/r42_nv1/portable_test.lua`.
 
+## Round 73 HPCAP — mobs keep health above 65,535 (2026-11-10)
+
+Five markers in `mobs/api.lua` (`GRUG PATCH (Round 73 HPCAP)`): the engine keeps
+the `hp_max` property as u16, so `grug_mobs/levels.lua` writes it as at most
+65535 and keeps the game's max in `self.hp_max`. `check_for_death`'s clamp, the
+infotext, the spawn roll in `mob_activate` and feeding read `self.hp_max or
+prop.hp_max`; `mob_activate`'s staticdata loop also keeps a saved `hp_max` on
+`self`, besides writing it to the property, so a reloaded mob has its max before
+its first tick. A mob that never sets `self.hp_max` reads the property as before.
+Fixture `tools/r73_hpcap/portable_test.lua`.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world

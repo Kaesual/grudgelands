@@ -12,7 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.72.2 (Finish green, Cancel red, open Expedition windows redrawn once at
+**Current state:** 0.73.0, Round 73 (the Expedition redesign: relief by stairs, bent passages,
+light from what belongs there, the ambush, lava falls, critters and particles, one shared
+template proof; bosses keep health above 65,535; compatible, tag `round-73`, not pushed,
+GUI test open: [completion](docs/planning/round73-plan.md#completion-2026-11-10)), on
+0.72.2 (Finish green, Cancel red, open Expedition windows redrawn once at
 a close or an end; compatible, tag `round-72.2`), on 0.72.1 (finish and cancel an Expedition,
 the Deserter's Mark; tag `round-72.1`), on top of 0.72.0, Round 72 (combat at targeting; placement in combat and around
 bodies; the boss floor and the kings' and bosses' reset; guards out of reach reset at once;
@@ -604,9 +608,12 @@ The topic rules below name the one path to use; the
   passes that run only while something waits.
 - **Every Expedition mob spawns through `packs.lua`'s spawn,** which sets the mark
   `_grug_expedition` (no truce, no shrinking aggro radius); a summon outside it needs the mark
-  in its staticdata. A new template carries the places `boss_room_min` and `boss_room_max`
-  (the boss's range), flat floors and passes `tools/expedition_templates/proofs.lua`
-  (free height, no perch, every pack-room cell noticed, no walk round).
+  in its staticdata (lava immunity and the critter tier hang on it). A new template carries
+  the places `boss_room_min` and `boss_room_max` (the boss's range) and passes the shared
+  proof `tools/expedition_templates/proofs.lua` with every rule on (Round 73: the floor a
+  height map with stairs, free height, no perch, no walk round, the light zones and sight,
+  the ambush, lava and particles). A source writes floor stairs only through `relief.py` and
+  light through `light.py` (no grid), and its rooms go to the user as `preview.py` sheets.
 - **Balance is for a Warrior and a Priest at player level = Expedition level;** nothing is
   tuned for a player at the entry limit. A new Expedition's fight needs a real test: the
   probes' fights are scripted.

@@ -329,6 +329,15 @@ The removal is covered by `tools/r28_a6_ui` and the Character fixture; the
   `grug_core/hud_layout.lua` and the HUD bars in `grug_abilities/init.lua`
   write only changed, pixel-quantized values. Skipping a no-op call stays
   right after an upstream fix; nothing to remove.
+- An object's `hp_max` property and an entity's own HP are u16
+  (`src/object_properties.h:68`; `read_object_properties` clamps it,
+  `src/script/common/c_content.cpp:350`; `LuaEntitySAO::setHP`,
+  `src/server/luaentity_sao.cpp:427`). The Expedition bosses and the dragons
+  have more health than that, so a mob's max is the Lua field `self.hp_max`, the property is
+  written as at most 65535 (`grug_mobs/levels.lua` `ENGINE_HP_MAX`) and
+  mobs_redo's readers ask the field first (VENDOR.md, Round 73 HPCAP). Mobs
+  keep their health in Lua and take no engine damage (`immortal` armor); their
+  engine HP is only ever tested for being above 0. An engine limit, not a bug.
 - `grug_ambience` drops loop emitters beyond their hearing distance itself
   because `max_hear_distance` does not apply to a `to_player` sound: engine
   semantics, not a bug.

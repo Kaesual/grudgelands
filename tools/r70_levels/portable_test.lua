@@ -35,13 +35,14 @@ dofile(ROOT .. "/mods/ENTITIES/grug_mobs/levels.lua")
 local stats_for = grug_mobs.stats_for
 
 local hp = stats_for(70, "boss")
-eq(hp, 30000, "A a dragon has 30,000 HP")
-eq((stats_for(1, "boss")), 30000, "A the boss tier's HP is flat")
+-- 100,000 since Round 73 BOSSHP (the user, 2026-11-10; it was 30,000).
+eq(hp, 100000, "A a dragon has 100,000 HP")
+eq((stats_for(1, "boss")), 100000, "A the boss tier's HP is flat")
 local _, damage, xp = stats_for(70, "boss")
 eq(damage, 71.25, "A a level 70 boss hits at the normal curve")
 eq(xp, 375, "A and pays the normal XP of its level")
-eq((stats_for(70, "elite")), 10812, "A a King at 70 has an elite's HP of his level")
-eq((stats_for(65, "elite")), 9401, "A a General stays at a level 65 elite's HP")
+eq((stats_for(70, "elite")), 10812, "A a King's base at 70 is an elite's HP of his level (his factor in B)")
+eq((stats_for(65, "elite")), 9401, "A a General's base stays a level 65 elite's HP")
 
 -- The fixed levels, each at its definition.
 local bosses = read("mods/ENTITIES/grug_mobs/bosses.lua")
@@ -49,6 +50,9 @@ local king_def = bosses:match("local function king_def%(race, row%)(.-)\nend\n")
 check(king_def ~= nil, "B king_def found")
 check(king_def and king_def:find("_grug_fixed_level = 70", 1, true) ~= nil,
 	"B a King is level 70")
+-- Round 73 BOSSHP: x3 on the elite's 10,812 (32,436), and on a General's 9,401 (28,203).
+check(king_def and king_def:find("_grug_hp_scale = 3,", 1, true) ~= nil,
+	"B a King, and a General with his def, has three times an elite's HP")
 check(bosses:find("general._grug_fixed_level = garrison.GENERAL_LEVEL", 1, true) ~= nil,
 	"B a General leaves the King's level for his own")
 local garrison = dofile(ROOT .. "/mods/ENTITIES/grug_mobs/pvp_garrison.lua")

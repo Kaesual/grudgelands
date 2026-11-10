@@ -76,9 +76,12 @@ local function has_floor(pos)
 	local def = node and core.registered_nodes[node.name]
 	return def ~= nil and def.walkable == true and (def.damage_per_second or 0) <= 0
 end
+P.has_floor = has_floor
 
 -- A cell beside the player, with a floor, that the player can see, else their own:
--- always one a mob can stand on and strike from, never a fall.
+-- always one a mob can stand on and strike from, never a fall. A player standing in
+-- what hurts (Round 73: a lava basin) has its rim a step up beside them, so a jump
+-- lands a mob in the lava only when there is no rim.
 local function beside(player)
 	-- The cell of the feet. vector.round takes a half away from zero, so on a floor
 	-- below y 0 (every box), where the feet stand at an exact half, it names the floor
@@ -87,11 +90,13 @@ local function beside(player)
 	local at = {x = math.floor(feet.x + 0.5), y = math.floor(feet.y + 0.5),
 		z = math.floor(feet.z + 0.5)}
 	local eye = {x = at.x, y = at.y + 1, z = at.z}
-	for _, side in ipairs(SIDES) do
-		local pos = {x = at.x + side[1], y = at.y, z = at.z + side[2]}
-		if P.standable(pos) and has_floor(pos) and
-				core.line_of_sight(eye, {x = pos.x, y = pos.y + 1, z = pos.z}) then
-			return pos
+	for dy = 0, P.standable(at) and 0 or 1 do
+		for _, side in ipairs(SIDES) do
+			local pos = {x = at.x + side[1], y = at.y + dy, z = at.z + side[2]}
+			if P.standable(pos) and has_floor(pos) and
+					core.line_of_sight(eye, {x = pos.x, y = pos.y + 1, z = pos.z}) then
+				return pos
+			end
 		end
 	end
 	return at
@@ -130,6 +135,12 @@ local function spawn(member, pos, health)
 		_grug_home = {x = member.home.x, y = member.home.y, z = member.home.z},
 		_grug_pack = key, _grug_chase_range = NEVER, attack_patience = NEVER,
 		_grug_soft_deaggro = false,
+		-- Round 73: no Expedition mob takes lava damage (live_claim below sets it
+		-- again on every activation). Lava stays a boundary for its walking: mobs_redo's
+		-- is_node_dangerous still answers yes through node_damage (lava's
+		-- damage_per_second), so its cliff probe, grug_nav's cell test and the "get out"
+		-- of do_states keep it out of lava, and this only spares one pushed in.
+		lava_damage = 0,
 		-- The pack's pull is the only alert: no call reaches another pack.
 		group_attack = false}))
 	local ent = object and object:get_luaentity()
@@ -230,10 +241,21 @@ end
 grug_mobs.pack_contact = contact
 
 -- Every other way into a fight: a hit, a threat gain, a hit taken (grug_core).
+-- An Expedition's critter (`_grug_scenery`, Round 73) starts no fight at all.
 local engage_mob = grug_core.engage_mob
 function grug_core.engage_mob(mob_ent, player)
+	if mob_ent and mob_ent._grug_scenery then return end
 	engage_mob(mob_ent, player)
 	if mob_ent and mob_ent._grug_pack then contact(mob_ent, player) end
+end
+
+-- Sets the whole pack on `player` at once, as a contact does (Round 73: an ambush
+-- springs, encounters.lua).
+function P.pull(pack, player)
+	for _, member in ipairs(pack.members) do
+		local ent = live_entity(member)
+		if ent then return contact(ent, player) end
+	end
 end
 
 -- ---- The hunt ---------------------------------------------------------------------
@@ -394,6 +416,19 @@ function P.new(run, boss_id)
 	return pack
 end
 
+-- An Expedition's critter (Round 73, the `critter` tier): an Expedition mob outside
+-- every pack. Scenery: no drop, no kill (grug_mobs settle_mob_death), no fight
+-- (engage_mob above), no gate, never placed again. False when the engine refused it.
+function P.add_critter(run, row, pos)
+	local object = core.add_entity(pos, row.mob, core.serialize({
+		_grug_spawn_level = run.level, _grug_expedition = run.id,
+		_grug_authored = true, lifetimer = LIFETIMER, _grug_scenery = true,
+		lava_damage = 0, group_attack = false}))
+	if not (object and object:get_luaentity()) then return false end
+	grug_mobs.place_on_ground(object, pos)
+	return true
+end
+
 -- A first body at the room's marker; false when the engine refused it.
 function P.add(pack, row, pos)
 	local member = {pack = pack, row = row, home = pos}
@@ -419,6 +454,9 @@ end
 -- starts it again.
 local live_claim = grug_mobs.live_claim
 function grug_mobs.live_claim(self)
+	-- Round 73: every Expedition mob, critters included, is immune to lava, on every
+	-- activation whatever its staticdata carries (spawn and add_critter write it too).
+	if self._grug_expedition then self.lava_damage = 0 end
 	if self._grug_pack then
 		local member = bodies[self._grug_pack]
 		if not member then
