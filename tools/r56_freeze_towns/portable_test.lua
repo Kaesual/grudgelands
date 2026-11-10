@@ -138,18 +138,22 @@ check(not pcall(templates.sockets, {{id = "b", building = "other"}}, collected()
 -- node list moves the point digest) the towns' new values again.
 -- Round 75: declared map reset; restrained city dressing changes cell identities.
 -- Source blueprints and their point/build digests stay unchanged.
+-- 0.75.1: declared map reset (unreleased 0.75.0 already resets): the slab over
+-- every workshop workbench and the human closed shutters are gone; the human
+-- palette's shutter node leaves the node list, so Dawnmere's and Highcourt's
+-- point digests move too.
 local FROZEN = {
-	hearthpine = {"e4fe7e3b3f6bcaacfe47a72d06be734a3a3d810abf388c98aa886071d8dca37a",
+	hearthpine = {"6ca976fa5741bdd914e9e540fe676b71269aa8225656d05546be3c11250a15c1",
 		"72ca455e10241c9bea4328b1a367d932bf3afecd67d3968c1d3d1359bde61bf5"},
-	dawnmere = {"bc145a4b19dd0adfeddef70dfeb59239ef00f20c2d70b4c2cabca6b625cdbdeb",
-		"a7605a229c413263d75ebd442aa139fae10b186bd7e957951afdc1bef009d306"},
-	silverleaf = {"2bc9af3f4a0f050b2f6dc0326e2830ebf44e6f70c332aade291304b5740f4f36",
+	dawnmere = {"e2d0481360abf226eb40746c1c278037cd9187c413816bc0a157b4b1ecd78cf9",
+		"cd0aa85eac0752becbd614999556856086856be4386fd2786bd000ca067d3746"},
+	silverleaf = {"86cc1097e793a2cbaa958fe9e33341445a4bd464829bfe4760139aa012f320b5",
 		"539aeb053cde71f8362459160f69c07bf6a8727bf81bd36706a1144334f9bfea"},
-	stillgrave = {"7d45b784beb072fb326c1ea9cb6cfc2387013d726e73c6a8841f5ba2f42b1db3",
+	stillgrave = {"1e0402d51127f0213b8b2bd57b380eb59ddabd582374f6429cbfc83a2a448b29",
 		"9c818115f1656ccb5b6f5b3aa2f77c08362e707d4a8075119eab083e023943c5"},
-	sunscar = {"4de359a7a03bfe446cac6cbf872e02a7746231e11bfe3ee2037b4f71a45b5f67",
+	sunscar = {"b3f8d7bd725af8ce21be8c22a413135f20f77fa1237dd38746dee2234e8b1485",
 		"2647c4c29010a9ad7d827139c0b30eec414326f886baa4e8380dcfef353ae04d"},
-	kapok = {"1377263447852043a71542ea78049bb366c23c782b0aaa78a41d3141e54161a9",
+	kapok = {"77d762710e1c450fd148fa9d68a48dde5dc83a5aac6ebd2e3be8d3a6e6c8b1f4",
 		"eeddeccb546dab30e3955aee0bc75117900810dca32363f56ee36c436f5e9583"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")

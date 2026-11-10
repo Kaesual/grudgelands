@@ -33,10 +33,6 @@ U role roof_stair o=facedir:3
 V role rug_accent
 W role shelf o=facedir:1
 X role shelf_vessels o=facedir:1
-Y role shutter else=air
-Z role shutter o=facedir:1 else=air
-a role shutter o=facedir:2 else=air
-b role shutter o=facedir:3 else=air
 c role storage
 d role storage o=facedir:1
 e role wall_accent
@@ -84,41 +80,41 @@ layer 1
 |.RjeejjeejeR.|
 |.........c...|
 layer 2
-|.........YY..|
+|.............|
 |.RffRfHRjhhj.|
 |.j.........j.|
-|ZiL........ib|
-|Zi.........ib|
+|.iL........i.|
+|.i.........i.|
 |.j.........jg|
 |.j.........jg|
-|Zi.........ib|
-|Zi.........ib|
+|.i.........i.|
+|.i.........i.|
 |.j.........j.|
 |.j.........j.|
-|Zi.........ib|
-|Zi.........ib|
+|.i.........i.|
+|.i.........i.|
 |.j.........j.|
 |.f.........f.|
 |.RjhhjjhhjRR.|
-|...aa..aa....|
+|.............|
 layer 3
-|....O...OYY..|
+|....O...O....|
 |.RffRffRjhhj.|
 |.j.........j.|
-|ZiF........ib|
-|Zi.........ib|
+|.iF........i.|
+|.i.........i.|
 |.jN.......Mj.|
 |.j.........j.|
-|Zi.........ib|
-|Zi.........ib|
+|.i.........i.|
+|.i.........i.|
 |.jN.......Mj.|
 |.j.........j.|
-|Zi.........ib|
-|Zi.........ib|
+|.i.........i.|
+|.i.........i.|
 |.jN.......Mj.|
 |.f.........f.|
 |.RjhhjjhhjRR.|
-|...aa..aa....|
+|.............|
 layer 4
 |.............|
 |.RffRffRjfRj.|

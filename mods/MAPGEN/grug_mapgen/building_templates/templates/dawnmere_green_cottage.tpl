@@ -36,9 +36,6 @@ X role seat o=facedir:3
 Y role shelf o=facedir:1
 Z role shelf o=facedir:3
 a role shelf_vessels o=facedir:1
-b role shutter else=air
-c role shutter o=facedir:1 else=air
-d role shutter o=facedir:3 else=air
 e role storage o=facedir:3
 f node grug_decor:xdecor_table
 h role wall_accent
@@ -73,27 +70,27 @@ layer 1
 |.lhhhEhhhl.|
 |...H.......|
 layer 2
-|...bb..bb..|
+|...........|
 |.Pljjlljjl.|
 |.l......KC.|
-|ck.......kd|
-|ck.......kd|
+|.k.......k.|
+|.k.......k.|
 |.lZ......l.|
 |.l.......l.|
-|ck......akd|
-|ck.......kd|
+|.k......ak.|
+|.k.......k.|
 |.liiPFiPil.|
 |...........|
 layer 3
-|...bb..bb..|
+|...........|
 |.Pljjlljjl.|
 |.l......CC.|
-|ck.......kd|
-|ck.......kd|
+|.k.......k.|
+|.k.......k.|
 |.lM.....Ll.|
 |.l.......l.|
-|ck.......kd|
-|ck.......kd|
+|.k.......k.|
+|.k.......k.|
 |.liiPiiPil.|
 |...N...N...|
 layer 4

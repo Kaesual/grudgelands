@@ -12,6 +12,17 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.75.1 — tidier workshops and windows (2026-11-10)
+
+**Map reset** (joins 0.75.0's): the changed town buildings appear in regenerated
+buildings. Characters and items are untouched; there is no separate migration step.
+
+- **No more floating slab over the workbench:** the half block that hung over the
+  anvil (and the other races' workbenches) in every smithy, armoury, bakehouse,
+  butcher and workshop of the start towns and capitals is gone.
+- **Open windows in human towns:** the closed shutters in front of the windows of
+  Dawnmere's and Highcourt's houses are gone, so the windows show.
+
 ## 0.75.0 — details for homes and cities (2026-11-10)
 
 **Map reset:** city furnishings appear in regenerated buildings. Characters and

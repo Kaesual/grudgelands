@@ -116,30 +116,34 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- core socket) every capital's new digests again.
 -- Round 75: declared map reset; restrained city dressing changes cell identities.
 -- Source blueprints and their point/build digests stay unchanged.
+-- 0.75.1: declared map reset (unreleased 0.75.0 already resets): the slab over
+-- every workshop workbench and the human closed shutters are gone; the human
+-- palette's shutter node leaves the node list, so Dawnmere's and Highcourt's
+-- point digests move too.
 local FROZEN = {
-	highcourt = {"ca939cf8fdb72cda839b264355cc98144d1dbad5d1df3797615e60fcc23b487c",
-		"75987f959c83754997215511b9e1abd909403b386d5ca42eb06bf658aeff6e54",
-		"584216a4572a61625b9b6e6162ee2e16cdf3fdfbe970530fedb9557684752e01"},
+	highcourt = {"95f3224bec65d000ef8decb764af004dec58bef207c5780284dcc129667b7d5e",
+		"2e2b54fc58e3a2d0962578a8689a5cbc34d3cd011e71864ec11a6fff515213ec",
+		"1b7ecd684a6a6cf97292323d6506a286000a3cdb932f3823238538b26e149ecc"},
 	-- the next capital
-	dur_brannoc = {"3428803a15cd0d7118aa29a64cc186499a787548fb86cf58c84e95c0fd00c197",
+	dur_brannoc = {"0a72c128f9011c9c26afdc94ca09123f2f10a523cc62fa6cea2fbf3ff2bded56",
 		"324f504a660a49b4520010db998501c0c551f5cf72e799787529b0383fd3ab95",
-		"f4f5659b66ae7a190e55ff9ebf0936c712ab371480e9efb314f993537ede5e01"},
+		"feed1cbada425805e796ab1a414b5ec1defa246a933596d9a2cca01ad71035ff"},
 	-- the next capital
-	lethariel = {"02d24abf92f7f5bf97ebf8ede9ad01af5f8757d887165cde4ab67ddb5bf3ca91",
+	lethariel = {"5ae2fe2eb06a81668574cf6f6cbeb4312d6f13639cf36cd25d1eef9771dcf039",
 		"ee4f66aa936205ec417105e20a5e6ada3c8fca60412b6571031212860cc08904",
-		"277e703bf7bb0d732e5ad1785c4e556c37b439088f4b783f9b492357263d3830"},
+		"c85d530560e2b5bbd38e951dd1ff0aef57d7619e6779fcc6db9ae61514da3012"},
 	-- the next capital
-	nhal_veyr = {"628dffe0b7b23ceec298c87b6c90e970e65551f7efe8f4e3bdf9bd2b29f08576",
+	nhal_veyr = {"a2288dbc85a7bc5c8459b824744f49d90f7a5cedfa2a8496edcba53d58e19f2f",
 		"fe115147b4c67a6ba90fb75296e071d32f501be417f5671921473b3cd91ef453",
-		"8b09fc6bc372f300b1564deeb2a5151e234a9fd5ac3d7b2cef471dd928625a5e"},
+		"dd5ae86b0b0b55a239971d6b306b73c837f5f36e504d1112c189d5b827e9db22"},
 	-- the next capital
-	gor_drazhak = {"73e347f42c42d99335dc1fc3a1827ae61d827173fd77ffe9832d562b2c527ce6",
+	gor_drazhak = {"f99ffd8d7b4f4f85e54f1778ac042cd41a0c6df1c1eb46bcb072f93dc0ddc0ab",
 		"3009f018b70a2899e2cb896f274591778a58e9cf77068d6ac986aed59d435016",
-		"f4ed37ab1628e3b4e1ebd1db0eaa9795455cfad54b89241d013f560ada28bdd2"},
+		"3b508e5059918ea573f7513a64536d4402a879996540678870c22c57eeaba34b"},
 	-- the next capital
-	kezamba = {"ca41c91f7d4b7bb49292685a972fcb0c61e0e5bc46173171569a6885a21a04ec",
+	kezamba = {"8f98ecdbd99f65e9f0dfcb7b6a386680b394bdb5503abe8786e48a85fe505b50",
 		"6aa6f2972f8d5cde364c0200e85651f46380bd6b192de175cf798146a3f25418",
-		"d04870ae6e57f69753b28d2f70198b7740d670a6e74d2067c74e113929aed4ce"},
+		"caca27a71f9ccb83e88323b6e9f2758ae8a94572743788fa9202d8835af43fd3"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()

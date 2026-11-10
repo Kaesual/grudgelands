@@ -42,10 +42,6 @@ d role shelf o=facedir:1
 e role shelf o=facedir:3
 f role shelf_vessels o=facedir:1
 g role shelf_vessels o=facedir:3
-h role shutter else=air
-i role shutter o=facedir:1 else=air
-j role shutter o=facedir:2 else=air
-k role shutter o=facedir:3 else=air
 l role storage
 m role storage o=facedir:2
 n role wall
@@ -95,42 +91,42 @@ layer 1
 |.........l...|
 layer 2
 |             |
-|.........hh..|
+|.............|
 |.QnnnnGHrppr.|
 |.r.........r.|
-|iq.b.......qk|
-|iq.........qk|
+|.q.b.......q.|
+|.q.........q.|
 |.r.........r.|
 |.r.........r.|
-|iq.........qk|
-|iq.........qk|
+|.q.........q.|
+|.q.........q.|
 |.r.........r.|
 |.r.........r.|
-|iq.........qk|
-|iq.........qk|
+|.q.........q.|
+|.q.........q.|
 |.r.........r.|
 |.n.........n.|
 |.QrpprrpprnQ.|
-|...jj..jj....|
+|.............|
 layer 3
 |             |
-|....N...Nhh..|
+|....N...N....|
 |.Qnnnnnnrppr.|
 |.r.........r.|
-|iq.........qk|
-|iq.........qk|
+|.q.........q.|
+|.q.........q.|
 |.rM.......Lr.|
 |.r.........r.|
-|iq.........qk|
-|iq.........qk|
+|.q.........q.|
+|.q.........q.|
 |.r.........r.|
 |.r.........r.|
-|iq.........qk|
-|iq.........qk|
+|.q.........q.|
+|.q.........q.|
 |.rM.......Lr.|
 |.n...N...N.n.|
 |.QrpprrpprnQ.|
-|...jj..jj....|
+|.............|
 layer 4
 |             |
 |.............|

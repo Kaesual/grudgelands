@@ -2,6 +2,14 @@
 
 Updated 2026-11-10. This is the delivery pointer, not another game specification.
 
+**0.75.1 is on main (squash, tag `round-75.1`), not pushed.** Two look fixes after the
+user's first walk through 0.75.0: the chimney-cap slab that hung over the workbench (the
+anvil and the other races' benches) in 21 workshop templates (22 slabs) is gone, and the human
+houses' closed shutters (10 templates in Dawnmere and Highcourt) are air. **Map reset**
+(joins 0.75.0's); the Round 56 town and capital identity pins moved; check.py, the
+strict city-decor audit (24 builders) and five town fixtures pass. GUI: walk Dawnmere's
+smithy and houses and Highcourt's bakehouse.
+
 **0.75.0 / Round 75 is merged into main as one squash commit, not pushed.**
 The tag `round-75` preserves the reviewed round history. It includes
 main's completed Round 74 commit `59da1e93`. The [Round 75 plan](planning/round75-plan.md)
