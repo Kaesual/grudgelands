@@ -1,0 +1,12 @@
+{
+  "race": "dwarf", "title": "The pine workshop", "seed": 1102,
+  "description": "A stone-paved workyard beside a dwarven forge hall. Pine trunks, slate roofs, rock shelves and a stone gateway frame the open yard.",
+  "camera": {"eye": [0, 2.05, -13], "target": [0, 1.256, -9.5], "fov": 55},
+  "portrait": {"feet": [0, 0.5, -9.5], "units_per_pixel": 0.0525, "stature": 0.9},
+  "sky": "#98abb8", "fog": [43, 105], "tint": "#edf1f2",
+  "ground": "default:dirt_with_grass", "soil": "default:stone", "path": "default:stonebrick", "stone": "default:stonebrick",
+  "buildings": [{"template": "hearthpine_forge_hall", "at": [-17, 0, 17]}, {"template": "hearthpine_east_home", "at": [14, 0, 25]}],
+  "trees": [{"at": [-8, 0, 31], "kind": "pine", "height": 19}, {"at": [10, 0, 35], "kind": "pine", "height": 22}, {"at": [-22, 0, 3], "kind": "pine", "height": 20}, {"at": [22, 0, 7], "kind": "pine", "height": 20}, {"at": [-15, 0, 48], "kind": "pine", "height": 23}, {"at": [19, 0, 49], "kind": "pine", "height": 23}],
+  "plants": ["default:fern_1", "grug_nodes:alpine_cushion"],
+  "props": [{"kind": "arch", "at": [0, 0, 36], "width": 9, "height": 8}, {"kind": "wall", "from": [-10, 1, 5], "to": [-10, 1, 12]}, {"kind": "wall", "from": [9, 1, 5], "to": [9, 1, 16]}]
+}

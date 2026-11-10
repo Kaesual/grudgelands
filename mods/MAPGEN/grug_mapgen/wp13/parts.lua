@@ -1065,10 +1065,10 @@ function M.seat(buf, palette, x, y, z, face)
 	buf:put(x, y, z, palette.node("seat"), (face + 2) % 4)
 end
 
--- A trestle table cell: leg below, top slab above.
+-- One supported thin-top table at the feet course. Leave the space above
+-- untouched: a caller may already have placed goods or another prop there.
 function M.table_cell(buf, palette, x, y, z)
-	buf:put(x, y, z, palette.node("table_leg"))
-	buf:put(x, y + 1, z, palette.node("table_top"))
+	buf:put(x, y, z, "grug_decor:xdecor_table")
 end
 
 -- One round of a plain 32-bit LCG. The caller must feed a value below 2^15,

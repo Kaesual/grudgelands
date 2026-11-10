@@ -41,8 +41,7 @@ c role shelf o=facedir:1
 d role shelf o=facedir:3
 e role shelf_vessels o=facedir:1
 f role storage o=facedir:3
-g role table_leg
-h role table_top
+g node grug_decor:xdecor_table
 i role wall
 j role wall_accent
 k role window
@@ -141,7 +140,7 @@ layer 6
 |..l......NG..|
 |..k.......k..|
 |..k.......k..|
-|..ld..hh..l..|
+|..ld......l..|
 |..l.......l..|
 |..k......ek..|
 |..k.......k..|

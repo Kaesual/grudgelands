@@ -79,9 +79,9 @@ layer 1
 |.j...DEC...j.|
 |.e...DEC...e.|
 |.e...DEC..We.|
-|.j........Xj.|
-|.eAPA......e.|
-|.RBeBjjeejeR.|
+|.jA.A.....Xj.|
+|.eBPB......e.|
+|.RjeejjeejeR.|
 |.........c...|
 layer 2
 |.........YY..|

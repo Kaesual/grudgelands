@@ -35,8 +35,7 @@ W role seat
 X role seat o=facedir:2
 Y role storage
 Z role storage o=facedir:1
-a role table_leg
-b role table_top
+a node grug_decor:xdecor_table
 c role wall
 d role wall_accent
 e role window
@@ -76,7 +75,7 @@ layer 2
 |.g.O.....g.|
 |.E.......d.|
 |.g.......g.|
-|Yd.....bbd.|
+|Yd.......d.|
 |.g.......g.|
 |.LgdgdgdgL.|
 |...........|

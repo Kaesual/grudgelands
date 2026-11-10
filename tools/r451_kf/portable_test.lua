@@ -265,7 +265,7 @@ do
 	for _, path in ipairs({"mods/PLAYER/grug_parties/ui.lua",
 			"mods/PLAYER/grug_classes/talents_ui.lua", "mods/PLAYER/grug_inventory/help.lua",
 			"mods/PLAYER/grug_classes/talent_graph_ui.lua",
-			"mods/ENTITIES/grug_traders/crown.lua", "mods/PLAYER/grug_classes/selection.lua",
+			"mods/ENTITIES/grug_traders/crown.lua", "mods/PLAYER/grug_classes/creation_window.lua",
 			"mods/PLAYER/grug_housing/stone_form.lua", "mods/PLAYER/grug_money/coins.lua",
 			"mods/BASE/default/craftitems.lua", "mods/PLAYER/grug_inventory/pages.lua"}) do
 		local text = assert(io.open(repo .. "/" .. path)):read("*a")

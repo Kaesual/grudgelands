@@ -1,0 +1,194 @@
+{
+  "dawnmere_field_cottage_before": {
+    "path": "tools/capital_polish_study/implementation/all_tables/before/dawnmere_field_cottage.tpl",
+    "sha256": "df3f35f779ca8c2e6c6c62c11eafd16de568407a9c104a1750e851a19fc1ef99",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        2,
+        9
+      ],
+      "z": [
+        1,
+        7
+      ]
+    }
+  },
+  "dawnmere_field_cottage_after": {
+    "path": "mods/MAPGEN/grug_mapgen/building_templates/templates/dawnmere_field_cottage.tpl",
+    "sha256": "cd6bb0fe7cd0b73a4c62f0875f04b18eab1f5839fb4f70b6c1396f9fed53d2b5",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        2,
+        9
+      ],
+      "z": [
+        1,
+        7
+      ]
+    }
+  },
+  "highcourt_homes_tavern_before": {
+    "path": "tools/capital_polish_study/implementation/all_tables/before/highcourt_homes_tavern.tpl",
+    "sha256": "51804dd95cc4c2504495f8f4bb708cf58233c630b0eef0cc41f0bc7afffbb05e",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        0,
+        12
+      ],
+      "z": [
+        2,
+        12
+      ]
+    }
+  },
+  "highcourt_homes_tavern_after": {
+    "path": "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_homes_tavern.tpl",
+    "sha256": "a2427ba57a6a46875617ec798c6bf6ee1c84b3b02e894b917d8e3b3a91b1c631",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        0,
+        12
+      ],
+      "z": [
+        2,
+        12
+      ]
+    }
+  },
+  "dur_brannoc_deep_scriptorium_before": {
+    "path": "tools/capital_polish_study/implementation/all_tables/before/dur_brannoc_deep_scriptorium.tpl",
+    "sha256": "c2ec69acd2183c74a2b0a22c0967286c493c670da214cfe32bbf4bc1311d5d29",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        -1,
+        13
+      ],
+      "z": [
+        0,
+        16
+      ]
+    }
+  },
+  "dur_brannoc_deep_scriptorium_after": {
+    "path": "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_deep_scriptorium.tpl",
+    "sha256": "6c5441ab04ec57cca2c2c60cfc764a40eb7de3fb2722ce52856d6b6aae4926f5",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        -1,
+        13
+      ],
+      "z": [
+        0,
+        16
+      ]
+    }
+  },
+  "highcourt_market_before": {
+    "path": "tools/capital_polish_study/implementation/all_tables/before/highcourt_market.tpl",
+    "sha256": "d99e1c6b0f6ead5cfe58970e89d41ccdaeaea86bbb2187908eb80dc684ef6dc6",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        1,
+        23
+      ],
+      "z": [
+        2,
+        22
+      ]
+    }
+  },
+  "highcourt_market_after": {
+    "path": "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_market.tpl",
+    "sha256": "ead3e5863ac8df7541bf80dcb319fd9222fda2c29198401efbfeb0ac05f964b2",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        1,
+        23
+      ],
+      "z": [
+        2,
+        22
+      ]
+    }
+  },
+  "kezamba_moot_house_before": {
+    "path": "tools/capital_polish_study/implementation/all_tables/before/kezamba_moot_house.tpl",
+    "sha256": "7147f94416341fdaf98538c04d48a5ec69c8ce3a5130e458c4f9aa7941ed72f1",
+    "crop": {
+      "floor": 4,
+      "cut": 6,
+      "x": [
+        0,
+        10
+      ],
+      "z": [
+        4,
+        14
+      ]
+    }
+  },
+  "kezamba_moot_house_after": {
+    "path": "mods/MAPGEN/grug_mapgen/building_templates/templates/kezamba_moot_house.tpl",
+    "sha256": "7764618eb1a2c8fe2a3e467a701957e80428524265118498bf53d57edc4196a0",
+    "crop": {
+      "floor": 4,
+      "cut": 6,
+      "x": [
+        0,
+        10
+      ],
+      "z": [
+        4,
+        14
+      ]
+    }
+  },
+  "nhal_veyr_market_bonesmith_before": {
+    "path": "tools/capital_polish_study/implementation/all_tables/before/nhal_veyr_market_bonesmith.tpl",
+    "sha256": "d72f74accd30847b20d3afb4539ae4eb26d5cc43fd3bf5c9c633e705ce4398a8",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        1,
+        9
+      ],
+      "z": [
+        3,
+        9
+      ]
+    }
+  },
+  "nhal_veyr_market_bonesmith_after": {
+    "path": "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_market_bonesmith.tpl",
+    "sha256": "93eac0f6c1eb57bcc5c42c4074f77da7e1b1b466c3c221dce18a2e675dd84415",
+    "crop": {
+      "floor": 0,
+      "cut": 2,
+      "x": [
+        1,
+        9
+      ],
+      "z": [
+        3,
+        9
+      ]
+    }
+  }
+}

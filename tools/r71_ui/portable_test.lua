@@ -1,6 +1,6 @@
 -- Round 71 lane UI portable test (LuaJIT): the Expedition Registrar (the warning's
 -- lines in the box and on the tab: tools/r67_social; the role change: tools/r451_nq).
---   A  the socket: the real registry takes the role on all six clerk sockets, and
+--   A  the socket: the real registry takes the role on all six plaza-approach sockets, and
 --      only there; the resolver gives the capital's villager;
 --   D  the dialog's rows on the REAL runs.lua, the real catalogue and the real
 --      toolkit: the dropdowns offer only levels the creator may enter, a tier and then
@@ -117,7 +117,7 @@ local UI = grug_core.ui
 UI.text_growth = function() return 1 end
 UI.frame = function(w, h) return ("formspec_version[6]size[%g,%g]"):format(w, h) end
 
--- The real registry, with the capitals' clerk sockets and one lookalike.
+-- The real registry, with dedicated core sockets and the unchanged guild residents.
 local assigned, resolved = {}, nil
 dofile(repo .. "/mods/CORE/grug_core/settlement_sockets.lua")
 local services = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp13/capital_services.lua")
@@ -127,6 +127,8 @@ table.sort(capitals)
 check(#capitals == 6, "A six capitals")
 for _, key in ipairs(capitals) do
 	grug_core.register_settlement_sockets(key, "human", {x = 0, y = 10, z = 0}, {
+		{id = "expedition_registrar", role = "idle", x = 3, y = 1, z = 1, dir = {x = 1, z = 0},
+			tags = {"work"}},
 		{id = "miners_guild/miners_guild_clerk", role = "idle", x = 1, y = 1, z = 1, dir = {x = 1, z = 0},
 			tags = {"work"}},
 		{id = "miners_guild/miners_guild_sorter", role = "idle", x = 2, y = 1, z = 1, dir = {x = 1, z = 0},
@@ -179,12 +181,13 @@ local R = M.registrar
 for _, key in ipairs(capitals) do
 	local roles = {}
 	for _, socket in ipairs(grug_core.settlement_sockets_at(key)) do roles[socket.id] = socket.role end
-	check(roles["miners_guild/miners_guild_clerk"] == "expedition_registrar", "A the role in " .. key)
-	check(roles["miners_guild/miners_guild_sorter"] == "idle", "A only the clerk in " .. key)
+	check(roles["expedition_registrar"] == "expedition_registrar", "A the core role in " .. key)
+	check(roles["miners_guild/miners_guild_clerk"] == "idle", "A the clerk stays a resident in " .. key)
+	check(roles["miners_guild/miners_guild_sorter"] == "idle", "A sorter unchanged in " .. key)
 end
 check(assigned[1] == "expedition_registrar" and #assigned == 1, "A one resolver")
 check(resolved(nil, {race_id = "orc"}) == "grug_mobs:villager_orc", "A the capital's villager")
-check(not pcall(grug_core.assign_service_socket, "highcourt", "miners_guild/miners_guild_clerk",
+check(not pcall(grug_core.assign_service_socket, "highcourt", "expedition_registrar",
 	"expedition_registrar"), "A the socket is taken once")
 
 -- ---- The players --------------------------------------------------------------

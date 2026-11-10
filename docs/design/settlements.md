@@ -326,6 +326,17 @@ belong to, the core or their own plot, instead of wandering the whole city. Its
 two traders stand on the blueprint's own vendor sockets; all six capitals
 export those sockets.
 
+**King-hall polish** (user, 2026-11-10): all six castles use the lower throne
+(seat one node above the dais, arms one node above the seat), joined side piers
+and broad bays instead of narrow passages behind closed inner walls. Lamps attach
+to retained piers and obstructing side seats are removed. The ridge is lowered
+half a node; gable-end upper roof slabs become full roof blocks to close the gaps
+above the wall without raising the roof surface. Core gate arches in Highcourt,
+Dur Brannoc, Lethariel, Gor Drazhak and Nhal Veyr use inverted stairs at the upper passage corners;
+Kezamba's different gatehouse does not need that change. All template sockets and
+building footprints remain. Static geometry and body-clearance checks do not
+replace the user's native king/guard chase test.
+
 **Walled capitals.** The user's ruling of 2026-09-17 fixed **four walled
 capitals** — Highcourt, Dur Brannoc, Gor Drazhak and Nhal Veyr — and **two
 open capitals**, Lethariel and Kezamba; the Round 23 ruling (2026-09-28)
@@ -712,9 +723,33 @@ the same ids in all six capitals:
 |---|---|---|
 | `miners_guild/miners_guild_leader` | `quest`, facing the door | the capital's guild leader, a quest NPC registered on it by `grug_quests/npcs.lua` (`r58_guild_leader_<capital key>`, the socket id read from `GUILD_HALL.leader`): named as the story names the leaders, of the capital's race and faction; a talk objective can name it; since Round 59 the one giver of its capital's hub `<capital key>_guild` (chapter 1's second story quest, [quests.md](quests.md) "Chapter 1 in the capitals"). |
 | `miners_guild/miners_guild_exchange` | `idle`, inhabited, tag `work`, behind the counter facing it | the Miner's Guild Exchange (`grug_traders:guild_exchange`): the socket is taken over as the service role `guild_exchange` (`grug_traders/vendors.lua`, the socket id read from `GUILD_HALL.exchange`), as the Crownbinder takes his; a guild vendor of the capital's faction that opens on Trade-in and buys like every vendor, without the camp vendor's reputation page or repair. |
-| `miners_guild/miners_guild_clerk` | `idle`, inhabited, tag `work` | the Expedition Registrar (Round 71, `grug_expeditions/registrar.lua`): the socket is taken over as the service role `expedition_registrar`, a villager of the capital's race and faction; its window lists the Expeditions and enters a run. |
+| `miners_guild/miners_guild_clerk` | `idle`, inhabited, tag `work` | an ordinary guild clerk; the Expedition Registrar now uses the dedicated core socket beside the waystone plaza approach. |
 | `miners_guild/miners_guild_sorter` | `idle`, inhabited, tag `work`, between the grinder and the furnace behind his desk | the Stonewright (`grug_traders:stonewright`, Round 70): the socket is taken over as the service role `stonewright` (the socket id read from `GUILD_HALL.stonewright`), a guild service of the capital's faction ([miners_guild.md](miners_guild.md) §5.3). |
 | `miners_guild/miners_guild_porter` | `idle`, tag `door` | a resident in the forecourt, facing the street |
+
+The clerk and the three larger desks use existing `grug_decor:xdecor_table`
+blocks: a one-node total height with a 1/8-node top and a connected support.
+The longer desks consist of three adjoining table nodes; all guild sockets remain.
+
+The same thin-table construction applies to other authored buildings and active
+market/counter/crafting decoration builders (user, 2026-11-10). Complete tables
+occupy their old leg course; the upper slab is removed. Raised floors keep their
+relative furniture height. Existing complete furniture remains; slabs on storage
+barrels and scaffolding are not tables. The palette's `table_top` and `table_leg`
+materials remain available for those other structures. Frozen building templates
+are authoritative; active `parts.table_cell` and `dressing.stall`/`counter` use the
+complete table directly.
+
+**Public Expedition Registrar** (user-approved capital polish, 2026-11-10): every
+capital owns one inhabited `expedition_registrar` core socket, with the `idle`
+role and `work` tag until `grug_expeditions/registrar.lua` assigns its service role.
+It stands on the approach to the waystone plaza, outside the reserved arrival pad,
+facing an accessible path. It uses the capital's villager and faction. The clerk
+inside the guild house is an ordinary resident again. This relocation and the
+building changes require a map reset; there is no live-world socket conversion.
+The compositions own the exact coordinates. The capital geometry fixture checks
+reachability, facing clearance, separation from other sockets and proximity to the
+waystone; the UI fixture checks the service binding and the unchanged clerk.
 
 Like every district plot it also publishes `miners_guild/miners_guild_gate_idle`,
 a resident at its gate. The house's `inside` point is the destination

@@ -1,0 +1,15 @@
+parser PASS mods/MAPGEN/grug_mapgen/wp13/parts.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/dressing.lua
+parser PASS tools/r36_w/portable_test.lua
+	932	[293]	SETGLOBAL	22 -9	; dofile
+	1033	[329]	SETGLOBAL	18 -9	; dofile
+parser PASS tools/capital_polish_study/implementation/all_tables/runtime_test.lua
+parser PASS tools/capital_polish_study/implementation/all_tables/runtime_decor_test.lua
+parser PASS tools/capital_polish_study/implementation/all_tables/compare-benches.lua
+	23	[26]	SETGLOBAL	5 -7	; dofile
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+sweep 4 PASS
+sweep 5 PASS
+sweep 6 PASS

@@ -34,8 +34,7 @@ V role roof_stair_outer o=facedir:3
 W role seat
 X role seat o=facedir:2
 Y role storage o=facedir:1
-Z role table_leg
-a role table_top
+Z node grug_decor:xdecor_table
 b role wall
 c role wall_accent
 d role window
@@ -75,7 +74,7 @@ layer 2
 |.f.O.....f.|
 |.E.......c.|
 |.f.......f.|
-|.c.....aac.|
+|.c.......c.|
 |.f.......f.|
 |.LfcfcfcfL.|
 |...........|

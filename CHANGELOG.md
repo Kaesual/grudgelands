@@ -12,6 +12,28 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.73.1 — character creation and capital polish (2026-11-10)
+
+**Map reset** needed: the capitals' halls, gates and furniture, the tables in the start
+towns and the Registrar's place change what world generation builds, so an existing
+world's map is generated anew from its seed. Characters keep their level, gear,
+inventory, money, quests, professions, mounts and waypoints, as in every map reset;
+their position and home claim go with the old map, and the containers in a housing
+claim come back through the Claim Stone's Belongings tab. No migration step of its own.
+
+- **Character creation** fills the window, groups the peoples under their faction
+  banners and shows a matching scene behind the character. Appearance, people and
+  class descriptions sit to the right. The opening view shows the opposing fortresses
+  until you pick a people.
+- **Royal halls:** thrones sit lower, the side walls open into broad pillar bays, and
+  the roof ridge and the gaps above the gable walls are repaired in all six capitals.
+- **Gate arches** in the capitals use correctly turned corner stairs.
+- **Tables and shop counters** in the start towns, the capitals and the market stalls
+  are thin wooden tables with their legs joined.
+- **Dawnmere's inn** keeps both rear beds inside its walls.
+- **The Expedition Registrar** now stands at each capital's waystone plaza, beside the
+  arrival point. The guild clerk is an ordinary resident again.
+
 ## 0.73.0 — the Expeditions redesigned (2026-11-10)
 
 The Stilled Seam, The Second Shift and The Last Mint, rebuilt to feel like places. Compatible:

@@ -1,0 +1,38 @@
+{
+  "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_kings_hall.tpl": {
+    "worktree": "022e4cb96f317d6681de7f8769c54d2024f247d2427ab7fd84e61efcf1a46fcc",
+    "main": "022e4cb96f317d6681de7f8769c54d2024f247d2427ab7fd84e61efcf1a46fcc"
+  },
+  "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_kings_hall.tpl": {
+    "worktree": "ac83f772582c00cdf99374905b2c0a39faf33974ac9ce966dda13aee360168ff",
+    "main": "ac83f772582c00cdf99374905b2c0a39faf33974ac9ce966dda13aee360168ff"
+  },
+  "mods/MAPGEN/grug_mapgen/building_templates/templates/lethariel_kings_hall.tpl": {
+    "worktree": "5d0c05b2a5f43d59f9935f6328b3dcf6e4ad3c345a5a83f53840ae35e20d6b0b",
+    "main": "5d0c05b2a5f43d59f9935f6328b3dcf6e4ad3c345a5a83f53840ae35e20d6b0b"
+  },
+  "mods/MAPGEN/grug_mapgen/building_templates/templates/gor_drazhak_warlord_hall.tpl": {
+    "worktree": "a5a4f8c91db59cd649d2bbadd571b4db35288176f4c3c52696c030b9ac4247c8",
+    "main": "a5a4f8c91db59cd649d2bbadd571b4db35288176f4c3c52696c030b9ac4247c8"
+  },
+  "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_mausoleum.tpl": {
+    "worktree": "abf414da7778ba378a9d5e4a11a25bae5c9eefc09feea26b70093afefce9ae7d",
+    "main": "abf414da7778ba378a9d5e4a11a25bae5c9eefc09feea26b70093afefce9ae7d"
+  },
+  "mods/MAPGEN/grug_mapgen/building_templates/templates/kezamba_kings_hall.tpl": {
+    "worktree": "4e21d3cbed3a1eef06acf3bb7c2b852c32ec2dd55783b5e9af2899d421931653",
+    "main": "4e21d3cbed3a1eef06acf3bb7c2b852c32ec2dd55783b5e9af2899d421931653"
+  },
+  "mods/PLAYER/grug_expeditions/registrar.lua": {
+    "worktree": "d9f62e0fdc4b64458a11086928d6cde7f96dd1ace2e9207d63501751d1a30125",
+    "main": "fc41c77b8131016f84b6858963d855adee9e024e9d6ea5ba9ab1aa26e216f47d"
+  },
+  "mods/ENTITIES/mobs/grug_nav.lua": {
+    "worktree": "c1944e871a2c049f04e5738e0505c9707ab44b7c2afd3eda1a93a12ccbcf33d1",
+    "main": "b13f81dc0f3fae2d7aa9071b09a6770733c6fb07d0ca884b46c70a13bf01bf3e"
+  },
+  "mods/ENTITIES/grug_mobs/bosses.lua": {
+    "worktree": "02b515d20626007eaf02f033ebcd57853f91f0d93ed06aebaca84715fa556668",
+    "main": "ef4d3dfb26bead05a42785ebe2c6916844add4310e6f49c0db5876c64b0a7dcd"
+  }
+}

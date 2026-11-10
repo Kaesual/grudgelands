@@ -1,6 +1,6 @@
 -- The Expedition Registrar (Round 71; docs/planning/round71-expeditions-concept.md
--- sections 4 and 5): the villager on the clerk's socket of every capital's guild
--- house, its one window and the notices of a run. It only asks and calls
+-- sections 4 and 5): the villager at every capital's waystone plaza approach,
+-- its one window and the notices of a run. It only asks and calls
 -- init.lua's interface: every rule and every refusal text are runs.lua's.
 --
 -- Without a run the window lists the Expeditions, the levels the player may enter
@@ -9,14 +9,13 @@
 -- Enter, and for its leader Finish or Cancel (Round 72.1; Cancel asks first). Nothing
 -- here is saved. Since Round 72.1 the Deserter's Mark shows here as a status too.
 --
--- Takes over the socket like the Miner's Guild Exchange takes its counter
--- (grug_traders/vendors.lua) and needs no template change. On a world older than
--- this file the clerk gives way at its activation (grug_mobs start_npc_claim).
+-- Takes the dedicated core socket through the shared service registry. Relocation
+-- from the guild house is a map-reset change; its clerk stays an ordinary resident.
 local M = grug_expeditions
 local capital_services = dofile(core.get_modpath("grug_mapgen") .. "/wp13/capital_services.lua")
 
 local ROLE = "expedition_registrar"
-local CLERK = "miners_guild/miners_guild_clerk"
+local SOCKET = "expedition_registrar"
 local TITLE, SUBTITLE = "Expedition Registrar", "The Miner's Guild needs fighters"
 local FORMNAME = "grug_expeditions:registrar"
 local REACH = 8
@@ -47,7 +46,7 @@ local CURTAIN_SECONDS = 1
 local capital_keys = {}
 for key in pairs(capital_services.PLOTS) do capital_keys[#capital_keys + 1] = key end
 table.sort(capital_keys)
-for _, key in ipairs(capital_keys) do grug_core.assign_service_socket(key, CLERK, ROLE) end
+for _, key in ipairs(capital_keys) do grug_core.assign_service_socket(key, SOCKET, ROLE) end
 grug_mobs.register_start_socket_role(ROLE, function(_, settlement)
 	return "grug_mobs:villager_" .. settlement.race_id
 end)
@@ -409,4 +408,4 @@ grug_core.register_status_source(function(player, now)
 end)
 
 -- For fixtures: the sessions and the window's text.
-M.registrar = {sessions = sessions, form = form, FORMNAME = FORMNAME, ROLE = ROLE, CLERK = CLERK}
+M.registrar = {sessions = sessions, form = form, FORMNAME = FORMNAME, ROLE = ROLE, SOCKET = SOCKET}

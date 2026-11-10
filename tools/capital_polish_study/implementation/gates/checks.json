@@ -1,0 +1,37 @@
+{
+  "human": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_gate_south.tpl",
+    "sha256": "59db3e8341ea616dba1fca4ad4d0307a86a1f8906e145281f1dc0cb478111e86",
+    "changed_cells": 14,
+    "unmodified_cells": 1533,
+    "points_unchanged": true
+  },
+  "dwarf": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_gate_south.tpl",
+    "sha256": "2ffaf937f2bb85fcaa1597e2c844804b55755890c1fa42853aa734b57681c42e",
+    "changed_cells": 14,
+    "unmodified_cells": 1533,
+    "points_unchanged": true
+  },
+  "elf": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/lethariel_gate_south.tpl",
+    "sha256": "b894c2644d6bd969170b619194cdf717ee5bacb053de702d1ba51fda60c1d041",
+    "changed_cells": 14,
+    "unmodified_cells": 1533,
+    "points_unchanged": true
+  },
+  "orc": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/gor_drazhak_gate_south.tpl",
+    "sha256": "69dd7d7827c971a3f1f68fe2b302471d6e968e4de1136ff3496207c90c5bb280",
+    "changed_cells": 14,
+    "unmodified_cells": 1533,
+    "points_unchanged": true
+  },
+  "undead": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_gate_south.tpl",
+    "sha256": "1c6cfad4c35694dde2e8f5e1535cf58efac79a053cef989178351a8c4a320fc3",
+    "changed_cells": 14,
+    "unmodified_cells": 1533,
+    "points_unchanged": true
+  }
+}

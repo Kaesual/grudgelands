@@ -126,9 +126,36 @@ do
 	for l in f:lines() do was[#was + 1] = l end
 	f:close()
 	check(#now == #was, "baseline: " .. #now .. " compositions, " .. #was .. " recorded")
+	-- The approved capital polish adds exactly one outdoor Registrar socket
+	-- per core. Keep the historical snapshot and compare every other field
+	-- exactly; these literal additions also pin each new position and facing.
+	local registrar = {
+		["highcourt/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
+		["dur_brannoc/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
+		["lethariel/core"] = "expedition_registrar,idle,28,1,-25,0,1",
+		["nhal_veyr/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
+		["gor_drazhak/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
+		["kezamba/core"] = "expedition_registrar,idle,-36,1,-33,0,1",
+	}
+	local additions = 0
 	for i = 1, #was do
-		check(now[i] == was[i], "footprint and sockets unchanged: " .. tostring(was[i]):match("^[^\t]*"))
+		local label = tostring(was[i]):match("^[^\t]*")
+		local expected = was[i]
+		if registrar[label] then
+			local prefix, tail = expected:match("^(.-\t)([^\t]*)$")
+			local sockets = {}
+			for socket in tail:gmatch("[^;]+") do
+				check(not socket:match("^expedition_registrar,"), "historical core has no duplicate Registrar")
+				sockets[#sockets + 1] = socket
+			end
+			sockets[#sockets + 1] = registrar[label]
+			table.sort(sockets)
+			expected = prefix .. table.concat(sockets, ";")
+			additions = additions + 1
+		end
+		check(now[i] == expected, "footprint and sockets unchanged except approved Registrar: " .. label)
 	end
+	check(additions == 6, "exactly six approved core Registrar additions")
 end
 
 -- C. the rift candidates' cracks and every clash site's quest spot --------

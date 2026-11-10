@@ -30,8 +30,7 @@ R role shelf_vessels
 S role storage
 T role storage o=facedir:1
 U role storage o=facedir:3
-V role table_leg
-W role table_top
+V node grug_decor:xdecor_table
 X role tree_log
 Y role wall_accent
 Z role wall_infill else=air
@@ -80,7 +79,7 @@ layer 2
 |.b.........b.|
 |.c.........c.|
 |.c.........c.|
-|.b..WWW....b.|
+|.b.........b.|
 |.b.........b.|
 |.c.........c.|
 |.c.........c.|

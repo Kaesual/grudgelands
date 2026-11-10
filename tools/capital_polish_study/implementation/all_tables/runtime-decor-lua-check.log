@@ -1,0 +1,6 @@
+parser PASS tools/capital_polish_study/implementation/all_tables/runtime_decor_test.lua
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+sweep 4 PASS
+sweep 5 PASS

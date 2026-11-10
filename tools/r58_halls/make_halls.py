@@ -33,9 +33,9 @@ smallest district lot (Lethariel's, 23 x 23 with the plot's two-node ring):
     props, barrels and a coal bunker; mine lamps on the yard posts and under
     the headframe; a fence round the yard's two outer sides.
 
-Every material is a palette role except the mining props, the banners, the
-plaque, the heaps and the frieze. The banners and plaques are the picked
-guild art (grug_mapgen `guild_banner_*`, `guild_emblem_*`), the rail and the
+Every material is a palette role except the mining props, the thin wooden
+tables, the banners, the plaque, the heaps and the frieze. The banners and
+plaques are the picked guild art (grug_mapgen `guild_banner_*`, `guild_emblem_*`), the rail and the
 carts grug_mapgen's yard pieces.
 
 The template frame (format doc §2): x east, z north, the street side is
@@ -263,20 +263,15 @@ def build(spec):
     # 4. The hall. The exchange counter on the east side, its keeper behind
     # it facing west; the clerk's desk on the west side; the Stonewright's
     # work bay behind it; the leader's desk at the back.
+    # One-node tables have a thin top and a leg touching its underside.
+    # Adjacent tables keep each desk's footprint while forming a continuous
+    # surface; the clerk's old two-node counter becomes waist height too.
     def counter(x, z):
-        put(x, 1, z, "role table_leg")
-        put(x, 2, z, "role table_top")
+        put(x, 1, z, "node grug_decor:xdecor_table")
 
-    # A desk at waist height, so whoever stands behind it is seen from the
-    # door (HALLS2: the leader stood half hidden behind a counter of a post
-    # and a slab on top): posts at its two ends, the top slab upside down in
-    # the course between them.
     def desk(cells_xz):
-        for index, (x, z) in enumerate(cells_xz):
-            if index in (0, len(cells_xz) - 1):
-                put(x, 1, z, "role table_leg")
-            else:
-                put(x, 1, z, "role table_top o=facedir:20")
+        for x, z in cells_xz:
+            counter(x, z)
     zc = hz0 + 2
     desk([(w - 3, z) for z in (zc, zc + 1, zc + 2)])
     put(w - 2, 1, zc - 1, "role storage o=facedir:3")

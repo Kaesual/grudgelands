@@ -1,0 +1,6 @@
+luajit: tools/r36_w/portable_test.lua:130: FAIL footprint and sockets unchanged: highcourt/core
+stack traceback:
+	[C]: in function 'error'
+	tools/r36_w/portable_test.lua:27: in function 'check'
+	tools/r36_w/portable_test.lua:130: in main chunk
+	[C]: at 0x563f1e433b00

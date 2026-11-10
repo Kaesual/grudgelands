@@ -41,10 +41,8 @@ local CREATION_FORMS = {
 -- the panel here instead of being called. Without it creation has no look.
 -- Its fields are named "look_*".
 --   panel.roll(race)                       a random look for the race
---   panel.formspec(race, look, x, y, w, h) its elements in that area: the
---                                          preview on the left, the selectors
---                                          top right; the bottom 1.2 of the
---                                          right part stays free (Create)
+--   panel.formspec(race, look, x, y, w, h, scale) appearance selectors
+--   panel.preview(race, look, x, y, w, h)        model over the scene
 --   panel.act(race, look, fields)          the changed look, or nil
 --   panel.store(player, look)              store it for good (after the race)
 --
@@ -52,7 +50,7 @@ local look_panel = nil
 
 function grug_classes.register_look_panel(panel)
 	assert(type(panel) == "table" and type(panel.roll) == "function" and
-		type(panel.formspec) == "function" and type(panel.act) == "function" and
+		type(panel.formspec) == "function" and type(panel.preview) == "function" and type(panel.act) == "function" and
 		type(panel.store) == "function", "grug_classes.register_look_panel: incomplete panel")
 	look_panel = panel
 end
@@ -198,7 +196,7 @@ local function lock_player(player)
 			preparation_only = character_complete(player),
 			relocate = relocate,
 			preparation_ready = grug_core.world_preparation_status().ready,
-			draft = {},
+			draft = {class = "warrior"},
 			dismissed = false}
 		creation_sessions[name] = session
 		-- The inventory is the current window from the first moment on, not
@@ -241,102 +239,8 @@ function sfinv.inventory_suspended(player)
 		sfinv_inventory_suspended(player)
 end
 
---
--- THE WINDOW (BACKLOG "Character creation in one window"): the faction row on
--- top; below it a narrow race column on the left and, on the right, the class
--- row with the look panel under it and "Create character" at the bottom
--- right. Real coordinates, 15 x 10.6: never taller than the inventory
--- (10.4 x 11.1), so it is drawn at least at the inventory's scale on a small
--- or wide screen.
---
+-- The native layout is separate from the creation/arrival state machine.
 local esc = core.formspec_escape
-local WIDTH, HEIGHT = 15, 10.6
-local LEFT, RIGHT_EDGE = 0.4, 14.6
-local RACE_W = 3.0
-local SIDE_X = 3.8 -- the right part
-local ROW_Y = 2.5 -- race and class buttons
-local LOOK_Y = 4.7
-local CREATE_X, CREATE_Y, CREATE_W, CREATE_H = 11.0, 9.4, 3.6, 0.8
-local HINT_COLOUR = "#b8b0a0"
--- The faction buttons (Round 66 ruling 9) wear their faction's colour as a
--- fill of this strength (alpha over the dark window): subdued while not
--- chosen, a little brighter under the mouse, full once chosen.
-local FACTION_SUBDUED, FACTION_HOVER, FACTION_PRESSED = 0.38, 0.5, 0.62
-
-local function one_line(text)
-	return (text or ""):gsub("\n", " ")
-end
-
-local function faction_fill(colour, strength)
-	return esc(("[fill:16x16:%s%02x"):format(colour, math.floor(255 * strength + 0.5)))
-end
-
--- Its own style instead of the navigation one: no underline, and the focus
--- looks like the normal state. A fresh window focuses its last button
--- (guiFormSpecMenu.cpp setInitialFocus), the Throng's, and the shared focus
--- look must not read as a choice. Hover still shows on a focused button:
--- the hovered state applies after the focused one (StyleSpec.h
--- getStyleFromStatePropagation).
-local function faction_style(field, colour, chosen, scale)
-	local name = esc(field)
-	local normal = faction_fill(colour, chosen and 1 or FACTION_SUBDUED)
-	local hover = chosen and normal or faction_fill(colour, FACTION_HOVER)
-	local pressed = chosen and normal or faction_fill(colour, FACTION_PRESSED)
-	local text = chosen and "#ffffff" or grug_core.ui.colors.text
-	return ("style[%s;border=false;bgcolor=#ffffff;bgimg=%s;bgimg_middle=6;" ..
-		"padding=-6,-6,6,6;font_size=*%.3f;textcolor=%s;content_offset=0,0]" ..
-		"style[%s:focused;bgimg=%s;textcolor=%s]" ..
-		"style[%s:hovered;bgimg=%s;textcolor=%s]" ..
-		"style[%s:pressed;bgimg=%s;textcolor=%s]"):format(name, normal, scale or 1, text,
-		name, normal, text, name, hover, text, name, pressed, text)
-end
-
--- `fs.growth` is the window's text growth (grug_core.ui.text_growth).
-local function button(fs, x, y, w, h, field, label, tooltip, bgcolor, chosen)
-	if field:match("^faction_") then
-		fs[#fs + 1] = faction_style(field, bgcolor, chosen, fs.growth)
-	else
-		fs[#fs + 1] = grug_core.ui.button_style(field, chosen and "selected" or "normal", fs.growth)
-		if field:match("^race_") or field:match("^class_") then
-			fs[#fs + 1] = grug_core.ui.navigation_style(field, chosen, x, y, w, h,
-				field:match("^race_") ~= nil, fs.growth)
-		elseif bgcolor then
-			fs[#fs + 1] = ("style[%s;bgcolor=%s]"):format(field, bgcolor)
-		end
-	end
-	if chosen then fs[#fs + 1] = ("style[%s;font=bold]"):format(field) end
-	fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(x, y, w, h, field,
-		esc(label))
-	fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(tooltip))
-end
-
-local function faction_tooltip(id)
-	local races = {}
-	for _, race in ipairs(grug_classes.race_ids[id] or {}) do
-		races[#races + 1] = grug_classes.registered_races[race].name
-	end
-	return grug_factions.display_name(id) .. "\nRaces: " ..
-		table.concat(races, ", ") .. "\nYour race decides where you start."
-end
-
-local function create_button(fs, ready)
-	-- Keep the confirmation hint on one line beside the final action.
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(SIDE_X + 0.15, CREATE_Y + CREATE_H / 2,
-		esc(core.colorize(HINT_COLOUR, "This choice is final.")))
-	if ready then
-		button(fs, CREATE_X, CREATE_Y, CREATE_W, CREATE_H, "create_character",
-			"Create character", "Store faction, race, class and look for good " ..
-			"and travel to your starting settlement.", "#2f6a2a")
-		return
-	end
-	-- Inactive: not a button at all, so there is nothing to click.
-	fs[#fs + 1] = ("box[%.2f,%.2f;%.2f,%.2f;#2a2a2aff]"):format(CREATE_X, CREATE_Y,
-		CREATE_W, CREATE_H)
-	fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(CREATE_X + 0.25, CREATE_Y + 0.4,
-		esc(core.colorize("#808080", "Create character")))
-	fs[#fs + 1] = ("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(CREATE_X, CREATE_Y,
-		CREATE_W, CREATE_H, esc("Choose a faction, race and class first."))
-end
 
 local function valid_race(faction, race)
 	local def = grug_classes.registered_races[race or ""]
@@ -351,82 +255,7 @@ local function draft_ready(draft)
 end
 
 local function create_formspec(draft, player)
-	local growth = grug_core.ui.text_growth(player, WIDTH, HEIGHT)
-	local fs = {
-		"formspec_version[6]",
-		("size[%s,%s]"):format(WIDTH, HEIGHT),
-		(grug_core.ui.window_padding and grug_core.ui.window_padding(player) or ""),
-		DARK_BACKGROUND, growth ~= 1 and grug_core.ui.fonts(growth) or "",
-		grug_core.ui.title(0.4, 0.45, "Create your character", growth, growth),
-		"style_type[label,textarea;font_size=" .. grug_core.ui.font_size(0.85, growth) ..
-			"]style_type[textarea;border=false]",
-		grug_core.ui.panel(0.25, 1.95, 3.3, 8.35),
-		grug_core.ui.panel(3.65, 1.95, 11.1, 2.5),
-		grug_core.ui.panel(3.65, 4.55, 11.1, 4.8),
-		growth = growth,
-	}
-	if draft.faction then
-		-- The chosen faction's button takes the focus at every send (0.45.1):
-		-- otherwise the engine focuses the race textarea, which eats the
-		-- inventory key. Pressing it again changes nothing. Forced: the window
-		-- is also the inventory formspec, where an unforced one would not
-		-- apply when the inventory key opens it.
-		fs[#fs + 1] = "set_focus[faction_" .. draft.faction .. ";true]"
-	end
-	local faction_w = (RIGHT_EDGE - LEFT - 0.2) / #grug_core.faction_ids
-	for index, id in ipairs(grug_core.faction_ids) do
-		button(fs, LEFT + (index - 1) * (faction_w + 0.2), 0.85, faction_w, 0.9,
-			"faction_" .. id, grug_factions.display_name(id), faction_tooltip(id),
-			grug_core.factions[id].color, draft.faction == id)
-	end
-	if not draft.faction then
-		fs[#fs + 1] = ("label[%.2f,2.4;%s]"):format(LEFT, esc(core.colorize(HINT_COLOUR,
-			"Choose your faction to begin.")))
-		return table.concat(fs)
-	end
-
-	-- The race column with the chosen race's description under it.
-	local races = grug_classes.race_ids[draft.faction] or {}
-	fs[#fs + 1] = grug_core.ui.heading(LEFT, 2.2, "RACE", growth)
-	for index, id in ipairs(races) do
-		local def = grug_classes.registered_races[id]
-		button(fs, LEFT, ROW_Y + (index - 1) * 0.9, RACE_W, 0.8, "race_" .. id,
-			def.name, def.description or def.name, nil, draft.race == id)
-	end
-	local text_y = ROW_Y + #races * 0.9 + 0.1
-	local race_def = draft.race and grug_classes.registered_races[draft.race]
-	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(LEFT, text_y, RACE_W,
-		HEIGHT - 0.4 - text_y, esc(race_def and race_def.description or
-		"Choose your race."))
-
-	if not race_def then
-		fs[#fs + 1] = ("label[%.2f,2.9;%s]"):format(SIDE_X, esc(core.colorize(HINT_COLOUR,
-			"Choose your race to see your character.")))
-		create_button(fs, false)
-		return table.concat(fs)
-	end
-
-	-- The class row, the chosen class's description in one line under it.
-	local classes = grug_classes.class_ids
-	local class_w = (RIGHT_EDGE - SIDE_X - (#classes - 1) * 0.2) / #classes
-	fs[#fs + 1] = grug_core.ui.heading(SIDE_X, 2.2, "CLASS", growth)
-	for index, id in ipairs(classes) do
-		local def = grug_classes.registered_classes[id]
-		button(fs, SIDE_X + (index - 1) * (class_w + 0.2), ROW_Y, class_w, 0.8,
-			"class_" .. id, def.name, def.description or def.name, nil,
-			draft.class == id)
-	end
-	local class_def = draft.class and grug_classes.registered_classes[draft.class]
-	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,1.0;;;%s]"):format(SIDE_X, ROW_Y + 0.9,
-		RIGHT_EDGE - SIDE_X, esc(class_def and one_line(class_def.description) or
-		"Choose your class."))
-
-	if look_panel then
-		fs[#fs + 1] = look_panel.formspec(draft.race, draft.look, SIDE_X, LOOK_Y,
-			RIGHT_EDGE - SIDE_X, 9.1 - LOOK_Y)
-	end
-	create_button(fs, draft_ready(draft))
-	return table.concat(fs)
+	return grug_classes.creation_formspec(draft, player, look_panel)
 end
 
 local function loading_formspec(status, failed, player)
@@ -875,21 +704,11 @@ local function act_on_draft(player, session, fields)
 		create_character(player, session)
 		return
 	end
-	local id = chosen_id(fields, "faction_")
-	if id then
-		-- A new faction clears race and look; every class is open to every
-		-- race, so the class stays.
-		if grug_core.factions[id] and id ~= draft.faction then
-			draft.faction = id
-			draft.race = nil
-			draft.look = nil
-		end
-		return
-	end
-	id = chosen_id(fields, "race_")
+	local id = chosen_id(fields, "race_")
 	if id then
 		-- A new race rolls a new look.
-		if valid_race(draft.faction, id) and id ~= draft.race then
+		if grug_classes.registered_races[id] and id ~= draft.race then
+			draft.faction = grug_classes.registered_races[id].faction
 			draft.race = id
 			draft.look = look_panel and look_panel.roll(id) or nil
 		end

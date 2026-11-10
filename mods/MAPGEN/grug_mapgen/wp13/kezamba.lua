@@ -764,6 +764,8 @@ local function loader(directory)
 				{kind = booth.kind})
 		end
 		socket("travel_waypoint", "waypoint", pad_x, 1, pad_z, 0)
+		-- Public service at the plaza approach, outside the reserved arrival pad.
+		socket("expedition_registrar", "idle", -36, 1, -33, 0, {tags = {"work"}})
 		for _, corner in ipairs(CORNERS) do
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
 				corner.face, {group = WATCH, order = corner.order})

@@ -1,0 +1,32 @@
+{
+  "dur_brannoc_kings_hall": {
+    "changed_cells": 502,
+    "source_sha256": "ac83f772582c00cdf99374905b2c0a39faf33974ac9ce966dda13aee360168ff",
+    "target_sha256": "86f02767bdf788579c7cfa1be223b4594b2b9dede579576ba203536a982deabc"
+  },
+  "highcourt_kings_hall": {
+    "changed_cells": 502,
+    "source_sha256": "022e4cb96f317d6681de7f8769c54d2024f247d2427ab7fd84e61efcf1a46fcc",
+    "target_sha256": "87a3af1d098dddefc360f40c3f446e5f94d3b1d8d32b2e1c146141f6066310e8"
+  },
+  "lethariel_kings_hall": {
+    "changed_cells": 502,
+    "source_sha256": "5d0c05b2a5f43d59f9935f6328b3dcf6e4ad3c345a5a83f53840ae35e20d6b0b",
+    "target_sha256": "af31168087db7402b117fea3673d8858735080b141a0f52d5293943f50d72218"
+  },
+  "gor_drazhak_warlord_hall": {
+    "changed_cells": 502,
+    "source_sha256": "a5a4f8c91db59cd649d2bbadd571b4db35288176f4c3c52696c030b9ac4247c8",
+    "target_sha256": "c1a8974fa571d9c55ed85b1f48b07301867a017d12535ee88f12c9efefd01b5b"
+  },
+  "nhal_veyr_mausoleum": {
+    "changed_cells": 502,
+    "source_sha256": "abf414da7778ba378a9d5e4a11a25bae5c9eefc09feea26b70093afefce9ae7d",
+    "target_sha256": "d321dccb5000690aba270cd04ebb7f8dc29da867768388d1ce80f4127c58b70c"
+  },
+  "kezamba_kings_hall": {
+    "changed_cells": 502,
+    "source_sha256": "4e21d3cbed3a1eef06acf3bb7c2b852c32ec2dd55783b5e9af2899d421931653",
+    "target_sha256": "fb52a2931e8b3d588e67f9079f80647efab00904b18981fbef99cc2825686ee5"
+  }
+}

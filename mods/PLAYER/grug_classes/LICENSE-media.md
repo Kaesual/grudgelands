@@ -187,3 +187,69 @@ candidate; provenance: `tools/r67_art/LICENSE-media.md`.
 | `textures/grug_race_orc.png` | `candidates/race_orc_a.png` | 661 | `c91a812d5c7a92b769d5d3dfe51ab1e8c72fae7977a4c44d8c9eabf0c2867bb6` |
 | `textures/grug_race_troll.png` | `candidates/race_troll_a.png` | 739 | `d05649c29f5ba7be506250e4177229fd22a08282b78e1451129a552ed3011254` |
 | `textures/grug_race_undead.png` | `candidates/race_undead_a.png` | 599 | `183780fcab073e93121e3c48b60e32eab8ff722b409ace7058dfc9cda469c2e6` |
+
+## Character creation backdrops — rendered composites
+
+The six 1540 × 1400 PNGs below were rendered on 2026-11-09 from the game's
+existing blocks, plant textures, meshes and building templates. No external
+scene image or generated raster artwork was used. The authored arrangement
+and additional project contribution are CC BY-SA 3.0; this does not relicense
+incorporated components. Those retain their original licenses and notices.
+
+Editable scenes and tree placements: `tools/character_creation_preview/scenes/`.
+The tree shapes come from the shipped procedural generator. Source assembly:
+`scenery.py`; native camera calibration: `native.py`; renderer:
+`tools/building_templates/viewer/renderer.js`. All paths here are relative to
+the repository root unless a filename is under `textures/`.
+
+The texture/mesh attributions and original source licenses remain in
+`mods/BASE/default/license.txt`, `mods/BASE/default/LICENSE-media.md`, and the
+`LICENSE-media.md` files of `mods/ITEMS/grug_decor`, `grug_nodes`, `grug_trees`,
+`grug_gathering`, and `mods/MAPGEN/grug_mapgen`. In particular, the decor ledger
+includes CC BY-SA 3.0, CC BY-SA 2.0 DE, CC0 and WTFPL textures, and the GPLv3
+barrel/tub meshes. Their editable source meshes and notices remain alongside
+the assets; the rendered composite is not offered as wholly CC0 or solely
+under the license of the new arrangement. Upstream source provenance is also
+recorded in `VENDOR.md`.
+
+Build receipts: `tools/character_creation_preview/scene-build.json` and
+`native/scene-build.json`; per-image camera, input digest, dimensions and output
+hash: `native/renders/<race>.json` under the same directory. The self-contained
+`native/scenes.html` preserves the exact rendered geometry and texture inputs.
+The installed files are byte-identical to those native renders.
+
+| Local file | SHA-256 |
+|---|---|
+| `textures/grug_creation_dwarf.png` | `303c04ef26fcff4b171b34204da751f16cb382be0504f1ae861bf267a340fb31` |
+| `textures/grug_creation_elf.png` | `e19461658ba7a9b9e26cc40aac19736d5987cccb378bc1726538384b7bc8a7ef` |
+| `textures/grug_creation_human.png` | `179e99152d5a1ed2ee52434588536ebdf1278724261785d082595be82d4d0271` |
+| `textures/grug_creation_orc.png` | `3f302e85621cae8ab3f4592c3b1801e8ae42a4eecd378fce0173c86d3dc39411` |
+| `textures/grug_creation_troll.png` | `ae251804d0652f67e11e82e46d7bd6756abf7bfdb78c8aebfc0d69c0d417da37` |
+| `textures/grug_creation_undead.png` | `85dd0607cfd3e9183a0125819955eef8de047daaf6a772e36e7609b2b30384da` |
+
+
+## Character creation opening — rendered composite
+
+`textures/grug_creation_intro.png` is a byte-identical copy of the user's
+approved opening study 03, rendered on 2026-11-10 at 1920 × 1080. SHA-256:
+`74291ece69c42c9c745023e390dcd88bbd069c9dabb1989a8a6c43cb1ef7805e`.
+Installation/check: `tools/character_creation_preview/install-opening.py`.
+
+Editable scene, recipe, geometry, media and camera receipts:
+`tools/character_creation_preview/intro/scene.json`, `scene-build.json`,
+`scenes.html` and `renders/intro.json` under that directory. Builder:
+`tools/character_creation_preview/intro.py`; static smoke/fire arrangement:
+`intro-atmosphere.js`; renderer: `tools/building_templates/viewer/renderer.js`.
+Trees use the shipped procedural generator. No external scene illustration
+or generated raster artwork is included. Text is a native UI overlay.
+
+As with the race backdrops, the authored arrangement and new contribution
+are CC BY-SA 3.0 without relicensing incorporated components. Source notices
+remain in the default ledgers and in the media ledgers of `grug_decor`,
+`grug_materials`, `grug_nodes`, `grug_trees`, `grug_guild` and `grug_mapgen`.
+These include the GPLv3 barrel mesh and CC0 faction standards; editable
+sources remain in those mods. Smoke/fire texture notices remain in
+`mods/ENTITIES/mobs/license.txt`, `mods/BASE/default/license.txt` and
+`VENDOR.md`. This composite is not represented as wholly CC0 or solely under
+the arrangement's license. Full source/rebuild record:
+`tools/character_creation_preview/intro/README.md`.

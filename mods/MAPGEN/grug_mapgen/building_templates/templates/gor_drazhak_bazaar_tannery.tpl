@@ -21,8 +21,7 @@ I role roof_stair o=facedir:2
 J role seat
 K role seat o=facedir:2
 L role storage
-M role table_leg
-N role table_top
+M node grug_decor:xdecor_table
 O role tree_log
 P role wall
 Q role wall_accent
@@ -62,7 +61,7 @@ layer 2
 |.TOO.......OOT.|
 |.S...........S.|
 |.S...........S.|
-|.T....NNN....T.|
+|.T...........T.|
 |.T...........T.|
 |.S...........S.|
 |.S...........S.|

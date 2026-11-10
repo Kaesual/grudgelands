@@ -1,0 +1,68 @@
+{
+  "dwarf": {
+    "changed_template_cells": 502,
+    "changed_resolved_cells": 502,
+    "gable_gaps_closed": 36,
+    "ridge_cells": 50,
+    "points_preserved": 16,
+    "source_sha256": "86f02767bdf788579c7cfa1be223b4594b2b9dede579576ba203536a982deabc",
+    "king_guard_boxes_clear": true,
+    "joined_piers_and_open_bays": true,
+    "roof_stairs_and_interior_slabs_preserved": true
+  },
+  "human": {
+    "changed_template_cells": 502,
+    "changed_resolved_cells": 502,
+    "gable_gaps_closed": 36,
+    "ridge_cells": 50,
+    "points_preserved": 16,
+    "source_sha256": "87a3af1d098dddefc360f40c3f446e5f94d3b1d8d32b2e1c146141f6066310e8",
+    "king_guard_boxes_clear": true,
+    "joined_piers_and_open_bays": true,
+    "roof_stairs_and_interior_slabs_preserved": true
+  },
+  "elf": {
+    "changed_template_cells": 502,
+    "changed_resolved_cells": 502,
+    "gable_gaps_closed": 36,
+    "ridge_cells": 50,
+    "points_preserved": 16,
+    "source_sha256": "af31168087db7402b117fea3673d8858735080b141a0f52d5293943f50d72218",
+    "king_guard_boxes_clear": true,
+    "joined_piers_and_open_bays": true,
+    "roof_stairs_and_interior_slabs_preserved": true
+  },
+  "orc": {
+    "changed_template_cells": 502,
+    "changed_resolved_cells": 502,
+    "gable_gaps_closed": 36,
+    "ridge_cells": 50,
+    "points_preserved": 16,
+    "source_sha256": "c1a8974fa571d9c55ed85b1f48b07301867a017d12535ee88f12c9efefd01b5b",
+    "king_guard_boxes_clear": true,
+    "joined_piers_and_open_bays": true,
+    "roof_stairs_and_interior_slabs_preserved": true
+  },
+  "undead": {
+    "changed_template_cells": 502,
+    "changed_resolved_cells": 502,
+    "gable_gaps_closed": 36,
+    "ridge_cells": 50,
+    "points_preserved": 16,
+    "source_sha256": "d321dccb5000690aba270cd04ebb7f8dc29da867768388d1ce80f4127c58b70c",
+    "king_guard_boxes_clear": true,
+    "joined_piers_and_open_bays": true,
+    "roof_stairs_and_interior_slabs_preserved": true
+  },
+  "troll": {
+    "changed_template_cells": 502,
+    "changed_resolved_cells": 492,
+    "gable_gaps_closed": 36,
+    "ridge_cells": 50,
+    "points_preserved": 16,
+    "source_sha256": "fb52a2931e8b3d588e67f9079f80647efab00904b18981fbef99cc2825686ee5",
+    "king_guard_boxes_clear": true,
+    "joined_piers_and_open_bays": true,
+    "roof_stairs_and_interior_slabs_preserved": true
+  }
+}

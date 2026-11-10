@@ -1,0 +1,12 @@
+{
+  "race": "undead", "title": "The quiet cloister", "seed": 1106,
+  "description": "An old paved approach to a crypt chapel, with a broken house, leaning grave markers and gravewood trees. Cool mist softens the rear wall while the foreground remains readable.",
+  "camera": {"eye": [0, 2.05, -13], "target": [0, 1.2896, -9.5], "fov": 55},
+  "portrait": {"feet": [0, 0.5, -9.5], "units_per_pixel": 0.0525, "stature": 0.94},
+  "sky": "#8b9aa3", "fog": [33, 85], "tint": "#dce3f0",
+  "ground": "default:dirt_with_dry_grass", "soil": "default:dirt", "path": "default:stonebrick", "stone": "default:mossycobble",
+  "buildings": [{"template": "stillgrave_crypt_chapel", "at": [-15, 0, 21]}, {"template": "stillgrave_sunken_ruin", "at": [13, 0, 15]}],
+  "trees": [{"at": [-11, 0, 5], "kind": "gravewood", "height": 17}, {"at": [16, 0, 31], "kind": "gravewood", "height": 18}, {"at": [-9, 0, 41], "kind": "gravewood", "height": 18}, {"at": [9, 0, 45], "kind": "gravewood", "height": 19}, {"at": [23, 0, 3], "kind": "gravewood", "height": 16}],
+  "plants": ["default:dry_grass_2", "default:fern_1"],
+  "props": [{"kind": "arch", "at": [0, 0, 34], "width": 9, "height": 9}, {"kind": "graves", "at": [-7, 1, 17]}, {"kind": "graves", "at": [7, 1, 21]}]
+}

@@ -84,8 +84,10 @@ local function benches(label, bp)
 		return c and c.name or nil
 	end
 	-- A seat: open above, on a floor, not a step of a stairway (the next
-	-- stair one up on its raised side), and a stair only with room for feet
-	-- beside it (a roof's stairs have none: the slab of a stepped roof's
+	-- stair one up on its raised side) or of a stepped roof (0.73.1: the next
+	-- stair one up and two along on its raised side, as the royal halls' roofs
+	-- climb once their gable gaps are filled), and a stair only with room for
+	-- feet beside it (a roof's stairs have none: the slab of a stepped roof's
 	-- lower course is no floor).
 	local function is_seat(c)
 		if not SEAT[c.name] or (c.param2 or 0) >= 4 then return false end
@@ -94,6 +96,7 @@ local function benches(label, bp)
 		if not stair(c.name) then return true end
 		local ux, uz = parts.facedir_step(c.param2 or 0)
 		if stair(at(c.x + ux, c.y + 1, c.z + uz)) then return false end
+		if stair(at(c.x + 2 * ux, c.y + 1, c.z + 2 * uz)) then return false end
 		for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
 			local x, z = c.x + d[1], c.z + d[2]
 			local floor = at(x, c.y - 1, z)
@@ -332,6 +335,16 @@ do
 	end
 	fails = benches("scene", gable("stairs:slab_wood"))
 	check(#fails == 0, "a roof's stair beside its slab is no bench: " .. table.concat(fails, "; "))
+	-- The same stair on a full block's ledge with the roof's next stair one up
+	-- and two along (0.73.1's filled gable gaps): a roof, no seat.
+	do
+		local scene = gable(p.node("wall"))
+		scene.cells[#scene.cells + 1] = {x = 2, y = 20, z = 0, name = p.node("seat"), param2 = 1}
+		local f = benches("scene", scene)
+		local seat_at_19 = false
+		for _, line in ipairs(f) do if line:find(",19,", 1, true) then seat_at_19 = true end end
+		check(not seat_at_19, "a stepped roof's stair beside a full block is no bench: " .. table.concat(f, "; "))
+	end
 	fails = benches("scene", gable(p.node("wall")))
 	check(#fails == 1 and fails[1]:find("faces a wall 2 ahead", 1, true) ~= nil,
 		"a seat beside a full floor still counts: " .. table.concat(fails, "; "))

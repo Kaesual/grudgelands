@@ -254,8 +254,8 @@ local function last_feed(name)
   if feeds[i].name == name then return feeds[i].text end
  end
 end
-local NOTHING = "You have no Expedition to enter. The Expedition Registrar in a capital's " ..
- "guild house opens one."
+local NOTHING = "You have no Expedition to enter. The Expedition Registrar at a capital's " ..
+ "waystone plaza opens one."
 
 local eve = new_player("Eve", 25)
 local cid = new_player("Cid", 25)

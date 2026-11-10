@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "pass": true,
+      "label": "opening state 1600"
+    },
+    {
+      "pass": true,
+      "label": "classes and right cards hidden 1600"
+    },
+    {
+      "pass": true,
+      "label": "real rendered backdrop loaded 1600"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow 1600"
+    },
+    {
+      "pass": true,
+      "label": "first click shows warrior 1600"
+    },
+    {
+      "pass": true,
+      "label": "controls restored 1600"
+    },
+    {
+      "pass": true,
+      "label": "class preserved cross-faction 1600"
+    },
+    {
+      "pass": true,
+      "label": "cannot return to opening 1600"
+    },
+    {
+      "pass": true,
+      "label": "opening state 1366"
+    },
+    {
+      "pass": true,
+      "label": "classes and right cards hidden 1366"
+    },
+    {
+      "pass": true,
+      "label": "real rendered backdrop loaded 1366"
+    },
+    {
+      "pass": true,
+      "label": "no page overflow 1366"
+    },
+    {
+      "pass": true,
+      "label": "first click shows warrior 1366"
+    },
+    {
+      "pass": true,
+      "label": "controls restored 1366"
+    },
+    {
+      "pass": true,
+      "label": "class preserved cross-faction 1366"
+    },
+    {
+      "pass": true,
+      "label": "cannot return to opening 1366"
+    },
+    {
+      "pass": true,
+      "label": "no JavaScript errors"
+    }
+  ],
+  "errors": []
+}

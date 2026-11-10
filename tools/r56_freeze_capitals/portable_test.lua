@@ -111,31 +111,33 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- since Round 70 (GUILD, a declared map reset: the Stonewright's work bay in
 -- the six guild houses) every capital's new digests; since Round 70 CAP0 (a
 -- declared map reset: the core's radius 56, Dur Brannoc's castle) every
--- capital's new digests again; each capital lane pins its own.
+-- capital's new digests again; each capital lane pins its own; since 0.73.1 (a
+-- declared map reset: royal halls, gate arches, thin tables, the Registrar's own
+-- core socket) every capital's new digests again.
 local FROZEN = {
-	highcourt = {"ed4c5bd9e39f6c059c2e4c77ac78a96a9eb052255d68a81d67daf9d90607d4b9",
-		"f6b0eb2750d999b797d74c9a23b5cc04b5cc7f4d6b40d9952acdf84317a23845",
-		"bb9edff773f80a5ec2dbfc5336ba850b9bfe52168710c248908eb0909a773186"},
+	highcourt = {"0099e19afd63996550564f6858bcc5a6a9bdc692f6cf532744cee2e0b1e878ff",
+		"75987f959c83754997215511b9e1abd909403b386d5ca42eb06bf658aeff6e54",
+		"584216a4572a61625b9b6e6162ee2e16cdf3fdfbe970530fedb9557684752e01"},
 	-- the next capital
-	dur_brannoc = {"846961cd7a6edc906185fb59f4d42da986abd75fe4c3e4a650299a2f8c48ba9f",
-		"8d7ea2686c9ffac290086a5cc2b844ff108960af9f45b7012c809963f5baed6d",
-		"bd63e88dcc8a3b344280e38e85d629f12f9a8a852a7fa7f1d23df5f33ea4dc6c"},
+	dur_brannoc = {"6b2ccaba03e0e411d5f5bb8d52e2077e72f8ee814f8918082ce5b49d7cb5abcf",
+		"324f504a660a49b4520010db998501c0c551f5cf72e799787529b0383fd3ab95",
+		"f4f5659b66ae7a190e55ff9ebf0936c712ab371480e9efb314f993537ede5e01"},
 	-- the next capital
-	lethariel = {"35311dffe179a1f1588a9cdb0fe6406252a208c93c1ace9192ffe8bc58256314",
-		"3ad8da8b436b2f96d571d05b3bc775dd52694c6f0e3599e20456047dbe839275",
-		"d2d1b651a651b45ae8dcabb7925d3b96e8585c13e21488e203ff493f538c68fa"},
+	lethariel = {"5e94d0920ddb3592cdb767194bb26de2e58325047433c05b781297b18e72b0ea",
+		"ee4f66aa936205ec417105e20a5e6ada3c8fca60412b6571031212860cc08904",
+		"277e703bf7bb0d732e5ad1785c4e556c37b439088f4b783f9b492357263d3830"},
 	-- the next capital
-	nhal_veyr = {"90fcc51122df02ac74c550e1b5a3e186d47f46c715f27369f45adc0ddfb74eef",
-		"52278367781453de32d3102d06e13bd071e94331e92de8c44a3a3782b24684b6",
-		"221bfa03044e477dc79abca2b342b148cdc0a4795554cd27d64c1b08b05a4479"},
+	nhal_veyr = {"c94ff0dcf83c95347d57f01f067a1749a310e6e125360e7af66951fe112aec69",
+		"fe115147b4c67a6ba90fb75296e071d32f501be417f5671921473b3cd91ef453",
+		"8b09fc6bc372f300b1564deeb2a5151e234a9fd5ac3d7b2cef471dd928625a5e"},
 	-- the next capital
-	gor_drazhak = {"bc5019233b5363a316ea689063cfdf2c006d66e51ff2cde30b831306ec450013",
-		"b659f3b315c5b6e4ace96d001afb3a8392389bd14b28b222b2de181abe12d6ae",
-		"c4534ad062d64b7ce07a529392054cc1505d067908151a9e6767fcb3bfe25b14"},
+	gor_drazhak = {"cff5b1c293760344c742582fc74be02dcd3d82e7362027a81d5b1018ea62e305",
+		"3009f018b70a2899e2cb896f274591778a58e9cf77068d6ac986aed59d435016",
+		"f4ed37ab1628e3b4e1ebd1db0eaa9795455cfad54b89241d013f560ada28bdd2"},
 	-- the next capital
-	kezamba = {"5a126c84e45ae2288d3d540d11c4bba5b0e31b9c77ac25084782f2e982a511ed",
-		"30a4cee70bec78dd0bd9b8e45455e570dd522ff1ddcaf3cedffa6006e7a99c5f",
-		"43226372dde0b77c79717b1733e5840df8829d14477ae46138484d73ec1a0356"},
+	kezamba = {"5cb60822a9fb9de36c69ffb66b3d854d43f2bad67b2f27e7bc887a5df09bd566",
+		"6aa6f2972f8d5cde364c0200e85651f46380bd6b192de175cf798146a3f25418",
+		"d04870ae6e57f69753b28d2f70198b7740d670a6e74d2067c74e113929aed4ce"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()

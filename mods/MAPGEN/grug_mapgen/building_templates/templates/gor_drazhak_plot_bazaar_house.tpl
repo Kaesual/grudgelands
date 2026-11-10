@@ -41,8 +41,7 @@ c role shelf_vessels o=facedir:1
 d role signature else=air
 e role storage
 f role storage o=facedir:3
-g role table_leg
-h role table_top
+g node grug_decor:xdecor_table
 i role wall_accent
 j role wall_infill else=air
 k role window
@@ -80,7 +79,7 @@ layer 2
 |.m........NG.|
 |.l.........l.|
 |.l.........l.|
-|.mb...hh...m.|
+|.mb........m.|
 |.m.........m.|
 |.l........cl.|
 |.l.........l.|

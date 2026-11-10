@@ -1,0 +1,3 @@
+ACTION[Emerge-0]: [uifidelity] READY
+ACTION[Server]: [uifidelity] SHOT dark_creation_start
+ACTION[Server]: [uifidelity] shutdown

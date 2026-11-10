@@ -136,9 +136,12 @@ Veinward** for The Accord; **Drava Flintshoulder, Iven Lastshift, Ombali
 Ropekeeper** for The Throng. Six capital variants of one quest, two faction
 texts; return to the giver. The registrar handles entry.
 
+*0.73.1: "this guild house's registrar" became "the Expedition Registrar" in both offers, since the
+Registrar moved to the waystone plaza.*
+
 **The Accord — offer**
 
-> Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.
+> Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.
 
 **The Accord — completion**
 
@@ -146,7 +149,7 @@ texts; return to the giver. The registrar handles entry.
 
 **The Throng — offer**
 
-> The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.
+> The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.
 
 **The Throng — completion**
 

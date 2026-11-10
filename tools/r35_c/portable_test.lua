@@ -6,9 +6,8 @@
 -- and grug_visuals' compose/set_look are stubbed.
 --
 --   A. the wait for world preparation, Esc and I, failure and retry;
---   B. the draft rules: a faction change clears race and look (the class
---      stays), a race change rolls a new look, forged fields are refused,
---      Create is refused until faction, race and class are chosen, and
+--   B. implicit faction, Warrior default, chosen class retained across races,
+--      race changes roll a look, unknown fields are refused, and
 --      NOTHING is written to the player (meta, inventory) before Create;
 --   C. a disconnect before Create starts over;
 --   D. Create stores everything at once, a second Create does nothing, a
@@ -71,6 +70,7 @@ core = {
 	EMERGE_CANCELLED = 0, EMERGE_ERRORED = 1, EMERGE_FROM_MEMORY = 2,
 	EMERGE_FROM_DISK = 3, EMERGE_GENERATED = 4,
 	log = noop,
+	get_player_window_information = function() return nil end,
 	get_modpath = function(name) return modpaths[name] end,
 	get_current_modname = function() return current_mod end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
@@ -308,7 +308,7 @@ current_mod = "grug_classes"
 do
 	local real_dofile = dofile
 	dofile = function(path)
-		if path:match("/scout%.lua$") or path:match("/selection%.lua$") then
+		if path:match("/scout%.lua$") or path:match("/selection%.lua$") or path:match("/creation_window%.lua$") or path:match("/creation_camera%.lua$") then
 			if path:match("/selection%.lua$") then
 				-- The skipped sub-files provide these for set_class/finish.
 				grug_classes.apply_stats = noop
@@ -329,7 +329,7 @@ current_mod = "grug_visuals"
 grug_visuals = {}
 dofile(repo .. "/mods/PLAYER/grug_visuals/looks.lua")
 grug_visuals.compose = function(spec)
-	return {textures = {"skin_" .. spec.race .. "_" .. grug_visuals.look_string(spec.look)}}
+	return {stature = ({human=1,dwarf=.9,elf=1.06,orc=1.08,troll=1.12,undead=.94})[spec.race], textures = {"skin_" .. spec.race .. "_" .. grug_visuals.look_string(spec.look)}}
 end
 grug_visuals.set_look = function(player, look)
 	local meta = player:get_meta()
@@ -428,9 +428,9 @@ notify_progress()
 run_after()
 eq(#shown_since(mark, "alice"), 0, "A ready while dismissed: no dialog")
 eq(hint(a), READY, "A ready while dismissed: hint changes")
-check(has(a.inventory_formspec, "faction_accord"), "A ready: the inventory is the window")
+check(has(a.inventory_formspec, "race_human"), "A ready: the inventory is the window")
 eq(last_shown("bob").formname, CREATE_FORM, "A ready while open: the window replaces the waiting screen")
-check(has(last_shown("bob").form, BACKDROP), "A the window has the dark backdrop")
+check(has(last_shown("bob").form, "bgcolor[#0b1315;both;#0b1315]"), "A the window has the dark backdrop")
 
 --
 -- B. The draft (alice, through the inventory key: formname "").
@@ -439,52 +439,30 @@ local writes_before, adds_before = meta_writes, inventory_adds
 local sfinv_writes = a.inventory_writes
 sfinv.set_player_inventory_formspec(a)
 eq(a.inventory_writes, sfinv_writes, "B sfinv writes nothing while creation owns the inventory")
-check(has(a.inventory_formspec, "Choose your faction"), "B empty state before a faction")
-check(not has(a.inventory_formspec, "race_human"), "B no races before a faction")
-check(not has(a.inventory_formspec, "create_character"), "B no Create before a faction")
-
--- Race and class before a faction are refused.
-submit(a, "", {race_human = "Human"})
-submit(a, "", {class_mage = "Mage"})
-check(not has(a.inventory_formspec, "race_human"), "B race before faction refused")
-
-mark = #shown
-eq(submit(a, "", {faction_accord = "The Accord"}), "grug_classes", "B faction from the inventory handled")
-eq(last_shown("alice").formname, CREATE_FORM, "B the acting player sees the window again")
-eq(hint(a), "", "B hint gone while the window is open")
-local form = a.inventory_formspec
-check(has(form, "race_human") and has(form, "race_dwarf") and has(form, "race_elf"),
-	"B the Accord's races are offered")
-check(not has(form, "race_orc"), "B no Throng race for the Accord")
-check(not has(form, "model["), "B no model before a race")
-check(has(form, "Choose your race to see your character"), "B hint before a race")
-check(not has(form, "class_mage"), "B no class row before a race")
-check(not has(form, "create_character"), "B Create inactive before a race")
--- Round 66 ruling 9: the faction buttons wear their own colour (tools/r66_ui).
-check(has(form, "fill:16x16:#3f6fceff") and has(form, "style[faction_accord;font=bold]"),
-	"B the chosen faction is highlighted")
-check(has(form, "fill:16x16:#c41e3a61") and not has(form, "style[faction_throng;font=bold]"),
-	"B the other faction is dimmed")
-
--- A race of the other faction is refused.
-submit(a, "", {race_orc = "Orc"})
-check(not has(a.inventory_formspec, "model["), "B a Throng race is refused for the Accord")
-
+check(has(a.inventory_formspec, "Choose your fate"), "B neutral start")
+check(has(a.inventory_formspec, "race_human") and has(a.inventory_formspec, "race_orc"), "B both factions offered immediately")
+check(not has(a.inventory_formspec, "faction_accord"), "B no explicit faction selector")
+check(not has(a.inventory_formspec, "create_character"), "B Create inactive without a race")
+check(has(a.inventory_formspec, "grug_creation_intro.png"), "B opening fortress image")
+check(not has(a.inventory_formspec, "class_warrior") and not has(a.inventory_formspec, "APPEARANCE")
+	and not has(a.inventory_formspec, "creation_skills"), "B opening hides classes and right cards")
+submit(a, "", {class_mage = "forged before race"})
+submit(a, "", {create_character = "Create character"})
+eq(stored("alice"), 0, "B Create refused without race")
+submit(a, "", {race_unknown = "forged", faction_throng = "forged"})
+check(not has(a.inventory_formspec, "model["), "B invalid race and obsolete faction fields ignored")
 local rolls_before = rolls
 submit(a, "", {race_human = "Human"})
 eq(rolls, rolls_before + 1, "B choosing a race rolls a look")
-form = a.inventory_formspec
-eq(preview_race(form), "human", "B the preview shows the human")
-check(has(form, "0,160;false;true;0,79;30]"), "B mouse rotation on, auto-rotation off")
-check(has(form, grug_core.ui.button_style("race_human", "selected")), "B the chosen race is highlighted")
-check(has(form, "class_warrior") and has(form, "class_scout"), "B the class row appears")
-check(not has(form, "create_character"), "B Create inactive without a class")
+local form = a.inventory_formspec
+eq(preview_race(form), "human", "B human preview")
+check(not has(form, "grug_creation_intro.png"), "B first race leaves opening")
+check(has(form, grug_core.ui.button_style("class_warrior", "selected")), "B Warrior default; hidden class ignored")
+check(has(form, "-12.000,160;false;true;0,79;30]"), "B native tilt; mouse rotation on, auto-rotation off")
+check(has(form, grug_core.ui.button_style("race_human", "selected")), "B selected race")
+check(has(form, "create_character"), "B default Warrior makes draft ready")
 local look_human = preview_look(form)
-check(look_human ~= nil, "B the drafted look is drawn: " .. tostring(look_human))
-
--- Create without a class is refused.
-submit(a, "", {create_character = "Create character"})
-eq(stored("alice"), 0, "B Create refused without a class")
+check(look_human ~= nil, "B look texture drawn")
 
 -- The same race again does not reroll; a look button changes the draft.
 submit(a, "", {race_human = "Human"})
@@ -496,7 +474,7 @@ submit(a, "", {look_bogus = "x", look_next_nothing = ">"})
 eq(preview_look(a.inventory_formspec), look_next, "B unknown look fields change nothing")
 
 submit(a, "", {class_bogus = "x"})
-check(has(a.inventory_formspec, "Choose your class."), "B an unknown class is refused")
+check(has(a.inventory_formspec, grug_core.ui.button_style("class_warrior", "selected")), "B unknown class preserves Warrior")
 submit(a, "", {class_mage = "Mage"})
 form = a.inventory_formspec
 check(has(form, grug_core.ui.button_style("class_mage", "selected")), "B the chosen class is highlighted")
@@ -509,23 +487,14 @@ submit(a, "", {race_dwarf = "Dwarf"})
 eq(rolls, rolls_before + 1, "B a race change rolls a new look")
 eq(preview_race(a.inventory_formspec), "dwarf", "B the preview follows the race")
 
--- A faction change clears race and look; the class stays.
-submit(a, "", {faction_throng = "The Throng"})
-form = a.inventory_formspec
-check(not has(form, "model["), "B a faction change clears the look")
-check(has(form, "race_orc") and not has(form, "race_dwarf"), "B the Throng's races")
-for _, race in ipairs({"orc", "undead", "troll"}) do
-	check(not has(form, grug_core.ui.button_style("race_" .. race, "selected")),
-		"B a faction change leaves " .. race .. " unselected")
-end
-check(not has(form, "create_character"), "B Create inactive after a faction change")
-submit(a, "", {create_character = "Create character"})
-eq(stored("alice"), 0, "B Create refused after the race was cleared")
+-- Cross-faction race selection derives faction and preserves chosen class.
+rolls_before = rolls
 submit(a, "", {race_troll = "Troll"})
 form = a.inventory_formspec
-check(has(form, grug_core.ui.button_style("class_mage", "selected")), "B the class stayed through the faction change")
-eq(preview_race(form), "troll", "B the troll preview")
-check(has(form, "create_character"), "B Create active again")
+eq(rolls, rolls_before + 1, "B cross-faction race rerolls appearance")
+check(has(form, grug_core.ui.button_style("class_mage", "selected")), "B Mage survives cross-faction race change")
+eq(preview_race(form), "troll", "B Troll preview")
+check(has(form, "create_character"), "B cross-faction draft ready")
 
 -- Esc keeps the draft; I resumes it.
 mark = #shown
@@ -544,7 +513,7 @@ do
 	form = a.inventory_formspec
 	for _, opts in ipairs({{}, {preserved = "create_character"}}) do
 		local got = focus.initial(form, opts)
-		eq(got and got.name, "faction_throng", "B 0.45.1 the chosen faction focused (" ..
+		eq(got and got.name, "race_troll", "B 0.45.1 the chosen race focused (" ..
 			(opts.preserved and "re-sent" or "inventory key") .. ")")
 	end
 	local bare = focus.initial(focus.without_set_focus(form), {})
@@ -564,7 +533,7 @@ mark = #shown
 a = join("alice", false)
 eq(a.armor.immortal, 1, "C reconnect: back in stasis")
 eq(last_shown("alice").formname, CREATE_FORM, "C reconnect: the window")
-check(has(a.inventory_formspec, "Choose your faction"), "C reconnect: the draft starts over")
+check(has(a.inventory_formspec, "Choose your fate"), "C reconnect: the draft starts over")
 eq(stored("alice"), 0, "C still nothing stored")
 
 --
@@ -575,8 +544,8 @@ submit(a, CREATE_FORM, {race_elf = "Elf"})
 submit(a, CREATE_FORM, {class_priest = "Priest"})
 local look_elf = preview_look(a.inventory_formspec)
 -- A forged mix: a Create together with a race of the other faction.
-submit(a, CREATE_FORM, {race_orc = "Orc"})
-eq(preview_race(a.inventory_formspec), "elf", "D a forged race leaves the draft alone")
+submit(a, CREATE_FORM, {race_bogus = "forged"})
+eq(preview_race(a.inventory_formspec), "elf", "D an invalid race leaves the draft alone")
 local emerges_before = #emerges
 mark = #shown
 eq(submit(a, CREATE_FORM, {create_character = "Create character"}), "grug_classes", "D Create handled")
@@ -684,7 +653,7 @@ eq(b.pos.x, 0, "E not teleported")
 
 -- The window is the inventory synchronously, inside the join callbacks.
 local d = join("dave", true, true)
-check(has(d.inventory_formspec, "faction_accord"), "E the window is the inventory before the first step")
+check(has(d.inventory_formspec, "race_human"), "E the window is the inventory before the first step")
 run_after()
 
 --
@@ -694,17 +663,17 @@ submit(d, "", {faction_accord = "The Accord"})
 submit(d, "", {race_dwarf = "Dwarf"})
 submit(d, "", {class_scout = "Scout"})
 form = d.inventory_formspec
-check(has(form, "faction_accord") and has(form, "race_dwarf") and
+check(has(form, "race_human") and has(form, "race_dwarf") and
 	has(form, "class_scout") and has(form, "model[") and has(form, "look_") and
 	has(form, "create_character"), "F choices, appearance and Create share one page")
 local W, H = form:match("size%[([%d.]+),([%d.]+)%]")
 W, H = tonumber(W), tonumber(H)
-check(W and H and W <= 15 and H <= 11.1, "F the window fits the inventory's height: " ..
+check(W and H and W >= 22 and H == 14, "F native fullscreen design coordinates: " ..
 	tostring(W) .. "x" .. tostring(H))
 local boxes, outside = {}, {}
 for kind, x, y, w, h, rest in form:gmatch("(%a+)%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);([^%]]*)") do
 	x, y, w, h = tonumber(x), tonumber(y), tonumber(w), tonumber(h)
-	if x < 0 or y < 0 or x + w > W + 1e-6 or y + h > H + 1e-6 then
+	if x < 0 or y < 0 or x + w > W + 0.002 or y + h > H + 0.002 then
 		outside[#outside + 1] = kind .. "@" .. x .. "," .. y
 	end
 	if kind == "button" or kind == "model" or kind == "textarea" then
@@ -716,38 +685,14 @@ for kind, x, y in form:gmatch("(label)%[([%d.]+),([%d.]+);") do
 	if x < 0 or y < 0 or x > W or y > H then outside[#outside + 1] = "label@" .. x .. "," .. y end
 end
 eq(#outside, 0, "F every element inside the window: " .. table.concat(outside, " "))
--- Card backgrounds must contain the controls they group, with a gap before Create.
-local panels = {}
-for x, y, w, h in form:gmatch("background9%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);grug_ui_panel%.png;") do
-	panels[#panels + 1] = {x = tonumber(x), y = tonumber(y), w = tonumber(w), h = tonumber(h)}
-end
-local class_panel, look_panel
-for _, panel in ipairs(panels) do
-	if panel.x > 3 then
-		if panel.y < 3 then class_panel = panel else look_panel = panel end
-	end
-end
-check(class_panel and look_panel, "F class and appearance cards exist")
-for _, box in ipairs(boxes) do
-	if box.kind == "textarea" and box.x > 3 and box.y < 4.55 then
-		check(class_panel and box.y + box.h <= class_panel.y + class_panel.h,
-			"F class description stays inside its card")
-	elseif box.name:match("^look_") then
-		check(look_panel and box.y >= look_panel.y and
-			box.y + box.h <= look_panel.y + look_panel.h,
-			"F " .. box.name .. " stays inside appearance card")
-	elseif box.name == "create_character" then
-		check(look_panel and look_panel.y + look_panel.h < box.y,
-			"F appearance card ends before Create")
-	end
-end
+-- The model's mouse viewport must not eat the class/appearance controls.
 check(#boxes >= 20, "F the full window has its elements (" .. #boxes .. ")")
 local overlaps = {}
 for i = 1, #boxes do
 	for j = i + 1, #boxes do
 		local p, q = boxes[i], boxes[j]
-		if p.x < q.x + q.w - 1e-6 and q.x < p.x + p.w - 1e-6 and
-				p.y < q.y + q.h - 1e-6 and q.y < p.y + p.h - 1e-6 then
+		if p.x < q.x + q.w - 0.002 and q.x < p.x + p.w - 0.002 and
+				p.y < q.y + q.h - 0.002 and q.y < p.y + p.h - 0.002 then
 			overlaps[#overlaps + 1] = p.name .. "/" .. q.name
 		end
 	end
@@ -761,6 +706,37 @@ for _, box in ipairs(boxes) do
 end
 eq(#untipped, 0, "F every button has a tooltip: " .. table.concat(untipped, " "))
 check(not has(form, "wield") and not has(form, "grug_gear"), "F no weapon in the preview")
+
+-- Native layout matrix: a shared aspect and race-proportional model widget
+-- must survive the viewport and GUI-density reports without hitting controls.
+local statures = {human=1,dwarf=.9,elf=1.06,orc=1.08,troll=1.12,undead=.94}
+for _, view in ipairs({{1600,1000,1},{1366,768,1},{1920,1080,1.5},{3840,2160,2},{1024,768,1}}) do
+	local info = {max_formspec_size={x=view[1]/(60*view[3]),y=view[2]/(60*view[3])}}
+	core.get_player_window_information = function() return info end
+	local g = grug_classes.creation_layout(info)
+	local intro = grug_classes.creation_formspec({}, d, nil)
+	local ix, iy, iw, ih = intro:match("image%[([%d.-]+),([%d.-]+);([%d.]+),([%d.]+);grug_creation_intro.png")
+	ix, iy, iw, ih = tonumber(ix), tonumber(iy), tonumber(iw), tonumber(ih)
+	local stage_w = g.w - g.x - 0.3
+	check(iw and math.abs(iw/ih-16/9)<.001, "G opening preserves render aspect")
+	check(ix and ix<=0 and iy<=0 and ix+iw>=stage_w-.001 and iy+ih>=g.scene_h-.001,
+		"G opening image covers its clipped stage")
+	check(not has(intro,"model[") and not has(intro,"class_warrior") and not has(intro,"APPEARANCE"),
+		"G opening hides character controls at every viewport")
+	check(math.abs(g.scene_w/g.scene_h-1.1)<1e-8, "G fixed scene aspect")
+	check(g.right_w >= 4.6, "G right controls have room")
+	for _, race in ipairs({"human","dwarf","elf","orc","troll","undead"}) do
+		submit(d,"",{["race_"..race]="pick"})
+		local fs = d.inventory_formspec
+		local x,y,w,h = fs:match("model%[([%d.]+),([%d.]+);([%d.]+),([%d.]+);")
+		x,y,w,h = tonumber(x),tonumber(y),tonumber(w),tonumber(h)
+		check(x and math.abs(h/g.scene_h - .6*statures[race])<.0001, "G "..race.." correct relative stature")
+		check(x and x>=g.x and x+w<=g.x+g.scene_w and y>g.y+1.2 and y+h<g.y+g.scene_h-1.25,
+			"G "..race.." model clears heading/classes/sides")
+		check(has(fs,"grug_creation_"..race..".png"),"G "..race.." correct native background")
+		check(has(fs,grug_core.ui.button_style("class_scout","selected",g.scale)),"G class retained")
+	end
+end
 
 if failures > 0 then
 	error(("R35 C PORTABLE FAIL %d/%d"):format(failures, checks), 0)

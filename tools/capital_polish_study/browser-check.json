@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "pass": true,
+      "label": "all images decoded 1600"
+    },
+    {
+      "pass": true,
+      "label": "no horizontal overflow 1600"
+    },
+    {
+      "pass": true,
+      "label": "all six review sections 1600"
+    },
+    {
+      "pass": true,
+      "label": "all images decoded 760"
+    },
+    {
+      "pass": true,
+      "label": "no horizontal overflow 760"
+    },
+    {
+      "pass": true,
+      "label": "all six review sections 760"
+    },
+    {
+      "pass": true,
+      "label": "no JavaScript errors"
+    }
+  ],
+  "errors": []
+}

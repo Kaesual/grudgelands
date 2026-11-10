@@ -350,6 +350,7 @@ core = {
 	get_modpath = function(name) return modpaths[name] end,
 	get_current_modname = function() return current_mod end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
+	get_player_window_information = function() return nil end,
 	formspec_escape = function(s) return (s:gsub("[%[%];,\\]", "\\%0")) end,
 	colorize = function(_, s) return s end,
 	chat_send_player = function(name, msg) chat[#chat + 1] = name .. ": " .. msg end,
@@ -483,7 +484,8 @@ current_mod = "grug_classes"
 do
 	local real_dofile = dofile
 	dofile = function(path)
-		if path:match("/scout%.lua$") or path:match("/selection%.lua$") then
+		if path:match("/scout%.lua$") or path:match("/selection%.lua$") or
+			path:match("/creation_window%.lua$") or path:match("/creation_camera%.lua$") then
 			if path:match("/selection%.lua$") then
 				grug_classes.apply_stats = noop
 				grug_classes.get_max_hp = function() return 20 end

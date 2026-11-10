@@ -72,7 +72,7 @@ To create a local world or host a server, see
 
 ## Getting started
 
-1. **Create your character:** choose your faction, people, class and look.
+1. **Create your character:** choose your people, class and look; your people determine your faction.
 2. **Meet your first quest giver:** a yellow `!` means a new quest;
    a yellow `?` means one is ready to hand in. Right-click to talk.
 3. **Fight:** your starter weapon is equipped and your class's basic
@@ -97,6 +97,11 @@ levels 21–40 and leads you to your faction's fortress at 40; from 41 your
 Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
+
+**0.73.1** redesigns character creation and polishes the capitals: lower thrones, pillar
+bays and repaired roofs in the royal halls, corrected gate arches, thin tables throughout the
+towns, and the Expedition Registrar at each capital's waystone plaza. It needs a **map reset**;
+desktop and web acceptance is pending.
 
 **0.73.0** redesigns the three Expeditions: floors that rise and fall over stairs, passages
 that bend, light from candles, lamps and lava instead of rows of torches, dark stretches with an

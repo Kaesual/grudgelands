@@ -33,8 +33,7 @@ U role shelf_vessels o=facedir:1
 V role shelf_vessels o=facedir:3
 W role signature
 X role storage
-Y role table_leg
-Z role table_top
+Y node grug_decor:xdecor_table
 a role wall
 b role window
 c role door_hidden o=facedir:1
@@ -224,11 +223,11 @@ layer 6
 |...........|
 |...........|
 |..KacDbaK..|
-|..Z..G..Z..|
-|..Z.....Z..|
-|..Z.....Z..|
-|..Z.....Z..|
-|..Z.....Z..|
+|.....G.....|
+|...........|
+|...........|
+|...........|
+|...........|
 |..KababaK..|
 |...........|
 |...........|

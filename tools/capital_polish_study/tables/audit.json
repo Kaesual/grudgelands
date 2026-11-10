@@ -1,0 +1,830 @@
+{
+  "human": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_miners_guild.tpl",
+    "sha256": "787afe0f9dc9c272a7c234420249e58a31cac4508413c97a50268bdda5562681",
+    "cells": [
+      {
+        "position": [
+          2,
+          1,
+          7
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          2,
+          2,
+          7
+        ],
+        "entry": "role table_top",
+        "resolved": [
+          "stairs:slab_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          10
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          11
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          12
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          5,
+          1,
+          14
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          6,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          6
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          7
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          8
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_wood",
+          0
+        ]
+      }
+    ]
+  },
+  "dwarf": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_miners_guild.tpl",
+    "sha256": "112f05eb7e898bfb7ed78c2e0f1821a1b3bdcef89dfb4c4e2f214ecd0d4363b5",
+    "cells": [
+      {
+        "position": [
+          2,
+          1,
+          7
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_pine_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          2,
+          2,
+          7
+        ],
+        "entry": "role table_top",
+        "resolved": [
+          "stairs:slab_pine_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          10
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_pine_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          11
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_pine_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          12
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_pine_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_pine_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          5,
+          1,
+          14
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_pine_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          6,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_pine_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          6
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_pine_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          7
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_pine_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          8
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_pine_wood",
+          0
+        ]
+      }
+    ]
+  },
+  "elf": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/lethariel_miners_guild.tpl",
+    "sha256": "e41ddeb7c52f744defb0f9510e0f484268fcc269568b6a0ab7e3190ef992118c",
+    "cells": [
+      {
+        "position": [
+          2,
+          1,
+          7
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_aspen_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          2,
+          2,
+          7
+        ],
+        "entry": "role table_top",
+        "resolved": [
+          "stairs:slab_silver_sandstone",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          10
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_aspen_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          11
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_silver_sandstone",
+          20
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          12
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_aspen_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_aspen_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          5,
+          1,
+          14
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_silver_sandstone",
+          20
+        ]
+      },
+      {
+        "position": [
+          6,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_aspen_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          6
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_aspen_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          7
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_silver_sandstone",
+          20
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          8
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_aspen_wood",
+          0
+        ]
+      }
+    ]
+  },
+  "orc": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/gor_drazhak_miners_guild.tpl",
+    "sha256": "5e47dcdfb4692bec7a86a83cbfd980835d51a5850ce3ee2b21e200b8397f229f",
+    "cells": [
+      {
+        "position": [
+          2,
+          1,
+          7
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_acacia_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          2,
+          2,
+          7
+        ],
+        "entry": "role table_top",
+        "resolved": [
+          "stairs:slab_acacia_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          10
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_acacia_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          11
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_acacia_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          12
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_acacia_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_acacia_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          5,
+          1,
+          14
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_acacia_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          6,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_acacia_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          6
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_acacia_wood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          7
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_acacia_wood",
+          20
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          8
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_acacia_wood",
+          0
+        ]
+      }
+    ]
+  },
+  "troll": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/kezamba_miners_guild.tpl",
+    "sha256": "c266127cd7e20b6b7fa909c6676cbba84bc3ec52676623c3757eb42f07c3a2ff",
+    "cells": [
+      {
+        "position": [
+          2,
+          1,
+          7
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          2,
+          2,
+          7
+        ],
+        "entry": "role table_top",
+        "resolved": [
+          "stairs:slab_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          10
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          11
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_junglewood",
+          20
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          12
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          5,
+          1,
+          14
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_junglewood",
+          20
+        ]
+      },
+      {
+        "position": [
+          6,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          6
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          7
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_junglewood",
+          20
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          8
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      }
+    ]
+  },
+  "undead": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_miners_guild.tpl",
+    "sha256": "a39fd7d3974ca9220b12cb6e96e08d97c1b6beec8b9d435d142a5adf44207846",
+    "cells": [
+      {
+        "position": [
+          2,
+          1,
+          7
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          2,
+          2,
+          7
+        ],
+        "entry": "role table_top",
+        "resolved": [
+          "stairs:slab_obsidianbrick",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          10
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          11
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_obsidianbrick",
+          20
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          12
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          4,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          5,
+          1,
+          14
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_obsidianbrick",
+          20
+        ]
+      },
+      {
+        "position": [
+          6,
+          1,
+          14
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          6
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          7
+        ],
+        "entry": "role table_top o=facedir:20",
+        "resolved": [
+          "stairs:slab_obsidianbrick",
+          20
+        ]
+      },
+      {
+        "position": [
+          8,
+          1,
+          8
+        ],
+        "entry": "role table_leg",
+        "resolved": [
+          "default:fence_junglewood",
+          0
+        ]
+      }
+    ]
+  }
+}

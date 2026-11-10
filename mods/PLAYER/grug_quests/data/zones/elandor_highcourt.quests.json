@@ -417,7 +417,7 @@
       "level": 20,
       "requires": [],
       "title": "Party: The Stilled Seam",
-      "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+      "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
       "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again.",
       "objectives": [
         {
@@ -434,7 +434,7 @@
           "givers": [
             "r58_guild_leader_highcourt"
           ],
-          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
           "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again."
         },
         {
@@ -442,7 +442,7 @@
           "givers": [
             "r58_guild_leader_dur_brannoc"
           ],
-          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
           "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again."
         },
         {
@@ -450,7 +450,7 @@
           "givers": [
             "r58_guild_leader_lethariel"
           ],
-          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
+          "text": "The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.",
           "completion": "Flintback is dead, and the contract will record it as a short delay. The crew will record it rather more loudly. Nobody goes back in until the foreman has tested every prop, so the goldsmiths can wait one more day for their Gold. Keep your name with the registrar: stone that stood up once may stand up again."
         },
         {
@@ -458,7 +458,7 @@
           "givers": [
             "r58_guild_leader_gor_drazhak"
           ],
-          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
+          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
           "completion": "You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns, and we can keep our word to the goldsmiths with everyone still on their feet. The registrar will hold the way open; that rock got up once, and I do not trust it to stay down."
         },
         {
@@ -466,7 +466,7 @@
           "givers": [
             "r58_guild_leader_kezamba"
           ],
-          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
+          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
           "completion": "You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns, and we can keep our word to the goldsmiths with everyone still on their feet. The registrar will hold the way open; that rock got up once, and I do not trust it to stay down."
         },
         {
@@ -474,7 +474,7 @@
           "givers": [
             "r58_guild_leader_nhal_veyr"
           ],
-          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
+          "text": "The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.",
           "completion": "You brought Flintback down and came back to tell it. The foreman will check the supports before the crew returns, and we can keep our word to the goldsmiths with everyone still on their feet. The registrar will hold the way open; that rock got up once, and I do not trust it to stay down."
         }
       ],
@@ -493,7 +493,7 @@
       "level": 40,
       "requires": [],
       "title": "Party: The Second Shift",
-      "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+      "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
       "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours.",
       "objectives": [
         {
@@ -510,7 +510,7 @@
           "givers": [
             "r58_guild_leader_highcourt"
           ],
-          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
           "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours."
         },
         {
@@ -518,7 +518,7 @@
           "givers": [
             "r58_guild_leader_dur_brannoc"
           ],
-          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
           "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours."
         },
         {
@@ -526,7 +526,7 @@
           "givers": [
             "r58_guild_leader_lethariel"
           ],
-          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
+          "text": "Our crew opened an old working and found the shift still on: lamps trimmed, benches full, and every miner on the board long dead. Auditor Nemm walks the rows and pays each of them in coin burned with a broken circle and two hooks, and every payment signs them on for another shift. The Charter of Stone has audited that payroll and found one entry too many: his. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm.",
           "completion": "Auditor Nemm is struck from the books, the only entry of his the Charter means to honour. The crew will copy the shift board onto a memorial stone, and nobody touches the branded pay: a coin you cannot put down is not a wage. Someone asked whether the lost shifts count as unpaid leave. I told them to write down the names and stop counting the hours."
         },
         {
@@ -534,7 +534,7 @@
           "givers": [
             "r58_guild_leader_gor_drazhak"
           ],
-          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
+          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
           "completion": "Auditor Nemm will call no more shifts. We are taking the names off his board and cutting them into the guild hall's stone, beside the living, where they belong. Leave the burned pay where it lies; a coin that will not let go of your hand is no wage. The crew have asked to finish the old working themselves, and this time everyone comes home when the shift is done."
         },
         {
@@ -542,7 +542,7 @@
           "givers": [
             "r58_guild_leader_kezamba"
           ],
-          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
+          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
           "completion": "Auditor Nemm will call no more shifts. We are taking the names off his board and cutting them into the guild hall's stone, beside the living, where they belong. Leave the burned pay where it lies; a coin that will not let go of your hand is no wage. The crew have asked to finish the old working themselves, and this time everyone comes home when the shift is done."
         },
         {
@@ -550,7 +550,7 @@
           "givers": [
             "r58_guild_leader_nhal_veyr"
           ],
-          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask this guild house's registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
+          "text": "The crew found miners working who should have been resting in their graves. Auditor Nemm pays them with burned coin, and every payment buys another shift. The Oathdelvers never sold those names. Ask the Expedition Registrar for The Second Shift Expedition, take three companions, and kill Auditor Nemm. No paymaster decides how long our dead must work.",
           "completion": "Auditor Nemm will call no more shifts. We are taking the names off his board and cutting them into the guild hall's stone, beside the living, where they belong. Leave the burned pay where it lies; a coin that will not let go of your hand is no wage. The crew have asked to finish the old working themselves, and this time everyone comes home when the shift is done."
         }
       ],
@@ -569,7 +569,7 @@
       "level": 60,
       "requires": [],
       "title": "Party: The Last Mint",
-      "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
+      "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
       "completion": "Duewarden is dead, and the last mint has struck its last coin. The Charter of Stone will take the press apart and enter every piece in the record. The branded stock goes under seal, uncounted and unspent; nobody draws wages from that chest. It was one workshop among however many there are. Today there is one fewer, and the roll got no new names from it.",
       "objectives": [
         {
@@ -586,7 +586,7 @@
           "givers": [
             "r58_guild_leader_highcourt"
           ],
-          "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
+          "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
           "completion": "Duewarden is dead, and the last mint has struck its last coin. The Charter of Stone will take the press apart and enter every piece in the record. The branded stock goes under seal, uncounted and unspent; nobody draws wages from that chest. It was one workshop among however many there are. Today there is one fewer, and the roll got no new names from it."
         },
         {
@@ -594,7 +594,7 @@
           "givers": [
             "r58_guild_leader_dur_brannoc"
           ],
-          "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
+          "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
           "completion": "Duewarden is dead, and the last mint has struck its last coin. The Charter of Stone will take the press apart and enter every piece in the record. The branded stock goes under seal, uncounted and unspent; nobody draws wages from that chest. It was one workshop among however many there are. Today there is one fewer, and the roll got no new names from it."
         },
         {
@@ -602,7 +602,7 @@
           "givers": [
             "r58_guild_leader_lethariel"
           ],
-          "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
+          "text": "Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.",
           "completion": "Duewarden is dead, and the last mint has struck its last coin. The Charter of Stone will take the press apart and enter every piece in the record. The branded stock goes under seal, uncounted and unspent; nobody draws wages from that chest. It was one workshop among however many there are. Today there is one fewer, and the roll got no new names from it."
         },
         {
@@ -610,7 +610,7 @@
           "givers": [
             "r58_guild_leader_gor_drazhak"
           ],
-          "text": "The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.",
+          "text": "The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.",
           "completion": "Duewarden is down, and the press with it. Our crew will pull it apart bolt by bolt before anyone feeds it another purse. The branded coin stays out of every wage box we own; the dead it was struck from owe nothing to anyone. There will be other furnaces. This one buys no more names."
         },
         {
@@ -618,7 +618,7 @@
           "givers": [
             "r58_guild_leader_kezamba"
           ],
-          "text": "The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.",
+          "text": "The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.",
           "completion": "Duewarden is down, and the press with it. Our crew will pull it apart bolt by bolt before anyone feeds it another purse. The branded coin stays out of every wage box we own; the dead it was struck from owe nothing to anyone. There will be other furnaces. This one buys no more names."
         },
         {
@@ -626,7 +626,7 @@
           "givers": [
             "r58_guild_leader_nhal_veyr"
           ],
-          "text": "The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.",
+          "text": "The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.",
           "completion": "Duewarden is down, and the press with it. Our crew will pull it apart bolt by bolt before anyone feeds it another purse. The branded coin stays out of every wage box we own; the dead it was struck from owe nothing to anyone. There will be other furnaces. This one buys no more names."
         }
       ],

@@ -151,9 +151,12 @@ Veinward** for The Accord; **Drava Flintshoulder, Iven Lastshift, Ombali
 Ropekeeper** for The Throng. Six capital variants of one quest, two faction
 texts; return to the giver. The registrar handles entry.
 
+*0.73.1: "this guild house's registrar" became "the Expedition Registrar" in both offers, since the
+Registrar moved to the waystone plaza.*
+
 **The Accord — offer**
 
-> Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.
+> Branded coin has to come from somewhere, and our crew found where: a buried works that burns the Tithe-Brand into pay stripped from the battlefield dead. Every coin it strikes enters another name on the Undertithe's roll, and the Undertithe reads that roll as a deed. Duewarden guards the press, past a furnace that is now a lava lake with pillars for a bridge. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Watch the fireballs before you jump. There is no ledge below.
 
 **The Accord — completion**
 
@@ -161,7 +164,7 @@ texts; return to the giver. The registrar handles entry.
 
 **The Throng — offer**
 
-> The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask this guild house's registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.
+> The soot factors have a mint. They buried it behind a furnace they let run to a lava lake, and its press burns their mark into coin from the graves of both armies, ours among them. Every coin it strikes buys the Undertithe another name. Duewarden guards the press. Ask the Expedition Registrar for The Last Mint Expedition, take three companions, and kill Duewarden. Let the fireballs pass before you jump; the lake gives nobody back.
 
 **The Throng — completion**
 

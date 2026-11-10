@@ -1,0 +1,12 @@
+{
+  "race": "orc", "title": "The red-earth courtyard", "seed": 1104,
+  "description": "An ochre courtyard between the spear lodge and a tusk lodge. Acacia crowns, dry grass, stone posts and adobe buildings give the savanna settlement its silhouette.",
+  "camera": {"eye": [0, 2.05, -13], "target": [0, 1.4072, -9.5], "fov": 55},
+  "portrait": {"feet": [0, 0.5, -9.5], "units_per_pixel": 0.0525, "stature": 1.08},
+  "sky": "#c8bba3", "fog": [45, 110], "tint": "#fff0d4",
+  "ground": "default:dry_dirt_with_dry_grass", "soil": "default:dry_dirt", "path": "default:desert_sandstone_brick", "stone": "default:desert_stonebrick",
+  "buildings": [{"template": "sunscar_spear_lodge", "at": [-13, 0, 14]}, {"template": "sunscar_tusk_lodge", "at": [14, 0, 20]}],
+  "trees": [{"at": [-10, 0, 32], "kind": "acacia", "height": 13}, {"at": [10, 0, 38], "kind": "acacia", "height": 14}, {"at": [-22, 0, 6], "kind": "acacia", "height": 13}, {"at": [23, 0, 9], "kind": "acacia", "height": 14}],
+  "plants": ["default:dry_grass_3", "default:dry_grass_4"],
+  "props": [{"kind": "arch", "at": [0, 0, 35], "width": 10, "height": 7}, {"kind": "wall", "from": [-9, 1, 5], "to": [-9, 1, 13]}, {"kind": "wall", "from": [9, 1, 7], "to": [9, 1, 15]}]
+}

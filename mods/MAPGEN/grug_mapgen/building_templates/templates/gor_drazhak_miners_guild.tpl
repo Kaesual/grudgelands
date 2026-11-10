@@ -20,245 +20,243 @@ G node grug_decor:darkage_iron_grille
 H node grug_decor:xdecor_lantern
 I node grug_decor:xdecor_lantern_hanging
 J node grug_decor:xdecor_rope
-K node grug_guild:stonewright_furnace_0_0_0 o=facedir:3
-L node grug_guild:stonewright_furnace_0_0_1 o=facedir:3
-M node grug_guild:stonewright_furnace_0_1_0 o=facedir:3
-N node grug_guild:stonewright_furnace_0_1_1 o=facedir:3
-O node grug_guild:stonewright_furnace_0_2_0 o=facedir:3
-P node grug_guild:stonewright_furnace_0_2_1 o=facedir:3
-Q node grug_guild:stonewright_furnace_1_0_0 o=facedir:3
-R node grug_guild:stonewright_furnace_1_0_1 o=facedir:3
-S node grug_guild:stonewright_furnace_1_1_0 o=facedir:3
-T node grug_guild:stonewright_furnace_1_1_1 o=facedir:3
-U node grug_guild:stonewright_furnace_1_2_0 o=facedir:3
-V node grug_guild:stonewright_furnace_1_2_1 o=facedir:3
-W node grug_guild:stonewright_grinder_0_0_0 o=facedir:3
-X node grug_guild:stonewright_grinder_0_0_1 o=facedir:3
-Y node grug_guild:stonewright_grinder_0_1_0 o=facedir:3
-Z node grug_guild:stonewright_grinder_0_1_1 o=facedir:3
-a node grug_guild:stonewright_grinder_1_0_0 o=facedir:3
-b node grug_guild:stonewright_grinder_1_0_1 o=facedir:3
-c node grug_guild:stonewright_grinder_1_1_0 o=facedir:3
-d node grug_guild:stonewright_grinder_1_1_1 o=facedir:3
-e node grug_mapgen:guild_banner_oathdelvers o=wallmounted:4
-f node grug_mapgen:guild_emblem_oathdelvers o=wallmounted:4
-g node grug_mapgen:mine_cart o=facedir:0
-h node grug_mapgen:mine_rail o=facedir:0
-i node grug_materials:abyssal_crystal_block
-j node grug_materials:copper_block
-k node grug_materials:diamond_block
-l node grug_materials:emberglass_block
-m node grug_materials:gold_block
-n node grug_materials:silver_block
-o node grug_materials:t2_stone
-p node grug_materials:t3_stone
-q node grug_materials:t4_stone
-r node grug_materials:t5_stone
-s node grug_materials:t6_stone
-t role beam
-u role ceiling
-v role door variant=_a
-w role door_hidden
-x role fence
-y role floor
-z role foundation
-0 role light_wall o=wallmounted:2
-1 role light_wall o=wallmounted:3
-2 role light_wall o=wallmounted:4
-3 role path
-4 role post
-5 role rug
-6 role shelf o=facedir:2
-7 role storage o=facedir:1
-8 role storage o=facedir:3
-9 role table_leg
-! role table_top
-$ role table_top o=facedir:20
-% role wall
-& role wall_accent
-' role window o=facedir:0
-( role window o=facedir:3
+K node grug_decor:xdecor_table
+L node grug_guild:stonewright_furnace_0_0_0 o=facedir:3
+M node grug_guild:stonewright_furnace_0_0_1 o=facedir:3
+N node grug_guild:stonewright_furnace_0_1_0 o=facedir:3
+O node grug_guild:stonewright_furnace_0_1_1 o=facedir:3
+P node grug_guild:stonewright_furnace_0_2_0 o=facedir:3
+Q node grug_guild:stonewright_furnace_0_2_1 o=facedir:3
+R node grug_guild:stonewright_furnace_1_0_0 o=facedir:3
+S node grug_guild:stonewright_furnace_1_0_1 o=facedir:3
+T node grug_guild:stonewright_furnace_1_1_0 o=facedir:3
+U node grug_guild:stonewright_furnace_1_1_1 o=facedir:3
+V node grug_guild:stonewright_furnace_1_2_0 o=facedir:3
+W node grug_guild:stonewright_furnace_1_2_1 o=facedir:3
+X node grug_guild:stonewright_grinder_0_0_0 o=facedir:3
+Y node grug_guild:stonewright_grinder_0_0_1 o=facedir:3
+Z node grug_guild:stonewright_grinder_0_1_0 o=facedir:3
+a node grug_guild:stonewright_grinder_0_1_1 o=facedir:3
+b node grug_guild:stonewright_grinder_1_0_0 o=facedir:3
+c node grug_guild:stonewright_grinder_1_0_1 o=facedir:3
+d node grug_guild:stonewright_grinder_1_1_0 o=facedir:3
+e node grug_guild:stonewright_grinder_1_1_1 o=facedir:3
+f node grug_mapgen:guild_banner_oathdelvers o=wallmounted:4
+g node grug_mapgen:guild_emblem_oathdelvers o=wallmounted:4
+h node grug_mapgen:mine_cart o=facedir:0
+i node grug_mapgen:mine_rail o=facedir:0
+j node grug_materials:abyssal_crystal_block
+k node grug_materials:copper_block
+l node grug_materials:diamond_block
+m node grug_materials:emberglass_block
+n node grug_materials:gold_block
+o node grug_materials:silver_block
+p node grug_materials:t2_stone
+q node grug_materials:t3_stone
+r node grug_materials:t4_stone
+s node grug_materials:t5_stone
+t node grug_materials:t6_stone
+u role beam
+v role ceiling
+w role door variant=_a
+x role door_hidden
+y role fence
+z role floor
+0 role foundation
+1 role light_wall o=wallmounted:2
+2 role light_wall o=wallmounted:3
+3 role light_wall o=wallmounted:4
+4 role path
+5 role post
+6 role rug
+7 role shelf o=facedir:2
+8 role storage o=facedir:1
+9 role storage o=facedir:3
+! role wall
+$ role wall_accent
+% role window o=facedir:0
+& role window o=facedir:3
 end
 
 layer 0
-|3333333333333333333|
-|3333333333333333333|
-|3333333333333333333|
-|3333333333333333333|
-|3zzzzzzzzzzz3333333|
-|3zyyyy5yyyyz3333333|
-|3zyyyy5yyyyz3333333|
-|3zyyyy5yyyyz3333333|
-|3zyyyy5yyyyz3333333|
-|3zyyyy5yyyyz3333333|
-|3zyyyy5yyyyz3333333|
-|3zyyyy5yyyyz33GG333|
-|3zyyyy5yyyyz33GG333|
-|3zyyyy5yyyyz3333333|
-|3zyyyy5yyyyz3333333|
-|3zyyyyyyyyyz3333333|
-|3zyyyyyyyyyz3333333|
-|3zzzzzzzzzzz3333333|
-|3333333333333333333|
+|4444444444444444444|
+|4444444444444444444|
+|4444444444444444444|
+|4444444444444444444|
+|4000000000004444444|
+|40zzzz6zzzz04444444|
+|40zzzz6zzzz04444444|
+|40zzzz6zzzz04444444|
+|40zzzz6zzzz04444444|
+|40zzzz6zzzz04444444|
+|40zzzz6zzzz04444444|
+|40zzzz6zzzz044GG444|
+|40zzzz6zzzz044GG444|
+|40zzzz6zzzz04444444|
+|40zzzz6zzzz04444444|
+|40zzzzzzzzz04444444|
+|40zzzzzzzzz04444444|
+|4000000000004444444|
+|4444444444444444444|
 layer 1
 |...................|
-|.................4.|
-|..............hjBx.|
-|..............h.ox.|
-|.zzzz&v&zzzz..gnpx.|
-|.z........Az..h.qx.|
-|.z........8z..hirx.|
-|.z.......9.z..g.sx.|
-|.z.9.....$.z..httx.|
-|.z.......9.z..httx.|
-|.zXW.......z.4h.4x.|
-|.zba.9.....z..D..x.|
-|.z7..$.....z.....x.|
-|.zLK.9.....z.4..4x.|
-|.zRQ.......z.....x.|
-|.z...9$9...z....Cx.|
-|.z76.....68z.E.ACx.|
-|.z4zzzzzz4zzxxxxx4.|
+|.................5.|
+|..............ikBy.|
+|..............i.py.|
+|.0000$w$0000..hoqy.|
+|.0........A0..i.ry.|
+|.0........90..ijsy.|
+|.0.......K.0..h.ty.|
+|.0.K.....K.0..iuuy.|
+|.0.......K.0..iuuy.|
+|.0YX.......0.5i.5y.|
+|.0cb.K.....0..D..y.|
+|.08..K.....0.....y.|
+|.0ML.K.....0.5..5y.|
+|.0SR.......0.....y.|
+|.0...KKK...0....Cy.|
+|.087.....790.E.ACy.|
+|.05000000500yyyyy5.|
 |...................|
 layer 2
 |...................|
-|.................4.|
-|................j..|
-|................m..|
-|.zz'z&w&z'zz....n..|
-|.z........jz....l..|
-|.(.........(....i..|
-|.(.........(....k..|
-|.z.!.......z.......|
-|.z.........z...tt..|
-|.(ZY.......(.4..4..|
-|.(dc.......(..J....|
-|.z.........z.......|
-|.zNM.......z.4..4..|
-|.zTS.......z.......|
-|.z.........z.......|
-|.z76.....68z.......|
-|.z4Bopqrs4zz.....4.|
+|.................5.|
+|................k..|
+|................n..|
+|.00%0$x$0%00....o..|
+|.0........k0....m..|
+|.&.........&....j..|
+|.&.........&....l..|
+|.0.........0.......|
+|.0.........0...uu..|
+|.&aZ.......&.5..5..|
+|.&ed.......&..J....|
+|.0.........0.......|
+|.0ON.......0.5..5..|
+|.0UT.......0.......|
+|.0.........0.......|
+|.087.....790.......|
+|.05Bpqrst500.....5.|
 |...................|
 layer 3
 |...................|
 |.................H.|
 |...................|
-|....e2f2e..........|
-|.4%'4&&&%'44.......|
-|.%1.......0%.......|
-|.(.........(.......|
-|.(.........(.......|
-|.%.........%.......|
-|.%.........%.......|
-|.(.........(.4..4..|
-|.(.........(..J....|
-|.%.........%.......|
-|.4PO.......4.4..4..|
-|.%VU.......%.......|
-|.%.........%.......|
-|.41.......04.......|
-|.44Bopqrs444.....H.|
+|....f3g3f..........|
+|.5!%5$$$!%55.......|
+|.!2.......1!.......|
+|.&.........&.......|
+|.&.........&.......|
+|.!.........!.......|
+|.!.........!.......|
+|.&.........&.5..5..|
+|.&.........&..J....|
+|.!.........!.......|
+|.5QP.......5.5..5..|
+|.!WV.......!.......|
+|.!.........!.......|
+|.52.......15.......|
+|.55Bpqrst555.....H.|
 |...................|
 layer 4
 |...................|
 |...................|
 |...................|
 |...................|
-|.4%%4%%4%%44.......|
-|.%.........%.......|
-|.%.........%.......|
-|.4.........4.......|
-|.%.........%.......|
-|.%.........%.......|
-|.4.........4.4.I4..|
-|.%.........%..J....|
-|.%.........%.......|
-|.4.........4.4..4..|
-|.%.........%.......|
-|.%.........%.......|
-|.4.........4.......|
-|.4tttttttt44.......|
+|.5!!5!!5!!55.......|
+|.!.........!.......|
+|.!.........!.......|
+|.5.........5.......|
+|.!.........!.......|
+|.!.........!.......|
+|.5.........5.5.I5..|
+|.!.........!..J....|
+|.!.........!.......|
+|.5.........5.5..5..|
+|.!.........!.......|
+|.!.........!.......|
+|.5.........5.......|
+|.5uuuuuuuu55.......|
 |...................|
 layer 5
 |...................|
 |...................|
 |...................|
 |...................|
-|.ttttttttttt.......|
-|.t.........t.......|
-|.t.........t.......|
-|.t.........t.......|
-|.ttttttttttt.......|
-|.t.........t.......|
-|.t.........t.tttt..|
-|.t.........t.tJ.t..|
-|.t.........t.t..t..|
-|.ttttttttttt.tttt..|
-|.t.........t.......|
-|.t.........t.......|
-|.t.........t.......|
-|.ttttttttttt.......|
+|.uuuuuuuuuuu.......|
+|.u.........u.......|
+|.u.........u.......|
+|.u.........u.......|
+|.uuuuuuuuuuu.......|
+|.u.........u.......|
+|.u.........u.uuuu..|
+|.u.........u.uJ.u..|
+|.u.........u.u..u..|
+|.uuuuuuuuuuu.uuuu..|
+|.u.........u.......|
+|.u.........u.......|
+|.u.........u.......|
+|.uuuuuuuuuuu.......|
 |...................|
 layer 6
 |...................|
 |...................|
 |...................|
 |...................|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.4..4..|
-|.uuuuuuuuuuu..J....|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.4..4..|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
-|.uuuuuuuuuuu.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.5..5..|
+|.vvvvvvvvvvv..J....|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.5..5..|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
+|.vvvvvvvvvvv.......|
 |...................|
 layer 7
 |...................|
 |...................|
 |...................|
 |...................|
-|.&&&&&&&&&&&.......|
-|.&.........&.......|
-|.&.........&.......|
-|.&.........&.......|
-|.&.........&.......|
-|.&.........&.......|
-|.&.........&.4..4..|
-|.&.........&..J....|
-|.&.........&.......|
-|.&.........&.4..4..|
-|.&.........&.......|
-|.&.........&.......|
-|.&.........&.......|
-|.&&&&&&&&&&&.......|
+|.$$$$$$$$$$$.......|
+|.$.........$.......|
+|.$.........$.......|
+|.$.........$.......|
+|.$.........$.......|
+|.$.........$.......|
+|.$.........$.5..5..|
+|.$.........$..J....|
+|.$.........$.......|
+|.$.........$.5..5..|
+|.$.........$.......|
+|.$.........$.......|
+|.$.........$.......|
+|.$$$$$$$$$$$.......|
 |...................|
 layer 8
 |...................|
 |...................|
 |...................|
 |...................|
-|..&.&.&.&.&........|
-|.&.........&.......|
+|..$.$.$.$.$........|
+|.$.........$.......|
 |...................|
-|.&.........&.......|
+|.$.........$.......|
 |...................|
-|.&.........&.......|
-|.............4..4..|
-|.&.........&..J....|
+|.$.........$.......|
+|.............5..5..|
+|.$.........$..J....|
 |...................|
-|.&.........&.4..4..|
+|.$.........$.5..5..|
 |...................|
-|.&.........&.......|
+|.$.........$.......|
 |...................|
-|.&.&.&.&.&.&.......|
+|.$.$.$.$.$.$.......|
 |...................|
 layer 9
 |...................|
@@ -271,10 +269,10 @@ layer 9
 |...................|
 |...................|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |..............J....|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |...................|
 |...................|
 |...................|
@@ -290,11 +288,11 @@ layer 10
 |...................|
 |...................|
 |...................|
-|..............ee...|
-|.............tttt..|
-|.............tJ.t..|
-|.............t..t..|
-|.............tttt..|
+|..............ff...|
+|.............uuuu..|
+|.............uJ.u..|
+|.............u..u..|
+|.............uuuu..|
 |...................|
 |...................|
 |...................|
@@ -311,10 +309,10 @@ layer 11
 |...................|
 |...................|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |..............J....|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |...................|
 |...................|
 |...................|
@@ -331,10 +329,10 @@ layer 12
 |...................|
 |...................|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |..............J....|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |...................|
 |...................|
 |...................|
@@ -351,10 +349,10 @@ layer 13
 |...................|
 |...................|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |..............J....|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |...................|
 |...................|
 |...................|
@@ -371,10 +369,10 @@ layer 14
 |...................|
 |...................|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |..............J....|
 |...................|
-|.............4..4..|
+|.............5..5..|
 |...................|
 |...................|
 |...................|
@@ -391,10 +389,10 @@ layer 15
 |...................|
 |...................|
 |...................|
-|.............tttt..|
-|.............tJ.t..|
-|.............t..t..|
-|.............tttt..|
+|.............uuuu..|
+|.............uJ.u..|
+|.............u..u..|
+|.............uuuu..|
 |...................|
 |...................|
 |...................|
@@ -413,7 +411,7 @@ layer 16
 |...................|
 |...................|
 |..............FF...|
-|.............tttt..|
+|.............uuuu..|
 |...................|
 |...................|
 |...................|

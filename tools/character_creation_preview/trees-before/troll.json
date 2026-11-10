@@ -1,0 +1,259 @@
+{
+  "race": "troll",
+  "title": "The spirit-house landing",
+  "seed": 1105,
+  "description": "A landing on a quiet jungle inlet with a low open railing. Barrels, a worktable and a lantern suggest daily use; lilies float beside the deck and dense banks replace the straight corridor of tall trunks.",
+  "camera": {
+    "eye": [
+      0,
+      3.05,
+      -9.5
+    ],
+    "target": [
+      0,
+      2.4408,
+      -6
+    ],
+    "fov": 55
+  },
+  "portrait": {
+    "feet": [
+      0,
+      1.5,
+      -6
+    ],
+    "units_per_pixel": 0.0525,
+    "stature": 1.12
+  },
+  "sky": "#9daf9f",
+  "fog": [
+    38,
+    90
+  ],
+  "tint": "#f0f0d9",
+  "ground": "grug_nodes:mud_with_wet_grass",
+  "soil": "default:dirt",
+  "path": "default:junglewood",
+  "stone": "default:stonebrick",
+  "buildings": [
+    {
+      "template": "kapok_river_stilt",
+      "at": [
+        -15,
+        0,
+        22
+      ]
+    },
+    {
+      "template": "kapok_spirit_lodge",
+      "at": [
+        22,
+        0,
+        38
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "at": [
+        -11,
+        0,
+        32
+      ],
+      "kind": "jungle",
+      "height": 14,
+      "radius": 5
+    },
+    {
+      "at": [
+        7,
+        0,
+        44
+      ],
+      "kind": "jungle",
+      "height": 17,
+      "radius": 5
+    },
+    {
+      "at": [
+        -24,
+        0,
+        9
+      ],
+      "kind": "jungle",
+      "height": 14,
+      "radius": 4
+    },
+    {
+      "at": [
+        21,
+        0,
+        11
+      ],
+      "kind": "jungle",
+      "height": 16,
+      "radius": 5
+    },
+    {
+      "at": [
+        -19,
+        0,
+        48
+      ],
+      "kind": "jungle",
+      "height": 17,
+      "radius": 5
+    }
+  ],
+  "plants": [
+    "default:junglegrass",
+    "default:fern_3",
+    "grug_nodes:flower_ruby_fan"
+  ],
+  "props": [
+    {
+      "kind": "water",
+      "from": [
+        -18,
+        0,
+        -10
+      ],
+      "to": [
+        18,
+        0,
+        32
+      ]
+    },
+    {
+      "kind": "deck",
+      "from": [
+        -6,
+        1,
+        -9
+      ],
+      "to": [
+        6,
+        1,
+        28
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_barrel",
+      "at": [
+        -4,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_barrel_open",
+      "at": [
+        -4,
+        2,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_workbench",
+      "at": [
+        4,
+        2,
+        9
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_lantern",
+      "at": [
+        4,
+        3,
+        9
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_tub",
+      "at": [
+        -3,
+        2,
+        14
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        -9,
+        1,
+        0
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        -8,
+        1,
+        6
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        10,
+        1,
+        11
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        8,
+        1,
+        18
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        -8,
+        1,
+        18
+      ]
+    }
+  ],
+  "route": [
+    [
+      -22,
+      0,
+      3
+    ],
+    [
+      -10,
+      0,
+      3
+    ],
+    [
+      30,
+      0,
+      4
+    ],
+    [
+      46,
+      -5,
+      2
+    ],
+    [
+      55,
+      -8,
+      0
+    ]
+  ],
+  "plant_count": 410
+}

@@ -18,13 +18,9 @@ local LABEL = {tone = "Skin tone", hair = "Hair colour", style = "Hairstyle",
 local FEATURE_LABEL = {human = "Beard", dwarf = "Beard", elf = "Ears",
 	orc = "Tusks", troll = "Tusks", undead = "Face"}
 
--- The panel's geometry inside its area: the preview on the left, then the
--- selector rows (label, ‹, colour, option, ›) and Random.
-local MODEL_W = 3.4
-local GAP = 0.3
-local ROW = 0.75
-local LABEL_W = 2.3
-local STEP_W = 0.6
+-- Generated together with the native backdrops; fixes the model viewport,
+-- camera inclination and projection contract in one reproducible asset build.
+local camera = grug_classes.creation_camera
 
 local function category_label(race, category)
 	if category == "eyes" and race == "undead" then
@@ -47,55 +43,40 @@ local function roll(race)
 	return grug_visuals.roll_look(race)
 end
 
-local function formspec(race, look, x, y, w, h)
+local function preview(race, look, x, y, w, h)
+	local appearance = grug_visuals.compose({race = race, look = look})
+	local mh = h * camera.height_fraction * appearance.stature
+	local mw = mh * camera.aspect
+	return ("style[look_preview;bgcolor=#00000000]" ..
+		"model[%.4f,%.4f;%.4f,%.4f;look_preview;character.b3d;%s;%.3f,160;false;true;0,79;30]"):
+		format(x + (w - mw) / 2, y + (h - mh) / 2, mw, mh,
+			esc(appearance.textures[1]), -camera.pitch)
+end
+
+local function formspec(race, look, x, y, w, h, scale)
 	local def = grug_visuals.LOOKS[race]
-	if not def then
-		return ""
-	end
+	if not def then return "" end
 	look = grug_visuals.normalize_look(race, look)
-	local texture = grug_visuals.compose({race = race, look = look}).textures[1]
-	local fs = {
-		-- Standing, turned by the mouse only: frames 0..79 are player_api's
-		-- stand animation of character.b3d. The engine rebuilds the model with
-		-- every formspec, so a change resets the turn (accepted, BACKLOG).
-		-- Round 54: deliberately NOT the player model. Nothing is worn here,
-		-- and the engine frames a model[] by its mesh's bounding box, which
-		-- the player model's armor boxes and weapon card widen: the same
-		-- look on character.b3d draws about half again as large.
-		("model[%.2f,%.2f;%.2f,%.2f;look_preview;character.b3d;%s;0,160;false;true;0,79;30]")
-			:format(x, y, MODEL_W, h, esc(texture)),
-		("tooltip[%.2f,%.2f;%.2f,%.2f;%s]"):format(x, y, MODEL_W, h,
-			esc("Drag with the mouse to turn your character.")),
-	}
-	local sx = x + MODEL_W + GAP
-	local next_x = x + w - STEP_W
+	local fs = {grug_core.ui.fonts(scale or 1)}
+	local row = (h - 0.55) / #CATEGORIES
 	for index, category in ipairs(CATEGORIES) do
-		local row_y = y + (index - 1) * ROW
+		local yy = y + (index - 1) * row
 		local label = category_label(race, category)
-		local lower = label:lower()
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(sx, row_y + 0.3, esc(label))
-		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;look_prev_%s;<]"):format(
-			sx + LABEL_W, row_y, STEP_W, category)
-		fs[#fs + 1] = ("tooltip[look_prev_%s;%s]"):format(category,
-			esc("Previous " .. lower))
-		local colour = category ~= "style" and category ~= "feature" and
-			def.options[category][look[category]] or nil
-		local text_x = sx + LABEL_W + STEP_W + 0.1
+		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(x, yy + 0.1, esc(label))
+		fs[#fs + 1] = ("button[%.3f,%.3f;0.45,0.4;look_prev_%s;<]"):format(x, yy + 0.25, category)
+		fs[#fs + 1] = ("button[%.3f,%.3f;0.45,0.4;look_next_%s;>]"):format(x + w - 0.45, yy + 0.25, category)
+		local colour = category ~= "style" and category ~= "feature" and def.options[category][look[category]] or nil
+		local tx = x + 0.65
 		if colour then
-			fs[#fs + 1] = ("box[%.2f,%.2f;0.45,0.45;%s]"):format(text_x, row_y + 0.08,
-				colour)
-			text_x = text_x + 0.55
+			fs[#fs + 1] = ("box[%.3f,%.3f;0.3,0.3;%s]"):format(tx, yy + 0.29, colour)
+			tx = tx + 0.45
 		end
-		fs[#fs + 1] = ("label[%.2f,%.2f;%s]"):format(text_x, row_y + 0.3,
-			esc(option_text(def, category, look[category])))
-		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.6;look_next_%s;>]"):format(
-			next_x, row_y, STEP_W, category)
-		fs[#fs + 1] = ("tooltip[look_next_%s;%s]"):format(category,
-			esc("Next " .. lower))
+		fs[#fs + 1] = ("label[%.3f,%.3f;%s]"):format(tx, yy + 0.44, esc(option_text(def, category, look[category])))
+		fs[#fs + 1] = "tooltip[look_prev_" .. category .. ";" .. esc("Previous " .. label:lower()) .. "]"
+		fs[#fs + 1] = "tooltip[look_next_" .. category .. ";" .. esc("Next " .. label:lower()) .. "]"
 	end
-	fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,0.7;look_random;Random]"):format(sx,
-		y + #CATEGORIES * ROW + 0.1, x + w - sx)
-	fs[#fs + 1] = "tooltip[look_random;" .. esc("Roll a random look.") .. "]"
+	fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.5;look_random;Random]"):format(x, y + h - 0.5, w)
+	fs[#fs + 1] = "tooltip[look_random;Roll a random look.]"
 	return table.concat(fs)
 end
 
@@ -126,6 +107,7 @@ end
 grug_visuals.creation_panel = {
 	roll = roll,
 	formspec = formspec,
+	preview = preview,
 	act = act,
 	store = grug_visuals.set_look,
 }

@@ -1,0 +1,30 @@
+warning: camp_site_dwarf [unused]: no layout places this template
+warning: camp_site_elf [unused]: no layout places this template
+warning: camp_site_human [unused]: no layout places this template
+warning: camp_site_orc [unused]: no layout places this template
+warning: camp_site_troll [unused]: no layout places this template
+warning: camp_site_undead [unused]: no layout places this template
+warning: dur_brannoc_gate_south [unreachable] at 4 1 1: the sockets point {id}_post_west cannot be reached from an entrance inside the template (dur_brannoc:dur_brannoc_gate_south)
+warning: dur_brannoc_gate_south [unreachable] at 8 1 1: the sockets point {id}_post_east cannot be reached from an entrance inside the template (dur_brannoc:dur_brannoc_gate_south)
+warning: gor_drazhak_gate_south [unreachable] at 4 1 1: the sockets point {id}_post_west cannot be reached from an entrance inside the template (gor_drazhak:gor_drazhak_gate_south main=ors)
+warning: gor_drazhak_gate_south [unreachable] at 8 1 1: the sockets point {id}_post_east cannot be reached from an entrance inside the template (gor_drazhak:gor_drazhak_gate_south main=ors)
+warning: highcourt_gate_south [unreachable] at 4 1 1: the sockets point {id}_post_west cannot be reached from an entrance inside the template (highcourt:highcourt_gate_south main=white)
+warning: highcourt_gate_south [unreachable] at 8 1 1: the sockets point {id}_post_east cannot be reached from an entrance inside the template (highcourt:highcourt_gate_south main=white)
+warning: lethariel_gate_south [unreachable] at 4 1 1: the sockets point {id}_post_west cannot be reached from an entrance inside the template (lethariel:lethariel_gate_south main=pale)
+warning: lethariel_gate_south [unreachable] at 8 1 1: the sockets point {id}_post_east cannot be reached from an entrance inside the template (lethariel:lethariel_gate_south main=pale)
+warning: mining_camp_dwarf [unused]: no layout places this template
+warning: mining_camp_dwarf_large [unused]: no layout places this template
+warning: mining_camp_elf [unused]: no layout places this template
+warning: mining_camp_elf_large [unused]: no layout places this template
+warning: mining_camp_human [unused]: no layout places this template
+warning: mining_camp_human_large [unused]: no layout places this template
+warning: mining_camp_orc [unused]: no layout places this template
+warning: mining_camp_orc_large [unused]: no layout places this template
+warning: mining_camp_troll [unused]: no layout places this template
+warning: mining_camp_troll_large [unused]: no layout places this template
+warning: mining_camp_undead [unused]: no layout places this template
+warning: mining_camp_undead_large [unused]: no layout places this template
+warning: nhal_veyr_gate_south [unreachable] at 4 1 1: the sockets point {id}_post_west cannot be reached from an entrance inside the template (nhal_veyr:nhal_veyr_gate_south main=crypt)
+warning: nhal_veyr_gate_south [unreachable] at 8 1 1: the sockets point {id}_post_east cannot be reached from an entrance inside the template (nhal_veyr:nhal_veyr_gate_south main=crypt)
+warning: sunscar_warlord_hall [unreachable] at 7 9 8: the inside point warlord_platform cannot be reached from an entrance inside the template (sunscar:warlord_hall)
+building templates: PASS (284 templates, 6 layouts, 6 rosters, 0 errors, 29 warnings; baseline: BASELINE 83436509e80fb1231fabe4401c5993272ed793c5)

@@ -145,8 +145,8 @@ local function loader(directory)
 		if lights then lights[#lights + 1] = {x = x - 1, y = 3, z = z} end
 	end
 
-	-- A market stall: four corner posts under a plank canopy, with a trestle
-	-- counter and a crate of goods beneath it.
+	-- A market stall: four corner posts under a plank canopy, with a thin-top
+	-- counter and a crate of goods behind it.
 	function M.stall(buf, palette, x, z, face)
 		for _, corner in ipairs({{0, 0}, {2, 0}, {0, 2}, {2, 2}}) do
 			for y = 1, 3 do
@@ -155,17 +155,16 @@ local function loader(directory)
 		end
 		buf:fill(x - 1, 4, z - 1, x + 3, 4, z + 3, palette.node("roof_slab"))
 		for step = 0, 2 do
-			buf:put(x + step, 1, z + 1, palette.node("table_leg"))
-			buf:put(x + step, 2, z + 1, palette.node("table_top"))
+			parts.table_cell(buf, palette, x + step, 1, z + 1)
 		end
 		buf:put(x + 1, 1, z, palette.node("storage"), (face + 2) % 4)
 		buf:put(x + 1, 1, z + 2, palette.node("rug"))
 	end
 
-	-- A TRESTLE COUNTER: the shopfront of a profession house (playtest round
+	-- A THIN-TOP COUNTER: the shopfront of a profession house (playtest round
 	-- 3). `M.stall` is the market square's four-poster booth with a canopy,
 	-- which needs five nodes by five and overhangs them; a counter is the
-	-- three or four nodes of trestle a butcher, a baker or a smith serves over
+	-- three or four table nodes a butcher, a baker or a smith serves over
 	-- and it stands in the two-node ring a plot leaves round its building.
 	-- Waist high on purpose: the sockets contract's `stall` activity is "a
 	-- counter (any solid node at waist height)", and waist height from a
@@ -174,8 +173,7 @@ local function loader(directory)
 		for step = 0, (len or 3) - 1 do
 			local cx = (axis == "z") and x or x + step
 			local cz = (axis == "z") and z + step or z
-			buf:put(cx, 1, cz, palette.node("table_leg"))
-			buf:put(cx, 2, cz, palette.node("table_top"))
+			parts.table_cell(buf, palette, cx, 1, cz)
 		end
 	end
 

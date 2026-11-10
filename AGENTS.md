@@ -12,7 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.73.0, Round 73 (the Expedition redesign: relief by stairs, bent passages,
+**Current state:** 0.73.1 (character creation redesigned, capital polish: royal halls, gate
+arches, thin tables, Dawnmere's inn beds, the Expedition Registrar at each capital's waystone
+plaza; **map reset**, no step; tag `round-73.1`, not pushed, GUI test open:
+[checklist](tools/capital_polish_study/implementation/README.md#desktop-and-web-gui-checklist)),
+on 0.73.0, Round 73 (the Expedition redesign: relief by stairs, bent passages,
 light from what belongs there, the ambush, lava falls, critters and particles, one shared
 template proof; bosses keep health above 65,535; compatible, tag `round-73`, not pushed,
 GUI test open: [completion](docs/planning/round73-plan.md#completion-2026-11-10)), on

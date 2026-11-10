@@ -17,7 +17,6 @@ E role castle_slit o=facedir:3 else=P
 F role castle_wall
 G role castle_wall else=air
 H role castle_wall_stair o=facedir:1 else=air
-I role castle_wall_stair o=facedir:3 else=air
 J role door variant=_a o=facedir:2
 K role door_hidden o=facedir:2
 L role floor
@@ -30,6 +29,8 @@ R role signature_slab else=air
 S role window
 T role castle_wall_stair o=facedir:0 else=air
 U role castle_wall_stair o=facedir:2 else=air
+V role castle_wall_stair o=facedir:21 else=air
+W role castle_wall_stair o=facedir:23 else=air
 end
 
 layer -2
@@ -89,13 +90,13 @@ layer 4
 |GGGG.....GGGG|
 |GGGG.....GGGG|
 layer 5
-|GGGGH...IGGGG|
-|GGGGH...IG.OG|
-|GGGGH...IG..G|
-|GGGGH...IGT.G|
-|GGGGH...IGGGG|
-|GGGGH...IGGGG|
-|GGGGH...IGGGG|
+|GGGGV...WGGGG|
+|GGGGV...WG.OG|
+|GGGGV...WG..G|
+|GGGGV...WGT.G|
+|GGGGV...WGGGG|
+|GGGGV...WGGGG|
+|GGGGV...WGGGG|
 layer 6
 |LLLLLLLLLLLLL|
 |LLLLLLLLLL.LL|

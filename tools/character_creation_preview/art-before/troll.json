@@ -1,0 +1,12 @@
+{
+  "race": "troll", "title": "The spirit-house landing", "seed": 1105,
+  "description": "A broad junglewood landing above shallow water, leading between stilt houses to a spirit lodge. Tall jungle trunks and fern banks enclose the scene.",
+  "camera": {"eye": [0, 3.05, -9.5], "target": [0, 2.4408, -6], "fov": 55},
+  "portrait": {"feet": [0, 1.5, -6], "units_per_pixel": 0.0525, "stature": 1.12},
+  "sky": "#9daf9f", "fog": [38, 90], "tint": "#f0f0d9",
+  "ground": "grug_nodes:mud_with_wet_grass", "soil": "default:dirt", "path": "default:junglewood", "stone": "default:stonebrick",
+  "buildings": [{"template": "kapok_river_stilt", "at": [-14, 0, 14]}, {"template": "kapok_spirit_lodge", "at": [18, 0, 29]}],
+  "trees": [{"at": [-11, 0, 32], "kind": "jungle", "height": 23}, {"at": [8, 0, 43], "kind": "jungle", "height": 25}, {"at": [-22, 0, 4], "kind": "jungle", "height": 24}, {"at": [22, 0, 5], "kind": "jungle", "height": 26}, {"at": [-19, 0, 47], "kind": "jungle", "height": 27}],
+  "plants": ["default:junglegrass", "default:fern_3", "grug_nodes:flower_ruby_fan"],
+  "props": [{"kind": "water", "from": [-18, 0, -10], "to": [18, 0, 32]}, {"kind": "deck", "from": [-6, 1, -9], "to": [6, 1, 28]}]
+}

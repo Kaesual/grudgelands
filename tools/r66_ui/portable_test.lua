@@ -1,5 +1,5 @@
 -- Round 66 lane UI portable test (LuaJIT): the grown viewport ceiling, text
--- growth and the creation window's faction buttons.
+-- growth. Character creation now uses its own fullscreen geometry.
 --
 --   luajit tools/r66_ui/portable_test.lua [REPO]
 --
@@ -18,10 +18,6 @@
 --      inventory window's slots (font pixels follow GUI scale x density,
 --      fontengine.cpp getFontSize; slots follow the viewport); a form that
 --      does not grow (portrait, the fixed floor) gets growth 1;
---   F  the creation window's faction buttons (selection.lua): both subdued
---      in their colour while none is chosen, the chosen one at full strength
---      and bold, the other subdued; hover brighter; focus like the normal
---      state; no navigation underline; race/class keep the navigation style.
 -- Prints the screen table of the lane report (computed, GUI scale 1).
 local repo = arg and arg[1] or "."
 local checks, failures = 0, 0
@@ -265,72 +261,10 @@ for _, row in ipairs({{1280, 720, 1}, {1920, 1080, 1}, {2560, 1440, 1}, {3440, 1
 		info.size.x, info.size.y, UI.text_scale(player), UI.text_growth(player), 100 * 15 * s / row[2]))
 end
 
---
--- F: the faction buttons, from the real selection.lua.
---
-do
-	local source = read("mods/PLAYER/grug_classes/selection.lua")
-	local body = source:match("\n(local FACTION_SUBDUED.-\nlocal function button%(.-\nend)\n")
-	if check(body ~= nil, "F faction style and button() found") then
-		local env = setmetatable({esc = core.formspec_escape}, {__index = _G})
-		local chunk = assert(loadstring(body .. "\nreturn button"))
-		setfenv(chunk, env)
-		local button = chunk()
-		local colours = {accord = "#3f6fce", throng = "#c41e3a"}
-		local function row(chosen)
-			local fs = {growth = 1}
-			for _, id in ipairs({"accord", "throng"}) do
-				button(fs, 0, 0, 7, 0.9, "faction_" .. id, id, "tip", colours[id], chosen == id)
-			end
-			return table.concat(fs)
-		end
-		local function style(fs, field, state)
-			local key = state and (field .. ":" .. state) or field
-			return fs:match("style%[" .. key:gsub("%p", "%%%0") .. ";([^%]]-)%]") or ""
-		end
-		local function fill(fs, field, state)
-			return style(fs, field, state):match("bgimg=\\%[fill:16x16:(#%x+)")
-		end
-		local none = row(nil)
-		for id, colour in pairs(colours) do
-			local field = "faction_" .. id
-			check(fill(none, field) == colour .. "61", "F " .. id .. " subdued (38 %) with none chosen")
-			check(fill(none, field, "focused") == fill(none, field), "F " .. id .. " focus looks normal")
-			check(style(none, field, "focused"):find("textcolor=#eeeae1", 1, true) ~= nil,
-				"F " .. id .. " focus keeps the normal text")
-			check(fill(none, field, "hovered") == colour .. "80", "F " .. id .. " hover a little brighter")
-			check(fill(none, field, "pressed") == colour .. "9e", "F " .. id .. " pressed")
-			check(not none:find("style%[" .. field .. ";font=bold%]"), "F " .. id .. " not bold unchosen")
-		end
-		check(not none:find("box[", 1, true) and not none:find("grug_ui_focus", 1, true) and
-			not none:find("grug_ui_nav", 1, true), "F no navigation underline or shared focus look")
-		for id, colour in pairs(colours) do
-			local other = id == "accord" and "throng" or "accord"
-			local fs = row(id)
-			check(fill(fs, "faction_" .. id) == colour .. "ff" and
-				fill(fs, "faction_" .. id, "focused") == colour .. "ff" and
-				fill(fs, "faction_" .. id, "hovered") == colour .. "ff", "F chosen " .. id .. " at full strength")
-			check(fs:find("style[faction_" .. id .. ";font=bold]", 1, true) ~= nil, "F chosen " .. id .. " bold")
-			check(fill(fs, "faction_" .. other) == colours[other] .. "61" and
-				not fs:find("style[faction_" .. other .. ";font=bold]", 1, true), "F the other stays subdued")
-		end
-		local fs = {growth = 4 / 3}
-		button(fs, 0, 0, 7, 0.9, "faction_accord", "A", "tip", "#3f6fce", false)
-		check(table.concat(fs):find("font_size=*1.333", 1, true) ~= nil, "F faction text grows with the window")
-		fs = {growth = 1}
-		button(fs, 0, 0, 3, 0.8, "race_human", "Human", "tip", nil, true)
-		local race = table.concat(fs)
-		check(race:find("grug_ui_nav_selected.png", 1, true) ~= nil and race:find("box[", 1, true) ~= nil,
-			"F race buttons keep the navigation style")
-		fs = {growth = 1}
-		button(fs, 0, 0, 3, 0.8, "create_character", "Create", "tip", "#2f6a2a", false)
-		check(table.concat(fs):find("style[create_character;bgcolor=#2f6a2a]", 1, true) ~= nil,
-			"F Create character keeps its green")
-	end
-	check(source:find("grug_core.factions%[id%]%.color, draft%.faction == id%)") ~= nil,
-		"F the faction row passes each faction's own colour and the choice")
-	check(not source:find("dimmed", 1, true), "F the dead dimming code is gone")
-end
+-- The explicit faction buttons were replaced by grouped race rows. Their
+-- retired color assertions are superseded by r35_c (selection behavior) and
+-- character_creation_preview (native geometry). The window-ceiling and text
+-- growth checks above still cover every other shared-toolkit consumer.
 
 if failures > 0 then
 	error(("R66 UI PORTABLE FAIL %d/%d"):format(failures, checks), 0)

@@ -1,0 +1,22 @@
+{
+  "intro": {
+    "render_input": "9a1843870e0b0a398f78be0644dad1484852c4373e41570fedd914106a872478",
+    "sources": {
+      "tools/character_creation_preview/export-trees.lua": "42453004e1a8423391f31e200a32a7602d0784aaca174af115cf9b78a809d037",
+      "mods/MAPGEN/grug_mapgen/wp40/treegen.lua": "07c3f0c0c6076542818de3c5a951fb3f135b0101e8615d9662b7151c7995e4b7",
+      "mods/MAPGEN/grug_mapgen/wp40/tree_templates.lua": "9e4ab4c336274d23ed8855413c1bf67643a88ae3efd2d114b8b7689f4e921bc9",
+      "authored_fortifications": "intro/scene.json + intro.py (no castle template stamping)",
+      "tools/character_creation_preview/intro.py": "c2db82a336701cd55f870a12db3fdfdbaaced1db59c02dc04188601769a98f36",
+      "tools/character_creation_preview/intro-atmosphere.js": "18fd33a852737bad2e8fe572a1ea44738fb70682e561f3524a14f0bf180b521b",
+      "tools/character_creation_preview/render-scenes.mjs": "213c8718ce16ae4415196cbcd16b30f412ba83219639921c74c46d1d26f9ad69",
+      "tools/character_creation_preview/scenes.html.in": "283d4a27fc35ce7e2c8ea7927214848335eb2fb1fe04d356549747a9f2a8d245",
+      "tools/character_creation_preview/portrait.js": "ffc8d288e6bbc90a5f15aac03a906f13cc93873e52b43af60c17947c194aeace",
+      "tools/character_creation_preview/scenery.py": "1262b285b263847d93b58002c33d58c4e2669a110f28e7e40a1aa3dd8cc7954a",
+      "tools/building_templates/viewer/renderer.js": "badbc2e6264ca0bbe39aca35bae68c6d713c107c477693ae350a2b64e51d6517",
+      "tools/r54_armor/vendor/three.min.js": "f34446bf875b5fb0dcd93819ffe1d9e182d46634ee855f5d904c6c4ac7cdbc95",
+      "tools/r69_camp_art/orbit.js": "9ce8c552ae1f3fbc2f410f6186232199b1915e0ac76f6bd2285ccb2f24dea441"
+    },
+    "cells": 136574,
+    "recipe": "00e4d5b746da2878c327ac232d5a3f3975058f7ca46cd0940fc22b02f163c778"
+  }
+}

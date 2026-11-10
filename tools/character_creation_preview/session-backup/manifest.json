@@ -1,0 +1,41 @@
+{
+  "purpose": "Historical scratch files preserved before shutdown; not required by the current build. Do not rerun the historical iteration script against current scenes.",
+  "files": [
+    {
+      "source": "/tmp/grug-creation-tree-check.json",
+      "file": "grug-creation-tree-check.json",
+      "sha256": "3593612dc916432e65d69b5f9c9b7c2e7290628df6debc845eab0235e5c1d722",
+      "bytes": 10809
+    },
+    {
+      "source": "/tmp/grug-scene-iteration.py",
+      "file": "grug-scene-iteration.py",
+      "sha256": "737820719f12c13d536459328e170c14b421144cf6a79d29a8e1bc570047ee4c",
+      "bytes": 6072
+    },
+    {
+      "source": "/tmp/grudgelands-headless-failed/grudgelands-headless.m7rpgA/map_meta.txt",
+      "file": "headless-failed/grudgelands-headless.m7rpgA/map_meta.txt",
+      "sha256": "a27fadd16c014f526253a8f7247a19d4965972dc772eb67aab3b3fb7b4c18ebb",
+      "bytes": 3626
+    },
+    {
+      "source": "/tmp/grudgelands-headless-failed/grudgelands-headless.m7rpgA/server.conf",
+      "file": "headless-failed/grudgelands-headless.m7rpgA/server.conf",
+      "sha256": "b5ffeef68108ad6c89f1acf1c7065eac190b2f5c0e784148dd9a675566988ee7",
+      "bytes": 9617
+    },
+    {
+      "source": "/tmp/grudgelands-headless-failed/grudgelands-headless.m7rpgA/server.console.log",
+      "file": "headless-failed/grudgelands-headless.m7rpgA/server.console.log",
+      "sha256": "f79cb7c3c6f135c196d04d1d7e84f8d6b27e96542df1b00d1689912f2f85670b",
+      "bytes": 36970
+    },
+    {
+      "source": "/tmp/grudgelands-headless-failed/grudgelands-headless.m7rpgA/server.log",
+      "file": "headless-failed/grudgelands-headless.m7rpgA/server.log",
+      "sha256": "614370ba835d861e08d07ff43e3bc3b9eb4a0cc675c9946198fe7dfcc817114f",
+      "bytes": 36838
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "race": "human", "title": "The orchard lane", "seed": 1101,
+  "description": "A quiet village lane between a timber cottage and the smithy, with an orchard, low stone walls and meadow flowers. The foreground stays open for the character.",
+  "camera": {"eye": [0, 2.05, -13], "target": [0, 1.34, -9.5], "fov": 55},
+  "portrait": {"feet": [0, 0.5, -9.5], "units_per_pixel": 0.0525, "stature": 1},
+  "sky": "#a8bec2", "fog": [42, 100], "tint": "#fff4df",
+  "ground": "default:dirt_with_grass", "soil": "default:dirt", "path": "grug_decor:castle_pavement_brick", "stone": "default:cobble",
+  "buildings": [{"template": "dawnmere_orchard_cottage", "at": [-15, 0, 13]}, {"template": "dawnmere_smithy", "at": [16, 0, 25]}],
+  "trees": [{"at": [-11, 0, 29], "kind": "oak", "height": 13}, {"at": [11, 0, 37], "kind": "oak", "height": 15}, {"at": [-23, 0, 7], "kind": "oak", "height": 13}, {"at": [23, 0, 5], "kind": "oak", "height": 12}, {"at": [0, 0, 52], "kind": "oak", "height": 15}],
+  "plants": ["default:grass_3", "grug_nodes:flower_cream_cups", "grug_nodes:flower_lilac_bells"],
+  "props": [{"kind": "wall", "from": [-10, 1, 6], "to": [-10, 1, 18]}, {"kind": "wall", "from": [9, 1, 10], "to": [9, 1, 19]}]
+}

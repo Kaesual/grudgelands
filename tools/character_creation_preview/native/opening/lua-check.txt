@@ -1,0 +1,19 @@
+parser PASS mods/PLAYER/grug_classes/creation_window.lua
+parser PASS mods/PLAYER/grug_classes/selection.lua
+parser PASS tools/r35_c/portable_test.lua
+	5	[22]	SETGLOBAL	0 -1	; grug_sounds
+	11	[32]	SETGLOBAL	0 -5	; grug_inventory
+	127	[105]	SETGLOBAL	16 -26	; core
+	129	[106]	SETGLOBAL	16 -60	; minetest
+	131	[107]	SETGLOBAL	16 -61	; dump
+	135	[108]	SETGLOBAL	16 -62	; vector
+	211	[172]	SETGLOBAL	22 -18	; grug_core
+	313	[320]	SETGLOBAL	38 -125	; dofile
+	319	[322]	SETGLOBAL	37 -125	; dofile
+	333	[329]	SETGLOBAL	37 -24	; grug_visuals
+parser PASS tools/r35_c/grug_probe_r35_c/init.lua
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+sweep 4 PASS
+sweep 5 PASS

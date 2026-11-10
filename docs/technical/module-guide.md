@@ -1848,9 +1848,10 @@ tools](#player-meta-read-by-external-tools).
     `grug_guild.stonewright_rows` with the Trade-in's lots, locked by rank
     (`stoneN_<index>`, `stoneall_<index>`), made by
     `grug_guild.stonewright_make`.
-    The Expedition Registrar takes the same house's clerk socket
-    (`grug_expeditions/registrar.lua`, role `expedition_registrar`), a villager
-    like the Housing Steward.
+    The Expedition Registrar has its own core socket `expedition_registrar`
+    at each capital's waystone plaza approach (0.73.1, map reset;
+    `grug_expeditions/registrar.lua`), a villager like the Housing Steward;
+    the guild clerk stays an ordinary resident.
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached
@@ -2416,9 +2417,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   leaver from the last member, which `register_on_change` cannot),
   `grug_parties.invitation_warning`, `settle_boss`'s `credit_as` (`bosses.lua`),
   `roll_mob_gear`'s lift on `_grug_expedition` and `grug_items.roll_gear_item`
-  (`grug_quality`). The registrar's role is one `SERVICE_ROLES` entry; an old world's clerk
-  gives way through `start_npc_claim`: an NPC whose saved role differs from its socket's
-  removes itself, for every socket.
+  (`grug_quality`). The registrar's role is one `SERVICE_ROLES` entry on its own core socket
+  `expedition_registrar` (0.73.1; before that the guild clerk's socket); `start_npc_claim`
+  still removes an NPC whose saved role differs from its socket's, for every socket.
 - **Mobs** spawn through `core.add_entity` (`packs.lua`), not `mobs:add_mob`, which the
   active-mob limit can refuse. Everything sits in the first staticdata (`encounters.lua`'s header):
   `_grug_spawn_level`, `_grug_expedition`, `_grug_authored`, `_grug_pack`, and a lifetimer

@@ -1,0 +1,8274 @@
+{
+  "templates": [
+    {
+      "name": "dawnmere_field_cottage",
+      "source_sha256": "df3f35f779ca8c2e6c6c62c11eafd16de568407a9c104a1750e851a19fc1ef99",
+      "output_sha256": "cd6bb0fe7cd0b73a4c62f0875f04b18eab1f5839fb4f70b6c1396f9fed53d2b5",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dawnmere_green_cottage",
+      "source_sha256": "7ab0f3f4f8cf3ec5b14bbe548b6fa4cb3b5d0b1d73579a896b7f0b79ecac82b1",
+      "output_sha256": "f3ae04e0bb81c5b7c103bb4a2368ba01dafac7943494351eedb8d0df0d0fc69a",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dawnmere_lane_cottage",
+      "source_sha256": "7f0201b741fe1573895ce7239b2231e05bd2cad1af0c682bff75dc2113280fc9",
+      "output_sha256": "31f4864e2d75f21030b35d74bcbebb46784c37b8a5e8bb8ea4a6ffc1aa308ba6",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dawnmere_orchard_cottage",
+      "source_sha256": "85e87abe30bf1c8e40afcf6a723f9d6671ee15936c079796f36cfe1c28eefe07",
+      "output_sha256": "a43f0dfa7a79fbb873e919504a8d37e1dddcd76ec8e3a6bc2d5c1de752af9f43",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dawnmere_smithy",
+      "source_sha256": "38886787723b1e717827cf422bc14ea1bb6b3e4bc51a55ec6f340dbc4641d08c",
+      "output_sha256": "0107f900b09bbab51d99ece57725d1cea0dec43310cc58cdbb9bca045c8b5c64",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dawnmere_tollhouse",
+      "source_sha256": "cfdc3658f79ef9988b68970e8dd22cf3ab2ca09e3f42ec6601c152f1404d8c2f",
+      "output_sha256": "ead8d5d28059996deab4350abc3684174a295528b8b9a8481294175321986304",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_ancestor_hall",
+      "source_sha256": "50e64346b13abf675e6bc02d31250aec2fd434be323d15eaa89d4e0cf5e0b5ff",
+      "output_sha256": "5e62526e2e345d0897178ff5fc8ef47c496eb3d9342e0f54ddace3766d839bc3",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          16
+        ],
+        [
+          6,
+          2,
+          16
+        ],
+        [
+          7,
+          2,
+          16
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          16
+        ],
+        [
+          6,
+          1,
+          16
+        ],
+        [
+          7,
+          1,
+          16
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_deep_hall_of_record",
+      "source_sha256": "2eda1d1315040d67d5b446a637d5a57ac181d1652709d1eced80532061a8cd99",
+      "output_sha256": "8a7cce5fda8a198c6ed1865fbfd6d7d6db31a749b063fb660246aefa4a03959c",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          14
+        ],
+        [
+          6,
+          2,
+          14
+        ],
+        [
+          7,
+          2,
+          14
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          14
+        ],
+        [
+          6,
+          1,
+          14
+        ],
+        [
+          7,
+          1,
+          14
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_deep_memory_hall",
+      "source_sha256": "043fbf3e20b1933f413138eac88daceca5f0dce09cac4f71d0dd12b343d18342",
+      "output_sha256": "8c3b06d480915fe294916315ffe1ac392231b280ccd98b38d9e21edf81233687",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          9
+        ],
+        [
+          4,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          8
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_deep_scriptorium",
+      "source_sha256": "c2ec69acd2183c74a2b0a22c0967286c493c670da214cfe32bbf4bc1311d5d29",
+      "output_sha256": "6c5441ab04ec57cca2c2c60cfc764a40eb7de3fb2722ce52856d6b6aae4926f5",
+      "table_cells": 16,
+      "changed_cells": 32,
+      "removed_tops": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          1,
+          3
+        ],
+        [
+          2,
+          1,
+          4
+        ],
+        [
+          2,
+          1,
+          6
+        ],
+        [
+          2,
+          1,
+          7
+        ],
+        [
+          2,
+          1,
+          9
+        ],
+        [
+          2,
+          1,
+          10
+        ],
+        [
+          2,
+          1,
+          12
+        ],
+        [
+          2,
+          1,
+          13
+        ],
+        [
+          10,
+          1,
+          3
+        ],
+        [
+          10,
+          1,
+          4
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          12
+        ],
+        [
+          10,
+          1,
+          13
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_forge_guild_house",
+      "source_sha256": "52e74df34b71226023d6196746fee4e2e0414c6d77b087b1a6ef88f5859fd372",
+      "output_sha256": "d7cec97ad117d3e9e1490564e62f18f74481838e70b045b8ec328ea7bbb986f5",
+      "table_cells": 16,
+      "changed_cells": 32,
+      "removed_tops": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          1,
+          3
+        ],
+        [
+          2,
+          1,
+          4
+        ],
+        [
+          2,
+          1,
+          6
+        ],
+        [
+          2,
+          1,
+          7
+        ],
+        [
+          2,
+          1,
+          9
+        ],
+        [
+          2,
+          1,
+          10
+        ],
+        [
+          2,
+          1,
+          12
+        ],
+        [
+          2,
+          1,
+          13
+        ],
+        [
+          10,
+          1,
+          3
+        ],
+        [
+          10,
+          1,
+          4
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          12
+        ],
+        [
+          10,
+          1,
+          13
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_forge_smithy",
+      "source_sha256": "cf30fb445fd90cb71a43a86212f8a25b5279068f24a12e4a07e9745d94ec39a8",
+      "output_sha256": "19324f72fd9d25ee836017462d1f554dbafa2367234d2b0905a4047056c6f2c6",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_forge_store",
+      "source_sha256": "16f27c73d0c0248abd62009d4783829baaef83a90f373f2f04edd03170d2a888",
+      "output_sha256": "a9be2eed204e49f8e0add237eb6dc8a9094fff78152c6707c4390dfa1a76bd7e",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_garrison_armoury",
+      "source_sha256": "d1f8e739771701f9b2aca71df7a298106b32d0a769b62186835248cf8c7f0d4e",
+      "output_sha256": "f49eab3c031257fae482361d7a4ed1d3a205f1f6e43302b0b460502b1a4ee219",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ],
+        [
+          6,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_garrison_drill_yard",
+      "source_sha256": "a077c1278e52cf2497569b38342a49d5cfb97416979ed16af6c50b3911e8818e",
+      "output_sha256": "7a2aad02165c648ce947c971a08c75d6297c194f50c58c7d9473f5bb2494bcc8",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_garrison_muster_hall",
+      "source_sha256": "9f666bf7f7953eb90edb33d428a5654c932a066104d4a88cde675d133b70d9fc",
+      "output_sha256": "0d56ae0e065ed325eff33f16642b6e12108a21245310dd85df3a65c5b39b76ab",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          9
+        ],
+        [
+          4,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          8
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_garrison_quartermaster",
+      "source_sha256": "4a869986a511423f63f530929a8c262cc949b6c3350ec3cb4eaa8ae233aeef3d",
+      "output_sha256": "0f75ba968332e397105db7090274fd8072096ed69b056a7408ea79fd1f2dd51f",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_garrison_serjeant",
+      "source_sha256": "4d076859940ed9b65cea76c26b3776d0a3cff61d9412b85e12f7726a289f2123",
+      "output_sha256": "2f824e74111c78c8cf6cfa80786dbc6972abaebe3e5ecf45bfa0abe831ef188c",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          6,
+          2,
+          3
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          3
+        ],
+        [
+          6,
+          1,
+          3
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_garrison_watch_tower",
+      "source_sha256": "35ee2c984eabca60a1e9bd546b8a7e3ee405cc9199683f70c6c30d1e4d93d1f3",
+      "output_sha256": "e414b03424b0c6fbb167ce04d573688ccce8560ad321f82efa5963e90209ee40",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_great_forge",
+      "source_sha256": "609a1aea42adbe7eecba759cf6bf1d0207ae4204283e3b2cfb8e577de5a9d91b",
+      "output_sha256": "2daa4f3f64b20b8ee4cd17fa8fab7cf20480bf9b142b4f6b32adf4767b092faf",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_lane_house",
+      "source_sha256": "ffe380e666a2e58fc4dcd556c9ac85fb6750315c875376426f5942adf2478714",
+      "output_sha256": "203b332e7e5da4baa943e293e225087f41e24ccda757b540617691c66291158b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_market_house",
+      "source_sha256": "818b3b39459270ec79a8ebdd8569770a5adc5fd4560f5ba7e3e9b9fe2ec26f67",
+      "output_sha256": "8447d7ae02e0dfdc0294ccc1c938f5becf14eaa48f45e3b347307d7a998ab287",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_masons_guild",
+      "source_sha256": "646b86796dc2cb1e4c05566e27e801e295f3a9f5300404051c2bf0897432294f",
+      "output_sha256": "ae2a84c4685c4d4c0926f4cde903021a843075bf3a957197443cb50f6eaa6e6d",
+      "table_cells": 16,
+      "changed_cells": 32,
+      "removed_tops": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          1,
+          3
+        ],
+        [
+          2,
+          1,
+          4
+        ],
+        [
+          2,
+          1,
+          6
+        ],
+        [
+          2,
+          1,
+          7
+        ],
+        [
+          2,
+          1,
+          9
+        ],
+        [
+          2,
+          1,
+          10
+        ],
+        [
+          2,
+          1,
+          12
+        ],
+        [
+          2,
+          1,
+          13
+        ],
+        [
+          10,
+          1,
+          3
+        ],
+        [
+          10,
+          1,
+          4
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          12
+        ],
+        [
+          10,
+          1,
+          13
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_plaza_house",
+      "source_sha256": "af3b9f874203c3809f0810f825859d6d1394d0bdd0fec667d9e24a6f870b43f6",
+      "output_sha256": "86d8e8792e3595140da8ef0a434b8e2ec2bc6eb78cac04e1d92336052c914fc1",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_south_house",
+      "source_sha256": "1c152bd63afdada2450265d43f049fdc0f7f0e770b42cabeb52e56a6a8349936",
+      "output_sha256": "39f77d66a57ffcff8357b900c12b01a53596ea1785a64c7310bc7853a4614033",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_terrace_alehouse",
+      "source_sha256": "6ecd57740e066c34b62a410c5162b731a9956710920fe206f83ea628a8a7bb3a",
+      "output_sha256": "e431154b7a7bd6fb7f6e5d3bde7000f1e0f3956b7ca2eb1416af7b5ea6785211",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          3,
+          1,
+          9
+        ],
+        [
+          9,
+          1,
+          5
+        ],
+        [
+          9,
+          1,
+          6
+        ],
+        [
+          9,
+          1,
+          7
+        ],
+        [
+          9,
+          1,
+          8
+        ],
+        [
+          9,
+          1,
+          9
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_terrace_bakehouse",
+      "source_sha256": "5a722ca54a7914bb57c398392482c8a28e17efe99ba9585544165df9d674efa1",
+      "output_sha256": "d61c03d6aeb69b07fe8d6afce0e658875e660b2d3babcfc146e921466d9d6a35",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_terrace_cottage_east",
+      "source_sha256": "367580306549aef5b132b1fe0a2155f506d59d8c8083592b28d7c7f25f83064d",
+      "output_sha256": "bf7d0acdf0bb3c8a55c3fbca6ca5d02d463139c5da5e3b47579963562cd3189e",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_terrace_cottage_west",
+      "source_sha256": "dc121d89c377d8a2da0b7c793fe9ee3beab4a5cdc64cfe0b3d88aad45a049f25",
+      "output_sha256": "5e0b9a1b6194185d158f31401efc2f172704002c124b3ae30620054897e6527d",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "dur_brannoc_terrace_long_house",
+      "source_sha256": "d900d22752a969668a62b1da5815049ffa6a8803e89450cf8b6185bd931a65f1",
+      "output_sha256": "72ba8f20daa6fb472032b8a20532fecd72438cda7269bd598d50c658f3980dde",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          5,
+          2,
+          8
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          5,
+          1,
+          8
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_bazaar_armourer",
+      "source_sha256": "b81b788795d846ef526013967e3c4b066773a926483a17bf3c953bb5987c7947",
+      "output_sha256": "e41188230128991ec41d9f82179e51d73682a0bd58c786ba9c62ebc1e387931a",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ],
+        [
+          6,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_bazaar_butcher",
+      "source_sha256": "394a31c49168db266df6a420b2c5a31a1a4a42cdefe380c755bc3190499a79b2",
+      "output_sha256": "9795dff5e2622efb5f7de172dcfe4e99f61d0e08ed8b1235ecaba544b19f7a5c",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_bazaar_carver",
+      "source_sha256": "ad4ba0c3f67668549b1d40fcc6af3f98819b0d92cfbe0b65e1df43dc895869a8",
+      "output_sha256": "514939b562f5266d11926863edb0768eb19081725c32750e890063dd6582fb6e",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_bazaar_house",
+      "source_sha256": "b6ab47fd36adc15519f666338eec1a5ffcd233448c888537d9872b292e6d7a7d",
+      "output_sha256": "89017aa382a59166f2448993b251890b461f42ac0c004955ee87b16ce1163b23",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_bazaar_tannery",
+      "source_sha256": "352730f42627d56bdd24d913143cfd64373bab74f015828c84dceef58a34d8cf",
+      "output_sha256": "9495705b77d4243b7e856da7be2500fb8a1266e34cf4199e1145f3a51123e98b",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ],
+        [
+          7,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_bone_herb_house",
+      "source_sha256": "e00cd0a37fc1f2b2119cdc96cd9b654d9188e99e1b915df0146c587b777ab725",
+      "output_sha256": "3545f223fe3b2403b6e3d915369b70a1724fc4831a93bf91a0f5c6e9f96327be",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_lane_house",
+      "source_sha256": "387155fd63f0a02b52ae76c4b0fcdbdb71ac2dbe619457f332489506024c0728",
+      "output_sha256": "8434bc08024df3f41b46b151ed7e00fb81c942f1cedf872a3d55e7f39470ec24",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_plot_bazaar_house",
+      "source_sha256": "539d0da70b2af4be7522d173e77f347c5586056ead0e58c67258130869f566c2",
+      "output_sha256": "b851e36ae9aaa3ac67739e65bd583741ec6c9761a7a216841bc0b6bfa07f5012",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_south_house",
+      "source_sha256": "9fde7a01ec76e2266ba2b852365b5b902a9aa4554cf60553745864f1eb669698",
+      "output_sha256": "19267825235a5b94d5e62c065c62a6b227bd5243e08aae5678caa35675c2db79",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_war_armoury",
+      "source_sha256": "b1783fef31736e74dffb52cf10042f2c19cc59611624520491aee0b913c1b097",
+      "output_sha256": "4f213214fc7a0cae0ae4ad9fbb8b74bdb696008100582508a37e91b2be9c2ca4",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ],
+        [
+          6,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_war_drill_yard",
+      "source_sha256": "72b8e233c102edcf9db242c6f26211e59d04f6e5e6e336ae64622eda0223b421",
+      "output_sha256": "c29889996bae135de6ca057f0469e4d49de747c08f22a1dd148547b8e135254b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_war_quartermaster",
+      "source_sha256": "67918838b1a6432c8dce74349f509256339ac33773e07ceba7ee670080b947f9",
+      "output_sha256": "ba0d935ea22282443f49633d771ebbe996a5cf42e6b9c4c4a7f050df25b2db41",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_war_watch_tower",
+      "source_sha256": "a4521f481fb9a2520c78657a223aa1965be415fb1b583a5df7d0b813ca38ba45",
+      "output_sha256": "e3f5be06be5a3ad075aba5068fa6ae466ec7cdf87d73eef29c839a35978919a0",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_warren_clan_house",
+      "source_sha256": "2d24d6716395d29fa96003ec11f649461a38ba4fb486f947aedf156d2f5e321e",
+      "output_sha256": "1d580786bcc44e2281f0eb01cce54d84ccc784c763cbf9da4795f1018a66bb17",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          5,
+          2,
+          8
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          5,
+          1,
+          8
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_warren_house_bone",
+      "source_sha256": "7f95507d74ff4de2bc67408a3ad3860c235360e00501e467b0926f55939e9fdf",
+      "output_sha256": "bd757bc5d529ebf5f73efb019f113f06d473eb90df3a7eee966af609dda68e44",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_warren_house_spear",
+      "source_sha256": "680cd1a646f3aab7e334cdbe829036c9ace71ec9cbf98282d3da696ed95d9438",
+      "output_sha256": "211b90b12f14aaacfe066b0ea283417983505a69f20353a23376dd5759b778a6",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_warren_house_tusk",
+      "source_sha256": "c15507e777db125ea37c44a7f629fb1bcb52131ec9718daff7acf370f87afed0",
+      "output_sha256": "0e307a6a426ca6e03c702943b727dc6623921dcf5a18ef86530a4658edc84f28",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "gor_drazhak_warren_round_lodge",
+      "source_sha256": "f79a00c7a5c5631a6add7d43f18c6167778a99d739ab8d1e27494bb02b6e1dbe",
+      "output_sha256": "37844327c654c7c490dbc83519d01fba606b08c05ec75cd14db2e0d9f6809957",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_community_hall",
+      "source_sha256": "d6be51a03d62f085145773f100d27e2259bc5073acac88d46ac002a7f833efad",
+      "output_sha256": "060c58d7c7a0a0410b2247748b003da8c4e63fe736ea8a43588a2af12daba6e0",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          3,
+          1,
+          9
+        ],
+        [
+          9,
+          1,
+          5
+        ],
+        [
+          9,
+          1,
+          6
+        ],
+        [
+          9,
+          1,
+          7
+        ],
+        [
+          9,
+          1,
+          8
+        ],
+        [
+          9,
+          1,
+          9
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_east_gable_home",
+      "source_sha256": "9040f2c7b31a4cfcf0116289f723f8e7e9355d3cfa21502f5a1d4cf57a0e490b",
+      "output_sha256": "14f5dc290f1c2f60439960ce98aa2c2ae33e4c4985bf5fe350bfbf80ba8fd3a8",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_east_home",
+      "source_sha256": "b1edafb96b01f7593ab84be58ab1a0a7104fae51d7c9f0a5bee2f56276a319b3",
+      "output_sha256": "a5279625f527889f3ff77f4966c5b03b6a7111603f45fa8eb2a7d6e6bb22a23b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_forge_hall",
+      "source_sha256": "c1177d0f252b653efca3690352876146732c7f79a47b124b988330935da295cd",
+      "output_sha256": "e7bbcaa98e1be0178610dd4ee0ed1d0e21ebc475093697c56a478b99c2566015",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ],
+        [
+          6,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_gatewatch",
+      "source_sha256": "356cf64d2277d8fa7fe8fe6345bc0f77e5c48f53304b9084916d8d313687d385",
+      "output_sha256": "b2387b272ae1c7421ce60941fcd7aeb5df2f73b40a1ee35fd5291f945f48e23c",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_lagerhouse",
+      "source_sha256": "c95e93ec50a0989b5f471f4f5a6835586449ca41de669a6a90eb1926b5b6b446",
+      "output_sha256": "8390f8df357d6898f4ba7f2fe73ba28855a3288fb2c2af8c778bfd6fe7cf0681",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_southwest_home",
+      "source_sha256": "9f9361e4ccb3a7f8a3019a40dfc05e1af53138b795f4bb9a3bd707386e50cd0d",
+      "output_sha256": "029834fcf32ba81822940cdefd5be39722b806962e4d74d9014f1a51decc103a",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_west_home",
+      "source_sha256": "e0a35fb3e6f5f1863a84256e783df727799c5a3a64f279fe3f151edcbc4c0686",
+      "output_sha256": "ca0281e462f42a3cc74a833e991c1b0269b8198e34338a146a621df8d7f7f1c2",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "hearthpine_workyard",
+      "source_sha256": "f13219bde060f5008c716069c1694c2ad5b1d149fea43c1ba472b8c2c87d44cb",
+      "output_sha256": "fc9d8702d72c868431e9a7ec5cc3f59ee054cd459f70db7668ab0166d4af8d58",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ],
+        [
+          7,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_chapel_house",
+      "source_sha256": "0bad2007af888232b48820ebec5d5f99197531d879d30dc2011f7f3378d8525c",
+      "output_sha256": "fca2c1d403be3500eaa7298500b18c9947e1b5785bcf16f2378baf15c979f3dd",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_city_workshop",
+      "source_sha256": "a7a81ec98ec88feee034d8a6e6c07ebd6132ce0e8be415e993906642d135c465",
+      "output_sha256": "272319ddbf495f34cba204cba9e7910db24bb4c3a1282acb1d312ba1b2f8dcab",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_homes_bakehouse",
+      "source_sha256": "8d22c281cc09f848f8e034d907da470a44e77de67d246355746ebd12585deba7",
+      "output_sha256": "9e51364042a4595627305a069cecd2e3d72b66cee2fdff7cdde910e0846ff319",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_homes_house_gable",
+      "source_sha256": "d9bbd23adc30fbe2a706be1b726978bc92dc89389e1c4ce916c5776b463d4333",
+      "output_sha256": "e5da73184964c9f96d47148f2765d030ad001cb46b83b671df06e7346dffa95e",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          5,
+          2,
+          3
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          3
+        ],
+        [
+          5,
+          1,
+          3
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_homes_house_hip",
+      "source_sha256": "4bda4bcc40d7d45de662349eabe5861a80349d535ed0818f7369e740bb767051",
+      "output_sha256": "708bf21af488512d18014cdcf03a074002d3e762a49069e10f9002da4f7e27ef",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_homes_house_lane",
+      "source_sha256": "96d1bbe377c1cc6db0bbb7ce589ff4858381e9142e9b1ef47dd03ed4b483cf69",
+      "output_sha256": "5beb55b8311dd9d4a1101edf9fdb6b8852683eba2b7960a710fc78481cc31865",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_homes_tavern",
+      "source_sha256": "51804dd95cc4c2504495f8f4bb708cf58233c630b0eef0cc41f0bc7afffbb05e",
+      "output_sha256": "a2427ba57a6a46875617ec798c6bf6ee1c84b3b02e894b917d8e3b3a91b1c631",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          3,
+          1,
+          9
+        ],
+        [
+          9,
+          1,
+          5
+        ],
+        [
+          9,
+          1,
+          6
+        ],
+        [
+          9,
+          1,
+          7
+        ],
+        [
+          9,
+          1,
+          8
+        ],
+        [
+          9,
+          1,
+          9
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_homes_tenement",
+      "source_sha256": "b18aea826465d0aa0763da0fa3e8b430cd64e186a414456239063b201d432225",
+      "output_sha256": "238c43144edd930151a1bbd046eed8849de7f2375242c5d757e773e80d160ba2",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          5,
+          2,
+          8
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          5,
+          1,
+          8
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_lane_house",
+      "source_sha256": "31f3370c103f1434b6182f137fe785823140bdc5c1dfc4743f9f7b84d105289a",
+      "output_sha256": "48466bafd1fa4e891923644f259cde5b0c183b241bfa99f48afa350eb1bfac9c",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_lore_almonry",
+      "source_sha256": "025e6e973377316df840fb4de49b659a2b6db0651b226c0fd7e169f635842fe3",
+      "output_sha256": "14d090d7db2d8aad71bc7d424f01a63de85dfc552c90759d9b545ca4d9912da5",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_lore_chapter_house",
+      "source_sha256": "504eb6011890222e4cf3d401da7a15334e0a6cd3cb5f56ab2b31dc174989bd63",
+      "output_sha256": "38053db3d0dba523fa1402c821d8e8c7910fccc0aa1a57494d3d2d58e2d59807",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_lore_library",
+      "source_sha256": "e071e2600990024744afccce8dc580061050917190e58a622cfdf6999e753c4f",
+      "output_sha256": "411290e4202bd4139ef8765fd7611e4a27192a9fc625fdd40217929e6ffcac8d",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          4,
+          2,
+          11
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          11
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          9
+        ],
+        [
+          4,
+          1,
+          10
+        ],
+        [
+          4,
+          1,
+          11
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          8
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          11
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_market",
+      "source_sha256": "d99e1c6b0f6ead5cfe58970e89d41ccdaeaea86bbb2187908eb80dc684ef6dc6",
+      "output_sha256": "ead3e5863ac8df7541bf80dcb319fd9222fda2c29198401efbfeb0ac05f964b2",
+      "table_cells": 12,
+      "changed_cells": 24,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          19
+        ],
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          19
+        ],
+        [
+          6,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          19
+        ],
+        [
+          18,
+          2,
+          5
+        ],
+        [
+          18,
+          2,
+          19
+        ],
+        [
+          19,
+          2,
+          5
+        ],
+        [
+          19,
+          2,
+          19
+        ],
+        [
+          20,
+          2,
+          5
+        ],
+        [
+          20,
+          2,
+          19
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          4,
+          1,
+          19
+        ],
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          19
+        ],
+        [
+          6,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          19
+        ],
+        [
+          18,
+          1,
+          5
+        ],
+        [
+          18,
+          1,
+          19
+        ],
+        [
+          19,
+          1,
+          5
+        ],
+        [
+          19,
+          1,
+          19
+        ],
+        [
+          20,
+          1,
+          5
+        ],
+        [
+          20,
+          1,
+          19
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_market_house",
+      "source_sha256": "6f7e80da87984acbc7d238964941a96e99f0df614cf669444b9174b1a8cd42ab",
+      "output_sha256": "9212e0312df3bee7201541d0cc7f06369a797a27a0c82f8e6b5f2db5c7749b79",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_market_store",
+      "source_sha256": "11d047a6d611e2deb13a762ba917837bd9111cab21877fa249295f74c3b009b4",
+      "output_sha256": "fb817b5ed5e6bf3967ffe87bc16002c84572343d09c56d05f806426b2ced80fa",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_market_workshop",
+      "source_sha256": "eb1494d1575ca4ea54a1b179a73db06bc52f379948d150e6d53896f8afd0105a",
+      "output_sha256": "52b58c2489a994a9d122d0b93eacef369f14f5f1adf8d4196700793cd992b967",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_martial_armoury",
+      "source_sha256": "2ea326d4d326cc5a0ddae2392a07c9564fb9f6744e59090e9db0d11c236149fd",
+      "output_sha256": "9dc338555cd3e238ec0d17851597b71dbf64c945be91abf36e595f15cb771f68",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ],
+        [
+          6,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_martial_drill_yard",
+      "source_sha256": "8f9c35970196eda974576ae479db7e324d1665c471444dcc40d001055a0b8410",
+      "output_sha256": "43f33e747a2642ec821b0cfc20eec6f4737912bb866d6e9145c7da645420abd4",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_martial_guard_house",
+      "source_sha256": "40a4d92941cf3305d65efa7a6b6ebd6b75f98a593f5c398bc6bc268a0388d8ca",
+      "output_sha256": "e4b77c388df95d0c7c06e04d0e98b403c07f8abe8f1b669ecbc954424a75e4ba",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          6,
+          2,
+          3
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          3
+        ],
+        [
+          6,
+          1,
+          3
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_martial_muster_hall",
+      "source_sha256": "aaf97bbe98c0b4fda4bdc38f6b7c17276169f1dd504be1d566eb107b13c52902",
+      "output_sha256": "14951672f17cd57334fdec23a5ed1f8ab59149c7818a4d8e4cbee188a6a53393",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          9
+        ],
+        [
+          4,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          8
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_martial_quartermaster",
+      "source_sha256": "76ee83402dced9c09a95cc5cc6b363b0e7fdf2dc79827182bdac8e80e6ed9b33",
+      "output_sha256": "7ea79362391a5550f5759b508aaafc84c47877bf4e9cf4a8d1ed44aa223030f7",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_martial_watch_tower",
+      "source_sha256": "1816fde88821343664bdf8bb6de14648fe636e9ffe4ade8af133d048c66793d8",
+      "output_sha256": "1b6f4b36cc5c731e10c8d9b15bda4b555e5d6c6fe20e61cb67c30bfec94554e7",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_north_house",
+      "source_sha256": "159fe70831ba04135ae80450735466d4be78fd3fe89e2591b53f1283821ea126",
+      "output_sha256": "3064859233a22318b35660174a5dd21dac2ce5b0393057ead2564b605f603dad",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_orchard_house",
+      "source_sha256": "317db1ca3bcc8df97d65237c518f31f51fdad9a420f227116c9efb9df87cb6fb",
+      "output_sha256": "832ebfb1d19479cd15f15ab6149059d325f0b92c49f3191cf7acdee9034f4b5b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_service_store",
+      "source_sha256": "8477b782d26f643645a4c14282d26780be3c5d967c5d48abd7b3e3130509847c",
+      "output_sha256": "5e9601f24530212d3a4393e23cac019f53fb5a9fd5d8dc9026c9a7469cd409f3",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "highcourt_service_yard",
+      "source_sha256": "82e347a54791648c2d7ccfb4fbbcbdc53e7fb7be83389a5ef60d9a0246c31739",
+      "output_sha256": "53cfa010efc33b2cd54ee302878f08473d2f24207af78528f5914bb6bdd79bba",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ],
+        [
+          7,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kapok_drying_shed",
+      "source_sha256": "e0eb7c5336be147dcf94040f4b90b66b1d2dc903f3e81b424906b13144dd623c",
+      "output_sha256": "eca5a6b19953851b13bc5c8b7d9e927cec7e44a4eff7add54eb47abd3d864eaf",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ],
+        [
+          7,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kapok_elder_stilt",
+      "source_sha256": "8179be3cbadfebd3795f5ba5c3410b162635cf1a8c045eaa5cc20d0b32c47c88",
+      "output_sha256": "cdae71fd4295147cf32fb20f0e46218d32ee3f59619000826eddef7c466bccf1",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          5,
+          4
+        ],
+        [
+          5,
+          5,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kapok_fish_smoker",
+      "source_sha256": "362aa56a792f24f417156ab793d6b34dd3c95e6942abcb7804fcb5845be29d92",
+      "output_sha256": "0d98278e8e835e45b1b16d5b121e3da33c71f3ceec25f7e3fdafd2070d55152d",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          5,
+          4,
+          4
+        ],
+        [
+          6,
+          4,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          3,
+          4
+        ],
+        [
+          5,
+          3,
+          4
+        ],
+        [
+          6,
+          3,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kapok_reed_stilt",
+      "source_sha256": "080e0b0edd1d2e90dece7378994d8e573966a542e217b479c1257874c44c4611",
+      "output_sha256": "d17eeb3101526760f36769eac7725e99f021280bebef697eb9bea895112f3202",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          5,
+          4
+        ],
+        [
+          5,
+          5,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kapok_river_stilt",
+      "source_sha256": "a45edbeaed0c585f8690e576fd6df37ef2236293b26ac005f5fec63174a11e6c",
+      "output_sha256": "03fdb428ea7769c7a20e216d8caf0c23d6e3f51f4fb0ecdc4dee13ba580bc4ce",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          5,
+          4
+        ],
+        [
+          5,
+          5,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kapok_watchpost",
+      "source_sha256": "e0d115cdc94f353bec0e27ee442cecb2c48a983022fd45a70b92b0a5b8b0f4ee",
+      "output_sha256": "a5da686341afc246e4c0a2a748e4092d822b2c6781a50b9b791aaf2556a18a5e",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kapok_weaver_stilt",
+      "source_sha256": "3ceb4f0facc5fee5c2fe611b8f610902efc0834d6f234fe43395426977630c8a",
+      "output_sha256": "79b2842f09131b347063c684997af1c7f4dce4d336c0de6f036720d146563455",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          5,
+          4
+        ],
+        [
+          5,
+          5,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_canopy_watchpost",
+      "source_sha256": "e54034f4a9a8229640a9b5ef7f9494270350d1224423fbcd6aa52528ad013615",
+      "output_sha256": "05cca433477a554bda3a1e419d10083d062df8d2daaf9f9db3aaee804778bf21",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_gate_house_south",
+      "source_sha256": "de204b26e58bbdc4a78bbaef599b1d476614cb3544a052685c2665f76f25df5c",
+      "output_sha256": "dc344e471380fd97ad6763aefb517ce90195142b3c0360a082a40b1fa0fc0eda",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_lane_house",
+      "source_sha256": "3af3bc506efd05f7650d75b6801cf8aaa498ea9c334e633d7917c1cc3638f61f",
+      "output_sha256": "b3fbcad1459da4015b46b4e27d002a875e71c174265fce2935eb4d8cee024f91",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_moot_house",
+      "source_sha256": "7147f94416341fdaf98538c04d48a5ec69c8ce3a5130e458c4f9aa7941ed72f1",
+      "output_sha256": "7764618eb1a2c8fe2a3e467a701957e80428524265118498bf53d57edc4196a0",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          2,
+          6,
+          7
+        ],
+        [
+          2,
+          6,
+          8
+        ],
+        [
+          2,
+          6,
+          9
+        ],
+        [
+          2,
+          6,
+          10
+        ],
+        [
+          2,
+          6,
+          11
+        ],
+        [
+          8,
+          6,
+          7
+        ],
+        [
+          8,
+          6,
+          8
+        ],
+        [
+          8,
+          6,
+          9
+        ],
+        [
+          8,
+          6,
+          10
+        ],
+        [
+          8,
+          6,
+          11
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          5,
+          7
+        ],
+        [
+          2,
+          5,
+          8
+        ],
+        [
+          2,
+          5,
+          9
+        ],
+        [
+          2,
+          5,
+          10
+        ],
+        [
+          2,
+          5,
+          11
+        ],
+        [
+          8,
+          5,
+          7
+        ],
+        [
+          8,
+          5,
+          8
+        ],
+        [
+          8,
+          5,
+          9
+        ],
+        [
+          8,
+          5,
+          10
+        ],
+        [
+          8,
+          5,
+          11
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_plot_shore_house",
+      "source_sha256": "ee5beab306592077caaa1e05a447da819cf60b36c4e74fa56d763197857567ea",
+      "output_sha256": "71e0d17f5923dba59d59dbd7f86d4a5bfa6c4ccccd7884092b8167e5018abb73",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_shore_butcher",
+      "source_sha256": "8fe90cb3dff185a5363223c8cc1ddb3682a68201a8bfc149b4756de466a3a26e",
+      "output_sha256": "e2af27187f39616abcd8f04e5fd25a8ba15a7aff1527683b5103212cf7db5d51",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_shore_house",
+      "source_sha256": "ca2c847d5de00aa3b5847468ab6ba0a1e7390c480e64230ba7f5e20ac2a76e63",
+      "output_sha256": "dfec6a539d7aa826e72c673d656607916bc9fb180c551caf389f16e7f70904d0",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_shore_tailor",
+      "source_sha256": "1d1a7ea9910a0a477b5dd10c0fea1f2ee1b7815fb9a64698c37ca4c498496e25",
+      "output_sha256": "443fe5eff29dbc3bab2b976985a1e213928b5fd45f51debc08fc597b5602d9b1",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_totem_scriptorium",
+      "source_sha256": "0865284cd68234f07516e20be8dca4b5b1afc87acb3d112c9c08e2dc735e2351",
+      "output_sha256": "caf6dd1829252ca91c14a65db232b74cc20f0976ccbe1dd1fa6ac6ad8d4ffa82",
+      "table_cells": 16,
+      "changed_cells": 32,
+      "removed_tops": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          1,
+          3
+        ],
+        [
+          2,
+          1,
+          4
+        ],
+        [
+          2,
+          1,
+          6
+        ],
+        [
+          2,
+          1,
+          7
+        ],
+        [
+          2,
+          1,
+          9
+        ],
+        [
+          2,
+          1,
+          10
+        ],
+        [
+          2,
+          1,
+          12
+        ],
+        [
+          2,
+          1,
+          13
+        ],
+        [
+          10,
+          1,
+          3
+        ],
+        [
+          10,
+          1,
+          4
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          12
+        ],
+        [
+          10,
+          1,
+          13
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_totem_shrine",
+      "source_sha256": "9693357e7727aca10305a8cc91bf2b6984b5500b6980081035493bc929ad42e5",
+      "output_sha256": "635cf43d6b519f4c6defb45dff02f126973868eeaa7e2a820d0e87de4fe6fe42",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          16
+        ],
+        [
+          6,
+          2,
+          16
+        ],
+        [
+          7,
+          2,
+          16
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          16
+        ],
+        [
+          6,
+          1,
+          16
+        ],
+        [
+          7,
+          1,
+          16
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_trade_shed",
+      "source_sha256": "ba1ad62840d14f846ed897c3425122540b9f40a3faa59ad170068a95615d0f4e",
+      "output_sha256": "9f3e8e983383024b8a9737fad6d5086badc61cc8c65e0d9fd8cfaa06a2e53c89",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ],
+        [
+          7,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_vine_herbalist",
+      "source_sha256": "0ea9c50e2b5e1c0529ea177535bb8c5fa4aa33ecc6ad62cd53aaf1fab7eb6e73",
+      "output_sha256": "016dee886e350251e25c61d4b433374b548d4dfdea1d4eaa36dc5b85de4985c0",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_vine_house_a",
+      "source_sha256": "3116fd9b69c56420f46106603973e33072b6b68c1817ae03438891484e14edc6",
+      "output_sha256": "486788125a04c22397ce265d84d435b0bac872778e035191688475a961095a3c",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_vine_house_b",
+      "source_sha256": "935bdca892b5c97611bcf5a24089b66281248c2acdcbbeaa4a336b8cf84a3dcd",
+      "output_sha256": "83ddd14ff2d2f5bde2a1ddd640aa544146212cf40223dfe8bae7ec3bddbb63ed",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_vine_house_c",
+      "source_sha256": "45c741f13f97be7c9ae761094b1723d6977cf6abe27e611cff765cae7ab340f1",
+      "output_sha256": "9e4b81e08f1a4adc5657f019f217639a1c04002043233f371982fc9223157d06",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_vine_house_d",
+      "source_sha256": "d03b8735e70e5c6fa68dace7b3262b02fd345ad2ac8564ded5ae3b1c17fe5477",
+      "output_sha256": "d144a1b9e5a6ef5e69b234ee5dfabd0db7a148f82adee2a24caa6e63ce656e62",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "kezamba_west_house",
+      "source_sha256": "076f9a116bd2700eb20dc70d40e1fefeae2ae048bc19ae4eac60e91840befbd0",
+      "output_sha256": "abcc37655316ad48650be605740085daf69c2f6a2281c06c6017f6c8aafa8e8b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_homes_feast_hall",
+      "source_sha256": "af653370c1f8bd7fe19623dbc3cee55c6d3c61f73d358d50e06a85f62fac8257",
+      "output_sha256": "61de3ccd3c12315290f08469e246d534df752bc66fd4c23078da4c4854e5a3e7",
+      "table_cells": 16,
+      "changed_cells": 32,
+      "removed_tops": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          1,
+          3
+        ],
+        [
+          2,
+          1,
+          4
+        ],
+        [
+          2,
+          1,
+          6
+        ],
+        [
+          2,
+          1,
+          7
+        ],
+        [
+          2,
+          1,
+          9
+        ],
+        [
+          2,
+          1,
+          10
+        ],
+        [
+          2,
+          1,
+          12
+        ],
+        [
+          2,
+          1,
+          13
+        ],
+        [
+          10,
+          1,
+          3
+        ],
+        [
+          10,
+          1,
+          4
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          12
+        ],
+        [
+          10,
+          1,
+          13
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_homes_longhouse",
+      "source_sha256": "969440deab23882189399e27af2012205567f42e04ba149f3577198ef00979aa",
+      "output_sha256": "271c086797a473609c8fc6718a786e371164ffeb7daf9973131c2156557eec3c",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_homes_terrace_east",
+      "source_sha256": "c8e0be41c4849bd012affb4fb7ecaadf9e7ff188d9b1e2be29c3b4d5c844f852",
+      "output_sha256": "45880b05aab45005ac072ce46741798c1c6c6d92dcf3ee16cb0b70c06133a9b0",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_market",
+      "source_sha256": "07b00c5f380e40456b554dbd5232a8a39737ed7b7e94d655299809b099cdfb8d",
+      "output_sha256": "2e930d22f2e3fc8a88bc0e3cd354d4a0a8fd5061b0b9d342e09abf00785535d0",
+      "table_cells": 12,
+      "changed_cells": 24,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          15
+        ],
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          15
+        ],
+        [
+          6,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          15
+        ],
+        [
+          14,
+          2,
+          5
+        ],
+        [
+          14,
+          2,
+          15
+        ],
+        [
+          15,
+          2,
+          5
+        ],
+        [
+          15,
+          2,
+          15
+        ],
+        [
+          16,
+          2,
+          5
+        ],
+        [
+          16,
+          2,
+          15
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          4,
+          1,
+          15
+        ],
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          15
+        ],
+        [
+          6,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          15
+        ],
+        [
+          14,
+          1,
+          5
+        ],
+        [
+          14,
+          1,
+          15
+        ],
+        [
+          15,
+          1,
+          5
+        ],
+        [
+          15,
+          1,
+          15
+        ],
+        [
+          16,
+          1,
+          5
+        ],
+        [
+          16,
+          1,
+          15
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_market_bakehouse",
+      "source_sha256": "74fb2c7d777a5f88b20c57eee7c81bcebe6b56df4213d25773e0d45dbf73a0bb",
+      "output_sha256": "13c241781c0d2af3d34a7c65fd41e9b9e778d880153be49b72de06980537b910",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_market_bowyer",
+      "source_sha256": "bfa25d4c8e19029dcecc76bd2831742f688144681bf5ee3f0fdef261ac913ccd",
+      "output_sha256": "4f7464cb3f556c6ddddf7f7d8e7f48fc2c6ab41fc1f305ccc92f7bb8ae3a226d",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_market_weaver",
+      "source_sha256": "c4085ce74aa02d28f8466e4303239e2eecf55e15abd72c704692d8ff3b29b3af",
+      "output_sha256": "4825d5ba2579a19cf3638f79bf8eb442ca73a12458e62a5c2772acdd7bf6a0b7",
+      "table_cells": 16,
+      "changed_cells": 32,
+      "removed_tops": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          1,
+          3
+        ],
+        [
+          2,
+          1,
+          4
+        ],
+        [
+          2,
+          1,
+          6
+        ],
+        [
+          2,
+          1,
+          7
+        ],
+        [
+          2,
+          1,
+          9
+        ],
+        [
+          2,
+          1,
+          10
+        ],
+        [
+          2,
+          1,
+          12
+        ],
+        [
+          2,
+          1,
+          13
+        ],
+        [
+          10,
+          1,
+          3
+        ],
+        [
+          10,
+          1,
+          4
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          12
+        ],
+        [
+          10,
+          1,
+          13
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_martial_hall",
+      "source_sha256": "e02ddcddf839cc2481d075766904f8c926b2d2d94fffa364ad25559e5fe4911c",
+      "output_sha256": "db616bfe5e37f0f3f144863e22e391ed7138d4afe1a721feb5aed4424d2791c6",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          3,
+          2,
+          10
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          10
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          3,
+          1,
+          9
+        ],
+        [
+          3,
+          1,
+          10
+        ],
+        [
+          9,
+          1,
+          6
+        ],
+        [
+          9,
+          1,
+          7
+        ],
+        [
+          9,
+          1,
+          8
+        ],
+        [
+          9,
+          1,
+          9
+        ],
+        [
+          9,
+          1,
+          10
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_martial_lodge",
+      "source_sha256": "829db65df1b41ebbbd8a9b4425eca5e7c552f1ca47bd1a2e844e6a6fc114d3fe",
+      "output_sha256": "e21f9263f954aa99549b0eabdc36d60be16421633c316eff94d201140ffa4052",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_martial_store",
+      "source_sha256": "7a652cb51312bfd084571eddf78e64f86a04a5678bcb3cf1f7e6693c78c49fe5",
+      "output_sha256": "76e6e3bbe91d1d7265fccbf9230237c0b7cd2964980c4c0e9228e5c631e216f8",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_mere_lore_hall",
+      "source_sha256": "d2d114ff30e4f4653a17c248b3c2af9680f51d4429f6c8aa6d914846e41c82a6",
+      "output_sha256": "fefda6ab599cdced8b7633a63d9e88b9b7d70ab99a1dd4d0e99205d513ca17bb",
+      "table_cells": 16,
+      "changed_cells": 32,
+      "removed_tops": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "installed_tables": [
+        [
+          2,
+          1,
+          3
+        ],
+        [
+          2,
+          1,
+          4
+        ],
+        [
+          2,
+          1,
+          6
+        ],
+        [
+          2,
+          1,
+          7
+        ],
+        [
+          2,
+          1,
+          9
+        ],
+        [
+          2,
+          1,
+          10
+        ],
+        [
+          2,
+          1,
+          12
+        ],
+        [
+          2,
+          1,
+          13
+        ],
+        [
+          10,
+          1,
+          3
+        ],
+        [
+          10,
+          1,
+          4
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          12
+        ],
+        [
+          10,
+          1,
+          13
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "lethariel_star_hall",
+      "source_sha256": "dbecf6477700d00de11227d27231237a4ab5e433cecbfcf65f52e00074eedc98",
+      "output_sha256": "a91864a509b47bf566373626a81af56ca49bce199dd790991723724fb2b256de",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          16
+        ],
+        [
+          6,
+          2,
+          16
+        ],
+        [
+          7,
+          2,
+          16
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          16
+        ],
+        [
+          6,
+          1,
+          16
+        ],
+        [
+          7,
+          1,
+          16
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_homes_corner_house",
+      "source_sha256": "d04d19a08accb4aa26cd0c3b0ecf3a0c9af70e01c9c4f67669f1e85e95262dc1",
+      "output_sha256": "a4aa4d98953757cf68915ca58a79d3ae2152a573000e0b1a00eb9992898e0bc9",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_homes_gate_house",
+      "source_sha256": "3b8c5508cce1bbf70f6d2434d9c13ff5c65453b533acdbfc0219a59494464dfa",
+      "output_sha256": "d4036c1eb5568bf7490e7062237ff31e5ddfaf05a79f2cb698884fbbdc5da140",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_homes_lane_house",
+      "source_sha256": "8b3cc9f2abdaaf772d29ffa2ff3516a8a6a81c8ebbb8493d8475c88d33704d3c",
+      "output_sha256": "381adbc3fd157c03582859abcb8f1d334ae480cb998054038e6ae3c0b30ac76a",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_homes_terrace_house",
+      "source_sha256": "3ec70875c31db18a37c29d28dbc5a61b55f1c83c42ff2fe20532da592bc1aade",
+      "output_sha256": "9a8612de66aded6f4f83ab87876ae2dd6e6bbbf5d7f128129b7b0d9ff028a680",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_lane_house",
+      "source_sha256": "0fca260f0d6445231d88d8b3397f1fac09181de72a091d18f807b36303a7a52f",
+      "output_sha256": "9c13fa589de6708f672ec86a99dca254580e6b1922f0d08ac0bd2248cf5b02ca",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_market_bonesmith",
+      "source_sha256": "d72f74accd30847b20d3afb4539ae4eb26d5cc43fd3bf5c9c633e705ce4398a8",
+      "output_sha256": "93eac0f6c1eb57bcc5c42c4074f77da7e1b1b466c3c221dce18a2e675dd84415",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_market_charnel",
+      "source_sha256": "24051badda46ca6b7f3c614333c4eec296bf9cd9d3ffbfeced39a9e8f0c4f99a",
+      "output_sha256": "ca334fe01e69468ef2af1ad13814fc54539ace7dd78bf2a179febf009e6e430e",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_market_physic",
+      "source_sha256": "f7c5263f8c0268a6185afb8dc83cb7ba1a1d0ad6226056ad9d76daa13b10ebf0",
+      "output_sha256": "59287c844a9a8f4091fea2f8768aab0e55d119fda416a9df90a45e6a68e77683",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          3,
+          2,
+          10
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          10
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          3,
+          1,
+          9
+        ],
+        [
+          3,
+          1,
+          10
+        ],
+        [
+          9,
+          1,
+          6
+        ],
+        [
+          9,
+          1,
+          7
+        ],
+        [
+          9,
+          1,
+          8
+        ],
+        [
+          9,
+          1,
+          9
+        ],
+        [
+          9,
+          1,
+          10
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_watch_armoury",
+      "source_sha256": "f0d9d6e086e2f95563e6d92b565d966f31dc8c32b6902a024c247210346e31dc",
+      "output_sha256": "11e27c2e1df58d0f3cc76fe32a2100c180660951790bfb3225f0429aeeb9bda6",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ],
+        [
+          6,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_watch_captain_hall",
+      "source_sha256": "39596eb2968d750da9ec5aa2d40af92a1517f250d5678bdf04655084eb58b23e",
+      "output_sha256": "7ba9671af392dbc35f4c11aaf8fe3ff261da40264dde975b052f579a4d607348",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          9
+        ],
+        [
+          4,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          8
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_watch_drill_yard",
+      "source_sha256": "503e13d18adc24bea8d27897f29172315e40a4d5e9a1f64a3989d74dbbf9b70f",
+      "output_sha256": "8b21ea38eadb50ba2c2e9a2f10b48dfc3c2a86fe8b5e8671a64dd9bbe5fe9f77",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_watch_quartermaster",
+      "source_sha256": "c6abcbdd007209499479c9d6dc5aa748845d9c75d75165901f81c4b7ae1eb505",
+      "output_sha256": "178e915422ca2d49e139eedca99588da7046717cfdf9958669259a4a263e66fb",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          5,
+          1,
+          7
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_watch_serjeant_house",
+      "source_sha256": "aeff4533cc2343cf1fd5cc11f4c51f87cebbb491b8c6e5f98d6e13dfd8bc9340",
+      "output_sha256": "c8ad5bb0d3f5995d97faa3a368e88a97bb27577c9e0b337c7c44bdea56f31ef9",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          6,
+          2,
+          3
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          3
+        ],
+        [
+          6,
+          1,
+          3
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "nhal_veyr_watch_tower",
+      "source_sha256": "330cae3f945c74af11ba5292a106af6f39770345a4b684e81abf8284a8ca312f",
+      "output_sha256": "0db46beda506a8f8993aef4abe9e85524345a98ceb0f2d9588a28fd1d68f7673",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_bowyer_workshop",
+      "source_sha256": "a455c09398d12d17450d18b8fd8a0685104fbb181f694d80e134be305a01ab7d",
+      "output_sha256": "169437a0d794a869f5ab57aa75d98bdb3dc967c4f6f0b4fe626f57435f5c6c3f",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_covered_market",
+      "source_sha256": "27eee7574c2c131846dd56412a1c29240efea276aacd12721c91fa6574eb6ba7",
+      "output_sha256": "780cacc2e6d9b80b48510445db7bffcabc4cf59ebbd337b369c23233fcd5c158",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ],
+        [
+          7,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_glade_house_east",
+      "source_sha256": "c7134391ab4c85be5a337ee3fd99b454983342c4e79118cde998257f7e55f261",
+      "output_sha256": "10b7119fcb46f10302df7826aee76ede300682bf39a051292f37f73fc573322e",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          4,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_glade_house_west",
+      "source_sha256": "30964daaa20b4974814947ec034ea69f66442db76dd5093ec031db9b003f64a4",
+      "output_sha256": "4a3c2f0ae3a84421e268cc9b84c77c8d9c8f3053c0fefb97ce4f0bc93750f56b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          4,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_lore_hall",
+      "source_sha256": "c5d7ea43fa1cf9649951c8327f7934c8444b03ce5763c772600db85db046c2c4",
+      "output_sha256": "c0b4930de853a9b17ada968f4957e3903aaca5fbda9b6bb46c3b8ae384c2b3cf",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          1,
+          7
+        ],
+        [
+          3,
+          1,
+          8
+        ],
+        [
+          3,
+          1,
+          9
+        ],
+        [
+          9,
+          1,
+          5
+        ],
+        [
+          9,
+          1,
+          6
+        ],
+        [
+          9,
+          1,
+          7
+        ],
+        [
+          9,
+          1,
+          8
+        ],
+        [
+          9,
+          1,
+          9
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_moon_shrine",
+      "source_sha256": "1df1314f021f7fe72093a50d6d7f4af01b0c5c280a34a41327616c74c7e214d6",
+      "output_sha256": "d5a05ae10c19aaeae8d524686a465ff6f466b02090b3eb5248738b1a0a969121",
+      "table_cells": 1,
+      "changed_cells": 2,
+      "removed_tops": [
+        [
+          4,
+          2,
+          12
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          12
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_terrace_house_east",
+      "source_sha256": "c97bbebfa96a10f6e541f23fdd5ca69b43e395fd6e93add4e5dbafcb6faa7104",
+      "output_sha256": "c57a24bed2c09330dea77cec9c5b23dc4533f8403478d532eb61e40477f83fab",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          4,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "silverleaf_terrace_house_west",
+      "source_sha256": "17ee905b2bd007c055b28c813425337accb63785ed5bdd35b153b631702f1520",
+      "output_sha256": "a5b74970cc68249d467cc30a9d4bc4d5f8197ea4d38fb41d43eb78fcb1642316",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          3,
+          1,
+          5
+        ],
+        [
+          4,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "stillgrave_keepers_house",
+      "source_sha256": "775f6657e71bcac1677d7c281b38d6123f6a859f8eb1d67f20a8e85fa1c48ce2",
+      "output_sha256": "3f73e0d4412096f83b0cba18d06ea81153a6139c1df5995611320492ad50cf65",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "stillgrave_warden_house",
+      "source_sha256": "3cebfbfc9d3a80cd34e3e92019d1761402760321019001b203a731c095d2e70a",
+      "output_sha256": "edc2bc2524368623b373e9b045df848dbc77ac03a056a801afc95362a7d2aa9b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "stillgrave_watchtower",
+      "source_sha256": "bd49dd2e9360c676d5ad65bfd521fa640859158a0445b3b058eda75e99bfb174",
+      "output_sha256": "eed473273214e5a5c52fcee88688919c6cc8143a3555b3e2661550e44db2ae93",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_armoury",
+      "source_sha256": "05541521dc2e479287331f2e0a2556af25b1aa1ffd880757ca10529a1220da58",
+      "output_sha256": "c47c1ae36f60025dee3d8b531949b783d842d69ff9b5afdeda253d164be1ba46",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          1,
+          6
+        ],
+        [
+          6,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_beast_pen",
+      "source_sha256": "ddb5361b2878e8c2ff645d717a4d7d4d74315548d76eb05c326f7473173ea4a0",
+      "output_sha256": "8fa3076c24af6dd020c0bf914e72a90f1f499d46bd7f2836e2f2cb11acc03a7b",
+      "table_cells": 3,
+      "changed_cells": 6,
+      "removed_tops": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ],
+        [
+          7,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          5
+        ],
+        [
+          6,
+          1,
+          5
+        ],
+        [
+          7,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_bone_lodge",
+      "source_sha256": "f42053b8d86fe1ae4c35c2aa6156169aa981efc9cec5685850ef688718040d84",
+      "output_sha256": "5f332ccc803f0b52a8b58ee67472f05fcf60773888e98d4a9fcc1666f30f9fd9",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          5
+        ],
+        [
+          5,
+          1,
+          5
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_chief_lodge",
+      "source_sha256": "60ee38f96875bd5a838cff943c13d5819348dc0421f950de7c9084de1d51b81d",
+      "output_sha256": "d51ebf4f373ace3f77ca33fd39f0b5a161de4d2809b606571ee029f50111c42a",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_east_tower",
+      "source_sha256": "9e43cf31165c7888df7469372984b7b1c33688fa7ecba88ebf747047c6570952",
+      "output_sha256": "bf24798be4feb37e8b417bf9405b25cb3872eff9310246601582e8d3fb5417c3",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_spear_lodge",
+      "source_sha256": "39af73a14ca3b7f9a6bfcf650298cd27c6c01204d48065678f1ba00e0580d3ed",
+      "output_sha256": "b7c6f8068ae2bb1ccfd87614a8ea98da78d9d5665a7c1a7dc140073674955489",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          4
+        ],
+        [
+          5,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_tusk_lodge",
+      "source_sha256": "b404487d22c70dd6f1d2e69941f2fdc5939e51ab958d2f9371031ca97278422b",
+      "output_sha256": "a561c8e3d9637a04fe92b0361f6f4e1a3a656d6e43b88848011ebb052a9eee6f",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "installed_tables": [
+        [
+          5,
+          1,
+          4
+        ],
+        [
+          6,
+          1,
+          4
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_warlord_hall",
+      "source_sha256": "3c3445a7937da5446501f17858a2b0cc300b667b1b7d575e7222721e19bbb473",
+      "output_sha256": "8b1eb82d9884bb158d0ca7b4ab3ea65bebfd37e9f23b5a37d9180e07ebfe8ddf",
+      "table_cells": 10,
+      "changed_cells": 20,
+      "removed_tops": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "installed_tables": [
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          4,
+          1,
+          7
+        ],
+        [
+          4,
+          1,
+          8
+        ],
+        [
+          4,
+          1,
+          9
+        ],
+        [
+          4,
+          1,
+          10
+        ],
+        [
+          10,
+          1,
+          6
+        ],
+        [
+          10,
+          1,
+          7
+        ],
+        [
+          10,
+          1,
+          8
+        ],
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          10,
+          1,
+          10
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    },
+    {
+      "name": "sunscar_west_tower",
+      "source_sha256": "e442ff42f75a704e5d5226dab1363808ca245da29c2bd34405045c40e8b4925c",
+      "output_sha256": "ee6aa07078c4726c036cdf48fa689f11f2f231f04b14885c27c5723abc471b0b",
+      "table_cells": 2,
+      "changed_cells": 4,
+      "removed_tops": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "installed_tables": [
+        [
+          6,
+          1,
+          6
+        ],
+        [
+          7,
+          1,
+          6
+        ]
+      ],
+      "points_unchanged": true,
+      "other_cells_unchanged": true
+    }
+  ],
+  "classification": "map reset",
+  "validation": {
+    "errors": [],
+    "warnings": [
+      [
+        "unused",
+        "camp_site_dwarf",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "camp_site_elf",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "camp_site_human",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "camp_site_orc",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "camp_site_troll",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "camp_site_undead",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "fixed_in_shared",
+        "dawnmere_tollhouse",
+        [
+          6,
+          1,
+          6
+        ],
+        "a fixed node painted into a template human and elf place"
+      ],
+      [
+        "fixed_in_shared",
+        "dawnmere_tollhouse",
+        [
+          7,
+          1,
+          6
+        ],
+        "a fixed node painted into a template human and elf place"
+      ],
+      [
+        "unreachable",
+        "dur_brannoc_gate_south",
+        [
+          4,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_west cannot be reached from an entrance inside the template (dur_brannoc:dur_brannoc_gate_south)"
+      ],
+      [
+        "unreachable",
+        "dur_brannoc_gate_south",
+        [
+          8,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_east cannot be reached from an entrance inside the template (dur_brannoc:dur_brannoc_gate_south)"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_great_forge",
+        [
+          4,
+          1,
+          6
+        ],
+        "a fixed node painted into a template dwarf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_great_forge",
+        [
+          5,
+          1,
+          6
+        ],
+        "a fixed node painted into a template dwarf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_great_forge",
+        [
+          6,
+          1,
+          6
+        ],
+        "a fixed node painted into a template dwarf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_lane_house",
+        [
+          4,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_lane_house",
+        [
+          5,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_market_house",
+        [
+          4,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_market_house",
+        [
+          5,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_plaza_house",
+        [
+          4,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_plaza_house",
+        [
+          5,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_south_house",
+        [
+          4,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf and undead place"
+      ],
+      [
+        "fixed_in_shared",
+        "dur_brannoc_south_house",
+        [
+          5,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and elf and undead place"
+      ],
+      [
+        "unreachable",
+        "gor_drazhak_gate_south",
+        [
+          4,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_west cannot be reached from an entrance inside the template (gor_drazhak:gor_drazhak_gate_south main=ors)"
+      ],
+      [
+        "unreachable",
+        "gor_drazhak_gate_south",
+        [
+          8,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_east cannot be reached from an entrance inside the template (gor_drazhak:gor_drazhak_gate_south main=ors)"
+      ],
+      [
+        "unreachable",
+        "highcourt_gate_south",
+        [
+          4,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_west cannot be reached from an entrance inside the template (highcourt:highcourt_gate_south main=white)"
+      ],
+      [
+        "unreachable",
+        "highcourt_gate_south",
+        [
+          8,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_east cannot be reached from an entrance inside the template (highcourt:highcourt_gate_south main=white)"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          4,
+          1,
+          5
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          4,
+          1,
+          19
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          5,
+          1,
+          5
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          5,
+          1,
+          19
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          6,
+          1,
+          5
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          6,
+          1,
+          19
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          18,
+          1,
+          5
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          18,
+          1,
+          19
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          19,
+          1,
+          5
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          19,
+          1,
+          19
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          20,
+          1,
+          5
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_market",
+        [
+          20,
+          1,
+          19
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_martial_drill_yard",
+        [
+          6,
+          1,
+          6
+        ],
+        "a fixed node painted into a template human and elf place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_martial_drill_yard",
+        [
+          7,
+          1,
+          6
+        ],
+        "a fixed node painted into a template human and elf place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_service_yard",
+        [
+          5,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_service_yard",
+        [
+          6,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "fixed_in_shared",
+        "highcourt_service_yard",
+        [
+          7,
+          1,
+          4
+        ],
+        "a fixed node painted into a template dwarf and human and undead and orc place"
+      ],
+      [
+        "unreachable",
+        "lethariel_gate_south",
+        [
+          4,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_west cannot be reached from an entrance inside the template (lethariel:lethariel_gate_south main=pale)"
+      ],
+      [
+        "unreachable",
+        "lethariel_gate_south",
+        [
+          8,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_east cannot be reached from an entrance inside the template (lethariel:lethariel_gate_south main=pale)"
+      ],
+      [
+        "unused",
+        "mining_camp_dwarf",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_dwarf_large",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_elf",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_elf_large",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_human",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_human_large",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_orc",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_orc_large",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_troll",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_troll_large",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_undead",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unused",
+        "mining_camp_undead_large",
+        null,
+        "no layout places this template"
+      ],
+      [
+        "unreachable",
+        "nhal_veyr_gate_south",
+        [
+          4,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_west cannot be reached from an entrance inside the template (nhal_veyr:nhal_veyr_gate_south main=crypt)"
+      ],
+      [
+        "unreachable",
+        "nhal_veyr_gate_south",
+        [
+          8,
+          1,
+          1
+        ],
+        "the sockets point {id}_post_east cannot be reached from an entrance inside the template (nhal_veyr:nhal_veyr_gate_south main=crypt)"
+      ],
+      [
+        "unreachable",
+        "sunscar_warlord_hall",
+        [
+          7,
+          9,
+          8
+        ],
+        "the inside point warlord_platform cannot be reached from an entrance inside the template (sunscar:warlord_hall)"
+      ]
+    ],
+    "counts": [
+      284,
+      6
+    ],
+    "rosters": 6,
+    "baseline": "BASELINE 83436509e80fb1231fabe4401c5993272ed793c5",
+    "builds": true
+  }
+}

@@ -1,0 +1,9 @@
+parser PASS mods/MAPGEN/grug_mapgen/wp13/parts.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/dressing.lua
+parser PASS tools/capital_polish_study/implementation/all_tables/runtime_test.lua
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+sweep 4 PASS
+sweep 5 PASS
+sweep 6 PASS

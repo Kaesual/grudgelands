@@ -1,0 +1,7 @@
+staged patch: probe.patch
+staged probe: grug_probe_ui_dialogs
+headless boot: PASS (port 33946, 0 s)
+log: /tmp/grudgelands-headless.uifidelity-7afthk/server.log
+seed = 12345
+112:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:33946.
+kept: /tmp/grudgelands-headless.uifidelity-7afthk

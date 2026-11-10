@@ -690,6 +690,8 @@ local function loader(directory)
 		socket("travel_waypoint", "waypoint",
 			math.floor((PLAZA.x1 + PLAZA.x2) / 2), 1,
 			math.floor((PLAZA.z1 + PLAZA.z2) / 2), 0)
+		-- Public service at the plaza approach, outside the reserved arrival pad.
+		socket("expedition_registrar", "idle", 12, 1, -12, 2, {tags = {"work"}})
 		for _, corner in ipairs(CORNERS) do
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
 				corner.face, {group = WATCH, order = corner.order})

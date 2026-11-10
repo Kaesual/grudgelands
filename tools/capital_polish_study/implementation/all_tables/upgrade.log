@@ -1,0 +1,2 @@
+check_upgrade self-test: PASS
+Upgrade declaration 0.72.3: PASS (compared with origin/main; the towns build as at origin/main or a map reset is declared)

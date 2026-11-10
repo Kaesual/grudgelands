@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grudgelands · Perspektivvergleich</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;background:#0b1315;color:#e6deca;font:15px/1.6 system-ui}main{max-width:1440px;margin:auto}h1{font:30px Georgia;margin:0 0 12px}p{color:#b0beb4;max-width:850px}a{color:#dec28c}nav{display:flex;gap:24px;flex-wrap:wrap;margin:18px 0}.controls{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:18px 0}input{flex:1;min-width:160px;accent-color:#ceb17a}button{background:#24332d;color:#e6deca;border:1px solid #8c805d;padding:8px 16px;cursor:pointer}figure{position:relative;margin:0;border:1px solid #546354;background:#0b1315;line-height:0}figure img{width:100%;display:block}#after{position:absolute;inset:0;clip-path:inset(0 0 0 50%)}#divider{position:absolute;left:50%;top:0;bottom:0;width:2px;background:#e6c78e;pointer-events:none}.captions{display:flex;justify-content:space-between;font-size:12px;color:#ceb17a;margin-top:8px}small{color:#92a697}
+</style>
+<main><h1>Ein Charakter im Vordergrund, keine Riesenfigur</h1>
+<p>Links der bisherige Stand, rechts die neue Menschen-Perspektive. Die aktuelle Fassung enthält außerdem die überarbeitete Kulisse mit scharfen Pixeltexturen und gepflasterter Straße. Kamera, Körpermaßstab und Bildausschnitt sind jetzt aufeinander abgestimmt; ein Bodenschatten verankert die Füße.</p>
+<nav><a href="portraits.html">Alle sechs Charaktere im Überblick</a><a href="preview.html?race=human">Neue Vorschau ausprobieren →</a><a href="preview-before.html?race=human">Bisherige Vorschau</a><a href="scenes.html?race=human">Szene mit zuschaltbarer Referenzfigur</a></nav>
+<div class="controls"><button id="old">Nur vorher</button><label for="split">Vergleich</label><input id="split" aria-label="Trennlinie zwischen vorher und nachher" type="range" min="0" max="100" value="50"><button id="new">Nur nachher</button></div>
+<figure><img src="preview-human-before.png" alt="Bisherige Perspektive: Figur und Hintergrund mit unabhängigen Kameras"><img id="after" src="preview-human.png" alt="Neue Perspektive: menschliche Spielproportionen und gemeinsame Kamera"><div id="divider"></div></figure>
+<div class="captions"><span>VORHER · Unabhängige Kameras</span><span>NACHHER · Gemeinsame Perspektive</span></div>
+<p><small>Der Vergleich zeigt Human. Die gleiche Perspektivkorrektur ist inzwischen bei allen sechs Völkern umgesetzt; ihre Wegbeläge sind ebenfalls geprüft. Beide Vergleichsbilder zeigen dieselben Aussehensoptionen und dieselbe Fenstergröße.</small></p></main>
+<script>
+const split=document.getElementById('split');function update(){document.getElementById('after').style.clipPath=`inset(0 0 0 ${split.value}%)`;document.getElementById('divider').style.left=split.value+'%'}
+split.oninput=update;document.getElementById('old').onclick=()=>{split.value=100;update()};document.getElementById('new').onclick=()=>{split.value=0;update()};
+</script></html>

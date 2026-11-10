@@ -1,0 +1,5 @@
+ACTION[Emerge-0]: [uifidelity] READY
+ACTION[Server]: [uifidelity] SHOT dark_creation_start
+ACTION[Server]: [uifidelity] SHOT dark_creation_race_human
+ACTION[Server]: [uifidelity] SHOT dark_creation_race_troll
+ACTION[Server]: [uifidelity] shutdown

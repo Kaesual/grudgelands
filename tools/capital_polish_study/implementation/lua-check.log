@@ -1,0 +1,16 @@
+parser PASS mods/CORE/grug_core/settlement_sockets.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/highcourt.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/dur_brannoc.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/gor_drazhak.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/nhal_veyr.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/lethariel.lua
+parser PASS mods/MAPGEN/grug_mapgen/wp13/kezamba.lua
+parser PASS mods/PLAYER/grug_expeditions/registrar.lua
+parser PASS tools/r70_cap/portable_test.lua
+parser PASS tools/r71_ui/portable_test.lua
+sweep 1 PASS
+sweep 2 PASS
+sweep 3 PASS
+sweep 4 PASS
+sweep 5 PASS
+sweep 6 PASS

@@ -64,8 +64,8 @@ Colours are not separate art: a coloured layer is a white mask coloured by the
 engine (`^[multiply`) with a detail layer of shading and fixed colours over it.
 A dwarf beard reaches onto the chest and lies over the armor there.
 
-**Character creation** chooses the look in the same window as faction, race
-and class ([world.md](world.md) §7): previous/next per category, a random
+**Character creation** chooses the look in the same window as race and class
+(the race determines the faction; [world.md](world.md) §7): previous/next per category, a random
 button and a full-body preview the player turns with the mouse (no
 auto-rotation, no weapon). A race choice rolls a random look; the look is
 stored only by "Create character", together with the rest, once in player

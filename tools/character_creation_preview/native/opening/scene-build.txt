@@ -1,0 +1,1 @@
+Opening scene built: 136574 nodes; 26 types; no missing assets

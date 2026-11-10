@@ -1,0 +1,10 @@
+{
+  "foreground_unchanged": true,
+  "foreground": {
+    "count": 84031,
+    "sha256": "ab22bd8cc7fde2a9142cb0977d4e0545a7065b3fa34b8fc70e7ed3958fae8219"
+  },
+  "original_scene_settings_unchanged": true,
+  "trees": 9,
+  "modified_region": "z > 60"
+}

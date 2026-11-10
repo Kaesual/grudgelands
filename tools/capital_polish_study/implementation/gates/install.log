@@ -1,0 +1,18 @@
+highcourt_gate_south: editor save and validator
+Traceback (most recent call last):
+  File "/home/jan/projects/grudgelands/.claude/worktrees/character-creation/tools/capital_polish_study/implementation/gates/install.py", line 53, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/home/jan/projects/grudgelands/.claude/worktrees/character-creation/tools/capital_polish_study/implementation/gates/install.py", line 45, in main
+    assert before.points==after.points
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+highcourt_gate_south: already installed; no validator repeated
+dur_brannoc_gate_south: editor save and validator
+dur_brannoc_gate_south: saved, exactly14 oriented nodes; points/box retained
+lethariel_gate_south: editor save and validator
+lethariel_gate_south: saved, exactly14 oriented nodes; points/box retained
+gor_drazhak_gate_south: editor save and validator
+gor_drazhak_gate_south: saved, exactly14 oriented nodes; points/box retained
+nhal_veyr_gate_south: editor save and validator
+nhal_veyr_gate_south: saved, exactly14 oriented nodes; points/box retained

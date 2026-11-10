@@ -1,0 +1,669 @@
+{
+  "race": "elf",
+  "title": "The grove terrace",
+  "seed": 1103,
+  "description": "A silverwood grove garden with pale winding paving, a reflecting pool, planted borders, fern beds and quiet seating. Slender aspen groups frame the taller forked silverwood crowns.",
+  "camera": {
+    "eye": [
+      0,
+      2.05,
+      -13
+    ],
+    "target": [
+      0,
+      1.3904,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "portrait": {
+    "feet": [
+      0,
+      0.5,
+      -9.5
+    ],
+    "units_per_pixel": 0.0525,
+    "stature": 1.06
+  },
+  "sky": "#9aafb2",
+  "fog": [
+    38,
+    90
+  ],
+  "tint": "#e7f0e9",
+  "ground": "default:dirt_with_grass",
+  "soil": "default:dirt",
+  "path": "default:silver_sandstone_brick",
+  "stone": "default:silver_sandstone_brick",
+  "buildings": [
+    {
+      "template": "silverleaf_moon_shrine",
+      "at": [
+        -20,
+        0,
+        29
+      ]
+    },
+    {
+      "template": "silverleaf_glade_house_west",
+      "at": [
+        21,
+        0,
+        43
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "at": [
+        -9,
+        0,
+        17
+      ],
+      "species": "silverwood",
+      "seed": 110319
+    },
+    {
+      "at": [
+        16,
+        0,
+        30
+      ],
+      "species": "silverwood",
+      "seed": 110456
+    },
+    {
+      "at": [
+        -2,
+        0,
+        40
+      ],
+      "species": "aspen",
+      "seed": 110593
+    },
+    {
+      "at": [
+        7,
+        0,
+        47
+      ],
+      "species": "silverwood",
+      "seed": 110730
+    },
+    {
+      "at": [
+        -24,
+        0,
+        9
+      ],
+      "species": "aspen",
+      "seed": 110867
+    },
+    {
+      "at": [
+        23,
+        0,
+        11
+      ],
+      "species": "aspen",
+      "seed": 111004
+    },
+    {
+      "at": [
+        -13,
+        0,
+        55
+      ],
+      "species": "silverwood",
+      "seed": 45019
+    },
+    {
+      "at": [
+        0,
+        0,
+        57
+      ],
+      "species": "aspen",
+      "seed": 45029
+    },
+    {
+      "at": [
+        16,
+        0,
+        62
+      ],
+      "species": "silverwood",
+      "seed": 45039
+    },
+    {
+      "at": [
+        7,
+        0,
+        67
+      ],
+      "species": "aspen",
+      "seed": 45049
+    }
+  ],
+  "plants": [
+    "default:fern_2",
+    "grug_nodes:flower_cream_cups",
+    "grug_nodes:flower_lilac_bells"
+  ],
+  "props": [
+    {
+      "kind": "blocks",
+      "node": "default:silver_sandstone_brick",
+      "from": [
+        4,
+        0,
+        10
+      ],
+      "to": [
+        12,
+        0,
+        20
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "default:river_water_source",
+      "from": [
+        5,
+        0,
+        11
+      ],
+      "to": [
+        11,
+        0,
+        19
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        7,
+        1,
+        13
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        9,
+        1,
+        17
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_bench",
+      "at": [
+        4,
+        1,
+        7
+      ],
+      "param2": 2
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_bench",
+      "at": [
+        12,
+        1,
+        14
+      ],
+      "param2": 3
+    },
+    {
+      "kind": "blocks",
+      "node": "stairs:slab_silver_sandstone_brick",
+      "from": [
+        -7,
+        1,
+        8
+      ],
+      "to": [
+        -7,
+        1,
+        13
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -4,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -5,
+        1,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        4,
+        1,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        8,
+        1,
+        8
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -6,
+        1,
+        7
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        13,
+        1,
+        18
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -3,
+        1,
+        13
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        3,
+        1,
+        21
+      ]
+    },
+    {
+      "kind": "patch",
+      "node": "grug_nodes:dirt_with_silver_litter",
+      "at": [
+        -9,
+        17
+      ],
+      "radius": [
+        5,
+        7
+      ]
+    },
+    {
+      "kind": "patch",
+      "node": "grug_nodes:dirt_with_moss",
+      "at": [
+        15,
+        25
+      ],
+      "radius": [
+        5,
+        7
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "stairs:slab_silver_sandstone_brick",
+      "from": [
+        4,
+        1,
+        10
+      ],
+      "to": [
+        11,
+        1,
+        10
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "stairs:slab_silver_sandstone_brick",
+      "from": [
+        12,
+        1,
+        11
+      ],
+      "to": [
+        12,
+        1,
+        12
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "stairs:slab_silver_sandstone_brick",
+      "from": [
+        4,
+        1,
+        17
+      ],
+      "to": [
+        4,
+        1,
+        20
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_bench",
+      "at": [
+        -5,
+        1,
+        8
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_potted_viola",
+      "at": [
+        -7,
+        2,
+        8
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_potted_dandelion_white",
+      "at": [
+        -7,
+        2,
+        13
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_table",
+      "at": [
+        5,
+        1,
+        6
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_potted_geranium",
+      "at": [
+        5,
+        2,
+        6
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        -5,
+        1,
+        0
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        -6,
+        1,
+        2
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        -5,
+        1,
+        3
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        -7,
+        1,
+        5
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        -6,
+        1,
+        6
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        4,
+        1,
+        4
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        6,
+        1,
+        3
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        7,
+        1,
+        5
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        9,
+        1,
+        7
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        11,
+        1,
+        8
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        13,
+        1,
+        9
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        14,
+        1,
+        12
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        14,
+        1,
+        16
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        13,
+        1,
+        20
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        11,
+        1,
+        22
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        8,
+        1,
+        22
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_3",
+      "at": [
+        -8,
+        1,
+        6
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_3",
+      "at": [
+        -11,
+        1,
+        11
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_3",
+      "at": [
+        15,
+        1,
+        14
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_3",
+      "at": [
+        14,
+        1,
+        21
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_3",
+      "at": [
+        -11,
+        1,
+        20
+      ],
+      "param2": 0
+    }
+  ],
+  "route": [
+    [
+      -22,
+      0,
+      2.8
+    ],
+    [
+      -4,
+      0,
+      2.8
+    ],
+    [
+      7,
+      -1,
+      2.6
+    ],
+    [
+      21,
+      -6,
+      2
+    ],
+    [
+      38,
+      -9,
+      1.5
+    ],
+    [
+      48,
+      -12,
+      0
+    ]
+  ],
+  "plant_count": 300
+}

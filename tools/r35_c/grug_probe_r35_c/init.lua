@@ -333,8 +333,8 @@ stage("the window after readiness", function()
 	else
 		check(hint("probe_a") == READY, "ready hint while dismissed: " .. hint("probe_a"))
 	end
-	check(inv_has("probe_a", "faction_accord"), "the inventory is the window")
-	check(inv_has("probe_a", "bgcolor[#080808FF;both;#000000FF]"), "the dark backdrop")
+	check(inv_has("probe_a", "race_human"), "the inventory is the window")
+	check(inv_has("probe_a", "bgcolor[#0b1315;both;#0b1315]"), "the dark backdrop")
 	return nil
 end)
 
@@ -343,25 +343,29 @@ stage("the draft through the inventory key", function()
 	local writes = fakes.probe_a.inventory_writes
 	set_player_inventory_formspec(by_name.probe_a)
 	check(fakes.probe_a.inventory_writes == writes, "sfinv writes nothing during creation")
-	check(submit("probe_a", "", {faction_accord = "The Accord"}) == "grug_classes",
-		"faction from the inventory handled by grug_classes (sfinv passed)")
+	check(submit("probe_a", "", {race_unknown = "forged"}) == "grug_classes",
+		"inventory submission handled by grug_classes (sfinv passed)")
 	check(last_show("probe_a") == CREATE_FORM, "the window opens again")
 	check(not inv_has("probe_a", "model["), "no model before a race")
+	check(inv_has("probe_a", "grug_creation_intro.png"), "opening fortress scene")
+	check(not inv_has("probe_a", "class_warrior") and not inv_has("probe_a", "APPEARANCE"),
+		"opening hides classes and appearance")
+	submit("probe_a", "", {class_mage = "forged before race"})
 	submit("probe_a", "", {race_human = "Human"})
 	check(inv_has("probe_a", "grug_visuals_human_body.png"), "the human preview (real look panel)")
+	check(not inv_has("probe_a", "grug_creation_intro.png"), "first race leaves opening")
+	check(inv_has("probe_a", grug_core.ui.button_style("class_warrior", "selected")), "first race starts as Warrior")
 	check(inv_has("probe_a", ";false;true;0,79;30]"), "mouse rotation on, auto-rotation off")
 	submit("probe_a", "", {race_dwarf = "Dwarf"})
 	check(inv_has("probe_a", "grug_visuals_dwarf_body.png"), "a race change redraws the preview")
 	submit("probe_a", "", {class_mage = "Mage"})
 	check(inv_has("probe_a", "create_character"), "Create active")
-	submit("probe_a", "", {faction_throng = "The Throng"})
-	check(not inv_has("probe_a", "model[") and not inv_has("probe_a", "create_character"),
-		"a faction change clears race and look")
-	submit("probe_a", "", {race_human = "Human"})
-	check(not inv_has("probe_a", "model["), "a forged race of the other faction is refused")
+	check(inv_has("probe_a", "race_orc") and inv_has("probe_a", "race_human"), "both factions stay available")
+	submit("probe_a", "", {race_unknown = "forged"})
+	check(inv_has("probe_a", "grug_visuals_dwarf_body.png"), "invalid race preserves draft")
 	submit("probe_a", "", {race_orc = "Orc"})
-	check(inv_has("probe_a", "style[class_mage;bgcolor=#8a6a1e;font=bold]"),
-		"the class stayed through the faction change")
+	check(inv_has("probe_a", grug_core.ui.button_style("class_mage", "selected")),
+		"chosen class survives a cross-faction race change")
 	local before = fakes.probe_a.inventory_formspec
 	submit("probe_a", "", {look_next_tone = ">"})
 	check(fakes.probe_a.inventory_formspec ~= before, "a look button changes the draft")
@@ -375,7 +379,8 @@ end)
 
 stage("Create, a second Create, then disconnect mid-load", function()
 	check(#shows_since(marks.a, "probe_a") == 0, "the window was not re-opened")
-	check(inv_has("probe_a", "style[race_orc;bgcolor=#8a6a1e;font=bold]"), "the draft survived Esc")
+	check(inv_has("probe_a", grug_core.ui.button_style("race_orc", "selected")) and
+		inv_has("probe_a", "grug_visuals_orc_body.png"), "the draft survived Esc")
 	check(submit("probe_a", "", {create_character = "Create character"}) == "grug_classes",
 		"Create from the inventory")
 	check(meta("probe_a", "grug_factions:faction") == "throng", "faction stored")
@@ -426,10 +431,10 @@ stage("arrival after the reconnect", function()
 end)
 
 stage("the named dialog to an arrival", function()
-	submit("probe_b", CREATE_FORM, {faction_accord = "The Accord"})
-	submit("probe_b", CREATE_FORM, {race_elf = "Elf"})
 	submit("probe_b", CREATE_FORM, {create_character = "Create character"})
-	check(nothing_stored("probe_b"), "Create refused without a class")
+	check(nothing_stored("probe_b"), "Create refused without a race")
+	submit("probe_b", CREATE_FORM, {race_elf = "Elf"})
+	check(inv_has("probe_b", grug_core.ui.button_style("class_warrior", "selected")), "Warrior default")
 	submit("probe_b", CREATE_FORM, {class_scout = "Scout"})
 	check(submit("probe_b", CREATE_FORM, {create_character = "Create character"}) ==
 		"grug_classes", "Create from the dialog")
@@ -449,7 +454,7 @@ stage("named flow result, then a draft disconnect", function()
 	submit("probe_c", "", {class_priest = "Priest"})
 	leave("probe_c")
 	join("probe_c", false)
-	check(inv_has("probe_c", "Choose your faction"), "a disconnect before Create starts over")
+	check(inv_has("probe_c", "Choose your fate"), "a disconnect before Create starts over")
 	check(nothing_stored("probe_c"), "nothing stored for the abandoned draft")
 	check(fakes.probe_c.armor.immortal == 1, "the new draft is in stasis")
 	leave("probe_c")

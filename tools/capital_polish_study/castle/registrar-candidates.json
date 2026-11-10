@@ -1,0 +1,122 @@
+{
+  "dur_brannoc": {
+    "waystone": [
+      19,
+      1,
+      -22
+    ],
+    "castle_entrance": [
+      0,
+      1,
+      10
+    ],
+    "registrar_candidate": [
+      10,
+      1,
+      7
+    ],
+    "straight_distance_waystone_to_candidate": 30.4,
+    "clear_patch": "3x3 existing paving, top y=0, no socket within1.5 nodes",
+    "note": "Proposal only. Distance is a straight line, not a verified walking route. Guild placement depends on seed."
+  },
+  "highcourt": {
+    "waystone": [
+      22,
+      1,
+      -22
+    ],
+    "castle_entrance": [
+      0,
+      1,
+      10
+    ],
+    "registrar_candidate": [
+      10,
+      1,
+      7
+    ],
+    "straight_distance_waystone_to_candidate": 31.4,
+    "clear_patch": "3x3 existing paving, top y=0, no socket within1.5 nodes",
+    "note": "Proposal only. Distance is a straight line, not a verified walking route. Guild placement depends on seed."
+  },
+  "lethariel": {
+    "waystone": [
+      25,
+      1,
+      -14
+    ],
+    "castle_entrance": [
+      -18,
+      1,
+      -29
+    ],
+    "registrar_candidate": [
+      -15,
+      1,
+      -19
+    ],
+    "straight_distance_waystone_to_candidate": 40.3,
+    "clear_patch": "3x3 existing paving, top y=0, no socket within1.5 nodes",
+    "note": "Proposal only. Distance is a straight line, not a verified walking route. Guild placement depends on seed."
+  },
+  "gor_drazhak": {
+    "waystone": [
+      19,
+      1,
+      -22
+    ],
+    "castle_entrance": [
+      0,
+      1,
+      10
+    ],
+    "registrar_candidate": [
+      -10,
+      1,
+      7
+    ],
+    "straight_distance_waystone_to_candidate": 41.0,
+    "clear_patch": "3x3 existing paving, top y=0, no socket within1.5 nodes",
+    "note": "Proposal only. Distance is a straight line, not a verified walking route. Guild placement depends on seed."
+  },
+  "nhal_veyr": {
+    "waystone": [
+      19,
+      1,
+      -22
+    ],
+    "castle_entrance": [
+      0,
+      1,
+      10
+    ],
+    "registrar_candidate": [
+      10,
+      1,
+      7
+    ],
+    "straight_distance_waystone_to_candidate": 30.4,
+    "clear_patch": "3x3 existing paving, top y=0, no socket within1.5 nodes",
+    "note": "Proposal only. Distance is a straight line, not a verified walking route. Guild placement depends on seed."
+  },
+  "kezamba": {
+    "waystone": [
+      -38,
+      1,
+      -24
+    ],
+    "castle_entrance": [
+      27,
+      1,
+      -18
+    ],
+    "registrar_candidate": [
+      17,
+      1,
+      -14
+    ],
+    "straight_distance_waystone_to_candidate": 55.9,
+    "clear_patch": "3x3 existing paving, top y=0, no socket within1.5 nodes",
+    "note": "Proposal only. Distance is a straight line, not a verified walking route. Guild placement depends on seed."
+  }
+}

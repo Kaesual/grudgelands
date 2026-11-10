@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+"""Embed approved study captures in a standalone comparison page."""
+from pathlib import Path
+import base64
+HERE=Path(__file__).resolve().parent
+parts=['''<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mining-Gilde · Tischstudie</title><style>*{box-sizing:border-box}body{margin:0;background:#142126;color:#dfddd0;font:16px/1.55 system-ui}main{max-width:1550px;margin:auto;padding:35px}h1,h2{font-family:Georgia;font-weight:400}h1{font-size:42px}p{max-width:90ch;color:#b9c5c2}a{color:#e5bd75}.pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:25px 0 45px}figure{margin:0;background:#253238;border:1px solid #687570}img{width:100%;display:block}figcaption{padding:14px}b{color:#e7c992}small{color:#b9c5c2}@media(max-width:850px){.pair{grid-template-columns:1fr}main{padding:20px}}</style><main><small>GRUDGELANDS · ENTWURF · KEINE SPIELÄNDERUNGEN</small><h1>Tische in der Mining-Gilde</h1><p>Das Problem steckt tatsächlich in der Geometrie: Beim Registrar ist der Tisch 1,5 Blöcke hoch. Die anderen Platten liegen zwischen den Pfosten, ohne dass diese sie berühren.</p><p>Vorschlag: den bereits vorhandenen dünnen Holztisch verwenden. Seine Platte ist ⅛ Block dick, er ist insgesamt einen Block hoch. Für die langen Schreibtische stehen drei Exemplare direkt nebeneinander. Die grauen Figuren sind 1,70-Block-Maßreferenzen, keine echten NPC-Renderings.</p><p><a href="scenes.html">Interaktive Web-Szenen: alle sechs Hauptstädte und beide Varianten</a></p>''']
+for title,prefix in [('Gleiche Kamera, gleiche Figuren','detail'),('Im Guild-Haus von Highcourt','human')]:
+ parts.append('<h2>'+title+'</h2><div class="pair">')
+ for variant,label in [('before','Bestand'),('after','Vorschlag')]:
+  data=base64.b64encode((HERE/'renders'/f'{prefix}_{variant}.png').read_bytes()).decode()
+  parts.append(f'<figure><figcaption><b>{label}</b></figcaption><img src="data:image/png;base64,{data}" alt="{title}: {label}"></figure>')
+ parts.append('</div>')
+parts.append('''<p>Im Gebäudevergleich sind Dach und obere Wände abgeschnitten, damit die Arbeitsplätze sichtbar werden. Tischpositionen und NPC-Plätze bleiben erhalten. Die vorgeschlagene Holzoberfläche wäre bei Elfen und Untoten eine bewusste Änderung gegenüber den bisherigen Steinplatten.</p><p>Die sechs Guild-Häuser haben denselben Tischaufbau. Eine globale Ersetzung wäre zu breit: Die bisherige Tischplatten-Rolle wird in 159 Gebäudevorlagen verwendet. Für diese erste Korrektur würde ich bei den sechs Guild-Häusern bleiben.</p><small>Quellen, genaue Maße, weitere vorhandene Tischtypen und reproduzierbarer Aufbau: README.md und audit.json im selben Ordner.</small></main></html>''')
+(HERE/'index.html').write_text(''.join(parts))

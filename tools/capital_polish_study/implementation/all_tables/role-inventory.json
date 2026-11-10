@@ -1,0 +1,3959 @@
+{
+  "counts": {
+    "templates": 284,
+    "tops": 575,
+    "legs": 575,
+    "pairs": 575,
+    "orphan_tops": 0,
+    "extra_legs": 0,
+    "table_templates": 153
+  },
+  "templates": [
+    {
+      "template": "nhal_veyr_homes_gate_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_lane_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_warren_clan_house",
+      "pairs": [
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          5,
+          2,
+          8
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_market_bowyer",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_watch_serjeant_house",
+      "pairs": [
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          6,
+          2,
+          3
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_market",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ],
+        [
+          18,
+          2,
+          5
+        ],
+        [
+          19,
+          2,
+          5
+        ],
+        [
+          20,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          19
+        ],
+        [
+          5,
+          2,
+          19
+        ],
+        [
+          6,
+          2,
+          19
+        ],
+        [
+          18,
+          2,
+          19
+        ],
+        [
+          19,
+          2,
+          19
+        ],
+        [
+          20,
+          2,
+          19
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_canopy_watchpost",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_totem_shrine",
+      "pairs": [
+        [
+          5,
+          2,
+          16
+        ],
+        [
+          6,
+          2,
+          16
+        ],
+        [
+          7,
+          2,
+          16
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_plaza_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_warren_round_lodge",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_bone_lodge",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_vine_house_d",
+      "pairs": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_gate_house_south",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_moot_house",
+      "pairs": [
+        [
+          2,
+          6,
+          7
+        ],
+        [
+          8,
+          6,
+          7
+        ],
+        [
+          2,
+          6,
+          8
+        ],
+        [
+          8,
+          6,
+          8
+        ],
+        [
+          2,
+          6,
+          9
+        ],
+        [
+          8,
+          6,
+          9
+        ],
+        [
+          2,
+          6,
+          10
+        ],
+        [
+          8,
+          6,
+          10
+        ],
+        [
+          2,
+          6,
+          11
+        ],
+        [
+          8,
+          6,
+          11
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_great_forge",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_terrace_house_east",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_bazaar_butcher",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_south_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "stillgrave_watchtower",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_gatewatch",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kapok_river_stilt",
+      "pairs": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_market_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dawnmere_orchard_cottage",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_market_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_homes_terrace_house",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_market_store",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_homes_feast_hall",
+      "pairs": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_market_charnel",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_war_drill_yard",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_plot_bazaar_house",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_bazaar_tannery",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_homes_corner_house",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_vine_house_c",
+      "pairs": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_orchard_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_market_weaver",
+      "pairs": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_martial_muster_hall",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_homes_house_hip",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_totem_scriptorium",
+      "pairs": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_trade_shed",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_martial_drill_yard",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_deep_memory_hall",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_warren_house_bone",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_martial_armoury",
+      "pairs": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_forge_smithy",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_homes_lane_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_moon_shrine",
+      "pairs": [
+        [
+          4,
+          2,
+          12
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_warlord_hall",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_west_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_east_home",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dawnmere_smithy",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_lane_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_glade_house_east",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_terrace_cottage_west",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_west_tower",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_bazaar_carver",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_vine_herbalist",
+      "pairs": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_east_tower",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_bazaar_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_market_workshop",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_beast_pen",
+      "pairs": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ],
+        [
+          7,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_plot_shore_house",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_lore_hall",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_forge_store",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dawnmere_field_cottage",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dawnmere_lane_cottage",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kapok_drying_shed",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_bazaar_armourer",
+      "pairs": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_east_gable_home",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dawnmere_green_cottage",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_terrace_cottage_east",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_martial_watch_tower",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_lane_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_shore_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_homes_house_gable",
+      "pairs": [
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          5,
+          2,
+          3
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_warren_house_tusk",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_martial_store",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_garrison_muster_hall",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_war_armoury",
+      "pairs": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_bone_herb_house",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_martial_guard_house",
+      "pairs": [
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          6,
+          2,
+          3
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_forge_guild_house",
+      "pairs": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_garrison_serjeant",
+      "pairs": [
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          6,
+          2,
+          3
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_deep_scriptorium",
+      "pairs": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_homes_bakehouse",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_homes_tenement",
+      "pairs": [
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          5,
+          2,
+          8
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_market_bakehouse",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_homes_house_lane",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_lore_library",
+      "pairs": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          4,
+          2,
+          11
+        ],
+        [
+          10,
+          2,
+          11
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_south_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_watch_armoury",
+      "pairs": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_shore_tailor",
+      "pairs": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_lagerhouse",
+      "pairs": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_service_yard",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_garrison_quartermaster",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_armoury",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kapok_reed_stilt",
+      "pairs": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_terrace_alehouse",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_garrison_armoury",
+      "pairs": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_war_quartermaster",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_city_workshop",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_vine_house_b",
+      "pairs": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_garrison_watch_tower",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "stillgrave_keepers_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_north_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_lore_almonry",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_garrison_drill_yard",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_chapel_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_forge_hall",
+      "pairs": [
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ],
+        [
+          6,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_tusk_lodge",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_shore_butcher",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_homes_tavern",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_market_physic",
+      "pairs": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          9
+        ],
+        [
+          3,
+          2,
+          10
+        ],
+        [
+          9,
+          2,
+          10
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_community_hall",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          9,
+          2,
+          5
+        ],
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          9
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_watch_tower",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_southwest_home",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "stillgrave_warden_house",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_martial_quartermaster",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_deep_hall_of_record",
+      "pairs": [
+        [
+          5,
+          2,
+          14
+        ],
+        [
+          6,
+          2,
+          14
+        ],
+        [
+          7,
+          2,
+          14
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_chief_lodge",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_star_hall",
+      "pairs": [
+        [
+          5,
+          2,
+          16
+        ],
+        [
+          6,
+          2,
+          16
+        ],
+        [
+          7,
+          2,
+          16
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_west_home",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kapok_weaver_stilt",
+      "pairs": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kapok_fish_smoker",
+      "pairs": [
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          5,
+          4,
+          4
+        ],
+        [
+          6,
+          4,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_warren_house_spear",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kezamba_vine_house_a",
+      "pairs": [
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_covered_market",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kapok_watchpost",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_market",
+      "pairs": [
+        [
+          4,
+          2,
+          5
+        ],
+        [
+          5,
+          2,
+          5
+        ],
+        [
+          6,
+          2,
+          5
+        ],
+        [
+          14,
+          2,
+          5
+        ],
+        [
+          15,
+          2,
+          5
+        ],
+        [
+          16,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          15
+        ],
+        [
+          5,
+          2,
+          15
+        ],
+        [
+          6,
+          2,
+          15
+        ],
+        [
+          14,
+          2,
+          15
+        ],
+        [
+          15,
+          2,
+          15
+        ],
+        [
+          16,
+          2,
+          15
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_homes_terrace_east",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_lane_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_martial_hall",
+      "pairs": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          9,
+          2,
+          6
+        ],
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          9,
+          2,
+          7
+        ],
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          9,
+          2,
+          8
+        ],
+        [
+          3,
+          2,
+          9
+        ],
+        [
+          9,
+          2,
+          9
+        ],
+        [
+          3,
+          2,
+          10
+        ],
+        [
+          9,
+          2,
+          10
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "hearthpine_workyard",
+      "pairs": [
+        [
+          5,
+          2,
+          4
+        ],
+        [
+          6,
+          2,
+          4
+        ],
+        [
+          7,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_terrace_house_west",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_ancestor_hall",
+      "pairs": [
+        [
+          5,
+          2,
+          16
+        ],
+        [
+          6,
+          2,
+          16
+        ],
+        [
+          7,
+          2,
+          16
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_bowyer_workshop",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_watch_captain_hall",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          10,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          4,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_market_bonesmith",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_homes_longhouse",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_lore_chapter_house",
+      "pairs": [
+        [
+          3,
+          2,
+          6
+        ],
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_watch_drill_yard",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "gor_drazhak_war_watch_tower",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "kapok_elder_stilt",
+      "pairs": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          5,
+          6,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_martial_lodge",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dawnmere_tollhouse",
+      "pairs": [
+        [
+          6,
+          2,
+          6
+        ],
+        [
+          7,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "silverleaf_glade_house_west",
+      "pairs": [
+        [
+          3,
+          2,
+          5
+        ],
+        [
+          4,
+          2,
+          5
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "lethariel_mere_lore_hall",
+      "pairs": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_lane_house",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_masons_guild",
+      "pairs": [
+        [
+          2,
+          2,
+          3
+        ],
+        [
+          10,
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          4
+        ],
+        [
+          10,
+          2,
+          4
+        ],
+        [
+          2,
+          2,
+          6
+        ],
+        [
+          10,
+          2,
+          6
+        ],
+        [
+          2,
+          2,
+          7
+        ],
+        [
+          10,
+          2,
+          7
+        ],
+        [
+          2,
+          2,
+          9
+        ],
+        [
+          10,
+          2,
+          9
+        ],
+        [
+          2,
+          2,
+          10
+        ],
+        [
+          10,
+          2,
+          10
+        ],
+        [
+          2,
+          2,
+          12
+        ],
+        [
+          10,
+          2,
+          12
+        ],
+        [
+          2,
+          2,
+          13
+        ],
+        [
+          10,
+          2,
+          13
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_terrace_bakehouse",
+      "pairs": [
+        [
+          4,
+          2,
+          6
+        ],
+        [
+          5,
+          2,
+          6
+        ],
+        [
+          6,
+          2,
+          6
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "sunscar_spear_lodge",
+      "pairs": [
+        [
+          4,
+          2,
+          4
+        ],
+        [
+          5,
+          2,
+          4
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "nhal_veyr_watch_quartermaster",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "dur_brannoc_terrace_long_house",
+      "pairs": [
+        [
+          3,
+          2,
+          8
+        ],
+        [
+          4,
+          2,
+          8
+        ],
+        [
+          5,
+          2,
+          8
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    },
+    {
+      "template": "highcourt_service_store",
+      "pairs": [
+        [
+          3,
+          2,
+          7
+        ],
+        [
+          4,
+          2,
+          7
+        ],
+        [
+          5,
+          2,
+          7
+        ]
+      ],
+      "orphan_tops": [],
+      "extra_legs": []
+    }
+  ]
+}

@@ -2,6 +2,21 @@
 
 Updated 2026-11-10. This is the delivery pointer, not another game specification.
 
+**0.73.1 is complete on main as one squash commit (tag `round-73.1`), not pushed; the GUI
+test is open.** The `character-creation` work (GPT-6 Astra, implemented and independently
+reviewed on its own branch from Round 71's code, provisional version 0.72.3) integrated by
+the coordinator on top of 0.73.0: native **character creation** (extracted window and camera
+modules, seven installed backgrounds, media provenance), **six royal halls** (lower throne,
+pillar bays, 216 gable gaps closed, ridge lowered), **five core gate arches**, **thin tables**
+in six guild templates, 153 further templates and the runtime table/counter builders,
+**Dawnmere's inn beds**, and a dedicated **`expedition_registrar` socket** at each capital's
+waystone plaza approach (main's Round 72/73 Registrar dialog, run lifecycle and finish/cancel
+kept; the guild clerk an ordinary resident). **Map reset**, no migration step. Evidence,
+reviews and the GUI checklist (8 items):
+[capital-polish implementation](../tools/capital_polish_study/implementation/README.md);
+creation: [creation report](../tools/character_creation_preview/README.md). Integration
+checks: see the squash commit.
+
 **0.73.0 / Round 73 is complete on main as one squash commit (tag `round-73`), not pushed;
 the GUI test is open.** The Expedition redesign from the user's test (rulings 2026-11-09 and
 2026-11-10, [concept](planning/round73-expedition-redesign-concept.md)): all three

@@ -1,0 +1,411 @@
+{
+  "race": "undead",
+  "title": "The quiet cloister",
+  "seed": 1106,
+  "description": "A neglected cemetery with bent, claw-branched gravewood, a kneeling mourner, low broken grave enclosures and sparse candles. Ash, moss and bone litter interrupt the blighted ground around the slate walk.",
+  "camera": {
+    "eye": [
+      0,
+      2.05,
+      -13
+    ],
+    "target": [
+      0,
+      1.2896,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "portrait": {
+    "feet": [
+      0,
+      0.5,
+      -9.5
+    ],
+    "units_per_pixel": 0.0525,
+    "stature": 0.94
+  },
+  "sky": "#8b9aa3",
+  "fog": [
+    40,
+    92
+  ],
+  "tint": "#dce3f0",
+  "ground": "grug_nodes:blight_dirt",
+  "soil": "default:dirt",
+  "path": "grug_decor:darkage_slate_block",
+  "stone": "default:mossycobble",
+  "buildings": [
+    {
+      "template": "stillgrave_crypt_chapel",
+      "at": [
+        -19,
+        0,
+        32
+      ]
+    },
+    {
+      "template": "stillgrave_sunken_ruin",
+      "at": [
+        17,
+        0,
+        25
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "at": [
+        -10,
+        0,
+        14
+      ],
+      "species": "gravewood",
+      "seed": 110619
+    },
+    {
+      "at": [
+        15,
+        0,
+        37
+      ],
+      "species": "gravewood",
+      "seed": 110756
+    },
+    {
+      "at": [
+        -4,
+        0,
+        45
+      ],
+      "species": "gravewood",
+      "seed": 110893
+    },
+    {
+      "at": [
+        24,
+        0,
+        5
+      ],
+      "species": "gravewood",
+      "seed": 111030
+    },
+    {
+      "at": [
+        7,
+        0,
+        46
+      ],
+      "species": "gravewood",
+      "seed": 78118
+    }
+  ],
+  "plants": [
+    "default:dry_shrub",
+    "grug_gathering:gravemoss_source"
+  ],
+  "props": [
+    {
+      "kind": "patch",
+      "node": "grug_nodes:ash_ground",
+      "at": [
+        7,
+        9
+      ],
+      "radius": [
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "patch",
+      "node": "grug_nodes:dirt_with_bone_litter",
+      "at": [
+        -7,
+        19
+      ],
+      "radius": [
+        4,
+        6
+      ]
+    },
+    {
+      "kind": "graves",
+      "at": [
+        -6,
+        1,
+        9
+      ]
+    },
+    {
+      "kind": "graves",
+      "at": [
+        6,
+        1,
+        20
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:gravestone_sunken",
+      "at": [
+        8,
+        1,
+        12
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_decor:darkage_slate_rubble_slab",
+      "from": [
+        -6,
+        1,
+        2
+      ],
+      "to": [
+        -4,
+        1,
+        4
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "default:mossycobble",
+      "from": [
+        7,
+        1,
+        5
+      ],
+      "to": [
+        9,
+        1,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:darkage_slate_rubble_slab",
+      "at": [
+        9,
+        2,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:dry_shrub",
+      "at": [
+        -4,
+        1,
+        0
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:dry_shrub",
+      "at": [
+        5,
+        1,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_gathering:gravemoss_source",
+      "at": [
+        -5,
+        1,
+        6
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:statue_mourner_base",
+      "at": [
+        5,
+        1,
+        7
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:statue_mourner_upper",
+      "at": [
+        5,
+        2,
+        7
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_candle",
+      "at": [
+        4,
+        1,
+        7
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_candle",
+      "at": [
+        6,
+        1,
+        8
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_decor:darkage_slate_rubble_wall",
+      "from": [
+        -8,
+        1,
+        8
+      ],
+      "to": [
+        -8,
+        1,
+        13
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:darkage_slate_rubble_slab",
+      "at": [
+        -8,
+        1,
+        14
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:statue_veiled_head",
+      "at": [
+        -7,
+        1,
+        4
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:bones_fragments",
+      "at": [
+        7,
+        1,
+        11
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:ribcage_human",
+      "at": [
+        9,
+        1,
+        10
+      ],
+      "param2": 3
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:gravestone_fallen",
+      "at": [
+        -5,
+        1,
+        18
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:gravestone_stele",
+      "at": [
+        8,
+        1,
+        17
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_candle",
+      "at": [
+        7,
+        1,
+        17
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:swamp_moss",
+      "at": [
+        6,
+        1,
+        5
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:swamp_moss",
+      "at": [
+        -7,
+        1,
+        12
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:bones_fragments",
+      "at": [
+        -4,
+        1,
+        8
+      ],
+      "param2": 0
+    }
+  ],
+  "route": [
+    [
+      -22,
+      0,
+      2.9
+    ],
+    [
+      -4,
+      0,
+      2.9
+    ],
+    [
+      9,
+      0,
+      2.5
+    ],
+    [
+      23,
+      -4,
+      2.2
+    ],
+    [
+      37,
+      -10,
+      1.6
+    ],
+    [
+      46,
+      -13,
+      0
+    ]
+  ],
+  "plant_count": 100
+}

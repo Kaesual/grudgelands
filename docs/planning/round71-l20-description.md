@@ -91,9 +91,12 @@ Use six capital variants of the same quest with the two faction texts
 below; return to the giver. The registrar arranges entry. No new town place
 or quest object. Each text block is replaceable whole.
 
+*0.73.1: "this guild house's registrar" became "the Expedition Registrar" in both offers, since the
+Registrar moved to the waystone plaza.*
+
 **The Accord — offer**
 
-> The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.
+> The Charter of Stone opened a gold seam and found out its back wall was alive. The crew named it Flintback from a safe distance; everyone is accounted for, but our supply contract has no clause for walls that walk. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so our miners can work there again.
 
 **The Accord — completion**
 
@@ -101,7 +104,7 @@ or quest object. Each text block is replaceable whole.
 
 **The Throng — offer**
 
-> The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to this guild house's registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.
+> The Oathdelvers promised a load of Gold, and then the end of the seam stood up and threw us off it. The crew call it Flintback. They got out together; I mean to bring them home from the next shift too. Speak to the Expedition Registrar for The Stilled Seam Expedition, take two companions, and kill Flintback so we can return to the working.
 
 **The Throng — completion**
 

@@ -1,0 +1,639 @@
+{
+  "races": {
+    "dwarf": {
+      "gate_template": "dur_brannoc_gate_south",
+      "arch_cells": [
+        [
+          4,
+          5,
+          0,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          1,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          2,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          3,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          4,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          5,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          6,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          8,
+          5,
+          0,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          1,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          2,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          3,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          4,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          5,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          6,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ]
+      ],
+      "ridge": {
+        "template": "dur_brannoc_kings_hall",
+        "x": 22,
+        "z": [
+          8,
+          32
+        ],
+        "upper_slab_y": 27,
+        "full_block_y": 28,
+        "slab": "grug_decor:darkage_slate_tile_slab",
+        "block": "grug_decor:darkage_slate_tile",
+        "air_gap": [
+          26.5,
+          27
+        ]
+      }
+    },
+    "human": {
+      "gate_template": "highcourt_gate_south",
+      "arch_cells": [
+        [
+          4,
+          5,
+          0,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          1,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          2,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          3,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          4,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          5,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          6,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          8,
+          5,
+          0,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          1,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          2,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          3,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          4,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          5,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          6,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ]
+      ],
+      "ridge": {
+        "template": "highcourt_kings_hall",
+        "x": 22,
+        "z": [
+          8,
+          32
+        ],
+        "upper_slab_y": 27,
+        "full_block_y": 28,
+        "slab": "grug_decor:darkage_slate_tile_slab",
+        "block": "grug_decor:darkage_slate_tile",
+        "air_gap": [
+          26.5,
+          27
+        ]
+      }
+    },
+    "elf": {
+      "gate_template": "lethariel_gate_south",
+      "arch_cells": [
+        [
+          4,
+          5,
+          0,
+          "stairs:stair_silver_sandstone_brick",
+          1
+        ],
+        [
+          4,
+          5,
+          1,
+          "stairs:stair_silver_sandstone_brick",
+          1
+        ],
+        [
+          4,
+          5,
+          2,
+          "stairs:stair_silver_sandstone_brick",
+          1
+        ],
+        [
+          4,
+          5,
+          3,
+          "stairs:stair_silver_sandstone_brick",
+          1
+        ],
+        [
+          4,
+          5,
+          4,
+          "stairs:stair_silver_sandstone_brick",
+          1
+        ],
+        [
+          4,
+          5,
+          5,
+          "stairs:stair_silver_sandstone_brick",
+          1
+        ],
+        [
+          4,
+          5,
+          6,
+          "stairs:stair_silver_sandstone_brick",
+          1
+        ],
+        [
+          8,
+          5,
+          0,
+          "stairs:stair_silver_sandstone_brick",
+          3
+        ],
+        [
+          8,
+          5,
+          1,
+          "stairs:stair_silver_sandstone_brick",
+          3
+        ],
+        [
+          8,
+          5,
+          2,
+          "stairs:stair_silver_sandstone_brick",
+          3
+        ],
+        [
+          8,
+          5,
+          3,
+          "stairs:stair_silver_sandstone_brick",
+          3
+        ],
+        [
+          8,
+          5,
+          4,
+          "stairs:stair_silver_sandstone_brick",
+          3
+        ],
+        [
+          8,
+          5,
+          5,
+          "stairs:stair_silver_sandstone_brick",
+          3
+        ],
+        [
+          8,
+          5,
+          6,
+          "stairs:stair_silver_sandstone_brick",
+          3
+        ]
+      ],
+      "ridge": {
+        "template": "lethariel_kings_hall",
+        "x": 22,
+        "z": [
+          8,
+          32
+        ],
+        "upper_slab_y": 27,
+        "full_block_y": 28,
+        "slab": "stairs:slab_silver_sandstone_brick",
+        "block": "default:silver_sandstone_brick",
+        "air_gap": [
+          26.5,
+          27
+        ]
+      }
+    },
+    "orc": {
+      "gate_template": "gor_drazhak_gate_south",
+      "arch_cells": [
+        [
+          4,
+          5,
+          0,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          1,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          2,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          3,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          4,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          5,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          6,
+          "grug_decor:castle_stonewall_stair",
+          1
+        ],
+        [
+          8,
+          5,
+          0,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          1,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          2,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          3,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          4,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          5,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          6,
+          "grug_decor:castle_stonewall_stair",
+          3
+        ]
+      ],
+      "ridge": {
+        "template": "gor_drazhak_warlord_hall",
+        "x": 22,
+        "z": [
+          8,
+          32
+        ],
+        "upper_slab_y": 27,
+        "full_block_y": 28,
+        "slab": "stairs:slab_desert_stonebrick",
+        "block": "default:desert_stonebrick",
+        "air_gap": [
+          26.5,
+          27
+        ]
+      }
+    },
+    "undead": {
+      "gate_template": "nhal_veyr_gate_south",
+      "arch_cells": [
+        [
+          4,
+          5,
+          0,
+          "grug_decor:castle_dungeon_stone_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          1,
+          "grug_decor:castle_dungeon_stone_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          2,
+          "grug_decor:castle_dungeon_stone_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          3,
+          "grug_decor:castle_dungeon_stone_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          4,
+          "grug_decor:castle_dungeon_stone_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          5,
+          "grug_decor:castle_dungeon_stone_stair",
+          1
+        ],
+        [
+          4,
+          5,
+          6,
+          "grug_decor:castle_dungeon_stone_stair",
+          1
+        ],
+        [
+          8,
+          5,
+          0,
+          "grug_decor:castle_dungeon_stone_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          1,
+          "grug_decor:castle_dungeon_stone_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          2,
+          "grug_decor:castle_dungeon_stone_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          3,
+          "grug_decor:castle_dungeon_stone_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          4,
+          "grug_decor:castle_dungeon_stone_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          5,
+          "grug_decor:castle_dungeon_stone_stair",
+          3
+        ],
+        [
+          8,
+          5,
+          6,
+          "grug_decor:castle_dungeon_stone_stair",
+          3
+        ]
+      ],
+      "ridge": {
+        "template": "nhal_veyr_mausoleum",
+        "x": 22,
+        "z": [
+          8,
+          32
+        ],
+        "upper_slab_y": 27,
+        "full_block_y": 28,
+        "slab": "stairs:slab_stonebrick",
+        "block": "default:stonebrick",
+        "air_gap": [
+          26.5,
+          27
+        ]
+      }
+    },
+    "troll": {
+      "gate_template": "kezamba_gate_house_south",
+      "arch_cells": [],
+      "ridge": {
+        "template": "kezamba_kings_hall",
+        "x": 22,
+        "z": [
+          8,
+          32
+        ],
+        "upper_slab_y": 27,
+        "full_block_y": 28,
+        "slab": "stairs:slab_junglewood",
+        "block": "default:junglewood",
+        "air_gap": [
+          26.5,
+          27
+        ]
+      }
+    }
+  },
+  "sources": {
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_gate_south.tpl": "8f8344006e305342e77037ee520a7ea08e904c70c29fe56d14beac561b9a29b7",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster": "cb38973b6e9116cb906588994c85a64417aa0a4ff6d00dd294d6b5fd7c3c844f",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_kings_hall.tpl": "ac83f772582c00cdf99374905b2c0a39faf33974ac9ce966dda13aee360168ff",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_gate_south.tpl": "a0b5a2b68fcc2a759feb3bcc0520ddf8ef61cd8ee1ae0e59ddcb36f52b26c8cc",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster": "52fe22101156a4746aed699565f9e3f0e81e9c995b91ececa118fdf9b245b6e2",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_kings_hall.tpl": "022e4cb96f317d6681de7f8769c54d2024f247d2427ab7fd84e61efcf1a46fcc",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/lethariel_gate_south.tpl": "eb92ed450716c9adf257fc48e95eb1d3fb4cf26fa3fa8f387f44f4375860501c",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster": "ccc5cf0dd58bd4012e47fb9f1c5a8bc73bb3482543859950ba931b9ac477326a",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/lethariel_kings_hall.tpl": "5d0c05b2a5f43d59f9935f6328b3dcf6e4ad3c345a5a83f53840ae35e20d6b0b",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/gor_drazhak_gate_south.tpl": "9db9f86ad65d2a3cde1cc16cbb85e01e33ad2df3c754da51743e321738535931",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster": "e00140c8570d65620ed874570d90201e18575c7668bdabf64bd6c4b99c58579e",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/gor_drazhak_warlord_hall.tpl": "a5a4f8c91db59cd649d2bbadd571b4db35288176f4c3c52696c030b9ac4247c8",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_gate_south.tpl": "de23ff4b13a192a66c38989234debe390060ae0c0fa4ecaadd98ab08efad7bac",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster": "f0aae7dc8527695dbf582c0cf70dd779c67dab9db5655b55abe9d344aee59cdb",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_mausoleum.tpl": "abf414da7778ba378a9d5e4a11a25bae5c9eefc09feea26b70093afefce9ae7d",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/kezamba_gate_house_south.tpl": "de204b26e58bbdc4a78bbaef599b1d476614cb3544a052685c2665f76f25df5c",
+    "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster": "633c4512c1a5bae80b60aee77bebf33e6bdf6a8873b684497b27b1456de44527",
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/kezamba_kings_hall.tpl": "4e21d3cbed3a1eef06acf3bb7c2b852c32ec2dd55783b5e9af2899d421931653"
+  }
+}

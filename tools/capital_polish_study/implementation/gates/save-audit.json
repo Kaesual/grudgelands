@@ -1,0 +1,507 @@
+{
+  "highcourt_gate_south": {
+    "source_sha256": "a0b5a2b68fcc2a759feb3bcc0520ddf8ef61cd8ee1ae0e59ddcb36f52b26c8cc",
+    "output_sha256": "59db3e8341ea616dba1fca4ad4d0307a86a1f8906e145281f1dc0cb478111e86",
+    "changed_cells": 14,
+    "positions": [
+      [
+        4,
+        5,
+        0
+      ],
+      [
+        4,
+        5,
+        1
+      ],
+      [
+        4,
+        5,
+        2
+      ],
+      [
+        4,
+        5,
+        3
+      ],
+      [
+        4,
+        5,
+        4
+      ],
+      [
+        4,
+        5,
+        5
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        8,
+        5,
+        0
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        5,
+        2
+      ],
+      [
+        8,
+        5,
+        3
+      ],
+      [
+        8,
+        5,
+        4
+      ],
+      [
+        8,
+        5,
+        5
+      ],
+      [
+        8,
+        5,
+        6
+      ]
+    ],
+    "editor_save": {
+      "saved": true,
+      "note": "Previous editor.save completed; post-save comparison initially counted source line offsets. Verified semantics without repeating validator."
+    }
+  },
+  "dur_brannoc_gate_south": {
+    "source_sha256": "8f8344006e305342e77037ee520a7ea08e904c70c29fe56d14beac561b9a29b7",
+    "output_sha256": "2ffaf937f2bb85fcaa1597e2c844804b55755890c1fa42853aa734b57681c42e",
+    "changed_cells": 14,
+    "positions": [
+      [
+        4,
+        5,
+        0
+      ],
+      [
+        4,
+        5,
+        1
+      ],
+      [
+        4,
+        5,
+        2
+      ],
+      [
+        4,
+        5,
+        3
+      ],
+      [
+        4,
+        5,
+        4
+      ],
+      [
+        4,
+        5,
+        5
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        8,
+        5,
+        0
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        5,
+        2
+      ],
+      [
+        8,
+        5,
+        3
+      ],
+      [
+        8,
+        5,
+        4
+      ],
+      [
+        8,
+        5,
+        5
+      ],
+      [
+        8,
+        5,
+        6
+      ]
+    ],
+    "editor_save": {
+      "errors": [],
+      "warnings": [
+        {
+          "rule": "unreachable",
+          "where": "dur_brannoc_gate_south",
+          "pos": [
+            4,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_west cannot be reached from an entrance inside the template (dur_brannoc:dur_brannoc_gate_south)"
+        },
+        {
+          "rule": "unreachable",
+          "where": "dur_brannoc_gate_south",
+          "pos": [
+            8,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_east cannot be reached from an entrance inside the template (dur_brannoc:dur_brannoc_gate_south)"
+        }
+      ],
+      "elsewhere": [],
+      "saved": true,
+      "hash": "2ffaf937f2bb85fcaa1597e2c844804b55755890c1fa42853aa734b57681c42e",
+      "unchanged": false
+    }
+  },
+  "lethariel_gate_south": {
+    "source_sha256": "eb92ed450716c9adf257fc48e95eb1d3fb4cf26fa3fa8f387f44f4375860501c",
+    "output_sha256": "b894c2644d6bd969170b619194cdf717ee5bacb053de702d1ba51fda60c1d041",
+    "changed_cells": 14,
+    "positions": [
+      [
+        4,
+        5,
+        0
+      ],
+      [
+        4,
+        5,
+        1
+      ],
+      [
+        4,
+        5,
+        2
+      ],
+      [
+        4,
+        5,
+        3
+      ],
+      [
+        4,
+        5,
+        4
+      ],
+      [
+        4,
+        5,
+        5
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        8,
+        5,
+        0
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        5,
+        2
+      ],
+      [
+        8,
+        5,
+        3
+      ],
+      [
+        8,
+        5,
+        4
+      ],
+      [
+        8,
+        5,
+        5
+      ],
+      [
+        8,
+        5,
+        6
+      ]
+    ],
+    "editor_save": {
+      "errors": [],
+      "warnings": [
+        {
+          "rule": "unreachable",
+          "where": "lethariel_gate_south",
+          "pos": [
+            4,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_west cannot be reached from an entrance inside the template (lethariel:lethariel_gate_south main=pale)"
+        },
+        {
+          "rule": "unreachable",
+          "where": "lethariel_gate_south",
+          "pos": [
+            8,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_east cannot be reached from an entrance inside the template (lethariel:lethariel_gate_south main=pale)"
+        }
+      ],
+      "elsewhere": [],
+      "saved": true,
+      "hash": "b894c2644d6bd969170b619194cdf717ee5bacb053de702d1ba51fda60c1d041",
+      "unchanged": false
+    }
+  },
+  "gor_drazhak_gate_south": {
+    "source_sha256": "9db9f86ad65d2a3cde1cc16cbb85e01e33ad2df3c754da51743e321738535931",
+    "output_sha256": "69dd7d7827c971a3f1f68fe2b302471d6e968e4de1136ff3496207c90c5bb280",
+    "changed_cells": 14,
+    "positions": [
+      [
+        4,
+        5,
+        0
+      ],
+      [
+        4,
+        5,
+        1
+      ],
+      [
+        4,
+        5,
+        2
+      ],
+      [
+        4,
+        5,
+        3
+      ],
+      [
+        4,
+        5,
+        4
+      ],
+      [
+        4,
+        5,
+        5
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        8,
+        5,
+        0
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        5,
+        2
+      ],
+      [
+        8,
+        5,
+        3
+      ],
+      [
+        8,
+        5,
+        4
+      ],
+      [
+        8,
+        5,
+        5
+      ],
+      [
+        8,
+        5,
+        6
+      ]
+    ],
+    "editor_save": {
+      "errors": [],
+      "warnings": [
+        {
+          "rule": "unreachable",
+          "where": "gor_drazhak_gate_south",
+          "pos": [
+            4,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_west cannot be reached from an entrance inside the template (gor_drazhak:gor_drazhak_gate_south main=ors)"
+        },
+        {
+          "rule": "unreachable",
+          "where": "gor_drazhak_gate_south",
+          "pos": [
+            8,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_east cannot be reached from an entrance inside the template (gor_drazhak:gor_drazhak_gate_south main=ors)"
+        }
+      ],
+      "elsewhere": [],
+      "saved": true,
+      "hash": "69dd7d7827c971a3f1f68fe2b302471d6e968e4de1136ff3496207c90c5bb280",
+      "unchanged": false
+    }
+  },
+  "nhal_veyr_gate_south": {
+    "source_sha256": "de23ff4b13a192a66c38989234debe390060ae0c0fa4ecaadd98ab08efad7bac",
+    "output_sha256": "1c6cfad4c35694dde2e8f5e1535cf58efac79a053cef989178351a8c4a320fc3",
+    "changed_cells": 14,
+    "positions": [
+      [
+        4,
+        5,
+        0
+      ],
+      [
+        4,
+        5,
+        1
+      ],
+      [
+        4,
+        5,
+        2
+      ],
+      [
+        4,
+        5,
+        3
+      ],
+      [
+        4,
+        5,
+        4
+      ],
+      [
+        4,
+        5,
+        5
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        8,
+        5,
+        0
+      ],
+      [
+        8,
+        5,
+        1
+      ],
+      [
+        8,
+        5,
+        2
+      ],
+      [
+        8,
+        5,
+        3
+      ],
+      [
+        8,
+        5,
+        4
+      ],
+      [
+        8,
+        5,
+        5
+      ],
+      [
+        8,
+        5,
+        6
+      ]
+    ],
+    "editor_save": {
+      "errors": [],
+      "warnings": [
+        {
+          "rule": "unreachable",
+          "where": "nhal_veyr_gate_south",
+          "pos": [
+            4,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_west cannot be reached from an entrance inside the template (nhal_veyr:nhal_veyr_gate_south main=crypt)"
+        },
+        {
+          "rule": "unreachable",
+          "where": "nhal_veyr_gate_south",
+          "pos": [
+            8,
+            1,
+            1
+          ],
+          "message": "the sockets point {id}_post_east cannot be reached from an entrance inside the template (nhal_veyr:nhal_veyr_gate_south main=crypt)"
+        }
+      ],
+      "elsewhere": [],
+      "saved": true,
+      "hash": "1c6cfad4c35694dde2e8f5e1535cf58efac79a053cef989178351a8c4a320fc3",
+      "unchanged": false
+    }
+  }
+}

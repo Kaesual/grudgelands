@@ -429,6 +429,29 @@ local function capital_tests(capital)
 	local castle = CASTLE[capital]
 	local by_id = {}
 	for _, socket in ipairs(lm.sockets) do by_id[socket.id] = socket end
+	-- Capital polish: the service stands outside the reserved arrival pad, close
+	-- to the waystone, with a standing neighbour in its authored facing. W above
+	-- also verifies its route from the crossing against actual generated geometry.
+	local registrar, waypoint = by_id.expedition_registrar, by_id.travel_waypoint
+	check(registrar ~= nil and registrar.role == "idle" and registrar.spawn ~= false,
+		"E " .. label .. "one inhabited registrar socket")
+	if registrar and waypoint then
+		local plaza = lm.waypoint_plaza
+		check(registrar.x < plaza.min.x - 1 or registrar.x > plaza.max.x + 1 or
+			registrar.z < plaza.min.z - 1 or registrar.z > plaza.max.z + 1,
+			"E " .. label .. "registrar outside arrival plaza including kerb")
+		local dx, dz = registrar.x - waypoint.x, registrar.z - waypoint.z
+		check(dx * dx + dz * dz <= 15 * 15, "E " .. label .. "within 15 nodes of waystone")
+		local facing = ({[0] = {0, 1}, {1, 0}, {0, -1}, {-1, 0}})[registrar.face]
+		check(reached(seen, registrar.x + facing[1], registrar.y, registrar.z + facing[2]),
+			"E " .. label .. "faces accessible path")
+		for _, other in ipairs(lm.sockets) do
+			if other ~= registrar then
+				dx, dz = registrar.x - other.x, registrar.z - other.z
+				check(dx * dx + dz * dz >= 4, "E " .. label .. "clear of " .. other.id)
+			end
+		end
+	end
 	local king = by_id.king
 	if check(king ~= nil, "C " .. label .. "has the king's socket") and castle then
 		local guards = 0
@@ -508,7 +531,7 @@ local function capital_tests(capital)
 	local moved = MOVED[capital] or {}
 	for _, socket in ipairs(lm.sockets) do
 		local row = rows[socket.id]
-		if not moved[socket.id] then
+		if not moved[socket.id] and socket.id ~= "expedition_registrar" then
 			if check(row ~= nil, "P " .. label .. socket.id .. " has a row") then
 				check(row.x == socket.x and row.z == socket.z,
 					("P %s%s at %d,%d, its row says %d,%d"):format(label, socket.id,
@@ -523,7 +546,6 @@ for _, capital in ipairs(CAPITALS) do
 end
 
 if failures > 0 then
-	print(("R70 CAP PORTABLE FAIL failures=%d of checks=%d"):format(failures, checks))
-	os.exit(1)
+	error(("R70 CAP PORTABLE FAIL failures=%d of checks=%d"):format(failures, checks), 0)
 end
 print(("R70 CAP PORTABLE PASS checks=%d"):format(checks))

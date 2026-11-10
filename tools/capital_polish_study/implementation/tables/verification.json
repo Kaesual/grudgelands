@@ -1,0 +1,386 @@
+{
+  "human": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_miners_guild.tpl",
+    "baseline_sha256": "787afe0f9dc9c272a7c234420249e58a31cac4508413c97a50268bdda5562681",
+    "actual_sha256": "446d6017bf99559db459199b5aa08e38ca23767a5999159c1f6498eb3a6cf92c",
+    "changed_cells": [
+      [
+        2,
+        1,
+        7
+      ],
+      [
+        2,
+        2,
+        7
+      ],
+      [
+        4,
+        1,
+        10
+      ],
+      [
+        4,
+        1,
+        11
+      ],
+      [
+        4,
+        1,
+        12
+      ],
+      [
+        4,
+        1,
+        14
+      ],
+      [
+        5,
+        1,
+        14
+      ],
+      [
+        6,
+        1,
+        14
+      ],
+      [
+        8,
+        1,
+        6
+      ],
+      [
+        8,
+        1,
+        7
+      ],
+      [
+        8,
+        1,
+        8
+      ]
+    ],
+    "points_preserved": true,
+    "accepted_proposal_match": true
+  },
+  "dwarf": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_miners_guild.tpl",
+    "baseline_sha256": "112f05eb7e898bfb7ed78c2e0f1821a1b3bdcef89dfb4c4e2f214ecd0d4363b5",
+    "actual_sha256": "0c13cf0bd58553436a95bbec45b3223177d27bd434d160d40904bccb30b9d373",
+    "changed_cells": [
+      [
+        2,
+        1,
+        7
+      ],
+      [
+        2,
+        2,
+        7
+      ],
+      [
+        4,
+        1,
+        10
+      ],
+      [
+        4,
+        1,
+        11
+      ],
+      [
+        4,
+        1,
+        12
+      ],
+      [
+        4,
+        1,
+        14
+      ],
+      [
+        5,
+        1,
+        14
+      ],
+      [
+        6,
+        1,
+        14
+      ],
+      [
+        8,
+        1,
+        6
+      ],
+      [
+        8,
+        1,
+        7
+      ],
+      [
+        8,
+        1,
+        8
+      ]
+    ],
+    "points_preserved": true,
+    "accepted_proposal_match": true
+  },
+  "elf": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/lethariel_miners_guild.tpl",
+    "baseline_sha256": "e41ddeb7c52f744defb0f9510e0f484268fcc269568b6a0ab7e3190ef992118c",
+    "actual_sha256": "226d2c64c18a1615eb9cbb4fc6ee9847ae3be79ef91ea526ba09787483684554",
+    "changed_cells": [
+      [
+        2,
+        1,
+        7
+      ],
+      [
+        2,
+        2,
+        7
+      ],
+      [
+        4,
+        1,
+        10
+      ],
+      [
+        4,
+        1,
+        11
+      ],
+      [
+        4,
+        1,
+        12
+      ],
+      [
+        4,
+        1,
+        14
+      ],
+      [
+        5,
+        1,
+        14
+      ],
+      [
+        6,
+        1,
+        14
+      ],
+      [
+        8,
+        1,
+        6
+      ],
+      [
+        8,
+        1,
+        7
+      ],
+      [
+        8,
+        1,
+        8
+      ]
+    ],
+    "points_preserved": true,
+    "accepted_proposal_match": true
+  },
+  "orc": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/gor_drazhak_miners_guild.tpl",
+    "baseline_sha256": "5e47dcdfb4692bec7a86a83cbfd980835d51a5850ce3ee2b21e200b8397f229f",
+    "actual_sha256": "b9eba5e6bf102173861d33fcabc9d9d64c36ee8b68f8c2872b6644aac1bbfbc8",
+    "changed_cells": [
+      [
+        2,
+        1,
+        7
+      ],
+      [
+        2,
+        2,
+        7
+      ],
+      [
+        4,
+        1,
+        10
+      ],
+      [
+        4,
+        1,
+        11
+      ],
+      [
+        4,
+        1,
+        12
+      ],
+      [
+        4,
+        1,
+        14
+      ],
+      [
+        5,
+        1,
+        14
+      ],
+      [
+        6,
+        1,
+        14
+      ],
+      [
+        8,
+        1,
+        6
+      ],
+      [
+        8,
+        1,
+        7
+      ],
+      [
+        8,
+        1,
+        8
+      ]
+    ],
+    "points_preserved": true,
+    "accepted_proposal_match": true
+  },
+  "troll": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/kezamba_miners_guild.tpl",
+    "baseline_sha256": "c266127cd7e20b6b7fa909c6676cbba84bc3ec52676623c3757eb42f07c3a2ff",
+    "actual_sha256": "a6e9bedfa3cf1445d8e915f83b6aa2de75795f83521f8e4c607158b8ba2f11e3",
+    "changed_cells": [
+      [
+        2,
+        1,
+        7
+      ],
+      [
+        2,
+        2,
+        7
+      ],
+      [
+        4,
+        1,
+        10
+      ],
+      [
+        4,
+        1,
+        11
+      ],
+      [
+        4,
+        1,
+        12
+      ],
+      [
+        4,
+        1,
+        14
+      ],
+      [
+        5,
+        1,
+        14
+      ],
+      [
+        6,
+        1,
+        14
+      ],
+      [
+        8,
+        1,
+        6
+      ],
+      [
+        8,
+        1,
+        7
+      ],
+      [
+        8,
+        1,
+        8
+      ]
+    ],
+    "points_preserved": true,
+    "accepted_proposal_match": true
+  },
+  "undead": {
+    "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_miners_guild.tpl",
+    "baseline_sha256": "a39fd7d3974ca9220b12cb6e96e08d97c1b6beec8b9d435d142a5adf44207846",
+    "actual_sha256": "d18d85a8a63751651c2a8a0d2a753ce038f73fe25244b26c38b9dd5af4bc058e",
+    "changed_cells": [
+      [
+        2,
+        1,
+        7
+      ],
+      [
+        2,
+        2,
+        7
+      ],
+      [
+        4,
+        1,
+        10
+      ],
+      [
+        4,
+        1,
+        11
+      ],
+      [
+        4,
+        1,
+        12
+      ],
+      [
+        4,
+        1,
+        14
+      ],
+      [
+        5,
+        1,
+        14
+      ],
+      [
+        6,
+        1,
+        14
+      ],
+      [
+        8,
+        1,
+        6
+      ],
+      [
+        8,
+        1,
+        7
+      ],
+      [
+        8,
+        1,
+        8
+      ]
+    ],
+    "points_preserved": true,
+    "accepted_proposal_match": true
+  }
+}

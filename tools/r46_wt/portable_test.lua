@@ -86,6 +86,7 @@ core = {
 	settings = {get = function(_, key) if key == "grug_reset_world" then return "1" end end},
 	get_mod_storage = function() return new_store(world_storage) end,
 	log = noop,
+	get_player_window_information = function() return nil end,
 	get_modpath = function(name) return modpaths[name] end,
 	get_current_modname = function() return current_mod end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
@@ -254,7 +255,7 @@ current_mod = "grug_classes"
 do
 	local real_dofile = dofile
 	dofile = function(path)
-		if path:match("/scout%.lua$") or path:match("/selection%.lua$") then
+		if path:match("/scout%.lua$") or path:match("/selection%.lua$") or path:match("/creation_window%.lua$") or path:match("/creation_camera%.lua$") then
 			if path:match("/selection%.lua$") then
 				grug_classes.apply_stats = noop
 				grug_classes.get_max_hp = function() return 20 end

@@ -1058,22 +1058,24 @@ territory.
   race geography is not required to be a geometric mirror. A character begins
   in its race's outer starting settlement and reaches its central capital
   through the safe early-level roads.
-- **Character creation is one window** (Round 35): the faction row at the
-  top; below it a narrow race column on the left (the races of the chosen
-  faction, the chosen race's description under the list) and on the right
-  the class row (the chosen class's description in one line), the look
-  ([character_visuals.md](character_visuals.md) §1.1) with a preview the
-  player turns with the mouse, and "Create character" at the bottom right,
-  active once faction, race and class are chosen. The choices are
-  highlighted and every button has a tooltip. The two faction buttons wear
-  their faction's colour (The Accord blue, The Throng red): both subdued
-  until one is chosen, then the chosen one at full strength in bold and the
-  other still subdued; hover brightens a little, and keyboard focus looks like
-  the normal state, so it never reads as a choice (Round 66). Before a faction is chosen
-  everything below it is empty with a hint; before a race is chosen no model
-  is drawn. Every class is open to every race. Changing the faction clears
-  race and look (the class stays); changing the race rolls a new random
-  look.
+- **Character creation is one large window** (layout approved 2026-11-09):
+  the left column contains two faction panels, each with its hanging banner
+  and three race rows (icon and name). Selecting a race selects its faction
+  implicitly; the active row is highlighted. The centre contains the
+  mouse-turnable full-body model over an editable, prerendered scene for that
+  race, with the four classes along its bottom. The right column contains
+  appearance controls ([character_visuals.md](character_visuals.md) §1.1),
+  the race description, then the class description and a scrollable skill
+  list (icon and name only). "Create character" sits at the bottom right.
+  Warrior is initially selected. Every class is open to every race; changing
+  race preserves the chosen class and rolls a new random look.
+- **The opening view** (approved 2026-11-10) shows the two factions' distinct
+  war fortresses and their camp banners, with distant procedural trees, across
+  the centre and right columns. The text reads "Choose your fate" and "Choose
+  your people. Begin your story." Before the first race selection, the model,
+  classes, appearance, description cards and Create are hidden. Selecting a
+  race enters the character layout with Warrior selected. There is no return
+  to the opening within that draft, including after Esc and I.
 - **Nothing is stored before "Create character".** The choices are a draft
   that lives only in the server session; a disconnect starts over. Create
   stores faction, race, look and class at once and marks the character as

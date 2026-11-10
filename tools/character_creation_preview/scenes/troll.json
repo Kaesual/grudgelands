@@ -1,0 +1,621 @@
+{
+  "race": "troll",
+  "title": "The spirit-house landing",
+  "seed": 1105,
+  "description": "A working river landing under branching jungle trees and a distant kapok. Mooring posts, hanging rope, stacked stores and reed islands give the stilt village a lived-in waterfront.",
+  "camera": {
+    "eye": [
+      0,
+      3.05,
+      -9.5
+    ],
+    "target": [
+      0,
+      2.4408,
+      -6
+    ],
+    "fov": 55
+  },
+  "portrait": {
+    "feet": [
+      0,
+      1.5,
+      -6
+    ],
+    "units_per_pixel": 0.0525,
+    "stature": 1.12
+  },
+  "sky": "#9daf9f",
+  "fog": [
+    38,
+    90
+  ],
+  "tint": "#f0f0d9",
+  "ground": "grug_nodes:mud_with_wet_grass",
+  "soil": "default:dirt",
+  "path": "default:junglewood",
+  "stone": "default:stonebrick",
+  "buildings": [
+    {
+      "template": "kapok_river_stilt",
+      "at": [
+        -15,
+        0,
+        22
+      ]
+    },
+    {
+      "template": "kapok_spirit_lodge",
+      "at": [
+        22,
+        0,
+        38
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "at": [
+        -10,
+        0,
+        35
+      ],
+      "species": "jungle",
+      "seed": 110519
+    },
+    {
+      "at": [
+        7,
+        0,
+        44
+      ],
+      "species": "jungle",
+      "seed": 110656
+    },
+    {
+      "at": [
+        -24,
+        0,
+        9
+      ],
+      "species": "jungle",
+      "seed": 110793
+    },
+    {
+      "at": [
+        21,
+        0,
+        11
+      ],
+      "species": "jungle",
+      "seed": 110930
+    },
+    {
+      "at": [
+        -17,
+        0,
+        42
+      ],
+      "species": "kapok",
+      "seed": 111067
+    },
+    {
+      "at": [
+        -5,
+        0,
+        58
+      ],
+      "species": "jungle",
+      "seed": 46019
+    },
+    {
+      "at": [
+        7,
+        0,
+        61
+      ],
+      "species": "jungle",
+      "seed": 46029
+    },
+    {
+      "at": [
+        17,
+        0,
+        58
+      ],
+      "species": "jungle",
+      "seed": 46040
+    }
+  ],
+  "plants": [
+    "default:junglegrass",
+    "default:fern_3",
+    "grug_nodes:flower_ruby_fan"
+  ],
+  "props": [
+    {
+      "kind": "water",
+      "from": [
+        -18,
+        0,
+        -10
+      ],
+      "to": [
+        18,
+        0,
+        32
+      ]
+    },
+    {
+      "kind": "deck",
+      "from": [
+        -6,
+        1,
+        -9
+      ],
+      "to": [
+        6,
+        1,
+        28
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_barrel",
+      "at": [
+        -4,
+        2,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_barrel_open",
+      "at": [
+        -4,
+        2,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_workbench",
+      "at": [
+        4,
+        2,
+        9
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_lantern",
+      "at": [
+        4,
+        3,
+        9
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_tub",
+      "at": [
+        -3,
+        2,
+        14
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        -9,
+        1,
+        0
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        -8,
+        1,
+        6
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        10,
+        1,
+        11
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        8,
+        1,
+        18
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        -8,
+        1,
+        18
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "default:jungletree",
+      "from": [
+        5,
+        2,
+        4
+      ],
+      "to": [
+        5,
+        4,
+        4
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_lantern_hanging",
+      "at": [
+        5,
+        3,
+        3
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_decor:xdecor_rope",
+      "from": [
+        5,
+        1,
+        5
+      ],
+      "to": [
+        5,
+        4,
+        5
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_barrel_lying",
+      "at": [
+        -4,
+        2,
+        7
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_barrel",
+      "at": [
+        -3,
+        2,
+        6
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_straw_mat",
+      "at": [
+        -3,
+        2,
+        4
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_tub",
+      "at": [
+        3,
+        2,
+        2
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_bench",
+      "at": [
+        4,
+        2,
+        12
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:capital_hides",
+      "at": [
+        -4,
+        2,
+        11
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:capital_hides",
+      "at": [
+        -4,
+        2,
+        12
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_nodes:mud",
+      "from": [
+        -10,
+        0,
+        4
+      ],
+      "to": [
+        -9,
+        0,
+        6
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        -10,
+        1,
+        4
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:cattails",
+      "at": [
+        -9,
+        1,
+        5
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        -10,
+        1,
+        6
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_nodes:mud",
+      "from": [
+        10,
+        0,
+        8
+      ],
+      "to": [
+        11,
+        0,
+        10
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        10,
+        1,
+        8
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:cattails",
+      "at": [
+        11,
+        1,
+        9
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        10,
+        1,
+        10
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_nodes:mud",
+      "from": [
+        -9,
+        0,
+        24
+      ],
+      "to": [
+        -8,
+        0,
+        26
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        -9,
+        1,
+        24
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:cattails",
+      "at": [
+        -8,
+        1,
+        25
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        -9,
+        1,
+        26
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_nodes:mud",
+      "from": [
+        12,
+        0,
+        20
+      ],
+      "to": [
+        13,
+        0,
+        22
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        12,
+        1,
+        20
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:cattails",
+      "at": [
+        13,
+        1,
+        21
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:reeds",
+      "at": [
+        12,
+        1,
+        22
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:driftwood_log",
+      "at": [
+        -11,
+        1,
+        6
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:driftwood_fork",
+      "at": [
+        11,
+        1,
+        10
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_3",
+      "at": [
+        20,
+        1,
+        7
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:jungle_bush_leaves",
+      "at": [
+        21,
+        1,
+        8
+      ],
+      "param2": 0
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:jungle_bush_leaves",
+      "at": [
+        20,
+        1,
+        9
+      ],
+      "param2": 0
+    }
+  ],
+  "route": [
+    [
+      -22,
+      0,
+      3
+    ],
+    [
+      -10,
+      0,
+      3
+    ],
+    [
+      30,
+      0,
+      4
+    ],
+    [
+      46,
+      -5,
+      2
+    ],
+    [
+      55,
+      -8,
+      0
+    ]
+  ],
+  "plant_count": 410
+}

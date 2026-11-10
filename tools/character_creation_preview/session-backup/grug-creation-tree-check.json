@@ -1,0 +1,401 @@
+{
+  "checks": [
+    {
+      "label": "neutral start; warrior default; creation disabled",
+      "pass": true
+    },
+    {
+      "label": "human model visible; warrior preselected",
+      "pass": true
+    },
+    {
+      "label": "explicit class persists across faction and race change",
+      "pass": true
+    },
+    {
+      "label": "appearance control changes selection",
+      "pass": true
+    },
+    {
+      "label": "model and skin human",
+      "pass": true
+    },
+    {
+      "label": "rendered backdrop human",
+      "pass": true
+    },
+    {
+      "label": "pixel-preserving backdrop display human",
+      "pass": true
+    },
+    {
+      "label": "model and skin dwarf",
+      "pass": true
+    },
+    {
+      "label": "rendered backdrop dwarf",
+      "pass": true
+    },
+    {
+      "label": "pixel-preserving backdrop display dwarf",
+      "pass": true
+    },
+    {
+      "label": "model and skin elf",
+      "pass": true
+    },
+    {
+      "label": "rendered backdrop elf",
+      "pass": true
+    },
+    {
+      "label": "pixel-preserving backdrop display elf",
+      "pass": true
+    },
+    {
+      "label": "model and skin orc",
+      "pass": true
+    },
+    {
+      "label": "rendered backdrop orc",
+      "pass": true
+    },
+    {
+      "label": "pixel-preserving backdrop display orc",
+      "pass": true
+    },
+    {
+      "label": "model and skin troll",
+      "pass": true
+    },
+    {
+      "label": "rendered backdrop troll",
+      "pass": true
+    },
+    {
+      "label": "pixel-preserving backdrop display troll",
+      "pass": true
+    },
+    {
+      "label": "model and skin undead",
+      "pass": true
+    },
+    {
+      "label": "rendered backdrop undead",
+      "pass": true
+    },
+    {
+      "label": "pixel-preserving backdrop display undead",
+      "pass": true
+    },
+    {
+      "label": "1600x1000: no horizontal overflow",
+      "pass": true
+    },
+    {
+      "label": "1600x1000: create visible; skills have room",
+      "pass": true
+    },
+    {
+      "label": "1600x1000: panels stay above footer",
+      "pass": true
+    },
+    {
+      "label": "1366x768: no horizontal overflow",
+      "pass": true
+    },
+    {
+      "label": "1366x768: create visible; skills have room",
+      "pass": true
+    },
+    {
+      "label": "1366x768: panels stay above footer",
+      "pass": true
+    },
+    {
+      "label": "1920x1080: no horizontal overflow",
+      "pass": true
+    },
+    {
+      "label": "1920x1080: create visible; skills have room",
+      "pass": true
+    },
+    {
+      "label": "1920x1080: panels stay above footer",
+      "pass": true
+    },
+    {
+      "label": "1024x768: no horizontal overflow",
+      "pass": true
+    },
+    {
+      "label": "1024x768: create visible; skills have room",
+      "pass": true
+    },
+    {
+      "label": "1024x768: panels stay above footer",
+      "pass": true
+    },
+    {
+      "label": "390x844: no horizontal overflow",
+      "pass": true
+    },
+    {
+      "label": "human 1600x1000: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "human 1600x1000: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "human 1366x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "human 1366x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "human 1920x1080: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "human 1920x1080: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "human 1024x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "human 1024x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "human 390x844: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "human 390x844: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1600x1000: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1600x1000: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1366x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1366x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1920x1080: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1920x1080: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1024x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "dwarf 1024x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "dwarf 390x844: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "dwarf 390x844: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "elf 1600x1000: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "elf 1600x1000: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "elf 1366x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "elf 1366x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "elf 1920x1080: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "elf 1920x1080: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "elf 1024x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "elf 1024x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "elf 390x844: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "elf 390x844: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "orc 1600x1000: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "orc 1600x1000: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "orc 1366x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "orc 1366x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "orc 1920x1080: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "orc 1920x1080: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "orc 1024x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "orc 1024x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "orc 390x844: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "orc 390x844: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "troll 1600x1000: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "troll 1600x1000: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "troll 1366x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "troll 1366x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "troll 1920x1080: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "troll 1920x1080: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "troll 1024x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "troll 1024x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "troll 390x844: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "troll 390x844: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "undead 1600x1000: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "undead 1600x1000: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "undead 1366x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "undead 1366x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "undead 1920x1080: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "undead 1920x1080: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "undead 1024x768: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "undead 1024x768: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "undead 390x844: shared projection matches background crop within 0.1px",
+      "pass": true
+    },
+    {
+      "label": "undead 390x844: real race scale, grounded shadow, head and feet clear of labels",
+      "pass": true
+    },
+    {
+      "label": "banner above: both faction lists fit",
+      "pass": true
+    },
+    {
+      "label": "banner below: both faction lists fit",
+      "pass": true
+    },
+    {
+      "label": "banner side: both faction lists fit",
+      "pass": true
+    },
+    {
+      "label": "no uncaught JavaScript exceptions",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,65 @@
+{
+  "race": "intro",
+  "title": "Choose your fate",
+  "description": "Two rival strongholds face the same scarred approach. The Accord's pale stone and the warm, iron-bound walls of The Throng carry the existing hart and boar standards.",
+  "seed": 7209,
+  "camera": {
+    "eye": [
+      0,
+      4,
+      -45
+    ],
+    "target": [
+      0,
+      6,
+      20
+    ],
+    "fov": 44
+  },
+  "sky": "#46535e",
+  "fog": [
+    100,
+    210
+  ],
+  "tint": "#d3dbe0",
+  "buildings": [
+    {
+      "template": "highcourt_kings_hall",
+      "town": "highcourt",
+      "at": [
+        -30,
+        0,
+        32
+      ]
+    },
+    {
+      "template": "gor_drazhak_warlord_hall",
+      "town": "gor_drazhak",
+      "at": [
+        30,
+        0,
+        32
+      ]
+    }
+  ],
+  "banners": [
+    {
+      "faction": "accord",
+      "at": [
+        -17,
+        12,
+        4
+      ],
+      "scale": 3
+    },
+    {
+      "faction": "throng",
+      "at": [
+        17,
+        12,
+        4
+      ],
+      "scale": 3
+    }
+  ]
+}

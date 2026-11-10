@@ -33,8 +33,7 @@ U role storage
 V role storage o=facedir:1
 W role storage o=facedir:2
 X role storage o=facedir:3
-Y role table_leg
-Z role table_top
+Y node grug_decor:xdecor_table
 end
 
 layer 0
@@ -87,7 +86,7 @@ layer 2
 |..L...............L..|
 |...N.........N.......|
 |....L.L.......L.L....|
-|....ZZZ.......ZZZ....|
+|.....................|
 |....L.L.......L.L....|
 |.....................|
 |........E...E........|
@@ -97,7 +96,7 @@ layer 2
 |........E...E........|
 |.....................|
 |....L.L.......L.L....|
-|....ZZZ.......ZZZ....|
+|.....................|
 |....L.L.......L.L....|
 |...N.........N.......|
 |..L...............L..|

@@ -1,0 +1,10 @@
+luajit: ./tools/r36_w2/portable_test.lua:274: FAIL 2 benches face the wrong way
+stack traceback:
+	[C]: in function 'error'
+	./tools/r36_w2/portable_test.lua:38: in function 'check'
+	./tools/r36_w2/portable_test.lua:274: in main chunk
+	[C]: in function 'run'
+	...lish_study/implementation/all_tables/compare-benches.lua:27: in main chunk
+	[C]: at 0x55986d481b00
+kezamba/core: the bench of 1 at 11,19,-50 looking -1,0 faces a wall 2 ahead with open ground behind
+kezamba/core: the bench of 1 at 43,19,-50 looking 1,0 faces a wall 2 ahead with open ground behind

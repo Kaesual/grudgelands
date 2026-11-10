@@ -1,0 +1,9 @@
+[ALSOFT] (EE) Failed to connect PipeWire event context (errno: 112)
+2026-11-10 00:58:46: ACTION[Main]: Connected to 127.0.0.1 (127.0.0.1:32426)
+2026-11-10 00:58:46: ACTION[Main]: CHAT: # Server: version: 5.18.0 | game: Grudgelands | uptime: 1s | max lag: 0.123s | clients: grugcap
+2026-11-10 00:58:46: ACTION[Main]: CHAT: *** grugcap joined the game.
+2026-11-10 00:59:10: ACTION[Main]: CHAT: Welcome to the Accord!
+2026-11-10 00:59:10: ACTION[Main]: CHAT: You are now a Warrior. Your journey begins!
+2026-11-10 00:59:13: ACTION[Main]: CHAT: *** Server shutting down
+2026-11-10 00:59:14: ERROR[Main]: Access denied. Reason: fidelity capture complete
+INFO: signal_handler(): got SIGTERM, shutting down.

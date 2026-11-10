@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grudgelands · Character backdrop scenes</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#101b1c;color:#e3ddcc;font:14px system-ui}#stage{width:100vw;height:100vh}canvas{display:block}nav{position:fixed;top:18px;left:18px;background:#111b1ee8;border:1px solid #bda57866;padding:13px 16px;max-width:400px;border-radius:3px}select,button{background:#263330;color:#e3ddcc;border:1px solid #7d8b7744;padding:7px;font:inherit}h1{font:23px Georgia;margin:12px 0 6px}p{font-size:12px;line-height:1.6;color:#b8c4b4}small{font-size:10px;color:#9da98e}#error{color:#ffb5a2}</style>
+<div id="stage"></div><nav><select id="race" aria-label="Backdrop scene"></select> <button id="reset">Saved camera</button> <button id="copy">Copy camera</button><label><input id="reference" type="checkbox"> Reference figure</label><h1 id="title"></h1><p id="description"></p><small>Shared building renderer · drag to orbit · wheel to zoom<br>Scene sources: tools/character_creation_preview/scenes/</small><p id="error"></p></nav>
+<!-- __LICENSE__ -->
+<script>__THREE__</script><script id="payload" type="application/json">__PAYLOAD__</script><script>
+__ORBIT__
+__RENDERER__
+__PORTRAIT__
+const D=JSON.parse(document.getElementById('payload').textContent),$=id=>document.getElementById(id);
+const view=createNodeView({stage:$('stage'),types:D.types,textures:D.textures,meshes:D.meshes});
+window.sceneView=view;let selected='human';
+const reference=new THREE.Group();view.scene.add(reference);
+const referenceMaterial=new THREE.MeshBasicMaterial({color:0xe5bb77,wireframe:true});
+for(const b of D.body){const [x0,y0,z0,x1,y1,z1]=b.box;const mesh=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),referenceMaterial);mesh.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);reference.add(mesh);if(b.mirror){const copy=mesh.clone();copy.position.x=-copy.position.x;reference.add(copy)}}
+reference.visible=false;
+window.showReference=function(show){const spec=D.scenes[selected].spec;reference.visible=!!show&&!!spec.portrait;$('reference').checked=reference.visible;if(reference.visible)placePortrait(reference,spec);view.step(0)};
+$('reference').onchange=()=>showReference($('reference').checked);
+const waitFrame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
+async function loadedTextures(){const images=new Set();view.root.traverse(o=>{if(o.material?.map?.image)images.add(o.material.map.image)});await Promise.all([...images].map(im=>im.complete&&im.naturalWidth?Promise.resolve():im.decode()));await waitFrame()}
+function pixelTextures(){
+ const maps=new Set();view.root.traverse(o=>{if(o.material?.map)maps.add(o.material.map)});
+ for(const map of maps){map.magFilter=THREE.NearestFilter;map.minFilter=THREE.NearestFilter;map.generateMipmaps=false;map.anisotropy=1;map.needsUpdate=true}
+}
+function fit(w=innerWidth,h=innerHeight){view.renderer.setPixelRatio(1);view.renderer.setSize(w,h);view.camera.aspect=w/h;view.camera.updateProjectionMatrix();view.step(0)}
+function camera(){const s=D.scenes[selected].spec;view.camera.fov=s.camera.fov;view.camera.updateProjectionMatrix();view.lookAt(s.camera.eye,s.camera.target);view.step(0)}
+window.selectScene=async function(race,width=innerWidth,height=innerHeight){selected=race;const s=D.scenes[race],spec=s.spec;$('race').value=race;$('title').textContent=spec.title;$('description').textContent=spec.description;$('reference').disabled=!spec.portrait;showReference(false);view.setData(decodeCells(s.cells,s.count));view.scene.background=new THREE.Color(spec.sky);view.scene.fog=new THREE.Fog(spec.sky,...spec.fog);view.root.traverse(o=>{if(o.material?.color)o.material.color.set(spec.tint)});pixelTextures();camera();fit(width,height);await loadedTextures();view.step(0);return {race,cells:s.count,digest:s.digest,camera:view.pose(),width,height}};
+for(const [race,s] of Object.entries(D.scenes))$('race').insertAdjacentHTML('beforeend',`<option value="${race}">${race[0].toUpperCase()+race.slice(1)}</option>`);
+$('race').onchange=()=>selectScene($('race').value).catch(e=>$('error').textContent=e.message);$('reset').onclick=camera;$('copy').onclick=()=>{const p=view.pose();prompt('Camera in scene coordinates',JSON.stringify({eye:p.pos.map(v=>+v.toFixed(3)),target:p.target.map(v=>+v.toFixed(3)),fov:view.camera.fov}))};
+window.addEventListener('resize',()=>fit());view.controls.addEventListener('change',()=>view.step(0));
+window.sceneReady=selectScene(new URLSearchParams(location.search).get('race')||'human').catch(e=>{$('error').textContent=e.message;throw e});
+</script></html>

@@ -1,0 +1,5 @@
+capture: /home/jan/projects/grudgelands/.claude/worktrees/character-creation/tools/character_creation_preview/native/opening/1600x1000/dark_creation_start.png
+capture: /home/jan/projects/grudgelands/.claude/worktrees/character-creation/tools/character_creation_preview/native/opening/1600x1000/dark_creation_race_human.png
+capture: /home/jan/projects/grudgelands/.claude/worktrees/character-creation/tools/character_creation_preview/native/opening/1600x1000/dark_creation_race_troll.png
+capture: 3 shots
+ACTION[Emerge-0]: [uifidelity] READY

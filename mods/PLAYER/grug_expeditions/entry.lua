@@ -7,8 +7,8 @@
 -- with that alone, never an Enter row. Every rule is runs.lua's.
 local M = grug_expeditions
 
-local NOTHING = "You have no Expedition to enter. The Expedition Registrar in a capital's " ..
-	"guild house opens one."
+local NOTHING = "You have no Expedition to enter. The Expedition Registrar at a capital's " ..
+	"waystone plaza opens one."
 
 local function notice(player, text)
 	grug_core.feed(player, "notice", text, "expedition")

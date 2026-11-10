@@ -1,0 +1,235 @@
+{
+  "race": "intro",
+  "title": "Choose your fate",
+  "description": "An active siege frontier: a stone bastion of The Accord faces the staggered timber-and-basalt war platforms of The Throng across churned earth, a broken trench and abandoned barricades.",
+  "seed": 7209,
+  "camera": {
+    "eye": [
+      0,
+      5,
+      -44
+    ],
+    "target": [
+      0,
+      10,
+      20
+    ],
+    "fov": 48
+  },
+  "sky": "#424c55",
+  "fog": [
+    100,
+    210
+  ],
+  "tint": "#c4cbd1",
+  "banners": [
+    {
+      "faction": "accord",
+      "at": [
+        -20,
+        18,
+        8
+      ],
+      "scale": 3
+    },
+    {
+      "faction": "throng",
+      "at": [
+        27,
+        19,
+        17
+      ],
+      "scale": 3
+    }
+  ],
+  "fortifications": {
+    "accord": {
+      "style": "stone_bastion",
+      "towers": [
+        [
+          -20,
+          14,
+          26
+        ],
+        [
+          -42,
+          30,
+          34
+        ]
+      ],
+      "wall": [
+        -48,
+        17,
+        -24,
+        23,
+        14
+      ],
+      "keep": [
+        -47,
+        31,
+        -28,
+        47,
+        24
+      ]
+    },
+    "throng": {
+      "style": "war_platforms",
+      "towers": [
+        [
+          27,
+          24,
+          33
+        ],
+        [
+          46,
+          38,
+          25
+        ]
+      ],
+      "palisade": [
+        17,
+        12,
+        53,
+        18,
+        10
+      ]
+    }
+  },
+  "smoke": [
+    {
+      "at": [
+        0,
+        1,
+        51
+      ],
+      "height": 26,
+      "width": 3.5,
+      "wind": 6
+    },
+    {
+      "at": [
+        -9,
+        1,
+        28
+      ],
+      "height": 18,
+      "width": 2.6,
+      "wind": 4
+    },
+    {
+      "at": [
+        16,
+        1,
+        -9
+      ],
+      "height": 8,
+      "width": 1.6,
+      "wind": 2
+    }
+  ],
+  "fires": [
+    [
+      -18,
+      1,
+      -5
+    ],
+    [
+      16,
+      1,
+      -9
+    ],
+    [
+      -7,
+      1,
+      12
+    ],
+    [
+      9,
+      1,
+      23
+    ]
+  ],
+  "trees": [
+    {
+      "species": "pine",
+      "seed": 44019,
+      "at": [
+        -18,
+        0,
+        74
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 44029,
+      "at": [
+        -8,
+        0,
+        82
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 45029,
+      "at": [
+        4,
+        0,
+        76
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 44039,
+      "at": [
+        16,
+        0,
+        89
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 44049,
+      "at": [
+        24,
+        0,
+        78
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 45049,
+      "at": [
+        -23,
+        0,
+        101
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 110219,
+      "at": [
+        -4,
+        0,
+        111
+      ]
+    },
+    {
+      "species": "pine",
+      "seed": 110356,
+      "at": [
+        11,
+        0,
+        119
+      ]
+    },
+    {
+      "species": "aspen",
+      "seed": 110867,
+      "at": [
+        29,
+        0,
+        109
+      ]
+    }
+  ]
+}

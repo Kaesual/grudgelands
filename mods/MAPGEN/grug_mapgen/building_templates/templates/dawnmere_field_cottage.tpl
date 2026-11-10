@@ -41,8 +41,7 @@ c role shutter o=facedir:2 else=air
 d role shutter o=facedir:3 else=air
 e role storage
 f role storage o=facedir:3
-g role table_leg
-h role table_top
+g node grug_decor:xdecor_table
 i role wall
 j role wall_accent
 k role window
@@ -80,7 +79,7 @@ layer 2
 |.m........JC.|
 |bl.........ld|
 |bl.........ld|
-|.mY...hh...m.|
+|.mY........m.|
 |.m.........m.|
 |bl........Zld|
 |bl.........ld|

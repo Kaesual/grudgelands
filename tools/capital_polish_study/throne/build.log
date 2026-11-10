@@ -1,0 +1,58 @@
+{
+  "sources": {
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/dur_brannoc_kings_hall.tpl": {
+      "sha256": "ac83f772582c00cdf99374905b2c0a39faf33974ac9ce966dda13aee360168ff",
+      "same_as_main": true
+    },
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/highcourt_kings_hall.tpl": {
+      "sha256": "022e4cb96f317d6681de7f8769c54d2024f247d2427ab7fd84e61efcf1a46fcc",
+      "same_as_main": true
+    },
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/lethariel_kings_hall.tpl": {
+      "sha256": "5d0c05b2a5f43d59f9935f6328b3dcf6e4ad3c345a5a83f53840ae35e20d6b0b",
+      "same_as_main": true
+    },
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/gor_drazhak_warlord_hall.tpl": {
+      "sha256": "a5a4f8c91db59cd649d2bbadd571b4db35288176f4c3c52696c030b9ac4247c8",
+      "same_as_main": true
+    },
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/nhal_veyr_mausoleum.tpl": {
+      "sha256": "abf414da7778ba378a9d5e4a11a25bae5c9eefc09feea26b70093afefce9ae7d",
+      "same_as_main": true
+    },
+    "mods/MAPGEN/grug_mapgen/building_templates/templates/kezamba_kings_hall.tpl": {
+      "sha256": "4e21d3cbed3a1eef06acf3bb7c2b852c32ec2dd55783b5e9af2899d421931653",
+      "same_as_main": true
+    }
+  },
+  "measurements": {
+    "seat_above_dais": [
+      2,
+      1
+    ],
+    "arm_above_seat": [
+      1.5,
+      1
+    ],
+    "body_width_depth_height": [
+      [
+        5,
+        3,
+        7
+      ],
+      [
+        5,
+        3,
+        6
+      ]
+    ]
+  },
+  "changes": {
+    "dwarf": 42,
+    "human": 42,
+    "elf": 42,
+    "orc": 42,
+    "undead": 42,
+    "troll": 42
+  }
+}

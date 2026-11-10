@@ -1,0 +1,86 @@
+{
+  "highcourt": {
+    "registrar": [
+      12,
+      1,
+      -12
+    ],
+    "face": 2,
+    "waystone": [
+      22,
+      1,
+      -22
+    ],
+    "straight_distance": 14.14
+  },
+  "dur_brannoc": {
+    "registrar": [
+      12,
+      1,
+      -12
+    ],
+    "face": 2,
+    "waystone": [
+      19,
+      1,
+      -22
+    ],
+    "straight_distance": 12.21
+  },
+  "lethariel": {
+    "registrar": [
+      28,
+      1,
+      -25
+    ],
+    "face": 0,
+    "waystone": [
+      25,
+      1,
+      -14
+    ],
+    "straight_distance": 11.4
+  },
+  "gor_drazhak": {
+    "registrar": [
+      12,
+      1,
+      -12
+    ],
+    "face": 2,
+    "waystone": [
+      19,
+      1,
+      -22
+    ],
+    "straight_distance": 12.21
+  },
+  "nhal_veyr": {
+    "registrar": [
+      12,
+      1,
+      -12
+    ],
+    "face": 2,
+    "waystone": [
+      19,
+      1,
+      -22
+    ],
+    "straight_distance": 12.21
+  },
+  "kezamba": {
+    "registrar": [
+      -36,
+      1,
+      -33
+    ],
+    "face": 0,
+    "waystone": [
+      -38,
+      1,
+      -24
+    ],
+    "straight_distance": 9.22
+  }
+}

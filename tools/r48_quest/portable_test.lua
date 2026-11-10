@@ -693,7 +693,7 @@ do
 	eq(registrar[1].subject, "A line in the guild's ledger", "L the Registrar's subject")
 	eq(registrar[1].body, (TEXTS.registrar.body:gsub("{player}", "Rider"):gsub("{capital}", "Dur Brannoc")),
 		"L the Registrar's text, {player} and {capital} filled")
-	has(registrar[1].body, "Come to the guild house in Dur Brannoc and ask for me;",
+	has(registrar[1].body, "Come to the waystone plaza in Dur Brannoc and ask for me;",
 		"L the Registrar names the race capital")
 	join(rider)
 	level_change(rider, 21, 22)

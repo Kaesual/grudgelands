@@ -1,0 +1,12 @@
+{
+  "race": "elf", "title": "The grove terrace", "seed": 1103,
+  "description": "A pale-stone terrace at the edge of an elven grove. A moon shrine and forest home sit between tall trees; low garden walls lead towards the distant grove.",
+  "camera": {"eye": [0, 2.05, -13], "target": [0, 1.3904, -9.5], "fov": 55},
+  "portrait": {"feet": [0, 0.5, -9.5], "units_per_pixel": 0.0525, "stature": 1.06},
+  "sky": "#9aafb2", "fog": [38, 90], "tint": "#e7f0e9",
+  "ground": "default:dirt_with_grass", "soil": "default:dirt", "path": "default:silver_sandstone_brick", "stone": "default:silver_sandstone_brick",
+  "buildings": [{"template": "silverleaf_moon_shrine", "at": [-15, 0, 24]}, {"template": "silverleaf_glade_house_west", "at": [12, 0, 15]}],
+  "trees": [{"at": [-12, 0, 8], "kind": "aspen", "height": 23}, {"at": [15, 0, 28], "kind": "aspen", "height": 23}, {"at": [-8, 0, 40], "kind": "aspen", "height": 24}, {"at": [8, 0, 44], "kind": "aspen", "height": 26}, {"at": [-23, 0, 26], "kind": "aspen", "height": 24}, {"at": [24, 0, 6], "kind": "aspen", "height": 23}],
+  "plants": ["default:fern_2", "grug_nodes:flower_cream_cups", "grug_nodes:flower_lilac_bells"],
+  "props": [{"kind": "wall", "from": [-8, 1, 4], "to": [-8, 1, 17]}, {"kind": "wall", "from": [8, 1, 4], "to": [8, 1, 11]}]
+}

@@ -1,0 +1,13 @@
+{
+  "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/dawnmere_harvest_inn.tpl",
+  "before_sha256": "f1abf83eaeed7b1c386247c6096299880eea1f39f4c227fbd9a816d760605edb",
+  "after_sha256": "3ebe1cb0d07f6138147edecb4ff028964bb9b45b02a35efb53d73c7ce1967c7e",
+  "result": {
+    "errors": [],
+    "warnings": [],
+    "elsewhere": [],
+    "saved": true,
+    "hash": "3ebe1cb0d07f6138147edecb4ff028964bb9b45b02a35efb53d73c7ce1967c7e",
+    "unchanged": false
+  }
+}

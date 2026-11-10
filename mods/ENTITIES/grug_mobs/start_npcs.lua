@@ -571,7 +571,7 @@ function grug_mobs.start_npc_claim(entity)
 		if grug_mobs.start_npc_retag then grug_mobs.start_npc_retag(entity) end
 	end
 	-- A SOCKET THAT TOOK A NEW ROLE (Round 71, the Expedition Registrar on the
-	-- clerk's socket): `assign_service_socket` changes the socket, not the NPC an
+	-- clerk's socket until 0.73.1): `assign_service_socket` changes the socket, not the NPC an
 	-- older world saved on it, which still carries the role `install` wrote and
 	-- would hold the socket for good. It goes here, whether at home or on a walk;
 	-- the marker then reads as empty and `serve` frees it by the ordinary strikes

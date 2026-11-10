@@ -1,0 +1,310 @@
+{
+  "race": "elf",
+  "title": "The grove terrace",
+  "seed": 1103,
+  "description": "An asymmetric grove garden: the moon shrine sits to the left, a small reflecting pool and benches to the right. A narrow pale-stone path curves between ferns and smaller aspen crowns towards the forest home.",
+  "camera": {
+    "eye": [
+      0,
+      2.05,
+      -13
+    ],
+    "target": [
+      0,
+      1.3904,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "portrait": {
+    "feet": [
+      0,
+      0.5,
+      -9.5
+    ],
+    "units_per_pixel": 0.0525,
+    "stature": 1.06
+  },
+  "sky": "#9aafb2",
+  "fog": [
+    38,
+    90
+  ],
+  "tint": "#e7f0e9",
+  "ground": "default:dirt_with_grass",
+  "soil": "default:dirt",
+  "path": "default:silver_sandstone_brick",
+  "stone": "default:silver_sandstone_brick",
+  "buildings": [
+    {
+      "template": "silverleaf_moon_shrine",
+      "at": [
+        -20,
+        0,
+        29
+      ]
+    },
+    {
+      "template": "silverleaf_glade_house_west",
+      "at": [
+        21,
+        0,
+        43
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "at": [
+        -9,
+        0,
+        17
+      ],
+      "kind": "aspen",
+      "height": 11,
+      "radius": 3
+    },
+    {
+      "at": [
+        16,
+        0,
+        30
+      ],
+      "kind": "aspen",
+      "height": 13,
+      "radius": 4
+    },
+    {
+      "at": [
+        -2,
+        0,
+        40
+      ],
+      "kind": "aspen",
+      "height": 12,
+      "radius": 3
+    },
+    {
+      "at": [
+        7,
+        0,
+        47
+      ],
+      "kind": "aspen",
+      "height": 14,
+      "radius": 4
+    },
+    {
+      "at": [
+        -24,
+        0,
+        9
+      ],
+      "kind": "aspen",
+      "height": 13,
+      "radius": 3
+    },
+    {
+      "at": [
+        23,
+        0,
+        11
+      ],
+      "kind": "aspen",
+      "height": 12,
+      "radius": 3
+    }
+  ],
+  "plants": [
+    "default:fern_2",
+    "grug_nodes:flower_cream_cups",
+    "grug_nodes:flower_lilac_bells"
+  ],
+  "props": [
+    {
+      "kind": "blocks",
+      "node": "default:silver_sandstone_brick",
+      "from": [
+        4,
+        0,
+        10
+      ],
+      "to": [
+        12,
+        0,
+        20
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "default:river_water_source",
+      "from": [
+        5,
+        0,
+        11
+      ],
+      "to": [
+        11,
+        0,
+        19
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        7,
+        1,
+        13
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_mapgen:freshwater_waterlily",
+      "at": [
+        9,
+        1,
+        17
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_bench",
+      "at": [
+        4,
+        1,
+        7
+      ],
+      "param2": 2
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_bench",
+      "at": [
+        12,
+        1,
+        14
+      ],
+      "param2": 3
+    },
+    {
+      "kind": "blocks",
+      "node": "stairs:slab_silver_sandstone_brick",
+      "from": [
+        -7,
+        1,
+        8
+      ],
+      "to": [
+        -7,
+        1,
+        13
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -4,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -5,
+        1,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        4,
+        1,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        8,
+        1,
+        8
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -6,
+        1,
+        7
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        13,
+        1,
+        18
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        -3,
+        1,
+        13
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:fern_2",
+      "at": [
+        3,
+        1,
+        21
+      ]
+    }
+  ],
+  "route": [
+    [
+      -22,
+      0,
+      2.8
+    ],
+    [
+      -4,
+      0,
+      2.8
+    ],
+    [
+      7,
+      -1,
+      2.6
+    ],
+    [
+      21,
+      -6,
+      2
+    ],
+    [
+      38,
+      -9,
+      1.5
+    ],
+    [
+      48,
+      -12,
+      0
+    ]
+  ],
+  "plant_count": 300
+}

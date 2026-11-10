@@ -223,8 +223,8 @@ letters (lane QUEST). Seams and storage: the
   - The **Housing Steward's letter** at level **20**, only while the
     character never had a Claim Stone.
   - The **Expedition Registrar's letter** ("A line in the guild's ledger")
-    at level **20**, always (Round 72): it sends the player to the guild
-    house of their race's capital ([expeditions](expeditions.md)).
+    at level **20**, always (Round 72): it sends the player to the waystone
+    plaza of their race's capital (the guild house before 0.73.1) ([expeditions](expeditions.md)).
   A jump over both levels (14 → 21) sends all three. A character that is past
   the level when 0.48.0 (the Registrar's: 0.72.0) arrives gets the letter at
   its next join, but only while it is still useful; a letter that is no

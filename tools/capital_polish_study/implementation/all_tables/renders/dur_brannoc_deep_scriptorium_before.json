@@ -1,0 +1,21 @@
+{
+  "input": "4c278dc4cddde8dad739354741a0e251d6ba68049541962b5d8ec70a285c56ec",
+  "output": "df7d225d71415c1117cb2e07889ed7c03e8b9105e43c7ecf2405b2577bb7ca88",
+  "width": 1280,
+  "height": 900,
+  "camera": {
+    "pos": [
+      20,
+      19,
+      -12
+    ],
+    "target": [
+      6,
+      0.7,
+      8
+    ]
+  },
+  "cells": 438,
+  "renderer": "tools/building_templates/viewer/renderer.js",
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36"
+}

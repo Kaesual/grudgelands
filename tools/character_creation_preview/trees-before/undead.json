@@ -1,0 +1,251 @@
+{
+  "race": "undead",
+  "title": "The quiet cloister",
+  "seed": 1106,
+  "description": "A weathered slate walk through blighted earth towards an off-center crypt. Broken low masonry, scattered grave markers, ash patches and sparse dead shrubs replace the monumental gate and yellow grass.",
+  "camera": {
+    "eye": [
+      0,
+      2.05,
+      -13
+    ],
+    "target": [
+      0,
+      1.2896,
+      -9.5
+    ],
+    "fov": 55
+  },
+  "portrait": {
+    "feet": [
+      0,
+      0.5,
+      -9.5
+    ],
+    "units_per_pixel": 0.0525,
+    "stature": 0.94
+  },
+  "sky": "#8b9aa3",
+  "fog": [
+    40,
+    92
+  ],
+  "tint": "#dce3f0",
+  "ground": "grug_nodes:blight_dirt",
+  "soil": "default:dirt",
+  "path": "grug_decor:darkage_slate_block",
+  "stone": "default:mossycobble",
+  "buildings": [
+    {
+      "template": "stillgrave_crypt_chapel",
+      "at": [
+        -19,
+        0,
+        32
+      ]
+    },
+    {
+      "template": "stillgrave_sunken_ruin",
+      "at": [
+        17,
+        0,
+        25
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "at": [
+        -10,
+        0,
+        14
+      ],
+      "kind": "gravewood",
+      "height": 11,
+      "radius": 3
+    },
+    {
+      "at": [
+        15,
+        0,
+        37
+      ],
+      "kind": "gravewood",
+      "height": 13,
+      "radius": 3
+    },
+    {
+      "at": [
+        -4,
+        0,
+        45
+      ],
+      "kind": "gravewood",
+      "height": 12,
+      "radius": 3
+    },
+    {
+      "at": [
+        24,
+        0,
+        5
+      ],
+      "kind": "gravewood",
+      "height": 10,
+      "radius": 2
+    }
+  ],
+  "plants": [
+    "default:dry_shrub",
+    "grug_gathering:gravemoss_source"
+  ],
+  "props": [
+    {
+      "kind": "patch",
+      "node": "grug_nodes:ash_ground",
+      "at": [
+        7,
+        9
+      ],
+      "radius": [
+        3,
+        5
+      ]
+    },
+    {
+      "kind": "patch",
+      "node": "grug_nodes:dirt_with_bone_litter",
+      "at": [
+        -7,
+        19
+      ],
+      "radius": [
+        4,
+        6
+      ]
+    },
+    {
+      "kind": "graves",
+      "at": [
+        -6,
+        1,
+        9
+      ]
+    },
+    {
+      "kind": "graves",
+      "at": [
+        6,
+        1,
+        20
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:gravestone_sunken",
+      "at": [
+        8,
+        1,
+        12
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "blocks",
+      "node": "grug_decor:darkage_slate_rubble_slab",
+      "from": [
+        -6,
+        1,
+        2
+      ],
+      "to": [
+        -4,
+        1,
+        4
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "default:mossycobble",
+      "from": [
+        7,
+        1,
+        5
+      ],
+      "to": [
+        9,
+        1,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:darkage_slate_rubble_slab",
+      "at": [
+        9,
+        2,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:dry_shrub",
+      "at": [
+        -4,
+        1,
+        0
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "default:dry_shrub",
+      "at": [
+        5,
+        1,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_gathering:gravemoss_source",
+      "at": [
+        -5,
+        1,
+        6
+      ]
+    }
+  ],
+  "route": [
+    [
+      -22,
+      0,
+      2.9
+    ],
+    [
+      -4,
+      0,
+      2.9
+    ],
+    [
+      9,
+      0,
+      2.5
+    ],
+    [
+      23,
+      -4,
+      2.2
+    ],
+    [
+      37,
+      -10,
+      1.6
+    ],
+    [
+      46,
+      -13,
+      0
+    ]
+  ],
+  "plant_count": 100
+}

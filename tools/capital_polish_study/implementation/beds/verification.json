@@ -1,0 +1,43 @@
+{
+  "changed_cells": [
+    [
+      1,
+      1,
+      12
+    ],
+    [
+      1,
+      1,
+      13
+    ],
+    [
+      1,
+      1,
+      14
+    ],
+    [
+      3,
+      1,
+      12
+    ],
+    [
+      3,
+      1,
+      13
+    ],
+    [
+      3,
+      1,
+      14
+    ]
+  ],
+  "points_preserved": true,
+  "bed_pairs": {
+    "templates_with_beds": 96,
+    "complete_beds": 230
+  },
+  "invalid_pairs": [],
+  "boundary_heads": [],
+  "interior_bed_approaches_reachable": true,
+  "note": "Conservative static two-high occupancy check, not native pathfinding; all sockets unchanged."
+}

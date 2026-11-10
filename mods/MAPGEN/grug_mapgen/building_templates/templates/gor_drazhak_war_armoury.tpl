@@ -41,8 +41,7 @@ c role signature else=air
 d role storage o=facedir:1
 e role storage o=facedir:2
 f role storage o=facedir:3
-g role table_leg
-h role table_top
+g node grug_decor:xdecor_table
 i role tree_log
 j role wall_accent
 k role wall_infill else=air
@@ -97,7 +96,7 @@ layer 2
 |.n.........nllnkS.|
 |.G..............C.|
 |.H..............m.|
-|.k...hhh.....D.Mm.|
+|.k...........D.Mm.|
 |dk..............n.|
 |.n..............k.|
 |.m.........nllnkS.|
