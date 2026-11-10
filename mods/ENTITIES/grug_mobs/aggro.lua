@@ -380,6 +380,220 @@ local EVADE_SEARCH = {close = 6, rings = {6}, band = 2}
 -- speed fields are owned); combat_stats §4's "1.5x its run speed".
 grug_mobs.EVADE_SPEED_FACTOR = 1.5
 
+--
+-- THE EVADE GUIDES (Round 74, round74-plan.md §3.1). The way home is asked, once a
+-- second, in this order: the registered guides, the mob's own trail (below), then the
+-- walk straight home with its local search; the 40 s teleport stays the net. A guide
+-- is `fn(self, pos, home) -> point | nil`: `pos` the evader's object position, `home`
+-- its `_grug_home` (a feet position); the answer is the next point to walk to (a feet
+-- position {x, y, z}; y nil: given in plan only, its ground looked up), or nil when the
+-- guide has no answer for this mob. The point is walked like home (patrol.lua
+-- walk_fixed: straight, the local search when stuck), as its own walk per guide. The
+-- arrival at home, the evade speed, the untouchable state and the timeout stay
+-- evade_tick's. Asked in registration order; the Expedition's guide answers only for a
+-- mob with `_grug_expedition` (grug_expeditions).
+--
+local evade_guides, guide_keys = {}, {}
+
+function grug_mobs.register_evade_guide(fn)
+	evade_guides[#evade_guides + 1] = fn
+	guide_keys[#guide_keys + 1] = "evade_guide" .. #evade_guides
+end
+
+--
+-- THE TRAIL (Round 74 TRAIL, round74-plan.md §4; combat_stats.md §4 Evade). A mob
+-- that chases drops waypoints where it went, and its evade walks them back, newest
+-- first, straight from point to point, then home: the way it came, not a straight line
+-- into the wall it went round.
+--   * Recorded in the 1 Hz leash slot while the mob chases (attack state with a
+--     target) and stands outside its evade's arrival area (evade_radius: four nodes
+--     round a post, the wander radius of a free mob): the first sample outside drops
+--     the first point, then one every TRAIL_SPACING nodes walked (the sum of the
+--     samples' horizontal moves); while the navigation steers a detour round
+--     something (mobs/grug_nav.lua, a path to the chase target) and in the sample
+--     after it, one every TRAIL_DETOUR_SPACING nodes, and one where the detour began.
+--   * On the ground only: standing on a walkable node, not in a liquid, no vertical
+--     speed above TRAIL_AIR; a sample that is not puts the drop off to the next one.
+--   * The loop cut: a new point within TRAIL_LOOP_NEAR nodes (and TRAIL_LOOP_RISE in
+--     height) of an older one that the mob walked at least TRAIL_LOOP_WALK nodes ago
+--     drops every point between them (the oldest such point wins), so a mob kited
+--     round and back keeps the short thread. TRAIL_LOOP_NEAR is the walk's direct
+--     search distance (TRAIL_SEARCH.close covers it), so a cut leg through a thin
+--     obstacle is searched round; the walk minimum keeps a detour's close points.
+--   * At most TRAIL_CAP points: one more leaves out the inner point whose loss
+--     lengthens the trail least (the straightest), so the corners stay.
+--   * Runtime only (self.temp, gone with an unload or the death): cleared at the
+--     evade's arrival or teleport, back inside the arrival area, and when the mob is
+--     idle again without an evade; fleeing and flopping in a fight keep it.
+--   * The walk: a point is reached within TRAIL_REACH nodes (checked every step, so
+--     the mob turns there and does not overshoot); each leg is a fixed walk of its
+--     own (patrol.lua walk_fixed: straight, the local search when stuck, the point
+--     itself searched for); a leg with TRAIL_SKIP_AFTER failed searches drops its
+--     point (one on a ledge the mob came down and cannot climb) and the walk goes on
+--     to the next. The 40 s teleport stays the net.
+-- Cost: a chasing mob, once a second, its position and velocity and a few sums; a
+-- drop looks at no more than TRAIL_CAP points. No node is read for the trail.
+--
+local TRAIL_SPACING = 8 -- nodes walked between two points
+local TRAIL_DETOUR_SPACING = 3 -- the same during a detour and in the sample after
+local TRAIL_CAP = 10
+local TRAIL_LOOP_NEAR = 6
+local TRAIL_LOOP_RISE = 2
+local TRAIL_LOOP_WALK = 18
+local TRAIL_AIR = 1 -- nodes/s of vertical speed: jumping or falling
+local TRAIL_REACH = 2
+local TRAIL_SKIP_AFTER = 1
+-- A leg's search: the point itself within 16 nodes (a leg is at most about
+-- TRAIL_SPACING plus a second's run), otherwise the evade's local point.
+local TRAIL_SEARCH = {close = 16, rings = EVADE_SEARCH.rings, band = EVADE_SEARCH.band}
+local trail_keys = {}
+for i = 1, TRAIL_CAP do trail_keys[i] = "evade_trail" .. i end
+
+local function feet_y(self, pos)
+	return pos.y + mobs.grug_obstacle.mob_cbox(self)[2]
+end
+
+local function on_ground(self)
+	local on = self.standing_on and core.registered_nodes[self.standing_on]
+	if not (on and on.walkable) then return false end
+	local within = core.registered_nodes[self.standing_in]
+	if within and within.liquidtype and within.liquidtype ~= "none" then
+		return false
+	end
+	local v = self.object:get_velocity()
+	return not v or math.abs(v.y) <= TRAIL_AIR
+end
+
+local function hdist(a, b)
+	local dx, dz = a.x - b.x, a.z - b.z
+	return math.sqrt(dx * dx + dz * dz)
+end
+
+local function trail_drop(tr, x, y, z)
+	local near2 = TRAIL_LOOP_NEAR * TRAIL_LOOP_NEAR
+	for i = 1, #tr do
+		local p = tr[i]
+		local dx, dz = x - p.x, z - p.z
+		if dx * dx + dz * dz <= near2 and math.abs(y - p.y) <= TRAIL_LOOP_RISE
+				and tr.walked - p.s >= TRAIL_LOOP_WALK then
+			for k = #tr, i + 1, -1 do tr[k] = nil end
+			tr.walked = p.s + math.sqrt(dx * dx + dz * dz)
+			break
+		end
+	end
+	tr[#tr + 1] = {x = x, y = y, z = z, s = tr.walked}
+	if #tr > TRAIL_CAP then
+		local best, cost = 2, math.huge
+		for i = 2, #tr - 1 do
+			local c = hdist(tr[i - 1], tr[i]) + hdist(tr[i], tr[i + 1])
+				- hdist(tr[i - 1], tr[i + 1])
+			if c < cost then best, cost = i, c end
+		end
+		table.remove(tr, best)
+	end
+end
+
+-- The recording, from the 1 Hz leash slot.
+local function trail_tick(self)
+	local t = self.temp
+	if t.grug_evading or not (self.attack or t.grug_evade_trail) then return end
+	if not self.attack or self.state ~= "attack" then
+		if self.state ~= "runaway" and self.state ~= "flop" then
+			t.grug_evade_trail = nil
+		end
+		return
+	end
+	local home = self._grug_home
+	local pos = self.object and self.object:get_pos()
+	if not home or not pos or self.fly or self._grug_swim_dy
+			or self._grug_patrol_route
+			or (type(self._grug_boss_id) == "string"
+				and self._grug_boss_id:find("^dragon:") ~= nil) then
+		t.grug_evade_trail = nil
+		return
+	end
+	local area = evade_radius(self)
+	local dx, dz = pos.x - home.x, pos.z - home.z
+	if dx * dx + dz * dz <= area * area then
+		t.grug_evade_trail = nil
+		return
+	end
+	local tr = t.grug_evade_trail
+	if not tr then
+		tr = {walked = 0, x = pos.x, z = pos.z}
+		t.grug_evade_trail = tr
+	else
+		tr.walked = tr.walked + hdist(pos, tr)
+		tr.x, tr.z = pos.x, pos.z
+	end
+	local nst = t.grug_nav
+	local detour = nst ~= nil and nst.path ~= nil and nst.target == self.attack
+	local spacing = TRAIL_SPACING
+	if detour and not tr.detour then
+		spacing = 1
+	elseif detour or tr.detour then
+		spacing = TRAIL_DETOUR_SPACING
+	end
+	tr.detour = detour
+	local last = tr[#tr]
+	if (last and tr.walked - last.s < spacing) or not on_ground(self) then return end
+	trail_drop(tr, pos.x, feet_y(self, pos), pos.z)
+end
+
+local function reached(self, p, pos)
+	return hdist(p, pos) <= TRAIL_REACH
+		and math.abs(p.y - feet_y(self, pos)) <= TRAIL_LOOP_RISE
+end
+
+-- The trail's next point for an evader at `pos`, its reached points dropped; nil
+-- when the trail is walked.
+local function trail_next(self, pos)
+	local tr = self.temp.grug_evade_trail
+	if not tr then return nil end
+	local p = tr[#tr]
+	while p and reached(self, p, pos) do
+		tr[#tr] = nil
+		p = tr[#tr]
+	end
+	if not p then self.temp.grug_evade_trail = nil end
+	return p
+end
+
+-- One decision of the walk home (evade_tick, once a second).
+local function evade_walk(self, dtime, pos, home)
+	local ev = self.temp.grug_evading
+	ev.trail = nil
+	for i = 1, #evade_guides do
+		local p = evade_guides[i](self, pos, home)
+		if p then
+			-- A guided mob leaves its trail: once it has walked the guide's way the
+			-- trail's newest point lies behind it, so a later nil from the guide (off
+			-- its grid: in water, after a fall) walks home instead.
+			self.temp.grug_evade_trail = nil
+			grug_mobs.walk_fixed(self, dtime, pos, p.x, p.y, p.z, guide_keys[i],
+				"evade", EVADE_SEARCH)
+			return
+		end
+	end
+	local p = trail_next(self, pos)
+	if p then
+		ev.trail = true
+		local tr = self.temp.grug_evade_trail
+		local n = #tr
+		if grug_mobs.walk_fixed(self, dtime, pos, p.x, p.y, p.z, trail_keys[n], "evade",
+				TRAIL_SEARCH) >= TRAIL_SKIP_AFTER then
+			tr[n] = nil
+		end
+		return
+	end
+	-- One decision of the walk home, once a second. mobs_redo's walk state
+	-- re-issues the velocity and may randomly turn the mob (its random stop
+	-- is held off by the nudge, ruling 25; patrol.lua's header spells this
+	-- out); a detour is steered every step (leash_tick, walk_follow).
+	grug_mobs.walk_fixed(self, dtime, pos, home.x, home.y, home.z, "evade",
+		"evade", EVADE_SEARCH)
+end
+
 local function evade_tick(self, dtime)
 	local ev = self.temp.grug_evading
 	if not ev then
@@ -420,6 +634,7 @@ local function evade_tick(self, dtime)
 		-- Instantly a normal mob again: attackable, targeting, and its speeds
 		-- restored by the next tick_speed_effects (init.lua).
 		self.temp.grug_evading = nil
+		self.temp.grug_evade_trail = nil
 		grug_mobs.walk_clear(self, "evade")
 		-- And it stops where it arrived (Round 72 GUARDNAV): the run's velocity,
 		-- 1.5x its run speed, would otherwise carry it on until mobs_redo's walk
@@ -445,15 +660,24 @@ local function evade_tick(self, dtime)
 		-- point) and an entity's position is its collisionbox origin.
 		grug_mobs.place_on_ground(self.object, home)
 		self.temp.grug_evading = nil
+		self.temp.grug_evade_trail = nil
 		grug_mobs.walk_clear(self, "evade")
 		return
 	end
-	-- One decision of the walk home, once a second. mobs_redo's walk state
-	-- re-issues the velocity and may randomly turn the mob (its random stop
-	-- is held off by the nudge, ruling 25; patrol.lua's header spells this
-	-- out); a detour is steered every step (leash_tick, walk_follow).
-	grug_mobs.walk_fixed(self, dtime, pos, home.x, home.y, home.z, "evade",
-		"evade", EVADE_SEARCH)
+	evade_walk(self, dtime, pos, home)
+end
+
+-- Between the decisions: an evader walking its trail that reached its point turns
+-- to the next one now (true), else nothing (false).
+local function trail_turn(self, dtime)
+	local ev = self.temp.grug_evading
+	local tr = self.temp.grug_evade_trail
+	local p = ev.trail and tr and tr[#tr]
+	if not p then return false end
+	local pos = self.object and self.object:get_pos()
+	if not pos or not reached(self, p, pos) then return false end
+	evade_walk(self, dtime, pos, self._grug_home)
+	return true
 end
 
 --
@@ -896,8 +1120,11 @@ function grug_mobs.leash_tick(self, dtime)
 	end
 	t.grug_leash_acc = (t.grug_leash_acc or 0) + dtime
 	if t.grug_leash_acc < LEASH_INTERVAL then
-		-- An evader's detour is steered every step (patrol.lua walk_follow).
-		if t.grug_evading then grug_mobs.walk_follow(self, dtime, "evade") end
+		-- An evader's detour is steered every step (patrol.lua walk_follow); one
+		-- walking its trail turns in the step it reaches a point.
+		if t.grug_evading and not trail_turn(self, dtime) then
+			grug_mobs.walk_follow(self, dtime, "evade")
+		end
 		return
 	end
 	t.grug_leash_acc = 0
@@ -929,6 +1156,9 @@ function grug_mobs.leash_tick(self, dtime)
 	-- leash_check: that is what keeps the arrival/timeout handling ahead of any
 	-- fresh chase bookkeeping in the same slot.
 	evade_tick(self, dtime)
+	-- The trail of a chase (above), for every mob that may evade: also before the
+	-- no-leash return (a king's or a boss's reset runs the evade too).
+	trail_tick(self)
 	-- Any-source idle recovery shares this one-second cadence. It runs for
 	-- no-leash actors too (notably royal guards), while its own calm-state and
 	-- shared encounter gates prevent a transient target gap from healing them.

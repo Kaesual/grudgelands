@@ -816,8 +816,10 @@ drawn from the base image above. The gliding version (approved in playtest,
   a faction sits on a flying mount, the cell texture also holds the
   faction's no-fly overlay after the map's tiles and before any claim layer:
   semi-transparent red (Claim mode's red) wherever that faction's flyer is
-  dismounted: enemy home land, the dragon islands and the ocean (bays and
-  lakes inside the coast, which the map draws as water, stay clear). On
+  dismounted: enemy home land, the dragon islands, the coastal belt in front
+  of both and the open sea (bays, lakes and, since Round 74, the belt in
+  front of the own and contested land, which the map draws as water, stay
+  clear). On
   foot, on a ground mount or a boat, or without a faction the minimap is the
   normal one. The minimap's per-step check reads the mount table
   (`grug_mounts.is_flying`), so mounting and dismounting rebuild the cell

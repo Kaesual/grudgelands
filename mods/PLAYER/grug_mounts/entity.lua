@@ -833,6 +833,9 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	local model = grug_mounts.model_for(player, tier_id)
 	if not tier or not model then return false, "Mount appearance is unavailable." end
 	local name = player:get_player_name()
+	-- One ride at a time: one already there ends first (its controller and
+	-- visual removed), whichever path summons.
+	if active[name] then grug_mounts.dismount(player, nil, true) end
 	activating_players[name] = player
 	local object = core.add_entity(pos, ENTITY_NAME,
 		core.serialize({owner = name, tier = tier_id}))
@@ -887,7 +890,9 @@ function grug_mounts.register_summon_guard(guard)
 end
 
 -- Where tier_id may be summoned for this player right now, or nil and why.
-local function summon_position(player, tier_id)
+-- `seated`: the player's position is a ride's seat saved at logout
+-- (restore.lua), for a boat its origin on the water's surface.
+local function summon_position(player, tier_id, seated)
 	if grug_core.in_combat(player) then return nil, "You cannot mount while in combat." end
 	local tier = grug_mounts.TIERS[tier_id]
 	local pos = player:get_pos()
@@ -906,7 +911,7 @@ local function summon_position(player, tier_id)
 		-- On a boat the player's position is the boat's, on the water surface:
 		-- the water node is the half node below it.
 		local record = active[player:get_player_name()]
-		if record and record.mode == "water" then pos.y = pos.y - 0.5 end
+		if seated or (record and record.mode == "water") then pos.y = pos.y - 0.5 end
 		return grug_mounts.boat_surface(pos)
 	end
 	-- Feet in water, or on its surface (a boat's seat, a swimmer at the top):
@@ -942,6 +947,14 @@ end
 
 function grug_mounts.mount(player, tier_id)
 	local pos, message = summon_position(player, tier_id)
+	if not pos then return false, message end
+	return grug_mounts.spawn_entity(player, tier_id, pos)
+end
+
+-- The ride saved at logout, summoned again at login (restore.lua) under every
+-- rule of a summon: true, or false and the refusal.
+function grug_mounts.mount_saved(player, tier_id)
+	local pos, message = summon_position(player, tier_id, true)
 	if not pos then return false, message end
 	return grug_mounts.spawn_entity(player, tier_id, pos)
 end
@@ -982,16 +995,29 @@ core.register_on_dieplayer(function(player)
 	grug_mounts.dismount(player, nil, true)
 end)
 
-core.register_on_leaveplayer(function(player)
+-- Logout and shutdown keep the teardown dismount (fix 6a120d54: nothing
+-- of the appearance is restored after player_api dropped its records); the
+-- ride's tier is saved first, and the next login summons it again
+-- (restore.lua; Round 74, user ruling 2026-11-10). The player is set where
+-- the mount was, the seat restore.lua summons at. Only a ride sets the key:
+-- a shutdown's teardown comes before the leave, which finds no ride.
+local LOGOUT_RIDE_KEY = "grug_mounts:logout_ride"
+grug_mounts.LOGOUT_RIDE_KEY = LOGOUT_RIDE_KEY
+
+local function teardown(player)
+	local record = active[player:get_player_name()]
+	if record then player:get_meta():set_int(LOGOUT_RIDE_KEY, record.tier) end
 	dismount(player, nil, true, true, true)
-end)
+end
+
+core.register_on_leaveplayer(teardown)
 
 core.register_on_shutdown(function()
 	local names = {}
 	for name in pairs(active) do names[#names + 1] = name end
 	for _, name in ipairs(names) do
 		local player = core.get_player_by_name(name)
-		if player then dismount(player, nil, true, true, true) end
+		if player then teardown(player) end
 	end
 end)
 

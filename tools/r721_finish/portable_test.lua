@@ -11,7 +11,7 @@
 --    Finish only once rewards_open, then Cancel no more; the solo owner may.
 -- B. Finish at the registrar: the countdown banner inside, once a second, the notice
 --    outside; a member sees the state without buttons; entry at T-11, refused at T-10,
---    on the click and on a trip's arrival; the end at 60 sends everyone out, a dead
+--    on the click and on a trip's arrival; the end at 30 sends everyone out, a dead
 --    player stays.
 -- C. Cancel: a ready run never entered, at the registrar, with its confirmation, ends
 --    at once; a running one from a waystone's tab, with its confirmation, counts down
@@ -19,7 +19,7 @@
 --    alone to a member, and Finish to a solo owner, without confirmation.
 -- D. The Deserter's Mark: only the canceller; it blocks opening and entering; its
 --    status; a logout and a login 48 s later with the right time left; gone after
---    5 minutes, its saved end cleared at the next login.
+--    2 minutes, its saved end cleared at the next login.
 -- E. A solo owner joins a foreign party: ended at once, marked unless rewards_open or
 --    already finished.
 -- F. A run left empty for 10 minutes ends without a mark.
@@ -219,7 +219,8 @@ local FAKE_TEMPLATE = {EXTENSION=".exp", resolve=function() end,
    end_waystone={x=40, y=2, z=8}}, encounters={}}
  end}
 local SISTERS = {["encounters.lua"]=true, ["guard.lua"]=true,
- ["chest.lua"]=true, ["loot.lua"]=true, ["traps.lua"]=true}
+ ["chest.lua"]=true, ["loot.lua"]=true, ["traps.lua"]=true,
+ ["navigation.lua"]=true} -- navigation.lua needs mobs: r74_nav
 local load_file = dofile
 _G.dofile = function(file)
  local base = file:match("[^/]+$")
@@ -314,7 +315,7 @@ end
 local eve, cid = new_player("Eve", 25), new_player("Cid", 25)
 local ann, bob, dee = new_player("Ann", 26), new_player("Bob", 25), new_player("Dee", 24)
 party("p1", "Ann", "Bob", "Dee")
-local CONFIRM = "Cancel this Expedition? You cannot open or enter an Expedition for 5 minutes."
+local CONFIRM = "Cancel this Expedition? You cannot open or enter an Expedition for 2 minutes."
 check(E.CANCEL_CONFIRM == CONFIRM, "the confirmation's text")
 
 -- A. Who may finish or cancel, and when.
@@ -358,7 +359,7 @@ rewards[solo] = true
 check(E.can_finish(eve), "A the solo owner may finish")
 E.end_run(solo, "test")
 
--- B. Finish at the registrar and the minute after it.
+-- B. Finish at the registrar and the countdown after it (30 s since Round 74, the user).
 enter_by_tab(bob, run, "dawnmere")
 feeds, banners = {}, {}
 -- Round 72.2: Dee keeps a waystone's Expeditions tab open; Finish redraws it once.
@@ -375,12 +376,12 @@ check(#closes == 1 and closes[1][1] == run and closes[1][2] == "finished" and cl
 check(dee_before ~= fs_of(dee) and has(fs_of(dee), "Finished. It ends in") and
  not has(fs_of(dee), "act_finish_"), "B72.2 a member's open tab redrawn")
 check(run.closing and run.closing.reason == "finished" and run.closing.by == "Ann" and
- E.closing_left(run) == 60 and run.state == "running", "B closing, a minute left")
-check(has(fs_of(ann), "Finished. It ends in 60 seconds.") and not has(fs_of(ann), ";finish;"),
+ E.closing_left(run) == 30 and run.state == "running", "B closing, 30 s left")
+check(has(fs_of(ann), "Finished. It ends in 30 seconds.") and not has(fs_of(ann), ";finish;"),
  "B the registrar shows the countdown")
-check(last_feed("Ann") == "You finished the Expedition. It ends in 60 seconds.", "B the leader's line")
-check(last_feed("Dee") == "Ann finished the Expedition. It ends in 60 seconds.", "B a member outside")
-check(last_feed("Bob") == nil and banners.Bob == "This Expedition ends in 60 seconds.",
+check(last_feed("Ann") == "You finished the Expedition. It ends in 30 seconds.", "B the leader's line")
+check(last_feed("Dee") == "Ann finished the Expedition. It ends in 30 seconds.", "B a member outside")
+check(last_feed("Bob") == nil and banners.Bob == "This Expedition ends in 30 seconds.",
  "B inside: the banner, no line")
 check(last_feed("Eve") == nil and banners.Eve == nil, "B nobody else")
 ok, why = E.can_finish(ann)
@@ -388,10 +389,10 @@ check(not ok and why == "This Expedition is already closing.", "B no second Fini
 ok, why = E.can_cancel(ann)
 check(not ok and why == "This Expedition is already closing.", "B no Cancel while closing")
 advance(1)
-check(banners.Bob == "This Expedition ends in 59 seconds.", "B once a second")
+check(banners.Bob == "This Expedition ends in 29 seconds.", "B once a second")
 fs = expeditions_tab(dee, "dawnmere")
-check(has(fs, "Finished. It ends in 59 seconds.") and not has(fs, "act_"), "B a member: the time left, no button")
-advance(48)
+check(has(fs, "Finished. It ends in 29 seconds.") and not has(fs, "act_"), "B a member: the time left, no button")
+advance(18)
 check(E.closing_left(run) == 11 and E.may_enter(ann), "B at T-11 one may enter")
 banners.Ann = nil
 enter_by_tab(ann, run, "highcourt")
@@ -413,7 +414,7 @@ ann.hp = 0
 advance(9)
 check(run.state ~= "ended" and banners.Bob == "This Expedition ends in 1 second.", "B one second")
 advance(1)
-check(run.state == "ended" and ended[run] == "finished", "B the end at 60, reason finished")
+check(run.state == "ended" and ended[run] == "finished", "B the end at 30, reason finished")
 check(E.run_inside(bob) == nil and E.run_inside(ann) == nil and not E.run_of(ann), "B nobody inside, the slot free")
 check(#emerge == 1, "B one way out: the dead player stays")
 finish()
@@ -440,31 +441,31 @@ fields(eve, {cancel="Cancel"})
 fields(eve, {cancel_confirm="Confirm"})
 check(own.state == "ended" and ended[own] == "cancelled", "C nobody inside: it ends at once")
 check(last_feed("Eve", "expedition") == "Your Expedition was cancelled.", "C the end's line")
-check(last_feed("Eve", "expedition_mark") == "Deserter's Mark: no Expeditions for 5:00.", "C the mark's line")
-check(E.deserter_left(eve) == 300 and eve.data[E.DESERTER_META] == tostring(now + 300), "C the mark, saved")
-check(has(fs_of(eve), "Deserter's Mark: no Expeditions for 5:00.") and not has(fs_of(eve), ";open;"),
+check(last_feed("Eve", "expedition_mark") == "Deserter's Mark: no Expeditions for 2:00.", "C the mark's line")
+check(E.deserter_left(eve) == 120 and eve.data[E.DESERTER_META] == tostring(now + 120), "C the mark, saved")
+check(has(fs_of(eve), "Deserter's Mark: no Expeditions for 2:00.") and not has(fs_of(eve), ";open;"),
  "C the registrar's list names the mark")
 
 -- D. The Deserter's Mark.
 local entries = sources[1](eve, now * 1e6)
 check(#sources == 1 and entries and entries[1].id == "deserter_mark" and
- entries[1].expiry_us == (now + 300) * 1e6, "D a timed status")
+ entries[1].expiry_us == (now + 120) * 1e6, "D a timed status")
 check(sources[1](cid, now * 1e6) == nil, "D none without it")
 ok, why = E.can_create(eve, "test_vault", 4)
-check(not ok and why == "Deserter's Mark: no Expeditions for 5:00.", "D no Expedition opened")
+check(not ok and why == "Deserter's Mark: no Expeditions for 2:00.", "D no Expedition opened")
 local back = rejoin(eve)
 check(not E.deserter_left(eve), "D offline, out of the rules' table")
 advance(48)
 back()
 ok, why = E.can_create(eve, "test_vault", 4)
-check(E.deserter_left(eve) == 252 and not ok and why == "Deserter's Mark: no Expeditions for 4:12.",
+check(E.deserter_left(eve) == 72 and not ok and why == "Deserter's Mark: no Expeditions for 1:12.",
  "D after a login the time left: " .. tostring(why))
-check(sources[1](eve, now * 1e6)[1].expiry_us == (now + 252) * 1e6, "D its status again")
-advance(251)
+check(sources[1](eve, now * 1e6)[1].expiry_us == (now + 72) * 1e6, "D its status again")
+advance(71)
 check(E.deserter_left(eve) == 1, "D one second left")
 advance(1)
 check(not E.deserter_left(eve) and sources[1](eve, now * 1e6) == nil and E.can_create(eve, "test_vault", 4),
- "D gone after 5 minutes")
+ "D gone after 2 minutes")
 check(eve.data[E.DESERTER_META] ~= "", "D its saved end stays until the next login")
 rejoin(eve)()
 check(eve.data[E.DESERTER_META] == "", "D cleared at the login")
@@ -486,11 +487,11 @@ feeds, banners = {}, {}
 fields(ann, {["act_cancel_" .. second.id]="Cancel"})
 fields(ann, {act_confirm="Confirm"})
 check(second.closing and second.closing.reason == "cancelled" and second.state == "running", "C closing")
-check(has(fs_of(ann), "Cancelled. It ends in 60 seconds.") and not has(fs_of(ann), "act_"),
+check(has(fs_of(ann), "Cancelled. It ends in 30 seconds.") and not has(fs_of(ann), "act_"),
  "C the tab shows it, no more buttons")
-check(banners.Bob == "This Expedition was cancelled. It ends in 60 seconds.", "C the banner inside")
-check(last_feed("Dee") == "Ann cancelled the Expedition. It ends in 60 seconds.", "C a member outside")
-check(E.deserter_left(ann) == 300 and not E.deserter_left(bob) and not E.deserter_left(dee),
+check(banners.Bob == "This Expedition was cancelled. It ends in 30 seconds.", "C the banner inside")
+check(last_feed("Dee") == "Ann cancelled the Expedition. It ends in 30 seconds.", "C a member outside")
+check(E.deserter_left(ann) == 120 and not E.deserter_left(bob) and not E.deserter_left(dee),
  "C only the canceller is marked")
 ok, why = E.may_enter(dee)
 check(not ok and why == "This Expedition was cancelled.", "C nobody gets in, at once")
@@ -500,11 +501,11 @@ check(not ok and why == "This Expedition is already closing.", "C no second Canc
 E.use_waystone(bob, second.places.start_waystone)
 fields(bob, {waystone_tab_2="Expeditions"})
 fs = fs_of(bob)
-check(has(fs, "Your Expedition") and has(fs, "Cancelled. It ends in 60 seconds.") and not has(fs, "act_") and
+check(has(fs, "Your Expedition") and has(fs, "Cancelled. It ends in 30 seconds.") and not has(fs, "act_") and
  not has(fs, "enter_"), "C the stone inside: the state, no button, no Enter")
-advance(60)
+advance(30)
 check(second.state == "ended" and ended[second] == "cancelled" and E.run_inside(bob) == nil,
- "C the end at 60, everyone out")
+ "C the end at 30, everyone out")
 finish()
 
 -- C. Finish at a stone inside, by a solo owner, needs no confirmation.
@@ -516,7 +517,7 @@ fields(cid, {waystone_tab_2="Expeditions"})
 check(has(fs_of(cid), "act_finish_" .. cids.id .. ";Finish]") and not has(fs_of(cid), "enter_"),
  "C the stone inside: Finish")
 fields(cid, {["act_finish_" .. cids.id]="Finish"})
-check(cids.closing and cids.closing.reason == "finished" and banners.Cid == "This Expedition ends in 60 seconds.",
+check(cids.closing and cids.closing.reason == "finished" and banners.Cid == "This Expedition ends in 30 seconds.",
  "C finished from inside at once")
 -- The Claim Stone's way: the same block and action through grug_home.
 local block = home.expedition_actions(cid)
@@ -536,7 +537,7 @@ local function join_p2(p)
 end
 local fays = assert(E.create(fay, "test_vault", 4))
 join_p2(fay)
-check(fays.state == "ended" and ended[fays] == "joined_party" and E.deserter_left(fay) == 300,
+check(fays.state == "ended" and ended[fays] == "joined_party" and E.deserter_left(fay) == 120,
  "E unfinished: ended and marked")
 local ivys = assert(E.create(ivy, "test_vault", 4))
 rewards[ivys] = true
@@ -563,21 +564,21 @@ check(kims.state == "ended" and ended[kims] == "empty" and not E.deserter_left(k
 local lea, max = new_player("Lea", 25), new_player("Max", 25)
 party("p3", "Lea", "Max")
 local leas = assert(E.create(lea, "test_vault", 4))
-check(E.cancel(lea) and leas.state == "ended" and E.deserter_left(lea) == 300, "G cancelled, marked")
+check(E.cancel(lea) and leas.state == "ended" and E.deserter_left(lea) == 120, "G cancelled, marked")
 parties.p3.leader = "Max"
 emit("leadership", "Lea", "Max")
 local maxs = E.create(max, "test_vault", 4)
 check(maxs and E.run_of(lea) == maxs, "G the new leader opens one at once")
 ok, why = E.can_enter(lea)
-check(not ok and why == "Deserter's Mark: no Expeditions for 5:00.", "G the bearer cannot enter")
+check(not ok and why == "Deserter's Mark: no Expeditions for 2:00.", "G the bearer cannot enter")
 check(E.can_enter(max), "G the new leader can")
 fs = expeditions_tab(lea, "highcourt")
-check(has(fs, "Deserter's Mark: no Expeditions for 5:00.") and not has(fs, "enter_") and not has(fs, "act_"),
+check(has(fs, "Deserter's Mark: no Expeditions for 2:00.") and not has(fs, "enter_") and not has(fs, "act_"),
  "G the bearer's tab: the mark, no button")
 parties.p3.leader = "Lea"
 emit("leadership", "Lea", "Max")
 fs = expeditions_tab(lea, "highcourt")
-check(has(fs, "Deserter's Mark: no Expeditions for 5:00.") and has(fs, "act_cancel_" .. maxs.id),
+check(has(fs, "Deserter's Mark: no Expeditions for 2:00.") and has(fs, "act_cancel_" .. maxs.id),
  "G a leader who cannot enter still sees Cancel")
 E.end_run(maxs, "test")
 

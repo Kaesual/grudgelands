@@ -1,0 +1,31 @@
+character complete at (0,37,-2550)
+ready after 15.8 s
+PLACED 12 pack mobs
+EVADE corner grug_mobs:stone_golem home 112,5,24 from 98,6,57: walked 6.1 s, stood 0 s
+EVADE corner grug_mobs:giant_spider home 60,5,28 from 84,5,23: teleport 40.9 s, stood 36 s
+EVADE corner grug_mobs:giant_spider home 60,5,28 from 84,5,23: teleport 40.9 s, stood 36 s
+EVADE corner grug_mobs:stone_golem home 108,5,70 from 102,6,44: teleport 40.6 s, stood 33 s
+EVADE corner grug_mobs:giant_spider home 108,5,74 from 108,5,103: teleport 40.6 s, stood 36 s
+EVADE corner grug_mobs:giant_spider home 60,5,31 from 31,5,21: teleport 40.1 s, stood 35 s
+EVADE corner grug_mobs:giant_spider home 111,5,74 from 105,5,102: teleport 40.6 s, stood 32 s
+EVADE corner grug_mobs:giant_spider home 105,5,74 from 109,5,105: teleport 40.6 s, stood 34 s
+EVADE corner grug_mobs:giant_spider home 111,5,28 from 86,5,18: walked 5.0 s, stood 0 s
+EVADE corner grug_mobs:giant_spider home 108,5,28 from 84,5,22: teleport 40.9 s, stood 36 s
+EVADE corner grug_mobs:giant_spider home 60,5,28 from 84,5,23: teleport 40.1 s, stood 35 s
+EVADE corner grug_mobs:flintback home 68,4,108 from 97,5,94: walked 9.1 s, stood 0 s
+WAVE corner mobs 12 walked 3 teleports 9 other 0 time median 6.1 max 9.1 stood 313 worst 36
+EVADE stairs grug_mobs:giant_spider home 108,5,28 from 79,4,19: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 60,5,28 from 37,6,19: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 60,5,28 from 37,6,19: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:stone_golem home 108,5,70 from 100,5,92: walked 3.8 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 60,5,28 from 37,6,19: walked 4.4 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 60,5,31 from 37,6,20: walked 3.4 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 111,5,74 from 100,4,94: teleport 40.8 s, stood 35 s
+EVADE stairs grug_mobs:stone_golem home 112,5,24 from 79,5,21: walked 7.3 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 108,5,74 from 100,4,94: walked 6.0 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 105,5,74 from 97,4,95: walked 3.8 s, stood 0 s
+EVADE stairs grug_mobs:giant_spider home 111,5,28 from 79,4,21: walked 6.3 s, stood 0 s
+EVADE stairs grug_mobs:flintback home 68,4,108 from 71,7,94: walked 2.7 s, stood 0 s
+WAVE stairs mobs 12 walked 11 teleports 1 other 0 time median 5.2 max 7.3 stood 35 worst 35
+NAV searches 19 found 19 grid 0 largest_us 36
+shutdown

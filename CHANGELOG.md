@@ -12,6 +12,35 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.74.0 — the way home, the waiting cast, the coast (2026-11-10)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Skills fire in melee:** a self or support skill (Ruination, Hold Ground, Ice Nova,
+  Blink, the heals and the others) that you press while your last swing or cast still
+  holds it back now waits and fires as soon as it may, before your next swing, instead of
+  "You are still busy." and a Strike. One short click is enough. A heal goes to the ally
+  you aimed at, or to nobody if you look away from them. Not enough resource or a
+  cooldown is still refused at once; switching the slot, a stun or death drops the wait.
+- **The hotbar shows when you can cast:** while a swing or a cast holds them back, your
+  other cast skills are covered like a cooldown, without a number, clearing in four
+  steps. A skill waiting to fire has a gold frame.
+- **Fly over the coast:** the coastal water in front of your own home and the contested
+  land is open to flyers, out to the open sea 250 to 350 nodes off the shore. The coast
+  in front of the enemy's land and of the dragon islands and the open sea stay no-fly;
+  the minimap on a flyer shows it.
+- **Your ride comes back:** log out on a flying mount, a ground mount or in a boat (or
+  have the server restart) and you sit on it again at your next login, with no fall.
+  Where that ride is no longer allowed, a flyer is set down on the ground below without
+  damage.
+- **Mobs find their way home:** in the open world, a mob that gives up the chase walks back
+  the way it came instead of sticking at a wall. In an Expedition every mob knows the
+  floor: it comes round pillars and corners to reach you and walks home without sticking;
+  one that cannot walk home (across The Last Mint's lake) is put back at once.
+- **Expeditions:** a finished or cancelled Expedition now closes after 30 seconds (was
+  60), the Deserter's Mark lasts 2 minutes (was 5), and the wall traps of The Second
+  Shift and The Last Mint fire every 2 seconds.
+
 ## 0.73.1 — character creation and capital polish (2026-11-10)
 
 **Map reset** needed: the capitals' halls, gates and furniture, the tables in the start

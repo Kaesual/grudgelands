@@ -2,6 +2,27 @@
 
 Updated 2026-11-10. This is the delivery pointer, not another game specification.
 
+**0.74.0 / Round 74 is complete on `round74` (every lane merged, lane D done); it lands on
+main as one squash commit (tag `round-74`), not pushed; the GUI test is open.** Play fixes
+after the user's play of 0.73.1 (rulings 2026-11-10,
+[plan](planning/round74-plan.md)): a finished or cancelled Expedition **closes after 30 s**,
+the **Deserter's Mark lasts 2 minutes**, the **wall traps fire every 2 s** (QUICK); a self or
+support skill refused only by the action clock **waits and fires** at the first moment it
+may, a heal on the ally its press aimed at (CAST); the hotbar shows the action clock's block
+on free cast skills as the **cooldown's cover without a number** (4 steps) and the waiting
+cast as a **gold frame** (HUD, added at C1); **flight over the coastal belt** in front of the
+own and contested land (the whole belt, ruled variant A) and the **ride restored at login**
+for flyers, ground mounts and boats (MOUNT); the overworld evader **walks home along its own
+trail** through a new evade seam (TRAIL); every Expedition mob path goes over a
+**precomputed walk grid** per template, and a mob the grid cannot bring home is set home at
+once (NAV). **Compatible:** no step, no map reset; one new player meta key,
+`grug_mounts:logout_ride`. Reviews: CAST, MOUNT and HUD MERGE (CAST and MOUNT after fix
+rounds), TRAIL and NAV MERGE, QUICK by the coordinator. Fixtures: the new `r74_cast`,
+`r74_mount`, `r74_trail`, `r74_nav`, `r74_hud`; engine runs: MOUNT 1, TRAIL 2, NAV 5, HUD 2
+(captures); the round-end full run in the completion. **Open for the user:** the
+[GUI checklist](planning/round74-plan.md#gui-checklist-desktop-and-web), 22 items
+([completion, numbers and decisions](planning/round74-plan.md#completion-2026-11-10)).
+
 **0.73.1 is complete on main as one squash commit (tag `round-73.1`), not pushed; the GUI
 test is open.** The `character-creation` work (GPT-6 Astra, implemented and independently
 reviewed on its own branch from Round 71's code, provisional version 0.72.3) integrated by

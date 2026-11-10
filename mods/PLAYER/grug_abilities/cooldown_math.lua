@@ -1,5 +1,6 @@
 -- The cooldown overlay's arithmetic (classes.md "The cooldown overlay"; Round
--- 40 plan §2.1, §2.13, §3.1). PURE Lua: it calls nothing from `core`, so the
+-- 40 plan §2.1, §2.13, §3.1; the action clock's cover and the waiting
+-- marker since Round 74). PURE Lua: it calls nothing from `core`, so the
 -- portable fixture (tools/r40_cd/portable_test.lua) loads this very file.
 --
 -- The hotbar's slot rectangles are the engine's integer arithmetic
@@ -79,6 +80,52 @@ end
 
 function M.pie_texture(frame)
 	return M.PIE:format(frame)
+end
+
+-- The action clock's cover (Round 74 HUD): a cast skill without a running
+-- cooldown of its own, whose cast the action clock or its cast interval
+-- holds back, is covered like a cooldown (the user, after the screenshots:
+-- a block is a block, and a lighter cover was barely visible on the dark
+-- icons) but without a number. It clears like the cooldown's cover, in
+-- CLOCK_FRAMES steps only: it restarts with every swing on every such slot,
+-- and each step is one HUD write per slot. The steps are every
+-- (FRAMES / CLOCK_FRAMES)-th cooldown frame, so no texture file is added;
+-- CLOCK_OPACITY below 255 would lighten them (128: the 50 % black becomes
+-- 25 %).
+M.CLOCK_FRAMES = 4
+M.CLOCK_OPACITY = 255
+
+-- The clock cover's step for the elapsed share: 0 (fully covered) ..
+-- CLOCK_FRAMES - 1.
+function M.clock_frame(elapsed, duration)
+	if duration <= 0 then return M.CLOCK_FRAMES - 1 end
+	local k = floor(elapsed / duration * M.CLOCK_FRAMES)
+	if k < 0 then return 0 end
+	if k > M.CLOCK_FRAMES - 1 then return M.CLOCK_FRAMES - 1 end
+	return k
+end
+
+function M.clock_texture(k)
+	local tex = M.pie_texture(floor(k * M.FRAMES / M.CLOCK_FRAMES))
+	if M.CLOCK_OPACITY < 255 then
+		tex = tex .. "^[opacity:" .. M.CLOCK_OPACITY
+	end
+	return tex
+end
+
+-- The waiting cast's marker (Round 74 HUD): a MARKER_PX frame of
+-- MARKER_COLOR along the edge of the PIE_PX square (3 px on a 48 px slot),
+-- drawn over the slot's cover (`base`, "" for none) in the same element.
+M.MARKER_PX = 6
+M.MARKER_COLOR = "#ffd040"
+
+function M.marker_texture(base)
+	local p, n, c = M.MARKER_PX, M.PIE_PX, M.MARKER_COLOR
+	if base == "" then base = ("[fill:%dx%d:#00000000"):format(n, n) end
+	return ("%s^[fill:%dx%d:0,0:%s^[fill:%dx%d:0,%d:%s" ..
+		"^[fill:%dx%d:0,%d:%s^[fill:%dx%d:%d,%d:%s"):format(base,
+		n, p, c, n, p, n - p, c,
+		p, n - 2 * p, p, c, p, n - 2 * p, n - p, p, c)
 end
 
 -- The number as one image: a [combine of the glyph files, GLYPH_ADVANCE

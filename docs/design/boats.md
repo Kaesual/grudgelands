@@ -91,7 +91,9 @@ are not nudged into travelling by owning a boat.
   land cell within 2 nodes (a dry, solid floor and two open cells above it),
   otherwise in the water at the boat's position.
 - **Death, logout and server shutdown** disembark exactly as mounts dismount;
-  every reconnect starts in the water or on foot, never in a boat.
+  a logout or shutdown in a boat summons the boat again at the next login
+  where the player sits on the water (Round 74, `mounts.md` §3); otherwise
+  the player starts in the water.
 - A boat is an entity, not a node: it modifies no terrain, so it is legal on
   every water surface the player can reach, including immutable deep ocean,
   the dragon channels and Battlegrounds water. Terrain protection never blocks
@@ -146,8 +148,8 @@ The water classes, the Kraken's pursuit rules and the dragon channels
 are owned by `world.md` §2b. What matters for a boat:
 
 - **The dragon islands are reachable by boat only** (ruling 2). Flying mounts
-  stay forbidden over every ocean column, including the dragon channels, and
-  on both islands (`mounts.md` §4.1/§4.2).
+  stay forbidden over the open sea, the dragon channels, the islands' coastal
+  belt and both islands (`mounts.md` §4.1/§4.2).
 - **Deep ocean is not survivable in a boat.** The Kraken swims 10
   nodes/s inside deep-ocean columns, above the Improved Boat's 8, with a view
   range of 40 (ruling 7); one hit ejects the rider into deep water.

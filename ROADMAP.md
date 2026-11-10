@@ -24,11 +24,14 @@ remain delivered foundations, with this refinement work still ahead.
   the Expeditions tab on waystones and shaped rooms in 0.72.0; finish, cancel and the
   Deserter's Mark in 0.72.1 and 0.72.2; all three redesigned in 0.73.0 (relief by stairs,
   bent passages, light from what belongs there, the ambush, lava falls, critters, particles;
-  GUI tests pending). Next: tuning run length, bosses and coins from the user's runs.
+  GUI tests pending); 0.74.0 closes runs after 30 s, shortens the Deserter's Mark to 2 minutes,
+  fires the wall traps every 2 s and walks every Expedition mob over a precomputed grid. Next:
+  tuning run length, bosses and coins from the user's runs.
 - **Fair fights** (0.72.0, from player reports): combat from the moment a mob targets you, no
   building in combat, kings and bosses that reset when they cannot reach their target, guards
   that reset at once out of reach, ranged kings that shoot, no mounts in enemy towns, friend
-  and foe nametags.
+  and foe nametags. 0.74.0: self skills wait for the swing instead of being refused, the
+  hotbar shows the block, and evaders walk home along their trail.
 - **Classes, talents and character progression:** make leveling bring more
   meaningful customization. Start with fewer skills and let talent choices
   decide more of which abilities a character gains or leaves out. Build

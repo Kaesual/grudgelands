@@ -269,8 +269,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   Expedition, "Deep ocean" in §2b). The organic dragon channels override the belt and
   belong to their island. Bay, belt and channel water 24 nodes or more off
   the coast is protected: immutable at every y like the open sea; nearer,
-  the shore follows its zone's rule. Every exterior-ocean class remains
-  non-flyable, while planned zone water inherits its zone's flight rule.
+  the shore follows its zone's rule. The open sea and the dragon channels
+  remain non-flyable, while planned zone water and (since Round 74) the
+  coastal belt inherit their zone's flight rule (`mounts.md` §4.1).
   Claims exist only in the eligible home zones (`housing.md` §2). Their
   planned water may lie in a claim unless it is protected (a bay's shore
   strip of the belt counts as the bay's, Round 57); the belt is
@@ -632,7 +633,8 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   nodes toward a goal further than 32 nodes, and follows it to its end,
   steered every step; more than **2 nodes** off the path it searches again.
   The evade searches a point **6 nodes** toward home (within 2 of its
-  height) instead. Failed searches in a row feed the later stages: a patrol
+  height) instead, and walks back along its own trail of the chase first
+  (Round 74; `combat_stats.md` §4 "The way home"). Failed searches in a row feed the later stages: a patrol
   takes its next waypoint after **3**, and the second waypoint in a row it
   cannot reach is snapped to while no player is within 48 nodes (skipped
   while watched; a named rare only skips); a post guard, king or General is

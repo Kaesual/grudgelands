@@ -1,7 +1,8 @@
 -- Expeditions (Round 71): repeatable group content in 100 generic slots beyond the
 -- map. A run is one activation: the server clears and fills a slot from a template
 -- file, the owner's players enter it, and it ends when nobody has been inside for
--- 10 minutes, or since Round 72.1 a minute after its leader finished or cancelled it.
+-- 10 minutes, or since Round 72.1 catalogue.CLOSING_SECONDS (30 s) after its leader
+-- finished or cancelled it.
 -- Rules: docs/planning/round71-expeditions-concept.md sections 2, 4, 5.
 -- Nothing about a run is saved: a restart ends every run, a login in a box whose
 -- run is gone stands at the waystone the player came in from (one saved value, its
@@ -138,6 +139,7 @@ end
 
 assert(loadfile(path .. "/runs.lua"))(catalogue, preparation)
 dofile(path .. "/encounters.lua")
+dofile(path .. "/navigation.lua")
 dofile(path .. "/traps.lua")
 dofile(path .. "/particles.lua")
 dofile(path .. "/guard.lua")

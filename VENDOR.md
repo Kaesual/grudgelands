@@ -1013,6 +1013,24 @@ prop.hp_max`; `mob_activate`'s staticdata loop also keeps a saved `hp_max` on
 its first tick. A mob that never sets `self.hp_max` reads the property as before.
 Fixture `tools/r73_hpcap/portable_test.lua`.
 
+## Round 74 NAV — the Expedition's walk grid behind the navigation (2026-11-10)
+
+`mobs/grug_nav.lua` (markers `GRUG PATCH (Round 74 NAV)`): round74-plan.md §3.2.
+`nav.grid`, installed by `grug_expeditions` (`navigation.lua`), is the Expedition
+backend: `nav.body` carries the walk grid of an Expedition mob's run as
+`body.grid`; `nav.line_walkable` answers from the grid for such a body, reading no
+node; `nav.search` takes an optional `body` and for one on a grid searches the grid
+(A*, any distance) instead of `core.find_path`, counted in `nav.counters` (plus
+`grid`); `attempt` gives such a body the goal itself at any distance and skips the
+engine's gates (padding, negative cache, cap, budget queue, path check), the lockout
+kept; and `combat_step` tests such a mob's line to its target on its first step at a
+target and every `LINE_EVERY.combat`, searching as soon as it is blocked (a mob off
+every grid is marked once per target and never tested). Fix round: `fixed_step` tests a
+grid body's line to its goal at each decision and searches at once when blocked, and a
+grid search's lockout is `LOCKOUT.combat` (1 s) in both modes. With `nav.grid` unset, or a
+mob outside an Expedition, every rule is as before. Fixtures
+`tools/r74_nav/portable_test.lua` and `tools/r42_nv1/portable_test.lua`.
+
 ## Fresh-server cleanup — 2026-09-13
 
 The standing development mode in `AGENTS.md` removes support for earlier world

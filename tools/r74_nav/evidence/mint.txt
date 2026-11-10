@@ -1,0 +1,74 @@
+character complete at (0,37,-2550)
+ready after 18.7 s
+PLACED 19 pack mobs
+EVADE corner grug_mobs:ember_wisp home 112,32,106 from 117,32,78: walked 5.6 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 69,30,110 from 87,32,85: walked 7.8 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 101,33,14 from 98,32,40: walked 8.0 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 108,35,10 from 97,32,42: walked 8.0 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 103,33,96 from 96,32,78: walked 7.2 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 112,35,13 from 119,32,43: lost -1.0 s, stood 0 s
+TRACE corner 112,35,13: 115.5,32.0,41.8>110,40 110.2,32.0,40.1>110,39 108.3,32.0,36.3>108,24 108.2,33.0,30.8>108,19 108.1,33.0,25.2>112,13 109.4,33.0,19.9>112,13 111.4,35.0,14.7>112,13
+EVADE corner grug_mobs:ember_wisp home 64,32,66 from 52,32,35: walked 6.1 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 58,31,109 from 84,32,88: walked 7.8 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 57,31,99 from 30,32,99: walked 8.9 s, stood 0 s
+EVADE corner grug_mobs:ember_wisp home 71,31,61 from 85,33,38: walked 6.9 s, stood 0 s
+EVADE corner grug_mobs:ember_wisp home 108,33,21 from 89,33,36: walked 4.7 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 102,32,106 from 98,32,76: walked 7.8 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 115,33,99 from 117,32,78: walked 5.6 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 72,31,101 from 92,32,90: walked 7.8 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 108,32,101 from 117,32,79: walked 6.7 s, stood 0 s
+EVADE corner grug_mobs:ember_wisp home 54,34,57 from 52,32,35: walked 5.8 s, stood 0 s
+EVADE corner grug_mobs:land_guard home 64,32,58 from 86,34,43: walked 28.6 s, stood 2 s
+TRACE corner 64,32,58: 86.0,33.9,43.8>86,45 86.2,33.9,44.8>86,46 86.2,33.9,45.8>86,47 86.2,33.9,46.8>86,48 86.2,33.9,47.8>86,49 86.2,33.4,49.2>86,50 86.2,33.4,48.8>86,50 86.2,32.9,50.2>86,51 86.2,32.9,51.2>86,52 86.2,32.9,52.2>86,53 86.2,32.9,52.3>86,53 86.2,32.9,51.8>86,53 86.2,32.9,52.8>86,54 86.2,32.9,53.8>86,55 86.2,32.9,54.8>86,56 86.2,32.9,56.1>86,57 86.2,32.9,57.2>85,58 84.8,32.9,58.2>84,58 83.8,32.9,58.2>83,58 82.8,32.9,58.2>82,58 80.8,32.9,58.2>80,58 79.8,32.9,58.2>79,58 78.8,32.9,58.2>78,58 77.8,32.9,58.2>66,58 72.8,32.9,58.3>64,58 65.3,32.9,58.3>64,58
+EVADE corner grug_mobs:duewarden home 64,30,23 from 73,33,49: walked 8.0 s, stood 0 s
+EVADE corner grug_mobs:lava_flan home 65,30,97 from 92,32,91: walked 7.8 s, stood 0 s
+WAVE corner mobs 19 walked 18 teleports 0 other 1 time median 7.8 max 28.6 stood 2 worst 2
+EVADE stairs grug_mobs:lava_flan home 115,33,99 from 117,32,78: walked 6.1 s, stood 0 s
+EVADE stairs grug_mobs:ember_wisp home 112,32,106 from 101,33,95: walked 2.8 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 103,33,96 from 96,32,78: walked 6.5 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 72,31,101 from 87,32,88: walked 6.1 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 58,31,109 from 28,32,100: walked 8.3 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 69,30,110 from 82,32,84: walked 7.2 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 57,31,99 from 37,32,102: walked 6.1 s, stood 0 s
+EVADE stairs grug_mobs:ember_wisp home 64,32,66 from 55,34,53: walked 2.2 s, stood 0 s
+EVADE stairs grug_mobs:ember_wisp home 108,33,21 from 98,32,42: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 108,35,10 from 111,32,40: walked 8.4 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 102,32,106 from 119,33,101: walked 3.9 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 101,33,14 from 115,35,11: lost -1.0 s, stood 0 s
+TRACE stairs 101,33,14: 
+EVADE stairs grug_mobs:land_guard home 64,32,58 from 50,35,52: walked 3.0 s, stood 0 s
+EVADE stairs grug_mobs:ember_wisp home 71,31,61 from 57,34,55: walked 11.7 s, stood 2 s
+EVADE stairs grug_mobs:ember_wisp home 54,34,57 from 65,30,31: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:lava_flan home 65,30,97 from 80,32,89: teleport 40.9 s, stood 0 s
+TRACE stairs 65,30,97: 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.8>73,88 80.0,32.0,86.7>73,88 80.0,32.0,85.3>73,88 80.0,32.0,87.1>73,88 80.0,32.0,85.3>73,88 80.0,32.0,87.1>73,88 80.0,32.0,85.3>73,88 80.0,32.0,87.1>73,88 80.0,32.0,85.3>73,88 80.0,32.0,87.1>73,88 80.0,32.0,85.3>73,88 80.0,32.0,87.1>73,88 80.0,32.0,85.3>73,88 80.0,32.0,87.1>73,88
+EVADE stairs grug_mobs:duewarden home 64,30,23 from 54,35,50: walked 6.3 s, stood 0 s
+WAVE stairs mobs 17 walked 15 teleports 1 other 1 time median 6.1 max 11.7 stood 2 worst 2
+EVADE lake grug_mobs:lava_flan home 102,32,106 from 108,32,40: teleport 41.0 s, stood 23 s
+TRACE lake 102,32,106: 107.0,32.0,41.6 106.8,32.0,43.9 106.7,32.0,45.2 106.3,32.0,49.9 106.2,32.0,51.2 105.9,32.0,55.8 105.8,32.0,57.2 105.4,32.0,61.4 105.3,32.0,62.8 105.0,32.0,66.9 104.9,31.8,68.3 104.6,24.1,72.4 104.5,4.8,73.8 104.4,3.1,74.9 104.3,3.6,75.0 104.3,4.1,75.0 104.2,4.6,75.0 104.2,5.0,75.0 104.1,5.5,75.0 104.1,6.0,75.0 104.1,6.5,75.0 104.0,7.0,75.0 104.0,7.5,75.0 103.9,7.8,75.0 103.7,7.7,75.0 103.6,7.8,75.0 103.5,7.8,75.0 103.4,7.8,75.0 103.3,7.9,75.0 103.2,7.6,75.0 103.1,7.8,75.0 103.0,7.5,75.0 102.9,7.5,75.0 102.9,7.6,75.0 102.8,7.8,75.0 102.8,7.8,75.0 102.7,7.6,75.0
+EVADE lake grug_mobs:lava_flan home 115,33,99 from 108,32,41: teleport 41.0 s, stood 24 s
+TRACE lake 115,33,99: 107.3,32.0,42.5 107.4,32.0,43.4 107.6,32.0,44.7 108.2,32.0,49.3 108.4,32.0,50.7 109.0,32.0,55.3 109.2,32.0,56.7 109.8,32.0,60.8 110.0,32.0,62.1 110.5,26.2,66.3 110.7,16.6,67.6 111.4,11.3,72.7 111.9,7.2,75.0 112.0,7.7,75.0 112.2,7.8,75.0 112.5,7.8,75.0 112.7,7.7,75.0 112.9,7.8,75.0 113.1,7.8,75.0 113.3,7.7,75.0 113.4,7.8,75.0 113.6,7.7,75.0 113.7,7.7,75.0 113.8,7.8,75.0 113.9,7.8,75.0 114.0,7.6,75.0 114.1,7.7,75.0 114.2,7.8,75.0 114.3,7.5,75.0 114.3,7.7,75.0 114.4,7.8,75.0 114.5,7.5,75.0 114.5,7.6,75.0 114.5,7.7,75.0 114.6,7.8,75.0 114.6,7.6,75.0 114.7,7.7,75.0
+EVADE lake grug_mobs:ember_wisp home 112,32,106 from 107,32,39: walked 10.6 s, stood 0 s
+WAVE lake mobs 3 walked 1 teleports 2 other 0 time median 10.6 max 10.6 stood 47 worst 24
+NAV searches 29 found 13 grid 26 largest_us 853
+CHASE pack_c grug_mobs:ember_wisp: jumped 10.9 s
+CHASE pack_c grug_mobs:lava_flan: jumped 8.8 s
+PACK pack_c at 110,32,38 members 2 walked 0 jumped 2 missed 0 time median 0.0 max 0.0
+CHASE pack_b grug_mobs:ember_wisp: jumped 1.1 s
+CHASE pack_b grug_mobs:lava_flan: jumped 1.1 s
+CHASE pack_b grug_mobs:lava_flan: jumped 7.3 s
+CHASE pack_b grug_mobs:lava_flan: jumped 13.7 s
+CHASE pack_b grug_mobs:lava_flan: jumped 7.3 s
+PACK pack_b at 119,32,76 members 5 walked 0 jumped 5 missed 0 time median 0.0 max 0.0
+CHASE pack_a grug_mobs:lava_flan: jumped 1.1 s
+CHASE pack_a grug_mobs:lava_flan: jumped 3.9 s
+CHASE pack_a grug_mobs:lava_flan: jumped 5.4 s
+CHASE pack_a grug_mobs:lava_flan: jumped 1.1 s
+CHASE pack_a grug_mobs:lava_flan: jumped 1.1 s
+PACK pack_a at 31,32,103 members 5 walked 0 jumped 5 missed 0 time median 0.0 max 0.0
+CHASE pack_d grug_mobs:ember_wisp: jumped 13.0 s
+CHASE pack_d grug_mobs:ember_wisp: jumped 13.0 s
+CHASE pack_d grug_mobs:ember_wisp: jumped 13.0 s
+CHASE pack_d grug_mobs:land_guard: walked 5.1 s
+PACK pack_d at 54,32,36 members 4 walked 1 jumped 3 missed 0 time median 5.1 max 5.1
+NAV searches 125 found 36 grid 122 largest_us 853
+shutdown

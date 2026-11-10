@@ -229,7 +229,8 @@ differs:
   heal) and never from a hold on its own. The only repeat while held: a
   support cast a fresh press began on an ally repeats on that same ally,
   never on another one that walks into the crosshair, and never after that
-  press ends.
+  press ends. A press refused only for the action clock waits for it
+  (Scheduling, below); a waiting heal keeps the recipient its press aimed at.
 - **Gather becomes combat** as soon as a hostile combat accepts is in the
   crosshair and within that reach: any mob it may attack, a neutral mob or
   critter too (the user, 2026-10-03), and a player only where
@@ -320,7 +321,10 @@ intervening objects (dropped items excepted) matter.
   clocks; once the selected skill is ready it takes precedence again. A
   selected self or support skill fires only on the fresh press (an
   applicable heal here targets self, never the hostile or a remembered
-  ally); held, the hold attacks with the basic attack.
+  ally); held, the hold attacks with the basic attack. A fresh press of a
+  self or support skill that only the action clock or its cast interval
+  refuses waits for them instead (Round 74, below): no fallback of that
+  press fires before it.
 - **Friendly player:** use an applicable heal/support action on the eligible
   ally a fresh press aims at, repeated while held on that ally. No Strike
   fallback or attack through that ally. An offensive self skill (Ice Nova,
@@ -382,8 +386,25 @@ After a successful skill, Strike must wait at least the actual weapon interval,
 without shortening a later existing deadline; after a swing, a cast waits one
 interval of the current melee weapon (the action clock in both directions,
 Round 53 K9), and a cast holds the next cast back for its own occupied time
-("You are still busy." on a fresh press inside it). Skill cooldowns/cast
-intervals still apply; no global cooldown is added. A held basic attack with
+("You are still busy." on a fresh press inside it). A fresh press of a self
+or support skill (every class's: Ruination, Hold Ground, Ice Nova, Blink,
+the heals ...) refused only for the action clock or its cast interval is
+kept instead (Round 74, the user's finding that Ruination and Hold Ground
+never fired in melee): it fires at the first input pass its clocks allow,
+as the press would have (aimed as the crosshair is then: Blink's direction,
+a cone's facing, a ground point), with no fallback swing of that press
+before it, and afterwards a held press goes on with the basic attack. A
+waiting heal (Heal, Shield, Mend) fires only while the crosshair gives the
+recipient its press aimed at (that ally, or no ally: the caster), never an
+ally walking in and never the caster instead of the aimed ally; otherwise it
+waits on and, if that never happens, ends silently. One cast waits at a time
+and a new press replaces it; it is dropped silently on a hotbar switch, an
+RMB interaction, stun, death or leave, and with its notice when another
+refusal (cost, cooldown, lock) appears or after what held it back at the
+press (an earlier cast's occupied time, its own interval; at least one
+interval of the melee weapon) plus 0.25 s. A cost or cooldown refusal of the press itself
+stays immediate and loud, a hostile-target skill never waits. Skill
+cooldowns/cast intervals still apply; no global cooldown is added. A held basic attack with
 a cast interval (Fiery Spark, Cold Spark, Smite, Loose) carries the
 server-step lateness of its last cast, at most 0.1 s and half the
 interval, into its next interval and its own occupied time, so it keeps
@@ -590,6 +611,20 @@ replaces the item wear bar, which no longer shows cooldowns or charges.
   1:01), from 60 s down the seconds rounded up (`60`, `59` … `1`).
 - **No ready signal:** cover and number vanish when the skill is ready; a
   fully charged swing skill shows nothing, which is the default state.
+- **The action clock** (Round 74, the user's ruling): a **cast** skill in a
+  hotbar slot with no running cooldown of its own, whose cast the action
+  clock or its own cast interval holds back (a swing holds every cast back
+  until the next swing is due, a cast its occupied time; Scheduling,
+  above), is covered **like a cooldown** (50 % black; the user's ruling
+  after the screenshots: a block is a block, and a lighter cover was barely
+  visible on the dark icons) but **without a number**; the cover clears clockwise like
+  the cooldown's, in **4 steps** (every 18th frame), restarting with every
+  swing. A running cooldown takes precedence in its slot. Swing skills and
+  items that are not skills show nothing of it.
+- **The waiting cast** (a fresh press the clock refused, kept until it can
+  fire; Scheduling, above) has a **gold frame** (3 px on a 48 px slot)
+  along the edge of its slot, over any cover, while it waits; it is gone
+  when the cast fires or the wait ends.
 - **Hotbar only:** a skill in a bag or in the main inventory past the hotbar
   shows nothing. The overlay follows a skill moved between slots or into
   and out of the hotbar, the hotbar's item count and the engine's two-row
@@ -600,7 +635,12 @@ replaces the item wear bar, which no longer shows cooldowns or charges.
   keep the 0.1 s cadence; beyond that they take turns, round robin), and
   writes only a visible change: a new frame, a new number, an element added
   or removed (a 300 s cooldown: 134 changes; a pass with nothing new sends
-  nothing). The hotbar is read again after an
+  nothing). A swing or a cast that blocks the action clock brings the
+  player into the pass until 2 s after the block; meanwhile an emptied slot
+  keeps its elements blank, so a held fight's next swing changes a texture
+  instead of adding elements (the clock cover costs one write per covered
+  slot and step: with a sword and four free casts about 17 writes per
+  second more than the cooldowns alone). The hotbar is read again after an
   inventory action, a new timer and every 0.5 s. The overlay never writes
   the inventory (the wear bar re-sent the whole `main` list on every
   visible step).

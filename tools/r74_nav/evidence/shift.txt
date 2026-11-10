@@ -1,0 +1,64 @@
+character complete at (0,37,-2550)
+ready after 15.8 s
+PLACED 18 pack mobs
+EVADE corner grug_mobs:skeleton_raider home 64,8,18 from 98,8,26: walked 6.6 s, stood 0 s
+EVADE corner grug_mobs:zombie home 62,8,29 from 40,8,14: walked 5.5 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 15,6,29 from 39,8,13: walked 5.5 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 58,8,21 from 29,8,31: walked 6.6 s, stood 0 s
+EVADE corner grug_mobs:zombie home 59,8,29 from 85,9,25: walked 5.8 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 23,7,23 from 51,8,35: walked 6.6 s, stood 0 s
+EVADE corner grug_mobs:zombie home 20,6,108 from 13,7,84: walked 5.8 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 24,7,77 from 40,7,99: walked 6.9 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 16,7,110 from 17,7,87: walked 8.0 s, stood 0 s
+EVADE corner grug_mobs:zombie home 21,7,79 from 39,7,98: walked 5.8 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 17,6,101 from 12,7,86: walked 5.8 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 25,7,104 from 12,7,87: walked 5.8 s, stood 0 s
+EVADE corner grug_mobs:auditor_nemm home 63,7,104 from 49,7,82: walked 8.0 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 70,8,22 from 99,9,29: walked 6.6 s, stood 0 s
+EVADE corner grug_mobs:zombie home 20,7,32 from 50,8,25: walked 6.6 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 16,8,71 from 15,7,96: walked 8.0 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 17,7,80 from 14,7,97: walked 5.8 s, stood 0 s
+EVADE corner grug_mobs:skeleton_raider home 16,7,19 from 24,8,42: walked 5.5 s, stood 0 s
+WAVE corner mobs 18 walked 18 teleports 0 other 0 time median 5.8 max 8.0 stood 0 worst 0
+EVADE stairs grug_mobs:skeleton_raider home 58,8,21 from 65,7,38: walked 3.8 s, stood 0 s
+EVADE stairs grug_mobs:auditor_nemm home 63,7,104 from 48,10,106: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 23,7,23 from 38,8,13: walked 3.8 s, stood 0 s
+EVADE stairs grug_mobs:zombie home 20,7,32 from 42,8,23: walked 3.8 s, stood 0 s
+EVADE stairs grug_mobs:zombie home 62,8,29 from 90,9,20: walked 4.9 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 64,8,18 from 57,7,38: walked 3.8 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 70,8,22 from 63,7,38: walked 3.8 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 25,7,104 from 21,8,71: walked 6.3 s, stood 0 s
+EVADE stairs grug_mobs:zombie home 59,8,29 from 88,9,20: walked 6.3 s, stood 0 s
+EVADE stairs grug_mobs:zombie home 21,7,79 from 16,5,107: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:zombie home 20,6,108 from 17,7,86: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 16,8,71 from 20,6,101: walked 6.3 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 24,7,77 from 17,5,102: walked 5.2 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 17,6,101 from 28,8,73: walked 6.3 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 16,7,19 from 38,8,14: walked 4.9 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 17,7,80 from 16,5,105: walked 6.3 s, stood 0 s
+EVADE stairs grug_mobs:skeleton_raider home 15,6,29 from 40,8,19: walked 4.9 s, stood 0 s
+WAVE stairs mobs 17 walked 17 teleports 0 other 0 time median 5.2 max 6.3 stood 0 worst 0
+NAV searches 2 found 2 grid 1 largest_us 54
+CHASE pack_a grug_mobs:skeleton_raider: walked 23.3 s
+CHASE pack_a grug_mobs:skeleton_raider: walked 5.3 s
+CHASE pack_a grug_mobs:skeleton_raider: walked 2.8 s
+CHASE pack_a grug_mobs:zombie: walked 6.1 s
+CHASE pack_a grug_mobs:zombie: walked 8.0 s
+PACK pack_a at 86,9,18 members 5 walked 5 jumped 0 missed 0 time median 6.1 max 23.3
+CHASE pack_b grug_mobs:zombie: walked 5.6 s
+CHASE pack_b grug_mobs:skeleton_raider: walked 9.9 s
+CHASE pack_b grug_mobs:skeleton_raider: walked 9.8 s
+CHASE pack_b grug_mobs:skeleton_raider: walked 9.8 s
+PACK pack_b at 40,8,13 members 4 walked 4 jumped 0 missed 0 time median 9.8 max 9.9
+CHASE pack_d grug_mobs:zombie: walked 12.3 s
+CHASE pack_d grug_mobs:skeleton_raider: walked 22.8 s
+CHASE pack_d grug_mobs:skeleton_raider: walked 22.8 s
+CHASE pack_d grug_mobs:skeleton_raider: walked 22.8 s
+PACK pack_d at 14,7,82 members 4 walked 4 jumped 0 missed 0 time median 22.8 max 22.8
+CHASE pack_c grug_mobs:zombie: jumped 0.0 s
+CHASE pack_c grug_mobs:skeleton_raider: jumped 0.0 s
+CHASE pack_c grug_mobs:skeleton_raider: jumped 0.0 s
+CHASE pack_c grug_mobs:skeleton_raider: jumped 0.0 s
+PACK pack_c at 29,7,57 members 4 walked 0 jumped 4 missed 0 time median 0.0 max 0.0
+NAV searches 40 found 40 grid 39 largest_us 389
+shutdown

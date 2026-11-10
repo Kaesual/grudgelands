@@ -1,0 +1,16 @@
+[r74trail] emerged in 6.5 s
+[r74trail] built: 12 cells, 252 blocks forceloaded
+[r74trail] spawned 12 cells
+[r74trail] RESULT scene house rep 1 chase_held true chase_s 18.3 trail 5 from 17.6 result home evade_s 8.2
+[r74trail] RESULT scene house rep 2 chase_held true chase_s 18.3 trail 5 from 17.6 result home evade_s 8.2
+[r74trail] RESULT scene pen rep 1 chase_held true chase_s 23.5 trail 7 from 19.6 result home evade_s 9.4
+[r74trail] RESULT scene pen rep 2 chase_held true chase_s 23.5 trail 7 from 19.6 result home evade_s 9.4
+[r74trail] RESULT scene ridge rep 1 chase_held true chase_s 32.9 trail 10 from 16.1 result home evade_s 13.1
+[r74trail] RESULT scene ridge rep 2 chase_held true chase_s 32.9 trail 10 from 16.1 result home evade_s 13.1
+[r74trail] RESULT scene wall rep 1 chase_held true chase_s 37.4 trail 10 from 38.6 result home evade_s 15.1
+[r74trail] RESULT scene wall rep 2 chase_held true chase_s 37.4 trail 10 from 38.6 result home evade_s 15.1
+[r74trail] RESULT scene ledge rep 1 chase_held true chase_s 16.7 trail 5 from 46.6 result teleport evade_s 40.2
+[r74trail] RESULT scene ledge rep 2 chase_held true chase_s 16.7 trail 5 from 46.6 result teleport evade_s 40.2
+[r74trail] RESULT scene kite rep 1 chase_held true chase_s 53.1 trail 7 from 58.0 result home evade_s 10.3
+[r74trail] RESULT scene kite rep 2 chase_held true chase_s 53.1 trail 7 from 58.0 result home evade_s 10.3
+[r74trail] shutdown (0 open)

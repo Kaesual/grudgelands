@@ -11,6 +11,7 @@ never in a preparation. Slots, box and step size: `grug_expeditions/catalogue.lu
 | Templates, written by the tool | `mods/PLAYER/grug_expeditions/templates/<name>.exp` |
 | Their sources (edit these) | `tools/expedition_templates/sources/<name>.py` |
 | The tool | `tools/expedition_templates/build.py` (`--check`: every file matches its source) |
+| The walk grid (Round 74) | written by `tools/expedition_templates/walkgrid.py`, read by `grug_expeditions/walkgrid.lua` |
 
 A source has `build()` returning a `Template` (`tools/expedition_templates/template.py`): `box`, `set`, `dig`, `place`,
 `encounter`, `trap_floor`, `trap_wall`, and since Round 73 `ambush` and `particles` (their signatures at the top of
@@ -20,7 +21,8 @@ that is not solid.
 
 ## The file
 
-A text head, then one zlib stream. Coordinates are box-relative cells from the box's lowest corner.
+A text head, then one zlib stream, then (Round 74) the walk grid: a `grid <bytes>` line and a second zlib
+stream. Coordinates are box-relative cells from the box's lowest corner.
 
 ```
 grudgelands-expedition-template 1
@@ -37,7 +39,8 @@ trap w1 1 wall 3.6 5.5 34 +x 4 0
 ambush a1 1 drift 11 5 18 13 20
 particles dust 5 5 5 14 9 14 24
 data 342
-<342 bytes>
+<342 bytes>grid 577
+<577 bytes>
 ```
 
 - `size`: multiples of 16, at most the box (128 64 128). A smaller template sits in the box's lowest corner; the
@@ -93,6 +96,35 @@ data 342
   Expedition's chest contents live in `grug_expeditions/loot.lua`, by catalogue id.
 - `data <bytes>`: the length of the stream that follows the line. The stream unpacks to `sx * sy * sz` palette bytes in
   VoxelManip order (`z * sy * sx + y * sx + x + 1`), then as many param2 bytes.
+- `grid <bytes>` (Round 74), right after the cells' stream (no newline between): the length of the walk grid's
+  stream, which unpacks to four planes of `sx * sz` bytes, one per column in the order `z * sx + x + 1`. The game's
+  reader keeps it packed (`template.lua` `parse`: `tpl.grid`, nil without the section; `load` refuses a shipped
+  template without it, and `parse` refuses bytes after the cells that are no grid section, or a grid cut short or
+  of another size). The planes:
+  - **height**: the feet row of the column's one walking cell, 255 for none. The walking cells are the shared proof's
+    height map (`proofs.lua` `map`): what a player walks to from the arrival, the reward door read open and the
+    diggable ore read **solid** (a dug cell only offers a shortcut the grid ignores); one per column, the proof's
+    `surface` rule.
+  - **mask**: the moves a mob makes from the cell, bit `k - 1` for move `k` of `+x, -x, +z, -z, +x+z, +x-z, -x+z,
+    -x-z`. A straight move goes to a neighbour's walking cell at most one node up or down, with the body's two rows
+    free over both columns at the higher level (every Expedition mob has stepheight 1.1, and a physics box at most
+    1.95 high: the engine steps it up any box within that, `collision.cpp` `collisionMoveSimple`'s `step_up`). A
+    diagonal move needs both straight neighbours as moves from the cell and each of them a move to the diagonal cell:
+    no corner is cut. A player's level leap over open columns (The Last Mint's lake) is no mob move.
+  - **clearance**: the Chebyshev distance (at most 6) to the nearest column a body standing on the cell would hit:
+    one solid in the body's two rows, or a floor two or more nodes higher. Open air beside the floor (a pit, the
+    lake) is no wall.
+  - **flags**: bit 0 a door cell (a reward door node in its body rows; passable only while the door is open, read
+    live at the `door` place); bits 1 to 4 a free 2 x 2 block the cell is a corner of, towards `+x+z`, `+x-z`,
+    `-x+z`, `-x-z`.
+
+  A body's class follows its width (the larger side of its collision box): up to one node any walking cell, up to two
+  a cell of a free 2 x 2 block (it steers at the block's middle), wider a cell whose clearance is at least
+  `ceil(width / 2 - 0.5) + 1`. `build.py` refuses a grid off the height map it re-derives, a move without its way
+  back or with a step over one, a diagonal that cuts a corner, an encounter or an ambush zone cell off the grid, a
+  place with no walking cell in or beside it, and a room whose markers lie in two walk components; `--check` compares
+  the unpacked grid too. `tools/r74_nav/portable_test.lua` derives every plane again from `proofs.lua`'s map of the
+  written file.
 
 The file holds no node meta, no timers and no light: VoxelManip writes neither of the first two, listeners of
 `register_on_ready` set theirs, and the engine computes the light on write.

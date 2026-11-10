@@ -530,7 +530,7 @@ eq(#walls, 2, "I two wall candidates")
 for i, x in ipairs({43, 35}) do
 	local w = walls[i]
 	check(w.group == "w1" and w.pick == 1 and w.pos.x == x and w.pos.y == 8.5 and w.pos.z == 15.6 and
-		w.axis == "+z" and w.period == 8 and w.offset == 0, "I wall " .. i .. " as planned")
+		w.axis == "+z" and w.period == 2 and w.offset == 0, "I wall " .. i .. " as planned") -- 8 s until Round 74
 end
 
 -- traps.lua on a fake engine whose map is this template.
@@ -710,7 +710,7 @@ for _, level in ipairs({40, 69}) do
 	end_run(run)
 end
 
--- The wall: one shot every 8 s from readiness, across the passage, stopped by the
+-- The wall: one shot every 2 s (Round 74) from readiness, across the passage, stopped by the
 -- far wall: 7.5 nodes of flight from z 15.6.
 do
 	local run = new_run(40)

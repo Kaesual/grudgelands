@@ -33,6 +33,16 @@ return function(api)
 	-- only passes while scrolling never fires its skill. Digging does not
 	-- wait (Round 36 F2).
 	local SETTLE_US = 200000
+	-- A fresh press of a self or support skill refused only by the action
+	-- clock or its cast interval waits for them (Round 74 CAST): a swing
+	-- holds casts back until the next swing is due, so in melee a press
+	-- almost always lands inside it. The wait lasts what still holds the
+	-- cast back (api.cast_wait: an earlier cast's occupied time, the
+	-- skill's own interval), at least one interval of the melee weapon
+	-- (the longest a swing occupies), plus this grace: the next input pass
+	-- after the clock runs out, on 0.09 s server steps with the catch-up of
+	-- the swing clock (0.1 s).
+	local WAIT_GRACE_US = 250000
 	local pickup_delegate
 	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
 	local function food_api() return rawget(_G, "grug_food") end
@@ -139,7 +149,7 @@ return function(api)
 	local function reset(player, s)
 		end_food_hold(player)
 		end_mode(player, s)
-		s.pending, s.dig, s.right, s.food, s.settle = nil, nil, nil, nil, nil
+		s.pending, s.dig, s.right, s.food, s.settle, s.waiting = nil, nil, nil, nil, nil, nil
 	end
 	-- ... and latch the cancellation until both buttons are released.
 	local function cancel(player, s)
@@ -180,17 +190,52 @@ return function(api)
 			(def.repeat_policy ~= "once" or not s.used)
 	end
 	local function silent() end
+	-- The recipient a heal's press aims at, for its wait: the ally the
+	-- crosshair gives (aimed_target), an aimed ally the PvP flag forbids
+	-- (it stays refused, never a self-cast: Round 31 ruling 9), or false
+	-- for none (the caster).
+	local function recipient(player, def)
+		local target, ray = Q.aimed_target(player, def)
+		if target then return target end
+		if ray and ray.reason == "friendly" and ray.target then return ray.target end
+		return false
+	end
+	-- The waiting cast, once per input pass before the press acts: it fires
+	-- at the first pass its clocks allow, as the fresh press would have
+	-- (loud unless that press was quiet). It ends unfired, reporting why,
+	-- once it has waited too long or another refusal (cost, cooldown, lock)
+	-- appears; a switch, a stun, death, leave and an RMB interaction drop it
+	-- silently (reset, M.interaction). A heal fires only while the crosshair
+	-- still gives the recipient its press aimed at (classes.md §2b: never
+	-- an ally walking in, never the caster instead of the aimed ally); it
+	-- waits for that until it expires, then ends silently.
+	-- Defined after cast (below).
+	local wait_step
 	-- `fresh`: this attempt is the press's own decision (key-down, its
 	-- single empty-space or tap cast), so a refusal is reported; held
 	-- repeats stay silent, and so does a fresh decision `quiet` marks (a
 	-- press carried across a hotbar switch). A refusal returns false and its
 	-- reason (init.lua cast_refusal: "cooldown", "interval", "busy" ...).
+	-- A fresh self or support cast refused for "busy" or "interval" waits
+	-- instead (`s.waiting`, served by wait_step): no notice now; a new press
+	-- replaces it. A friendly-target cast (a heal) keeps the recipient the
+	-- press aimed at: the ally then in the crosshair, or none (the caster).
 	local function cast(player, def, s, hit, fresh, quiet)
 		if not castable(def, s) then return false end
 		local loud = fresh and not quiet
 		local refusal, why = api.cast_refusal(player, def)
 		if refusal then
-			if loud then report(player, s, refusal) end
+			if fresh and support(def) and (why == "busy" or why == "interval") then
+				local _, interval = Q.swing_stats(player)
+				local seconds = math.max(interval, api.cast_wait(player, def))
+				s.waiting = {def = def, hit = hit, quiet = quiet,
+					expires = core.get_us_time() + seconds * 1000000 + WAIT_GRACE_US}
+				if def.target_kind == "friendly" then
+					s.waiting.ally = recipient(player, def)
+				end
+			elseif loud then
+				report(player, s, refusal)
+			end
 			return false, why
 		end
 		local now = core.get_us_time()
@@ -208,6 +253,23 @@ return function(api)
 		end
 		s.failed[def.id] = now
 		return false
+	end
+	wait_step = function(player, s, def)
+		local w = s.waiting
+		if w.def ~= def then s.waiting = nil; return end
+		local refusal, why = api.cast_refusal(player, def)
+		local expired = core.get_us_time() >= w.expires
+		if (why == "busy" or why == "interval") and not expired then return end
+		if not refusal and w.ally ~= nil and recipient(player, def) ~= w.ally then
+			if expired then s.waiting = nil end
+			return
+		end
+		s.waiting = nil
+		if refusal then
+			if not w.quiet then report(player, s, refusal) end
+			return
+		end
+		cast(player, def, s, w.hit, true, w.quiet)
 	end
 	-- The LMB hold (Round 28 ruling 14, Round 32 §2.4) is one state machine:
 	-- "gather" or "combat" locked on a foe (`s.foe`, the last valid hostile
@@ -231,9 +293,11 @@ return function(api)
 	-- swing (Strike, Retort) and goes through cast() when it is a cast (Fiery
 	-- Spark, Smite). None when the skill is that basic attack itself, or when
 	-- the refusal is the action clock or the cast interval (`why`): a busy
-	-- player waits, so a cast is never woven between swings.
+	-- player waits, so a cast is never woven between swings. None either
+	-- while a self or support cast of this press waits (`s.waiting`): the
+	-- swing would hold it back again (Round 74 CAST).
 	local function fallback(player, s, def, hit, why)
-		if why == "busy" or why == "interval" then return end
+		if why == "busy" or why == "interval" or s.waiting then return end
 		local basic = Q.current_form(player, Q.registered.strike)
 		if not basic or basic == def then return end
 		if basic.kind == "swing" then
@@ -546,6 +610,11 @@ return function(api)
 			end
 		end
 		s.slot, s.item = slot, item
+		-- A waiting cast fires before this pass's press acts (and its held
+		-- fallback); a new press replaces it and decides again below.
+		if s.waiting then
+			if down and not s.down then s.waiting = nil else wait_step(player, s, def) end
+		end
 		if not down and not right and s.cancelled then
 			s.cancelled, s.down, s.rmb, s.settle = nil, false, false, nil
 			return
@@ -666,6 +735,13 @@ return function(api)
 		return state(player).right
 	end
 	function M.cancel(player) cancel(player, state(player)) end
+	-- The def of the cast a fresh press keeps waiting for the clocks
+	-- (`s.waiting`), or nil: the cooldown overlay marks its slot (Round 74
+	-- HUD). Reads only.
+	function M.waiting(player)
+		local s = states[player:get_player_name()]
+		return s and s.waiting and s.waiting.def
+	end
 	-- Crosshair feedback (crosshair.lua): is the first thing within hand reach
 	-- something a press would interact with? The same ray and classification
 	-- an RMB press uses, plus a dropped item (the LMB pickup of `activate`).
@@ -694,6 +770,7 @@ return function(api)
 		local s = state(player)
 		end_food_hold(player)
 		s.pending, s.dig, s.right, s.food, s.rmb = nil, nil, "interaction", nil, true
+		s.waiting = nil
 	end
 	-- A food item's native on_place/on_secondary_use (press and the engine's
 	-- repeat_place_time repeats). True: contextual input owns the press and

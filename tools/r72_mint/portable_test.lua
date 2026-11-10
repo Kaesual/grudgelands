@@ -511,7 +511,7 @@ check(LAVA_HI + 0.5 + 1.47 + 10 < FLOOR + 0.5, "H no single Blink out of the lav
 
 -- ---- I. The shot lines ------------------------------------------------------------------
 -- Two of four, one per group (W1/W2, W3/W4), each along x through a gap's middle a node
--- and a half over the tops, every 6 s, the second group 3 s after the first.
+-- and a half over the tops, every 2 s, the second group 1 s after the first (Round 74).
 local traps_text = read_file("mods/PLAYER/grug_expeditions/traps.lua")
 local BALL = tonumber(traps_text:match("\nlocal BALL = ([%d%.]+)\n"))
 check(BALL and traps_text:find("\nlocal REACH = BALL %+ 0%.3\n"), "I traps.lua's ball and reach")
@@ -528,8 +528,9 @@ local per_group = {}
 for _, w in ipairs(walls) do
 	per_group[w.group] = (per_group[w.group] or 0) + 1
 	eq(w.pick, 1, "I one of each group")
-	eq(w.period, 6, "I every 6 s")
-	check((w.group == "w1" and w.offset == 0) or (w.group == "w2" and w.offset == 3), "I the offsets")
+	-- 6 s and 3 s until Round 74 (the user's ruling).
+	eq(w.period, 2, "I every 2 s")
+	check((w.group == "w1" and w.offset == 0) or (w.group == "w2" and w.offset == 1), "I the offsets")
 	check(w.axis == "+x" or w.axis == "-x", "I along x")
 	eq(w.pos.y, F + 0.5, "I a node and a half over the tops")
 	check(GAP_MIDDLES[w.pos.z], "I through a gap's middle: " .. w.pos.z)
@@ -1009,7 +1010,7 @@ do
 	eq(marks[key(trap.cell)], "grug_expeditions:trap_mark", "M its mark")
 	end_run(run)
 	-- The lake: nobody waiting on a top or a landing is hit, at its middle or at its edge
-	-- (0.29 over it, the sneak's limit), over two periods of both groups; a player in a
+	-- (0.29 over it, the sneak's limit), over 12 s, six periods of both groups; a player in a
 	-- gap's middle, on the line, is. A hit bursts on its player and reaches whoever stands
 	-- within 2 of it (traps.lua): so the plan's "cross separately".
 	local lines_hit = {}

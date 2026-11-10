@@ -12,7 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.73.1 (character creation redesigned, capital polish: royal halls, gate
+**Current state:** 0.74.0, Round 74 (Expeditions close after 30 s, the Deserter's Mark 2 min,
+wall traps every 2 s; self skills wait for the action clock, its cover on the hotbar; flight over
+the own and contested coastal belt, the ride restored at login; the evader's trail home and the
+Expeditions' walk grid; compatible, tag `round-74`, not pushed, GUI test open:
+[completion](docs/planning/round74-plan.md#completion-2026-11-10)), on 0.73.1 (character creation redesigned, capital polish: royal halls, gate
 arches, thin tables, Dawnmere's inn beds, the Expedition Registrar at each capital's waystone
 plaza; **map reset**, no step; tag `round-73.1`, not pushed, GUI test open:
 [checklist](tools/capital_polish_study/implementation/README.md#desktop-and-web-gui-checklist)),
@@ -618,6 +622,11 @@ The topic rules below name the one path to use; the
   height map with stairs, free height, no perch, no walk round, the light zones and sight,
   the ambush, lava and particles). A source writes floor stairs only through `relief.py` and
   light through `light.py` (no grid), and its rooms go to the user as `preview.py` sheets.
+- **Every template carries its walk grid** (Round 74, `walkgrid.py` through `build.py`), and
+  every Expedition mob path goes over it (`navigation.lua`: the chase's search and line, the
+  evade guide), never `core.find_path`. A template change rebuilds it and passes `build.py
+  --check` and `tools/r74_nav`. Its moves assume every Expedition mob steps 1.1 and stands
+  at most 1.95 high (`grug_obstacle`); a new mob that does not breaks the grid's promise.
 - **Balance is for a Warrior and a Priest at player level = Expedition level;** nothing is
   tuned for a player at the entry limit. A new Expedition's fight needs a real test: the
   probes' fights are scripted.
@@ -732,6 +741,9 @@ The topic rules below name the one path to use; the
 - **A boss's reset is `grug_mobs.reset_home`** (kings, Generals, Expedition bosses through the
   boss floor; guards and the other `_grug_reach_reset` mobs through their give-up); a new
   boss or out-of-reach rule ends there, never in a second heal-and-evade path.
+- **An evader's way home is `aggro.lua`'s `evade_walk`:** guides first, then the mob's trail,
+  then the straight walk ([combat_stats.md](docs/design/combat_stats.md) "The way home"); a new
+  way home registers a guide (`grug_mobs.register_evade_guide`), never a second walk.
 - **Personal notices go to the message feed** (`grug_core.feed`), never chat;
   chat keeps deaths, rare sightings, boss and dragon warnings. Quest kill labels
   use the zone's mob name (`validate.py`).

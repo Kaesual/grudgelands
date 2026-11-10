@@ -188,9 +188,15 @@ class Template:
         lines.append(f"data {data_bytes}")
         return ("\n".join(lines) + "\n").encode()
 
-    def to_bytes(self):
+    def to_bytes(self, grid=None):
+        """The file; `grid` (walkgrid.Grid) adds the walk grid section after the cells
+        (Round 74), as build.py writes every template."""
         stream = zlib.compress(bytes(self.cells) + bytes(self.param2), 9)
-        return self.head(len(stream)) + stream
+        blob = self.head(len(stream)) + stream
+        if grid is not None:
+            packed = grid.to_bytes()
+            blob += f"grid {len(packed)}\n".encode() + packed
+        return blob
 
     def problems(self, walkable):
         """What keeps this template from a run. `walkable(node)` is the registry's answer."""
@@ -296,11 +302,28 @@ class Template:
         return found
 
 
-def read_back(blob):
-    """(head lines, cells, param2) of a written file."""
+def _data_end(blob):
     at = blob.index(b"\ndata ") + 1
     stop = blob.index(b"\n", at)
+    return stop, stop + 1 + int(blob[at + 5:stop])
+
+
+def read_back(blob):
+    """(head lines, cells, param2) of a written file."""
+    stop, end = _data_end(blob)
     head = blob[:stop].decode().split("\n")
-    cells = zlib.decompress(blob[stop + 1:])
+    cells = zlib.decompress(blob[stop + 1:end])
     half = len(cells) // 2
     return head, cells[:half], cells[half:]
+
+
+def read_grid(blob):
+    """The packed walk grid section of a written file (Round 74), or None."""
+    _, end = _data_end(blob)
+    if end == len(blob):
+        return None
+    stop = blob.index(b"\n", end)
+    word, size = blob[end:stop].decode().split(" ")
+    if word != "grid" or stop + 1 + int(size) != len(blob):
+        raise ValueError("a malformed grid section")
+    return blob[stop + 1:]

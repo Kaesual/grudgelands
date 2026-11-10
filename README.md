@@ -98,6 +98,13 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.74.0** lets self and support skills wait for your swing and fire instead of being
+refused, shows on the hotbar when the next cast can start, opens the coastal water in front
+of your own and contested land to flyers, brings your mount or boat back at login, and
+teaches mobs the way home: along their own trail outside, over a map of the floor in
+Expeditions. Expeditions close after 30 seconds, the Deserter's Mark lasts 2 minutes and the
+wall traps fire every 2 seconds. Compatible; desktop and web acceptance is pending.
+
 **0.73.1** redesigns character creation and polishes the capitals: lower thrones, pillar
 bays and repaired roofs in the royal halls, corrected gate arches, thin tables throughout the
 towns, and the Expedition Registrar at each capital's waystone plaza. It needs a **map reset**;

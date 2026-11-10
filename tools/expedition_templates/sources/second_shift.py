@@ -880,9 +880,9 @@ def traps(t, lay):
         for x, z in spots:
             t.trap_floor(group, pick, x, lay.floor[x, z], z)
     # The wall: one of two muzzles in the gallery between rooms 1 and 2, across it (+z)
-    # every 8 s, the first shot on readiness.
+    # every 2 s (8 s until Round 74), the first shot on readiness.
     for x in (43, 35):
-        t.trap_wall("w1", 1, x, 8.5, 15.6, "+z", 8, 0)
+        t.trap_wall("w1", 1, x, 8.5, 15.6, "+z", 2, 0)
 
 
 def build():

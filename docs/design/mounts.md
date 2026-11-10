@@ -282,7 +282,29 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   shutdown skip animation/appearance restoration because player display records
   may already be gone; ordinary dismount and death retain that restoration.
   No deferred movement callback is scheduled during teardown. Mount ownership
-  remains in player metadata; every reconnect starts on foot.
+  remains in player metadata.
+- **The ride comes back at login** (Round 74, user ruling 2026-11-10). The
+  teardown first saves the ridden tier in the player's meta
+  (`grug_mounts:logout_ride`) and leaves the player where the mount was. At
+  the next join (`grug_mounts/restore.lua`) the key is cleared and the player
+  held (no movement, no gravity: the movement aggregator's hold) until the
+  block is active, then that tier is summoned at the saved seat under every
+  rule of a summon and the player seated: a flyer in the air, a ground
+  mount, a boat on the water. A ride the rules refuse there (the flight rule,
+  the ceiling, an enemy town, a boat off the water, an Expedition's box) or
+  whose block is not active within 5 seconds is not summoned, with one feed
+  line: a flyer's rider is set down on the first ground or water below, any
+  other rider released where they are. The set-down emerges the column and
+  searches it in stages of 128 nodes below the lower of the rider and the
+  surface, down to 512 (a ravine, a cave under an underground flyer); the
+  rider stays held while a stage is not loaded or holds no ground, so there
+  is no fall and no fall damage. Never into lava: the nearest safe column
+  within 4 nodes takes the rider instead; with lava all round, or nothing
+  found after 30 seconds, the rider is released where they are (the last
+  resort). A rider who mounts during the hold (the quickbar) keeps that
+  ride. A player who leaves again while held keeps the key for the next
+  login (or the ride they mounted meanwhile). A server crash runs no teardown: that rider
+  starts on foot as before.
 - **Entering a no-mount zone dismounts you** (§4) — via the same detach and
   entity-removal transaction.
 - **Water is for boats** (Round 45 playtest). A riding or flying mount whose
@@ -448,9 +470,12 @@ and the refusal goes to the message feed. A rider is dismounted by the teleport 
 
 ### 4.1 Ocean: warned edge, then forced flight dismount
 
-- Flying is forbidden over every authored ocean column: the coastal-water
-  shelf, deep ocean and the channels around both dragon islands. The rule is
-  independent of altitude. The landward planned parts of bays, lakes, rivers,
+- Flying is forbidden over the open sea (deep ocean) and the channels
+  around both dragon islands. The **coastal belt** (the coastal-water shelf,
+  `coastal_shelf`) belongs to the zone it lies in front of and takes that
+  zone's rule (Round 74, user ruling 2026-11-10): flyable in front of
+  contested land and the rider's own home, forbidden in front of the
+  enemy's home and a dragon island. The rule is independent of altitude. The landward planned parts of bays, lakes, rivers,
   marsh channels and other water inside a mainland footprint remain part of
   their named zone, inherit its flight rule and do not become ocean merely
   because they contain water nodes or connect to the outer sea. That holds
@@ -461,9 +486,12 @@ and the refusal goes to the message feed. A rider is dismounted by the teleport 
   a bay's body and landward of its mouth as that bay's planned water
   (Round 57, ruling 23; generation keeps them belt). At a headland the
   no-fly edge therefore lies on the outer coast's belt, up to 128 nodes from
-  the bay. The four declared outer bay-mouth caps are deep ocean and use this
-  section's warning and forced-dismount rule.
-- A flying mount cannot be summoned in an ocean column. Once per second, the
+  the bay. Since Round 74 the belt beyond is flyable in front of the own and
+  contested land too, so the no-fly edge there is the open sea's. The four
+  declared outer bay-mouth caps are deep ocean and use this section's
+  warning and forced-dismount rule.
+- A flying mount cannot be summoned in an ocean column (open sea, channel)
+  or on the belt in front of enemy land. Once per second, the
   visible warning probes the same flight-legality rule as the hard dismount in
   16 horizontal directions at 1, 2, 4, 8, 16, 32 and 40 nodes (the band is
   **40 nodes** since 0.53.1, before 48; `grug_mounts.WARNING_WIDTH` in
@@ -479,8 +507,9 @@ and the refusal goes to the message feed. A rider is dismounted by the teleport 
   check, the warning sweep and the minimap overlay below all ask it.
 - **Minimap no-fly overlay** (0.53.1): while the player sits on a flying
   mount, the minimap shows that faction's no-fly area in red: enemy home
-  land, the dragon islands and the ocean; bays and lakes that belong to a
-  mainland zone stay clear. It is drawn from the same rule, so overlay and
+  land and its coastal belt, the dragon islands and their belt, the channels
+  and the open sea; bays, lakes and the belt in front of the own and
+  contested land stay clear. It is drawn from the same rule, so overlay and
   dismount agree on every pixel, rendered once per world and faction and
   cached like the Claim Stone overlay (`world_map.md`, "Flight mode"). On
   foot, on a ground mount or a boat it is not shown; a minimap the player
@@ -507,8 +536,8 @@ and the refusal goes to the message feed. A rider is dismounted by the teleport 
 - **Both factions may summon and use either flying tier throughout the
   contested mainland, including ordinary contested regions and the Battlegrounds.**
   The shared-front territory is an intentional aerial PvP space,
-  not enemy territory. Its planned water inherits this permission because it
-  is not an ocean column.
+  not enemy territory. Its planned water and its coastal belt inherit this
+  permission (the belt since Round 74).
 - PvP and NPC combat remain active there. Any incoming damage still dismounts
   immediately under §3.1, so permission to fly is not safety or immunity.
 - Both dragon islands forbid flight for both factions; ground riding remains
@@ -547,8 +576,9 @@ defence instead of engaging with it. `world.md` §6's ban on enemy-territory
 waypoints closes the same bypass for teleportation.
 
 **The mechanism is the central territory/zone lookup, never a hand-picked
-coordinate.** `grug_zones.water_class_at(x,z)` separates authored ocean from
-land and planned inland water; the horizontal
+coordinate.** `grug_zones.water_class_at(x,z)` separates the open sea and the
+channels from land, planned water and the coastal belt, which carry a zone
+(`grug_zones.id_at`); that zone's
 `grug_zones.at(pos).territory_rule` record allows the rider's own
 `accord_home`/`throng_home` and `contested_land` (which the four
 Battlegrounds zones also use).
@@ -561,7 +591,8 @@ bought a mount, so the nil case needs no rule of its own.
 
 **Ocean is a separate classification with the same border transaction.** The
 enemy-territory rule does not legalize flight over neutral water: §4.1 warns on
-the legal side and dismounts at the first ocean node at every altitude. Read
+the legal side and dismounts at the first open-sea or channel node at every
+altitude; the coastal belt in front of enemy land is enemy territory. Read
 along a legal invasion path, the system is therefore own land → flyable
 Battlegrounds → warned enemy border → forced ground travel; the dragon islands
 instead require a boat because their ocean channel reaches the hard no-flight

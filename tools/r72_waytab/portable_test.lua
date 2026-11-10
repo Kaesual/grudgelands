@@ -199,7 +199,8 @@ local FAKE_TEMPLATE = {EXTENSION=".exp", resolve=function() end,
    end_waystone={x=40, y=2, z=8}}, encounters={}}
  end}
 local SISTERS = {["encounters.lua"]=true, ["guard.lua"]=true, ["registrar.lua"]=true,
- ["chest.lua"]=true, ["loot.lua"]=true, ["traps.lua"]=true} -- traps.lua: r72_traps
+ ["chest.lua"]=true, ["loot.lua"]=true, ["traps.lua"]=true, -- traps.lua: r72_traps
+ ["navigation.lua"]=true} -- navigation.lua needs mobs: r74_nav
 local load_file = dofile
 _G.dofile = function(file)
  local base = file:match("[^/]+$")

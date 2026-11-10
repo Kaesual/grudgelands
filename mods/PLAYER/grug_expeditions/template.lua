@@ -14,9 +14,14 @@
 --   ambush a1 1 drift 12 5 18 14 22   group, pick, room, the zone x0 y z0 x1 z1 (Round 73)
 --   particles dust 4 5 4 9 8 9 24     style, a box x0 y0 z0 x1 y1 z1, its most live particles
 --   data 1234                         the bytes of the zlib stream after this line
+--   grid 567                          after that stream: the walk grid's (Round 74)
 --
 -- The stream holds sx * sy * sz palette bytes in VoxelManip order
--- (z * sy * sx + y * sx + x + 1), then as many param2 bytes.
+-- (z * sy * sx + y * sx + x + 1), then as many param2 bytes. The grid's stream
+-- holds four planes of sx * sz bytes, column z * sx + x + 1: the walking height,
+-- the move mask, the clearance and the flags (walkgrid.lua reads them;
+-- tools/expedition_templates/walkgrid.py writes them). `parse` keeps it packed in
+-- tpl.grid, nil when the file has none; `load` requires it.
 local M = {}
 M.EXTENSION = ".exp"
 local MAGIC = "grudgelands-expedition-template 1"
@@ -205,6 +210,16 @@ function M.parse(text, decompress, source)
 			bad()
 		end
 	end
+	-- The walk grid section after the cells (Round 74), optional here.
+	local grid_stream
+	local after = at + #stream
+	if after <= #text then
+		local line_end = text:find("\n", after, true)
+		local bytes = line_end and text:sub(after, line_end - 1):match("^grid (%d+)$")
+		if not bytes then fail("trailing bytes after the data") end
+		grid_stream = text:sub(line_end + 1)
+		if #grid_stream ~= tonumber(bytes) then fail("the grid is cut short or followed by more") end
+	end
 	if not tpl.size then fail("no size") end
 	if #tpl.nodes == 0 then fail("no palette") end
 	local groups = {}
@@ -222,6 +237,11 @@ function M.parse(text, decompress, source)
 	local cells = decompress(stream)
 	if #cells ~= 2 * total then fail("the data does not fit the size") end
 	tpl.cells = cells
+	if grid_stream then
+		local grid = decompress(grid_stream)
+		if #grid ~= 4 * size.x * size.z then fail("the grid does not fit the size") end
+		tpl.grid = grid
+	end
 	-- A floor trap's mark goes into its cell: air only (template.py refuses the rest).
 	for _, row in ipairs(tpl.traps) do
 		local pos = row.pos
@@ -280,6 +300,7 @@ function M.load(path, name, box, required)
 		error("[grug_expeditions] template " .. name .. ": the file names " .. tostring(tpl.name), 0)
 	end
 	M.check_fits(tpl, box, required, name)
+	if not tpl.grid then error("[grug_expeditions] template " .. name .. ": no walk grid (build.py writes it)", 0) end
 	return tpl
 end
 

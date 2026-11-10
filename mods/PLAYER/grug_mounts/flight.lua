@@ -26,12 +26,18 @@ local function zone_rule(id)
 	return rule
 end
 
+-- The water classes (grug_zones water_class_at) that take their zone's rule:
+-- land, planned water (bays, lakes, rivers) and, since Round 74 (user ruling
+-- 2026-11-10), the coastal belt, whose owner is the zone it lies in front
+-- of. The open sea and the dragon channels stay "ocean".
+local ZONED = {land = true, planned_water = true, coastal_shelf = true}
+
 -- The rule for one faction on a column of water class `water` (grug_zones
 -- water_class_at) in zone `id` (grug_zones id_at; nil or false: none):
 -- true, or false and why ("ocean", "island" or "enemy"). The zone id is
--- read only on land and planned water.
+-- read only on the zoned classes.
 function grug_mounts.flight_rule(faction, water, id)
-	if water ~= "land" and water ~= "planned_water" then
+	if not ZONED[water] then
 		return false, "ocean"
 	end
 	if faction ~= "accord" and faction ~= "throng" then
@@ -55,6 +61,5 @@ end
 -- queries.
 function grug_mounts.column_flight_state(faction, x, z)
 	local water = grug_zones.water_class_at(x, z)
-	local land = water == "land" or water == "planned_water"
-	return grug_mounts.flight_rule(faction, water, land and grug_zones.id_at(x, z) or nil)
+	return grug_mounts.flight_rule(faction, water, ZONED[water] and grug_zones.id_at(x, z) or nil)
 end

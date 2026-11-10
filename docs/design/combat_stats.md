@@ -935,6 +935,26 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   their prior return threshold, their leash radius (25 for a camp member, 30
   for a guard, 40 by default), and end the run within about four nodes of
   home; patrollers and dragons never evade.
+- **The way home** (Round 74, `round74-plan.md` §3.1 and §4 TRAIL): once a
+  second the evade asks, in order, the registered **evade guides**
+  (`grug_mobs.register_evade_guide(fn)`, `fn(self, pos, home)` returning the
+  next point or nil; the Expeditions' guide answers for their own mobs; a mob a
+  guide walks leaves its trail, so the guide's later nil walks it home), then
+  the mob's own **trail**, then walks straight home as above. While a mob
+  chases outside its arrival area (four nodes round its post, the wander
+  radius of a free mob) it drops a waypoint every **8 nodes** walked, one
+  where its navigation began a detour and one every **3 nodes** during it,
+  only on the ground (not jumping, falling or swimming); at most **10**
+  (one more leaves out the straightest inner point), runtime only. A new
+  waypoint within **6 nodes** (and 2 in height) of one it walked at least
+  **18 nodes** earlier cuts the loop between them, so a mob kited round and
+  back keeps the short thread. The evade walks the trail back newest first,
+  straight from point to point (a point counts within 2 nodes; a blocked
+  leg searches for the point itself within 16 nodes), then home; a point
+  whose leg fails (a ledge the mob came down) is skipped. The trail is
+  cleared at home, at the arrival or the teleport, and when the mob is idle
+  again without an evade. The arrival, the speed, the untouchable state and
+  the 40 s teleport are unchanged.
   Incoming NPC damage does not create player reward credit.
 - **Evading feedback:** an evading mob is no target. The crosshair stays
   neutral on it, a press does not lock or hit it, and a fresh press, or a
@@ -1006,6 +1026,10 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   up, is ordered to stand, rooted, stunned or knocked back. Progress toward
   the target is not the measure: a target running away faster than the mob
   leaves no stuck mob.
+  Inside an Expedition the search and the walkable line read the template's
+  walk grid instead, and a mob searches as soon as its line to its target is
+  blocked (Round 74, "Expedition packs" below); the rest of this paragraph is
+  the engine's search everywhere else.
   A stuck mob asks the engine's pathfinder for a short local detour, never a
   long fixed path: straight to a target within **16 nodes**, otherwise to an
   intermediate point in the target's direction, on a ring of **10 nodes** and
@@ -1656,6 +1680,27 @@ XP); these rules replace the leash, the pursuit policy above and group alerts.
   inactive) a new body stands beside the player at the old health, and the old copy
   removes itself when it wakes. A jump lands on a free cell with a floor that the player can see, else on
   the player's own.
+- **The way inside** (Round 74, `grug_expeditions/navigation.lua` and `walkgrid.lua`;
+  [format](../technical/expedition-template-format.md)): every path of an Expedition's
+  mob goes over its template's walk grid, one per template shared by every run. In a
+  chase the search is A* over the grid, to the target itself at any distance, its
+  steer points needing no check, and the walkable line reads the grid, no node; the
+  mob tests that line on its first step at a target and every **0.5 s**, and searches
+  as soon as it is blocked (once a second at most, the lockout above); the stuck
+  detector stays the net, and three failed searches give up as above (a pack's mob
+  jumps). The evade's guide walks the distance field of the mob's home (built on first
+  use, kept for the server's life): once a second the furthest of the next **12**
+  cells of its way home that it walks to in a straight line; when that cell is nearer
+  than **3 nodes** (an alcove, a tight corner: the mob would run past it before the
+  next decision) the furthest of the twelve instead, round the corner. A fixed walk of
+  such a mob searches the grid as soon as its line to its point is blocked and follows
+  the path, steered every step; one search a second at most in both modes. A moment
+  off the grid (more than **2 nodes** from a walking cell its body fits) the guide keeps
+  its last point **2 s**. A mob whose home the grid cannot reach (no way over it, The
+  Last Mint's lake; or still off the grid after that hold and a fresh stretch of more
+  than 2 s walking straight home, at the once-a-second decisions about **5–6 s** after
+  it left the grid: fallen into that lake) is **set home at once** (the user, 2026-11-10), placed the way a pack's jump places a mob,
+  instead of the 40 s teleport.
 - **Idle** a pack's mob stays within 8 nodes of its marker, so packs can be fought one
   at a time.
 - **Logout.** Logging out on a list counts as a death with Round 70's penalty, once

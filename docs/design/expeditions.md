@@ -8,7 +8,8 @@ Every run is written anew, so an Expedition can be played again and again.
 are implemented in Round 71 (`grug_expeditions`), The Second Shift, The Last Mint, the
 traps, the Expeditions tab and the reshaped rooms in Round 72; Round 73 (0.73.0) redesigned all
 three: floors with stairs, bent passages, light from what belongs there, dark stretches, the
-ambush, lava falls, critters and particles. This file owns the game rules
+ambush, lava falls, critters and particles; Round 74 (0.74.0) shortened the closing and the
+Deserter's Mark, quickened the wall traps and gave the mobs the walk grid. This file owns the game rules
 and their numbers. The [concept](../planning/round71-expeditions-concept.md) stays as the
 record of the rulings, the [Round 73 concept](../planning/round73-expedition-redesign-concept.md)
 as that of the redesign's; [Round 71](../planning/round71-plan.md),
@@ -185,11 +186,11 @@ the start waystone, still inside.
 - **Finish** (Round 72.1, the user, 2026-11-09) ends a run properly once its boss is dead,
   or at once when its template has none. Only the party's **current leader**, or the solo
   owner, may finish, at the Registrar, on the Expeditions tab of a waystone outside or of
-  the Claim Stone, or at a waystone inside; it needs no confirmation. The run ends **60
-  seconds** later:
+  the Claim Stone, or at a waystone inside; it needs no confirmation. The run ends **30
+  seconds** later (60 until Round 74, the user, 2026-11-10):
   - Everyone inside sees "This Expedition ends in N seconds." as the banner line, once a
-    second for the whole minute; whoever enters meanwhile sees it from their arrival on.
-    Members outside get one notice: "<leader> finished the Expedition. It ends in 60
+    second for the whole countdown; whoever enters meanwhile sees it from their arrival on.
+    Members outside get one notice: "<leader> finished the Expedition. It ends in 30
     seconds."
   - Entering is refused for the last **10 seconds** ("This Expedition is closing."), at
     the click and on the arrival of a trip already on its way.
@@ -199,8 +200,8 @@ the start waystone, still inside.
 - **Cancel** ends a run that cannot be finished, in any state from ready on, never
   entered included; the same leader, the same places. A run whose boss is dead offers
   Finish alone. The first click asks: "Cancel this Expedition? You cannot open or enter an
-  Expedition for 5 minutes.", with Confirm and Back. With nobody inside the run ends at
-  once; otherwise it counts down 60 seconds like Finish, with the banner "This Expedition
+  Expedition for 2 minutes.", with Confirm and Back. With nobody inside the run ends at
+  once; otherwise it counts down 30 seconds like Finish, with the banner "This Expedition
   was cancelled. It ends in N seconds.", and nobody can enter it from the click on.
 - **The buttons** (Round 72.2, the user, 2026-11-10): the leader only ever sees one of
   them, Finish in green, Cancel in red (its Confirm red too). An open Registrar window or
@@ -209,13 +210,14 @@ the start waystone, still inside.
   a window the player left (walked away from its stone, or another form replaced it) does
   not pop back.
 - Finish and Cancel are refused while a run is being prepared (about 15 seconds) and
-  once it is closing. During the minute the owner still holds the run, so a new one can
+  once it is closing. During the countdown the owner still holds the run, so a new one can
   be opened only after its end; the 10-minute clock runs on, and whichever end comes
   first ends it.
 - **The Deserter's Mark:** whoever cancels, and nobody else (party members are never
   punished for their leader), can neither open nor enter any Expedition, their party's
-  included, for **5 minutes** of real time, from the click. A refusal names it with the
-  time left: "Deserter's Mark: no Expeditions for 4:12." It runs on through a logout and a
+  included, for **2 minutes** of real time (5 until Round 74, the user, 2026-11-10), from
+  the click. A refusal names it with the time left: "Deserter's Mark: no Expeditions for
+  1:42." It runs on through a logout and a
   server restart (its end is saved player meta), and shows in the status row and the
   Effects tab as "Deserter's Mark", "Cannot open or enter Expeditions"; its icon is the
   contested banner upside down and muted until a drawn one is picked. The leader may hand
@@ -308,6 +310,18 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
     reach them.
   - **Wipe:** with nobody left on its list the pack goes home healed, and its dead stand
     at their place at once. A fully dead pack stays dead.
+- **Their way** (Round 74, the user, 2026-11-10): every mob path inside an Expedition goes over its template's
+  **walk grid**, written with the template and loaded once for every run of it
+  ([format](../technical/expedition-template-format.md)): the floor's walking cells, the moves between them (one node
+  up or down, no corner cut), the room a wide body needs (a Giant Spider keeps two nodes from walls, a two-node elite
+  a free 2 x 2 block), and the reward door, passable once open. A chasing mob searches it as soon as its straight
+  line to its target is blocked, at any distance, and so comes round a pillar or a corner instead of running into
+  it; an evading mob walks home along the shortest way to its home, steering at the furthest cell ahead it can walk
+  to straight (round a corner close by, along the grid's path). A mob in the air or pushed into a wall finds its
+  walking cell within two nodes. Mobs do not leap: a mob whose home the grid cannot reach (one that crossed The
+  Last Mint's lake by its pack's jump) is **set home at once**, and one that fell into the lake once it has been
+  off the grid about 5–6 s, placed the way a pack's jump places a mob, instead of waiting for the 40 s teleport
+  (the user, 2026-11-10).
 - **The boss** is a pack of one: a wipe heals it and sends it home. Its **room is its range**
   (0.72.0, the user, 2026-11-07): its floor inside the template's envelope (the places
   `boss_room_min` and `boss_room_max`), so it pursues nobody into a passage and a ledge is
@@ -337,8 +351,9 @@ test.
   it (a jump over it does not): a muted red ring of radius 2 for 1.5 s, then the hit to every player within 2 nodes of
   it and in sight of it. It rearms 10 s after the hit; standing on it then starts it again. From its first hit a red
   mark shows its spot for the rest of the run.
-- **Wall trap:** a fireball on a fixed period (6 or 8 s in the plans), always, from its group's offset after the
-  Expedition is ready, along a fixed direction at 8 nodes a second; no targeting. Stone stops it. A player in its way
+- **Wall trap:** a fireball on a fixed period (2 s in both templates since Round 74, the user, 2026-11-10; 6 and 8 s
+  before), always, from its group's offset after the Expedition is ready, along a fixed direction at 8 nodes a
+  second; no targeting. Stone stops it. A player in its way
   bursts it: the same hit to every player within 2 nodes. A shot with nobody of the run within 32 nodes of its line is
   left out, the rhythm kept.
 - **A boss's marked spot** (The Second Shift's Auditor Nemm): the floor trap's ring and hit on one position, once;
@@ -489,8 +504,8 @@ its books, order gone sour.
 | 5 Store | flat and square on purpose: plank floor, lamp niches, coffers; chest, end waystone; 4 ore, 2 gem |
 
 - **Passages:** the arrival's cut bends over a hump with a niche; the trap gallery between
-  rooms 1 and 2 holds the wall trap (1 of 2 muzzles, every 8 s) and stays straight where the
-  fireball flies; the **grain drift** (room 2 to 3) and the **pay drift** (room 3 north, then
+  rooms 1 and 2 holds the wall trap (1 of 2 muzzles, every 2 s since Round 74) and stays
+  straight where the fireball flies; the **grain drift** (room 2 to 3) and the **pay drift** (room 3 north, then
   east under a low roof into the court) are long, straight and dark on purpose, mossy, each
   dipping a node; the door's cut jogs into the store.
 - **The ambush** (Round 73): two candidates, one in each drift, one armed per run. Its zone
@@ -595,8 +610,8 @@ route, the packs, the boss, the lake, the press, the traps, the ore, the door an
   or climb, and the tops are beyond one Blink from the lava. A fall is death: lava takes
   20 % of the actual pool a second through every shield, five ticks for a full pool, and
   Return Home is refused (§4). Two of four wall sockets fire across a gap's middle every
-  6 s, the second group 3 s after the first; every top and landing is clear of their
-  lines, so a player waits on a top, watches a shot pass, then jumps. A burst reaches
+  2 s (6 until Round 74), the second group 1 s after the first; every top and landing is
+  clear of their lines, so a player waits on a top, watches a shot pass, then jumps. A burst reaches
   whoever stands within 2 of the one it hit: cross one at a time.
 - **Mobs:** 16 normal (11 Seeps, 5 Wisps), 3 elites (2 Seeps, 1 Sentinel) and the boss, and
   the armed ambush's 3 Seeps,

@@ -63,6 +63,9 @@ Heal, Shield and Mend use one selection rule, on the press:
    recipient. An explicitly aimed ally whom the PvP flag forbids supporting
    is a refusal at no cost, never a self-cast.
 3. The cast commits at once: cost, cooldown and effect in one transaction.
+   A press refused only for the action clock waits for it (Round 74,
+   [classes](classes.md) §2b) and then fires only on the recipient the
+   press aimed at: that ally, or the caster when it aimed at none.
 
 Mend's later ticks belong to its status on the recipient and never
 reselect from the crosshair; a recast renews it. A tap at the ground (the

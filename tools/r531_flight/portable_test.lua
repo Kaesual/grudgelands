@@ -279,7 +279,11 @@ do
 	eq(red_at("accord", -100, -100), false, "O the Accord flies over its home")
 	eq(red_at("throng", -100, -100), true, "O the Throng does not fly over the Accord home")
 	eq(red_at("accord", -40, -30), false, "O the lake in the Accord home is flyable")
-	eq(red_at("accord", 0, -160) and red_at("throng", 0, -160), true, "O the shelf is red for both")
+	-- Round 74 (user ruling 2026-11-10): the coastal belt takes its zone's
+	-- rule; (0, -160) lies in front of the Throng home.
+	eq(red_at("accord", 0, -160), true, "O the shelf before the Throng home is red for the Accord")
+	eq(red_at("throng", 0, -160), false, "O and clear for the Throng")
+	eq(red_at("accord", 0, -190) and red_at("throng", 0, -190), true, "O the open sea is red for both")
 	eq(red_at("accord", -120, 120) and red_at("throng", -120, 120), true, "O the island is red for both")
 end
 

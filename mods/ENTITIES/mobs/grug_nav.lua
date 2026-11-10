@@ -61,6 +61,15 @@
 --     height, drops down to its fear height; a diagonal step needs both
 --     corner cells free with ground under them. Harmless water is ground
 --     for a mob that wades (Round 34).
+--   * GRUG PATCH (Round 74 NAV, round74-plan.md §3.2): inside an Expedition
+--     every path goes over its template's precomputed walk grid
+--     (grug_expeditions/walkgrid.lua, installed as `nav.grid`): `nav.search`
+--     answers from the grid instead of core.find_path (the target itself at
+--     any distance, no engine budget, cap or negative cache, its steer points
+--     need no path check), and the walkable line reads the grid, never a
+--     node. Such a mob searches as soon as its line to its target is blocked
+--     (tested every LINE_EVERY.combat, the strict rule's timing), not only
+--     once it is stuck; the stuck detector stays the net.
 --
 -- No wall-clock budget: the lockouts and the negative cache are timers per
 -- mob, the cap is a count of searches per second of server steps.
@@ -119,6 +128,15 @@ end
 -- GRUG PATCH (Round 72 GUARDNAV): nav.strict(self) -> true for a mob under the
 -- strict rule (set by grug_mobs, aggro.lua grug_mobs.reach_reset); nil: none.
 nav.strict = nil
+
+-- GRUG PATCH (Round 74 NAV): the Expedition backend, set by grug_expeditions
+-- (navigation.lua), nil without it:
+--   nav.grid.view(self)                  the walk grid of the mob's run, or nil
+--   nav.grid.path(view, body, from, goal)  steer points over it (feet positions,
+--                                        the first where the mob stands), or nil
+--   nav.grid.line(view, body, a, b, rise)  the walkable line over it
+-- `nav.body` carries the view as `body.grid`, renewed on every call.
+nav.grid = nil
 
 -- Optional observer (the navigation probe): nav.on_event(self, kind).
 nav.on_event = nil
@@ -222,7 +240,11 @@ end
 --
 function nav.body(self, nst)
 	local box = obstacle.mob_cbox(self)
-	if nst and nst.body and nst.body_box == box then return nst.body end
+	if nst and nst.body and nst.body_box == box then
+		-- GRUG PATCH (Round 74 NAV): the walk grid of an Expedition mob's run.
+		if nav.grid then nst.body.grid = nav.grid.view(self) end
+		return nst.body
+	end
 	local width = box[4] - box[1]
 	if box[6] - box[3] > width then width = box[6] - box[3] end
 	local props = self.initial_properties
@@ -248,6 +270,8 @@ function nav.body(self, nst)
 		wades = (self.floats and not self.fly and not self.keep_flying) == true,
 	}
 	if body.head < 1 then body.head = 1 end
+	-- GRUG PATCH (Round 74 NAV): the walk grid of an Expedition mob's run.
+	if nav.grid then body.grid = nav.grid.view(self) end
 	if nst then nst.body, nst.body_box = body, box end
 	return body
 end
@@ -274,6 +298,8 @@ local function settle(body, x, y, z)
 end
 
 function nav.line_walkable(body, a, b, rise)
+	-- GRUG PATCH (Round 74 NAV): over an Expedition's walk grid, reading no node.
+	if body.grid then return nav.grid.line(body.grid, body, a, b, rise) end
 	local dx, dz = b.x - a.x, b.z - a.z
 	local len = sqrt(dx * dx + dz * dz)
 	local y = feet_y(a.y)
@@ -526,8 +552,22 @@ end
 
 --
 -- The one engine search: the padding floor, the leg limit, the cost.
+-- GRUG PATCH (Round 74 NAV): `body` (optional) on an Expedition's walk grid
+-- (body.grid) searches the grid instead, at any distance: `from` and `goal`
+-- are feet positions, the answer steer points (nav.grid.path).
 --
-function nav.search(from, goal, padding, jump, drop)
+function nav.search(from, goal, padding, jump, drop, body)
+	if body and body.grid then
+		local t0 = core.get_us_time()
+		local steer = nav.grid.path(body.grid, body, from, goal)
+		local us = core.get_us_time() - t0
+		local counters = nav.counters
+		counters.searches = counters.searches + 1
+		counters.grid = (counters.grid or 0) + 1
+		if steer then counters.found = counters.found + 1 end
+		if us > counters.largest_us then counters.largest_us = us end
+		return steer
+	end
 	local dx, dz = goal.x - from.x, goal.z - from.z
 	if dx * dx + dz * dz > nav.MAX_LEG * nav.MAX_LEG then return nil end
 	padding = floor(padding or nav.PADDING)
@@ -737,6 +777,23 @@ local function attempt(self, nst, pos, goal_pos, key, mode, close, target, opts)
 	local t = now()
 	if t < (nst.lock or 0) then return "wait" end
 	local body = nav.body(self, nst)
+	-- GRUG PATCH (Round 74 NAV): on an Expedition's walk grid the search is cheap
+	-- and exact: the goal itself at any distance, nothing but the lockout gates it.
+	if body.grid then
+		-- One lockout for both modes: a grid search costs microseconds (Round 74 fix
+		-- round: a fixed walk's 5 s left an evader pressed at a corner).
+		nst.lock, nst.point = t + nav.LOCKOUT.combat, nil
+		nst.searches = (nst.searches or 0) + 1
+		local goal = target and target_cell(target, goal_pos) or goal_pos
+		local steer = nav.search(feet_of(body, pos), goal, nil, nil, nil, body)
+		if not steer then
+			emit(self, "no_path")
+			return "failed"
+		end
+		emit(self, "found")
+		take_path(nst, body, pos, steer)
+		return "found"
+	end
 	local from = start_cell(body, pos)
 	local goal
 	if from then
@@ -917,6 +974,25 @@ function nav.combat_step(self, pos, dtime, target, target_pos, dist, striking,
 			end
 		end
 	end
+	-- GRUG PATCH (Round 74 NAV): a mob on an Expedition's walk grid searches as
+	-- soon as its line to the target is blocked: tested on its first step at a
+	-- target and every LINE_EVERY.combat after, the stuck detector the net.
+	if not nst.want and nav.grid and nst.grid_lt ~= false then
+		nst.grid_lt = (nst.grid_lt or nav.LINE_EVERY.combat) + dtime
+		if nst.grid_lt >= nav.LINE_EVERY.combat then
+			body = body or nav.body(self, nst)
+			if body.grid then
+				nst.grid_lt = 0
+				if not nav.line_walkable(body, feet_of(body, pos),
+						target_cell(target, target_pos), 1) then
+					nst.want = true
+					emit(self, "blocked")
+				end
+			else
+				nst.grid_lt = false -- off the grid: not tested again at this target
+			end
+		end
+	end
 	if not nst.want then return nil end
 	local result = attempt(self, nst, pos, target_pos, target, "combat",
 		strict and nav.MAX_LEG or nav.CLOSE, target)
@@ -971,6 +1047,16 @@ function nav.fixed_step(self, pos, dtime, goal, key, opts)
 			progress(self, nst)
 		end
 		return nil
+	end
+	-- GRUG PATCH (Round 74 NAV, fix round): on an Expedition's walk grid a fixed walk
+	-- whose straight line to its goal is blocked searches at once (each decision of the
+	-- walk; the evade guide's point may lie round a corner), as the chase does.
+	if not nst.want and nav.grid then
+		local body = nav.body(self, nst)
+		if body.grid and not nav.line_walkable(body, feet_of(body, pos), goal) then
+			nst.want = true
+			emit(self, "blocked")
+		end
 	end
 	if seen == "stuck" then
 		if not nst.want then emit(self, "stuck") end

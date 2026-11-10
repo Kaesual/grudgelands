@@ -91,11 +91,12 @@ PILLARS = [(106, 70, 110, 74), (106, 64, 110, 68), (106, 58, 110, 62), (106, 52,
            (106, 46, 110, 50)]
 LAVA_Y = (2, 7)
 # A fireball crosses each gap at its middle, a node and a half over the tops: two of
-# four, one per group, the second group 3 s after the first (traps.lua).
+# four, one per group, the second group 1 s after the first (traps.lua); every 2 s
+# since Round 74.
 SHOT_Y = 32.5
 WALLS = [("w1", 95.6, 68.5, "+x", 0), ("w1", 119.4, 62.5, "-x", 0),
-         ("w2", 95.6, 56.5, "+x", 3), ("w2", 119.4, 50.5, "-x", 3)]
-SHOT_PERIOD = 6
+         ("w2", 95.6, 56.5, "+x", 1), ("w2", 119.4, 50.5, "-x", 1)]
+SHOT_PERIOD = 2
 # Floor traps, two of four per room: the furnace room, the vestibule, the press floor.
 # Each lies on flat floor (its cell and its neighbours at one height).
 FLOOR_TRAPS = [("f1", [(101, 108), (114, 109), (98, 96), (111, 95)]),

@@ -606,7 +606,11 @@ tools](#player-meta-read-by-external-tools).
   targeting range; cooldowns and charges show as the hotbar overlay of
   `cooldown_hud.lua` since Round 40: `arm_cooldown` and `reset_charge` hand
   it their `{expiry, duration}` records, `cooldown_math.lua` is its pure
-  arithmetic, fixture `tools/r40_cd`); kits/numbers:
+  arithmetic, fixture `tools/r40_cd`; since Round 74 `occupy_casts` and
+  `arm_cast_interval` report each block of the action clock with
+  `cooldown_hud.block`, the overlay reads a slot's block end through its
+  read-only `cast_block` seam and the waiting cast through
+  `grug_abilities.input.waiting`, fixture `tools/r74_hud`); kits/numbers:
   `docs/design/classes.md`. WP19 added the 8 s target-memory store (separate
   enemy/ally slots via `grug_abilities.get_target(player, ally)`). **WP39's
   decided rule supersedes its hostile fallback:** enemy memory is Target-Frame/
@@ -956,7 +960,16 @@ tools](#player-meta-read-by-external-tools).
     player's current basic attack (`current_form` of Strike) once,
     silently, a swing through the swing, a cast through `try_cast`; none
     when the skill is that basic attack or the refusal is `busy` or
-    `interval`. PvE bench
+    `interval`. **The waiting cast** (Round 74 CAST, `input.lua`): a fresh
+    or carried press of a self or support skill refused only `busy` or
+    `interval` is kept as `s.waiting` (one at a time, a new key-down
+    replaces it); `wait_step` runs once per pass before the press acts and
+    fires it at the first pass its clocks allow; `fallback` does nothing
+    meanwhile; it expires after `max(weapon interval, api.cast_wait) +
+    WAIT_GRACE_US` (`init.lua`'s `cast_wait`: what the action clock and the
+    skill's own interval still hold back), and `reset`, `cancel` and an RMB
+    interaction drop it; `grug_abilities.input.waiting(player)` is the
+    overlay's accessor (fixture `tools/r74_cast`). PvE bench
     `tools/r52_bench` (per-action records of each class, main against a
     branch).
   - **The transformation** (D8): `transforms = "<base id>"` on the ability
@@ -1283,7 +1296,13 @@ tools](#player-meta-read-by-external-tools).
     cap and the budget (`claim_path_budget`, `note_path_cost`); never an
     unbudgeted `core.find_path`. Fixtures `tools/r30_p2` (also the merged
     spawn ABMs and the eye height), `tools/r42_nv1`, `tools/r42_nv2` and
-    `tools/r42_nv3`, `tools/r42_dr`.
+    `tools/r42_nv3`, `tools/r42_dr`. The evade's way home (`aggro.lua`
+    `evade_walk`, Round 74) asks the evade guides first
+    (`grug_mobs.register_evade_guide(fn)`, `fn(self, pos, home) -> point |
+    nil`, in registration order; the Expeditions register theirs), then the
+    mob's trail (`self.temp.grug_evade_trail`, recorded in the 1 Hz leash
+    slot while it chases), then the walk home; each answer is a fixed walk
+    of its own key (fixture `tools/r74_trail`).
   - **Countdowns tick in `do_custom`, never `core.after`**: a mob can
     die, be unloaded or leash-reset inside the window, and mobs_redo
     persists plain fields — a lost timer would save the mob permanently
@@ -2447,6 +2466,19 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   `core.calculate_knockback`: a pack's hit pushes level, because a pack swings as one and
   the downward pushes of one step add up to a fall. Jumps stand on the feet's cell,
   `floor(y + 0.5)`: `math.round` takes a floor below y 0 into the floor's own cell.
+- **The walk grid** (Round 74): `build.py` writes each template's grid
+  (`tools/expedition_templates/walkgrid.py`, [format](expedition-template-format.md));
+  `template.lua` reads it, `navigation.lua` makes one `walkgrid.lua` grid per template at
+  load (`tpl.walkgrid`) and installs grug_nav's Expedition backend `mobs.grug_nav.grid`
+  (`view(self)`: the grid of the mob's live run, by `_grug_expedition` and its home;
+  `path`; `line`) and the evade guide through `grug_mobs.register_evade_guide`. A world
+  position becomes a cell by subtracting the run's `minp`; the door is read live at its
+  place. Fields are kept per template, home cell, body class and door state for the
+  server's life (16 KB each). A failed grid search counts its reason in
+  `mobs.grug_nav.counters` (`grid_off_start`, `grid_off_goal`, `grid_no_way`). The
+  guide's instant way home (no grid way) is `grug_mobs.place_on_ground` with the
+  velocity stopped and `nav.forget`, as `packs.lua`'s jump. A template change rebuilds
+  its grid with `build.py`; `tools/r74_nav` proves it.
 - **Adding an Expedition:** a source in `tools/expedition_templates/sources/` and
   `build.py` ([format](expedition-template-format.md); `t.dig` for ore, written with the
   T2 ore and gem: a run's tier swaps them, `catalogue.TIERS`); a catalogue row with its

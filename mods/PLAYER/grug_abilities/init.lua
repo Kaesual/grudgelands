@@ -1260,13 +1260,31 @@ end
 -- The cooldown overlay on the hotbar (classes.md "The cooldown overlay"):
 -- arm_cooldown and reset_charge hand it their records, it draws them on the
 -- skill's hotbar slot and drops them when they run out. It never writes the
--- inventory.
+-- inventory. Since Round 74 it also covers the cast skills the action clock
+-- holds back (occupy_casts and arm_cast_interval report each block) and
+-- marks the cast a press keeps waiting (input.lua).
 local cooldown_hud = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/cooldown_hud.lua")({
 	math = dofile(core.get_modpath(core.get_current_modname()) ..
 		"/cooldown_math.lua"),
 	ability_of = function(itemname)
 		local def = item_defs[itemname]
+		if not def then return nil end
+		return def.cooldown_key, def.kind == "cast"
+	end,
+	-- The us time before which the action clock or the cast interval under
+	-- `key` holds a cast back (in the past when nothing does): the same
+	-- clocks cast_refusal reads for "busy" and "interval". Read-only.
+	cast_block = function(player, key)
+		local name = player:get_player_name()
+		local until_us = cast_clock[name] or 0
+		local records = cast_intervals[name]
+		local next_cast = records and records[key]
+		if next_cast and next_cast > until_us then until_us = next_cast end
+		return until_us
+	end,
+	waiting = function(player)
+		local def = grug_abilities.input and grug_abilities.input.waiting(player)
 		return def and def.cooldown_key
 	end,
 })
@@ -1343,6 +1361,7 @@ local function arm_cast_interval(player, def)
 	local seconds = clock_seconds(def.cast_interval, player, def)
 	local late = carried_lateness(cast_intervals[name][def.cooldown_key], now, seconds)
 	cast_intervals[name][def.cooldown_key] = now + (seconds - late) * 1e6
+	cooldown_hud.block(player, cast_intervals[name][def.cooldown_key])
 	return late
 end
 
@@ -1358,11 +1377,24 @@ local function occupy_casts(player, seconds, late)
 	late = math.min(late or 0, seconds * 0.5)
 	cast_clock[name] = math.max(cast_clock[name] or 0,
 		core.get_us_time() + (seconds - late) * 1e6)
+	cooldown_hud.block(player, cast_clock[name])
 end
 
 local function cast_clock_ready(player)
 	local until_us = cast_clock[player:get_player_name()]
 	return not until_us or core.get_us_time() >= until_us
+end
+
+-- Seconds until neither the action clock nor def's own cast interval holds
+-- a cast of def back (0 when nothing does): how long a press refused for
+-- "busy" or "interval" may wait (input.lua, Round 74 CAST).
+local function cast_wait(player, def)
+	local name = player:get_player_name()
+	local until_us = cast_clock[name] or 0
+	local records = def.cast_interval and cast_intervals[name]
+	local next_cast = records and records[def.cooldown_key]
+	if next_cast and next_cast > until_us then until_us = next_cast end
+	return math.max(0, (until_us - core.get_us_time()) / 1e6)
 end
 
 -- The cooldown this player's cast actually earns. Same reason as get_range
@@ -3116,6 +3148,8 @@ grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 	-- Refusal messages (nil = go): the input gate asks these before it
 	-- reaches try_cast or the swing, so it reports the reason itself.
 	cast_refusal = cast_refusal,
+	-- How long the clocks still hold a cast of def back (the waiting press).
+	cast_wait = cast_wait,
 	swing_refusal = function(player, def)
 		if not grug_abilities.charge_ready(player, def) then
 			return def.name .. " is not ready."

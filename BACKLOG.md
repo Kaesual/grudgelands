@@ -6,6 +6,49 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 74 — the way home, the waiting cast, the coast (GUI acceptance pending)
+
+Delivered in 0.74.0 (**compatible**)
+([completion and checklist](docs/planning/round74-plan.md#completion-2026-11-10); rules in
+[expeditions.md](docs/design/expeditions.md), [classes.md](docs/design/classes.md) §2b and
+"The cooldown overlay", [mounts.md](docs/design/mounts.md) §3 and §4.1,
+[combat_stats.md](docs/design/combat_stats.md) "The way home" and "The way inside").
+Carry-overs:
+
+- **For the user's GUI test:** the 50 % clock cover live and swing skills without it
+  (`CLOCK_FRAMES` is the knob for smoother steps); the wall traps at 2 s (The Last Mint's own
+  `SHOT_PERIOD` in `last_mint.py` is its knob, apart from The Second Shift); Blink firing
+  late along the look (excluding it by id is the alternative).
+- **Not engine-verified (NAV):** the flue fix (a Lava Flan overrunning a one-node point
+  between two alcoves) and the Flintback teleport in The Stilled Seam, whose cause is a
+  hypothesis (the same overrun; that run had no traces): GUI item 22; trace it if it
+  recurs. The near-point rule gives about 30 % of the guide's answers in The Last Mint
+  (simulated), each one grid search of about 10 µs.
+- **The walk grid (NAV review, theoretical):** a body exactly 1.0 wide (a normal Lava Flan,
+  a Land Guard) passes a one-node gap only centred (the engine's overlap test is strict); The
+  Last Mint has 2 such cells, neither a chokepoint; the test vault's 2.94 elite spider on
+  diagonals likewise. One class-2 move without a shared free 2 x 2 block (The Second Shift,
+  (28,111)–(28,112), no class-2 mob there): `walkgrid.problems` could refuse it, or the
+  class-2 mask require the block.
+- **The overworld evade (TRAIL):** a mob pulled off a ledge or plateau it came up by stairs
+  finds no way round with the trail or the local search and teleports home after 40 s
+  (unchanged; a later rule could search round with a larger padding). The trail walks the way
+  the mob came even where a shorter one exists (ridge: 13.1 s against 11.0 s).
+- **The waiting cast (CAST):** a block pushed further after the press (a longer lock while
+  waiting) still ends the wait with "You are still busy." (a busy time longer than the weapon
+  interval at the press is covered since the review, `cast_wait`). An inventory or another
+  form the client opens on its own sends no server event, so it does not drop the wait.
+- **The clock cover (HUD review):** `init.lua`'s `cast_block` seam reads `records[key]`
+  without the `def.cast_interval` guard of `cast_wait`: a future D8 transformation without a
+  cast interval, sharing its key with a base that has one, would show the base's cover; pass
+  the slot's interval through `ability_of` when one comes. Nothing ships such a pair.
+- **The ride at login (MOUNT):** a server crash runs no teardown, so that rider starts on
+  foot; a refused flyer over a lava lake wider than 9 x 9 is held 30 s, then released where
+  it is (falls); a set-down over ungenerated land emerges up to about 40 blocks once.
+- Closed in the round: the reviews' guide answer/nil flapping (NAV holds its last point
+  2 s), the shallow and lava-blind set-down (MOUNT's fix rounds), the wait expiring before
+  an earlier cast's busy time (CAST's `cast_wait`).
+
 ## Round 73 — the Expedition redesign (GUI acceptance pending)
 
 Delivered in 0.73.0 (**compatible**)
