@@ -121,30 +121,32 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- palette's shutter node leaves the node list, so Dawnmere's and Highcourt's
 -- point digests move too.
 -- 0.75.2: declared map reset; richer authored city decor changes only identities.
+-- 0.75.3: declared map reset; the Expedition Registrar's socket moves to the
+-- great hall door, so every capital's point and build digests move.
 local FROZEN = {
 	highcourt = {"932da00d04f22b23b8067f10bc201c21dcfd92000b99d90b715f85336b47ca5d",
-		"2e2b54fc58e3a2d0962578a8689a5cbc34d3cd011e71864ec11a6fff515213ec",
-		"1b7ecd684a6a6cf97292323d6506a286000a3cdb932f3823238538b26e149ecc"},
+		"c23077576987fa6f6aa5a2a00d1bffeb9278d40667b461023e9e114d107b6540",
+		"f73492aefae6914427a725dd2c25a6438ff9c688bcf16e5c254636d22c9f7097"},
 	-- the next capital
 	dur_brannoc = {"4a5b13758b4270e4451647caaf57bc357fc5da10d8be85aca221d360f2d2bfa2",
-		"324f504a660a49b4520010db998501c0c551f5cf72e799787529b0383fd3ab95",
-		"feed1cbada425805e796ab1a414b5ec1defa246a933596d9a2cca01ad71035ff"},
+		"e9bfaf8fb9181bff72fff6351b54d798513038b07042a225ff2f132e69e44a47",
+		"36056b75e661cc9fa698dae8fb974611fd85f8d3df4119a49a3499f6bcae14ae"},
 	-- the next capital
 	lethariel = {"f440bc14f22bd26487ba0cfd8abcb1e5c09ebd9724242584401ccfa051e584de",
-		"ee4f66aa936205ec417105e20a5e6ada3c8fca60412b6571031212860cc08904",
-		"c85d530560e2b5bbd38e951dd1ff0aef57d7619e6779fcc6db9ae61514da3012"},
+		"3c541fb7ebc542e65a1ac8a05af2c28fd26d9f2baef442826a8b116246cb3a9b",
+		"ab83735460b6dfedeaac9a11f45dde4289bd4a5769e5b1f33f09c6df8e12e820"},
 	-- the next capital
 	nhal_veyr = {"cbc495832932c5a4aca4930e8ef6bc57a46ea3c261d9ff60a57e1bd54271e39b",
-		"fe115147b4c67a6ba90fb75296e071d32f501be417f5671921473b3cd91ef453",
-		"dd5ae86b0b0b55a239971d6b306b73c837f5f36e504d1112c189d5b827e9db22"},
+		"0bdc88e0aa2038d0dfc6502eecad91e3450fb9493d3fab6e21e8540ff951e200",
+		"aebf68cb8411f3c69b155104bdfcb71ce464f59e4ba0b353ab8b72ddb110ef7a"},
 	-- the next capital
 	gor_drazhak = {"1a7681b36f815794d70204a650c943caacf352bd2b3c534433aca6315f9106b7",
-		"3009f018b70a2899e2cb896f274591778a58e9cf77068d6ac986aed59d435016",
-		"3b508e5059918ea573f7513a64536d4402a879996540678870c22c57eeaba34b"},
+		"0cee1c24bbe58065671cfc391598a3ebab867c051c8884716efeb3ca1e3868f8",
+		"75431541e1379a100c0582532f8eab54ccbb628b3650246d60cd04a1a0dcd361"},
 	-- the next capital
 	kezamba = {"41786321777b1f16151a32bd92b8fd06bcbc28d4e9e953c57202230f2b099aab",
-		"6aa6f2972f8d5cde364c0200e85651f46380bd6b192de175cf798146a3f25418",
-		"caca27a71f9ccb83e88323b6e9f2758ae8a94572743788fa9202d8835af43fd3"},
+		"65fa89d788163afa67babeaee93af54a8f5b41aa9c331663a8f498d7f01d2263",
+		"c39b5fec19c51ad999a8b105e81afc5ace07a9881dae02ef2075e5ae6713f6a8"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()

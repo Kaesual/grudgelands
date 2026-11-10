@@ -2,6 +2,14 @@
 
 Updated 2026-11-10. This is the delivery pointer, not another game specification.
 
+**0.75.3 is on main (squash, tag `round-75.3`), not pushed.** The user's request after
+a look at Highcourt: every capital's Expedition Registrar stands outside, a few nodes
+from the great hall door (king's hall, warlord hall, mausoleum), facing the street;
+the waystone stays the arrival point. **Map reset** (joins 0.75.0's; the capitals'
+point and build digests move). r70_cap now checks the hall door distance (≤ 6)
+instead of the waystone's; r36_w, r56_freeze_capitals and the upgrade check pass.
+GUI: the Registrar beside each great hall door.
+
 **0.75.2 / Round 75.2 is merged into main (one squash, tag `round-75.2`)
 and synced to local Luanti, not pushed.**
 The decoration material fix replaces transparent inventory sprites on solid

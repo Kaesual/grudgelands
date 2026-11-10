@@ -743,13 +743,15 @@ complete table directly.
 **Public Expedition Registrar** (user-approved capital polish, 2026-11-10): every
 capital owns one inhabited `expedition_registrar` core socket, with the `idle`
 role and `work` tag until `grug_expeditions/registrar.lua` assigns its service role.
-It stands on the approach to the waystone plaza, outside the reserved arrival pad,
-facing an accessible path. It uses the capital's villager and faction. The clerk
+It stands outside, a few nodes from the capital's great hall door (king's hall,
+warlord hall, mausoleum) beside its approach, facing away from the hall onto an
+accessible path, in plain view (the user, 2026-11-10; until 0.75.3 it stood on
+the approach to the waystone plaza). The waystone stays the arrival point. It uses the capital's villager and faction. The clerk
 inside the guild house is an ordinary resident again. This relocation and the
 building changes require a map reset; there is no live-world socket conversion.
 The compositions own the exact coordinates. The capital geometry fixture checks
 reachability, facing clearance, separation from other sockets and proximity to the
-waystone; the UI fixture checks the service binding and the unchanged clerk.
+great hall door; the UI fixture checks the service binding and the unchanged clerk.
 
 Like every district plot it also publishes `miners_guild/miners_guild_gate_idle`,
 a resident at its gate. The house's `inside` point is the destination

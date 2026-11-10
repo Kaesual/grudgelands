@@ -12,6 +12,13 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.75.3 — the Registrar at the great hall (2026-11-10)
+
+**Map reset** (joins 0.75.0's): the Expedition Registrar of every capital now
+stands outside, a few steps from the door of the great hall (the king's hall, the
+warlord hall, the mausoleum), facing the street, instead of at the waystone
+plaza. The waystone where you arrive and return stays where it was.
+
 ## 0.75.2 — solid decoration surfaces and fuller interiors (2026-11-10)
 
 **Map reset** for the additional city furnishings, joining the planned reset.

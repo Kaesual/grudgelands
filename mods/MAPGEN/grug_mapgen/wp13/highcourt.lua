@@ -690,8 +690,9 @@ local function loader(directory)
 		socket("travel_waypoint", "waypoint",
 			math.floor((PLAZA.x1 + PLAZA.x2) / 2), 1,
 			math.floor((PLAZA.z1 + PLAZA.z2) / 2), 0)
-		-- Public service at the plaza approach, outside the reserved arrival pad.
-		socket("expedition_registrar", "idle", 12, 1, -12, 2, {tags = {"work"}})
+		-- Public service a few nodes outside the {'highcourt': "king's hall", 'dur_brannoc': "king's hall", 'nhal_veyr': 'mausoleum', 'gor_drazhak': 'warlord hall', 'lethariel': "king's hall", 'kezamba': "king's hall"} door, beside its
+		-- approach and facing away from it, in plain view (the user, 2026-11-10).
+		socket("expedition_registrar", "idle", 4, 1, 7, 2, {tags = {"work"}})
 		for _, corner in ipairs(CORNERS) do
 			socket(corner.id, "guard_patrol", corner.x, 1, corner.z,
 				corner.face, {group = WATCH, order = corner.order})

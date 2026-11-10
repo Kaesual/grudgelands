@@ -125,7 +125,7 @@ An Expedition has **one owner: one player or one party**, and an owner has one
 Expedition at a time, until it ends: a run it no longer wants is finished or cancelled
 (§5). Anyone who does not belong to it is teleported out at once.
 
-- **Creating:** at the **Expedition Registrar**, outdoors at a capital's waystone plaza approach
+- **Creating:** at the **Expedition Registrar**, outdoors a few steps from a capital's great hall door
   ([settlements](settlements.md)). It serves its own faction. A party leader creates a
   party-owned Expedition, a player without a party a player-owned one; another party
   member cannot create one. Solo is allowed; the content stays balanced for a group.

@@ -429,9 +429,11 @@ local function capital_tests(capital)
 	local castle = CASTLE[capital]
 	local by_id = {}
 	for _, socket in ipairs(lm.sockets) do by_id[socket.id] = socket end
-	-- Capital polish: the service stands outside the reserved arrival pad, close
-	-- to the waystone, with a standing neighbour in its authored facing. W above
-	-- also verifies its route from the crossing against actual generated geometry.
+	-- Capital polish: the service stands outside the reserved arrival pad, a few
+	-- nodes outside the capital's great hall door (the user, 2026-11-10; it stood
+	-- by the waystone before), with a standing neighbour in its authored facing.
+	-- W above also verifies its route from the crossing against actual generated
+	-- geometry.
 	local registrar, waypoint = by_id.expedition_registrar, by_id.travel_waypoint
 	check(registrar ~= nil and registrar.role == "idle" and registrar.spawn ~= false,
 		"E " .. label .. "one inhabited registrar socket")
@@ -440,8 +442,12 @@ local function capital_tests(capital)
 		check(registrar.x < plaza.min.x - 1 or registrar.x > plaza.max.x + 1 or
 			registrar.z < plaza.min.z - 1 or registrar.z > plaza.max.z + 1,
 			"E " .. label .. "registrar outside arrival plaza including kerb")
-		local dx, dz = registrar.x - waypoint.x, registrar.z - waypoint.z
-		check(dx * dx + dz * dz <= 15 * 15, "E " .. label .. "within 15 nodes of waystone")
+		local door = lm.kings_hall_door or lm.warlord_hall_door
+		local dx, dz
+		if check(door ~= nil, "E " .. label .. "has a great hall door") then
+			dx, dz = registrar.x - door.x, registrar.z - door.z
+			check(dx * dx + dz * dz <= 6 * 6, "E " .. label .. "within 6 nodes of the hall door")
+		end
 		local facing = ({[0] = {0, 1}, {1, 0}, {0, -1}, {-1, 0}})[registrar.face]
 		check(reached(seen, registrar.x + facing[1], registrar.y, registrar.z + facing[2]),
 			"E " .. label .. "faces accessible path")

@@ -1,5 +1,5 @@
 -- The Expedition Registrar (Round 71; docs/planning/round71-expeditions-concept.md
--- sections 4 and 5): the villager at every capital's waystone plaza approach,
+-- sections 4 and 5): the villager outside every capital's great hall door,
 -- its one window and the notices of a run. It only asks and calls
 -- init.lua's interface: every rule and every refusal text are runs.lua's.
 --

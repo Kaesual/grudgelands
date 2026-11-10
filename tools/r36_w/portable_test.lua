@@ -130,12 +130,12 @@ do
 	-- per core. Keep the historical snapshot and compare every other field
 	-- exactly; these literal additions also pin each new position and facing.
 	local registrar = {
-		["highcourt/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
-		["dur_brannoc/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
-		["lethariel/core"] = "expedition_registrar,idle,28,1,-25,0,1",
-		["nhal_veyr/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
-		["gor_drazhak/core"] = "expedition_registrar,idle,12,1,-12,0,-1",
-		["kezamba/core"] = "expedition_registrar,idle,-36,1,-33,0,1",
+		["highcourt/core"] = "expedition_registrar,idle,4,1,7,0,-1",
+		["dur_brannoc/core"] = "expedition_registrar,idle,4,1,7,0,-1",
+		["lethariel/core"] = "expedition_registrar,idle,-16,1,-26,1,0",
+		["nhal_veyr/core"] = "expedition_registrar,idle,4,1,7,0,-1",
+		["gor_drazhak/core"] = "expedition_registrar,idle,-4,1,7,0,-1",
+		["kezamba/core"] = "expedition_registrar,idle,24,1,-15,0,1",
 	}
 	local additions = 0
 	for i = 1, #was do

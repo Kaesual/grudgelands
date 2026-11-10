@@ -132,7 +132,7 @@ for i, location in ipairs(LOCATIONS) do
  grug_core.register_settlement_sockets(location.id, location.race, anchor,
   {{id=location.socket, role="idle", x=0, y=1, z=0, dir={x=0, z=1}},
    {id="travel_waypoint", role="waypoint", x=40, y=1, z=0, dir={x=0, z=1}},
-   -- The Expedition Registrar's own core socket at the waystone plaza (0.73.1).
+   -- The Expedition Registrar's own core socket (0.73.1; at the great hall since 0.75.3).
    {id="expedition_registrar", role="idle", x=2, y=1, z=2, dir={x=1, z=0}, tags={"work"}}})
  STONE[location.id] = vnew(anchor.x + 40, 101, 0)
  cells[key(STONE[location.id])] = "grug_mapgen:waystone"
