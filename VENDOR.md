@@ -1166,6 +1166,13 @@ The recipe surface itself is enforced at every server start by
 
 ## Curated copies -- `mods/ITEMS/grug_decor` (WP13)
 
+Round 75 adds original static furnishings and paintings alongside this harvested
+kit; their provenance is recorded separately in the mod's media ledger. Existing
+xdecor painting IDs now have named motifs and actual inventory previews. The
+separate `grug_displays` wrapper supplies new item-frame behavior; no upstream
+entity or storage implementation was imported.
+
+
 The four `grug_decor` rows above are **not** whole vendored trees. `grug_decor`
 harvests individual **node definitions and media** from four upstream mods and
 ships nothing else: no upstream file is copied verbatim, no upstream global

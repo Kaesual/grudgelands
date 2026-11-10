@@ -12,7 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.74.0, Round 74 (Expeditions close after 30 s, the Deserter's Mark 2 min,
+**Current state:** 0.75.0, Round 75 (decorations for homes and cities: 128 merchant
+offers, cheap Basic frames/stands, functional displays, 16 original paintings,
+2% expedition art rewards, restrained city dressing; **map reset**, no step;
+merged into main as one squash commit, tag `round-75`,
+not pushed, GUI open: [plan](docs/planning/round75-plan.md)), on 0.74.0, Round 74 (Expeditions close after 30 s, the Deserter's Mark 2 min,
 wall traps every 2 s; self skills wait for the action clock, its cover on the hotbar; flight over
 the own and contested coastal belt, the ride restored at login; the evader's trail home and the
 Expeditions' walk grid; compatible, tag `round-74`, not pushed, GUI test open:

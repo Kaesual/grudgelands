@@ -1,0 +1,93 @@
+{
+  "checks": [
+    {
+      "pass": true,
+      "label": "no horizontal overflow 1600"
+    },
+    {
+      "pass": true,
+      "label": "57 item families 1600"
+    },
+    {
+      "pass": true,
+      "label": "515 building/space entries 1600"
+    },
+    {
+      "pass": true,
+      "label": "building detail fits 1600"
+    },
+    {
+      "pass": true,
+      "label": "no horizontal overflow 760"
+    },
+    {
+      "pass": true,
+      "label": "57 item families 760"
+    },
+    {
+      "pass": true,
+      "label": "515 building/space entries 760"
+    },
+    {
+      "pass": true,
+      "label": "building detail fits 760"
+    },
+    {
+      "pass": true,
+      "label": "no horizontal overflow 390"
+    },
+    {
+      "pass": true,
+      "label": "57 item families 390"
+    },
+    {
+      "pass": true,
+      "label": "515 building/space entries 390"
+    },
+    {
+      "pass": true,
+      "label": "building detail fits 390"
+    },
+    {
+      "pass": true,
+      "label": "all 24 city filters"
+    },
+    {
+      "pass": true,
+      "label": "all 515 detail cards and template maps render"
+    },
+    {
+      "pass": true,
+      "label": "empty search state"
+    },
+    {
+      "pass": true,
+      "label": "reset restores every building"
+    },
+    {
+      "pass": true,
+      "label": "existing catalog filter"
+    },
+    {
+      "pass": true,
+      "label": "new catalog filter"
+    },
+    {
+      "pass": true,
+      "label": "crafting catalog filter"
+    },
+    {
+      "pass": true,
+      "label": "building deep link"
+    },
+    {
+      "pass": true,
+      "label": "item deep link clears filters"
+    },
+    {
+      "pass": true,
+      "label": "no JavaScript errors"
+    }
+  ],
+  "errors": []
+}

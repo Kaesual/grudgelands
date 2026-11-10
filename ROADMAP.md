@@ -8,6 +8,10 @@ Earlier delivery narratives are preserved in the
 
 ## Next priorities — Deepening the playable game
 
+The housing-detail pass is implemented in Round 75 and awaits visual acceptance:
+[decorations](docs/design/decorations.md), [checklist](docs/planning/round75-plan.md#6-verification-and-gui-checklist).
+It covers player access and restrained furnishings in our cities.
+
 Presentation milestone awaiting desktop/web acceptance: [Round 64 map icons](docs/planning/round64-plan.md),
 implementing the [atlas rules](docs/design/world_map.md#approved-icon-integration-round-64)
 for readable shared symbols and stable placement. Work status is in

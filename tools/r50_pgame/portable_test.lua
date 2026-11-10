@@ -553,6 +553,51 @@ for name, sizes in pairs(shelf_sizes("mods/BASE/vessels/init.lua",
 		'tier_name("vessels:shelf"', "vessels")) do
 	VENDORED[name] = sizes
 end
+
+-- Round 75 functional displays: derive both the registered names and their
+-- inventory lists from the real node definitions. This deliberately does not
+-- read grug_housing's packing registry, which is the surface checked below.
+local function display_sizes()
+	local path = "mods/PLAYER/grug_displays/nodes.lua"
+	local text = read(path)
+	local function names(block)
+		local body = assert(text:match("local " .. block .. " = {(.-)\n}"),
+			path .. ": missing " .. block)
+		local out = {}
+		for name in body:gmatch('"([%w_]+:[%w_]+)"') do out[#out + 1] = name end
+		return out
+	end
+	local frame_lists = source_sizes(path, "local function construct_frame")
+	local visuals_path = "mods/PLAYER/grug_visuals/compose.lua"
+	local visuals = read(visuals_path)
+	local slots_body = assert(visuals:match("grug_visuals%.SLOTS = {(.-)}"),
+		visuals_path .. ": missing armor slots")
+	local armor_lists = {}
+	for list in slots_body:gmatch('"([%w_]+)"') do armor_lists[list] = 1 end
+	assert(text:find(
+		"for _, slot in ipairs(grug_visuals.SLOTS) do inv:set_size(slot, 1) end",
+		1, true), path .. ": stand constructor no longer uses grug_visuals.SLOTS")
+	local armor_body = assert(text:match(
+		"local armor_rows = {(.-)}\n\nlocal function construct_frame"),
+		path .. ": missing armor rows")
+	assert(next(frame_lists) and next(armor_lists), path .. ": display lists missing")
+	local row_lists = {}
+	for list in armor_body:gmatch('list = "([%w_]+)"') do row_lists[list] = 1 end
+	assert(ser(row_lists) == ser(armor_lists), path .. ": armor UI and constructor slots differ")
+
+	local out = {}
+	for _, name in ipairs(names("FRAME_IDS")) do out[name] = frame_lists end
+	for _, name in ipairs(names("STAND_IDS")) do out[name] = armor_lists end
+	local holder = assert(text:match('M%.WEAPON_HOLDER = "([%w_]+:[%w_]+)"'),
+		path .. ": missing weapon holder")
+	assert(text:find("holder.on_construct = construct_frame", 1, true),
+		path .. ": weapon holder constructor changed")
+	out[holder] = frame_lists
+	return out
+end
+local DISPLAY_SIZES = display_sizes()
+for name, sizes in pairs(DISPLAY_SIZES) do VENDORED[name] = sizes end
+
 local puts = {}
 local function stand_in(name, def)
 	def.description = def.description
@@ -911,6 +956,10 @@ do
 	eq(H.model.claim_count(), 0, "C ...and clears the claims")
 	for name, sizes in pairs(P.CONTAINER_LISTS) do
 		eq(ser(sizes), ser(VENDORED[name]), "C " .. name .. ": the list sizes of its on_construct")
+	end
+	for name, sizes in pairs(DISPLAY_SIZES) do
+		eq(ser(P.CONTAINER_LISTS[name]), ser(sizes),
+			"C " .. name .. ": every registered display is packed with its exact lists")
 	end
 end
 

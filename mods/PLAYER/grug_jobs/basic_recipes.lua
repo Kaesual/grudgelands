@@ -105,6 +105,8 @@ return {
 		{output = "grug_artisans:lacquered_wood", count = 1, ingredients = {{group = "wood", n = 2}, {item = "grug_materials:emberglass", n = 1}}},
 		{output = "grug_artisans:polished_wood", count = 1, ingredients = {{group = "wood", n = 2}, {item = "grug_materials:iron_bar", n = 1}}},
 		{output = "grug_artisans:seasoned_wood", count = 1, ingredients = {{group = "wood", n = 2}}},
+		{output = "grug_decor:xdecor_itemframe", count = 1, ingredients = {{group = "wood", n = 4}}},
+		{output = "grug_displays:armor_stand", count = 1, ingredients = {{group = "wood", n = 6}}},
 		{output = "grug_farming:empty_iron_bucket", count = 1, ingredients = {{item = "grug_materials:iron_bar", n = 3}}},
 		{output = "grug_farming:hoe", count = 1, ingredients = {{group = "wood", n = 2}, {item = "default:stick", n = 2}}},
 		{output = "grug_farming:hoe_abyssal_steel", count = 1, ingredients = {{item = "grug_materials:abyssal_steel_bar", n = 2}, {item = "default:stick", n = 2}}},

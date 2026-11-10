@@ -312,15 +312,12 @@ items without one:
   hour of band-6 income, **1g 48s** (`grug_traders.CROWN_FEE`, checked by
   `income.py`). Once per item, only below item level 70; a King's or a
   dragon's drop is refused.
-- **Culture vendor** (Round 33, [item_tiers.md](item_tiers.md) §6.4): the
-  Decor Merchant at the gate of every capital's woodcarver hall sells
-  cosmetic blocks and lights nobody can craft — accent blocks 25c (marble,
-  marble tile, serpentine, slate tile, old red sandstone brick, basalt brick,
-  chalked brick, paving stone, round and square glass, wooden frame, iron
-  grille), small lights 1s (lantern), large lights 10s (hanging lantern),
-  showpieces 1g (wagon wheel, four paintings) — at every level, with the
-  ordinary 5 % buy-back. All are grug_decor's harvested kit, licensed per
-  file in its `LICENSE-media.md`.
+- **Culture vendor** (Round 75, [decorations.md](decorations.md)): the
+  Decor Merchant at every capital's woodcarver hall sells household details,
+  building accents, lights, special displays and art at fixed prices with the
+  ordinary 5% buy-back. Small details cost copper; elaborate fixtures and art
+  cost silver or gold. The Wagon Wheel costs 2s. Simple frames/stands are Basic
+  crafts, and expedition paintings are exclusive Reward Chest drops.
 - **Postage** (Round 48, [mail.md](mail.md)): **5c** per letter to another
   player plus **30c per attached stack**, up to four stacks (35c, 65c, 95c,
   125c); mail to the admin is free. A small, steady sink at the mailboxes;

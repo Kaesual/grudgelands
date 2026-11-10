@@ -12,6 +12,25 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.75.0 — details for homes and cities (2026-11-10)
+
+**Map reset:** city furnishings appear in regenerated buildings. Characters and
+existing items keep their IDs; there is no separate migration step.
+
+- **A fuller Decoration Merchant:** 128 offers, including tables, shelves,
+  cushions, flowers, affordable household details, workshop props, rugs and
+  varied lights. The Wagon Wheel now costs **2 silver**.
+- **Display what you own:** craft a simple Item Frame from **4 wood planks** or
+  an Armor Stand from **6**. Special frames and stands and a wall weapon holder
+  are sold. Displayed gear keeps its metadata and survives saving and claim packing.
+- **Original wall art:** 16 Grudgelands paintings, with small and large formats,
+  actual inventory previews and a local motif gallery. Three expedition motifs
+  are exclusive **2% personal Reward Chest drops**, one chance per run.
+- **Lived-in cities:** restrained role-specific details in starts, capital cores
+  and districts and peaceful regional villages. Doors, services and royal combat
+  space stay clear; gates and other quiet spaces remain undressed. City props
+  are static and provide no loot.
+
 ## 0.74.0 — the way home, the waiting cast, the coast (2026-11-10)
 
 Compatible: no map reset, no new world, nothing for the host to do.

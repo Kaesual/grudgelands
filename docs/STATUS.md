@@ -2,6 +2,18 @@
 
 Updated 2026-11-10. This is the delivery pointer, not another game specification.
 
+**0.75.0 / Round 75 is merged into main as one squash commit, not pushed.**
+The tag `round-75` preserves the reviewed round history. It includes
+main's completed Round 74 commit `59da1e93`. The [Round 75 plan](planning/round75-plan.md)
+records reviews, integration checks and the open desktop/web checklist. The
+[decoration design](design/decorations.md) owns the rules; the
+[local art gallery](../tools/r75_art/index.html) contains the 16 original motifs.
+**Map reset**, no migration step, joining the user's planned production reset.
+Production was not changed; no game sync or reset was run. Independent reviews
+and integration checks passed (344 fixtures covered, with eight updated legacy
+fixtures passing their targeted rerun). GUI acceptance and the final art choice
+remain open.
+
 **0.74.0 / Round 74 is complete on `round74` (every lane merged, lane D done); it lands on
 main as one squash commit (tag `round-74`), not pushed; the GUI test is open.** Play fixes
 after the user's play of 0.73.1 (rulings 2026-11-10,

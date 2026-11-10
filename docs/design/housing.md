@@ -14,6 +14,9 @@ A player places one fuelled **Claim Stone** and owns the land around it for
 as long as the stone burns. There are no private islands, royal land grants
 or guild land.
 
+Household furnishings, functional displays and their reset packing are specified
+in [decorations.md](decorations.md).
+
 ## 1. The claim
 
 - A claim is exactly **101 × 101 nodes** in x/z, ±50 around the Claim Stone

@@ -613,13 +613,27 @@ for _, item in ipairs(items_json) do known[item.id] = true end
 for name in read_file("mods/ENTITIES/grug_mobs/items.lua"):gmatch('material%("([%w_]+)"') do
 	known["grug_mobs:" .. name] = true
 end
+local PAINTING = "grug_decor:painting_stilled_seam"
+local painting_registered = false
+for _, art in ipairs(dofile(repo .. "/mods/ITEMS/grug_decor/paintings_catalog.lua")) do
+	painting_registered = painting_registered or
+		("grug_decor:painting_" .. art.id == PAINTING and art.expedition == "stilled_seam")
+end
+check(painting_registered, "J the painting is registered for this Expedition")
+local painting_row
+for _, entry in ipairs(tbl.materials) do
+	if entry.item == PAINTING then painting_row = entry end
+end
+check(painting_row and painting_row.min == 1 and painting_row.max == 1 and
+	painting_row.chance == 2, "J the registered painting is a single 2% reward")
 local BAND_ONLY = {["grug_mobs:coarse_spider_silk"] = {21, 30},
 	["grug_mobs:layered_spider_web"] = {31, 40}, ["grug_mobs:glass_spider_silk"] = {51, 69}}
 for level = row.level, row.max_level do
 	local got = {}
 	for _, entry in ipairs(L.plan(tbl, level, function(lo) return lo end, {5, 15})) do
 		if entry.item then
-			check(known[entry.item], "J a registered material: " .. entry.item)
+			check(known[entry.item] or entry.item == PAINTING,
+				"J a registered material or the Expedition painting: " .. entry.item)
 			got[entry.item] = true
 		end
 	end

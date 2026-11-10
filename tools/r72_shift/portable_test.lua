@@ -124,13 +124,27 @@ local BAND = {
 	{60, 69, "grug_mobs:unquiet_bone", "grug_mobs:salt_cured_flesh"},
 }
 local items_json = read_file("mods/ENTITIES/grug_mobs/data/items.json")
+local PAINTING = "grug_decor:painting_second_shift"
+local painting_registered = false
+for _, art in ipairs(dofile(repo .. "/mods/ITEMS/grug_decor/paintings_catalog.lua")) do
+	painting_registered = painting_registered or
+		("grug_decor:painting_" .. art.id == PAINTING and art.expedition == ID)
+end
+check(painting_registered, "B the painting is registered for this Expedition")
+local painting_row
+for _, entry in ipairs(tbl.materials) do
+	if entry.item == PAINTING then painting_row = entry end
+end
+check(painting_row and painting_row.min == 1 and painting_row.max == 1 and
+	painting_row.chance == 2, "B the registered painting is a single 2% reward")
 for level = 40, 69 do
 	local plan = L.plan(tbl, level, function(lo) return lo end, {5, 15})
 	local got, gear, coins = {}, 0, 0
 	for _, entry in ipairs(plan) do
 		if entry.item then
 			got[entry.item] = entry.count
-			check(items_json:find('"id": "' .. entry.item .. '"', 1, true), "B a registered material " .. entry.item)
+			check(items_json:find('"id": "' .. entry.item .. '"', 1, true) or entry.item == PAINTING,
+				"B a registered material or the Expedition painting " .. entry.item)
 			check(not entry.item:find("ore") and not entry.item:find("crystal"), "B no ore")
 		end
 		if entry.quality then gear = gear + 1 end

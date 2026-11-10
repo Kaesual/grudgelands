@@ -360,15 +360,17 @@ local painting_box = {
 	wall_side = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
 }
 
+-- GRUG PATCH: named motifs and their own previews; stable existing node IDs.
+local painting_titles = {"River and Hills", "The Old Orchard", "Red Roofs", "Evening Village"}
 for i = 1, 4 do
 	local image = tex("painting_" .. i)
 	core.register_node("grug_decor:xdecor_painting_" .. i, {
-		description = "Painting " .. i,
+		description = painting_titles[i] .. " (Painting)",
 		drawtype = "nodebox",
 		tiles = {image, image .. "^[transformR180", image},
 		use_texture_alpha = "opaque",
-		inventory_image = tex("painting_empty"),
-		wield_image = tex("painting_empty"),
+		inventory_image = image,
+		wield_image = image,
 		paramtype = "light",
 		paramtype2 = "wallmounted",
 		wallmounted_rotate_vertical = true,

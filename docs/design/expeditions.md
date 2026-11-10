@@ -631,3 +631,8 @@ route, the packs, the boss, the lake, the press, the traps, the ore, the door an
   come on top.
 - **Quest:** "Party: The Last Mint" at level 60, from the six guild leaders: kill Duewarden
   once, at any of its levels.
+
+
+The three expedition-specific paintings are exclusive 2% personal Reward Chest
+rolls; see [decorations.md](decorations.md#original-wall-art) for their access and
+formats. The normal per-player, per-run reward cache applies.

@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""Generate the small multi-material furnishing OBJ meshes.
+
+The Lua nodeboxes remain the single source of collision and selection bounds.
+This generator reads those cuboids, assigns whole components to texture slots,
+and writes explicit 0..1 UVs for every face. Run with --check in verification.
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+from pathlib import Path
+
+
+COMPONENT_SLOTS = {
+    "bread_board": [0, 1, 1],
+    "meal_platter": [0, 1, 1, 1],
+    "fruit_basket": [0, 0, 0, 1],
+    "vegetable_basket": [0, 0, 0, 1],
+    "sack_grain": [0, 0, 1],
+    "crate_vegetables": [0, 0, 0, 1],
+    "crate_fish": [0, 0, 0, 1],
+    "crate_meat": [0, 0, 0, 1],
+    "crate_ore": [0, 0, 0, 1],
+    "tool_board": [0, 1, 1, 1, 1],
+    "material_ore": [0, 0, 1, 1],
+    "material_metal": [0, 0, 1, 1],
+    "material_gems": [0, 0, 1, 1],
+    "candle_group": [0, 0, 0, 1, 1, 1],
+    "sconce_iron": [0, 0, 0, 1, 2],
+    "sconce_wood": [0, 0, 0, 1, 2],
+    "chandelier": [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2],
+    "fire_basket": [0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 2],
+    "hearth": [0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 2],
+    "wall_shelf_filled": [0, 0, 0, 1, 1, 1],
+    "planter": [0, 0, 1, 1, 1, 1],
+    "hanging_plant": [0, 0, 0, 1, 1, 1],
+    # Slot 0 is cloth/rod; slot 1 receives the complete heraldry image.
+    "tapestry_accord": [1, 0],
+    "tapestry_throng": [1, 0],
+    "display_armor": [0, 0, 1, 1, 1],
+    "display_weapon": [0, 0, 0, 0, 1, 1, 1],
+}
+
+RUGS = {"rug_red", "rug_green", "rug_blue", "runner_red", "runner_blue"}
+NUMBER = re.compile(r"-?(?:\d+(?:\.\d*)?|\.\d+)")
+
+
+def balanced(text: str, start: int) -> str:
+    depth = 0
+    for index in range(start, len(text)):
+        if text[index] == "{":
+            depth += 1
+        elif text[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start : index + 1]
+    raise ValueError("unterminated Lua table")
+
+
+def boxes_for(text: str, item_id: str) -> list[tuple[float, ...]]:
+    marker = f'id = "{item_id}"'
+    item_start = text.index(marker)
+    boxes_start = text.index("boxes =", item_start)
+    brace = text.index("{", boxes_start)
+    values = [float(value) for value in NUMBER.findall(balanced(text, brace))]
+    if len(values) % 6:
+        raise ValueError(f"{item_id}: geometry is not a list of cuboids")
+    return [tuple(values[index : index + 6]) for index in range(0, len(values), 6)]
+
+
+def patterned_rug(bounds: tuple[float, ...]) -> tuple[list[tuple[float, ...]], list[int]]:
+    x1, y1, z1, x2, y2, z2 = bounds
+    border = 0.065
+    boxes = [
+        (x1 + border, y1, z1 + border, x2 - border, y2, z2 - border),
+        (x1, y1, z1, x2, y2, z1 + border),
+        (x1, y1, z2 - border, x2, y2, z2),
+        (x1, y1, z1 + border, x1 + border, y2, z2 - border),
+        (x2 - border, y1, z1 + border, x2, y2, z2 - border),
+    ]
+    return boxes, [0, 1, 1, 1, 1]
+
+
+def emit_face(
+    lines: list[str],
+    vertices: tuple[tuple[float, float, float], ...],
+    normal: tuple[int, int, int],
+    offset: int,
+) -> int:
+    # Luanti's Irrlicht OBJ loader negates every vertex/normal X coordinate and
+    # reverses face indices while converting handedness. Store the inverse
+    # transform so runtime geometry and asymmetric texture motifs retain the
+    # authored node-space orientation.
+    for x, y, z in vertices:
+        lines.append(f"v {-x:.6f} {y:.6f} {z:.6f}")
+    lines.extend(("vt 0.000000 0.000000", "vt 1.000000 0.000000",
+                  "vt 1.000000 1.000000", "vt 0.000000 1.000000"))
+    a = offset + 1
+    normal_index = offset // 4 + 1
+    lines.append(f"vn {-normal[0]} {normal[1]} {normal[2]}")
+    lines.append(f"f {a + 2}/{a + 2}/{normal_index} {a + 1}/{a + 1}/{normal_index} {a}/{a}/{normal_index}")
+    lines.append(f"f {a + 3}/{a + 3}/{normal_index} {a + 2}/{a + 2}/{normal_index} {a}/{a}/{normal_index}")
+    return offset + 4
+
+
+def emit_box(lines: list[str], box: tuple[float, ...], offset: int) -> int:
+    x1, y1, z1, x2, y2, z2 = box
+    faces = (
+        (((x1, y1, z1), (x1, y1, z2), (x1, y2, z2), (x1, y2, z1)), (-1, 0, 0)),
+        (((x2, y1, z2), (x2, y1, z1), (x2, y2, z1), (x2, y2, z2)), (1, 0, 0)),
+        (((x1, y1, z2), (x2, y1, z2), (x2, y2, z2), (x1, y2, z2)), (0, 0, 1)),
+        (((x2, y1, z1), (x1, y1, z1), (x1, y2, z1), (x2, y2, z1)), (0, 0, -1)),
+        (((x1, y2, z2), (x2, y2, z2), (x2, y2, z1), (x1, y2, z1)), (0, 1, 0)),
+        (((x1, y1, z1), (x2, y1, z1), (x2, y1, z2), (x1, y1, z2)), (0, -1, 0)),
+    )
+    for face, normal in faces:
+        offset = emit_face(lines, face, normal, offset)
+    return offset
+
+
+def obj_for(item_id: str, boxes: list[tuple[float, ...]], slots: list[int]) -> str:
+    if len(boxes) != len(slots):
+        raise ValueError(f"{item_id}: {len(boxes)} cuboids but {len(slots)} slot assignments")
+    lines = ["# Generated by tools/r75_furnish/generate_meshes.py",
+             "# Precompensated for Luanti OBJ loader X reflection", f"o {item_id}"]
+    offset = 0
+    for slot in range(max(slots) + 1):
+        lines.extend((f"g texture_slot_{slot}", f"usemtl texture_slot_{slot}"))
+        for box, assigned in zip(boxes, slots):
+            if assigned == slot:
+                offset = emit_box(lines, box, offset)
+    return "\n".join(lines) + "\n"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true")
+    parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[2])
+    args = parser.parse_args()
+    source = (args.repo / "mods/ITEMS/grug_decor/furnishings.lua").read_text()
+    output = args.repo / "mods/ITEMS/grug_decor/models"
+    changed = []
+    for item_id in sorted(set(COMPONENT_SLOTS) | RUGS):
+        boxes = boxes_for(source, item_id)
+        if item_id in RUGS:
+            boxes, slots = patterned_rug(boxes[0])
+        else:
+            slots = COMPONENT_SLOTS[item_id]
+        content = obj_for(item_id, boxes, slots)
+        path = output / f"grug_decor_furnish_{item_id}.obj"
+        if not path.exists() or path.read_text() != content:
+            changed.append(path)
+            if not args.check:
+                path.write_text(content)
+    if changed and args.check:
+        for path in changed:
+            print(f"out of date: {path.relative_to(args.repo)}")
+        return 1
+    print(f"R75 FURNISH MESHES {'CURRENT' if args.check else 'GENERATED'} count={len(COMPONENT_SLOTS) + len(RUGS)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

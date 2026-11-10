@@ -160,6 +160,44 @@ local PARAM2_KIND = {
 	-- the one place this library writes that family down.
 }
 
+-- Round 75's drop-less static city clones keep the source nodes' orientation
+-- contract. The list is explicit because the `city_` namespace also contains
+-- full cubes whose facedir is only a pinned texture alignment and must remain
+-- NONE. Furnishings, displays, one-node paintings and the four cloned shelves,
+-- frame and bench deliberately face the room with upright facedir.
+for _, suffix in ipairs({
+	"plate_wood", "plate_ceramic", "bowl_wood", "bowl_ceramic", "jug", "mug",
+	"bread_board", "meal_platter", "fruit_basket", "vegetable_basket",
+	"sack_closed", "sack_grain", "crate_vegetables", "crate_fish", "crate_meat",
+	"crate_ore", "wicker_basket", "wicker_tray", "book_stack", "book_open",
+	"lectern", "writing_set", "scroll", "scroll_bundle", "map_sheet",
+	"alchemy_set", "herb_bundle", "tool_board", "material_ore", "material_metal",
+	"material_gems", "cloth_rolls", "yarn", "leather_bundle", "fur_bundle",
+	"rope_coil", "oar", "candle_bundle", "wax_bowl", "candle_group",
+	"sconce_iron", "sconce_wood", "chandelier", "fire_basket", "hearth",
+	"rug_red", "rug_green", "rug_blue", "runner_red", "runner_blue",
+	"wall_shelf", "wall_shelf_filled", "planter", "hanging_plant",
+	"tapestry_accord", "tapestry_throng", "display_armor", "display_weapon",
+	"xdecor_itemframe", "xdecor_empty_shelf", "cottages_shelf", "cottages_bench",
+	"cottages_barrel_lying", "cottages_barrel_lying_open", "cottages_straw_mat",
+	"cottages_table", "cottages_washing", "cottages_window_shutter_closed",
+	"cottages_window_shutter_open", "xdecor_barrel", "xdecor_cauldron",
+	"xdecor_chair", "xdecor_cushion", "xdecor_cushion_block", "xdecor_stonepath",
+	"xdecor_table", "xdecor_workbench",
+}) do PARAM2_KIND["grug_decor:city_" .. suffix] = M.FACEDIR end
+for _, suffix in ipairs({"highcourt", "dur_brannoc", "lethariel", "gor_drazhak",
+	"kezamba", "nhal_veyr", "silverwood", "marsh", "savanna", "still_life",
+	"stilled_seam", "second_shift", "last_mint", "charter", "tavern", "trade_map"}) do
+	PARAM2_KIND["grug_decor:city_painting_" .. suffix] = M.FACEDIR
+end
+-- These older source nodes are wallmounted rather than facedir. They are not
+-- in the initial catalog, but their guaranteed static clones retain that
+-- contract if an authored city row uses them later.
+for _, suffix in ipairs({"xdecor_candle", "cottages_wagon_wheel", "xdecor_ivy",
+	"xdecor_curtain", "xdecor_curtain_open"}) do
+	PARAM2_KIND["grug_decor:city_" .. suffix] = M.WALLMOUNTED
+end
+
 -- The SHAPED family: stairs and slabs, the only nodes whose `on_place` can
 -- turn them upside down (`rotate_and_place`, mods/BASE/stairs/init.lua). It
 -- is not a third answer to a question asked elsewhere: it is the same two

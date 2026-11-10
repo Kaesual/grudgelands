@@ -379,7 +379,16 @@ for kind in pairs(grug_traders.profession_stock) do
 end
 eq(kinds, 13, "thirteen profession shelves")
 for kind, expected_items in pairs(SHELVES) do
-	eq(items(grug_traders.profession_stock[kind] or {}), sorted(expected_items), kind .. " shelf")
+	local shelf = grug_traders.profession_stock[kind] or {}
+	if kind == "culture" then
+		-- Round 75 expands this shelf; its catalog/access contract is tested in r75_art.
+		eq(#shelf, 128, "expanded culture shelf")
+		local present = {}
+		for _, row in ipairs(shelf) do present[row.item] = true end
+		for _, item in ipairs(expected_items) do check(present[item], "old decor remains: " .. item) end
+	else
+		eq(items(shelf), sorted(expected_items), kind .. " shelf")
+	end
 end
 -- A supply registered for every vendor reaches every trade's shelf; the
 -- Decor Merchant carries none.

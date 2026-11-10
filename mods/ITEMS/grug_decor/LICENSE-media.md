@@ -1,6 +1,6 @@
 # Media Origin & Licenses (grug_decor)
 
-All media in this mod is a **verbatim copy** of an upstream file, **renamed** to
+The harvested media in sections 1–10 is a **verbatim copy** of an upstream file, **renamed** to
 `grug_decor_<source>_<original>` so that nothing collides with another mod's
 media namespace. No file is retinted, rescaled or otherwise edited; "rename
 only" in the tables below is literal.
@@ -218,3 +218,77 @@ xdecor-libre's `LICENSE.txt` declares `Textures: CC0 (credits: Gambit, kilbith, 
 | `grug_decor_xdecor_xdecor_cauldron_bottom.png` | `textures/xdecor_cauldron_bottom.png` @ `43a7753` | Gambit / kilbith / Cisoun / Wuzzy (xdecor-libre) | CC0 1.0 | rename only |
 | `grug_decor_xdecor_xdecor_cauldron_sides.png` | `textures/xdecor_cauldron_sides.png` @ `43a7753` | Gambit / kilbith / Cisoun / Wuzzy (xdecor-libre) | CC0 1.0 | rename only |
 | `grug_decor_xdecor_xdecor_empty_shelf.png` | `textures/xdecor_empty_shelf.png` @ `43a7753` | Gambit / kilbith / Cisoun / Wuzzy (xdecor-libre) | CC0 1.0 | rename only |
+
+
+## 11. Round 75 original paintings and authored geometry
+
+Original art created for Grudgelands with OpenAI's built-in image generation
+tool on 2026-11-10, with no reference images. To the extent rights exist, the
+project dedicates these originals and its authored geometry to CC0-1.0.
+Prompts and full original outputs are preserved in `tools/r75_art/` at the
+repository root. `build.py` performs only mechanical resizing and mesh baking.
+
+| Shipped file | Original source / generator | License | Modification |
+|---|---|---|---|
+| `textures/grug_decor_painting_highcourt.png` | `tools/r75_art/source/highcourt.png`; prompt `tools/r75_art/prompts/highcourt.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_dur_brannoc.png` | `tools/r75_art/source/dur_brannoc.png`; prompt `tools/r75_art/prompts/dur_brannoc.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_lethariel.png` | `tools/r75_art/source/lethariel.png`; prompt `tools/r75_art/prompts/lethariel.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_gor_drazhak.png` | `tools/r75_art/source/gor_drazhak.png`; prompt `tools/r75_art/prompts/gor_drazhak.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_kezamba.png` | `tools/r75_art/source/kezamba.png`; prompt `tools/r75_art/prompts/kezamba.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_nhal_veyr.png` | `tools/r75_art/source/nhal_veyr.png`; prompt `tools/r75_art/prompts/nhal_veyr.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_silverwood.png` | `tools/r75_art/source/silverwood.png`; prompt `tools/r75_art/prompts/silverwood.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_marsh.png` | `tools/r75_art/source/marsh.png`; prompt `tools/r75_art/prompts/marsh.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_savanna.png` | `tools/r75_art/source/savanna.png`; prompt `tools/r75_art/prompts/savanna.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_still_life.png` | `tools/r75_art/source/still_life.png`; prompt `tools/r75_art/prompts/still_life.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_stilled_seam.png` | `tools/r75_art/source/stilled_seam.png`; prompt `tools/r75_art/prompts/stilled_seam.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_second_shift.png` | `tools/r75_art/source/second_shift.png`; prompt `tools/r75_art/prompts/second_shift.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_last_mint.png` | `tools/r75_art/source/last_mint.png`; prompt `tools/r75_art/prompts/last_mint.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_charter.png` | `tools/r75_art/source/charter.png`; prompt `tools/r75_art/prompts/charter.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_tavern.png` | `tools/r75_art/source/tavern.png`; prompt `tools/r75_art/prompts/tavern.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `textures/grug_decor_painting_trade_map.png` | `tools/r75_art/source/trade_map.png`; prompt `tools/r75_art/prompts/trade_map.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
+| `models/grug_decor_painting_1.obj` | `tools/r75_art/build.py`; original frame geometry | CC0-1.0 | generated; OBJ handedness compensated |
+| `models/grug_decor_painting_2.obj` | `tools/r75_art/build.py`; original frame geometry | CC0-1.0 | generated; OBJ handedness compensated |
+| `models/grug_decor_furnish_bread_board.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_candle_group.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_chandelier.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_crate_fish.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_crate_meat.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_crate_ore.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_crate_vegetables.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_display_armor.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_display_weapon.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_fire_basket.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_fruit_basket.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_hanging_plant.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_hearth.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_material_gems.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_material_metal.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_material_ore.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_meal_platter.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_planter.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_rug_blue.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_rug_green.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_rug_red.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_runner_blue.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_runner_red.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_sack_grain.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_sconce_iron.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_sconce_wood.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_tapestry_accord.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_tapestry_throng.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_tool_board.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_vegetable_basket.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_wall_shelf_filled.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+
+Furnishings reuse existing shipped texture names without copying or editing the
+source files. Texture modifiers are runtime color tints. Media ownership remains:
+
+- `default_*.png`: `mods/BASE/default/LICENSE-media.md`.
+- `grug_decor_xdecor_*.png` and `grug_decor_cottages_*.png`: sections above.
+- `grug_cooking_*.png`: `mods/ITEMS/grug_cooking/LICENSE-media.md`.
+- `mobs_meat_raw.png`: `mods/ENTITIES/mobs/license.txt`.
+- `grug_gathering_sunleaf_plant.png`: `mods/ITEMS/grug_gathering/LICENSE-media.md`.
+- `grug_mapgen_faction_banner_*.png`: `mods/MAPGEN/grug_mapgen/LICENSE-media.md`.
+
+The mesh uses separate material slots: wood, cloth, leaves, wax, light and
+products keep their own surfaces. No unverified reference-project media was added.

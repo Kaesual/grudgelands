@@ -8,6 +8,9 @@
 -- route made is `added` with its ingredient list. The file is Lua: a loop
 -- may add a family of edits.
 local edits = {
+	-- Round 75: simple displays are affordable Basic crafts; no metal or job gate.
+	{output = "grug_decor:xdecor_itemframe", count = 1, added = {{group = "wood", n = 4}}},
+	{output = "grug_displays:armor_stand", count = 1, added = {{group = "wood", n = 6}}},
 	-- Round 46 ruling 4: 10 torches per coal or charcoal (4 per coal before);
 	-- the coal supply is solved by torches, not by more coal. One recipe for
 	-- both (lane ID, the user's request of 2026-10-12): the coal row goes,

@@ -98,6 +98,11 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.75.0** adds affordable household details, functional item frames and armor
+stands, original wall art and restrained city furnishings. The three expedition
+paintings are exclusive rare Reward Chest drops. **Map reset**; merged into main,
+not pushed, GUI acceptance pending. [Details and checklist](docs/planning/round75-plan.md).
+
 **0.74.0** lets self and support skills wait for your swing and fire instead of being
 refused, shows on the hotbar when the next cast can start, opens the coastal water in front
 of your own and contested land to flyers, brings your mount or boat back at login, and
@@ -493,7 +498,7 @@ investigations and delivery records.
 | Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses, combat state, boss resets and friend and foe nametags; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit; [Miner's Guild](docs/design/miners_guild.md): mining camps, lifts, reputation and the guild's goods. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags, crafting stations and the approved UI presentation rules; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
-| Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
+| Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes; [decorations](docs/design/decorations.md): household details, functional displays and original wall art. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [Expeditions](docs/design/expeditions.md): repeatable group content beyond the map, its levels, owners, packs, traps, ambushes and lava falls, and rewards, and the Expeditions tab on waystones; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers, including the shared Round 64 icons and bounded placement. |
 | Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |

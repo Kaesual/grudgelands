@@ -114,28 +114,30 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- capital's new digests again; each capital lane pins its own; since 0.73.1 (a
 -- declared map reset: royal halls, gate arches, thin tables, the Registrar's own
 -- core socket) every capital's new digests again.
+-- Round 75: declared map reset; restrained city dressing changes cell identities.
+-- Source blueprints and their point/build digests stay unchanged.
 local FROZEN = {
-	highcourt = {"0099e19afd63996550564f6858bcc5a6a9bdc692f6cf532744cee2e0b1e878ff",
+	highcourt = {"ca939cf8fdb72cda839b264355cc98144d1dbad5d1df3797615e60fcc23b487c",
 		"75987f959c83754997215511b9e1abd909403b386d5ca42eb06bf658aeff6e54",
 		"584216a4572a61625b9b6e6162ee2e16cdf3fdfbe970530fedb9557684752e01"},
 	-- the next capital
-	dur_brannoc = {"6b2ccaba03e0e411d5f5bb8d52e2077e72f8ee814f8918082ce5b49d7cb5abcf",
+	dur_brannoc = {"3428803a15cd0d7118aa29a64cc186499a787548fb86cf58c84e95c0fd00c197",
 		"324f504a660a49b4520010db998501c0c551f5cf72e799787529b0383fd3ab95",
 		"f4f5659b66ae7a190e55ff9ebf0936c712ab371480e9efb314f993537ede5e01"},
 	-- the next capital
-	lethariel = {"5e94d0920ddb3592cdb767194bb26de2e58325047433c05b781297b18e72b0ea",
+	lethariel = {"02d24abf92f7f5bf97ebf8ede9ad01af5f8757d887165cde4ab67ddb5bf3ca91",
 		"ee4f66aa936205ec417105e20a5e6ada3c8fca60412b6571031212860cc08904",
 		"277e703bf7bb0d732e5ad1785c4e556c37b439088f4b783f9b492357263d3830"},
 	-- the next capital
-	nhal_veyr = {"c94ff0dcf83c95347d57f01f067a1749a310e6e125360e7af66951fe112aec69",
+	nhal_veyr = {"628dffe0b7b23ceec298c87b6c90e970e65551f7efe8f4e3bdf9bd2b29f08576",
 		"fe115147b4c67a6ba90fb75296e071d32f501be417f5671921473b3cd91ef453",
 		"8b09fc6bc372f300b1564deeb2a5151e234a9fd5ac3d7b2cef471dd928625a5e"},
 	-- the next capital
-	gor_drazhak = {"cff5b1c293760344c742582fc74be02dcd3d82e7362027a81d5b1018ea62e305",
+	gor_drazhak = {"73e347f42c42d99335dc1fc3a1827ae61d827173fd77ffe9832d562b2c527ce6",
 		"3009f018b70a2899e2cb896f274591778a58e9cf77068d6ac986aed59d435016",
 		"f4ed37ab1628e3b4e1ebd1db0eaa9795455cfad54b89241d013f560ada28bdd2"},
 	-- the next capital
-	kezamba = {"5cb60822a9fb9de36c69ffb66b3d854d43f2bad67b2f27e7bc887a5df09bd566",
+	kezamba = {"ca41c91f7d4b7bb49292685a972fcb0c61e0e5bc46173171569a6885a21a04ec",
 		"6aa6f2972f8d5cde364c0200e85651f46380bd6b192de175cf798146a3f25418",
 		"d04870ae6e57f69753b28d2f70198b7740d670a6e74d2067c74e113929aed4ce"},
 }

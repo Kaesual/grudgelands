@@ -1,0 +1,98 @@
+[
+  {
+    "id": "highcourt",
+    "title": "Highcourt, After the Rain",
+    "prompt": "prompts/highcourt.txt",
+    "expedition": null
+  },
+  {
+    "id": "dur_brannoc",
+    "title": "The Hearths of Dur Brannoc",
+    "prompt": "prompts/dur_brannoc.txt",
+    "expedition": null
+  },
+  {
+    "id": "lethariel",
+    "title": "Lethariel by the Mere",
+    "prompt": "prompts/lethariel.txt",
+    "expedition": null
+  },
+  {
+    "id": "gor_drazhak",
+    "title": "Gor Drazhak at Dusk",
+    "prompt": "prompts/gor_drazhak.txt",
+    "expedition": null
+  },
+  {
+    "id": "kezamba",
+    "title": "The Walkways of Kezamba",
+    "prompt": "prompts/kezamba.txt",
+    "expedition": null
+  },
+  {
+    "id": "nhal_veyr",
+    "title": "Candles of Nhal Veyr",
+    "prompt": "prompts/nhal_veyr.txt",
+    "expedition": null
+  },
+  {
+    "id": "silverwood",
+    "title": "Silverwood Morning",
+    "prompt": "prompts/silverwood.txt",
+    "expedition": null
+  },
+  {
+    "id": "marsh",
+    "title": "Lanterns over the Fen",
+    "prompt": "prompts/marsh.txt",
+    "expedition": null
+  },
+  {
+    "id": "savanna",
+    "title": "The Long Afternoon",
+    "prompt": "prompts/savanna.txt",
+    "expedition": null
+  },
+  {
+    "id": "still_life",
+    "title": "Bread, Herbs and Clay",
+    "prompt": "prompts/still_life.txt",
+    "expedition": null
+  },
+  {
+    "id": "stilled_seam",
+    "title": "The Quiet Seam",
+    "prompt": "prompts/stilled_seam.txt",
+    "expedition": "stilled_seam"
+  },
+  {
+    "id": "second_shift",
+    "title": "The Ledger Left Open",
+    "prompt": "prompts/second_shift.txt",
+    "expedition": "second_shift"
+  },
+  {
+    "id": "last_mint",
+    "title": "The Last Mint",
+    "prompt": "prompts/last_mint.txt",
+    "expedition": "last_mint"
+  },
+  {
+    "id": "charter",
+    "title": "An Agreement in Stone",
+    "prompt": "prompts/charter.txt",
+    "expedition": null
+  },
+  {
+    "id": "tavern",
+    "title": "The Unpaid Guest",
+    "prompt": "prompts/tavern.txt",
+    "expedition": null
+  },
+  {
+    "id": "trade_map",
+    "title": "A Trader’s Sketch",
+    "prompt": "prompts/trade_map.txt",
+    "expedition": null
+  }
+]

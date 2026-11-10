@@ -36,6 +36,11 @@ local NAME_PATTERNS = {"leather", "linen", "cloth", "silk", "pelt", "hide",
 	"_bar$", "lump", "ingot", "_ore$", "stone_with_", "^wool:"}
 -- The ruling keeps these (Thread is a job supply; the wools are bed decor).
 local KEPT = {["wool:white"] = "tailor", ["wool:brown"] = "tailor"}
+-- Static representations, not crafting materials; actual registry/group checks still apply.
+local DECOR_NAMES = {
+	["grug_decor:crate_ore"] = true, ["grug_decor:material_ore"] = true,
+	["grug_decor:cloth_rolls"] = true, ["grug_decor:leather_bundle"] = true,
+}
 
 local function material_reason(item, sets)
 	if sets.ore[item] then return "ore/mined resource" end
@@ -46,6 +51,7 @@ local function material_reason(item, sets)
 	end
 	-- Equipment (the gear tab's leather and cloth armour) is no material.
 	if core.get_item_group(item, "grug_gear") > 0 then return nil end
+	if DECOR_NAMES[item] then return nil end
 	for _, p in ipairs(NAME_PATTERNS) do
 		if item:find(p) then return "name ~ " .. p end
 	end

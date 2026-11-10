@@ -486,7 +486,7 @@ before Round 33.
 | 4 | Pitted Crab Shell | 2/2/0 | regular | enchant Armor suffix | 0.8 | — |
 | 4 | Storm Feather | 2/1/0 | common | enchant Int suffix; enchant Mana suffix | 2.5 | — |
 | 4 | Veined Core | 0/0/0 | none | sell-only: no regular source (one unique elite); no longer drops (Round 46) | 0.0 | — |
-| 4 | Warpack Fang | 3/2/0 | common | enchant Str suffix; enchant Speed suffix | 2.0 | — |
+| 4 | Warpack Fang | 2/2/0 | common | enchant Str suffix; enchant Speed suffix | 2.0 | — |
 | 5 | Ash Feather | 0/0/2 | scarce | enchant Int suffix; enchant Dodge suffix | 2.2 | — |
 | 5 | Clenched Jaw | 0/0/2 | regular | enchant Str prefix; enchant Crit prefix; enchant Armor suffix | 3.2 | enchant |
 | 5 | Scorch Venom | 0/0/2 | regular | enchant Speed suffix | 0.5 | — |
@@ -678,9 +678,9 @@ eight King kills, next to Master Riding's five hours.
 <!-- generated: crown -->
 | Sink | Rule | Price (today's band-6 income) | Price (after) |
 |---|---|---:|---:|
-| Crown fee (option 1) | 30 min of band-6 income | 83s | 84s |
-| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 65s | 1g 67s |
-| Crown fee (option 3) | 2 h of band-6 income | 3g 30s | 3g 34s |
+| Crown fee (option 1) | 30 min of band-6 income | 80s | 81s |
+| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 61s | 1g 63s |
+| Crown fee (option 3) | 2 h of band-6 income | 3g 21s | 3g 25s |
 <!-- end generated -->
 
 ## 5. Potions and elixirs
@@ -808,31 +808,21 @@ too), which sell for about 3–15 minutes of the band's income:
 | Tier | One level: one own material (bar … setting) | A whole tier (+9 levels) | Minutes of the band's income |
 |---:|---|---:|---:|
 | T1 | 0c–2c | up to 18c | 5.3 |
-| T2 | 1c–10c | up to 90c | 12.1 |
-| T3 | 2c–26c | up to 2s 34c | 13.4 |
-| T4 | 2c–28c | up to 2s 52c | 5.9 |
-| T5 | 4c–80c | up to 7s 20c | 6.2 |
-| T6 | 40c–82c | up to 7s 38c | 2.7 |
+| T2 | 1c–10c | up to 90c | 12.3 |
+| T3 | 2c–26c | up to 2s 34c | 14.4 |
+| T4 | 2c–28c | up to 2s 52c | 6.1 |
+| T5 | 4c–80c | up to 7s 20c | 6.6 |
+| T6 | 40c–82c | up to 7s 38c | 2.8 |
 <!-- end generated -->
 
 ### 6.4 The culture vendor
 
-One culture vendor in every capital sells cosmetic, non-craftable blocks and
-lights (plan §2.6); the items as built are listed in
-[economy.md](economy.md) §4 (the Decor Merchant). Fixed prices,
-the same at every level, ordinary vendor rules (5 % buy-back):
-
-| Band | Kinds | Price each | Band-6 income time |
-|---|---|---:|---:|
-| Accent blocks | tiles, carved or polished stone, panels, glass accents | 25c | 6 s |
-| Small lights | candles, small lanterns, table lamps | 1s | 25 s |
-| Large lights | hanging lanterns, chandeliers, braziers, lamp posts | 10s | 4 min |
-| Showpieces | statues, banners, large carved or woven pieces | 1g | 41 min |
-
-*Rationale:* accents and candles stay affordable from the first levels; a
-decorated house (about 300 accents, 20 small and 10 large lights, 5
-showpieces) costs about 7g, some five hours of band-6 income, like Master
-Riding.
+One culture vendor in every capital sells affordable household details,
+cosmetic building accents, special displays and wall art. The complete access
+and price design lives in [decorations.md](decorations.md); the ordered runtime
+shelf is `grug_traders/stock.lua`. Fixed prices do not scale with player level;
+ordinary vendor rules, including 5% buy-back, apply. Simple frames and armor
+stands are inexpensive Basic crafts. Expedition paintings are reward-only.
 
 ### 6.5 Income before and after
 
@@ -847,11 +837,11 @@ column shows a player in gold gear). Mount and respec prices move by less than
 | Band | Net/h today | Gear sales/h | Repair/h today | Repair/h new (blue) | Repair/h new (gold) | Net/h after (blue) | Change | Repair share today → after (blue / gold) |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
 | 1 → 10 | 2s 5c | 8c | 4c | 18c | 36c | 1s 99c | -2.9 % | 1.7 % → 8.2 % / 16.5 % |
-| 10 → 20 | 4s 45c | 17c | 6c | 29c | 57c | 4s 39c | -1.4 % | 1.3 % → 6.1 % / 12.3 % |
-| 20 → 30 | 10s 45c | 35c | 11c | 53c | 1s 6c | 10s 37c | -0.7 % | 1.0 % → 4.8 % / 9.7 % |
-| 30 → 40 | 25s 74c | 85c | 21c | 1s 5c | 2s 11c | 25s 75c | +0.0 % | 0.8 % → 3.9 % / 7.9 % |
-| 40 → 50 | 69s 42c | 1s 94c | 40c | 1s 99c | 3s 98c | 69s 76c | +0.5 % | 0.6 % → 2.8 % / 5.6 % |
-| 50 → 60 | 1g 65s 4c | 5s 67c | 87c | 4s 35c | 8s 71c | 1g 67s 23c | +1.3 % | 0.5 % → 2.5 % / 5.1 % |
+| 10 → 20 | 4s 39c | 16c | 5c | 27c | 54c | 4s 33c | -1.3 % | 1.2 % → 5.9 % / 11.8 % |
+| 20 → 30 | 9s 78c | 29c | 9c | 44c | 88c | 9s 71c | -0.6 % | 0.9 % → 4.3 % / 8.7 % |
+| 30 → 40 | 24s 88c | 70c | 17c | 87c | 1s 74c | 24s 89c | +0.0 % | 0.7 % → 3.4 % / 6.8 % |
+| 40 → 50 | 65s 57c | 1s 67c | 34c | 1s 72c | 3s 44c | 65s 87c | +0.5 % | 0.5 % → 2.5 % / 5.1 % |
+| 50 → 60 | 1g 60s 54c | 5s 57c | 86c | 4s 28c | 8s 56c | 1g 62s 69c | +1.3 % | 0.5 % → 2.6 % / 5.1 % |
 <!-- end generated -->
 
 ## Appendix A: the models

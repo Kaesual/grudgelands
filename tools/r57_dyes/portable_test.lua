@@ -16,9 +16,9 @@
 --      (the base wool vendors sell; no mob drops wool), the dye and wool
 --      recipes make all 15 dyes and all 15 wools;
 --   O  nothing else changed: the dye rows are exactly the six plain sources
---      and the 19 vendored mixes, and the catalog has 240 rows (ALLOY's 235
+--      and the 19 vendored mixes, and the catalog has 242 rows (ALLOY's 235
 --      and these four, less Round 67 CRAFT's nine, plus CONTAINERS' 8 - 1,
---      plus Round 68 SIGNS' three).
+--      plus Round 68 SIGNS' three and Round 75's two basic displays).
 -- Prints "R57 DYES PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -165,8 +165,9 @@ end
 eq(seen, 25, "O 25 dye rows")
 -- Round 67 rulings 12-13: the three stem planks and the six rods went;
 -- Round 67 CONTAINERS: +8 container tier rows, -1 chest + Iron Bar row;
--- Round 68 SIGNS: +3 (standing sign, waypost, notice board).
-eq(#catalog.recipes, 240, "O the catalog has 240 rows")
+-- Round 68 SIGNS: +3 (standing sign, waypost, notice board);
+-- Round 75: +2 (basic item frame and armor stand).
+eq(#catalog.recipes, 242, "O the catalog has 242 rows")
 
 if failures > 0 then
 	error(("R57 DYES PORTABLE FAIL failures=%d checks=%d"):format(failures, checks), 0)

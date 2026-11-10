@@ -6,6 +6,14 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 75 — decorations for homes and cities (GUI acceptance pending)
+
+Implementation is merged into main on the completed Round 74 baseline;
+reviewed history is preserved by `round-75`. Not pushed. Design: [decorations.md](docs/design/decorations.md). Remaining acceptance:
+[desktop/web checklist and art gallery](docs/planning/round75-plan.md#6-verification-and-gui-checklist).
+No implementation family from the approved E01–E20 / N01–N32 / A01–A05 list is deferred.
+Map-reset declaration joins the planned deployment; no production reset was run.
+
 ## Round 74 — the way home, the waiting cast, the coast (GUI acceptance pending)
 
 Delivered in 0.74.0 (**compatible**)

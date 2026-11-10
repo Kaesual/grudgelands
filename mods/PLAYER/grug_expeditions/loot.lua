@@ -5,7 +5,7 @@
 -- A table: `gear` {quality, chance} rows (quality 1 white, 2 blue, 3 gold, at the run's
 -- level as the item level), `coin_bags` {factor, chance} rows (a bag of `factor`
 -- times a kill's coin bag at the run's level), `materials` {item, min, max, chance}
--- rows, with `level = {lo, hi}` when a row holds only for some run levels.
+-- fixed-item rows (including decorative rewards), with `level = {lo, hi}` when a row holds only for some run levels.
 -- `chance` is percent, 100 when left out. Ores and gems never: nodes are their
 -- only source (concept section 7); M.check refuses them at load.
 local M = {}
@@ -30,6 +30,8 @@ M.TABLES = {
 		gear = {{quality = 2}, {quality = 3, chance = 25}},
 		coin_bags = {{factor = 10}},
 		materials = {
+			-- Independent cosmetic roll, cached with this player's chest for the run.
+			{item = "grug_decor:painting_stilled_seam", min = 1, max = 1, chance = 2},
 			{item = "grug_mobs:spider_silk", min = 3, max = 5},
 			{item = "grug_mobs:coarse_spider_silk", min = 1, max = 2, level = {21, 30}},
 			{item = "grug_mobs:venom_gland", min = 1, max = 2, chance = 50},
@@ -47,6 +49,8 @@ M.TABLES = {
 		gear = {{quality = 2}, {quality = 3, chance = 25}},
 		coin_bags = {{factor = 10}},
 		materials = {
+			-- Independent cosmetic roll, cached with this player's chest for the run.
+			{item = "grug_decor:painting_second_shift", min = 1, max = 1, chance = 2},
 			{item = "grug_mobs:marching_bone", min = 3, max = 5, level = {40, 49}},
 			{item = "grug_mobs:leathery_flesh", min = 1, max = 2, level = {40, 49}},
 			{item = "grug_mobs:siege_bone", min = 3, max = 5, level = {50, 59}},
@@ -63,6 +67,8 @@ M.TABLES = {
 		gear = {{quality = 2}, {quality = 3, chance = 25}},
 		coin_bags = {{factor = 10}},
 		materials = {
+			-- Independent cosmetic roll, cached with this player's chest for the run.
+			{item = "grug_decor:painting_last_mint", min = 1, max = 1, chance = 2},
 			{item = "grug_mobs:stone_core", min = 3, max = 5},
 			{item = "grug_mobs:slime_gel", min = 1, max = 2},
 		},

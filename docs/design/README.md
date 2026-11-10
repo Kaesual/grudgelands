@@ -24,6 +24,10 @@ see [AGENTS.md](../../AGENTS.md#release-mode).
 
 ## Documents
 
+[Decorations](decorations.md): affordable furnishings, functional displays,
+original paintings, expedition art rewards and restrained city dressing.
+
+
 | File | Scope | Status |
 |------|-------|--------|
 | [`crafting_equipment_revision.md`](crafting_equipment_revision.md) | Redirect: the 2026-09-21 workspace, enchanting and equipment rules now live in `inventory_equipment.md` §4, `professions.md` §1.5, `items_crafting.md` §3.0.3 and §6b, and `durability_repair.md`. | **redirect** (Round 37). |

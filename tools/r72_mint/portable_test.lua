@@ -821,6 +821,19 @@ local known = {}
 for name in read_file("mods/ENTITIES/grug_mobs/items.lua"):gmatch('material%("([%w_]+)"') do
 	known["grug_mobs:" .. name] = true
 end
+local PAINTING = "grug_decor:painting_last_mint"
+local painting_registered = false
+for _, art in ipairs(dofile(repo .. "/mods/ITEMS/grug_decor/paintings_catalog.lua")) do
+	painting_registered = painting_registered or
+		("grug_decor:painting_" .. art.id == PAINTING and art.expedition == ID)
+end
+check(painting_registered, "B the painting is registered for this Expedition")
+local painting_row
+for _, entry in ipairs(tbl.materials) do
+	if entry.item == PAINTING then painting_row = entry end
+end
+check(painting_row and painting_row.min == 1 and painting_row.max == 1 and
+	painting_row.chance == 2, "B the registered painting is a single 2% reward")
 for _, level in ipairs({60, 65, 69}) do
 	local plan = L.plan(tbl, level, function(lo) return lo end, {80, 240})
 	local gear, coins, items = {}, 0, {}
@@ -828,7 +841,8 @@ for _, level in ipairs({60, 65, 69}) do
 		if entry.quality then gear[#gear + 1] = entry.quality end
 		if entry.copper then coins = coins + entry.copper end
 		if entry.item then
-			check(known[entry.item] and not ORE_ITEMS[entry.item], "B a material, no ore: " .. entry.item)
+			check((known[entry.item] or entry.item == PAINTING) and not ORE_ITEMS[entry.item],
+				"B a material or the Expedition painting, no ore: " .. entry.item)
 			items[entry.item] = entry.count
 		end
 	end

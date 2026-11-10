@@ -75,10 +75,16 @@ end
 local NAME_PATTERNS = {"leather", "linen", "cloth", "silk", "pelt", "hide", "_bar$",
 	"lump", "ingot", "_ore$", "stone_with_", "^wool:"}
 local KEPT = {["wool:white"] = "tailor", ["wool:brown"] = "tailor"}
+-- Static representations, not crafting materials; actual registry/group checks still apply.
+local DECOR_NAMES = {
+	["grug_decor:crate_ore"] = true, ["grug_decor:material_ore"] = true,
+	["grug_decor:cloth_rolls"] = true, ["grug_decor:leather_bundle"] = true,
+}
 local function material(item, shelf, gear)
 	if KEPT[item] == shelf then return nil end
 	if forbidden[item] then return forbidden[item] end
 	if gear then return nil end
+	if DECOR_NAMES[item] and shelf == "culture" then return nil end
 	for _, pattern in ipairs(NAME_PATTERNS) do
 		if item:find(pattern) then return "name ~ " .. pattern end
 	end

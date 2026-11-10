@@ -65,6 +65,7 @@ if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapge
 local round20_catalog = dofile(module_dir.."/r20_poi_catalog.lua")
 local pvp_catalog = dofile(module_dir.."/r31_pvp_catalog.lua")
 local camp_catalog = dofile(module_dir.."/r58_camp_catalog.lua")
+local city_decor = dofile(module_dir.."/city_decor.lua")(module_dir)
 local plot_approach = dofile(module_dir.."/../wp13/plot_approach.lua")
 local approach_palettes = dofile(module_dir.."/../wp13/palette.lua")
 local parts = dofile(module_dir.."/../wp13/parts.lua")
@@ -867,12 +868,17 @@ end
 -- the palette and the landmarks (the NPC sockets among them). The cells of a
 -- LAZY settlement are dropped here and rebuilt on the first mapchunk that
 -- touches the blueprint; an eager settlement keeps them.
+local function build_blueprint(profile, descriptor)
+	return city_decor.apply(profile.key, descriptor.plot_id or descriptor.id,
+		descriptor.build())
+end
+
 local function prepare_one(profile, descriptor, raw_sha256, fail)
 	local prepared
 	if descriptor.kind == "overlay" then
 		prepared = prepare_city(fail, descriptor, descriptor.overlay)
 	else
-		prepared = prepare_cells(fail, descriptor, descriptor.build())
+		prepared = prepare_cells(fail, descriptor, build_blueprint(profile, descriptor))
 	end
 	local digest = raw_sha256(prepared.identity_bytes)
 	if type(digest) ~= "string" or #digest ~= 32 then
@@ -1053,7 +1059,7 @@ function M.anchor_cells(profile, source, identity_sha256, anchor, raw_sha256)
 	if #descriptors ~= 1 or descriptor.kind ~= "anchor" or (descriptor.turns or 0) ~= 0 then
 		fail("the anchor cells need one anchor-relative blueprint")
 	end
-	local rebuilt = prepare_cells(fail, descriptor, descriptor.build())
+	local rebuilt = prepare_cells(fail, descriptor, build_blueprint(profile, descriptor))
 	if hex(raw_sha256(rebuilt.identity_bytes)) ~= identity_sha256 then
 		fail(descriptor.id .. ": the rebuild differs from its published identity")
 	end
@@ -1433,7 +1439,7 @@ function M.config(prepared, content, raw_sha256)
 			if not source_cells then
 				metrics.build_calls = metrics.build_calls + 1
 				local rebuilt = prepare_cells(fail, state.descriptor,
-					state.descriptor.build())
+					build_blueprint(profile, state.descriptor))
 				if hex(raw_sha256(rebuilt.identity_bytes)) ~=
 						state.blueprint.identity.sha256 then
 					fail(state.descriptor.id ..

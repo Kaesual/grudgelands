@@ -20,7 +20,7 @@
 --      one Fallen Crown are taken together with the crowned item written,
 --      or nothing changes (no crown, not enough money, a changed item, the
 --      operation's refusal, no operation at all);
---   G. the Decor Merchant's shelf: grug_decor items in the four price bands,
+--   G. the Decor Merchant's shelf: decorations and displays at fixed prices,
 --      no profession supplies, 5 % buy-back; both capital services in every
 --      capital's service plots.
 --
@@ -234,11 +234,14 @@ do
 		not source:find("* 1.5)", 1, true), "B ability, heal and melee crits share x2")
 	-- Every kit file (Round 53: round K's class files come and go).
 	local kits = read_file("mods/PLAYER/grug_abilities/scout.lua")
-	local pipe = assert(io.popen("ls " .. ROOT .. "/mods/PLAYER/grug_abilities/kits*.lua"))
-	for line in pipe:lines() do
-		kits = kits .. read_file("mods/PLAYER/grug_abilities/" .. line:match("([^/]+)$"))
+	local loader = read_file("mods/PLAYER/grug_abilities/kits.lua")
+	kits = kits .. loader
+	local kit_count = 0
+	for file in loader:gmatch('"/(kits_[%w_]+%.lua)"') do
+		kits = kits .. read_file("mods/PLAYER/grug_abilities/" .. file)
+		kit_count = kit_count + 1
 	end
-	pipe:close()
+	check(kit_count > 0, "B the kit loader exposes its class files")
 	check(not kits:find("math.floor(power / 2)", 1, true) and
 		not kits:find("math.floor(\n\t\t\t\t\tgrug_classes.get_spell_power_bonus", 1, true),
 		"B no early floor of half the spell power")
@@ -690,9 +693,13 @@ do
 	check(shelf ~= nil and #shelf > 0, "G the culture shelf exists")
 	local bands = {[25] = 0, [100] = 0, [1000] = 0, [10000] = 0}
 	for _, entry in ipairs(shelf or {}) do
-		check(bands[entry.price] ~= nil, "G " .. entry.item .. " is in a price band")
+		-- Round 75: everyday details have individual affordable prices. The four
+		-- original bands remain represented; r75_art owns exact catalog prices.
+		check(entry.price >= 4 and entry.price <= 10000 and entry.price % 1 == 0,
+			"G " .. entry.item .. " has a fixed decoration price")
 		bands[entry.price] = (bands[entry.price] or 0) + 1
-		check(entry.item:find("^grug_decor:") ~= nil, "G " .. entry.item .. " is grug_decor's")
+		check(entry.item:find("^grug_decor:") or entry.item:find("^grug_displays:"),
+			"G " .. entry.item .. " is a decoration or display")
 	end
 	for price, count in pairs(bands) do
 		check(count > 0, "G the " .. price .. "c band has an item")

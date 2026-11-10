@@ -64,6 +64,14 @@ P.CONTAINER_LISTS = {
 	["vessels:shelf"] = {vessels = 32},
 	["vessels:shelf_steel"] = {vessels = 64},
 	["vessels:shelf_abyssal"] = {vessels = 96},
+	["grug_decor:xdecor_itemframe"] = {item = 1},
+	["grug_displays:frame_iron"] = {item = 1},
+	["grug_displays:frame_carved"] = {item = 1},
+	["grug_displays:frame_brass"] = {item = 1},
+	["grug_displays:armor_stand"] = {head = 1, chest = 1, legs = 1, feet = 1},
+	["grug_displays:armor_stand_iron"] = {head = 1, chest = 1, legs = 1, feet = 1},
+	["grug_displays:armor_stand_carved"] = {head = 1, chest = 1, legs = 1, feet = 1},
+	["grug_displays:weapon_holder"] = {item = 1},
 }
 
 -- How many content lines the tooltip names before "and N more".

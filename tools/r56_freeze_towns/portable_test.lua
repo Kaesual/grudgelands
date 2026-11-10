@@ -136,18 +136,20 @@ check(not pcall(templates.sockets, {{id = "b", building = "other"}}, collected()
 -- towns' new values; since 0.73.1 (a declared map reset: thin tables replace the
 -- table_leg/table_top pairs, Dawnmere's inn beds; points unchanged, the
 -- node list moves the point digest) the towns' new values again.
+-- Round 75: declared map reset; restrained city dressing changes cell identities.
+-- Source blueprints and their point/build digests stay unchanged.
 local FROZEN = {
-	hearthpine = {"a0a958b1f05a225ee047636bd2bcaf1cdbbb93f7eff711f3093da0efb355b47a",
+	hearthpine = {"e4fe7e3b3f6bcaacfe47a72d06be734a3a3d810abf388c98aa886071d8dca37a",
 		"72ca455e10241c9bea4328b1a367d932bf3afecd67d3968c1d3d1359bde61bf5"},
-	dawnmere = {"225d637982d74f01324c33708620313dd694e2437cbbe0d1b57df5967c10a225",
+	dawnmere = {"bc145a4b19dd0adfeddef70dfeb59239ef00f20c2d70b4c2cabca6b625cdbdeb",
 		"a7605a229c413263d75ebd442aa139fae10b186bd7e957951afdc1bef009d306"},
-	silverleaf = {"c40ddd34e4e2700d3856685713b8523ab40a1f11e36b4b69fd8517ca7065d635",
+	silverleaf = {"2bc9af3f4a0f050b2f6dc0326e2830ebf44e6f70c332aade291304b5740f4f36",
 		"539aeb053cde71f8362459160f69c07bf6a8727bf81bd36706a1144334f9bfea"},
-	stillgrave = {"f7313aafcce55132bc5df94c52fdcf9d39676e063af6c5e6fceddc44cb5e007c",
+	stillgrave = {"7d45b784beb072fb326c1ea9cb6cfc2387013d726e73c6a8841f5ba2f42b1db3",
 		"9c818115f1656ccb5b6f5b3aa2f77c08362e707d4a8075119eab083e023943c5"},
-	sunscar = {"9f3556fbcaa05b905ec1045fb79362fa63c10f09d9eef21501cdd9f2becf154b",
+	sunscar = {"4de359a7a03bfe446cac6cbf872e02a7746231e11bfe3ee2037b4f71a45b5f67",
 		"2647c4c29010a9ad7d827139c0b30eec414326f886baa4e8380dcfef353ae04d"},
-	kapok = {"04782a60a8f5284c6b420b86a5349ac9a209f105c913da42e0510f5c3488206f",
+	kapok = {"1377263447852043a71542ea78049bb366c23c782b0aaa78a41d3141e54161a9",
 		"eeddeccb546dab30e3955aee0bc75117900810dca32363f56ee36c436f5e9583"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")

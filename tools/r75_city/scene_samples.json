@@ -1,0 +1,1043 @@
+{
+  "alchemy": {
+    "id": "highcourt/district/lore_almonry",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_alchemy_set",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 0,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_book_open",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 1,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_herb_bundle",
+        "param2": 0,
+        "support": "grug_decor:cottages_loam",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": -3,
+        "y": 2,
+        "z": -6
+      }
+    ],
+    "reason": null,
+    "scope": "lore_almonry"
+  },
+  "archive": {
+    "id": "dur_brannoc/district/deep_archive",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_scroll_bundle",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -3,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_writing_set",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -2,
+        "y": 2,
+        "z": 0
+      }
+    ],
+    "reason": null,
+    "scope": "deep_archive"
+  },
+  "armoury": {
+    "id": "sunscar/building/armoury",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_display_armor",
+        "param2": 0,
+        "support": "default:desert_stonebrick",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 31,
+        "y": 7,
+        "z": -6
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_display_weapon",
+        "param2": 0,
+        "support": "default:desert_stonebrick",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 32,
+        "y": 7,
+        "z": -6
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tool_board",
+        "param2": 3,
+        "support": "grug_decor:darkage_adobe",
+        "support_dx": -1,
+        "support_dy": 0,
+        "support_dz": 0,
+        "x": 31,
+        "y": 2,
+        "z": -6
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "barracks": {
+    "id": "highcourt/district/martial_barracks",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_display_armor",
+        "param2": 0,
+        "support": "default:dirt_with_grass",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -11,
+        "y": 1,
+        "z": -13
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_display_weapon",
+        "param2": 0,
+        "support": "default:dirt_with_grass",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -10,
+        "y": 1,
+        "z": -13
+      }
+    ],
+    "reason": null,
+    "scope": "martial_barracks"
+  },
+  "boat": {
+    "id": "r20_anchor_016/building/building_5",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_rope_coil",
+        "param2": 0,
+        "support": "default:cobble",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 3,
+        "y": 1,
+        "z": -10
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "brew": {
+    "id": "hearthpine/building/lagerhouse",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_jug",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 17,
+        "y": 2,
+        "z": 28
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_writing_set",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 18,
+        "y": 2,
+        "z": 28
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "butcher": {
+    "id": "gor_drazhak/district/bazaar_butcher",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_crate_meat",
+        "param2": 0,
+        "support": "default:dirt_with_dry_grass",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -10,
+        "y": 1,
+        "z": -9
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tool_board",
+        "param2": 2,
+        "support": "grug_decor:darkage_adobe",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": -1,
+        "x": -7,
+        "y": 8,
+        "z": -6
+      }
+    ],
+    "reason": null,
+    "scope": "bazaar_butcher"
+  },
+  "candle": {
+    "id": "gor_drazhak/district/bone_candle_court",
+    "placements": [],
+    "reason": "quiet fill space",
+    "scope": "bone_candle_court"
+  },
+  "carver": {
+    "id": "silverleaf/building/bowyer_workshop",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tool_board",
+        "param2": 3,
+        "support": "grug_trees:silverwood_wood",
+        "support_dx": -1,
+        "support_dy": 0,
+        "support_dz": 0,
+        "x": 31,
+        "y": 2,
+        "z": -5
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "colonnade": {
+    "id": "highcourt/core/colonnade_west",
+    "placements": [],
+    "reason": "quiet colonnade",
+    "scope": "core"
+  },
+  "command": {
+    "id": "highcourt/district/martial_muster_hall",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_map_sheet",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -3,
+        "y": 2,
+        "z": -2
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_scroll",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 3,
+        "y": 2,
+        "z": -2
+      }
+    ],
+    "reason": null,
+    "scope": "martial_muster_hall"
+  },
+  "council": {
+    "id": "dawnmere/building/meeting_hall",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_writing_set",
+        "param2": 0,
+        "support": "grug_decor:cottages_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -18,
+        "y": 2,
+        "z": 26
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_painting_trade_map",
+        "param2": 0,
+        "support": "default:wood",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": -20,
+        "y": 2,
+        "z": 13
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "drill": {
+    "id": "highcourt/district/martial_drill_yard",
+    "placements": [],
+    "reason": "quiet drill",
+    "scope": "martial_drill_yard"
+  },
+  "embalmer": {
+    "id": "nhal_veyr/district/vigil_embalmer",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_wax_bowl",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 4,
+        "y": 2,
+        "z": -9
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_scroll",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 6,
+        "y": 2,
+        "z": -9
+      }
+    ],
+    "reason": null,
+    "scope": "vigil_embalmer"
+  },
+  "fish": {
+    "id": "kapok/building/fish_smoker",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_crate_fish",
+        "param2": 0,
+        "support": "default:junglewood",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 25,
+        "y": 3,
+        "z": 23
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_rope_coil",
+        "param2": 0,
+        "support": "default:junglewood",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 26,
+        "y": 3,
+        "z": 23
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_herb_bundle",
+        "param2": 0,
+        "support": "default:junglewood",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": 25,
+        "y": 4,
+        "z": 24
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "garden": {
+    "id": "highcourt/core/orchard_east",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_fruit_basket",
+        "param2": 0,
+        "support": "default:dirt_with_grass",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 11,
+        "y": 1,
+        "z": -45
+      }
+    ],
+    "reason": null,
+    "scope": "core"
+  },
+  "gate": {
+    "id": "highcourt/core/gate_south",
+    "placements": [],
+    "reason": "quiet gate",
+    "scope": "core"
+  },
+  "green": {
+    "id": "highcourt/district/market_grove",
+    "placements": [],
+    "reason": "quiet green",
+    "scope": "market_grove"
+  },
+  "guild": {
+    "id": "highcourt/district/miners_guild",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_material_ore",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 0,
+        "y": 2,
+        "z": -2
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_writing_set",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 0,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_painting_stilled_seam",
+        "param2": 0,
+        "support": "grug_materials:copper_block",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": 7,
+        "y": 2,
+        "z": -8
+      }
+    ],
+    "reason": null,
+    "scope": "miners_guild"
+  },
+  "home": {
+    "id": "dawnmere/building/orchard_cottage",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_plate_wood",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -26,
+        "y": 2,
+        "z": -22
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_book_stack",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -25,
+        "y": 2,
+        "z": -22
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_painting_still_life",
+        "param2": 0,
+        "support": "default:brick",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": -22,
+        "y": 8,
+        "z": -26
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "jewel": {
+    "id": "lethariel/district/mere_lore_hall",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_material_gems",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -4,
+        "y": 2,
+        "z": -5
+      }
+    ],
+    "reason": null,
+    "scope": "mere_lore_hall"
+  },
+  "kitchen": {
+    "id": "highcourt/district/homes_bakehouse",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_bread_board",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 5,
+        "y": 2,
+        "z": -8
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_wall_shelf_filled",
+        "param2": 0,
+        "support": "grug_decor:cottages_loam",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": -3,
+        "y": 2,
+        "z": -7
+      }
+    ],
+    "reason": null,
+    "scope": "homes_bakehouse"
+  },
+  "leather": {
+    "id": "highcourt/district/market_store",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_leather_bundle",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 5,
+        "y": 2,
+        "z": -9
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tool_board",
+        "param2": 0,
+        "support": "grug_decor:cottages_loam",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": -4,
+        "y": 2,
+        "z": -8
+      }
+    ],
+    "reason": null,
+    "scope": "market_store"
+  },
+  "library": {
+    "id": "silverleaf/building/lore_hall",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_book_open",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 23,
+        "y": 2,
+        "z": 27
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_book_stack",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 29,
+        "y": 2,
+        "z": 27
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_candle_group",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 23,
+        "y": 2,
+        "z": 28
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "market": {
+    "id": "silverleaf/building/covered_market",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_fruit_basket",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -39,
+        "y": 2,
+        "z": 0
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_crate_vegetables",
+        "param2": 0,
+        "support": "grug_decor:darkage_slate_tile",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -42,
+        "y": 1,
+        "z": -5
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "royal": {
+    "id": "highcourt/core/kings_hall",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_painting_highcourt",
+        "param2": 3,
+        "support": "default:cobble",
+        "support_dx": -1,
+        "support_dy": 0,
+        "support_dz": 0,
+        "x": -3,
+        "y": 2,
+        "z": 10
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_display_armor",
+        "param2": 0,
+        "support": "grug_decor:castle_stonewall",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -2,
+        "y": 11,
+        "z": 11
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_display_weapon",
+        "param2": 0,
+        "support": "grug_decor:castle_stonewall",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -1,
+        "y": 11,
+        "z": 11
+      }
+    ],
+    "reason": null,
+    "scope": "core"
+  },
+  "ruin": {
+    "id": "stillgrave/building/hollow_ruin",
+    "placements": [],
+    "reason": "quiet ruin",
+    "scope": "blueprint"
+  },
+  "scribe": {
+    "id": "highcourt/district/lore_scriptorium",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_writing_set",
+        "param2": 0,
+        "support": "grug_decor:cottages_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -5,
+        "y": 2,
+        "z": -5
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_scroll_bundle",
+        "param2": 0,
+        "support": "grug_decor:cottages_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 5,
+        "y": 2,
+        "z": -5
+      }
+    ],
+    "reason": null,
+    "scope": "lore_scriptorium"
+  },
+  "shelter": {
+    "id": "gor_drazhak/district/warren_story_fire",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_wicker_basket",
+        "param2": 0,
+        "support": "default:dirt_with_dry_grass",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -10,
+        "y": 1,
+        "z": -10
+      }
+    ],
+    "reason": null,
+    "scope": "warren_story_fire"
+  },
+  "shrine": {
+    "id": "silverleaf/building/moon_shrine",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_candle_group",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -21,
+        "y": 2,
+        "z": 30
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "smith": {
+    "id": "dawnmere/building/smithy",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tool_board",
+        "param2": 3,
+        "support": "default:wood",
+        "support_dx": -1,
+        "support_dy": 0,
+        "support_dz": 0,
+        "x": 25,
+        "y": 2,
+        "z": -5
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_material_metal",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 28,
+        "y": 2,
+        "z": 0
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "stable": {
+    "id": "sunscar/building/beast_pen",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_rope_coil",
+        "param2": 0,
+        "support": "default:desert_cobble",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -49,
+        "y": 1,
+        "z": 1
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "statue": {
+    "id": "highcourt/core/statue",
+    "placements": [],
+    "reason": "quiet statue",
+    "scope": "core"
+  },
+  "store": {
+    "id": "dawnmere/building/great_barn",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_sack_closed",
+        "param2": 0,
+        "support": "grug_decor:cottages_straw_ground",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -29,
+        "y": 1,
+        "z": -5
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_crate_vegetables",
+        "param2": 0,
+        "support": "default:wood",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -28,
+        "y": 1,
+        "z": -5
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "tailor": {
+    "id": "kapok/building/weaver_stilt",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_cloth_rolls",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -35,
+        "y": 6,
+        "z": 11
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "tavern": {
+    "id": "dawnmere/building/harvest_inn",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_plate_ceramic",
+        "param2": 0,
+        "support": "grug_decor:cottages_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 18,
+        "y": 2,
+        "z": 17
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_mug",
+        "param2": 0,
+        "support": "grug_decor:cottages_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 18,
+        "y": 2,
+        "z": 18
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_painting_tavern",
+        "param2": 0,
+        "support": "grug_decor:cottages_loam",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": 14,
+        "y": 2,
+        "z": 13
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "watch": {
+    "id": "dawnmere/building/tollhouse",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_writing_set",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 11,
+        "y": 2,
+        "z": 54
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_display_weapon",
+        "param2": 0,
+        "support": "default:wood",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": 9,
+        "y": 1,
+        "z": 49
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "well": {
+    "id": "highcourt/core/well_court",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_cottages_bench",
+        "param2": 0,
+        "support": "default:brick",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -46,
+        "y": 1,
+        "z": 8
+      }
+    ],
+    "reason": null,
+    "scope": "core"
+  },
+  "workshop": {
+    "id": "hearthpine/building/workyard",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tool_board",
+        "param2": 3,
+        "support": "default:pine_wood",
+        "support_dx": -1,
+        "support_dy": 0,
+        "support_dz": 0,
+        "x": -38,
+        "y": 5,
+        "z": 16
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_material_ore",
+        "param2": 0,
+        "support": "grug_decor:xdecor_table",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -34,
+        "y": 2,
+        "z": 19
+      }
+    ],
+    "reason": null,
+    "scope": "blueprint"
+  },
+  "yard": {
+    "id": "highcourt/core/service_yard",
+    "placements": [
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tool_board",
+        "param2": 3,
+        "support": "default:wood",
+        "support_dx": -1,
+        "support_dy": 0,
+        "support_dz": 0,
+        "x": 34,
+        "y": 5,
+        "z": 8
+      }
+    ],
+    "reason": null,
+    "scope": "core"
+  }
+}
