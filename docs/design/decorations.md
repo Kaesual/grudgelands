@@ -62,6 +62,11 @@ replaced with a compulsory purchase.
 
 Food, materials, sacks, crates and books are **static decorations**. They do not
 provide food, crafting inputs, storage, recipes or another workstation system.
+Closed decorative shapes use complete opaque surface textures, not transparent
+inventory sprites. Paper, bindings, tools and vessel colors have separate
+materials where needed. Only the heraldic cloth silhouettes deliberately clip
+alpha. The [material audit](../../tools/r75_2_materials/README.md) covers the
+new player items and their city copies.
 Lights have constant node light, without flame timers or particle emitters.
 Furniture uses explicit mounting surfaces and stays upright; tabletop and wall
 details do not block walking. Rugs have quiet geometric borders; faction
@@ -120,8 +125,11 @@ world generation selects district plots from it.
 
 Use the building's actual role: food and drink in inns, materials/tools in
 workshops, writing and maps in guild rooms, display equipment in armories and
-barracks. A royal hall has one deliberate painting and at most two equipment
-displays. Wells may receive a missing bench, gardens a basket (the low tabletop
+barracks. Large residential buildings receive a modest second layer, and every
+capital profession-trainer building receives one to three spaced workplace details.
+A royal hall has four wall-mounted art or heraldry accents; all are non-walkable,
+have no collision and leave its combat floor empty. Wells may receive a missing
+bench, gardens a basket (the low tabletop
 basket can also stand upright on a complete ground face), shelters a
 small everyday prop. Gates, statues, ruins, greens, colonnades and drill spaces
 remain quiet. No generic painting on every wall or mug on every table.

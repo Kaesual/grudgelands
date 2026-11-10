@@ -5,7 +5,7 @@ local decor = dofile(wp .. "/city_decor.lua")(wp)
 local catalog = decor.catalog()
 local parts = dofile(wp .. "/../wp13/parts.lua")
 local expected = {
- alchemy={7,14,1},archive={1,2,0},armoury={5,15,0},barracks={7,14,0},boat={2,2,0},brew={3,4,1},butcher={2,4,0},candle={5,0,5},carver={14,10,4},colonnade={12,0,12},command={11,22,0},council={8,14,0},drill={11,0,11},embalmer={1,2,0},fish={4,6,2},garden={22,5,17},gate={19,0,19},green={60,0,60},guild={6,18,0},home={95,243,0},jewel={6,2,4},kitchen={10,14,3},leather={7,11,0},library={3,9,0},market={9,17,0},royal={6,18,0},ruin={7,0,7},scribe={5,10,0},shelter={7,6,1},shrine={21,12,9},smith={15,22,3},stable={13,13,0},statue={7,0,7},store={20,40,0},tailor={7,7,0},tavern={8,24,0},watch={23,37,0},well={15,15,0},workshop={13,14,2},yard={18,3,15},
+ alchemy={7,25,0},archive={1,2,0},armoury={5,15,0},barracks={7,14,0},boat={2,2,0},brew={3,4,1},butcher={2,4,0},candle={5,0,5},carver={14,22,3},colonnade={12,0,12},command={11,22,0},council={8,14,0},drill={11,0,11},embalmer={1,2,0},fish={4,6,2},garden={22,5,17},gate={19,0,19},green={60,0,60},guild={6,18,0},home={95,272,0},jewel={6,16,0},kitchen={10,20,3},leather={7,23,0},library={3,9,0},market={9,17,0},royal={6,24,0},ruin={7,0,7},scribe={5,10,0},shelter={7,6,1},shrine={21,12,9},smith={15,35,3},stable={13,13,0},statue={7,0,7},store={20,40,0},tailor={7,25,0},tavern={8,24,0},watch={23,37,0},well={15,15,0},workshop={13,14,2},yard={18,3,15},
 
 }
 local walls={herb_bundle=true,tool_board=true,oar=true,sconce_iron=true,sconce_wood=true,wall_shelf=true,wall_shelf_filled=true,tapestry_accord=true,tapestry_throng=true}
@@ -62,13 +62,16 @@ for _,scopes in pairs(catalog) do for _,entries in pairs(scopes) do for _,row in
   if suffix:match("^painting_") then painting=painting+1 end
   if suffix=="display_armor" or suffix=="display_weapon" then displays=displays+1 end
  end
- if row.profile=="royal" then assert(painting==1 and displays<=2,row.id..": royal focal set differs") end
+ if row.profile=="royal" then
+  assert(#row.placements==4 and painting==3 and displays==0,
+   row.id..": royal wall-only focal set differs")
+ end
  if row.profile=="barracks" or row.profile=="armoury" then assert(displays>=2,row.id..": martial displays missing") end
  if row.profile=="well" then for _,p in ipairs(row.placements) do assert(p.node=="grug_decor:city_cottages_bench",row.id..": well family") end end
  if row.profile=="garden" then for _,p in ipairs(row.placements) do assert(p.node=="grug_decor:city_fruit_basket",row.id..": garden family") end end
  if row.profile=="shelter" then for _,p in ipairs(row.placements) do assert(p.node=="grug_decor:city_wicker_basket",row.id..": shelter family") end end
 end end end
-assert(rows==515 and placements==649 and zero==183,"CITY exact totals differ")
+assert(rows==515 and placements==770 and zero==177,"CITY exact totals differ")
 for profile,want in pairs(expected) do local got=assert(counts[profile],"missing profile "..profile);for i=1,3 do assert(got[i]==want[i],profile..": exact count differs") end end
 local caps=dofile(wp.."/r7_capital_blueprint.lua")
 if caps.CAPITALS[city] then local kit=caps.kit(city);decor.apply(city,"core",kit.core.build(),true);for _,plot in ipairs(kit.plots) do decor.apply(city,plot.id,plot.build(),true) end

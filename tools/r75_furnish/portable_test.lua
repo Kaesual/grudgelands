@@ -178,7 +178,8 @@ local mesh_ids = {
 	"sconce_wood", "chandelier", "fire_basket", "hearth", "rug_red", "rug_green",
 	"rug_blue", "runner_red", "runner_blue", "wall_shelf_filled", "planter",
 	"hanging_plant", "tapestry_accord", "tapestry_throng", "display_armor",
-	"display_weapon",
+	"display_weapon", "book_stack", "book_open", "writing_set", "scroll_bundle",
+	"map_sheet", "alchemy_set", "herb_bundle",
 }
 local expected_mesh = {}
 for _, suffix in ipairs(mesh_ids) do expected_mesh["grug_decor:" .. suffix] = true end
@@ -241,7 +242,7 @@ for _, suffix in ipairs({"tapestry_accord", "tapestry_throng"}) do
 	local height = banner.max_y - banner.min_y
 	check(math.abs(width * 2 - height) < 0.000001, "heraldry preserves 1:2 aspect " .. suffix)
 end
-local tools = mesh_bounds["grug_decor:tool_board"][1]
+local tools = mesh_bounds["grug_decor:tool_board"][2]
 eq(tools.min_x, -0.28, "asymmetric tool geometry keeps runtime left edge")
 eq(tools.max_x, 0.34, "asymmetric tool geometry keeps runtime right edge")
 

@@ -1,0 +1,19 @@
+return {
+ bounds={min={x=-2,y=0,z=-2},max={x=11,y=3,z=2}},
+ landmarks={
+  ["alchemy_set"]={min={x=0,y=1,z=0},max={x=0,y=1,z=0}},
+  ["writing_set"]={min={x=3,y=1,z=0},max={x=3,y=1,z=0}},
+  ["scroll_bundle"]={min={x=6,y=1,z=0},max={x=6,y=1,z=0}},
+  ["tool_board"]={min={x=9,y=1,z=0},max={x=9,y=1,z=0}},
+ },
+ cells={
+  {x=0,y=1,z=0,name="grug_decor:alchemy_set",param2=0},
+  {x=0,y=0,z=0,name="default:stonebrick",param2=0},
+  {x=3,y=1,z=0,name="grug_decor:writing_set",param2=0},
+  {x=3,y=0,z=0,name="default:stonebrick",param2=0},
+  {x=6,y=1,z=0,name="grug_decor:scroll_bundle",param2=0},
+  {x=6,y=0,z=0,name="default:stonebrick",param2=0},
+  {x=9,y=1,z=0,name="grug_decor:tool_board",param2=0},
+  {x=9,y=0,z=0,name="default:stonebrick",param2=0},
+ },
+}

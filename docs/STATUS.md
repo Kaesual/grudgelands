@@ -2,6 +2,16 @@
 
 Updated 2026-11-10. This is the delivery pointer, not another game specification.
 
+**0.75.2 / Round 75.2 is merged into main (one squash, tag `round-75.2`)
+and synced to local Luanti, not pushed.**
+The decoration material fix replaces transparent inventory sprites on solid
+props; the full material audit includes player items and city copies. Larger
+homes and profession-trainer buildings receive more details; royal halls use
+only non-colliding wall accents. **Map reset**, no migration step. Independent
+reviews are MERGE; all 344 fixtures, the 194-definition material audit and
+final engine boot passed. Evidence is in [the fix plan](planning/round75.2-plan.md).
+Desktop/web GUI acceptance remains open. Not pushed; production unchanged.
+
 **0.75.1 is on main (squash, tag `round-75.1`), not pushed.** Two look fixes after the
 user's first walk through 0.75.0: the chimney-cap slab that hung over the workbench (the
 anvil and the other races' benches) in 21 workshop templates (22 slabs) is gone, and the human

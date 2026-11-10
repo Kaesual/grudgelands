@@ -98,6 +98,11 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.75.2** fixes decoration surfaces and fills out larger houses and profession
+workshops. Royal halls gain wall art without new combat obstacles. **Map reset**;
+merged into main and synced locally, not pushed; GUI acceptance pending.
+[Fix checklist](docs/planning/round75.2-plan.md).
+
 **0.75.0** adds affordable household details, functional item frames and armor
 stands, original wall art and restrained city furnishings. The three expedition
 paintings are exclusive rare Reward Chest drops. **Map reset**; merged into main,

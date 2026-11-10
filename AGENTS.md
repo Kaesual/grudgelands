@@ -12,7 +12,11 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.75.0, Round 75 (decorations for homes and cities: 128 merchant
+**Current state:** 0.75.2, Round 75.2 (solid decoration surfaces, fuller houses
+and profession-trainer rooms, non-colliding royal wall art; **map reset**, no
+step; merged into main, tag `round-75.2`, synced locally, not pushed; GUI open:
+[plan](docs/planning/round75.2-plan.md)), on 0.75.1 (tidier workshops and open human
+windows; **map reset**, tag `round-75.1`, not pushed), on 0.75.0, Round 75 (decorations for homes and cities: 128 merchant
 offers, cheap Basic frames/stands, functional displays, 16 original paintings,
 2% expedition art rewards, restrained city dressing; **map reset**, no step;
 merged into main as one squash commit, tag `round-75`,

@@ -6,6 +6,13 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 75.2 — decoration corrections (GUI acceptance pending)
+
+Material and city follow-ups from the first playtest are reviewed, tested,
+merged into main and synced locally; not pushed. User acceptance covers the corrected props,
+larger houses, profession trainers and obstacle-free royal halls:
+[fix plan](docs/planning/round75.2-plan.md). No new gameplay systems or prices.
+
 ## Round 75 — decorations for homes and cities (GUI acceptance pending)
 
 Implementation is merged into main on the completed Round 74 baseline;

@@ -7,9 +7,15 @@ in the twelve peaceful regional villages. Camps, mines, outposts, city gates,
 ruins, drill yards, colonnade passages and deliberately open green/fill spaces
 receive no additions.
 
-The generated catalog contains 649 exact substitutions in 332 entries. Small
-buildings receive at most three accents. The 183 zero-addition rows carry an
-explicit reason. Decorations use only the static, drop-less `city_*` nodes:
+The generated catalog contains 770 exact substitutions in 338 entries. The
+Round 75 baseline had 649 substitutions; `report.json` records both counts and
+the delta for every building. Twenty-nine large residential buildings receive
+one additional spaced detail, all 42 buildings whose authored area contains a
+profession-trainer socket receive one to three, and the six royal halls replace
+their floor displays with four spaced wall-art/heraldry accents. Smaller homes
+and buildings without a trainer remain at the restrained baseline. The 177
+zero-addition rows carry an explicit reason. Decorations use only the static,
+drop-less `city_*` nodes:
 table details stand in the existing air cell directly above an actual
 `xdecor_table` or `cottages_table`; wall details and one-node paintings replace
 an air cell beside their exact authored wall support. Existing thin tables are
@@ -35,13 +41,13 @@ luajit tools/r36_w/portable_test.lua "$PWD"
 luajit tools/r31_s/portable_test.lua "$PWD"
 ```
 
-`report.json` is the complete per-building count/omission ledger.
+`report.json` is the complete per-building before/after count and omission ledger.
 `scene_samples.json` gives one concrete coordinate-and-node scene for every
 profile (and the explicit zero scene for profiles that remain quiet), so the
 visual review can render each authored family without inferring rooms again.
 
 Validation on 2026-11-10: all 24 finished builders passed the strict source
-audit; the catalog reported 515 rows and 649 placements each time. The real
+audit; the catalog reported 515 rows and 770 placements each time. The real
 lazy bind/settle fixture rebuilt Copperfell once and wrote 5,184 cells. Its
 capital-plot cases also rotated a tool board and a painting together with their
 wall support through non-zero district turns. The Lua

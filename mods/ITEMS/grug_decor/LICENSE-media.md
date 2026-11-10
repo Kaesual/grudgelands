@@ -248,6 +248,13 @@ repository root. `build.py` performs only mechanical resizing and mesh baking.
 | `textures/grug_decor_painting_trade_map.png` | `tools/r75_art/source/trade_map.png`; prompt `tools/r75_art/prompts/trade_map.txt` | CC0-1.0 | resized to 256×256; metadata stripped |
 | `models/grug_decor_painting_1.obj` | `tools/r75_art/build.py`; original frame geometry | CC0-1.0 | generated; OBJ handedness compensated |
 | `models/grug_decor_painting_2.obj` | `tools/r75_art/build.py`; original frame geometry | CC0-1.0 | generated; OBJ handedness compensated |
+| `models/grug_decor_furnish_alchemy_set.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_book_open.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_book_stack.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_herb_bundle.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_map_sheet.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_scroll_bundle.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
+| `models/grug_decor_furnish_writing_set.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
 | `models/grug_decor_furnish_bread_board.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
 | `models/grug_decor_furnish_candle_group.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |
 | `models/grug_decor_furnish_chandelier.obj` | `tools/r75_furnish/generate_meshes.py`; original nodebox components in `furnishings.lua` | CC0-1.0 | generated geometry and UVs |

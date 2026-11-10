@@ -1,0 +1,4733 @@
+{
+  "counts": {
+    "city": 112,
+    "displays": 8,
+    "furnishings": 58,
+    "paintings": 16
+  },
+  "errors": [],
+  "groups": {
+    "city": [
+      "grug_decor:city_alchemy_set",
+      "grug_decor:city_book_open",
+      "grug_decor:city_book_stack",
+      "grug_decor:city_bowl_ceramic",
+      "grug_decor:city_bowl_wood",
+      "grug_decor:city_bread_board",
+      "grug_decor:city_candle_bundle",
+      "grug_decor:city_candle_group",
+      "grug_decor:city_chandelier",
+      "grug_decor:city_cloth_rolls",
+      "grug_decor:city_cottages_barrel",
+      "grug_decor:city_cottages_barrel_lying",
+      "grug_decor:city_cottages_barrel_lying_open",
+      "grug_decor:city_cottages_barrel_open",
+      "grug_decor:city_cottages_bench",
+      "grug_decor:city_cottages_shelf",
+      "grug_decor:city_cottages_straw_bale",
+      "grug_decor:city_cottages_straw_mat",
+      "grug_decor:city_cottages_table",
+      "grug_decor:city_cottages_tub",
+      "grug_decor:city_cottages_wagon_wheel",
+      "grug_decor:city_cottages_washing",
+      "grug_decor:city_cottages_window_shutter_closed",
+      "grug_decor:city_cottages_window_shutter_open",
+      "grug_decor:city_crate_fish",
+      "grug_decor:city_crate_meat",
+      "grug_decor:city_crate_ore",
+      "grug_decor:city_crate_vegetables",
+      "grug_decor:city_display_armor",
+      "grug_decor:city_display_weapon",
+      "grug_decor:city_fire_basket",
+      "grug_decor:city_fruit_basket",
+      "grug_decor:city_fur_bundle",
+      "grug_decor:city_hanging_plant",
+      "grug_decor:city_hearth",
+      "grug_decor:city_herb_bundle",
+      "grug_decor:city_jug",
+      "grug_decor:city_leather_bundle",
+      "grug_decor:city_lectern",
+      "grug_decor:city_map_sheet",
+      "grug_decor:city_material_gems",
+      "grug_decor:city_material_metal",
+      "grug_decor:city_material_ore",
+      "grug_decor:city_meal_platter",
+      "grug_decor:city_mug",
+      "grug_decor:city_oar",
+      "grug_decor:city_painting_charter",
+      "grug_decor:city_painting_dur_brannoc",
+      "grug_decor:city_painting_gor_drazhak",
+      "grug_decor:city_painting_highcourt",
+      "grug_decor:city_painting_kezamba",
+      "grug_decor:city_painting_last_mint",
+      "grug_decor:city_painting_lethariel",
+      "grug_decor:city_painting_marsh",
+      "grug_decor:city_painting_nhal_veyr",
+      "grug_decor:city_painting_savanna",
+      "grug_decor:city_painting_second_shift",
+      "grug_decor:city_painting_silverwood",
+      "grug_decor:city_painting_still_life",
+      "grug_decor:city_painting_stilled_seam",
+      "grug_decor:city_painting_tavern",
+      "grug_decor:city_painting_trade_map",
+      "grug_decor:city_planter",
+      "grug_decor:city_plate_ceramic",
+      "grug_decor:city_plate_wood",
+      "grug_decor:city_rope_coil",
+      "grug_decor:city_rug_blue",
+      "grug_decor:city_rug_green",
+      "grug_decor:city_rug_red",
+      "grug_decor:city_runner_blue",
+      "grug_decor:city_runner_red",
+      "grug_decor:city_sack_closed",
+      "grug_decor:city_sack_grain",
+      "grug_decor:city_sconce_iron",
+      "grug_decor:city_sconce_wood",
+      "grug_decor:city_scroll",
+      "grug_decor:city_scroll_bundle",
+      "grug_decor:city_tapestry_accord",
+      "grug_decor:city_tapestry_throng",
+      "grug_decor:city_tool_board",
+      "grug_decor:city_vegetable_basket",
+      "grug_decor:city_wall_shelf",
+      "grug_decor:city_wall_shelf_filled",
+      "grug_decor:city_wax_bowl",
+      "grug_decor:city_wicker_basket",
+      "grug_decor:city_wicker_tray",
+      "grug_decor:city_writing_set",
+      "grug_decor:city_xdecor_barrel",
+      "grug_decor:city_xdecor_candle",
+      "grug_decor:city_xdecor_cauldron",
+      "grug_decor:city_xdecor_chair",
+      "grug_decor:city_xdecor_curtain",
+      "grug_decor:city_xdecor_curtain_open",
+      "grug_decor:city_xdecor_cushion",
+      "grug_decor:city_xdecor_cushion_block",
+      "grug_decor:city_xdecor_empty_shelf",
+      "grug_decor:city_xdecor_itemframe",
+      "grug_decor:city_xdecor_ivy",
+      "grug_decor:city_xdecor_lantern",
+      "grug_decor:city_xdecor_lantern_hanging",
+      "grug_decor:city_xdecor_potted_chrysanthemum_green",
+      "grug_decor:city_xdecor_potted_dandelion_white",
+      "grug_decor:city_xdecor_potted_dandelion_yellow",
+      "grug_decor:city_xdecor_potted_geranium",
+      "grug_decor:city_xdecor_potted_rose",
+      "grug_decor:city_xdecor_potted_tulip",
+      "grug_decor:city_xdecor_potted_tulip_black",
+      "grug_decor:city_xdecor_potted_viola",
+      "grug_decor:city_xdecor_stonepath",
+      "grug_decor:city_xdecor_table",
+      "grug_decor:city_xdecor_workbench",
+      "grug_decor:city_yarn"
+    ],
+    "displays": [
+      "grug_decor:xdecor_itemframe",
+      "grug_displays:frame_iron",
+      "grug_displays:frame_carved",
+      "grug_displays:frame_brass",
+      "grug_displays:armor_stand",
+      "grug_displays:armor_stand_iron",
+      "grug_displays:armor_stand_carved",
+      "grug_displays:weapon_holder"
+    ],
+    "furnishings": [
+      "grug_decor:plate_wood",
+      "grug_decor:plate_ceramic",
+      "grug_decor:bowl_wood",
+      "grug_decor:bowl_ceramic",
+      "grug_decor:jug",
+      "grug_decor:mug",
+      "grug_decor:bread_board",
+      "grug_decor:meal_platter",
+      "grug_decor:fruit_basket",
+      "grug_decor:vegetable_basket",
+      "grug_decor:sack_closed",
+      "grug_decor:sack_grain",
+      "grug_decor:crate_vegetables",
+      "grug_decor:crate_fish",
+      "grug_decor:crate_meat",
+      "grug_decor:crate_ore",
+      "grug_decor:wicker_basket",
+      "grug_decor:wicker_tray",
+      "grug_decor:book_stack",
+      "grug_decor:book_open",
+      "grug_decor:lectern",
+      "grug_decor:writing_set",
+      "grug_decor:scroll",
+      "grug_decor:scroll_bundle",
+      "grug_decor:map_sheet",
+      "grug_decor:alchemy_set",
+      "grug_decor:herb_bundle",
+      "grug_decor:tool_board",
+      "grug_decor:material_ore",
+      "grug_decor:material_metal",
+      "grug_decor:material_gems",
+      "grug_decor:cloth_rolls",
+      "grug_decor:yarn",
+      "grug_decor:leather_bundle",
+      "grug_decor:fur_bundle",
+      "grug_decor:rope_coil",
+      "grug_decor:oar",
+      "grug_decor:candle_bundle",
+      "grug_decor:wax_bowl",
+      "grug_decor:candle_group",
+      "grug_decor:sconce_iron",
+      "grug_decor:sconce_wood",
+      "grug_decor:chandelier",
+      "grug_decor:fire_basket",
+      "grug_decor:hearth",
+      "grug_decor:rug_red",
+      "grug_decor:rug_green",
+      "grug_decor:rug_blue",
+      "grug_decor:runner_red",
+      "grug_decor:runner_blue",
+      "grug_decor:wall_shelf",
+      "grug_decor:wall_shelf_filled",
+      "grug_decor:planter",
+      "grug_decor:hanging_plant",
+      "grug_decor:tapestry_accord",
+      "grug_decor:tapestry_throng",
+      "grug_decor:display_armor",
+      "grug_decor:display_weapon"
+    ],
+    "paintings": [
+      "grug_decor:painting_highcourt",
+      "grug_decor:painting_dur_brannoc",
+      "grug_decor:painting_lethariel",
+      "grug_decor:painting_gor_drazhak",
+      "grug_decor:painting_kezamba",
+      "grug_decor:painting_nhal_veyr",
+      "grug_decor:painting_silverwood",
+      "grug_decor:painting_marsh",
+      "grug_decor:painting_savanna",
+      "grug_decor:painting_still_life",
+      "grug_decor:painting_stilled_seam",
+      "grug_decor:painting_second_shift",
+      "grug_decor:painting_last_mint",
+      "grug_decor:painting_charter",
+      "grug_decor:painting_tavern",
+      "grug_decor:painting_trade_map"
+    ]
+  },
+  "materials": {
+    "grug_decor:alchemy_set": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#497c66:175",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#4c6e8a:170",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#a97835:175",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#a9613d:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:book_open": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#603c35:155",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:book_stack": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#603c35:155",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:bowl_ceramic": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:bowl_wood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:bread_board": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_desert_sandstone.png^[colorize:#c29451:95",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:candle_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:candle_group": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:chandelier": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_alchemy_set": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#497c66:175",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#4c6e8a:170",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#a97835:175",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#a9613d:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_book_open": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#603c35:155",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_book_stack": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#603c35:155",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_bowl_ceramic": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_bowl_wood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_bread_board": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_desert_sandstone.png^[colorize:#c29451:95",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_candle_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_candle_group": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_chandelier": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cloth_rolls": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_barrel": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_barrel.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_barrel_lying": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_barrel.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_barrel_lying_open": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_barrel.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_barrel_open": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_barrel.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_bench": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_minimal_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_shelf": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_minimal_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_straw_bale": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_darkage_straw_bale.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_straw_mat": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_darkage_straw.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_table": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_minimal_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_tub": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_barrel.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_wagon_wheel": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wagonwheel.png",
+          "zero": 176
+        }
+      ]
+    },
+    "grug_decor:city_cottages_washing": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_clay.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_window_shutter_closed": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_minimal_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_cottages_window_shutter_open": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_minimal_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_crate_fish": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#91a3a0:120",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_crate_meat": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#9e5544:175",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_crate_ore": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png^default_mineral_iron.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_crate_vegetables": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_display_armor": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_display_weapon": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_fire_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_coal_block.png^[colorize:#7d2418:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#e96525:185",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#ffd07a:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_fruit_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#b16d37:180",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_fur_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_tree.png^[colorize:#6b625d:80",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_hanging_plant": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_hearth": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_coal_block.png^[colorize:#7d2418:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#e96525:185",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#ffd07a:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_herb_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#ad9365:170",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^[colorize:#637143:90",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_jug": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#a9613d:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_leather_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tree.png^[colorize:#8b5a36:90",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_lectern": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_map_sheet": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#355f3e:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_material_gems": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#32868c:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_material_metal": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_material_ore": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png^default_mineral_iron.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_meal_platter": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#91a3a0:120",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_mug": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_oar": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_charter": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_charter.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_dur_brannoc": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_dur_brannoc.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_gor_drazhak": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_gor_drazhak.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_highcourt": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 249,
+          "min": 209,
+          "partial": 65536,
+          "spec": "grug_decor_painting_highcourt.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_kezamba": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_kezamba.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_last_mint": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_last_mint.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_lethariel": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_lethariel.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_marsh": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_marsh.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_nhal_veyr": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_nhal_veyr.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_savanna": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_savanna.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_second_shift": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 249,
+          "min": 228,
+          "partial": 65536,
+          "spec": "grug_decor_painting_second_shift.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_silverwood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_silverwood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_still_life": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_still_life.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_stilled_seam": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_stilled_seam.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_tavern": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_tavern.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_painting_trade_map": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_trade_map.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_planter": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#a9613d:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_plate_ceramic": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_plate_wood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_rope_coil": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#ad9365:170",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_rug_blue": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_rug_green": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#355f3e:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_rug_red": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_runner_blue": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_runner_red": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_sack_closed": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_sack_grain": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_desert_sandstone.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_sconce_iron": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_sconce_wood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_scroll": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_scroll_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#ad9365:170",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_tapestry_accord": {
+      "alpha_mode": "clip",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 612,
+          "spec": "grug_mapgen_faction_banner_accord.png",
+          "zero": 11282
+        }
+      ]
+    },
+    "grug_decor:city_tapestry_throng": {
+      "alpha_mode": "clip",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 612,
+          "spec": "grug_mapgen_faction_banner_throng.png",
+          "zero": 11282
+        }
+      ]
+    },
+    "grug_decor:city_tool_board": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_vegetable_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_wall_shelf": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_wall_shelf_filled": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#603c35:155",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_wax_bowl": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_wicker_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_wicker_tray": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_writing_set": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_coal_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_barrel": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_barrel_top.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_barrel_top.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_barrel_sides.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_candle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 4,
+          "spec": "grug_decor_xdecor_xdecor_candle_floor.png",
+          "zero": 910
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_candle_hanging.png",
+          "zero": 850
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 4,
+          "spec": "grug_decor_xdecor_xdecor_candle_wall.png",
+          "zero": 902
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_cauldron": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cauldron_top_empty.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cauldron_bottom.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cauldron_sides.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_chair": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_curtain": {
+      "alpha_mode": "clip",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "(grug_decor_xdecor_xdecor_cushion.png)^[transformFY",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_curtain_open": {
+      "alpha_mode": "clip",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png^grug_decor_xdecor_xdecor_curtain_open_overlay.png^[makealpha:255,126,126",
+          "zero": 92
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "(grug_decor_xdecor_xdecor_cushion.png^grug_decor_xdecor_xdecor_curtain_open_overlay.png^[makealpha:255,126,126)^[transformFY",
+          "zero": 92
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png^grug_decor_xdecor_xdecor_curtain_open_overlay_top.png^[makealpha:255,126,126",
+          "zero": 32
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png^grug_decor_xdecor_xdecor_curtain_open_overlay_bottom.png^[makealpha:255,126,126",
+          "zero": 192
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_cushion": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_cushion_block": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_cushion.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_empty_shelf": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png^grug_decor_xdecor_xdecor_empty_shelf.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_itemframe": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_itemframe.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_ivy": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_ivy.png",
+          "zero": 183
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_lantern": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_lantern.png",
+          "zero": 644
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_lantern_hanging": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_lantern.png",
+          "zero": 644
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_chrysanthemum_green": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_chrysanthemum_green_pot.png",
+          "zero": 112
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_dandelion_white": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_dandelion_white_pot.png",
+          "zero": 92
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_dandelion_yellow": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_dandelion_yellow_pot.png",
+          "zero": 105
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_geranium": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_geranium_pot.png",
+          "zero": 89
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_rose": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_rose_pot.png",
+          "zero": 87
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_tulip": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_tulip_pot.png",
+          "zero": 88
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_tulip_black": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_tulip_black_pot.png",
+          "zero": 88
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_potted_viola": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_viola_pot.png",
+          "zero": 103
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_stonepath": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_table": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_xdecor_workbench": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_workbench_top.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_workbench_bottom.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_workbench_sides.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_workbench_sides.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_workbench_front.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_workbench_front.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:city_yarn": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:cloth_rolls": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:crate_fish": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#91a3a0:120",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:crate_meat": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#9e5544:175",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:crate_ore": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png^default_mineral_iron.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:crate_vegetables": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:display_armor": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:display_weapon": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:fire_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_coal_block.png^[colorize:#7d2418:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#e96525:185",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#ffd07a:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:fruit_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#b16d37:180",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:fur_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_tree.png^[colorize:#6b625d:80",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:hanging_plant": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:hearth": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_coal_block.png^[colorize:#7d2418:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#e96525:185",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#ffd07a:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:herb_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#ad9365:170",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^[colorize:#637143:90",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:jug": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#a9613d:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:leather_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tree.png^[colorize:#8b5a36:90",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:lectern": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:map_sheet": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#355f3e:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:material_gems": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#32868c:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:material_metal": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:material_ore": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_stone.png^default_mineral_iron.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:meal_platter": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png^[colorize:#91a3a0:120",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:mug": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:oar": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_charter": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_charter.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_dur_brannoc": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_dur_brannoc.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_gor_drazhak": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_gor_drazhak.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_highcourt": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 249,
+          "min": 209,
+          "partial": 65536,
+          "spec": "grug_decor_painting_highcourt.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_kezamba": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_kezamba.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_last_mint": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_last_mint.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_lethariel": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_lethariel.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_marsh": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_marsh.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_nhal_veyr": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_nhal_veyr.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_savanna": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_savanna.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_second_shift": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 249,
+          "min": 228,
+          "partial": 65536,
+          "spec": "grug_decor_painting_second_shift.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_silverwood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_silverwood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_still_life": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_still_life.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_stilled_seam": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_stilled_seam.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_tavern": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_tavern.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:painting_trade_map": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_painting_trade_map.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:planter": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#a9613d:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:plate_ceramic": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:plate_wood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:rope_coil": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#ad9365:170",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:rug_blue": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:rug_green": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#355f3e:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:rug_red": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:runner_blue": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:runner_red": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:sack_closed": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:sack_grain": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#4b392d:130",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_desert_sandstone.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:sconce_iron": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:sconce_wood": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_mese_block.png^[colorize:#ff8a24:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:scroll": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:scroll_bundle": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#ad9365:170",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:tapestry_accord": {
+      "alpha_mode": "clip",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#294c70:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 612,
+          "spec": "grug_mapgen_faction_banner_accord.png",
+          "zero": 11282
+        }
+      ]
+    },
+    "grug_decor:tapestry_throng": {
+      "alpha_mode": "clip",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 0,
+          "partial": 612,
+          "spec": "grug_mapgen_faction_banner_throng.png",
+          "zero": 11282
+        }
+      ]
+    },
+    "grug_decor:tool_board": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_tin_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:vegetable_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_grass.png^default_leaves.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:wall_shelf": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:wall_shelf_filled": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#603c35:155",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:wax_bowl": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#f1d78a:100",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:wicker_basket": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:wicker_tray": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_acacia_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:writing_set": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_clay.png^[colorize:#eadbc0:210",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_coal_block.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_aspen_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:xdecor_itemframe": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_wood.png",
+          "zero": 0
+        },
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_xdecor_xdecor_itemframe.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_decor:yarn": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "grug_decor_cottages_cottages_wool.png^[colorize:#8d2f32:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_displays:armor_stand": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_displays:armor_stand_carved": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png^[colorize:#e1c28a:75",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_displays:armor_stand_iron": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_displays:frame_brass": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png^[colorize:#b7832f:150",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_displays:frame_carved": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png^[colorize:#e1c28a:75",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_displays:frame_iron": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_steel_block.png",
+          "zero": 0
+        }
+      ]
+    },
+    "grug_displays:weapon_holder": {
+      "alpha_mode": "opaque",
+      "textures": [
+        {
+          "max": 255,
+          "min": 255,
+          "partial": 0,
+          "spec": "default_wood.png",
+          "zero": 0
+        }
+      ]
+    }
+  },
+  "mesh_nodes": 114,
+  "meshes": {
+    "grug_decor:alchemy_set": {
+      "groups": 4,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2",
+        "texture_slot_3"
+      ],
+      "mesh": "grug_decor_furnish_alchemy_set.obj",
+      "tiles": 4
+    },
+    "grug_decor:book_open": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_book_open.obj",
+      "tiles": 2
+    },
+    "grug_decor:book_stack": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_book_stack.obj",
+      "tiles": 3
+    },
+    "grug_decor:bread_board": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_bread_board.obj",
+      "tiles": 2
+    },
+    "grug_decor:candle_group": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_candle_group.obj",
+      "tiles": 2
+    },
+    "grug_decor:chandelier": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_chandelier.obj",
+      "tiles": 3
+    },
+    "grug_decor:city_alchemy_set": {
+      "groups": 4,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2",
+        "texture_slot_3"
+      ],
+      "mesh": "grug_decor_furnish_alchemy_set.obj",
+      "tiles": 4
+    },
+    "grug_decor:city_book_open": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_book_open.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_book_stack": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_book_stack.obj",
+      "tiles": 3
+    },
+    "grug_decor:city_bread_board": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_bread_board.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_candle_group": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_candle_group.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_chandelier": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_chandelier.obj",
+      "tiles": 3
+    },
+    "grug_decor:city_cottages_barrel": {
+      "groups": 1,
+      "materials": [],
+      "mesh": "grug_decor_cottages_cottages_barrel_closed.obj",
+      "tiles": 1
+    },
+    "grug_decor:city_cottages_barrel_lying": {
+      "groups": 1,
+      "materials": [],
+      "mesh": "grug_decor_cottages_cottages_barrel_closed_lying.obj",
+      "tiles": 1
+    },
+    "grug_decor:city_cottages_barrel_lying_open": {
+      "groups": 1,
+      "materials": [],
+      "mesh": "grug_decor_cottages_cottages_barrel_lying.obj",
+      "tiles": 1
+    },
+    "grug_decor:city_cottages_barrel_open": {
+      "groups": 1,
+      "materials": [],
+      "mesh": "grug_decor_cottages_cottages_barrel.obj",
+      "tiles": 1
+    },
+    "grug_decor:city_cottages_tub": {
+      "groups": 1,
+      "materials": [],
+      "mesh": "grug_decor_cottages_cottages_tub.obj",
+      "tiles": 1
+    },
+    "grug_decor:city_cottages_wagon_wheel": {
+      "groups": 1,
+      "materials": [
+        "Material.001"
+      ],
+      "mesh": "grug_decor_cottages_cottages_wagonwheel_round_with_axle.obj",
+      "tiles": 1
+    },
+    "grug_decor:city_crate_fish": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_fish.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_crate_meat": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_meat.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_crate_ore": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_ore.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_crate_vegetables": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_vegetables.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_display_armor": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_display_armor.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_display_weapon": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_display_weapon.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_fire_basket": {
+      "groups": 4,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2",
+        "texture_slot_3"
+      ],
+      "mesh": "grug_decor_furnish_fire_basket.obj",
+      "tiles": 4
+    },
+    "grug_decor:city_fruit_basket": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_fruit_basket.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_hanging_plant": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_hanging_plant.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_hearth": {
+      "groups": 4,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2",
+        "texture_slot_3"
+      ],
+      "mesh": "grug_decor_furnish_hearth.obj",
+      "tiles": 4
+    },
+    "grug_decor:city_herb_bundle": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_herb_bundle.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_map_sheet": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_map_sheet.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_material_gems": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_material_gems.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_material_metal": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_material_metal.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_material_ore": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_material_ore.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_meal_platter": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_meal_platter.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_charter": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_dur_brannoc": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_gor_drazhak": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_highcourt": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_kezamba": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_last_mint": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_lethariel": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_marsh": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_nhal_veyr": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_savanna": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_second_shift": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_silverwood": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_still_life": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_stilled_seam": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_tavern": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_painting_trade_map": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_planter": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_planter.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_rug_blue": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_rug_blue.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_rug_green": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_rug_green.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_rug_red": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_rug_red.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_runner_blue": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_runner_blue.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_runner_red": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_runner_red.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_sack_grain": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_sack_grain.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_sconce_iron": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_sconce_iron.obj",
+      "tiles": 3
+    },
+    "grug_decor:city_sconce_wood": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_sconce_wood.obj",
+      "tiles": 3
+    },
+    "grug_decor:city_scroll_bundle": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_scroll_bundle.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_tapestry_accord": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_tapestry_accord.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_tapestry_throng": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_tapestry_throng.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_tool_board": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_tool_board.obj",
+      "tiles": 3
+    },
+    "grug_decor:city_vegetable_basket": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_vegetable_basket.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_wall_shelf_filled": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_wall_shelf_filled.obj",
+      "tiles": 2
+    },
+    "grug_decor:city_writing_set": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_writing_set.obj",
+      "tiles": 3
+    },
+    "grug_decor:crate_fish": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_fish.obj",
+      "tiles": 2
+    },
+    "grug_decor:crate_meat": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_meat.obj",
+      "tiles": 2
+    },
+    "grug_decor:crate_ore": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_ore.obj",
+      "tiles": 2
+    },
+    "grug_decor:crate_vegetables": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_crate_vegetables.obj",
+      "tiles": 2
+    },
+    "grug_decor:display_armor": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_display_armor.obj",
+      "tiles": 2
+    },
+    "grug_decor:display_weapon": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_display_weapon.obj",
+      "tiles": 2
+    },
+    "grug_decor:fire_basket": {
+      "groups": 4,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2",
+        "texture_slot_3"
+      ],
+      "mesh": "grug_decor_furnish_fire_basket.obj",
+      "tiles": 4
+    },
+    "grug_decor:fruit_basket": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_fruit_basket.obj",
+      "tiles": 2
+    },
+    "grug_decor:hanging_plant": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_hanging_plant.obj",
+      "tiles": 2
+    },
+    "grug_decor:hearth": {
+      "groups": 4,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2",
+        "texture_slot_3"
+      ],
+      "mesh": "grug_decor_furnish_hearth.obj",
+      "tiles": 4
+    },
+    "grug_decor:herb_bundle": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_herb_bundle.obj",
+      "tiles": 2
+    },
+    "grug_decor:map_sheet": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_map_sheet.obj",
+      "tiles": 2
+    },
+    "grug_decor:material_gems": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_material_gems.obj",
+      "tiles": 2
+    },
+    "grug_decor:material_metal": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_material_metal.obj",
+      "tiles": 2
+    },
+    "grug_decor:material_ore": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_material_ore.obj",
+      "tiles": 2
+    },
+    "grug_decor:meal_platter": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_meal_platter.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_charter": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_dur_brannoc": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_gor_drazhak": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_highcourt": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_kezamba": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_last_mint": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_lethariel": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_marsh": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_nhal_veyr": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_savanna": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_second_shift": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_silverwood": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_still_life": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_stilled_seam": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_tavern": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_1.obj",
+      "tiles": 2
+    },
+    "grug_decor:painting_trade_map": {
+      "groups": 2,
+      "materials": [
+        "wood",
+        "canvas"
+      ],
+      "mesh": "grug_decor_painting_2.obj",
+      "tiles": 2
+    },
+    "grug_decor:planter": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_planter.obj",
+      "tiles": 2
+    },
+    "grug_decor:rug_blue": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_rug_blue.obj",
+      "tiles": 2
+    },
+    "grug_decor:rug_green": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_rug_green.obj",
+      "tiles": 2
+    },
+    "grug_decor:rug_red": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_rug_red.obj",
+      "tiles": 2
+    },
+    "grug_decor:runner_blue": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_runner_blue.obj",
+      "tiles": 2
+    },
+    "grug_decor:runner_red": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_runner_red.obj",
+      "tiles": 2
+    },
+    "grug_decor:sack_grain": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_sack_grain.obj",
+      "tiles": 2
+    },
+    "grug_decor:sconce_iron": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_sconce_iron.obj",
+      "tiles": 3
+    },
+    "grug_decor:sconce_wood": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_sconce_wood.obj",
+      "tiles": 3
+    },
+    "grug_decor:scroll_bundle": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_scroll_bundle.obj",
+      "tiles": 2
+    },
+    "grug_decor:tapestry_accord": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_tapestry_accord.obj",
+      "tiles": 2
+    },
+    "grug_decor:tapestry_throng": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_tapestry_throng.obj",
+      "tiles": 2
+    },
+    "grug_decor:tool_board": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_tool_board.obj",
+      "tiles": 3
+    },
+    "grug_decor:vegetable_basket": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_vegetable_basket.obj",
+      "tiles": 2
+    },
+    "grug_decor:wall_shelf_filled": {
+      "groups": 2,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1"
+      ],
+      "mesh": "grug_decor_furnish_wall_shelf_filled.obj",
+      "tiles": 2
+    },
+    "grug_decor:writing_set": {
+      "groups": 3,
+      "materials": [
+        "texture_slot_0",
+        "texture_slot_1",
+        "texture_slot_2"
+      ],
+      "mesh": "grug_decor_furnish_writing_set.obj",
+      "tiles": 3
+    }
+  },
+  "nodes": "tools/building_templates/nodes.json",
+  "schema": 1,
+  "texture_warnings": {},
+  "total": 194,
+  "unique_texture_specs": 92
+}

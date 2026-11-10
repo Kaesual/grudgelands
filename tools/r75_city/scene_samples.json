@@ -1,46 +1,22 @@
 {
   "alchemy": {
-    "id": "highcourt/district/lore_almonry",
+    "id": "highcourt/district/lore_herb_garden",
     "placements": [
       {
         "expect": "air",
-        "node": "grug_decor:city_alchemy_set",
+        "node": "grug_decor:city_rug_blue",
         "param2": 0,
-        "support": "grug_decor:xdecor_table",
+        "support": "default:dirt_with_grass",
         "support_dx": 0,
         "support_dy": -1,
         "support_dz": 0,
-        "x": 0,
-        "y": 2,
-        "z": 0
-      },
-      {
-        "expect": "air",
-        "node": "grug_decor:city_book_open",
-        "param2": 0,
-        "support": "grug_decor:xdecor_table",
-        "support_dx": 0,
-        "support_dy": -1,
-        "support_dz": 0,
-        "x": 1,
-        "y": 2,
-        "z": 0
-      },
-      {
-        "expect": "air",
-        "node": "grug_decor:city_herb_bundle",
-        "param2": 0,
-        "support": "grug_decor:cottages_loam",
-        "support_dx": 0,
-        "support_dy": 0,
-        "support_dz": 1,
-        "x": -3,
-        "y": 2,
-        "z": -6
+        "x": -10,
+        "y": 1,
+        "z": -10
       }
     ],
     "reason": null,
-    "scope": "lore_almonry"
+    "scope": "lore_herb_garden"
   },
   "archive": {
     "id": "dur_brannoc/district/deep_archive",
@@ -519,23 +495,35 @@
     "scope": "blueprint"
   },
   "jewel": {
-    "id": "lethariel/district/mere_lore_hall",
+    "id": "highcourt/district/lore_archive",
     "placements": [
       {
         "expect": "air",
-        "node": "grug_decor:city_material_gems",
+        "node": "grug_decor:city_rug_blue",
         "param2": 0,
-        "support": "grug_decor:xdecor_table",
+        "support": "default:dirt_with_grass",
         "support_dx": 0,
         "support_dy": -1,
         "support_dz": 0,
-        "x": -4,
-        "y": 2,
-        "z": -5
+        "x": -9,
+        "y": 1,
+        "z": -10
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_sconce_iron",
+        "param2": 0,
+        "support": "grug_decor:cottages_loam",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": 2,
+        "y": 5,
+        "z": -8
       }
     ],
     "reason": null,
-    "scope": "mere_lore_hall"
+    "scope": "lore_archive"
   },
   "kitchen": {
     "id": "highcourt/district/homes_bakehouse",
@@ -563,6 +551,18 @@
         "x": -3,
         "y": 2,
         "z": -7
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_rug_blue",
+        "param2": 0,
+        "support": "default:dirt_with_grass",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -8,
+        "y": 1,
+        "z": -9
       }
     ],
     "reason": null,
@@ -593,6 +593,30 @@
         "support_dz": 1,
         "x": -4,
         "y": 2,
+        "z": -8
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_rug_blue",
+        "param2": 0,
+        "support": "default:dirt_with_grass",
+        "support_dx": 0,
+        "support_dy": -1,
+        "support_dz": 0,
+        "x": -8,
+        "y": 1,
+        "z": -10
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_wall_shelf_filled",
+        "param2": 0,
+        "support": "grug_decor:cottages_loam",
+        "support_dx": 0,
+        "support_dy": 0,
+        "support_dz": 1,
+        "x": -3,
+        "y": 5,
         "z": -8
       }
     ],
@@ -690,27 +714,39 @@
       },
       {
         "expect": "air",
-        "node": "grug_decor:city_display_armor",
-        "param2": 0,
-        "support": "grug_decor:castle_stonewall",
-        "support_dx": 0,
-        "support_dy": -1,
+        "node": "grug_decor:city_painting_charter",
+        "param2": 1,
+        "support": "default:cobble",
+        "support_dx": 1,
+        "support_dy": 0,
         "support_dz": 0,
-        "x": -2,
-        "y": 11,
-        "z": 11
+        "x": 3,
+        "y": 2,
+        "z": 10
       },
       {
         "expect": "air",
-        "node": "grug_decor:city_display_weapon",
-        "param2": 0,
-        "support": "grug_decor:castle_stonewall",
-        "support_dx": 0,
-        "support_dy": -1,
+        "node": "grug_decor:city_painting_trade_map",
+        "param2": 3,
+        "support": "grug_decor:darkage_marble",
+        "support_dx": -1,
+        "support_dy": 0,
         "support_dz": 0,
-        "x": -1,
-        "y": 11,
-        "z": 11
+        "x": -13,
+        "y": 10,
+        "z": 10
+      },
+      {
+        "expect": "air",
+        "node": "grug_decor:city_tapestry_accord",
+        "param2": 1,
+        "support": "grug_decor:darkage_marble",
+        "support_dx": 1,
+        "support_dy": 0,
+        "support_dz": 0,
+        "x": -7,
+        "y": 10,
+        "z": 10
       }
     ],
     "reason": null,

@@ -45,6 +45,20 @@ no dependency on `grug_mapgen` (which already depends on the decor kit). Large
 paintings use their own footprint-aware placer.
 
 Independent review: MERGE, including material/UV, mounting, OBJ handedness and
-the final ember/flame refinement. The focused fixture passes 12,728 checks.
+the final ember/flame refinement. The focused fixture passes 14,632 checks.
 The lane is additive and compatible; Round 75 requires a map reset for CITY.
 Desktop/web visual acceptance remains open.
+
+## Round 75.2 material correction
+
+The geometry review in Round 75 did not catch transparent inventory sprites
+used as full surface materials. Solid props now use opaque material textures;
+only the two heraldic cloth silhouettes deliberately use alpha clipping.
+Paper, book bindings, scroll ties, writing implements and colored alchemy
+vessels have distinct full material groups. Ore and foliage overlays sit on
+opaque stone/grass bases. The tool board separates light metal heads from
+wooden handles. There are now 38 generated furnishing meshes.
+
+The [material audit and textured inspection page](../r75_2_materials/README.md)
+checks all new items and their city copies against the real engine node dump.
+The older false-color preview above is only a geometry aid, not texture proof.

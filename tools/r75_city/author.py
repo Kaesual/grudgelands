@@ -45,6 +45,15 @@ RECIPES = {
     "shelter": [("floor", "wicker_basket")],
     "garden": [("floor_soft", "fruit_basket")],
 }
+TRAINER_EXTRAS = {
+    "smith": [("floor", "trainer_rug"), ("table", "material_ore"), ("wall", "sconce_iron")],
+    "tailor": [("floor", "trainer_rug"), ("table", "yarn"), ("wall", "wall_shelf_filled")],
+    "leather": [("floor", "trainer_rug"), ("table", "fur_bundle"), ("wall", "wall_shelf_filled")],
+    "jewel": [("floor", "trainer_rug"), ("table", "writing_set"), ("wall", "sconce_iron")],
+    "alchemy": [("floor", "trainer_rug"), ("table", "scroll_bundle"), ("wall", "wall_shelf_filled")],
+    "carver": [("floor", "trainer_rug"), ("table", "writing_set"), ("wall", "wall_shelf_filled")],
+    "kitchen": [("floor", "trainer_rug"), ("table", "plate_ceramic"), ("table", "jug")],
+}
 PAINTING = {
     "highcourt":"highcourt", "dur_brannoc":"dur_brannoc", "lethariel":"lethariel",
     "gor_drazhak":"gor_drazhak", "kezamba":"kezamba", "nhal_veyr":"nhal_veyr",
@@ -96,16 +105,36 @@ def reserve(row):
                 for dy in (0,1): out.add((a["x"]+dx,a["y"]+dy,a["z"]+dz))
     return out
 
-def author(item, row, region, occupied):
+def author(item, row, region, occupied, enriched=True):
     if item["stance"] == "Bewusst frei lassen" or item.get("isFill"):
-        return [], "quiet " + ("fill space" if item.get("isFill") else item["profile"])
+        return [], "quiet " + ("fill space" if item.get("isFill") else item["profile"]), None
     recipe = list(RECIPES.get(item["profile"], ()))
+    base_count = len(recipe)
+    enrichment = None
+    sockets = (row.get("landmarks") or {}).get("sockets") or []
+    trainers = [s for s in sockets if s.get("role") == "trainer" and
+                (s["x"], s["y"], s["z"]) in region]
+    if enriched and item["profile"] == "royal":
+        faction = "accord" if item["city"] in {
+            "highcourt", "dur_brannoc", "lethariel"} else "throng"
+        recipe = [("wall", "painting"), ("wall", "painting_charter"),
+                  ("wall", "painting_trade_map"), ("wall", "tapestry_" + faction)]
+        base_count = 1
+        enrichment = "royal wall-only enrichment"
+    elif enriched and trainers:
+        if item["profile"] not in TRAINER_EXTRAS:
+            raise AssertionError(item["id"] + ": trainer profile has no enrichment")
+        recipe.extend(TRAINER_EXTRAS.get(item["profile"], ()))
+        enrichment = "profession trainer enrichment"
+    elif enriched and item["profile"] == "home" and len(region) >= 2500:
+        recipe.extend([("table", "mug"), ("wall", "wall_shelf_filled")])
+        enrichment = "large house enrichment"
     if item["profile"] == "well":
         has_bench = any("bench" in name for name in item.get("nodeEvidence", {}))
         recipe = [] if has_bench else [("floor", "cottages_bench")]
-        if has_bench: return [], "existing well seating"
+        if has_bench: return [], "existing well seating", None
     if not recipe:
-        return [], "no approved fitting family for " + item["profile"]
+        return [], "no approved fitting family for " + item["profile"], None
     cells={(c["x"],c["y"],c["z"]):(c["name"],c.get("param2",0)) for c in row["cells"]}
     blocked=reserve(row)
     additions=[]
@@ -186,25 +215,41 @@ def author(item, row, region, occupied):
                 out.append((p,(p[0],p[1]-1,p[2]),cells[(p[0],p[1]-1,p[2])][0]))
         return out
 
+    def spaced(pos):
+        return all(max(abs(pos[0]-a["x"]), abs(pos[1]-a["y"]),
+                       abs(pos[2]-a["z"])) >= 2 for a in additions)
+
     table_index=wall_index=floor_index=0
     floors=floor_candidates()
-    for mount,suffix in recipe:
+    for recipe_index,(mount,suffix) in enumerate(recipe):
+        extra = recipe_index >= base_count
         if suffix=="painting": suffix="painting_"+PAINTING.get(item["city"],"still_life")
+        if suffix=="trainer_rug":
+            suffix = "rug_blue" if item["city"] in {
+                "highcourt", "dur_brannoc", "lethariel"} else "rug_red"
         if mount=="table":
-            while table_index<len(tables) and tables[table_index][1] in occupied: table_index+=1
+            while table_index<len(tables) and (tables[table_index][1] in occupied or
+                    (extra and not spaced(tables[table_index][1]))): table_index+=1
             if table_index<len(tables):
                 support,pos,name=tables[table_index];table_index+=1;add(pos,suffix,0,support,name)
         elif mount=="wall":
-            while wall_index<len(candidates) and candidates[wall_index][6] in occupied: wall_index+=1
+            while wall_index<len(candidates) and (candidates[wall_index][6] in occupied or
+                    (extra and not spaced(candidates[wall_index][6]))): wall_index+=1
             if wall_index<len(candidates):
                 _,_,_,face,wall,wn,pos=candidates[wall_index];wall_index+=1;add(pos,suffix,face,wall,wn)
         else:
-            while floor_index<len(floors) and floors[floor_index][0] in occupied: floor_index+=1
+            while floor_index<len(floors) and (floors[floor_index][0] in occupied or
+                    (extra and not spaced(floors[floor_index][0]))): floor_index+=1
             if floor_index<len(floors):
                 pos,support,name=floors[floor_index];floor_index+=1;add(pos,suffix,0,support,name)
     if not additions:
-        return [], "no safe approved mount"
-    return additions, None
+        return [], "no safe approved mount", enrichment
+    if enriched and item["profile"] == "royal":
+        for placement in additions:
+            definition = NODE_DEFS.get(placement["node"]) or {}
+            if definition.get("walkable") is not False or definition.get("collision_box"):
+                raise AssertionError(item["id"] + ": royal decoration has collision")
+    return additions, None, enrichment
 
 def lua_string(s): return '"'+s.replace('\\','\\\\').replace('"','\\"')+'"'
 
@@ -214,19 +259,33 @@ def main():
     catalog={}; report=[]; samples={}
     for city,items in by_city.items():
         exported=json.loads((EVIDENCE/(city+".json")).read_text())
-        scopes={}; occupied_by_scope={}
+        scopes={}; occupied_by_scope={}; before_occupied_by_scope={}
         for item in items:
             scope,row,region=scope_and_region(item,exported)
             occupied=occupied_by_scope.setdefault(scope,set())
-            additions,reason=author(item,row,region,occupied)
+            before_occupied=before_occupied_by_scope.setdefault(scope,set())
+            before,_,_=author(item,row,region,before_occupied,False)
+            additions,reason,enrichment=author(item,row,region,occupied,True)
             scopes.setdefault(scope,[]).append((item["id"],item["profile"],additions,reason))
             report.append({"id":item["id"],"profile":item["profile"],"scope":scope,
-                           "additions":len(additions),"reason":reason})
+                           "before_additions":len(before), "additions":len(additions),
+                           "delta":len(additions)-len(before), "enrichment":enrichment,
+                           "reason":reason})
             current=samples.get(item["profile"])
             if current is None or (not current["placements"] and additions):
                 samples[item["profile"]]={"id":item["id"],"scope":scope,
                     "placements":additions,"reason":reason}
         catalog[city]=scopes
+    enriched_rows = [r for r in report if r["enrichment"]]
+    kinds = {kind: [r for r in enriched_rows if r["enrichment"] == kind] for kind in (
+        "large house enrichment", "profession trainer enrichment",
+        "royal wall-only enrichment")}
+    expected = {"large house enrichment": 29, "profession trainer enrichment": 42,
+                "royal wall-only enrichment": 6}
+    for kind, count in expected.items():
+        if len(kinds[kind]) != count or any(r["delta"] < 1 for r in kinds[kind]):
+            raise AssertionError(kind + ": enrichment coverage differs")
+
     lines=["-- Generated by tools/r75_city/author.py from finished Round 75 blueprints.",
            "-- Every surveyed space has one explicit row; runtime performs no room inference.","return {"]
     for city in sorted(catalog):

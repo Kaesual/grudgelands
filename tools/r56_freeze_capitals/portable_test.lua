@@ -120,28 +120,29 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- every workshop workbench and the human closed shutters are gone; the human
 -- palette's shutter node leaves the node list, so Dawnmere's and Highcourt's
 -- point digests move too.
+-- 0.75.2: declared map reset; richer authored city decor changes only identities.
 local FROZEN = {
-	highcourt = {"95f3224bec65d000ef8decb764af004dec58bef207c5780284dcc129667b7d5e",
+	highcourt = {"932da00d04f22b23b8067f10bc201c21dcfd92000b99d90b715f85336b47ca5d",
 		"2e2b54fc58e3a2d0962578a8689a5cbc34d3cd011e71864ec11a6fff515213ec",
 		"1b7ecd684a6a6cf97292323d6506a286000a3cdb932f3823238538b26e149ecc"},
 	-- the next capital
-	dur_brannoc = {"0a72c128f9011c9c26afdc94ca09123f2f10a523cc62fa6cea2fbf3ff2bded56",
+	dur_brannoc = {"4a5b13758b4270e4451647caaf57bc357fc5da10d8be85aca221d360f2d2bfa2",
 		"324f504a660a49b4520010db998501c0c551f5cf72e799787529b0383fd3ab95",
 		"feed1cbada425805e796ab1a414b5ec1defa246a933596d9a2cca01ad71035ff"},
 	-- the next capital
-	lethariel = {"5ae2fe2eb06a81668574cf6f6cbeb4312d6f13639cf36cd25d1eef9771dcf039",
+	lethariel = {"f440bc14f22bd26487ba0cfd8abcb1e5c09ebd9724242584401ccfa051e584de",
 		"ee4f66aa936205ec417105e20a5e6ada3c8fca60412b6571031212860cc08904",
 		"c85d530560e2b5bbd38e951dd1ff0aef57d7619e6779fcc6db9ae61514da3012"},
 	-- the next capital
-	nhal_veyr = {"a2288dbc85a7bc5c8459b824744f49d90f7a5cedfa2a8496edcba53d58e19f2f",
+	nhal_veyr = {"cbc495832932c5a4aca4930e8ef6bc57a46ea3c261d9ff60a57e1bd54271e39b",
 		"fe115147b4c67a6ba90fb75296e071d32f501be417f5671921473b3cd91ef453",
 		"dd5ae86b0b0b55a239971d6b306b73c837f5f36e504d1112c189d5b827e9db22"},
 	-- the next capital
-	gor_drazhak = {"f99ffd8d7b4f4f85e54f1778ac042cd41a0c6df1c1eb46bcb072f93dc0ddc0ab",
+	gor_drazhak = {"1a7681b36f815794d70204a650c943caacf352bd2b3c534433aca6315f9106b7",
 		"3009f018b70a2899e2cb896f274591778a58e9cf77068d6ac986aed59d435016",
 		"3b508e5059918ea573f7513a64536d4402a879996540678870c22c57eeaba34b"},
 	-- the next capital
-	kezamba = {"8f98ecdbd99f65e9f0dfcb7b6a386680b394bdb5503abe8786e48a85fe505b50",
+	kezamba = {"41786321777b1f16151a32bd92b8fd06bcbc28d4e9e953c57202230f2b099aab",
 		"6aa6f2972f8d5cde364c0200e85651f46380bd6b192de175cf798146a3f25418",
 		"caca27a71f9ccb83e88323b6e9f2758ae8a94572743788fa9202d8835af43fd3"},
 }

@@ -12,6 +12,22 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.75.2 — solid decoration surfaces and fuller interiors (2026-11-10)
+
+**Map reset** for the additional city furnishings, joining the planned reset.
+The material correction also applies to existing placed decorations after a
+restart; no migration step is needed.
+
+- Replace transparent inventory-icon surfaces on household props with complete
+  material textures. Books, writing sets, scroll ties and alchemy vessels have
+  distinct material parts; wall tools have clearer wooden handles and metal heads.
+- Audit the full new decoration collection, including city copies, paintings
+  and functional displays. The local textured inspection page now respects
+  opaque mesh and nodebox materials instead of hiding their missing surfaces.
+- Add purposeful details to large houses and all profession-trainer buildings.
+  Royal halls receive only non-colliding wall art and heraldry; their earlier
+  added floor displays are removed.
+
 ## 0.75.1 — tidier workshops and windows (2026-11-10)
 
 **Map reset** (joins 0.75.0's): the changed town buildings appear in regenerated

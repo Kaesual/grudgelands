@@ -14,17 +14,20 @@ local wood = "grug_decor_xdecor_xdecor_wood.png"
 local pale_wood = "default_aspen_wood.png"
 local wicker = "default_acacia_wood.png"
 local ceramic = "default_clay.png"
-local pottery = "default_clay_brick.png"
-local paper = "default_paper.png"
-local book = "default_book.png"
+local pottery = "default_clay.png^[colorize:#a9613d:150"
+-- Closed props need complete surface textures, not transparent inventory sprites.
+local paper = "default_clay.png^[colorize:#eadbc0:210"
+local book = "grug_decor_cottages_cottages_wool.png^[colorize:#603c35:155"
 local stone = "default_stone.png"
 local iron = "default_steel_block.png"
-local ore = "default_mineral_iron.png"
-local gems = "default_obsidian_glass.png^[colorize:#6ac8d8:110"
-local glass = "default_glass.png^[colorize:#5d9b83:100"
-local leaf = "default_leaves.png"
-local herb = "grug_gathering_sunleaf_plant.png"
-local rope = "grug_decor_xdecor_xdecor_rope.png"
+local ore = "default_stone.png^default_mineral_iron.png"
+local gems = "default_tin_block.png^[colorize:#32868c:150"
+local glass = "default_tin_block.png^[colorize:#497c66:175"
+local blue_glass = "default_tin_block.png^[colorize:#4c6e8a:170"
+local amber_glass = "default_tin_block.png^[colorize:#a97835:175"
+local leaf = "default_grass.png^default_leaves.png"
+local herb = "default_grass.png^[colorize:#637143:90"
+local rope = "grug_decor_cottages_cottages_wool.png^[colorize:#ad9365:170"
 local cloth = "grug_decor_cottages_cottages_wool.png"
 local leather = "default_tree.png^[colorize:#8b5a36:90"
 local fur = "default_aspen_tree.png^[colorize:#6b625d:80"
@@ -33,6 +36,13 @@ local flame = "default_mese_block.png^[colorize:#ff8a24:150"
 local ember = "default_coal_block.png^[colorize:#7d2418:100"
 local fire_flame = "default_clay.png^[colorize:#e96525:185"
 local fire_glow = "default_clay.png^[colorize:#ffd07a:150"
+
+local bread = "default_desert_sandstone.png^[colorize:#c29451:95"
+local fish = "default_tin_block.png^[colorize:#91a3a0:120"
+local meat = "default_clay.png^[colorize:#9e5544:175"
+local fruit = "default_clay.png^[colorize:#b16d37:180"
+local ink = "default_coal_block.png"
+local tool_metal = "default_tin_block.png"
 
 local red_cloth = cloth .. "^[colorize:#8d2f32:150"
 local green_cloth = cloth .. "^[colorize:#355f3e:150"
@@ -143,7 +153,7 @@ local function register(row)
 		drawtype = row.mesh and "mesh" or "nodebox",
 		mesh = row.mesh,
 		tiles = row.tiles or {row.texture or wood},
-		use_texture_alpha = row.alpha,
+		use_texture_alpha = row.alpha or "opaque",
 		paramtype = "light",
 		paramtype2 = "facedir",
 		on_place = grug_decor.place_furnishing,
@@ -184,22 +194,22 @@ local furnishings = {
 
 	-- N08: serving silhouettes.
 	{id = "bread_board", description = "Bread Board", family = "N08", mount = "table",
-		mesh = "grug_decor_furnish_bread_board.obj", tiles = {wood, "grug_cooking_bread.png"},
+		mesh = "grug_decor_furnish_bread_board.obj", tiles = {wood, bread},
 		boxes = {{-0.37,-0.5,-0.26,0.37,-0.45,0.26}, {-0.25,-0.45,-0.15,-0.03,-0.32,0.15},
 			{0.02,-0.45,-0.13,0.26,-0.34,0.13}}},
 	{id = "meal_platter", description = "Meal Platter", family = "N08", mount = "table",
 		mesh = "grug_decor_furnish_meal_platter.obj",
-		tiles = {pale_wood, "grug_cooking_dish_salt_crusted_fish.png"},
+		tiles = {pale_wood, fish},
 		boxes = {{-0.36,-0.5,-0.25,0.36,-0.46,0.25}, {-0.23,-0.46,-0.12,0.22,-0.34,0.12},
 			{-0.30,-0.43,-0.18,-0.22,-0.35,-0.10}, {0.22,-0.43,0.10,0.30,-0.35,0.18}}},
 
 	-- N09: basket body plus distinct produce mounds.
 	{id = "fruit_basket", description = "Fruit Basket", family = "N09", mount = "table",
-		mesh = "grug_decor_furnish_fruit_basket.obj", tiles = {wicker, "default_apple.png"},
+		mesh = "grug_decor_furnish_fruit_basket.obj", tiles = {wicker, fruit},
 		boxes = {{-0.30,-0.5,-0.24,0.30,-0.42,0.24}, {-0.27,-0.42,-0.21,-0.19,-0.25,0.21},
 			{0.19,-0.42,-0.21,0.27,-0.25,0.21}, {-0.19,-0.40,-0.16,0.19,-0.23,0.16}}},
 	{id = "vegetable_basket", description = "Vegetable Basket", family = "N09", mount = "table",
-		mesh = "grug_decor_furnish_vegetable_basket.obj", tiles = {wicker, "default_leaves.png"},
+		mesh = "grug_decor_furnish_vegetable_basket.obj", tiles = {wicker, leaf},
 		boxes = {{-0.31,-0.5,-0.23,0.31,-0.42,0.23}, {-0.28,-0.42,-0.20,-0.20,-0.24,0.20},
 			{0.20,-0.42,-0.20,0.28,-0.24,0.20}, {-0.20,-0.40,-0.15,0.20,-0.20,0.15}}},
 
@@ -209,7 +219,7 @@ local furnishings = {
 		boxes = {{-0.27,-0.5,-0.22,0.27,-0.12,0.22}, {-0.20,-0.12,-0.17,0.20,0.05,0.17},
 			{-0.08,0.05,-0.08,0.08,0.15,0.08}}},
 	{id = "sack_grain", description = "Open Grain Sack", family = "N10", mount = "floor",
-		mesh = "grug_decor_furnish_sack_grain.obj", tiles = {dark_cloth, "default_dry_grass.png"},
+		mesh = "grug_decor_furnish_sack_grain.obj", tiles = {dark_cloth, "default_desert_sandstone.png"},
 		material = "soft", walkable = true,
 		boxes = {{-0.29,-0.5,-0.24,0.29,-0.14,0.24}, {-0.25,-0.14,-0.20,0.25,0.02,0.20},
 			{-0.20,0.02,-0.16,0.20,0.07,0.16}}},
@@ -221,11 +231,11 @@ local furnishings = {
 			{0.34,-0.40,-0.34,0.42,-0.16,0.34}, {-0.34,-0.36,-0.26,0.34,-0.18,0.26}}},
 	{id = "crate_fish", description = "Fish Crate", family = "N11", mount = "floor",
 		mesh = "grug_decor_furnish_crate_fish.obj",
-		tiles = {wood, "grug_cooking_dish_salt_crusted_fish.png"}, walkable = true,
+		tiles = {wood, fish}, walkable = true,
 		boxes = {{-0.42,-0.5,-0.34,0.42,-0.40,0.34}, {-0.42,-0.40,-0.34,-0.34,-0.16,0.34},
 			{0.34,-0.40,-0.34,0.42,-0.16,0.34}, {-0.31,-0.35,-0.16,0.31,-0.20,0.16}}},
 	{id = "crate_meat", description = "Meat Crate", family = "N11", mount = "floor",
-		mesh = "grug_decor_furnish_crate_meat.obj", tiles = {wood, "mobs_meat_raw.png"}, walkable = true,
+		mesh = "grug_decor_furnish_crate_meat.obj", tiles = {wood, meat}, walkable = true,
 		boxes = {{-0.42,-0.5,-0.34,0.42,-0.40,0.34}, {-0.42,-0.40,-0.34,-0.34,-0.16,0.34},
 			{0.34,-0.40,-0.34,0.42,-0.16,0.34}, {-0.30,-0.36,-0.22,0.30,-0.19,0.22}}},
 	{id = "crate_ore", description = "Ore Crate", family = "N11", mount = "floor",
@@ -248,11 +258,14 @@ local furnishings = {
 
 	-- N13-N17: reading, writing and alchemy groups.
 	{id = "book_stack", description = "Stack of Books", family = "N13", mount = "table",
-		texture = book, material = "soft",
-		boxes = {{-0.30,-0.5,-0.22,0.24,-0.43,0.22}, {-0.24,-0.43,-0.20,0.30,-0.35,0.20},
-			{-0.27,-0.35,-0.17,0.18,-0.28,0.17}}},
+		mesh = "grug_decor_furnish_book_stack.obj", tiles = {paper, book, blue_cloth}, material = "soft",
+		boxes = {{-0.30,-0.5,-0.22,0.24,-0.49,0.22}, {-0.29,-0.49,-0.21,0.23,-0.44,0.21},
+			{-0.30,-0.44,-0.22,0.24,-0.43,0.22}, {-0.24,-0.43,-0.20,0.30,-0.42,0.20},
+			{-0.23,-0.42,-0.19,0.29,-0.36,0.19}, {-0.24,-0.36,-0.20,0.30,-0.35,0.20},
+			{-0.27,-0.35,-0.17,0.18,-0.34,0.17}, {-0.26,-0.34,-0.16,0.17,-0.29,0.16},
+			{-0.27,-0.29,-0.17,0.18,-0.28,0.17}}},
 	{id = "book_open", description = "Open Book", family = "N14", mount = "table",
-		texture = paper, material = "soft",
+		mesh = "grug_decor_furnish_book_open.obj", tiles = {paper, book}, material = "soft",
 		boxes = {{-0.34,-0.5,-0.22,-0.02,-0.45,0.22}, {0.02,-0.5,-0.22,0.34,-0.45,0.22},
 			{-0.03,-0.48,-0.23,0.03,-0.42,0.23}}},
 	{id = "lectern", description = "Reading Lectern", family = "N14", mount = "floor",
@@ -261,7 +274,7 @@ local furnishings = {
 			{-0.31,0.12,-0.20,0.31,0.20,0.20}, {-0.27,0.20,-0.12,0.27,0.29,0.18},
 			{-0.31,0.18,0.16,0.31,0.34,0.24}}},
 	{id = "writing_set", description = "Writing Set", family = "N15", mount = "table",
-		texture = paper, material = "soft",
+		mesh = "grug_decor_furnish_writing_set.obj", tiles = {paper, ink, pale_wood}, material = "soft",
 		boxes = {{-0.32,-0.5,-0.24,0.18,-0.47,0.24}, {0.21,-0.5,-0.10,0.34,-0.34,0.03},
 			{0.08,-0.47,-0.03,0.30,-0.43,0.01}, {0.25,-0.34,-0.06,0.29,-0.10,-0.02}}},
 	{id = "scroll", description = "Scroll", family = "N16", mount = "table",
@@ -269,15 +282,16 @@ local furnishings = {
 		boxes = {{-0.31,-0.5,-0.16,0.31,-0.46,0.16}, {-0.36,-0.49,-0.20,-0.30,-0.41,0.20},
 			{0.30,-0.49,-0.20,0.36,-0.41,0.20}}},
 	{id = "scroll_bundle", description = "Bundle of Scrolls", family = "N16", mount = "table",
-		texture = paper, material = "soft",
+		mesh = "grug_decor_furnish_scroll_bundle.obj", tiles = {paper, rope}, material = "soft",
 		boxes = {{-0.28,-0.5,-0.18,0.28,-0.42,-0.08}, {-0.24,-0.5,-0.04,0.30,-0.40,0.06},
 			{-0.30,-0.5,0.08,0.22,-0.41,0.18}, {-0.04,-0.44,-0.20,0.04,-0.37,0.20}}},
 	{id = "map_sheet", description = "Map Sheet", family = "N16", mount = "table",
-		texture = "default_paper.png^[colorize:#b79a66:45", material = "soft",
+		mesh = "grug_decor_furnish_map_sheet.obj", tiles = {paper, green_cloth}, material = "soft",
 		boxes = {{-0.42,-0.5,-0.34,0.42,-0.48,0.34}, {-0.35,-0.48,-0.27,-0.30,-0.46,0.28},
 			{0.10,-0.48,-0.20,0.15,-0.46,0.23}}},
 	{id = "alchemy_set", description = "Alchemy Flask Set", family = "N17", mount = "table",
-		texture = glass, material = "stone", alpha = "blend",
+		mesh = "grug_decor_furnish_alchemy_set.obj",
+		tiles = {glass, blue_glass, amber_glass, pottery}, material = "stone",
 		boxes = {{-0.30,-0.5,-0.14,-0.10,-0.28,0.06}, {-0.25,-0.28,-0.09,-0.15,-0.10,0.01},
 			{-0.03,-0.5,-0.08,0.13,-0.20,0.08}, {0.02,-0.20,-0.04,0.08,0.02,0.04},
 			{0.19,-0.5,-0.13,0.34,-0.34,0.02}, {0.22,-0.34,-0.10,0.31,-0.08,-0.01},
@@ -285,14 +299,14 @@ local furnishings = {
 
 	-- N18-N20: wall tools and material dishes. Wall fronts face -Z.
 	{id = "herb_bundle", description = "Hanging Herb Bundle", family = "N18", mount = "wall",
-		texture = herb, material = "soft", alpha = "clip",
+		mesh = "grug_decor_furnish_herb_bundle.obj", tiles = {rope, herb}, material = "soft",
 		boxes = {{-0.04,0.20,0.43,0.04,0.43,0.48}, {-0.24,-0.25,0.42,-0.03,0.21,0.48},
 			{0.03,-0.32,0.42,0.24,0.21,0.48}, {-0.27,-0.05,0.42,0.27,0.03,0.48}}},
 	{id = "tool_board", description = "Tool Board", family = "N19", mount = "wall",
-		mesh = "grug_decor_furnish_tool_board.obj", tiles = {wood, iron},
-		boxes = {{-0.42,-0.35,0.43,0.42,0.35,0.49}, {-0.28,-0.24,0.36,-0.20,0.24,0.43},
-			{-0.04,-0.17,0.36,0.04,0.27,0.43}, {0.17,-0.25,0.36,0.29,0.12,0.43},
-			{0.12,0.12,0.36,0.34,0.20,0.43}}},
+		mesh = "grug_decor_furnish_tool_board.obj", tiles = {wood, pale_wood, tool_metal},
+		boxes = {{-0.42,-0.35,0.43,0.42,0.35,0.49}, {-0.24,-0.24,0.36,-0.20,0.24,0.43},
+			{-0.04,-0.17,0.36,0.04,0.27,0.43}, {0.20,-0.25,0.36,0.26,0.15,0.43},
+			{0.12,0.12,0.32,0.34,0.20,0.43}, {-0.28,0.18,0.32,-0.12,0.26,0.43}}},
 	{id = "material_ore", description = "Ore Material Dish", family = "N20", mount = "table",
 		mesh = "grug_decor_furnish_material_ore.obj", tiles = {stone, ore}, material = "stone",
 		boxes = {{-0.28,-0.5,-0.24,0.28,-0.45,0.24}, {-0.22,-0.45,-0.18,0.22,-0.35,0.18},
@@ -358,13 +372,13 @@ local furnishings = {
 			{-0.035,0.20,0.13,0.035,0.30,0.18}}},
 	{id = "chandelier", description = "Ring Chandelier", family = "N27", mount = "ceiling",
 		mesh = "grug_decor_furnish_chandelier.obj", tiles = {iron, wax, flame}, material = "metal", light = 12,
-		boxes = {{-0.04,0.25,-0.04,0.04,0.50,0.04}, {-0.35,0.05,-0.35,0.35,0.12,-0.28},
+		boxes = {{-0.04,0.12,-0.04,0.04,0.50,0.04}, {-0.35,0.05,-0.35,0.35,0.12,-0.28},
 			{-0.35,0.05,0.28,0.35,0.12,0.35}, {-0.35,0.05,-0.28,-0.28,0.12,0.28},
 			{0.28,0.05,-0.28,0.35,0.12,0.28}, {-0.31,0.10,-0.31,-0.27,0.31,-0.27},
 			{0.27,0.10,-0.31,0.31,0.31,-0.27}, {-0.31,0.10,0.27,-0.27,0.31,0.31},
 			{0.27,0.10,0.27,0.31,0.31,0.31}, {-0.305,0.31,-0.305,-0.275,0.39,-0.275},
 			{0.275,0.31,-0.305,0.305,0.39,-0.275}, {-0.305,0.31,0.275,-0.275,0.39,0.305},
-			{0.275,0.31,0.275,0.305,0.39,0.305}}},
+			{0.275,0.31,0.275,0.305,0.39,0.305}, {-0.35,0.10,-0.03,0.35,0.14,0.03}}},
 	{id = "fire_basket", description = "Fire Basket", family = "N28", mount = "floor",
 		mesh = "grug_decor_furnish_fire_basket.obj",
 		tiles = {iron, ember, fire_flame, fire_glow}, material = "metal",
@@ -418,13 +432,13 @@ local furnishings = {
 	-- N31: floor planter and ceiling-hung plant.
 	{id = "planter", description = "Green Planter", family = "N31", mount = "floor",
 		mesh = "grug_decor_furnish_planter.obj", tiles = {pottery, leaf}, material = "stone",
-		walkable = true, alpha = "clip",
+		walkable = true,
 		boxes = {{-0.31,-0.5,-0.31,0.31,-0.39,0.31}, {-0.27,-0.39,-0.27,0.27,-0.13,0.27},
 			{-0.05,-0.13,-0.05,0.05,0.32,0.05}, {-0.28,0.02,-0.06,0.28,0.10,0.06},
 			{-0.07,-0.02,-0.27,0.07,0.09,0.27}, {-0.20,0.12,-0.05,0.20,0.20,0.05}}},
 	{id = "hanging_plant", description = "Hanging Plant", family = "N31", mount = "ceiling",
-		mesh = "grug_decor_furnish_hanging_plant.obj", tiles = {wicker, leaf}, material = "soft", alpha = "clip",
-		boxes = {{-0.03,0.27,-0.03,0.03,0.50,0.03}, {-0.25,-0.04,-0.25,0.25,0.04,0.25},
+		mesh = "grug_decor_furnish_hanging_plant.obj", tiles = {wicker, leaf}, material = "soft",
+		boxes = {{-0.03,0.04,-0.03,0.03,0.50,0.03}, {-0.25,-0.04,-0.25,0.25,0.04,0.25},
 			{-0.20,-0.18,-0.20,0.20,-0.04,0.20}, {-0.04,-0.43,-0.04,0.04,-0.16,0.04},
 			{-0.23,-0.34,-0.03,0.23,-0.27,0.03}, {-0.03,-0.30,-0.22,0.03,-0.23,0.22}}},
 

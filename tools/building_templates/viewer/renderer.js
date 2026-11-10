@@ -331,7 +331,10 @@ export function createNodeView(opts) {
       if (!b) { b = new Bucket(tex, mode); buckets.set(k, b); }
       return b;
     };
-    const modeOf = t => t.alpha === "blend" ? "blend" : (t.alpha === "opaque" && t.cube ? "opaque" : "clip");
+    // use_texture_alpha is a material contract for every drawtype. In
+    // particular, opaque nodeboxes and meshes must not acquire alpha testing
+    // merely because their geometry is not a full cube.
+    const modeOf = t => t.alpha === "blend" ? "blend" : (t.alpha === "opaque" ? "opaque" : "clip");
     const occl = (x, y, z) => { const t = visibleType(d.at(x, y, z), d); return t && t.occl ? 1 : 0; };
     const AO = [1.0, 0.8, 0.66, 0.54];
 
@@ -415,7 +418,7 @@ export function createNodeView(opts) {
         const bufs = MESHES[t.mesh] || [];
         const m = rotationFor(t, p2);
         bufs.forEach((buf, bi) => {
-          const b = bucket(t.tex[Math.min(bi, t.tex.length - 1)], "clip");
+          const b = bucket(t.tex[Math.min(bi, t.tex.length - 1)], modeOf(t));
           for (let k = 0; k + 15 <= buf.length; k += 15) {
             const pts = [], uvs = [];
             for (let v = 0; v < 3; v++) {
