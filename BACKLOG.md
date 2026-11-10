@@ -4515,11 +4515,11 @@ Gates:
 - Freeze game/engine/settings identity and choose the intended public seed.
   Since Round 22 D24 the coast and borders vary per seed, so the seed is a
   free choice.
-- Complete the Z-Image media gate for `menu/icon.png`: set ContentDB's
-  **AI-generated media flag** (content policy §4.3), credit Z-Image, retain Jan
-  Hangebrauck as prompt/mask author and rights holder, keep the source render
-  and derivative under CC0 1.0, and retain the source/prompt/export record in
-  `menu/LICENSE-media.md` (added 2026-09-16).
+- Complete the AI-generated media gate for `menu/icon.png`: set ContentDB's
+  **AI-generated media flag**, credit OpenAI's built-in image generation,
+  retain Jan Hangebrauck as art director and rights holder, keep the source
+  render and derivatives under CC0 1.0, and retain the source/prompt/export
+  record linked from `menu/LICENSE-media.md` (updated 2026-11-10).
 
 Release checks with judgement, not gates (E10: sometimes thorough, never a
 rigid rule that forces hour-long tests):

@@ -33,7 +33,7 @@ starts from; it holds no plan and decides nothing. The deploy round's coordinato
 
 - **The first-public-release gates** ([BACKLOG](../../BACKLOG.md#first-public-release-gates), open, owned by the
   coordinator preparing the first public release): freeze the game, engine and settings identity and choose the public
-  seed; the Z-Image media gate for `menu/icon.png` (ContentDB's AI-generated media flag, the credit, CC0, the source
+  seed; the AI-generated media gate for `menu/icon.png` (ContentDB's AI-generated media flag, the credit, CC0, the source
   record in `menu/LICENSE-media.md`). Checks with judgement, not gates: a native start, generation and restart of the
   candidate as deep as its changes warrant; an **optional** PUC Lua 5.1 crash smoke test; one spot check of resource
   supply and regional access on a few seeds.

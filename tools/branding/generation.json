@@ -1,0 +1,25 @@
+{
+  "approved_on": "2026-11-10",
+  "approved_by": "Jan Hangebrauck",
+  "tool": "OpenAI built-in image_gen",
+  "model": "Not exposed by the tool",
+  "master": "grudgelands_icon.png",
+  "master_sha256": "996e2f2159657aa48f929d68bc4458068175d3b14b31eeb6709e006190e7df75",
+  "dimensions": [
+    1254,
+    1254
+  ],
+  "background": "transparent alpha",
+  "edit_input": "source/concept-4.png",
+  "lineage": "Old split-shield logo and current Round 67 H1/K1 heraldry informed concept 2. The user selected concept 4 (balanced heads), then approved its final polish and light/dark size previews.",
+  "original_references_at_commit": "23f0f1b4",
+  "original_references": [
+    "tools/branding/grudgelands_icon.png",
+    "tools/r67_emblem/preview/large_accord_1.png",
+    "tools/r67_emblem/preview/large_throng_1.png"
+  ],
+  "prompt": "Use case: precise-object-edit and background-extraction. Create the finished polished master PNG of this approved Grudgelands shield. This is a very conservative final retouch of the exact supplied image, NOT another redesign. Output ONE large square high-resolution image with a genuinely TRANSPARENT ALPHA background, isolated full shield with clear clean edges and modest equal breathing room. No background color, no checkerboard baked into pixels, no floor or cast shadow outside the shield, no label, no text, no numeral.\nPreserve the exact broad coarse shield silhouette, existing shape and alignment of both animal half faces, aligned eyes and muzzle tips, tall branching left hart antler and lowered right boar bristles, slate-blue left and muted wine-red right, massive roughly hammered iron rim with large rivets, rough aged bronze animal reliefs, battle scars AND subsidiary cracks of this exact approved concept 4, central orange fiery fissure and its small flame at the bottom, frontal camera and dramatic realistic lighting. Preserve the gritty, heavy physical artifact feel. Do not sanitize the hammered metal or smooth it into jewelry. Do not change the whole composition or make the boar tall again.\nMake only these final polish corrections:\n1. Remove the little round bead/rivet at the outer upper-left antler tip (near x 23% y18% of source). Finish that antler branch as a natural narrow tapered bronze point, preserving the rest of the antler shape.\n2. Very subtle nose-contour refinement: the left hart dark nose recess should be a small natural tapered deer-nose shape, not a cute heart or three-lobed clover. Retain the frontal half-head composition and original muzzle location. The right boar nose recess should have slightly softened irregular forged edges, not look like a perfect geometric polygon. Keep both muzzle tips aligned and animal identities clear. No new anatomical details elsewhere.\n3. Add sparse restrained silver-grey rubbed highlights to selected outer iron edges (shoulders, a few side edges and lower point) so the complete silhouette remains visible on dark backgrounds. Not a continuous luminous outline, no halo, no bevel sticker border.\n4. Remove the old concept number 4 completely and remove the whole dark backdrop to true transparency. The dark material inside the shield, the eye openings showing blue/red shield fields, dark recesses and hot fissure remain part of the opaque shield, not transparency holes. Do not erase dark shield pixels. The outer contour alone determines the cutout.\nThe resulting artifact must look immediately like the approved image with these small corrections, and work as both a large realistic logo and a small icon. Highest available detail. No separate previews on this canvas.",
+  "export_tool": "ImageMagick 7.1.2-35",
+  "export_script": "make_icons.sh",
+  "license": "CC0-1.0 (continuing the repository's branding media dedication)"
+}

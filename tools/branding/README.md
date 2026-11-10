@@ -1,40 +1,62 @@
 # Branding — the Grudgelands crest
 
-Everything needed to regenerate `menu/icon.png` and the other icon sizes from
-the source render. Licence for all of it: CC0 1.0, see `menu/LICENSE-media.md`
-(AI-generated with Z-Image, prompt and mask edit by Jan Hangebrauck).
+The user-approved logo is a battle-worn iron shield with bronze half-heads:
+The Accord's hart on slate blue and The Throng's boar on wine red, separated
+by a fiery fissure. Concept 4 and its final polish were approved on 2026-11-10.
+The [media record](../../menu/LICENSE-media.md) owns credit and licensing.
 
-| file | what |
-|---|---|
-| `grudgelands_icon.png` | 1024×1024 source render (Z-Image, local), black background |
-| `mask_hand.png` | 1024×1024 cutout mask, hand-corrected in GIMP — the shipped reference |
-| `make_icons.sh` | cutout + export pipeline (ImageMagick 7; the automatic-mask path also needs python3 with numpy and Pillow) |
-| `hullmask.py` | helper for the automatic mask path only |
+## Files and sizes
 
-## Reproduce the shipped icon
+| File | Dimensions | Intended use |
+|---|---|---|
+| `grudgelands_icon.png` | 1254 × 1254 | Unmodified approved RGBA master; keep for future exports |
+| `exports/plain_<N>.png` | 16, 32, 48, 64, 96, 128, 256, 512, 1024 square | Transparent icons, website branding and general reuse |
+| `exports/avatar_512.png`, `exports/avatar_1024.png` | 512 / 1024 square | Opaque charcoal profile pictures with room for a circular crop |
+| `exports/favicon.ico` | 16, 32, 48 frames | Website favicon |
+| `../../menu/icon.png` | 96 × 96 | Same bytes as `exports/plain_96.png`; also used by the README |
+| `generation.json` | — | Approval, generation prompt, input provenance and master checksum |
+| `source/concept-4.png` | 1254 × 1254 | Retained input to the final polish; not a production logo |
+
+Prefer 1024 for a large website logo or a profile-picture upload, 512 for
+smaller branding, and the matching small PNG for a fixed-size UI icon.
+These are general-purpose exports, not platform-specific upload requirements.
+Use the transparent logo over a chosen background; use the avatar files when
+the destination expects a filled square or crops pictures to a circle.
+
+The master has real alpha. Plain exports trim transparent margins, preserve
+aspect ratio and fit the shield inside 90% of a square. Avatars fit it inside
+75% of a square over `#181b20`. There is no extra sharpening, saturation or
+redrawing. At 32 px, the outline, faction colours and fiery split carry the
+identity; fine facial details are clearer at 64 px and above.
+
+No upscaled 2048/4096 master or traced SVG is supplied: the approved source is
+raster art at 1254 px. Preserve it rather than treating interpolation as new detail.
+
+## Reproduce
+
+Requires ImageMagick 7; run from the repository root:
 
 ```sh
-cd tools/branding
-MASK=mask_hand.png ./make_icons.sh grudgelands_icon.png /tmp/grudgelands-icons
-magick compare -metric AE /tmp/grudgelands-icons/plain_96.png ../../menu/icon.png null:
+bash tools/branding/make_icons.sh tools/branding/grudgelands_icon.png /tmp/grudgelands-icons
+cmp /tmp/grudgelands-icons/plain_96.png menu/icon.png
+diff -qr tools/branding/exports /tmp/grudgelands-icons
 ```
 
-The compare prints `0 (0)`: the pixels are identical. The files are not
-byte-identical because ImageMagick writes the run's time into the PNG
-(`tIME`, `date:*` text chunks). Verified on 2026-09-16 for `plain_96` and
-`plain_512` (signature `cfa4e1b6…` and `fab9e7ca…`).
+To refresh the tracked exports intentionally:
 
-Without `MASK=` the script rebuilds an automatic mask that differs from the
-hand-edited one by a few hundred pixels. Do not ship that path's output.
+```sh
+bash tools/branding/make_icons.sh tools/branding/grudgelands_icon.png tools/branding/exports
+cp tools/branding/exports/plain_96.png menu/icon.png
+```
 
-`out/punch_<N>.png` (96 and below) are the same icons with slightly boosted
-contrast; `menu/icon.png` is the plain variant, the default choice.
+Export PNGs omit timestamps and metadata; the approved master is copied
+byte-for-byte. Reproduction is checked with ImageMagick 7 on this workstation;
+different ImageMagick versions may produce different encodings or resampling.
+The old black-background source, hand mask and automatic mask helper are
+retired; their provenance remains in Git history (before the logo refresh).
 
-## Package size
+## Acceptance
 
-The source render is 1.6 MB and, like everything in the repository, would ship
-in the ContentDB package (tools/ as a whole is already over 300 MB, so the
-render is not the deciding item). If it should stay out of the package, an
-`export-ignore` line in the existing `.gitattributes` is the mechanism;
-whether ContentDB honours it has not been verified, so none is set. What of
-`tools/` and `docs/research/` ships at all is a release-time decision.
+The user accepted the final full-size logo and the light/dark, 32/64/128 px
+previews before integration on 2026-11-10. This is a compatible artwork-only
+change; no game version, world state or gameplay code changes.

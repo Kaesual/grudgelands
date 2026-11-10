@@ -7,25 +7,29 @@ part of this directory yet.
 
 ## `icon.png` — CC0 1.0
 
-The Grudgelands crest: a heater shield split by a glowing fissure, a gold half
-with an oak and a sun (Elandor) and a rust-red half with three black peaks
-(Kragmar), fire rising from the bottom of the crack. Approved by the user on
-2026-09-16.
+The Grudgelands crest is a battle-worn iron shield split by a fiery fissure.
+Bronze half-heads show The Accord's hart on slate blue and The Throng's boar
+on wine red. The user approved concept 4 and its final polish on 2026-11-10.
 
-* Author / rights holder: Jan Hangebrauck (prompt, mask edit, approval).
-* Generated with Z-Image (run locally); prompt by Jan Hangebrauck; the cutout
-  mask that removes the render's black background was hand-edited by Jan
-  Hangebrauck in GIMP.
+* Art direction, selection and rights holder: Jan Hangebrauck.
+* Generated and polished with OpenAI's built-in image generation tool, with
+  prompts prepared by Codex from the user's direction and repository heraldry.
+  The tool did not expose an underlying image-model identifier.
 * Licence: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
-  (public-domain dedication) for the icon and for the source render.
-* Source and reproduction: `tools/branding/` holds the 1024×1024 source render
-  (`grudgelands_icon.png`, also CC0 1.0), the hand-edited mask and the export
-  pipeline; `tools/branding/README.md` gives the exact command. `icon.png` is
-  the pipeline's `plain_96.png`: the cutout scaled to 90 % of a transparent
-  96×96 square.
-* Modifications: background removed, padded to a transparent square, scaled.
-  The PNG keeps the `zTXt parameters` chunk ImageMagick copied from the source
-  render, i.e. the generation prompt travels inside the file.
+  (public-domain dedication), continuing the project's branding licence for
+  the source, retained concept and derivatives.
+* Source: [the approved 1254×1254 transparent PNG](../tools/branding/grudgelands_icon.png),
+  preserved byte-for-byte. The final edit's input is retained as
+  [concept 4](../tools/branding/source/concept-4.png); the
+  [generation record](../tools/branding/generation.json) contains its prompt,
+  lineage, original references and the master checksum.
+* Derivation: ImageMagick trims transparent margins, scales with Lanczos and
+  centres the shield within 90% of a transparent square. `menu/icon.png` is
+  byte-identical to the 96×96 `exports/plain_96.png`. No contrast or colour
+  adjustment is applied. The profile-picture variants use 75% over charcoal.
+* Reproduction and all export sizes: [branding kit](../tools/branding/README.md).
+  The old Z-Image source and its GIMP cutout mask are retired; their original
+  credit and licence record remain in Git history before the logo refresh.
 
 ## `theme.ogg` — CC0 1.0
 
