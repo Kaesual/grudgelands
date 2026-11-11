@@ -2,6 +2,24 @@
 
 Updated 2026-11-11. This is the delivery pointer, not another game specification.
 
+**0.76.0 / Round 76 is merged locally into main as one squash commit on top of 0.75.5
+(tag `round-76`), synced to local Luanti; not pushed; the GUI test is open.**
+Clans after player requests (rulings 2026-11-11, [plan](planning/round76-plan.md),
+[clans.md](design/clans.md)): a second, purely social kind of party (no name, no HUD, no
+game effect), up to 100 players of one faction with Leader, Captain and Member, the Clan
+invitations switch, `/c` clan chat with presence and membership lines and `/p` party chat
+(CLAN); the Social tab in four cards (party and clan left, Online Players and PvP right),
+one row style for all three lists, the clan card with Online/Offline tabs and pages of
+seven, party status instead of HP, party invitations as rows, Party and Clan buttons and
+the clan mark per online row (SOCIAL, after the user's look rulings and two fix rounds).
+**Compatible:** no step, no map reset; new saved keys: mod storage `grug_clans` / `clans`
+(and `clans_unreadable` on a parse failure), player meta `grug_clans:invites_off`.
+Reviews: CLAN MERGE, SOCIAL MERGE with two delta reviews MERGE. Fixtures: the new
+`r76_clan` (561) and `r76_social` (301); `r67_social`, `r44_pp`, `r26_status_icons`,
+`r31_p2` updated; the round-end full run in the completion. **Open for the user:** the
+24-item desktop and web checklist (plan §6), the clan mark's look, the party notice's
+place and offline rows without a race icon.
+
 **0.75.5 is merged locally into main as one squash commit; not pushed.**
 The detailed reviewed history is retained by tag `round-75.5`. The local Luanti
 Flatpak game is synced and verified: all 4,958 game files match main. The user

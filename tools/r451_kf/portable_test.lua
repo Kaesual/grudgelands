@@ -185,14 +185,15 @@ party = {leader = "ana", members = {
 	{name = "bo", class = "mage", level = 28, online = true, hp = 18, hp_max = 20}}}
 pending = {{inviter = "bo", level = 28, expires_in = 50}}
 fs = H.render(ana, PARTY)
-check(fs:find("table[", 1, true) ~= nil and
+-- Round 76: member rows (a pick button each) instead of a member table.
+check(fs:find("grug_party_pick_bo;", 1, true) ~= nil and
 	fs:find("You are not in a party.", 1, true) == nil and
 	fs:find("There is no early unflag.", 1, true) ~= nil,
-	"I Party in a party: member table and PvP rules replace the empty-party hint")
+	"I Party in a party: member rows and PvP rules replace the empty-party hint")
 harmless(fs, "button:grug_social_focus", "I Party in a party", {tab = TABS})
 sfinv.get_or_create_context(ana).grug_party_notice = "Refused: no."
 fs = H.render(ana, PARTY)
-check(fs:find("Refused: no.", 1, true) ~= nil, "I Party with a notice: the notice textarea")
+check(fs:find("Refused: no.", 1, true) ~= nil, "I Party with a notice: the notice line")
 harmless(fs, "button:grug_social_focus", "I Party with a notice", {tab = TABS})
 
 local HELP = "grug_inventory:help"

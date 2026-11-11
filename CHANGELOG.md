@@ -12,6 +12,34 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.76.0 — clans, party chat and clan chat (2026-11-11)
+
+Compatible: no map reset, no new world, nothing for the host to do. Parties
+stay exactly as they were.
+
+- **Clans:** a second, purely social group beside your party, for up to
+  **100 players** of your faction. A clan has no name, no HUD and no effect on
+  XP, loot, quests or Expeditions; you can be in a clan and a party at once.
+  Invite a player with the new **Clan** button in Online Players; when they
+  accept, the clan exists with you as its **Leader**. The leader and
+  **Captains** invite and remove members (captains only members); the leader
+  makes captains and members and can hand over the lead. When the leader
+  leaves, the first captain leads (or the first member). With one member
+  left the clan dissolves. A "Clan invitations" switch turns clan invitations
+  off without touching party invitations.
+- **Party and clan chat:** **/p** writes to your party in blue, **/c** to
+  your clan in green. Your clan sees when a member comes online or goes
+  offline, joins, leaves, is removed or changes role.
+- **The Social tab in four cards:** party and clan on the left, Online
+  Players and PvP on the right. All three lists share one row style with
+  clear columns; a click on a party or clan row selects it. The clan card has
+  **Online** and **Offline** tabs with pages of seven and shows when an
+  offline member was last online. Party rows now show Online or Offline
+  instead of health (the Party HUD keeps the health bars), and party
+  invitations appear as rows like clan invitations. Each Online Players row
+  has a **Party** and a **Clan** button, and clan mates carry a small green
+  mark.
+
 ## 0.75.5 — coherent town architecture (2026-11-11)
 
 **Map reset**, joining the planned production reset. Ordinary homes, workshops

@@ -6,6 +6,32 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 76 — clans, party chat and clan chat (GUI acceptance pending)
+
+Delivered in 0.76.0 (**compatible**) on `round76`, not on main and not pushed
+([completion and checklist](docs/planning/round76-plan.md#completion-2026-11-11); rules in
+[clans.md](docs/design/clans.md) and [parties.md](docs/design/parties.md)). Carry-overs
+from the lane reports and reviews, none blocking:
+
+- **Load repairs are not saved** until the next clan change, so their warnings repeat at
+  every boot (`grug_clans/init.lua` load validation). Persist once after a repair if the
+  log noise matters.
+- **`last_online` after a crash:** it is also stamped at login, so after a crash (no leave
+  or shutdown hook) an offline row shows the member's last login, not the logout.
+- **The whole clan store is serialized** at every clan member's login and logout and at
+  every change. Fine at the design size; watch it if clans become many.
+- **The clan list moves under a click:** a presence event re-sends the card and the
+  order shifts; the pick button names its player (fix round 1), but the row under the
+  cursor may then be another member. The highlight shows before Kick acts (GUI item 22).
+- **Clan button cost:** `can_invite` per Online Players row is linear in the viewer's
+  clan size (`record_of`); event-driven and capped at 100, so not measured as a problem.
+- **Offline clan (and party) rows show no race icon:** neither stores the race. Storing it
+  with the class is one field, compatible; only if the user's GUI test asks for it.
+- **Invitation seconds** (party and clan rows) count down only when the page is re-sent.
+- **API caveats** for a future caller: `grug_clans.invitations_enabled` needs a player
+  object (a name errors); the `can_kick`, `can_promote`, `can_demote` and `can_transfer`
+  target must be a name (an object answers false).
+
 ## Round 75.2 — decoration corrections (GUI acceptance pending)
 
 Material and city follow-ups from the first playtest are reviewed, tested,

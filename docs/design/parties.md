@@ -1,6 +1,7 @@
 # Parties
 
-Decided 2026-09-21; Round 14 user Go.
+Decided 2026-09-21; Round 14 user Go. Clans, the second and purely social
+kind of group (Round 76), have their own rules: [clans.md](clans.md).
 
 
 ### Confirmed by the user
@@ -92,16 +93,46 @@ does not introduce any shared XP, quest or teleport authority.
 ## The Social tab
 
 Round 67 (rulings 1–8) renamed the Party & PvP tab **Social** and rebuilt
-it. Left, from the top: the settings row (Invitations, Party HUD, Health
-colors), **one party box** and the PvP section ([pvp.md](pvp.md) §5).
-Right, at full height: the **Online Players** list.
+it; Round 76 (rulings 7 and 8) made it four cards: left (8.6 wide), from
+the top, the settings row (Invitations, Party HUD, Health colors), **one
+party box** and the **clan card**; right (10.8 wide) the **Online Players**
+list (it scrolls) and the PvP section below it ([pvp.md](pvp.md) §5). The
+party, clan and player lists share one row style: alternating row
+backgrounds, icons, fixed columns, the own row tinted; in the party and
+clan lists a click anywhere on a row selects it (stronger tint and a frame).
 
 - **The party box** shows the current party ("Current Party (n/10)", the
-  member table with Leave, and Kick and Make leader for the leader) or,
-  without a party, the pending invitations under their count ("0 Pending
-  Invitations", "1 Pending Invitation", …) with Accept and Decline; with
-  none, a hint to invite from the list. The two never show together, and
-  accepting an invitation switches the box at once.
+  member rows under small column heads: class and race icons, name, role
+  ("Leader" only), level and status, "Online" or "Offline", as in the clan
+  list; live health is the Party HUD's, since this page is not re-sent on
+  HP changes; six rows visible, scrolling from seven) with Leave, and Kick
+  and Make leader for the leader, or, without a party, the pending
+  invitations under their count ("0 Pending Invitations", "1 Pending
+  Invitation", …) in the same rows (class, race, inviter, party size,
+  level, seconds left; an inviter without a party shows "1/10") with
+  Accept and Decline; with none, a hint to invite
+  with the Party button. The party and clan rows carry no "(you)" (the own
+  row is tinted); Online Players keeps it. The two never show together, and accepting an
+  invitation switches the box at once. The box's messages show in the
+  Online Players heading row (the box has no free line).
+- **The clan card** (Round 76, `grug_clans/social.lua`; rules in
+  [clans.md](clans.md)) mirrors it: the
+  heading "Clan (n/100)" and the "Clan invitations" switch, two tabs
+  "Online (n)" (the default) and "Offline (n)", pages of seven rows with
+  "‹ p / P ›", rows with class and race, name, role (Leader, Captain,
+  Member), level and "Online" or the age of the last logout ("5 min ago");
+  online members by role and name, offline ones by most recent logout.
+  Only the shown page is sent. Leave always, and the buttons the clan API
+  allows for the selected row (Make captain or Make member, Make leader,
+  Kick); a tab or page change, or the selected member leaving the page,
+  clears the selection. The line under the list shows the last button's
+  message until the next selection, tab or page change, else a hint:
+  "Click a member to select them.", "Selected: you.", "Members can only
+  leave.", "Captains cannot act on the leader or other captains." or
+  "Selected: <name>.". Without a clan the pending clan invitations in the
+  same rows (class, race, inviter, clan size or "new clan", level, seconds
+  left) with Accept and Decline, or a hint to invite with the Clan button.
+  Tab, page and selection are session state.
 - **Online Players** lists every online player of both factions, one
   compact row each: faction, name, class, race and level, faction, class
   and race as icons with the word as tooltip; the viewer's own row is
@@ -110,17 +141,22 @@ Right, at full height: the **Online Players** list.
   first, then by name (case-insensitive), favourites by name too. It
   scrolls; there is no paging.
 - **Row actions** on the right: a **star** that marks the player a
-  favourite (any row but the own), and **Invite**, shown only when the
+  favourite (any row but the own), and **Party**, shown only when the
   viewer may invite that player now: the viewer is in no party or leads
   one that is not full, and the target is of the viewer's faction, online,
   in no party, accepting invitations and not already invited by the
-  viewer. Enemy rows therefore never show it. Each button names its player,
-  never a place in the list; the invitation API decides again at the click.
+  viewer. Enemy rows therefore never show it. Beside it **Clan**, shown
+  only when the clan API allows the clan invitation (`grug_clans.can_invite`),
+  and a small green **clan mark** after the faction icon of every clan
+  mate (Round 76). Each button names its player, never a place in the
+  list; the invitation API decides again at the click.
 - **Favourites** are per character, saved by name in player meta (like the
   recipe favourites); only an online player can be marked.
 - **Refresh:** the list follows joins, leaves, faction, class, race and
   level changes, party changes and the invitation switch, and the box
-  follows the viewer's invitations. Only players whose current inventory
+  follows the viewer's invitations. A clan change of membership, role,
+  presence or the clan invitation switch re-sends every viewer (their Clan
+  buttons and marks may move); other clan changes only the players named. Only players whose current inventory
   page is Social get sends (the server cannot tell whether the window is
   open), at most one every 2 s: changes in one server step make one send,
   a change inside the 2 s goes out when they end. A send waits 0.5 s after
@@ -148,3 +184,13 @@ an offline member or a member without a class shows a blank instead.
 Member and invitation labels include `[Lv X]`. Online levels are live; an
 offline member retains the last known level in the persisted party record.
 This does not introduce a separate global offline-player database.
+
+## Party chat
+
+Round 76 (ruling 9): `/p <text>` sends `[Party] Name: text` in blue
+(`#6fb6ff`) to the party's online members, the sender included; every
+member may write and there is no party mute. It needs `shout` like public
+chat (every player holds it by default), is logged at `action` level like
+Luanti's `/msg`, keeps no history and reaches no offline member. Without a
+party or without text it answers with one plain line. The clan chat `/c`
+belongs to the clans ([clans.md](clans.md#clan-chat-and-lines)).

@@ -949,8 +949,9 @@ passes, not postponed to this phase.
 
 - Private housing islands, purchased mining-depth rights and private material
   sources.
-- A social-organization system, shared organization bank/chat or
-  organization-owned land.
+- An organization with a name, bank, owned land or any game effect.
+  Clans (Round 76, [clans.md](docs/design/clans.md)) stay anonymous and purely
+  social: roles, invitations and a clan chat only.
 - Instanced PvP battlegrounds/arenas and permanent war-front capture in the
   current scope.
 - A separate Enchanter profession; each profession enchants the families it

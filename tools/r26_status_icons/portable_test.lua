@@ -625,19 +625,20 @@ grug_parties = {
 }
 core.register_on_mods_loaded = function() end
 function alice:get_meta() return {get_string = function() return "" end} end
+-- Round 76 fix round 1: a party row shows an online member's race icon too.
+grug_classes.get_race = grug_classes.get_race or function() return "human" end
 dofile("mods/PLAYER/grug_parties/ui.lua")
 local group = pages["grug_parties:group"]
 local group_context = {}
 local group_fs = group:get(alice, group_context)
-check(group_fs:find("tablecolumns[image,align=center,0=blank.png,1=grug_class_warrior.png," ..
-	"2=grug_class_mage.png,3=grug_class_priest.png,4=grug_class_scout.png;text", 1, true) ~= nil,
-	"member table declares the class icons")
-check(group_fs:find(";grug_party_members;1," ..
-	fs_escape("* alice [Lv 5]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 5]  10/20 HP") ..
-	",0," .. fs_escape("cyd [Lv 4]  Offline") .. ";1]", 1, true) ~= nil,
-	"member rows carry class indices (offline: blank)")
-group:on_player_receive_fields(alice, group_context, {grug_party_members = "CHG:2:2"})
-eq(group_context.grug_party_member, "bob", "table selection picks the member")
+-- Round 76 fix round 1: member rows in the Online Players style, not a table.
+check(group_fs:find("image[0.10,0.06;0.42,0.42;grug_class_warrior.png]", 1, true) ~= nil,
+	"member rows carry the class icon (alice)")
+check(group_fs:find("image[0.10,0.66;0.42,0.42;grug_class_priest.png]", 1, true) ~= nil,
+	"member rows carry the class icon (bob)")
+check(group_fs:find("image[0.10,1.26;", 1, true) == nil, "an offline member without a class: no icon")
+group:on_player_receive_fields(alice, group_context, {grug_party_pick_bob = ""})
+eq(group_context.grug_party_member, "bob", "a row click picks the member")
 
 print(("%d registered ids, %d ids set in code, %d checks, %d failures"):format(
 	registered, used, checks, failures))

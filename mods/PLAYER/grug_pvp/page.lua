@@ -7,8 +7,9 @@
 -- installs the section there (grug_parties.pvp_section) and keeps it
 -- current.
 --
--- Real coordinates, in a card below the party box (Round 67 ruling 4a):
--- state and button left, statistics right. While the tab is the player's
+-- Real coordinates, in a card below the Online Players list (Round 76; below
+-- the party box from Round 67 ruling 4a): state and button left, statistics
+-- right. While the tab is the player's
 -- page the section's text is compared once a second and the page re-sent
 -- only when it changed, through the Social tab's limiter
 -- (grug_parties.social_resend: at most one send per 2 s, none while the
@@ -27,8 +28,9 @@ end
 
 -- The card's size; the caller supplies a container. All status texts,
 -- statistics and refresh keys still come from view.lua.
-local CARD_W, CARD_H = 9.7, 6.35
-local STATS_X, VALUE_X = 5.4, 9.0
+-- Round 76 fix round 1: as wide as the Online Players card above it.
+local CARD_W, CARD_H = 10.8, 6.35
+local STATS_X, VALUE_X, TEXT_W = 6.2, 10.1, 5.4
 local function section(player, context, y)
 	local state, stats = grug_pvp.state(player), grug_pvp.stats(player)
 	local scale = grug_core.ui.text_scale(player)
@@ -42,8 +44,8 @@ local function section(player, context, y)
 		grug_core.ui.panel(0, y, CARD_W, CARD_H),
 		grug_core.ui.heading(0.3, y + 0.35, "PvP status", scale),
 		label(0.3, y + 1.0, core.colorize(lines.color, lines.headline)),
-		grug_core.ui.prose(0.3, y + 1.3, 4.8, 1.75, detail, false, scale),
-		grug_core.ui.prose(0.3, y + 3.1, 4.8, 1.95,
+		grug_core.ui.prose(0.3, y + 1.3, TEXT_W, 1.75, detail, false, scale),
+		grug_core.ui.prose(0.3, y + 3.1, TEXT_W, 1.95,
 			"Flags you for 60 s; pressing it again restarts the 60 s.\n" ..
 			"PvP needs both players flagged. There is no early unflag.", true, scale),
 		grug_core.ui.button_style(FLAG_FIELD, "danger", scale),

@@ -266,6 +266,8 @@ return function(repo, hidden)
 		register_on_class_chosen = function(fn) table.insert(registered.class_chosen, fn) end,
 		register_on_race_chosen = function(fn) table.insert(registered.race_chosen, fn) end,
 		get_class = function(player) return player.class end,
+		-- Round 76: the Social tab's party rows show an online member's race.
+		get_race = function(player) return player.race end,
 		apply_stats = noop,
 		pool_percent_amount = function(player, _, percent)
 			return math.floor(grug_core.base_pool(player.level) * percent / 100 + 0.5)

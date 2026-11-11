@@ -109,7 +109,7 @@ local function show(player, scroll, party)
 	local formspec = sfinv.get_formspec(player, context)
 	core.get_connected_players = connected
 	log(("list: %d rows, scroll %d of %s, formspec %d bytes"):format(
-		select(2, formspec:gsub("label%[0%.65,", "")), context.grug_social_scroll,
+		select(2, formspec:gsub("label%[1%.05,", "")), context.grug_social_scroll,
 		formspec:match("scrollbaroptions%[min=0;max=(%d+);") or "none", #formspec))
 	core.show_formspec(NAME, "r67social:social", formspec)
 end

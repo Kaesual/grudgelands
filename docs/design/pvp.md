@@ -122,7 +122,8 @@ eligibility and flag".
 ## 5. Interface
 
 - **The PvP section of the Social tab** (Round 44: one tab with the
-  party, no inventory; since Round 67 a card below the party box, the
+  party, no inventory; since Round 67 a card below the party box, since
+  Round 76 below the Online Players list on the right, the
   state and the button left, the statistics right; `grug_pvp/page.lua`
   installs it into `grug_parties`'s page): the "Flag me for PvP"
   button; the state — "Safe", "Flagged: Contested Territory", "Flagged:

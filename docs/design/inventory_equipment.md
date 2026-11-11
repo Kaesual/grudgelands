@@ -924,7 +924,7 @@ the Round 19 top-centre text list:
   the Stats mode since the Round 45 playtest, which merged the two;
   [character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
-  list, in the Social tab's "Current Party" table and on each row of its
+  list, in the Social tab's party and clan rows and on each row of its
   online players' list, with the race icon beside it (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
   keep using the one central registry rather than per-consumer status

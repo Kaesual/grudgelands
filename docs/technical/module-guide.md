@@ -2043,7 +2043,25 @@ tools](#player-meta-read-by-external-tools).
   through the same limiter (`grug_parties.social_resend`). The coalescing state lives in the
   sfinv context; every build counts as a send. Favourites are player meta
   `grug_parties:favorites` (a serialised sorted name list). Fixture
-  `tools/r67_social`.
+  `tools/r67_social`. Since Round 76 the tab has four cards and one row
+  style (`row_list`, `column_heads`, `member_cells`, shared with the clan
+  card), each scrollbar's position kept through `grug_parties.kept_scrolls`;
+  `init.lua` holds the `/p` party chat. Fixtures `tools/r76_social` (the tab)
+  and `tools/r76_clan` (`/p`).
+- **`grug_clans` (Round 76):** clans ([clans.md](../design/clans.md)).
+  `init.lua` holds the state (mod storage `clans`, validated at load, the
+  name index derived), the rules (only the `can_*` functions decide; each
+  action asks them again and answers `ok, message`), the session
+  invitations (one `core.after` per invitation, no globalstep), `/c` and the
+  presence lines. `grug_clans` depends on `grug_parties`, never the other
+  way (an optional dependency would be a cycle the engine refuses), so
+  `social.lua` installs the clan card and the Online Players' mark and Clan
+  button as `grug_parties.clan_section` (as `grug_pvp` installs
+  `pvp_section`); `ui.lua` draws without it. Clan changes re-send the Social
+  tab through the party limiter: membership, role, presence and the switch
+  every viewer (`grug_parties.social_resend_all`), level, class and
+  invitations only the named players. Fixtures `tools/r76_clan` (rules,
+  storage, chat) and `tools/r76_social` (the card).
 
 ## Miner's Guild
 
