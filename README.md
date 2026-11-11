@@ -98,6 +98,9 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.76.1** adds a **Party** button to each online row of the clan list, so clan mates
+can be invited to a party from there. Compatible.
+
 **0.76.0** adds clans: a long-lived, purely social group of up to 100 players of your
 faction beside your party, with a Leader, Captains and Members and no effect on play.
 `/p` writes to your party and `/c` to your clan. The Social tab now holds four cards

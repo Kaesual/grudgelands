@@ -125,7 +125,10 @@ clan lists a click anywhere on a row selects it (stronger tint and a frame).
   Only the shown page is sent. Leave always, and the buttons the clan API
   allows for the selected row (Make captain or Make member, Make leader,
   Kick); a tab or page change, or the selected member leaving the page,
-  clears the selection. The line under the list shows the last button's
+  clears the selection. Each online row but the own ends in the Online
+  Players **Party** button (0.76.1), under the same rule; its click invites
+  without selecting the row (it lies above the row's pick) and its message
+  shows in the clan card's line. The line under the list shows the last button's
   message until the next selection, tab or page change, else a hint:
   "Click a member to select them.", "Selected: you.", "Members can only
   leave.", "Captains cannot act on the leader or other captains." or
@@ -149,7 +152,8 @@ clan lists a click anywhere on a row selects it (stronger tint and a frame).
   only when the clan API allows the clan invitation (`grug_clans.can_invite`),
   and a small green **clan mark** after the faction icon of every clan
   mate (Round 76). Each button names its player, never a place in the
-  list; the invitation API decides again at the click.
+  list; the invitation API decides again at the click. The same **Party**
+  button sits in the clan card's online rows (0.76.1).
 - **Favourites** are per character, saved by name in player meta (like the
   recipe favourites); only an online player can be marked.
 - **Refresh:** the list follows joins, leaves, faction, class, race and

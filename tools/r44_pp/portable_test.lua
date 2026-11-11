@@ -471,7 +471,8 @@ has(out_fs, grug_core.ui.heading(0.5, 1.2, "2 Pending Invitations"),
 -- Round 76 fix round 2: invitations as rows (inviter, party size, level, seconds).
 has(out_fs, "grug_party_ipick_bob;", "P out of a party: bob's invitation row")
 has(out_fs, "label[3.85,0.27;2/10]", "P ...the size of bob's party")
-has(out_fs, "label[5.95,0.87;20 s]", "P ...the seconds of cyd's")
+-- 0.76.1: the last column at 5.70 (was 5.95), room for the clan rows' Party button.
+has(out_fs, "label[5.70,0.87;20 s]", "P ...the seconds of cyd's")
 has(out_fs, ";grug_party_accept;Accept]", "P out of a party: Accept")
 has(out_fs, ";grug_party_decline;Decline]", "P out of a party: Decline")
 lacks(out_fs, "You are not in a party.", "P invitations instead of the hint")
@@ -503,7 +504,7 @@ has(in_fs, grug_core.ui.heading(0.5, 1.2, "Current Party (3/10)"), "P in a party
 has(in_fs, "image_button[0,0.60;7.85,0.54;blank.png;grug_party_pick_bob;;false;false]",
 	"P in a party: a member row with its pick button")
 has(in_fs, "label[1.05,0.27;alice]", "P in a party: the own row, without (you)")
-has(in_fs, "label[5.95,0.87;" .. fs_escape(core.colorize("#b4dca4", "Online")) .. "]",
+has(in_fs, "label[5.70,0.87;" .. fs_escape(core.colorize("#b4dca4", "Online")) .. "]",
 	"P in a party: an online member's status")
 has(in_fs, "Offline", "P in a party: an offline member")
 has(in_fs, ";grug_party_kick;Kick]", "P in a party: Kick for the leader")

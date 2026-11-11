@@ -377,8 +377,8 @@ has(card, grug_core.ui.heading(0.3, 0.32, "2 Pending Clan Invitations"), "N two 
 eq(picks(fs, "grug_clan_ipick_"), "Lea,ned", "N one row per inviter, by name")
 has(card, "label[3.85,0.27;4/100]", "N the inviter's clan size in the role column")
 has(card, "label[3.85,0.87;new clan]", "N ...or a new clan")
-has(card, "label[5.05,0.27;Lv 30]", "N the inviter's level")
-has(card, "label[5.95,0.87;120 s]", "N the seconds left")
+has(card, "label[4.95,0.27;Lv 30]", "N the inviter's level")
+has(card, "label[5.70,0.87;120 s]", "N the seconds left")
 has(card, "image[0.10,0.06;0.42,0.42;grug_class_warrior.png]", "N the inviter's class icon")
 has(card, "box[0,0.00;7.85,0.54;#bba0626b]", "N the first invitation is selected")
 has(card, "INVITED BY", "N the column heads")
@@ -553,7 +553,7 @@ has(card, "label[3.85,0.27;" .. core.formspec_escape(core.colorize("#d4b77d", "L
 	"R the leader's role in gold")
 has(card, "label[3.85,0.87;" .. core.formspec_escape(core.colorize(grug_clans.COLOR, "Captain")) .. "]",
 	"R a captain's role in green")
-has(card, "label[5.95,0.27;" .. core.formspec_escape(core.colorize("#b4dca4", "Online")) .. "]",
+has(card, "label[5.70,0.27;" .. core.formspec_escape(core.colorize("#b4dca4", "Online")) .. "]",
 	"R Online in the last column")
 has(card, "style[grug_clan_kick;border=false;bgcolor=#ffffff;bgimg=grug_ui_danger.png", "R Kick is red")
 has(select_member(lea, "Cap"), ";grug_clan_demote;Make member]", "R Make member for a captain row")
@@ -592,6 +592,97 @@ check(clan_button(fs, "ned"), "O a captain invites to the clan")
 fs = open_social(ork)
 check(not clan_button(fs, "ned") and not party_button(fs, "Lea"), "O the Throng sees no buttons on the Accord")
 lacks(row_of(fs, "Lea"), section.MARK, "O no mark for another clan's members")
+
+--
+-- P. The clan rows' Party button (0.76.1, the user's ruling 2026-11-11)
+--
+
+-- The Party button on `name`'s clan row, and that row's pick.
+local function clan_party(fs, name)
+	return clan_card(fs):find(";" .. section.PARTY_PREFIX .. name .. ";Party]", 1, true) ~= nil
+end
+do
+local function clan_pick_y(fs, name)
+	return tonumber(clan_card(fs):match("image_button%[0,([%d.]+);7%.85,0%.54;blank%.png;grug_clan_pick_" ..
+		name .. ";"))
+end
+-- Lea leads the party Lea, Pia; Max joins it (a clan member already in a party).
+step(1.1)
+grug_parties.invite(lea, "Max")
+grug_parties.accept(max, "Lea")
+fs = open_social(lea)
+eq(picks(fs), "Lea,Cap,Max,Mem", "P the online tab's rows")
+check(clan_party(fs, "Cap") and clan_party(fs, "Mem"), "P Party on an online member the party may invite")
+check(not clan_party(fs, "Lea"), "P never on the own row")
+check(not clan_party(fs, "Max"), "P none on a member already in a party")
+for _, name in ipairs({"Cap", "Max", "Mem"}) do
+	eq(clan_party(fs, name), grug_parties.can_invite("Lea", name), "P " .. name .. ": as grug_parties.can_invite answers")
+	-- Same faction by design: a faction change removes the member.
+	eq(grug_factions.get_faction(players[name]), grug_factions.get_faction(lea), "P " .. name .. " shares the faction")
+end
+check(not grug_clans.can_invite(lea, "Ork") and not grug_parties.can_invite("Lea", "Ork"),
+	"P the other faction never joins the clan, nor the party")
+-- The place: the Online Players button's size, inside the row, right of the
+-- status text, drawn after the row's pick (the engine hands a click to the
+-- last element at that point).
+local card_cap = clan_card(fs)
+local y = clan_pick_y(fs, "Cap")
+eq(y, 0.6, "P Cap's row")
+local field = section.PARTY_PREFIX .. "Cap"
+local party_at = card_cap:find(("button[6.65,%.2f;1.10,0.5;%s;Party]"):format(y + 0.02, field), 1, true)
+check(party_at ~= nil, "P the button at the row's right end, 1.1 x 0.5 like Online Players'")
+has(card_cap, "tooltip[" .. field .. ";Invite to your party]", "P ...with the Online Players tooltip")
+lacks(card_cap, "style[" .. field, "P ...and no style of its own (the plain button look)")
+local pick_at = card_cap:find("grug_clan_pick_Cap;", 1, true)
+check(pick_at and party_at and party_at > pick_at, "P ...after the row's pick, so it takes its own clicks")
+local row = {x = 0, y = y, w = 7.85, h = 0.54}
+local button = {x = 6.65, y = y + 0.02, w = 1.1, h = 0.5}
+check(inside(button, row), "P the button inside the row")
+check(button.x + button.w <= row.w - 0.05, "P ...not touching the row's right edge")
+-- "Online" at the last column, with the fixture's width estimate per letter.
+local status = {x = grug_parties.COLUMNS.last, y = y, w = #"Online" * 0.1275, h = 0.54}
+has(card_cap, "label[" .. ("%.2f"):format(status.x) .. "," .. ("%.2f"):format(y + 0.27) .. ";" ..
+	core.formspec_escape(core.colorize("#b4dca4", "Online")) .. "]", "P Cap's status text")
+check(not overlap(button, status), "P the button does not cover the status text")
+four_cards(fs, "P leader with Party buttons")
+-- Not the party leader (Max), a party invitation switch off (Mem), the
+-- invitation pending (after the press).
+fs = open_social(max)
+check(not clan_party(fs, "Cap") and not clan_party(fs, "Mem") and not clan_party(fs, "Lea"),
+	"P a party member who does not lead: no Party button")
+grug_parties.set_invitations_enabled(mem, false)
+step(2.1)
+check(not clan_party(lea.formspec, "Mem"), "P Mem switched party invitations off: gone (re-sent)")
+grug_parties.set_invitations_enabled(mem, true)
+step(2.1)
+check(clan_party(lea.formspec, "Mem"), "P ...and back on")
+-- The press: invites, shows the party's answer in the clan card, never selects.
+submit(lea, {grug_clan_pick_Mem = ""})
+eq(sfinv.contexts.Lea.grug_clan_member, "Mem", "P a click on the row still selects")
+local party_notice = sfinv.contexts.Lea.grug_party_notice
+submit(lea, {[field] = "Party"})
+fs = lea.formspec
+check(grug_parties.pending(cap)[1] ~= nil and grug_parties.pending(cap)[1].inviter == "Lea",
+	"P the press calls grug_parties.invite")
+has(clan_card(fs), "Success: Invitation sent.", "P ...its answer in the clan card's notice line")
+eq(sfinv.contexts.Lea.grug_party_notice, party_notice, "P ...not in the party's notice")
+eq(sfinv.contexts.Lea.grug_clan_member, "Mem", "P ...and the selection stays")
+check(not clan_party(fs, "Cap"), "P Cap invited: the button goes while the invitation lasts")
+check(clan_party(fs, "Mem"), "P ...Mem's stays")
+-- A refusal shows too (a stale page: Cap holds the invitation already).
+step(1.1)
+submit(lea, {grug_clan_party_Max = "Party"})
+has(clan_card(lea.formspec), "Refused: That player already belongs to a party.", "P a refused press")
+-- Cap declines: Lea's button comes back (the decline asks the inviter's page).
+grug_parties.decline(cap, "Lea")
+step(2.1)
+check(clan_party(lea.formspec, "Cap"), "P a declined invitation: the button returns")
+-- Max leaves the party: his button appears (a membership change asks everyone).
+grug_parties.leave(max)
+step(2.1)
+check(clan_party(lea.formspec, "Max"), "P a member who left the party: the button appears")
+sfinv.contexts.Lea.grug_clan_member, sfinv.contexts.Lea.grug_clan_notice = nil, nil
+end
 
 --
 -- A. Button presses
@@ -653,8 +744,8 @@ fs = open_social(ned)
 has(fs, "image_button[0,0.00;7.85,0.54;blank.png;grug_party_ipick_Lea;;false;false]",
 	"A ned's party invitation as a row with its pick button")
 has(fs, "label[3.85,0.27;2/10]", "A ...the party's size")
-has(fs, "label[5.05,0.27;Lv 30]", "A ...the inviter's level")
-has(fs, "label[5.95,0.27;120 s]", "A ...the seconds left")
+has(fs, "label[4.95,0.27;Lv 30]", "A ...the inviter's level")
+has(fs, "label[5.70,0.27;120 s]", "A ...the seconds left")
 has(fs, "PARTY", "A ...under column heads")
 has(fs, "box[0,0.00;7.85,0.54;#bba0626b]", "A ...the first invitation selected")
 lacks(fs, "grug_party_pending", "A ...no textlist any more")
@@ -671,7 +762,7 @@ has(lea.formspec, "box[0,0.60;7.85,0.54;#bba0626b]", "A ...the row marked")
 has(lea.formspec, "label[3.85,0.27;" .. core.formspec_escape(core.colorize("#d4b77d", "Leader")) .. "]",
 	"A the party leader's role, no star prefix")
 -- Fix round 2: a status column instead of HP, no "(you)" in the rows.
-has(lea.formspec, "label[5.95,0.87;" .. core.formspec_escape(core.colorize("#b4dca4", "Online")) .. "]",
+has(lea.formspec, "label[5.70,0.87;" .. core.formspec_escape(core.colorize("#b4dca4", "Online")) .. "]",
 	"A a party member's status")
 lacks(lea.formspec, " HP]", "A no HP in the party rows")
 has(lea.formspec, "label[1.05,0.27;Lea]", "A the own party row, without (you)")
@@ -717,6 +808,7 @@ has(card, "LAST ONLINE", "M the offline tab's last column head")
 has(card, core.formspec_escape(core.colorize(grug_core.ui.colors.muted, "5 min ago")), "M Max's age, grey")
 has(card, core.formspec_escape(core.colorize(grug_core.ui.colors.muted, "3 h ago")), "M Mem's age")
 has(card, core.formspec_escape(core.colorize(grug_core.ui.colors.muted, "Max")), "M an offline row is grey")
+lacks(card, section.PARTY_PREFIX, "P an offline member never has a Party button")
 submit(lea, {grug_clan_pick_Max = ""})
 eq(buttons(lea.formspec), "leave,promote,transfer,kick", "M an offline member can be selected and kicked")
 submit(lea, {grug_clan_tab_online = "Online (2)"})
@@ -792,6 +884,29 @@ has(clan_card(big_leader.formspec), "style[grug_clan_next;border=false;bgimg=gru
 	"M ...where it is inactive")
 local bytes_offline, card_offline = #big_leader.formspec, #clan_card(big_leader.formspec)
 submit(big_leader, {grug_clan_tab_online = "Online"})
+-- P: Boss's party fills up; with ten members no row has a Party button.
+do
+	local mates = {"member_11", "member_13", "member_14", "member_16", "member_17", "member_19",
+		"member_20", "member_22", "member_23"}
+	for index, name in ipairs(mates) do
+		step(1.1)
+		check(grug_parties.invite(big_leader, name) and grug_parties.accept(players[name], "Boss"),
+			"P setup " .. name .. " joins Boss's party")
+		if index == 8 then
+			fs = resend(big_leader)
+			eq(picks(fs), "Boss,member_02,member_04,member_05,member_07,member_08,member_10",
+				"P Boss's first page")
+			check(clan_party(fs, "member_02") and clan_party(fs, "member_10"),
+				"P a party of nine: Party on the free rows")
+		end
+	end
+	fs = resend(big_leader)
+	eq(#grug_parties.view(big_leader).members, 10, "P Boss's party is full")
+	lacks(clan_card(fs), section.PARTY_PREFIX, "P a full party: no Party button on any row")
+	-- Back to no party for the refresh checks below.
+	for _, name in ipairs(mates) do grug_parties.kick(big_leader, name) end
+	run_jobs()
+end
 
 --
 -- F. The refresh

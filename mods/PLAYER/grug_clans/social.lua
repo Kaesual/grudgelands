@@ -18,6 +18,15 @@
 -- the list shows the last button's notice until the next selection, tab or
 -- page change, else a hint for the selection (fix round 2).
 --
+-- 0.76.1 (the user's ruling, 2026-11-11): an online member's row ends in a
+-- Party button, the Online Players one (label, size, look), when
+-- grug_parties.can_invite allows the invitation now. It lies above the row's
+-- pick (row_list's list.over), so its click invites and never selects; its
+-- message shows in the card's notice line. Every change that moves it (the
+-- target's or the viewer's party, invitation, switch, faction, presence)
+-- already re-sends the whole page: a roster change asks every viewer, an
+-- invitation's expiry or decline its inviter (grug_parties/ui.lua).
+--
 -- Refresh: through the Social tab's limiter. A change that can move a Clan
 -- button or a clan mark in any list (membership, role, presence, the
 -- switch) asks every viewer; the others only the players named.
@@ -30,6 +39,9 @@ local INVITES_Y, INVITES_ROWS, INVITES_SCROLL = 1.05, 8, "grug_clan_inv_scroll"
 local TABS_Y, NOTICE_Y, BUTTONS_Y = 0.7, 6.05, 6.3
 local INVITE_PREFIX = "grug_social_clan_"
 local PICK_PREFIX, INVITER_PREFIX = "grug_clan_pick_", "grug_clan_ipick_"
+-- The Party button: the Online Players one's size, 0.1 inside the row's
+-- right end.
+local PARTY_PREFIX, PARTY_X, PARTY_W = "grug_clan_party_", LIST_W - 0.1 - 1.1, 1.1
 local ROLE_NAMES = {leader = "Leader", captain = "Captain", member = "Member"}
 local ROLE_ORDER = {leader = 1, captain = 2, member = 3}
 local ROLE_COLORS = {leader = "#d4b77d", captain = grug_clans.COLOR}
@@ -150,6 +162,13 @@ local function members_card(fs, player, context, view, scale)
 				label = row.name, role = ROLE_NAMES[row.role], role_color = ROLE_COLORS[row.role], level = row.level,
 				last = row.online and "Online" or age(row.last_online, now),
 				last_color = row.online and ONLINE_COLOR or nil, muted = not row.online}, y)
+		end,
+		-- After the pick, so the button takes its own clicks (0.76.1).
+		over = function(body, row, y)
+			if not row.online or row.name == own or not grug_parties.can_invite(own, row.name) then return end
+			local field = PARTY_PREFIX .. row.name
+			body[#body + 1] = ("button[%.2f,%.2f;%.2f,0.5;%s;Party]tooltip[%s;Invite to your party]")
+				:format(PARTY_X, y + 0.02, PARTY_W, field, field)
 		end})
 	fs[#fs + 1] = ("button[0.20,%.2f;1.7,0.55;grug_clan_leave;Leave]"):format(BUTTONS_Y)
 	-- The line under the list (fix round 2, the mockup's hints): a notice
@@ -260,9 +279,10 @@ end
 
 -- True when the fields were the clan's (the caller re-sends the page).
 local function on_fields(player, context, fields)
-	local invite_target, pick, inviter_pick
+	local invite_target, party_target, pick, inviter_pick
 	for field in pairs(fields) do
 		invite_target = invite_target or field:match("^" .. INVITE_PREFIX .. "(.+)$")
+		party_target = party_target or field:match("^" .. PARTY_PREFIX .. "(.+)$")
 		pick = pick or field:match("^" .. PICK_PREFIX .. "(.+)$")
 		inviter_pick = inviter_pick or field:match("^" .. INVITER_PREFIX .. "(.+)$")
 	end
@@ -271,6 +291,9 @@ local function on_fields(player, context, fields)
 	local ok, message
 	if invite_target then
 		ok, message = grug_clans.invite(player, invite_target)
+	elseif party_target then
+		-- A row's Party button (0.76.1): the party's own rules decide.
+		ok, message = grug_parties.invite(player, party_target)
 	elseif pick then
 		-- A new selection: its hint replaces the last notice.
 		context.grug_clan_member, context.grug_clan_notice = pick, nil
@@ -311,6 +334,7 @@ grug_parties.clan_section = {
 	age = age,
 	ordered = ordered,
 	PAGE_ROWS = PAGE_ROWS,
+	PARTY_PREFIX = PARTY_PREFIX,
 }
 
 grug_clans.register_on_change(function(names, reason)

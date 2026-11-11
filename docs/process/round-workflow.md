@@ -115,10 +115,12 @@ count: widely loaded files pull in dozens of unrelated old fixtures. In fix
 rounds: the own fixture plus the fixtures that failed or that test the fixed
 behaviour. The lane's report names the fixtures it ran during development
 and why. The full
-`tools/run_fixtures.sh` runs once per lane, right before its final report,
-and again only if a later fix touches files outside that selection. The
-coordinator runs it on main only if main moved since the lane's run, or at
-the round end; never a second full run right after a merge.
+`tools/run_fixtures.sh` runs once, at the round end, by the coordinator
+(user, 2026-11-08): never per lane, per reviewer or per wave, and again only
+after a conflict merge into game code. A small follow-up round (0.NN.x)
+clearly limited to one area ends with the targeted selection of the fixtures
+that render or test that area, found by grep, instead of the full run (user,
+2026-11-11).
 
 **Upgrade classification** (release mode since 0.41.0, Round 41 ruling 10;
 four outcomes since Round 43;

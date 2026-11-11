@@ -2,6 +2,10 @@
 
 Updated 2026-11-11. This is the delivery pointer, not another game specification.
 
+**0.76.1 / Round 76.1** puts the Online Players **Party** button into each online row of
+the clan card (the user's ruling 2026-11-11), shown when `grug_parties.can_invite` allows it;
+compatible, no step; GUI checklist in the [plan's 0.76.1 section](planning/round76-plan.md#0761-follow-up).
+
 **0.76.0 / Round 76 is merged locally into main as one squash commit on top of 0.75.5
 (tag `round-76`), synced to local Luanti; not pushed; the GUI test is open.**
 Clans after player requests (rulings 2026-11-11, [plan](planning/round76-plan.md),

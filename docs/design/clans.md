@@ -126,6 +126,17 @@ card (`grug_clans/social.lua`, installed as `grug_parties.clan_section`):
   tab. Order: online members by role (leader, captains, members), then by
   name; offline members by most recent logout. The own row is tinted, not
   marked "(you)".
+- **Party button (0.76.1, the user's ruling 2026-11-11):** each online
+  row but the own ends in the Online Players **Party** button (same label,
+  size, look and tooltip), shown only when `grug_parties.can_invite` allows
+  the party invitation now: not on party mates, members in another party,
+  players with party invitations off or already invited by the viewer, and
+  on no row while the viewer's party is full or led by someone else.
+  Offline rows never have one. The button lies above the row's pick, so a
+  click on it invites and does not select the row; its message ("Success:
+  Invitation sent." or the refusal) shows in the line under the list. The
+  level and status columns of the party and clan rows moved left (4.95 and
+  5.7) to give it room beside "Online".
 - **Selection and buttons:** a click anywhere on a row selects it. **Leave**
   always; for the selected row the buttons the clan API allows: **Make
   captain** or **Make member**, **Make leader** and **Kick**. A tab or page

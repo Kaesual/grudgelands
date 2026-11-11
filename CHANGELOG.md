@@ -12,6 +12,17 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.76.1 — a Party button in the clan list (2026-11-11)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Party from the clan list:** each online clan member's row in the clan
+  card now ends in a **Party** button, like the one in Online Players, shown
+  whenever you may invite that member to your party. A click invites without
+  selecting the row; the answer shows under the clan list. To make room, the
+  level and status columns of the party and clan lists sit a little further
+  left.
+
 ## 0.76.0 — clans, party chat and clan chat (2026-11-11)
 
 Compatible: no map reset, no new world, nothing for the host to do. Parties

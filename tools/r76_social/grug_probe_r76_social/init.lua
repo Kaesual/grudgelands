@@ -16,7 +16,9 @@
 -- grug_parties/ui.lua). Shots: no party and no clan; in a party and a clan
 -- of 23 as leader, as captain and as member (offline members with ages);
 -- the pending clan invitations; the list scrolled to the end as leader;
--- the offline tab's page 2 (fix round 1).
+-- the offline tab's page 2 (fix round 1); 0.76.1: the leader's Online tab
+-- with a Party button on the free rows only (party mates, the own row and
+-- an "invitations off" stand-in without one) and the press's notice.
 
 local P = "[r76social] "
 local NAME = "grugcap"
@@ -120,9 +122,13 @@ function grug_parties.can_invite(inviter, recipient)
 	local fake = fake_by_name[recipient]
 	if not fake then return party_can_invite(inviter, recipient) end
 	-- Every fifth is in a party, has invitations off or is invited already;
-	-- the two in grugcap's party never.
-	return fake.accord and fake.index % 5 ~= 0 and
-		not (scene.party and (recipient == "Aldric" or recipient == "Hruk"))
+	-- grugcap's party mates never (0.76.1: all of them, for the clan rows).
+	if scene.party then
+		for _, member in ipairs(grug_parties.view(NAME).members) do
+			if member.name == recipient then return false end
+		end
+	end
+	return fake.accord and fake.index % 5 ~= 0
 end
 local party_pending = grug_parties.pending
 function grug_parties.pending(player)
@@ -248,6 +254,12 @@ local SHOTS = {
 	{name = "S7_leader_offline_page2", run = function(player)
 		show(player, {party = true, role = "leader", roles = {Aldric = "captain", Rook = "captain"},
 			tab = "offline", page = 2, select = "Brakka"})
+	end},
+	-- 0.76.1: Party on brannoc, Dorrik_Stonehand and Gorza; none on grugcap,
+	-- the party mates Aldric and Hruk, or elowen (every fifth: invitations off).
+	{name = "S8_leader_clan_party_buttons", run = function(player)
+		show(player, {party = true, role = "leader", roles = {Aldric = "captain"},
+			select = "Dorrik_Stonehand", notice = "Success: Invitation sent."})
 	end},
 }
 

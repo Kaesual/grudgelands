@@ -68,8 +68,10 @@ local FACTION_ICONS = {accord = "grug_inventory_faction_accord.png",
 -- Row tints: alternate rows, the own row, the selected row and its frame.
 local ROW_ALT, ROW_OWN, ROW_SELECTED, ROW_FRAME = "#ffffff0b", "#bba06230", "#bba0626b", "#d4b77db3"
 -- Party and clan columns (Round 76 fix rounds 1 and 2): class, race, name,
--- role, level and the last column ("Online", "Offline" or an age).
-local COLUMNS = {class = 0.1, race = 0.55, name = 1.05, role = 3.85, level = 5.05, last = 5.95}
+-- role, level and the last column ("Online", "Offline" or an age). Level
+-- and the last column moved left in 0.76.1 (from 5.05 and 5.95): an online
+-- clan row ends in a Party button (grug_clans/social.lua) beside "Online".
+local COLUMNS = {class = 0.1, race = 0.55, name = 1.05, role = 3.85, level = 4.95, last = 5.7}
 grug_parties.COLUMNS = COLUMNS
 -- The status column's "Online" (the clan list's green).
 local ONLINE_COLOR = "#b4dca4"
@@ -188,8 +190,11 @@ end
 -- row tinted stronger with a frame), then list.draw(body, row, y), then for
 -- list.pick an invisible button over the whole row named list.pick ..
 -- name: a click anywhere on the row selects it (the visible elements take
--- no clicks, so the button lies on top). list.prelude(fs) goes before the
--- rows (styles for their buttons).
+-- no clicks, so the button lies on top). list.over(body, row, y) goes after
+-- the pick: a button there lies above it and takes its own clicks (the
+-- engine hands a click to the last element drawn at that point; Round 76.1,
+-- the clan rows' Party button). list.prelude(fs) goes before the rows
+-- (styles for their buttons).
 function grug_parties.row_list(fs, context, list)
 	local body = {}
 	for index, row in ipairs(list.rows) do
@@ -210,6 +215,7 @@ function grug_parties.row_list(fs, context, list)
 			body[#body + 1] = ("image_button[0,%.2f;%.2f,%.2f;blank.png;%s%s;;false;false]"):format(
 				y, list.w, ROW_H, list.pick, row.name)
 		end
+		if list.over then list.over(body, row, y) end
 	end
 	local view_h = list.visible * ROW_PITCH
 	if list.field then

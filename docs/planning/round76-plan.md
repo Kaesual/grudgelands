@@ -368,3 +368,41 @@ logout, login, joining and shutdown. Rules in [clans.md](../design/clans.md).
 - The GUI test (§6, 24 items, desktop and web), the clan mark's look among them.
 - Backlog notes from the reports and reviews: [BACKLOG](../../BACKLOG.md#round-76--clans-party-chat-and-clan-chat-gui-acceptance-pending).
 
+## 0.76.1 follow-up
+
+**Ruling (the user, 2026-11-11):** players can be invited to a party directly from the
+clan list: a small **Party** button in the row of each online clan member, at the right
+end of the row, shown only when a party invitation is allowed
+(`grug_parties.can_invite(viewer, name)`), exactly like the Party button in Online Players
+(same label, size and look). No selection needed. The bottom button bar stays as it is.
+
+Built on branch `r761-party` (one lane, PARTY, with its own release lines): the button
+in `grug_clans/social.lua`, drawn after the row's invisible pick through `row_list`'s new
+`list.over` (the engine hands a click to the last element drawn at that point,
+`irr/include/IGUIElement.h` `getElementFromPoint`), so a click on it invites and never
+selects; its message shows in the clan card's line. The level and status columns of the
+party and clan rows moved left (5.05 → 4.95, 5.95 → 5.7) so the button never covers
+"Online". No new refresh: every change that moves the button already re-sends the page.
+**Compatible:** nothing new is saved.
+
+GUI checklist (desktop and web):
+
+1. As a party leader (or without a party), the clan card's **Online** tab shows **Party**
+   at the right end of each member's row that can be invited, the same button as in
+   Online Players; none on the own row, on party mates, on members in another party or
+   with party invitations off, and none on the **Offline** tab.
+2. A click on **Party** sends the invitation ("Success: Invitation sent." under the clan
+   list) and does **not** select the row; a click elsewhere on the row still selects it.
+   The button goes while the invitation is pending and comes back after a decline or
+   the expiry.
+3. As a party member who does not lead, or with a full party (10), no row has the
+   button; it appears within about 2 s when the party changes.
+4. At the smallest and largest text size, "Online" and the button do not touch, the
+   button stays inside the row, and the party card's columns still line up with the
+   clan card's. The narrower role column still keeps "Captain" clear of "Lv", and in
+   the invitation rows "new clan" and "23/100" clear of "Lv" (review note).
+
+Checks: lane fixtures `r76_social` (404), `r44_pp`, `r67_social`; independent review MERGE;
+full run on the merged `round76.1` 347 passed, 0 failed. From now on a small follow-up like
+this one ends with the targeted fixture selection instead of the full run (user, 2026-11-11;
+[round workflow](../process/round-workflow.md) §3).

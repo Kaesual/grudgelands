@@ -2060,7 +2060,10 @@ tools](#player-meta-read-by-external-tools).
   `pvp_section`); `ui.lua` draws without it. Clan changes re-send the Social
   tab through the party limiter: membership, role, presence and the switch
   every viewer (`grug_parties.social_resend_all`), level, class and
-  invitations only the named players. Fixtures `tools/r76_clan` (rules,
+  invitations only the named players. Since 0.76.1 the card's online rows
+  end in the party's Party button (`grug_parties.can_invite` and `invite`,
+  called directly), drawn after the row's pick through `row_list`'s
+  `list.over` so it takes its own clicks. Fixtures `tools/r76_clan` (rules,
   storage, chat) and `tools/r76_social` (the card).
 
 ## Miner's Guild

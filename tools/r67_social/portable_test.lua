@@ -384,7 +384,8 @@ has(fs, grug_core.ui.heading(0.5, 1.2, "1 Pending Invitation"), "B one invitatio
 -- Round 76 fix round 2: invitations as rows (inviter, party size, level, seconds).
 has(fs, "grug_party_ipick_alice;", "B the invitation's row")
 has(fs, "label[3.85,0.27;1/10]", "B ...the party's size")
-has(fs, "label[5.95,0.27;120 s]", "B ...the seconds left")
+-- 0.76.1: the last column at 5.70 (was 5.95), room for the clan rows' Party button.
+has(fs, "label[5.70,0.27;120 s]", "B ...the seconds left")
 has(fs, ";grug_party_accept;Accept]", "B Accept")
 eq(hud_count(bob), 5, "H the box: panel, icon and three lines")
 has(hud_texts(bob), "alice has invited you to join their | ", "H the inviter's sentence, wrapped")
