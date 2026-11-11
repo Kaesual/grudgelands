@@ -15,8 +15,6 @@ C role castle_slit o=facedir:1 else=P
 D role castle_slit o=facedir:2 else=F
 E role castle_slit o=facedir:3 else=P
 F role castle_wall
-G role castle_wall else=air
-H role castle_wall_stair o=facedir:1 else=air
 J role door variant=_a o=facedir:2
 K role door_hidden o=facedir:2
 L role floor
@@ -27,140 +25,143 @@ P role signature
 Q role signature else=air
 R role signature_slab else=air
 S role window
-T role castle_wall_stair o=facedir:0 else=air
-U role castle_wall_stair o=facedir:2 else=air
-V role castle_wall_stair o=facedir:21 else=air
-W role castle_wall_stair o=facedir:23 else=air
+G role facade_base
+H role facade_infill
+I role facade_stone_stair o=facedir:1
+T role facade_stone_stair o=facedir:21
+U role facade_stone_stair o=facedir:23
+V role facade_stone_stair o=facedir:0
+W role facade_stone_stair o=facedir:2
 end
 
 layer -2
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
 layer -1
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
 layer 0
-|FFFFAAAAAFFFF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FFFFAAAAAFFFF|
+|GGGGAAAAAGGGG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GGGGAAAAAGGGG|
 layer 1
-|GGGG.....GGGG|
-|G..G.....GFFG|
-|G..G.....G.FG|
-|G..G.....G.FG|
-|G..G.....G.UG|
+|GHHG.....GHHG|
+|G..G.....GHHG|
+|G..G.....G.HG|
+|G..G.....G.HG|
+|G..G.....G.WG|
 |G..G.....G..G|
-|GGJG.....GJGG|
+|GHJG.....GJHG|
 layer 2
-|GGGG.....GGGG|
-|G..G.....GFFG|
-|G..G.....G.FG|
-|G..G.....G.UG|
+|GHHG.....GHHG|
+|G..G.....GHHG|
+|G..G.....G.HG|
+|G..G.....G.WG|
 |G..G.....G..G|
 |G..G.....G..G|
-|GGKG.....GKGG|
+|GHKG.....GKHG|
 layer 3
-|QQQQ.....QQQQ|
-|QO.C.....EFFQ|
-|Q..Q.....Q.UQ|
+|QHHQ.....QHHQ|
+|QO.C.....EHHQ|
+|Q..Q.....Q.WQ|
 |Q..Q.....Q..Q|
 |Q..Q.....Q..Q|
 |Q..C.....E..Q|
-|QQQQ.....QQQQ|
+|QHHQ.....QHHQ|
 layer 4
-|GGGG.....GGGG|
-|GGGGN...MG..G|
-|GGGG.....GT.G|
-|GGGG.....GG.G|
-|GGGG.....GG.G|
-|GGGG.....GGGG|
-|GGGG.....GGGG|
+|GHHG.....GHHG|
+|GHHGN...MG..G|
+|GHHG.....GV.G|
+|GHHG.....GH.G|
+|GHHG.....GH.G|
+|GHHG.....GHHG|
+|GHHG.....GHHG|
 layer 5
-|GGGGV...WGGGG|
-|GGGGV...WG.OG|
-|GGGGV...WG..G|
-|GGGGV...WGT.G|
-|GGGGV...WGGGG|
-|GGGGV...WGGGG|
-|GGGGV...WGGGG|
+|GHHGT...UGHHG|
+|GHHGT...UG.OG|
+|GHHGT...UG..G|
+|GHHGT...UGV.G|
+|GHHGT...UGHHG|
+|GHHGT...UGHHG|
+|GHHGT...UGHHG|
 layer 6
 |LLLLLLLLLLLLL|
 |LLLLLLLLLL.LL|
 |LLLLLLLLLL.LL|
 |LLLLLLLLLL.LL|
-|LLLLLLLLLLTLL|
+|LLLLLLLLLLVLL|
 |LLLLLLLLLLLLL|
 |LLLLLLLLLLLLL|
 layer 7
-|GGGGGGGGGGGGG|
+|GHHGHHHHHGHHG|
 |G...........G|
 |G...........G|
 |G...........G|
 |G...........G|
-|G.H.........G|
-|GGGGGGGGGGGGG|
+|G.I.........G|
+|GHHGHHHHHGHHG|
 layer 8
-|GGGDGGDGGDGGG|
+|GHHDHHDHHDHHG|
 |G...........G|
 |G...........G|
 |G...........G|
 |G...........G|
-|G..H........G|
-|GGGSGGSGGSGGG|
+|G..I........G|
+|GHHSHHSHHSHHG|
 layer 9
-|GGGGGGGGGGGGG|
+|GHHGHHHHHGHHG|
 |G...........G|
 |G...........G|
 |G...........G|
 |G...........G|
-|G...H.......G|
-|GGGSGGSGGSGGG|
+|G...I.......G|
+|GHHSHHSHHSHHG|
 layer 10
-|QQQQQQQQQQQQQ|
+|QHHQHHHHHQHHQ|
 |Q...........Q|
 |Q...........Q|
 |Q...........Q|
 |Q...........Q|
-|Q....H......Q|
-|QQQQQQQQQQQQQ|
+|Q....I......Q|
+|QHHQHHHHHQHHQ|
 layer 11
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
-|BB....HBBBBBB|
+|BB....IBBBBBB|
 |BBBBBBBBBBBBB|
 layer 12
-|GGGGGGGGGGGGG|
+|GHHGHHHHHGHHG|
 |G...........G|
 |G...........G|
 |G...........G|
 |G...........G|
 |G...........G|
-|GGGGGGGGGGGGG|
+|GHHGHHHHHGHHG|
 layer 13
-|G.G.G.G.G.G.G|
+|G.H.H.H.H.H.G|
 |.............|
 |G...........G|
 |.............|
 |G...........G|
 |.............|
-|G.G.G.G.G.G.G|
+|G.H.H.H.H.H.G|
 layer 14
 |R.R.R.R.R.R.R|
 |.............|

@@ -11,65 +11,64 @@ races orc
 legend
 A role castle_paving
 B role castle_paving else=air
-C role castle_wall else=air
 D role light_wall o=wallmounted:3
-E role pillar variant=_bottom else=air
-F role pillar variant=_middle else=air
-G role pillar variant=_top else=air
-H role plaza_edge
 I role seat
 J role seat o=facedir:2
-K role signature else=air
 L role signature_slab else=air
+C role facade_base
+E role facade_frame
+F role facade_pillar_bottom o=facedir:0
+G role facade_pillar_middle o=facedir:0
+H role facade_pillar_top o=facedir:0
 end
 
 layer 0
 |AAAAAAAAAAAAAAAAA|
-|AHHHHHHHHHHHHHHHA|
-|AHAAAAAAAAAAAAAHA|
-|AHAAAAAAAAAAAAAHA|
-|AHAAAAAAAAAAAAAHA|
-|AHHHHHHHHHHHHHHHA|
+|ACCCCCCCCCCCCCCCA|
+|ACAAAAAAAAAAAAACA|
+|ACAAAAAAAAAAAAACA|
+|ACAAAAAAAAAAAAACA|
+|ACCCCCCCCCCCCCCCA|
 |AAAAAAAAAAAAAAAAA|
 layer 1
 |.................|
-|.CJE.E.CJE.E.CJE.|
+|.EJF.F.EJF.F.EJF.|
 |.................|
 |.................|
 |.................|
-|.CIE.E.CIE.E.CIE.|
+|.EIF.F.EIF.F.EIF.|
 |.................|
 layer 2
 |.................|
-|.C.F.F.C.F.F.C.F.|
+|.E.G.G.E.G.G.E.G.|
 |.................|
 |.................|
 |.................|
-|.C.F.F.C.F.F.C.F.|
+|.E.G.G.E.G.G.E.G.|
 |.................|
 layer 3
 |.................|
-|.CDF.F.CDF.F.CDF.|
+|.EDG.G.EDG.G.EDG.|
 |.................|
 |.................|
 |.................|
-|.CDF.F.CDF.F.CDF.|
+|.EDG.G.EDG.G.EDG.|
 |.................|
 layer 4
 |.................|
-|.C.G.G.C.G.G.C.G.|
+|.E.H.H.E.H.H.E.H.|
 |.................|
 |.................|
 |.................|
-|.C.G.G.C.G.G.C.G.|
+|.E.H.H.E.H.H.E.H.|
 |.................|
 layer 5
 |.................|
-|.KKKKKKKKKKKKKKK.|
+|.CCCCCCCCCCCCCCC.|
 |.................|
 |.................|
 |.................|
-|.KKKKKKKKKKKKKKK.|
+|.CCCCCCCCCCCCCCC.|
 |.................|
 layer 6
 |.................|

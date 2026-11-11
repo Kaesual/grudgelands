@@ -20,7 +20,6 @@ H role chimney_cap
 I role door variant=_a
 J role door_hidden
 K role floor
-L role foundation
 M role hearth o=facedir:1
 N role light_post o=wallmounted:1
 O role light_wall o=wallmounted:2
@@ -28,7 +27,6 @@ P role light_wall o=wallmounted:3
 Q role light_wall o=wallmounted:4
 R role low_wall
 S role path
-T role post
 U role roof_ridge
 V role rug
 W role rug_accent
@@ -43,10 +41,12 @@ e role storage
 f role storage o=facedir:3
 g node grug_decor:xdecor_table
 i role wall_accent
-j role wall_infill else=air
 k role window
 l role window o=facedir:3
-m role window_frame
+L role facade_base
+T role facade_frame
+h role facade_infill
+j role facade_roof_ridge
 end
 
 layer 0
@@ -63,63 +63,63 @@ layer 0
 |SSSSSSSSSSSSS|
 layer 1
 |..A....BA....|
-|.TiiIimiimiT.|
-|.mE.......MG.|
+|.LiiIiLiiLiL.|
+|.LE.......MG.|
 |.iF......Z.iB|
 |.if...Y....iA|
-|.mb...gg...mB|
-|.m....X....m.|
+|.Lb...gg...LB|
+|.L....X....L.|
 |.i........ai.|
 |.i........ci.|
-|.mmiimmiimim.|
+|.LLiiLLiiLiL.|
 |.........e...|
 layer 2
 |.............|
-|.TjjJjmkkmTT.|
-|.m........NG.|
+|.ThhJhTkkhhT.|
+|.h........NG.|
 |.l.........l.|
 |.l.........l.|
-|.mb........m.|
-|.m.........m.|
+|.Tb........T.|
+|.h.........h.|
 |.l........cl.|
 |.l.........l.|
-|.mmkkmmkkmTm.|
+|.ThkkhTkkhhT.|
 |.............|
 layer 3
 |..Q...Q......|
-|.TjjTjmkkmTT.|
-|.m........GG.|
+|.ThhhhTkkhhT.|
+|.h........GG.|
 |.l.........l.|
 |.l.........l.|
-|.mP.......Om.|
-|.m.........m.|
+|.TP.......OT.|
+|.h.........h.|
 |.l.........l.|
 |.l.........l.|
-|.mmkkmmkkmTm.|
+|.ThkkhTkkhhT.|
 |.............|
 layer 4
 |.............|
-|.TjjTjmTjmTT.|
-|.m........GG.|
-|.j.........j.|
+|.TLLLLTLLLLT.|
+|.L........GG.|
+|.L.........L.|
+|.L.........L.|
 |.T.........T.|
-|.m.........m.|
-|.m.........m.|
-|.T.........T.|
-|.j.........j.|
-|.mmjTmmTjmTm.|
+|.L.........L.|
+|.L.........L.|
+|.L.........L.|
+|.TLLLLTLLLLT.|
 |.............|
 layer 5
 |UUUUUUUUUUUUU|
-|UUUUUUUUUUUUU|
-|UUUUUUUUUUUGU|
-|UUUUUUUUUUUUU|
-|UUUUUUUUUUUUU|
-|UUUUUUUUUUUUU|
-|UUUUUUUUUUUUU|
-|UUUUUUUUUUUUU|
-|UUUUUUUUUUUUU|
-|UUUUUUUUUUUUU|
+|UjjjjjjjjjjUU|
+|UjjjjjjjjjUGU|
+|UjjjjjjjjjjUU|
+|UjjjjjjjjjjjU|
+|UjjjjjjjjjjjU|
+|UjjjjjjjjjjjU|
+|UjjjjjjjjjjjU|
+|UjjjjjjjjjjjU|
+|UjjjjjjjjjjjU|
 |UUUUUUUUUUUUU|
 layer 6
 |RRRRRRRRRRRRR|

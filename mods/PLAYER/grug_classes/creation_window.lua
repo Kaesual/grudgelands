@@ -36,8 +36,10 @@ local function opening(fs, g)
 		:format(g.x, g.y, w, h)
 	image(fs, (w - iw) / 2, (h - ih) / 2, iw, ih, "grug_creation_intro.png")
 	fs[#fs + 1] = "style_type[box;colors=#08101500,#08101500,#081015ef,#081015ef]"
-	fs[#fs + 1] = ("box[0,%.3f;%.3f,3.5;]"):format(h - 3.5, w)
+	fs[#fs + 1] = ("box[0,%.3f;%.3f,5.1;]"):format(h - 5.1, w)
 	fs[#fs + 1] = "style_type[box;colors=]"
+	-- The approved small crest stays inside the opening scene, above its text.
+	image(fs, (w - 2) / 2, h - 4.85, 2, 2, "grug_creation_crest.png")
 	local function centered(y, height, name, text, size, color)
 		local markup = ('<global margin=0 halign=center valign=middle color="%s" size=%d>%s')
 			:format(color, math.floor(size * g.scale + 0.5), text)

@@ -18,7 +18,6 @@ F role door_hidden
 G role floor
 H role flower else=air
 I role flower_alt else=air
-J role foundation
 K role hearth o=facedir:1
 L role light_beacon else=h
 M role light_post o=wallmounted:1
@@ -26,7 +25,6 @@ N role light_wall o=wallmounted:2
 O role light_wall o=wallmounted:3
 P role light_wall o=wallmounted:4
 Q role path
-R role post
 S role roof_slab
 T role roof_stair o=facedir:1
 U role roof_stair o=facedir:3
@@ -42,10 +40,12 @@ d role storage
 e role storage o=facedir:3
 f node grug_decor:xdecor_table
 h role wall
-i role wall_accent
 j role window
 k role window o=facedir:3
-l role window_frame
+J role facade_base
+R role facade_frame
+g role facade_infill
+i role facade_band
 end
 
 layer 0
@@ -64,87 +64,87 @@ layer 0
 |QQQQQQQQQ|
 layer 1
 |......I..|
-|.RiiEiiR.|
-|.lA...KC.|
-|.iB..Z.iH|
-|.ie....iI|
-|.lb.Y..lH|
-|.l..ff.l.|
-|.i..X..i.|
-|.i.....i.|
-|dl....al.|
-|.i....ci.|
-|.RliiliR.|
+|.JJJEJJJ.|
+|.JA...KC.|
+|.JB..Z.JH|
+|.Je....JI|
+|.Jb.Y..JH|
+|.J..ff.J.|
+|.J..X..J.|
+|.J.....J.|
+|dJ....aJ.|
+|.J....cJ.|
+|.JJJJJJJ.|
 |...HIH...|
 layer 2
 |.........|
 |.RhhFhhR.|
-|.l....MC.|
+|.g....MC.|
 |.k.....k.|
 |.k.....k.|
-|.lb....l.|
-|.l.....l.|
+|.gb....g.|
+|.R.....R.|
 |.k.....k.|
 |.k.....k.|
-|.l....cl.|
+|.g....cg.|
 |.h.....h.|
-|.RljjlhR.|
+|.RgjjghR.|
 |.........|
 layer 3
 |..P...P..|
 |.RhhhhhR.|
-|.l....CC.|
+|.g....CC.|
 |.k.....k.|
 |.k.....k.|
-|.l.....l.|
-|.lO...Nl.|
+|.g.....g.|
+|.RO...NR.|
 |.k.....k.|
 |.k.....k.|
-|.l.....l.|
+|.g.....g.|
 |.h.....h.|
-|.RljjlhR.|
+|.RgjjghR.|
 |.........|
 layer 4
 |.........|
 |.RhhhhhR.|
-|.l....CC.|
+|.g....CC.|
 |.h.....h.|
 |.h.....h.|
-|.l.....l.|
-|.l.....l.|
+|.g.....g.|
+|.R.....R.|
 |.h.....h.|
 |.h.....h.|
-|.l.....l.|
+|.g.....g.|
 |.h.....h.|
-|.RlhhlhR.|
+|.RghhghR.|
 |.........|
 layer 5
 |.........|
 |.RhhhhhR.|
-|.l....CC.|
+|.g....CC.|
 |.h.....h.|
 |.h.....h.|
-|.l.....l.|
-|.l.....l.|
+|.g.....g.|
+|.R.....R.|
 |.h.....h.|
 |.h.....h.|
-|.l.....l.|
+|.g.....g.|
 |.h.....h.|
-|.RlhhlhR.|
+|.RghhghR.|
 |.........|
 layer 6
 |T.......U|
-|TRhhhhhRU|
-|Tl....CCU|
-|Th.....hU|
-|Th.....hU|
-|Tl.....lU|
-|Tl.....lU|
-|Th.....hU|
-|Th.....hU|
-|Tl.....lU|
-|Th.....hU|
-|TRlhhlhRU|
+|TiiiiiiiU|
+|Ti....CCU|
+|Ti.....iU|
+|Ti.....iU|
+|Ti.....iU|
+|Ti.....iU|
+|Ti.....iU|
+|Ti.....iU|
+|Ti.....iU|
+|Ti.....iU|
+|TiiiiiiiU|
 |T.......U|
 layer 7
 |.T.....U.|

@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-11",
+  "authorization": "User approved all prepared changes and requested game integration and main merge.",
+  "backdrop_source": "architecture-refresh/native/renders",
+  "logo_source": "tools/branding/exports/plain_512.png",
+  "logo_variant": "small centered opening crest",
+  "installed": {
+    "mods/PLAYER/grug_classes/textures/grug_creation_human.png": "34c39452ea44c55b380b0486a10b954b88a411bb3d8f1ec0eca770d3f97a875f",
+    "mods/PLAYER/grug_classes/textures/grug_creation_dwarf.png": "c70da9eb0161df7909964ec1f460bbc8fdf09520ff0aa989ff399e4aefdad52c",
+    "mods/PLAYER/grug_classes/textures/grug_creation_elf.png": "cb878bbf434cfe8a8b505c5f5265d45e927a900a86ee4ebc302b8e6ce1d0a672",
+    "mods/PLAYER/grug_classes/textures/grug_creation_orc.png": "09ad3364bd1bcd15208f1ffcc693f6b1199ec97cf3b9a1c22102c3730777ae85",
+    "mods/PLAYER/grug_classes/textures/grug_creation_troll.png": "783cac0d25114b27881b0c6aeecd2cc5471bf99fb5e90499431fcfbeed58931d",
+    "mods/PLAYER/grug_classes/textures/grug_creation_undead.png": "ff4886b6e32372721380de922dbf5d40d2e1063f720d63437745a762cc0e27a6",
+    "mods/PLAYER/grug_classes/textures/grug_creation_crest.png": "08cad78a882779a6dbddc8c5301881dd729e9053bdc09d0addb0cfc996a759da"
+  }
+}

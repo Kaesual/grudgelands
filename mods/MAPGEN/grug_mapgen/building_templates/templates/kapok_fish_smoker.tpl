@@ -17,7 +17,6 @@ E role door variant=_b
 F role door_hidden
 G role door_hidden o=facedir:3
 H role floor
-I role foundation
 J role hearth
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
@@ -27,13 +26,7 @@ O role light_wall o=wallmounted:4
 P role path
 Q role post
 R role railing
-S role roof_slab
 T role roof_stair
-U role roof_stair o=facedir:1
-V role roof_stair o=facedir:2
-W role roof_stair o=facedir:3
-X role roof_stair_inner
-Y role roof_stair_inner o=facedir:3
 Z role rope else=air
 a role rug_accent
 b role shelf
@@ -44,10 +37,18 @@ f role storage o=facedir:2
 g role storage o=facedir:3
 h node grug_decor:xdecor_table
 j role wall
-k role wall_accent
 l role window
 m role window_frame
 n role workbench
+I role facade_roof_stair o=facedir:1
+S role facade_home_base
+U role facade_infill
+V role facade_roof_slab o=facedir:0
+W role facade_roof_stair o=facedir:3
+X role facade_roof_stair_inner o=facedir:0
+Y role facade_roof_stair_inner o=facedir:3
+i role facade_roof_stair o=facedir:0
+k role facade_roof_stair o=facedir:2
 end
 
 layer 1
@@ -73,191 +74,191 @@ layer 2
 |    ...             |
 |PPPPPPPPPPPPPPP     |
 |PPPPPPPPPPPPPPP     |
-|PPQIIIImIImIQPP     |
-|PPmHHHHHHHHHIPPPPPPP|
-|PPIHHHHaHHHHIPPPPPPP|
-|PPIHHHHHHHHHmIImIQPP|
+|PPQSSSSmSSmSQPP     |
+|PPmHHHHHHHHHSPPPPPPP|
+|PPSHHHHaHHHHSPPPPPPP|
+|PPSHHHHHHHHHmSSmSQPP|
 |PPmHHHHHHHHHHHHHHBPP|
-|PPmHHHHHHHHHHHHHHIPP|
-|PPIHHHHHHHHHHHHHHIPP|
-|PPIHHHHHHHHHHaaaHmPP|
-|PPmHHHHHHHHHHHHHHIPP|
-|PPmHHHHHHHHHmIImIQPP|
-|PPIHHHHHHHHHIPPPPPPP|
-|PPIHHHHHHHHHIPPPPPPP|
-|PPmmIImBIImImPP     |
+|PPmHHHHHHHHHHHHHHSPP|
+|PPSHHHHHHHHHHHHHHSPP|
+|PPSHHHHHHHHHHaaaHmPP|
+|PPmHHHHHHHHHHHHHHSPP|
+|PPmHHHHHHHHHmSSmSQPP|
+|PPSHHHHHHHHHSPPPPPPP|
+|PPSHHHHHHHHHSPPPPPPP|
+|PPmmSSmBSSmSmPP     |
 |PPPPPPPPPPPPPPP     |
 |PPPPPPPPPPPPPPP     |
 layer 3
 |    ...             |
 |RRR.....RRRRRRR     |
 |R.............R     |
-|R.QkkDEmkkmkQ.R     |
-|R.m......RRRkRRRRRRR|
-|R.k......R..k.R....R|
-|R.kg.....R.cmkkmkQ.R|
-|R.mg..hhhR.e.ff..B.R|
-|R.mg.....R.c..R..k.R|
-|R.k...n.nR....n.Kk.R|
-|R.k......R....R..m.R|
-|R.m....n.R...bd..k.R|
-|R.m......R..mkkmkQ.R|
-|R.k......R..k.R....R|
-|R.k..J.J.JRRkRRRRRRR|
-|R.mmkkmBkkmkm.R     |
+|R.SSSDESSSSSS.R     |
+|R.S......RRRSRRRRRRR|
+|R.S......R..S.R....R|
+|R.Sg.....R.cmSSSSS.R|
+|R.Sg..hhhR.e.ff..B.R|
+|R.Sg.....R.c..R..S.R|
+|R.S...n.nR....n.KS.R|
+|R.S......R....R..S.R|
+|R.S....n.R...bd..S.R|
+|R.S......R..mSSSSS.R|
+|R.S......R..S.R....R|
+|R.S..J.J.JRRSRRRRRRR|
+|R.SSSSSBSSSSS.R     |
 |R.............R     |
 |RRRRRRRRRRRRRRR     |
 layer 4
 |    ...             |
 |...............     |
 |...............     |
-|..QjjFGmllmjQ..     |
-|..m.........j.......|
+|..SUUFGSllUUS..     |
+|..U.........U.......|
 |..l.........j.......|
-|..l.........mllmjQ..|
-|..m..............B..|
-|..m..............l..|
+|..l.........mllUUS..|
+|..S..............B..|
+|..U..............l..|
 |..l.............Ll..|
-|..l..............m..|
-|..m..............j..|
-|..m.........mllmjQ..|
+|..l..............U..|
+|..S..............U..|
+|..U.........mllUUS..|
 |..l.........l.......|
 |..l..L.L.L..l.......|
-|..mmllmBllmjm..     |
+|..SUllSBllUUS..     |
 |...............     |
 |...............     |
 layer 5
 |                    |
 |...............     |
 |...O...O.......     |
-|..QjjjjmllmjQ..     |
-|..m.........j.......|
+|..SUUUUSllUUS..     |
+|..U.........U.......|
 |..l.........j.......|
-|..l........MmllmjQ..|
-|..mN............MB..|
-|..m..............l..|
+|..l........MmllUUS..|
+|..SN............MB..|
+|..U..............l..|
 |..l.............Bl..|
-|..l..............m..|
-|..m............O.j..|
-|..mN.......MmllmjQ..|
+|..l..............U..|
+|..S............O.U..|
+|..UN.......MmllUUS..|
 |..l.........l.......|
 |..l..B.B.B..l.......|
-|..mmllmBllmjm..     |
+|..SUllSBllUUS..     |
 |...............     |
 |...............     |
 layer 6
 |                    |
 |...............     |
 |...............     |
-|..QjjjjmjjmjQ..     |
-|..m.........j.......|
-|..j.........j.......|
-|..j.........mjjmjQ..|
-|..m..............B..|
-|..m..............j..|
-|..j.............Bj..|
-|..j..............m..|
-|..m..............j..|
-|..m.Z.Z.Z.Z.mjjmjQ..|
-|..j.........j.......|
-|..j..B.B.B..j.......|
-|..mmjjmBjjmjm..     |
+|..SUUUUSUUUUS..     |
+|..U.........U.......|
+|..U.........j.......|
+|..U.........mUUUUS..|
+|..S..............B..|
+|..U..............U..|
+|..U.............BU..|
+|..U..............U..|
+|..S..............U..|
+|..U.Z.Z.Z.Z.mUUUUS..|
+|..U.........U.......|
+|..U..B.B.B..U.......|
+|..SUUUSBUUUUS..     |
 |...............     |
 |...............     |
 layer 7
 |                    |
 |...............     |
-|.U...........W.     |
-|.UQjjjjmjjmjQW.     |
-|.Um.........jW......|
-|.Uj.........jXTTTTT.|
-|.Uj.........mjjmjQ..|
-|.Um..............B..|
-|.Um..............j..|
-|.Uj.............Bj..|
-|.Uj..............m..|
-|.Um..............j..|
-|.UmAAAAAAAAAmjjmjQ..|
-|.Uj.........jYVVVVV.|
-|.Uj..B.B.B..jW......|
-|.UmmjjmBjjmjmW.     |
-|.U...........W.     |
+|.I...........W.     |
+|.ISjjjjSjjSjSW.     |
+|.IS.........jW......|
+|.Ij.........jXiiiii.|
+|.Ij.........mjjSjS..|
+|.IS..............B..|
+|.IS..............j..|
+|.Ij.............Bj..|
+|.Ij..............S..|
+|.IS..............j..|
+|.ISAAAAAAAAAmjjSjS..|
+|.Ij.........jYkkkkk.|
+|.Ij..B.B.B..jW......|
+|.ISSjjSBjjSjSW.     |
+|.I...........W.     |
 |...............     |
 layer 8
 |                    |
 |...............     |
-|..U.........W..     |
-|..UjjjjjjjjjW..     |
-|..U.........W.......|
-|..U.........W.......|
-|..U.........XTTTTTT.|
-|..U..............B..|
-|..U..............j..|
-|..U..............j..|
-|..U..............j..|
-|..U..............j..|
-|..U.........YVVVVVV.|
-|..U.........W.......|
-|..U.........W.......|
-|..UjjjjBjjjjW..     |
-|..U.........W..     |
+|..I.........W..     |
+|..IUUUUjUUUUW..     |
+|..I.........W.......|
+|..I.........W.......|
+|..I.........Xiiiiii.|
+|..I..............B..|
+|..I..............U..|
+|..I..............U..|
+|..I..............U..|
+|..I..............U..|
+|..I.........Ykkkkkk.|
+|..I.........W.......|
+|..I.........W.......|
+|..IUUUjBUUUUW..     |
+|..I.........W..     |
 |...............     |
 layer 9
 |                    |
 |...............     |
-|...U.......W...     |
-|...UjjjjjjjW...     |
-|...U.......W........|
-|...U.......W........|
-|...U.......W........|
-|...U.......XTTTTTBT.|
-|...U.............j..|
-|...U.............j..|
-|...U.............j..|
-|...U.......YVVVVVVV.|
-|...U.......W........|
-|...U.......W........|
-|...U.......W........|
-|...UjjjBjjjW...     |
-|...U.......W...     |
+|...I.......W...     |
+|...IUUUjUUUW...     |
+|...I.......W........|
+|...I.......W........|
+|...I.......W........|
+|...I.......XiiiiiBi.|
+|...I.............U..|
+|...I.............U..|
+|...I.............U..|
+|...I.......Ykkkkkkk.|
+|...I.......W........|
+|...I.......W........|
+|...I.......W........|
+|...IUUjBUUUW...     |
+|...I.......W...     |
 |...............     |
 layer 10
 |                    |
 |...............     |
-|....U.....W....     |
-|....UjjjjjW....     |
-|....U.....W.........|
-|....U.....W.........|
-|....U.....W.........|
-|....U.....W......B..|
-|....U.....WSSSSSSSS.|
-|....U.....WSSSSSSSS.|
-|....U.....WSSSSSSSS.|
-|....U.....W.........|
-|....U.....W.........|
-|....U.....W.........|
-|....U.....W.........|
-|....UjjBjjW....     |
-|....U.....W....     |
+|....I.....W....     |
+|....IUUjUUW....     |
+|....I.....W.........|
+|....I.....W.........|
+|....I.....W.........|
+|....I.....W......B..|
+|....I.....WVVVVVVVV.|
+|....I.....WVVVVVVVV.|
+|....I.....WVVVVVVVV.|
+|....I.....W.........|
+|....I.....W.........|
+|....I.....W.........|
+|....I.....W.........|
+|....IUjBUUW....     |
+|....I.....W....     |
 |...............     |
 layer 11
 |                    |
 |...............     |
-|.....SSSSS.....     |
-|.....SSSSS.....     |
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSSSS.......B..|
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSSSS..........|
-|.....SSBSS.....     |
-|.....SSSSS.....     |
+|.....VVVVV.....     |
+|.....VVVVV.....     |
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVVVV.......B..|
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVVVV..........|
+|.....VVBVV.....     |
+|.....VVVVV.....     |
 |...............     |
 layer 12
 |                    |

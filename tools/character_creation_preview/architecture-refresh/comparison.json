@@ -1,0 +1,92 @@
+{
+  "human": {
+    "label": "Menschen",
+    "changed_cells": 508,
+    "cells": 52235,
+    "removed_cells": 34,
+    "added_cells": 0,
+    "camera_unchanged": true,
+    "scene_recipe_unchanged": true,
+    "templates": [
+      "dawnmere_orchard_cottage",
+      "dawnmere_smithy"
+    ],
+    "old_image_sha256": "179e99152d5a1ed2ee52434588536ebdf1278724261785d082595be82d4d0271",
+    "new_image_sha256": "34c39452ea44c55b380b0486a10b954b88a411bb3d8f1ec0eca770d3f97a875f"
+  },
+  "dwarf": {
+    "label": "Zwerge",
+    "changed_cells": 827,
+    "cells": 51727,
+    "removed_cells": 6,
+    "added_cells": 0,
+    "camera_unchanged": true,
+    "scene_recipe_unchanged": true,
+    "templates": [
+      "hearthpine_forge_hall",
+      "hearthpine_east_home"
+    ],
+    "old_image_sha256": "303c04ef26fcff4b171b34204da751f16cb382be0504f1ae861bf267a340fb31",
+    "new_image_sha256": "c70da9eb0161df7909964ec1f460bbc8fdf09520ff0aa989ff399e4aefdad52c"
+  },
+  "elf": {
+    "label": "Elfen",
+    "changed_cells": 425,
+    "cells": 52867,
+    "removed_cells": 3,
+    "added_cells": 0,
+    "camera_unchanged": true,
+    "scene_recipe_unchanged": true,
+    "templates": [
+      "silverleaf_moon_shrine",
+      "silverleaf_glade_house_west"
+    ],
+    "old_image_sha256": "e19461658ba7a9b9e26cc40aac19736d5987cccb378bc1726538384b7bc8a7ef",
+    "new_image_sha256": "cb878bbf434cfe8a8b505c5f5265d45e927a900a86ee4ebc302b8e6ce1d0a672"
+  },
+  "orc": {
+    "label": "Orcs",
+    "changed_cells": 475,
+    "cells": 50739,
+    "removed_cells": 4,
+    "added_cells": 0,
+    "camera_unchanged": true,
+    "scene_recipe_unchanged": true,
+    "templates": [
+      "sunscar_spear_lodge",
+      "sunscar_tusk_lodge"
+    ],
+    "old_image_sha256": "3f302e85621cae8ab3f4592c3b1801e8ae42a4eecd378fce0173c86d3dc39411",
+    "new_image_sha256": "09ad3364bd1bcd15208f1ffcc693f6b1199ec97cf3b9a1c22102c3730777ae85"
+  },
+  "troll": {
+    "label": "Trolle",
+    "changed_cells": 696,
+    "cells": 53250,
+    "removed_cells": 2,
+    "added_cells": 0,
+    "camera_unchanged": true,
+    "scene_recipe_unchanged": true,
+    "templates": [
+      "kapok_river_stilt",
+      "kapok_spirit_lodge"
+    ],
+    "old_image_sha256": "ae251804d0652f67e11e82e46d7bd6756abf7bfdb78c8aebfc0d69c0d417da37",
+    "new_image_sha256": "783cac0d25114b27881b0c6aeecd2cc5471bf99fb5e90499431fcfbeed58931d"
+  },
+  "undead": {
+    "label": "Untote",
+    "changed_cells": 379,
+    "cells": 50451,
+    "removed_cells": 0,
+    "added_cells": 0,
+    "camera_unchanged": true,
+    "scene_recipe_unchanged": true,
+    "templates": [
+      "stillgrave_crypt_chapel",
+      "stillgrave_sunken_ruin"
+    ],
+    "old_image_sha256": "85dd0607cfd3e9183a0125819955eef8de047daaf6a772e36e7609b2b30384da",
+    "new_image_sha256": "ff4886b6e32372721380de922dbf5d40d2e1063f720d63437745a762cc0e27a6"
+  }
+}

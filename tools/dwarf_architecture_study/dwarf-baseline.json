@@ -1,0 +1,17 @@
+{
+  "base_commit": "0fd00949bcd0669a4f85840842883be5f66048d1",
+  "buildings": {
+    "home": {
+      "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/hearthpine_west_home.tpl",
+      "template_sha256": "ca0281e462f42a3cc74a833e991c1b0269b8198e34338a146a621df8d7f7f1c2",
+      "changed_cells": 243,
+      "changes_sha256": "c752ec6529f215c5809bcb697a0d01e5dc8ed0cc12bfc2f2df1866e1355bbc79"
+    },
+    "forge": {
+      "template": "mods/MAPGEN/grug_mapgen/building_templates/templates/hearthpine_forge_hall.tpl",
+      "template_sha256": "6d3cce0daeb48fbe659422daa070d5caca69c6c737e540cf64286332644e7f26",
+      "changed_cells": 542,
+      "changes_sha256": "37af7f64c19e8bd8036b752f610f29a344e5ff6ace7bcdc643c40f90fbbf6522"
+    }
+  }
+}

@@ -14,14 +14,14 @@ B role castle_paving else=D
 C role light_wall o=wallmounted:5
 D role low_wall
 E role planter
-F role plaza_edge
-G role post
 H role roof_slab
 I role rubble
 J role seat
 K role seat o=facedir:1
 L role seat o=facedir:2
 M role seat o=facedir:3
+F role facade_base
+G role facade_open_wood
 end
 
 layer 0

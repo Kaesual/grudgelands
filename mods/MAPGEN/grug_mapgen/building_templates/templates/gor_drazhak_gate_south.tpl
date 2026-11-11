@@ -15,8 +15,6 @@ C role castle_slit o=facedir:1 else=P
 D role castle_slit o=facedir:2 else=F
 E role castle_slit o=facedir:3 else=P
 F role castle_wall
-G role castle_wall else=air
-H role castle_wall_stair o=facedir:1 else=air
 J role door variant=_a o=facedir:2
 K role door_hidden o=facedir:2
 L role floor
@@ -24,143 +22,145 @@ M role light_wall o=wallmounted:2
 N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:5
 P role signature
-Q role signature else=air
 R role signature_slab else=air
 S role window
-T role castle_wall_stair o=facedir:0 else=air
-U role castle_wall_stair o=facedir:2 else=air
-V role castle_wall_stair o=facedir:21 else=air
-W role castle_wall_stair o=facedir:23 else=air
+G role facade_base
+H role facade_frame
+I role facade_stone_stair o=facedir:1
+Q role facade_stone_stair o=facedir:21
+T role facade_stone_stair o=facedir:23
+U role facade_stone_stair o=facedir:0
+V role facade_stone_stair o=facedir:2
 end
 
 layer -2
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
 layer -1
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
-|FFFFFFFFFFFFF|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
+|GGGGGGGGGGGGG|
 layer 0
-|FFFFAAAAAFFFF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FLLFAAAAAFLLF|
-|FFFFAAAAAFFFF|
+|GGGGAAAAAGGGG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GLLGAAAAAGLLG|
+|GGGGAAAAAGGGG|
 layer 1
-|GGGG.....GGGG|
-|G..G.....GFFG|
-|G..G.....G.FG|
-|G..G.....G.FG|
-|G..G.....G.UG|
-|G..G.....G..G|
-|GGJG.....GJGG|
+|HGGH.....HGGH|
+|H..H.....HGGH|
+|H..H.....H.GH|
+|H..H.....H.GH|
+|H..H.....H.VH|
+|H..H.....H..H|
+|HGJH.....HJGH|
 layer 2
-|GGGG.....GGGG|
-|G..G.....GFFG|
-|G..G.....G.FG|
-|G..G.....G.UG|
-|G..G.....G..G|
-|G..G.....G..G|
-|GGKG.....GKGG|
+|HGGH.....HGGH|
+|H..H.....HGGH|
+|H..H.....H.GH|
+|H..H.....H.VH|
+|H..H.....H..H|
+|H..H.....H..H|
+|HGKH.....HKGH|
 layer 3
-|QQQQ.....QQQQ|
-|QO.C.....EFFQ|
-|Q..Q.....Q.UQ|
-|Q..Q.....Q..Q|
-|Q..Q.....Q..Q|
-|Q..C.....E..Q|
-|QQQQ.....QQQQ|
+|HGGH.....HGGH|
+|HO.C.....EGGH|
+|H..H.....H.VH|
+|H..H.....H..H|
+|H..H.....H..H|
+|H..C.....E..H|
+|HGGH.....HGGH|
 layer 4
-|GGGG.....GGGG|
-|GGGGN...MG..G|
-|GGGG.....GT.G|
-|GGGG.....GG.G|
-|GGGG.....GG.G|
-|GGGG.....GGGG|
-|GGGG.....GGGG|
+|HGGH.....HGGH|
+|HGGHN...MH..H|
+|HGGH.....HU.H|
+|HGGH.....HG.H|
+|HGGH.....HG.H|
+|HGGH.....HGGH|
+|HGGH.....HGGH|
 layer 5
-|GGGGV...WGGGG|
-|GGGGV...WG.OG|
-|GGGGV...WG..G|
-|GGGGV...WGT.G|
-|GGGGV...WGGGG|
-|GGGGV...WGGGG|
-|GGGGV...WGGGG|
+|HGGHQ...THGGH|
+|HGGHQ...TH.OH|
+|HGGHQ...TH..H|
+|HGGHQ...THU.H|
+|HGGHQ...THGGH|
+|HGGHQ...THGGH|
+|HGGHQ...THGGH|
 layer 6
 |LLLLLLLLLLLLL|
 |LLLLLLLLLL.LL|
 |LLLLLLLLLL.LL|
 |LLLLLLLLLL.LL|
-|LLLLLLLLLLTLL|
+|LLLLLLLLLLULL|
 |LLLLLLLLLLLLL|
 |LLLLLLLLLLLLL|
 layer 7
-|GGGGGGGGGGGGG|
-|G...........G|
-|G...........G|
-|G...........G|
-|G...........G|
-|G.H.........G|
-|GGGGGGGGGGGGG|
+|HGGHGGGGGHGGH|
+|H...........H|
+|H...........H|
+|H...........H|
+|H...........H|
+|H.I.........H|
+|HGGHGGGGGHGGH|
 layer 8
-|GGGDGGDGGDGGG|
-|G...........G|
-|G...........G|
-|G...........G|
-|G...........G|
-|G..H........G|
-|GGGSGGSGGSGGG|
+|HGGDGGDGGDGGH|
+|H...........H|
+|H...........H|
+|H...........H|
+|H...........H|
+|H..I........H|
+|HGGSGGSGGSGGH|
 layer 9
-|GGGGGGGGGGGGG|
-|G...........G|
-|G...........G|
-|G...........G|
-|G...........G|
-|G...H.......G|
-|GGGSGGSGGSGGG|
+|HGGHGGGGGHGGH|
+|H...........H|
+|H...........H|
+|H...........H|
+|H...........H|
+|H...I.......H|
+|HGGSGGSGGSGGH|
 layer 10
-|QQQQQQQQQQQQQ|
-|Q...........Q|
-|Q...........Q|
-|Q...........Q|
-|Q...........Q|
-|Q....H......Q|
-|QQQQQQQQQQQQQ|
+|HGGHGGGGGHGGH|
+|H...........H|
+|H...........H|
+|H...........H|
+|H...........H|
+|H....I......H|
+|HGGHGGGGGHGGH|
 layer 11
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
 |BBBBBBBBBBBBB|
-|BB....HBBBBBB|
+|BB....IBBBBBB|
 |BBBBBBBBBBBBB|
 layer 12
-|GGGGGGGGGGGGG|
-|G...........G|
-|G...........G|
-|G...........G|
-|G...........G|
-|G...........G|
-|GGGGGGGGGGGGG|
+|HGGHGGGGGHGGH|
+|H...........H|
+|H...........H|
+|H...........H|
+|H...........H|
+|H...........H|
+|HGGHGGGGGHGGH|
 layer 13
-|G.G.G.G.G.G.G|
+|H.G.G.G.G.G.H|
 |.............|
-|G...........G|
+|H...........H|
 |.............|
-|G...........G|
+|H...........H|
 |.............|
-|G.G.G.G.G.G.G|
+|H.G.G.G.G.G.H|
 layer 14
 |R.R.R.R.R.R.R|
 |.............|

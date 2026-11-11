@@ -200,7 +200,9 @@ def make_scene(spec, palettes, registry, trees):
     return cells, templates_used
 
 
-def main():
+def main(output=HERE):
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
     registry_file = ROOT / "tools/building_templates/nodes.json"
     reg = json.loads(registry_file.read_text())
     palettes = T.Palettes(G.load_palettes("luajit", set(reg["nodes"]) | set(reg.get("aliases", {}))))
@@ -257,8 +259,8 @@ def main():
                         "__LICENSE__": ROOT / "tools/r69_camp_art/THREE-LICENSE.txt"}.items():
         page = page.replace(token, path.read_text().replace("</", "<\\/"))
     page = page.replace("__PAYLOAD__", json.dumps(payload, separators=(",", ":")).replace("</", "<\\/"))
-    (HERE / "scenes.html").write_text(page)
-    (HERE / "scene-build.json").write_text(json.dumps(receipts, indent=2) + "\n")
+    (output / "scenes.html").write_text(page)
+    (output / "scene-build.json").write_text(json.dumps(receipts, indent=2) + "\n")
     print(json.dumps({"scenes": {r: v["cells"] for r, v in receipts.items()}, "node_types": len(types), "textures": len(textures.images), "missing": 0}))
 
 

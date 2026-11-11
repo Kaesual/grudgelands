@@ -12,6 +12,27 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.75.5 — coherent town architecture (2026-11-11)
+
+**Map reset**, joining the planned production reset. Ordinary homes, workshops
+and civic buildings now use clear structural frames, continuous ties and calm
+infill, with the approved material palette of each culture. Tall dwarf side
+walls stay masonry up to the roof; timber starts in the actual gable. Troll
+homes gain dark clay infill and brown reed roofs. Four reed stair/slab shapes
+complete the existing material. Building shapes, openings, services and
+furnishings keep their positions. All six miners' guild halls and ordinary
+service/garrison buildings adopt the same cultural frames; guild yards and
+machines remain unchanged. Camps stay outside the city pass. Silverleaf's
+moon shrine now has marble supports, quiet silverwood wall fields and one
+green accent course, keeping its pale roof and high roof lantern.
+
+Royal halls, shrines, gates, towers, markets and other approved city structures
+now share that vocabulary. Open stages and combat floors stay clear; ruins keep
+their gaps and moss. Slender pillars retain their geometry with matching cultural
+materials. Green grounds and monuments selected to remain unchanged are kept.
+The six character-creation backdrops now show the revised buildings, and the
+opening screen displays the new Grudgelands crest above its title.
+
 ## 0.75.4 — Return home to Lethariel and Kezamba (2026-11-11)
 
 Compatible, no map reset. **Return home** to the Lethariel or Kezamba innkeeper

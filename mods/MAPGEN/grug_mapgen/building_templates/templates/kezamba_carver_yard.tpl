@@ -12,11 +12,12 @@ legend
 A role castle_paving else=B
 B role ground
 C role light_post o=wallmounted:1
-D role plaza_edge
 E role post
 F role roof_slab
 G role stepping else=B
 H role tree_log
+D role facade_home_base
+I role facade_base
 end
 
 layer 0
@@ -35,7 +36,7 @@ layer 0
 |GGGGGGGGGGGGG|
 layer 1
 |.............|
-|.E.........E.|
+|.D.........D.|
 |.......HHHH..|
 |.............|
 |.............|
@@ -49,7 +50,7 @@ layer 1
 |.............|
 layer 2
 |.............|
-|.E.........E.|
+|.D.........D.|
 |.......HHHH..|
 |.............|
 |.............|
@@ -68,7 +69,7 @@ layer 3
 |.............|
 |.............|
 |.............|
-|...D..H..H...|
+|...I..H..H...|
 |.............|
 |.............|
 |..FFFF.......|
@@ -110,7 +111,7 @@ layer 6
 |.............|
 |.............|
 |.............|
-|...D.........|
+|...I.........|
 |.............|
 |.............|
 |.............|

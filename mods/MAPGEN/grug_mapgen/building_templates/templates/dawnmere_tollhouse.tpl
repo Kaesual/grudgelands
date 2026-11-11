@@ -9,19 +9,16 @@ meta peak=12
 races human elf
 
 legend
-A role beam
 B role bed variant=_bottom
 C role bed variant=_top
 D role door variant=_a o=facedir:1
 E role door_hidden o=facedir:1
 F role floor
 G role flower_alt else=air
-H role foundation
 I role light_post o=wallmounted:1
 J role light_wall o=wallmounted:2
 K role light_wall o=wallmounted:3
 L role path
-M role post
 N role railing
 O role roof_slab channel=roof
 P role roof_stair
@@ -38,72 +35,73 @@ Z role seat o=facedir:2
 a role storage
 b role storage o=facedir:1
 c node grug_decor:xdecor_table
-e role wall
-f role wall_accent
 g role window
 h role window o=facedir:3
-i role window_frame
+A role facade_base
+H role facade_frame
+M role facade_infill
+d role facade_band
 end
 
 layer 0
 |LLLLLLLLLLL|
-|LHHHHHHHHHL|
-|LHFFFFFFFHL|
-|LHFFFFFFFHL|
-|LHFFFFFFFHL|
-|LHFFFFFFFHL|
-|LHFFFFFFFHL|
-|LHFFFFFFFHL|
-|LHFFFFFFFHL|
-|LHHHHHHHHHL|
+|LAAAAAAAAAL|
+|LAFFFFFFFAL|
+|LAFFFFFFFAL|
+|LAFFFFFFFAL|
+|LAFFFFFFFAL|
+|LAFFFFFFFAL|
+|LAFFFFFFFAL|
+|LAFFFFFFFAL|
+|LAAAAAAAAAL|
 |LLLLLLLLLLL|
 layer 1
 |.......a...|
-|.MifififiM.|
-|.iB.....bi.|
-|GfCP.....f.|
-|.i.......i.|
-|.D.......f.|
-|.i.....Z.i.|
-|.f.....ccf.|
-|.i.....Y.i.|
-|.MifififiM.|
+|.AAAAAAAAA.|
+|.AB.....bA.|
+|GACP.....A.|
+|.A.......A.|
+|.D.......A.|
+|.A.....Z.A.|
+|.A.....ccA.|
+|.A.....Y.A.|
+|.AAAAAAAAA.|
 |...........|
 layer 2
 |...........|
-|.MifififiM.|
-|.i.......i.|
-|.f.......f.|
-|.i.P.....i.|
-|.E.......f.|
-|.i.......i.|
-|.f.......f.|
-|.i.......i.|
-|.MifififiM.|
+|.HMMMHMMMH.|
+|.M.......M.|
+|.M.......M.|
+|.H.P.....M.|
+|.E.......H.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.HMMMHMMMH.|
 |...........|
 layer 3
 |...........|
-|.MigieigiM.|
-|Ji.......i.|
+|.HMgMHMgMH.|
+|JM.......M.|
 |.h.......h.|
-|.i.......i.|
-|.eKP.....e.|
-|.i.......i.|
+|.H.......M.|
+|.MKP.....H.|
+|.M.......M.|
 |.h.......h.|
-|Ji.......i.|
-|.MigieigiM.|
+|JM.......M.|
+|.HMgMHMgMH.|
 |...........|
 layer 4
 |...........|
-|.MigieigiM.|
-|.i.......i.|
+|.ddgdddgdd.|
+|.d.......d.|
 |.h.......h.|
-|.i.......i.|
-|.e.......e.|
-|.i.P.....i.|
+|.d.......d.|
+|.d.......d.|
+|.d.P.....d.|
 |.h.......h.|
-|.i.......i.|
-|.MigieigiM.|
+|.d.......d.|
+|.ddgdddgdd.|
 |...........|
 layer 5
 |...........|
@@ -119,19 +117,19 @@ layer 5
 |...........|
 layer 6
 |...........|
-|.fffffffff.|
-|.fI.....If.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.fI.....If.|
-|.fffffffff.|
+|.HMMMMMMMH.|
+|.MI.....IM.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.MI.....IM.|
+|.HMMMMMMMH.|
 |...........|
 layer 7
 |...........|
-|.M.N.N.N.M.|
+|.H.N.N.N.H.|
 |...........|
 |.N.......N.|
 |...........|
@@ -139,19 +137,19 @@ layer 7
 |...........|
 |.N.......N.|
 |...........|
-|.M.N.N.N.M.|
+|.H.N.N.N.H.|
 |...........|
 layer 8
 |VQQQQQQQQQU|
-|RAAAAAAAAAT|
-|RA.......AT|
-|RA.......AT|
-|RA.......AT|
-|RA.......AT|
-|RA.......AT|
-|RA.......AT|
-|RA.......AT|
-|RAAAAAAAAAT|
+|RdddddddddT|
+|Rd.......dT|
+|Rd.......dT|
+|Rd.......dT|
+|Rd.......dT|
+|Rd.......dT|
+|Rd.......dT|
+|Rd.......dT|
+|RdddddddddT|
 |WSSSSSSSSSX|
 layer 9
 |...........|

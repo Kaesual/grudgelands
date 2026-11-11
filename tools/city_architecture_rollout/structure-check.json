@@ -1,0 +1,19 @@
+{
+  "page_sha256": "a3e81fe96294b3ae670969e669f588917b400ba8fe9bbf1a4821158919199dba",
+  "checks": [
+    "All 145 delivered scenes preserve occupied cells and orientation",
+    "Scene deltas exactly match the audit; openings and protected content unchanged",
+    "All twelve accepted references retain their exact deltas",
+    "Long facade: intermediate post runs continuously to the high roofline",
+    "Long facade: old wide frame becomes a one-cell post with adjacent loam",
+    "Long facade: the low-eave tie spans the whole taller side",
+    "Long facade: the high roofline tie also spans the whole taller side",
+    "Horizontal ties remain one cell thick",
+    "Dwarf high side wall no longer turns into timber above the low eave",
+    "Dwarf high wall ends with a masonry tie",
+    "Dwarf actual gable retains warm timber infill",
+    "Raised troll house: continuous frame starts above its existing platform",
+    "Troll infill uses existing umber clay",
+    "Elf accent is one continuous level including corners"
+  ]
+}

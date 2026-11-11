@@ -9,12 +9,9 @@ meta extent=[-1,-1,13,9] peak=7 top=9
 races orc
 
 legend
-A role beam
 B role floor
-C role foundation
 D role light_wall o=wallmounted:3
 E role path
-F role post
 G role roof_slab
 H role roof_stair
 I role roof_stair o=facedir:2
@@ -27,69 +24,71 @@ P role wall
 Q role wall_accent
 R role window
 S role window o=facedir:3
-T role window_frame
 U role workbench
+A role facade_base
+C role facade_frame
+F role facade_infill
 end
 
 layer 0
 |EEEEEEEEEEEEEEE|
-|ECCCCCCCCCCCCCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECCCCCCCCCCCCCE|
+|EAAAAAAAAAAAAAE|
+|EABBBBBBBBBBBAE|
+|EABBBBBBBBBBBAE|
+|EABBBBBBBBBBBAE|
+|EABBBBBBBBBBBAE|
+|EABBBBBBBBBBBAE|
+|EABBBBBBBBBBBAE|
+|EABBBBBBBBBBBAE|
+|EAAAAAAAAAAAAAE|
 |EEEEEEEEEEEEEEE|
 layer 1
 |...............|
-|.F...F...F...F.|
-|.TOO.......OOT.|
+|.A...C...C...A.|
+|.AOO.......OOA.|
 |.Q...........Q.|
 |.Q.....K.....Q.|
-|.T....MMM....T.|
-|.T.....J.....T.|
+|.A....MMM....A.|
+|.A.....J.....A.|
 |.Q...........Q.|
 |.QLL...U.....Q.|
-|.TTQQTTQQTTQQT.|
+|.AAQQAAQQAAQQA.|
 |...............|
 layer 2
 |...............|
-|.F...F...F...F.|
-|.TOO.......OOT.|
+|.C...C...C...C.|
+|.FOO.......OOF.|
 |.S...........S.|
 |.S...........S.|
-|.T...........T.|
-|.T...........T.|
+|.C...........C.|
+|.F...........F.|
 |.S...........S.|
 |.S...........S.|
-|.TTRRTTRRTTRRT.|
+|.CFRRCFRRCFRRC.|
 |...............|
 layer 3
 |...............|
-|.F...F...F...F.|
-|.TGG.......GGT.|
+|.C...C...C...C.|
+|.FGG.......GGF.|
 |.S...........S.|
 |.S...........S.|
-|.TD..........T.|
-|.TD..........T.|
+|.CD..........C.|
+|.FD..........F.|
 |.S...........S.|
 |.S...........S.|
-|.TTRRTTRRTTRRT.|
+|.CFRRCFRRCFRRC.|
 |...............|
 layer 4
 |HHHHHHHHHHHHHHH|
-|.FAAAAAAAAAAAF.|
-|.T...........T.|
-|.P...........P.|
-|.P...........P.|
-|.T...........T.|
-|.T...........T.|
-|.P...........P.|
-|.P...........P.|
-|.TTPPTTPPTTPPT.|
+|.CCCCCCCCCCCCC.|
+|.A...........A.|
+|.A...........A.|
+|.A...........A.|
+|.C...........C.|
+|.A...........A.|
+|.A...........A.|
+|.A...........A.|
+|.CAAACAAACAAAC.|
 |IIIIIIIIIIIIIII|
 layer 5
 |...............|
@@ -97,7 +96,7 @@ layer 5
 |.P...........P.|
 |.P...........P.|
 |.P...........P.|
-|.P...........P.|
+|.C...........C.|
 |.P...........P.|
 |.P...........P.|
 |.P...........P.|
@@ -109,7 +108,7 @@ layer 6
 |HHHHHHHHHHHHHHH|
 |.P...........P.|
 |.P...........P.|
-|.P...........P.|
+|.C...........C.|
 |.P...........P.|
 |.P...........P.|
 |IIIIIIIIIIIIIII|

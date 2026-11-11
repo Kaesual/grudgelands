@@ -1,0 +1,295 @@
+{
+  "race": "human",
+  "title": "The orchard lane",
+  "seed": 1101,
+  "description": "A lived-in orchard lane: a bend past the smithy, low garden fencing, a bench and working barrels beside the cottage. Small fruit trees and flower clumps break up the meadow.",
+  "camera": {
+    "eye": [
+      0,
+      2.0968693507543725,
+      -13.013744035405665
+    ],
+    "target": [
+      0,
+      1.349999999999996,
+      -9.5
+    ],
+    "fov": 48.1293567771872
+  },
+  "portrait": {
+    "feet": [
+      0,
+      0.5,
+      -9.5
+    ],
+    "units_per_pixel": 0.0525,
+    "stature": 1
+  },
+  "sky": "#a8bec2",
+  "fog": [
+    42,
+    100
+  ],
+  "tint": "#fff4df",
+  "ground": "default:dirt_with_grass",
+  "soil": "default:dirt",
+  "path": "grug_decor:castle_pavement_brick",
+  "stone": "default:cobble",
+  "buildings": [
+    {
+      "template": "dawnmere_orchard_cottage",
+      "at": [
+        -14,
+        0,
+        17
+      ]
+    },
+    {
+      "template": "dawnmere_smithy",
+      "at": [
+        18,
+        0,
+        29
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "at": [
+        -7,
+        0,
+        27
+      ],
+      "species": "apple",
+      "seed": 110119
+    },
+    {
+      "at": [
+        5,
+        0,
+        40
+      ],
+      "species": "apple",
+      "seed": 110256
+    },
+    {
+      "at": [
+        -17,
+        0,
+        35
+      ],
+      "species": "apple",
+      "seed": 110393
+    },
+    {
+      "at": [
+        20,
+        0,
+        7
+      ],
+      "species": "apple",
+      "seed": 110530
+    },
+    {
+      "at": [
+        -24,
+        0,
+        4
+      ],
+      "species": "apple",
+      "seed": 110667
+    },
+    {
+      "at": [
+        0,
+        0,
+        47
+      ],
+      "species": "apple",
+      "seed": 110804
+    }
+  ],
+  "plants": [
+    "default:grass_3",
+    "grug_nodes:flower_cream_cups",
+    "grug_nodes:flower_lilac_bells"
+  ],
+  "props": [
+    {
+      "kind": "blocks",
+      "node": "default:fence_wood",
+      "from": [
+        -5,
+        1,
+        0
+      ],
+      "to": [
+        -5,
+        1,
+        10
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "default:fence_wood",
+      "from": [
+        -9,
+        1,
+        10
+      ],
+      "to": [
+        -5,
+        1,
+        10
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_bench",
+      "at": [
+        -6,
+        1,
+        7
+      ],
+      "param2": 1
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_barrel",
+      "at": [
+        6,
+        1,
+        5
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:cottages_tub",
+      "at": [
+        7,
+        1,
+        6
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_workbench",
+      "at": [
+        -8,
+        1,
+        13
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_decor:xdecor_lantern",
+      "at": [
+        -8,
+        2,
+        13
+      ]
+    },
+    {
+      "kind": "blocks",
+      "node": "default:tree",
+      "from": [
+        -9,
+        1,
+        14
+      ],
+      "to": [
+        -7,
+        1,
+        14
+      ],
+      "param2": 12
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        -4,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        -4,
+        1,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        -6,
+        1,
+        9
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        5,
+        1,
+        3
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_lilac_bells",
+      "at": [
+        7,
+        1,
+        10
+      ]
+    },
+    {
+      "kind": "node",
+      "node": "grug_nodes:flower_cream_cups",
+      "at": [
+        -7,
+        1,
+        5
+      ]
+    }
+  ],
+  "route": [
+    [
+      -22,
+      0,
+      3.2
+    ],
+    [
+      -4,
+      0,
+      3.2
+    ],
+    [
+      7,
+      1,
+      3
+    ],
+    [
+      19,
+      6,
+      2.4
+    ],
+    [
+      36,
+      13,
+      2
+    ],
+    [
+      48,
+      17,
+      0
+    ]
+  ],
+  "plant_count": 300
+}

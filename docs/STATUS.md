@@ -2,6 +2,39 @@
 
 Updated 2026-11-11. This is the delivery pointer, not another game specification.
 
+**0.75.5 is merged locally into main as one squash commit; not pushed.**
+The detailed reviewed history is retained by tag `round-75.5`. The local Luanti
+Flatpak game is synced and verified: all 4,958 game files match main. The user
+accepted all browser comparisons. The completed round worktree/branch are removed.
+The user approved the remaining special-building proposals after the original
+145-scene framing study, moon shrine and 50 guild/service views. All 87 pending
+contexts / 72 templates are now adapted: **283 contexts / 254 templates** in
+total, with 16 green grounds and monuments retained. Camps stay outside scope.
+The [acceptance overview](../tools/city_architecture_specials/README.md) separates
+138 completed special views, zero pending and 16 leave-as-is recommendations;
+the original 145-scene comparison is linked separately.
+
+Royal combat areas, tower galleries, open structures, ruins, treehouse access,
+planting and late-cell ordering are preserved. Twelve hidden pillar material
+variants reuse existing shapes and textures. Thirty-three additional decoration
+support names follow changed surfaces; no props move. The combined real-loader
+proof covers 1,132 rotations / 4,030,468 cells across all implemented contexts;
+all 299 city contexts are checked. Classification remains **map reset**, no
+migration. Independent final review PASS, no open findings. The final integrated main sweep passes all 345 portable fixtures without
+failures. The final isolated main server boot, browser, exact-loader, Lua,
+template, decor, upgrade and release gates pass. Native acceptance
+is still open in the
+[round plan](planning/round75.5-plan.md#9-remaining-approved-special-buildings-2026-11-11).
+Production and saved worlds are unchanged; only the user pushes.
+
+**Character-creation adoption (2026-11-11):** the user accepted the browser
+result and requested complete game adoption and main merge. All six refreshed
+native-camera PNGs and the recommended small centered crest are now in the
+round's game files, copied byte-identically from approved sources. Cameras and
+character standing points are unchanged. The [comparison](../tools/character_creation_preview/architecture-refresh/README.md)
+keeps its archived before images. Browser acceptance is complete; native
+desktop/web testing remains open. The merge and local game sync are complete.
+
 **0.75.4 is on main, not pushed.** Player report from production (0.69.0): Return home
 to Lethariel failed every time ("Home arrival is unavailable"). An engine probe of all
 twelve innkeeper arrivals (seed 42, on 0.69.0 and on 0.75.3) found Lethariel's and

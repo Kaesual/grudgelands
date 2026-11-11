@@ -18,14 +18,12 @@ F role chimney_cap
 G role door variant=_a
 H role door_hidden
 I role floor
-J role foundation
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
 M role light_wall o=wallmounted:2
 N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:4
 P role path
-Q role post
 R role roof_slab
 S role roof_stair
 T role roof_stair o=facedir:1
@@ -46,11 +44,12 @@ h role shelf_vessels o=facedir:1
 i role storage
 j role storage o=facedir:3
 k node grug_decor:xdecor_table
-m role wall
 n role wall_accent
 o role window
 p role window o=facedir:3
-q role window_frame
+J role facade_base
+Q role facade_frame
+l role facade_infill
 end
 
 layer 0
@@ -69,67 +68,67 @@ layer 0
 layer 1
 |             |
 |....B....BA..|
-|.QnnnnGnqnnq.|
-|.qC.......KE.|
+|.JnnnnGnJnnJ.|
+|.JC.......KE.|
 |.nD......e.nB|
 |.nj...d....nA|
-|.qg...kk...qB|
-|.q....c....q.|
+|.Jg...kk...JB|
+|.J....c....J.|
 |.n........fni|
 |.n........hn.|
-|.qqnnqqnnqnq.|
+|.JJnnJJnnJnJ.|
 |.............|
 layer 2
 |             |
 |.............|
-|.QmmmmHmqooq.|
-|.q........LE.|
+|.QlllQHllooQ.|
+|.l........LE.|
 |.p.........p.|
 |.p.........p.|
-|.qg........q.|
-|.q.........q.|
+|.Qg........Q.|
+|.l.........l.|
 |.p........hp.|
 |.p.........p.|
-|.qqooqqooqmq.|
+|.QloolQoollQ.|
 |.............|
 layer 3
 |             |
 |....O...O....|
-|.Qmmmmmmqooq.|
-|.q........EE.|
+|.QlllQlllooQ.|
+|.l........EE.|
 |.p.........p.|
 |.p.........p.|
-|.qN.......Mq.|
-|.q.........q.|
+|.QN.......MQ.|
+|.l.........l.|
 |.p.........p.|
 |.p.........p.|
-|.qqooqqooqmq.|
+|.QloolQoollQ.|
 |.............|
 layer 4
 |             |
 |.............|
-|.Qmmmmmmqmmq.|
-|.q........EE.|
-|.m.........m.|
-|.m.........m.|
-|.q.........q.|
-|.q.........q.|
-|.m.........m.|
-|.m.........m.|
-|.qqmmqqmmqmq.|
+|.QlllQlllllQ.|
+|.l........EE.|
+|.l.........l.|
+|.l.........l.|
+|.Q.........Q.|
+|.l.........l.|
+|.l.........l.|
+|.l.........l.|
+|.QllllQllllQ.|
 |.............|
 layer 5
 |             |
 |XSSSSSSSSSSSW|
-|TQmmmmmmqmmqV|
-|Tq........EEV|
-|Tm.........mV|
-|Tm.........mV|
-|Tq.........qV|
-|Tq.........qV|
-|Tm.........mV|
-|Tm.........mV|
-|TqqmmqqmmqmqV|
+|TQQQQQQQQQQQV|
+|TQ........EEV|
+|TQ.........QV|
+|TQ.........QV|
+|TQ.........QV|
+|TQ.........QV|
+|TQ.........QV|
+|TQ.........QV|
+|TQQQQQQQQQQQV|
 |YUUUUUUUUUUUZ|
 layer 6
 |             |

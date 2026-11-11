@@ -10,18 +10,15 @@ races orc
 
 legend
 A node grug_decor:xdecor_potted_rose
-B role beam
 C role bed variant=_bottom
 D role bed variant=_top
 E role door variant=_a o=facedir:1
 F role door_hidden o=facedir:1
 G role floor
-H role foundation
 I role light_post o=wallmounted:1
 J role light_wall o=wallmounted:2
 K role light_wall o=wallmounted:3
 L role path
-M role post
 N role railing
 O role roof_ridge
 P role roof_stair
@@ -34,68 +31,71 @@ W role wall
 X role wall_accent
 Y role window
 Z role window o=facedir:3
-a role window_frame
+B role facade_base
+H role facade_frame
+M role facade_infill
+V role facade_roof_ridge
 end
 
 layer 0
 |LLLLLLLLLLL|
-|LHHHHHHHHHL|
-|LHGGGGGGGHL|
-|LHGGGGGGGHL|
-|LHGGGGGGGHL|
-|LHGGGGGGGHL|
-|LHGGGGGGGHL|
-|LHGGGGGGGHL|
-|LHGGGGGGGHL|
-|LHHHHHHHHHL|
+|LBBBBBBBBBL|
+|LBGGGGGGGBL|
+|LBGGGGGGGBL|
+|LBGGGGGGGBL|
+|LBGGGGGGGBL|
+|LBGGGGGGGBL|
+|LBGGGGGGGBL|
+|LBGGGGGGGBL|
+|LBBBBBBBBBL|
 |LLLLLLLLLLL|
 layer 1
 |.......S...|
-|.MaXaXaXaM.|
-|.aC.....Ta.|
+|.BBXBXBXBB.|
+|.BC.....TB.|
 |.XDP.....X.|
-|.a.......a.|
+|.B.......B.|
 |.E.......X.|
-|.a.....R.a.|
+|.B.....R.B.|
 |AX.....UUX.|
-|.a.....Q.a.|
-|.MaXaXaXaM.|
+|.B.....Q.B.|
+|.BBXBXBXBB.|
 |...........|
 layer 2
 |...........|
-|.MaXaXaXaM.|
-|.a.......a.|
-|.X.......X.|
-|.a.P.....a.|
-|.F.......X.|
-|.a.......a.|
-|.X.......X.|
-|.a.......a.|
-|.MaXaXaXaM.|
+|.HMMMHMMMH.|
+|.M.......M.|
+|.M.......M.|
+|.H.P.....M.|
+|.F.......H.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.HMMMHMMMH.|
 |...........|
 layer 3
 |...........|
-|.MaYaWaYaM.|
-|Ja.......a.|
+|.HMYMHMYMH.|
+|JM.......M.|
 |.Z.......Z.|
-|.a.......a.|
-|.WKP.....W.|
-|.a.......a.|
+|.H.......M.|
+|.WKP.....H.|
+|.M.......M.|
 |.Z.......Z.|
-|Ja.......a.|
-|.MaYaWaYaM.|
+|JM.......M.|
+|.HMYMHMYMH.|
 |...........|
 layer 4
 |...........|
-|.MaYaWaYaM.|
-|.a.......a.|
+|.HBYBHBYBH.|
+|.B.......B.|
 |.Z.......Z.|
-|.a.......a.|
-|.W.......W.|
-|.a.P.....a.|
+|.H.......B.|
+|.B.......H.|
+|.B.P.....B.|
 |.Z.......Z.|
-|.a.......a.|
-|.MaYaWaYaM.|
+|.B.......B.|
+|.HBYBHBYBH.|
 |...........|
 layer 5
 |...........|
@@ -111,19 +111,19 @@ layer 5
 |...........|
 layer 6
 |...........|
-|.XXXXXXXXX.|
-|.XI.....IX.|
-|.X.......X.|
-|.X.......X.|
-|.X.......X.|
-|.X.......X.|
-|.X.......X.|
-|.XI.....IX.|
-|.XXXXXXXXX.|
+|.HMMMMMMMH.|
+|.MI.....IM.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.M.......M.|
+|.MI.....IM.|
+|.HMMMMMMMH.|
 |...........|
 layer 7
 |...........|
-|.M.N.N.N.M.|
+|.H.N.N.N.H.|
 |...........|
 |.N.......N.|
 |...........|
@@ -131,7 +131,7 @@ layer 7
 |...........|
 |.N.......N.|
 |...........|
-|.M.N.N.N.M.|
+|.H.N.N.N.H.|
 |...........|
 layer 8
 |...........|
@@ -147,15 +147,15 @@ layer 8
 |...........|
 layer 9
 |OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
-|OOOOOOOOOOO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
+|OVVVVVVVVVO|
 |OOOOOOOOOOO|
 
 points

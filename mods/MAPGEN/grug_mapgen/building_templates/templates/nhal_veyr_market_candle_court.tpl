@@ -10,35 +10,34 @@ races undead
 
 legend
 A role castle_paving
-B role castle_wall else=air
 C role light_post o=wallmounted:1
-D role plaza_edge
 E role post
 F role seat
 G role seat o=facedir:2
-H role signature else=air
+B role facade_base
+D role facade_frame
 end
 
 layer 0
-|DDDDDDDDDDD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DAAAAAAAAAD|
-|DDDDDDDDDDD|
+|BBBBBBBBBBB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BAAAAAAAAAB|
+|BBBBBBBBBBB|
 layer 1
 |...........|
 |.E...G...E.|
 |...........|
 |...........|
-|....HHH....|
-|....HHH....|
-|....HHH....|
+|....DDD....|
+|....DDD....|
+|....DDD....|
 |...........|
 |...........|
 |.E...F...E.|
@@ -49,7 +48,7 @@ layer 2
 |...........|
 |...........|
 |.....C.....|
-|....CBC....|
+|....CDC....|
 |.....C.....|
 |...........|
 |...........|

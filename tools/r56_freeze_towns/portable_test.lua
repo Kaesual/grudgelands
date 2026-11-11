@@ -142,19 +142,23 @@ check(not pcall(templates.sockets, {{id = "b", building = "other"}}, collected()
 -- every workshop workbench and the human closed shutters are gone; the human
 -- palette's shutter node leaves the node list, so Dawnmere's and Highcourt's
 -- point digests move too.
+-- 0.75.5: declared map reset; approved facade materials and decor support pins.
+-- Node lists affect point digests; authored points and cell positions are unchanged.
+-- Moon-shrine follow-up: Silverleaf cell identity changes; point digest stays exact.
+-- Guild/service follow-up: authorized material cells and support names only.
 local FROZEN = {
-	hearthpine = {"6ca976fa5741bdd914e9e540fe676b71269aa8225656d05546be3c11250a15c1",
-		"72ca455e10241c9bea4328b1a367d932bf3afecd67d3968c1d3d1359bde61bf5"},
-	dawnmere = {"e2d0481360abf226eb40746c1c278037cd9187c413816bc0a157b4b1ecd78cf9",
-		"cd0aa85eac0752becbd614999556856086856be4386fd2786bd000ca067d3746"},
-	silverleaf = {"86cc1097e793a2cbaa958fe9e33341445a4bd464829bfe4760139aa012f320b5",
-		"539aeb053cde71f8362459160f69c07bf6a8727bf81bd36706a1144334f9bfea"},
-	stillgrave = {"1e0402d51127f0213b8b2bd57b380eb59ddabd582374f6429cbfc83a2a448b29",
-		"9c818115f1656ccb5b6f5b3aa2f77c08362e707d4a8075119eab083e023943c5"},
-	sunscar = {"b3f8d7bd725af8ce21be8c22a413135f20f77fa1237dd38746dee2234e8b1485",
-		"2647c4c29010a9ad7d827139c0b30eec414326f886baa4e8380dcfef353ae04d"},
-	kapok = {"77d762710e1c450fd148fa9d68a48dde5dc83a5aac6ebd2e3be8d3a6e6c8b1f4",
-		"eeddeccb546dab30e3955aee0bc75117900810dca32363f56ee36c436f5e9583"},
+	hearthpine = {"94586469e474adc9863ff0a699451e90bdcaca3e3c3cad9f3f2a0c26fde45258",
+		"686be3554990adb01df0f8b43b101c82d85f5380b101df55eace3c6468d7fe63"},
+	dawnmere = {"3bb7489f3884cba0afe66f452996b9367e15f555cdcffd62c311b260f8329e45",
+		"9b4eba24cca97b58d48c3e63e7e8ff50e3b4fbc896461ed57bdcf57fec4f47a3"},
+	silverleaf = {"4dddedef880fd7d638784206c7f6892826e85ff3dda59ddec09adb1e568ca188",
+		"89aec9d4ddd8ee56f5c2fa3cb00cf20ca13ac4bfcbc76cb74c9677e946ead2dd"},
+	stillgrave = {"cd2cb02edea076ac3200aa58aafe505793dc7638fe1ab1048028ed43c5d9057c",
+		"55231a6c26d41f1c85f56b65d15014aa57431bb06447e16bc3d92d5b44967219"},
+	sunscar = {"dcb06c20074597caaf0ad637cbfc08d40432df026fa058dee1eb07e1dac7d874",
+		"2361770142a9c34cb3eaa7ebc792b818ca95108da8280dbba359745be3005acd"},
+	kapok = {"abd82210626691782a7be04809036333871817a4a9e086b93c2a3d5c1900d2cf",
+		"40c70ede0896fb433ede3dcbbd4907048448ab00754f994be558035d07294c4f"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()

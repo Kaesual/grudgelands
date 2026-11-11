@@ -1,0 +1,80 @@
+[
+  {
+    "id": "dur_brannoc/core/smelting_yard",
+    "position": "33:5:28",
+    "before": "default:pine_wood",
+    "after": "default:wood"
+  },
+  {
+    "id": "dur_brannoc/district/garrison_wain_shed",
+    "position": "-5:5:-3",
+    "before": "default:pine_wood",
+    "after": "default:wood"
+  },
+  {
+    "id": "hearthpine/building/workyard",
+    "position": "-38:5:16",
+    "before": "default:pine_wood",
+    "after": "default:wood"
+  },
+  {
+    "id": "highcourt/core/service_yard",
+    "position": "34:5:8",
+    "before": "default:wood",
+    "after": "grug_decor:cottages_loam"
+  },
+  {
+    "id": "highcourt/district/martial_wain_shed",
+    "position": "-5:5:-3",
+    "before": "default:wood",
+    "after": "grug_decor:cottages_loam"
+  },
+  {
+    "id": "highcourt/district/martial_wain_shed",
+    "position": "-5:5:0",
+    "before": "default:wood",
+    "after": "grug_trees:gravewood_wood"
+  },
+  {
+    "id": "kapok/building/drying_shed",
+    "position": "-39:5:26",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/shore_smokehouse",
+    "position": "-5:5:-3",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "nhal_veyr/core/charnel_yard",
+    "position": "33:5:28",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/homes_gate_house",
+    "position": "-3:2:-5",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/homes_gate_house",
+    "position": "0:5:-5",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "nhal_veyr/district/watch_armoury",
+    "position": "-6:2:-8",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/watch_cart_shed",
+    "position": "-5:5:-3",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  }
+]

@@ -19,12 +19,10 @@ G role door variant=_b o=facedir:1
 H role door_hidden
 I role door_hidden o=facedir:1
 J role floor
-K role foundation
 L role light_wall o=wallmounted:2
 M role light_wall o=wallmounted:3
 N role light_wall o=wallmounted:4
 O role path
-P role post
 Q role roof_slab
 R role roof_stair
 S role roof_stair o=facedir:1
@@ -43,12 +41,13 @@ e role storage
 f role storage o=facedir:2
 g role storage o=facedir:3
 h role tree_log
-i role wall
 j role wall_accent
 k role window
 l role window o=facedir:3
-m role window_frame
 n role workbench
+K role facade_base
+P role facade_frame
+i role facade_infill
 end
 
 layer 0
@@ -69,87 +68,87 @@ layer 0
 | OOOOOOOOOOOOO     |
 layer 1
 | ...BAB...hh..     |
-| .PmjjmDjjmjP.     |
+| .KKjjKDjjKjK.     |
 | .j..nnnnn..j.     |
 | .j.........jBAB...|
-| .j.........mjjmjP.|
+| .j.........KjjKjK.|
 | .G..........ff..D.|
 | .F..............jB|
 | .j...CCC.....n..jA|
-| em...ZZZ........mB|
+| eK...ZZZ........KB|
 | .j..........ac..j.|
-| .jg.......bmjjmjP.|
-| .mg.......djB.hh..|
+| .jg.......bKjjKjK.|
+| .Kg.......djB.hh..|
 | .jg.......bjA     |
-| .Pmjjmmjjmjm.     |
+| .KKjjKKjjKjK.     |
 | .............     |
 layer 2
 | .........hh..     |
-| .PmkkmDkkmiP.     |
+| .PikkPDkkPiP.     |
 | .i.........i.     |
 | .i.........i......|
-| .i.........mkkmiP.|
+| .i.........ikkiiP.|
 | .H..............D.|
 | .I..............l.|
 | .i..............l.|
-| .m..............m.|
-| .l..............i.|
-| .l.........mkkmiP.|
-| .m.........l..hh..|
+| .i..............i.|
+| .l..............P.|
+| .l.........ikkiiP.|
+| .i.........l..hh..|
 | .i.........l.     |
-| .Pmkkmmkkmim.     |
+| .PikkPikkPii.     |
 | .............     |
 layer 3
 | .........QQ..     |
-| .PmkkmDkkmiP.     |
+| .PikkPDkkPiP.     |
 | .i.........i.     |
 | .iM.......Li......|
-| Li.........mkkmiP.|
-| .i.............LD.|
+| Li.........ikkiiP.|
+| .P.............LD.|
 | .i..............l.|
 | .i..............l.|
-| Lm..............m.|
-| .l............N.i.|
-| .l........LmkkmiP.|
-| .mM........l..QQ..|
+| Li..............i.|
+| .l............N.P.|
+| .l........LikkiiP.|
+| .iM........l..QQ..|
 | .i.........l.     |
-| .Pmkkmmkkmim.     |
+| .PikkPikkPii.     |
 | .............     |
 layer 4
 | .............     |
-| .PmiimDiimiP.     |
-| .i.........i.     |
-| .i.........i......|
-| .i.........miimiP.|
-| .i..............D.|
-| .i..............i.|
-| .i..............i.|
-| .m..............m.|
-| .i..............i.|
-| .i.........miimiP.|
-| .m.........i......|
-| .i.........i.     |
-| .Pmiimmiimim.     |
+| .PPPPPDPPPPP.     |
+| .P.........P.     |
+| .P.........P......|
+| .P.........PPPPPP.|
+| .P..............D.|
+| .P..............P.|
+| .P..............P.|
+| .P..............P.|
+| .P..............P.|
+| .P.........PPPPPP.|
+| .P.........P......|
+| .P.........P.     |
+| .PPPPPPPPPPP.     |
 | .............     |
 layer 5
 | S...........U     |
-| SPmiimDiimiPU     |
+| SPiiiPDiiPiPU     |
 | Si.........iU     |
 | Si.........iVRRRRR|
-| Si.........miimiP.|
-| Si..............D.|
+| Si.........iiiiiP.|
+| SP..............D.|
 | Si..............i.|
 | Si..............i.|
-| Sm..............m.|
 | Si..............i.|
-| Si.........miimiP.|
-| Sm.........iWTTTTT|
+| SP..............P.|
+| Si.........iiiiiP.|
+| Si.........iWTTTTT|
 | Si.........iU     |
-| SPmiimmiimimU     |
+| SPiiiPiiiPiiU     |
 | S...........U     |
 layer 6
 | .S.........U.     |
-| .SiiiiDiiiiU.     |
+| .SiiiPDiiPiU.     |
 | .S.........U.     |
 | .S.........U......|
 | .S.........VRRRRRR|
@@ -157,15 +156,15 @@ layer 6
 | .S..............i.|
 | .S..............i.|
 | .S..............i.|
-| .S..............i.|
+| .S..............P.|
 | .S.........WTTTTTT|
 | .S.........U......|
 | .S.........U.     |
-| .SiiiiiiiiiU.     |
+| .SiiiPiiiPiU.     |
 | .S.........U.     |
 layer 7
 | ..S.......U..     |
-| ..SiiiDiiiU..     |
+| ..SiiPDiiPU..     |
 | ..S.......U..     |
 | ..S.......U.......|
 | ..S.......U.......|
@@ -177,11 +176,11 @@ layer 7
 | ..S.......U.......|
 | ..S.......U.......|
 | ..S.......U..     |
-| ..SiiiiiiiU..     |
+| ..SiiPiiiPU..     |
 | ..S.......U..     |
 layer 8
 | ...S.....U...     |
-| ...SiiDiiU...     |
+| ...SiPDiiU...     |
 | ...S.....U...     |
 | ...S.....U........|
 | ...S.....U........|
@@ -193,7 +192,7 @@ layer 8
 | ...S.....U........|
 | ...S.....U........|
 | ...S.....U...     |
-| ...SiiiiiU...     |
+| ...SiPiiiU...     |
 | ...S.....U...     |
 layer 9
 | ....QQQQQ....     |

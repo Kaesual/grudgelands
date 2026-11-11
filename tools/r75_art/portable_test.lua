@@ -19,7 +19,9 @@ local nodes, protected, placed, violation, clicked = {}, nil, nil, false, false
 local function key(p) return string.format("%d:%d:%d", p.x,p.y,p.z) end
 core = {
 	registered_nodes = {air = {buildable_to = true, walkable = false},
-		["test:stone"] = {walkable = true, drawtype = "normal"}},
+		["test:stone"] = {walkable = true, drawtype = "normal"},
+		-- The real default dependency registers this material before grug_decor.
+		["default:junglewood"] = {tiles = {"default_junglewood.png"}}},
 	get_modpath = function() return modpath end,
 	get_current_modname = function() return "grug_decor" end,
 	register_node = function(id, def) def.name = id; core.registered_nodes[id] = def end,
@@ -55,6 +57,17 @@ for size = 1,2 do
 		"runtime bounds match selection and checked footprint")
 end
 local parts = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp13/parts.lua")
+local pillars = 0
+for id, def in pairs(core.registered_nodes) do
+	if def._grug_city_architecture then
+		pillars = pillars + 1
+		check(def.groups.not_in_creative_inventory == 1 and def.drop == "",
+			id .. " stays a hidden city construction material")
+		check(parts.param2_kind(id) == parts.FACEDIR,
+			id .. " participates in building rotation")
+	end
+end
+check(pillars == 12, "twelve material pillar variants registered")
 local count = 0
 for id,def in pairs(core.registered_nodes) do
 	if def._grug_city_decoration then

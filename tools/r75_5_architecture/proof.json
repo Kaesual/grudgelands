@@ -1,0 +1,2403 @@
+{
+  "source": "48d69ef0",
+  "classification": "map reset",
+  "templates": 254,
+  "placements": [
+    {
+      "template": "dawnmere_field_cottage",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 15,
+      "scene": "dawnmere__dawnmere_field_cottage",
+      "cells": 1716,
+      "sha256": "2ad746793e9cdf1299052fd4b9a86e04bcb4718155b7a616fcb8901d89b81682"
+    },
+    {
+      "template": "dawnmere_great_barn",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 10,
+      "scene": "dawnmere__dawnmere_great_barn",
+      "cells": 2925,
+      "sha256": "b7c3256fe53ce406f8d4580ae68002df17ace3e00658671312b664d11c6ab7a9"
+    },
+    {
+      "template": "dawnmere_green_cottage",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 14,
+      "scene": "dawnmere__dawnmere_green_cottage",
+      "cells": 1694,
+      "sha256": "f44c63823606a67ebcd28fe5cbf11b64965b560f02a996183b29eb1fd4281a21"
+    },
+    {
+      "template": "dawnmere_harvest_inn",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 9,
+      "scene": "dawnmere__dawnmere_harvest_inn",
+      "cells": 2873,
+      "sha256": "a622d3ef530ae0aa00ba8f07b870e4c689f0ef6b42bf814e0933d5890ac5e56a"
+    },
+    {
+      "template": "dawnmere_lane_cottage",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 13,
+      "scene": "dawnmere__dawnmere_lane_cottage",
+      "cells": 1331,
+      "sha256": "246c6245f74804416cc125c8a5f0f02627a72b7dec46d0591e7d2a9d9181cc93"
+    },
+    {
+      "template": "dawnmere_meeting_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 8,
+      "scene": "dawnmere__dawnmere_meeting_hall",
+      "cells": 2938,
+      "sha256": "12c5f61a7d3bc14c74f58154972a40cf70428c5dfb9ff7da856184f661e7c75d"
+    },
+    {
+      "template": "dawnmere_orchard_cottage",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 12,
+      "scene": "dawnmere__dawnmere_orchard_cottage",
+      "cells": 1452,
+      "sha256": "015ede8acf96b1e64c3d37e09464d7944129a6065766d250b1c5aceec6f75124"
+    },
+    {
+      "template": "dawnmere_smithy",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 11,
+      "scene": "dawnmere__dawnmere_smithy",
+      "cells": 2880,
+      "sha256": "80af41299d1f589eb98ff808f7a1f5303d83991ee569e3bfb1664d8e593cf134"
+    },
+    {
+      "template": "dawnmere_tollhouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dawnmere.layout",
+      "line": 16,
+      "scene": "dawnmere__dawnmere_tollhouse__16",
+      "cells": 1573,
+      "sha256": "8a95400450bbff42c19c922819a032975c00e0e0a50a31e3bbc9d8ca9063e042"
+    },
+    {
+      "template": "dawnmere_tollhouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 16,
+      "scene": "silverleaf__dawnmere_tollhouse__16",
+      "cells": 1573,
+      "sha256": "e2df95dadd8586e235529d06fe19502856ea38757409190c45b9eb9cfe30b015"
+    },
+    {
+      "template": "dur_brannoc_ancestor_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 17,
+      "scene": "dur_brannoc__dur_brannoc_ancestor_hall__17",
+      "cells": 4798,
+      "sha256": "04adabc2f9560b511d79e8c34bd2502c0d04682e9ef9c914d54c229a99fffa50"
+    },
+    {
+      "template": "dur_brannoc_colonnade_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 14,
+      "scene": "dur_brannoc__dur_brannoc_colonnade_east__14",
+      "cells": 1071,
+      "sha256": "aab332f711a2d00c3a9ea0b20947c8f75bc9c3b3a2557925d4319971cba77695"
+    },
+    {
+      "template": "dur_brannoc_colonnade_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 13,
+      "scene": "dur_brannoc__dur_brannoc_colonnade_west__13",
+      "cells": 1071,
+      "sha256": "aab332f711a2d00c3a9ea0b20947c8f75bc9c3b3a2557925d4319971cba77695"
+    },
+    {
+      "template": "dur_brannoc_deep_hall_of_record",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 42,
+      "scene": "dur_brannoc__dur_brannoc_deep_hall_of_record",
+      "cells": 4063,
+      "sha256": "79b3733c69ef8bcc45f486599ff0dae052924633c308333a2175601968bb508b"
+    },
+    {
+      "template": "dur_brannoc_deep_memory_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 44,
+      "scene": "dur_brannoc__dur_brannoc_deep_memory_hall",
+      "cells": 3876,
+      "sha256": "3949267b4fc5640f14ed272fa8bc58ff40addcce4cc1f12093071a06cbadac17"
+    },
+    {
+      "template": "dur_brannoc_deep_scriptorium",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 43,
+      "scene": "dur_brannoc__dur_brannoc_deep_scriptorium",
+      "cells": 3990,
+      "sha256": "fcb541ee8acbf6eb0a899fa3d6bae3a50db63ab30501d1639cd35be843f13aa0"
+    },
+    {
+      "template": "dur_brannoc_forge_charcoal",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 25,
+      "scene": "dur_brannoc__dur_brannoc_forge_charcoal",
+      "cells": 3094,
+      "sha256": "ad3c83c034401e04b5ad98f7ac266d1cb2b4c57a251efd54b0e20cf16fbf0412"
+    },
+    {
+      "template": "dur_brannoc_forge_copse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 30,
+      "scene": null,
+      "cells": 5625,
+      "sha256": "d1b97ed8a597e99b2b3faca85be7d1129cf1f39a2a324354e6de4d4e396ccb88"
+    },
+    {
+      "template": "dur_brannoc_forge_guild_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 28,
+      "scene": "dur_brannoc__dur_brannoc_forge_guild_house",
+      "cells": 3990,
+      "sha256": "cad1c089556bcb5c8e43684762612ed46fd32854a8d94e4312928495c50dc275"
+    },
+    {
+      "template": "dur_brannoc_forge_ore_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 31,
+      "scene": "dur_brannoc__dur_brannoc_forge_ore_yard",
+      "cells": 3094,
+      "sha256": "2c88c4d0e63bdf467344837ee6772150fc4661daba1c8f8582a9005203823509"
+    },
+    {
+      "template": "dur_brannoc_forge_smithy",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 27,
+      "scene": "dur_brannoc__dur_brannoc_forge_smithy",
+      "cells": 2880,
+      "sha256": "74f821c87bc9e3c6a5465ca76f57c67fe99e957f5d737103684954a20b4b2bb5"
+    },
+    {
+      "template": "dur_brannoc_forge_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 32,
+      "scene": "dur_brannoc__dur_brannoc_forge_store",
+      "cells": 2873,
+      "sha256": "a571278ff1feff6400e68fabdc384dca343fda7cd7f312823bc09b590a6d86a3"
+    },
+    {
+      "template": "dur_brannoc_forge_watch",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 29,
+      "scene": "dur_brannoc__dur_brannoc_forge_watch__29",
+      "cells": 4692,
+      "sha256": "fc10e64b0cfbf44fcff02802d890e6ac9fa2f865541b7c0166b9321915ec2169"
+    },
+    {
+      "template": "dur_brannoc_garrison_armoury",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 36,
+      "scene": "dur_brannoc__dur_brannoc_garrison_armoury",
+      "cells": 3192,
+      "sha256": "67ca04873000639b827336def35bc14c4eec97649b7ab979bc99260da5f9e018"
+    },
+    {
+      "template": "dur_brannoc_garrison_barracks",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 34,
+      "scene": "dur_brannoc__dur_brannoc_garrison_barracks__34",
+      "cells": 5681,
+      "sha256": "241ba60936436cbd28f7654dd1e3f7b1db918ed8582f9bb206449da117722c97"
+    },
+    {
+      "template": "dur_brannoc_garrison_drill_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 37,
+      "scene": "dur_brannoc__dur_brannoc_garrison_drill_yard__37",
+      "cells": 1573,
+      "sha256": "d5c3154cb56eea70a8c2d08c73bb3acc22870eb6847b6f6a62dc1628f9eb60b1"
+    },
+    {
+      "template": "dur_brannoc_garrison_muster_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 35,
+      "scene": "dur_brannoc__dur_brannoc_garrison_muster_hall__35",
+      "cells": 3876,
+      "sha256": "d0f35628aa2592e1cb3dd6c93927fd28ecd0246d4b46032411ba0f7377fcd9f8"
+    },
+    {
+      "template": "dur_brannoc_garrison_quartermaster",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 39,
+      "scene": "dur_brannoc__dur_brannoc_garrison_quartermaster__39",
+      "cells": 3315,
+      "sha256": "10cb78151351a53ac518f0df5e8893a1dcad5ad3cf0a04796ffd5eb848280903"
+    },
+    {
+      "template": "dur_brannoc_garrison_serjeant",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 40,
+      "scene": "dur_brannoc__dur_brannoc_garrison_serjeant__40",
+      "cells": 1170,
+      "sha256": "730aff5015787ccff91340b344c7ac6aeac557dfd51e752d45dd1baef4c0610e"
+    },
+    {
+      "template": "dur_brannoc_garrison_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 38,
+      "scene": "dur_brannoc__dur_brannoc_garrison_stable",
+      "cells": 3060,
+      "sha256": "75d6347cf7aaca8de5f2fad2fe2e501db83e2de95dcab9f3f1c2b5b69fc346d1"
+    },
+    {
+      "template": "dur_brannoc_garrison_watch_tower",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 41,
+      "scene": "dur_brannoc__dur_brannoc_garrison_watch_tower__41",
+      "cells": 1573,
+      "sha256": "3a0ebde39d25e22d5687b6c4fdde3dd9f6faaeb23e148692ba64199cfc9d18e4"
+    },
+    {
+      "template": "dur_brannoc_gate_south",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 11,
+      "scene": "dur_brannoc__dur_brannoc_gate_south__11",
+      "cells": 1547,
+      "sha256": "df1e92cceb62f7d1e6149c6510a4a7c5f2ac3e4c860e4ae1f67808eccb4c8afa"
+    },
+    {
+      "template": "dur_brannoc_great_forge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 18,
+      "scene": "dur_brannoc__dur_brannoc_great_forge",
+      "cells": 2880,
+      "sha256": "f6585f3dd47a986d2c2c4e3df98bca68244573a771147bcc5eeb09faad0de8e3"
+    },
+    {
+      "template": "dur_brannoc_great_forge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 20,
+      "scene": "nhal_veyr__dur_brannoc_great_forge",
+      "cells": 2880,
+      "sha256": "574e451f101a5555b101266bcd0493ae01a10f93f76a071134b0d97eb58bfa25"
+    },
+    {
+      "template": "dur_brannoc_kings_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 10,
+      "scene": "dur_brannoc__dur_brannoc_kings_hall__10",
+      "cells": 53550,
+      "sha256": "c9845e1198b213749c380473881970f89e401773879e10ef940975b95501db03"
+    },
+    {
+      "template": "dur_brannoc_lane_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 23,
+      "scene": "dur_brannoc__dur_brannoc_lane_house",
+      "cells": 1694,
+      "sha256": "e478ca79fbb9f11c97cc008770872adbb024cc6f7e93e9d684e19431d5e534ca"
+    },
+    {
+      "template": "dur_brannoc_lane_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 24,
+      "scene": "lethariel__dur_brannoc_lane_house",
+      "cells": 1694,
+      "sha256": "ac1190127a1aa78922a34fe3255e39605a27c926592788af86dd83d5da49aad3"
+    },
+    {
+      "template": "dur_brannoc_market_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 21,
+      "scene": "dur_brannoc__dur_brannoc_market_house",
+      "cells": 1452,
+      "sha256": "29d7bb820f5d6c12846fc494977ff29e9716b154f2e87374e1bc531a3c9b6fd2"
+    },
+    {
+      "template": "dur_brannoc_market_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 22,
+      "scene": "lethariel__dur_brannoc_market_house",
+      "cells": 1452,
+      "sha256": "5f78700c60fcfe88fa2835cbcb9f24eb80ad98d03e09796d47a25e2c9787a330"
+    },
+    {
+      "template": "dur_brannoc_market_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 23,
+      "scene": "nhal_veyr__dur_brannoc_market_house",
+      "cells": 1452,
+      "sha256": "1f435f6e4d17884accac56aaac6a4f29446c205958ac6950d55a4245ab01e076"
+    },
+    {
+      "template": "dur_brannoc_masons_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 20,
+      "scene": "dur_brannoc__dur_brannoc_masons_guild",
+      "cells": 3990,
+      "sha256": "37fbaacca014ab09c0d23a5d8cd8fb1dc3acc614e2ef33118da61b0b53460076"
+    },
+    {
+      "template": "dur_brannoc_miners_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 33,
+      "scene": "dur_brannoc__dur_brannoc_miners_guild__33",
+      "cells": 6137,
+      "sha256": "47772b35c77432a7ebf594e2ffedb3522499c0d7b78be28be2fe0a417f5267e2"
+    },
+    {
+      "template": "dur_brannoc_plaza_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 24,
+      "scene": "dur_brannoc__dur_brannoc_plaza_house",
+      "cells": 1452,
+      "sha256": "34d9218d9a8ef5c5114636bbac9b58f9922b130a175beb296affa57f9b5cc752"
+    },
+    {
+      "template": "dur_brannoc_plaza_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 25,
+      "scene": "lethariel__dur_brannoc_plaza_house",
+      "cells": 1452,
+      "sha256": "40db0dd65b820f3bbc2c275bb5297a47d9cd8c92865e86c5fa1889b3a7298dbd"
+    },
+    {
+      "template": "dur_brannoc_plaza_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 26,
+      "scene": "nhal_veyr__dur_brannoc_plaza_house",
+      "cells": 1452,
+      "sha256": "ef40e0cabab238f27d4fbcf26e454fcd9680b2a2771532dd709f59000c5eb666"
+    },
+    {
+      "template": "dur_brannoc_south_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 22,
+      "scene": "dur_brannoc__dur_brannoc_south_house",
+      "cells": 1331,
+      "sha256": "e31706536f67a0d616b5549251bc058dbcdb707e4bcae49ee2142241a12b0081"
+    },
+    {
+      "template": "dur_brannoc_south_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 23,
+      "scene": "lethariel__dur_brannoc_south_house",
+      "cells": 1331,
+      "sha256": "fa875a66252daebae1a176b975b11afbbaf79dbebaf16648a231eb182ccafdf0"
+    },
+    {
+      "template": "dur_brannoc_south_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 24,
+      "scene": "nhal_veyr__dur_brannoc_south_house",
+      "cells": 1331,
+      "sha256": "f8fd83037aec4199bea5cb0f2a18ec42ff58aea4d7b94dfbcc3df42f744c5253"
+    },
+    {
+      "template": "dur_brannoc_terrace_alehouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 46,
+      "scene": "dur_brannoc__dur_brannoc_terrace_alehouse",
+      "cells": 3060,
+      "sha256": "724eb7a16e699aff96732025e39ed12d70b39161292df8f4822e72b3d51a2fb6"
+    },
+    {
+      "template": "dur_brannoc_terrace_bakehouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 47,
+      "scene": "dur_brannoc__dur_brannoc_terrace_bakehouse",
+      "cells": 2880,
+      "sha256": "cce281ec7efa1aeb272c6e1b3334fa2f15554469c5a1e72c929ade5141eaa4d7"
+    },
+    {
+      "template": "dur_brannoc_terrace_cottage_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 50,
+      "scene": "dur_brannoc__dur_brannoc_terrace_cottage_east",
+      "cells": 1573,
+      "sha256": "cd5e43b8d98940ee5bfcc3aca13a74e30bfbbefd7fb57f0705040fa7c121be09"
+    },
+    {
+      "template": "dur_brannoc_terrace_cottage_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 49,
+      "scene": "dur_brannoc__dur_brannoc_terrace_cottage_west",
+      "cells": 1430,
+      "sha256": "894e90dbc153f4597bc47fa15ad69d1a9ebf05c328359882d990afd0f142d225"
+    },
+    {
+      "template": "dur_brannoc_terrace_long_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 48,
+      "scene": "dur_brannoc__dur_brannoc_terrace_long_house",
+      "cells": 3705,
+      "sha256": "e773e5f2def3ca002691586d2f50bea26ffeae5c6340121700fa55edde7d36c4"
+    },
+    {
+      "template": "dur_brannoc_terrace_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 45,
+      "scene": "dur_brannoc__dur_brannoc_terrace_market__45",
+      "cells": 1071,
+      "sha256": "aab332f711a2d00c3a9ea0b20947c8f75bc9c3b3a2557925d4319971cba77695"
+    },
+    {
+      "template": "gor_drazhak_bazaar_armourer",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 27,
+      "scene": "gor_drazhak__gor_drazhak_bazaar_armourer",
+      "cells": 2394,
+      "sha256": "3547e8b05c2ff08046abecc3b81a28dbd9f2f9dd8718874d3bdbc82c5a5691fe"
+    },
+    {
+      "template": "gor_drazhak_bazaar_butcher",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 24,
+      "scene": "gor_drazhak__gor_drazhak_bazaar_butcher",
+      "cells": 2160,
+      "sha256": "293eb8858f71e99f8acf265c5adece0385a69526d15a99b6dc3d5f620f531af7"
+    },
+    {
+      "template": "gor_drazhak_bazaar_butcher",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 26,
+      "scene": "gor_drazhak__gor_drazhak_bazaar_butcher__25d617",
+      "cells": 2160,
+      "sha256": "293eb8858f71e99f8acf265c5adece0385a69526d15a99b6dc3d5f620f531af7"
+    },
+    {
+      "template": "gor_drazhak_bazaar_carver",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 29,
+      "scene": "gor_drazhak__gor_drazhak_bazaar_carver",
+      "cells": 1144,
+      "sha256": "8a67367295c2b3280e7c51560bd7d96b3545bb27898a0061eab73a5b13edb366"
+    },
+    {
+      "template": "gor_drazhak_bazaar_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 21,
+      "scene": "gor_drazhak__gor_drazhak_bazaar_house",
+      "cells": 968,
+      "sha256": "9c08b684b3fd24c25aa4f3163f9646f399e50877a8f418cc3261706f00edb0d1"
+    },
+    {
+      "template": "gor_drazhak_bazaar_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 28,
+      "scene": "gor_drazhak__gor_drazhak_bazaar_store",
+      "cells": 3094,
+      "sha256": "8d1a5f78b8b70ca21e1a806d3421f6ca70fbfe34b88f90ca8606e8fef694879d"
+    },
+    {
+      "template": "gor_drazhak_bazaar_tannery",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 25,
+      "scene": "gor_drazhak__gor_drazhak_bazaar_tannery__25",
+      "cells": 1650,
+      "sha256": "5d5025cbb74d1a54245941782bc15ea73c9436e350920d60d7f45040303794e8"
+    },
+    {
+      "template": "gor_drazhak_bone_herb_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 40,
+      "scene": "gor_drazhak__gor_drazhak_bone_herb_house",
+      "cells": 1144,
+      "sha256": "ab3b2d50bc0ab98c819f42e006d867788f31ec1b249731eb736aca7e80088cd6"
+    },
+    {
+      "template": "gor_drazhak_bone_reader_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 39,
+      "scene": "gor_drazhak__gor_drazhak_bone_reader_hall",
+      "cells": 3990,
+      "sha256": "3a638fd5a4a1bbdd68434cd2ba507f4614fd0c22bd6880869f4a6560a073554d"
+    },
+    {
+      "template": "gor_drazhak_bone_spirit_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 38,
+      "scene": "gor_drazhak__gor_drazhak_bone_spirit_hall__38",
+      "cells": 4798,
+      "sha256": "2080df57bf7be888c91801c2ef054bf05ff17db6ccc0add707e9db069edeed48"
+    },
+    {
+      "template": "gor_drazhak_bone_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 41,
+      "scene": "gor_drazhak__gor_drazhak_bone_store",
+      "cells": 3094,
+      "sha256": "c6dc4a03560a3343ffff4894585121dae16eb16eade8fd1cc44f11113776c37b"
+    },
+    {
+      "template": "gor_drazhak_colonnade_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 14,
+      "scene": "gor_drazhak__gor_drazhak_colonnade_east__14",
+      "cells": 1071,
+      "sha256": "a868a9a36f908d5731baed57b5b7ecc9006021618985f435cfcecd2ffe72b93a"
+    },
+    {
+      "template": "gor_drazhak_colonnade_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 13,
+      "scene": "gor_drazhak__gor_drazhak_colonnade_west__13",
+      "cells": 1071,
+      "sha256": "a868a9a36f908d5731baed57b5b7ecc9006021618985f435cfcecd2ffe72b93a"
+    },
+    {
+      "template": "gor_drazhak_council_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 20,
+      "scene": "gor_drazhak__gor_drazhak_council_house",
+      "cells": 3990,
+      "sha256": "4f4d2cb52c585966b0e4ed25ff31923920c75d53d9f960d4389c2a15b9504468"
+    },
+    {
+      "template": "gor_drazhak_gate_south",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 11,
+      "scene": "gor_drazhak__gor_drazhak_gate_south__11",
+      "cells": 1547,
+      "sha256": "cecfce7b8f31f7ce23cd7a98b5e4576d13b1b4b22c4aab4706fd92b8b2dba10b"
+    },
+    {
+      "template": "gor_drazhak_host_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 18,
+      "scene": "gor_drazhak__gor_drazhak_host_store",
+      "cells": 3094,
+      "sha256": "685dd92efca29025f2cec8e00ced8b2da6f29c97037dd7ecbdf605ca809d8b3d"
+    },
+    {
+      "template": "gor_drazhak_lane_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 23,
+      "scene": "gor_drazhak__gor_drazhak_lane_house",
+      "cells": 1089,
+      "sha256": "1ddc542556288f1da2a08b5ab08aefd20c523a44a7c8a653191e8394ab59e205"
+    },
+    {
+      "template": "gor_drazhak_miners_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 31,
+      "scene": "gor_drazhak__gor_drazhak_miners_guild__31",
+      "cells": 6137,
+      "sha256": "9a6e702e53c32521da795cbc04af99f5b271390ed392ccdb66b93f48bb49fa16"
+    },
+    {
+      "template": "gor_drazhak_plot_bazaar_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 30,
+      "scene": "gor_drazhak__gor_drazhak_plot_bazaar_house",
+      "cells": 1144,
+      "sha256": "e5d148e6024184bfdcf902c44392fbff03a33cf49cec8e62155d3ed83a457df2"
+    },
+    {
+      "template": "gor_drazhak_skull_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 17,
+      "scene": "gor_drazhak__gor_drazhak_skull_hall__17",
+      "cells": 4798,
+      "sha256": "8c2b573faf3f17d2565515e880d79b02820b0afccc7e6260963e273a5f913ef1"
+    },
+    {
+      "template": "gor_drazhak_south_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 22,
+      "scene": "gor_drazhak__gor_drazhak_south_house",
+      "cells": 968,
+      "sha256": "390f8c8684ad7fc34b720c4f345de20a18b5b58b2bb816a92dd59972968e2203"
+    },
+    {
+      "template": "gor_drazhak_war_armoury",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 33,
+      "scene": "gor_drazhak__gor_drazhak_war_armoury",
+      "cells": 2394,
+      "sha256": "f28abc16b819a841eb3bc0327585a2a34674c9f9436e7242d907f6e6e65b869b"
+    },
+    {
+      "template": "gor_drazhak_war_barracks",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 32,
+      "scene": "gor_drazhak__gor_drazhak_war_barracks__32",
+      "cells": 4641,
+      "sha256": "03195610c02e0bdee67aa212eefbceba0e50cef0a7e51413734de043c6dc716e"
+    },
+    {
+      "template": "gor_drazhak_war_drill_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 35,
+      "scene": "gor_drazhak__gor_drazhak_war_drill_yard__35",
+      "cells": 1573,
+      "sha256": "d15eaa080067adb7a40731b7f5fe36f7319e09a76f4211a3051d89bd9477279b"
+    },
+    {
+      "template": "gor_drazhak_war_quartermaster",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 36,
+      "scene": "gor_drazhak__gor_drazhak_war_quartermaster__36",
+      "cells": 3315,
+      "sha256": "f3f6e9c17c9fc1a490a22b64748538044e0da9bfbab49f141ff9b6d3cd19fa19"
+    },
+    {
+      "template": "gor_drazhak_war_watch_tower",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 37,
+      "scene": "gor_drazhak__gor_drazhak_war_watch_tower__37",
+      "cells": 1573,
+      "sha256": "0f3c4847e981cc7f3761c29170a8f6c8d1940c39d3adca4107fb52bdf23ba1fa"
+    },
+    {
+      "template": "gor_drazhak_warlord_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 10,
+      "scene": "gor_drazhak__gor_drazhak_warlord_hall__10",
+      "cells": 53550,
+      "sha256": "7ad3f04e2b755cf7aed0f54fffce29369723f5010b9146972476ac340a7bd728"
+    },
+    {
+      "template": "gor_drazhak_warren_clan_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 42,
+      "scene": "gor_drazhak__gor_drazhak_warren_clan_house",
+      "cells": 3705,
+      "sha256": "191d6147a8469585f17fa48cb499552b542cc4a28976baa027c49a433b6cd397"
+    },
+    {
+      "template": "gor_drazhak_warren_house_bone",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 46,
+      "scene": "gor_drazhak__gor_drazhak_warren_house_bone",
+      "cells": 1287,
+      "sha256": "e89beb5783f3dd7baee498ac391a351bbe3f80f914b30147caeecdbbb2e2919d"
+    },
+    {
+      "template": "gor_drazhak_warren_house_spear",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 44,
+      "scene": "gor_drazhak__gor_drazhak_warren_house_spear",
+      "cells": 1144,
+      "sha256": "a4d96ac2960ac183ac68e77b249a1d451b31d09f4c7b8a206d0b89ad97f86be6"
+    },
+    {
+      "template": "gor_drazhak_warren_house_tusk",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 45,
+      "scene": "gor_drazhak__gor_drazhak_warren_house_tusk",
+      "cells": 936,
+      "sha256": "7bd79bab39c92a187a887d6c89fd9ea1c57768890d2df8b11e27da03d5378fb8"
+    },
+    {
+      "template": "gor_drazhak_warren_round_lodge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 43,
+      "scene": "gor_drazhak__gor_drazhak_warren_round_lodge",
+      "cells": 1170,
+      "sha256": "173854e2eb9c1553a32ed0070fcce4f40bceb4902f53fd1b00babcafb9d78468"
+    },
+    {
+      "template": "gor_drazhak_warren_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 47,
+      "scene": "gor_drazhak__gor_drazhak_warren_store",
+      "cells": 3094,
+      "sha256": "0b057789edfd8fa72e70079b95cbe2ebb6ab96016e722a54264f38eb5adcebc1"
+    },
+    {
+      "template": "hearthpine_community_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 14,
+      "scene": "hearthpine__hearthpine_community_hall",
+      "cells": 3060,
+      "sha256": "eefe8a53868503ed686515d4666fcea1b8d3474f774c0093a2a1f0715024922e"
+    },
+    {
+      "template": "hearthpine_east_gable_home",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 12,
+      "scene": "hearthpine__hearthpine_east_gable_home",
+      "cells": 1573,
+      "sha256": "e80ab28940ebe58097c5386253d6ff1909590867c982f37d1b8b53ba04cc1196"
+    },
+    {
+      "template": "hearthpine_east_home",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 10,
+      "scene": "hearthpine__hearthpine_east_home",
+      "cells": 1430,
+      "sha256": "1e13153691208366e0cf8af3f88fac549cfdaa05a7a4c641b8a4ff603435e5db"
+    },
+    {
+      "template": "hearthpine_forge_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 8,
+      "scene": "hearthpine__hearthpine_forge_hall",
+      "cells": 3192,
+      "sha256": "feae9dc8f791bde4df130276e715f75b6316e8674ea8332f92db8b3cbc783ea1"
+    },
+    {
+      "template": "hearthpine_gatewatch",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 16,
+      "scene": "hearthpine__hearthpine_gatewatch__16",
+      "cells": 1573,
+      "sha256": "624343b5ccd9c05b2113f99a07f7ca65c98785b419f1bf9b24bad67e135f0a34"
+    },
+    {
+      "template": "hearthpine_lagerhouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 13,
+      "scene": "hearthpine__hearthpine_lagerhouse",
+      "cells": 1980,
+      "sha256": "70b391c37aaa42e713ee2453d7c04a4809f1abca7194218574825fcee036b144"
+    },
+    {
+      "template": "hearthpine_southwest_home",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 11,
+      "scene": "hearthpine__hearthpine_southwest_home",
+      "cells": 1573,
+      "sha256": "26bd31456dee5e9f6b11efe929c21070ca695bedcdbc651e719e2306f9414bc6"
+    },
+    {
+      "template": "hearthpine_west_home",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 9,
+      "scene": "hearthpine__hearthpine_west_home",
+      "cells": 1331,
+      "sha256": "e23bd3182ad00595778388b6f9eb55e9d7583b038e53a730fc95b3f4c8cd5cf4"
+    },
+    {
+      "template": "hearthpine_workyard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/hearthpine.layout",
+      "line": 15,
+      "scene": "hearthpine__hearthpine_workyard__15",
+      "cells": 1650,
+      "sha256": "363662346c1f79440445f731afe0bb48c3cc2230e9d9495d223622d647ee2bc0"
+    },
+    {
+      "template": "highcourt_chapel",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 21,
+      "scene": "highcourt__highcourt_chapel__21",
+      "cells": 2946,
+      "sha256": "bd786ce908becdfdf165f3d46a016eb0525ade75eafaabd570de4ee6c727c8a5"
+    },
+    {
+      "template": "highcourt_chapel_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 28,
+      "scene": "highcourt__highcourt_chapel_house__28",
+      "cells": 1331,
+      "sha256": "928adefd508205655490551ac83b38c575d671340ea933d4a14909023e31c349"
+    },
+    {
+      "template": "highcourt_city_workshop",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 24,
+      "scene": "highcourt__highcourt_city_workshop",
+      "cells": 2880,
+      "sha256": "b67ef88e250f26550f45d790943cd2849b3378cf70c3cb74f04c902017140863"
+    },
+    {
+      "template": "highcourt_colonnade_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 16,
+      "scene": "highcourt__highcourt_colonnade_east__16",
+      "cells": 1071,
+      "sha256": "2f2d365c619e4084a110b5acbe3237f3f8799ba547aa906063c43ff6df018396"
+    },
+    {
+      "template": "highcourt_colonnade_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 15,
+      "scene": "highcourt__highcourt_colonnade_west__15",
+      "cells": 1071,
+      "sha256": "2f2d365c619e4084a110b5acbe3237f3f8799ba547aa906063c43ff6df018396"
+    },
+    {
+      "template": "highcourt_gate_south",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 13,
+      "scene": "highcourt__highcourt_gate_south__13",
+      "cells": 1547,
+      "sha256": "385b6fc22c87637fe44839bfd75eb895129f90d238b93c1e08948f78750155c5"
+    },
+    {
+      "template": "highcourt_homes_bakehouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 62,
+      "scene": "highcourt__highcourt_homes_bakehouse",
+      "cells": 2090,
+      "sha256": "d2b18ffc952647eab997e3ad389f640272a3801b07f4dc94238b09dd3fc18b0d"
+    },
+    {
+      "template": "highcourt_homes_house_gable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 58,
+      "scene": "highcourt__highcourt_homes_house_gable",
+      "cells": 1089,
+      "sha256": "7a7903c8b4e43f9e71e88e13b39d0c18284c5dfdbd4b5a41f74913c15f56845d"
+    },
+    {
+      "template": "highcourt_homes_house_hip",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 59,
+      "scene": "highcourt__highcourt_homes_house_hip",
+      "cells": 1430,
+      "sha256": "7ff655f203fdb9ec4f207cdb48b7eb69707a60a83e0a00ad1b563a8ab9bbb378"
+    },
+    {
+      "template": "highcourt_homes_house_lane",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 60,
+      "scene": "highcourt__highcourt_homes_house_lane",
+      "cells": 1331,
+      "sha256": "ebf280e3b461ac2776b913b3ae016b282b8c9d37ba91e423df91eb7285d1650b"
+    },
+    {
+      "template": "highcourt_homes_orchard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 63,
+      "scene": null,
+      "cells": 4641,
+      "sha256": "768c5094513db8b405be1f1d4dbfac70f74a24abf49c35f497f4feffe4002850"
+    },
+    {
+      "template": "highcourt_homes_tavern",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 57,
+      "scene": "highcourt__highcourt_homes_tavern",
+      "cells": 3060,
+      "sha256": "7c9ba5ebc278202005f5e95a4525ab43eaef99ab6f6a03942a94e3896a418837"
+    },
+    {
+      "template": "highcourt_homes_tenement",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 61,
+      "scene": "highcourt__highcourt_homes_tenement",
+      "cells": 3211,
+      "sha256": "15626d49e95073a5e823cf75dfa33c9e0163960250a40ca6b43454fb7a73229c"
+    },
+    {
+      "template": "highcourt_kings_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 12,
+      "scene": "highcourt__highcourt_kings_hall__12",
+      "cells": 53550,
+      "sha256": "0f2061012021f4f936d1b133195fba43f21fb897850f927fad78d24b05b40c1a"
+    },
+    {
+      "template": "highcourt_lane_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 26,
+      "scene": "highcourt__highcourt_lane_house",
+      "cells": 1331,
+      "sha256": "051e758a71aac74d2c2362f586da3ab0920655fc922151c5ec9af931aeab3c94"
+    },
+    {
+      "template": "highcourt_lore_almonry",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 53,
+      "scene": "highcourt__highcourt_lore_almonry",
+      "cells": 1573,
+      "sha256": "6d0d7a24facde74e6c34907fd4a5d729ea85eafe05e8e36d7ca89c973dff4337"
+    },
+    {
+      "template": "highcourt_lore_archive",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 51,
+      "scene": "highcourt__highcourt_lore_archive",
+      "cells": 3825,
+      "sha256": "25de97917dcaef1343f14312dd0b45066cf014e1374bb64095b2eaa21deb0fdb"
+    },
+    {
+      "template": "highcourt_lore_chapel_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 56,
+      "scene": "highcourt__highcourt_lore_chapel_yard__56",
+      "cells": 2340,
+      "sha256": "95000035e75463ca8aed3b241ef16dc73a9e37b213a792f8aa6107bcec8e1b60"
+    },
+    {
+      "template": "highcourt_lore_chapter_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 52,
+      "scene": "highcourt__highcourt_lore_chapter_house",
+      "cells": 2535,
+      "sha256": "8160ff0e25f50806a0ae784e2470ad8a354313649060a3cda22cfc94631280a9"
+    },
+    {
+      "template": "highcourt_lore_cloister_walk",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 54,
+      "scene": "highcourt__highcourt_lore_cloister_walk__54",
+      "cells": 1071,
+      "sha256": "2f2d365c619e4084a110b5acbe3237f3f8799ba547aa906063c43ff6df018396"
+    },
+    {
+      "template": "highcourt_lore_library",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 49,
+      "scene": "highcourt__highcourt_lore_library",
+      "cells": 4641,
+      "sha256": "07e3c4e09498dac6f6b760663619284bbc745e493d8121cdcb063742de943c34"
+    },
+    {
+      "template": "highcourt_lore_quiet_grove",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 55,
+      "scene": null,
+      "cells": 5625,
+      "sha256": "43d620f54b90a7ce1cb928f2d0a501babe3b45e71fd8534c2b1d98c24d44ed15"
+    },
+    {
+      "template": "highcourt_lore_scriptorium",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 50,
+      "scene": "highcourt__highcourt_lore_scriptorium",
+      "cells": 4522,
+      "sha256": "50cc5e18c28ea34ade347ba6eff7a6b687f7d90732898da0136729ed455c539d"
+    },
+    {
+      "template": "highcourt_lore_shrine",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 48,
+      "scene": "highcourt__highcourt_lore_shrine__48",
+      "cells": 4063,
+      "sha256": "c253babea6eb51771f6a28fa43c0c9d90fbf5fac6b021a88ebda2d3df726163d"
+    },
+    {
+      "template": "highcourt_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 12,
+      "scene": "dur_brannoc__highcourt_market__12",
+      "cells": 5625,
+      "sha256": "2bfee8371fde0686ae7c40553abdbc0098c12118ff1d28c8fb9fef062d37deb9"
+    },
+    {
+      "template": "highcourt_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 12,
+      "scene": "gor_drazhak__highcourt_market__12",
+      "cells": 5625,
+      "sha256": "db3170bd0d1429c06ea8ea961458aa31e185bef1c108feaa0fca7ea9bea1c445"
+    },
+    {
+      "template": "highcourt_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 14,
+      "scene": "highcourt__highcourt_market__14",
+      "cells": 5625,
+      "sha256": "2cc9ed18a65ab383ec639942465221bf36ac1392e7cd7ebde4eef6a9b966591d"
+    },
+    {
+      "template": "highcourt_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 14,
+      "scene": "nhal_veyr__highcourt_market__14",
+      "cells": 5625,
+      "sha256": "f4ba8482d22dd40e1225097efa3aa6aad317493ad6a63f18e2e93930bb987404"
+    },
+    {
+      "template": "highcourt_market_counting_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 33,
+      "scene": "highcourt__highcourt_market_counting_house",
+      "cells": 3990,
+      "sha256": "e548dee2d510f84b9d40a7ad49df712bb2fd3c7b37281bc6dea738608f6806e0"
+    },
+    {
+      "template": "highcourt_market_granary",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 30,
+      "scene": "highcourt__highcourt_market_granary",
+      "cells": 3094,
+      "sha256": "6307c8d58d9082e6f227d0f32da7bdd7d4e95cfd723a4a3634c5111035dcf9cc"
+    },
+    {
+      "template": "highcourt_market_grove",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 36,
+      "scene": null,
+      "cells": 5625,
+      "sha256": "43d620f54b90a7ce1cb928f2d0a501babe3b45e71fd8534c2b1d98c24d44ed15"
+    },
+    {
+      "template": "highcourt_market_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 29,
+      "scene": "highcourt__highcourt_market_house",
+      "cells": 1452,
+      "sha256": "dbde6c7239730915f45fb38841d14e3136d045aca2f4260208f5833c736be008"
+    },
+    {
+      "template": "highcourt_market_orchard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 37,
+      "scene": null,
+      "cells": 3927,
+      "sha256": "96154d08a76008d579013a5d08e94ea519c78d4ef8a63ac0230f61160fff5b97"
+    },
+    {
+      "template": "highcourt_market_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 26,
+      "scene": "dur_brannoc__highcourt_market_stable__26",
+      "cells": 2499,
+      "sha256": "14463c7d3545ce7e59e569f8f1845c1038d36b45a7fcf4cca943018aa79cf5c2"
+    },
+    {
+      "template": "highcourt_market_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 34,
+      "scene": "gor_drazhak__highcourt_market_stable__34",
+      "cells": 2499,
+      "sha256": "6f26cfbdbe14d2b2d2cdacd41f6ee5ba5b048182b97a7d1014bd3eb054de556c"
+    },
+    {
+      "template": "highcourt_market_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 31,
+      "scene": "highcourt__highcourt_market_stable__31",
+      "cells": 2499,
+      "sha256": "cc6035a07e2df49766de6de3db84ffac79c9b47225fd5c81200c300a299a610e"
+    },
+    {
+      "template": "highcourt_market_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 44,
+      "scene": "kezamba__highcourt_market_stable__44",
+      "cells": 2499,
+      "sha256": "88344001289b3d9f7bebca7547890dc7a819a330b0580c3b5996560f15c759ba"
+    },
+    {
+      "template": "highcourt_market_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 27,
+      "scene": "lethariel__highcourt_market_stable__27",
+      "cells": 2499,
+      "sha256": "d2729fe68ff7798922c38e725ad827e5aa42d4164718349b408bfa4f133e7fd7"
+    },
+    {
+      "template": "highcourt_market_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 29,
+      "scene": "nhal_veyr__highcourt_market_stable__29",
+      "cells": 2499,
+      "sha256": "404f9e46d3d03cbebb8157310d9db638a6617f7c167304fa616c137083df92c5"
+    },
+    {
+      "template": "highcourt_market_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 38,
+      "scene": "highcourt__highcourt_market_store",
+      "cells": 2873,
+      "sha256": "86f4047c6496eefa5654f69ffdfa68c453b5f509465f63652ae42e4a267ed2f9"
+    },
+    {
+      "template": "highcourt_market_watch",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 35,
+      "scene": "highcourt__highcourt_market_watch__35",
+      "cells": 4692,
+      "sha256": "80576bb323f07c30c7b80b45d260eb9e99c52dc77dbca594c8543dbc362226d8"
+    },
+    {
+      "template": "highcourt_market_workshop",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 32,
+      "scene": "highcourt__highcourt_market_workshop",
+      "cells": 2880,
+      "sha256": "b381ea4f8694bbab5a26492482a5db996fa4f23d36245e450a80a87afb529d12"
+    },
+    {
+      "template": "highcourt_martial_armoury",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 42,
+      "scene": "highcourt__highcourt_martial_armoury",
+      "cells": 3192,
+      "sha256": "c53cceff93251521381cf5df38513e0175b57eca781f7629f4cc205d9524a507"
+    },
+    {
+      "template": "highcourt_martial_barracks",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 40,
+      "scene": "highcourt__highcourt_martial_barracks__40",
+      "cells": 5681,
+      "sha256": "415f58c52e134e7c19003599121be94e389e67d45ed20bd578de4401b996d099"
+    },
+    {
+      "template": "highcourt_martial_drill_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 44,
+      "scene": "highcourt__highcourt_martial_drill_yard__44",
+      "cells": 1573,
+      "sha256": "8a95400450bbff42c19c922819a032975c00e0e0a50a31e3bbc9d8ca9063e042"
+    },
+    {
+      "template": "highcourt_martial_drill_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 37,
+      "scene": "lethariel__highcourt_martial_drill_yard__37",
+      "cells": 1573,
+      "sha256": "e494cadbc5f58480fe957aac96eb462c5ac3865bc7a9b377744043c1cc523d0a"
+    },
+    {
+      "template": "highcourt_martial_guard_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 46,
+      "scene": "highcourt__highcourt_martial_guard_house__46",
+      "cells": 1170,
+      "sha256": "2d9bc576e71df8da240574cfa940b1fd1c4aa98cf7d55adc740e87e0d6dc1fd3"
+    },
+    {
+      "template": "highcourt_martial_muster_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 41,
+      "scene": "highcourt__highcourt_martial_muster_hall__41",
+      "cells": 3876,
+      "sha256": "b4f41776cdcf34f340ec58b45537dfdd193048945f313dc7091dbea00bf66245"
+    },
+    {
+      "template": "highcourt_martial_quartermaster",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 45,
+      "scene": "highcourt__highcourt_martial_quartermaster__45",
+      "cells": 3315,
+      "sha256": "ac99b6c2c8bd2c88122941276814f6b7cd22641c54a4eb68bbc0170665295125"
+    },
+    {
+      "template": "highcourt_martial_stables",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 43,
+      "scene": "highcourt__highcourt_martial_stables",
+      "cells": 3060,
+      "sha256": "df02c4938c065cc36b4343953714d5fbd63c09b34e21201fd911ef6515dd295b"
+    },
+    {
+      "template": "highcourt_martial_watch_tower",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 47,
+      "scene": "highcourt__highcourt_martial_watch_tower__47",
+      "cells": 1573,
+      "sha256": "43f101b2ca1c6f5f236ba20c5c1155c98562901a1322268c5d2981e9aee93955"
+    },
+    {
+      "template": "highcourt_miners_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 39,
+      "scene": "highcourt__highcourt_miners_guild__39",
+      "cells": 6137,
+      "sha256": "691a386b51157c8019cc9774fafc2349093161e6deb142cbae0772d7117519bf"
+    },
+    {
+      "template": "highcourt_north_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 25,
+      "scene": "highcourt__highcourt_north_house",
+      "cells": 1452,
+      "sha256": "f4c741cdf74fab4fe51a5e3ac35a981be6f6e80b41f9e270a1db89c01a3e2c1f"
+    },
+    {
+      "template": "highcourt_orchard_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 19,
+      "scene": null,
+      "cells": 3927,
+      "sha256": "96154d08a76008d579013a5d08e94ea519c78d4ef8a63ac0230f61160fff5b97"
+    },
+    {
+      "template": "highcourt_orchard_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 27,
+      "scene": "highcourt__highcourt_orchard_house",
+      "cells": 1694,
+      "sha256": "bceea5a687355a661a0fb258ada642015a379a8b1f20f254b1f88cd06c04ef6b"
+    },
+    {
+      "template": "highcourt_orchard_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 20,
+      "scene": null,
+      "cells": 3927,
+      "sha256": "96154d08a76008d579013a5d08e94ea519c78d4ef8a63ac0230f61160fff5b97"
+    },
+    {
+      "template": "highcourt_service_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 23,
+      "scene": "highcourt__highcourt_service_store",
+      "cells": 2873,
+      "sha256": "a12e170923661fddbf8ad6beadb32a03546bbdece6a00d83b43d1bd2825cd240"
+    },
+    {
+      "template": "highcourt_service_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 19,
+      "scene": "dur_brannoc__highcourt_service_yard__19",
+      "cells": 1650,
+      "sha256": "363662346c1f79440445f731afe0bb48c3cc2230e9d9495d223622d647ee2bc0"
+    },
+    {
+      "template": "highcourt_service_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 19,
+      "scene": "gor_drazhak__highcourt_service_yard__19",
+      "cells": 1650,
+      "sha256": "0eb50aeb67044eeb029e7269a344e86b8292d4bd07ddfc1cc271e8112f2bf0cf"
+    },
+    {
+      "template": "highcourt_service_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 22,
+      "scene": "highcourt__highcourt_service_yard__22",
+      "cells": 1650,
+      "sha256": "d755a74985974183c792e532d7f33fd761006228beccfb76a59fbf5927318b0e"
+    },
+    {
+      "template": "highcourt_service_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 21,
+      "scene": "nhal_veyr__highcourt_service_yard__21",
+      "cells": 1650,
+      "sha256": "3c50fb1cbe82622273c03010b4ae0045d3a0e5e33cc861ddc449a1e86f232135"
+    },
+    {
+      "template": "highcourt_statue",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 15,
+      "scene": null,
+      "cells": 810,
+      "sha256": "eb7046a1b24cd1d1ca7d3a9a72516d02aff0ddc3f29e501c45b022fead5ee69a"
+    },
+    {
+      "template": "highcourt_statue",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 15,
+      "scene": null,
+      "cells": 810,
+      "sha256": "7456f0f659628de5e2689626dcdc603c3b4b9ab90a81237dd6eae95d4afaaa02"
+    },
+    {
+      "template": "highcourt_statue",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 17,
+      "scene": null,
+      "cells": 810,
+      "sha256": "a24664f715bd70d574d09b3b154d45d80c408ea6bcc38dfead610e0f8feb65c4"
+    },
+    {
+      "template": "highcourt_statue",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 15,
+      "scene": null,
+      "cells": 810,
+      "sha256": "57683b91960ffd51768deafeae84a96ccfb6bb6699f8708fa929b768131d70fa"
+    },
+    {
+      "template": "highcourt_statue",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 17,
+      "scene": null,
+      "cells": 810,
+      "sha256": "8cebc5516496eec5b1c93312398a080487564c5c393ba21ee9e4e17795dc20e9"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/dur_brannoc.roster",
+      "line": 16,
+      "scene": "dur_brannoc__highcourt_well_court__16",
+      "cells": 847,
+      "sha256": "64811e0f7faa4fec528344ff9129ba03ad067171f00007c21442df9cf22639e4"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/gor_drazhak.roster",
+      "line": 16,
+      "scene": "gor_drazhak__highcourt_well_court__16",
+      "cells": 847,
+      "sha256": "c677a0ce53e9d07e01e98131a8fa24905e9aa03b2e08c577a02946de1e79d6f2"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 18,
+      "scene": "highcourt__highcourt_well_court__18",
+      "cells": 847,
+      "sha256": "1081e809473c7eeb0b499140eb397fc3984f523da0d2320e68bbf0b8775c1ec7"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/highcourt.roster",
+      "line": 34,
+      "scene": "highcourt__highcourt_well_court__34",
+      "cells": 847,
+      "sha256": "1081e809473c7eeb0b499140eb397fc3984f523da0d2320e68bbf0b8775c1ec7"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 31,
+      "scene": "kezamba__highcourt_well_court__31",
+      "cells": 847,
+      "sha256": "a8445dade98caae92d58074cddacbfbd985b78def2194a14c0c9d6ba6d0b183f"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 16,
+      "scene": "lethariel__highcourt_well_court__16",
+      "cells": 847,
+      "sha256": "929e4b1b9ae033c40cfc949a5c9944bad8f6e00c54f72b4f0a49687c596afa00"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 30,
+      "scene": "lethariel__highcourt_well_court__30",
+      "cells": 847,
+      "sha256": "82b13f3d769f055c876276e265d0ae673e0623354f81787ad1615f5ea1fc9141"
+    },
+    {
+      "template": "highcourt_well_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 18,
+      "scene": "nhal_veyr__highcourt_well_court__18",
+      "cells": 847,
+      "sha256": "f3a6e2db01e0c181ebb18b89dafa553985a99d1bdd0ee69a88baa504b5f4bd90"
+    },
+    {
+      "template": "kapok_drying_shed",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 11,
+      "scene": "kapok__kapok_drying_shed__11",
+      "cells": 1650,
+      "sha256": "2deea69f7af9dddd5599b98da8f6f1c470f40467914b9f26aceef064dc4be8f2"
+    },
+    {
+      "template": "kapok_elder_stilt",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 12,
+      "scene": "kapok__kapok_elder_stilt",
+      "cells": 2411,
+      "sha256": "b4394913b2cee8e9a77af60cfb1f7381776c06d1894d28d5c1e90b021b96a08f"
+    },
+    {
+      "template": "kapok_fish_smoker",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 10,
+      "scene": "kapok__kapok_fish_smoker",
+      "cells": 4042,
+      "sha256": "efad7a8be2a4b62f23d6169d939f1aa495a70d8f7a639519b7dc73dc04a0334e"
+    },
+    {
+      "template": "kapok_reed_stilt",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 15,
+      "scene": "kapok__kapok_reed_stilt",
+      "cells": 2411,
+      "sha256": "7e6fcf9778cad8a344fe592b66db197727830e3e43f0e1319f9628072a44610d"
+    },
+    {
+      "template": "kapok_river_stilt",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 13,
+      "scene": "kapok__kapok_river_stilt",
+      "cells": 2411,
+      "sha256": "f2bcdf41211b7f96ab5a25f49394635f7b640fef27c4214bfe4dca9351259380"
+    },
+    {
+      "template": "kapok_spirit_lodge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 9,
+      "scene": "kapok__kapok_spirit_lodge",
+      "cells": 5187,
+      "sha256": "b4ac00778d15ab09e2d277fa0fe01d1dc25c4f32d5ae6775436e1b7249ff1c57"
+    },
+    {
+      "template": "kapok_watchpost",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 16,
+      "scene": "kapok__kapok_watchpost__16",
+      "cells": 1573,
+      "sha256": "0755dd0a20bb80437e8f04ffdbc706e31abc1ffee94681b164e98ac87dc31ee8"
+    },
+    {
+      "template": "kapok_weaver_stilt",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kapok.layout",
+      "line": 14,
+      "scene": "kapok__kapok_weaver_stilt",
+      "cells": 2411,
+      "sha256": "7ee1ec4c6d487bd6f75e2c25daeb544f8c6a1562d6b2e48388a097e14694a2df"
+    },
+    {
+      "template": "kezamba_canopy_barracks_a",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 41,
+      "scene": "kezamba__kezamba_canopy_barracks_a__41",
+      "cells": 4692,
+      "sha256": "e16e77f18d07def2fab60b451939c45c533b1c54ce499653ec13609f574b49d8"
+    },
+    {
+      "template": "kezamba_canopy_barracks_b",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 42,
+      "scene": "kezamba__kezamba_canopy_barracks_b__42",
+      "cells": 4692,
+      "sha256": "e16e77f18d07def2fab60b451939c45c533b1c54ce499653ec13609f574b49d8"
+    },
+    {
+      "template": "kezamba_canopy_watchpost",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 43,
+      "scene": "kezamba__kezamba_canopy_watchpost__43",
+      "cells": 1573,
+      "sha256": "ef7581e7166e4adec65e890ff7c2d2cd839fdc807f95cb829c7b6c035edb23d0"
+    },
+    {
+      "template": "kezamba_carver_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 18,
+      "scene": "kezamba__kezamba_carver_yard__18",
+      "cells": 1859,
+      "sha256": "cd9bfe3e19bf9f1c45ca53fec4d8d949c913da2663f46c3f6d0a65ee966f650f"
+    },
+    {
+      "template": "kezamba_cauldron_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 16,
+      "scene": "kezamba__kezamba_cauldron_court__16",
+      "cells": 1575,
+      "sha256": "9f225b9fdc65800da6ce2dfbe55d705010d8039dbd3e0f0044912fb10fb0715b"
+    },
+    {
+      "template": "kezamba_gate_house_south",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 21,
+      "scene": "kezamba__kezamba_gate_house_south__21",
+      "cells": 1452,
+      "sha256": "acc7f03e3b07bd221587ea424a63475d4350352509a60fdfc8a4151f947ff6d6"
+    },
+    {
+      "template": "kezamba_granary",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 19,
+      "scene": "kezamba__kezamba_granary",
+      "cells": 3094,
+      "sha256": "12cc36adf09cb1cb47bb3e3e89e58cd3ab74b0020dc7edf3e5eabfb70498ea32"
+    },
+    {
+      "template": "kezamba_kings_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 14,
+      "scene": "kezamba__kezamba_kings_hall__14",
+      "cells": 53550,
+      "sha256": "28021f44160c00c8e1212067d3b2f9dae061b697828fa583c03deef75239cb21"
+    },
+    {
+      "template": "kezamba_lane_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 22,
+      "scene": "kezamba__kezamba_lane_house",
+      "cells": 1331,
+      "sha256": "f90d12af32ca48d49292cb0b307bdb2febdbebd1a23ad2ab135ee64d9cdbd85d"
+    },
+    {
+      "template": "kezamba_miners_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 34,
+      "scene": "kezamba__kezamba_miners_guild__34",
+      "cells": 6137,
+      "sha256": "1c69d113b99131b1626f52beb4055d864e4e5e8ee7c1cdf5faddfc1ccd194721"
+    },
+    {
+      "template": "kezamba_moot_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 15,
+      "scene": "kezamba__kezamba_moot_house__15",
+      "cells": 3501,
+      "sha256": "5de51b9efe34152c36bb48744724f5d39f105cabca892cdbbbae38408067d601"
+    },
+    {
+      "template": "kezamba_plot_shore_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 33,
+      "scene": "kezamba__kezamba_plot_shore_house",
+      "cells": 2873,
+      "sha256": "d0b48ea69095cc3ea953d8c134b755e61e7ff4ef042b07fa4461aaf899289b89"
+    },
+    {
+      "template": "kezamba_shore_butcher",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 27,
+      "scene": "kezamba__kezamba_shore_butcher",
+      "cells": 2880,
+      "sha256": "eb8a5ef7c48da07ad0695518acbff069c1f2977a38e856c6daed64d571ad2485"
+    },
+    {
+      "template": "kezamba_shore_carvers",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 30,
+      "scene": "kezamba__kezamba_shore_carvers__30",
+      "cells": 2475,
+      "sha256": "5e6125e9ec61611e8e8b806f52644f4ec07d87d9b3c7231e263eff03179cf8be"
+    },
+    {
+      "template": "kezamba_shore_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 24,
+      "scene": "kezamba__kezamba_shore_house",
+      "cells": 1452,
+      "sha256": "ede772197cc94976a71154dad9816cc634155563be8d752aed6d86c8930fabb9"
+    },
+    {
+      "template": "kezamba_shore_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 26,
+      "scene": "kezamba__kezamba_shore_market__26",
+      "cells": 1575,
+      "sha256": "9f225b9fdc65800da6ce2dfbe55d705010d8039dbd3e0f0044912fb10fb0715b"
+    },
+    {
+      "template": "kezamba_shore_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 29,
+      "scene": "kezamba__kezamba_shore_store",
+      "cells": 3094,
+      "sha256": "7544a9e6e66cf034a853c250dfdaec562f3f94aa4a5e8acf753f2d4358a9e94d"
+    },
+    {
+      "template": "kezamba_shore_tailor",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 28,
+      "scene": "kezamba__kezamba_shore_tailor",
+      "cells": 2028,
+      "sha256": "368a155049e1fa264ac9fed4ed7deba168befe4a640a7b327cafb86a07904338"
+    },
+    {
+      "template": "kezamba_shore_watch",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 32,
+      "scene": "kezamba__kezamba_shore_watch__32",
+      "cells": 4692,
+      "sha256": "e16e77f18d07def2fab60b451939c45c533b1c54ce499653ec13609f574b49d8"
+    },
+    {
+      "template": "kezamba_shrine",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 17,
+      "scene": "kezamba__kezamba_shrine__17",
+      "cells": 2197,
+      "sha256": "4834b5b98ca2f3cbbff02b97200c99dc597efbafb1d68aa177389905818532b1"
+    },
+    {
+      "template": "kezamba_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 20,
+      "scene": "kezamba__kezamba_stable",
+      "cells": 2652,
+      "sha256": "147bc989a9b2fcf90365525e099bfff201fcf2caa2679a739f6c4be35fb37196"
+    },
+    {
+      "template": "kezamba_totem_scriptorium",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 45,
+      "scene": "kezamba__kezamba_totem_scriptorium",
+      "cells": 3990,
+      "sha256": "adf212b89334ef63c5db08bb46bd58ea59c45c40fdceea3ab2c649c060487645"
+    },
+    {
+      "template": "kezamba_totem_shrine",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 46,
+      "scene": "kezamba__kezamba_totem_shrine__46",
+      "cells": 4798,
+      "sha256": "1b893ae58cb8caf892b3b4e85113509de4a9667374ace0f989813b13760d278d"
+    },
+    {
+      "template": "kezamba_trade_shed",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 25,
+      "scene": "kezamba__kezamba_trade_shed__25",
+      "cells": 1650,
+      "sha256": "2deea69f7af9dddd5599b98da8f6f1c470f40467914b9f26aceef064dc4be8f2"
+    },
+    {
+      "template": "kezamba_vine_herbalist",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 39,
+      "scene": "kezamba__kezamba_vine_herbalist",
+      "cells": 1859,
+      "sha256": "1a5bff9c5486daddfe3c773b2fe651f6afdd115fd50b7b5cba7c409941caa5aa"
+    },
+    {
+      "template": "kezamba_vine_house_a",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 35,
+      "scene": "kezamba__kezamba_vine_house_a",
+      "cells": 2028,
+      "sha256": "1a61dc964e6f3ac7d8f99f442a1ab15fc2209e285cacdddd81603c4e12773827"
+    },
+    {
+      "template": "kezamba_vine_house_b",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 36,
+      "scene": "kezamba__kezamba_vine_house_b",
+      "cells": 1859,
+      "sha256": "d276709a67fac9df6d98971565b42e6f4ffcc12fba6ce931b5f958f7813497f2"
+    },
+    {
+      "template": "kezamba_vine_house_c",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 37,
+      "scene": "kezamba__kezamba_vine_house_c",
+      "cells": 2366,
+      "sha256": "bb70a92eeca98deaf784dd2c9b5ae9cc088398e15b97abc88e7029a7030be879"
+    },
+    {
+      "template": "kezamba_vine_house_d",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 38,
+      "scene": "kezamba__kezamba_vine_house_d",
+      "cells": 2028,
+      "sha256": "dc8b17ed92c860f55ee037f25eecace75cc8c566f73f5920c9fde767f29e1df0"
+    },
+    {
+      "template": "kezamba_vine_moot",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 40,
+      "scene": "kezamba__kezamba_vine_moot__40",
+      "cells": 1071,
+      "sha256": "5608fca23f45c3db4db613aa30c556af883c191ddf468ad99164b6e6e1e16e73"
+    },
+    {
+      "template": "kezamba_west_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/kezamba.roster",
+      "line": 23,
+      "scene": "kezamba__kezamba_west_house",
+      "cells": 1694,
+      "sha256": "c6bf7259bfdc233854b70eaf334b333029ad5330d9ddda613bd992901404e968"
+    },
+    {
+      "template": "lethariel_bough_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 21,
+      "scene": "lethariel__lethariel_bough_east__21",
+      "cells": 1694,
+      "sha256": "83dd1d3bc1b80a78a972ee831b41aea85e0fee8d14cd003f0f2f9fff00d70cb8"
+    },
+    {
+      "template": "lethariel_bough_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 20,
+      "scene": "lethariel__lethariel_bough_west__20",
+      "cells": 1815,
+      "sha256": "da6be607052343e665f8aea5b723128327eebe562a01089a690a441b1ca1fc2d"
+    },
+    {
+      "template": "lethariel_colonnade_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 14,
+      "scene": "lethariel__lethariel_colonnade_east__14",
+      "cells": 1071,
+      "sha256": "af32605500086e09c33c1befa0006cdada98815856eb189df6f13c7474616056"
+    },
+    {
+      "template": "lethariel_colonnade_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 13,
+      "scene": "lethariel__lethariel_colonnade_west__13",
+      "cells": 1071,
+      "sha256": "af32605500086e09c33c1befa0006cdada98815856eb189df6f13c7474616056"
+    },
+    {
+      "template": "lethariel_gate_south",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 11,
+      "scene": "lethariel__lethariel_gate_south__11",
+      "cells": 1547,
+      "sha256": "e9f1d0ab7cb674dbed492d1744f3c7a826d5088c7b4dee84483eabc42185885c"
+    },
+    {
+      "template": "lethariel_homes_feast_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 46,
+      "scene": "lethariel__lethariel_homes_feast_hall",
+      "cells": 3990,
+      "sha256": "0ff8efa2951b819324e7df98d233c5293ef938ded0fdc9ec220f3065c9ec7154"
+    },
+    {
+      "template": "lethariel_homes_longhouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 45,
+      "scene": "lethariel__lethariel_homes_longhouse",
+      "cells": 2873,
+      "sha256": "1060663efe0e548d410aef008c9a94f4eaa85e8836e07730b11636b0cc3630a7"
+    },
+    {
+      "template": "lethariel_homes_terrace_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 44,
+      "scene": "lethariel__lethariel_homes_terrace_east",
+      "cells": 1331,
+      "sha256": "184e96447e855ded880cfa591dd14e3a0ea94055acb4b5dbd7cd43acc7e74b05"
+    },
+    {
+      "template": "lethariel_kings_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 10,
+      "scene": "lethariel__lethariel_kings_hall__10",
+      "cells": 53550,
+      "sha256": "432c29a60386c868f913e3c5dc447df12613efee83229f249dc7ff2fcf9530c9"
+    },
+    {
+      "template": "lethariel_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 12,
+      "scene": "lethariel__lethariel_market__12",
+      "cells": 3969,
+      "sha256": "79f14ce69a8eaa92ec557529949c689780c0c2f20daa690e83ff10d431190802"
+    },
+    {
+      "template": "lethariel_market_bakehouse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 34,
+      "scene": "lethariel__lethariel_market_bakehouse",
+      "cells": 2873,
+      "sha256": "cf40eba2afb343b1dd18f9813b661ae99c5160fe1c12fac4cfdbfa6258b75234"
+    },
+    {
+      "template": "lethariel_market_bowyer",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 28,
+      "scene": "lethariel__lethariel_market_bowyer",
+      "cells": 2880,
+      "sha256": "fd6b19adf1eaee3cbc65d621778856a0877b31f2932e26f63364124bb3cf33d8"
+    },
+    {
+      "template": "lethariel_market_granary",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 26,
+      "scene": "lethariel__lethariel_market_granary",
+      "cells": 3094,
+      "sha256": "18db8d82d412bf86f08bd79897239ab4fdff50f91b6cba40a55b2b156eab81be"
+    },
+    {
+      "template": "lethariel_market_grove",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 32,
+      "scene": null,
+      "cells": 5625,
+      "sha256": "8e0d5b970a8f53355befa3e029eb68478b520503342fa642367c304e0bd9d14b"
+    },
+    {
+      "template": "lethariel_market_orchard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 33,
+      "scene": null,
+      "cells": 3927,
+      "sha256": "a6f58d79953e8d3892f3aa597c50e65e3e307d9ee17a9412adf46a4d4de975f4"
+    },
+    {
+      "template": "lethariel_market_watch",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 31,
+      "scene": "lethariel__lethariel_market_watch__31",
+      "cells": 3420,
+      "sha256": "ffa6c4595f17127b06a9d515d1ac1331d1d1ac024b9dd2d68b481012cc8f2055"
+    },
+    {
+      "template": "lethariel_market_weaver",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 29,
+      "scene": "lethariel__lethariel_market_weaver",
+      "cells": 3990,
+      "sha256": "79b5ab12a071d502478b93995f50a674638177f037754730f3d5c0d7c89ee377"
+    },
+    {
+      "template": "lethariel_martial_barracks",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 36,
+      "scene": "lethariel__lethariel_martial_barracks__36",
+      "cells": 3420,
+      "sha256": "e832bd46646a5d0912ecb87497e3a0232cfdfad4dc0a932a30e00294b5aef00e"
+    },
+    {
+      "template": "lethariel_martial_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 38,
+      "scene": "lethariel__lethariel_martial_hall",
+      "cells": 3705,
+      "sha256": "a9b36a2a4307583ae55345eaefef6841e6b4297bf35f66abb5bd79cdeb65889e"
+    },
+    {
+      "template": "lethariel_martial_lodge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 41,
+      "scene": "lethariel__lethariel_martial_lodge",
+      "cells": 1452,
+      "sha256": "2a1de7536420a04bf0bd93aa26e99005d2dab01f6be61fab210947f797245159"
+    },
+    {
+      "template": "lethariel_martial_stable",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 39,
+      "scene": "lethariel__lethariel_martial_stable",
+      "cells": 2652,
+      "sha256": "6b7ae90cbd51e871f62abd5febd353501b3dd944c465b6ddf401cb36cf47fc31"
+    },
+    {
+      "template": "lethariel_martial_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 40,
+      "scene": "lethariel__lethariel_martial_store",
+      "cells": 2873,
+      "sha256": "3068424acd585b42c7e522a3ab2cbad74138a790bb790b01eaff72ee4791ddbd"
+    },
+    {
+      "template": "lethariel_mere_lore_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 43,
+      "scene": "lethariel__lethariel_mere_lore_hall",
+      "cells": 3990,
+      "sha256": "7cf797b48e8142c633e5efabfa1c6e4639226d53a7cc98e66915cfb118f7aea6"
+    },
+    {
+      "template": "lethariel_mere_shrine",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 19,
+      "scene": "lethariel__lethariel_mere_shrine__19",
+      "cells": 810,
+      "sha256": "aefb6c4486661b8b43028602d0e9be2aa9f83fa7f18384ba2564ae6f3b6757db"
+    },
+    {
+      "template": "lethariel_miners_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 35,
+      "scene": "lethariel__lethariel_miners_guild__35",
+      "cells": 6137,
+      "sha256": "5c6de57fc1fb883efd428d5346002695a563f444e1c8f5865f001617d7dd3dbd"
+    },
+    {
+      "template": "lethariel_plot_mere_shrine",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 42,
+      "scene": "lethariel__lethariel_plot_mere_shrine__42",
+      "cells": 810,
+      "sha256": "aefb6c4486661b8b43028602d0e9be2aa9f83fa7f18384ba2564ae6f3b6757db"
+    },
+    {
+      "template": "lethariel_sacred_grove",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 18,
+      "scene": null,
+      "cells": 7225,
+      "sha256": "8e8b4f5e533c180547a1c1645f66a142e9d3654635c7aa187a45a352ebb5d2a6"
+    },
+    {
+      "template": "lethariel_star_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/lethariel.roster",
+      "line": 17,
+      "scene": "lethariel__lethariel_star_hall__17",
+      "cells": 4798,
+      "sha256": "5ff42993eb26d1da52f320f7686cb97318c962837a980d359460f858350e7bbc"
+    },
+    {
+      "template": "nhal_veyr_bonesmith_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 22,
+      "scene": "nhal_veyr__nhal_veyr_bonesmith_guild",
+      "cells": 3990,
+      "sha256": "bc6ecdfa4092732c4f7dce73eb3641aab01fb041056a7ce9144146877504737a"
+    },
+    {
+      "template": "nhal_veyr_colonnade_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 16,
+      "scene": "nhal_veyr__nhal_veyr_colonnade_east__16",
+      "cells": 1071,
+      "sha256": "2319127da0f019d11da7b9512e86bfb905fc8be58e44776e5b099ab522a08bbc"
+    },
+    {
+      "template": "nhal_veyr_colonnade_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 15,
+      "scene": "nhal_veyr__nhal_veyr_colonnade_west__15",
+      "cells": 1071,
+      "sha256": "2319127da0f019d11da7b9512e86bfb905fc8be58e44776e5b099ab522a08bbc"
+    },
+    {
+      "template": "nhal_veyr_fallen_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 27,
+      "scene": "nhal_veyr__nhal_veyr_fallen_house__27",
+      "cells": 792,
+      "sha256": "0ff0a58617c0c0dfc75d72dd9e86eda98630813781aa6ce6dc6f4ac313122df1"
+    },
+    {
+      "template": "nhal_veyr_gate_south",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 13,
+      "scene": "nhal_veyr__nhal_veyr_gate_south__13",
+      "cells": 1547,
+      "sha256": "8ad1377d3c16a855d9d1cb591bc3f0e381c866e8a00f377034f8e2afa80e9a50"
+    },
+    {
+      "template": "nhal_veyr_homes_corner_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 56,
+      "scene": "nhal_veyr__nhal_veyr_homes_corner_house",
+      "cells": 1716,
+      "sha256": "0bd61e663b46340a7cd6c28aca269cb56b60d78a6792a630e01d1d96d5f5f424"
+    },
+    {
+      "template": "nhal_veyr_homes_fallen_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 58,
+      "scene": "nhal_veyr__nhal_veyr_homes_fallen_east__58",
+      "cells": 1144,
+      "sha256": "6f434db9a9a1ddb32a0ce85e0b53360f9d503625925bb1f2275da755f8cc66fc"
+    },
+    {
+      "template": "nhal_veyr_homes_fallen_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 57,
+      "scene": "nhal_veyr__nhal_veyr_homes_fallen_west__57",
+      "cells": 968,
+      "sha256": "4fb88821762ad566c046b9781dcc3f1c4d24aa2a2f24f2fce69a9d101c4b1402"
+    },
+    {
+      "template": "nhal_veyr_homes_gate_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 53,
+      "scene": "nhal_veyr__nhal_veyr_homes_gate_house__53",
+      "cells": 1452,
+      "sha256": "250419624b725fe35d7da9fef8f8a8fdefc2f16a7b3bc523cca43619216b35e8"
+    },
+    {
+      "template": "nhal_veyr_homes_lane_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 54,
+      "scene": "nhal_veyr__nhal_veyr_homes_lane_house",
+      "cells": 1331,
+      "sha256": "30aa50a58c0ba1bef09dd131dd600a4569f51dd39e0c68bd6e667f656eafa65a"
+    },
+    {
+      "template": "nhal_veyr_homes_terrace_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 55,
+      "scene": "nhal_veyr__nhal_veyr_homes_terrace_house",
+      "cells": 2002,
+      "sha256": "7906d823851a3418fa98b097038f2b194b4dd72c2f605df5a22e5b2a2f582053"
+    },
+    {
+      "template": "nhal_veyr_lane_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 25,
+      "scene": "nhal_veyr__nhal_veyr_lane_house",
+      "cells": 1694,
+      "sha256": "48a7f5dec2c94cea1c3f334861f5724455ea5e1edf8e7499f8a06b01116737b9"
+    },
+    {
+      "template": "nhal_veyr_market_bone_store",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 28,
+      "scene": "nhal_veyr__nhal_veyr_market_bone_store",
+      "cells": 3094,
+      "sha256": "4f09f6dc3ed6d404bed4c4b0b512e00081b4759f11a77a8e05625940d53ac7e9"
+    },
+    {
+      "template": "nhal_veyr_market_bonesmith",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 30,
+      "scene": "nhal_veyr__nhal_veyr_market_bonesmith",
+      "cells": 2880,
+      "sha256": "3943d40a9ed0a7c7fe7d8c6ecd0ede84144522c29c11f86ba88f9005121d2e7d"
+    },
+    {
+      "template": "nhal_veyr_market_candle_court",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 37,
+      "scene": "nhal_veyr__nhal_veyr_market_candle_court__37",
+      "cells": 847,
+      "sha256": "e4dc32029e33e217cedfd8a26a9caae21d067d2427c73957ce47e9e1e8fde56b"
+    },
+    {
+      "template": "nhal_veyr_market_charnel",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 35,
+      "scene": "nhal_veyr__nhal_veyr_market_charnel__35",
+      "cells": 2873,
+      "sha256": "a189a3910694b4c5256284afc6098b97389fd0e8d2cc447ff22449702c8e9f2a"
+    },
+    {
+      "template": "nhal_veyr_market_copse",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 33,
+      "scene": null,
+      "cells": 5625,
+      "sha256": "5d20cd1026d3479af4b80de8bfc71951475756b923d518bdebfdc46fe93fc179"
+    },
+    {
+      "template": "nhal_veyr_market_physic",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 34,
+      "scene": "nhal_veyr__nhal_veyr_market_physic",
+      "cells": 3705,
+      "sha256": "7e8af16217e7ba4048d0c80f4165dae4834b14b2c05e10b3ea4c49e9a4d5942b"
+    },
+    {
+      "template": "nhal_veyr_market_shroud_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 31,
+      "scene": "nhal_veyr__nhal_veyr_market_shroud_house",
+      "cells": 3990,
+      "sha256": "ef0a7ac296442cc67f9984c3cefab254ca617acd35d79ff9c0c41ba9ec21f14d"
+    },
+    {
+      "template": "nhal_veyr_market_watch",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 32,
+      "scene": "nhal_veyr__nhal_veyr_market_watch__32",
+      "cells": 4692,
+      "sha256": "a85a59db4f78d0630336525fd9c13d62e1150711f620592ada6fa98b79ec7bfb"
+    },
+    {
+      "template": "nhal_veyr_mausoleum",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 12,
+      "scene": "nhal_veyr__nhal_veyr_mausoleum__12",
+      "cells": 53550,
+      "sha256": "5b099edeee8863eeefbee2a7546366e5cc85654eaef2f3c46c3d110ca3bcfa27"
+    },
+    {
+      "template": "nhal_veyr_miners_guild",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 36,
+      "scene": "nhal_veyr__nhal_veyr_miners_guild__36",
+      "cells": 6137,
+      "sha256": "5fbd8ad43c8f924152d6aa09500f225ad9c387e8d4af0cf1ca296e8f88d17967"
+    },
+    {
+      "template": "nhal_veyr_vigil_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 19,
+      "scene": "nhal_veyr__nhal_veyr_vigil_hall__19",
+      "cells": 4798,
+      "sha256": "bedf07eed02775660b62545dc16eb3c7e2836fcd73abf63b9fbf5e42311370e7"
+    },
+    {
+      "template": "nhal_veyr_vigil_mausoleum_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 49,
+      "scene": "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49",
+      "cells": 1671,
+      "sha256": "1ab656b9a5ee45a392502aa710b52a06577026a423ed6deeda7d8fa95666e4f4"
+    },
+    {
+      "template": "nhal_veyr_vigil_mausoleum_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 48,
+      "scene": "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48",
+      "cells": 1985,
+      "sha256": "7f1e9e488356445839a893c34e0cb4ad509748054f42879674b09e36ed2c51ad"
+    },
+    {
+      "template": "nhal_veyr_vigil_ossuary",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 46,
+      "scene": "nhal_veyr__nhal_veyr_vigil_ossuary__46",
+      "cells": 4275,
+      "sha256": "c99f6d867c9ed4928fb1d58af1260789c6792487220fdde7f699625a04b3c2c1"
+    },
+    {
+      "template": "nhal_veyr_vigil_ruin_close_ruin_1",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 51,
+      "scene": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51",
+      "cells": 968,
+      "sha256": "4fb88821762ad566c046b9781dcc3f1c4d24aa2a2f24f2fce69a9d101c4b1402"
+    },
+    {
+      "template": "nhal_veyr_vigil_ruin_close_ruin_2",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 52,
+      "scene": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52",
+      "cells": 968,
+      "sha256": "bd9beeffb5d4fa54a5a60d0010087a433d1063d25a384c265d9fb56d88bcf9e5"
+    },
+    {
+      "template": "nhal_veyr_vigil_scriptorium",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 47,
+      "scene": "nhal_veyr__nhal_veyr_vigil_scriptorium",
+      "cells": 3990,
+      "sha256": "a7db9e8ddd298e8b9263a64e34d45d112eba9b2ae42bb92699467b1d204ac1fd"
+    },
+    {
+      "template": "nhal_veyr_vigil_watch",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 50,
+      "scene": "nhal_veyr__nhal_veyr_vigil_watch__50",
+      "cells": 4692,
+      "sha256": "a85a59db4f78d0630336525fd9c13d62e1150711f620592ada6fa98b79ec7bfb"
+    },
+    {
+      "template": "nhal_veyr_watch_armoury",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 40,
+      "scene": "nhal_veyr__nhal_veyr_watch_armoury__40",
+      "cells": 3192,
+      "sha256": "b8de2b43dfce00bd4ab3baa8358d547323ae059dc4dee00f26e06295d488e3d2"
+    },
+    {
+      "template": "nhal_veyr_watch_barracks",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 38,
+      "scene": "nhal_veyr__nhal_veyr_watch_barracks__38",
+      "cells": 5681,
+      "sha256": "1b159a5197c2203f7a47739970a0a829ac974288a3144b956fbe2419a2fe0acb"
+    },
+    {
+      "template": "nhal_veyr_watch_captain_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 39,
+      "scene": "nhal_veyr__nhal_veyr_watch_captain_hall__39",
+      "cells": 3876,
+      "sha256": "ce176c018c712b68c5edd40e7fa8e5e27400c067b6c6db3c72c969d5905d9cb5"
+    },
+    {
+      "template": "nhal_veyr_watch_drill_yard",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 42,
+      "scene": "nhal_veyr__nhal_veyr_watch_drill_yard__42",
+      "cells": 1573,
+      "sha256": "806e57f5eff96495ee7ed6eb9e1c6ef8a36ee80719061c4fb1d3236ba7345d7c"
+    },
+    {
+      "template": "nhal_veyr_watch_quartermaster",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 43,
+      "scene": "nhal_veyr__nhal_veyr_watch_quartermaster__43",
+      "cells": 3315,
+      "sha256": "de744b2a01d5fb855575b1e750c4338b64e7691373d11a291fe0be988b4f2fee"
+    },
+    {
+      "template": "nhal_veyr_watch_serjeant_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 44,
+      "scene": "nhal_veyr__nhal_veyr_watch_serjeant_house__44",
+      "cells": 1170,
+      "sha256": "d6a04115102edde98231e0c71951fcad9e459407954c44cb4eec914ac0052a0e"
+    },
+    {
+      "template": "nhal_veyr_watch_stables",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 41,
+      "scene": "nhal_veyr__nhal_veyr_watch_stables__41",
+      "cells": 3060,
+      "sha256": "4b1c3ccddac3d64fc409d71be1b278f9a8f24d756c7479cbf1cbcc653e1e5488"
+    },
+    {
+      "template": "nhal_veyr_watch_tower",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/nhal_veyr.roster",
+      "line": 45,
+      "scene": "nhal_veyr__nhal_veyr_watch_tower__45",
+      "cells": 1573,
+      "sha256": "fc3589e6375522855feb061fe0e963343262042d90db1f0f24a1934e471c9993"
+    },
+    {
+      "template": "silverleaf_bowyer_workshop",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 10,
+      "scene": "silverleaf__silverleaf_bowyer_workshop",
+      "cells": 3120,
+      "sha256": "271b9955f1a9d24208a69d5a00534c600b60fef78657837e89ec3d5654bce700"
+    },
+    {
+      "template": "silverleaf_covered_market",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 15,
+      "scene": "silverleaf__silverleaf_covered_market__15",
+      "cells": 1815,
+      "sha256": "3c835f2250ae0b92d8fe21aac39719c2a4fd6c878674df6087b23cf06b70403c"
+    },
+    {
+      "template": "silverleaf_glade_house_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 14,
+      "scene": "silverleaf__silverleaf_glade_house_east",
+      "cells": 1404,
+      "sha256": "adcc9a2a929baf0c20cac4687684c5644672102b8bc13294496886d14bea291a"
+    },
+    {
+      "template": "silverleaf_glade_house_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 13,
+      "scene": "silverleaf__silverleaf_glade_house_west",
+      "cells": 1521,
+      "sha256": "0619911c0d2e464c537a8300b9fa8f2e9fd5a737ade8bc35bad04fcb8036c078"
+    },
+    {
+      "template": "silverleaf_lore_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 9,
+      "scene": "silverleaf__silverleaf_lore_hall",
+      "cells": 3315,
+      "sha256": "ce6b66e486b20f5b07faf35f75a175ccc326710104d25c8929ea8a3cecd5e021"
+    },
+    {
+      "template": "silverleaf_moon_shrine",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 8,
+      "scene": "silverleaf__silverleaf_moon_shrine",
+      "cells": 2876,
+      "sha256": "7a6584f49db37c238c6b2c1300393c81087f287d45db40e1285376e26ffde1c5"
+    },
+    {
+      "template": "silverleaf_terrace_house_east",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 12,
+      "scene": "silverleaf__silverleaf_terrace_house_east",
+      "cells": 1521,
+      "sha256": "383b472cf4f0fdf13aad4801f0136f66367c9872eb959f58a407e51c330e4eac"
+    },
+    {
+      "template": "silverleaf_terrace_house_west",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/silverleaf.layout",
+      "line": 11,
+      "scene": "silverleaf__silverleaf_terrace_house_west",
+      "cells": 1521,
+      "sha256": "a7801ffd3a9a9d6b633fae6a64301de0b0612bb960396cc360dddd08b9ffe8c7"
+    },
+    {
+      "template": "stillgrave_bone_works",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout",
+      "line": 10,
+      "scene": "stillgrave__stillgrave_bone_works",
+      "cells": 2880,
+      "sha256": "97d08efeaef7bafeef484fb60648d52055ba78f0802b274935a2dba468dde7e6"
+    },
+    {
+      "template": "stillgrave_crypt_chapel",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout",
+      "line": 9,
+      "scene": "stillgrave__stillgrave_crypt_chapel__9",
+      "cells": 2697,
+      "sha256": "a9e430e8f6ca6c34728261da54aa6ee2f617ef7265b5818ee1b6f8ae4f5f1b4f"
+    },
+    {
+      "template": "stillgrave_hollow_ruin",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout",
+      "line": 13,
+      "scene": "stillgrave__stillgrave_hollow_ruin__13",
+      "cells": 1089,
+      "sha256": "d6a75c86b87ab0a06687eafec8f9f4f9769c7bde4b7fb951913a6bbfa5257b96"
+    },
+    {
+      "template": "stillgrave_keepers_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout",
+      "line": 11,
+      "scene": "stillgrave__stillgrave_keepers_house",
+      "cells": 1452,
+      "sha256": "dfc23033f0d14da6334d63d7eb5fc158f975f116a3d7f1cdb932b99f3e6a49ec"
+    },
+    {
+      "template": "stillgrave_sunken_ruin",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout",
+      "line": 14,
+      "scene": "stillgrave__stillgrave_sunken_ruin__14",
+      "cells": 1287,
+      "sha256": "39bffbb871f7eda104558b5a681676101e60ea237bba91666a79aaff6fc718f7"
+    },
+    {
+      "template": "stillgrave_warden_house",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout",
+      "line": 12,
+      "scene": "stillgrave__stillgrave_warden_house",
+      "cells": 1573,
+      "sha256": "f615f22aa9f795adbee73bbc5a55db23ebf9aca9d332e4729cefa8905a1a196e"
+    },
+    {
+      "template": "stillgrave_watchtower",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/stillgrave.layout",
+      "line": 15,
+      "scene": "stillgrave__stillgrave_watchtower__15",
+      "cells": 1573,
+      "sha256": "fbe3f187cb8871e6a519766df113b7259358f55a30606875c2eb78cb7b7a944c"
+    },
+    {
+      "template": "sunscar_armoury",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 7,
+      "scene": "sunscar__sunscar_armoury",
+      "cells": 2160,
+      "sha256": "429ea35d438ac6f4b434ecca07c700a6005e9d3ecdc954a3b19c9fad2ea1c207"
+    },
+    {
+      "template": "sunscar_beast_pen",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 8,
+      "scene": "sunscar__sunscar_beast_pen__8",
+      "cells": 1560,
+      "sha256": "82939e66085b08b673232a03d66b4cb911af0484c9111af199928610c658fa72"
+    },
+    {
+      "template": "sunscar_bone_lodge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 12,
+      "scene": "sunscar__sunscar_bone_lodge",
+      "cells": 1430,
+      "sha256": "197db53adf0955d066715a2d840470fedc3edaed62c83b760e4185a42f2bad50"
+    },
+    {
+      "template": "sunscar_chief_lodge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 9,
+      "scene": "sunscar__sunscar_chief_lodge",
+      "cells": 1053,
+      "sha256": "fccf11c79954cf4e3584e856cb7eee2d98d8dd393c82e8a2e2b52ad1be21433e"
+    },
+    {
+      "template": "sunscar_east_tower",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 14,
+      "scene": "sunscar__sunscar_east_tower__14",
+      "cells": 1210,
+      "sha256": "abcd4834e119dae5d820ebb9bc17b7a635273d240b1f1fa308db1f7260a0eaa0"
+    },
+    {
+      "template": "sunscar_spear_lodge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 10,
+      "scene": "sunscar__sunscar_spear_lodge",
+      "cells": 1089,
+      "sha256": "baebd6f99f192838920b064ac369c65bc4a3ec1c751dcd9dcd64d5063ad92a6d"
+    },
+    {
+      "template": "sunscar_tusk_lodge",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 11,
+      "scene": "sunscar__sunscar_tusk_lodge",
+      "cells": 1287,
+      "sha256": "ead8da5d8dd9cfbfc86c16bda94e25e113f6aaed2e658553c0e9bffed502beb9"
+    },
+    {
+      "template": "sunscar_warlord_hall",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 6,
+      "scene": "sunscar__sunscar_warlord_hall__6",
+      "cells": 3553,
+      "sha256": "ab2fdf53d9357b22df0cca458c0ccee52fda00d527e11835baba03280c43e611"
+    },
+    {
+      "template": "sunscar_west_tower",
+      "layout": "mods/MAPGEN/grug_mapgen/building_templates/layouts/sunscar.layout",
+      "line": 13,
+      "scene": "sunscar__sunscar_west_tower__13",
+      "cells": 1210,
+      "sha256": "1fc8e07c9ac8a19bf1e8b540a4a407568b5b56e229e9947de8de2c80d8f92119"
+    }
+  ],
+  "study_sha256": "542ad421de39dc191cc8f8d1ef377266f40474f42dfa39363c0e9307e53fd733",
+  "shrine_sha256": "041fcb2ad0f2ce6f9d0e06e277267edd6727249e9d5a8f680391692270d07737",
+  "services_sha256": "2c45f83674bbe13377cb2a6e620352b15f50290fbb486fd256a8e89f63536592",
+  "specials_sha256": "482df22429505feb56f39c314e2b7d7d4d7af03baed13a0450ecd8588183b98b"
+}

@@ -18,14 +18,12 @@ F role chimney_cap
 G role door variant=_a
 H role door_hidden
 I role floor
-J role foundation
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
 M role light_wall o=wallmounted:2
 N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:4
 P role path
-Q role post
 R role roof_slab
 S role roof_stair
 T role roof_stair o=facedir:2
@@ -44,7 +42,10 @@ g role wall
 h role wall_accent
 i role window
 j role window o=facedir:3
-k role window_frame
+J role facade_base
+Q role facade_frame
+f role facade_infill
+k role facade_gable
 end
 
 layer 0
@@ -61,63 +62,63 @@ layer 0
 |PPPPPPPPPPP|
 layer 1
 |...B.......|
-|.QhhhGhhhQ.|
-|.kC.....KE.|
+|.JhhhGhhhJ.|
+|.JC.....KE.|
 |.hD....Y.hB|
 |.hd..X...hA|
-|.ka..ee..kB|
-|.k...W...k.|
+|.Ja..ee..JB|
+|.J...W...J.|
 |ch......Zh.|
 |.h......bh.|
-|.kkhhkkhhk.|
+|.JJhhJJhhJ.|
 |...BAB.....|
 layer 2
 |...........|
-|.QgggHgggQ.|
-|.k......LE.|
+|.QfffHfffQ.|
+|.f......LE.|
 |.j.......j.|
 |.j.......j.|
-|.ka......k.|
-|.k.......k.|
+|.Qa......Q.|
+|.f.......f.|
 |.j......bj.|
 |.j.......j.|
-|.kkiikkiik.|
+|.QfiiQfiiQ.|
 |...........|
 layer 3
 |...O...O...|
-|.QgggggggQ.|
-|.k......EE.|
+|.QfffQfffQ.|
+|.f......EE.|
 |.j.......j.|
 |.j.......j.|
-|.kN.....Mk.|
-|.k.......k.|
+|.QN.....MQ.|
+|.f.......f.|
 |.j.......j.|
 |.j.......j.|
-|.kkiikkiik.|
+|.QfiiQfiiQ.|
 |...........|
 layer 4
 |...........|
-|.QgggggggQ.|
-|.k......EE.|
-|.g.......g.|
-|.g.......g.|
-|.k.......k.|
-|.k.......k.|
-|.g.......g.|
-|.g.......g.|
-|.kkggkkggk.|
+|.QQQQQQQQQ.|
+|.Q......EE.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.QQQQQQQQQ.|
 |...........|
 layer 5
 |SSSSSSSSSSS|
-|.QgggggggQ.|
+|.QgggQgggQ.|
 |.k......EE.|
 |.g.......g.|
 |.g.......g.|
-|.k.......k.|
+|.Q.......Q.|
 |.k.......k.|
 |.g.......g.|
 |.g.......g.|
-|.kkggkkggk.|
+|.QkggQkggQ.|
 |TTTTTTTTTTT|
 layer 6
 |...........|
@@ -125,7 +126,7 @@ layer 6
 |.g.......E.|
 |.g.......g.|
 |.g.......g.|
-|.g.......g.|
+|.Q.......Q.|
 |.g.......g.|
 |.g.......g.|
 |.g.......g.|
@@ -137,7 +138,7 @@ layer 7
 |SSSSSSSSSES|
 |.g.......g.|
 |.g.......g.|
-|.g.......g.|
+|.Q.......Q.|
 |.g.......g.|
 |.g.......g.|
 |TTTTTTTTTTT|
@@ -149,7 +150,7 @@ layer 8
 |.........E.|
 |SSSSSSSSSSS|
 |.g.......g.|
-|.g.......g.|
+|.Q.......Q.|
 |.g.......g.|
 |TTTTTTTTTTT|
 |...........|

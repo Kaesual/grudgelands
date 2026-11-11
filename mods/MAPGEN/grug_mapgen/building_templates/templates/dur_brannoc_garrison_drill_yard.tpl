@@ -10,7 +10,6 @@ races dwarf
 
 legend
 A node grug_decor:xdecor_potted_dandelion_white
-B role beam
 C role bed variant=_bottom
 D role bed variant=_top
 E role door variant=_a o=facedir:1
@@ -21,27 +20,26 @@ I role light_post o=wallmounted:1
 J role light_wall o=wallmounted:2
 K role light_wall o=wallmounted:3
 L role path
-M role post
 N role railing
-O role roof_slab
 P role roof_stair
-Q role roof_stair o=facedir:1
-R role roof_stair o=facedir:2
-S role roof_stair o=facedir:3
-T role roof_stair_outer
-U role roof_stair_outer o=facedir:1
-V role roof_stair_outer o=facedir:2
-W role roof_stair_outer o=facedir:3
 X role seat
 Y role seat o=facedir:2
 Z role storage
 a role storage o=facedir:1
 b node grug_decor:xdecor_table
-d role wall
-e role wall_accent
 f role window
 g role window o=facedir:3
-h role window_frame
+B role facade_roof_stair_outer o=facedir:1
+M role facade_roof_stair o=facedir:1
+O role facade_roof_stair_outer o=facedir:2
+Q role facade_base
+R role facade_infill
+S role facade_roof_stair o=facedir:0
+T role facade_roof_stair o=facedir:2
+U role facade_roof_slab o=facedir:0
+V role facade_roof_stair_outer o=facedir:0
+W role facade_roof_stair o=facedir:3
+c role facade_roof_stair_outer o=facedir:3
 end
 
 layer 0
@@ -58,51 +56,51 @@ layer 0
 |LLLLLLLLLLL|
 layer 1
 |.......Z...|
-|.MhehehehM.|
-|.hC.....ah.|
-|AeDP.....e.|
-|.h.......h.|
-|.E.......e.|
-|.h.....Y.h.|
-|.e.....bbe.|
-|.h.....X.h.|
-|.MhehehehM.|
+|.QQQQQQQQQ.|
+|.QC.....aQ.|
+|AQDP.....Q.|
+|.Q.......Q.|
+|.E.......Q.|
+|.Q.....Y.Q.|
+|.Q.....bbQ.|
+|.Q.....X.Q.|
+|.QQQQQQQQQ.|
 |...........|
 layer 2
 |...........|
-|.MhehehehM.|
-|.h.......h.|
-|.e.......e.|
-|.h.P.....h.|
-|.F.......e.|
-|.h.......h.|
-|.e.......e.|
-|.h.......h.|
-|.MhehehehM.|
+|.QRRRQRRRQ.|
+|.R.......R.|
+|.R.......R.|
+|.Q.P.....R.|
+|.F.......Q.|
+|.R.......R.|
+|.R.......R.|
+|.R.......R.|
+|.QRRRQRRRQ.|
 |...........|
 layer 3
 |...........|
-|.MhfhdhfhM.|
-|Jh.......h.|
+|.QRfRQRfRQ.|
+|JR.......R.|
 |.g.......g.|
-|.h.......h.|
-|.dKP.....d.|
-|.h.......h.|
+|.Q.......R.|
+|.RKP.....Q.|
+|.R.......R.|
 |.g.......g.|
-|Jh.......h.|
-|.MhfhdhfhM.|
+|JR.......R.|
+|.QRfRQRfRQ.|
 |...........|
 layer 4
 |...........|
-|.MhfhdhfhM.|
-|.h.......h.|
+|.QQfQQQfQQ.|
+|.Q.......Q.|
 |.g.......g.|
-|.h.......h.|
-|.d.......d.|
-|.h.P.....h.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.Q.P.....Q.|
 |.g.......g.|
-|.h.......h.|
-|.MhfhdhfhM.|
+|.Q.......Q.|
+|.QQfQQQfQQ.|
 |...........|
 layer 5
 |...........|
@@ -118,19 +116,19 @@ layer 5
 |...........|
 layer 6
 |...........|
-|.eeeeeeeee.|
-|.eI.....Ie.|
-|.e.......e.|
-|.e.......e.|
-|.e.......e.|
-|.e.......e.|
-|.e.......e.|
-|.eI.....Ie.|
-|.eeeeeeeee.|
+|.QRRRRRRRQ.|
+|.RI.....IR.|
+|.R.......R.|
+|.R.......R.|
+|.R.......R.|
+|.R.......R.|
+|.R.......R.|
+|.RI.....IR.|
+|.QRRRRRRRQ.|
 |...........|
 layer 7
 |...........|
-|.M.N.N.N.M.|
+|.Q.N.N.N.Q.|
 |...........|
 |.N.......N.|
 |...........|
@@ -138,53 +136,53 @@ layer 7
 |...........|
 |.N.......N.|
 |...........|
-|.M.N.N.N.M.|
+|.Q.N.N.N.Q.|
 |...........|
 layer 8
-|UPPPPPPPPPT|
-|QBBBBBBBBBS|
-|QB.......BS|
-|QB.......BS|
-|QB.......BS|
-|QB.......BS|
-|QB.......BS|
-|QB.......BS|
-|QB.......BS|
-|QBBBBBBBBBS|
-|VRRRRRRRRRW|
+|BSSSSSSSSSV|
+|MQQQQQQQQQW|
+|MQ.......QW|
+|MQ.......QW|
+|MQ.......QW|
+|MQ.......QW|
+|MQ.......QW|
+|MQ.......QW|
+|MQ.......QW|
+|MQQQQQQQQQW|
+|OTTTTTTTTTc|
 layer 9
 |...........|
-|.UPPPPPPPT.|
-|.Q.......S.|
-|.Q.......S.|
-|.Q.......S.|
-|.Q.......S.|
-|.Q.......S.|
-|.Q.......S.|
-|.Q.......S.|
-|.VRRRRRRRW.|
+|.BSSSSSSSV.|
+|.M.......W.|
+|.M.......W.|
+|.M.......W.|
+|.M.......W.|
+|.M.......W.|
+|.M.......W.|
+|.M.......W.|
+|.OTTTTTTTc.|
 |...........|
 layer 10
 |...........|
 |...........|
-|..UPPPPPT..|
-|..Q.....S..|
-|..Q.....S..|
-|..Q.....S..|
-|..Q.....S..|
-|..Q.....S..|
-|..VRRRRRW..|
+|..BSSSSSV..|
+|..M.....W..|
+|..M.....W..|
+|..M.....W..|
+|..M.....W..|
+|..M.....W..|
+|..OTTTTTc..|
 |...........|
 |...........|
 layer 11
 |...........|
 |...........|
 |...........|
-|...UPPPT...|
-|...Q...S...|
-|...Q...S...|
-|...Q...S...|
-|...VRRRW...|
+|...BSSSV...|
+|...M...W...|
+|...M...W...|
+|...M...W...|
+|...OTTTc...|
 |...........|
 |...........|
 |...........|
@@ -193,9 +191,9 @@ layer 12
 |...........|
 |...........|
 |...........|
-|....OOO....|
-|....OOO....|
-|....OOO....|
+|....UUU....|
+|....UUU....|
+|....UUU....|
 |...........|
 |...........|
 |...........|

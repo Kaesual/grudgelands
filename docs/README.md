@@ -14,6 +14,7 @@ reading every development round.
 | Where is the class rework? | Built in Rounds 52 (round F) and 53 (round K): the shipped rules in [classes](design/classes.md), [talents](design/skill_trees.md), [scout](design/scout.md) and [ability targeting](design/ability_targeting.md); the record in the [round 53 plan](planning/round53-plan.md), the [delivery plan](planning/class-redesign/delivery-plan.md), the [continuation plan](planning/class-redesign/continuation.md) and the [earlier handoff](planning/class-redesign-handoff.md) |
 | How should work be performed? | [AGENTS](../AGENTS.md), then the [round workflow](process/round-workflow.md) (gates, review checklist, [templates](process/round-workflow.md#7-templates)) |
 | Where is the map-icon integration and its acceptance checklist? | [Round 64 plan](planning/round64-plan.md); current rules in the [atlas design](design/world_map.md#approved-icon-integration-round-64) |
+| How do the six cultures’ town facades differ? | [Ordinary town facades](design/settlements.md#ordinary-town-facades-0755) |
 | How are the town buildings stored and edited? | [Building template format](technical/building-template-format.md), the [template tools and the editor](../tools/building_templates/README.md) |
 | How are forms styled without changing their mechanisms? | [UI presentation toolkit](technical/ui-presentation.md), [implementation plan](planning/ui-modernization-plan.md) |
 | Which mod owns a concern? | [Mod ownership map](technical/mod-map.md) |

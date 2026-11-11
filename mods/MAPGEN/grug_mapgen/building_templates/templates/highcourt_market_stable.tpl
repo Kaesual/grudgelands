@@ -11,8 +11,8 @@ races dwarf human elf undead orc troll
 legend
 A node grug_farming:soil
 B role fence
-C role post
 D role roof_ridge
+C role facade_open_wood
 end
 
 layer 0

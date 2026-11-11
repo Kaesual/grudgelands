@@ -98,6 +98,14 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.75.5** gives town homes, guilds, services and special city buildings coherent
+structural frames and cultural materials, while retaining monumental forms,
+open grounds and ruined silhouettes. Character creation shows the updated
+buildings and the new opening crest. **Map reset**;
+merged locally into main and synced to local Luanti, not pushed. Browser
+comparisons accepted; native
+desktop/web acceptance remains open. [Checklist](docs/planning/round75.5-plan.md).
+
 **0.75.2** fixes decoration surfaces and fills out larger houses and profession
 workshops. Royal halls gain wall art without new combat obstacles. **Map reset**;
 merged into main and synced locally, not pushed; GUI acceptance pending.
@@ -499,7 +507,7 @@ investigations and delivery records.
 
 | Area | Design documents |
 |------|------------------|
-| World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns, capitals and fortified mining camps; [story](docs/design/story.md): factions and the campaign. |
+| World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns, cultural building frames, capitals and fortified mining camps; [story](docs/design/story.md): factions and the campaign. |
 | Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses, combat state, boss resets and friend and foe nametags; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit; [Miner's Guild](docs/design/miners_guild.md): mining camps, lifts, reputation and the guild's goods. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags, crafting stations and the approved UI presentation rules; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |

@@ -17,14 +17,12 @@ E role door variant=_a o=facedir:2
 F role door_hidden o=facedir:2
 G role floor
 H role flower_alt else=air
-I role foundation
 J role hearth o=facedir:1
 K role light_post o=wallmounted:1
 L role light_wall o=wallmounted:2
 M role light_wall o=wallmounted:3
 N role light_wall o=wallmounted:5
 O role path
-P role post
 Q role roof_slab
 R role roof_stair
 S role roof_stair o=facedir:2
@@ -42,7 +40,9 @@ h role wall_accent
 i role wall_infill else=air
 j role window
 k role window o=facedir:3
-l role window_frame
+I role facade_home_base
+P role facade_frame
+b role facade_infill
 end
 
 layer 0
@@ -59,84 +59,84 @@ layer 0
 |OOOOOOOOOOO|
 layer 1
 |...........|
-|.Plhhllhhl.|
-|.lA.....JC.|
+|.IIhhIIhhI.|
+|.IA.....JC.|
 |.hB....X.h.|
 |.he..W...h.|
-|.lZ..ff..l.|
-|.l...V...l.|
+|.IZ..ff..I.|
+|.I...V...I.|
 |.h......Yh.|
 |.h......ah.|
-|.lhhhEhhhl.|
+|.IhhhEhhhI.|
 |...H.......|
 layer 2
 |...........|
-|.Pljjlljjl.|
-|.l......KC.|
+|.PbjjPbjjP.|
+|.b......KC.|
 |.k.......k.|
 |.k.......k.|
-|.lZ......l.|
-|.l.......l.|
+|.PZ......P.|
+|.b.......b.|
 |.k......ak.|
 |.k.......k.|
-|.liiPFiPil.|
+|.PiiPFibiP.|
 |...........|
 layer 3
 |...........|
-|.Pljjlljjl.|
-|.l......CC.|
+|.PbjjPbjjP.|
+|.b......CC.|
 |.k.......k.|
 |.k.......k.|
-|.lM.....Ll.|
-|.l.......l.|
+|.PM.....LP.|
+|.b.......b.|
 |.k.......k.|
 |.k.......k.|
-|.liiPiiPil.|
+|.PiiPiibiP.|
 |...N...N...|
 layer 4
 |...........|
-|.PliPllPil.|
-|.l......CC.|
+|.PbibPbbiP.|
+|.b......CC.|
 |.i.......i.|
+|.b.......b.|
 |.P.......P.|
-|.l.......l.|
-|.l.......l.|
-|.P.......P.|
+|.b.......b.|
+|.b.......b.|
 |.i.......i.|
-|.liiPiiPil.|
+|.PiiPiibiP.|
 |...........|
 layer 5
 |...........|
-|.PliPllPil.|
-|.l......CC.|
-|.i.......i.|
+|.PPPPPPPPP.|
+|.P......CC.|
 |.P.......P.|
-|.l.......l.|
-|.l.......l.|
 |.P.......P.|
-|.i.......i.|
-|.liiPiiPil.|
+|.P.......P.|
+|.P.......P.|
+|.P.......P.|
+|.P.......P.|
+|.PPPPPPPPP.|
 |SSSSSSSSSSS|
 layer 6
 |...........|
-|.PiiPiiPiP.|
+|.PiibPibiP.|
 |.i.......C.|
 |.i.......i.|
+|.b.......b.|
 |.P.......P.|
 |.i.......i.|
-|.i.......i.|
-|.P.......P.|
+|.b.......b.|
 |.i.......i.|
 |SSSSSSSSSSS|
 |...........|
 layer 7
 |RRRRRRRRRRR|
-|.PiiPiiPiP.|
-|.i.......C.|
-|.i.......i.|
+|.PPPPPPPPP.|
+|.P.......C.|
 |.P.......P.|
-|.i.......i.|
-|.i.......i.|
+|.P.......P.|
+|.P.......P.|
+|.P.......P.|
 |.P.......P.|
 |SSSSSSSSSSS|
 |...........|
@@ -146,8 +146,8 @@ layer 8
 |RRRRRRRRRRR|
 |.i.......C.|
 |.i.......i.|
+|.b.......b.|
 |.P.......P.|
-|.i.......i.|
 |.i.......i.|
 |SSSSSSSSSSS|
 |...........|
@@ -158,8 +158,8 @@ layer 9
 |...........|
 |RRRRRRRRRCR|
 |.i.......i.|
+|.b.......b.|
 |.P.......P.|
-|.i.......i.|
 |SSSSSSSSSSS|
 |...........|
 |...........|
@@ -170,7 +170,7 @@ layer 10
 |...........|
 |.........C.|
 |RRRRRRRRRRR|
-|.P.......P.|
+|.b.......b.|
 |SSSSSSSSSSS|
 |...........|
 |...........|

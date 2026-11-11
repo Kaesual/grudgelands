@@ -9,46 +9,44 @@ meta cauldrons=4 extent=[0,0,14,14] peak=4 top=6
 races troll
 
 legend
-A role beam
 B role castle_paving
 C role hearth
 D role light_post o=wallmounted:1
-E role plaza_edge
-F role post
 G role rope else=air
 H role seat
 I role seat o=facedir:2
-J role signature else=B
-K role signature else=air
+A role facade_base
+E role facade_monument_frame
+F role facade_home_base
 end
 
 layer 0
-|EEEEEEEEEEEEEEE|
-|EBJBBBBBBBBBJBE|
-|EJJJJJJJJJJJJJE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EBJBBBBBBBBBJBE|
-|EJJJJJJJJJJJJJE|
-|EBJBBBBBBBBBJBE|
-|EEEEEEEEEEEEEEE|
+|AAAAAAAAAAAAAAA|
+|ABEBBBBBBBBBEBA|
+|AEEEEEEEEEEEEEA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|ABEBBBBBBBBBEBA|
+|AEEEEEEEEEEEEEA|
+|ABEBBBBBBBBBEBA|
+|AAAAAAAAAAAAAAA|
 layer 1
 |...............|
 |.F...........F.|
 |......III......|
 |..F.........F..|
 |...............|
-|.....KKKKK.....|
-|.....KKKKK.....|
-|.....KKKKK.....|
-|.....KKKKK.....|
-|.....KKKKK.....|
+|.....EEEEE.....|
+|.....EEEEE.....|
+|.....EEEEE.....|
+|.....EEEEE.....|
+|.....EEEEE.....|
 |...............|
 |..F.........F..|
 |......HHH......|
@@ -90,15 +88,15 @@ layer 4
 |...............|
 |...............|
 |...............|
-|..A.........A..|
-|..A.........A..|
-|..A.........A..|
-|..A.........A..|
-|..A.........A..|
-|..A.........A..|
-|..A.........A..|
-|..A.........A..|
-|..A.........A..|
+|..F.........F..|
+|..F.........F..|
+|..F.........F..|
+|..F.........F..|
+|..F.........F..|
+|..F.........F..|
+|..F.........F..|
+|..F.........F..|
+|..F.........F..|
 |...............|
 |...............|
 |...............|

@@ -17,7 +17,7 @@ return {
 		["blueprint"] = {
 			{id="dawnmere/building/meeting_hall", profile="council", placements={
 				{x=-18,y=2,z=26,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:cottages_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-20,y=2,z=13,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="default:wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-20,y=2,z=13,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:cottages_loam",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="dawnmere/building/harvest_inn", profile="tavern", placements={
 				{x=18,y=2,z=17,node="grug_decor:city_plate_ceramic",param2=0,expect="air",support="grug_decor:cottages_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -29,7 +29,7 @@ return {
 				{x=-28,y=1,z=-5,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:wood",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="dawnmere/building/smithy", profile="smith", placements={
-				{x=25,y=2,z=-5,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=25,y=2,z=-5,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_decor:cottages_loam",support_dx=-1,support_dy=0,support_dz=0},
 				{x=28,y=2,z=0,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="dawnmere/building/orchard_cottage", profile="home", placements={
@@ -76,7 +76,7 @@ return {
 			}},
 			{id="dur_brannoc/core/market", profile="market", placements={
 				{x=-34,y=2,z=-23,node="grug_decor:city_fruit_basket",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-40,y=1,z=-28,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:stonebrick",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-40,y=1,z=-28,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="dur_brannoc/core/colonnade_west", profile="colonnade", reason="quiet colonnade", placements={
 			}},
@@ -85,7 +85,7 @@ return {
 			{id="dur_brannoc/core/statue", profile="statue", reason="quiet statue", placements={
 			}},
 			{id="dur_brannoc/core/cistern_court", profile="well", placements={
-				{x=-45,y=1,z=9,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:stonebrick",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-45,y=1,z=9,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="dur_brannoc/core/ancestor_hall", profile="shrine", placements={
 				{x=-39,y=2,z=38,node="grug_decor:city_candle_group",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -95,16 +95,16 @@ return {
 				{x=36,y=2,z=14,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="dur_brannoc/core/smelting_yard", profile="yard", placements={
-				{x=33,y=5,z=28,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:pine_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=33,y=5,z=28,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:wood",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 			{id="dur_brannoc/core/masons_guild", profile="workshop", placements={
-				{x=33,y=2,z=-31,node="grug_decor:city_tool_board",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=33,y=2,z=-31,node="grug_decor:city_tool_board",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=0,support_dz=1},
 				{x=31,y=2,z=-43,node="grug_decor:city_material_ore",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="dur_brannoc/core/market_house", profile="home", placements={
 				{x=-48,y=2,z=-16,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-48,y=2,z=-15,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-45,y=3,z=-19,node="grug_decor:city_painting_dur_brannoc",param2=1,expect="air",support="default:pine_wood",support_dx=1,support_dy=0,support_dz=0},
+				{x=-45,y=3,z=-19,node="grug_decor:city_painting_dur_brannoc",param2=1,expect="air",support="grug_decor:darkage_stone_brick",support_dx=1,support_dy=0,support_dz=0},
 			}},
 			{id="dur_brannoc/core/south_house", profile="home", placements={
 				{x=-37,y=2,z=-38,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -134,10 +134,10 @@ return {
 		},
 		["deep_carvers"] = {
 			{id="dur_brannoc/district/deep_carvers", profile="carver", placements={
-				{x=-6,y=3,z=-6,node="grug_decor:city_tool_board",param2=2,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=-1},
+				{x=-6,y=3,z=-6,node="grug_decor:city_tool_board",param2=2,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=-1},
 				{x=-3,y=1,z=-10,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_coniferous_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=5,y=2,z=-9,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=6,y=7,z=-4,node="grug_decor:city_wall_shelf_filled",param2=1,expect="air",support="default:pine_wood",support_dx=1,support_dy=0,support_dz=0},
+				{x=6,y=7,z=-4,node="grug_decor:city_wall_shelf_filled",param2=1,expect="air",support="default:wood",support_dx=1,support_dy=0,support_dz=0},
 			}},
 		},
 		["deep_green"] = {
@@ -214,7 +214,7 @@ return {
 				{x=-4,y=2,z=-5,node="grug_decor:city_cloth_rolls",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-9,y=1,z=-11,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_coniferous_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=4,y=2,z=-5,node="grug_decor:city_yarn",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["forge_ore_court"] = {
@@ -242,7 +242,7 @@ return {
 		},
 		["forge_smithy"] = {
 			{id="dur_brannoc/district/forge_smithy", profile="smith", placements={
-				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="default:pine_wood",support_dx=1,support_dy=0,support_dz=0},
+				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="default:wood",support_dx=1,support_dy=0,support_dz=0},
 				{x=6,y=2,z=-9,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-9,y=1,z=-10,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_coniferous_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=7,y=2,z=-2,node="grug_decor:city_sconce_iron",param2=3,expect="air",support="default:stonebrick",support_dx=-1,support_dy=0,support_dz=0},
@@ -251,9 +251,9 @@ return {
 		["forge_store"] = {
 			{id="dur_brannoc/district/forge_store", profile="leather", placements={
 				{x=5,y=2,z=-9,node="grug_decor:city_leather_bundle",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
 				{x=-8,y=1,z=-10,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_coniferous_litter",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["forge_watch"] = {
@@ -265,7 +265,7 @@ return {
 			{id="dur_brannoc/district/garrison_armoury", profile="armoury", placements={
 				{x=-10,y=1,z=-10,node="grug_decor:city_display_armor",param2=0,expect="air",support="default:dirt_with_coniferous_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-9,y=1,z=-10,node="grug_decor:city_display_weapon",param2=0,expect="air",support="default:dirt_with_coniferous_litter",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-6,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-6,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["garrison_barracks"] = {
@@ -315,7 +315,7 @@ return {
 		},
 		["garrison_wain_shed"] = {
 			{id="dur_brannoc/district/garrison_wain_shed", profile="carver", placements={
-				{x=-5,y=5,z=-3,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:pine_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-5,y=5,z=-3,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:wood",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 		},
 		["garrison_watch_tower"] = {
@@ -358,25 +358,25 @@ return {
 			{id="dur_brannoc/district/terrace_brewhouse", profile="alchemy", placements={
 				{x=5,y=2,z=-9,node="grug_decor:city_alchemy_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=7,y=2,z=-9,node="grug_decor:city_book_open",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-6,y=3,z=-6,node="grug_decor:city_herb_bundle",param2=2,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=-1},
+				{x=-6,y=3,z=-6,node="grug_decor:city_herb_bundle",param2=2,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=-1},
 				{x=-7,y=1,z=-10,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_coniferous_litter",support_dx=0,support_dy=-1,support_dz=0},
-				{x=6,y=7,z=-4,node="grug_decor:city_wall_shelf_filled",param2=1,expect="air",support="default:pine_wood",support_dx=1,support_dy=0,support_dz=0},
+				{x=6,y=7,z=-4,node="grug_decor:city_wall_shelf_filled",param2=1,expect="air",support="default:wood",support_dx=1,support_dy=0,support_dz=0},
 			}},
 		},
 		["terrace_cottage_east"] = {
 			{id="dur_brannoc/district/terrace_cottage_east", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-6,node="grug_decor:city_painting_dur_brannoc",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
-				{x=0,y=5,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-6,node="grug_decor:city_painting_dur_brannoc",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
+				{x=0,y=5,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["terrace_cottage_west"] = {
 			{id="dur_brannoc/district/terrace_cottage_west", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-5,node="grug_decor:city_painting_dur_brannoc",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-5,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-5,node="grug_decor:city_painting_dur_brannoc",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-5,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["terrace_goat_pasture"] = {
@@ -395,8 +395,8 @@ return {
 			{id="dur_brannoc/district/terrace_long_house", profile="home", placements={
 				{x=-3,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-2,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_painting_dur_brannoc",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
-				{x=-3,y=5,z=-7,node="grug_decor:city_wall_shelf_filled",param2=2,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=-1},
+				{x=2,y=5,z=-9,node="grug_decor:city_painting_dur_brannoc",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=5,z=-7,node="grug_decor:city_wall_shelf_filled",param2=2,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=-1},
 			}},
 		},
 		["terrace_market"] = {
@@ -451,7 +451,7 @@ return {
 		},
 		["bazaar_carver"] = {
 			{id="gor_drazhak/district/bazaar_carver", profile="carver", placements={
-				{x=-3,y=2,z=-6,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-6,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
 				{x=-8,y=1,z=-9,node="grug_decor:city_rug_red",param2=0,expect="air",support="default:dirt_with_dry_grass",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=7,z=-5,node="grug_decor:city_wall_shelf_filled",param2=3,expect="air",support="grug_decor:darkage_adobe",support_dx=-1,support_dy=0,support_dz=0},
 			}},
@@ -468,7 +468,7 @@ return {
 			{id="gor_drazhak/district/bazaar_house", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-5,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-5,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
 				{x=-5,y=7,z=-4,node="grug_decor:city_wall_shelf_filled",param2=2,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=-1},
 			}},
 		},
@@ -523,7 +523,7 @@ return {
 		},
 		["bone_herb_house"] = {
 			{id="gor_drazhak/district/bone_herb_house", profile="alchemy", placements={
-				{x=-3,y=2,z=-6,node="grug_decor:city_herb_bundle",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-6,node="grug_decor:city_herb_bundle",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
 				{x=-9,y=1,z=-10,node="grug_decor:city_rug_red",param2=0,expect="air",support="default:dirt_with_dry_grass",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=7,z=-5,node="grug_decor:city_wall_shelf_filled",param2=2,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=-1},
 			}},
@@ -570,10 +570,10 @@ return {
 		},
 		["core"] = {
 			{id="gor_drazhak/core/warlord_hall", profile="royal", placements={
-				{x=-3,y=2,z=10,node="grug_decor:city_painting_gor_drazhak",param2=3,expect="air",support="default:desert_stone_block",support_dx=-1,support_dy=0,support_dz=0},
-				{x=3,y=2,z=10,node="grug_decor:city_painting_charter",param2=1,expect="air",support="default:desert_stone_block",support_dx=1,support_dy=0,support_dz=0},
-				{x=-13,y=10,z=10,node="grug_decor:city_painting_trade_map",param2=3,expect="air",support="grug_decor:darkage_adobe",support_dx=-1,support_dy=0,support_dz=0},
-				{x=-7,y=10,z=10,node="grug_decor:city_tapestry_throng",param2=1,expect="air",support="grug_decor:darkage_adobe",support_dx=1,support_dy=0,support_dz=0},
+				{x=-3,y=2,z=10,node="grug_decor:city_painting_gor_drazhak",param2=3,expect="air",support="default:desert_stonebrick",support_dx=-1,support_dy=0,support_dz=0},
+				{x=3,y=2,z=10,node="grug_decor:city_painting_charter",param2=1,expect="air",support="default:desert_stonebrick",support_dx=1,support_dy=0,support_dz=0},
+				{x=-13,y=10,z=10,node="grug_decor:city_painting_trade_map",param2=3,expect="air",support="grug_decor:darkage_ors_block",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-7,y=10,z=10,node="grug_decor:city_tapestry_throng",param2=1,expect="air",support="grug_decor:darkage_ors_block",support_dx=1,support_dy=0,support_dz=0},
 			}},
 			{id="gor_drazhak/core/gate_south", profile="gate", reason="quiet gate", placements={
 			}},
@@ -585,7 +585,7 @@ return {
 			}},
 			{id="gor_drazhak/core/bazaar_square", profile="market", placements={
 				{x=-34,y=2,z=-23,node="grug_decor:city_fruit_basket",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-40,y=1,z=-28,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:desert_stone_block",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-40,y=1,z=-28,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:desert_stonebrick",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="gor_drazhak/core/colonnade_west", profile="colonnade", reason="quiet colonnade", placements={
 			}},
@@ -594,7 +594,7 @@ return {
 			{id="gor_drazhak/core/statue", profile="statue", reason="quiet statue", placements={
 			}},
 			{id="gor_drazhak/core/cistern_court", profile="well", placements={
-				{x=-45,y=1,z=9,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:desert_stone_block",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-45,y=1,z=9,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:desert_stonebrick",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="gor_drazhak/core/skull_hall", profile="shrine", placements={
 				{x=-39,y=2,z=38,node="grug_decor:city_candle_group",param2=0,expect="air",support="grug_decor:cottages_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -608,7 +608,7 @@ return {
 			}},
 			{id="gor_drazhak/core/council_house", profile="council", placements={
 				{x=31,y=2,z=-43,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:cottages_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=33,y=2,z=-31,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
+				{x=33,y=2,z=-31,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="gor_drazhak/core/bazaar_house", profile="home", placements={
 				{x=-48,y=2,z=-16,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -664,7 +664,7 @@ return {
 			{id="gor_drazhak/district/war_chief_house", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-5,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-5,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
 				{x=-5,y=7,z=-4,node="grug_decor:city_wall_shelf_filled",param2=2,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=-1},
 			}},
 		},
@@ -713,7 +713,7 @@ return {
 			{id="gor_drazhak/district/warren_clan_house", profile="tavern", placements={
 				{x=-3,y=2,z=0,node="grug_decor:city_plate_ceramic",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-2,y=2,z=0,node="grug_decor:city_mug",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["warren_cook_court"] = {
@@ -739,7 +739,7 @@ return {
 			{id="gor_drazhak/district/warren_house_bone", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-6,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-6,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
 				{x=0,y=5,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
@@ -747,7 +747,7 @@ return {
 			{id="gor_drazhak/district/warren_house_spear", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-5,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-5,node="grug_decor:city_painting_gor_drazhak",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
 				{x=-5,y=7,z=-4,node="grug_decor:city_wall_shelf_filled",param2=2,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=-1},
 			}},
 		},
@@ -790,13 +790,13 @@ return {
 	["hearthpine"] = {
 		["blueprint"] = {
 			{id="hearthpine/building/forge_hall", profile="smith", placements={
-				{x=4,y=2,z=-29,node="grug_decor:city_tool_board",param2=2,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=-1},
+				{x=4,y=2,z=-29,node="grug_decor:city_tool_board",param2=2,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=-1},
 				{x=-1,y=2,z=-23,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="hearthpine/building/west_home", profile="home", placements={
 				{x=-29,y=2,z=4,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-29,y=2,z=5,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-24,y=2,z=1,node="grug_decor:city_painting_charter",param2=3,expect="air",support="default:pine_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-24,y=2,z=1,node="grug_decor:city_painting_charter",param2=3,expect="air",support="grug_decor:darkage_stone_brick",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 			{id="hearthpine/building/east_home", profile="home", placements={
 				{x=26,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -806,12 +806,12 @@ return {
 			{id="hearthpine/building/southwest_home", profile="home", placements={
 				{x=-35,y=2,z=-16,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-34,y=2,z=-16,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-37,y=4,z=-18,node="grug_decor:city_painting_charter",param2=3,expect="air",support="default:pine_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-37,y=4,z=-18,node="grug_decor:city_painting_charter",param2=3,expect="air",support="grug_decor:darkage_stone_brick",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 			{id="hearthpine/building/east_gable_home", profile="home", placements={
 				{x=43,y=2,z=-8,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=44,y=2,z=-8,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=40,y=2,z=-13,node="grug_decor:city_painting_charter",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=40,y=2,z=-13,node="grug_decor:city_painting_charter",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="hearthpine/building/lagerhouse", profile="brew", placements={
 				{x=17,y=2,z=28,node="grug_decor:city_jug",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -819,10 +819,10 @@ return {
 			}},
 			{id="hearthpine/building/community_hall", profile="council", placements={
 				{x=-31,y=2,z=33,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-29,y=2,z=27,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="default:pine_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-29,y=2,z=27,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:darkage_stone_brick",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="hearthpine/building/workyard", profile="workshop", placements={
-				{x=-38,y=5,z=16,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:pine_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-38,y=5,z=16,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:wood",support_dx=-1,support_dy=0,support_dz=0},
 				{x=-34,y=2,z=19,node="grug_decor:city_material_ore",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="hearthpine/building/gatewatch", profile="watch", placements={
@@ -834,10 +834,10 @@ return {
 	["highcourt"] = {
 		["core"] = {
 			{id="highcourt/core/kings_hall", profile="royal", placements={
-				{x=-3,y=2,z=10,node="grug_decor:city_painting_highcourt",param2=3,expect="air",support="default:cobble",support_dx=-1,support_dy=0,support_dz=0},
-				{x=3,y=2,z=10,node="grug_decor:city_painting_charter",param2=1,expect="air",support="default:cobble",support_dx=1,support_dy=0,support_dz=0},
-				{x=-13,y=10,z=10,node="grug_decor:city_painting_trade_map",param2=3,expect="air",support="grug_decor:darkage_marble",support_dx=-1,support_dy=0,support_dz=0},
-				{x=-7,y=10,z=10,node="grug_decor:city_tapestry_accord",param2=1,expect="air",support="grug_decor:darkage_marble",support_dx=1,support_dy=0,support_dz=0},
+				{x=-3,y=2,z=10,node="grug_decor:city_painting_highcourt",param2=3,expect="air",support="default:stone_block",support_dx=-1,support_dy=0,support_dz=0},
+				{x=3,y=2,z=10,node="grug_decor:city_painting_charter",param2=1,expect="air",support="default:stone_block",support_dx=1,support_dy=0,support_dz=0},
+				{x=-13,y=10,z=10,node="grug_decor:city_painting_trade_map",param2=3,expect="air",support="default:stone_block",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-7,y=10,z=10,node="grug_decor:city_tapestry_accord",param2=1,expect="air",support="default:stone_block",support_dx=1,support_dy=0,support_dz=0},
 			}},
 			{id="highcourt/core/gate_south", profile="gate", reason="quiet gate", placements={
 			}},
@@ -849,7 +849,7 @@ return {
 			}},
 			{id="highcourt/core/market", profile="market", placements={
 				{x=-35,y=2,z=-26,node="grug_decor:city_fruit_basket",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-41,y=1,z=-31,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:brick",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-41,y=1,z=-31,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="highcourt/core/colonnade_west", profile="colonnade", reason="quiet colonnade", placements={
 			}},
@@ -858,7 +858,7 @@ return {
 			{id="highcourt/core/statue", profile="statue", reason="quiet statue", placements={
 			}},
 			{id="highcourt/core/well_court", profile="well", placements={
-				{x=-46,y=1,z=8,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:brick",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-46,y=1,z=8,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:stone_block",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="highcourt/core/orchard_east", profile="garden", placements={
 				{x=11,y=1,z=-45,node="grug_decor:city_fruit_basket",param2=0,expect="air",support="default:dirt_with_grass",support_dx=0,support_dy=-1,support_dz=0},
@@ -870,7 +870,7 @@ return {
 				{x=-37,y=2,z=32,node="grug_decor:city_candle_group",param2=0,expect="air",support="grug_decor:cottages_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="highcourt/core/service_yard", profile="yard", placements={
-				{x=34,y=5,z=8,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=34,y=5,z=8,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_decor:cottages_loam",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 			{id="highcourt/core/service_store", profile="store", placements={
 				{x=36,y=1,z=24,node="grug_decor:city_sack_closed",param2=0,expect="air",support="default:wood",support_dx=0,support_dy=-1,support_dz=0},
@@ -974,7 +974,7 @@ return {
 				{x=-2,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-9,node="grug_decor:city_painting_highcourt",param2=0,expect="air",support="grug_decor:cottages_loam",support_dx=0,support_dy=0,support_dz=1},
-				{x=-3,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:cottages_loam",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["homes_well"] = {
@@ -992,7 +992,7 @@ return {
 		["lore_archive"] = {
 			{id="highcourt/district/lore_archive", profile="jewel", placements={
 				{x=-9,y=1,z=-10,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_grass",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-8,node="grug_decor:city_sconce_iron",param2=0,expect="air",support="grug_decor:cottages_loam",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-8,node="grug_decor:city_sconce_iron",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["lore_chapel_yard"] = {
@@ -1053,7 +1053,7 @@ return {
 				{x=6,y=2,z=-10,node="grug_decor:city_cloth_rolls",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-9,y=1,z=-11,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_grass",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-5,node="grug_decor:city_yarn",param2=0,expect="air",support="grug_decor:cottages_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:cottages_loam",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["market_gardens"] = {
@@ -1097,7 +1097,7 @@ return {
 				{x=5,y=2,z=-9,node="grug_decor:city_leather_bundle",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:cottages_loam",support_dx=0,support_dy=0,support_dz=1},
 				{x=-8,y=1,z=-10,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_grass",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:cottages_loam",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["market_watch"] = {
@@ -1172,9 +1172,9 @@ return {
 		},
 		["martial_wain_shed"] = {
 			{id="highcourt/district/martial_wain_shed", profile="carver", placements={
-				{x=-5,y=5,z=-3,node="grug_decor:city_tool_board",param2=3,expect="air",support="default:wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-5,y=5,z=-3,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_decor:cottages_loam",support_dx=-1,support_dy=0,support_dz=0},
 				{x=-11,y=1,z=-9,node="grug_decor:city_rug_blue",param2=0,expect="air",support="default:dirt_with_grass",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-5,y=5,z=0,node="grug_decor:city_wall_shelf_filled",param2=3,expect="air",support="default:wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-5,y=5,z=0,node="grug_decor:city_wall_shelf_filled",param2=3,expect="air",support="grug_trees:gravewood_wood",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 		},
 		["martial_watch_tower"] = {
@@ -1202,12 +1202,12 @@ return {
 			{id="kapok/building/fish_smoker", profile="fish", placements={
 				{x=25,y=3,z=23,node="grug_decor:city_crate_fish",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=-1,support_dz=0},
 				{x=26,y=3,z=23,node="grug_decor:city_rope_coil",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=-1,support_dz=0},
-				{x=25,y=4,z=24,node="grug_decor:city_herb_bundle",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=25,y=4,z=24,node="grug_decor:city_herb_bundle",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="kapok/building/drying_shed", profile="fish", placements={
 				{x=-41,y=1,z=24,node="grug_decor:city_crate_fish",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-40,y=1,z=24,node="grug_decor:city_rope_coil",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-39,y=5,z=26,node="grug_decor:city_herb_bundle",param2=3,expect="air",support="default:junglewood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-39,y=5,z=26,node="grug_decor:city_herb_bundle",param2=3,expect="air",support="grug_nodes:clay_band_umber",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 			{id="kapok/building/elder_stilt", profile="home", placements={
 				{x=-26,y=6,z=-18,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -1225,7 +1225,7 @@ return {
 			{id="kapok/building/reed_stilt", profile="home", placements={
 				{x=35,y=6,z=11,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=36,y=6,z=11,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=32,y=6,z=6,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=32,y=6,z=6,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="kapok/building/watchpost", profile="watch", placements={
 				{x=11,y=2,z=-46,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -1236,7 +1236,7 @@ return {
 	["kezamba"] = {
 		["canopy_armoury"] = {
 			{id="kezamba/district/canopy_armoury", profile="smith", placements={
-				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="default:junglewood",support_dx=1,support_dy=0,support_dz=0},
+				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="grug_nodes:clay_band_umber",support_dx=1,support_dy=0,support_dz=0},
 				{x=-6,y=2,z=-8,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-7,y=1,z=-10,node="grug_decor:city_rug_red",param2=0,expect="air",support="default:dirt_with_rainforest_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-8,node="grug_decor:city_material_ore",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -1274,7 +1274,7 @@ return {
 				{x=0,y=2,z=-1,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=0,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-6,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["canopy_house_b"] = {
@@ -1282,7 +1282,7 @@ return {
 				{x=0,y=2,z=-1,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=0,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-6,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["canopy_muster"] = {
@@ -1321,14 +1321,14 @@ return {
 		},
 		["core"] = {
 			{id="kezamba/core/kings_hall", profile="royal", placements={
-				{x=10,y=9,z=-52,node="grug_decor:city_painting_kezamba",param2=3,expect="air",support="grug_decor:darkage_basalt",support_dx=-1,support_dy=0,support_dz=0},
-				{x=44,y=10,z=-52,node="grug_decor:city_painting_charter",param2=1,expect="air",support="grug_decor:darkage_basalt",support_dx=1,support_dy=0,support_dz=0},
+				{x=10,y=9,z=-52,node="grug_decor:city_painting_kezamba",param2=3,expect="air",support="grug_decor:darkage_basalt_block",support_dx=-1,support_dy=0,support_dz=0},
+				{x=44,y=10,z=-52,node="grug_decor:city_painting_charter",param2=1,expect="air",support="grug_decor:darkage_basalt_block",support_dx=1,support_dy=0,support_dz=0},
 				{x=6,y=7,z=-51,node="grug_decor:city_painting_trade_map",param2=2,expect="air",support="grug_decor:darkage_basalt",support_dx=0,support_dy=0,support_dz=-1},
 				{x=8,y=7,z=-51,node="grug_decor:city_tapestry_throng",param2=1,expect="air",support="grug_decor:darkage_basalt",support_dx=1,support_dy=0,support_dz=0},
 			}},
 			{id="kezamba/core/moot_house", profile="council", placements={
 				{x=-17,y=6,z=47,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-15,y=7,z=46,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:darkage_basalt",support_dx=0,support_dy=0,support_dz=1},
+				{x=-15,y=7,z=46,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:darkage_basalt_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="kezamba/core/cauldron_court", profile="kitchen", reason="no safe approved mount", placements={
 			}},
@@ -1378,7 +1378,7 @@ return {
 		["shore_butcher"] = {
 			{id="kezamba/district/shore_butcher", profile="butcher", placements={
 				{x=-3,y=1,z=-10,node="grug_decor:city_crate_meat",param2=0,expect="air",support="default:dirt_with_rainforest_litter",support_dx=0,support_dy=-1,support_dz=0},
-				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="default:junglewood",support_dx=1,support_dy=0,support_dz=0},
+				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="grug_nodes:clay_band_umber",support_dx=1,support_dy=0,support_dz=0},
 			}},
 		},
 		["shore_carvers"] = {
@@ -1398,7 +1398,7 @@ return {
 			{id="kezamba/district/shore_house", profile="home", placements={
 				{x=-2,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-4,y=2,z=-8,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-4,y=2,z=-8,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
@@ -1415,13 +1415,13 @@ return {
 			{id="kezamba/district/shore_smokehouse", profile="kitchen", placements={
 				{x=-6,y=2,z=-5,node="grug_decor:city_bread_board",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-5,node="grug_decor:city_fruit_basket",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-5,y=5,z=-3,node="grug_decor:city_wall_shelf_filled",param2=3,expect="air",support="default:junglewood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-5,y=5,z=-3,node="grug_decor:city_wall_shelf_filled",param2=3,expect="air",support="grug_nodes:clay_band_umber",support_dx=-1,support_dy=0,support_dz=0},
 				{x=-7,y=1,z=-7,node="grug_decor:city_rug_red",param2=0,expect="air",support="default:dirt_with_rainforest_litter",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 		},
 		["shore_store"] = {
 			{id="kezamba/district/shore_store", profile="leather", placements={
-				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 				{x=-6,y=1,z=-10,node="grug_decor:city_rug_red",param2=0,expect="air",support="default:dirt_with_rainforest_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-2,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
 			}},
@@ -1474,7 +1474,7 @@ return {
 				{x=0,y=2,z=-1,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=0,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-6,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["totem_posts"] = {
@@ -1523,7 +1523,7 @@ return {
 				{x=0,y=2,z=-1,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=0,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-6,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["vine_house_b"] = {
@@ -1531,7 +1531,7 @@ return {
 				{x=0,y=2,z=-1,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=0,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-6,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["vine_house_c"] = {
@@ -1539,7 +1539,7 @@ return {
 				{x=0,y=2,z=-1,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=0,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-6,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["vine_house_d"] = {
@@ -1547,7 +1547,7 @@ return {
 				{x=0,y=2,z=-1,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=0,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-6,node="grug_decor:city_painting_kezamba",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-6,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["vine_kitchen"] = {
@@ -1558,12 +1558,12 @@ return {
 			{id="kezamba/district/vine_longhouse", profile="tavern", placements={
 				{x=-2,y=2,z=0,node="grug_decor:city_plate_ceramic",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-1,y=2,z=0,node="grug_decor:city_mug",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-4,y=2,z=-8,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-4,y=2,z=-8,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="grug_nodes:clay_band_umber",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["vine_moot"] = {
 			{id="kezamba/district/vine_moot", profile="council", placements={
-				{x=5,y=3,z=-3,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:castle_stonewall",support_dx=0,support_dy=0,support_dz=1},
+				{x=5,y=3,z=-3,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="default:junglewood",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["vine_park"] = {
@@ -1591,8 +1591,8 @@ return {
 			{id="lethariel/core/kings_hall", profile="royal", placements={
 				{x=-47,y=10,z=-51,node="grug_decor:city_painting_lethariel",param2=3,expect="air",support="grug_decor:darkage_marble",support_dx=-1,support_dy=0,support_dz=0},
 				{x=-26,y=10,z=-51,node="grug_decor:city_painting_charter",param2=1,expect="air",support="grug_decor:darkage_marble",support_dx=1,support_dy=0,support_dz=0},
-				{x=-51,y=7,z=-50,node="grug_decor:city_painting_trade_map",param2=2,expect="air",support="grug_decor:darkage_marble",support_dx=0,support_dy=0,support_dz=-1},
-				{x=-49,y=7,z=-50,node="grug_decor:city_tapestry_accord",param2=1,expect="air",support="grug_decor:darkage_marble",support_dx=1,support_dy=0,support_dz=0},
+				{x=-51,y=7,z=-50,node="grug_decor:city_painting_trade_map",param2=2,expect="air",support="default:silver_sandstone_brick",support_dx=0,support_dy=0,support_dz=-1},
+				{x=-49,y=7,z=-50,node="grug_decor:city_tapestry_accord",param2=1,expect="air",support="default:silver_sandstone_brick",support_dx=1,support_dy=0,support_dz=0},
 			}},
 			{id="lethariel/core/gate_south", profile="gate", reason="quiet gate", placements={
 			}},
@@ -1602,7 +1602,7 @@ return {
 			}},
 			{id="lethariel/core/market", profile="market", placements={
 				{x=20,y=2,z=-41,node="grug_decor:city_fruit_basket",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=14,y=1,z=-46,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="grug_decor:darkage_serpentine",support_dx=0,support_dy=-1,support_dz=0},
+				{x=14,y=1,z=-46,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:silver_sandstone_block",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="lethariel/core/colonnade_west", profile="colonnade", reason="quiet colonnade", placements={
 			}},
@@ -1611,7 +1611,7 @@ return {
 			{id="lethariel/core/statue", profile="statue", reason="quiet statue", placements={
 			}},
 			{id="lethariel/core/fountain_court", profile="well", placements={
-				{x=-44,y=1,z=8,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="grug_decor:darkage_serpentine",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-44,y=1,z=8,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:silver_sandstone_block",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="lethariel/core/star_hall", profile="shrine", placements={
 				{x=-26,y=2,z=22,node="grug_decor:city_candle_group",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -1649,8 +1649,8 @@ return {
 		},
 		["homes_bough"] = {
 			{id="lethariel/district/homes_bough", profile="home", placements={
-				{x=-2,y=9,z=-3,node="grug_decor:city_painting_lethariel",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
-				{x=0,y=9,z=-3,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-2,y=9,z=-3,node="grug_decor:city_painting_lethariel",param2=0,expect="air",support="grug_decor:darkage_serpentine",support_dx=0,support_dy=0,support_dz=1},
+				{x=0,y=9,z=-3,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_serpentine",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["homes_brewhouse"] = {
@@ -1662,7 +1662,7 @@ return {
 		},
 		["homes_carver"] = {
 			{id="lethariel/district/homes_carver", profile="carver", placements={
-				{x=2,y=5,z=-9,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:darkage_marble",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["homes_court"] = {
@@ -1673,7 +1673,7 @@ return {
 			{id="lethariel/district/homes_feast_hall", profile="tavern", placements={
 				{x=-4,y=2,z=-5,node="grug_decor:city_plate_ceramic",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=4,y=2,z=-5,node="grug_decor:city_mug",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="grug_decor:darkage_marble",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["homes_gardens"] = {
@@ -1784,7 +1784,7 @@ return {
 				{x=-4,y=2,z=-5,node="grug_decor:city_cloth_rolls",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-8,y=1,z=-7,node="grug_decor:city_rug_blue",param2=0,expect="air",support="grug_nodes:dirt_with_silver_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=4,y=2,z=-5,node="grug_decor:city_yarn",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_marble",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["martial_armoury"] = {
@@ -1845,7 +1845,7 @@ return {
 			{id="lethariel/district/martial_store", profile="leather", placements={
 				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
 				{x=-3,y=1,z=-10,node="grug_decor:city_rug_blue",param2=0,expect="air",support="grug_nodes:dirt_with_silver_litter",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_serpentine",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["martial_tower"] = {
@@ -1863,7 +1863,7 @@ return {
 				{x=-4,y=2,z=-5,node="grug_decor:city_material_gems",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-5,y=1,z=-11,node="grug_decor:city_rug_blue",param2=0,expect="air",support="grug_nodes:dirt_with_silver_litter",support_dx=0,support_dy=-1,support_dz=0},
 				{x=4,y=2,z=-5,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_sconce_iron",param2=0,expect="air",support="grug_trees:silverwood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_sconce_iron",param2=0,expect="air",support="grug_decor:darkage_marble",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["mere_mourning"] = {
@@ -1907,10 +1907,10 @@ return {
 	["nhal_veyr"] = {
 		["core"] = {
 			{id="nhal_veyr/core/mausoleum", profile="royal", placements={
-				{x=-3,y=2,z=10,node="grug_decor:city_painting_nhal_veyr",param2=3,expect="air",support="default:obsidianbrick",support_dx=-1,support_dy=0,support_dz=0},
-				{x=3,y=2,z=10,node="grug_decor:city_painting_charter",param2=1,expect="air",support="default:obsidianbrick",support_dx=1,support_dy=0,support_dz=0},
-				{x=-13,y=10,z=10,node="grug_decor:city_painting_trade_map",param2=3,expect="air",support="default:obsidianbrick",support_dx=-1,support_dy=0,support_dz=0},
-				{x=-7,y=10,z=10,node="grug_decor:city_tapestry_throng",param2=1,expect="air",support="default:obsidianbrick",support_dx=1,support_dy=0,support_dz=0},
+				{x=-3,y=2,z=10,node="grug_decor:city_painting_nhal_veyr",param2=3,expect="air",support="default:mossycobble",support_dx=-1,support_dy=0,support_dz=0},
+				{x=3,y=2,z=10,node="grug_decor:city_painting_charter",param2=1,expect="air",support="default:mossycobble",support_dx=1,support_dy=0,support_dz=0},
+				{x=-13,y=10,z=10,node="grug_decor:city_painting_trade_map",param2=3,expect="air",support="grug_decor:darkage_basalt_block",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-7,y=10,z=10,node="grug_decor:city_tapestry_throng",param2=1,expect="air",support="grug_decor:darkage_basalt_block",support_dx=1,support_dy=0,support_dz=0},
 			}},
 			{id="nhal_veyr/core/gate_south", profile="gate", reason="quiet gate", placements={
 			}},
@@ -1922,7 +1922,7 @@ return {
 			}},
 			{id="nhal_veyr/core/market", profile="market", placements={
 				{x=-34,y=2,z=-23,node="grug_decor:city_fruit_basket",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-40,y=1,z=-28,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:obsidianbrick",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-40,y=1,z=-28,node="grug_decor:city_crate_vegetables",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="nhal_veyr/core/colonnade_west", profile="colonnade", reason="quiet colonnade", placements={
 			}},
@@ -1931,7 +1931,7 @@ return {
 			{id="nhal_veyr/core/statue", profile="statue", reason="quiet statue", placements={
 			}},
 			{id="nhal_veyr/core/cistern_court", profile="well", placements={
-				{x=-45,y=1,z=9,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:obsidianbrick",support_dx=0,support_dy=-1,support_dz=0},
+				{x=-45,y=1,z=9,node="grug_decor:city_cottages_bench",param2=0,expect="air",support="default:mossycobble",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="nhal_veyr/core/vigil_hall", profile="shrine", placements={
 				{x=-39,y=2,z=38,node="grug_decor:city_candle_group",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -1942,16 +1942,16 @@ return {
 			}},
 			{id="nhal_veyr/core/charnel_yard", profile="leather", placements={
 				{x=37,y=2,z=31,node="grug_decor:city_leather_bundle",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=33,y=5,z=28,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_trees:gravewood_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=33,y=5,z=28,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 			{id="nhal_veyr/core/bonesmith_guild", profile="smith", placements={
-				{x=33,y=2,z=-31,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
+				{x=33,y=2,z=-31,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:darkage_basalt_block",support_dx=0,support_dy=0,support_dz=1},
 				{x=31,y=2,z=-43,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="nhal_veyr/core/market_house", profile="home", placements={
 				{x=-48,y=2,z=-16,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-48,y=2,z=-15,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-45,y=3,z=-19,node="grug_decor:city_painting_nhal_veyr",param2=1,expect="air",support="grug_trees:gravewood_wood",support_dx=1,support_dy=0,support_dz=0},
+				{x=-45,y=3,z=-19,node="grug_decor:city_painting_nhal_veyr",param2=1,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=1,support_dy=0,support_dz=0},
 			}},
 			{id="nhal_veyr/core/south_house", profile="home", placements={
 				{x=-37,y=2,z=-38,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
@@ -1988,7 +1988,7 @@ return {
 			{id="nhal_veyr/district/homes_corner_house", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-6,node="grug_decor:city_painting_nhal_veyr",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-6,node="grug_decor:city_painting_nhal_veyr",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 				{x=4,y=8,z=-5,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
@@ -2008,8 +2008,8 @@ return {
 			{id="nhal_veyr/district/homes_gate_house", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-5,node="grug_decor:city_painting_nhal_veyr",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
-				{x=0,y=5,z=-5,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-5,node="grug_decor:city_painting_nhal_veyr",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
+				{x=0,y=5,z=-5,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_basalt_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["homes_green"] = {
@@ -2020,7 +2020,7 @@ return {
 			{id="nhal_veyr/district/homes_lane_house", profile="tavern", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_ceramic",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_mug",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-5,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-5,node="grug_decor:city_painting_tavern",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["homes_mourners_hall"] = {
@@ -2033,8 +2033,8 @@ return {
 			{id="nhal_veyr/district/homes_terrace_house", profile="home", placements={
 				{x=0,y=2,z=0,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=1,y=2,z=0,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=2,z=-5,node="grug_decor:city_painting_nhal_veyr",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
-				{x=4,y=3,z=-5,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=2,z=-5,node="grug_decor:city_painting_nhal_veyr",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
+				{x=4,y=3,z=-5,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["homes_watch"] = {
@@ -2054,7 +2054,7 @@ return {
 		},
 		["market_bonesmith"] = {
 			{id="nhal_veyr/district/market_bonesmith", profile="smith", placements={
-				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="grug_trees:gravewood_wood",support_dx=1,support_dy=0,support_dz=0},
+				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=1,support_dy=0,support_dz=0},
 				{x=6,y=2,z=-9,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-9,y=1,z=-10,node="grug_decor:city_rug_red",param2=0,expect="air",support="grug_nodes:blight_dirt",support_dx=0,support_dy=-1,support_dz=0},
 				{x=7,y=2,z=-2,node="grug_decor:city_sconce_iron",param2=3,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=-1,support_dy=0,support_dz=0},
@@ -2072,9 +2072,9 @@ return {
 		["market_charnel"] = {
 			{id="nhal_veyr/district/market_charnel", profile="leather", placements={
 				{x=5,y=2,z=-9,node="grug_decor:city_leather_bundle",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-4,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 				{x=-8,y=1,z=-10,node="grug_decor:city_rug_red",param2=0,expect="air",support="grug_nodes:blight_dirt",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-3,y=5,z=-8,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["market_cistern"] = {
@@ -2098,7 +2098,7 @@ return {
 			{id="nhal_veyr/district/market_physic", profile="alchemy", placements={
 				{x=6,y=2,z=-10,node="grug_decor:city_alchemy_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=7,y=2,z=-10,node="grug_decor:city_book_open",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_herb_bundle",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_herb_bundle",param2=0,expect="air",support="grug_decor:darkage_basalt_block",support_dx=0,support_dy=0,support_dz=1},
 				{x=-9,y=1,z=-11,node="grug_decor:city_rug_red",param2=0,expect="air",support="grug_nodes:blight_dirt",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-6,y=9,z=-7,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
@@ -2108,7 +2108,7 @@ return {
 				{x=6,y=2,z=-10,node="grug_decor:city_cloth_rolls",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-9,y=1,z=-11,node="grug_decor:city_rug_red",param2=0,expect="air",support="grug_nodes:blight_dirt",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-4,y=2,z=-5,node="grug_decor:city_yarn",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
+				{x=2,y=5,z=-9,node="grug_decor:city_wall_shelf_filled",param2=0,expect="air",support="grug_decor:darkage_basalt_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["market_watch"] = {
@@ -2129,7 +2129,7 @@ return {
 		},
 		["vigil_candle_works"] = {
 			{id="nhal_veyr/district/vigil_candle_works", profile="carver", placements={
-				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="grug_trees:gravewood_wood",support_dx=1,support_dy=0,support_dz=0},
+				{x=5,y=7,z=-4,node="grug_decor:city_tool_board",param2=1,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=1,support_dy=0,support_dz=0},
 				{x=-9,y=1,z=-10,node="grug_decor:city_rug_red",param2=0,expect="air",support="grug_nodes:blight_dirt",support_dx=0,support_dy=-1,support_dz=0},
 				{x=7,y=2,z=-2,node="grug_decor:city_wall_shelf_filled",param2=3,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=-1,support_dy=0,support_dz=0},
 			}},
@@ -2187,7 +2187,7 @@ return {
 			{id="nhal_veyr/district/watch_armoury", profile="armoury", placements={
 				{x=-10,y=1,z=-10,node="grug_decor:city_display_armor",param2=0,expect="air",support="grug_nodes:blight_dirt",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-9,y=1,z=-10,node="grug_decor:city_display_weapon",param2=0,expect="air",support="grug_nodes:blight_dirt",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-6,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-6,y=2,z=-8,node="grug_decor:city_tool_board",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
 		},
 		["watch_barracks"] = {
@@ -2208,7 +2208,7 @@ return {
 		},
 		["watch_cart_shed"] = {
 			{id="nhal_veyr/district/watch_cart_shed", profile="yard", placements={
-				{x=-5,y=5,z=-3,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_trees:gravewood_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=-5,y=5,z=-3,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 		},
 		["watch_close"] = {
@@ -2451,18 +2451,18 @@ return {
 			{id="stillgrave/building/crypt_chapel", profile="shrine", reason="no safe approved mount", placements={
 			}},
 			{id="stillgrave/building/bone_works", profile="smith", placements={
-				{x=31,y=2,z=-5,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_trees:gravewood_wood",support_dx=-1,support_dy=0,support_dz=0},
+				{x=31,y=2,z=-5,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=-1,support_dy=0,support_dz=0},
 				{x=34,y=2,z=0,node="grug_decor:city_material_metal",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 			}},
 			{id="stillgrave/building/keepers_house", profile="home", placements={
 				{x=-30,y=2,z=44,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-29,y=2,z=44,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-33,y=2,z=39,node="grug_decor:city_painting_marsh",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-33,y=2,z=39,node="grug_decor:city_painting_marsh",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="stillgrave/building/warden_house", profile="home", placements={
 				{x=-13,y=2,z=44,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-12,y=2,z=44,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-17,y=2,z=39,node="grug_decor:city_painting_marsh",param2=0,expect="air",support="grug_trees:gravewood_wood",support_dx=0,support_dy=0,support_dz=1},
+				{x=-17,y=2,z=39,node="grug_decor:city_painting_marsh",param2=0,expect="air",support="grug_decor:castle_dungeon_stone",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="stillgrave/building/hollow_ruin", profile="ruin", reason="quiet ruin", placements={
 			}},
@@ -2477,11 +2477,11 @@ return {
 		["blueprint"] = {
 			{id="sunscar/building/warlord_hall", profile="council", placements={
 				{x=-3,y=2,z=28,node="grug_decor:city_writing_set",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-1,y=2,z=21,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
+				{x=-1,y=2,z=21,node="grug_decor:city_painting_trade_map",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="sunscar/building/armoury", profile="armoury", placements={
-				{x=31,y=7,z=-6,node="grug_decor:city_display_armor",param2=0,expect="air",support="default:desert_stonebrick",support_dx=0,support_dy=-1,support_dz=0},
-				{x=32,y=7,z=-6,node="grug_decor:city_display_weapon",param2=0,expect="air",support="default:desert_stonebrick",support_dx=0,support_dy=-1,support_dz=0},
+				{x=31,y=7,z=-6,node="grug_decor:city_display_armor",param2=0,expect="air",support="default:desert_sandstone",support_dx=0,support_dy=-1,support_dz=0},
+				{x=32,y=7,z=-6,node="grug_decor:city_display_weapon",param2=0,expect="air",support="default:desert_sandstone",support_dx=0,support_dy=-1,support_dz=0},
 				{x=31,y=2,z=-6,node="grug_decor:city_tool_board",param2=3,expect="air",support="grug_decor:darkage_adobe",support_dx=-1,support_dy=0,support_dz=0},
 			}},
 			{id="sunscar/building/beast_pen", profile="stable", placements={
@@ -2490,7 +2490,7 @@ return {
 			{id="sunscar/building/chief_lodge", profile="home", placements={
 				{x=-32,y=2,z=20,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
 				{x=-31,y=2,z=20,node="grug_decor:city_book_stack",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},
-				{x=-33,y=2,z=15,node="grug_decor:city_painting_savanna",param2=0,expect="air",support="grug_decor:darkage_ors_block",support_dx=0,support_dy=0,support_dz=1},
+				{x=-33,y=2,z=15,node="grug_decor:city_painting_savanna",param2=0,expect="air",support="grug_decor:darkage_adobe",support_dx=0,support_dy=0,support_dz=1},
 			}},
 			{id="sunscar/building/spear_lodge", profile="home", placements={
 				{x=-30,y=2,z=-30,node="grug_decor:city_plate_wood",param2=0,expect="air",support="grug_decor:xdecor_table",support_dx=0,support_dy=-1,support_dz=0},

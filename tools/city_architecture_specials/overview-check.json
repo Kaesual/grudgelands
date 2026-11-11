@@ -1,0 +1,44 @@
+{
+  "page_sha256": "b14534483b090a7b9322d3c2ce92304f33d8d319c176344cfabbfd4fbb7a422c",
+  "checks": [
+    "All 154 cards present",
+    "Unique card ids",
+    "All actual images load",
+    "All cards link to matching context",
+    "Completed group is the initial acceptance view",
+    "Status group done",
+    "Status group pending",
+    "Status group keep",
+    "Culture filter human",
+    "Culture filter dwarf",
+    "Culture filter elf",
+    "Culture filter orc",
+    "Culture filter troll",
+    "Culture filter undead",
+    "Search finds six guilds",
+    "138 completed scenes include remaining special buildings",
+    "Treehouse filter finds both variants",
+    "Empty state is visible",
+    "Reset restores all cards",
+    "Mobile no overflow",
+    "No browser JavaScript exceptions"
+  ],
+  "captures": [
+    {
+      "file": "captures/overview.png",
+      "sha256": "ccfd7c082d724aeb8c77f84644dd3c9270b4abeb25943f3b0c8fb9352f593a89",
+      "page": "overview"
+    },
+    {
+      "file": "captures/overview-guilds.png",
+      "sha256": "7aba0a62eb632056f40a19fe99537297f78583ae8f40d2a17f4f9c448c7f0c75",
+      "page": "overview"
+    },
+    {
+      "file": "captures/overview-mobile.png",
+      "sha256": "cd4ffa1be137055c7712145b91150cbca12f7997c03578ef0d2101f2a7912fdc",
+      "page": "overview"
+    }
+  ],
+  "errors": []
+}

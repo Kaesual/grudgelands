@@ -11,7 +11,6 @@ races orc
 legend
 A role beam
 B role floor
-C role foundation
 D role light_wall o=wallmounted:3
 E role path
 F role post
@@ -26,8 +25,11 @@ O role wall
 P role wall_accent
 Q role window
 R role window o=facedir:3
-S role window_frame
 T role workbench
+C role facade_base
+M role facade_frame
+S role facade_infill
+U role facade_roof_ridge
 end
 
 layer 0
@@ -46,73 +48,73 @@ layer 0
 |EEEEEEEEEEEEEEE|
 layer 1
 |...............|
-|.FSPPSSPPSSPPS.|
-|.SNN.......NN..|
+|.CCPPCCPPCCPPC.|
+|.CNN.......NN..|
 |.P.............|
 |.P.............|
-|.S.....J.....F.|
-|.S....LLL......|
+|.C.....J.....F.|
+|.C....LLL......|
 |.P.....I.......|
 |.P.............|
-|.S...........F.|
+|.C...........F.|
 |.PKK...T.......|
-|.F...F...F...F.|
+|.C...F...F...F.|
 |...............|
 layer 2
 |...............|
-|.FSQQSSQQSSQQS.|
-|.SNN.......NN..|
+|.MMQQMMQQMSQQM.|
+|.MNN.......NN..|
 |.R.............|
 |.R.............|
 |.S...........F.|
-|.S.............|
+|.M.............|
 |.R.............|
 |.R.............|
 |.S...........F.|
 |.O.............|
-|.F...F...F...F.|
+|.M...F...F...F.|
 |...............|
 layer 3
 |...............|
-|.FSQQSSQQSSQQS.|
-|.SHH.......HH..|
+|.MMQQMMQQMSQQM.|
+|.MHH.......HH..|
 |.R.............|
 |.R.............|
 |.S...........F.|
-|.SD............|
+|.MD............|
 |.R.............|
 |.R.............|
 |.SD..........F.|
 |.O.............|
-|.F...F...F...F.|
+|.M...F...F...F.|
 |...............|
 layer 4
 |...............|
-|.FSOOSSOOSSOOS.|
-|.S...........A.|
-|.O...........A.|
-|.O...........A.|
-|.S...........A.|
-|.S...........A.|
-|.O...........A.|
-|.O...........A.|
-|.S...........A.|
-|.O...........A.|
-|.FAAAAAAAAAAAF.|
+|.MMCCMMCCMCCCM.|
+|.M...........A.|
+|.C...........A.|
+|.C...........A.|
+|.C...........A.|
+|.M...........A.|
+|.C...........A.|
+|.C...........A.|
+|.C...........A.|
+|.C...........A.|
+|.MAAAAAAAAAAAF.|
 |...............|
 layer 5
 |GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
+|GUUUUUUUUUUUUUG|
 |GGGGGGGGGGGGGGG|
 layer 6
 |...............|

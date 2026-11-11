@@ -23,10 +23,6 @@ K role light_wall o=wallmounted:2
 L role light_wall o=wallmounted:3
 M role light_wall o=wallmounted:4
 N role path
-O role post
-P role roof_slab
-Q role roof_stair
-R role roof_stair o=facedir:2
 S role rug
 T role rug_accent
 U role seat
@@ -37,11 +33,14 @@ Y role shelf o=facedir:3
 Z role shelf_vessels o=facedir:1
 a role storage o=facedir:3
 b node grug_decor:xdecor_table
-d role wall
-e role wall_accent
 f role window
 g role window o=facedir:3
-h role window_frame
+O role facade_roof_stair o=facedir:0
+P role facade_roof_stair o=facedir:2
+Q role facade_roof_slab o=facedir:0
+R role facade_base
+c role facade_infill
+d role facade_gable
 end
 
 layer 0
@@ -60,59 +59,59 @@ layer 0
 layer 1
 |           |
 |...........|
-|.OeEeeheeh.|
-|.hA.....IC.|
-|.eB....W.e.|
-|.ea..V...e.|
-|.hY..bb..h.|
-|.h...U...h.|
-|.e......Xe.|
-|.e......Ze.|
-|.hheehheeh.|
+|.RRERRRRRR.|
+|.RA.....IC.|
+|.RB....W.R.|
+|.Ra..V...R.|
+|.RY..bb..R.|
+|.R...U...R.|
+|.R......XR.|
+|.R......ZR.|
+|.RRRRRRRRR.|
 |...........|
 layer 2
 |           |
 |...........|
-|.OdFddhffh.|
-|.h......JC.|
+|.RcFcccffR.|
+|.c......JC.|
 |.g.......g.|
 |.g.......g.|
-|.hY......h.|
-|.h.......h.|
+|.cY......c.|
+|.c.......c.|
 |.g......Zg.|
 |.g.......g.|
-|.hhffhhffh.|
+|.RcffccffR.|
 |...........|
 layer 3
 |           |
 |.M...M.....|
-|.Oddddhffh.|
-|.h......CC.|
+|.RcccccffR.|
+|.c......CC.|
 |.g.......g.|
 |.g.......g.|
-|.hL.....Kh.|
-|.h.......h.|
+|.cL.....Kc.|
+|.c.......c.|
 |.g.......g.|
 |.g.......g.|
-|.hhffhhffh.|
+|.RcffccffR.|
 |...........|
 layer 4
 |           |
-|QQQQQQQQQQQ|
-|.Oddddhddh.|
-|.h......CC.|
+|OOOOOOOOOOO|
+|.ddddddddd.|
+|.d......CC.|
 |.d.......d.|
 |.d.......d.|
-|.h.......h.|
-|.h.......h.|
 |.d.......d.|
 |.d.......d.|
-|.hhddhhddh.|
-|RRRRRRRRRRR|
+|.d.......d.|
+|.d.......d.|
+|.ddddddddd.|
+|PPPPPPPPPPP|
 layer 5
 |           |
 |...........|
-|QQQQQQQQQQQ|
+|OOOOOOOOOOO|
 |.d.......C.|
 |.d.......d.|
 |.d.......d.|
@@ -120,19 +119,19 @@ layer 5
 |.d.......d.|
 |.d.......d.|
 |.d.......d.|
-|RRRRRRRRRRR|
+|PPPPPPPPPPP|
 |...........|
 layer 6
 |           |
 |...........|
 |...........|
-|QQQQQQQQQCQ|
+|OOOOOOOOOCO|
 |.d.......d.|
 |.d.......d.|
 |.d.......d.|
 |.d.......d.|
 |.d.......d.|
-|RRRRRRRRRRR|
+|PPPPPPPPPPP|
 |...........|
 |...........|
 layer 7
@@ -140,11 +139,11 @@ layer 7
 |...........|
 |...........|
 |.........C.|
-|QQQQQQQQQQQ|
+|OOOOOOOOOOO|
 |.d.......d.|
 |.d.......d.|
 |.d.......d.|
-|RRRRRRRRRRR|
+|PPPPPPPPPPP|
 |...........|
 |...........|
 |...........|
@@ -154,9 +153,9 @@ layer 8
 |...........|
 |.........C.|
 |...........|
-|PPPPPPPPPPP|
-|PPPPPPPPPPP|
-|PPPPPPPPPPP|
+|QQQQQQQQQQQ|
+|QQQQQQQQQQQ|
+|QQQQQQQQQQQ|
 |...........|
 |...........|
 |...........|

@@ -261,6 +261,17 @@ local SHAPED = {
 	["grug_decor:darkage_ors_brick_stair"] = true,
 	["grug_decor:darkage_ors_brick_slab"] = true,
 }
+-- Round 75.5 reed roofs use the standard stair/slab geometry.
+for _, shape in ipairs({"stair", "stair_inner", "stair_outer", "slab"}) do
+	SHAPED["grug_decor:cottages_reet_" .. shape] = true
+	SHAPED["grug_decor:darkage_slate_" .. shape] = true
+end
+-- City-only palette copies retain the castle pillar forms and facedir.
+for _, material in ipairs({"marble", "ors", "basalt", "junglewood"}) do
+	for _, shape in ipairs({"bottom", "middle", "top"}) do
+		PARAM2_KIND["grug_decor:city_pillar_" .. material .. "_" .. shape] = M.FACEDIR
+	end
+end
 for name in pairs(SHAPED) do PARAM2_KIND[name] = M.FACEDIR end
 
 -- The tree shape nodes (Round 47, mods/ITEMS/grug_trees/shapes.lua): the
@@ -385,6 +396,10 @@ end
 -- only nodes that read as a wall. A nodebox, a mesh, a plant or a pane is
 -- not one of them, and neither is a full cube that light passes through.
 local FULL_SOLID = {
+	["default:desert_sandstone"] = true,
+	["grug_decor:darkage_stone_brick"] = true,
+	["grug_decor:darkage_basalt_block"] = true,
+	["grug_nodes:clay_band_umber"] = true,
 	["default:furnace"] = true,
 	["default:acacia_tree"] = true,
 	["default:acacia_wood"] = true,

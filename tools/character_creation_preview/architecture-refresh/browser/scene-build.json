@@ -1,0 +1,62 @@
+{
+  "dwarf": {
+    "templates": {
+      "hearthpine_forge_hall": "05061f0ac2d8cfa4268999c03294b4b091e587da1f4139c91f71cb22c12036df",
+      "hearthpine.layout": "a7f5c63ef9134b471f9acb2f18e3bf710bb846a01dd47b705ce350825a8a3ef4",
+      "hearthpine_east_home": "63e4bbab23816d1dda38b6751229fcee66fafbd4d56a58b987e4826a5535bdc2"
+    },
+    "cells": 51727,
+    "recipe": "3dd43788c78d3e4baef20be4103c6fb1a4d638f032d5709f2e93c4dea068bc3f",
+    "render_input": "e29fd5c0e86bbbddbbf7e0da04a87ced5da7d77bb4924675685ad066dff2d560"
+  },
+  "elf": {
+    "templates": {
+      "silverleaf_moon_shrine": "cac719199ce51c4a97bf231530a5a000df0aa428cbda2e454fe1f665ec67e87e",
+      "silverleaf.layout": "8b9601faae32807f5f1768a87f8dc121627c68846f6317646bf6d66015a23e24",
+      "silverleaf_glade_house_west": "c46f18dbb406ac701dea4126e7bb05870873c13d84ea5ed77dbca00529e4936d"
+    },
+    "cells": 52867,
+    "recipe": "37c6eeb58cd9cfbc361d73eaf014ed7262082727020be5c103329e1ed1b0abce",
+    "render_input": "dc398746b46a7ab21e58401ba10f3e4ec51e7e6878c07dfceb80a831fb4f1e5a"
+  },
+  "human": {
+    "templates": {
+      "dawnmere_orchard_cottage": "ab255839432c48ef566b61573668a47bbde0da88db5ff4dbf542592c3e3ccd79",
+      "dawnmere.layout": "e7f734b89fd7b87d4cf39a4540ced0d116c84c22c14ec08a2e2ac42ee3c98d19",
+      "dawnmere_smithy": "36f1498582319c79a54aebb9ee05aacbf659cf5e4a701aa6c27663916409ae64"
+    },
+    "cells": 52235,
+    "recipe": "fd84879518ac8fad6c4c5d9b70a4697a969a70e39f9459355e97298ef757ed35",
+    "render_input": "a8b2fb874eb6aeba53975e54e30ba29b23c71ce6b8ebba13a7cd57c28725878b"
+  },
+  "orc": {
+    "templates": {
+      "sunscar_spear_lodge": "93257e94b00f1029dabfddb54b7ba19a21a4451630e10dcc6b47cca6dd322594",
+      "sunscar.layout": "fef863535a20e991a07f91a8df4c7a8c42a1c4e58e32b54cde8fc26488164824",
+      "sunscar_tusk_lodge": "740f0dfc4bb423851cdedafc310647e0bfb11762d5084bab5c1103315cca859f"
+    },
+    "cells": 50739,
+    "recipe": "aca91d07247447edb771ac325f19206a8cc1d779287ea332a233194751113e64",
+    "render_input": "1e0588a25643325107236dca3c4fc7bb768c8281a814464e1efafa4a85c3589a"
+  },
+  "troll": {
+    "templates": {
+      "kapok_river_stilt": "e7942ffbd46d0d9c925c6c79341d236b76d12aa7187e46b6a9fcc515cbec639b",
+      "kapok.layout": "a84922d5268f8eb24920081d21c8f000be25f5c34b36985292fded2417153409",
+      "kapok_spirit_lodge": "739d5c2220d6aa649666e70d1447105f7966e12b69d87726c9159fce3d0368e4"
+    },
+    "cells": 53250,
+    "recipe": "049b30f8fcfb1382ec2dcaa702e9da2b98492ce42c1de4cd98afd9e8fa8d9822",
+    "render_input": "53ae55263fbdf9200c6175b240788f517d0e4ab7cce982a4b0c6f6dc59045ef4"
+  },
+  "undead": {
+    "templates": {
+      "stillgrave_crypt_chapel": "eb6e9045bd215f0ff4816298c9be6582699c51c7df31f57828951edd6c4b2b72",
+      "stillgrave.layout": "0eb0f11f4d904ca2fc2482d9bfa7742b97a8e00cbfad28c19ced210a7456c5d1",
+      "stillgrave_sunken_ruin": "a9eef7e210fe77ccc68a0b0512bf621c284d43cb7825e30c5b66874aa02958ae"
+    },
+    "cells": 50451,
+    "recipe": "79124d61ebd5456f9fb6d529378a0759aff0dcd581d4d05157a2f4462bfbf12f",
+    "render_input": "5231982eb89b2ce96c0dda03ded360e4d60726aaf002b902cce0a58d0c388b64"
+  }
+}

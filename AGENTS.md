@@ -12,7 +12,17 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.75.2, Round 75.2 (solid decoration surfaces, fuller houses
+**Current state:** 0.75.5 is merged locally into main as one squash commit,
+with detailed history tagged `round-75.5` (coherent city architecture, all
+approved special buildings, refreshed character backdrops and small opening
+crest; **map reset**, no migration). Browser comparisons accepted by the user.
+Independent reviews PASS; final main suite 345/345 and isolated server boot
+PASS. Synced to local Luanti and verified (4,958 game files); not pushed.
+Native desktop/web GUI remains open.
+Gates and checklist: [Round 75.5 plan](docs/planning/round75.5-plan.md);
+[delivery status](docs/STATUS.md).
+
+**Previous recorded state:** 0.75.2, Round 75.2 (solid decoration surfaces, fuller houses
 and profession-trainer rooms, non-colliding royal wall art; **map reset**, no
 step; merged into main, tag `round-75.2`, synced locally, not pushed; GUI open:
 [plan](docs/planning/round75.2-plan.md)), on 0.75.1 (tidier workshops and open human

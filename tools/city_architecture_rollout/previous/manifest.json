@@ -1,0 +1,10 @@
+{
+  "source_commit": "a4579cf1",
+  "source_directory": "tools/city_architecture_rollout/captures",
+  "sha256": {
+    "dawnmere__dawnmere_harvest_inn.png": "0895fef60dc89e8113e166575c007214b522cbbcc5fe48f5815170ac8eaa42bb",
+    "dawnmere__dawnmere_smithy.png": "93348ca1f013c46d602804a8b447a84f4cd50d4ca8f2720d57d02f976bfb5bfb",
+    "dur_brannoc__dur_brannoc_lane_house.png": "6885636d2809b523eccc20b13c10a7d4112aa49a49a7a77da59c9071ca7f65ef",
+    "kapok__kapok_elder_stilt.png": "c3aecde47ed3f633654f61b02350b4bc6e6f1a48391d7410609335cf12cdbd3f"
+  }
+}
