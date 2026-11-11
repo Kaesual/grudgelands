@@ -462,7 +462,16 @@ check(respawn() and held() and #trail == 1 and same(player.pos, beside(highcourt
 finish()
 check(#trail == 1, "I respawn: no second teleport")
 ended("I respawn", beside(highcourt, -1, 0))
--- The socket's block not in memory yet: the authored side to wait on, the free
+-- The socket's blocks not in memory but on disk: core.load_area brings them in
+-- and the respawn still waits on the free side from the first teleport.
+inn_player({{1, 0}})
+for dx = -1, 1 do for dy = -1, 1 do for dz = -1, 1 do
+ unloaded[block_of(vector.offset(highcourt.pos, dx, dy, dz))] = true
+end end end
+check(respawn() and #trail == 1 and same(player.pos, beside(highcourt, -1, 0)),
+ "I unloaded socket: load_area, waits on -x")
+finish(); ended("I unloaded socket", beside(highcourt, -1, 0))
+-- The socket's block not generated yet: the authored side to wait on, the free
 -- side on arrival.
 inn_player({{1, 0}})
 -- (the socket stands on a mapblock edge: every block of its 3 x 3 x 3 box)
