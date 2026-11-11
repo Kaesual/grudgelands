@@ -184,6 +184,8 @@ local before_home = {}
 for kind, list in pairs(callbacks) do before_home[kind] = #list end
 core.colorize = function(_, text) return text end
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+-- Round 76.2: grug_home registers /home (home_command.lua).
+core.register_chatcommand = core.register_chatcommand or function() end
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 check(#claim_listeners == 1, "D grug_home registers one claim-change listener")

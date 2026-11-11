@@ -2,6 +2,10 @@
 
 Updated 2026-11-11. This is the delivery pointer, not another game specification.
 
+**0.76.2 / Round 76.2** adds `/home` (the user, 2026-11-11): the chat command starts the same
+Return home as the button, with the same rules and cooldown (`grug_home/home_command.lua`);
+compatible, no step; checks in the [plan's 0.76.2 section](planning/round76-plan.md#0762-follow-up).
+
 **0.76.1 / Round 76.1** puts the Online Players **Party** button into each online row of
 the clan card (the user's ruling 2026-11-11), shown when `grug_parties.can_invite` allows it;
 compatible, no step; GUI checklist in the [plan's 0.76.1 section](planning/round76-plan.md#0761-follow-up).

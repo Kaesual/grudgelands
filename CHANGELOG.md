@@ -12,6 +12,15 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.76.2 — /home (2026-11-11)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **/home:** type `/home` to return home. It is the same trip as the
+  **Return home** button on the Character page and in the quickbar (E), with
+  the same rules: not in combat, not from an Expedition's lava, and the same
+  30-minute cooldown, shared with the button.
+
 ## 0.76.1 — a Party button in the clan list (2026-11-11)
 
 Compatible: no map reset, no new world, nothing for the host to do.

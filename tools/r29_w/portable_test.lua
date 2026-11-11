@@ -192,6 +192,8 @@ player = {race="human", hp=20, pos=vnew(0, 101, 0),
  get_pos=function(self) return self.pos end,
  set_pos=function(self, p) self.pos = vnew(p) end}
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+-- Round 76.2: grug_home registers /home (home_command.lua).
+core.register_chatcommand = core.register_chatcommand or function() end
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 

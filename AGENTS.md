@@ -12,7 +12,9 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.76.1, Round 76.1 (a Party button in each online row of the clan card;
+**Current state:** 0.76.2, Round 76.2 (`/home` triggers Return home, the same trip and
+30-minute cooldown as the button; compatible:
+[plan](docs/planning/round76-plan.md#0762-follow-up)), on 0.76.1, Round 76.1 (a Party button in each online row of the clan card;
 compatible: [plan](docs/planning/round76-plan.md#0761-follow-up)), on 0.76.0, Round 76 (clans: purely social same-faction groups of up to 100
 with Leader, Captain and Member, `/c` clan chat and `/p` party chat, the Social tab in four
 cards with one row style; compatible, no step; merged into main as one squash commit, tag

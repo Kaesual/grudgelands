@@ -406,3 +406,31 @@ Checks: lane fixtures `r76_social` (404), `r44_pp`, `r67_social`; independent re
 full run on the merged `round76.1` 347 passed, 0 failed. From now on a small follow-up like
 this one ends with the targeted fixture selection instead of the full run (user, 2026-11-11;
 [round workflow](../process/round-workflow.md) §3).
+
+## 0.76.2 follow-up
+
+**Ruling (the user, 2026-11-11):** typing `/home` starts the travel home: the same trip
+as the **Return home** button and the same cooldown, no new feature; some players find
+typing it easier than E and the button.
+
+Built by the coordinator on `round76.2`: `grug_home/home_command.lua` registers `/home`
+(no privilege) and calls `grug_home.return_home`, which keeps every rule and its own
+answers (alive, out of combat, the return guards such as an Expedition's lava, the 30-minute
+cooldown shared with the button). The command answers in one line where the button is not offered or
+`return_home` stays silent: character creation and its waiting point (the inventory and
+both buttons are suspended there; independent review, Medium, fixed), a trip already being
+prepared, dead.
+**Compatible:** nothing new is saved. Checks: the new fixture `r762_home`, the fixtures
+that load `grug_home/init.lua` or `travel.lua` (a `register_chatcommand` stub where their
+fake engine lacked one), independent review.
+
+GUI checks (desktop and web):
+
+1. `/home` with a home, out of combat and off cooldown: the same trip, sound and arrival
+   as the button; afterwards the button shows the cooldown.
+2. `/home` during the cooldown, in combat or in an Expedition's lava: the same refusal line
+   as the button, nothing else; the button after a refused `/home` is unchanged.
+3. `/home` right after the button (or twice in a row): "Travel is already being
+   prepared." or the cooldown line; never a second trip.
+4. `/home` typed during character creation (after closing the window with Esc) or while
+   held after a map reset: "You cannot return home yet.", no teleport, no cooldown.

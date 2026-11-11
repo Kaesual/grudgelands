@@ -98,6 +98,9 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.76.2** adds the chat command **/home**: the same Return home as the button on the
+Character page and the quickbar, with the same 30-minute cooldown. Compatible.
+
 **0.76.1** adds a **Party** button to each online row of the clan list, so clan mates
 can be invited to a party from there. Compatible.
 

@@ -199,6 +199,8 @@ end
 new_player()
 core.colorize = function(_, text) return text end
 local factions_joins = #callbacks.join
+-- Round 76.2: grug_home registers /home (home_command.lua).
+core.register_chatcommand = core.register_chatcommand or function() end
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 local home_joins = {unpack(callbacks.join, factions_joins + 1)}

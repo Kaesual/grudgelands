@@ -20,7 +20,11 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   and once when it becomes Ready (Round 30 ruling; it was on the Map tab
   before). The quickbar (E, Round 44, `inventory_equipment.md`) carries the
   same line and button with the same gates; it is sent once per opening and
-  closes on the click. The
+  closes on the click. The chat command `/home` (Round 76.2,
+  `home_command.lua`) starts the same return with the same gates and the
+  shared cooldown; it refuses character creation and its waiting point (where
+  the inventory and both buttons are suspended) and answers in one line where
+  `return_home` stays silent (a trip already being prepared, dead). The
   minimap's innkeeper markers (the own faction's six only, Round 31) show the
   locations and the current home; the map window shows only the home
   (Round 44); a claim home has its own marker (below).
