@@ -1,6 +1,16 @@
 # Project status
 
-Updated 2026-11-10. This is the delivery pointer, not another game specification.
+Updated 2026-11-11. This is the delivery pointer, not another game specification.
+
+**0.75.4 is on main, not pushed.** Player report from production (0.69.0): Return home
+to Lethariel failed every time ("Home arrival is unavailable"). An engine probe of all
+twelve innkeeper arrivals (seed 42, on 0.69.0 and on 0.75.3) found Lethariel's and
+Kezamba's authored side inside a two-high barrel stack of the longhouse template.
+`grug_home` now tries the socket's other sides (+x, −x, +z, −z) when the authored one
+is blocked, as the waystones do; a respawn waits on the chosen side. Compatible, no
+map reset. r69_home gains section I; the home,
+waystone and Expedition fixtures pass. GUI: Return home and a death with Lethariel
+as home.
 
 **0.75.3 is on main (squash, tag `round-75.3`), not pushed.** The user's request after
 a look at Highcourt: every capital's Expedition Registrar stands outside, a few nodes

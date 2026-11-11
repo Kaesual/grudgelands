@@ -92,6 +92,32 @@ local function safe_arrival(row)
  return vector.new(arrival)
 end
 
+-- An innkeeper home (a row with a socket) arrives on its authored side first,
+-- then on the first other free side of the same socket, as a waystone does
+-- (waypoints.lua): a town's dressing may block one side (Lethariel's and
+-- Kezamba's longhouse barrels stood on it, 0.75.4). Any other row keeps its
+-- one arrival.
+local SIDES = {{x=1,z=0},{x=-1,z=0},{x=0,z=1},{x=0,z=-1}}
+local function inn_arrival(row)
+ local arrival = safe_arrival(row)
+ if arrival or not row.socket then return arrival end
+ for _, side in ipairs(SIDES) do
+  local beside = vector.offset(row.pos, side.x, -0.49, side.z)
+  if vector.distance(beside, row.arrival) > 0.1 then
+   arrival = safe_arrival({arrival=beside})
+   if arrival then return arrival end
+  end
+ end
+end
+-- Where a respawn waits while an innkeeper's area emerges: the side
+-- inn_arrival picks when the socket's blocks are in memory (core.load_area
+-- loads, never generates), else the authored arrival.
+local function inn_wait(row)
+ if not row.socket then return row.arrival end
+ core.load_area(vector.offset(row.pos,-1,-1,-1), vector.offset(row.pos,1,1,1))
+ return inn_arrival(row) or row.arrival
+end
+
 -- A claim home arrives in the arrival cube above the Claim Stone. Lane A keeps
 -- the cube free; stale claim data must still never put a player into a solid
 -- node, so the arrival cell and the one above it are checked. The feet stand
@@ -234,12 +260,12 @@ local function request(player, respawn)
   if not inn then return unavailable(p) end
   notify(p, "Your Claim Stone's arrival is blocked. Returning to the " ..
    inn.label .. " Innkeeper instead.")
-  if respawn then teleport(p, inn.arrival) end
+  if respawn then teleport(p, inn_wait(inn)) end
   prepare(name, {pos=inn.pos, check=check,
    timeout=function(q) timed_out(q, unavailable) end,
    arrive=function(q, failed)
     local fallback = grug_home.innkeeper(q)
-    fallback = not failed and fallback and safe_arrival(fallback)
+    fallback = not failed and fallback and inn_arrival(fallback)
     if not fallback then return unavailable(q) end
     land(q, fallback)
    end})
@@ -251,12 +277,14 @@ local function request(player, respawn)
  -- map, core.load_area brings them in and claim_arrival judges the cube.
  local function go_home(p, target)
   if respawn then
-   local first = target.arrival
+   local first
    if target.claim then
     local cell = vector.round(target.arrival)
     core.load_area(cell, vector.offset(cell,0,1,0))
     first = claim_arrival(target)
     if not first then return go_innkeeper(p) end
+   else
+    first = inn_wait(target)
    end
    teleport(p, first)
   end
@@ -271,7 +299,7 @@ local function request(player, respawn)
     if respawn and current.id ~= target.id then return go_home(q, current) end
     if failed then return fallback(q) end
     if not current.claim then
-     local arrival = safe_arrival(current)
+     local arrival = inn_arrival(current)
      if not arrival then return unavailable(q) end
      return land(q, arrival)
     end

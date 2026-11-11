@@ -12,6 +12,14 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.75.4 — Return home to Lethariel and Kezamba (2026-11-11)
+
+Compatible, no map reset. **Return home** to the Lethariel or Kezamba innkeeper
+failed every time with "Home arrival is unavailable. Please try again.", and a
+death there woke the player in their starting town: a stack of barrels stood on
+the innkeeper's arrival spot. An innkeeper's arrival now uses the next free side
+of the innkeeper when its own side is blocked, as waystones already do.
+
 ## 0.75.3 — the Registrar at the great hall (2026-11-10)
 
 **Map reset** (joins 0.75.0's): the Expedition Registrar of every capital now

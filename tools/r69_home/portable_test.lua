@@ -18,6 +18,7 @@
 --      innkeeper's at the start pocket, no valid pocket releases the hold;
 --   O  a claim lost while dead, or between the request and the arrival;
 --   S  the session: death, leave and rejoin on every leg;
+--   I  an innkeeper's blocked authored side: the first free other side;
 --   H  no faction and creation stasis behave as before.
 -- Prints "R69 HOME PASS checks=<n>" or the failures.
 rawset(_G, "grug_sounds", {play = function() return false end, CLICK_STYLE = ""})
@@ -393,8 +394,15 @@ to_start("P innkeeper emerge failed", function() finish(core.EMERGE_ERRORED) end
 to_start("P innkeeper timeout", function()
  check(held(), "P innkeeper timeout: held"); timeout()
 end)
+-- Every side of the innkeeper blocked (0.75.4: one blocked side is not enough).
+local function block_inn(row, sides)
+ for _, s in ipairs(sides) do
+  cells[key(vnew(row.pos.x + s[1], row.pos.y + 1, row.pos.z + s[2]))] = "stone"
+ end
+end
+local ALL_SIDES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}
 to_start("P innkeeper unsafe", function()
- cells[key(vnew(highcourt.pos.x + 1, highcourt.pos.y + 1, highcourt.pos.z))] = "stone"
+ block_inn(highcourt, ALL_SIDES)
  finish()
 end)
 -- No valid pocket: the hold must not stay on.
@@ -409,6 +417,79 @@ local function nothing_left(label, spoil)
 end
 nothing_left("P no start", function() no_start = true end)
 nothing_left("P bad pocket", function() cells[key(vnew(1, 102, 0))] = "stone" end)
+
+-- ---------------------------------------------------------------------------
+-- I: the innkeeper's other sides (0.75.4). Lethariel's and Kezamba's authored
+-- side stood in a barrel stack: a blocked side moves the arrival to the first
+-- free other side of the same socket, in the order +x, -x, +z, -z.
+-- ---------------------------------------------------------------------------
+local function beside(row, dx, dz) return vnew(row.pos.x + dx, row.pos.y - 0.49, row.pos.z + dz) end
+check(same(highcourt.arrival, beside(highcourt, 1, 0)), "I the authored side is +x here")
+local function inn_player(blocked)
+ reset(); new_player({["grug_home:id"]="highcourt"})
+ block_inn(highcourt, blocked)
+ trail, chat = {}, {}
+end
+-- A return home: the next free side, one teleport, the cooldown started.
+inn_player({{1, 0}})
+check(home.return_home(player), "I return request"); finish()
+check(same(player.pos, beside(highcourt, -1, 0)) and #trail == 1, "I return lands on -x")
+check(home.remaining(player) > 0, "I return starts the cooldown")
+emerge, after = {}, {}
+inn_player({{1, 0}, {-1, 0}})
+check(home.return_home(player), "I return request 2"); finish()
+check(same(player.pos, beside(highcourt, 0, 1)), "I two sides blocked: +z")
+emerge, after = {}, {}
+-- Headroom counts: a free floor under a blocked head is a blocked side.
+inn_player({})
+cells[key(vnew(highcourt.pos.x + 1, highcourt.pos.y, highcourt.pos.z))] = "stone"
+check(home.return_home(player), "I return request 3"); finish()
+check(same(player.pos, beside(highcourt, -1, 0)), "I feet blocked: -x")
+emerge, after = {}, {}
+-- Every side blocked: the return stays where it was and says so.
+inn_player(ALL_SIDES)
+local before = vnew(player.pos)
+check(home.return_home(player), "I return request 4"); finish()
+check(same(player.pos, before) and #trail == 0, "I all sides blocked: not moved")
+check(last_chat() == "Home arrival is unavailable. Please try again.", "I all sides blocked message")
+check(home.remaining(player) == 0, "I all sides blocked: no cooldown")
+emerge, after = {}, {}
+-- A respawn waits on the free side from the first teleport on (the area is in
+-- memory) and is not moved again.
+inn_player({{1, 0}})
+check(respawn() and held() and #trail == 1 and same(player.pos, beside(highcourt, -1, 0)),
+ "I respawn waits on -x")
+finish()
+check(#trail == 1, "I respawn: no second teleport")
+ended("I respawn", beside(highcourt, -1, 0))
+-- The socket's block not in memory yet: the authored side to wait on, the free
+-- side on arrival.
+inn_player({{1, 0}})
+-- (the socket stands on a mapblock edge: every block of its 3 x 3 x 3 box)
+for dx = -1, 1 do for dy = -1, 1 do for dz = -1, 1 do
+ lost[block_of(vector.offset(highcourt.pos, dx, dy, dz))] = true
+end end end
+check(respawn() and same(player.pos, highcourt.arrival), "I unread socket: waits on the authored side")
+lost = {}
+finish()
+check(#trail == 2, "I unread socket: one move on arrival")
+ended("I unread socket", beside(highcourt, -1, 0))
+-- A blocked claim hands on to an innkeeper whose authored side is blocked.
+claim_player()
+cells[key(BLOCK_CELL)] = "stone"
+block_inn(highcourt, {{1, 0}})
+check(respawn() and #trail == 1 and same(player.pos, beside(highcourt, -1, 0)),
+ "I claim blocked: waits on the innkeeper's free side")
+finish(); ended("I claim to inn", beside(highcourt, -1, 0))
+claim_player()
+block_inn(highcourt, {{1, 0}})
+check(home.return_home(player), "I claim return request")
+cells[key(BLOCK_CELL)] = "stone"
+finish()
+check(last_chat():find("arrival is blocked", 1, true), "I claim return: blocked message")
+finish()
+check(same(player.pos, beside(highcourt, -1, 0)), "I claim return: the innkeeper's free side")
+emerge, after = {}, {}
 
 -- ---------------------------------------------------------------------------
 -- O: the claim goes

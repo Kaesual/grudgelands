@@ -43,6 +43,13 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   arrival validated, then released. A Claim Stone's cube is read before the
   teleport (its blocks are loaded, `core.load_area`), so nobody lands in a
   blocked cube.
+- **An innkeeper's arrival** (0.75.4) is its authored side of the socket first,
+  then the first other free side of the same socket (+x, −x, +z, −z), the rule a
+  waystone already follows. A town's dressing may block one side: Lethariel's and
+  Kezamba's longhouse barrel stacks stood on it, and every return there failed
+  ("Home arrival is unavailable"). A respawn reads the socket's blocks before its
+  teleport and waits on the side it will land on; only with all four sides blocked
+  does the arrival fail.
 - A death inside a running Expedition respawns at its start waystone, held like any
   respawn (`grug_home.register_respawn_home`, filled by `grug_expeditions/guard.lua`).
   A run that ended meanwhile hands the respawn on. In a box whose run is gone the same
