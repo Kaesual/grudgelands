@@ -345,7 +345,12 @@ squash commit (0.78.0) after the round-end full run and the user's go (ruling 15
 lane had an independent review; EXPED, BOSS and EMOTE also a fix round, EXPED and BOSS
 with a delta review.
 
-Round-end full run: (coordinator fills in)
+Round-end full run (coordinator, `round78` at `6bfde270`): 349 passed, 5 failed (`r30_p2`,
+`r37_mb`, `r39_wm`, `r45_art`, `r75_art`). Fixed by the lanes: four stale fixture stubs or
+pins (`r30_p2`, `r37_mb` BOSS; `r39_wm` EMOTE; `r75_art` EXPED) and one code fix
+(`expedition_variants.lua` passed `assert`'s second value to `table.copy`, EXPED). After the
+fixes the five plus every Round 78 fixture and `r44_pp`: 12/12 PASS. `check_fresh_server.py`,
+`check_upgrade.py` (0.78.0 against `origin/main`) and one smoke boot of `round78`: PASS.
 
 **0.78.0 is compatible:** no step, no map reset, no new world. Every lane report says
 compatible, and lane D's reading agrees: definitions, display text, runtime state and two
