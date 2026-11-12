@@ -5,7 +5,8 @@
 -- no form, no flood), no drop. The hanging lantern uses its city copy
 -- (city_variants.lua), which already holds still.
 local function static(source, suffix)
-	local def = table.copy(assert(core.registered_nodes[source], source))
+	local original = assert(core.registered_nodes[source], source)
+	local def = table.copy(original)
 	for key, value in pairs(def) do
 		if type(value) == "function" then def[key] = nil end
 	end

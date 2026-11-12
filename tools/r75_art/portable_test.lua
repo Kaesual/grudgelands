@@ -21,7 +21,10 @@ core = {
 	registered_nodes = {air = {buildable_to = true, walkable = false},
 		["test:stone"] = {walkable = true, drawtype = "normal"},
 		-- The real default dependency registers this material before grug_decor.
-		["default:junglewood"] = {tiles = {"default_junglewood.png"}}},
+		["default:junglewood"] = {tiles = {"default_junglewood.png"}},
+		-- And these two, which expedition_variants.lua copies (Round 78).
+		["default:torch_wall"] = {groups = {attached_node = 1}},
+		["default:bookshelf"] = {groups = {choppy = 3}}},
 	get_modpath = function() return modpath end,
 	get_current_modname = function() return "grug_decor" end,
 	register_node = function(id, def) def.name = id; core.registered_nodes[id] = def end,
