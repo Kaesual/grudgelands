@@ -1224,6 +1224,13 @@ tools](#player-meta-read-by-external-tools).
     the stub `grug_core.get_player_object_faction`, which `grug_factions`
     fills); callers keep their one handle, and text, the HP bar and the
     visibility callbacks reach both carriers. Fixture `tools/r72_tags`.
+    Since Round 78 a player's lost carrier (gone, invalid or detached) is
+    replaced in its row by the pass and by `create_tag_carrier`, which
+    therefore may hand back a new handle (or, while the player's block is not
+    in memory, the old invalid one, whose text is kept for the replacement);
+    `grug_factions.refresh_player_tag` asks for it on every call and is the
+    re-ensure hook of grug_home teleports, respawns and `grug_mounts` mount and
+    dismount. A mob's lost carrier is still forgotten. Fixture `tools/r78_tags`.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
