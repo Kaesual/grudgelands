@@ -1353,9 +1353,10 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   nodes that block nobody stay allowed; digging and right-click interaction
   stay allowed.
 - **In or out of combat** a walkable node is never placed into a cell that
-  overlaps the collision box of a live mob (guards, bosses, NPCs) or player,
-  the placer included; a body spans several cells, and a box that only
-  touches a cell's face does not count. The line is "Cannot place a block
+  overlaps the collision box of a live mob (guards, bosses, NPCs) or another
+  player; a body spans several cells, and a box that only touches a cell's
+  face does not count. The placer's own body is exempt (Round 78 ruling 8),
+  so towering (a block under one's own feet in a jump) works. The line is "Cannot place a block
   where someone stands.". A protected cell keeps its protection line.
 - **A walkable falling node** (sand, gravel) is tested where it lands: when
   the landing cell overlaps a live body it drops as an item instead, also
