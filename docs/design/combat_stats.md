@@ -1386,7 +1386,8 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
     from tier data. Current cooked fish and meat are T1 HP dishes.
   - The natural replacement cadence is about **12 servings per hour**.
-- **Healing potion**: instant fixed amount, **60 s shared cooldown**
+- **Healing potion**: instant fixed amount, **30 s shared cooldown** (60 s
+  until Round 78 ruling 1; shown in the status row while it runs)
   (Alchemy craft, 70 to 1350 HP by tier; the vendors' Weak Healing Potion
   heals 35 HP). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
@@ -1394,7 +1395,7 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   due during combat is skipped while the 300-second buff keeps running.
 - **Alchemy** (2026-09-18, tiers since Round 33, [item_tiers.md](item_tiers.md)
   §5): Healing and Mana Potions I–VI restore **70 / 200 / 400 / 650 / 1000 /
-  1350** and every potion and draught shares one persistent 60-second clock;
+  1350** and every potion and draught shares one persistent 30-second clock;
   the mana half may be consumed at full mana. Every successfully consumed
   potion, draught or elixir plays the shared drinking sound; a refused use is
   silent. Antivenom clears poison,

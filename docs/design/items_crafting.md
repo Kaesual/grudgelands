@@ -1652,7 +1652,7 @@ the same specials; it remains subject to that special's authored two-slot rule.
   cooldown first, then restores HP plus maximum-Mana percentage for Mage/
   Priest or HP plus flat Rage for Warrior. Gray kills grant nothing.
 - Apothecary Loop increases only the restored amount of instant HP/Mana
-  potions. It neither shortens nor resets the shared 60-second cooldown.
+  potions. It neither shortens nor resets the shared 30-second cooldown.
 
 Direct damage procs, ability cooldown reduction, movement speed, gathering
 yield, durability and vendor bonuses are excluded from the six-special MVP.
