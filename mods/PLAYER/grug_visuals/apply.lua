@@ -349,15 +349,19 @@ do
 		animations[pose .. "_walk"] = {x = clip.walk.x, y = clip.walk.y,
 			_grug_phase = clip.once and pose or "walk"}
 	end
-	-- An emote starts at its first frame. Its seated clip carries the seat's
-	-- eye height and box, so it is the same animation class as `sit`.
+	-- An emote starts at its first frame (poses.lua restarts it). Its own
+	-- group keeps its progress when player_api sets it again at another
+	-- speed (sneak pressed or released), as a one-shot pose's twins do; the
+	-- resume after it, in another group, starts fresh. Its seated clip
+	-- carries the seat's eye height and box, so it is the same animation
+	-- class as `sit`.
 	for emote, clip in pairs(grug_visuals.EMOTE_CLIPS) do
-		animations[emote] = {x = clip.stand.x, y = clip.stand.y}
+		animations[emote] = {x = clip.stand.x, y = clip.stand.y, _grug_phase = emote}
 		if clip.sit then
 			local sit = animations.sit
 			animations[emote .. "_sit"] = {x = clip.sit.x, y = clip.sit.y,
 				eye_height = sit.eye_height, collisionbox = sit.collisionbox,
-				override_local = sit.override_local}
+				override_local = sit.override_local, _grug_phase = emote}
 		end
 	end
 	-- The way back from a pose for the player's OWN client: a 5.17 client

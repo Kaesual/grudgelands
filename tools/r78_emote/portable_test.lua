@@ -180,9 +180,11 @@ do
 	eq(E.dance and E.dance.once, nil, "R dance loops")
 	local flinch = GV.POSE_CLIPS.flinch.walk
 	eq(E.wave.stand.x, flinch.y + 1, "R the emotes follow the last pose clip")
-	check(A.wave and A.wave.x == 485 and A.wave.y == 544 and A.wave._grug_phase == nil,
-		"R wave registered, starting at its first frame")
+	check(A.wave and A.wave.x == 485 and A.wave.y == 544, "R wave registered")
+	eq(A.wave and A.wave._grug_phase, "wave", "R wave in its own group (sneak keeps its progress)")
 	check(A.dance and A.dance.x == 605 and A.dance.y == 645, "R dance registered")
+	eq(A.dance and A.dance._grug_phase, "dance", "R dance in its own group")
+	eq(A.wave_sit and A.wave_sit._grug_phase, "wave", "R wave_sit in the wave's group")
 	eq(A.wave_walk, nil, "R no walking twin")
 	eq(A.dance_sit, nil, "R no dance_sit")
 	local ws = A.wave_sit
@@ -216,6 +218,40 @@ do
 	eq(anim_of(p), "stand_resume", "P wave ends after its clip, back through stand_resume")
 	step(0.05)
 	eq(anim_of(p), "stand", "P ... then stand")
+
+	-- Sneak pressed and released mid-emote: the clip goes on at the other
+	-- speed from where it was (fix round, review Low 1), and the resume after
+	-- it starts fresh.
+	step(1.1)
+	GV.play_emote(p, "wave")
+	step(0.05)
+	step(0.5) -- 0.5 s in: frame 15
+	p.controls = {sneak = true}
+	step(0.05)
+	eq(last(p).speed, FPS / 2, "P sneak halves the wave's speed")
+	check(last(p).start > 485 + 14 and last(p).start < 485 + 17,
+		"P ... and keeps its progress (start " .. tostring(last(p).start) .. ")")
+	step(0.4) -- 6 frames at half speed
+	p.controls = {}
+	step(0.05)
+	eq(last(p).speed, FPS, "P releasing sneak restores the speed")
+	check(last(p).start > 485 + 21 and last(p).start < 485 + 24,
+		"P ... still from where it was (start " .. tostring(last(p).start) .. ")")
+	step(1.3)
+	eq(anim_of(p), "stand_resume", "P the sneaked wave ends after its clip")
+	eq(last(p).start, A.stand.x, "P ... and the resume starts fresh")
+	step(1.1)
+	GV.play_emote(p, "dance")
+	step(0.05)
+	step(0.5)
+	p.controls = {sneak = true}
+	step(0.05)
+	check(last(p).start > 605 + 14 and last(p).start < 605 + 17,
+		"P sneak keeps the dance's progress (start " .. tostring(last(p).start) .. ")")
+	p.controls = {}
+	step(4)
+	step(0.05)
+	eq(anim_of(p), "stand", "P the dance ends")
 
 	step(1)
 	eq(GV.play_emote(p, "dance"), true, "P dance starts")
