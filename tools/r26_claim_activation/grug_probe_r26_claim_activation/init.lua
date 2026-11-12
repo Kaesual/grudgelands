@@ -179,7 +179,7 @@ local function step_steward()
 	local fs = last_form(OWNER).fs
 	check(fs:find("label[0.4,0.5;Housing Steward]", 1, true) ~= nil, "dialog title Housing Steward")
 	check(fs:find("Manager", 1, true) == nil, "no Manager in the dialog")
-	check(fs:find("Activate it within 5 minutes with 5 coal lumps or charcoal", 1, true) ~= nil,
+	check(fs:find("Activate it within 5 minutes with 5 coal\\, charcoal or anthracite", 1, true) ~= nil,
 		"dialog explains the activation")
 	check(fs:find("stays in place for 12 hours", 1, true) ~= nil, "dialog names the 12 h lock")
 	-- Map: the service markers (best effort with a stand-in player).

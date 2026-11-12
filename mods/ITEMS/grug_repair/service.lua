@@ -15,8 +15,9 @@ function grug_repair.eligible(stack)
 end
 
 -- Repair cost = ceil(FACTOR x reference price x missing durability): wearing
--- an item out once costs what buying it again would (item_tiers.md §6.2).
-grug_repair.FACTOR = 1.00
+-- an item out once costs half of what buying it again would (item_tiers.md
+-- §6.2; 1.00 from Round 33, 0.50 since Round 78 ruling 3).
+grug_repair.FACTOR = 0.50
 
 function grug_repair.cost(stack)
 	if not grug_repair.eligible(stack) then return nil end

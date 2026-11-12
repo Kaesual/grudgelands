@@ -122,7 +122,8 @@ in [decorations.md](decorations.md).
   a new stone and gets it from the Housing Steward at once.
 - **Activation** (ruling 9): the draft form's Activate button pays exactly
   **5 lumps** at once from the main inventory and the bags (charcoal
-  first, then coal lumps) and starts fuel and protection. Further fuel goes through the fuel
+  first, then coal lumps, then Anthracite, which counts one lump here, Round
+  78 ruling 9) and starts fuel and protection. Further fuel goes through the fuel
   slot (§4); the draft's slot refuses fuel.
 - A draft cannot be the travel-home target (§8).
 

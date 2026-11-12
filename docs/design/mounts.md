@@ -404,9 +404,12 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
 - **A flyer needs room**: it is summoned only where its collision box (the
   flyer body, 1.8 wide and 1.65 high) fits at the rider's position, on the
   surface as underground; a node box at most half a node above the feet (a
-  slab, a stair's step, snow) is footing, everything else walkable in the
-  box refuses the summon ("There is not enough room here for a flying
-  mount."). Ground mounts keep their rule (the rider on solid ground; they
+  slab, a stair's step, snow) is footing. When something else walkable is in
+  the box, the summon tries once more one node higher (Round 78 ruling 13: a
+  slope, a step beside the feet; room is needed there, footing is not, and
+  the rider attaches as usual); only when that box is blocked too is the
+  summon refused ("There is not enough room here for a flying mount.").
+  Ground mounts keep their rule (the rider on solid ground; they
   fit 1-wide tunnels and doorways).
 - The flight ceiling is exactly **y = 600** in every zone. Upward input stops
   there and any integration overshoot is clamped back to y = 600.

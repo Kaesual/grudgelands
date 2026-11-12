@@ -72,7 +72,7 @@ local function on_place(itemstack, placer, pointed_thing)
 	itemstack:take_item(1)
 	grug_housing.notify_claim_changed(claim, "placed")
 	tell(placer, ("Claim Stone placed as a draft. Open it and activate it " ..
-		"with %d coal or charcoal within %d minutes, or it crumbles."):format(
+		"with %d coal, charcoal or anthracite within %d minutes, or it crumbles."):format(
 		model.ACTIVATION_LUMPS, model.DRAFT_SECONDS / 60))
 	core.log("action", ("[grug_housing] %s placed Claim Stone %d at %s"):format(
 		name, claim.id, core.pos_to_string(pos)))

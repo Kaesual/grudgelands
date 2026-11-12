@@ -73,8 +73,11 @@ function grug_housing.refund_item()
 end
 
 -- Activation takes its lumps from the inventory and bags in this order:
--- charcoal first, so the scarcer coal is spent last.
-grug_housing.FUEL_ORDER = {"grug_smelting:charcoal", "default:coal_lump"}
+-- charcoal first, so the scarcer coal is spent later, and anthracite last
+-- (Round 78 ruling 9): it counts one lump toward activation, but refuelling
+-- burns it as 1.5.
+grug_housing.FUEL_ORDER = {"grug_smelting:charcoal", "default:coal_lump",
+	"grug_materials:anthracite"}
 
 function grug_housing.is_fuel(itemname)
 	return grug_housing.FUEL_ITEMS[itemname] ~= nil
@@ -260,9 +263,9 @@ local function fuel_carried(inv)
 	return have
 end
 
--- R26 ruling 9: the owner activates the draft; ACTIVATION_LUMPS coal lumps or
--- charcoal (mixed) are taken from the inventory and bags at once. Returns ok,
--- message.
+-- R26 ruling 9: the owner activates the draft; ACTIVATION_LUMPS coal lumps,
+-- charcoal or anthracite (mixed, Round 78 ruling 9) are taken from the
+-- inventory and bags at once. Returns ok, message.
 function grug_housing.activate(player)
 	if not player or not player:is_player() then return false, "No player." end
 	local name = player:get_player_name()
@@ -275,8 +278,8 @@ function grug_housing.activate(player)
 	local inv = player:get_inventory()
 	local have = fuel_carried(inv)
 	if have < need then
-		return false, ("Activation needs %d coal lumps or charcoal in your " ..
-			"inventory; you have %d."):format(need, have)
+		return false, ("Activation needs %d coal lumps, charcoal or anthracite " ..
+			"in your inventory; you have %d."):format(need, have)
 	end
 	local left = need
 	-- Each fuel in its order from the carried lists, then from the inactive

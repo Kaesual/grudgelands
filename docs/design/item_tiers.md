@@ -692,7 +692,8 @@ eight King kills, next to Master Riding's five hours.
   spell costs are percentages of the same base pool, so a Mana Potion VI
   (1350) is eight Fireballs or six Heals at level 60, and both kinds share
   one potion clock, so a caster chooses between them.
-- **One shared 60-second potion cooldown** for every potion; the 45-second
+- **One shared 30-second potion cooldown** for every potion (60 s until
+  Round 78 ruling 1); the 45-second
   exception of the old Greater potions goes. Elixirs keep their own rule: one
   elixir at a time, the newest replaces it.
 - **Elixirs** give two enchants' worth of their stat at the tier's top level
@@ -791,13 +792,15 @@ level 61+ uses T6.
 ### 6.2 Repair
 
 ```
-repair_cost = ceil(1.00 × P × w)
+repair_cost = ceil(0.50 × P × w)
 ```
 
 `P` is the reference purchase price times the quality multiplier 1 / 3 / 6, `w`
 the missing durability fraction ([durability_repair.md](durability_repair.md#price)).
-The factor rises from 0.20 to **1.00**: wearing an item out once costs what it
-would cost to buy again. Repair then takes about 3–9 % of net income for blue
+The factor rose from 0.20 to **1.00** in Round 33 (wearing an item out once
+cost what it would cost to buy again) and halves to **0.50** in Round 78
+(ruling 3, "a good start"; death wear stays 10 %): wearing it out once costs
+half its price; the repair shares below are Round 33's. Repair then takes about 3–9 % of net income for blue
 gear and 6–18 % for gold, against 0.6–1.8 % today (§6.5).
 
 ### 6.3 Upgrade and crafting costs

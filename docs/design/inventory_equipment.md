@@ -878,8 +878,10 @@ the Round 19 top-centre text list:
   shield's remaining absorb).
 - **Capacity:** at most 10 icons. When more statuses run, debuffs keep their
   slots first, then neutral states, then buffs.
-- **No cooldowns** on the row (ruling 21): the potion cooldown is no longer
-  shown; its refusal messages remain.
+- **No cooldowns** on the row (ruling 21), with one exception since Round 78
+  (ruling 2): the shared potion cooldown shows as the neutral status
+  "Potion cooldown" with its countdown (the potion's image on the plate),
+  also after a relog while it runs; its refusal messages remain.
 - **Registered statuses:** food (the eaten item's own image, else the
   generic food icon), elixirs, draughts, mounts (land or flight; an untimed
   status, so the row caption is empty and the tier name and "+N% speed"
@@ -1057,7 +1059,7 @@ a small window on the left of the screen, four inventory-sized slots wide
 - **Potion belt:** the four belt slots; a filled one is an item button (the
   count in the item string; a list slot would pick the stack up), an empty
   one draws only the slot. A click uses the potion through its own `on_use`,
-  so the shared 60 s potion cooldown, the full-health and level refusals
+  so the shared 30 s potion cooldown, the full-health and level refusals
   hold; the stack shrinks in the belt.
 - **Return home:** with a home, "Home: <name>" and the button "Return home
   (<state>)" with the Character tab's state text; the same travel request

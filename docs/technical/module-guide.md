@@ -2323,7 +2323,7 @@ nothing and logs one line, so local and browser worlds play as without it.
     (`grug_housing:claim_stone`) and the draft node
     `grug_housing.DRAFT_STONE` (`grug_housing:claim_stone_draft`), drafts
     (`DRAFT_SECONDS = 300`), activation (`ACTIVATION_LUMPS = 5`, charcoal
-    first), the pick-up lock (`PICKUP_LOCK_SECONDS = 43200`), destruction
+    first, Anthracite last at one lump each), the pick-up lock (`PICKUP_LOCK_SECONDS = 43200`), destruction
     times, the arrival cube and no renewal in active claims.
     Contract: `claim_at(pos)` (claim `{id, owner, center, placed_at,
     activated_at, paid_until}` or nil; `activated_at` 0 is a draft),
