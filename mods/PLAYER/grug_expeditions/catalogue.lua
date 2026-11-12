@@ -93,6 +93,19 @@ function M.swaps()
 	return out
 end
 
+-- Round 78 (ruling 5): the template nodes a player could change in a box although the
+-- box is protected, each written as a static copy (template.resolve). Builtin
+-- falling.lua drops an attached node whose support is not walkable at any punch
+-- nearby, protection unasked: the hanging lanterns under their ropes, and the torches
+-- The Second Shift's light pass left facing no wall (param2 0). A bookshelf takes books
+-- from anyone (its allow_metadata_inventory_put asks no protection). Every other node
+-- a template writes, and why it stays, is listed in tools/r78_exped/portable_test.lua.
+M.STATIC = {
+	["grug_decor:xdecor_lantern_hanging"] = "grug_decor:city_xdecor_lantern_hanging",
+	["default:torch_wall"] = "grug_decor:expedition_torch_wall",
+	["default:bookshelf"] = "grug_decor:expedition_bookshelf",
+}
+
 local by_id = {}
 for _, row in ipairs(M.EXPEDITIONS) do by_id[row.id] = row end
 
