@@ -454,7 +454,6 @@ do
 end
 
 if failures > 0 then
-	print(("R78 EMOTE PORTABLE FAIL %d of %d checks"):format(failures, checks))
-	os.exit(1)
+	error(("R78 EMOTE PORTABLE FAIL %d of %d checks"):format(failures, checks), 0)
 end
 print(("R78 EMOTE PORTABLE PASS checks=%d"):format(checks))
