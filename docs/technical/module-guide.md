@@ -2430,7 +2430,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   one `core.after` a second for its minute, the countdown through `grug_core.banner` to those
   inside; `encounters.lua`'s one-second pass runs only
   while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled; `traps.lua`'s pass (5 a second) only while a run with traps has a player inside (since Round 73 it also tests an armed ambush: a segment from each player's last position against the zone, nothing once it fired), and its fireballs are entities that are never saved; `particles.lua` (Round 73) adds one endless spawner per `particles` line and player inside, sent to that player alone, deleted when they leave and at the end;
-  preparation's `core.after(0)` chain only while one is under way. An admin `/teleport` out
+  preparation's `core.after(0)` chain only while one is under way; the respawn lock (Round
+  78, `respawn_lock.lua`) one `core.after` a second per locked dead player, stopped by the
+  lock's end and the logout. An admin `/teleport` out
   is not noticed: the player counts as inside until logout.
 - **Preparation** (`preparation.lua`, its header has the order and why): objects out,
   `delete_area` mapblock by mapblock
@@ -2452,6 +2454,11 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   `registrar.lua`: the Deserter's Mark, a source so a death does not clear it),
   `grug_home.register_return_guard` and `grug_core.register_lava_hold` (Round 72,
   `guard.lua`: Return Home refused in or over lava in a box; every box holds its lava),
+  `core.show_death_screen` overridden (Round 78, `respawn_lock.lua`: its own form
+  `grug_expeditions:death` while locked, else the builtin screen; builtin
+  `death_screen.lua` calls it at a death, a join with hp 0 and any other form closed while
+  dead, so Esc and a relog come back through it, and the server ignores the legacy
+  respawn packet),
   `grug_mobs.set_spawn_free_field` (first
   check of `spawn_policy_allows`), `grug_parties.register_on_member_left` (it can tell a
   leaver from the last member, which `register_on_change` cannot),
