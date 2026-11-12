@@ -318,11 +318,15 @@ local function die(player)
 	player.hp = 0
 	core.show_death_screen(player, {type = "punch"})
 end
+-- Esc in the engine's order: receive_fields handlers newest first, stopping at the
+-- first true (builtin/game/register.lua make_registration_reverse, s_player.cpp
+-- RUN_CALLBACKS_MODE_OR_SC), so the mod's handler before the builtin's.
 local function esc(player)
 	local name = player:get_player_name()
 	local form = screen[name] and screen[name].form
+	screen[name] = nil -- the client closed it
+	if callbacks.fields(player, form, {quit = "true"}) then return end
 	if form ~= BUILTIN and player:get_hp() == 0 then core.show_death_screen(player, nil) end
-	callbacks.fields(player, form, {quit = "true"})
 end
 local function leave(player) online[player:get_player_name()] = nil; run.inside[player:get_player_name()] = nil end
 local function join(player)

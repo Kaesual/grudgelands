@@ -9,8 +9,11 @@
 -- and any quit of its own form respawns (lua_api.md, "core.show_death_screen ... You can
 -- override this to show a custom death screen"). So this file overrides that function:
 -- a locked player sees this file's form FORM, whose Respawn button is grey and does not
--- quit; Esc, a relog with hp 0 and any other form closed come back through the builtin
--- calls above and show it again with the time that is left. A free player, and every
+-- quit; Esc on it is answered here (receive_fields handlers run newest first and stop at
+-- the first true: builtin/game/register.lua make_registration_reverse,
+-- s_player.cpp RUN_CALLBACKS_MODE_OR_SC), a relog with hp 0 and any other form closed
+-- come back through the builtin calls above; each shows it again with the time that is
+-- left. A free player, and every
 -- death outside a run, gets the builtin screen unchanged. Replacing an open form keeps
 -- the client's window (luanti src/client/game_formspec.cpp GameFormSpec::showFormSpec,
 -- "Replace the currently open formspec": GUIFormSpecMenu::create reuses the open menu
@@ -113,11 +116,13 @@ function core.show_death_screen(player, reason)
 	show(player, lock, reason)
 end
 
--- The grey button: the screen again, the builtin one once the lock has ended. Esc is a
--- quit, which the builtin's own handler answers with core.show_death_screen.
+-- The grey button and Esc: the screen again at once, the builtin one once the lock has
+-- ended. This handler runs before the builtin's and its true stops it.
 core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORM then return end
-	if fields.respawn and player:get_hp() == 0 then core.show_death_screen(player, nil) end
+	if (fields.respawn or fields.quit) and player:get_hp() == 0 then
+		core.show_death_screen(player, nil)
+	end
 	return true
 end)
 
