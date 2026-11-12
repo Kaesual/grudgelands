@@ -607,7 +607,7 @@ the generator's `--check`):
 
 | Emote | Clip | Frames | Plays |
 | --- | --- | --- | --- |
-| `wave` | the right arm raised out to the side, waving three and a half times | 485–544 | once, 2 s |
+| `wave` | the right arm rises forward and on up and out to the side, turned so the palm faces forward (a held item points backward), waving three and a half times | 485–544 | once, 2 s |
 | `wave_sit` | the same over the seated frame (the legs stay on the saddle) | 545–604 | once, 2 s, on a mount |
 | `dance` | a 40-frame loop: the hips sway, the arms pump in turn, a knee lifts on each beat | 605–645 | three rounds, 4 s |
 

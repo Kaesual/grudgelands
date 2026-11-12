@@ -14,7 +14,9 @@
 # Usage: XVFB=/path/to/Xvfb tools/r78_emote/capture.sh OUT_DIR
 #   GUI_SCALE (default 1), WIDTH/HEIGHT (default 1920 x 1080), SUFFIX=<text>
 #   appended to every file name, SETTLE=<seconds> before each shot (default
-#   3), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri).
+#   3), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri),
+#   SET=v2 for the second shot set (the turned wave arm: seated, front, side,
+#   and a dance frame; default v1, the first set).
 #   Run it through the shared Lua queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
@@ -68,6 +70,7 @@ cat >>"$patchdir/b/minetest.conf" <<CONF
 # Round 78 EMOTE capture probe
 mobs_spawn = false
 r78emote_settle = $settle
+r78emote_set = ${SET:-v1}
 CONF
 (cd "$patchdir" && diff -u a/minetest.conf b/minetest.conf >"$patchdir/probe.patch") || true
 

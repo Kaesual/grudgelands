@@ -189,11 +189,18 @@ POSES = [
      "use": "the quickbar's Wave, standing and seated", "kind": "oneshot", "length": 60,
      "bases": ("stand", "sit"),
      "bones": {
-         # Pitch after roll: on a raised arm a negative pitch tips it forward.
-         "Arm_Right": {"mode": "hold", "keys": [[0, 0, 0, 0], [9, -12, 0, -150], [15, -12, 0, -128],
-                                                [21, -12, 0, -158], [27, -12, 0, -128], [33, -12, 0, -158],
-                                                [39, -12, 0, -128], [45, -12, 0, -158], [50, -12, 0, -145],
-                                                [59, 0, 0, 0]]},
+         # The arm rises forward (pitch alone, frames 0-3) and on up and out to
+         # the side, turned about its own length so a held item points
+         # backward, as a raised palm faces forward (the user, 2026-11-12).
+         # From frame 4 the same turn is written as yaw -180 with the pitch
+         # and roll mirrored: yaw 0, pitch p is yaw -180, pitch 180 - p,
+         # roll 180, so frames 3 and 4 (and 54 and 55) differ only by the
+         # rise; the wave is the roll swinging 128-158 out to the side.
+         "Arm_Right": {"mode": "hold", "keys": [[0, 0, 0, 0], [3, 60, 0, 0], [4, 105, -180, 180],
+                                                [9, 12, -180, 150], [15, 12, -180, 128],
+                                                [21, 12, -180, 158], [27, 12, -180, 128], [33, 12, -180, 158],
+                                                [39, 12, -180, 128], [45, 12, -180, 158], [50, 12, -180, 145],
+                                                [54, 100, -180, 180], [55, 70, 0, 0], [59, 0, 0, 0]]},
          "Arm_Left": {"mode": "hold", "keys": [[0, 0, 0, 0], [9, 4, 0, 5], [50, 4, 0, 5], [59, 0, 0, 0]]},
          "Head": {"mode": "add", "keys": [[0, 0, 0, 0], [9, 6, 0, -5], [50, 6, 0, -5], [59, 0, 0, 0]]},
      }},
