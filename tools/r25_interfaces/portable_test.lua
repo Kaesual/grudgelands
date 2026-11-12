@@ -252,8 +252,10 @@ eq(H.refund_item(), "default:coal_lump", "no charcoal registered: coal refund")
 core.registered_items = {["grug_smelting:charcoal"] = {}}
 eq(H.refund_item(), "grug_smelting:charcoal", "refund as charcoal, the cheaper lump")
 core.registered_items = nil
-eq(table.concat(H.FUEL_ORDER, ","), "grug_smelting:charcoal,default:coal_lump",
-	"activation takes charcoal first")
+-- Round 78 ruling 9: anthracite activates too, spent last.
+eq(table.concat(H.FUEL_ORDER, ","),
+	"grug_smelting:charcoal,default:coal_lump,grug_materials:anthracite",
+	"activation takes charcoal first, anthracite last")
 local now = 1000000
 local claims, states = {}, {}
 local calls = {add_fuel = {}, set_permission = {}, pick_up = {}, issue = {},
@@ -767,7 +769,7 @@ submit(owner, "grug_housing:stone", {pick_up = ""})
 has(last_shown("owner").fs, "It is not active yet\\; you can place it again at once.",
 	"draft pick-up confirmation")
 submit(owner, "grug_housing:stone", {cancel_pick_up = ""})
-activate_result = {false, "Activation needs 5 coal lumps or charcoal in your inventory; you have 2."}
+activate_result = {false, "Activation needs 5 coal lumps, charcoal or anthracite in your inventory; you have 2."}
 submit(owner, "grug_housing:stone", {activate = ""})
 eq(calls.activate[#calls.activate], "owner", "the button calls activate")
 has(last_shown("owner").fs, "\27(c@#ff6060)Activation needs 5 coal lumps", "refusal in red")
@@ -861,7 +863,7 @@ has(fs, "When the fuel runs out\\, the protection ends.", "empty-fuel line")
 has(fs, grug_core.ui.title(1.25, 0.56, "Housing Steward"), "Steward title")
 lacks(fs, "Manager", "no Manager wording")
 lacks(fs, "24 hours", "no daily rule any more")
-has(fs, "Activate it within 5 minutes with 5 coal lumps or charcoal", "activation line")
+has(fs, "Activate it within 5 minutes with 5 coal\\, charcoal or anthracite", "activation line (Round 78: anthracite)")
 has(fs, "stays in place for 12 hours", "pick-up lock line")
 has(fs, "button[7.7,7.7;3.4,0.6;receive;Receive Claim Stone]", "receive button")
 
