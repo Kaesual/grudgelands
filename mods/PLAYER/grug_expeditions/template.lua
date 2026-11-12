@@ -307,9 +307,18 @@ end
 -- Content ids exist once every mod has registered its nodes; an unknown node
 -- stops the server there. `swaps` ({[key] = {[node] = node}}, catalogue.swaps)
 -- gives the variants a run writes: tpl.variants[key] = {ids, dig}, the palette and
--- the marks with those nodes swapped. tpl.ids and tpl.dig stay the file's.
-function M.resolve(tpl, swaps)
+-- the marks with those nodes swapped. tpl.ids and tpl.dig stay the file's, but for
+-- `static` ({[node] = node}, catalogue.STATIC, Round 78): every palette and variant
+-- writes those nodes' static copies; a static node is never a mark.
+function M.resolve(tpl, swaps, static)
+	static = static or {}
+	for name in pairs(tpl.dig) do
+		if static[name] then
+			error("[grug_expeditions] template " .. tpl.name .. ": dig names the static " .. name, 0)
+		end
+	end
 	local function id_of(name)
+		name = static[name] or name
 		if not core.registered_nodes[name] then
 			error("[grug_expeditions] template " .. tpl.name .. ": unknown node " .. name, 0)
 		end
