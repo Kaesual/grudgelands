@@ -323,15 +323,16 @@ end
 do
 	grug_repair = {}
 	dofile(ROOT .. "/mods/ITEMS/grug_repair/service.lua")
-	eq(grug_repair.FACTOR, 1.00, "D repair factor 1.00")
+	-- Round 78 ruling 3: the factor halves (was 1.00 from Round 33).
+	eq(grug_repair.FACTOR, 0.50, "D repair factor 0.50")
 	local sword = ItemStack(grug_gear.weapon_item("sword", 6))
 	sword:set_wear(65535)
-	eq(grug_repair.cost(sword), 2500, "D a worn-out T6 sword costs its price")
+	eq(grug_repair.cost(sword), 1250, "D a worn-out T6 sword costs half its price")
 	sword:set_wear(32768)
-	eq(grug_repair.cost(sword), 1251, "D half worn: half the price, rounded up")
+	eq(grug_repair.cost(sword), 626, "D half worn: a quarter of the price, rounded up")
 	sword:get_meta():set_int("grug_quality", 2)
 	sword:set_wear(65535)
-	eq(grug_repair.cost(sword), 7500, "D a blue item: x3")
+	eq(grug_repair.cost(sword), 3750, "D a blue item: x3")
 	sword:set_wear(0)
 	eq(grug_repair.cost(sword), 0, "D an intact item costs nothing")
 end
@@ -421,11 +422,12 @@ do
 	drink(p, "grug_alchemy:potion_swiftness")
 	check(#healed == 1 and #restored == 0 and statuses.alchemy_swiftness == nil,
 		"E every potion waits for the one shared clock")
-	eq(grug_traders.potion_cooldown_left(p), 60, "E the clock runs 60 s")
-	now = now + 60
+	-- Round 78 ruling 1: 30 s (was 60 s).
+	eq(grug_traders.potion_cooldown_left(p), 30, "E the clock runs 30 s")
+	now = now + 30
 	drink(p, "grug_traders:potion_healing_weak")
 	eq(healed[2] and healed[2].amount, 35, "E the Weak Healing Potion heals a fixed 35 HP")
-	eq(grug_traders.potion_cooldown_left(p), 60, "E ...and starts the same clock")
+	eq(grug_traders.potion_cooldown_left(p), 30, "E ...and starts the same clock")
 	-- The level requirement is the tier's first level.
 	local low = player(10)
 	healed = {}
@@ -446,6 +448,14 @@ do
 			local status = statuses.elixir
 			check(status and status.modifiers[row[1]] == row[2][tier],
 				"E elixir " .. key .. " " .. roman[tier] .. " gives " .. row[2][tier])
+			if key == "stoneskin" then
+				-- Round 78: the rating is shown x10 in its tooltip and status.
+				local shown = "+" .. math.floor(row[2][tier] * 10 + 0.5) .. " armor rating"
+				local def = registered["grug_alchemy:elixir_stoneskin_t" .. tier] or {}
+				check(status and status.detail == shown and
+					tostring(def.description):find(shown .. " for 30 minutes", 1, true),
+					"E Stoneskin " .. roman[tier] .. " shows " .. shown)
+			end
 			eq(grug_traders.potion_cooldown_left(q), 0, "E ...and leaves the potion clock")
 		end
 	end

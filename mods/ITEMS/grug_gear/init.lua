@@ -213,8 +213,17 @@ end
 
 local ARMOR_LABELS = {[1] = "Cloth", [2] = "Leather", [3] = "Metal"}
 
+-- Armor ratings carry one decimal inside and show ten times larger as whole
+-- numbers (Round 78 ruling 12): an inner 5.5 shows as 55. Every text that
+-- prints a rating goes through here; the combat math (grug_core.armor_k,
+-- armor_reduction) keeps the inner unit, so a reduction moves only by the
+-- finer piece rounding below.
+function grug_gear.format_armor(rating)
+	return tostring(math.floor((tonumber(rating) or 0) * 10 + 0.5))
+end
+
 local function armor_stats(armor)
-	return string.format("%d armor rating", armor)
+	return grug_gear.format_armor(armor) .. " armor rating"
 end
 
 --
@@ -319,6 +328,25 @@ local ARMOR_SLOTS = {
 	{key = "feet",  share = 0.16},
 }
 
+-- One piece's rating: its share of the set total at `ilvl`, rounded to 0.1
+-- (whole points before Round 78), at least 1.0: at the low cloth brackets
+-- the 16% foot share is 0.4, and a near-zero boot is a bug, not a design
+-- statement.
+local function piece_rating(line, share, ilvl)
+	return math.max(1, math.floor((line.base + line.per_ilvl * ilvl) * share * 10
+		+ 0.5) / 10)
+end
+
+-- A shield's rating: the complete same-ilvl metal set, each piece rounded as
+-- above; the sum rounded to 0.1 again, so it carries no float noise.
+local function shield_rating_at(ilvl)
+	local sum = 0
+	for _, slot in ipairs(ARMOR_SLOTS) do
+		sum = sum + piece_rating(ARMOR_LINES[1], slot.share, ilvl)
+	end
+	return math.floor(sum * 10 + 0.5) / 10
+end
+
 -- Public description-regeneration seam for grug_quality. It returns every
 -- definition-derived line below the display name, recomputing the base stat at
 -- a per-stack ilvl instead of copying a bracket anchor. Affixes and name
@@ -365,15 +393,8 @@ function grug_gear.describe_stack_base(stack, ilvl)
 	end
 	if (groups.grug_shield or 0) > 0 then
 		local rating = tonumber(def._grug_armor) or 0
-		if ilvl then
-			rating = 0
-			local line = ARMOR_LINES[1]
-			for _, slot in ipairs(ARMOR_SLOTS) do
-				rating = rating + math.max(1, math.floor(
-					(line.base + line.per_ilvl * ilvl) * slot.share + 0.5))
-			end
-		end
-		lines[#lines + 1] = core.colorize(STAT_COLOR, rating .. " armor rating")
+		if ilvl then rating = shield_rating_at(ilvl) end
+		lines[#lines + 1] = core.colorize(STAT_COLOR, armor_stats(rating))
 		return lines, {armor = rating}
 	end
 	if (groups.grug_spellbook or 0) > 0 then
@@ -404,8 +425,7 @@ function grug_gear.describe_stack_base(stack, ilvl)
 		end
 		local armor
 		if line and share and ilvl then
-			armor = math.max(1, math.floor((line.base + line.per_ilvl * ilvl)
-				* share + 0.5))
+			armor = piece_rating(line, share, ilvl)
 		else
 			armor = tonumber(def._grug_armor) or 0
 		end
@@ -567,18 +587,13 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	-- Offhands use the matching bracket's "other" purchase reference. A shield's
 	-- base rating equals the complete same-ilvl unrefined metal set; spellbooks
 	-- carry only their authored mana line before ordinary affixes.
-	local metal_line = ARMOR_LINES[1]
-	local shield_rating = 0
-	for _, slot in ipairs(ARMOR_SLOTS) do
-		shield_rating = shield_rating + math.max(1, math.floor(
-			(metal_line.base + metal_line.per_ilvl * br.ilvl) * slot.share + 0.5))
-	end
+	local shield_rating = shield_rating_at(br.ilvl)
 	local shield = "grug_gear:shield_" .. metal.key
 	core.register_tool(shield, {
 		tool_capabilities = {full_punch_interval=1.4, damage_groups={fleshy=0},
 			groupcaps={}, punch_attack_uses=0},
 		description = describe(metal.name, "Shield", br.ilvl,
-			shield_rating .. " armor rating"),
+			armor_stats(shield_rating)),
 		inventory_image = offhand_image("shield", metal), _grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1},
 		stack_max = 1, _grug_armor = shield_rating, _grug_ilvl = br.ilvl,
@@ -607,14 +622,10 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 
 	for _, line in ipairs(ARMOR_LINES) do
 		if line.register then
-			local total = line.base + line.per_ilvl * br.ilvl
 			local grade = grug_gear.MATERIALS[bracket][line.key]
 			for _, slot in ipairs(ARMOR_SLOTS) do
 				local itemname = grug_gear.armor_item(slot.key, line.key, bracket)
-				-- max(1) is a deliberate deviation from the raw split: at the
-				-- low cloth brackets the 16% foot share rounds to 0, and a
-				-- 0-armor boot is a bug, not a design statement.
-				local armor = math.max(1, math.floor(total * slot.share + 0.5))
+				local armor = piece_rating(line, slot.share, br.ilvl)
 				local price = br.price.other
 				if slot.key == "chest" then
 					price = br.price.chest

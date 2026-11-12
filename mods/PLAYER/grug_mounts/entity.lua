@@ -206,6 +206,13 @@ local function switch_camera(player, mode)
 	end)
 end
 
+-- Mounting and dismounting re-ensure the rider's nametag carrier (Round 78
+-- ruling 7, grug_factions). The check keeps loads of this file beside a
+-- partial grug_factions (the mount fixtures' stubs) working.
+local function ensure_tag(player)
+	if grug_factions.refresh_player_tag then grug_factions.refresh_player_tag(player) end
+end
+
 local function restore_player(player, skip_animation)
 	local name = player:get_player_name()
 	player_api.player_attached[name] = false
@@ -267,6 +274,8 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 	end
 	if object and object:is_valid() then object:remove() end
 	if record.visual and record.visual:is_valid() then record.visual:remove() end
+	-- The nametag is re-ensured (Round 78); a leaving player's goes with them.
+	if not teardown then ensure_tag(player) end
 	-- Mount notices go to the message feed (never chat), one keyed line.
 	if reason and reason ~= "manual" then
 		grug_core.feed(player, "notice", reason, "mount")
@@ -848,6 +857,7 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight",
 		mode = tier.mode, model = model}
 	attach(player, object, model, skip_animation)
+	ensure_tag(player)
 	switch_camera(player, "third")
 	local visual = core.add_entity(pos, VISUAL_NAME,
 		core.serialize({owner = name, tier = tier_id}))
@@ -937,9 +947,19 @@ local function summon_position(player, tier_id, seated)
 		-- tunnels and doorways.
 		local model = grug_mounts.model_for(player, tier_id)
 		local b = model and model.collisionbox
-		if b and grug_mobs.box_blocked(pos,
-				{b[1], math.max(b[2], 0), b[3], b[4], b[5], b[6]}) then
-			return nil, FLYER_ROOM_REFUSAL
+		local body = b and {b[1], math.max(b[2], 0), b[3], b[4], b[5], b[6]}
+		if body and grug_mobs.box_blocked(pos, body) then
+			-- Round 78 ruling 13: one more try a node higher (a slope, a step
+			-- beside the feet), which needs room but no footing; the rider
+			-- attaches up there as usual. The same body test, so a ceiling or a
+			-- wall (protected or not) still refuses; the column is the same,
+			-- so the flight rule above holds; the ceiling is checked again.
+			local raised = {x = pos.x, y = pos.y + 1, z = pos.z}
+			if raised.y > grug_mounts.FLIGHT_CEILING or
+					grug_mobs.box_blocked(raised, body) then
+				return nil, FLYER_ROOM_REFUSAL
+			end
+			return raised
 		end
 	end
 	return pos

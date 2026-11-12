@@ -137,6 +137,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - Player armor is a numerical **rating** evaluated against the attacker's
   level. It is not itself a percentage; endgame plate and shields remain useful
   against enemies above level 60.
+- **Shown ×10** (Round 78 ruling 12): the rating carries one decimal inside
+  and every text shows it ten times larger as a whole number
+  (`grug_gear.format_armor`): tooltips, the Character page, enchants, ability,
+  talent and elixir texts. The formulas below use the inner unit; Help states
+  the same formula in shown units (`200 + 5 × L`, 85 per level above 60).
 - **How armor resolves** (rating model adopted 2026-09-20): armor rating sums
   over head/chest/legs/feet, an equipped shield, affixes, statuses and
   talents. Which armor a
@@ -413,7 +418,11 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   to acquire a target spends no resource and arms no cooldown. Friendly
   heal/shield casts resolve through currently pointed valid in-range visible
   ally → self, never ally memory. Looking into empty space selects self
-  (user ruling 2026-09-24).
+  (user ruling 2026-09-24). Their ray looks past mobs and hostile, protected
+  and dead players to the first living friendly player (Round 78: the tank
+  behind the boss); nodes still block (`grug_core.combat_ray`'s `friendly`
+  option, set by `grug_abilities.aimed_target` for friendly skills: Heal,
+  Shield and Mend).
 - **All targeted projectiles lock at actual release (Round 17).** The current
   server-validated crosshair hostile must be in range and initially visible;
   no stale enemy memory and no valid target means no shot or mana/ammo payment.
@@ -559,8 +568,17 @@ Normal tier at level L:
   combat (accepted).
 - **Reach**: player swing abilities (Strike, Mighty Blow and Hamstring) use
   **3 m**, and every ordinary explicit mob reach is **3 m**. The Kraken keeps
-  its model-specific **4 m** and non-combatant villagers keep 0. The mobs_redo
-  contact run remains `reach × 0.6`, hence **1.8 m** for an ordinary attacker.
+  its model-specific **4 m** and non-combatant villagers keep 0. **A ground mob
+  measures melee edge to edge** (Round 78, ruling 6; `mobs/grug_obstacle.lua`
+  `melee_measure`): the horizontal gap between the two collision boxes, a height
+  difference of up to one node between the feet free (a target on a step or in
+  a hole is in melee), a larger one counted whole (a player three nodes up on a
+  tower is out of an ordinary mob's reach, as before). Its reach is `reach` minus its registered
+  radius and a player's 0.3, so an ordinary mob reaches exactly as far as before
+  on level ground and an elite's or rare's grown body as far past its own edge.
+  The contact run stops at a gap of **1 node** (at most 60 % of that reach), so a
+  mob never stands in or on its target and its hits land there; fliers keep the
+  origin distance and the contact run at `reach × 0.6`.
   Telegraphs continue to derive their geometry from the live reach; the
   ordinary elite/rare cone therefore reaches **4.5 m** (the swing skills'
   `range` in `grug_abilities/kits.lua` and `kits_warrior.lua`, the contact run in `mobs/api.lua`,
@@ -615,14 +633,15 @@ Normal tier at level L:
   actor-on-actor climbing (the player's `collide_with_objects` in
   `grug_core/init.lua`). The visible overlap is
   limited by **separation** (Round 28 ruling 5, kept deliberately simple): an
-  engaged ground melee mob does not enter its target's own column — the
-  contact run stops while a visible target is within the two collision radii
-  plus 0.5 m horizontally, and once a second a mob found inside that column
-  (radii sum) is moved out of it — and engaged mobs whose bodies overlap
+  engaged ground mob does not enter its target's column — the contact run
+  stops at the 1 node gap above (Round 78), and once a second a mob closer
+  than 0.5 m edge to edge (a target that walked into it) is moved out to that
+  gap — and engaged mobs whose bodies overlap
   drift apart sideways (perpendicular to the line to their own target), at
   most 0.5 m per second. The same fit test as knockback applies; no
   pathfinding. Implementation: `grug_mobs/separation.lua`, called from the
-  dogfight branch of `mobs/api.lua` `do_states()`.
+  dogfight branch of `mobs/api.lua` `do_states()` for every ground mob in it (a
+  mob with both attacks in melee too, Round 78).
 - **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
   (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
   **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
@@ -664,8 +683,8 @@ Normal tier at level L:
 - **Shot range** (Round 56, ruling 3 and D1): a ranged mob shoots within its
   own **shot range**, by default `view_range + 4` (a `dogshoot` family's 16 →
   20; a definition may set `_grug_shot_range`), so a player can stand inside
-  it without drawing aggro. A ranged mob (`shoot`, `dogshoot` outside its
-  melee phase, fliers too) whose target is beyond its
+  it without drawing aggro. A ranged mob (`shoot`, `dogshoot` in its ranged
+  mode, fliers too) whose target is beyond its
   shot range walks closer the way a ground ranged mob without sight walks
   (§4) and stops **3 m inside** it, so it does not hover at the edge, or
   earlier, once inside its shot range, when its way is blocked (stuck or a
@@ -674,6 +693,24 @@ Normal tier at level L:
   the same sight geometry (§2 "Hostile casts and projectiles"), so a shot it
   fires at a target it sees is never refused (`mobs/api.lua`
   `grug_shot_range`, `grug_mobs.stamp_arrow_damage`).
+- **Ranged or melee by distance** (Round 78, ruling 6; every mob with both
+  attacks, bosses and the open world alike: a `dogshoot` mob, all of which carry
+  a `dogshoot_switch`): measured edge to edge like the reach above, it melees
+  below **4 nodes** and shoots above **6**; between the two it keeps its mode, so
+  it never flips at one line. In melee it closes to the 1 node gap and only
+  chases when it has to; beyond its shot range with sight it closes in until it
+  can shoot (above). Without sight it walks and searches toward melee range
+  (§4) and re-checks **once a second**: with sight back outside the melee line it
+  shoots, inside it melees. A visible target out of melee reach whose way failed
+  a search (a ledge, a ravine) is shot at instead, and melee then waits until
+  the target is in reach, has left past the ranged line, or (checked once a
+  second while it is seen inside the melee line) can be walked to straight
+  again, e.g. after it hopped down to open floor. This replaces the
+  archers' clock (10 s ranged, 3 s melee) and the rule that a target within
+  `reach` forces melee (`mobs/api.lua` `grug_dogshoot_mode`; the mode is the
+  saved `dogshoot_switch`). The Expedition bosses: Flintback (the Stone Golem's
+  body) and Auditor Nemm (the Skeleton Raider's) follow it, the Duewarden
+  (melee only) holds the 1 node gap.
 - Pacing (Round 28 ruling 31): a level needs `k(L) = 8 + 0.29·(L − 1)`
   same-level normal kills' worth of XP (8 at level 1, about 25 at level 59;
   82 kill equivalents to level 10, 968 to level 60); quest rewards and
@@ -1069,26 +1106,27 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   both sides of the body, ground below, steps up to the mob's step height
   and drops down to its fear height; a diagonal step needs both corner cells
   free with ground under them; harmless water is ground for a mob that
-  floats. Fliers never search. A ground `dogshoot` family (Round 49) in
-  its ranged phase that cannot see its target walks at it like a melee mob, stuck detector and
-  search included, until it sees it; then it stops and shoots, which ends
-  its stuck episode like a strike; it never shoots without sight. Its melee
-  phase navigates like any melee mob. Beyond its shot range (§3, Round 56)
+  floats. Fliers never search. A ground `dogshoot` family (Round 49) that
+  cannot see its target walks at it like a melee mob, stuck detector and
+  search included, until it sees it (since Round 78 re-checked once a second,
+  §3 "Ranged or melee by distance"); then it stops and shoots, which ends
+  its stuck episode like a strike; it never shoots without sight. In melee
+  it navigates like any melee mob. Beyond its shot range (§3, Round 56)
   every ranged mob walks the same way until it is 3 m inside it. A flying
-  `dogshoot` mob in its ranged phase flies at its target (straight, it never
+  `dogshoot` mob in its ranged mode flies at its target (straight, it never
   searches) while it is beyond its shot range or cannot see it, and shoots
   once it sees it inside its shot range (the user, 2026-10-22). The ranged
   kings (Elf, Undead, Troll; Round 72, the user's ruling of 2026-11-07:
   every ranged mob, guard and boss without sight seeks it) are such ground
-  `dogshoot` mobs with the archers' rhythm (10 s ranged, 3 s melee): they shoot
+  `dogshoot` mobs (ranged or melee by distance since Round 78): they shoot
   their arrow (the Elf's arrow, the others' rock) at a target they see in
   shot range, and walk and search towards one they cannot see until they
   see it; their signatures are unchanged. No registered mob is a `dogshoot` mob without a
-  ranged phase any more. This
+  `dogshoot_switch` any more. This
   replaces mobs_redo's stuck
   timer, the 1 s blocked-line-of-sight trigger and the sidestep of the
   close-cover ruling of 2026-09-17 and the walk-speed crawl of a wedged
-  mob (ruling 17). The `reach × 0.6` contact stop applies only while the
+  mob (ruling 17). The contact stop (§3 "Reach") applies only while the
   target is visible; a blocked melee mob keeps running at it, along its
   detour when it has one. The contact run retains its `at_cliff` guard.
   A ground melee attack computes one collision-box eye-height target-LOS ray
@@ -1353,9 +1391,10 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   nodes that block nobody stay allowed; digging and right-click interaction
   stay allowed.
 - **In or out of combat** a walkable node is never placed into a cell that
-  overlaps the collision box of a live mob (guards, bosses, NPCs) or player,
-  the placer included; a body spans several cells, and a box that only
-  touches a cell's face does not count. The line is "Cannot place a block
+  overlaps the collision box of a live mob (guards, bosses, NPCs) or another
+  player; a body spans several cells, and a box that only touches a cell's
+  face does not count. The placer's own body is exempt (Round 78 ruling 8),
+  so towering (a block under one's own feet in a jump) works. The line is "Cannot place a block
   where someone stands.". A protected cell keeps its protection line.
 - **A walkable falling node** (sand, gravel) is tested where it lands: when
   the landing cell overlaps a live body it drops as an item instead, also
@@ -1385,7 +1424,8 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
     from tier data. Current cooked fish and meat are T1 HP dishes.
   - The natural replacement cadence is about **12 servings per hour**.
-- **Healing potion**: instant fixed amount, **60 s shared cooldown**
+- **Healing potion**: instant fixed amount, **30 s shared cooldown** (60 s
+  until Round 78 ruling 1; shown in the status row while it runs)
   (Alchemy craft, 70 to 1350 HP by tier; the vendors' Weak Healing Potion
   heals 35 HP). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
@@ -1393,7 +1433,7 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   due during combat is skipped while the 300-second buff keeps running.
 - **Alchemy** (2026-09-18, tiers since Round 33, [item_tiers.md](item_tiers.md)
   §5): Healing and Mana Potions I–VI restore **70 / 200 / 400 / 650 / 1000 /
-  1350** and every potion and draught shares one persistent 60-second clock;
+  1350** and every potion and draught shares one persistent 30-second clock;
   the mana half may be consumed at full mana. Every successfully consumed
   potion, draught or elixir plays the shared drinking sound; a refused use is
   silent. Antivenom clears poison,
@@ -1401,8 +1441,8 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   vision for 10 minutes. One elixir status is active at a time and stacks with
   food: at T1–T6 Vigor grants +4.0/4.8/5.6/6.4/7.2/8.0% maximum HP, Focus
   +5.0/5.6/6.2/6.8/7.4/8.0% maximum mana, Precision +4.2/5.2/6.0/7.0/7.8/8.6
-  percentage points crit, Stoneskin +0.8/1.6/2.4/3.2/4.0/4.8 armor rating for
-  30 minutes; Deepwater grants water breathing for 10 minutes. Ordinary
+  percentage points crit, Stoneskin +0.8/1.6/2.4/3.2/4.0/4.8 armor rating
+  (shown +8/16/24/32/40/48) for 30 minutes; Deepwater grants water breathing for 10 minutes. Ordinary
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
@@ -1461,7 +1501,12 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   eight steps of each second, snapshots player positions and manages every
   carrier once per second; unchanged observer sets are not written. Carriers have no per-entity `on_step`: the central pass also
   removes an orphan, while explicit parent lifecycle hooks remove the ordinary
-  cases immediately.
+  cases immediately. A **player's** carrier that is gone, invalid or detached
+  is rebuilt instead (Round 78 ruling 7): the engine drops an unsaved entity
+  whose map block is not in memory (the character waiting point at
+  y = 31000), so the pass replaces it once the player stands on loaded ground,
+  and every refresh of the player's tag (also with an unchanged text), a
+  grug_home teleport, a respawn, mounting and dismounting re-ensure it at once.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
   mob you look at/punch; a nametag's colour is per side, not per level). The
   frame's **reach is 20 m** — our choice, not an engine constant: far

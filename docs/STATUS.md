@@ -1,6 +1,23 @@
 # Project status
 
-Updated 2026-11-11. This is the delivery pointer, not another game specification.
+Updated 2026-11-12. This is the delivery pointer, not another game specification.
+
+**0.78.0 / Round 78 (game-night fixes) is complete on the integration branch `round78`;
+not on main, not pushed; the GUI test is open.** Fourteen items from a game night (rulings
+2026-11-12, [plan](planning/round78-plan.md)) in six lanes: SMALL (potion cooldown 30 s and
+its status, repair factor 0.5, guards at street level, towering, Claim Stone anthracite, Ore
+Sense protection, flying mount retry), TAGS (lost nametag carriers rebuilt; the E-key study),
+EXPED (static Expedition nodes, the 10 s respawn lock), ARMOR (ratings ×10 with one decimal
+inside), BOSS (edge-to-edge stand-off, ranged or melee by distance for every mob with both
+attacks, friendly casts past hostile bodies), EMOTE (Wave, Dance, a seated Wave). Every lane
+had an independent review (all MERGE; EXPED, BOSS and EMOTE after a fix round).
+**Compatible:** no step, no map reset; no new saved key (`grug_traders:potion_cd` is now also
+read by the status source); `check_upgrade.py` against `origin/main` (0.76.2) passes. The
+round-end full run, the squash merge into main after the user's go, and the push are open.
+**Open for the user:** the 15-item desktop and web checklist (plan §6), the emotes' look,
+and the E-key decision (the study recommends a client latch: a web-fork patch now, an
+upstream proposal for desktop; `dedicated_server_step` stays 0.09)
+([completion](planning/round78-plan.md#completion-2026-11-12)).
 
 **0.76.2 / Round 76.2** adds `/home` (the user, 2026-11-11): the chat command starts the same
 Return home as the button, with the same rules and cooldown (`grug_home/home_command.lua`);

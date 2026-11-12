@@ -106,7 +106,7 @@ local ELIXIR_DETAIL = {
 	hp_pool_percent = "+%.1f%% maximum HP",
 	mana_pool_percent = "+%.1f%% maximum Mana",
 	crit_percent = "+%.1f Crit",
-	armor = "+%.1f armor rating",
+	armor = "+%s armor rating",
 }
 local function elixir_detail(definition, modifiers)
 	if definition.kind == "deepwater" then
@@ -114,6 +114,9 @@ local function elixir_detail(definition, modifiers)
 	end
 	local pattern = ELIXIR_DETAIL[definition.modifier]
 	local value = modifiers[definition.modifier]
+	if value and definition.modifier == "armor" then
+		value = grug_gear.format_armor(value) -- a rating, shown x10
+	end
 	return pattern and value and pattern:format(value) or ""
 end
 

@@ -51,6 +51,9 @@ data 342
   (`grug_expeditions/guard.lua`). The mark is by node, so a template keeps its diggable nodes out of its walls.
   Ore and gem are written as T2's (`catalogue.TEMPLATE_ORE`, `TEMPLATE_GEM`): a run of another tier writes its tier's
   nodes in their cells and marks those instead (`catalogue.TIERS`, `template.resolve`'s variants, `written(run)`).
+  Since Round 78 every run also writes the nodes in `catalogue.STATIC` as their static copies (a hanging lantern, a
+  wall torch, a bookshelf: nothing a punch drops, no inventory); a template keeps naming the originals, never marks
+  them, and an attached or falling node of its own stands on a walkable node that is no mark (`tools/r78_exped`).
 - `place <name> x y z`: a named cell. `arrival` (the cell a player stands in, the start waystone beside it),
   `start_waystone` and `end_waystone` are required; `chest`, `door` and any other name are for the lanes that read them
   through `grug_expeditions.places(run)`.

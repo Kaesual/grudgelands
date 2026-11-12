@@ -256,7 +256,10 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
 
 - **Hull:** the walls are indestructible. Anything destructible is so on purpose: a tunnel
   the story asks for, or ore and gem nodes. The open sea's rule refuses everything else
-  ([world.md](world.md) R3).
+  ([world.md](world.md) R3). Nothing a template writes moves for a player either (Round 78,
+  ruling 5): a hanging lantern, a wall torch and a bookshelf are written as static copies
+  (no attachment a punch could drop, no shelf inventory); every other attached or falling
+  node stands on a walkable support that is no mark (`tools/r78_exped`).
 - **No building** at all, and players place no liquids. A template's own lava is allowed
   and stays where it was written (Round 72, `grug_core/lava_guard.lua`: every box holds its
   lava; nothing flows in, out or away). Short jump-and-run tasks appear in the higher
@@ -274,7 +277,13 @@ Expedition's name. An arrival hides the unloaded room behind one second of black
   them, only while they are inside, and they go with the run; a few hundred live particles per Expedition at most.
 - **No mounts:** neither riding nor flying, and no boats ([mounts](mounts.md) §4.0).
 - **Death:** the player respawns at the start waystone. Round 70's death penalty applies
-  ([durability](durability_repair.md)).
+  ([durability](durability_repair.md)). **The respawn lock** (Round 78, ruling 11): a player
+  who dies in their run while a living member inside the same run is in combat sees "Your
+  group is still fighting." and a grey Respawn button counting down 10 s; it frees at 10 s,
+  or at once when no living member inside fights any more, and stays free until the
+  respawn. Esc and a relog show it again with the time left (the time runs on while
+  offline); a player no longer in the run (it ended, or they left the party) is free. A
+  death outside a run, or with nobody fighting, shows the ordinary death screen.
 - **Digging:** only what the template marks, in a running Expedition, by a player who
   belongs to it. The ordinary mining path applies: the right pick, drop and wear. A hole
   takes no block.

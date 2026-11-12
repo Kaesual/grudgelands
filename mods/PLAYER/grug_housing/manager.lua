@@ -89,7 +89,7 @@ end
 local LINES = {
 	"From level 20 you get one Claim Stone for free.",
 	"Place it in your faction's lands of level 11 to 30.",
-	("Activate it within %d minutes with %d coal lumps or charcoal,"):format(
+	("Activate it within %d minutes with %d coal, charcoal or anthracite,"):format(
 		grug_housing.DRAFT_SECONDS / 60, grug_housing.ACTIVATION_LUMPS),
 	"or it crumbles and I give you a new one.",
 	"It burns coal lumps or charcoal: 99 lumps last about 30 days.",

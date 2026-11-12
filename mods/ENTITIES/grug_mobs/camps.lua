@@ -287,17 +287,29 @@ local function count_camp_mobs(pos, cfg)
 	return n
 end
 
+-- The levels a spot is searched at, relative to the anchor, in order. A camp
+-- fire takes the first fit from pos.y + 3 down to pos.y - 3. A guard post
+-- (Round 78 ruling 4) only at street level: the banner's own cell (it stands
+-- on the street) first, then one below and one above for a slope, so a lamp
+-- post's top (posts at +0 and +1, a floor torch at +2, its top at +3) and
+-- any other raised spot are out of reach.
+local CAMP_LEVELS = {3, 2, 1, 0, -1, -2, -3}
+local STREET_LEVELS = {0, -1, 1}
+
 -- A standable spot in the ring around the fire: air with air above it and
--- solid, non-liquid ground below. Searched locally (pos.y +-3) because a camp
--- refill must not substitute a different authored terrain level.
-local function free_spot_near(pos, radius)
+-- solid, non-liquid ground below. Searched locally (see the levels above)
+-- because a camp refill must not substitute a different authored terrain
+-- level. `street`: a guard post's levels, and the ground must be walkable
+-- (no torch, plant or rope under the feet).
+local function free_spot_near(pos, radius, street)
+	local levels = street and STREET_LEVELS or CAMP_LEVELS
 	for _ = 1, SPOT_TRIES do
 		local angle = math.random() * 2 * math.pi
 		local dist = 2 + math.random() * math.max(0, radius - 2)
 		local x = math.floor(pos.x + math.cos(angle) * dist + 0.5)
 		local z = math.floor(pos.z + math.sin(angle) * dist + 0.5)
-		for dy = 3, -3, -1 do
-			local p = {x = x, y = pos.y + dy, z = z}
+		for index = 1, #levels do
+			local p = {x = x, y = pos.y + levels[index], z = z}
 			local here = core.get_node_or_nil(p)
 			local above = core.get_node_or_nil({x = x, y = p.y + 1, z = z})
 			local below = core.get_node_or_nil({x = x, y = p.y - 1, z = z})
@@ -305,7 +317,10 @@ local function free_spot_near(pos, radius)
 					and here.name == "air" and above.name == "air"
 					and below.name ~= "air" and below.name ~= "ignore"
 					and core.get_item_group(below.name, "liquid") == 0 then
-				return p
+				local floor = street and core.registered_nodes[below.name]
+				if not street or (floor and floor.walkable ~= false) then
+					return p
+				end
 			end
 		end
 	end
@@ -368,7 +383,7 @@ end
 -- `living` is the head count BEFORE this spawn (the patrol rule below reads
 -- it), which is why the drain loop counts up as it goes.
 local function spawn_one(pos, meta, cfg, living)
-	local spot = free_spot_near(pos, cfg.radius)
+	local spot = free_spot_near(pos, cfg.radius, cfg.node == BANNER_NODE)
 	if not spot then
 		return false
 	end
@@ -866,6 +881,30 @@ grug_mobs.register_camp_type("guard_throng", {
 	respawn_min = GUARD_RESPAWN_MIN,
 	respawn_max = GUARD_RESPAWN_MAX,
 })
+
+-- Round 78 ruling 4, for the guards already standing in a world: a post guard
+-- that a spawn before 0.78.0 put on a lamp post or another raised spot (more
+-- than one node above its banner's street level, inside the post's radius)
+-- is moved to a street spot of its post. guard.lua calls this once per
+-- activation; a patroller, a guard in a fight and a guard off its post are
+-- left alone, and so is one for whom no street spot is free right now.
+function grug_mobs.guard_to_street(self)
+	local camp = self._grug_camp_pos
+	if not camp or self._grug_patrol_route or self.state == "attack" then return false end
+	local pos = self.object and self.object:get_pos()
+	if not pos or pos.y <= camp.y + 1 then return false end
+	local radius
+	for _, cfg in pairs(grug_mobs.registered_camp_types) do
+		if cfg.node == BANNER_NODE and camp_member(cfg, self.name) then radius = cfg.radius end
+	end
+	local dx, dz = pos.x - camp.x, pos.z - camp.z
+	if not radius or dx * dx + dz * dz > (radius + 1) * (radius + 1) then return false end
+	local spot = free_spot_near(camp, radius, true)
+	if not spot then return false end
+	-- The spot is the air cell; the body stands on its floor.
+	self.object:set_pos({x = spot.x, y = spot.y - 0.5, z = spot.z})
+	return true
+end
 
 
 --

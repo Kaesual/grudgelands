@@ -75,7 +75,9 @@ Core principles:
   are never hostile targets: direct casts refuse them, projectiles pass through
   them and hostile area effects skip them. `friendly` accepts another living
   same-faction player. Friendly skills resolve to a currently pointed valid
-  ally within the skill's range and line of sight, otherwise the caster.
+  ally within the skill's range and line of sight, otherwise the caster; their
+  ray looks past mobs and hostile players to the first friendly player (Round
+  78), so a heal reaches the tank behind the boss.
   There is no remembered-ally fallback; looking into empty space always selects
   self (user ruling 2026-09-24). An aimed ally the PvP flag rules out (an
   unflagged helper, a flagged ally) is a refusal at no cost, never a self-cast

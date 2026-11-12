@@ -48,20 +48,16 @@ end
 -- size depends on the level (armor, the pools) every rank's amount at the
 -- viewer's level, through the same rules the consumers read.
 local POOL_KEYS = {max_hp_percent_add = {"hp", "HP"}, max_mana_percent_add = {"mana", "mana"}}
-local function amount_text(value)
-	if value >= 10 then
-		return tostring(math.floor(value + 0.5))
-	end
-	return (("%.1f"):format(value):gsub("%.0$", ""))
-end
 local function own_text(viewer, def)
 	local parts = {}
 	for key, values in pairs(def.effects) do
 		local pool = POOL_KEYS[key]
 		if graph.LEVEL_SCALED_KEYS[key] then
+			-- The only level-scaled key is armor: shown as a rating, x10
+			-- (grug_gear.format_armor, Round 78).
 			for _, value in ipairs(values) do
-				parts[#parts + 1] = "+" .. amount_text(graph.level_amount(key, value,
-					grug_xp.get_level(viewer)))
+				parts[#parts + 1] = "+" .. grug_gear.format_armor(graph.level_amount(key,
+					value, grug_xp.get_level(viewer)))
 			end
 			return ("%s At your level: %s armor rating."):format(def.description,
 				table.concat(parts, " / "))

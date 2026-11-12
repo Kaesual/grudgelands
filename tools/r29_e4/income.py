@@ -101,7 +101,7 @@ BOATS = ((5, "Boat", 1), (6, "Improved Boat", 2))  # priced like that riding tie
 RESPEC_MINUTES = 5
 CROWN_MINUTES = 60  # the Crownbinder's fee: 1 h of band-6 income
 REPAIR_FACTOR_R29 = 0.20
-REPAIR_FACTOR = 1.00  # grug_repair.FACTOR since Round 33
+REPAIR_FACTOR = 0.50  # grug_repair.FACTOR (1.00 from Round 33, 0.50 since Round 78)
 # Gear drops per normal kill (round33-plan.md section 2.1): percent and sale
 # multiplier per quality; the tier's 26 equippables by slot price.
 GEAR_DROPS = ((5.0, 1), (2.0, 3), (1.0, 6))

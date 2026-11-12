@@ -249,6 +249,8 @@ return function(repo, hidden)
 	local armor_k = combat:match("(function grug_core%.armor_k%(attacker_level%).-\nend)\n")
 	assert(loadstring(assert(fit, "base_pool block in combat.lua")))()
 	assert(loadstring(assert(armor_k, "armor_k in combat.lua")))()
+	-- The one armor display helper for the talent texts (Round 78: x10).
+	dofile(repo .. "/tools/r78_armor/format_armor.lua")(repo)
 	grug_xp = {
 		get_level = function(player) return player.level end,
 		register_on_level_change = function(fn) table.insert(registered.level_change, fn) end,

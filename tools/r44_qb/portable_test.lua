@@ -251,6 +251,8 @@ grug_core = {
 	in_combat = function(player) return combat[player:get_player_name()] == true end,
 	set_status = function(player, id, def) statuses[player:get_player_name() .. ":" .. id] = def end,
 	clear_status = function(player, id) statuses[player:get_player_name() .. ":" .. id] = nil end,
+	-- Round 78: potion.lua shows the potion cooldown through a status source.
+	register_status_source = function() return true end,
 	flash = function() end,
 	hud_layout = {anchors = {flight_warning = {}}, flight_warning_offset = function() return {} end},
 	feed = function(player, kind, text, key)
@@ -402,7 +404,8 @@ lacks(fs, "grug_quickbar_home", "no home: no Return home button")
 has(fs, "Click to use\\; the window closes.", "the hint")
 local w, h = size_of(fs)
 eq(w, 5.75, "four inventory slots wide")
-check(h and h > 4 and h < 7, "roughly square without a home: " .. tostring(h))
+-- Round 78: the Emotes section (Wave, Dance) adds 1.55 to every height.
+check(h and h > 4 and h < 9, "roughly square without a home: " .. tostring(h))
 
 ada.meta["grug_mounts:land_tier"] = 2
 ada.meta["grug_mounts:water_tier"] = 6
@@ -437,7 +440,7 @@ lacks(fs, "#7ae08a", "on foot: no ridden frame")
 local w2, h2 = size_of(fs)
 eq(w2, 5.75, "width unchanged")
 -- Section spacing includes the A/B switch, home action and two-line hint.
-check(h2 and h2 > 6 and h2 < 9, "one mount row and a home: compact stacked sections (" .. tostring(h2) .. ")")
+check(h2 and h2 > 6 and h2 < 11, "one mount row and a home: compact stacked sections (" .. tostring(h2) .. ")")
 
 -- Five owned tiers: a second row.
 ada.meta["grug_mounts:flight_tier"] = 3

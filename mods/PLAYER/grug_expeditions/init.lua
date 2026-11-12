@@ -7,7 +7,8 @@
 -- Nothing about a run is saved: a restart ends every run, a login in a box whose
 -- run is gone stands at the waystone the player came in from (one saved value, its
 -- id; a registrar's capital, or since Round 72 any waystone of the Expeditions tab),
--- else at home. Packs: packs.lua. The waystones in and out: entry.lua.
+-- else at home. Packs: packs.lua. The waystones in and out: entry.lua. Since Round 78
+-- a death in a run while a member inside fights waits for its respawn: respawn_lock.lua.
 --
 -- THE INTERFACE (other mods read it; a `run` row is read-only for them)
 --
@@ -127,7 +128,7 @@ for _, row in ipairs(catalogue.EXPEDITIONS) do
 end
 core.register_on_mods_loaded(function()
 	local swaps = catalogue.swaps()
-	for _, tpl in pairs(grug_expeditions.templates) do template.resolve(tpl, swaps) end
+	for _, tpl in pairs(grug_expeditions.templates) do template.resolve(tpl, swaps, catalogue.STATIC) end
 end)
 
 -- The template as `run` writes it, its tier's ore and gem in the template's places:
@@ -143,6 +144,7 @@ dofile(path .. "/navigation.lua")
 dofile(path .. "/traps.lua")
 dofile(path .. "/particles.lua")
 dofile(path .. "/guard.lua")
+dofile(path .. "/respawn_lock.lua")
 dofile(path .. "/registrar.lua")
 
 -- The two stones inside: the capital's waystone in look, and since Round 72 the

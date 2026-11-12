@@ -323,7 +323,10 @@ do
 	local O = dofile(repo .. "/mods/ENTITIES/mobs/grug_obstacle.lua")
 	local swing_src = cut("\t\t\t-- GRUG PATCH (Round 37 MB, MOB-07): no ordinary swing",
 		"if consume then self.punch_timer = 0 end", "swing")
+	-- Round 78 BOSS: the swing reads do_states' melee measures (m_edge, m_reach,
+	-- grug_obstacle.melee_measure); the wind-up test keeps the plain distance.
 	local swing = load_in("return function(self, dist, s, target_pos, in_sight, ground_melee)\n"
+		.. "local m_edge, m_reach = dist, self.reach\n"
 		.. swing_src .. "\nend", {
 			random = function() return 1 end,
 			grug_winding_up = winding_up,

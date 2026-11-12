@@ -1,7 +1,7 @@
 -- Round 72 lane RANGED portable test (round72-plan.md §2.4, §3.1, §4
 -- RANGED): the ranged kings are ordinary ground ranged mobs. Loads the REAL
 -- king definitions (cut out of grug_mobs/bosses.lua), the REAL attack-branch
--- decisions of mobs/api.lua do_states (dogswitch, the shot range and closing
+-- decisions of mobs/api.lua do_states (the distance mode, the shot range and closing
 -- helpers, the branch conditions and can_nav, cut out) and the REAL
 -- mobs/grug_nav.lua and mobs/grug_obstacle.lua on a small fake engine (a
 -- node grid, a sampling raycast, a grid search modelled on the engine's
@@ -20,8 +20,10 @@
 --        ledge  a target on a 5-high pillar 10 m away, unreachable but in
 --               sight: it shoots (the reset is BOSSRESET's);
 --        far    30 m: it closes in and shoots inside its shot range;
---        rhythm 10 s ranged, then 3 s melee (it runs at the target), then
---               ranged again;
+--        rhythm Round 78 BOSS replaced the 10 s / 3 s clock by the distance
+--               mode (round78-plan.md ruling 6, tools/r78_boss): at 15 m
+--               the king stays ranged the whole time; a target that comes
+--               close is met in melee, the king stopping about a node off;
 --        and, reported only, the melee phase against the ledge.
 -- Prints the search counts per scene (the fake engine's searches; the
 -- engine's costs are the probe's) and the shot cadence.
@@ -261,12 +263,9 @@ local mob_class = {}
 local line_of_sight = load_in("local mob_class = {}\n" ..
 	cut(api, "function mob_class:line_of_sight(pos1, pos2)", "\n-- if not flying", "line_of_sight") ..
 	"\nreturn mob_class.line_of_sight", {get_node = core.get_node}, "line_of_sight")
-local dogswitch = load_in("local mob_class = {}\n" ..
-	cut(api, "function mob_class:dogswitch(dtime)", "\n-- GRUG PATCH (Round 56 MOBAI", "dogswitch") ..
-	"\nreturn mob_class.dogswitch", {}, "dogswitch")
 local helpers = load_in(cut(api, "local GRUG_SHOT_RANGE_EXTRA = 4", "-- stop attack & reset vars",
-	"shot range helpers") .. "\nreturn {range = grug_shot_range, closing = grug_ranged_closing}",
-	{mobs = {}}, "shot range helpers")
+	"shot range helpers") .. "\nreturn {range = grug_shot_range, closing = grug_ranged_closing,"
+	.. " mode = grug_dogshoot_mode}", {mobs = {}}, "shot range helpers")
 local function fn(args, body)
 	return assert(loadstring("local pathfinding_enable = true\nreturn function(" .. args ..
 		") return " .. body .. " end"))()
@@ -321,7 +320,7 @@ local function new_king(race, before)
 	local c = def.collisionbox
 	local box = {c[1] * 1.4, c[2] * 1.4, c[3] * 1.4, c[4] * 1.4, c[5] * 1.4, c[6] * 1.4}
 	m._grug_cbox = O.physics_box(box, m)
-	m.initial_properties = {stepheight = def.stepheight}
+	m.initial_properties = {stepheight = def.stepheight, collisionbox = c}
 	m.dogshoot_count = 0
 	m.timer = 0
 	m.temp = {}
@@ -344,7 +343,8 @@ local function free(p, hw, head)
 	return true
 end
 
--- Run one scene for `seconds`; returns what happened.
+-- Run one scene for `seconds`; returns what happened. `tpos` is the
+-- target's feet; the king's origin sits `-box[2]` above its own feet.
 local function run(m, start, tpos, seconds)
 	searches = 0
 	nav.forget(m.temp)
@@ -363,7 +363,10 @@ local function run(m, start, tpos, seconds)
 		if dist < out.min_dist then out.min_dist = dist end
 		local in_sight = O.target_visible(m, p, tpos, false)
 		if in_sight and not out.first_sight then out.first_sight = i * DT end
-		local ds_var = m.attack_type == "dogshoot" and dogswitch(m, DT) or 0
+		-- Round 78 BOSS: the distance mode on the real edge measures.
+		local edge, gap, reach, stop = O.melee_measure(m, p, tpos, dist)
+		local ds_var = m.attack_type == "dogshoot" and helpers.mode(m, edge, reach, in_sight, DT) or 0
+		if gap < (out.min_gap or math.huge) then out.min_gap = gap end
 		out.phases[#out.phases + 1] = ds_var
 		local b = branch(m, ds_var, dist, in_sight)
 		if b == "dogfight" then
@@ -372,14 +375,16 @@ local function run(m, start, tpos, seconds)
 			local v = 0
 			if can_nav(m) then
 				local steer, outcome = nav.combat_step(m, p, DT, target, tpos, dist,
-					dist <= m.reach and in_sight, false)
+					edge <= reach and in_sight, false)
 				if outcome == "give_up" then
 					out.give_up = true
 					break
 				end
 				if steer then goal = steer end
 			end
-			if dist > m.reach or not in_sight then v = m.run_velocity end
+			if edge > reach or O.should_close_contact(gap, stop, in_sight) then
+				v = m.run_velocity
+			end
 			if can_nav(m) then nav.command(m, p, v) end
 			local gx, gz = goal.x - p.x, goal.z - p.z
 			local l = math.sqrt(gx * gx + gz * gz)
@@ -469,37 +474,38 @@ for _, race in ipairs({"elf", "undead", "troll"}) do
 		"S8 far: the " .. race .. " king closes to 3 m inside his shot range and shoots (at "
 		.. string.format("%.1f", 30 - after.pos.x) .. " m)")
 
-	-- rhythm: 10 s ranged, 3 s melee (he runs at the target), ranged again.
+	-- Round 78 BOSS: the distance mode replaces the rhythm (ruling 6).
 	world = {}
 	local k = new_king(race)
 	after = run(k, {x = 0, z = 0}, {x = 15, y = Y, z = 0}, 14)
-	local first2, last2
-	for i, v in ipairs(after.phases) do
-		if v == 2 then
-			first2 = first2 or i
-			last2 = i
-		end
+	local melee_steps = 0
+	for _, v in ipairs(after.phases) do
+		if v == 2 then melee_steps = melee_steps + 1 end
 	end
-	check(first2 and math.abs(first2 * DT - 10.1) < 0.15 and math.abs((last2 - first2 + 1) * DT
-		- 3.1) < 0.15 and after.phases[#after.phases] == 1,
-		"S9 the " .. race .. " king's rhythm: ranged to 10 s, melee about 3 s, ranged again")
-	check(after.moved > 8, "S10 in the melee phase the " .. race .. " king runs at his target ("
-		.. string.format("%.1f", after.moved) .. " m)")
+	check(melee_steps == 0 and after.moved == 0 and after.shots == 4,
+		"S9 at 15 m the " .. race .. " king shoots for 14 s, no melee phase (" .. after.shots .. " shots)")
+	-- A target 3 m off: melee, the king stops about a node from it, never inside.
+	k = new_king(race)
+	after = run(k, {x = 0, z = 0}, {x = 3.5, y = Y, z = 0}, 3)
+	check(after.phases[#after.phases] == 2 and after.shots == 0 and after.moved > 0
+		and after.min_gap > 0.5 and after.min_gap <= 1,
+		"S10 at 3.5 m the " .. race .. " king closes to melee, stops "
+		.. string.format("%.2f", after.min_gap) .. " nodes off")
 end
 
--- The melee phase against the ledge, reported, not pinned: the king runs to
--- the foot of the pillar, where the ledge hides his target; back in the
--- ranged phase he searches a way to it, which does not exist, and the
--- navigation gives the target up (aggro.lua give_up_target; from Round 72
--- BOSSRESET's boss floor decides a king's reset). The same as an archer's.
+-- The ledge for 16 s, reported: until Round 72's clock the king's 3 s melee
+-- phase ran him to the foot of the pillar, where the ledge hid his target,
+-- and the navigation then gave the target up. Since Round 78 BOSS (the
+-- distance mode) the target 10 m off stays a ranged target: shot at the
+-- whole time, never given up.
 do
 	world = {}
 	fill(10, 1, 0, 10, 5, 0, "stone")
 	local out = run(new_king("elf"), {x = 0, z = 0}, {x = 10, y = 5 + Y, z = 0}, 16)
-	report[#report + 1] = "elf ledge 16 s (one melee phase): shots " .. out.shots ..
+	report[#report + 1] = "elf ledge 16 s: shots " .. out.shots ..
 		", searches " .. out.searches .. ", gave up " .. tostring(out.give_up) ..
 		", ended " .. string.format("%.1f", out.min_dist) .. " m from the target"
-	check(out.shots >= 3, "S11 the ledge target is shot through the whole ranged phase")
+	check(out.shots >= 5 and not out.give_up, "S11 the ledge target is shot the whole time, kept")
 end
 
 for _, line in ipairs(report) do print("  " .. line) end

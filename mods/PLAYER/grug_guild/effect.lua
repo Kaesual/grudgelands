@@ -32,8 +32,8 @@
 -- that falls due outside it does nothing and the next interval starts), ONE
 -- core.find_nodes_in_area over the `range` box (clipped to the band) for
 -- every target node at once; the mark goes to a random deposit within range
--- (a random target kind that has one, then one of its deposits), for
--- marker_seconds.
+-- (a random target kind that has one, then one of its deposits) that the
+-- user may dig (Round 78 ruling 14), for marker_seconds.
 --
 -- Treasure Hunt: one Miner's Remains at a time (items.lua registers the
 -- nodes), placed place_min..place_max nodes from the user in the tier's own
@@ -321,6 +321,11 @@ for tier, keys in ipairs(catalog.ORE_SENSE_TARGETS) do
 	target_nodes[tier] = nodes
 end
 
+-- Protection checks one mark may spend on deposits `name` may not dig
+-- before it gives up (Round 78): a user deep inside a town or a claim gets
+-- no mark rather than a protection call for every deposit in range.
+grug_guild.ORE_SENSE_CHECKS = 16
+
 -- The deposit Ore Sense of `tier` marks from pos (the user's ruling,
 -- 2026-10-23: a random deposit, ore or gem): of the targets with a deposit
 -- within `range` (true distance; the engine searches the cube around it,
@@ -328,7 +333,11 @@ end
 -- nil when none. Kind first, so a rare gem is marked as often as a common
 -- ore instead of drowning in Coal. One engine search for all targets.
 -- `random(lo, hi)` is math.random unless a caller (the fixture) passes one.
-function grug_guild.ore_sense_find(pos, tier, range, random)
+-- With `name`, only a deposit that player may dig (Round 78 ruling 14:
+-- core.is_protected, the dig rule itself, so a running Expedition's
+-- diggable ores stay markable): draw, check, and on a protected one drop it
+-- and draw again, at most ORE_SENSE_CHECKS times.
+function grug_guild.ore_sense_find(pos, tier, range, random, name)
 	random = random or math.random
 	pos = rounded(pos)
 	local band = tier_row(tier)
@@ -344,9 +353,23 @@ function grug_guild.ore_sense_find(pos, tier, range, random)
 		end
 		if #near > 0 then kinds[#kinds + 1] = {node_name, near} end
 	end
-	if #kinds == 0 then return nil end
-	local kind = kinds[random(1, #kinds)]
-	return kind[2][random(1, #kind[2])], kind[1]
+	for _ = 1, name and grug_guild.ORE_SENSE_CHECKS or 1 do
+		if #kinds == 0 then return nil end
+		local k = random(1, #kinds)
+		local kind = kinds[k]
+		local deposits = kind[2]
+		local d = random(1, #deposits)
+		local at = deposits[d]
+		if not name or not core.is_protected(at, name) then return at, kind[1] end
+		-- Protected for this player: swap-remove it, and the kind when empty.
+		deposits[d] = deposits[#deposits]
+		deposits[#deposits] = nil
+		if #deposits == 0 then
+			kinds[k] = kinds[#kinds]
+			kinds[#kinds] = nil
+		end
+	end
+	return nil
 end
 
 local function ore_texture(node_name)
@@ -362,7 +385,8 @@ local function ore_sense_mark(effect)
 	local row = effect.row
 	local pos = player:get_pos()
 	if not in_band(row.tier, pos.y) then return end
-	local at, node_name = grug_guild.ore_sense_find(pos, row.tier, row.range)
+	local at, node_name = grug_guild.ore_sense_find(pos, row.tier, row.range, nil,
+		effect.name)
 	if not at then return end
 	remove_marker(effect, "ore_marker")
 	local id = add_marker(player, at, ore_texture(node_name))
