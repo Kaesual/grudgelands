@@ -56,6 +56,7 @@ local function strength(level) return 10 + 3 * (level - 1) end
 local function base_hit(level) return sword(level) + strength(level) / 10 end
 local function level_scale(level) return base_pool(level) / (8 * base_hit(level)) end
 local function armor_k(level) return 20 + 0.5 * math.min(level, 60) end
+dofile(ROOT .. "/tools/r78_armor/format_armor.lua")(ROOT) -- Round 78: ratings shown x10
 
 ------------------------------------------------------------------------------
 -- G: the graph data.
@@ -901,6 +902,9 @@ do
 		for _, s in ipairs(log.statuses) do if s.id == "unbroken" then st = s end end
 		for _, x in ipairs(log.absorbs) do if x.id == "unbroken" then ab = x end end
 		near(st and st.def.modifiers.armor, 0.5 * armor_k(level), "K7 Unbroken +0.50 K armor" .. L)
+		check(R.unbroken.description_for(p, R.unbroken):find("+" ..
+			math.floor(0.5 * armor_k(level) * 10 + 0.5) .. " armor and", 1, true),
+			"K7 its tooltip shows the armor x10 (Round 78)" .. L)
 		near(st and st.def.duration, 8, "K7 ...for 8 s" .. L)
 		near(ab and ab.amount, 0.15 * P, "K7 a 0.15 P shield" .. L)
 		near(ab and ab.duration, 8, "K7 ...expiring with it" .. L)

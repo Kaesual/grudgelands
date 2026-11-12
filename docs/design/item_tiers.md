@@ -120,9 +120,11 @@ value is recomputed whenever the item level or the enchant tier changes
 | Armor rating | 0 | 0.08 | 0 | 1 | 0.5 |
 <!-- end generated -->
 
-The percentage stats, armor rating included, are shown and summed with one
-decimal (today HP, Mana, attack speed and armor are whole numbers); without
-it T6, T7 at 65 and T7 at 70 would round to the same value.
+The percentage stats, armor rating included, are stored and summed with one
+decimal; without it T6, T7 at 65 and T7 at 70 would round to the same value.
+The percentages show that decimal; armor rating shows ten times larger as a
+whole number, like every armor rating (Round 78 ruling 12): the T6 top 4.8
+reads "+48 armor rating". The tables here keep the stored unit.
 
 *Rationale:* one enchant is worth about the same in its kind for the class
 that wants it (plan §2.9), and that worth grows with the item level, from
@@ -588,7 +590,7 @@ ladder of Round 45) and upgrades lift it level by level to the top
 an Embersteel sword (T5) with two T5 enchants: item level 41 → 50, damage
 18 → 22, a Strength enchant 11 → 15, a Crit enchant 3.5 → 3.9 %. An upgraded
 T(n) weapon equals a plain T(n+1) one in base damage, an armour piece is at
-most one armor point behind it (one item level lower); the upgrade keeps its
+most 3 shown armor points behind it (one item level lower); the upgrade keeps its
 enchants, which a new base would have to buy again.
 
 ### 3.3 Profession families (v2, user ruling 2026-10-04)
@@ -716,13 +718,13 @@ eight King kills, next to Master Riding's five hours.
 | 1 | 1 | Elixir of Vigor I | +4.0 % maximum HP, 15 min | Sunleaf + Tattered Flesh |
 | 1 | 1 | Elixir of Focus I | +5.0 % maximum Mana, 15 min | Gravemoss + Crab Eye |
 | 1 | 1 | Elixir of Precision I | +4.2 percentage points Crit, 15 min | Sunleaf + Boar Tusk |
-| 1 | 1 | Stoneskin Elixir I | +0.8 armor rating, 30 min | Gravemoss + Crab Leg |
+| 1 | 1 | Stoneskin Elixir I | +8 armor rating, 30 min | Gravemoss + Crab Leg |
 | 2 | 11 | Healing Potion II | restores 200 HP at once | Dragonweed + Sunleaf |
 | 2 | 11 | Mana Potion II | restores 200 Mana at once | Dragonweed + Sugar Cane |
 | 2 | 11 | Elixir of Vigor II | +4.8 % maximum HP, 15 min | Dragonweed + Tough Sinew |
 | 2 | 11 | Elixir of Focus II | +5.6 % maximum Mana, 15 min | Dragonweed + Clear Crab Eye |
 | 2 | 11 | Elixir of Precision II | +5.2 percentage points Crit, 15 min | Dragonweed + Ridged Boar Tusk |
-| 2 | 11 | Stoneskin Elixir II | +1.6 armor rating, 30 min | Dragonweed + Ridged Crab Shell |
+| 2 | 11 | Stoneskin Elixir II | +16 armor rating, 30 min | Dragonweed + Ridged Crab Shell |
 | 2 | 11 | Antivenom | clears all poison (unchanged) | Dragonweed + Venom Gland |
 | 2 | 11 | Swiftness Draught | +10 % movement speed for 5 s (unchanged) | Dragonweed + Fang |
 | 3 | 21 | Healing Potion III | restores 400 HP at once | Crimson Lotus + Gravemoss |
@@ -730,27 +732,27 @@ eight King kills, next to Master Riding's five hours.
 | 3 | 21 | Elixir of Vigor III | +5.6 % maximum HP, 15 min | Crimson Lotus + Bear Claw |
 | 3 | 21 | Elixir of Focus III | +6.2 % maximum Mana, 15 min | Crimson Lotus + Cave Cap |
 | 3 | 21 | Elixir of Precision III | +6.0 percentage points Crit, 15 min | Crimson Lotus + Serrated Fang |
-| 3 | 21 | Stoneskin Elixir III | +2.4 armor rating, 30 min | Crimson Lotus + Layered Crab Shell |
+| 3 | 21 | Stoneskin Elixir III | +24 armor rating, 30 min | Crimson Lotus + Layered Crab Shell |
 | 3 | 21 | Cave Draught | night vision for 10 min (unchanged) | Cave Cap + Bound Wisp Mote |
 | 4 | 31 | Healing Potion IV | restores 650 HP at once | Crimson Lotus + Leathery Flesh |
 | 4 | 31 | Mana Potion IV | restores 650 Mana at once | Crimson Lotus + Venom Sac |
 | 4 | 31 | Elixir of Vigor IV | +6.4 % maximum HP, 15 min | Crimson Lotus + Ironbound Sinew |
 | 4 | 31 | Elixir of Focus IV | +6.8 % maximum Mana, 15 min | Crimson Lotus + Campaign Talisman |
 | 4 | 31 | Elixir of Precision IV | +7.0 percentage points Crit, 15 min | Crimson Lotus + Razor Cat Claw |
-| 4 | 31 | Stoneskin Elixir IV | +3.2 armor rating, 30 min | Crimson Lotus + Shiny Scale |
+| 4 | 31 | Stoneskin Elixir IV | +32 armor rating, 30 min | Crimson Lotus + Shiny Scale |
 | 5 | 41 | Healing Potion V | restores 1000 HP at once | Ember Moss + Crimson Lotus |
 | 5 | 41 | Mana Potion V | restores 1000 Mana at once | Stormkelp + Crimson Lotus |
 | 5 | 41 | Elixir of Vigor V | +7.2 % maximum HP, 15 min | Ember Moss + Scorched Flesh |
 | 5 | 41 | Elixir of Focus V | +7.4 % maximum Mana, 15 min | Ember Moss + Cave Cap |
 | 5 | 41 | Elixir of Precision V | +7.8 percentage points Crit, 15 min | Ember Moss + Siegepack Fang |
-| 5 | 41 | Stoneskin Elixir V | +4.0 armor rating, 30 min | Stormkelp + Siege Bone |
+| 5 | 41 | Stoneskin Elixir V | +40 armor rating, 30 min | Stormkelp + Siege Bone |
 | 5 | 41 | Deepwater Elixir | water breathing for 10 min (unchanged) | Stormkelp + Cave Cap |
 | 6 | 51 | Healing Potion VI | restores 1350 HP at once | Wild Cocoa + Ember Moss |
 | 6 | 51 | Mana Potion VI | restores 1350 Mana at once | Wild Cocoa + Stormkelp |
 | 6 | 51 | Elixir of Vigor VI | +8.0 % maximum HP, 15 min | Wild Cocoa + Salt-Cured Flesh |
 | 6 | 51 | Elixir of Focus VI | +8.0 % maximum Mana, 15 min | Wild Cocoa + Last-Hex Shard |
 | 6 | 51 | Elixir of Precision VI | +8.6 percentage points Crit, 15 min | Ember Moss + Sharp Feather |
-| 6 | 51 | Stoneskin Elixir VI | +4.8 armor rating, 30 min | Wild Cocoa + Unquiet Bone |
+| 6 | 51 | Stoneskin Elixir VI | +48 armor rating, 30 min | Wild Cocoa + Unquiet Bone |
 
 Potion check: amount against half the base pool at the tier's top level.
 
@@ -877,7 +879,7 @@ class check below is a Round 33 record until the scripts follow:
 - **Crit** `5 % + 0.05 % Dex + gear`, cap 30 %, ×2 on every swing, spell, arrow
   and heal (v2; before Round 33 0.1 % and ×1.5); **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**
   `min(0.70, R / (R + K))`, `K(L) = 20 + 0.5 min(L, 60) + 8.5 max(L − 60, 0)`
-  ([combat_stats.md](combat_stats.md) §2).
+  in the stored unit; the game shows `R` ×10 ([combat_stats.md](combat_stats.md) §2).
 - **Effective HP** `= HP / ((1 − dodge)(1 − armor reduction))` against a
   same-level foe; the Warrior's armor is the metal set, with or without a
   shield (a shield adds the full metal set's rating).

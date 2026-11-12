@@ -603,6 +603,7 @@ grug_alchemy = {
 grug_traders = {POTION_COOLDOWN = 60, register_all_vendor_stock = function() end}
 local herb_authorizer
 grug_gathering = {register_herb_authorizer = function(fn) herb_authorizer = fn end}
+dofile(ROOT .. "/tools/r78_armor/format_armor.lua")(ROOT) -- Round 78: ratings shown x10
 dofile(ROOT .. "/mods/ITEMS/grug_alchemy/recipes.lua")
 
 -- The readers that load after grug_jobs.

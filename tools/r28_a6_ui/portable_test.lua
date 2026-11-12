@@ -723,6 +723,7 @@ grug_classes = {get_class_def = function() return {resource = "rage"} end,
 	get_crit_chance = function() return 0.05 end, get_dodge_chance = function() return 0.05 end}
 grug_core.get_armor_rating = function() return 10 end
 grug_core.armor_reduction = function() return 0.123 end
+dofile("tools/r78_armor/format_armor.lua")(".") -- Round 78: ratings shown x10
 grug_core.get_player_level = function() return 15 end
 grug_core.register_on_equipment_change = function() end
 grug_core.register_on_status_modifiers_changed = function() end
@@ -740,6 +741,7 @@ contexts.smith = context
 local stats_fs = character:get(smith, context)
 formspec_ok(stats_fs, "character stats")
 has(stats_fs, "label[10.10,3.10;Damage reduction: 12.3%]", "Damage reduction label")
+has(stats_fs, "label[10.10,2.60;Armor: 100]", "Armor shows the rating 10 x10 (Round 78)")
 lacks(stats_fs, "Own-level", "old label gone")
 has(stats_fs, fs_escape("Armor reduction against an enemy of your level."), "tooltip text")
 has(stats_fs, "tooltip[10.10,2.85;9.25,0.50;", "tooltip covers the label line")

@@ -63,6 +63,7 @@ end
 local function armor_k(level)
 	return 20 + 0.5 * math.min(level, 60) + 8.5 * math.max(level - 60, 0)
 end
+dofile(ROOT .. "/tools/r78_armor/format_armor.lua")(ROOT) -- Round 78: ratings shown x10
 -- D before the level scalar with an own-level caster weapon and no gear:
 -- spell_base = round(4 + 0.35 L), Int = 10 + 3 (L - 1).
 local function own_spell_base(level) return math.floor(4 + 0.35 * level + 0.5) end

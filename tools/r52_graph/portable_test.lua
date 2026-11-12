@@ -541,7 +541,7 @@ H.join(warrior)
 fs = H.render(warrior, "grug_classes:talents")
 eq(graph.node_text(warrior, node("B2")), "Armor +4/8/12/16 % of the level's armor constant. " ..
 	"At your level: +20 / +40 / +60 / +80 armor rating.", "E Ironbound's text names its rating")
-has(fs, "armor constant. At your level: +2 / +4 / +6 / +8 armor\nrating.", "E in its tooltip")
+has(fs, "armor constant. At your level: +20 / +40 / +60 / +80 armor\nrating.", "E in its tooltip")
 eq(graph.node_text(warrior, node("B3")), "Max health +3/6/9 %. At your level: +81 HP / " ..
 	"+162 HP / +243 HP.", "E Weathered's amounts at the level (the harness's pool)")
 eq(graph.node_text(warrior, node("B1")), node("B1").description, "E other nodes: the text")
