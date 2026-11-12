@@ -2,9 +2,9 @@
 -- rising edge of aux1 (E; grug_keys) opens a small window on the left of the
 -- screen with the character's purchased mounts and boats on top (and
 -- Dismount below them while riding), the potion belt and the hotbar switch
--- (A and B, Round 50) below and the Return home button at the foot. A click
--- uses the mount, boat, potion, Dismount or Return home and closes the
--- window. The window is sent once per opening and refreshed only by a
+-- (A and B, Round 50) below, the emotes Wave and Dance (Round 78) and the
+-- Return home button at the foot. A click uses the mount, boat, potion,
+-- Dismount, emote or Return home and closes the window. The window is sent once per opening and refreshed only by a
 -- hotbar switch. Its own mod because it reaches mounts, home travel and the
 -- inventory's belt, and grug_mounts and grug_home already depend on
 -- grug_inventory.
@@ -13,7 +13,8 @@
 -- the boat's water surface, the flight rules, dismount of the active tier),
 -- the potion's own on_use with the shared potion cooldown
 -- (grug_traders.potion_cooldown_left), grug_home.return_home (combat, the
--- cooldown, a running return). No "menu open" check: the client releases
+-- cooldown, a running return), grug_visuals.play_emote (the seated Wave on a
+-- mount, its rate limit). No "menu open" check: the client releases
 -- every key while a menu or the chat is open, so E cannot rise there.
 grug_quickbar = {}
 
@@ -28,6 +29,12 @@ local PITCH = SLOT + GAP
 local WIDTH = PAD * 2 + COLUMNS * SLOT + (COLUMNS - 1) * GAP
 local SLOT_COLOR = "#00000069" -- the empty-slot colour of the inventory lists
 local ACTIVE_COLOR = "#7ae08a" -- the frame of the mount or boat being ridden
+-- Dance while riding: greyed in every state (grug_jobs' disabled button), a
+-- click on it changes nothing.
+local DANCE_OFF = "grug_quickbar_dance_off"
+local DANCE_OFF_STYLE = "style[" .. DANCE_OFF .. "," .. DANCE_OFF .. ":hovered," ..
+	DANCE_OFF .. ":pressed;bgimg=grug_ui_button.png;bgcolor=#2a2a2a;" ..
+	"textcolor=#808080;border=false]"
 
 -- player name -> true from a send until the window's quit or a click.
 local open = {}
@@ -122,6 +129,25 @@ function grug_quickbar.formspec(player)
 	fs[#fs + 1] = grug_inventory.hotbar_switch(player, PAD, y, SLOT, 0.6, PITCH, 0)
 	y = y + 0.6
 	fs[section_index] = grug_core.ui.panel(0.2, section_y - 0.2, WIDTH - 0.4, y - section_y + 0.4)
+	-- The emotes (Round 78 ruling 10): two buttons side by side. A rider
+	-- waves seated; Dance is greyed out while riding.
+	y = y + 0.65
+	section_y, section_index = y, #fs + 1
+	fs[section_index] = ""
+	fs[#fs + 1] = grug_core.ui.heading(PAD, y, "Emotes", growth)
+	y = y + 0.3
+	local half = (WIDTH - PAD * 2 - GAP) / 2
+	fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.6;grug_quickbar_wave;Wave]"):format(PAD, y, half)
+	if active then
+		fs[#fs + 1] = DANCE_OFF_STYLE .. ("button[%.3f,%.3f;%.3f,0.6;%s;Dance]"):format(
+			PAD + half + GAP, y, half, DANCE_OFF) ..
+			("tooltip[%s;%s]"):format(DANCE_OFF, esc("Not while riding."))
+	else
+		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.6;grug_quickbar_dance;Dance]"):format(
+			PAD + half + GAP, y, half)
+	end
+	y = y + 0.6
+	fs[section_index] = grug_core.ui.panel(0.2, section_y - 0.2, WIDTH - 0.4, y - section_y + 0.4)
 	fs[#fs + 1] = "style_type[label;font_size=" .. grug_core.ui.font_size(0.85, growth) .. "]"
 	local home_label, home_state = grug_inventory.home_state(player)
 	if home_label then
@@ -204,6 +230,11 @@ function grug_quickbar.handle_fields(player, fields)
 				break
 			end
 		end
+	end
+	-- The greyed Dance (riding) is no field here: the window stays.
+	if not acted and (fields.grug_quickbar_wave or fields.grug_quickbar_dance) then
+		grug_visuals.play_emote(player, fields.grug_quickbar_wave and "wave" or "dance")
+		acted = true
 	end
 	if not acted and fields.grug_quickbar_home then
 		grug_home.return_home(player)

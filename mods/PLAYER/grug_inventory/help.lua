@@ -57,7 +57,7 @@ local SECTIONS = {
 		"• Craft a Wooden Pickaxe early: stone and ore need a pickaxe. Dirt, sand and other loose ground dig by hand (or with a skill selected), a shovel is fastest. The Basic area of the Crafting tab lists the tools, torches, blocks and other goods anyone can make.",
 		"",
 		heading("Keys"),
-		"• I opens your inventory. E opens the quickbar: your mounts and boats, the potion belt and Return home; a click uses one and closes it. Z opens the map with your quest log.",
+		"• I opens your inventory. E opens the quickbar: your mounts and boats, the potion belt, the emotes Wave and Dance (moving ends them; on a mount you wave seated) and Return home; a click uses one and closes it. Z opens the map with your quest log.",
 		"• E and Z are your client's Aux1 and Zoom keys. If you changed those keys in the client's settings, your own keys open the quickbar and the map.",
 		"• With the client setting \"Aux1 key for climbing/descending\" on, holding E also makes you sink in water and climb down ladders.",
 		"• With the client setting \"Toggle Aux1 key\" on, the quickbar opens on every second press of E.",
