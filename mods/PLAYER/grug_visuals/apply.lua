@@ -323,6 +323,14 @@ grug_visuals.POSE_CLIPS = {
 	charge = {stand = {x = 415, y = 434}, walk = {x = 435, y = 454}},
 	flinch = {stand = {x = 455, y = 464}, walk = {x = 465, y = 484}, once = true},
 }
+-- The Round 78 emotes (round78-plan.md ruling 10; poses.lua play_emote),
+-- baked after the poses by the same generator: over `stand` and, for one a
+-- rider may play, over `sit` (`<emote>_sit`: the legs on the saddle). No
+-- walking twin: walking ends an emote. Wave plays once, Dance loops.
+grug_visuals.EMOTE_CLIPS = {
+	wave = {stand = {x = 485, y = 544}, sit = {x = 545, y = 604}, once = true},
+	dance = {stand = {x = 605, y = 645}},
+}
 
 do
 	local base = player_api.registered_models["character.b3d"]
@@ -340,6 +348,21 @@ do
 			_grug_phase = clip.once and pose or nil}
 		animations[pose .. "_walk"] = {x = clip.walk.x, y = clip.walk.y,
 			_grug_phase = clip.once and pose or "walk"}
+	end
+	-- An emote starts at its first frame (poses.lua restarts it). Its own
+	-- group keeps its progress when player_api sets it again at another
+	-- speed (sneak pressed or released), as a one-shot pose's twins do; the
+	-- resume after it, in another group, starts fresh. Its seated clip
+	-- carries the seat's eye height and box, so it is the same animation
+	-- class as `sit`.
+	for emote, clip in pairs(grug_visuals.EMOTE_CLIPS) do
+		animations[emote] = {x = clip.stand.x, y = clip.stand.y, _grug_phase = emote}
+		if clip.sit then
+			local sit = animations.sit
+			animations[emote .. "_sit"] = {x = clip.sit.x, y = clip.sit.y,
+				eye_height = sit.eye_height, collisionbox = sit.collisionbox,
+				override_local = sit.override_local, _grug_phase = emote}
+		end
 	end
 	-- The way back from a pose for the player's OWN client: a 5.17 client
 	-- applies a server animation to its own model only when the range is
