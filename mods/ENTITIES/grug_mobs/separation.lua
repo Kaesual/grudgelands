@@ -23,9 +23,11 @@ local KNOCKBACK_TIERS = {normal = true, critter = true}
 
 local SEPARATION_INTERVAL = 1 -- seconds, ruling 5: at most 1 Hz
 local SEPARATION_STEP_MAX = 0.5 -- metres per separation tick
--- The contact run stops this far outside the target's column, so a step's
--- overshoot (run 4.6 m/s x 0.09 s = 0.41 m) never lands it back inside.
-local HOLD_MARGIN = 0.5
+-- Round 78 BOSS (ruling 6): a mob closer to its target than this gap edge to
+-- edge is moved out to it. The contact run stops at about a node
+-- (mobs/grug_obstacle.lua STOP_GAP), so a mob that ran in leaves this band
+-- alone; a target that walks into the mob pushes it back.
+local COLUMN_GAP = 0.5
 local NEIGHBOUR_REACH = 1.5 -- query radius beyond the own radius
 local EPS = 0.05
 
@@ -199,8 +201,8 @@ function grug_mobs.melee_knockback(self, hitter, interval)
 end
 
 -- Pure: the push out of the target's column, or nil when the mob is outside
--- it. `hold` = own radius + target radius. A mob exactly on the target's
--- centre backs off along `back_x, back_z` (unit vector).
+-- it. `hold` = own radius + target radius + COLUMN_GAP. A mob exactly on the
+-- target's centre backs off along `back_x, back_z` (unit vector).
 function grug_mobs.column_push(pos, target_pos, hold, back_x, back_z)
 	local dx, dz = pos.x - target_pos.x, pos.z - target_pos.z
 	local length = sqrt(dx * dx + dz * dz)
@@ -232,28 +234,17 @@ function grug_mobs.sideways_push(pos, target_pos, other_pos, overlap, tie)
 	return px * step, pz * step
 end
 
--- Ruling 5, the contact run's stop: true while a visible target's column is
--- closer than the hold distance (radii + HOLD_MARGIN). The hold is cached by
--- separation_step; before its first tick the run is unchanged.
-function grug_mobs.holds_column(self, pos, target_pos)
-	local hold = self.temp and self.temp.grug_separation_hold
-	if not hold then
-		return false
-	end
-	local dx, dz = pos.x - target_pos.x, pos.z - target_pos.z
-	hold = hold + HOLD_MARGIN
-	return dx * dx + dz * dz <= hold * hold
-end
-
 local function bodies_overlap_vertically(pos, cbox, other_pos, other_cbox)
 	return pos.y + cbox[2] < other_pos.y + other_cbox[5]
 		and other_pos.y + other_cbox[2] < pos.y + cbox[5]
 end
 
 -- Ruling 5, called once per server step from the GRUG PATCH in the dogfight
--- branch of mobs/api.lua do_states for ground melee mobs; acts at most once
--- per SEPARATION_INTERVAL. First: out of the target's own column. Otherwise:
--- away from one overlapping engaged neighbour, sideways.
+-- branch of mobs/api.lua do_states for ground mobs (a mob with both attacks
+-- in melee too, Round 78); acts at most once per SEPARATION_INTERVAL. First:
+-- out of the target's own column and COLUMN_GAP beyond it (the contact run's
+-- own stop is mobs/grug_obstacle.lua's). Otherwise: away from one
+-- overlapping engaged neighbour, sideways.
 function grug_mobs.separation_step(self, dtime, pos, target_pos)
 	local state = self.temp
 	local target = self.attack
@@ -273,8 +264,7 @@ function grug_mobs.separation_step(self, dtime, pos, target_pos)
 	local radius = box_radius(cbox)
 	local target_box = object_cbox(target)
 	local target_radius = target_box and box_radius(target_box) or 0.3
-	local hold = radius + target_radius
-	state.grug_separation_hold = hold
+	local hold = radius + target_radius + COLUMN_GAP
 
 	local yaw = self.object:get_yaw() or 0
 	-- Backwards along the facing (mobs_redo: forward = (-sin yaw, cos yaw)).

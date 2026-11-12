@@ -273,8 +273,68 @@ function obstacle.forget_no_path(temp)
 	temp.grug_no_path = nil
 end
 
-function obstacle.should_close_contact(distance, reach, target_visible)
-	return not target_visible or distance > reach * 0.6
+--
+-- GRUG PATCH (Round 78 BOSS, round78-plan.md ruling 6 and §3.1): a ground
+-- mob measures melee edge to edge. The gap is the horizontal distance
+-- between the two collision boxes (centres minus both radii, negative when
+-- they overlap); a height difference of up to STEP_ALLOWANCE between the
+-- feet costs nothing (a target one node up on a step is still in melee),
+-- more adds to the distance. The reach keeps its old meaning against a
+-- player-sized body: `reach` origin to origin minus the mob's REGISTERED
+-- radius and BODY_RADIUS, so an ordinary mob reaches exactly as far as
+-- before on level ground, while an elite's or a rare's grown body (the
+-- tier scale, levels.lua) reaches as far past its own edge as the normal
+-- body does: its hits still land at the stop gap. The contact run stops at
+-- STOP_GAP (at most 60 % of the edge reach, so a short reach still keeps a
+-- fleeing target in reach). Fliers keep upstream's 3D origin distance.
+--
+obstacle.BODY_RADIUS = 0.3 -- a player's radius: the body `reach` was set against
+obstacle.STOP_GAP = 1 -- nodes edge to edge where the contact run stops
+obstacle.STEP_ALLOWANCE = 1 -- nodes of height difference that cost nothing
+
+local function box_radius(box)
+	return math.max(-box[1], box[4], -box[3], box[6])
+end
+obstacle.box_radius = box_radius
+
+-- The edge distance (gap and the height beyond the step allowance) and the
+-- horizontal gap of a mob at `pos` to `target` at `target_pos`.
+function obstacle.edge_distance(self, pos, target_pos, target)
+	local box = obstacle.mob_cbox(self)
+	local tbox = obstacle.object_cbox(target)
+	local dx, dz = target_pos.x - pos.x, target_pos.z - pos.z
+	local gap = math.sqrt(dx * dx + dz * dz) - box_radius(box) - box_radius(tbox)
+	local dy = math.abs(target_pos.y + tbox[2] - pos.y - box[2]) - obstacle.STEP_ALLOWANCE
+	local h = gap > 0 and gap or 0
+	if dy > 0 then return math.sqrt(h * h + dy * dy), gap end
+	return h, gap
+end
+
+-- The melee reach edge to edge (never below 0).
+function obstacle.edge_reach(self)
+	local props = self.initial_properties
+	local base = props and props.collisionbox or obstacle.mob_cbox(self)
+	local reach = (self.reach or 0) - box_radius(base) - obstacle.BODY_RADIUS
+	return reach > 0 and reach or 0
+end
+
+-- One attack step's melee measures: the distance its reach is tested
+-- against, the gap its contact run stops at, the reach and the stop gap.
+-- A flier keeps upstream's origin distance and the 60 % contact run.
+function obstacle.melee_measure(self, pos, target_pos, dist)
+	if self.fly then
+		local reach = self.reach or 0
+		return dist, dist, reach, reach * 0.6
+	end
+	local edge, gap = obstacle.edge_distance(self, pos, target_pos, self.attack)
+	local reach = obstacle.edge_reach(self)
+	return edge, gap, reach, math.min(obstacle.STOP_GAP, reach * 0.6)
+end
+
+-- The contact run: on while the target is hidden or the gap is wider than
+-- the stop gap.
+function obstacle.should_close_contact(gap, stop, target_visible)
+	return not target_visible or gap > stop
 end
 
 function obstacle.target_visible(self, mob_pos, target_pos, ground_melee)

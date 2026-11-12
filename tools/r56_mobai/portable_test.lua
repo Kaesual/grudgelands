@@ -496,7 +496,9 @@ do
 	check(step(fresh, 1, 10, false) == "walk", "W8 without sight a ground archer walks (Round 49)")
 	check(step(fresh, 2, 30, true) == "walk" and fresh.temp.grug_closing == nil,
 		"W9 the melee phase is the dogfight branch, no closing state")
-	check(step(fresh, 1, 2, true) == "walk", "W10 in reach: melee")
+	-- Round 78 BOSS: the distance mode (not the branch) puts a target in reach
+	-- into melee: ds_var 2 below the melee line (tools/r78_boss).
+	check(step(fresh, 2, 2, true) == "walk", "W10 in reach: melee")
 	-- The ranged kings (ds_var 0) until Round 72, a dogshoot mob without a
 	-- switch (none since; tools/r72_ranged): walk beyond 22 m, then hold.
 	local king = archer({dogshoot_switch = nil, view_range = 18, animation_current = "shoot"})
