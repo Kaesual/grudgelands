@@ -251,6 +251,8 @@ grug_core = {
 	in_combat = function(player) return combat[player:get_player_name()] == true end,
 	set_status = function(player, id, def) statuses[player:get_player_name() .. ":" .. id] = def end,
 	clear_status = function(player, id) statuses[player:get_player_name() .. ":" .. id] = nil end,
+	-- Round 78: potion.lua shows the potion cooldown through a status source.
+	register_status_source = function() return true end,
 	flash = function() end,
 	hud_layout = {anchors = {flight_warning = {}}, flight_warning_offset = function() return {} end},
 	feed = function(player, kind, text, key)
