@@ -12,6 +12,46 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.78.0 — game-night fixes (2026-11-12)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Bosses keep their distance:** a mob in melee stops about a node from its
+  target instead of standing in it, and steps back when you walk into it.
+  Every mob with a ranged and a melee attack (the Expedition bosses, archers,
+  golems, the kings and others, in the open world too) now chooses by
+  distance instead of on a timer: it melees within about 4 nodes and shoots
+  beyond about 6.
+- **Heals reach the tank:** Heal, Shield and Mend aimed through a boss or
+  another hostile body land on the first friendly player behind it. Walls
+  still block.
+- **Expedition respawn wait:** dying in an Expedition while your group is
+  still fighting shows "Your group is still fighting." and a Respawn button
+  that unlocks after 10 s, or at once when the fight ends.
+- **Expedition lights stay put:** the hanging lanterns, The Second Shift's
+  wall torches and its bookshelf can no longer be knocked down or opened.
+- **Nametags:** a player's nametag that went missing (after character
+  creation, a waystone trip or mounting) comes back within a second.
+- **Potions:** the shared potion cooldown is **30 s** (was 60 s) and shows in
+  the status row as "Potion cooldown" with its countdown.
+- **Repairs cost half** of what they did. Death wear stays at 10%.
+- **Armor numbers ×10:** every armor rating is shown ten times larger and
+  finer (a T6 cloth chest shows 55 instead of 5); damage reduction stays the
+  same apart from rounding. Items in chests, on display stands and in mail
+  keep their old text until they reach your inventory.
+- **Emotes:** the quickbar (E) has **Wave** and **Dance**. Moving, jumping or
+  attacking ends them; on a mount you wave seated, and Dance waits until you
+  dismount.
+- **Towering:** you can jump and place a block under yourself again; other
+  players and mobs still block a placement.
+- **Claim Stone:** activates with anthracite too, in any mix with charcoal and
+  coal.
+- **Ore Sense** no longer marks deposits you may not mine; in an Expedition
+  its ores are still marked.
+- **Capital guards** stand at street level, never on lamp posts; guards that
+  stood on one step down to the street after the update.
+- **Flying mounts** that lack room on a slope try once more one node higher.
+
 ## 0.76.2 — /home (2026-11-11)
 
 Compatible: no map reset, no new world, nothing for the host to do.

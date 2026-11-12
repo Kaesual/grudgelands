@@ -6,6 +6,51 @@ owns the latest local/remote delivery and GUI acceptance. Completed implementati
 narratives are [historical receipts](docs/archive/planning/backlog-before-consolidation.md),
 not additional current contracts. No behavior changes are authorized by this cleanup.
 
+## Round 78 — game-night fixes (GUI acceptance pending)
+
+Delivered in 0.78.0 (**compatible**) on `round78`, not on main and not pushed
+([completion and checklist](docs/planning/round78-plan.md#completion-2026-11-12)).
+Carry-overs from the lane reports and reviews, none blocking:
+
+- **The E key misses short taps** (aux1 reported once per `dedicated_server_step`, no
+  latch; [study](docs/planning/round78-plan.md#what-shipped-with-numbers)). Recommended:
+  a client latch, as a patch in the web fork (kaesual-stack Luanti, `src/client/client.cpp`)
+  and proposed upstream for desktop; the server setting stays 0.09. **The user's decision.**
+- **The Second Shift's wall torches look ceiling-mounted** (29 with param2 0; static now, so
+  they cannot drop): `sources/second_shift.py` `thin()` and `place_light`'s undo put cells
+  back without their param2. Fix the source, rebuild the template, then `build.py --check`,
+  `r74_nav` and `r72_shift`.
+- **Old armor text outside inventories:** stacks in chests, on display stands, in mail, in
+  the buy-back list and on the ground keep the old (÷10) numbers until they reach a
+  player's inventory and the next join, equipment or level change.
+- **Seated Wave:** its guard survives a dismount (emote review Low 2); it keeps playing
+  while riding on, and an attack while seated does not end it (GUI item 13 asks).
+- **Dead mob fields:** `dogswitch` is no longer called and the `dogshoot_count*` fields are
+  inert; both could go. VENDOR.md's total marker count for `mobs/api.lua` is stale since
+  Round 56.
+- **Reach-2 mobs cannot hit a target 1.1–2 nodes up any more** (the edge distance frees a
+  height difference only up to 1.1; BOSS delta review). Watch for it in play.
+- **Nametag carriers:** a replaced carrier loses the 25/30 viewer hysteresis for one pass;
+  a valid but detached carrier waits for the pass; the leave path may create a carrier only
+  to remove it; the pass calls `is_valid`/`get_attach` twice. NPC quest markers and mob
+  carriers are not rebuilt by the pass (no loss found).
+- **Potion status:** the source reads player meta per player every 0.5 s (a cache is
+  possible); the countdown follows the wall-clock second and may trail by up to 1 s.
+- **Respawn lock edges:** a player who logged out dead is locked at the relog if the run
+  still fights (consistent); a `set_hp` revive would keep a stale lock (no caller does).
+- **Claim Stone fuel order:** anthracite is spent last within each source, not across them
+  (Round 50 ruling 3's order).
+- **Self-placement for items the client does not predict** follows the pre-Round 72
+  behaviour (the placer never blocks itself).
+- **Small hygiene:** `grug_classes/talent_graph_ui.lua` reads the bare `grug_gear` global
+  (the mod map names the coupling; `rawget` would make it explicit);
+  `tools/r60_herbs/reach.lua` stub; `tools/r29_e4/income.py` docstring still says
+  `REPAIR_FACTOR (1.00)`; `tools/r55_offhand/offhand.py` `CLIPS` comment ("every clip the
+  generator keys") misses the emote clips (harmless, coordinator-owned contract);
+  `tools/building_templates/nodes.json` lacks the two new Expedition nodes (refresh with
+  the next node-definition change).
+- **The realm website's model** has no emotes (`build_glb.py` exports stand and walk).
+
 ## Round 76 — clans, party chat and clan chat (GUI acceptance pending)
 
 Delivered in 0.76.0 (**compatible**) on `round76`, not on main and not pushed

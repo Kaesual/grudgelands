@@ -840,8 +840,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_jobs.register_public_position(station, pos)` owns the shared registry;
   `grug_brewing.register_public_position(pos)` delegates the brewing stand.
   No fixed capital-core position is authoritative. Potions share
-  `grug_traders`' persistent clock (`grug_traders.POTION_COOLDOWN` = 60 s in
-  `potion.lua`, which also owns the vendor's Weak Healing Potion; every
+  `grug_traders`' persistent clock (`grug_traders.POTION_COOLDOWN` = 30 s in
+  `potion.lua` since Round 78, shown in the status row as `potion_cooldown`, which also owns the vendor's Weak Healing Potion; every
   potion and draught); Healing and Mana Potions I–VI are fixed amounts
   (`grug_alchemy/recipes.lua`, item_tiers §5);
   elixirs replace status id `elixir`, stack with status id `food`, and never
