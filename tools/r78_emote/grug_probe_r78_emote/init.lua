@@ -11,7 +11,7 @@
 -- and two moments of the Dance. An emote starts when its SHOT is logged
 -- (`go`), so the screenshot about 1-1.5 s later lands inside it; a shot's
 -- own `settle` shortens the wait for a later moment of an emote its `run`
--- started.
+-- started. SHOTS_V2 below is the second set.
 
 local P = "[r78emote] "
 local NAME = "grugcap"
@@ -65,6 +65,41 @@ local SHOTS = {
 	{name = "E3_dance", run = front, go = function(player) emote(player, "dance") end},
 	{name = "E4_dance_later", settle = 0.5, run = function(player) emote(player, "dance") end},
 }
+
+-- The second set (SET=v2, after the user's look fix: the raised arm turned
+-- so a held item points backward): the seated and the standing Wave from
+-- the front, the Wave from the side (the whole body turned a quarter by a
+-- relative override on its root bone `Body`, the camera stays) and a Dance
+-- frame.
+local function side(player, on)
+	player:set_bone_override("Body", on and {rotation = {vec = {x = 0, y = math.pi / 2, z = 0}}} or nil)
+end
+local SHOTS_V2 = {
+	{name = "v2_E1_wave_seated", run = function(player)
+		log("mount: " .. tostring(grug_mounts.mount(player, 1)))
+		front(player)
+	end, go = function(player) emote(player, "wave") end},
+	{name = "v2_E2_wave", run = function(player)
+		log("dismount: " .. tostring(grug_mounts.dismount(player, "manual", false)))
+		front(player)
+	end, go = function(player) emote(player, "wave") end},
+	{name = "v2_E3_wave_side", run = function(player) side(player, true) end,
+		go = function(player) emote(player, "wave") end},
+	{name = "v2_E4_dance", run = function(player)
+		side(player, false)
+		front(player)
+	end, go = function(player) emote(player, "dance") end},
+}
+-- The third set (SET=v3, the livelier dance legs and body): three dance
+-- moments, two from the front and one from the side.
+local SHOTS_V3 = {
+	{name = "v3_D1_dance", run = front, go = function(player) emote(player, "dance") end},
+	{name = "v3_D2_dance_later", settle = 0.4, run = function() end},
+	{name = "v3_D3_dance_side", run = function(player) side(player, true) end,
+		go = function(player) emote(player, "dance") end},
+}
+local sets = {v2 = SHOTS_V2, v3 = SHOTS_V3}
+SHOTS = sets[core.settings:get("r78emote_set") or ""] or SHOTS
 
 core.register_globalstep(function(dtime)
 	state.clock = state.clock + dtime

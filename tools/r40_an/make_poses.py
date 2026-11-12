@@ -71,6 +71,31 @@ BASES = ("stand", "walk")
 HELD_LENGTH = 20
 
 
+def dance_bones(arm, leg, loop):
+    """The Dance's bones (Round 78): the arms pump in turn once per `arm` frames,
+    and per `leg` frames the hips sway, twist and bob, the head tilts, each knee
+    lifts once and the other leg steps out (roll 12); `loop` is a multiple of
+    both, so the held clip wraps seamlessly."""
+    assert loop % arm == 0 and loop % leg == 0
+    ar, al, body, head, lr, ll = [], [], [], [], [], []
+    for k in range(loop // arm):
+        t = k * arm
+        ar += [[t, 150, 0, -22], [t + arm / 2, 55, 0, -12]]
+        al += [[t, 55, 0, 12], [t + arm / 2, 150, 0, 22]]
+    for k in range(loop // leg):
+        t = k * leg
+        body += [[t, 0, 8, 6], [t + leg / 2, -4, -8, -6]]
+        head += [[t, 6, 0, -7], [t + leg / 2, 6, 0, 7]]
+        lr += [[t, 0, 0, 0], [t + leg / 4, 24, 0, 0], [t + leg / 2, 0, 0, 0], [t + 3 * leg / 4, 0, 0, -12]]
+        ll += [[t, 0, 0, 0], [t + leg / 4, 0, 0, 12], [t + leg / 2, 0, 0, 0], [t + 3 * leg / 4, 24, 0, 0]]
+    return {"Body": {"mode": "add", "keys": body},
+            "Leg_Right": {"mode": "add", "counter": True, "keys": lr},
+            "Leg_Left": {"mode": "add", "counter": True, "keys": ll},
+            "Head": {"mode": "add", "keys": head},
+            "Arm_Right": {"mode": "hold", "keys": ar},
+            "Arm_Left": {"mode": "hold", "keys": al}}
+
+
 def held(*keys):
     return [list(k) for k in keys]
 
@@ -189,26 +214,30 @@ POSES = [
      "use": "the quickbar's Wave, standing and seated", "kind": "oneshot", "length": 60,
      "bases": ("stand", "sit"),
      "bones": {
-         # Pitch after roll: on a raised arm a negative pitch tips it forward.
-         "Arm_Right": {"mode": "hold", "keys": [[0, 0, 0, 0], [9, -12, 0, -150], [15, -12, 0, -128],
-                                                [21, -12, 0, -158], [27, -12, 0, -128], [33, -12, 0, -158],
-                                                [39, -12, 0, -128], [45, -12, 0, -158], [50, -12, 0, -145],
-                                                [59, 0, 0, 0]]},
+         # The arm rises forward (pitch alone, frames 0-3) and on up and out to
+         # the side, turned about its own length so a held item points
+         # backward, as a raised palm faces forward (the user, 2026-11-12).
+         # From frame 4 the same turn is written as yaw -180 with the pitch
+         # and roll mirrored: yaw 0, pitch p is yaw -180, pitch 180 - p,
+         # roll 180, so frames 3 and 4 (and 54 and 55) differ only by the
+         # rise; the wave is the roll swinging 128-158 out to the side.
+         "Arm_Right": {"mode": "hold", "keys": [[0, 0, 0, 0], [3, 60, 0, 0], [4, 105, -180, 180],
+                                                [9, 12, -180, 150], [15, 12, -180, 128],
+                                                [21, 12, -180, 158], [27, 12, -180, 128], [33, 12, -180, 158],
+                                                [39, 12, -180, 128], [45, 12, -180, 158], [50, 12, -180, 145],
+                                                [54, 100, -180, 180], [55, 70, 0, 0], [59, 0, 0, 0]]},
          "Arm_Left": {"mode": "hold", "keys": [[0, 0, 0, 0], [9, 4, 0, 5], [50, 4, 0, 5], [59, 0, 0, 0]]},
          "Head": {"mode": "add", "keys": [[0, 0, 0, 0], [9, 6, 0, -5], [50, 6, 0, -5], [59, 0, 0, 0]]},
      }},
-    # Dance: a 40-frame loop of two beats (hips sway, the arms pump in turn,
-    # a knee lifts on each beat), played three times (4 s, poses.lua).
+    # Dance: the arms pump in turn (one arm cycle of 32 frames), the hips sway,
+    # twist and bob, the head follows, and each knee lifts while the other leg
+    # steps out to the side (one body/leg cycle of 24 frames); a 96-frame loop
+    # holds three arm and four leg cycles (the user's pick of 2026-11-12,
+    # "Gleichmäßiger": arms a little faster, legs and body a little slower than
+    # the first 40/20). Played once, 3.2 s (poses.lua).
     {"pose": "dance", "variant": "A", "label": "Emote: dance",
-     "use": "the quickbar's Dance", "kind": "held", "length": 41, "bases": ("stand",),
-     "bones": {
-         "Body": {"mode": "add", "keys": [[0, 0, 8, 6], [20, 0, -8, -6]]},
-         "Leg_Right": {"mode": "add", "counter": True, "keys": [[0, 0, 0, 0], [10, 24, 0, 0], [20, 0, 0, 0]]},
-         "Leg_Left": {"mode": "add", "counter": True, "keys": [[0, 0, 0, 0], [20, 0, 0, 0], [30, 24, 0, 0]]},
-         "Head": {"mode": "add", "keys": [[0, 6, 0, -7], [20, 6, 0, 7]]},
-         "Arm_Right": {"mode": "hold", "keys": [[0, 150, 0, -22], [20, 55, 0, -12]]},
-         "Arm_Left": {"mode": "hold", "keys": [[0, 55, 0, 12], [20, 150, 0, 22]]},
-     }},
+     "use": "the quickbar's Dance", "kind": "held", "length": 97, "bases": ("stand",),
+     "bones": dance_bones(32, 24, 96)},
 ]
 
 

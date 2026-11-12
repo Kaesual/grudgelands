@@ -162,8 +162,8 @@ local function only(bones, allowed)
 end
 
 for _, case in ipairs({
-	-- Round 78: the emotes (wave, wave_sit, dance) end the player model at frame 645.
-	{"player", player, 7, 646, true},
+	-- Round 78: the emotes (wave, wave_sit, dance) end the player model at frame 701.
+	{"player", player, 7, 702, true},
 	{"npc", npc, 5, 221, false},
 }) do
 	local name, model, buffers, frames, is_player = case[1], case[2], case[3], case[4], case[5]

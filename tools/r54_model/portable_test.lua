@@ -11,7 +11,7 @@
 --      none; every vertex rides exactly one bone with weight 1;
 --   U  the buffers in the texture order: player skin, cloak, armor, weapon;
 --      NPC skin, armor, weapon (the first buffers: Round 55's offhand, back
---      and wings follow, tools/r55_model); the frame counts (player 0-645
+--      and wings follow, tools/r55_model); the frame counts (player 0-701
 --      with Round 78's emotes, NPC 0-220);
 --      every armor UV inside the 128x64 atlas;
 --   S  the swing sign in every frame of every played clip (player_api's
@@ -172,8 +172,8 @@ local function frames(model)
 end
 -- Round 56 (lane HOOD): the armor buffer gains the hood, 8 faces = 32 vertices, 16 triangles.
 for _, case in ipairs({
-	-- Round 78: the emotes end the player model at frame 645.
-	{"player", player, "84,12,352,4", 646, true},
+	-- Round 78: the emotes end the player model at frame 701 (the 96-frame dance).
+	{"player", player, "84,12,352,4", 702, true},
 	{"npc", npc, "84,352,4", 221, false},
 }) do
 	local name, model, tris, frame_count, cloak = case[1], case[2], case[3], case[4], case[5]
@@ -250,7 +250,7 @@ local function played_frames(model, with_poses)
 		for f = r[1], r[2] do list[#list + 1] = f end
 	end
 	if with_poses then
-		for f = 221, 645 do list[#list + 1] = f end -- the poses and Round 78's emotes
+		for f = 221, 701 do list[#list + 1] = f end -- the poses and Round 78's emotes
 	end
 	return list
 end

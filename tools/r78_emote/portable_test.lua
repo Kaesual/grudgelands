@@ -12,7 +12,7 @@
 --      seat's eye height, box and local override; the poses stay as they
 --      were and NPCs get no emote;
 --   P  a click plays once: Wave from its first frame, once, ending after its
---      clip through stand_resume; Dance loops and ends after 4 s;
+--      clip through stand_resume; Dance loops and ends after one loop, 3.2 s;
 --   I  interrupts: moving, jumping, an attack (LMB, RMB) end an emote with the
 --      matching `<base>_resume`; a cast's pose replaces it; a mount ends it
 --      (after the ride the hook does not bring it back); a flinch never cuts
@@ -175,14 +175,14 @@ do
 	check(E.wave and E.wave.stand.x == 485 and E.wave.stand.y == 544, "R wave 485-544 (2 s)")
 	check(E.wave and E.wave.sit and E.wave.sit.x == 545 and E.wave.sit.y == 604, "R wave_sit 545-604")
 	eq(E.wave and E.wave.once, true, "R wave plays once")
-	check(E.dance and E.dance.stand.x == 605 and E.dance.stand.y == 645, "R dance 605-645 (a 40-frame loop)")
+	check(E.dance and E.dance.stand.x == 605 and E.dance.stand.y == 701, "R dance 605-701 (a 96-frame loop)")
 	eq(E.dance and E.dance.sit, nil, "R no seated dance")
 	eq(E.dance and E.dance.once, nil, "R dance loops")
 	local flinch = GV.POSE_CLIPS.flinch.walk
 	eq(E.wave.stand.x, flinch.y + 1, "R the emotes follow the last pose clip")
 	check(A.wave and A.wave.x == 485 and A.wave.y == 544, "R wave registered")
 	eq(A.wave and A.wave._grug_phase, "wave", "R wave in its own group (sneak keeps its progress)")
-	check(A.dance and A.dance.x == 605 and A.dance.y == 645, "R dance registered")
+	check(A.dance and A.dance.x == 605 and A.dance.y == 701, "R dance registered")
 	eq(A.dance and A.dance._grug_phase, "dance", "R dance in its own group")
 	eq(A.wave_sit and A.wave_sit._grug_phase, "wave", "R wave_sit in the wave's group")
 	eq(A.wave_walk, nil, "R no walking twin")
@@ -259,10 +259,10 @@ do
 	eq(anim_of(p), "dance", "P dance plays")
 	eq(last(p).loop, true, "P ... looping")
 	eq(last(p).start, 605, "P ... from its first frame")
-	step(3.85)
-	eq(anim_of(p), "dance", "P still dancing at 3.9 s")
+	step(3.05)
+	eq(anim_of(p), "dance", "P still dancing at 3.1 s")
 	step(0.15)
-	eq(anim_of(p), "stand_resume", "P dance ends after 4 s (three rounds)")
+	eq(anim_of(p), "stand_resume", "P dance ends after 3.2 s (one loop)")
 	eq(GV.current_pose(p), nil, "P ... and the row is gone")
 end
 

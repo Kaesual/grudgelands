@@ -222,9 +222,9 @@ check(math.abs(level[2]) < 1e-6 and level[3] * face[3] + level[1] * face[1] > 0.
 -- The played ranges in engine frames (file frame f is engine frame f - 1):
 -- player_api's stand, sit, walk, mine and walk_mine, the Round 40 pose
 -- clips after them (grug_visuals.POSE_CLIPS) and the Round 78 emotes after
--- those (EMOTE_CLIPS, 485-645); not lay (162-166, a dead player's head stays
+-- those (EMOTE_CLIPS, 485-701); not lay (162-166, a dead player's head stays
 -- level) nor the unplayed frames between ranges.
-local PLAYED = {{0, 79}, {81, 160}, {168, 187}, {189, 198}, {200, 219}, {221, 645}}
+local PLAYED = {{0, 79}, {81, 160}, {168, 187}, {189, 198}, {200, 219}, {221, 701}}
 local function played(engine_frame)
 	for _, r in ipairs(PLAYED) do
 		if engine_frame >= r[1] and engine_frame <= r[2] then return true end
