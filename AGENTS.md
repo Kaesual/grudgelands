@@ -12,7 +12,10 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.76.2, Round 76.2 (`/home` triggers Return home, the same trip and
+**Current state:** 0.78.0, Round 78 (game-night fixes: mob stand-off and ranged/melee by distance,
+friendly casts past bodies, the Expedition respawn lock and static nodes, nametags rebuilt, potion cooldown 30 s
+in the status row, repair ½, armor ×10, emotes; compatible; on branch `round78`, not on main, not pushed, GUI test open:
+[completion](docs/planning/round78-plan.md#completion-2026-11-12)), on 0.76.2, Round 76.2 (`/home` triggers Return home, the same trip and
 30-minute cooldown as the button; compatible:
 [plan](docs/planning/round76-plan.md#0762-follow-up)), on 0.76.1, Round 76.1 (a Party button in each online row of the clan card;
 compatible: [plan](docs/planning/round76-plan.md#0761-follow-up)), on 0.76.0, Round 76 (clans: purely social same-faction groups of up to 100
