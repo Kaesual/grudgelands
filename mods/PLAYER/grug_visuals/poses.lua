@@ -164,7 +164,7 @@ end
 --
 -- THE EMOTES (Round 78 ruling 10, round78-plan.md §3.1): Wave and Dance from
 -- the quickbar (grug_quickbar). One click plays the emote once, Dance as
--- three rounds of its loop; moving, jumping, a click (an attack or a cast;
+-- one round of its loop; moving, jumping, a click (an attack or a cast;
 -- a skill's pose replaces it anyway) and mounting end it, and the player's
 -- own client gets the `<base>_resume` way back like after a pose. The same
 -- emote again while it plays is ignored, another one replaces it, and at
@@ -179,8 +179,8 @@ end
 -- pose change (a dismount) simply replaces it.
 --
 grug_visuals.EMOTE_GAP = 1.0
--- A looping emote's length in seconds: three rounds of the 40-frame Dance.
-grug_visuals.EMOTE_PLAY = {dance = 4.0}
+-- A looping emote's length in seconds: one round of the 96-frame Dance.
+grug_visuals.EMOTE_PLAY = {dance = 3.2}
 local EMOTES = grug_visuals.EMOTE_CLIPS
 -- player_api's blend for every switch (player_api/api.lua GRUG PATCH).
 local BLEND = 0.12

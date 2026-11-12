@@ -609,7 +609,7 @@ the generator's `--check`):
 | --- | --- | --- | --- |
 | `wave` | the right arm rises forward and on up and out to the side, turned so the palm faces forward (a held item points backward), waving three and a half times | 485–544 | once, 2 s |
 | `wave_sit` | the same over the seated frame (the legs stay on the saddle) | 545–604 | once, 2 s, on a mount |
-| `dance` | a 40-frame loop: the arms pump in turn on each beat; the hips sway and bob and the head follows twice as often, and each knee lifts twice while the other leg steps out to the side | 605–645 | three rounds, 4 s |
+| `dance` | a 96-frame loop: the arms pump in turn (1.07 s a cycle); the hips sway and bob, the head follows and each knee lifts while the other leg steps out to the side (0.8 s a cycle) | 605–701 | one loop, 3.2 s |
 
 - **A click plays it once.** Moving, jumping, a click (an attack or a cast;
   a skill's pose replaces it anyway) and mounting end it, with the same

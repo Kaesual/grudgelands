@@ -329,7 +329,7 @@ grug_visuals.POSE_CLIPS = {
 -- walking twin: walking ends an emote. Wave plays once, Dance loops.
 grug_visuals.EMOTE_CLIPS = {
 	wave = {stand = {x = 485, y = 544}, sit = {x = 545, y = 604}, once = true},
-	dance = {stand = {x = 605, y = 645}},
+	dance = {stand = {x = 605, y = 701}},
 }
 
 do
