@@ -90,7 +90,16 @@ local SHOTS_V2 = {
 		front(player)
 	end, go = function(player) emote(player, "dance") end},
 }
-if core.settings:get("r78emote_set") == "v2" then SHOTS = SHOTS_V2 end
+-- The third set (SET=v3, the livelier dance legs and body): three dance
+-- moments, two from the front and one from the side.
+local SHOTS_V3 = {
+	{name = "v3_D1_dance", run = front, go = function(player) emote(player, "dance") end},
+	{name = "v3_D2_dance_later", settle = 0.4, run = function() end},
+	{name = "v3_D3_dance_side", run = function(player) side(player, true) end,
+		go = function(player) emote(player, "dance") end},
+}
+local sets = {v2 = SHOTS_V2, v3 = SHOTS_V3}
+SHOTS = sets[core.settings:get("r78emote_set") or ""] or SHOTS
 
 core.register_globalstep(function(dtime)
 	state.clock = state.clock + dtime

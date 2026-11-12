@@ -204,15 +204,22 @@ POSES = [
          "Arm_Left": {"mode": "hold", "keys": [[0, 0, 0, 0], [9, 4, 0, 5], [50, 4, 0, 5], [59, 0, 0, 0]]},
          "Head": {"mode": "add", "keys": [[0, 0, 0, 0], [9, 6, 0, -5], [50, 6, 0, -5], [59, 0, 0, 0]]},
      }},
-    # Dance: a 40-frame loop of two beats (hips sway, the arms pump in turn,
-    # a knee lifts on each beat), played three times (4 s, poses.lua).
+    # Dance: a 40-frame loop of two beats, played three times (4 s,
+    # poses.lua). The arms pump in turn once per beat; the hips sway and bob
+    # and the head follows on every half beat, and the knees lift twice per
+    # loop each, the other leg stepping out to the side meanwhile (the user,
+    # 2026-11-12: legs and upper body livelier than the arms).
     {"pose": "dance", "variant": "A", "label": "Emote: dance",
      "use": "the quickbar's Dance", "kind": "held", "length": 41, "bases": ("stand",),
      "bones": {
-         "Body": {"mode": "add", "keys": [[0, 0, 8, 6], [20, 0, -8, -6]]},
-         "Leg_Right": {"mode": "add", "counter": True, "keys": [[0, 0, 0, 0], [10, 24, 0, 0], [20, 0, 0, 0]]},
-         "Leg_Left": {"mode": "add", "counter": True, "keys": [[0, 0, 0, 0], [20, 0, 0, 0], [30, 24, 0, 0]]},
-         "Head": {"mode": "add", "keys": [[0, 6, 0, -7], [20, 6, 0, 7]]},
+         "Body": {"mode": "add", "keys": [[0, 0, 8, 6], [10, -4, -8, -6], [20, 0, 8, 6], [30, -4, -8, -6]]},
+         "Leg_Right": {"mode": "add", "counter": True, "keys": [
+             [0, 0, 0, 0], [5, 24, 0, 0], [10, 0, 0, 0], [15, 0, 0, -12],
+             [20, 0, 0, 0], [25, 24, 0, 0], [30, 0, 0, 0], [35, 0, 0, -12]]},
+         "Leg_Left": {"mode": "add", "counter": True, "keys": [
+             [0, 0, 0, 0], [5, 0, 0, 12], [10, 0, 0, 0], [15, 24, 0, 0],
+             [20, 0, 0, 0], [25, 0, 0, 12], [30, 0, 0, 0], [35, 24, 0, 0]]},
+         "Head": {"mode": "add", "keys": [[0, 6, 0, -7], [10, 6, 0, 7], [20, 6, 0, -7], [30, 6, 0, 7]]},
          "Arm_Right": {"mode": "hold", "keys": [[0, 150, 0, -22], [20, 55, 0, -12]]},
          "Arm_Left": {"mode": "hold", "keys": [[0, 55, 0, 12], [20, 150, 0, 22]]},
      }},

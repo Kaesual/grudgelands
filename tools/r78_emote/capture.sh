@@ -16,7 +16,8 @@
 #   appended to every file name, SETTLE=<seconds> before each shot (default
 #   3), XVFB_DRIVERS=<Mesa DRI dir for Xvfb's GLX> (default /usr/lib64/dri),
 #   SET=v2 for the second shot set (the turned wave arm: seated, front, side,
-#   and a dance frame; default v1, the first set).
+#   and a dance frame) or SET=v3 (three dance moments, front and side;
+#   default v1, the first set).
 #   Run it through the shared Lua queue (one boot).
 # Writes OUT_DIR/<shot><suffix>.png, OUT_DIR/probe<suffix>.txt and the logs.
 set -euo pipefail
