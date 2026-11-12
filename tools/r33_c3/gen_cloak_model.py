@@ -38,7 +38,11 @@ tools/r40_an/poses.json (each pose baked over `stand` and over `walk`), the
 cloak's from the cloak rule below, and the clearance check covers them too.
 The frames up to engine frame 220 stay byte-identical. The ranges are
 registered in mods/PLAYER/grug_visuals/apply.lua (POSE_CLIPS), which
-`--check` holds to the layout baked here.
+`--check` holds to the layout baked here. Round 78 (lane EMOTE,
+round78-plan.md ruling 10) appends the emotes after the poses the same way:
+Wave over `stand` and over `sit` (`wave_sit`, the seated rider's upper
+body), Dance over `stand`, registered as EMOTE_CLIPS; a seated clip keys
+the panels and the cloak as the sit range does.
 
 Round 54 (lane MODEL) adds the armor and the weapon card:
   * the ARMOR buffer: every box of tools/r54_armor/data/catalog.json
@@ -147,6 +151,10 @@ BASE_RANGES = (("stand", STAND), ("sit", SIT_R), ("lay", LAY), ("walk", WALK),
 # frame of the source, stays a spare like the other single frames).
 PICKS = (("cast1", "a"), ("cast2", "b"), ("swing", "b"), ("bow", "a"),
          ("block", "b"), ("charge", "b"), ("flinch", "a"))
+# Round 78: the emotes, after the poses, each over the bases poses.json bakes
+# it over (`<emote>` over stand, `<emote>_sit` over sit).
+EMOTE_PICKS = (("wave", "a"), ("dance", "a"))
+SUFFIX = {"stand": "", "walk": "_walk", "sit": "_sit"}
 FIRST_POSE_FRAME = 221
 TWIST_LIFT = 0.2         # of the torso's twist the cloak swings out (pose_swing)
 
@@ -405,18 +413,19 @@ def swing(frame, leg_keys):
 # --- the pose clips and their cloak rule ---------------------------------------
 def pose_layout():
     """The picked clips in frame order and poses.json's bone list. A clip is
-    {name, pose (the poses.json entry), base, first, last, once}."""
+    {name, pose (the poses.json entry), base, first, last, once, emote}."""
     doc = json.loads(POSES.read_text())
     by_id = {entry["id"]: entry for entry in doc["poses"]}
     layout, frame = [], FIRST_POSE_FRAME
-    for pose, variant in PICKS:
-        entry = by_id["%s_%s" % (pose, variant)]
-        for base in ("stand", "walk"):
-            frames = entry["clips"][base]["frames"]
-            layout.append({"name": pose if base == "stand" else pose + "_walk",
-                           "pose": entry, "base": base, "first": frame,
-                           "last": frame + frames - 1, "once": entry["kind"] == "oneshot"})
-            frame += frames
+    for picks, emote in ((PICKS, False), (EMOTE_PICKS, True)):
+        for pose, variant in picks:
+            entry = by_id["%s_%s" % (pose, variant)]
+            for base, clip in entry["clips"].items():
+                frames = clip["frames"]
+                layout.append({"name": pose + SUFFIX[base], "pose": entry, "base": base,
+                               "first": frame, "last": frame + frames - 1,
+                               "once": entry["kind"] == "oneshot", "emote": emote})
+                frame += frames
     return layout, doc["bones"]
 
 
@@ -463,6 +472,8 @@ def pose_swing(clip, i, leg_keys):
     closest leg gap of every pose clip stays at or above the base clips'."""
     if clip["base"] == "stand":
         base = swing(STAND[0], leg_keys)
+    elif clip["base"] == "sit":
+        base = swing(SIT_R[0], leg_keys)
     else:
         base = swing(WALK[0] + i % (WALK[1] - WALK[0] + 1), leg_keys)
     body = clip["pose"]["spec"].get("Body")
@@ -474,28 +485,47 @@ def pose_swing(clip, i, leg_keys):
     return base + lean + TWIST_LIFT * pose_twist(clip, i)
 
 
+CLIP_TABLES = ("POSE_CLIPS", "EMOTE_CLIPS")
+CLIP_ROW = re.compile(r"^\t(\w+) = \{((?:\w+ = \{x = \d+, y = \d+\}(?:, )?)+)(, once = true)?\},$", re.M)
+
+
 def registered_clips():
-    """{pose: ((x, y) stand, (x, y) walk, once)} as apply.lua registers them."""
-    pattern = (r"(\w+) = \{stand = \{x = (\d+), y = (\d+)\}, "
-               r"walk = \{x = (\d+), y = (\d+)\}(, once = true)?\}")
-    return {m.group(1): ((int(m.group(2)), int(m.group(3))),
-                         (int(m.group(4)), int(m.group(5))), bool(m.group(6)))
-            for m in re.finditer(pattern, APPLY.read_text())}
+    """{table: {pose: (((base, x, y), ...), once)}} as apply.lua registers
+    them in POSE_CLIPS and EMOTE_CLIPS."""
+    text = APPLY.read_text()
+    out = {}
+    for table in CLIP_TABLES:
+        block = re.search(r"grug_visuals\.%s = \{\n(.*?)\n\}" % table, text, re.S)
+        rows = {}
+        for row in CLIP_ROW.finditer(block.group(1) if block else ""):
+            ranges = tuple((base, int(x), int(y)) for base, x, y in
+                           re.findall(r"(\w+) = \{x = (\d+), y = (\d+)\}", row.group(2)))
+            rows[row.group(1)] = (ranges, bool(row.group(3)))
+        out[table] = rows
+    return out
 
 
 def expected_clips(layout):
-    out = {}
-    for stand, walk in zip(layout[0::2], layout[1::2]):
-        out[stand["name"]] = ((stand["first"], stand["last"]),
-                              (walk["first"], walk["last"]), stand["once"])
+    out = {table: {} for table in CLIP_TABLES}
+    for clip in layout:
+        pose = clip["pose"]["pose"]
+        rows = out["EMOTE_CLIPS" if clip["emote"] else "POSE_CLIPS"]
+        ranges, once = rows.get(pose, ((), clip["once"]))
+        rows[pose] = (ranges + ((clip["base"], clip["first"], clip["last"]),), once)
     return out
 
 
 def clips_lua(clips):
-    """The POSE_CLIPS rows apply.lua should hold, for the error message."""
-    return "\n".join("\t%s = {stand = {x = %d, y = %d}, walk = {x = %d, y = %d}%s}," % (
-        name, s[0], s[1], w[0], w[1], ", once = true" if once else "")
-        for name, (s, w, once) in clips.items())
+    """The POSE_CLIPS and EMOTE_CLIPS rows apply.lua should hold, for the
+    error message."""
+    lines = []
+    for table in CLIP_TABLES:
+        lines.append("grug_visuals.%s = {" % table)
+        lines += ["\t%s = {%s%s}," % (name, ", ".join("%s = {x = %d, y = %d}" % r for r in ranges),
+                                     ", once = true" if once else "")
+                  for name, (ranges, once) in clips[table].items()]
+        lines.append("}")
+    return "\n".join(lines)
 
 
 # --- the panels' swing ---------------------------------------------------------
@@ -517,7 +547,7 @@ def leg_angles(rig, file_frame):
     return out
 
 
-def panel_swing(rig, frame, twist):
+def panel_swing(rig, frame, twist, seated=False):
     """(front, back) degrees off vertical at engine frame `frame`, each hem
     moving away from the body (front forward, back backward). The front panel
     follows the leg swinging forward, the back panel the leg swinging back
@@ -528,8 +558,9 @@ def panel_swing(rig, frame, twist):
     through the belt line, so no front panel angle clears them (the hinge
     itself is inside the seated thigh); both panels hang straight down, the
     front one inside the thighs and the seat, the back one under the seat,
-    and only the back panel's leg clearance is checked there."""
-    if SEATED[0] <= frame <= SEATED[1]:
+    and only the back panel's leg clearance is checked there; `seated` marks
+    a frame of a clip baked over sit (wave_sit) the same way."""
+    if seated or SEATED[0] <= frame <= SEATED[1]:
         return PANEL_BASE, PANEL_BASE
     angles = leg_angles(rig, frame + 1)
     forward = max([0.0] + angles)
@@ -1080,6 +1111,8 @@ def build(kind="player", contract=None):
     # The swing curves, per engine frame: the panels from the legs, the cloak
     # from its own rule and never below the back panel.
     twist, cloak_rule, twisted_walk = {}, {}, set()
+    seated = {f for clip in layout if clip["base"] == "sit"
+              for f in range(clip["first"], clip["last"] + 1)}
     for clip in layout:
         for i in range(clip["last"] - clip["first"] + 1):
             twist[clip["first"] + i] = pose_twist(clip, i)
@@ -1088,7 +1121,7 @@ def build(kind="player", contract=None):
             cloak_rule[clip["first"] + i] = pose_swing(clip, i, legs["Leg_Left"])
     front, back, cloak = [], [], []
     for frame in range(frame_count):
-        f, b = panel_swing(rig, frame, twist.get(frame, 0.0))
+        f, b = panel_swing(rig, frame, twist.get(frame, 0.0), frame in seated)
         front.append(f)
         back.append(b)
         rule = cloak_rule.get(frame)
@@ -1182,6 +1215,7 @@ def build(kind="player", contract=None):
         curves["cloak"] = cloak
     return out, {"kind": kind, "root": root, "curves": curves, "layout": layout,
                  "buffers": buffers, "box_ids": box_ids, "twisted_walk": twisted_walk,
+                 "seated": seated,
                  "labels": labels, "params": params, "parts": parts}
 
 
@@ -1248,7 +1282,8 @@ def check_clearance(info):
                                  "from the body (frame %d)" % (key, frame))
             closest = None
             for name, label, c in legs + torso:
-                if key == "front" and name != "Body" and SEATED[0] <= frame <= SEATED[1]:
+                if key == "front" and name != "Body" and (SEATED[0] <= frame <= SEATED[1]
+                                                          or frame in info["seated"]):
                     continue  # panel_swing: no front panel angle clears seated thighs
                 if key == "cloak" and name == "Body" and label not in ("torso",):
                     continue  # the cloak lies over the back: only the bare torso is checked
@@ -1742,8 +1777,8 @@ def main():
     layout = built["player"][1]["layout"]
     clips, registered = expected_clips(layout), registered_clips()
     if registered != clips:
-        print("gen_cloak_model: grug_visuals/apply.lua POSE_CLIPS differ from the baked "
-              "layout; they must read:\n" + clips_lua(clips))
+        print("gen_cloak_model: grug_visuals/apply.lua POSE_CLIPS or EMOTE_CLIPS differ from "
+              "the baked layout; they must read:\n" + clips_lua(clips))
         return 1
     if status:
         return status
