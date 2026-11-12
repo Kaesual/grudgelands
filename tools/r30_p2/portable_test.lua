@@ -530,7 +530,9 @@ do
 	-- The dragons never reach give_up_target: api.lua passes keep_flying as
 	-- the navigation's never-give-up flag.
 	local api = read("mods/ENTITIES/mobs/api.lua")
-	check(api:find("dist <= attack_reach and in_sight, self.keep_flying == true)", 1, true) ~= nil,
+	-- Round 78 BOSS: the striking test reads the melee measure (a flier's is its
+	-- origin distance, as before); the never-give-up flag is unchanged.
+	check(api:find("m_edge <= attack_reach and in_sight, self.keep_flying == true)", 1, true) ~= nil,
 		"F flying actors (dragons, whelps) only wait")
 end
 
