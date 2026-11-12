@@ -1039,7 +1039,8 @@ do
 	check(branch(archer, 1, 10, true) == "shoot", "S1 sight: shoot")
 	check(branch(archer, 2, 10, true) == "dogfight"
 		and branch(archer, 2, 10, false) == "dogfight", "S1 the melee phase")
-	check(branch(archer, 1, 2, true) == "dogfight", "S1 in reach: melee")
+	-- Round 78 BOSS: in reach, the distance mode gives ds_var 2 (tools/r78_boss).
+	check(branch(archer, 2, 2, true) == "dogfight", "S1 in reach: melee")
 	local wisp = {attack_type = "dogshoot", reach = 2, pathfinding = 1, fly = true,
 		dogshoot_switch = 1}
 	-- Round 56 MOBAI (the user, 2026-10-22): a flier without sight flies at

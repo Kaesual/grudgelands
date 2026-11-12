@@ -50,12 +50,15 @@ end
 -- kind needs a ray "target" (a live hostile). Returns the target (or nil) and
 -- the structured ray. The casts below add Target Frame memory and diagnostics;
 -- the crosshair overlay (crosshair.lua) reads it bare, about 7 times a second,
--- and passes the eye position it already computed as `origin`.
+-- and passes the eye position it already computed as `origin`. A friendly
+-- skill's ray looks past mobs and hostile players to the first friendly
+-- player (combat_ray's `friendly`, Round 78 BOSS): the tank behind the boss.
 function grug_abilities.aimed_target(user, def, origin)
+	local friendly = def.target_kind == "friendly"
 	local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def),
-		origin and {origin = origin} or nil)
+		(origin or friendly) and {origin = origin, friendly = friendly} or nil)
 	local target = ray.target
-	if def.target_kind == "friendly" then
+	if friendly then
 		if ray.reason ~= "friendly" then target = nil end
 	elseif ray.status ~= "target" then
 		target = nil

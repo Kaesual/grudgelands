@@ -67,11 +67,9 @@ local skeleton = {
 	group_attack = true,
 	pathfinding = 1,
 
-	-- Ranged loadout. dogshoot_switch = 1 starts in the RANGED phase and
-	-- mobs_redo alternates: dogshoot_count_max seconds shooting, then
-	-- dogshoot_count2_max seconds of melee (api.lua dogswitch). 10 vs 3 is
-	-- "mostly ranged"; independently of the timer mobs_redo forces melee
-	-- whenever the target is within `reach` (api.lua:2491-2819), which is the
+	-- Ranged loadout. dogshoot_switch = 1 starts in the RANGED mode; since
+	-- Round 78 the mode follows the distance (golem.lua; the count fields
+	-- are no longer read): a target close in is met in melee, which is the
 	-- "melee when cornered" half.
 	arrow = "grug_mobs:arrow_entity",
 	arrow_override = grug_mobs.stamp_arrow_damage,

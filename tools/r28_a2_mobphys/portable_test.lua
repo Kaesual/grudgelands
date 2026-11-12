@@ -12,7 +12,8 @@
 --      the destination test (box free of walkable/unknown/hurting nodes,
 --      floor under the feet), and the displacement itself (move_to);
 --   S  ruling 5: out of the target's column, sideways drift off an
---      overlapping engaged mob, at most once per second, contact-run hold.
+--      overlapping engaged mob, at most once per second, out to the column
+--      gap (Round 78; the contact-run stop is tools/r78_boss's).
 -- Prints "R28 A2 MOBPHYS PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -323,8 +324,7 @@ player = new_object({x = 0, y = 0.5, z = 0}, PLAYER_BOX)
 local a = new_mob({x = 0.2, y = 0.5, z = 0}, {attack = player})
 grug_mobs.separation_step(a, 0.09, a.object:get_pos(), player:get_pos())
 check(near(a.object.pos.x, 0.7) and a.object.moves == 1,
-	"S first tick: pushed out of the column to radius sum 0.7")
-check(near(a.temp.grug_separation_hold, 0.7), "S hold cached")
+	"S first tick: pushed out of the column (capped 0.5)")
 grug_mobs.separation_step(a, 0.09, a.object:get_pos(), player:get_pos())
 check(a.object.moves == 1, "S rate limit: nothing before 1 s")
 a.object.pos.x = 0.1
@@ -335,13 +335,15 @@ check(a.object.moves == 1, "S rate limit: 0.9 s still nothing")
 grug_mobs.separation_step(a, 0.09, a.object:get_pos(), player:get_pos())
 check(a.object.moves == 2 and near(a.object.pos.x, 0.6),
 	"S after 1 s: next push (capped 0.5)")
--- contact-run hold: radii 0.7 + margin 0.5
-check(grug_mobs.holds_column(a, {x = 1.1, y = 0.5, z = 0}, {x = 0, y = 0.5, z = 0}),
-	"S hold: inside radii + margin stops the run")
-check(not grug_mobs.holds_column(a, {x = 1.3, y = 0.5, z = 0},
-	{x = 0, y = 0.5, z = 0}), "S hold: beyond it the run continues")
-check(not grug_mobs.holds_column({temp = {}}, {x = 0, y = 0, z = 0},
-	{x = 0, y = 0, z = 0}), "S hold: no cache yet, run unchanged")
+-- Round 78 BOSS: the push goes out to the radii + 0.5 (the column gap); the
+-- contact run's own stop moved to mobs/grug_obstacle.lua (tools/r78_boss).
+a.object.pos.x = 1.0
+for _ = 1, 12 do
+	grug_mobs.separation_step(a, 0.09, a.object:get_pos(), player:get_pos())
+end
+check(a.object.moves == 3 and near(a.object.pos.x, 1.2),
+	"S column gap: inside radii + 0.5 the mob is pushed out to it")
+check(grug_mobs.holds_column == nil, "S the contact-run hold is grug_obstacle's (Round 78)")
 
 -- two engaged mobs on one spot at contact distance drift apart sideways
 objects = {}
