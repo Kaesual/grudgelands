@@ -597,6 +597,33 @@ frames 0–220).
   without a hitch. Without it the player's own
   view would keep the pose until the movement changed.
 
+### Emotes (Round 78)
+
+Two emotes in the quickbar (E), the user's ruling 10 of round78-plan.md:
+**Wave** and **Dance**. They are clips of the player model like the poses,
+baked after them by the same generator from `tools/r40_an/poses.json` and
+registered in `grug_visuals/apply.lua` (`EMOTE_CLIPS`, held to the model by
+the generator's `--check`):
+
+| Emote | Clip | Frames | Plays |
+| --- | --- | --- | --- |
+| `wave` | the right arm raised out to the side, waving three and a half times | 485–544 | once, 2 s |
+| `wave_sit` | the same over the seated frame (the legs stay on the saddle) | 545–604 | once, 2 s, on a mount |
+| `dance` | a 40-frame loop: the hips sway, the arms pump in turn, a knee lifts on each beat | 605–645 | three rounds, 4 s |
+
+- **A click plays it once.** Moving, jumping, a click (an attack or a cast;
+  a skill's pose replaces it anyway) and mounting end it, with the same
+  `<base>_resume` way back as a pose. The same emote again while it plays is
+  ignored, the other one replaces it, and at most one emote starts per
+  second (`grug_visuals.EMOTE_GAP`). A hit taken never flinches over it.
+- **On a mount** Wave plays seated and Dance is greyed out in the quickbar
+  (and refused). The mount keeps the rider in `sit` through player_api, so
+  the seated clip goes to the player object directly and `sit` plays again
+  when it is over (one timer, nothing per step); a dismount simply replaces
+  it. Riding on does not end the seated Wave.
+- **Who sees them:** every player, the emoting player in third person too;
+  the cloak and the panels follow the clip's base frame as in a pose.
+
 ## 5d. Head look (Round 40)
 
 A player's head follows the look up and down (the user's pick H1,
