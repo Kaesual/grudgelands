@@ -188,7 +188,7 @@ local SECTIONS = {
 		"• Dexterity adds 0.05 percentage point of Crit and 0.1 of Dodge per point; Crit starts at 5%.",
 		"• Crit and Dodge are each capped at 30%. Character shows the effective values after caps.",
 		"• Crit doubles damage and healing. Dodge avoids the hit entirely.",
-		"• Armor is a rating resolved against the attacker's level: damage reduction is rating / (rating + 20 + 0.5 x attacker level) for attackers up to level 60 (each level above 60 adds 8.5 more); only this final reduction is capped at 70%. The rating includes gear, statuses and talents.",
+		"• Armor is a rating resolved against the attacker's level: damage reduction is rating / (rating + 200 + 5 x attacker level) for attackers up to level 60 (each level above 60 adds 85 more); only this final reduction is capped at 70%. The rating includes gear, statuses and talents.",
 		"• Item level is counted once, in the weapon's base damage; your character level applies the shared damage fit; there is no separate item-level multiplier.",
 		"• At level 60, an item-level 70 weapon gives about 9% more effective swing damage than item level 60, while item level 50 gives about 7% less, before enchants.",
 		"• Healing and absorbs are percentages of the caster's neutral base pool, raised by Intelligence from gear; without it you heal exactly the listed share.",

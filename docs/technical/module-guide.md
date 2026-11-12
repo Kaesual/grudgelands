@@ -1794,6 +1794,9 @@ tools](#player-meta-read-by-external-tools).
     8.5*max(L-60,0)` and reduction is `min(0.70, A/(A+K))`. Apply once to
     player combat damage before absorb, with the existing final `math.ceil`;
     environmental/fall damage has no attacker provenance and bypasses armor.
+    Ratings carry one decimal (a piece is its share rounded to 0.1, at least
+    1.0; Round 78) and every text shows one through `grug_gear.format_armor`
+    (×10, a whole number); the math above keeps the inner unit.
   - **Armor-rank gate**: items carry `grug_armor_class` (cloth 1 <
     leather 2 < metal 3), classes carry `armor_rank`
     (`grug_classes.get_armor_rank`, no class = 1); the check sits in the

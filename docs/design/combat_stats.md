@@ -137,6 +137,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - Player armor is a numerical **rating** evaluated against the attacker's
   level. It is not itself a percentage; endgame plate and shields remain useful
   against enemies above level 60.
+- **Shown ×10** (Round 78 ruling 12): the rating carries one decimal inside
+  and every text shows it ten times larger as a whole number
+  (`grug_gear.format_armor`): tooltips, the Character page, enchants, ability,
+  talent and elixir texts. The formulas below use the inner unit; Help states
+  the same formula in shown units (`200 + 5 × L`, 85 per level above 60).
 - **How armor resolves** (rating model adopted 2026-09-20): armor rating sums
   over head/chest/legs/feet, an equipped shield, affixes, statuses and
   talents. Which armor a
@@ -1431,8 +1436,8 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   vision for 10 minutes. One elixir status is active at a time and stacks with
   food: at T1–T6 Vigor grants +4.0/4.8/5.6/6.4/7.2/8.0% maximum HP, Focus
   +5.0/5.6/6.2/6.8/7.4/8.0% maximum mana, Precision +4.2/5.2/6.0/7.0/7.8/8.6
-  percentage points crit, Stoneskin +0.8/1.6/2.4/3.2/4.0/4.8 armor rating for
-  30 minutes; Deepwater grants water breathing for 10 minutes. Ordinary
+  percentage points crit, Stoneskin +0.8/1.6/2.4/3.2/4.0/4.8 armor rating
+  (shown +8/16/24/32/40/48) for 30 minutes; Deepwater grants water breathing for 10 minutes. Ordinary
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll

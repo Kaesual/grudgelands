@@ -364,7 +364,7 @@ local function stats_content(player)
 	local lines = {
 		("Maximum HP: %d"):format(hp.final),
 		mana and ("Maximum mana: " .. mana.final) or "Maximum rage: 100",
-		("Armor: %.1f"):format(armor.result),
+		"Armor: " .. grug_gear.format_armor(armor.result),
 		("Damage reduction: %.1f%%"):format(armor_reduction),
 		("Crit: %.1f%%"):format(crit),
 		("Dodge: %.1f%%"):format(dodge),

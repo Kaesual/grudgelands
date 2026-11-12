@@ -726,9 +726,10 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 end)
 
 --
--- Base armor rating of the four worn armor pieces (combat_stats.md §2
--- = 1% damage reduction). Read off the ITEM DEFINITION: per-stack overrides
--- through item meta are WP5's business (rolled affixes), not WP7's.
+-- Base armor rating of the four worn armor pieces (combat_stats.md §2), in
+-- the inner unit with one decimal (texts show it x10, grug_gear.format_armor).
+-- Read off the ITEM DEFINITION: per-stack overrides through item meta are
+-- WP5's business (rolled affixes), not WP7's.
 --
 -- CACHED PER PLAYER. The consumer is grug_core's hp-change modifier, i.e.
 -- this runs once per punch TAKEN — at the 100-player design target that is

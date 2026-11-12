@@ -138,15 +138,14 @@ local function modifier_parts(modifiers, tooltip)
 		{"spell_damage_percent", "spell damage", "spell damage"},
 	}
 	for index = 1, #rows do
-		local value = modifiers[rows[index][1]]
+		local key = rows[index][1]
+		local value = modifiers[key]
 		if value then
-			if tooltip then
-				labels[#labels + 1] = "+" .. number_text(value) .. "% " ..
-					rows[index][3]
-			else
-				labels[#labels + 1] = "+" .. number_text(value) .. "% " ..
-					rows[index][2]
-			end
+			-- Armor is a rating, not a percentage: shown x10 like every
+			-- rating (grug_gear.format_armor, Round 78).
+			local amount = key == "armor" and grug_gear.format_armor(value) .. " " or
+				number_text(value) .. "% "
+			labels[#labels + 1] = "+" .. amount .. rows[index][tooltip and 3 or 2]
 		end
 	end
 	return labels

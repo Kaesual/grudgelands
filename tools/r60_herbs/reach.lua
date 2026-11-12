@@ -66,6 +66,7 @@ local function load_alchemy(root, json)
 	_G.grug_brewing = {NODE = "grug_brewing:brewing_stand"}
 	_G.grug_gathering = {register_herb_authorizer = function() end}
 	_G.grug_core = {}
+	dofile(root .. "/tools/r78_armor/format_armor.lua")(root) -- Round 78: ratings shown x10
 	dofile(root .. "/mods/ITEMS/grug_alchemy/recipes.lua")
 	local alchemy = _G.grug_alchemy
 	for _, name in ipairs(names) do _G[name] = saved[name] end

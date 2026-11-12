@@ -39,8 +39,8 @@ local ELIXIRS = {
 		text = "+%.1f percentage points Crit for 15 minutes",
 		colors = {"#e19a3d", "#d28a31", "#be7627", "#a96720", "#9c5e1c", "#925618"}},
 	{key = "stoneskin", name = "Stoneskin Elixir", modifier = "armor",
-		values = {0.8, 1.6, 2.4, 3.2, 4.0, 4.8}, duration = 1800,
-		text = "+%.1f armor rating for 30 minutes",
+		values = {0.8, 1.6, 2.4, 3.2, 4.0, 4.8}, duration = 1800, rating = true,
+		text = "+%s armor rating for 30 minutes",
 		colors = {"#8a8a8a", "#808080", "#747474", "#686868", "#5c5c5c", "#505050"}},
 }
 local HEALING_COLORS = {"#d13b45", "#c3313b", "#b42631", "#a81729", "#961222", "#850e1c"}
@@ -155,7 +155,8 @@ end
 local function elixir(tier, def)
 	local name = def.name .. " " .. ROMAN[tier]
 	local value = def.values[tier]
-	local effect = def.text:format(value)
+	-- Stoneskin's value is an armor rating: shown x10 (grug_gear.format_armor).
+	local effect = def.text:format(def.rating and grug_gear.format_armor(value) or value)
 	local id = "elixir_" .. def.key .. "_t" .. tier
 	local inputs = RECIPES[tier][def.key]
 	grug_alchemy.register_consumable(id, {
