@@ -316,11 +316,12 @@ reports and reviews; 14 and 15 are new.
     buy-back list and on the ground keep their old text until they reach your inventory
     and the next join or equipment change.
 13. **Emotes:** E shows an Emotes section with Wave and Dance; a click closes the window and
-    plays the emote once (Wave 2 s, Dance about 4 s). Walking, jumping or punching ends it
+    plays the emote once (Wave 2 s, Dance 3.2 s, one loop). Walking, jumping or punching ends it
     at once, and the character is not stuck in the pose in third person. On a mount Wave is
     seated (legs on the saddle) and the seated pose comes back afterwards; Dance is greyed
     ("Not while riding.") and a click on it changes nothing. A second player sees both.
-    Judge the look of Wave and Dance (first version by feel). Known: a seated Wave keeps
+    The look was settled with the user during the round (the raised Wave arm turned so the
+    item points back; the Dance tempo "Gleichmäßiger"). Known: a seated Wave keeps
     playing while you ride on, and an attack while seated does not end it: acceptable?
 14. **Open-world mobs with both attacks** (Bandit Archer, Skeleton Archer, golems, the
     kings): no 10 s / 3 s rhythm; they shoot at range and melee up close. On a 3-high
@@ -440,9 +441,12 @@ Fixture numbers on the fixture's fake engine.
 
   `r72_ranged` base vs branch: cover 12.7 → 14.6 m walked (the 1 s re-check), ledge 3 → 5
   shots. Per-step decision cost 2 → 5 ns (micro benchmark); no new globalstep.
-- **EMOTE** (`r78_emote`, 123 → 134 checks with the fix round): the player model grows from
-  301 KB to 379 KB, frames 0–645 (wave 485–544, wave_sit 545–604, dance 605–645); frames
-  0–484 byte-identical. All model checks (`make_poses.py`, `gen_cloak_model.py`,
+- **EMOTE** (`r78_emote`, 123 → 134 checks with the fix rounds): the player model grows from
+  301 KB to 406 KB, frames 0–701 (wave 485–544, wave_sit 545–604, dance 605–701); frames
+  0–484 byte-identical. After the user's look: the raised Wave arm is turned about its
+  length so the held item points back (`c422357f`); the Dance (same choreography, chosen
+  over three other dances on a preview page) runs at arms 1.07 s and legs/body 0.80 s per
+  cycle, a 96-frame loop played once, 3.2 s (`217d013c`). All model checks (`make_poses.py`, `gen_cloak_model.py`,
   `build_glb.py`, `check_glb.py`, offhand) PASS; 7 related fixtures PASS. Six captures in
   `~/projects/grudgelands-orchestration/r78/emote-shots/`.
 - **D:** mod map rows, `module-guide.md` (the stale 60 s), help text (the potion cooldown
@@ -453,6 +457,9 @@ Fixture numbers on the fixture's fake engine.
 
 §2 (rulings 1–15, 2026-11-12), among them: the cloth curve stays (ruling 12); the round
 ends with the coordinator's report and the user's go for the squash merge (ruling 15).
+After the first report (2026-11-12): the Wave's raised arm turned so the item points back;
+the current Dance choreography kept over three alternatives (Jig, side step, point); its
+tempo "Gleichmäßiger" (arms faster, legs and body slower) picked on a preview page.
 
 ### Coordinator decisions on the lanes' questions (from the handover)
 
