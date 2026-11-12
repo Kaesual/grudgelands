@@ -229,7 +229,8 @@ def main():
                 turn = relative_turn(rig, bone, f, "Arm_Left")
                 worst = max(worst, angle_between(turn, ((1, 0, 0), (0, 1, 0), (0, 0, 1))))
         check(worst < 1e-3, "I %s: every frame without an entry rigid on the arm (%.2g deg)" % (kind, worst))
-        check(frames == (485 if kind == "player" else 221), "I %s: %d frames" % (kind, frames))
+        # Round 78: the emotes end the player model at frame 645.
+        check(frames == (646 if kind == "player" else 221), "I %s: %d frames" % (kind, frames))
 
     if failures:
         print("R55 MODEL FRAMES FAIL failures=%d checks=%d" % (len(failures), checks))
