@@ -686,6 +686,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_core.combat_ray(player, range, opts)` are the shared server-side
   acquisition seam: the latter returns one physically ordered structured ray
   result for combat and diagnostics, so callers do not raycast again for logs.
+  Its `friendly` option (Round 78, set by `aimed_target` for friendly skills)
+  passes every object but a living friendly player (the tank behind the boss).
   The combat ray passes dropped items and, since Round 36, any object whose
   observer set leaves the player out (a quest object, `grug_quests/use.lua`):
   nobody is blocked by what they cannot see. The same test,
