@@ -520,12 +520,19 @@ for _, beside in ipairs({{"slab", 0}, {"stair", 1}}) do
 	check(ok, "M a flyer beside a " .. beside .. ": " .. tostring(message))
 	grug_mounts.dismount(other, "manual", true)
 end
--- A full node beside the feet is no footing.
+-- A full node beside the feet is no footing; since Round 78 (ruling 13) the
+-- flyer then comes one node higher, where that node is its footing.
 local walled = make_player("walled")
 set(1, 50, 0, "stone")
 ok, message = summon(walled, 3, {x = 0, y = 49.5, z = 0})
+check(ok, "M a full node beside the feet: the flyer comes a node higher: " .. tostring(message))
+eq(ok and grug_mounts.active.walled.object:get_pos().y, 50.5, "M (one node above the feet)")
+if ok then grug_mounts.dismount(walled, "manual", true) end
+-- With no room up there either (a ceiling over the step), it is refused.
+set(0, 52, 0, "stone")
+ok, message = summon(walled, 3, {x = 0, y = 49.5, z = 0})
 check(not ok and message == "There is not enough room here for a flying mount.",
-	"M no flyer with a full node beside the feet: " .. tostring(message))
+	"M no flyer with a node beside the feet and a ceiling above: " .. tostring(message))
 
 -- V: the climb and sink speed.
 eq(grug_mounts.TIERS[3].vertical_speed, 8, "V Expert climbs at 8")

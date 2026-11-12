@@ -937,9 +937,19 @@ local function summon_position(player, tier_id, seated)
 		-- tunnels and doorways.
 		local model = grug_mounts.model_for(player, tier_id)
 		local b = model and model.collisionbox
-		if b and grug_mobs.box_blocked(pos,
-				{b[1], math.max(b[2], 0), b[3], b[4], b[5], b[6]}) then
-			return nil, FLYER_ROOM_REFUSAL
+		local body = b and {b[1], math.max(b[2], 0), b[3], b[4], b[5], b[6]}
+		if body and grug_mobs.box_blocked(pos, body) then
+			-- Round 78 ruling 13: one more try a node higher (a slope, a step
+			-- beside the feet), which needs room but no footing; the rider
+			-- attaches up there as usual. The same body test, so a ceiling or a
+			-- wall (protected or not) still refuses; the column is the same,
+			-- so the flight rule above holds; the ceiling is checked again.
+			local raised = {x = pos.x, y = pos.y + 1, z = pos.z}
+			if raised.y > grug_mounts.FLIGHT_CEILING or
+					grug_mobs.box_blocked(raised, body) then
+				return nil, FLYER_ROOM_REFUSAL
+			end
+			return raised
 		end
 	end
 	return pos
