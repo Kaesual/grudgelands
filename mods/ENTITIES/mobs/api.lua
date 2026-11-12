@@ -2169,22 +2169,38 @@ end
 -- re-check with sight decides by the melee line alone (inside it melees,
 -- outside it shoots). In melee, a visible target out of reach whose way
 -- failed a search (a ledge, a ravine: grug_nav's `fails`) is shot at
--- instead, and melee then waits until the target is in reach or has left
--- past the ranged line. The mode is the saved `dogshoot_switch` (1 or 2, as
--- upstream's); the approach and the wait live in the runtime-only temp
--- table, which stop_attack clears. Returns ds_var: 0 without a switch.
+-- instead, and melee then waits until the target is in reach, has left past
+-- the ranged line, or (a check every GRUG_DS_RECHECK seconds while the
+-- target is seen inside the melee line) can be walked to straight again
+-- (grug_nav.line_to_target at `pos`, `target_pos`: it came down to open
+-- floor). The mode is the saved `dogshoot_switch` (1 or 2, as upstream's);
+-- the approach and the wait live in the runtime-only temp table, which
+-- stop_attack clears. Returns ds_var: 0 without a switch.
 local GRUG_MELEE_BELOW = 4
 local GRUG_RANGED_ABOVE = 6
 local GRUG_DS_RECHECK = 1
 
-local function grug_dogshoot_mode(self, edge, reach, in_sight, dtime)
+local function grug_dogshoot_mode(self, edge, reach, in_sight, dtime, pos, target_pos)
 
 	local mode = self.dogshoot_switch
 	if not mode then return 0 end
 
 	local temp = self.temp
 	local blind = temp.grug_ds_blind
-	local below = temp.grug_ds_unreached and reach or GRUG_MELEE_BELOW
+	local below = GRUG_MELEE_BELOW
+
+	if temp.grug_ds_unreached then
+		below = reach
+		local check = (temp.grug_ds_check or 0) + dtime
+		if check >= GRUG_DS_RECHECK then
+			check = 0
+			if in_sight and edge < GRUG_MELEE_BELOW and pos
+			and grug_nav.line_to_target(self, pos, self.attack, target_pos) then
+				temp.grug_ds_unreached, below = nil, GRUG_MELEE_BELOW
+			end
+		end
+		temp.grug_ds_check = check
+	end
 
 	if blind or not in_sight then
 		blind = (blind or 0) + dtime
@@ -2203,7 +2219,7 @@ local function grug_dogshoot_mode(self, edge, reach, in_sight, dtime)
 	if mode == 2 then
 		local nst = temp.grug_nav
 		if edge > reach and nst and (nst.fails or 0) > 0 then
-			mode, temp.grug_ds_unreached = 1, true
+			mode, temp.grug_ds_unreached, temp.grug_ds_check = 1, true, 0
 		else
 			temp.grug_ds_unreached = nil
 		end
@@ -2230,6 +2246,7 @@ function mob_class:stop_attack()
 		self.temp.grug_closing = nil -- GRUG PATCH (Round 56 MOBAI): no stale approach
 		-- GRUG PATCH (Round 78 BOSS): nor a blind approach or a wait for reach.
 		self.temp.grug_ds_blind, self.temp.grug_ds_unreached = nil, nil
+		self.temp.grug_ds_check = nil
 	end
 	self:set_velocity(0)
 	self.state = "stand"
@@ -2464,7 +2481,8 @@ function mob_class:do_states(dtime)
 
 		-- GRUG PATCH (Round 78 BOSS): by distance, not upstream's clock.
 		if self.attack_type == "dogshoot" then
-			ds_var = grug_dogshoot_mode(self, m_edge, m_reach, in_sight, dtime)
+			ds_var = grug_dogshoot_mode(self, m_edge, m_reach, in_sight, dtime, s,
+					target_pos)
 		end
 
 		-- GRUG PATCH (Round 56 MOBAI, ruling 3): a ranged mob whose target is

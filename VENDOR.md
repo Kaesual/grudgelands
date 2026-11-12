@@ -272,7 +272,8 @@ only through `grug_mobs`, so in practice that is every Grudgelands mob.
   `do_states()`): `grug_mobs.separation_step` runs for ground melee mobs right
   after the cadence update (acts at most once per second), and the in-reach
   contact run also stops when `grug_mobs.holds_column` reports a visible
-  target's column within the hold distance.
+  target's column within the hold distance (replaced in Round 78 by the stop
+  gap of `grug_obstacle.melee_measure`; see "Round 78 BOSS").
 
 At this integration point `mobs/api.lua` has **82 markers**.
 
@@ -1036,7 +1037,8 @@ mob outside an Expedition, every rule is as before. Fixtures
 round78-plan.md ruling 6 and §3.1. `mobs/grug_obstacle.lua` (one marker
 `GRUG PATCH (Round 78 BOSS)`): `edge_distance`, `edge_reach`, `melee_measure` and
 the changed `should_close_contact(gap, stop, visible)` measure a ground mob's melee
-edge to edge (collision radii subtracted, one node of height free), its reach as
+edge to edge (collision radii subtracted, a height difference up to 1.1 free and
+a larger one counted whole), its reach as
 `reach` minus its registered radius and a player's 0.3, and the contact run's stop
 at a 1 node gap (at most 60 % of that reach); a flier keeps the origin distance and
 60 % of `reach`. `mobs/api.lua` (eight markers `GRUG PATCH (Round 78 BOSS)`):
@@ -1045,7 +1047,9 @@ strike and navigation `striking` tests read it; `grug_dogshoot_mode` replaces th
 call to upstream's `dogswitch` (left in place, no longer called): a `dogshoot` mob
 with a switch melees below 4 nodes, shoots above 6 and keeps its mode between,
 approaches a hidden target in melee and re-checks once a second, and shoots a
-visible target whose way failed a search until it is in reach; the dogfight
+visible target whose way failed a search until it is in reach or, checked once a
+second, can be walked to straight again (`mobs/grug_nav.lua` `nav.line_to_target`,
+one marker); the dogfight
 branch's condition keeps upstream's "in reach forces melee" only for a mob without
 a switch; `separation_step` runs for every ground mob in that branch; `stop_attack`
 clears the mode's runtime state. `grug_mobs/separation.lua`'s column push now goes

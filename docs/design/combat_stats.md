@@ -571,8 +571,9 @@ Normal tier at level L:
   its model-specific **4 m** and non-combatant villagers keep 0. **A ground mob
   measures melee edge to edge** (Round 78, ruling 6; `mobs/grug_obstacle.lua`
   `melee_measure`): the horizontal gap between the two collision boxes, a height
-  difference of up to one node between the feet free (a target on a step is in
-  melee), more added to the distance. Its reach is `reach` minus its registered
+  difference of up to one node between the feet free (a target on a step or in
+  a hole is in melee), a larger one counted whole (a player three nodes up on a
+  tower is out of an ordinary mob's reach, as before). Its reach is `reach` minus its registered
   radius and a player's 0.3, so an ordinary mob reaches exactly as far as before
   on level ground and an elite's or rare's grown body as far past its own edge.
   The contact run stops at a gap of **1 node** (at most 60 % of that reach), so a
@@ -702,7 +703,9 @@ Normal tier at level L:
   (§4) and re-checks **once a second**: with sight back outside the melee line it
   shoots, inside it melees. A visible target out of melee reach whose way failed
   a search (a ledge, a ravine) is shot at instead, and melee then waits until
-  the target is in reach or has left past the ranged line. This replaces the
+  the target is in reach, has left past the ranged line, or (checked once a
+  second while it is seen inside the melee line) can be walked to straight
+  again, e.g. after it hopped down to open floor. This replaces the
   archers' clock (10 s ranged, 3 s melee) and the rule that a target within
   `reach` forces melee (`mobs/api.lua` `grug_dogshoot_mode`; the mode is the
   saved `dogshoot_switch`). The Expedition bosses: Flintback (the Stone Golem's

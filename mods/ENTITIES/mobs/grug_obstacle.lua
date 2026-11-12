@@ -278,8 +278,9 @@ end
 -- mob measures melee edge to edge. The gap is the horizontal distance
 -- between the two collision boxes (centres minus both radii, negative when
 -- they overlap); a height difference of up to STEP_ALLOWANCE between the
--- feet costs nothing (a target one node up on a step is still in melee),
--- more adds to the distance. The reach keeps its old meaning against a
+-- feet costs nothing (a target one node up on a step or down in a hole is
+-- still in melee), a larger one counts whole (a player three nodes up on a
+-- tower is out of an ordinary mob's reach, as before). The reach keeps its old meaning against a
 -- player-sized body: `reach` origin to origin minus the mob's REGISTERED
 -- radius and BODY_RADIUS, so an ordinary mob reaches exactly as far as
 -- before on level ground, while an elite's or a rare's grown body (the
@@ -290,7 +291,8 @@ end
 --
 obstacle.BODY_RADIUS = 0.3 -- a player's radius: the body `reach` was set against
 obstacle.STOP_GAP = 1 -- nodes edge to edge where the contact run stops
-obstacle.STEP_ALLOWANCE = 1 -- nodes of height difference that cost nothing
+obstacle.STEP_ALLOWANCE = 1.1 -- nodes of height difference that cost nothing
+-- (a step, with room for a box that reaches a little below its feet)
 
 local function box_radius(box)
 	return math.max(-box[1], box[4], -box[3], box[6])
@@ -304,9 +306,9 @@ function obstacle.edge_distance(self, pos, target_pos, target)
 	local tbox = obstacle.object_cbox(target)
 	local dx, dz = target_pos.x - pos.x, target_pos.z - pos.z
 	local gap = math.sqrt(dx * dx + dz * dz) - box_radius(box) - box_radius(tbox)
-	local dy = math.abs(target_pos.y + tbox[2] - pos.y - box[2]) - obstacle.STEP_ALLOWANCE
+	local dy = math.abs(target_pos.y + tbox[2] - pos.y - box[2])
 	local h = gap > 0 and gap or 0
-	if dy > 0 then return math.sqrt(h * h + dy * dy), gap end
+	if dy > obstacle.STEP_ALLOWANCE then return math.sqrt(h * h + dy * dy), gap end
 	return h, gap
 end
 

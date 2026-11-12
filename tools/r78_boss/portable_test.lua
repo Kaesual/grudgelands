@@ -152,20 +152,39 @@ do
 	check(near(O.edge_reach(elite), 2.4), "E5 an elite's edge reach is the normal body's")
 	edge, gap = O.edge_distance(elite, {x = 0, y = Y + 1.4, z = 0}, target.pos, target)
 	check(near(gap, 3 - 0.42 - 0.3), "E6 the elite's gap subtracts its grown radius")
-	-- Height: a step up is free, more adds.
+	-- Height: a step up or a hole down is free; more counts whole (fix round:
+	-- a towering player three nodes up stays out of reach, as before).
+	local origin = {x = 0, y = Y, z = 0}
+	local R = O.edge_reach(raider)
 	target.pos = {x = 1.5, y = Y + 1, z = 0}
-	edge, gap = O.edge_distance(raider, {x = 0, y = Y, z = 0}, target.pos, target)
+	edge, gap = O.edge_distance(raider, origin, target.pos, target)
 	check(near(edge, 0.9, 1e-3) and near(gap, 0.9), "E7 a target one node up on a step: no height cost")
+	target.pos = {x = 1.5, y = Y - 1, z = 0}
+	edge = O.edge_distance(raider, origin, target.pos, target)
+	check(near(edge, 0.9, 1e-3), "E7b a target one node down in a hole: no height cost")
+	target.pos = {x = 1.6, y = Y - 2, z = 0}
+	edge = O.edge_distance(raider, origin, target.pos, target)
+	check(edge <= R, "E7c two down, a node off: in reach (" .. string.format("%.2f", edge) .. ")")
+	for _, h in ipairs({0, 0.8, 1.0, 1.3, 1.4}) do
+		target.pos = {x = h, y = Y + 3, z = 0}
+		edge = O.edge_distance(raider, origin, target.pos, target)
+		check(edge > R, "E8 a player three up on a tower " .. h .. " off centre: out of reach ("
+			.. string.format("%.2f", edge) .. ")")
+		-- before: 3D origin distance > 3 (the raider's feet sit 0.01 below its origin)
+		check(math.sqrt(h * h + 3.01 * 3.01) > 3, "E8b ... as before Round 78")
+	end
 	target.pos = {x = 1.5, y = Y + 3, z = 0}
-	edge = O.edge_distance(raider, {x = 0, y = Y, z = 0}, target.pos, target)
-	check(near(edge, math.sqrt(0.81 + 4), 0.02), "E8 three nodes up: the two beyond the step count")
+	edge = O.edge_distance(raider, origin, target.pos, target)
+	check(near(edge, math.sqrt(0.81 + 3.01 * 3.01), 1e-6), "E9 the whole height counts beyond the step")
 	target.pos = {x = 0, y = Y + 4, z = 0}
-	edge, gap = O.edge_distance(raider, {x = 0, y = Y, z = 0}, target.pos, target)
-	check(near(edge, 3, 0.02) and gap < 0, "E9 straight under a target 4 up: overlap is 0, height 3")
-	check(edge > O.edge_reach(raider), "E10 ... out of reach (it was before: 4 > 3)")
-	target.pos = {x = 0, y = Y + 3, z = 0}
-	check(O.edge_distance(raider, {x = 0, y = Y, z = 0}, target.pos, target) <= O.edge_reach(raider),
-		"E11 ... 3 up is in reach (it was before: 3 <= 3)")
+	edge, gap = O.edge_distance(raider, origin, target.pos, target)
+	check(near(edge, 4.01, 1e-6) and gap < 0 and edge > R, "E10 straight under a target 4 up: out of reach")
+	-- The bandit's body (origin at its feet, reach 3) the same way.
+	local bandit = new_mob({-0.3, 0, -0.3, 0.3, 1.77, 0.3}, 3, 1)
+	bandit.attack = target
+	target.pos = {x = 1.0, y = Y + 3, z = 0}
+	check(O.edge_distance(bandit, origin, target.pos, target) > O.edge_reach(bandit),
+		"E11 a bandit under a 3 high tower: out of reach")
 	-- melee_measure and the stop gap.
 	target.pos = {x = 3, y = Y, z = 0}
 	local m_edge, m_gap, m_reach, m_stop = O.melee_measure(raider, {x = 0, y = Y, z = 0}, target.pos, 3)
@@ -300,9 +319,15 @@ end
 -- ---------------------------------------------------------------------------
 -- M. The distance mode, cut out of api.lua.
 -- ---------------------------------------------------------------------------
+-- The way check (grug_nav.line_to_target), counted: `way` is its answer.
+local way, line_calls = false, 0
+local fake_nav = {line_to_target = function()
+	line_calls = line_calls + 1
+	return way
+end}
 local helpers = load_in(cut(api, "local GRUG_SHOT_RANGE_EXTRA = 4", "-- stop attack & reset vars",
 	"api helpers") .. "\nreturn {range = grug_shot_range, closing = grug_ranged_closing,"
-	.. " mode = grug_dogshoot_mode}", {mobs = {}}, "api helpers")
+	.. " mode = grug_dogshoot_mode}", {mobs = {}, grug_nav = fake_nav}, "api helpers")
 local mode = helpers.mode
 local function shooter(fields)
 	local m = {attack_type = "dogshoot", dogshoot_switch = 1, reach = 3, view_range = 16,
@@ -380,15 +405,56 @@ do
 	m = shooter({dogshoot_switch = 2})
 	m.temp.grug_nav = {fails = 2}
 	check(mode(m, 2, R, true, 0.1) == 2, "M17 in reach a failed search changes nothing")
+	-- Fix round: the target hops down from its ledge to open floor 3 m off.
+	local P, T = {x = 0, y = 0, z = 0}, {x = 3, y = 0, z = 0}
+	m = shooter({dogshoot_switch = 2})
+	m.temp.grug_nav = {fails = 1}
+	way, line_calls = false, 0
+	check(mode(m, 3, R, true, 0.25, P, T) == 1 and m.temp.grug_ds_unreached,
+		"M17b the target on its ledge 3 m off: it shoots")
+	m.temp.grug_nav.fails = 0 -- the shoot branch's strike clears the failures
+	for _ = 1, 3 do mode(m, 3, R, true, 0.25, P, T) end
+	check(line_calls == 0, "M17c no way check before a second has passed")
+	check(mode(m, 3, R, true, 0.25, P, T) == 1 and line_calls == 1,
+		"M17d the check at 1 s finds no straight way: it keeps shooting")
+	way = true -- the target hopped down to open floor
+	for _ = 1, 3 do check(mode(m, 3, R, true, 0.25, P, T) == 1, "M17e shooting until the next check") end
+	check(mode(m, 3, R, true, 0.25, P, T) == 2 and line_calls == 2 and not m.temp.grug_ds_unreached,
+		"M17f the next check finds the way: below 4 it melees (two checks in 2 s)")
+	-- The real way check on the fake grid: open floor yes, a 3 high ledge no.
+	local nav = dofile(repo .. "/mods/ENTITIES/mobs/grug_nav.lua")
+	nav.init({obstacle = O})
+	nav.set_dangerous(function() return false end)
+	local walker = new_mob(RAIDER_BOX, 3, 1, {temp = {}, fear_height = 6, jump_height = 4})
+	walker.initial_properties.stepheight = 1.1
+	local floor_target = new_target({x = 3, y = 0.5, z = 0})
+	O.begin_server_step()
+	check(nav.line_to_target(walker, {x = 0, y = 0.51, z = 0}, floor_target, floor_target.pos) == true,
+		"M17h the real check: a target on open floor 3 m off can be walked to")
+	for y = 1, 3 do nodes[key(3, y, 0)] = "stone" end
+	local ledge_target = new_target({x = 3, y = 3.5, z = 0})
+	check(nav.line_to_target(walker, {x = 0, y = 0.51, z = 0}, ledge_target, ledge_target.pos) == false,
+		"M17i ... one on a 3 high ledge cannot")
+	for y = 1, 3 do nodes[key(3, y, 0)] = nil end
+	-- No check out of sight or outside the melee line.
+	m = shooter({dogshoot_switch = 2})
+	m.temp.grug_nav = {fails = 1}
+	mode(m, 3, R, true, 0.25, P, T)
+	m.temp.grug_nav.fails = 0
+	line_calls = 0
+	for _ = 1, 8 do mode(m, 5, R, true, 0.25, P, T) end
+	check(line_calls == 0 and m.dogshoot_switch == 1, "M17g at 5 m (outside the melee line): no check")
 	-- No switch: upstream's ds_var 0, nothing written.
 	local none = shooter()
 	none.dogshoot_switch = nil
 	check(mode(none, 2, R, true, 0.1) == 0 and none.dogshoot_switch == nil, "M18 no switch: ds_var 0")
 	-- stop_attack clears the runtime state.
 	local stop_src = cut(api, "function mob_class:stop_attack()", "\n-- execute current state", "stop_attack")
-	check(stop_src:find("self.temp.grug_ds_blind, self.temp.grug_ds_unreached = nil, nil", 1, true) ~= nil,
+	check(stop_src:find("self.temp.grug_ds_blind, self.temp.grug_ds_unreached = nil, nil", 1, true) ~= nil
+		and stop_src:find("self.temp.grug_ds_check = nil", 1, true) ~= nil,
 		"M19 stop_attack clears the blind approach and the wait")
-	check(api:find("ds_var = grug_dogshoot_mode(self, m_edge, m_reach, in_sight, dtime)", 1, true) ~= nil
+	check(api:find("ds_var = grug_dogshoot_mode(self, m_edge, m_reach, in_sight, dtime, s,\n"
+		.. "\t\t\t\t\ttarget_pos)", 1, true) ~= nil
 		and api:find("ds_var = self:dogswitch(dtime)", 1, true) == nil,
 		"M20 do_states takes the distance mode, the clock is no longer called")
 end
