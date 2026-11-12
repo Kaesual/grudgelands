@@ -8,9 +8,10 @@ grug_traders.POTION_HEAL_AMOUNT = 35
 
 --
 -- SHARED instant-potion cooldown (item_tiers.md §5: "one shared 30-second
--- potion cooldown for every potion"; 60 s until Round 78 ruling 1). The alchemy potions and draughts gate on
--- the SAME clock, so they call grug_traders.potion_cooldown_left() and
--- grug_traders.start_potion_cooldown() instead of opening a second timer.
+-- potion cooldown for every potion"; 60 s until Round 78 ruling 1). The
+-- alchemy potions and draughts gate on the SAME clock, so they call
+-- grug_traders.potion_cooldown_left() and grug_traders.start_potion_cooldown()
+-- instead of opening a second timer.
 -- (The "one elixir buff at a time" half of §3.6 is a WP10 concern — an elixir
 -- is not an instant potion and must not touch this cooldown.)
 --
