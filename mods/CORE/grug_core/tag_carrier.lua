@@ -427,18 +427,56 @@ local function forget_carrier(carrier, row)
 	end
 end
 
+-- A new carrier entity on `parent`, attached at its origin, or nil.
+local function spawn_carrier(parent)
+	local pos = parent:get_pos()
+	local carrier = pos and core.add_entity(pos, ENTITY_NAME)
+	if not carrier then return nil end
+	copy_parent_box(carrier, parent)
+	carrier:set_attach(parent, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+	return carrier
+end
+
+-- A carrier still serving `parent`: valid and attached to it.
+local function carrier_holds(carrier, parent)
+	return object_valid(carrier) and carrier:get_attach() == parent
+end
+
 -- The other side's carrier, made when its first viewer comes in range.
 local function ensure_foe_carrier(row, text)
-	if object_valid(row.foe) then return row.foe end
-	local parent = row.parent
-	local pos = parent:get_pos()
-	local foe = pos and core.add_entity(pos, ENTITY_NAME)
+	if carrier_holds(row.foe, row.parent) then return row.foe end
+	remove_foe_carrier(row)
+	local foe = spawn_carrier(row.parent)
 	if not foe then return nil end
-	copy_parent_box(foe, parent)
-	foe:set_attach(parent, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 	style_carrier(foe, text or "", foe_category(row))
 	row.foe = foe
 	return foe
+end
+
+-- Round 78 (ruling 7): a player's carrier that is gone, invalid or detached
+-- is replaced in its row, which keeps its slot, owner and text. The engine
+-- drops a non-static entity whose map block is not in memory at an active
+-- block pass (serverenvironment.cpp deactivateFarObjects: `still_active` for
+-- !isStaticAllowed is getBlockNoCreateNoEx != nullptr), and an attached child
+-- moves with its parent, so a player held where no block is loaded (the
+-- character waiting point at y = 31000, grug_classes selection.lua) loses the
+-- carrier for good. A replacement waits while the parent's own block is not
+-- in memory (get_node_or_nil is nil exactly then, map.cpp Map::getNode), where
+-- it would go the same way. Returns the replacement, or nil while it waits.
+local function replace_carrier(old, row)
+	local parent = row.parent
+	local pos = parent:get_pos()
+	if not pos or not core.get_node_or_nil(pos) then return nil end
+	local carrier = spawn_carrier(parent)
+	if not carrier then return nil end
+	if object_valid(old) then old:remove() end
+	managed_carriers[old] = nil
+	carrier_slots[row.slot][old] = nil
+	managed_carriers[carrier] = row
+	carrier_slots[row.slot][carrier] = row
+	carrier_by_parent[parent] = carrier
+	style_carrier(carrier, row.text or "", own_category(row))
+	return carrier
 end
 
 local EMPTY = {}
@@ -492,7 +530,7 @@ local function update_observers(carrier, row)
 		end
 		return observers, changed
 	end
-	local foe = ensure_foe_carrier(row, entity._grug_text)
+	local foe = ensure_foe_carrier(row, row.text or entity._grug_text)
 	foe_entity = foe and foe:get_luaentity()
 	if foe_entity and not same_set(foe_entity._grug_observers or EMPTY, foes) then
 		foe_entity._grug_observers = foes
@@ -505,9 +543,15 @@ local function update_observers(carrier, row)
 	return both, changed
 end
 
+-- Returns true for a player's carrier that is lost while the player is
+-- still there: the caller replaces it after its walk (replace_carrier adds a
+-- key to the table being walked).
 local function manage_carrier(carrier, row)
 	local parent = row.parent
-	if not object_valid(carrier) then
+	if row.is_player and object_valid(parent)
+			and not carrier_holds(carrier, parent) then
+		return true
+	elseif not object_valid(carrier) then
 		forget_carrier(carrier, row)
 	elseif not object_valid(parent) or carrier:get_attach() ~= parent then
 		forget_carrier(carrier, row)
@@ -527,10 +571,22 @@ local function manage_carrier(carrier, row)
 	end
 end
 
--- One slot's carriers, or every carrier when `slot` is nil.
+-- One slot's carriers, or every carrier when `slot` is nil. A lost player
+-- carrier is replaced after the walk and visited at once, so its viewers
+-- get it on this pass; one whose replacement waits is retried next second.
 local function manage_carriers(slot)
+	local lost
 	for carrier, row in pairs(slot and carrier_slots[slot] or managed_carriers) do
-		manage_carrier(carrier, row)
+		if manage_carrier(carrier, row) then
+			lost = lost or {}
+			lost[#lost + 1] = carrier
+		end
+	end
+	if not lost then return end
+	for index = 1, #lost do
+		local row = managed_carriers[lost[index]]
+		local carrier = row and replace_carrier(lost[index], row)
+		if carrier then manage_carrier(carrier, row) end
 	end
 end
 
@@ -562,21 +618,21 @@ function grug_core.sync_tag_carrier_box(parent)
 	return true
 end
 
+-- The parent's carrier: the one it has, a replacement for one that is gone,
+-- invalid or detached (Round 78), or a new one. A replacement that has to
+-- wait for the parent's block returns the row's old handle: it is not valid,
+-- but a text set on it is kept for the replacement.
 function grug_core.create_tag_carrier(parent, owner_name)
 	if not object_valid(parent) then return nil end
 	local existing = carrier_by_parent[parent]
-	if object_valid(existing) then
-		local row = managed_carriers[existing]
-		if row and owner_name ~= nil then row.owner_name = owner_name end
-		return existing
+	local existing_row = existing and managed_carriers[existing]
+	if existing_row then
+		if owner_name ~= nil then existing_row.owner_name = owner_name end
+		if carrier_holds(existing, parent) then return existing end
+		return replace_carrier(existing, existing_row) or existing
 	end
-	local pos = parent:get_pos()
-	if not pos then return nil end
-	local carrier = core.add_entity(pos, ENTITY_NAME)
+	local carrier = spawn_carrier(parent)
 	if not carrier then return nil end
-	copy_parent_box(carrier, parent)
-	carrier:set_attach(parent, "", {x = 0, y = 0, z = 0},
-		{x = 0, y = 0, z = 0})
 	last_slot = last_slot % SLOTS + 1
 	local row = {parent = parent, owner_name = owner_name,
 		category = category_for(parent), is_player = parent:is_player(),
@@ -600,9 +656,12 @@ end
 
 -- The text reaches both sides' carriers; the colour is each carrier's own.
 function grug_core.set_tag_carrier_text(carrier, text)
-	if not object_valid(carrier) then return false end
+	if not carrier then return false end
 	text = type(text) == "string" and text or ""
 	local row = managed_carriers[carrier]
+	-- The row keeps the text for a carrier that has to be replaced.
+	if row then row.text = text end
+	if not object_valid(carrier) then return false end
 	local changed = style_carrier(carrier, text,
 		row and own_category(row) or "npc")
 	if row and object_valid(row.foe) then
