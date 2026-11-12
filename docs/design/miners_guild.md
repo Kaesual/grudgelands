@@ -338,6 +338,10 @@ amounts are the user's accepted ones of 2026-11-07
     a random target kind that has a deposit within `range` (true
     distance), then one of its deposits at random: kind first, so the gem
     is marked about as often as a common ore rather than drowning in Coal;
+    a drawn deposit the user may not dig (`core.is_protected`: a town, a
+    claim; a running Expedition's diggable ores stay allowed) is dropped and
+    another drawn, at most 16 protection checks per mark (Round 78 ruling
+    14);
     a mark that falls due outside the band does nothing and the next
     interval starts (per-target `core.find_node_near` would be up to one
     full scan per target when none is near; measured in the round report);
