@@ -304,7 +304,8 @@ do
 	eq(description(again), text, "B a seed reproduces its item")
 	-- One decimal for the percentage stats and armor.
 	eq(Q.format_enchant_value("max_hp_percent", 4), "4.0", "B HP shows one decimal")
-	eq(Q.format_enchant_value("armor_rating", 4.8), "4.8", "B armor shows one decimal")
+	-- Round 78: armor keeps its one stored decimal and shows x10, whole.
+	eq(Q.format_enchant_value("armor_rating", 4.8), "48", "B armor shows its rating x10")
 	eq(Q.format_enchant_value("str", 19), "19", "B attributes stay whole")
 end
 local function boss(kind)

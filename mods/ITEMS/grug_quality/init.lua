@@ -49,8 +49,10 @@ local AFFIX = {
 		percent = true},
 	dodge_percent = {label = "Dodge", short = "Dodge", prefix = "Elusive",
 		suffix = "of the Cat", decimals = 1, percent = true},
+	-- Stored with one decimal, shown x10 as a whole number like every armor
+	-- rating (grug_gear.format_armor, Round 78): a stored 4.8 reads "+48".
 	armor_rating = {label = "armor rating", short = "Armor", prefix = "Stalwart",
-		suffix = "of the Tortoise", decimals = 1},
+		suffix = "of the Tortoise", decimals = 1, rating = true},
 }
 
 local POOLS = {
@@ -342,8 +344,9 @@ local function format_number(value, decimals)
 end
 
 -- An enchant value as the tooltip shows it (whole attributes, one decimal
--- for the percentages and armor).
+-- for the percentages, armor as its rating x10).
 function grug_items.format_enchant_value(stat, value)
+	if AFFIX[stat].rating then return grug_gear.format_armor(value) end
 	return format_number(value, AFFIX[stat].decimals)
 end
 
@@ -411,7 +414,7 @@ end
 -- inside the brackets.
 local function affix_value_text(slot, extra)
 	local definition = AFFIX[slot.stat]
-	return "+" .. format_number(slot.value, definition.decimals) ..
+	return "+" .. grug_items.format_enchant_value(slot.stat, slot.value) ..
 		(definition.percent and "% " or " ") .. definition.label .. " (T" .. slot.tier ..
 		(extra and extra ~= "" and "; " .. extra or "") .. ")"
 end

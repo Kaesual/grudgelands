@@ -180,6 +180,7 @@ grug_core = {
 	armor_reduction = function() return 0.1 end,
 	get_player_level = function() return 10 end,
 }
+dofile(repo .. "/tools/r78_armor/format_armor.lua")(repo) -- Round 78: ratings shown x10
 grug_xp = {register_on_level_change = function(fn) stat_hooks.level = fn end}
 grug_money = {
 	register_on_change = function(fn) stat_hooks.money = fn end,

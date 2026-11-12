@@ -798,6 +798,7 @@ do
 	grug_classes.get_class = function() return "warrior" end
 	grug_core.get_armor_rating = function() return 0 end
 	grug_core.armor_reduction = function() return 0 end
+	dofile(repo .. "/tools/r78_armor/format_armor.lua")(repo) -- Round 78: ratings shown x10
 	grug_core.get_player_level = function() return 1 end
 	grug_core.register_on_equipment_change = function() end
 	grug_core.register_on_status_modifiers_changed = function() end

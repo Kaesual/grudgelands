@@ -243,6 +243,7 @@ grug_gear = {STARTER_SWORD = "grug_gear:sword_bronze",
 	initialize_weapon_tooltip = function() return false end,
 	usable_by = function() return "Usable by: someone" end,
 	can_equip_weapon = function() return true end}
+dofile(repo .. "/tools/r78_armor/format_armor.lua")(repo) -- Round 78: ratings shown x10
 dofile(repo .. "/mods/ITEMS/grug_gear/permissions.lua")
 grug_xp = {register_on_level_change = function() end,
 	get_level = function() return 30 end}
