@@ -1,8 +1,9 @@
 -- Runtime-only player statuses and their HUD icon row. Most statuses are
 -- timed; `untimed = true` is restricted to modifier-free lifecycle UI state.
 -- Effects intentionally disappear on relog. Cooldowns are never statuses
--- (Round 26 ruling 21): the potion cooldown keeps its own storage and its
--- own refusal message.
+-- (Round 26 ruling 21), with one exception (Round 78 ruling 2): the shared
+-- potion cooldown keeps its own storage and refusal message and shows on the
+-- row through a status source (grug_traders potion.lua).
 -- on_tick and a positive interval are an optional pair; definitions that
 -- provide only one of them are rejected.
 --

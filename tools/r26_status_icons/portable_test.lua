@@ -152,11 +152,20 @@ local EXPECTED_KIND = {
 	mining_sense = "buff",
 	-- Round 72.1: the Deserter's Mark (grug_expeditions).
 	deserter_mark = "debuff",
+	-- Round 78 ruling 2: the shared potion cooldown (grug_traders).
+	potion_cooldown = "neutral",
 }
 
 -- A picture may be a texture modifier over a shipped emblem (Round 72.1, the
 -- Deserter's Mark): the emblem is checked.
 local function texture_ok(name, label)
+	-- Round 78: an item image on the plate (the potion cooldown, like a food
+	-- item's icon): the item image is checked, not its size.
+	local item = name and name:match("^%[fill:16x16:[^%^]+%^%(([^%)]+)%)%^%[resize:64x64$")
+	if item then
+		check(textures[item] ~= nil, label .. ": item texture " .. item .. " exists")
+		return
+	end
 	name = name and name:match("^[^%^]+")
 	local path = textures[name]
 	check(path ~= nil, label .. ": texture " .. tostring(name) .. " exists")
@@ -265,7 +274,13 @@ for id, file in pairs(set_ids) do
 	check(icons.STATUS[id] ~= nil, "status id " .. id .. " (" .. file ..
 		") is registered")
 end
-check(set_ids.potion_cooldown == nil, "no potion cooldown status (ruling 21)")
+-- Round 78 ruling 2 lifts ruling 21 for the potion cooldown alone: it is set
+-- by its source, and no other cooldown id is.
+check(set_ids.potion_cooldown ~= nil, "the potion cooldown is a status (Round 78 ruling 2)")
+for id in pairs(set_ids) do
+	check(id == "potion_cooldown" or not id:match("cooldown"),
+		"no other cooldown status (ruling 21): " .. id)
+end
 -- Death ends poison chains like leaving does (review L3; the status table
 -- clears on death, so a chain ticking on after a respawn would be invisible).
 check(read_file("mods/ENTITIES/grug_mobs/verbs.lua"):find(

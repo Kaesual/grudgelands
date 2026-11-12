@@ -7,8 +7,8 @@
 grug_traders.POTION_HEAL_AMOUNT = 35
 
 --
--- SHARED instant-potion cooldown (item_tiers.md §5: "one shared 60-second
--- potion cooldown for every potion"). The alchemy potions and draughts gate on
+-- SHARED instant-potion cooldown (item_tiers.md §5: "one shared 30-second
+-- potion cooldown for every potion"; 60 s until Round 78 ruling 1). The alchemy potions and draughts gate on
 -- the SAME clock, so they call grug_traders.potion_cooldown_left() and
 -- grug_traders.start_potion_cooldown() instead of opening a second timer.
 -- (The "one elixir buff at a time" half of §3.6 is a WP10 concern — an elixir
@@ -34,7 +34,7 @@ grug_traders.POTION_HEAL_AMOUNT = 35
 --     deliberately NOT used here: it restarts at every server start, which
 --     would hand every player a free potion after a restart.
 --
-grug_traders.POTION_COOLDOWN = 60 -- seconds
+grug_traders.POTION_COOLDOWN = 30 -- seconds (Round 78 ruling 1)
 
 local META_POTION_CD = "grug_traders:potion_cd"
 
@@ -55,14 +55,27 @@ function grug_traders.potion_cooldown_left(player)
 	return left
 end
 
--- Starts the shared cooldown (the full 60 s).
+-- Starts the shared cooldown (the full POTION_COOLDOWN).
 function grug_traders.start_potion_cooldown(player)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
 	player:get_meta():set_string(META_POTION_CD,
 		tostring(os.time() + grug_traders.POTION_COOLDOWN))
+	-- The status row shows it at once, not at its next half-second pass.
+	if grug_core.refresh_status_hud then grug_core.refresh_status_hud(player) end
 end
+
+-- The running cooldown in the status row and the Effects tab (Round 78 ruling
+-- 2, the one exception to Round 26 ruling 21's "no cooldowns on the status
+-- row"): a status source, read at display time from the stored expiry, so it
+-- appears when the cooldown starts, ends with it and shows again after a
+-- relog while it still runs. The expiry is whole wall-clock seconds; the row
+-- counts on the monotonic clock, so the countdown is converted here.
+grug_core.register_status_source(function(player, now)
+	local left = grug_traders.potion_cooldown_left(player)
+	if left > 0 then return {{id = "potion_cooldown", expiry_us = now + left * 1e6}} end
+end)
 
 --
 -- The item. Its buy-back is the vendor rule of prices.lua: 5% of its 8c,
@@ -97,7 +110,7 @@ core.register_craftitem("grug_traders:potion_healing_weak", {
 		local max_hp = user:get_properties().hp_max
 		if user:get_hp() >= max_hp then
 			-- Not in the §3.6 spec, added deliberately: silently burning a
-			-- potion (and a 60 s cooldown) on a full health bar is a misclick
+			-- potion (and the shared cooldown) on a full health bar is a misclick
 			-- tax, not a rule. Reported as a WP7 deviation.
 			core.chat_send_player(name, "You are already at full health.")
 			return
