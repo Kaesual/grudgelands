@@ -1042,7 +1042,8 @@ do
 	check(R.meteor.description_for(t, R.meteor):find("within 3.75 m", 1, true),
 		"L Meteor's tooltip shows the radius with Broad Impact")
 	local mantle = R.rime_mantle.description_for(t, R.rime_mantle)
-	check(mantle:find("+" .. math.floor(0.2 * armor_k(60) + 0.5) .. " armor", 1, true) and
+	-- Round 78: the armor shows as its rating x10.
+	check(mantle:find("+" .. math.floor(0.2 * armor_k(60) * 10 + 0.5) .. " armor", 1, true) and
 		mantle:find("shield of " .. math.floor(0.12 * base_pool(60)), 1, true),
 		"L Rime Mantle's tooltip shows armor and shield")
 	eq(G.description_prefix(t, R.blink), "Blink (Mage)\n8% base mana (" .. mana_cost(60, 8) ..

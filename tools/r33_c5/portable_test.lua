@@ -446,6 +446,14 @@ do
 			local status = statuses.elixir
 			check(status and status.modifiers[row[1]] == row[2][tier],
 				"E elixir " .. key .. " " .. roman[tier] .. " gives " .. row[2][tier])
+			if key == "stoneskin" then
+				-- Round 78: the rating is shown x10 in its tooltip and status.
+				local shown = "+" .. math.floor(row[2][tier] * 10 + 0.5) .. " armor rating"
+				local def = registered["grug_alchemy:elixir_stoneskin_t" .. tier] or {}
+				check(status and status.detail == shown and
+					tostring(def.description):find(shown .. " for 30 minutes", 1, true),
+					"E Stoneskin " .. roman[tier] .. " shows " .. shown)
+			end
 			eq(grug_traders.potion_cooldown_left(q), 0, "E ...and leaves the potion clock")
 		end
 	end

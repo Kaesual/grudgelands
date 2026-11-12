@@ -249,6 +249,12 @@ return function(repo, hidden)
 	local armor_k = combat:match("(function grug_core%.armor_k%(attacker_level%).-\nend)\n")
 	assert(loadstring(assert(fit, "base_pool block in combat.lua")))()
 	assert(loadstring(assert(armor_k, "armor_k in combat.lua")))()
+	-- The one armor display helper (Round 78: ratings shown x10), cut out of
+	-- grug_gear for the talent texts that name a rating.
+	grug_gear = {}
+	local gear = assert(io.open(repo .. "/mods/ITEMS/grug_gear/init.lua")):read("*a")
+	assert(loadstring(assert(gear:match("(function grug_gear%.format_armor%(rating%).-\nend)\n"),
+		"format_armor in grug_gear/init.lua")))()
 	grug_xp = {
 		get_level = function(player) return player.level end,
 		register_on_level_change = function(fn) table.insert(registered.level_change, fn) end,

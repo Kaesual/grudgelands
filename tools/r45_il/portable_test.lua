@@ -286,7 +286,8 @@ do
 			("E T%d tooltip shows the old requirement"):format(tier))
 		local _, stats = grug_gear.describe_stack_base(pinned, grug_items.effective_ilvl(pinned))
 		local line = 0.86667 * old[1] + 5.6
-		check(stats.armor == math.max(1, math.floor(line * 0.35 + 0.5)),
+		-- Round 78: a piece rounds to 0.1 (whole points before).
+		check(stats.armor == math.max(1, math.floor(line * 0.35 * 10 + 0.5) / 10),
 			("E T%d armor from the pinned level"):format(tier))
 	end
 	-- A pinned shield keeps its old rating.
