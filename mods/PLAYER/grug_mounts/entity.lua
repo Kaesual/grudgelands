@@ -206,6 +206,13 @@ local function switch_camera(player, mode)
 	end)
 end
 
+-- Mounting and dismounting re-ensure the rider's nametag carrier (Round 78
+-- ruling 7, grug_factions). The check keeps loads of this file beside a
+-- partial grug_factions (the mount fixtures' stubs) working.
+local function ensure_tag(player)
+	if grug_factions.refresh_player_tag then grug_factions.refresh_player_tag(player) end
+end
+
 local function restore_player(player, skip_animation)
 	local name = player:get_player_name()
 	player_api.player_attached[name] = false
@@ -267,6 +274,8 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 	end
 	if object and object:is_valid() then object:remove() end
 	if record.visual and record.visual:is_valid() then record.visual:remove() end
+	-- The nametag is re-ensured (Round 78); a leaving player's goes with them.
+	if not teardown then ensure_tag(player) end
 	-- Mount notices go to the message feed (never chat), one keyed line.
 	if reason and reason ~= "manual" then
 		grug_core.feed(player, "notice", reason, "mount")
@@ -848,6 +857,7 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight",
 		mode = tier.mode, model = model}
 	attach(player, object, model, skip_animation)
+	ensure_tag(player)
 	switch_camera(player, "third")
 	local visual = core.add_entity(pos, VISUAL_NAME,
 		core.serialize({owner = name, tier = tier_id}))

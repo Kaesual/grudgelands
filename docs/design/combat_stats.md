@@ -1468,7 +1468,12 @@ Round 72 (user rulings 2026-11-07 and 2026-11-08, `grug_core/placement.lua`):
   eight steps of each second, snapshots player positions and manages every
   carrier once per second; unchanged observer sets are not written. Carriers have no per-entity `on_step`: the central pass also
   removes an orphan, while explicit parent lifecycle hooks remove the ordinary
-  cases immediately.
+  cases immediately. A **player's** carrier that is gone, invalid or detached
+  is rebuilt instead (Round 78 ruling 7): the engine drops an unsaved entity
+  whose map block is not in memory (the character waiting point at
+  y = 31000), so the pass replaces it once the player stands on loaded ground,
+  and every refresh of the player's tag (also with an unchanged text), a
+  grug_home teleport, a respawn, mounting and dismounting re-ensure it at once.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
   mob you look at/punch; a nametag's colour is per side, not per level). The
   frame's **reach is 20 m** — our choice, not an engine constant: far
