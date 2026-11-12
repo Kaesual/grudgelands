@@ -84,8 +84,11 @@ def weapon_damage(ilvl, family):
 
 
 def armor_set(line, ilvl):
+    """grug_gear piece_rating summed: each piece rounded to 0.1, at least 1.0
+    (Round 78; whole points before). The game shows the rating x10."""
     base, per = ARMOR_LINES[line]
-    return sum(max(1, rnd((base + per * ilvl) * share)) for share in ARMOR_SHARES)
+    return sum(max(1, rnd((base + per * ilvl) * share * 10) / 10.0)
+               for share in ARMOR_SHARES)
 
 
 # --- grug_classes -----------------------------------------------------------

@@ -524,8 +524,8 @@ grug_abilities.register_ability({
 	end,
 	description_for = function(user, def)
 		local values = def.values(user, def)
-		return ("Wraps you in rime for %g s:\n+%d armor and a shield of %d."):format(
-			values.duration, math.floor(values.armor + 0.5), math.floor(values.absorb))
+		return ("Wraps you in rime for %g s:\n+%s armor and a shield of %d."):format(
+			values.duration, grug_gear.format_armor(values.armor), math.floor(values.absorb))
 	end,
 	color = "#8bd8f0",
 	cost = {mana_percent = 10},

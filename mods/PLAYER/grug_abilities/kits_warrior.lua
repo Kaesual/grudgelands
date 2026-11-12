@@ -310,8 +310,8 @@ grug_abilities.register_ability({
 	values = unbroken_values,
 	description_for = function(user, def)
 		local v = def.values(user)
-		return ("Spend 25 rage: +%d armor and a shield that absorbs %d damage, " ..
-			"both for %g s."):format(math.floor(v.armor + 0.5),
+		return ("Spend 25 rage: +%s armor and a shield that absorbs %d damage, " ..
+			"both for %g s."):format(grug_gear.format_armor(v.armor),
 				effective_support_number(v.absorb), v.duration)
 	end,
 	cast = function(user, pointed, def)

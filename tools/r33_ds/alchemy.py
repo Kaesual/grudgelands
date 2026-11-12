@@ -31,7 +31,8 @@ def elixir_value(product, tier):
     if product.startswith("Elixir of Precision"):
         return "+%.1f percentage points Crit, 15 min" % (2 * S.curve_value("crit_percent", top))
     if product.startswith("Stoneskin"):
-        return "+%.1f armor rating, 30 min" % S.curve_value("armor_rating", top)
+        # Shown x10 as a whole number like every armor rating (Round 78).
+        return "+%d armor rating, 30 min" % C.rnd(10 * S.curve_value("armor_rating", top))
     if product.startswith("Healing Potion"):
         return "restores %d HP at once" % POTION[tier - 1]
     if product.startswith("Mana Potion"):
