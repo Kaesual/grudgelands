@@ -103,7 +103,7 @@ a node of distance and choose ranged or melee by distance, heals reach the tank 
 boss, a 10 s respawn wait while the Expedition group still fights, Expedition lights that
 cannot be knocked down, nametags that come back, a 30 s potion cooldown in the status row,
 half-price repairs, armor numbers ×10, the emotes Wave and Dance, and towering again.
-Compatible; not on main yet, not pushed; desktop and web acceptance is pending
+Compatible; pushed 2026-11-12; desktop and web acceptance is pending
 ([checklist](docs/planning/round78-plan.md#6-verification-and-gui-checklist)).
 
 **0.76.2** adds the chat command **/home**: the same Return home as the button on the

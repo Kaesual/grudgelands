@@ -2,8 +2,8 @@
 
 Updated 2026-11-12. This is the delivery pointer, not another game specification.
 
-**0.78.0 / Round 78 (game-night fixes) is complete on the integration branch `round78`;
-not on main, not pushed; the GUI test is open.** Fourteen items from a game night (rulings
+**0.78.0 / Round 78 (game-night fixes) is on main (`895a5d16`, tag
+`round-78`) and pushed 2026-11-12; the GUI test is open.** Fourteen items from a game night (rulings
 2026-11-12, [plan](planning/round78-plan.md)) in six lanes: SMALL (potion cooldown 30 s and
 its status, repair factor 0.5, guards at street level, towering, Claim Stone anthracite, Ore
 Sense protection, flying mount retry), TAGS (lost nametag carriers rebuilt; the E-key study),
