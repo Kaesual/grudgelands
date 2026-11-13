@@ -721,11 +721,15 @@ Headed by their ilvl from here on.
 | Cloth (Tailor) | 5 | 8 | 11 | 15 | 5/4/3/3 |
 | Shield | — | — | — | — | matching-tier base metal-set total |
 
-The six live catalog anchors at ilvl 1/11/21/31/41/51 (the item level
-ladder, Round 45) produce cloth set ratings 4/5/7/8/12/14, leather
-4/11/18/23/30/37 and metal 6/14/23/32/41/49. A plain shield contributes the
-matching tier's complete base metal-set rating: 6/14/23/32/41/49. Drop gear uses the same curve at
-its ilvl; quality adds affixes without changing the base curve.
+**One decimal per piece, shown ×10** (Round 78 ruling 12): a piece's rating
+is its share of the line rounded to 0.1 (whole points before), and every text
+shows ratings ten times larger as whole numbers; the table above keeps the
+inner unit of its whole-point era. The six live catalog anchors at ilvl
+1/11/21/31/41/51 (the item level ladder, Round 45) produce, shown, cloth set
+ratings 40/51/69/92/114/137, leather 45/104/168/232/297/361 and metal
+64/151/237/325/411/498. A plain shield contributes the matching tier's
+complete base metal-set rating: 64/151/237/325/411/498. Drop gear uses the
+same curve at its ilvl; quality adds affixes without changing the base curve.
 
 **Off-tier ilvls: linear interpolation** (recorded 2026-08-07 with WP7).
 The base brackets sit at ilvl 1/11/21/31/41/51 (§3.8) — ilvls the tier
@@ -746,11 +750,13 @@ will**, and the 1-point step is accepted there rather than bending the
 line: the table cell is the authority at the four tier ilvls, the line
 is the authority between them.
 
-**Minimum 1 armor point per piece.** The per-piece split can round to 0
-at the very bottom of the cloth line — bracket 1 (ilvl 1) has a set
-total of 2.6, and the 16 % foot share rounds to 0. A 0-armor boot is a
-bug, not a design statement, so every piece is clamped to ≥ 1. That
-clamp bites at exactly one item in the whole shipped catalog.
+**Minimum 1 armor point per piece** (1.0 inside, shown 10). The per-piece
+split falls below it at the very bottom of the cloth line — bracket 1
+(ilvl 1) has a set total of 2.6, and its pieces are 0.4 to 0.9. A near-zero
+boot is a bug, not a design statement, so every piece is clamped to ≥ 1.0:
+all four item-level-1 cloth pieces and the leather head and feet at
+item level 1 sit on the floor, so low-tier cloth keeps its 0.76.2 set (4,
+shown 40).
 
 **The six-tier ladder reads off the same line** (2026-08-07). Under
 §3.0.3 the material sets and the vendor brackets are one catalog, so a
@@ -1519,7 +1525,7 @@ enchant).
 WP7): under the name and the item level, one grey line carrying the
 number the item actually contributes — `5 damage, 1.0 s swing` for
 weapons (the swing interval belongs next to the damage, or a dagger's
-higher rate is invisible — combat_stats.md §2), `3 armor rating` for armor pieces. Without it a player cannot compare two pieces
+higher rate is invisible — combat_stats.md §2), `55 armor rating` for armor pieces (shown ×10, §3.1). Without it a player cannot compare two pieces
 without re-deriving the §3.1/§3.2 curves by hand. The base stat does
 **not** live in item meta and cannot be reconstructed from an enchant
 roll, so the regeneration above must **preserve these lines and append
@@ -1652,7 +1658,7 @@ the same specials; it remains subject to that special's authored two-slot rule.
   cooldown first, then restores HP plus maximum-Mana percentage for Mage/
   Priest or HP plus flat Rage for Warrior. Gray kills grant nothing.
 - Apothecary Loop increases only the restored amount of instant HP/Mana
-  potions. It neither shortens nor resets the shared 60-second cooldown.
+  potions. It neither shortens nor resets the shared 30-second cooldown.
 
 Direct damage procs, ability cooldown reduction, movement speed, gathering
 yield, durability and vendor bonuses are excluded from the six-special MVP.

@@ -686,6 +686,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_core.combat_ray(player, range, opts)` are the shared server-side
   acquisition seam: the latter returns one physically ordered structured ray
   result for combat and diagnostics, so callers do not raycast again for logs.
+  Its `friendly` option (Round 78, set by `aimed_target` for friendly skills)
+  passes every object but a living friendly player (the tank behind the boss).
   The combat ray passes dropped items and, since Round 36, any object whose
   observer set leaves the player out (a quest object, `grug_quests/use.lua`):
   nobody is blocked by what they cannot see. The same test,
@@ -838,8 +840,8 @@ tools](#player-meta-read-by-external-tools).
   `grug_jobs.register_public_position(station, pos)` owns the shared registry;
   `grug_brewing.register_public_position(pos)` delegates the brewing stand.
   No fixed capital-core position is authoritative. Potions share
-  `grug_traders`' persistent clock (`grug_traders.POTION_COOLDOWN` = 60 s in
-  `potion.lua`, which also owns the vendor's Weak Healing Potion; every
+  `grug_traders`' persistent clock (`grug_traders.POTION_COOLDOWN` = 30 s in
+  `potion.lua` since Round 78, shown in the status row as `potion_cooldown`, which also owns the vendor's Weak Healing Potion; every
   potion and draught); Healing and Mana Potions I–VI are fixed amounts
   (`grug_alchemy/recipes.lua`, item_tiers §5);
   elixirs replace status id `elixir`, stack with status id `food`, and never
@@ -1224,6 +1226,13 @@ tools](#player-meta-read-by-external-tools).
     the stub `grug_core.get_player_object_faction`, which `grug_factions`
     fills); callers keep their one handle, and text, the HP bar and the
     visibility callbacks reach both carriers. Fixture `tools/r72_tags`.
+    Since Round 78 a player's lost carrier (gone, invalid or detached) is
+    replaced in its row by the pass and by `create_tag_carrier`, which
+    therefore may hand back a new handle (or, while the player's block is not
+    in memory, the old invalid one, whose text is kept for the replacement);
+    `grug_factions.refresh_player_tag` asks for it on every call and is the
+    re-ensure hook of grug_home teleports, respawns and `grug_mounts` mount and
+    dismount. A mob's lost carrier is still forgotten. Fixture `tools/r78_tags`.
   - **Three behaviour classes, and a new mob picks one**
     (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
     food-only drops, `passive` + `runaway`), **passive prey** (the large
@@ -1792,6 +1801,9 @@ tools](#player-meta-read-by-external-tools).
     8.5*max(L-60,0)` and reduction is `min(0.70, A/(A+K))`. Apply once to
     player combat damage before absorb, with the existing final `math.ceil`;
     environmental/fall damage has no attacker provenance and bypasses armor.
+    Ratings carry one decimal (a piece is its share rounded to 0.1, at least
+    1.0; Round 78) and every text shows one through `grug_gear.format_armor`
+    (×10, a whole number); the math above keeps the inner unit.
   - **Armor-rank gate**: items carry `grug_armor_class` (cloth 1 <
     leather 2 < metal 3), classes carry `armor_rank`
     (`grug_classes.get_armor_rank`, no class = 1); the check sits in the
@@ -2043,7 +2055,28 @@ tools](#player-meta-read-by-external-tools).
   through the same limiter (`grug_parties.social_resend`). The coalescing state lives in the
   sfinv context; every build counts as a send. Favourites are player meta
   `grug_parties:favorites` (a serialised sorted name list). Fixture
-  `tools/r67_social`.
+  `tools/r67_social`. Since Round 76 the tab has four cards and one row
+  style (`row_list`, `column_heads`, `member_cells`, shared with the clan
+  card), each scrollbar's position kept through `grug_parties.kept_scrolls`;
+  `init.lua` holds the `/p` party chat. Fixtures `tools/r76_social` (the tab)
+  and `tools/r76_clan` (`/p`).
+- **`grug_clans` (Round 76):** clans ([clans.md](../design/clans.md)).
+  `init.lua` holds the state (mod storage `clans`, validated at load, the
+  name index derived), the rules (only the `can_*` functions decide; each
+  action asks them again and answers `ok, message`), the session
+  invitations (one `core.after` per invitation, no globalstep), `/c` and the
+  presence lines. `grug_clans` depends on `grug_parties`, never the other
+  way (an optional dependency would be a cycle the engine refuses), so
+  `social.lua` installs the clan card and the Online Players' mark and Clan
+  button as `grug_parties.clan_section` (as `grug_pvp` installs
+  `pvp_section`); `ui.lua` draws without it. Clan changes re-send the Social
+  tab through the party limiter: membership, role, presence and the switch
+  every viewer (`grug_parties.social_resend_all`), level, class and
+  invitations only the named players. Since 0.76.1 the card's online rows
+  end in the party's Party button (`grug_parties.can_invite` and `invite`,
+  called directly), drawn after the row's pick through `row_list`'s
+  `list.over` so it takes its own clicks. Fixtures `tools/r76_clan` (rules,
+  storage, chat) and `tools/r76_social` (the card).
 
 ## Miner's Guild
 
@@ -2299,7 +2332,7 @@ nothing and logs one line, so local and browser worlds play as without it.
     (`grug_housing:claim_stone`) and the draft node
     `grug_housing.DRAFT_STONE` (`grug_housing:claim_stone_draft`), drafts
     (`DRAFT_SECONDS = 300`), activation (`ACTIVATION_LUMPS = 5`, charcoal
-    first), the pick-up lock (`PICKUP_LOCK_SECONDS = 43200`), destruction
+    first, Anthracite last at one lump each), the pick-up lock (`PICKUP_LOCK_SECONDS = 43200`), destruction
     times, the arrival cube and no renewal in active claims.
     Contract: `claim_at(pos)` (claim `{id, owner, center, placed_at,
     activated_at, paid_until}` or nil; `activated_at` 0 is a draft),
@@ -2409,7 +2442,9 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   one `core.after` a second for its minute, the countdown through `grug_core.banner` to those
   inside; `encounters.lua`'s one-second pass runs only
   while a player is inside and a room waits, `packs.lua`'s tick only while a pack is pulled; `traps.lua`'s pass (5 a second) only while a run with traps has a player inside (since Round 73 it also tests an armed ambush: a segment from each player's last position against the zone, nothing once it fired), and its fireballs are entities that are never saved; `particles.lua` (Round 73) adds one endless spawner per `particles` line and player inside, sent to that player alone, deleted when they leave and at the end;
-  preparation's `core.after(0)` chain only while one is under way. An admin `/teleport` out
+  preparation's `core.after(0)` chain only while one is under way; the respawn lock (Round
+  78, `respawn_lock.lua`) one `core.after` a second per locked dead player, stopped by the
+  lock's end and the logout. An admin `/teleport` out
   is not noticed: the player counts as inside until logout.
 - **Preparation** (`preparation.lua`, its header has the order and why): objects out,
   `delete_area` mapblock by mapblock
@@ -2431,6 +2466,11 @@ in the [mod map](mod-map.md); **the public interface is the header of `init.lua`
   `registrar.lua`: the Deserter's Mark, a source so a death does not clear it),
   `grug_home.register_return_guard` and `grug_core.register_lava_hold` (Round 72,
   `guard.lua`: Return Home refused in or over lava in a box; every box holds its lava),
+  `core.show_death_screen` overridden (Round 78, `respawn_lock.lua`: its own form
+  `grug_expeditions:death` while locked, else the builtin screen; builtin
+  `death_screen.lua` calls it at a death, a join with hp 0 and any other form closed while
+  dead, so Esc and a relog come back through it, and the server ignores the legacy
+  respawn packet),
   `grug_mobs.set_spawn_free_field` (first
   check of `spawn_policy_allows`), `grug_parties.register_on_member_left` (it can tell a
   leaver from the last member, which `register_on_change` cannot),

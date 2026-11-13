@@ -1,6 +1,92 @@
 # Project status
 
-Updated 2026-11-10. This is the delivery pointer, not another game specification.
+Updated 2026-11-12. This is the delivery pointer, not another game specification.
+
+**0.78.0 / Round 78 (game-night fixes) is on main (`895a5d16`, tag
+`round-78`) and pushed 2026-11-12; the GUI test is open.** Fourteen items from a game night (rulings
+2026-11-12, [plan](planning/round78-plan.md)) in six lanes: SMALL (potion cooldown 30 s and
+its status, repair factor 0.5, guards at street level, towering, Claim Stone anthracite, Ore
+Sense protection, flying mount retry), TAGS (lost nametag carriers rebuilt; the E-key study),
+EXPED (static Expedition nodes, the 10 s respawn lock), ARMOR (ratings ×10 with one decimal
+inside), BOSS (edge-to-edge stand-off, ranged or melee by distance for every mob with both
+attacks, friendly casts past hostile bodies), EMOTE (Wave, Dance, a seated Wave). Every lane
+had an independent review (all MERGE; EXPED, BOSS and EMOTE after a fix round).
+**Compatible:** no step, no map reset; no new saved key (`grug_traders:potion_cd` is now also
+read by the status source); `check_upgrade.py` against `origin/main` (0.76.2) passes. The
+round-end full run, the squash merge into main after the user's go, and the push are open.
+**Open for the user:** the 15-item desktop and web checklist (plan §6), the emotes' look,
+and the E-key decision (the study recommends a client latch: a web-fork patch now, an
+upstream proposal for desktop; `dedicated_server_step` stays 0.09)
+([completion](planning/round78-plan.md#completion-2026-11-12)).
+
+**0.76.2 / Round 76.2** adds `/home` (the user, 2026-11-11): the chat command starts the same
+Return home as the button, with the same rules and cooldown (`grug_home/home_command.lua`);
+compatible, no step; checks in the [plan's 0.76.2 section](planning/round76-plan.md#0762-follow-up).
+
+**0.76.1 / Round 76.1** puts the Online Players **Party** button into each online row of
+the clan card (the user's ruling 2026-11-11), shown when `grug_parties.can_invite` allows it;
+compatible, no step; GUI checklist in the [plan's 0.76.1 section](planning/round76-plan.md#0761-follow-up).
+
+**0.76.0 / Round 76 is merged locally into main as one squash commit on top of 0.75.5
+(tag `round-76`), synced to local Luanti; not pushed; the GUI test is open.**
+Clans after player requests (rulings 2026-11-11, [plan](planning/round76-plan.md),
+[clans.md](design/clans.md)): a second, purely social kind of party (no name, no HUD, no
+game effect), up to 100 players of one faction with Leader, Captain and Member, the Clan
+invitations switch, `/c` clan chat with presence and membership lines and `/p` party chat
+(CLAN); the Social tab in four cards (party and clan left, Online Players and PvP right),
+one row style for all three lists, the clan card with Online/Offline tabs and pages of
+seven, party status instead of HP, party invitations as rows, Party and Clan buttons and
+the clan mark per online row (SOCIAL, after the user's look rulings and two fix rounds).
+**Compatible:** no step, no map reset; new saved keys: mod storage `grug_clans` / `clans`
+(and `clans_unreadable` on a parse failure), player meta `grug_clans:invites_off`.
+Reviews: CLAN MERGE, SOCIAL MERGE with two delta reviews MERGE. Fixtures: the new
+`r76_clan` (561) and `r76_social` (301); `r67_social`, `r44_pp`, `r26_status_icons`,
+`r31_p2` updated; the round-end full run in the completion. **Open for the user:** the
+24-item desktop and web checklist (plan §6), the clan mark's look, the party notice's
+place and offline rows without a race icon.
+
+**0.75.5 is merged locally into main as one squash commit; not pushed.**
+The detailed reviewed history is retained by tag `round-75.5`. The local Luanti
+Flatpak game is synced and verified: all 4,958 game files match main. The user
+accepted all browser comparisons. The completed round worktree/branch are removed.
+The user approved the remaining special-building proposals after the original
+145-scene framing study, moon shrine and 50 guild/service views. All 87 pending
+contexts / 72 templates are now adapted: **283 contexts / 254 templates** in
+total, with 16 green grounds and monuments retained. Camps stay outside scope.
+The [acceptance overview](../tools/city_architecture_specials/README.md) separates
+138 completed special views, zero pending and 16 leave-as-is recommendations;
+the original 145-scene comparison is linked separately.
+
+Royal combat areas, tower galleries, open structures, ruins, treehouse access,
+planting and late-cell ordering are preserved. Twelve hidden pillar material
+variants reuse existing shapes and textures. Thirty-three additional decoration
+support names follow changed surfaces; no props move. The combined real-loader
+proof covers 1,132 rotations / 4,030,468 cells across all implemented contexts;
+all 299 city contexts are checked. Classification remains **map reset**, no
+migration. Independent final review PASS, no open findings. The final integrated main sweep passes all 345 portable fixtures without
+failures. The final isolated main server boot, browser, exact-loader, Lua,
+template, decor, upgrade and release gates pass. Native acceptance
+is still open in the
+[round plan](planning/round75.5-plan.md#9-remaining-approved-special-buildings-2026-11-11).
+Production and saved worlds are unchanged; only the user pushes.
+
+**Character-creation adoption (2026-11-11):** the user accepted the browser
+result and requested complete game adoption and main merge. All six refreshed
+native-camera PNGs and the recommended small centered crest are now in the
+round's game files, copied byte-identically from approved sources. Cameras and
+character standing points are unchanged. The [comparison](../tools/character_creation_preview/architecture-refresh/README.md)
+keeps its archived before images. Browser acceptance is complete; native
+desktop/web testing remains open. The merge and local game sync are complete.
+
+**0.75.4 is on main, not pushed.** Player report from production (0.69.0): Return home
+to Lethariel failed every time ("Home arrival is unavailable"). An engine probe of all
+twelve innkeeper arrivals (seed 42, on 0.69.0 and on 0.75.3) found Lethariel's and
+Kezamba's authored side inside a two-high barrel stack of the longhouse template.
+`grug_home` now tries the socket's other sides (+x, −x, +z, −z) when the authored one
+is blocked, as the waystones do; a respawn waits on the chosen side. Compatible, no
+map reset. r69_home gains section I; the home,
+waystone and Expedition fixtures pass. GUI: Return home and a death with Lethariel
+as home.
 
 **0.75.3 is on main (squash, tag `round-75.3`), not pushed.** The user's request after
 a look at Highcourt: every capital's Expedition Registrar stands outside, a few nodes

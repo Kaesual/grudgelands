@@ -1,0 +1,23 @@
+{
+  "classification": "compatible, tools-only proposal",
+  "protected_game_files": {
+    "mods/PLAYER/grug_classes/creation_camera.lua": "891b3bbf1f6236faa1807ea7186a499fd32bf2dc62f20d782a03d8259a2fc3cb",
+    "mods/PLAYER/grug_classes/creation_window.lua": "9151d94d297b2a0e02cf8498f125022a7199b62816f9d92b6c09eaa92d289b23",
+    "mods/PLAYER/grug_classes/textures/grug_creation_dwarf.png": "303c04ef26fcff4b171b34204da751f16cb382be0504f1ae861bf267a340fb31",
+    "mods/PLAYER/grug_classes/textures/grug_creation_elf.png": "e19461658ba7a9b9e26cc40aac19736d5987cccb378bc1726538384b7bc8a7ef",
+    "mods/PLAYER/grug_classes/textures/grug_creation_human.png": "179e99152d5a1ed2ee52434588536ebdf1278724261785d082595be82d4d0271",
+    "mods/PLAYER/grug_classes/textures/grug_creation_intro.png": "74291ece69c42c9c745023e390dcd88bbd069c9dabb1989a8a6c43cb1ef7805e",
+    "mods/PLAYER/grug_classes/textures/grug_creation_orc.png": "3f302e85621cae8ab3f4592c3b1801e8ae42a4eecd378fce0173c86d3dc39411",
+    "mods/PLAYER/grug_classes/textures/grug_creation_troll.png": "ae251804d0652f67e11e82e46d7bd6756abf7bfdb78c8aebfc0d69c0d417da37",
+    "mods/PLAYER/grug_classes/textures/grug_creation_undead.png": "85dd0607cfd3e9183a0125819955eef8de047daaf6a772e36e7609b2b30384da"
+  },
+  "camera_and_composition": "all six native scene recipes unchanged",
+  "source_scene_hashes": {
+    "dwarf": "fb8883a4729124baa19c19f4af675f156b98008288a6402c339d4a0815ae7781",
+    "elf": "1f583070bdf4fa7f3deb62eeadfa7df314bfb4bbe336406bb0a950060b4d345c",
+    "human": "f02017d3ddee3edd6072b6c24772251ef9294d7ad134fa51ea0aabaaab086744",
+    "orc": "c553d0ed5028848b7c44f8bed2a96b2ebaadf2edeba04eccc8265ed5e594b9d6",
+    "troll": "72e10d7acbb8db3690fd34e018f9a9671607a86c69d1224fa5ed3444e357eff5",
+    "undead": "81d6c028e5f8c5a44c037da956109eac95a23a999eb2a0566be4856552887a8a"
+  }
+}

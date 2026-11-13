@@ -1,5 +1,11 @@
 # Character creation layout and backdrop study
 
+**Architecture follow-up, 2026-11-11:** the [isolated proposal](architecture-refresh/README.md)
+re-renders the six native scenes with the reviewed 0.75.5 templates and compares
+three opening-crest variants. Five background images change; the undead scene
+is unchanged. No game files are replaced by this preparation. The historical
+implementation notes below describe the original character-creation work.
+
 The separate `character-creation` branch contains the approved browser design
 and its native Luanti implementation. The user approved implementation on
 2026-11-09. Game files are changed only in this worktree; nothing has been

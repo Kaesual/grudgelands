@@ -1,0 +1,50 @@
+{
+  "browser_acceptance": "accepted by user 2026-11-11",
+  "classification": "map reset",
+  "date": "2026-11-11",
+  "local_sync": {
+    "content_manifest_sha256": "a5bb6ab56cf89757a1135140197c4e665f8b8c1c8acfe8f56700a0149b9cd114",
+    "files_verified": 4958,
+    "result": "PASS",
+    "target": "Luanti Flatpak games/grudgelands",
+    "version": "0.75.5"
+  },
+  "log_sha256": {
+    "boot": "2e81453ff8bf4cee738b35a8068d26c2d204303b784f017a4dc3b5065312aeba",
+    "design": "71d4a580f60c8f4765e215ee58ed3ce769f54ee6b4ece5f84f75487cffe59995",
+    "fixtures": "f9632f8e22e6dbed665d17dd159c546303c02e9161604964d6b94c1dc8a9845e",
+    "fresh": "aef33d6b092e3d23751fd58252cccbd48b2805cf55166e75586156d561586908",
+    "income": "ef27d90af7a07dcac8093312df7596aa5b847bd930030e1587b2f0efc9b96082",
+    "templates": "f9d5464d77f45d1f7caa6a11ac1887f226bf19cfca7c5088ad7be093d65e76aa",
+    "upgrade": "b255fcaf01a473ec0d7559d33f39b7f03bca0a3ecf4289a85b0fc8a93600e620"
+  },
+  "main_checks": {
+    "changed_lua": "PASS",
+    "design_errors": 0,
+    "design_warnings": 18,
+    "fixtures": {
+      "failed": 0,
+      "passed": 345
+    },
+    "fresh_server": "PASS",
+    "income": "PASS",
+    "isolated_server_boot": {
+      "result": "PASS",
+      "seconds": 240,
+      "seed": "4339807192009219981"
+    },
+    "local_links": 686,
+    "template_baseline_warnings": 59,
+    "template_errors": 0,
+    "templates": 284,
+    "upgrade": "PASS"
+  },
+  "migration": false,
+  "native_gui_acceptance": "open",
+  "production_changed": false,
+  "pushed": false,
+  "review": "PASS: remaining_architecture_review; no open findings",
+  "reviewed_tip": "f9fbb5a9ac601fe2b77a61f6d0086bef7feba860",
+  "round_tag": "round-75.5",
+  "saved_worlds_reset": false
+}

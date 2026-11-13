@@ -14,13 +14,12 @@ B role castle_rubble else=I
 C role ground
 D role hearth
 E role light_post o=wallmounted:1
-F role plaza_edge
 G role post
 H role roof_stair o=facedir:2
 I role signature
-J role signature else=air
 K role signature_slab else=air
 L role wall_accent
+F role facade_base
 end
 
 layer 0
@@ -41,13 +40,13 @@ layer 1
 |.............|
 |.G.........G.|
 |.............|
-|...JJJHJJJ...|
-|...JBBLBBJ...|
-|...JBBLBBJ...|
-|...JBBBBBJ...|
-|...JBBBBBJ...|
-|...JBBBBBJ...|
-|...JJJJJJJ...|
+|...FFFHFFF...|
+|...FBBLBBF...|
+|...FBBLBBF...|
+|...FBBBBBF...|
+|...FBBBBBF...|
+|...FBBBBBF...|
+|...FFFFFFF...|
 |.............|
 |.............|
 |.............|
@@ -55,13 +54,13 @@ layer 2
 |.............|
 |.G.........G.|
 |.............|
-|...JJJJJJJ...|
-|...JBBHBBJ...|
-|...JBBLBBJ...|
-|...JBBBBBJ...|
-|...JBBBBBJ...|
-|...JBBBBBJ...|
-|...JJJJJJJ...|
+|...FFFFFFF...|
+|...FBBHBBF...|
+|...FBBLBBF...|
+|...FBBBBBF...|
+|...FBBBBBF...|
+|...FBBBBBF...|
+|...FFFFFFF...|
 |.............|
 |.............|
 |.............|
@@ -69,13 +68,13 @@ layer 3
 |.............|
 |.E.........E.|
 |.............|
-|...JJJJJJJ...|
-|...JJJJJJJ...|
-|...JJJHJJJ...|
-|...JJJJJJJ...|
-|...JJJJJJJ...|
-|...JJJJJJJ...|
-|...JJJJJJJ...|
+|...FFFFFFF...|
+|...FFFFFFF...|
+|...FFFHFFF...|
+|...FFFFFFF...|
+|...FFFFFFF...|
+|...FFFFFFF...|
+|...FFFFFFF...|
 |.............|
 |.............|
 |.............|

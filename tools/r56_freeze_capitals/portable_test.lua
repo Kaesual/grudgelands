@@ -123,30 +123,33 @@ check(spot.x == 2 and spot.face == 1 and pcall(templates.all_used, stamped, "x")
 -- 0.75.2: declared map reset; richer authored city decor changes only identities.
 -- 0.75.3: declared map reset; the Expedition Registrar's socket moves to the
 -- great hall door, so every capital's point and build digests move.
+-- 0.75.5: declared map reset; approved facade materials and decor support pins.
+-- Node lists affect point digests; authored points and cell positions are unchanged.
+-- Guild/service follow-up: authorized material cells and support names only.
 local FROZEN = {
-	highcourt = {"932da00d04f22b23b8067f10bc201c21dcfd92000b99d90b715f85336b47ca5d",
-		"c23077576987fa6f6aa5a2a00d1bffeb9278d40667b461023e9e114d107b6540",
-		"f73492aefae6914427a725dd2c25a6438ff9c688bcf16e5c254636d22c9f7097"},
+	highcourt = {"9d2ed0130b1ea0bd8f4959cb1255bd5ac9370fe96f632da755d85dcc771a01aa",
+		"18c3f945e40c020d7685cc9c72223d9041a553c047194da7626dcf782981900f",
+		"3fa441814e5cb7e01d195243c59d96181eefea593d649178136f96a97020bb77"},
 	-- the next capital
-	dur_brannoc = {"4a5b13758b4270e4451647caaf57bc357fc5da10d8be85aca221d360f2d2bfa2",
-		"e9bfaf8fb9181bff72fff6351b54d798513038b07042a225ff2f132e69e44a47",
-		"36056b75e661cc9fa698dae8fb974611fd85f8d3df4119a49a3499f6bcae14ae"},
+	dur_brannoc = {"03026366216d86905efbc3273069aa89b54f85bb09fd00c34332d6c5a9550b20",
+		"0b995d4d4c0ee81b5e9275574506494b4f7929fbda8bd8d5fefec8afa28d52be",
+		"a024ec7f7e706547c30a419e8403f1b17e1f80b45012bf3dd90831c0e90a1d24"},
 	-- the next capital
-	lethariel = {"f440bc14f22bd26487ba0cfd8abcb1e5c09ebd9724242584401ccfa051e584de",
-		"3c541fb7ebc542e65a1ac8a05af2c28fd26d9f2baef442826a8b116246cb3a9b",
-		"ab83735460b6dfedeaac9a11f45dde4289bd4a5769e5b1f33f09c6df8e12e820"},
+	lethariel = {"47ab118397b2dba3300046f54342637f15605a1909d5b26c135c623b489486de",
+		"36d5d06672abf63eb2588dbd997284010f5fcc79a2e1a515d43948c847cd0bbe",
+		"ba656fe5917773747eba63755c4bc6e9d7c8edbd5e4ba00bc4d16de141c16629"},
 	-- the next capital
-	nhal_veyr = {"cbc495832932c5a4aca4930e8ef6bc57a46ea3c261d9ff60a57e1bd54271e39b",
-		"0bdc88e0aa2038d0dfc6502eecad91e3450fb9493d3fab6e21e8540ff951e200",
-		"aebf68cb8411f3c69b155104bdfcb71ce464f59e4ba0b353ab8b72ddb110ef7a"},
+	nhal_veyr = {"7f260e328bb11d27878069db00bce082f4824caefa72751df1fb7497addb57e3",
+		"e6377d19e1a87b7b22ff3016c1497942199e8645deab2432a7769054ff7d8c2d",
+		"96ce2524914a2a0cce0526bc057b156cdd4e14b727c296e5e2ee0f73f8391dbd"},
 	-- the next capital
-	gor_drazhak = {"1a7681b36f815794d70204a650c943caacf352bd2b3c534433aca6315f9106b7",
-		"0cee1c24bbe58065671cfc391598a3ebab867c051c8884716efeb3ca1e3868f8",
-		"75431541e1379a100c0582532f8eab54ccbb628b3650246d60cd04a1a0dcd361"},
+	gor_drazhak = {"2693972cb74605798d643c83b9f9a3571fc56f2f2319c8ea6c56ce37801c619f",
+		"9b13a978594709535298a8fdf38c883103daa17dff9018fa3f61c1c868e6a972",
+		"9b3a19b6be65a99dc8b6aaf5d9d2ee8ca9e24652c2dda798bb5a5a80bfc957a4"},
 	-- the next capital
-	kezamba = {"41786321777b1f16151a32bd92b8fd06bcbc28d4e9e953c57202230f2b099aab",
-		"65fa89d788163afa67babeaee93af54a8f5b41aa9c331663a8f498d7f01d2263",
-		"c39b5fec19c51ad999a8b105e81afc5ace07a9881dae02ef2075e5ae6713f6a8"},
+	kezamba = {"61d71c67ec5a1bfeda9e08bfc17d9da4a556d8e2cc1a3527833e218b17cbc823",
+		"4756d1c860d188e283268a7b4a5f48e7af9818152ef6b7cb2e0ef2ee53a91255",
+		"0a6aec3c9de751e494cce304c43c1ed6ecbd734212ffc95900eea8e8f9f7f50c"},
 }
 local common = dofile(repo .. "/tools/wp40/r6/common.lua")
 local sha = common.new_sha256()

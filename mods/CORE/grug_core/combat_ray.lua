@@ -508,6 +508,12 @@ end
 --            out_of_range | invalid
 -- (`protected`: an enemy player outside PvP, relation "protected" too)
 -- plus origin/destination/range/direction and the exact pointed/target/blocker.
+-- The friendly option (Round 78 BOSS, round78-plan.md §3.1): `opts.friendly`
+-- is the ray of a friendly-targeted cast (a heal): it looks past every object
+-- but a living friendly player (mobs, hostile, protected and dead players,
+-- other entities), so the healer reaches the tank behind the boss; nodes
+-- still block. Without such a player it ends "empty" or at its node, and the
+-- cast keeps its fallback (the caster).
 function grug_core.combat_ray(player, range, opts)
 	opts = opts or {}
 	local origin = opts.origin or grug_core.combat_eye_pos(player)
@@ -555,7 +561,11 @@ function grug_core.combat_ray(player, range, opts)
 			end
 		elseif pointed.type == "object" then
 			local object_result = classify_object(player, origin, range, pointed)
-			if nearer_terminal(object_result, false, best, best_is_node) then
+			if opts.friendly and (object_result.reason ~= "friendly"
+					or object_result.object_kind ~= "player") then
+				object_result = nil -- passed, like the player's own body
+			end
+			if object_result and nearer_terminal(object_result, false, best, best_is_node) then
 				best = object_result
 				best_is_node = false
 			end

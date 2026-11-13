@@ -18,7 +18,6 @@ F role door_hidden
 G role floor
 H role flower else=air
 I role flower_alt else=air
-J role foundation
 K role hearth o=facedir:1
 L role light_beacon else=air
 M role light_post o=wallmounted:1
@@ -26,7 +25,6 @@ N role light_wall o=wallmounted:2
 O role light_wall o=wallmounted:3
 P role light_wall o=wallmounted:4
 Q role path
-R role post
 S role roof_slab
 T role roof_stair
 U role roof_stair o=facedir:1
@@ -48,10 +46,12 @@ j role storage
 k role storage o=facedir:3
 l node grug_decor:xdecor_table
 n role wall
-o role wall_accent
 p role window
 q role window o=facedir:3
-r role window_frame
+J role facade_base
+R role facade_frame
+m role facade_infill
+o role facade_band
 end
 
 layer 0
@@ -70,87 +70,87 @@ layer 0
 |QQQQQQQQQ|
 layer 1
 |......j..|
-|.RooEooR.|
-|.rA...KC.|
-|.oB..f.oH|
-|.ok....oI|
-|.rh.e..rH|
-|.r..ll.r.|
-|.o..d..o.|
-|.o.....o.|
-|jr....gr.|
-|.o....io.|
-|.RrooroR.|
+|.JJJEJJJ.|
+|.JA...KC.|
+|.JB..f.JH|
+|.Jk....JI|
+|.Jh.e..JH|
+|.J..ll.J.|
+|.J..d..J.|
+|.J.....J.|
+|jJ....gJ.|
+|.J....iJ.|
+|.JJJJJJJ.|
 |...HIH...|
 layer 2
 |......j..|
 |.RnnFnnR.|
-|.r....MC.|
+|.m....MC.|
 |.q.....q.|
 |.q.....q.|
-|.rh....r.|
-|.r.....r.|
+|.mh....m.|
+|.R.....R.|
 |.q.....q.|
 |.q.....q.|
-|.r....ir.|
+|.m....im.|
 |.n.....n.|
-|.RrpprnR.|
+|.RmppmnR.|
 |.........|
 layer 3
 |..P...P..|
 |.RnnnnnR.|
-|.r....CC.|
+|.m....CC.|
 |.q.....q.|
 |.q.....q.|
-|.r.....r.|
-|.rO...Nr.|
+|.m.....m.|
+|.RO...NR.|
 |.q.....q.|
 |.q.....q.|
-|.r.....r.|
+|.m.....m.|
 |.n.....n.|
-|.RrpprnR.|
+|.RmppmnR.|
 |.........|
 layer 4
 |.........|
 |.RnnnnnR.|
-|.r....CC.|
+|.m....CC.|
 |.n.....n.|
 |.n.....n.|
-|.r.....r.|
-|.r.....r.|
+|.m.....m.|
+|.R.....R.|
 |.n.....n.|
 |.n.....n.|
-|.r.....r.|
+|.m.....m.|
 |.n.....n.|
-|.RrnnrnR.|
+|.RmnnmnR.|
 |.........|
 layer 5
 |.........|
 |.RnnnnnR.|
-|.r....CC.|
+|.m....CC.|
 |.n.....n.|
 |.n.....n.|
-|.r.....r.|
-|.r.....r.|
+|.m.....m.|
+|.R.....R.|
 |.n.....n.|
 |.n.....n.|
-|.r.....r.|
+|.m.....m.|
 |.n.....n.|
-|.RrnnrnR.|
+|.RmnnmnR.|
 |.........|
 layer 6
 |YTTTTTTTX|
-|URnnnnnRW|
-|Ur....CCW|
-|Un.....nW|
-|Un.....nW|
-|Ur.....rW|
-|Ur.....rW|
-|Un.....nW|
-|Un.....nW|
-|Ur.....rW|
-|Un.....nW|
-|URrnnrnRW|
+|UoooooooW|
+|Uo....CCW|
+|Uo.....oW|
+|Uo.....oW|
+|Uo.....oW|
+|Uo.....oW|
+|Uo.....oW|
+|Uo.....oW|
+|Uo.....oW|
+|Uo.....oW|
+|UoooooooW|
 |ZVVVVVVVa|
 layer 7
 |.........|

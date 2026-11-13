@@ -184,6 +184,8 @@ local before_home = {}
 for kind, list in pairs(callbacks) do before_home[kind] = #list end
 core.colorize = function(_, text) return text end
 dofile(repo .. "/mods/CORE/grug_core/ui.lua")
+-- Round 76.2: grug_home registers /home (home_command.lua).
+core.register_chatcommand = core.register_chatcommand or function() end
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 check(#claim_listeners == 1, "D grug_home registers one claim-change listener")
@@ -499,6 +501,7 @@ do
  rawset(_G, "grug_xp", {register_on_level_change=function() end})
  grug_core.get_armor_rating = function() return 0 end
  grug_core.armor_reduction = function() return 0 end
+ dofile(repo .. "/tools/r78_armor/format_armor.lua")(repo) -- Round 78: ratings shown x10
  grug_core.get_player_level = function() return 1 end
  grug_core.register_on_equipment_change = function() end
  grug_core.register_on_status_modifiers_changed = function() end

@@ -274,7 +274,8 @@ do
 	check(not form:find("rank", 1, true) and not form:find("title", 1, true),
 		"P statistics only: no rank or titles")
 	-- Geometry (real coordinates): every element from TOP down and inside the
-	-- 9.7 x 6.35 card below the party box (Round 67), a label at about 0.15
+	-- 10.8 x 6.35 card (Round 76 fix round 1: below the online list, as wide
+	-- as it; 9.7 below the party box since Round 67), a label at about 0.15
 	-- units a character (the web build; generous) and 0.2 below its middle.
 	local inside = true
 	for kind, args in form:gmatch("([%w_]+)%[([^%]]*)%]") do
@@ -282,22 +283,22 @@ do
 		x, y = tonumber(x), tonumber(y)
 		if kind == "label" and x then
 			local text = rest:gsub("\27%(c@#%x+%)", "")
-			if y < TOP or y + 0.2 > TOP + 6.35 or x + #text * 0.15 > 9.7 then
+			if y < TOP or y + 0.2 > TOP + 6.35 or x + #text * 0.15 > 10.8 then
 				inside = false
 				print("outside: " .. args)
 			end
 		elseif (kind == "button" or kind == "textarea" or kind == "background9") and x then
 			local w, h = rest:match("^([%d.]+),([%d.]+);")
-			if y < TOP or y + tonumber(h) > TOP + 6.35 or x + tonumber(w) > 9.7 then inside = false end
+			if y < TOP or y + tonumber(h) > TOP + 6.35 or x + tonumber(w) > 10.8 then inside = false end
 		end
 	end
 	check(inside, "P every element inside the card, under the section's top")
-	-- Stats labels do not run into their values (labels at 5.4, values at
-	-- 9.0), and the statistics column starts right of the state column.
+	-- Stats labels do not run into their values (labels at 6.2, values at
+	-- 10.1), and the statistics column starts right of the state column.
 	local longest = 0
 	for _, row in ipairs(V.STATS) do longest = math.max(longest, #row[2]) end
 	check(longest * 0.15 < 3.6, "P counter labels end before their values")
-	check(form:find("label[5.40,1.50;Player kills]", 1, true) ~= nil,
+	check(form:find("label[6.20,1.50;Player kills]", 1, true) ~= nil,
 		"P the statistics stand right of the state")
 
 	-- The button.

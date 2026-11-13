@@ -107,6 +107,8 @@ core = {
 	register_on_leaveplayer = function(fn) leaves[#leaves + 1] = fn end,
 	register_on_player_receive_fields = function(fn) receive[#receive + 1] = fn end,
 	register_on_mods_loaded = function(fn) mods_loaded[#mods_loaded + 1] = fn end,
+	-- grug_parties registers /p since Round 76 (tools/r76_clan tests it).
+	register_chatcommand = function() end,
 	get_player_by_name = function(name) return joined[name] and players[name] or nil end,
 	get_connected_players = function()
 		local list = {}
@@ -256,17 +258,19 @@ local function resend(p)
 	sfinv.set_player_inventory_formspec(p, sfinv.contexts[p.name])
 	return p.formspec
 end
--- The list's rows in drawn order: the names of the scroll area's labels.
+-- The list's rows in drawn order: the names of the scroll area's labels
+-- (at x 1.0 since Round 76 fix round 1, room for the clan mark).
 local function row_names(fs)
 	local area = fs:match("scroll_container%[[^%]]*%](.*)scroll_container_end%[%]") or ""
 	local names = {}
-	for name in area:gmatch("label%[0%.65,[%d.]+;([^%]]*)%]") do
+	for name in area:gmatch("label%[1%.0,[%d.]+;([^%]]*)%]") do
 		names[#names + 1] = name
 	end
 	return table.concat(names, " ")
 end
+-- Round 76: the party's invite button reads Party (beside Clan).
 local function invite_button(fs, name)
-	return fs:find(";grug_social_inv_" .. name .. ";Invite]", 1, true) ~= nil
+	return fs:find(";grug_social_inv_" .. name .. ";Party]", 1, true) ~= nil
 end
 local function star_button(fs, name)
 	return fs:find(";grug_social_fav_" .. name .. ";", 1, true) ~= nil
@@ -297,14 +301,16 @@ eq(row_names(fs), "alice (you) anna bob Carl iris zed dave eve newbie",
 has(fs, "Online Players (9)", "S the heading counts every online player")
 check(not star_button(fs, "alice") and not invite_button(fs, "alice"),
 	"S the own row has no star and no button")
-has(fs, "box[0,0.00;8.95,0.54;#bba06230]", "S the own row is highlighted")
+-- Round 76 fix round 1: the wider right column (10.05).
+has(fs, "box[0,0.00;10.05,0.54;#bba06230]", "S the own row is highlighted")
 has(fs, "image[0.10,0.06;0.42,0.42;grug_inventory_faction_accord.png]", "S the faction icon")
 has(fs, "tooltip[0.10,0.06;0.42,0.42;The Accord]", "S the faction's word as tooltip")
-has(fs, "image[4.60,0.06;0.42,0.42;grug_class_warrior.png]tooltip[4.60,0.06;0.42,0.42;Warrior]",
+-- Round 76 fix round 1: the row's columns for the clan mark and the Party and Clan buttons.
+has(fs, "image[5.10,0.06;0.42,0.42;grug_class_warrior.png]tooltip[5.10,0.06;0.42,0.42;Warrior]",
 	"S the class icon with its word")
-has(fs, "image[5.10,0.06;0.42,0.42;" .. core.formspec_escape(grug_core.status_icons.race_icon("human")) ..
-	"]tooltip[5.10,0.06;0.42,0.42;Human]", "S the race icon with its word")
-has(fs, "label[5.7,0.27;Lv 12]", "S the level")
+has(fs, "image[5.55,0.06;0.42,0.42;" .. core.formspec_escape(grug_core.status_icons.race_icon("human")) ..
+	"]tooltip[5.55,0.06;0.42,0.42;Human]", "S the race icon with its word")
+has(fs, "label[6.05,0.27;Lv 12]", "S the level")
 local races = 0
 for _, id in ipairs({"human", "dwarf", "elf", "orc", "troll", "undead"}) do
 	local file = io.open(repo .. "/mods/PLAYER/grug_classes/textures/" ..
@@ -375,8 +381,11 @@ end
 step(0.6) -- a poll of every player
 fs = open_social(bob)
 has(fs, grug_core.ui.heading(0.5, 1.2, "1 Pending Invitation"), "B one invitation: singular")
-has(fs, "grug_party_pending;" .. core.formspec_escape("alice [Lv 12] (1/10, 120s)") .. ";1;true]",
-	"B the invitation's row")
+-- Round 76 fix round 2: invitations as rows (inviter, party size, level, seconds).
+has(fs, "grug_party_ipick_alice;", "B the invitation's row")
+has(fs, "label[3.85,0.27;1/10]", "B ...the party's size")
+-- 0.76.1: the last column at 5.70 (was 5.95), room for the clan rows' Party button.
+has(fs, "label[5.70,0.27;120 s]", "B ...the seconds left")
 has(fs, ";grug_party_accept;Accept]", "B Accept")
 eq(hud_count(bob), 5, "H the box: panel, icon and three lines")
 has(hud_texts(bob), "alice has invited you to join their | ", "H the inviter's sentence, wrapped")
@@ -416,8 +425,8 @@ step(0.6)
 check(hud_count(bob) > 0, "H the box ignores the Party HUD switch")
 grug_parties.set_hud_enabled(bob, true)
 -- Decline Carl's: one left, no "+N more".
-submit(bob, {grug_party_pending = "CHG:1"})
-eq(sfinv.contexts.bob.grug_party_inviter, "Carl", "B the list selects an inviter (Carl sorts first)")
+submit(bob, {grug_party_ipick_Carl = ""})
+eq(sfinv.contexts.bob.grug_party_inviter, "Carl", "B a row click selects an inviter")
 submit(bob, {grug_party_decline = "Decline"})
 lacks(hud_texts(bob), "+1 more", "H declined: the other invitation alone")
 has(hud_texts(bob), "alice has invited you", "H declined: alice's stays")
@@ -426,7 +435,8 @@ local alice_sends = alice.sent
 step(95)
 eq(hud_count(bob), 0, "H hidden once the invitation expired")
 has(bob.formspec, grug_core.ui.heading(0.5, 1.2, "0 Pending Invitations"), "B no invitation: zero, plural")
-has(bob.formspec, "Invite a player of your faction with the Invite button", "B the empty box's hint")
+-- Round 76: the hint names the Party button (beside Clan).
+has(bob.formspec, "Invite a player of your faction with the Party button", "B the empty box's hint")
 check(alice.sent > alice_sends and invite_button(alice.formspec, "bob"),
 	"C an expiry re-sends the inviter: its Invite button is back")
 -- Decline: the same for the inviter.
@@ -451,7 +461,8 @@ fs = resend(bob)
 submit(bob, {grug_party_accept = "Accept"})
 fs = bob.formspec
 has(fs, "Current Party (2/10)", "B accepting switches the box at once")
-has(fs, "tablecolumns[image,align=center,0=blank.png,1=grug_class_warrior.png", "B the member table")
+-- Round 76 fix round 1: member rows in the list style instead of a table.
+has(fs, "image_button[0,0.00;7.85,0.54;blank.png;grug_party_pick_alice;;false;false]", "B the member rows")
 has(fs, ";grug_party_leave;Leave]", "B Leave")
 lacks(hud_texts(bob), "has invited you", "H accepted: the joiner's box goes")
 step(0.6)

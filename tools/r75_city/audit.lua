@@ -14,6 +14,9 @@ local tables={["grug_decor:xdecor_table"]=true,["grug_decor:cottages_table"]=tru
 -- builders. Stairs, slabs, fences, plants and furniture are intentionally
 -- absent; a changed support must be reviewed before this list changes.
 local floor_supports={
+ -- 0.75.5 special structures: verified normal full cubes in the engine dump.
+ ["default:stone_block"]=true,["default:silver_sandstone_block"]=true,
+ ["default:desert_sandstone"]=true, -- 0.75.5: unchanged props on the approved flat roof.
  ["default:acacia_wood"]=true,["default:brick"]=true,["default:cobble"]=true,
  ["default:desert_cobble"]=true,["default:desert_stone_block"]=true,
  ["default:desert_stonebrick"]=true,["default:dirt_with_coniferous_litter"]=true,

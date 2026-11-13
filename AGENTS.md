@@ -12,7 +12,22 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [luanti-lua.md](docs/technical/luanti-lua.md); everything else from
 [docs/README.md](docs/README.md).
 
-**Current state:** 0.75.2, Round 75.2 (solid decoration surfaces, fuller houses
+**Current state:** 0.78.0, Round 78 (game-night fixes: mob stand-off and ranged/melee by distance,
+friendly casts past bodies, the Expedition respawn lock and static nodes, nametags rebuilt, potion cooldown 30 s
+in the status row, repair ½, armor ×10, emotes; compatible; on main `895a5d16`, tag `round-78`, pushed, GUI test open:
+[completion](docs/planning/round78-plan.md#completion-2026-11-12)), on 0.76.2, Round 76.2 (`/home` triggers Return home, the same trip and
+30-minute cooldown as the button; compatible:
+[plan](docs/planning/round76-plan.md#0762-follow-up)), on 0.76.1, Round 76.1 (a Party button in each online row of the clan card;
+compatible: [plan](docs/planning/round76-plan.md#0761-follow-up)), on 0.76.0, Round 76 (clans: purely social same-faction groups of up to 100
+with Leader, Captain and Member, `/c` clan chat and `/p` party chat, the Social tab in four
+cards with one row style; compatible, no step; merged into main as one squash commit, tag
+`round-76`, synced locally, not pushed, GUI test open:
+[completion](docs/planning/round76-plan.md#completion-2026-11-11)), on 0.75.5, Round 75.5
+(coherent city architecture, approved special buildings, refreshed character backdrops
+and opening crest; **map reset**, no migration; tag `round-75.5`, not pushed; GUI open:
+[plan](docs/planning/round75.5-plan.md)), on 0.75.4 (Return home
+to Lethariel and Kezamba) and 0.75.3 (the Expedition Registrar at the great hall door;
+**map reset**), on 0.75.2, Round 75.2 (solid decoration surfaces, fuller houses
 and profession-trainer rooms, non-colliding royal wall art; **map reset**, no
 step; merged into main, tag `round-75.2`, synced locally, not pushed; GUI open:
 [plan](docs/planning/round75.2-plan.md)), on 0.75.1 (tidier workshops and open human

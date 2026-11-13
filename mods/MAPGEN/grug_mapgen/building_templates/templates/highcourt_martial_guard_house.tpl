@@ -18,23 +18,12 @@ F role door_hidden
 G role floor
 H role flower else=air
 I role flower_alt else=air
-J role foundation
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
 M role light_wall o=wallmounted:2
 N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:4
 P role path
-Q role post
-R role roof_slab
-S role roof_stair
-T role roof_stair o=facedir:1
-U role roof_stair o=facedir:2
-V role roof_stair o=facedir:3
-W role roof_stair_outer
-X role roof_stair_outer o=facedir:1
-Y role roof_stair_outer o=facedir:2
-Z role roof_stair_outer o=facedir:3
 a role rug
 b role rug_accent
 c role seat
@@ -46,90 +35,100 @@ h role shelf_vessels o=facedir:1
 i role storage
 j role storage o=facedir:3
 k node grug_decor:xdecor_table
-m role wall_accent
 n role wall_infill else=air
 o role window
 p role window o=facedir:3
-q role window_frame
+J role facade_service_roof_stair_outer o=facedir:1
+Q role facade_service_roof_stair o=facedir:1
+R role facade_service_roof_stair_outer o=facedir:2
+S role facade_base
+T role facade_frame
+U role facade_infill
+V role facade_service_roof_stair o=facedir:0
+W role facade_service_roof_stair o=facedir:2
+X role facade_service_roof_slab o=facedir:0
+Y role facade_service_roof_stair_outer o=facedir:0
+Z role facade_service_roof_stair o=facedir:3
+l role facade_service_roof_stair_outer o=facedir:3
 end
 
 layer 0
 |PPPPPPPPPPPPP|
-|PJJJJJJJJJJJP|
-|PJGGGGGGGbGJP|
-|PJGGGaaGGbGJP|
-|PJGGGaaGGGGJP|
-|PJGGGGGGGGGJP|
-|PJGGGGGGGGGJP|
-|PJJJJJJJJJJJP|
+|PSSSSSSSSSSSP|
+|PSGGGGGGGbGSP|
+|PSGGGaaGGbGSP|
+|PSGGGaaGGGGSP|
+|PSGGGGGGGGGSP|
+|PSGGGGGGGGGSP|
+|PSSSSSSSSSSSP|
 |PPPPPPPPPPPPP|
 layer 1
 |..i....HI....|
-|.QmmEmqmmqmQ.|
-|.qA.......KC.|
-|.mB...d..e.mH|
-|.mj...kk...mI|
-|.qg...c...fqH|
-|.m........hm.|
-|.QqmmqqmmqmQ.|
+|.SSSESSSSSSS.|
+|.SA.......KC.|
+|.SB...d..e.SH|
+|.Sj...kk...SI|
+|.Sg...c...fSH|
+|.S........hS.|
+|.SSSSSSSSSSS.|
 |.........i...|
 layer 2
 |..i..........|
-|.QnnFnqooqQQ.|
-|.q........LC.|
+|.TnnFnTooUUT.|
+|.U........LC.|
 |.p.........p.|
 |.p.........p.|
-|.qg.......hq.|
+|.Ug.......hU.|
 |.n.........n.|
-|.QqooqqooqQQ.|
+|.TUooUTooUUT.|
 |.............|
 layer 3
 |..O...O......|
-|.QnnQnqooqQQ.|
-|.q........CC.|
+|.TnnUnTooUUT.|
+|.U........CC.|
 |.p.........p.|
 |.p.........p.|
-|.qN.......Mq.|
+|.UN.......MU.|
 |.n.........n.|
-|.QqooqqooqQQ.|
+|.TUooUTooUUT.|
 |.............|
 layer 4
-|XSSSSSSSSSSSW|
-|TQnnQnqQnqQQV|
-|Tq........CCV|
-|Tn.........nV|
-|TQ.........QV|
-|Tq.........qV|
-|Tn.........nV|
-|TQqnQqqQnqQQV|
-|YUUUUUUUUUUUZ|
+|JVVVVVVVVVVVY|
+|QTTTTTTTTTTTZ|
+|QT........CCZ|
+|QT.........TZ|
+|QT.........TZ|
+|QT.........TZ|
+|QT.........TZ|
+|QTTTTTTTTTTTZ|
+|RWWWWWWWWWWWl|
 layer 5
 |.............|
-|.XSSSSSSSSSW.|
-|.T.........C.|
-|.T.........V.|
-|.T.........V.|
-|.T.........V.|
-|.T.........V.|
-|.YUUUUUUUUUZ.|
+|.JVVVVVVVVVY.|
+|.Q.........C.|
+|.Q.........Z.|
+|.Q.........Z.|
+|.Q.........Z.|
+|.Q.........Z.|
+|.RWWWWWWWWWl.|
 |.............|
 layer 6
 |.............|
 |.............|
-|..XSSSSSSSWC.|
-|..T.......V..|
-|..T.......V..|
-|..T.......V..|
-|..YUUUUUUUZ..|
+|..JVVVVVVVYC.|
+|..Q.......Z..|
+|..Q.......Z..|
+|..Q.......Z..|
+|..RWWWWWWWl..|
 |.............|
 |.............|
 layer 7
 |.............|
 |.............|
 |...........C.|
-|...RRRRRRR...|
-|...RRRRRRR...|
-|...RRRRRRR...|
+|...XXXXXXX...|
+|...XXXXXXX...|
+|...XXXXXXX...|
 |.............|
 |.............|
 |.............|

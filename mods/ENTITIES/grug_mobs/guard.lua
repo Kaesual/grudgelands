@@ -114,6 +114,12 @@ local function guard_tick(self, dtime)
 			return false
 		end
 	end
+	-- A post guard on a lamp post (spawned there before Round 78) goes back to
+	-- street level, checked once per activation (camps.lua guard_to_street).
+	if self._grug_camp_pos and not self.temp.grug_street_checked then
+		self.temp.grug_street_checked = true
+		grug_mobs.guard_to_street(self)
+	end
 	-- Ambient outpost patrol (world.md §4). Only the camp's designated
 	-- patroller carries the route; every other guard holds its post.
 	-- `snap` is on: a guard that cannot reach two waypoints of an authored

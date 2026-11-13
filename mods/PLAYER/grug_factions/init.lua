@@ -113,15 +113,20 @@ local function hide_parent_tag(player, text)
 	})
 end
 
+-- The player's carrier, asked of grug_core on every call: it hands back the
+-- live one, or replaces one that is gone, invalid or detached (Round 78
+-- ruling 7), keeping the text it had.
 local function ensure_player_carrier(player, state)
-	local carrier = state.carrier
-	if carrier and carrier:is_valid() then return carrier end
-	carrier = grug_core.create_tag_carrier(player, player:get_player_name())
-	state.carrier = carrier
-	grug_core.set_tag_carrier_text(carrier, state.text)
+	local carrier = grug_core.create_tag_carrier(player, player:get_player_name())
+	if carrier ~= state.carrier then
+		state.carrier = carrier
+		grug_core.set_tag_carrier_text(carrier, state.text)
+	end
 	return carrier
 end
 
+-- Also the re-ensure after a teleport, a respawn, mounting and dismounting
+-- (Round 78): an unchanged text still makes sure the carrier is there.
 function grug_factions.refresh_player_tag(player, hp)
 	local name = player:get_player_name()
 	local state = tag_states[name]
@@ -129,13 +134,13 @@ function grug_factions.refresh_player_tag(player, hp)
 		state = {visible = false}
 		tag_states[name] = state
 	end
+	local carrier = ensure_player_carrier(player, state)
 	local text = tag_text(player, hp)
 	if text == state.text then
 		return false
 	end
 	state.text = text
-	return grug_core.set_tag_carrier_text(
-		ensure_player_carrier(player, state), text)
+	return grug_core.set_tag_carrier_text(carrier, text)
 end
 
 local function reset_player_tag(player)
@@ -156,12 +161,20 @@ core.register_on_mods_loaded(function()
 			grug_factions.refresh_player_tag(player)
 		end)
 	end
+	-- Every trip of grug_home (waystones, return home, respawn arrivals,
+	-- Expedition travel) re-ensures the tag at the new place (Round 78).
+	if core.global_exists("grug_home") and grug_home.register_on_teleport then
+		grug_home.register_on_teleport(function(player)
+			grug_factions.refresh_player_tag(player)
+		end)
+	end
 end)
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	local state = tag_states[name]
-	if state then grug_core.remove_tag_carrier(state.carrier) end
+	-- The current carrier, not a handle a replacement made stale.
+	if state then grug_core.remove_tag_carrier(ensure_player_carrier(player, state)) end
 	tag_states[name] = nil
 end)
 
@@ -328,6 +341,12 @@ core.register_on_respawnplayer(function(player)
 	player:set_pos(spawn)
 	grug_factions.teleport_to_spawn(player)
 	return true
+end)
+
+-- A respawn re-ensures the nametag (Round 78); registered after the
+-- placement callback above and never placing anyone itself.
+core.register_on_respawnplayer(function(player)
+	grug_factions.refresh_player_tag(player)
 end)
 
 -- Prevent friendly fire within the own faction.

@@ -1,0 +1,34 @@
+{
+  "page_sha256": "7e8d7aa03d5bdaa9581b5e6b54aef746cd3e52d4f76fc449672e55468b672700",
+  "checks": [
+    "145 overview cards",
+    "Starts with four representative forms",
+    "Four previous-transfer comparison images",
+    "All preview images load",
+    "Every comparison has exactly one valid card link",
+    "dwarf filter",
+    "human filter",
+    "elf filter",
+    "orc filter",
+    "troll filter",
+    "undead filter",
+    "Seven structural inspection cases",
+    "Building name search",
+    "154 deferred placement rows, initially collapsed",
+    "Focus restores four forms and clears other filters",
+    "Phone overview has no horizontal overflow",
+    "Card opens the matching 3D comparison",
+    "No browser JavaScript exceptions"
+  ],
+  "captures": [
+    {
+      "file": "overview-desktop.png",
+      "sha256": "6561efa2cd4972a33a2e39d40078c3ce58c7feedd3db53f5c0fd4af167005875"
+    },
+    {
+      "file": "overview-mobile.png",
+      "sha256": "afce1bf4197155ae67b7e71eeb1ebcdb629952d34f59672c2beb3dd0c247e4d7"
+    }
+  ],
+  "errors": []
+}

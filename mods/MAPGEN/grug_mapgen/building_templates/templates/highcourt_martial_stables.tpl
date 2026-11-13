@@ -17,7 +17,6 @@ E role fence
 F role floor
 G role flower else=air
 H role flower_alt else=air
-I role foundation
 J role hearth o=facedir:1
 K role hearth o=facedir:3
 L role light_wall o=wallmounted:2
@@ -25,16 +24,16 @@ M role light_wall o=wallmounted:3
 N role light_wall o=wallmounted:4
 O role mat else=air
 P role path
-Q role post
 R role roof_slab
 S role roof_stair
 T role roof_stair o=facedir:2
 U role storage
-V role wall_accent
 W role wall_infill else=air
 X role window
 Y role window o=facedir:3
-Z role window_frame
+I role facade_base
+Q role facade_frame
+V role facade_infill
 end
 
 layer 0
@@ -55,96 +54,96 @@ layer 0
 |PPPPPPPPPPPPPPPPP|
 layer 1
 |...GHGU..........|
-|.QZVVZVVABZVVZVQ.|
-|.Z.............Z.|
-|.VKO.........OJVG|
-|.V.E.........E.VH|
-|.ZKO.........OJZG|
-|.Z.E.........E.Z.|
-|.VKO.........OJV.|
-|.V.E.........E.V.|
-|.ZKO.........OJZ.|
-|.Z.E.........E.Z.|
-|.VKO.........OJVU|
-|.V.E...UUU...E.V.|
-|.ZZVVZZVVZZVVZVZ.|
+|.IIIIIIIABIIIIII.|
+|.I.............I.|
+|.IKO.........OJIG|
+|.I.E.........E.IH|
+|.IKO.........OJIG|
+|.I.E.........E.I.|
+|.IKO.........OJI.|
+|.I.E.........E.I.|
+|.IKO.........OJI.|
+|.I.E.........E.I.|
+|.IKO.........OJIU|
+|.I.E...UUU...E.I.|
+|.IIIIIIIIIIIIIII.|
 |.................|
 layer 2
 |......U..........|
-|.QZXXZWQCDZXXZWQ.|
-|.Z.............Z.|
+|.QVXXQWVCDQXXVWQ.|
+|.V.............V.|
 |.Y.............Y.|
 |.Y.............Y.|
-|.Z.............Z.|
-|.Z.............Z.|
+|.Q.............Q.|
+|.V.............V.|
 |.Y.............Y.|
 |.Y.............Y.|
-|.Z.............Z.|
-|.Z.............Z.|
+|.Q.............Q.|
+|.V.............V.|
 |.Y.............Y.|
 |.Y.............Y.|
-|.ZZXXZZXXZZXXZWZ.|
+|.QVXXQVXXVQXXVWQ.|
 |.................|
 layer 3
 |......N...N......|
-|.QZXXZWQWWZXXZWQ.|
-|.Z.............Z.|
+|.QVXXQWVWWQXXVWQ.|
+|.V.............V.|
 |.Y.............Y.|
 |.Y.............Y.|
-|.ZM...........LZ.|
-|.Z.............Z.|
+|.QM...........LQ.|
+|.V.............V.|
 |.Y.............Y.|
 |.Y.............Y.|
-|.Z.............Z.|
-|.ZM...........LZ.|
+|.Q.............Q.|
+|.VM...........LV.|
 |.Y.............Y.|
 |.Y.............Y.|
-|.ZZXXZZXXZZXXZWZ.|
+|.QVXXQVXXVQXXVWQ.|
 |.................|
 layer 4
 |.................|
-|.QZWQZWQWWZWWZWQ.|
-|.Z.............Z.|
+|.QVWVQWVWWQWWVWQ.|
+|.V.............V.|
+|.W.............W.|
+|.V.............V.|
+|.Q.............Q.|
+|.V.............V.|
+|.V.............V.|
 |.W.............W.|
 |.Q.............Q.|
-|.Z.............Z.|
-|.Z.............Z.|
-|.Q.............Q.|
-|.W.............W.|
-|.Z.............Z.|
-|.Z.............Z.|
+|.V.............V.|
 |.W.............W.|
 |.W.............W.|
-|.ZZWQZZQWZZWWZWZ.|
+|.QVWVQVVWVQWWVWQ.|
 |.................|
 layer 5
 |SSSSSSSSSSSSSSSSS|
-|.QZWQZWQWWZWWZWQ.|
-|.Z.............Z.|
-|.W.............W.|
+|.QQQQQQQQQQQQQQQ.|
 |.Q.............Q.|
-|.Z.............Z.|
-|.Z.............Z.|
 |.Q.............Q.|
-|.W.............W.|
-|.Z.............Z.|
-|.Z.............Z.|
-|.W.............W.|
-|.W.............W.|
-|.ZZWQZZQWZZWWZWZ.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.Q.............Q.|
+|.QQQQQQQQQQQQQQQ.|
 |TTTTTTTTTTTTTTTTT|
 layer 6
 |.................|
 |SSSSSSSSSSSSSSSSS|
 |.W.............W.|
 |.W.............W.|
+|.V.............V.|
 |.Q.............Q.|
 |.W.............W.|
+|.V.............V.|
 |.W.............W.|
 |.Q.............Q.|
-|.W.............W.|
-|.W.............W.|
-|.Q.............Q.|
+|.V.............V.|
 |.W.............W.|
 |.W.............W.|
 |TTTTTTTTTTTTTTTTT|
@@ -154,13 +153,13 @@ layer 7
 |.................|
 |SSSSSSSSSSSSSSSSS|
 |.W.............W.|
+|.V.............V.|
 |.Q.............Q.|
 |.W.............W.|
+|.V.............V.|
 |.W.............W.|
 |.Q.............Q.|
-|.W.............W.|
-|.W.............W.|
-|.Q.............Q.|
+|.V.............V.|
 |.W.............W.|
 |TTTTTTTTTTTTTTTTT|
 |.................|
@@ -170,13 +169,13 @@ layer 8
 |.................|
 |.................|
 |SSSSSSSSSSSSSSSSS|
+|.V.............V.|
 |.Q.............Q.|
 |.W.............W.|
+|.V.............V.|
 |.W.............W.|
 |.Q.............Q.|
-|.W.............W.|
-|.W.............W.|
-|.Q.............Q.|
+|.V.............V.|
 |TTTTTTTTTTTTTTTTT|
 |.................|
 |.................|

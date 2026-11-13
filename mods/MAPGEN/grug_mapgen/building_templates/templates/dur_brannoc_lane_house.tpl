@@ -18,14 +18,12 @@ F role chimney_cap
 G role door variant=_a
 H role door_hidden
 I role floor
-J role foundation
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
 M role light_wall o=wallmounted:2
 N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:4
 P role path
-Q role post
 R role roof_slab
 S role roof_stair
 T role roof_stair o=facedir:2
@@ -40,128 +38,142 @@ b role shelf_vessels o=facedir:1
 c role storage o=facedir:3
 d node grug_decor:xdecor_table
 f role wall
-g role wall_accent
 h role window
 i role window o=facedir:3
 j role window_frame
+J role facade_roof_stair o=facedir:2
+Q race *=T dwarf=J
+e role facade_roof_stair o=facedir:0
+g race *=S dwarf=e
+k role facade_roof_slab o=facedir:0
+l race *=R dwarf=k
+m role facade_base
+n role facade_frame
+o role facade_infill
+p role facade_band
+q race *=j dwarf=o elf=p
+r race *=f dwarf=o elf=p
+s race *=f dwarf=m
+t role facade_gable
+u race *=j dwarf=m elf=o
 end
 
 layer 0
 |PPPPPPPPPPP|
-|PJJJJJJJJJP|
-|PJIIIIIVIJP|
-|PJIIIIIVIJP|
-|PJIIUUIIIJP|
-|PJIIUUIIIJP|
-|PJIIIIIIIJP|
-|PJIIIIIIIJP|
-|PJIIIIIIIJP|
-|PJJJJJJJJJP|
+|PmmmmmmmmmP|
+|PmIIIIIVImP|
+|PmIIIIIVImP|
+|PmIIUUIIImP|
+|PmIIUUIIImP|
+|PmIIIIIIImP|
+|PmIIIIIIImP|
+|PmIIIIIIImP|
+|PmmmmmmmmmP|
 |PPPPPPPPPPP|
 layer 1
 |...........|
-|.QgGggjggj.|
-|.jC.....KE.|
-|.gD....Y.g.|
-|.gc..X...g.|
-|.ja..dd..j.|
-|.j...W...j.|
-|.g......Zg.|
-|.g......bg.|
-|.jjggjjggj.|
+|.mmGmmmmmm.|
+|.mC.....KE.|
+|.mD....Y.m.|
+|.mc..X...m.|
+|.ma..dd..m.|
+|.m...W...m.|
+|.m......Zm.|
+|.m......bm.|
+|.mmmmmmmmm.|
 |...........|
 layer 2
 |...........|
-|.QfHffjhhj.|
-|.j......LE.|
+|.noHonohhn.|
+|.o......LE.|
 |.i.......i.|
 |.i.......i.|
-|.ja......j.|
-|.j.......j.|
+|.na......n.|
+|.o.......o.|
 |.i......bi.|
 |.i.......i.|
-|.jjhhjjhhj.|
+|.nohhnohhn.|
 |...........|
 layer 3
 |.O...O.....|
-|.Qffffjhhj.|
-|.j......EE.|
+|.nooonohhn.|
+|.o......EE.|
 |.i.......i.|
 |.i.......i.|
-|.jN.....Mj.|
-|.j.......j.|
+|.nN.....Mn.|
+|.o.......o.|
 |.i.......i.|
 |.i.......i.|
-|.jjhhjjhhj.|
+|.nohhnohhn.|
 |...........|
 layer 4
 |...........|
-|.Qffffjffj.|
-|.j......EE.|
-|.f.......f.|
-|.f.......f.|
-|.j.......j.|
-|.j.......j.|
-|.f.......f.|
-|.f.......f.|
-|.jjffjjffj.|
+|.prrrpqrrp.|
+|.q......EE.|
+|.r.......r.|
+|.r.......r.|
+|.p.......p.|
+|.q.......q.|
+|.r.......r.|
+|.r.......r.|
+|.pqrrpqrrp.|
 |...........|
 layer 5
 |...........|
-|.Qffffjffj.|
-|.j......EE.|
-|.f.......f.|
-|.f.......f.|
-|.j.......j.|
-|.j.......j.|
-|.f.......f.|
-|.f.......f.|
-|.jjffjjffj.|
-|TTTTTTTTTTT|
+|.nooonooon.|
+|.o......EE.|
+|.o.......o.|
+|.o.......o.|
+|.n.......n.|
+|.o.......o.|
+|.o.......o.|
+|.o.......o.|
+|.nussnussn.|
+|QQQQQQQQQQQ|
 layer 6
 |...........|
-|.QfffffffQ.|
-|.f.......E.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|TTTTTTTTTTT|
+|.nooonooon.|
+|.o.......E.|
+|.o.......o.|
+|.o.......o.|
+|.n.......n.|
+|.o.......o.|
+|.o.......o.|
+|.o.......o.|
+|QQQQQQQQQQQ|
 |...........|
 layer 7
-|SSSSSSSSSSS|
-|.QfffffffQ.|
-|.f.......E.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|TTTTTTTTTTT|
+|ggggggggggg|
+|.nsssnsssn.|
+|.s.......E.|
+|.s.......s.|
+|.s.......s.|
+|.n.......n.|
+|.s.......s.|
+|.s.......s.|
+|QQQQQQQQQQQ|
 |...........|
 |...........|
 layer 8
 |...........|
-|SSSSSSSSSSS|
-|.f.......E.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|TTTTTTTTTTT|
+|ggggggggggg|
+|.t.......E.|
+|.t.......t.|
+|.t.......t.|
+|.n.......n.|
+|.t.......t.|
+|QQQQQQQQQQQ|
 |...........|
 |...........|
 |...........|
 layer 9
 |...........|
 |...........|
-|SSSSSSSSSES|
-|.f.......f.|
-|.f.......f.|
-|.f.......f.|
-|TTTTTTTTTTT|
+|gggggggggEg|
+|.t.......t.|
+|.t.......t.|
+|.n.......n.|
+|QQQQQQQQQQQ|
 |...........|
 |...........|
 |...........|
@@ -170,9 +182,9 @@ layer 10
 |...........|
 |...........|
 |.........E.|
-|SSSSSSSSSSS|
-|.f.......f.|
-|TTTTTTTTTTT|
+|ggggggggggg|
+|.t.......t.|
+|QQQQQQQQQQQ|
 |...........|
 |...........|
 |...........|
@@ -183,7 +195,7 @@ layer 11
 |...........|
 |.........E.|
 |...........|
-|RRRRRRRRRRR|
+|lllllllllll|
 |...........|
 |...........|
 |...........|

@@ -63,6 +63,7 @@ end
 local function armor_k(level)
 	return 20 + 0.5 * math.min(level, 60) + 8.5 * math.max(level - 60, 0)
 end
+dofile(ROOT .. "/tools/r78_armor/format_armor.lua")(ROOT) -- Round 78: ratings shown x10
 -- D before the level scalar with an own-level caster weapon and no gear:
 -- spell_base = round(4 + 0.35 L), Int = 10 + 3 (L - 1).
 local function own_spell_base(level) return math.floor(4 + 0.35 * level + 0.5) end
@@ -1042,7 +1043,8 @@ do
 	check(R.meteor.description_for(t, R.meteor):find("within 3.75 m", 1, true),
 		"L Meteor's tooltip shows the radius with Broad Impact")
 	local mantle = R.rime_mantle.description_for(t, R.rime_mantle)
-	check(mantle:find("+" .. math.floor(0.2 * armor_k(60) + 0.5) .. " armor", 1, true) and
+	-- Round 78: the armor shows as its rating x10.
+	check(mantle:find("+" .. math.floor(0.2 * armor_k(60) * 10 + 0.5) .. " armor", 1, true) and
 		mantle:find("shield of " .. math.floor(0.12 * base_pool(60)), 1, true),
 		"L Rime Mantle's tooltip shows armor and shield")
 	eq(G.description_prefix(t, R.blink), "Blink (Mage)\n8% base mana (" .. mana_cost(60, 8) ..

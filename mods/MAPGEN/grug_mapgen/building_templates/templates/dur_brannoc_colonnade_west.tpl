@@ -11,25 +11,24 @@ races dwarf
 legend
 A role castle_paving
 B role castle_paving else=air
-C role castle_wall else=air
 D role light_wall o=wallmounted:3
 E role pillar variant=_bottom else=air
 F role pillar variant=_middle else=air
 G role pillar variant=_top else=air
-H role plaza_edge
 I role seat
 J role seat o=facedir:2
 K role signature else=air
 L role signature_slab else=air
+C role facade_base
 end
 
 layer 0
 |AAAAAAAAAAAAAAAAA|
-|AHHHHHHHHHHHHHHHA|
-|AHAAAAAAAAAAAAAHA|
-|AHAAAAAAAAAAAAAHA|
-|AHAAAAAAAAAAAAAHA|
-|AHHHHHHHHHHHHHHHA|
+|ACCCCCCCCCCCCCCCA|
+|ACAAAAAAAAAAAAACA|
+|ACAAAAAAAAAAAAACA|
+|ACAAAAAAAAAAAAACA|
+|ACCCCCCCCCCCCCCCA|
 |AAAAAAAAAAAAAAAAA|
 layer 1
 |.................|

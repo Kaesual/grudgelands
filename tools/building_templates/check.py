@@ -1292,7 +1292,7 @@ def real_template_cases():
     cases = [
         ("the frozen template", text, set()),
         ("a door without its upper cell", put(text, hidden, "."), {"multi_cell"}),
-        ("a walled-in door", put(text, leaf, keys["wall"]),
+        ("a walled-in door", put(text, leaf, keys.get("wall", keys.get("facade_infill"))),
          {"multi_cell", "point_place", "reach"}),
         ("a node outside the editor palette",
          put(legend_add(text, "~ node default:river_water_source"), empty, "~"),
@@ -1312,12 +1312,12 @@ def real_template_cases():
          {"point_place", "point_baseline"}),
         ("a pivot that changed", text.replace("pivot 9 9", "pivot 9 10"), {"box_baseline"}),
         ("a race switch that misses the placing race",
-         put(legend_add(text, "~ race human=%s" % keys["wall"]), empty, "~"),
+         put(legend_add(text, "~ race human=%s" % keys.get("wall", keys.get("facade_infill"))), empty, "~"),
          {"legend"}),
         ("a door oriented as a wall fitting",
          text.replace(" role door variant=_a", " role door variant=_a o=wallmounted:1", 1),
          {"orientation", "multi_cell", "point_place"}),
-        ("a role painted from the editor palette", put(text, empty, keys["wall"]), set()),
+        ("a role painted from the editor palette", put(text, empty, keys.get("wall", keys.get("facade_infill"))), set()),
     ]
     defects = {d[:3] for d in known_defects(ROOT)}
     for label, mutated, wanted in cases:

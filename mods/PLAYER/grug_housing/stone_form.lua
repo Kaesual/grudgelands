@@ -125,8 +125,8 @@ local function draft_formspec(claim, session, player)
 		"It protects nothing yet and crumbles in " ..
 		countdown(grug_housing.draft_remaining(claim)) ..
 		" unless you activate it.", ui.RED))
-	fs[#fs + 1] = "label[0.4,1.5;" .. ui.esc(("Activation takes %d coal lumps or " ..
-		"charcoal from your inventory"):format(need)) .. "]"
+	fs[#fs + 1] = "label[0.4,1.5;" .. ui.esc(("Activation takes %d coal, charcoal or " ..
+		"anthracite from your inventory"):format(need)) .. "]"
 	fs[#fs + 1] = "label[0.4,1.9;" .. ui.esc(("(%s of fuel) and protects your " ..
 		"home at once."):format(ui.format_remaining(need * grug_housing.LUMP_SECONDS))) .. "]"
 	fs[#fs + 1] = ("button[0.4,2.3;4.2,0.7;activate;%s]"):format(

@@ -10,8 +10,9 @@
 -- The art is a 64x64 opaque plate; the frame is a 64x64 overlay with a
 -- transparent centre, composited by texture modifier (`icon^frame`).
 --
--- Cooldowns never become statuses (ruling 21): the potion cooldown and the
--- talent-trigger clocks stay off this table on purpose.
+-- Cooldowns never become statuses (ruling 21): the talent-trigger clocks and
+-- the ability cooldowns stay off this table on purpose. The one exception is
+-- the shared potion cooldown (Round 78 ruling 2, `potion_cooldown` below).
 --
 -- This file is PURE Lua: it calls nothing from `core`, so the portable
 -- fixture (tools/r26_status_icons) loads the real thing.
@@ -146,6 +147,12 @@ icons.STATUS = {
 		art("pvp_tagged")),
 	pvp_contested = def("neutral", "Contested Territory",
 		"Flagged enemies can attack you", art("pvp_contested")),
+	-- Round 78 ruling 2: the shared potion cooldown (grug_traders potion.lua, a
+	-- status source), the one cooldown on the row. No art of its own: the
+	-- potion's item image on the plate, like a food item's.
+	potion_cooldown = def("neutral", "Potion cooldown", "No other potion until it ends",
+		"[fill:16x16:" .. icons.PLATE ..
+		"^(grug_traders_item_potion_healing_weak.png)^[resize:64x64"),
 }
 
 -- The Effects tab's remaining time: coarse on purpose, so the cached page

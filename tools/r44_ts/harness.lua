@@ -249,6 +249,8 @@ return function(repo, hidden)
 	local armor_k = combat:match("(function grug_core%.armor_k%(attacker_level%).-\nend)\n")
 	assert(loadstring(assert(fit, "base_pool block in combat.lua")))()
 	assert(loadstring(assert(armor_k, "armor_k in combat.lua")))()
+	-- The one armor display helper for the talent texts (Round 78: x10).
+	dofile(repo .. "/tools/r78_armor/format_armor.lua")(repo)
 	grug_xp = {
 		get_level = function(player) return player.level end,
 		register_on_level_change = function(fn) table.insert(registered.level_change, fn) end,
@@ -266,6 +268,8 @@ return function(repo, hidden)
 		register_on_class_chosen = function(fn) table.insert(registered.class_chosen, fn) end,
 		register_on_race_chosen = function(fn) table.insert(registered.race_chosen, fn) end,
 		get_class = function(player) return player.class end,
+		-- Round 76: the Social tab's party rows show an online member's race.
+		get_race = function(player) return player.race end,
 		apply_stats = noop,
 		pool_percent_amount = function(player, _, percent)
 			return math.floor(grug_core.base_pool(player.level) * percent / 100 + 0.5)

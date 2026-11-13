@@ -18,14 +18,12 @@ F role chimney_cap
 G role door variant=_a
 H role door_hidden
 I role floor
-J role foundation
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
 M role light_wall o=wallmounted:2
 N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:4
 P role path
-Q role post
 R role roof_slab
 S role roof_stair
 T role roof_stair o=facedir:1
@@ -49,7 +47,9 @@ l role wall_accent
 m role wall_infill else=air
 n role window
 o role window o=facedir:3
-p role window_frame
+J role facade_home_base
+Q role facade_frame
+k role facade_infill
 end
 
 layer 0
@@ -66,63 +66,63 @@ layer 0
 |PPPPPPPPPPP|
 layer 1
 |...........|
-|.QlGllpllp.|
-|.pC.....KE.|
+|.JlGllJllJ.|
+|.JC.....KE.|
 |.lD....e.l.|
 |.li..d...l.|
-|.pg..jj..p.|
-|.p...c...p.|
+|.Jg..jj..J.|
+|.J...c...J.|
 |.l......fl.|
 |.l......hl.|
-|.ppllppllp.|
+|.JJllJJllJ.|
 |...........|
 layer 2
 |...........|
-|.QmHQmpnnp.|
-|.p......LE.|
+|.QmHkQknnQ.|
+|.k......LE.|
 |.o.......o.|
 |.o.......o.|
-|.pg......p.|
-|.p.......p.|
+|.Qg......Q.|
+|.k.......k.|
 |.o......ho.|
 |.o.......o.|
-|.ppnnppnnp.|
+|.QknnQknnQ.|
 |...........|
 layer 3
 |.O...O.....|
-|.QmmQmpnnp.|
-|.p......EE.|
+|.QmmkQknnQ.|
+|.k......EE.|
 |.o.......o.|
 |.o.......o.|
-|.pN.....Mp.|
-|.p.......p.|
+|.QN.....MQ.|
+|.k.......k.|
 |.o.......o.|
 |.o.......o.|
-|.ppnnppnnp.|
+|.QknnQknnQ.|
 |...........|
 layer 4
 |...........|
-|.QmmQmpQmp.|
-|.p......EE.|
+|.QmmkQkkmQ.|
+|.k......EE.|
 |.m.......m.|
+|.k.......k.|
 |.Q.......Q.|
-|.p.......p.|
-|.p.......p.|
-|.Q.......Q.|
+|.k.......k.|
+|.k.......k.|
 |.m.......m.|
-|.ppmQppQmp.|
+|.QkmkQkkmQ.|
 |...........|
 layer 5
 |XSSSSSSSSSW|
-|TQmmQmpQmpV|
-|Tp......EEV|
-|Tm.......mV|
+|TQQQQQQQQQV|
+|TQ......EEV|
 |TQ.......QV|
-|Tp.......pV|
-|Tp.......pV|
 |TQ.......QV|
-|Tm.......mV|
-|TppmQppQmpV|
+|TQ.......QV|
+|TQ.......QV|
+|TQ.......QV|
+|TQ.......QV|
+|TQQQQQQQQQV|
 |YUUUUUUUUUZ|
 layer 6
 |...........|

@@ -2157,6 +2157,79 @@ local function grug_ranged_closing(self, ds_var, dist)
 	return temp.grug_closing == true
 end
 
+-- GRUG PATCH (Round 78 BOSS, round78-plan.md ruling 6 and §3.1): a mob with
+-- both attacks (`dogshoot` with a `dogshoot_switch`, every one since Round 72)
+-- chooses by distance instead of upstream's clock (dogswitch, no longer
+-- called). `edge` is the attack step's melee distance and `reach` its melee
+-- reach (grug_obstacle.melee_measure: edge to edge for a ground mob). Below
+-- GRUG_MELEE_BELOW it melees (2), above GRUG_RANGED_ABOVE it shoots (1), and
+-- between the two it keeps its mode, so it never flips at one line. A
+-- target it cannot see starts a blind approach: the melee branch walks (and
+-- searches) toward it and re-checks every GRUG_DS_RECHECK seconds; a
+-- re-check with sight decides by the melee line alone (inside it melees,
+-- outside it shoots). In melee, a visible target out of reach whose way
+-- failed a search (a ledge, a ravine: grug_nav's `fails`) is shot at
+-- instead, and melee then waits until the target is in reach, has left past
+-- the ranged line, or (a check every GRUG_DS_RECHECK seconds while the
+-- target is seen inside the melee line) can be walked to straight again
+-- (grug_nav.line_to_target at `pos`, `target_pos`: it came down to open
+-- floor). The mode is the saved `dogshoot_switch` (1 or 2, as upstream's);
+-- the approach and the wait live in the runtime-only temp table, which
+-- stop_attack clears. Returns ds_var: 0 without a switch.
+local GRUG_MELEE_BELOW = 4
+local GRUG_RANGED_ABOVE = 6
+local GRUG_DS_RECHECK = 1
+
+local function grug_dogshoot_mode(self, edge, reach, in_sight, dtime, pos, target_pos)
+
+	local mode = self.dogshoot_switch
+	if not mode then return 0 end
+
+	local temp = self.temp
+	local blind = temp.grug_ds_blind
+	local below = GRUG_MELEE_BELOW
+
+	if temp.grug_ds_unreached then
+		below = reach
+		local check = (temp.grug_ds_check or 0) + dtime
+		if check >= GRUG_DS_RECHECK then
+			check = 0
+			if in_sight and edge < GRUG_MELEE_BELOW and pos
+			and grug_nav.line_to_target(self, pos, self.attack, target_pos) then
+				temp.grug_ds_unreached, below = nil, GRUG_MELEE_BELOW
+			end
+		end
+		temp.grug_ds_check = check
+	end
+
+	if blind or not in_sight then
+		blind = (blind or 0) + dtime
+		if blind < GRUG_DS_RECHECK or not in_sight then
+			temp.grug_ds_blind = blind < GRUG_DS_RECHECK and blind or 0
+			return 2
+		end
+		temp.grug_ds_blind = nil
+		mode = edge < below and 2 or 1
+	elseif edge > GRUG_RANGED_ABOVE then
+		mode, temp.grug_ds_unreached = 1, nil
+	elseif edge < below then
+		mode = 2
+	end
+
+	if mode == 2 then
+		local nst = temp.grug_nav
+		if edge > reach and nst and (nst.fails or 0) > 0 then
+			mode, temp.grug_ds_unreached, temp.grug_ds_check = 1, true, 0
+		else
+			temp.grug_ds_unreached = nil
+		end
+	end
+
+	self.dogshoot_switch = mode
+
+	return mode
+end
+
 -- stop attack & reset vars
 
 function mob_class:stop_attack()
@@ -2171,6 +2244,9 @@ function mob_class:stop_attack()
 		grug_nav.forget(self.temp)
 		grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
 		self.temp.grug_closing = nil -- GRUG PATCH (Round 56 MOBAI): no stale approach
+		-- GRUG PATCH (Round 78 BOSS): nor a blind approach or a wait for reach.
+		self.temp.grug_ds_blind, self.temp.grug_ds_unreached = nil, nil
+		self.temp.grug_ds_check = nil
 	end
 	self:set_velocity(0)
 	self.state = "stand"
@@ -2379,7 +2455,13 @@ function mob_class:do_states(dtime)
 		local ground_melee = self.attack_type == "dogfight" and not self.fly
 		local in_sight = grug_obstacle.target_visible(self, s, target_pos,
 				ground_melee)
-		local attack_reach = self.reach + (self.reach_ext or 0)
+		-- GRUG PATCH (Round 78 BOSS): the melee distance, gap, reach and stop
+		-- gap of this step, edge to edge for a ground mob
+		-- (grug_obstacle.melee_measure); the reach tests, the contact run and
+		-- the mode of a mob with both attacks read them.
+		local m_edge, m_gap, m_reach, m_stop = grug_obstacle.melee_measure(self, s,
+				target_pos, dist)
+		local attack_reach = m_reach + (self.reach_ext or 0)
 
 		-- stop attacking when enemy not seen for 11 seconds
 		if not in_sight then
@@ -2397,8 +2479,10 @@ function mob_class:do_states(dtime)
 
 		local ds_var = 0
 
+		-- GRUG PATCH (Round 78 BOSS): by distance, not upstream's clock.
 		if self.attack_type == "dogshoot" then
-			ds_var = self:dogswitch(dtime)
+			ds_var = grug_dogshoot_mode(self, m_edge, m_reach, in_sight, dtime, s,
+					target_pos)
 		end
 
 		-- GRUG PATCH (Round 56 MOBAI, ruling 3): a ranged mob whose target is
@@ -2499,9 +2583,12 @@ function mob_class:do_states(dtime)
 		-- when the ranged kings got one) keeps upstream's branches. GRUG PATCH (Round 56 MOBAI, the user's
 		-- answer of 2026-10-22): a flier without sight flies at its target the
 		-- same way (no search, fliers never path) instead of shooting arrows
-		-- its target lock refuses, and shoots again once it sees it.
+		-- its target lock refuses, and shoots again once it sees it. GRUG PATCH
+		-- (Round 78 BOSS): a mob with a switch is in melee by its distance mode
+		-- alone (grug_dogshoot_mode, its blind approach included); upstream's
+		-- "in reach forces melee" stays for one without (ds_var 0).
 		elseif self.attack_type == "dogfight" or (self.attack_type == "dogshoot"
-		and (ds_var == 2 or dist <= self.reach
+		and (ds_var == 2 or (ds_var == 0 and dist <= self.reach)
 			or (ds_var == 1 and not in_sight)))
 		or grug_closing then
 			local movement_pos = target_pos
@@ -2544,7 +2631,9 @@ function mob_class:do_states(dtime)
 			-- GRUG PATCH (Round 28 ruling 5, combat_stats.md §3): at most once a
 			-- second a ground melee mob leaves its target's own column and drifts
 			-- sideways off an overlapping engaged mob (grug_mobs/separation.lua).
-			if ground_melee and grug_mobs and grug_mobs.separation_step then
+			-- GRUG PATCH (Round 78 BOSS): every ground mob in this branch, a mob
+			-- with both attacks in melee included.
+			if not self.fly and grug_mobs and grug_mobs.separation_step then
 				grug_mobs.separation_step(self, dtime, s, target_pos)
 			end
 
@@ -2602,7 +2691,7 @@ function mob_class:do_states(dtime)
 			if can_nav then
 				local steer, outcome = grug_nav.combat_step(self, s, dtime,
 						self.attack, target_pos, dist,
-						dist <= attack_reach and in_sight, self.keep_flying == true)
+						m_edge <= attack_reach and in_sight, self.keep_flying == true)
 				if outcome == "give_up" then
 					-- A given-up target ends the attack state like the give-up
 					-- distance above does (aggro.lua give_up_target).
@@ -2625,7 +2714,8 @@ function mob_class:do_states(dtime)
 			self:yaw_to_pos(movement_pos)
 
 			-- move towards enemy if beyond mob reach
-			if dist > (self.reach + (self.reach_ext or 0)) then
+			-- GRUG PATCH (Round 78 BOSS): edge to edge (melee_measure).
+			if m_edge > (m_reach + (self.reach_ext or 0)) then
 
 				-- GRUG PATCH: soft de-aggro (combat_stats.md §3, WP6) —
 				-- beyond 25m from its target a chasing mob drops to walk
@@ -2683,7 +2773,8 @@ function mob_class:do_states(dtime)
 				-- loses the ground the cadence patch above is meant to stop
 				-- losing; upstream's unconditional `set_velocity(0)` here was
 				-- the second half of the defect. The mob keeps closing until
-				-- it is at contact distance — 60 % of its own reach, chosen so
+				-- it is at contact distance — 60 % of its own reach (a ground
+				-- mob's stop gap since Round 78, below), chosen so
 				-- that a target fleeing at the player's 4.0 against a mob's
 				-- 4.6 hovers around that line and therefore stays comfortably
 				-- inside `reach` at every cadence due-tick, while a target
@@ -2700,12 +2791,11 @@ function mob_class:do_states(dtime)
 				if self.at_cliff then
 					self:set_velocity(0)
 					self:set_animation("stand")
-				-- GRUG PATCH (Round 28 ruling 5): the contact run also stops short of
-				-- a visible target's own column, e.g. a target on a step above.
-				elseif grug_obstacle.should_close_contact(
-						dist, self.reach, in_sight)
-				and not (in_sight and grug_mobs and grug_mobs.holds_column
-					and grug_mobs.holds_column(self, s, target_pos)) then
+				-- GRUG PATCH (Round 78 BOSS, ruling 6): a ground mob's contact run
+				-- stops at the stop gap edge to edge (about a node: never in or on
+				-- its target, Round 28 ruling 5's column hold included), a
+				-- flier's at 60 % of its reach (grug_obstacle.melee_measure).
+				elseif grug_obstacle.should_close_contact(m_gap, m_stop, in_sight) then
 
 					self:set_velocity(self.run_velocity)
 
@@ -2744,7 +2834,7 @@ function mob_class:do_states(dtime)
 			-- elite or rare winds up; the cone hit is its attack.
 			local ready = self.punch_timer >= self.punch_interval
 					and not grug_winding_up(self)
-			local in_reach = dist <= (self.reach + (self.reach_ext or 0))
+			local in_reach = m_edge <= (m_reach + (self.reach_ext or 0)) -- GRUG PATCH (Round 78 BOSS)
 			local strike_in_sight = in_sight
 			if ready and in_reach then
 				strike_in_sight = grug_obstacle.strike_target_visible(self, s,

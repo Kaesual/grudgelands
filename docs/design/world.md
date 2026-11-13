@@ -1070,14 +1070,18 @@ territory.
   the race description, then the class description and a scrollable skill
   list (icon and name only). "Create character" sits at the bottom right.
   Warrior is initially selected. Every class is open to every race; changing
-  race preserves the chosen class and rolls a new random look.
+  race preserves the chosen class and rolls a new random look. The six scene
+  images use the approved 0.75.5 city architecture with their existing cameras
+  and character standing points.
 - **The opening view** (approved 2026-11-10) shows the two factions' distinct
   war fortresses and their camp banners, with distant procedural trees, across
   the centre and right columns. The text reads "Choose your fate" and "Choose
   your people. Begin your story." Before the first race selection, the model,
   classes, appearance, description cards and Create are hidden. Selecting a
   race enters the character layout with Warrior selected. There is no return
-  to the opening within that draft, including after Esc and I.
+  to the opening within that draft, including after Esc and I. The small approved
+  Grudgelands crest is centered above the opening text as a separate transparent
+  image; it disappears with the opening scene after selecting a race.
 - **Nothing is stored before "Create character".** The choices are a draft
   that lives only in the server session; a disconnect starts over. Create
   stores faction, race, look and class at once and marks the character as

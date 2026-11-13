@@ -11,65 +11,64 @@ races undead
 legend
 A role castle_paving
 B role castle_paving else=air
-C role castle_wall else=air
 D role light_wall o=wallmounted:3
-E role pillar variant=_bottom else=air
-F role pillar variant=_middle else=air
-G role pillar variant=_top else=air
-H role plaza_edge
 I role seat
 J role seat o=facedir:2
-K role signature else=air
-L role signature_slab else=air
+C role facade_stone_slab o=facedir:0
+E role facade_base
+F role facade_frame
+G role facade_pillar_bottom o=facedir:0
+H role facade_pillar_middle o=facedir:0
+K role facade_pillar_top o=facedir:0
 end
 
 layer 0
 |AAAAAAAAAAAAAAAAA|
-|AHHHHHHHHHHHHHHHA|
-|AHAAAAAAAAAAAAAHA|
-|AHAAAAAAAAAAAAAHA|
-|AHAAAAAAAAAAAAAHA|
-|AHHHHHHHHHHHHHHHA|
+|AEEEEEEEEEEEEEEEA|
+|AEAAAAAAAAAAAAAEA|
+|AEAAAAAAAAAAAAAEA|
+|AEAAAAAAAAAAAAAEA|
+|AEEEEEEEEEEEEEEEA|
 |AAAAAAAAAAAAAAAAA|
 layer 1
 |.................|
-|.CJE.E.CJE.E.CJE.|
+|.FJG.G.FJG.G.FJG.|
 |.................|
 |.................|
 |.................|
-|.CIE.E.CIE.E.CIE.|
+|.FIG.G.FIG.G.FIG.|
 |.................|
 layer 2
 |.................|
-|.C.F.F.C.F.F.C.F.|
+|.F.H.H.F.H.H.F.H.|
 |.................|
 |.................|
 |.................|
-|.C.F.F.C.F.F.C.F.|
+|.F.H.H.F.H.H.F.H.|
 |.................|
 layer 3
 |.................|
-|.CDF.F.CDF.F.CDF.|
+|.FDH.H.FDH.H.FDH.|
 |.................|
 |.................|
 |.................|
-|.CDF.F.CDF.F.CDF.|
+|.FDH.H.FDH.H.FDH.|
 |.................|
 layer 4
 |.................|
-|.C.G.G.C.G.G.C.G.|
+|.F.K.K.F.K.K.F.K.|
 |.................|
 |.................|
 |.................|
-|.C.G.G.C.G.G.C.G.|
+|.F.K.K.F.K.K.F.K.|
 |.................|
 layer 5
 |.................|
-|.KKKKKKKKKKKKKKK.|
+|.FFFFFFFFFFFFFFF.|
 |.................|
 |.................|
 |.................|
-|.KKKKKKKKKKKKKKK.|
+|.FFFFFFFFFFFFFFF.|
 |.................|
 layer 6
 |.................|
@@ -80,13 +79,13 @@ layer 6
 |.BBBBBBBBBBBBBBB.|
 |.................|
 layer 7
-|LLLLLLLLLLLLLLLLL|
-|L...............L|
-|L...............L|
-|L...............L|
-|L...............L|
-|L...............L|
-|LLLLLLLLLLLLLLLLL|
+|CCCCCCCCCCCCCCCCC|
+|C...............C|
+|C...............C|
+|C...............C|
+|C...............C|
+|C...............C|
+|CCCCCCCCCCCCCCCCC|
 layer 8
 |.................|
 |.................|

@@ -9,25 +9,25 @@ meta extent=[-1,-1,13,9] peak=7 top=9
 races troll
 
 legend
-A role beam
 B role floor
 C role foundation
 D role light_wall o=wallmounted:3
 E role path
-F role post
 G role roof_slab
-H role roof_stair
-I role roof_stair o=facedir:2
 J role seat
 K role seat o=facedir:2
 L role storage
 M node grug_decor:xdecor_table
 O role tree_log
 P role wall
-Q role wall_accent
 R role window
-S role window_frame
 T role workbench
+A role facade_roof_stair o=facedir:0
+F role facade_roof_stair o=facedir:2
+H role facade_roof_slab o=facedir:0
+I role facade_base
+N role facade_home_base
+Q role facade_infill
 end
 
 layer 0
@@ -44,85 +44,85 @@ layer 0
 |EEEEEEEEEEEEEEE|
 layer 1
 |...............|
-|.F...F...F...F.|
-|.SOO.......OO..|
-|.Q.............|
-|.Q.....K.......|
-|.S....MMM....F.|
-|.S.....J.......|
-|.Q.............|
-|.QLL...T.......|
-|.SSQQSSQQSSQQS.|
+|.I...N...N...N.|
+|.IOO.......OO..|
+|.I.............|
+|.I.....K.......|
+|.I....MMM....N.|
+|.I.....J.......|
+|.I.............|
+|.ILL...T.......|
+|.IIIIIIIIIIIII.|
 |...............|
 layer 2
 |...............|
-|.F...F...F...F.|
-|.SOO.......OO..|
+|.N...N...N...N.|
+|.QOO.......OO..|
 |.R.............|
 |.R.............|
-|.S...........F.|
-|.S.............|
+|.N...........N.|
+|.Q.............|
 |.R.............|
 |.R.............|
-|.SSRRSSRRSSRRS.|
+|.NQRRNQRRNQRRN.|
 |...............|
 layer 3
 |...............|
-|.F...F...F...F.|
-|.SGG.......GG..|
+|.N...N...N...N.|
+|.QGG.......GG..|
 |.R.............|
 |.R.............|
-|.SD..........F.|
-|.SD............|
+|.ND..........N.|
+|.QD............|
 |.R.............|
 |.R.............|
-|.SSRRSSRRSSRRS.|
+|.NQRRNQRRNQRRN.|
 |...............|
 layer 4
-|HHHHHHHHHHHHHHH|
-|.FAAAAAAAAAAAF.|
-|.S.............|
+|AAAAAAAAAAAAAAA|
+|.NNNNNNNNNNNNN.|
+|.N.............|
 |.P.............|
 |.P.............|
-|.S...........F.|
-|.S.............|
+|.N...........N.|
+|.N.............|
 |.P.............|
 |.P.............|
-|.SSPPSSPPSSPPS.|
-|IIIIIIIIIIIIIII|
+|.NNPPNNPPNNPPN.|
+|FFFFFFFFFFFFFFF|
 layer 5
 |...............|
-|HHHHHHHHHHHHHHH|
-|.P...........A.|
-|.P.............|
-|.P.............|
-|.P...........F.|
-|.P.............|
-|.P.............|
-|.P...........A.|
-|IIIIIIIIIIIIIII|
+|AAAAAAAAAAAAAAA|
+|.Q...........N.|
+|.Q.............|
+|.Q.............|
+|.P...........N.|
+|.Q.............|
+|.Q.............|
+|.Q...........N.|
+|FFFFFFFFFFFFFFF|
 |...............|
 layer 6
 |...............|
 |...............|
-|HHHHHHHHHHHHHHH|
-|.P...........A.|
-|.P...........A.|
-|.P...........A.|
-|.P...........A.|
-|.P...........A.|
-|IIIIIIIIIIIIIII|
+|AAAAAAAAAAAAAAA|
+|.Q...........N.|
+|.Q...........N.|
+|.P...........N.|
+|.Q...........N.|
+|.Q...........N.|
+|FFFFFFFFFFFFFFF|
 |...............|
 |...............|
 layer 7
 |...............|
 |...............|
 |...............|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
+|HHHHHHHHHHHHHHH|
+|HHHHHHHHHHHHHHH|
+|HHHHHHHHHHHHHHH|
+|HHHHHHHHHHHHHHH|
+|HHHHHHHHHHHHHHH|
 |...............|
 |...............|
 |...............|

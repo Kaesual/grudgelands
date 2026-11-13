@@ -638,7 +638,8 @@ local function king_def(race, row)
 		-- arrow at a target they see in shot range and, without sight, walk
 		-- and search the shared navigation until they see it (mobs/api.lua
 		-- do_states). Without a `dogshoot_switch` they stood still inside
-		-- their shot range. The archers' rhythm: 10 s ranged, 3 s melee.
+		-- their shot range. Since Round 78 the mode follows the distance
+		-- (golem.lua; the count fields are no longer read).
 		dogshoot_switch = ranged and 1 or nil,
 		dogshoot_count_max = ranged and 10 or nil,
 		dogshoot_count2_max = ranged and 3 or nil,

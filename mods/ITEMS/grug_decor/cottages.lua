@@ -152,6 +152,15 @@ core.register_node("grug_decor:cottages_reet", {
 	is_ground_content = false,
 })
 
+-- Round 75.5: the city roof kit uses the existing reed texture on standard
+-- stair geometry, matching the approved architecture preview.
+grug_decor.register_shapes("cottages_reet", {
+	description = "Reed Thatch",
+	tiles = {tex_reet},
+	groups = {snappy = 3, choppy = 3, oddly_breakable_by_hand = 3, flammable = 3},
+	sounds = sounds_leaves,
+})
+
 ---------------------------------------------------------------------------
 -- Straw, loam and clay (cottages/nodes_straw.lua, nodes_historic.lua)
 ---------------------------------------------------------------------------

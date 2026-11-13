@@ -878,8 +878,10 @@ the Round 19 top-centre text list:
   shield's remaining absorb).
 - **Capacity:** at most 10 icons. When more statuses run, debuffs keep their
   slots first, then neutral states, then buffs.
-- **No cooldowns** on the row (ruling 21): the potion cooldown is no longer
-  shown; its refusal messages remain.
+- **No cooldowns** on the row (ruling 21), with one exception since Round 78
+  (ruling 2): the shared potion cooldown shows as the neutral status
+  "Potion cooldown" with its countdown (the potion's image on the plate),
+  also after a relog while it runs; its refusal messages remain.
 - **Registered statuses:** food (the eaten item's own image, else the
   generic food icon), elixirs, draughts, mounts (land or flight; an untimed
   status, so the row caption is empty and the tier name and "+N% speed"
@@ -924,7 +926,7 @@ the Round 19 top-centre text list:
   the Stats mode since the Round 45 playtest, which merged the two;
   [character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
-  list, in the Social tab's "Current Party" table and on each row of its
+  list, in the Social tab's party and clan rows and on each row of its
   online players' list, with the race icon beside it (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
   keep using the one central registry rather than per-consumer status
@@ -1045,7 +1047,7 @@ independent of the disposable item stack.
 Spec `docs/planning/ui-crafting-rework-plan.md` ruling 9 and §3.5
 (`grug_quickbar`). The rising edge of aux1 (E by default; `grug_keys`) opens
 a small window on the left of the screen, four inventory-sized slots wide
-(5.5 × about 6.5 units):
+(5.75 × about 8–11 units, with the emotes since Round 78):
 
 - **Mounts and boats:** one image button per purchased tier (every owned
   riding tier and boat, four to a row, the model's icon, a tooltip with the
@@ -1057,13 +1059,17 @@ a small window on the left of the screen, four inventory-sized slots wide
 - **Potion belt:** the four belt slots; a filled one is an item button (the
   count in the item string; a list slot would pick the stack up), an empty
   one draws only the slot. A click uses the potion through its own `on_use`,
-  so the shared 60 s potion cooldown, the full-health and level refusals
+  so the shared 30 s potion cooldown, the full-health and level refusals
   hold; the stack shrinks in the belt.
 - **Return home:** with a home, "Home: <name>" and the button "Return home
   (<state>)" with the Character tab's state text; the same travel request
   and its gates (combat, the cooldown, a running return).
 - **Hotbar:** the A and B buttons of the hotbar switch (§1); a switch keeps
   the window open and shows it again with the new layout marked (Round 50).
+- **Emotes** (Round 78): **Wave** and **Dance** side by side, below the
+  hotbar switch; a click plays the emote once (`character_visuals.md`
+  "Emotes"). While riding, Wave plays seated and Dance is greyed out (a
+  click on it does nothing and keeps the window open).
 - A click acts once and closes the window. It is sent once per opening and
   refreshed only by a hotbar switch; it does not open while dead or during character
   creation. The client releases every key while a menu or the chat is open,

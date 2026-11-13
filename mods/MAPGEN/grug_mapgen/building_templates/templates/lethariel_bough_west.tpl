@@ -23,6 +23,8 @@ K role signature_stair o=facedir:2 else=air late
 L role tree_log late
 M role wall late
 N role window o=facedir:3 late
+O role facade_frame late
+P role facade_band late
 end
 
 layer 0
@@ -125,11 +127,11 @@ layer 8
 |...........|
 |...........|
 |..GGGGGG.A.|
-|..GMMMMM...|
+|..GOMMMO...|
 |..GMAAAM...|
 |..GMAAA....|
 |..GMAAAMG..|
-|..GMMMMMG..|
+|..GOMMMOG..|
 |..GGGGGGG..|
 |...........|
 |...........|
@@ -137,11 +139,11 @@ layer 9
 |...........|
 |...........|
 |.........A.|
-|...MMMMM...|
+|...OMMMO...|
 |...NEAAM...|
 |...MAAA....|
 |...NAAAM...|
-|...MMMMM...|
+|...OMMMO...|
 |...........|
 |...........|
 |...........|
@@ -149,11 +151,11 @@ layer 10
 |...........|
 |...........|
 |.........A.|
-|...MMMMM...|
-|...MAAAM...|
-|...MAAA....|
-|...MAAAM...|
-|...MMMMM...|
+|...PPPPP...|
+|...PAAAP...|
+|...PAAA....|
+|...PAAAP...|
+|...PPPPP...|
 |...........|
 |...........|
 |...........|

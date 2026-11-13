@@ -65,10 +65,10 @@ local function golem_def(description, texture)
 		pathfinding = 1,
 
 		-- Ranged loadout, same reading as skeleton_archer.lua:
-		-- dogshoot_switch = 1 opens in the RANGED phase, then mobs_redo
-		-- alternates dogshoot_count_max seconds of shooting with
-		-- dogshoot_count2_max seconds of melee — 10 vs 3 is "mostly ranged",
-		-- and a target inside `reach` forces melee regardless (api.lua:2491-2819).
+		-- dogshoot_switch = 1 opens in the RANGED mode; since Round 78 the mode
+		-- follows the distance (mobs/api.lua grug_dogshoot_mode: melee inside
+		-- 4 nodes edge to edge, ranged beyond 6, the mode kept between). The
+		-- two count fields are upstream's 10 s / 3 s clock, no longer read.
 		arrow = "grug_mobs:rock_entity",
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 3,
@@ -100,7 +100,7 @@ local function golem_def(description, texture)
 		-- is inert documentation, and this def carries the same default
 		-- jump_height 4 as everything else. The reasons that DO hold are:
 		--   * a dogshoot mob searches only to regain sight of its target and in
-		--     its melee phase (Round 49 NAV2; before, never), so the
+		--     in melee (Round 49 NAV2; before, never), so the
 		--     "fear_height doubles as find_path's max_drop" half of the cliff
 		--     rule matters little to it — 4 vs 6 only keeps its short detours
 		--     off deeper drops, and is_at_cliff stops it there;

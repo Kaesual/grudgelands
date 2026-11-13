@@ -700,6 +700,15 @@ local function feet_of(body, pos)
 	return F
 end
 
+-- GRUG PATCH (Round 78 BOSS): whether a mob at `pos` can walk straight to
+-- its target (the walk grid inside an Expedition), the test combat_step
+-- uses; api.lua's distance mode asks it once a second while a ranged mob
+-- waits for an unreachable target to come into reach.
+function nav.line_to_target(self, pos, target, target_pos)
+	local body = nav.body(self, self.temp and self.temp.grug_nav)
+	return nav.line_walkable(body, feet_of(body, pos), target_cell(target, target_pos), 1)
+end
+
 -- Steer at the furthest of the next LOOKAHEAD waypoints that a straight
 -- walk reaches.
 local function smooth(nst, body, pos)

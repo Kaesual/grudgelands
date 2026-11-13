@@ -384,12 +384,12 @@ local function feed_to(name)
 end
 
 -- The sister lanes' parts of the mod have their own fixtures (r71_guard, r71_ui,
--- r71_mobs; traps.lua: r72_traps; particles.lua: r73_game; navigation.lua: r74_nav) and
--- need more of the game than this harness fakes.
+-- r71_mobs; traps.lua: r72_traps; particles.lua: r73_game; navigation.lua: r74_nav;
+-- respawn_lock.lua: r78_exped) and need more of the game than this harness fakes.
 local load_file = dofile
 local SISTERS = {["guard.lua"] = true, ["registrar.lua"] = true, ["encounters.lua"] = true,
 	["chest.lua"] = true, ["loot.lua"] = true, ["traps.lua"] = true, ["particles.lua"] = true,
-	["navigation.lua"] = true}
+	["navigation.lua"] = true, ["respawn_lock.lua"] = true}
 _G.dofile = function(file)
 	if not SISTERS[file:match("[^/]+$")] then return load_file(file) end
 end

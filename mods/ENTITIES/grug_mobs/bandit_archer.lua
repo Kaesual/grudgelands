@@ -22,9 +22,9 @@
 -- WHAT DIFFERS, and why each one:
 --
 --   attack_type  `dogshoot` -- the same verb the skeleton archer carries.
---                Ranged until the target is close, then melee; the switch is
---                mobs_redo's `dogswitch` plus the hard rule that a target
---                inside `reach` forces melee regardless (api.lua:2491-2819).
+--                Ranged until the target is close, then melee; since Round
+--                78 the switch is the distance (mobs/api.lua
+--                grug_dogshoot_mode, golem.lua).
 --   view_range   16 instead of the bandit's 14. That is the rule ruling 3
 --                asks for, now written down in biomes_mobs.md §3.1 and
 --                combat_stats.md §3: a `dogshoot` family sees 16, a melee
@@ -73,8 +73,8 @@ archer.shoot_offset = 1.3
 archer.animation.shoot_start = archer.animation.punch_start
 archer.animation.shoot_end = archer.animation.punch_end
 archer.animation.shoot_speed = archer.animation.punch_speed
--- dogshoot_switch = 1 starts in the RANGED phase; 10 s shooting against 3 s
--- of melee is "mostly ranged" (golem.lua documents the three knobs).
+-- dogshoot_switch = 1 starts in the RANGED mode, which follows the distance
+-- since Round 78 (golem.lua; the count fields are no longer read).
 archer.dogshoot_switch = 1
 archer.dogshoot_count_max = 10
 archer.dogshoot_count2_max = 3

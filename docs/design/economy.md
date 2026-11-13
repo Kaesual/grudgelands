@@ -275,7 +275,10 @@ items without one:
   Since Round 33 the estimate also counts every normal kill's gear drop sold
   (white 5 % / blue 2 % / gold 1 % at ×1 / ×3 / ×6, an upper bound) and repair
   at factor 1.00 ([item_tiers.md](item_tiers.md) §6.5); `income.py` prints
-  the change per band (−3.1 % at 1–10 to +1.5 % at 51–60). The table above
+  the change per band (−3.1 % at 1–10 to +1.5 % at 51–60). Since Round 78
+  the factor is 0.50 and `income.py` models it (+1.5 % to +2.7 % per band
+  against the Round 29 terms; the table above is still the 1.00 estimate);
+  every shipped price stays inside the check's corridor. The table above
   is the estimate with those terms; the prices below come from it.
 
   Round 46: with the coin bags and the 1/1 cloth (rulings 11, 12) and the

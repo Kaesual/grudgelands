@@ -386,8 +386,9 @@ local function pvp_section(fs, label)
 	has(fs, "There is no early unflag.", label .. ": the flag rule")
 end
 
--- Round 67 ruling 4a: the party box and the PvP card stacked on the left,
--- the online players' list at full height on the right. Controls must not
+-- Round 76 (four cards; Round 67 ruling 4a before): the party box top left
+-- (the clan card below it is tools/r76_social's), the online players' list
+-- top right and the PvP card below the list. Controls must not
 -- collide, including container offsets; decorative panels, row boxes,
 -- tooltip areas and the scroll area deliberately enclose them.
 local function layout(rects, label)
@@ -402,16 +403,20 @@ local function layout(rects, label)
 		if rect.kind == "label" and rect.text == "PvP status" then pvp_heading = rect end
 		if rect.kind == "table" or rect.kind == "textlist" then box_control = rect end
 	end
-	check(flag and flag.x + flag.w < 10, label .. ": PvP lives in the left column")
-	check(party_heading and pvp_heading and party_heading.x == pvp_heading.x and
-		party_heading.y + 5 < pvp_heading.y, label .. ": the party box, then PvP below it")
-	check(list_heading and list_heading.x > 10 and party_heading and
+	-- Round 76 fix round 1: the left column 8.6 wide, the right one from 9.0.
+	check(flag and flag.x > 8.8 and flag.x + flag.w < FRAME_W, label .. ": PvP lives in the right column")
+	check(list_heading and pvp_heading and list_heading.x == pvp_heading.x and
+		list_heading.y + 6 < pvp_heading.y, label .. ": the online list, then PvP below it")
+	check(list_heading and list_heading.x > 8.8 and party_heading and party_heading.x < 8.8 and
 		list_heading.y < party_heading.y, label .. ": the online list on the right, from the top")
 	if box_control then
-		check(box_control.x + box_control.w < 10 and box_control.y + box_control.h < pvp_heading.y,
+		-- The box ends 4.9 below its heading (the frame's header offset applies to both).
+		check(box_control.x + box_control.w < list_heading.x - 0.4 and
+			box_control.y + box_control.h < party_heading.y + 4.9,
 			label .. ": the party box's list stays in its box")
 	end
-	local skip = {background9 = true, box = true, tooltip = true}
+	-- The party rows' invisible pick buttons cover their row on purpose.
+	local skip = {background9 = true, box = true, tooltip = true, image_button = true}
 	local clash = false
 	for i, a in ipairs(rects) do
 		for j = i + 1, #rects do
@@ -452,19 +457,22 @@ has(out_fs, ";grug_party_health_colors;All green,By class;2;true]",
 has(out_fs, "Online Players (4)", "P out of a party: every online player, both factions")
 local function order(fs)
 	local names = {}
-	for name in fs:gmatch("label%[0%.65,[%d.]+;([^%]]*)%]") do names[#names + 1] = name end
+	for name in fs:gmatch("label%[1%.0,[%d.]+;([^%]]*)%]") do names[#names + 1] = name end
 	return table.concat(names, ",")
 end
 eq(order(out_fs), "alice (you),bob,cyd,dax", "P the list: own faction first, by name")
-has(out_fs, ";grug_social_inv_bob;Invite]", "P out of a party: Invite on an eligible row")
+-- Round 76: the party's invite button reads Party (beside Clan).
+has(out_fs, ";grug_social_inv_bob;Party]", "P out of a party: Party on an eligible row")
 lacks(out_fs, ";grug_social_inv_cyd;", "P no Invite for invitations off")
 lacks(out_fs, ";grug_social_inv_dax;", "P no Invite for an enemy")
 lacks(out_fs, "grug_party_refresh", "P no Refresh: the list refreshes itself")
 has(out_fs, grug_core.ui.heading(0.5, 1.2, "2 Pending Invitations"),
 	"P out of a party: the box counts the invitations")
-has(out_fs, "textlist[0.50,1.60;9.1,3.3;grug_party_pending;" ..
-	fs_escape("bob [Lv 12] (2/10, 50s)") .. "," .. fs_escape("cyd [Lv 11] (1/10, 20s)") ..
-	";1;true]", "P out of a party: the pending invitations")
+-- Round 76 fix round 2: invitations as rows (inviter, party size, level, seconds).
+has(out_fs, "grug_party_ipick_bob;", "P out of a party: bob's invitation row")
+has(out_fs, "label[3.85,0.27;2/10]", "P ...the size of bob's party")
+-- 0.76.1: the last column at 5.70 (was 5.95), room for the clan rows' Party button.
+has(out_fs, "label[5.70,0.87;20 s]", "P ...the seconds of cyd's")
 has(out_fs, ";grug_party_accept;Accept]", "P out of a party: Accept")
 has(out_fs, ";grug_party_decline;Decline]", "P out of a party: Decline")
 lacks(out_fs, "You are not in a party.", "P invitations instead of the hint")
@@ -473,8 +481,9 @@ lacks(out_fs, ";grug_party_leave;", "P out of a party: no Leave")
 pvp_section(out_fs, "P out of a party")
 has(out_fs, "Flagged: Contested Territory", "P the PvP headline")
 has(out_fs, "In PvP combat", "P the PvP combat line")
-has(out_fs, "label[9.00,2.80;9]", "P a counter value (guards 9, fourth row)")
-has(out_fs, "label[9.00,3.40;1]", "P a counter value (captains 1, fifth row)")
+-- Round 76 fix round 1: the PvP card 10.8 wide, its values at 10.1.
+has(out_fs, "label[10.10,2.80;9]", "P a counter value (guards 9, fourth row)")
+has(out_fs, "label[10.10,3.40;1]", "P a counter value (captains 1, fifth row)")
 layout(geometry(out_fs, "P out of a party"), "P out of a party")
 local bytes_out = #out_fs
 
@@ -491,9 +500,13 @@ local in_fs = alice.formspec
 formspec_ok(in_fs, "P in a party")
 no_inventory(in_fs, "P in a party")
 has(in_fs, grug_core.ui.heading(0.5, 1.2, "Current Party (3/10)"), "P in a party: the heading")
-has(in_fs, "table[0.50,1.60;9.1,3.3;grug_party_members;1," ..
-	fs_escape("* alice [Lv 12]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 12]  10/20 HP") ..
-	",0," .. fs_escape("cyd [Lv 11]  Offline") .. ";2]", "P in a party: the member table")
+-- Round 76 fix rounds 1 and 2: member rows in the list style (pick buttons, status).
+has(in_fs, "image_button[0,0.60;7.85,0.54;blank.png;grug_party_pick_bob;;false;false]",
+	"P in a party: a member row with its pick button")
+has(in_fs, "label[1.05,0.27;alice]", "P in a party: the own row, without (you)")
+has(in_fs, "label[5.70,0.87;" .. fs_escape(core.colorize("#b4dca4", "Online")) .. "]",
+	"P in a party: an online member's status")
+has(in_fs, "Offline", "P in a party: an offline member")
 has(in_fs, ";grug_party_kick;Kick]", "P in a party: Kick for the leader")
 has(in_fs, ";grug_party_transfer;Make leader]", "P in a party: Make leader for the leader")
 has(in_fs, ";grug_party_leave;Leave]", "P in a party: Leave")
@@ -526,7 +539,7 @@ local bob_context = sfinv.get_or_create_context(bob)
 sfinv.set_player_inventory_formspec(bob, bob_context)
 has(bob.formspec, grug_core.ui.heading(0.5, 1.2, "0 Pending Invitations"), "P no invitation: the count")
 has(bob.formspec, "You are not in a party.", "P no invitation: the hint")
-lacks(bob.formspec, ";grug_party_pending;", "P no selectable empty invitation row")
+lacks(bob.formspec, "grug_party_ipick_", "P no selectable empty invitation row")
 layout(geometry(bob.formspec, "P no invitations"), "P no invitations")
 pending_rows = saved_pending
 
@@ -542,14 +555,14 @@ local function last_call() return party_calls[#party_calls] end
 context.grug_party_member = "bob"
 submit(alice, {grug_social_inv_cyd = "Invite"})
 eq(last_call(), "invite:cyd", "B a row's Invite invites its player")
-submit(alice, {grug_party_pending = "CHG:2"})
-eq(context.grug_party_inviter, "cyd", "B the invitation list selects an inviter")
+submit(alice, {grug_party_ipick_cyd = ""})
+eq(context.grug_party_inviter, "cyd", "B an invitation row's click selects it")
 submit(alice, {grug_party_accept = "Accept"})
 eq(last_call(), "accept:cyd", "B Accept")
 submit(alice, {grug_party_decline = "Decline"})
 eq(last_call(), "decline:cyd", "B Decline")
-submit(alice, {grug_party_members = "CHG:3:2"})
-eq(context.grug_party_member, "cyd", "B the member table selects a member")
+submit(alice, {grug_party_pick_cyd = ""})
+eq(context.grug_party_member, "cyd", "B a member row's click selects it")
 submit(alice, {grug_party_kick = "Kick"})
 eq(last_call(), "kick:cyd", "B Kick")
 submit(alice, {grug_party_transfer = "Make leader"})

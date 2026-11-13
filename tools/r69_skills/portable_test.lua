@@ -414,6 +414,7 @@ env.dofile(ROOT .. "/mods/CORE/grug_core/status_icons.lua")
 env.dofile(ROOT .. "/mods/CORE/grug_core/area.lua")
 env.dofile(ROOT .. "/mods/PLAYER/grug_abilities/init.lua")
 env.dofile(ROOT .. "/mods/PLAYER/grug_classes/talent_windows.lua")
+dofile(ROOT .. "/tools/r78_armor/format_armor.lua")(ROOT) -- Round 78: ratings shown x10
 env.dofile(ROOT .. "/mods/PLAYER/grug_classes/talent_graph_ui.lua")
 setfenv(graph.level_amount, env) -- the graph loaded before the sandbox existed
 local G, C = env.grug_abilities, fake_classes

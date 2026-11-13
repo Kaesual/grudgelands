@@ -337,7 +337,8 @@ do
 		local remaining, maximum = grug_repair.durability(stack)
 		eq(maximum, lifetimes[tier], "W tier " .. tier .. " lifetime")
 		eq(remaining, maximum * 0.9, "W tier " .. tier .. " loses 10 % of the maximum")
-		eq(grug_repair.cost(stack), math.ceil(100 * 0.1), "W the quote prices the wear")
+		-- Round 78 ruling 3: the repair factor 0.5 (was 1.0).
+		eq(grug_repair.cost(stack), 5, "W the quote prices the wear (half of 10 % of 100)")
 		leave(p)
 	end
 

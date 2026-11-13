@@ -18,14 +18,12 @@ F role door_hidden
 G role floor
 H role flower else=air
 I role flower_alt else=air
-J role foundation
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
 M role light_wall o=wallmounted:2
 N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:4
 P role path
-Q role post
 R role roof_slab
 S role roof_stair
 T role roof_stair o=facedir:2
@@ -44,7 +42,9 @@ g role wall_accent
 h role wall_infill else=air
 i role window
 j role window o=facedir:3
-k role window_frame
+J role facade_home_base
+Q role facade_frame
+f role facade_infill
 end
 
 layer 0
@@ -61,61 +61,61 @@ layer 0
 |PPPPPPPPPPP|
 layer 1
 |.....I.IH..|
-|.QgEggkggk.|
-|.kA.....KC.|
+|.JgEggJggJ.|
+|.JA.....KC.|
 |.gB....Y.g.|
 |.gd..X...g.|
-|.ka..ee..k.|
-|Hk...W...k.|
+|.Ja..ee..J.|
+|HJ...W...J.|
 |Ig......Zg.|
 |Hg......bg.|
-|.kkggkkggk.|
+|.JJggJJggJ.|
 |.......c...|
 layer 2
 |...........|
-|.QhFQhkiik.|
-|.k......LC.|
+|.QhFfQfiiQ.|
+|.f......LC.|
 |.j.......j.|
 |.j.......j.|
-|.ka......k.|
-|.k.......k.|
+|.Qa......Q.|
+|.f.......f.|
 |.j......bj.|
 |.j.......j.|
-|.kkiikkiik.|
+|.QfiiQfiiQ.|
 |...........|
 layer 3
 |.O...O.....|
-|.QhhQhkiik.|
-|.k......CC.|
+|.QhhfQfiiQ.|
+|.f......CC.|
 |.j.......j.|
 |.j.......j.|
-|.kN.....Mk.|
-|.k.......k.|
+|.QN.....MQ.|
+|.f.......f.|
 |.j.......j.|
 |.j.......j.|
-|.kkiikkiik.|
+|.QfiiQfiiQ.|
 |...........|
 layer 4
 |SSSSSSSSSSS|
-|.QhhQhkQhk.|
-|.k......CC.|
-|.h.......h.|
+|.QQQQQQQQQ.|
+|.Q......CC.|
 |.Q.......Q.|
-|.k.......k.|
-|.k.......k.|
 |.Q.......Q.|
-|.h.......h.|
-|.kkhQkkQhk.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.Q.......Q.|
+|.QQQQQQQQQ.|
 |TTTTTTTTTTT|
 layer 5
 |...........|
 |SSSSSSSSSSS|
 |.h.......C.|
 |.h.......h.|
+|.f.......f.|
 |.Q.......Q.|
 |.h.......h.|
-|.h.......h.|
-|.Q.......Q.|
+|.f.......f.|
 |.h.......h.|
 |TTTTTTTTTTT|
 |...........|
@@ -124,10 +124,10 @@ layer 6
 |...........|
 |SSSSSSSSSCS|
 |.h.......h.|
+|.f.......f.|
 |.Q.......Q.|
 |.h.......h.|
-|.h.......h.|
-|.Q.......Q.|
+|.f.......f.|
 |TTTTTTTTTTT|
 |...........|
 |...........|
@@ -136,8 +136,8 @@ layer 7
 |...........|
 |.........C.|
 |SSSSSSSSSSS|
+|.f.......f.|
 |.Q.......Q.|
-|.h.......h.|
 |.h.......h.|
 |TTTTTTTTTTT|
 |...........|

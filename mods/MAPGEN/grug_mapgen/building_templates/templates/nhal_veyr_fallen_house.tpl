@@ -13,15 +13,15 @@ A node grug_nodes:bone_pile o=facedir:2
 B node grug_nodes:skull_human o=facedir:3
 C role cobweb else=air
 D role floor
-E role foundation
 F role grass_tuft
 G role ivy o=wallmounted:3 else=air
 H role ivy o=wallmounted:4 else=air
 I role path
-J role post
 K role rubble
 L role wall
 M role wall_accent
+E role facade_base
+J role facade_gable
 end
 
 layer 0

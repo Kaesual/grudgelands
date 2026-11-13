@@ -10,6 +10,32 @@
 # (multi-cell objects). Lane EDITOR extends it with what it finds.
 
 [roles]
+role facade_masonry
+role facade_monument_frame
+role facade_monument_band
+role facade_open_wood
+role facade_stone_slab
+role facade_stone_stair
+role facade_pillar_bottom
+role facade_pillar_middle
+role facade_pillar_top
+role facade_base
+role facade_home_base
+role facade_frame
+role facade_infill
+role facade_gable
+role facade_band
+role facade_rustic_infill
+role facade_roof_ridge
+role facade_roof_stair
+role facade_roof_stair_inner
+role facade_roof_stair_outer
+role facade_roof_slab
+role facade_service_roof_ridge
+role facade_service_roof_stair
+role facade_service_roof_stair_inner
+role facade_service_roof_stair_outer
+role facade_service_roof_slab
 role beam
 role bed
 role ceiling
@@ -165,6 +191,10 @@ node grug_decor:castle_stonewall
 node grug_decor:castle_stonewall_corner
 node grug_decor:cottages_loam
 node grug_decor:cottages_reet
+node grug_decor:cottages_reet_stair
+node grug_decor:cottages_reet_stair_inner
+node grug_decor:cottages_reet_stair_outer
+node grug_decor:cottages_reet_slab
 node grug_decor:cottages_slate_vertical
 node grug_decor:cottages_straw
 node grug_decor:cottages_straw_ground

@@ -15,13 +15,11 @@ C role door variant=_b
 D role door_hidden
 E role door_hidden o=facedir:3
 F role floor
-G role foundation
 H role ground_straw else=F
 I role light_wall o=wallmounted:2
 J role light_wall o=wallmounted:3
 K role light_wall o=wallmounted:4
 L role path
-M role post
 N role roof_slab
 O role roof_stair o=facedir:1
 P role roof_stair o=facedir:3
@@ -30,7 +28,9 @@ R role wall_accent
 S role wall_infill else=air
 T role window
 U role window o=facedir:3
-V role window_frame
+G role facade_base
+M role facade_frame
+V role facade_infill
 end
 
 layer 0
@@ -53,133 +53,133 @@ layer 0
 |LLLLLLLLLLLLL|
 layer 1
 |.............|
-|.MRRRRBCVRRV.|
-|.V.QQ...QQ.V.|
+|.GRRRRBCGRRG.|
+|.G.QQ...QQ.G.|
 |.RR.......RR.|
 |.RR.......RR.|
-|.VR.......RV.|
-|.VR.......RV.|
+|.GR.......RG.|
+|.GR.......RG.|
 |.RR.......RR.|
 |.RR.......RR.|
-|.VR.......RV.|
-|.VR.......RV.|
+|.GR.......RG.|
+|.GR.......RG.|
 |.RR.......RR.|
 |.RR.......RR.|
-|.VR.......RV.|
+|.GR.......RG.|
 |.R...A.A...R.|
-|.MVRRVVRRVRM.|
+|.GGRRGGRRGRG.|
 |.............|
 layer 2
 |.............|
-|.MSSMSDEVTTV.|
+|.MSSVMDEVTTM.|
+|.V.........V.|
+|.U.........U.|
+|.U.........U.|
+|.M.........M.|
 |.V.........V.|
 |.U.........U.|
 |.U.........U.|
 |.V.........V.|
-|.V.........V.|
-|.U.........U.|
-|.U.........U.|
-|.V.........V.|
-|.V.........V.|
+|.M.........M.|
 |.U.........U.|
 |.U.........U.|
 |.V.........V.|
 |.S.........S.|
-|.MVTTVVTTVMM.|
+|.MVTTVMTTVVM.|
 |.............|
 layer 3
 |....K...K....|
-|.MSSMSSMVTTV.|
+|.MSSVMSVVTTM.|
 |.V.........V.|
 |.U.........U.|
 |.U.........U.|
-|.VJ.......IV.|
+|.MJ.......IM.|
 |.V.........V.|
 |.U.........U.|
 |.U.........U.|
 |.V.........V.|
-|.V.........V.|
+|.M.........M.|
 |.U.........U.|
 |.U.........U.|
 |.VJ.......IV.|
 |.S.........S.|
-|.MVTTVVTTVMM.|
+|.MVTTVMTTVVM.|
 |.............|
 layer 4
 |.............|
-|.MSSMSSMVSMV.|
+|.MSSVMSVVSVM.|
 |.V.........V.|
 |.S.........S.|
+|.V.........V.|
 |.M.........M.|
 |.V.........V.|
 |.V.........V.|
+|.S.........S.|
+|.V.........V.|
 |.M.........M.|
 |.S.........S.|
-|.V.........V.|
-|.V.........V.|
-|.S.........S.|
 |.S.........S.|
 |.V.........V.|
 |.S.........S.|
-|.MVSMVVMSVMM.|
+|.MVSVVMVSVVM.|
 |.............|
 layer 5
 |............P|
-|.MSSMSSMVSMVP|
-|.V.........VP|
-|.S.........SP|
+|.MSSVMSVVSVMP|
+|.V.........GP|
+|.S.........GP|
+|.V.........GP|
 |.M.........MP|
-|.V.........VP|
-|.V.........VP|
+|.V.........GP|
+|.V.........GP|
+|.S.........GP|
+|.V.........GP|
 |.M.........MP|
-|.S.........SP|
-|.V.........VP|
-|.V.........VP|
-|.S.........SP|
-|.S.........SP|
-|.V.........VP|
-|.S.........SP|
-|.MVSMVVMSVMMP|
+|.S.........GP|
+|.S.........GP|
+|.V.........GP|
+|.S.........GP|
+|.MVSVVMVSVVMP|
 |............P|
 layer 6
 |...........P.|
-|.MSSMSSMSSMP.|
+|.MSSVMSVSSVP.|
+|.S.........P.|
+|.S.........P.|
+|.V.........P.|
+|.M.........P.|
+|.S.........P.|
+|.V.........P.|
 |.S.........P.|
 |.S.........P.|
 |.M.........P.|
 |.S.........P.|
 |.S.........P.|
-|.M.........P.|
+|.V.........P.|
 |.S.........P.|
-|.S.........P.|
-|.M.........P.|
-|.S.........P.|
-|.S.........P.|
-|.M.........P.|
-|.S.........P.|
-|.MSSMSSMSSMP.|
+|.MSSVSMVSSVP.|
 |...........P.|
 layer 7
 |O.........P..|
-|OMSSMSSMSSP..|
-|OS........P..|
-|OS........P..|
+|OMGGGMGGGGP..|
+|OG........P..|
+|OG........P..|
+|OG........P..|
 |OM........P..|
-|OS........P..|
-|OS........P..|
+|OG........P..|
+|OG........P..|
+|OG........P..|
+|OG........P..|
 |OM........P..|
-|OS........P..|
-|OS........P..|
-|OM........P..|
-|OS........P..|
-|OS........P..|
-|OM........P..|
-|OS........P..|
-|OMSSMSSMSSP..|
+|OG........P..|
+|OG........P..|
+|OG........P..|
+|OG........P..|
+|OMGGGGMGGGP..|
 |O.........P..|
 layer 8
 |.O.......P...|
-|.OSSMSSMSP...|
+|.OSSVMSVSP...|
 |.O.......P...|
 |.O.......P...|
 |.O.......P...|
@@ -193,11 +193,11 @@ layer 8
 |.O.......P...|
 |.O.......P...|
 |.O.......P...|
-|.OSSMSSMSP...|
+|.OSSVSMVSP...|
 |.O.......P...|
 layer 9
 |..O.....P....|
-|..OSMSSMP....|
+|..OSVMSVP....|
 |..O.....P....|
 |..O.....P....|
 |..O.....P....|
@@ -211,11 +211,11 @@ layer 9
 |..O.....P....|
 |..O.....P....|
 |..O.....P....|
-|..OSMSSMP....|
+|..OSVSMVP....|
 |..O.....P....|
 layer 10
 |...O...P.....|
-|...OMSSP.....|
+|...OVMSP.....|
 |...O...P.....|
 |...O...P.....|
 |...O...P.....|
@@ -229,7 +229,7 @@ layer 10
 |...O...P.....|
 |...O...P.....|
 |...O...P.....|
-|...OMSSP.....|
+|...OVSMP.....|
 |...O...P.....|
 layer 11
 |....NNN......|

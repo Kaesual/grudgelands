@@ -18,7 +18,6 @@ F role chimney_cap
 G role door variant=_a
 H role door_hidden
 I role floor
-J role foundation
 K role hearth o=facedir:1
 L role light_post o=wallmounted:1
 M role light_wall o=wallmounted:2
@@ -26,7 +25,6 @@ N role light_wall o=wallmounted:3
 O role light_wall o=wallmounted:4
 P role low_wall
 Q role path
-R role post
 S role roof_ridge
 T role roof_slab
 U role rug
@@ -45,7 +43,10 @@ h role wall_accent
 i role wall_infill else=air
 j role window
 k role window o=facedir:3
-l role window_frame
+J role facade_base
+R role facade_frame
+f role facade_infill
+l role facade_roof_ridge
 end
 
 layer 0
@@ -64,73 +65,73 @@ layer 0
 |QQQQQQQQQQQ|
 layer 1
 |.......AB..|
-|.RhGhhlhhl.|
-|.lC.....KE.|
+|.JhGhhJhhJ.|
+|.JC.....KE.|
 |.hD....Y.hA|
 |.hd......hB|
-|.la..X...lA|
-|.l...ee..l.|
+|.Ja..X...JA|
+|.J...ee..J.|
 |.h...W...h.|
 |.h.......h.|
-|gl......Zl.|
+|gJ......ZJ.|
 |gh......bh.|
-|.Rlhhllhhl.|
+|.JJhhJJhhJ.|
 |...........|
 layer 2
 |...........|
-|.RiHRiljjl.|
-|.l......LE.|
+|.RfHfifjjR.|
+|.f......LE.|
 |.k.......k.|
 |.k.......k.|
-|.la......l.|
-|.l.......l.|
+|.fa......f.|
+|.R.......R.|
 |.k.......k.|
 |.k.......k.|
-|gl......bl.|
-|gR.......R.|
-|.Rljjlljjl.|
+|gf......bf.|
+|gf.......f.|
+|.RfjjRfjjR.|
 |...........|
 layer 3
 |.O...O.....|
-|.RiiRiljjl.|
-|.l......EE.|
+|.RfffifjjR.|
+|.f......EE.|
 |.k.......k.|
 |.k.......k.|
-|.l.......l.|
-|.lN.....Ml.|
+|.f.......f.|
+|.RN.....MR.|
 |.k.......k.|
 |.k.......k.|
-|Tl.......l.|
-|TR.......R.|
-|.Rljjlljjl.|
+|Tf.......f.|
+|Tf.......f.|
+|.RfjjRfjjR.|
 |...........|
 layer 4
 |...........|
-|.RiiRilRil.|
-|.l......EE.|
-|.i.......i.|
+|.RJJJiJJJR.|
+|.J......EE.|
+|.J.......J.|
+|.J.......J.|
+|.J.......J.|
 |.R.......R.|
-|.l.......l.|
-|.l.......l.|
-|.R.......R.|
-|.i.......i.|
-|.l.......l.|
-|.R.......R.|
-|.RliRllRil.|
+|.J.......J.|
+|.J.......J.|
+|.J.......J.|
+|.J.......J.|
+|.RJJJRJJJR.|
 |...........|
 layer 5
 |SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSES|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
-|SSSSSSSSSSS|
+|SllllllllSS|
+|SlllllllSES|
+|SllllllllSS|
+|SlllllllllS|
+|SlllllllllS|
+|SlllllllllS|
+|SlllllllllS|
+|SlllllllllS|
+|SlllllllllS|
+|SlllllllllS|
+|SlllllllllS|
 |SSSSSSSSSSS|
 layer 6
 |PPPPPPPPPPP|

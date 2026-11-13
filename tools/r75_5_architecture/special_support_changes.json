@@ -1,0 +1,200 @@
+[
+  {
+    "id": "dur_brannoc/core/cistern_court",
+    "position": "-45:1:9",
+    "before": "default:stonebrick",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "dur_brannoc/core/market",
+    "position": "-40:1:-28",
+    "before": "default:stonebrick",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "gor_drazhak/core/bazaar_square",
+    "position": "-40:1:-28",
+    "before": "default:desert_stone_block",
+    "after": "default:desert_stonebrick"
+  },
+  {
+    "id": "gor_drazhak/core/cistern_court",
+    "position": "-45:1:9",
+    "before": "default:desert_stone_block",
+    "after": "default:desert_stonebrick"
+  },
+  {
+    "id": "gor_drazhak/core/warlord_hall",
+    "position": "-13:10:10",
+    "before": "grug_decor:darkage_adobe",
+    "after": "grug_decor:darkage_ors_block"
+  },
+  {
+    "id": "gor_drazhak/core/warlord_hall",
+    "position": "-3:2:10",
+    "before": "default:desert_stone_block",
+    "after": "default:desert_stonebrick"
+  },
+  {
+    "id": "gor_drazhak/core/warlord_hall",
+    "position": "-7:10:10",
+    "before": "grug_decor:darkage_adobe",
+    "after": "grug_decor:darkage_ors_block"
+  },
+  {
+    "id": "gor_drazhak/core/warlord_hall",
+    "position": "3:2:10",
+    "before": "default:desert_stone_block",
+    "after": "default:desert_stonebrick"
+  },
+  {
+    "id": "highcourt/core/kings_hall",
+    "position": "-13:10:10",
+    "before": "grug_decor:darkage_marble",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "highcourt/core/kings_hall",
+    "position": "-3:2:10",
+    "before": "default:cobble",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "highcourt/core/kings_hall",
+    "position": "-7:10:10",
+    "before": "grug_decor:darkage_marble",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "highcourt/core/kings_hall",
+    "position": "3:2:10",
+    "before": "default:cobble",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "highcourt/core/market",
+    "position": "-41:1:-31",
+    "before": "default:brick",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "highcourt/core/well_court",
+    "position": "-46:1:8",
+    "before": "default:brick",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "kezamba/core/kings_hall",
+    "position": "10:9:-52",
+    "before": "grug_decor:darkage_basalt",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "kezamba/core/kings_hall",
+    "position": "44:10:-52",
+    "before": "grug_decor:darkage_basalt",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "kezamba/core/moot_house",
+    "position": "-15:7:46",
+    "before": "grug_decor:darkage_basalt",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "kezamba/district/vine_moot",
+    "position": "5:3:-3",
+    "before": "grug_decor:castle_stonewall",
+    "after": "default:junglewood"
+  },
+  {
+    "id": "lethariel/core/fountain_court",
+    "position": "-44:1:8",
+    "before": "grug_decor:darkage_serpentine",
+    "after": "default:silver_sandstone_block"
+  },
+  {
+    "id": "lethariel/core/kings_hall",
+    "position": "-49:7:-50",
+    "before": "grug_decor:darkage_marble",
+    "after": "default:silver_sandstone_brick"
+  },
+  {
+    "id": "lethariel/core/kings_hall",
+    "position": "-51:7:-50",
+    "before": "grug_decor:darkage_marble",
+    "after": "default:silver_sandstone_brick"
+  },
+  {
+    "id": "lethariel/core/market",
+    "position": "14:1:-46",
+    "before": "grug_decor:darkage_serpentine",
+    "after": "default:silver_sandstone_block"
+  },
+  {
+    "id": "lethariel/district/homes_bough",
+    "position": "-2:9:-3",
+    "before": "grug_trees:silverwood_wood",
+    "after": "grug_decor:darkage_serpentine"
+  },
+  {
+    "id": "lethariel/district/homes_bough",
+    "position": "0:9:-3",
+    "before": "grug_trees:silverwood_wood",
+    "after": "grug_decor:darkage_serpentine"
+  },
+  {
+    "id": "nhal_veyr/core/cistern_court",
+    "position": "-45:1:9",
+    "before": "default:obsidianbrick",
+    "after": "default:mossycobble"
+  },
+  {
+    "id": "nhal_veyr/core/market",
+    "position": "-40:1:-28",
+    "before": "default:obsidianbrick",
+    "after": "default:mossycobble"
+  },
+  {
+    "id": "nhal_veyr/core/mausoleum",
+    "position": "-13:10:10",
+    "before": "default:obsidianbrick",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "nhal_veyr/core/mausoleum",
+    "position": "-3:2:10",
+    "before": "default:obsidianbrick",
+    "after": "default:mossycobble"
+  },
+  {
+    "id": "nhal_veyr/core/mausoleum",
+    "position": "-7:10:10",
+    "before": "default:obsidianbrick",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "nhal_veyr/core/mausoleum",
+    "position": "3:2:10",
+    "before": "default:obsidianbrick",
+    "after": "default:mossycobble"
+  },
+  {
+    "id": "nhal_veyr/district/market_charnel",
+    "position": "-3:5:-8",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/market_charnel",
+    "position": "-4:2:-8",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "sunscar/building/warlord_hall",
+    "position": "-1:2:21",
+    "before": "grug_decor:darkage_adobe",
+    "after": "grug_decor:darkage_ors_block"
+  }
+]

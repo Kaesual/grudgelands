@@ -1,0 +1,1389 @@
+{
+  "page_sha256": "a3e81fe96294b3ae670969e669f588917b400ba8fe9bbf1a4821158919199dba",
+  "checks": [
+    "All catalog buildings have two scenes",
+    "dawnmere__dawnmere_meeting_hall: same occupied geometry",
+    "dawnmere__dawnmere_meeting_hall: loaded textures",
+    "dawnmere__dawnmere_meeting_hall: selection and full height",
+    "dawnmere__dawnmere_meeting_hall: mouse camera coupling",
+    "dawnmere__dawnmere_meeting_hall: paired front",
+    "dawnmere__dawnmere_meeting_hall: paired gable",
+    "dawnmere__dawnmere_meeting_hall: paired back",
+    "dawnmere__dawnmere_meeting_hall: paired inside",
+    "dawnmere__dawnmere_meeting_hall: floor-relative cut",
+    "dawnmere__dawnmere_harvest_inn: same occupied geometry",
+    "dawnmere__dawnmere_harvest_inn: loaded textures",
+    "dawnmere__dawnmere_harvest_inn: selection and full height",
+    "dawnmere__dawnmere_great_barn: same occupied geometry",
+    "dawnmere__dawnmere_great_barn: loaded textures",
+    "dawnmere__dawnmere_great_barn: selection and full height",
+    "dawnmere__dawnmere_smithy: same occupied geometry",
+    "dawnmere__dawnmere_smithy: loaded textures",
+    "dawnmere__dawnmere_smithy: selection and full height",
+    "dawnmere__dawnmere_orchard_cottage: same occupied geometry",
+    "dawnmere__dawnmere_orchard_cottage: loaded textures",
+    "dawnmere__dawnmere_orchard_cottage: selection and full height",
+    "dawnmere__dawnmere_lane_cottage: same occupied geometry",
+    "dawnmere__dawnmere_lane_cottage: loaded textures",
+    "dawnmere__dawnmere_lane_cottage: selection and full height",
+    "dawnmere__dawnmere_green_cottage: same occupied geometry",
+    "dawnmere__dawnmere_green_cottage: loaded textures",
+    "dawnmere__dawnmere_green_cottage: selection and full height",
+    "dawnmere__dawnmere_field_cottage: same occupied geometry",
+    "dawnmere__dawnmere_field_cottage: loaded textures",
+    "dawnmere__dawnmere_field_cottage: selection and full height",
+    "hearthpine__hearthpine_forge_hall: same occupied geometry",
+    "hearthpine__hearthpine_forge_hall: loaded textures",
+    "hearthpine__hearthpine_forge_hall: selection and full height",
+    "hearthpine__hearthpine_forge_hall: mouse camera coupling",
+    "hearthpine__hearthpine_forge_hall: paired front",
+    "hearthpine__hearthpine_forge_hall: paired gable",
+    "hearthpine__hearthpine_forge_hall: paired back",
+    "hearthpine__hearthpine_forge_hall: paired inside",
+    "hearthpine__hearthpine_forge_hall: floor-relative cut",
+    "hearthpine__hearthpine_west_home: same occupied geometry",
+    "hearthpine__hearthpine_west_home: loaded textures",
+    "hearthpine__hearthpine_west_home: selection and full height",
+    "hearthpine__hearthpine_east_home: same occupied geometry",
+    "hearthpine__hearthpine_east_home: loaded textures",
+    "hearthpine__hearthpine_east_home: selection and full height",
+    "hearthpine__hearthpine_southwest_home: same occupied geometry",
+    "hearthpine__hearthpine_southwest_home: loaded textures",
+    "hearthpine__hearthpine_southwest_home: selection and full height",
+    "hearthpine__hearthpine_east_gable_home: same occupied geometry",
+    "hearthpine__hearthpine_east_gable_home: loaded textures",
+    "hearthpine__hearthpine_east_gable_home: selection and full height",
+    "hearthpine__hearthpine_lagerhouse: same occupied geometry",
+    "hearthpine__hearthpine_lagerhouse: loaded textures",
+    "hearthpine__hearthpine_lagerhouse: selection and full height",
+    "hearthpine__hearthpine_community_hall: same occupied geometry",
+    "hearthpine__hearthpine_community_hall: loaded textures",
+    "hearthpine__hearthpine_community_hall: selection and full height",
+    "kapok__kapok_spirit_lodge: same occupied geometry",
+    "kapok__kapok_spirit_lodge: loaded textures",
+    "kapok__kapok_spirit_lodge: selection and full height",
+    "kapok__kapok_spirit_lodge: mouse camera coupling",
+    "kapok__kapok_spirit_lodge: paired front",
+    "kapok__kapok_spirit_lodge: paired gable",
+    "kapok__kapok_spirit_lodge: paired back",
+    "kapok__kapok_spirit_lodge: paired inside",
+    "kapok__kapok_spirit_lodge: floor-relative cut",
+    "kapok__kapok_fish_smoker: same occupied geometry",
+    "kapok__kapok_fish_smoker: loaded textures",
+    "kapok__kapok_fish_smoker: selection and full height",
+    "kapok__kapok_fish_smoker: mouse camera coupling",
+    "kapok__kapok_fish_smoker: paired front",
+    "kapok__kapok_fish_smoker: paired gable",
+    "kapok__kapok_fish_smoker: paired back",
+    "kapok__kapok_fish_smoker: paired inside",
+    "kapok__kapok_fish_smoker: floor-relative cut",
+    "kapok__kapok_elder_stilt: same occupied geometry",
+    "kapok__kapok_elder_stilt: loaded textures",
+    "kapok__kapok_elder_stilt: selection and full height",
+    "kapok__kapok_elder_stilt: mouse camera coupling",
+    "kapok__kapok_elder_stilt: paired front",
+    "kapok__kapok_elder_stilt: paired gable",
+    "kapok__kapok_elder_stilt: paired back",
+    "kapok__kapok_elder_stilt: paired inside",
+    "kapok__kapok_elder_stilt: floor-relative cut",
+    "kapok__kapok_river_stilt: same occupied geometry",
+    "kapok__kapok_river_stilt: loaded textures",
+    "kapok__kapok_river_stilt: selection and full height",
+    "kapok__kapok_weaver_stilt: same occupied geometry",
+    "kapok__kapok_weaver_stilt: loaded textures",
+    "kapok__kapok_weaver_stilt: selection and full height",
+    "kapok__kapok_weaver_stilt: mouse camera coupling",
+    "kapok__kapok_weaver_stilt: paired front",
+    "kapok__kapok_weaver_stilt: paired gable",
+    "kapok__kapok_weaver_stilt: paired back",
+    "kapok__kapok_weaver_stilt: paired inside",
+    "kapok__kapok_weaver_stilt: floor-relative cut",
+    "kapok__kapok_reed_stilt: same occupied geometry",
+    "kapok__kapok_reed_stilt: loaded textures",
+    "kapok__kapok_reed_stilt: selection and full height",
+    "kapok__kapok_reed_stilt: mouse camera coupling",
+    "kapok__kapok_reed_stilt: paired front",
+    "kapok__kapok_reed_stilt: paired gable",
+    "kapok__kapok_reed_stilt: paired back",
+    "kapok__kapok_reed_stilt: paired inside",
+    "kapok__kapok_reed_stilt: floor-relative cut",
+    "silverleaf__silverleaf_lore_hall: same occupied geometry",
+    "silverleaf__silverleaf_lore_hall: loaded textures",
+    "silverleaf__silverleaf_lore_hall: selection and full height",
+    "silverleaf__silverleaf_lore_hall: mouse camera coupling",
+    "silverleaf__silverleaf_lore_hall: paired front",
+    "silverleaf__silverleaf_lore_hall: paired gable",
+    "silverleaf__silverleaf_lore_hall: paired back",
+    "silverleaf__silverleaf_lore_hall: paired inside",
+    "silverleaf__silverleaf_lore_hall: floor-relative cut",
+    "silverleaf__silverleaf_bowyer_workshop: same occupied geometry",
+    "silverleaf__silverleaf_bowyer_workshop: loaded textures",
+    "silverleaf__silverleaf_bowyer_workshop: selection and full height",
+    "silverleaf__silverleaf_terrace_house_west: same occupied geometry",
+    "silverleaf__silverleaf_terrace_house_west: loaded textures",
+    "silverleaf__silverleaf_terrace_house_west: selection and full height",
+    "silverleaf__silverleaf_terrace_house_east: same occupied geometry",
+    "silverleaf__silverleaf_terrace_house_east: loaded textures",
+    "silverleaf__silverleaf_terrace_house_east: selection and full height",
+    "silverleaf__silverleaf_glade_house_west: same occupied geometry",
+    "silverleaf__silverleaf_glade_house_west: loaded textures",
+    "silverleaf__silverleaf_glade_house_west: selection and full height",
+    "silverleaf__silverleaf_glade_house_east: same occupied geometry",
+    "silverleaf__silverleaf_glade_house_east: loaded textures",
+    "silverleaf__silverleaf_glade_house_east: selection and full height",
+    "stillgrave__stillgrave_bone_works: same occupied geometry",
+    "stillgrave__stillgrave_bone_works: loaded textures",
+    "stillgrave__stillgrave_bone_works: selection and full height",
+    "stillgrave__stillgrave_bone_works: mouse camera coupling",
+    "stillgrave__stillgrave_bone_works: paired front",
+    "stillgrave__stillgrave_bone_works: paired gable",
+    "stillgrave__stillgrave_bone_works: paired back",
+    "stillgrave__stillgrave_bone_works: paired inside",
+    "stillgrave__stillgrave_bone_works: floor-relative cut",
+    "stillgrave__stillgrave_keepers_house: same occupied geometry",
+    "stillgrave__stillgrave_keepers_house: loaded textures",
+    "stillgrave__stillgrave_keepers_house: selection and full height",
+    "stillgrave__stillgrave_warden_house: same occupied geometry",
+    "stillgrave__stillgrave_warden_house: loaded textures",
+    "stillgrave__stillgrave_warden_house: selection and full height",
+    "sunscar__sunscar_armoury: same occupied geometry",
+    "sunscar__sunscar_armoury: loaded textures",
+    "sunscar__sunscar_armoury: selection and full height",
+    "sunscar__sunscar_armoury: mouse camera coupling",
+    "sunscar__sunscar_armoury: paired front",
+    "sunscar__sunscar_armoury: paired gable",
+    "sunscar__sunscar_armoury: paired back",
+    "sunscar__sunscar_armoury: paired inside",
+    "sunscar__sunscar_armoury: floor-relative cut",
+    "sunscar__sunscar_chief_lodge: same occupied geometry",
+    "sunscar__sunscar_chief_lodge: loaded textures",
+    "sunscar__sunscar_chief_lodge: selection and full height",
+    "sunscar__sunscar_spear_lodge: same occupied geometry",
+    "sunscar__sunscar_spear_lodge: loaded textures",
+    "sunscar__sunscar_spear_lodge: selection and full height",
+    "sunscar__sunscar_tusk_lodge: same occupied geometry",
+    "sunscar__sunscar_tusk_lodge: loaded textures",
+    "sunscar__sunscar_tusk_lodge: selection and full height",
+    "sunscar__sunscar_bone_lodge: same occupied geometry",
+    "sunscar__sunscar_bone_lodge: loaded textures",
+    "sunscar__sunscar_bone_lodge: selection and full height",
+    "sunscar__sunscar_bone_lodge: mouse camera coupling",
+    "sunscar__sunscar_bone_lodge: paired front",
+    "sunscar__sunscar_bone_lodge: paired gable",
+    "sunscar__sunscar_bone_lodge: paired back",
+    "sunscar__sunscar_bone_lodge: paired inside",
+    "sunscar__sunscar_bone_lodge: floor-relative cut",
+    "dur_brannoc__dur_brannoc_great_forge: same occupied geometry",
+    "dur_brannoc__dur_brannoc_great_forge: loaded textures",
+    "dur_brannoc__dur_brannoc_great_forge: selection and full height",
+    "dur_brannoc__dur_brannoc_masons_guild: same occupied geometry",
+    "dur_brannoc__dur_brannoc_masons_guild: loaded textures",
+    "dur_brannoc__dur_brannoc_masons_guild: selection and full height",
+    "dur_brannoc__dur_brannoc_market_house: same occupied geometry",
+    "dur_brannoc__dur_brannoc_market_house: loaded textures",
+    "dur_brannoc__dur_brannoc_market_house: selection and full height",
+    "dur_brannoc__dur_brannoc_south_house: same occupied geometry",
+    "dur_brannoc__dur_brannoc_south_house: loaded textures",
+    "dur_brannoc__dur_brannoc_south_house: selection and full height",
+    "dur_brannoc__dur_brannoc_lane_house: same occupied geometry",
+    "dur_brannoc__dur_brannoc_lane_house: loaded textures",
+    "dur_brannoc__dur_brannoc_lane_house: selection and full height",
+    "dur_brannoc__dur_brannoc_plaza_house: same occupied geometry",
+    "dur_brannoc__dur_brannoc_plaza_house: loaded textures",
+    "dur_brannoc__dur_brannoc_plaza_house: selection and full height",
+    "dur_brannoc__dur_brannoc_forge_charcoal: same occupied geometry",
+    "dur_brannoc__dur_brannoc_forge_charcoal: loaded textures",
+    "dur_brannoc__dur_brannoc_forge_charcoal: selection and full height",
+    "dur_brannoc__dur_brannoc_forge_smithy: same occupied geometry",
+    "dur_brannoc__dur_brannoc_forge_smithy: loaded textures",
+    "dur_brannoc__dur_brannoc_forge_smithy: selection and full height",
+    "dur_brannoc__dur_brannoc_forge_guild_house: same occupied geometry",
+    "dur_brannoc__dur_brannoc_forge_guild_house: loaded textures",
+    "dur_brannoc__dur_brannoc_forge_guild_house: selection and full height",
+    "dur_brannoc__dur_brannoc_forge_ore_yard: same occupied geometry",
+    "dur_brannoc__dur_brannoc_forge_ore_yard: loaded textures",
+    "dur_brannoc__dur_brannoc_forge_ore_yard: selection and full height",
+    "dur_brannoc__dur_brannoc_forge_store: same occupied geometry",
+    "dur_brannoc__dur_brannoc_forge_store: loaded textures",
+    "dur_brannoc__dur_brannoc_forge_store: selection and full height",
+    "dur_brannoc__dur_brannoc_garrison_armoury: same occupied geometry",
+    "dur_brannoc__dur_brannoc_garrison_armoury: loaded textures",
+    "dur_brannoc__dur_brannoc_garrison_armoury: selection and full height",
+    "dur_brannoc__dur_brannoc_garrison_stable: same occupied geometry",
+    "dur_brannoc__dur_brannoc_garrison_stable: loaded textures",
+    "dur_brannoc__dur_brannoc_garrison_stable: selection and full height",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: same occupied geometry",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: loaded textures",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: selection and full height",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: mouse camera coupling",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: paired front",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: paired gable",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: paired back",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: paired inside",
+    "dur_brannoc__dur_brannoc_deep_hall_of_record: floor-relative cut",
+    "dur_brannoc__dur_brannoc_deep_scriptorium: same occupied geometry",
+    "dur_brannoc__dur_brannoc_deep_scriptorium: loaded textures",
+    "dur_brannoc__dur_brannoc_deep_scriptorium: selection and full height",
+    "dur_brannoc__dur_brannoc_deep_memory_hall: same occupied geometry",
+    "dur_brannoc__dur_brannoc_deep_memory_hall: loaded textures",
+    "dur_brannoc__dur_brannoc_deep_memory_hall: selection and full height",
+    "dur_brannoc__dur_brannoc_terrace_alehouse: same occupied geometry",
+    "dur_brannoc__dur_brannoc_terrace_alehouse: loaded textures",
+    "dur_brannoc__dur_brannoc_terrace_alehouse: selection and full height",
+    "dur_brannoc__dur_brannoc_terrace_bakehouse: same occupied geometry",
+    "dur_brannoc__dur_brannoc_terrace_bakehouse: loaded textures",
+    "dur_brannoc__dur_brannoc_terrace_bakehouse: selection and full height",
+    "dur_brannoc__dur_brannoc_terrace_long_house: same occupied geometry",
+    "dur_brannoc__dur_brannoc_terrace_long_house: loaded textures",
+    "dur_brannoc__dur_brannoc_terrace_long_house: selection and full height",
+    "dur_brannoc__dur_brannoc_terrace_cottage_west: same occupied geometry",
+    "dur_brannoc__dur_brannoc_terrace_cottage_west: loaded textures",
+    "dur_brannoc__dur_brannoc_terrace_cottage_west: selection and full height",
+    "dur_brannoc__dur_brannoc_terrace_cottage_east: same occupied geometry",
+    "dur_brannoc__dur_brannoc_terrace_cottage_east: loaded textures",
+    "dur_brannoc__dur_brannoc_terrace_cottage_east: selection and full height",
+    "gor_drazhak__gor_drazhak_host_store: same occupied geometry",
+    "gor_drazhak__gor_drazhak_host_store: loaded textures",
+    "gor_drazhak__gor_drazhak_host_store: selection and full height",
+    "gor_drazhak__gor_drazhak_council_house: same occupied geometry",
+    "gor_drazhak__gor_drazhak_council_house: loaded textures",
+    "gor_drazhak__gor_drazhak_council_house: selection and full height",
+    "gor_drazhak__gor_drazhak_bazaar_house: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bazaar_house: loaded textures",
+    "gor_drazhak__gor_drazhak_bazaar_house: selection and full height",
+    "gor_drazhak__gor_drazhak_south_house: same occupied geometry",
+    "gor_drazhak__gor_drazhak_south_house: loaded textures",
+    "gor_drazhak__gor_drazhak_south_house: selection and full height",
+    "gor_drazhak__gor_drazhak_lane_house: same occupied geometry",
+    "gor_drazhak__gor_drazhak_lane_house: loaded textures",
+    "gor_drazhak__gor_drazhak_lane_house: selection and full height",
+    "gor_drazhak__gor_drazhak_bazaar_butcher: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bazaar_butcher: loaded textures",
+    "gor_drazhak__gor_drazhak_bazaar_butcher: selection and full height",
+    "gor_drazhak__gor_drazhak_bazaar_butcher__25d617: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bazaar_butcher__25d617: loaded textures",
+    "gor_drazhak__gor_drazhak_bazaar_butcher__25d617: selection and full height",
+    "gor_drazhak__gor_drazhak_bazaar_armourer: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bazaar_armourer: loaded textures",
+    "gor_drazhak__gor_drazhak_bazaar_armourer: selection and full height",
+    "gor_drazhak__gor_drazhak_bazaar_store: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bazaar_store: loaded textures",
+    "gor_drazhak__gor_drazhak_bazaar_store: selection and full height",
+    "gor_drazhak__gor_drazhak_bazaar_carver: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bazaar_carver: loaded textures",
+    "gor_drazhak__gor_drazhak_bazaar_carver: selection and full height",
+    "gor_drazhak__gor_drazhak_plot_bazaar_house: same occupied geometry",
+    "gor_drazhak__gor_drazhak_plot_bazaar_house: loaded textures",
+    "gor_drazhak__gor_drazhak_plot_bazaar_house: selection and full height",
+    "gor_drazhak__gor_drazhak_war_armoury: same occupied geometry",
+    "gor_drazhak__gor_drazhak_war_armoury: loaded textures",
+    "gor_drazhak__gor_drazhak_war_armoury: selection and full height",
+    "gor_drazhak__gor_drazhak_bone_reader_hall: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bone_reader_hall: loaded textures",
+    "gor_drazhak__gor_drazhak_bone_reader_hall: selection and full height",
+    "gor_drazhak__gor_drazhak_bone_herb_house: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bone_herb_house: loaded textures",
+    "gor_drazhak__gor_drazhak_bone_herb_house: selection and full height",
+    "gor_drazhak__gor_drazhak_bone_store: same occupied geometry",
+    "gor_drazhak__gor_drazhak_bone_store: loaded textures",
+    "gor_drazhak__gor_drazhak_bone_store: selection and full height",
+    "gor_drazhak__gor_drazhak_warren_clan_house: same occupied geometry",
+    "gor_drazhak__gor_drazhak_warren_clan_house: loaded textures",
+    "gor_drazhak__gor_drazhak_warren_clan_house: selection and full height",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: same occupied geometry",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: loaded textures",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: selection and full height",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: mouse camera coupling",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: paired front",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: paired gable",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: paired back",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: paired inside",
+    "gor_drazhak__gor_drazhak_warren_round_lodge: floor-relative cut",
+    "gor_drazhak__gor_drazhak_warren_house_spear: same occupied geometry",
+    "gor_drazhak__gor_drazhak_warren_house_spear: loaded textures",
+    "gor_drazhak__gor_drazhak_warren_house_spear: selection and full height",
+    "gor_drazhak__gor_drazhak_warren_house_tusk: same occupied geometry",
+    "gor_drazhak__gor_drazhak_warren_house_tusk: loaded textures",
+    "gor_drazhak__gor_drazhak_warren_house_tusk: selection and full height",
+    "gor_drazhak__gor_drazhak_warren_house_bone: same occupied geometry",
+    "gor_drazhak__gor_drazhak_warren_house_bone: loaded textures",
+    "gor_drazhak__gor_drazhak_warren_house_bone: selection and full height",
+    "gor_drazhak__gor_drazhak_warren_store: same occupied geometry",
+    "gor_drazhak__gor_drazhak_warren_store: loaded textures",
+    "gor_drazhak__gor_drazhak_warren_store: selection and full height",
+    "highcourt__highcourt_service_store: same occupied geometry",
+    "highcourt__highcourt_service_store: loaded textures",
+    "highcourt__highcourt_service_store: selection and full height",
+    "highcourt__highcourt_city_workshop: same occupied geometry",
+    "highcourt__highcourt_city_workshop: loaded textures",
+    "highcourt__highcourt_city_workshop: selection and full height",
+    "highcourt__highcourt_north_house: same occupied geometry",
+    "highcourt__highcourt_north_house: loaded textures",
+    "highcourt__highcourt_north_house: selection and full height",
+    "highcourt__highcourt_lane_house: same occupied geometry",
+    "highcourt__highcourt_lane_house: loaded textures",
+    "highcourt__highcourt_lane_house: selection and full height",
+    "highcourt__highcourt_orchard_house: same occupied geometry",
+    "highcourt__highcourt_orchard_house: loaded textures",
+    "highcourt__highcourt_orchard_house: selection and full height",
+    "highcourt__highcourt_market_house: same occupied geometry",
+    "highcourt__highcourt_market_house: loaded textures",
+    "highcourt__highcourt_market_house: selection and full height",
+    "highcourt__highcourt_market_granary: same occupied geometry",
+    "highcourt__highcourt_market_granary: loaded textures",
+    "highcourt__highcourt_market_granary: selection and full height",
+    "highcourt__highcourt_market_workshop: same occupied geometry",
+    "highcourt__highcourt_market_workshop: loaded textures",
+    "highcourt__highcourt_market_workshop: selection and full height",
+    "highcourt__highcourt_market_counting_house: same occupied geometry",
+    "highcourt__highcourt_market_counting_house: loaded textures",
+    "highcourt__highcourt_market_counting_house: selection and full height",
+    "highcourt__highcourt_market_store: same occupied geometry",
+    "highcourt__highcourt_market_store: loaded textures",
+    "highcourt__highcourt_market_store: selection and full height",
+    "highcourt__highcourt_martial_armoury: same occupied geometry",
+    "highcourt__highcourt_martial_armoury: loaded textures",
+    "highcourt__highcourt_martial_armoury: selection and full height",
+    "highcourt__highcourt_martial_stables: same occupied geometry",
+    "highcourt__highcourt_martial_stables: loaded textures",
+    "highcourt__highcourt_martial_stables: selection and full height",
+    "highcourt__highcourt_lore_library: same occupied geometry",
+    "highcourt__highcourt_lore_library: loaded textures",
+    "highcourt__highcourt_lore_library: selection and full height",
+    "highcourt__highcourt_lore_scriptorium: same occupied geometry",
+    "highcourt__highcourt_lore_scriptorium: loaded textures",
+    "highcourt__highcourt_lore_scriptorium: selection and full height",
+    "highcourt__highcourt_lore_archive: same occupied geometry",
+    "highcourt__highcourt_lore_archive: loaded textures",
+    "highcourt__highcourt_lore_archive: selection and full height",
+    "highcourt__highcourt_lore_chapter_house: same occupied geometry",
+    "highcourt__highcourt_lore_chapter_house: loaded textures",
+    "highcourt__highcourt_lore_chapter_house: selection and full height",
+    "highcourt__highcourt_lore_almonry: same occupied geometry",
+    "highcourt__highcourt_lore_almonry: loaded textures",
+    "highcourt__highcourt_lore_almonry: selection and full height",
+    "highcourt__highcourt_homes_tavern: same occupied geometry",
+    "highcourt__highcourt_homes_tavern: loaded textures",
+    "highcourt__highcourt_homes_tavern: selection and full height",
+    "highcourt__highcourt_homes_house_gable: same occupied geometry",
+    "highcourt__highcourt_homes_house_gable: loaded textures",
+    "highcourt__highcourt_homes_house_gable: selection and full height",
+    "highcourt__highcourt_homes_house_hip: same occupied geometry",
+    "highcourt__highcourt_homes_house_hip: loaded textures",
+    "highcourt__highcourt_homes_house_hip: selection and full height",
+    "highcourt__highcourt_homes_house_lane: same occupied geometry",
+    "highcourt__highcourt_homes_house_lane: loaded textures",
+    "highcourt__highcourt_homes_house_lane: selection and full height",
+    "highcourt__highcourt_homes_tenement: same occupied geometry",
+    "highcourt__highcourt_homes_tenement: loaded textures",
+    "highcourt__highcourt_homes_tenement: selection and full height",
+    "highcourt__highcourt_homes_bakehouse: same occupied geometry",
+    "highcourt__highcourt_homes_bakehouse: loaded textures",
+    "highcourt__highcourt_homes_bakehouse: selection and full height",
+    "kezamba__kezamba_granary: same occupied geometry",
+    "kezamba__kezamba_granary: loaded textures",
+    "kezamba__kezamba_granary: selection and full height",
+    "kezamba__kezamba_stable: same occupied geometry",
+    "kezamba__kezamba_stable: loaded textures",
+    "kezamba__kezamba_stable: selection and full height",
+    "kezamba__kezamba_lane_house: same occupied geometry",
+    "kezamba__kezamba_lane_house: loaded textures",
+    "kezamba__kezamba_lane_house: selection and full height",
+    "kezamba__kezamba_west_house: same occupied geometry",
+    "kezamba__kezamba_west_house: loaded textures",
+    "kezamba__kezamba_west_house: selection and full height",
+    "kezamba__kezamba_shore_house: same occupied geometry",
+    "kezamba__kezamba_shore_house: loaded textures",
+    "kezamba__kezamba_shore_house: selection and full height",
+    "kezamba__kezamba_shore_butcher: same occupied geometry",
+    "kezamba__kezamba_shore_butcher: loaded textures",
+    "kezamba__kezamba_shore_butcher: selection and full height",
+    "kezamba__kezamba_shore_tailor: same occupied geometry",
+    "kezamba__kezamba_shore_tailor: loaded textures",
+    "kezamba__kezamba_shore_tailor: selection and full height",
+    "kezamba__kezamba_shore_store: same occupied geometry",
+    "kezamba__kezamba_shore_store: loaded textures",
+    "kezamba__kezamba_shore_store: selection and full height",
+    "kezamba__kezamba_plot_shore_house: same occupied geometry",
+    "kezamba__kezamba_plot_shore_house: loaded textures",
+    "kezamba__kezamba_plot_shore_house: selection and full height",
+    "kezamba__kezamba_vine_house_a: same occupied geometry",
+    "kezamba__kezamba_vine_house_a: loaded textures",
+    "kezamba__kezamba_vine_house_a: selection and full height",
+    "kezamba__kezamba_vine_house_b: same occupied geometry",
+    "kezamba__kezamba_vine_house_b: loaded textures",
+    "kezamba__kezamba_vine_house_b: selection and full height",
+    "kezamba__kezamba_vine_house_c: same occupied geometry",
+    "kezamba__kezamba_vine_house_c: loaded textures",
+    "kezamba__kezamba_vine_house_c: selection and full height",
+    "kezamba__kezamba_vine_house_d: same occupied geometry",
+    "kezamba__kezamba_vine_house_d: loaded textures",
+    "kezamba__kezamba_vine_house_d: selection and full height",
+    "kezamba__kezamba_vine_herbalist: same occupied geometry",
+    "kezamba__kezamba_vine_herbalist: loaded textures",
+    "kezamba__kezamba_vine_herbalist: selection and full height",
+    "kezamba__kezamba_totem_scriptorium: same occupied geometry",
+    "kezamba__kezamba_totem_scriptorium: loaded textures",
+    "kezamba__kezamba_totem_scriptorium: selection and full height",
+    "lethariel__dur_brannoc_market_house: same occupied geometry",
+    "lethariel__dur_brannoc_market_house: loaded textures",
+    "lethariel__dur_brannoc_market_house: selection and full height",
+    "lethariel__dur_brannoc_south_house: same occupied geometry",
+    "lethariel__dur_brannoc_south_house: loaded textures",
+    "lethariel__dur_brannoc_south_house: selection and full height",
+    "lethariel__dur_brannoc_lane_house: same occupied geometry",
+    "lethariel__dur_brannoc_lane_house: loaded textures",
+    "lethariel__dur_brannoc_lane_house: selection and full height",
+    "lethariel__dur_brannoc_plaza_house: same occupied geometry",
+    "lethariel__dur_brannoc_plaza_house: loaded textures",
+    "lethariel__dur_brannoc_plaza_house: selection and full height",
+    "lethariel__lethariel_market_granary: same occupied geometry",
+    "lethariel__lethariel_market_granary: loaded textures",
+    "lethariel__lethariel_market_granary: selection and full height",
+    "lethariel__lethariel_market_bowyer: same occupied geometry",
+    "lethariel__lethariel_market_bowyer: loaded textures",
+    "lethariel__lethariel_market_bowyer: selection and full height",
+    "lethariel__lethariel_market_weaver: same occupied geometry",
+    "lethariel__lethariel_market_weaver: loaded textures",
+    "lethariel__lethariel_market_weaver: selection and full height",
+    "lethariel__lethariel_market_bakehouse: same occupied geometry",
+    "lethariel__lethariel_market_bakehouse: loaded textures",
+    "lethariel__lethariel_market_bakehouse: selection and full height",
+    "lethariel__lethariel_martial_hall: same occupied geometry",
+    "lethariel__lethariel_martial_hall: loaded textures",
+    "lethariel__lethariel_martial_hall: selection and full height",
+    "lethariel__lethariel_martial_stable: same occupied geometry",
+    "lethariel__lethariel_martial_stable: loaded textures",
+    "lethariel__lethariel_martial_stable: selection and full height",
+    "lethariel__lethariel_martial_store: same occupied geometry",
+    "lethariel__lethariel_martial_store: loaded textures",
+    "lethariel__lethariel_martial_store: selection and full height",
+    "lethariel__lethariel_martial_lodge: same occupied geometry",
+    "lethariel__lethariel_martial_lodge: loaded textures",
+    "lethariel__lethariel_martial_lodge: selection and full height",
+    "lethariel__lethariel_mere_lore_hall: same occupied geometry",
+    "lethariel__lethariel_mere_lore_hall: loaded textures",
+    "lethariel__lethariel_mere_lore_hall: selection and full height",
+    "lethariel__lethariel_homes_terrace_east: same occupied geometry",
+    "lethariel__lethariel_homes_terrace_east: loaded textures",
+    "lethariel__lethariel_homes_terrace_east: selection and full height",
+    "lethariel__lethariel_homes_longhouse: same occupied geometry",
+    "lethariel__lethariel_homes_longhouse: loaded textures",
+    "lethariel__lethariel_homes_longhouse: selection and full height",
+    "lethariel__lethariel_homes_feast_hall: same occupied geometry",
+    "lethariel__lethariel_homes_feast_hall: loaded textures",
+    "lethariel__lethariel_homes_feast_hall: selection and full height",
+    "nhal_veyr__dur_brannoc_great_forge: same occupied geometry",
+    "nhal_veyr__dur_brannoc_great_forge: loaded textures",
+    "nhal_veyr__dur_brannoc_great_forge: selection and full height",
+    "nhal_veyr__nhal_veyr_bonesmith_guild: same occupied geometry",
+    "nhal_veyr__nhal_veyr_bonesmith_guild: loaded textures",
+    "nhal_veyr__nhal_veyr_bonesmith_guild: selection and full height",
+    "nhal_veyr__dur_brannoc_market_house: same occupied geometry",
+    "nhal_veyr__dur_brannoc_market_house: loaded textures",
+    "nhal_veyr__dur_brannoc_market_house: selection and full height",
+    "nhal_veyr__dur_brannoc_south_house: same occupied geometry",
+    "nhal_veyr__dur_brannoc_south_house: loaded textures",
+    "nhal_veyr__dur_brannoc_south_house: selection and full height",
+    "nhal_veyr__nhal_veyr_lane_house: same occupied geometry",
+    "nhal_veyr__nhal_veyr_lane_house: loaded textures",
+    "nhal_veyr__nhal_veyr_lane_house: selection and full height",
+    "nhal_veyr__dur_brannoc_plaza_house: same occupied geometry",
+    "nhal_veyr__dur_brannoc_plaza_house: loaded textures",
+    "nhal_veyr__dur_brannoc_plaza_house: selection and full height",
+    "nhal_veyr__nhal_veyr_market_bone_store: same occupied geometry",
+    "nhal_veyr__nhal_veyr_market_bone_store: loaded textures",
+    "nhal_veyr__nhal_veyr_market_bone_store: selection and full height",
+    "nhal_veyr__nhal_veyr_market_bonesmith: same occupied geometry",
+    "nhal_veyr__nhal_veyr_market_bonesmith: loaded textures",
+    "nhal_veyr__nhal_veyr_market_bonesmith: selection and full height",
+    "nhal_veyr__nhal_veyr_market_shroud_house: same occupied geometry",
+    "nhal_veyr__nhal_veyr_market_shroud_house: loaded textures",
+    "nhal_veyr__nhal_veyr_market_shroud_house: selection and full height",
+    "nhal_veyr__nhal_veyr_market_physic: same occupied geometry",
+    "nhal_veyr__nhal_veyr_market_physic: loaded textures",
+    "nhal_veyr__nhal_veyr_market_physic: selection and full height",
+    "nhal_veyr__nhal_veyr_vigil_scriptorium: same occupied geometry",
+    "nhal_veyr__nhal_veyr_vigil_scriptorium: loaded textures",
+    "nhal_veyr__nhal_veyr_vigil_scriptorium: selection and full height",
+    "nhal_veyr__nhal_veyr_homes_lane_house: same occupied geometry",
+    "nhal_veyr__nhal_veyr_homes_lane_house: loaded textures",
+    "nhal_veyr__nhal_veyr_homes_lane_house: selection and full height",
+    "nhal_veyr__nhal_veyr_homes_terrace_house: same occupied geometry",
+    "nhal_veyr__nhal_veyr_homes_terrace_house: loaded textures",
+    "nhal_veyr__nhal_veyr_homes_terrace_house: selection and full height",
+    "nhal_veyr__nhal_veyr_homes_corner_house: same occupied geometry",
+    "nhal_veyr__nhal_veyr_homes_corner_house: loaded textures",
+    "nhal_veyr__nhal_veyr_homes_corner_house: selection and full height",
+    "Phone width: no overflow",
+    "Phone starts on proposal",
+    "Phone switches to original",
+    "Culture navigation selects an elf building",
+    "Building dropdown changes the selection",
+    "Direct link restores selection",
+    "No browser JavaScript exceptions"
+  ],
+  "captures": [
+    {
+      "file": "captures/dawnmere__dawnmere_meeting_hall.png",
+      "sha256": "2f64db2390c5093b61aafb1a24fe24fdc2a1bb6e925abf7a64b3027567082349",
+      "building": "dawnmere__dawnmere_meeting_hall"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_meeting_hall-pair.png",
+      "sha256": "dd98f4d75ff6f3bb510a7b89cd54f0739ff641a3ccd0a2f3e257535150063261",
+      "building": "dawnmere__dawnmere_meeting_hall"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_harvest_inn.png",
+      "sha256": "6126584316de26ff4a9a6667d83a2164c3dd5660e7b20ddde9511be038b58c4a",
+      "building": "dawnmere__dawnmere_harvest_inn"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_harvest_inn-pair.png",
+      "sha256": "f7fe3c3dd637959f6b6d0b56dea450253e9e54726d563074e7bc734b80a5a0e2",
+      "building": "dawnmere__dawnmere_harvest_inn"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_great_barn.png",
+      "sha256": "06404f7defd43de9dcb38f0d5dfb5b53f5d38e2000634102cedceddb06cf0220",
+      "building": "dawnmere__dawnmere_great_barn"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_smithy.png",
+      "sha256": "3d5551a17c82cf6878a9cc8f8dab3ff14d395da8596bd27a7231b471ddccb902",
+      "building": "dawnmere__dawnmere_smithy"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_smithy-pair.png",
+      "sha256": "0a6a7e83bf2381b39a37915d685d9a9d395e5f5bbfa1d2bddb1d1b64392b6679",
+      "building": "dawnmere__dawnmere_smithy"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_orchard_cottage.png",
+      "sha256": "240afc267c93552e645c9a0ea4c60e47dd35910e965c8245726a44faa8e02460",
+      "building": "dawnmere__dawnmere_orchard_cottage"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_lane_cottage.png",
+      "sha256": "67eb5fa806cb85016a3e34ec16d1c6959ae3a4bead21a47dbe9d42d7fa5a3836",
+      "building": "dawnmere__dawnmere_lane_cottage"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_lane_cottage-pair.png",
+      "sha256": "089b14428e785548f12bb39e5fe39ca7fd8043efb058ec827036e37756bae322",
+      "building": "dawnmere__dawnmere_lane_cottage"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_green_cottage.png",
+      "sha256": "803f257ebde225de3d5259f45922efe6391354166cc502a8d22b5c1f66430c8d",
+      "building": "dawnmere__dawnmere_green_cottage"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_field_cottage.png",
+      "sha256": "2f61f5e3dbfa43b4d7db63e056d91977a5ffbeccc005c2f1ef5a6f7db3ab3b14",
+      "building": "dawnmere__dawnmere_field_cottage"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_forge_hall.png",
+      "sha256": "5322f8cdac7a6fa4905a3b71b7484f8dfc8b1d05d973c450acc8ad719df1a984",
+      "building": "hearthpine__hearthpine_forge_hall"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_forge_hall-pair.png",
+      "sha256": "bda622e64b4d7843ff2e7385369477859a15b2cf797af4cde104db857b37a17d",
+      "building": "hearthpine__hearthpine_forge_hall"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_west_home.png",
+      "sha256": "471e6d424f7c548357300f57450f637ed575bb9056a6e184f087d443c583b8eb",
+      "building": "hearthpine__hearthpine_west_home"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_west_home-pair.png",
+      "sha256": "1e0d9423a788846f3bf3bd587403f52f105eb25c04ed9fd4281c8f86f635d570",
+      "building": "hearthpine__hearthpine_west_home"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_east_home.png",
+      "sha256": "ac57bc8ca3e1c60222b313b92b60762c4741cc8cc67e94d3263e7d98c7ab7215",
+      "building": "hearthpine__hearthpine_east_home"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_southwest_home.png",
+      "sha256": "d5d84262d6c9ba659fc5c999f144eddfdf6c88ea63c01d893b66d197f2533a3b",
+      "building": "hearthpine__hearthpine_southwest_home"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_east_gable_home.png",
+      "sha256": "a8f09c06a28dded39589d8eaaab6f6a2dfb95a37a62295648c73318f76bfa65e",
+      "building": "hearthpine__hearthpine_east_gable_home"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_lagerhouse.png",
+      "sha256": "1f9635e0521427a2fd2487e43224fc59b1f89223dd1e201354c1aca272002b1b",
+      "building": "hearthpine__hearthpine_lagerhouse"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_community_hall.png",
+      "sha256": "74da9bf669de7f1a4d6ffc78a4291cdd51c4883cab37d7393c888aa8a5c7d2c2",
+      "building": "hearthpine__hearthpine_community_hall"
+    },
+    {
+      "file": "captures/kapok__kapok_spirit_lodge.png",
+      "sha256": "62a8ceb0dbcbf7c349680d535e4cc80083a5c13838e83799a89d065c1890e622",
+      "building": "kapok__kapok_spirit_lodge"
+    },
+    {
+      "file": "captures/kapok__kapok_spirit_lodge-pair.png",
+      "sha256": "0ed3411e2b132ca5d130fc706c993d954cbea84c931afdf72ede1b7a19a11980",
+      "building": "kapok__kapok_spirit_lodge"
+    },
+    {
+      "file": "captures/kapok__kapok_fish_smoker.png",
+      "sha256": "f2fcf3445230af1f4b8fbdeaf6b2f875dc60e6279eeb12096d542da37b2feaa7",
+      "building": "kapok__kapok_fish_smoker"
+    },
+    {
+      "file": "captures/kapok__kapok_fish_smoker-pair.png",
+      "sha256": "6b66c60b6fb62bffafd02c7fd2b3f9d028ba7043d2d18a8d31dc0364e913bb65",
+      "building": "kapok__kapok_fish_smoker"
+    },
+    {
+      "file": "captures/kapok__kapok_elder_stilt.png",
+      "sha256": "b78ea80d3200c551020cbe40b7c0a3d3b05b446dc74aefb00be5ebda9f11868e",
+      "building": "kapok__kapok_elder_stilt"
+    },
+    {
+      "file": "captures/kapok__kapok_elder_stilt-pair.png",
+      "sha256": "84dc72f97485d87e6392a63a40d56d61d196288aa8bc19cf54fe4dcb0756a224",
+      "building": "kapok__kapok_elder_stilt"
+    },
+    {
+      "file": "captures/kapok__kapok_river_stilt.png",
+      "sha256": "53f1d52832a8192e5274ecebf075144fe9dc1392269eaa2a8998763d431896d4",
+      "building": "kapok__kapok_river_stilt"
+    },
+    {
+      "file": "captures/kapok__kapok_river_stilt-pair.png",
+      "sha256": "19e80729f8f5ee2a7acf4c063526eed71fdf80e66f0109c30f9c2462dd168e9f",
+      "building": "kapok__kapok_river_stilt"
+    },
+    {
+      "file": "captures/kapok__kapok_weaver_stilt.png",
+      "sha256": "df89d722d9155ef0d83b8173677091d92370086a8068aa885e663db4292cf25e",
+      "building": "kapok__kapok_weaver_stilt"
+    },
+    {
+      "file": "captures/kapok__kapok_weaver_stilt-pair.png",
+      "sha256": "1c1d47902a805cf04f326b2af9d13ba89523f7689213e8ab570cd5b80a298fb3",
+      "building": "kapok__kapok_weaver_stilt"
+    },
+    {
+      "file": "captures/kapok__kapok_reed_stilt.png",
+      "sha256": "d607618b480e827a9d1d738d28dbac9f774578424209af26c318b05fbaaf480e",
+      "building": "kapok__kapok_reed_stilt"
+    },
+    {
+      "file": "captures/kapok__kapok_reed_stilt-pair.png",
+      "sha256": "3054c566da651d77a67b5bb7489f755fffdf2eb6e477a1f3e16752f3860185e4",
+      "building": "kapok__kapok_reed_stilt"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_lore_hall.png",
+      "sha256": "90993cd1ffe0ecf8d91268f5291bd83f8b155b50b128d7dc2f4d13ec6355a89e",
+      "building": "silverleaf__silverleaf_lore_hall"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_lore_hall-pair.png",
+      "sha256": "4c7dfeec8795b1512854cb3d85053b40c8125023f72ff955cbef672094ecccdc",
+      "building": "silverleaf__silverleaf_lore_hall"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_bowyer_workshop.png",
+      "sha256": "9c469d043354f0d98ab7519499d91d558758cffc1f671a4ea32a68a83a0f8221",
+      "building": "silverleaf__silverleaf_bowyer_workshop"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_terrace_house_west.png",
+      "sha256": "1cbad778984a322ec89d270d1c9e5bd104c78b7d4ce9a574ac658a2e64f315e9",
+      "building": "silverleaf__silverleaf_terrace_house_west"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_terrace_house_east.png",
+      "sha256": "1cbad778984a322ec89d270d1c9e5bd104c78b7d4ce9a574ac658a2e64f315e9",
+      "building": "silverleaf__silverleaf_terrace_house_east"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_glade_house_west.png",
+      "sha256": "888ae7ddec2c48c3e6c48bcd5fde63ae4a4e104f111e9366bfa56c12c6cca6b3",
+      "building": "silverleaf__silverleaf_glade_house_west"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_glade_house_east.png",
+      "sha256": "e35d63bbb7fca1c2cc93ab0b9452c79bce43110a771c9dd253058f4377f98abf",
+      "building": "silverleaf__silverleaf_glade_house_east"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_bone_works.png",
+      "sha256": "d12d69682d1caaff64bb5bd40b161004f5b90466270cb18fc484538ecf0f7b41",
+      "building": "stillgrave__stillgrave_bone_works"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_bone_works-pair.png",
+      "sha256": "f61d8d3ccd7e231942db466f23dc0dff40b923348ac4277548ea73d77b33510b",
+      "building": "stillgrave__stillgrave_bone_works"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_keepers_house.png",
+      "sha256": "5970fc36bb8474935253a12289f08105233639b96ffd6c82ad1bd3baf7d44056",
+      "building": "stillgrave__stillgrave_keepers_house"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_keepers_house-pair.png",
+      "sha256": "2a639e662fe06966bf77661ff529d0a9cbb35cc19f0b12c0e8ee2ac4a9282fde",
+      "building": "stillgrave__stillgrave_keepers_house"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_warden_house.png",
+      "sha256": "8e511b89c271a6cf880a468af0a5f8ae0b6327c2e391e85c3cd87200b15312b9",
+      "building": "stillgrave__stillgrave_warden_house"
+    },
+    {
+      "file": "captures/sunscar__sunscar_armoury.png",
+      "sha256": "0fcb72e0b81874e623ba33f78aae871265c81ff65090a424b0d7fb389c75a921",
+      "building": "sunscar__sunscar_armoury"
+    },
+    {
+      "file": "captures/sunscar__sunscar_armoury-pair.png",
+      "sha256": "dff6a1efb42e599e9dc0971c55db6f3ef0c44fb11e2005178f4c80706736b3fc",
+      "building": "sunscar__sunscar_armoury"
+    },
+    {
+      "file": "captures/sunscar__sunscar_chief_lodge.png",
+      "sha256": "f69c8566b6a488369a1223c592ee3ca33f8512b1956b7a1d6efe14d799dcfda0",
+      "building": "sunscar__sunscar_chief_lodge"
+    },
+    {
+      "file": "captures/sunscar__sunscar_chief_lodge-pair.png",
+      "sha256": "26d7d6426d4f47a5614b6639d03e606be1c3750c38683783dad49d442379289d",
+      "building": "sunscar__sunscar_chief_lodge"
+    },
+    {
+      "file": "captures/sunscar__sunscar_spear_lodge.png",
+      "sha256": "2809f5f75b1e719885d474edf6195bad7d8e2971b8c9a1d29fbefe50283aea2c",
+      "building": "sunscar__sunscar_spear_lodge"
+    },
+    {
+      "file": "captures/sunscar__sunscar_tusk_lodge.png",
+      "sha256": "1b26a996103ed93a450b1d134372928ae08ca1fc2c3fdea06a7f116855595c70",
+      "building": "sunscar__sunscar_tusk_lodge"
+    },
+    {
+      "file": "captures/sunscar__sunscar_bone_lodge.png",
+      "sha256": "d5cfbb166249955ec248f730e902bb49092a4b5c4353ce3cadf320a375da4494",
+      "building": "sunscar__sunscar_bone_lodge"
+    },
+    {
+      "file": "captures/sunscar__sunscar_bone_lodge-pair.png",
+      "sha256": "d212d353368318421519211f97e5f5814e40308a358f91276d260e168ed0afc1",
+      "building": "sunscar__sunscar_bone_lodge"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_great_forge.png",
+      "sha256": "1a099eeb568835fd910548cdebd704b01e39f047c55ebd9598605198186a101f",
+      "building": "dur_brannoc__dur_brannoc_great_forge"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_masons_guild.png",
+      "sha256": "40363034f0e14bdc86bea04a1c0e514aa0e4e9fd2807cd3cf3abb9d103ddcb03",
+      "building": "dur_brannoc__dur_brannoc_masons_guild"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_market_house.png",
+      "sha256": "3d31cbd0d8c362c86fa2a9495ea672ffcc7d3f17483d8d2b01688012c67d60bc",
+      "building": "dur_brannoc__dur_brannoc_market_house"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_south_house.png",
+      "sha256": "c944c5288fadab508d9027338909bb2f5e839e0aeadf07fb85c5eb9fc8902b81",
+      "building": "dur_brannoc__dur_brannoc_south_house"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_lane_house.png",
+      "sha256": "65bed874c27067b4b75bfa70f3b224c4626c32175f732b0b03581d79490e4c03",
+      "building": "dur_brannoc__dur_brannoc_lane_house"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_lane_house-pair.png",
+      "sha256": "f112c54609e3b28d56649f31b73012e1f1461653ea9d4148dcdd818c417e4e15",
+      "building": "dur_brannoc__dur_brannoc_lane_house"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_plaza_house.png",
+      "sha256": "a2a736e9aaf577ee6665e98792c523b05e53aa3508c105a707e7960107b926ff",
+      "building": "dur_brannoc__dur_brannoc_plaza_house"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_charcoal.png",
+      "sha256": "aea6ebbbe73a382bc607b79002c9fda68056a2b7b2e6fa8f3b95ff0498bc51ca",
+      "building": "dur_brannoc__dur_brannoc_forge_charcoal"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_smithy.png",
+      "sha256": "5ceaf2fb57ebd78dbe060ff83262e8b0750cda90eff885ba7d0c07fd7a4b8a62",
+      "building": "dur_brannoc__dur_brannoc_forge_smithy"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_guild_house.png",
+      "sha256": "6cea5a102445ba96bd670b4d836e1efdf88b0be59755cfcbaf02670ce1cc1ec9",
+      "building": "dur_brannoc__dur_brannoc_forge_guild_house"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_ore_yard.png",
+      "sha256": "2b7945bc2e745a8fb84ca004bcfaa89c1630b6e2a51c4819d2211aa0502e1353",
+      "building": "dur_brannoc__dur_brannoc_forge_ore_yard"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_store.png",
+      "sha256": "7fdf476769936cd6a60c83ad825f9109be1bcfb0a3aac1a82fe848170f6744a2",
+      "building": "dur_brannoc__dur_brannoc_forge_store"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_armoury.png",
+      "sha256": "e61ac916b471908b232b061d8eec10aa2f506251d71a740ab684c4245f93cfdb",
+      "building": "dur_brannoc__dur_brannoc_garrison_armoury"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_stable.png",
+      "sha256": "1fc5c003d7f93fbf7f6f042f3eb862d65bd0f28c307bd81af0f55affacf910bf",
+      "building": "dur_brannoc__dur_brannoc_garrison_stable"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_deep_hall_of_record.png",
+      "sha256": "77e64bd83f825838b60cc60f3a52db1a52bf37888f784ffe23f2cd1a080c6a0f",
+      "building": "dur_brannoc__dur_brannoc_deep_hall_of_record"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_deep_hall_of_record-pair.png",
+      "sha256": "81b3e3473ad39f05e2bc6982bfba398f069b700dce2424f386f0e6dffe601c0f",
+      "building": "dur_brannoc__dur_brannoc_deep_hall_of_record"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_deep_scriptorium.png",
+      "sha256": "eb55ad7e989efa3e0b7aaa68ec6a64724433642c432d184edc876e4609bb719e",
+      "building": "dur_brannoc__dur_brannoc_deep_scriptorium"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_deep_memory_hall.png",
+      "sha256": "a94aaa4707d740b4739de27f03332409c398d439ae6109474fae4b287a34571f",
+      "building": "dur_brannoc__dur_brannoc_deep_memory_hall"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_alehouse.png",
+      "sha256": "1d34802fa08cebc7f472e30ef9773a72bffcd807b471e4795461f083aa997b1e",
+      "building": "dur_brannoc__dur_brannoc_terrace_alehouse"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_bakehouse.png",
+      "sha256": "fab5bd283e3b5ba22abdf5008e32a8d331e68301e8f30cab8fabb94cc315dfc4",
+      "building": "dur_brannoc__dur_brannoc_terrace_bakehouse"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_long_house.png",
+      "sha256": "13c533d4c68ca3557e1a8108db09018924e472bc14d2dbe83bfe06ad581a232a",
+      "building": "dur_brannoc__dur_brannoc_terrace_long_house"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_cottage_west.png",
+      "sha256": "9d53422fb87ff2d34c0ffba6eabfb27f83e379a8b6b0d5edd8c91d0e2873c50f",
+      "building": "dur_brannoc__dur_brannoc_terrace_cottage_west"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_cottage_east.png",
+      "sha256": "cc9c0ede22a567d958180f826db641844534792ff5f3b04001ac49c6e79f6223",
+      "building": "dur_brannoc__dur_brannoc_terrace_cottage_east"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_host_store.png",
+      "sha256": "d85a3af82f12f5a080b78d78c046a9cf27e29835ffc18a4857c303ad86e6a195",
+      "building": "gor_drazhak__gor_drazhak_host_store"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_council_house.png",
+      "sha256": "0940c8a3a27e76f644f87d8782c391f73b4ae6f2ac1b5382fa456891840c385e",
+      "building": "gor_drazhak__gor_drazhak_council_house"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_house.png",
+      "sha256": "8f59596f9ebdd990c2ab4e8d3561d017457ce0a515dc529db2031dec92d5b57a",
+      "building": "gor_drazhak__gor_drazhak_bazaar_house"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_south_house.png",
+      "sha256": "6b7c13a398780165cd73371e3bcbf403e9227d946262c27d7e7be8d64348c34b",
+      "building": "gor_drazhak__gor_drazhak_south_house"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_lane_house.png",
+      "sha256": "f57676a16aee38288262533fd349ffbc54a528ed2b2ff135098360dbd6bec5b1",
+      "building": "gor_drazhak__gor_drazhak_lane_house"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_butcher.png",
+      "sha256": "98b0f5cf69d734e8b596cfe005036d844d24932bb1b16025954061004f98db1f",
+      "building": "gor_drazhak__gor_drazhak_bazaar_butcher"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_butcher__25d617.png",
+      "sha256": "98b0f5cf69d734e8b596cfe005036d844d24932bb1b16025954061004f98db1f",
+      "building": "gor_drazhak__gor_drazhak_bazaar_butcher__25d617"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_armourer.png",
+      "sha256": "57b9eff44d5c0e0b8321f575a2138f113d6d03add3349a2d6da1437d4033e73d",
+      "building": "gor_drazhak__gor_drazhak_bazaar_armourer"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_store.png",
+      "sha256": "16b6d1a4c77c4ec777cfa3c64970a4169e4b70728a73be33708c40a297a34a50",
+      "building": "gor_drazhak__gor_drazhak_bazaar_store"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_carver.png",
+      "sha256": "a08bfd91efa8e0bf9b225c9db1be1555008dfd8c3815f7d3fe9b805a5da9adb6",
+      "building": "gor_drazhak__gor_drazhak_bazaar_carver"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_plot_bazaar_house.png",
+      "sha256": "8389d01737b8b0ed58a12a1fff6342bd1d29d0b1a8c659108094e2a43bf6d984",
+      "building": "gor_drazhak__gor_drazhak_plot_bazaar_house"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_armoury.png",
+      "sha256": "9debef8a7432634ca39720aa78363c3e13da87e7969067d6aef9f30adad8797c",
+      "building": "gor_drazhak__gor_drazhak_war_armoury"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bone_reader_hall.png",
+      "sha256": "983d8f5a6635a75c588ff754053a2de6b75b59952f14927fd67b92b9865528ad",
+      "building": "gor_drazhak__gor_drazhak_bone_reader_hall"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bone_herb_house.png",
+      "sha256": "97342ef3520114ada24fa9053eaf2a5185cbb44e8fd94c05cc45c19878676365",
+      "building": "gor_drazhak__gor_drazhak_bone_herb_house"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bone_store.png",
+      "sha256": "614227124c454cf6e4f5acf62e60b7907a472cec77be56cf93c9b6ad5ddad583",
+      "building": "gor_drazhak__gor_drazhak_bone_store"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warren_clan_house.png",
+      "sha256": "0fb5b087603371968a86b4cb29ad191a7e7cd7a90f5f63159e28dcee3c831fc2",
+      "building": "gor_drazhak__gor_drazhak_warren_clan_house"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warren_round_lodge.png",
+      "sha256": "7f80c09f7850e4c1d7a820029de7ca26c69458a2a559882b48df1607359331d5",
+      "building": "gor_drazhak__gor_drazhak_warren_round_lodge"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warren_round_lodge-pair.png",
+      "sha256": "880aad14f3c0bc7b581bbff4fcdd3bc30e034cb6a079d53adbb7e48a1054f1a0",
+      "building": "gor_drazhak__gor_drazhak_warren_round_lodge"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warren_house_spear.png",
+      "sha256": "8389d01737b8b0ed58a12a1fff6342bd1d29d0b1a8c659108094e2a43bf6d984",
+      "building": "gor_drazhak__gor_drazhak_warren_house_spear"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warren_house_tusk.png",
+      "sha256": "46d516b8f026c65b4c8f694826cf9afa11bf9a7506a51b82fd3e652ae1579851",
+      "building": "gor_drazhak__gor_drazhak_warren_house_tusk"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warren_house_bone.png",
+      "sha256": "1113e335846658e21f6fd24e4ad459e55305792da31d47d0d18f40ceb3045de8",
+      "building": "gor_drazhak__gor_drazhak_warren_house_bone"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warren_store.png",
+      "sha256": "614227124c454cf6e4f5acf62e60b7907a472cec77be56cf93c9b6ad5ddad583",
+      "building": "gor_drazhak__gor_drazhak_warren_store"
+    },
+    {
+      "file": "captures/highcourt__highcourt_service_store.png",
+      "sha256": "63d6e172539d3e9c84e1022b815b0b6cc9ac69858990d6c629620d4992dd527a",
+      "building": "highcourt__highcourt_service_store"
+    },
+    {
+      "file": "captures/highcourt__highcourt_service_store-pair.png",
+      "sha256": "31401b85a7c0b3f06a12b519b778f13da8c989df5981e57d059ff0e14286d802",
+      "building": "highcourt__highcourt_service_store"
+    },
+    {
+      "file": "captures/highcourt__highcourt_city_workshop.png",
+      "sha256": "acad50e15ff9d2fa530eac01a555b7455fd57971555d8756262a511687c273b3",
+      "building": "highcourt__highcourt_city_workshop"
+    },
+    {
+      "file": "captures/highcourt__highcourt_north_house.png",
+      "sha256": "22d96c8ba325e6089734b4083947bc6589f589c0d4dd52dd1e7a6823465a0e6e",
+      "building": "highcourt__highcourt_north_house"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lane_house.png",
+      "sha256": "a1c0e66009abd4ed9244f67577f784aa994e5d08adc49e22f52b95226d57ef65",
+      "building": "highcourt__highcourt_lane_house"
+    },
+    {
+      "file": "captures/highcourt__highcourt_orchard_house.png",
+      "sha256": "2e6324b9c6b4baf9cfa09108301714a330879b359ee47784f3fa76ef26098d08",
+      "building": "highcourt__highcourt_orchard_house"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_house.png",
+      "sha256": "089e523a414ac4ce92a915178352447688992bfa77c655a98902d2c08382e569",
+      "building": "highcourt__highcourt_market_house"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_granary.png",
+      "sha256": "baa456380e9e0854e72b9326148319ec5250f4dbf3954effba5e1ae3136ca65e",
+      "building": "highcourt__highcourt_market_granary"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_workshop.png",
+      "sha256": "8d90a037bfe6715660be3d1360ccda63846c0a1f403ef6fe5553d46e77a6b17b",
+      "building": "highcourt__highcourt_market_workshop"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_counting_house.png",
+      "sha256": "ffc24a6c008029f145452888c20288840f62e3c50a478d15b2bd036a777230c9",
+      "building": "highcourt__highcourt_market_counting_house"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_store.png",
+      "sha256": "a0af00532f38881d6c1f7781ccadc0925e5322d8f607e3571f916e6b6ababf36",
+      "building": "highcourt__highcourt_market_store"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_armoury.png",
+      "sha256": "e15edf5eef63b74ea774ec05505ddf80615b3ad832d033784216e34e89c1f76e",
+      "building": "highcourt__highcourt_martial_armoury"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_stables.png",
+      "sha256": "0d32993bb42d3fa9b6683e599b4bdd99f9365b7e0ae1993a752eb791cbd79bb8",
+      "building": "highcourt__highcourt_martial_stables"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_library.png",
+      "sha256": "5a8c68ca7e4610b1d9fd46fdf4ac80fd7a31b412f7a1d27a2c92a71deec15941",
+      "building": "highcourt__highcourt_lore_library"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_scriptorium.png",
+      "sha256": "c2fb81fc188a10c945e9a6482e4b0b10340b696c95fe58a1428c7f0e7106b6a3",
+      "building": "highcourt__highcourt_lore_scriptorium"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_archive.png",
+      "sha256": "813990e3d66d6952d22c48cbd716468957e535cbc71358afd2018e1e8c01daa7",
+      "building": "highcourt__highcourt_lore_archive"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_chapter_house.png",
+      "sha256": "788c70178c6d62d857187eec5e60cc5a97114d9c6e535e37ece9e0f501812920",
+      "building": "highcourt__highcourt_lore_chapter_house"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_almonry.png",
+      "sha256": "935e799fd17e1ed4756129cdaaf2b4f449ae8018a11866ce96e70d76a8841ac2",
+      "building": "highcourt__highcourt_lore_almonry"
+    },
+    {
+      "file": "captures/highcourt__highcourt_homes_tavern.png",
+      "sha256": "a9bbd1346cd3b971568248f77fc501e523f8fbe7082cca90f7acc48c639a618b",
+      "building": "highcourt__highcourt_homes_tavern"
+    },
+    {
+      "file": "captures/highcourt__highcourt_homes_house_gable.png",
+      "sha256": "61cc4be1752d906c0671c9d231f8290c3daebedbf568b7e637a9f2f5e44a40e8",
+      "building": "highcourt__highcourt_homes_house_gable"
+    },
+    {
+      "file": "captures/highcourt__highcourt_homes_house_hip.png",
+      "sha256": "fe8fae8444116db573ec3497cee5ef1fd61b3fbce8ab87b21106e541bcdb1053",
+      "building": "highcourt__highcourt_homes_house_hip"
+    },
+    {
+      "file": "captures/highcourt__highcourt_homes_house_lane.png",
+      "sha256": "4d921be6ba86fb5c7486d44d6ea53883d3d919819bab9900c2155b97efec6884",
+      "building": "highcourt__highcourt_homes_house_lane"
+    },
+    {
+      "file": "captures/highcourt__highcourt_homes_tenement.png",
+      "sha256": "4ba3750353a2eaa5c6d50fab0bc0215ba6e54e08511cb9ee9980ea500331d6e9",
+      "building": "highcourt__highcourt_homes_tenement"
+    },
+    {
+      "file": "captures/highcourt__highcourt_homes_bakehouse.png",
+      "sha256": "a7e9eb6621baceda7c0851a9295120ad5c85b58c0af3c5d7f4f7e37431e0c835",
+      "building": "highcourt__highcourt_homes_bakehouse"
+    },
+    {
+      "file": "captures/kezamba__kezamba_granary.png",
+      "sha256": "595dfde71a3d13edcd5adada7c3ee4e61debcdaaff4737c3854066cd8495a2f3",
+      "building": "kezamba__kezamba_granary"
+    },
+    {
+      "file": "captures/kezamba__kezamba_stable.png",
+      "sha256": "f4d892be90b5b2af28b42c9df37c0b1ab3d496125666dab28ee3421e8801e8ab",
+      "building": "kezamba__kezamba_stable"
+    },
+    {
+      "file": "captures/kezamba__kezamba_lane_house.png",
+      "sha256": "7d3b6fc4f2be1e3fa7f80e64fd3ed428c039d0fef89743eae1179dd9a0477ef4",
+      "building": "kezamba__kezamba_lane_house"
+    },
+    {
+      "file": "captures/kezamba__kezamba_west_house.png",
+      "sha256": "8573809c428d25c1b768d4b4fabc1540f838ae1ff3b8a91cef04e1fcced4446d",
+      "building": "kezamba__kezamba_west_house"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_house.png",
+      "sha256": "5ff57b71b4d23c2dba3364b44a388abc9566a086eaf114372d0dd79aa78b614d",
+      "building": "kezamba__kezamba_shore_house"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_butcher.png",
+      "sha256": "9e19707b4070e0db7789f6d4616a39bfd9fa1fa200b58acadcb49d15731333ab",
+      "building": "kezamba__kezamba_shore_butcher"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_tailor.png",
+      "sha256": "e8ddc027b8a6c4031484648303e4d560d020c26a917310c938b6397e7206b3c0",
+      "building": "kezamba__kezamba_shore_tailor"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_store.png",
+      "sha256": "c6d9adb6941b2bf4cada828d7eaad0fca3c36ca79ee71029ba07afbb789ee0c8",
+      "building": "kezamba__kezamba_shore_store"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_store-pair.png",
+      "sha256": "e9c22db589b793537485069473f59bee9ee0efadc483d65125e619f926275b16",
+      "building": "kezamba__kezamba_shore_store"
+    },
+    {
+      "file": "captures/kezamba__kezamba_plot_shore_house.png",
+      "sha256": "3abf59ed99624f2d3ca80c5c065e92619bf21a6fee8f94033c08761a11dbe303",
+      "building": "kezamba__kezamba_plot_shore_house"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_house_a.png",
+      "sha256": "6497b1ec748835dd8c4844de049233df4d788423d1becc1251251a051a037436",
+      "building": "kezamba__kezamba_vine_house_a"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_house_b.png",
+      "sha256": "9a60096dad36d9b67d04e441148fb016f2a6c5b39bb2a653bf00e0017e76dc38",
+      "building": "kezamba__kezamba_vine_house_b"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_house_c.png",
+      "sha256": "e008d604bccbce4762bce58bdbf8701f21e3a571bf1f4a71010d97d4f038e4cd",
+      "building": "kezamba__kezamba_vine_house_c"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_house_d.png",
+      "sha256": "a38f4722ac9362c407522a7ffbd44fe2ecde56c6868d0758f476f5bdcb0f168f",
+      "building": "kezamba__kezamba_vine_house_d"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_herbalist.png",
+      "sha256": "1a805f479056cdc787f75414c5c8a85af47b865d34e999f2932d56dbcb5ab13f",
+      "building": "kezamba__kezamba_vine_herbalist"
+    },
+    {
+      "file": "captures/kezamba__kezamba_totem_scriptorium.png",
+      "sha256": "e9527d27a0568f8551c835414a771991b2c3ed18cbf025eb127eadc27068d79c",
+      "building": "kezamba__kezamba_totem_scriptorium"
+    },
+    {
+      "file": "captures/lethariel__dur_brannoc_market_house.png",
+      "sha256": "3c1631880ce219a0ae70a8b781a5c9275fc40a6ba3e7d4c4ed1414530814ec3b",
+      "building": "lethariel__dur_brannoc_market_house"
+    },
+    {
+      "file": "captures/lethariel__dur_brannoc_south_house.png",
+      "sha256": "02c559e4c2021cf8c78b61d7444ea1daef0800f0db24b077ed3a9c70a20d493c",
+      "building": "lethariel__dur_brannoc_south_house"
+    },
+    {
+      "file": "captures/lethariel__dur_brannoc_lane_house.png",
+      "sha256": "2321b4cb71e88ae5653a7165fa3ae9277538f9f30dd8b9d7dbb3169bf3ec9f9e",
+      "building": "lethariel__dur_brannoc_lane_house"
+    },
+    {
+      "file": "captures/lethariel__dur_brannoc_lane_house-pair.png",
+      "sha256": "a4a53bab3d07295c96f330c2f86a72c2e1cd611067bbb9f03a4197f8e6eba6e2",
+      "building": "lethariel__dur_brannoc_lane_house"
+    },
+    {
+      "file": "captures/lethariel__dur_brannoc_plaza_house.png",
+      "sha256": "bcb9af3c810fe3756639012e01a4f598924c354607d4ec318c7a2147fe6a1b55",
+      "building": "lethariel__dur_brannoc_plaza_house"
+    },
+    {
+      "file": "captures/lethariel__dur_brannoc_plaza_house-pair.png",
+      "sha256": "269f6132fbffe77be892d3f6b0e7c63d9cc5db3a6204e1bb46cb77b9c38c9027",
+      "building": "lethariel__dur_brannoc_plaza_house"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_granary.png",
+      "sha256": "501c38ba1471163b495847b0e07ce7605dd6fc45724febd439dbf0d579698b25",
+      "building": "lethariel__lethariel_market_granary"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_bowyer.png",
+      "sha256": "7fef1013f7f9815733bf9ec34dcd2e1a710749be08b08de3805eb3f1142ef372",
+      "building": "lethariel__lethariel_market_bowyer"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_weaver.png",
+      "sha256": "c5677a8f567a8741bdc015eb18f030dbb6da7ed31f7f08e10e41a2436308ebdf",
+      "building": "lethariel__lethariel_market_weaver"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_bakehouse.png",
+      "sha256": "dbfe0f4dee423bffff9eedc9f2ddc6bb32bf1c73472f8c95fd473e1f59ec5b87",
+      "building": "lethariel__lethariel_market_bakehouse"
+    },
+    {
+      "file": "captures/lethariel__lethariel_martial_hall.png",
+      "sha256": "a28ebc2ba35ff29b983bcf288c7db663393fbd2f596da302fdbc7b3ab2a7b685",
+      "building": "lethariel__lethariel_martial_hall"
+    },
+    {
+      "file": "captures/lethariel__lethariel_martial_stable.png",
+      "sha256": "53ee207d0abe4d6a1a64a867ff90ff7ec25e212d96691fe94fc7b67a15f6035a",
+      "building": "lethariel__lethariel_martial_stable"
+    },
+    {
+      "file": "captures/lethariel__lethariel_martial_store.png",
+      "sha256": "e59ba604a771a2192698af7880a13b371b19ac01a97605b7dbcec566a73a586a",
+      "building": "lethariel__lethariel_martial_store"
+    },
+    {
+      "file": "captures/lethariel__lethariel_martial_lodge.png",
+      "sha256": "ee8f78364ef426aa6b797d6cbf2089b5429022c39d8633c30ac2d9f923f9470a",
+      "building": "lethariel__lethariel_martial_lodge"
+    },
+    {
+      "file": "captures/lethariel__lethariel_mere_lore_hall.png",
+      "sha256": "983dd06c4808b01202815f145ed55fbab008f052293e603b7b3a33fef47e653d",
+      "building": "lethariel__lethariel_mere_lore_hall"
+    },
+    {
+      "file": "captures/lethariel__lethariel_homes_terrace_east.png",
+      "sha256": "784cd6823c0d33aa2731c52783463e19e80ff2f9a3ce8ab2843ad167e08aab54",
+      "building": "lethariel__lethariel_homes_terrace_east"
+    },
+    {
+      "file": "captures/lethariel__lethariel_homes_longhouse.png",
+      "sha256": "82b394fdc3b03df729f1909f6d46e8ed5e91934543c2eb2d1a04c266ec95cab6",
+      "building": "lethariel__lethariel_homes_longhouse"
+    },
+    {
+      "file": "captures/lethariel__lethariel_homes_feast_hall.png",
+      "sha256": "fba76cc73c0c37630f794b838aa74d33387e568e73f5fb5892b70a3e2a790065",
+      "building": "lethariel__lethariel_homes_feast_hall"
+    },
+    {
+      "file": "captures/nhal_veyr__dur_brannoc_great_forge.png",
+      "sha256": "87a915dd6ab0041fe7ce8513fac2f2c7d0d48384dc1b1044316e775d17ad1fe8",
+      "building": "nhal_veyr__dur_brannoc_great_forge"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_bonesmith_guild.png",
+      "sha256": "2e0107a8c53ca92df8640fcdfcefdc68dbbd9fa1b3f31b7b943f3a251edef253",
+      "building": "nhal_veyr__nhal_veyr_bonesmith_guild"
+    },
+    {
+      "file": "captures/nhal_veyr__dur_brannoc_market_house.png",
+      "sha256": "8b54a83f14727d4cb59b2d1fd538a6e9ee528f295aab5be1dfab4900e45f7958",
+      "building": "nhal_veyr__dur_brannoc_market_house"
+    },
+    {
+      "file": "captures/nhal_veyr__dur_brannoc_south_house.png",
+      "sha256": "e4ecd8bf9bbc9afe371abfe84916b34ad1bbf08874d4c8a64154704169486420",
+      "building": "nhal_veyr__dur_brannoc_south_house"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_lane_house.png",
+      "sha256": "a181c1cba6d7c8cf5b449896cbf66591b7e989965be56791debec539609d1156",
+      "building": "nhal_veyr__nhal_veyr_lane_house"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_lane_house-pair.png",
+      "sha256": "92d3c78938087409553eeb64ba8a799b231364c834551b1486bbe92cc9b9a844",
+      "building": "nhal_veyr__nhal_veyr_lane_house"
+    },
+    {
+      "file": "captures/nhal_veyr__dur_brannoc_plaza_house.png",
+      "sha256": "eff73bfb6c18172daa40b3becbc865dcae081465f1aa359eed4baa091854937a",
+      "building": "nhal_veyr__dur_brannoc_plaza_house"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_bone_store.png",
+      "sha256": "512b2d20d4fea69a0608333bad09ac71cf287156659846ed29405a8f6c509ac5",
+      "building": "nhal_veyr__nhal_veyr_market_bone_store"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_bonesmith.png",
+      "sha256": "55a9c437432d68fe24a26fa18fc24737813973e96b533a667075e3f376965484",
+      "building": "nhal_veyr__nhal_veyr_market_bonesmith"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_shroud_house.png",
+      "sha256": "ec3d184b2ca8bae6acf4e224aa73328d7e26157bd4b6f704211d2e72ecad98f1",
+      "building": "nhal_veyr__nhal_veyr_market_shroud_house"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_physic.png",
+      "sha256": "5e12881acd1210be09941417892fc9ec46e6237730ea0aeef2a61f3d175eb511",
+      "building": "nhal_veyr__nhal_veyr_market_physic"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_scriptorium.png",
+      "sha256": "070be4a187d3b7721ff8a7f274f041d0264d11afe53491f8c62a2dd4fe09985d",
+      "building": "nhal_veyr__nhal_veyr_vigil_scriptorium"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_lane_house.png",
+      "sha256": "58612dc667a50798e535d07c5b05375356be0051e10e94683a393206e213c031",
+      "building": "nhal_veyr__nhal_veyr_homes_lane_house"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_terrace_house.png",
+      "sha256": "5f6f4d5abe1d96bf48a6fc13a69967e3babbbe251e5824e8cf700ae2dce1f455",
+      "building": "nhal_veyr__nhal_veyr_homes_terrace_house"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_corner_house.png",
+      "sha256": "9159c05aea8303907ea43c6fe506cd4e12853d8bb61a83ec822b249241a9e63c",
+      "building": "nhal_veyr__nhal_veyr_homes_corner_house"
+    },
+    {
+      "file": "captures/mobile.png",
+      "sha256": "9fcf5a37e00b10575e9d49847a35b1e126c4648c0f73ed5a0daf06822d85c4ce",
+      "building": "dawnmere__dawnmere_lane_cottage"
+    }
+  ],
+  "errors": []
+}

@@ -7,7 +7,9 @@
 --     digging and right-click interaction are untouched.
 --   * In or out of combat, a walkable node is never placed into a cell that
 --     overlaps the collision box of a live mob (guards, bosses, NPCs) or
---     player; a body spans several cells.
+--     player; a body spans several cells. The placing player's own body is
+--     exempt (Round 78 ruling 8: towering, a block under one's own feet in a
+--     jump); other players and mobs still block.
 --   * A walkable falling node is tested where it lands: a landing cell that
 --     overlaps a live body refuses the landing and builtin drops the node as
 --     an item (falling.lua on_step). This also catches sand whose support was
@@ -28,8 +30,9 @@
 --     `cells` (a list of positions) for `placer` (a player, another object or
 --     nil); a player placer then gets the grey feed line. Callers run their
 --     protection check first, so a protected cell keeps its own line.
---   grug_core.body_in_cells(cells) -> true | false
---     Whether any cell overlaps a live body (the rule above, no placer).
+--   grug_core.body_in_cells(cells, except) -> true | false
+--     Whether any cell overlaps a live body (the rule above); `except` is a
+--     player whose own body does not count (the placer), nil for none.
 
 local placement = {}
 grug_core.placement = placement
@@ -80,9 +83,15 @@ local function overlaps(pos, box, cell)
 		pos.z + box[3] + touch < cell.z + 0.5 and pos.z + box[6] - touch > cell.z - 0.5
 end
 
+-- The placer's own body (by name: a player is one object, whichever ref).
+local function own_body(object, except_name)
+	return except_name ~= nil and is_player(object) and
+		object:get_player_name() == except_name
+end
+
 -- One area query round the cells' middle (the cells of one placement are
 -- neighbours: a door's two, a bed's two).
-function grug_core.body_in_cells(cells)
+function grug_core.body_in_cells(cells, except)
 	local count = #cells
 	if count == 0 then return false end
 	local cx, cy, cz = 0, 0, 0
@@ -97,10 +106,11 @@ function grug_core.body_in_cells(cells)
 		local dx, dy, dz = cell.x - middle.x, cell.y - middle.y, cell.z - middle.z
 		spread = math.max(spread, math.sqrt(dx * dx + dy * dy + dz * dz))
 	end
+	local except_name = is_player(except) and except:get_player_name() or nil
 	local objects = core.get_objects_inside_radius(middle, placement.QUERY_RADIUS + spread)
 	for index = 1, #objects do
 		local object = objects[index]
-		local box = body_box(object)
+		local box = not own_body(object, except_name) and body_box(object)
 		local pos = box and object:get_pos()
 		if pos then
 			for c = 1, count do
@@ -119,7 +129,7 @@ function placement.refusal(placer, node_name, cells)
 			grug_core.in_combat(placer) then
 		return placement.COMBAT_LINE
 	end
-	if def.walkable ~= false and grug_core.body_in_cells(cells) then
+	if def.walkable ~= false and grug_core.body_in_cells(cells, placer) then
 		return placement.BODY_LINE
 	end
 	return nil

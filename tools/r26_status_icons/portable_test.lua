@@ -152,11 +152,20 @@ local EXPECTED_KIND = {
 	mining_sense = "buff",
 	-- Round 72.1: the Deserter's Mark (grug_expeditions).
 	deserter_mark = "debuff",
+	-- Round 78 ruling 2: the shared potion cooldown (grug_traders).
+	potion_cooldown = "neutral",
 }
 
 -- A picture may be a texture modifier over a shipped emblem (Round 72.1, the
 -- Deserter's Mark): the emblem is checked.
 local function texture_ok(name, label)
+	-- Round 78: an item image on the plate (the potion cooldown, like a food
+	-- item's icon): the item image is checked, not its size.
+	local item = name and name:match("^%[fill:16x16:[^%^]+%^%(([^%)]+)%)%^%[resize:64x64$")
+	if item then
+		check(textures[item] ~= nil, label .. ": item texture " .. item .. " exists")
+		return
+	end
 	name = name and name:match("^[^%^]+")
 	local path = textures[name]
 	check(path ~= nil, label .. ": texture " .. tostring(name) .. " exists")
@@ -265,7 +274,13 @@ for id, file in pairs(set_ids) do
 	check(icons.STATUS[id] ~= nil, "status id " .. id .. " (" .. file ..
 		") is registered")
 end
-check(set_ids.potion_cooldown == nil, "no potion cooldown status (ruling 21)")
+-- Round 78 ruling 2 lifts ruling 21 for the potion cooldown alone: it is set
+-- by its source, and no other cooldown id is.
+check(set_ids.potion_cooldown ~= nil, "the potion cooldown is a status (Round 78 ruling 2)")
+for id in pairs(set_ids) do
+	check(id == "potion_cooldown" or not id:match("cooldown"),
+		"no other cooldown status (ruling 21): " .. id)
+end
 -- Death ends poison chains like leaving does (review L3; the status table
 -- clears on death, so a chain ticking on after a respawn would be invisible).
 check(read_file("mods/ENTITIES/grug_mobs/verbs.lua"):find(
@@ -625,19 +640,20 @@ grug_parties = {
 }
 core.register_on_mods_loaded = function() end
 function alice:get_meta() return {get_string = function() return "" end} end
+-- Round 76 fix round 1: a party row shows an online member's race icon too.
+grug_classes.get_race = grug_classes.get_race or function() return "human" end
 dofile("mods/PLAYER/grug_parties/ui.lua")
 local group = pages["grug_parties:group"]
 local group_context = {}
 local group_fs = group:get(alice, group_context)
-check(group_fs:find("tablecolumns[image,align=center,0=blank.png,1=grug_class_warrior.png," ..
-	"2=grug_class_mage.png,3=grug_class_priest.png,4=grug_class_scout.png;text", 1, true) ~= nil,
-	"member table declares the class icons")
-check(group_fs:find(";grug_party_members;1," ..
-	fs_escape("* alice [Lv 5]  20/20 HP") .. ",3," .. fs_escape("bob [Lv 5]  10/20 HP") ..
-	",0," .. fs_escape("cyd [Lv 4]  Offline") .. ";1]", 1, true) ~= nil,
-	"member rows carry class indices (offline: blank)")
-group:on_player_receive_fields(alice, group_context, {grug_party_members = "CHG:2:2"})
-eq(group_context.grug_party_member, "bob", "table selection picks the member")
+-- Round 76 fix round 1: member rows in the Online Players style, not a table.
+check(group_fs:find("image[0.10,0.06;0.42,0.42;grug_class_warrior.png]", 1, true) ~= nil,
+	"member rows carry the class icon (alice)")
+check(group_fs:find("image[0.10,0.66;0.42,0.42;grug_class_priest.png]", 1, true) ~= nil,
+	"member rows carry the class icon (bob)")
+check(group_fs:find("image[0.10,1.26;", 1, true) == nil, "an offline member without a class: no icon")
+group:on_player_receive_fields(alice, group_context, {grug_party_pick_bob = ""})
+eq(group_context.grug_party_member, "bob", "a row click picks the member")
 
 print(("%d registered ids, %d ids set in code, %d checks, %d failures"):format(
 	registered, used, checks, failures))

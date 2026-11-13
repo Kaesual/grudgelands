@@ -35,10 +35,8 @@ local function raider_def(description)
 		pathfinding = 1,
 
 		-- Ranged loadout, identical to skeleton_archer.lua: dogshoot_switch = 1
-		-- opens in the RANGED phase and mobs_redo then alternates
-		-- dogshoot_count_max seconds of shooting with dogshoot_count2_max seconds
-		-- of melee (10 vs 3 = "mostly ranged"); a target inside `reach` forces
-		-- melee regardless (api.lua:2491-2819).
+		-- opens in the RANGED mode, which follows the distance since Round 78
+		-- (golem.lua; the count fields are no longer read).
 		arrow = "grug_mobs:arrow_entity",
 		arrow_override = grug_mobs.stamp_arrow_damage,
 		shoot_interval = 2.5,

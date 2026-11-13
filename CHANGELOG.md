@@ -12,6 +12,123 @@ existing world's map from its seed while the characters stay
 The development record behind each round (reviews, tests, acceptance) is in
 the [project status](docs/STATUS.md) and the round plans.
 
+## 0.78.0 — game-night fixes (2026-11-12)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Bosses keep their distance:** a mob in melee stops about a node from its
+  target instead of standing in it, and steps back when you walk into it.
+  Every mob with a ranged and a melee attack (the Expedition bosses, archers,
+  golems, the kings and others, in the open world too) now chooses by
+  distance instead of on a timer: it melees within about 4 nodes and shoots
+  beyond about 6.
+- **Heals reach the tank:** Heal, Shield and Mend aimed through a boss or
+  another hostile body land on the first friendly player behind it. Walls
+  still block.
+- **Expedition respawn wait:** dying in an Expedition while your group is
+  still fighting shows "Your group is still fighting." and a Respawn button
+  that unlocks after 10 s, or at once when the fight ends.
+- **Expedition lights stay put:** the hanging lanterns, The Second Shift's
+  wall torches and its bookshelf can no longer be knocked down or opened.
+- **Nametags:** a player's nametag that went missing (after character
+  creation, a waystone trip or mounting) comes back within a second.
+- **Potions:** the shared potion cooldown is **30 s** (was 60 s) and shows in
+  the status row as "Potion cooldown" with its countdown.
+- **Repairs cost half** of what they did. Death wear stays at 10%.
+- **Armor numbers ×10:** every armor rating is shown ten times larger and
+  finer (a T6 cloth chest shows 55 instead of 5); damage reduction stays the
+  same apart from rounding. Items in chests, on display stands and in mail
+  keep their old text until they reach your inventory.
+- **Emotes:** the quickbar (E) has **Wave** and **Dance**. Moving, jumping or
+  attacking ends them; on a mount you wave seated, and Dance waits until you
+  dismount.
+- **Towering:** you can jump and place a block under yourself again; other
+  players and mobs still block a placement.
+- **Claim Stone:** activates with anthracite too, in any mix with charcoal and
+  coal.
+- **Ore Sense** no longer marks deposits you may not mine; in an Expedition
+  its ores are still marked.
+- **Capital guards** stand at street level, never on lamp posts; guards that
+  stood on one step down to the street after the update.
+- **Flying mounts** that lack room on a slope try once more one node higher.
+
+## 0.76.2 — /home (2026-11-11)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **/home:** type `/home` to return home. It is the same trip as the
+  **Return home** button on the Character page and in the quickbar (E), with
+  the same rules: not in combat, not from an Expedition's lava, and the same
+  30-minute cooldown, shared with the button.
+
+## 0.76.1 — a Party button in the clan list (2026-11-11)
+
+Compatible: no map reset, no new world, nothing for the host to do.
+
+- **Party from the clan list:** each online clan member's row in the clan
+  card now ends in a **Party** button, like the one in Online Players, shown
+  whenever you may invite that member to your party. A click invites without
+  selecting the row; the answer shows under the clan list. To make room, the
+  level and status columns of the party and clan lists sit a little further
+  left.
+
+## 0.76.0 — clans, party chat and clan chat (2026-11-11)
+
+Compatible: no map reset, no new world, nothing for the host to do. Parties
+stay exactly as they were.
+
+- **Clans:** a second, purely social group beside your party, for up to
+  **100 players** of your faction. A clan has no name, no HUD and no effect on
+  XP, loot, quests or Expeditions; you can be in a clan and a party at once.
+  Invite a player with the new **Clan** button in Online Players; when they
+  accept, the clan exists with you as its **Leader**. The leader and
+  **Captains** invite and remove members (captains only members); the leader
+  makes captains and members and can hand over the lead. When the leader
+  leaves, the first captain leads (or the first member). With one member
+  left the clan dissolves. A "Clan invitations" switch turns clan invitations
+  off without touching party invitations.
+- **Party and clan chat:** **/p** writes to your party in blue, **/c** to
+  your clan in green. Your clan sees when a member comes online or goes
+  offline, joins, leaves, is removed or changes role.
+- **The Social tab in four cards:** party and clan on the left, Online
+  Players and PvP on the right. All three lists share one row style with
+  clear columns; a click on a party or clan row selects it. The clan card has
+  **Online** and **Offline** tabs with pages of seven and shows when an
+  offline member was last online. Party rows now show Online or Offline
+  instead of health (the Party HUD keeps the health bars), and party
+  invitations appear as rows like clan invitations. Each Online Players row
+  has a **Party** and a **Clan** button, and clan mates carry a small green
+  mark.
+
+## 0.75.5 — coherent town architecture (2026-11-11)
+
+**Map reset**, joining the planned production reset. Ordinary homes, workshops
+and civic buildings now use clear structural frames, continuous ties and calm
+infill, with the approved material palette of each culture. Tall dwarf side
+walls stay masonry up to the roof; timber starts in the actual gable. Troll
+homes gain dark clay infill and brown reed roofs. Four reed stair/slab shapes
+complete the existing material. Building shapes, openings, services and
+furnishings keep their positions. All six miners' guild halls and ordinary
+service/garrison buildings adopt the same cultural frames; guild yards and
+machines remain unchanged. Camps stay outside the city pass. Silverleaf's
+moon shrine now has marble supports, quiet silverwood wall fields and one
+green accent course, keeping its pale roof and high roof lantern.
+
+Royal halls, shrines, gates, towers, markets and other approved city structures
+now share that vocabulary. Open stages and combat floors stay clear; ruins keep
+their gaps and moss. Slender pillars retain their geometry with matching cultural
+materials. Green grounds and monuments selected to remain unchanged are kept.
+The six character-creation backdrops now show the revised buildings, and the
+opening screen displays the new Grudgelands crest above its title.
+
+## 0.75.4 — Return home to Lethariel and Kezamba (2026-11-11)
+
+Compatible, no map reset. **Return home** to the Lethariel or Kezamba innkeeper
+failed every time with "Home arrival is unavailable. Please try again.", and a
+death there woke the player in their starting town: a stack of barrels stood on
+the innkeeper's arrival spot. An innkeeper's arrival now uses the next free side
+of the innkeeper when its own side is blocked, as waystones already do.
+
 ## 0.75.3 — the Registrar at the great hall (2026-11-10)
 
 **Map reset** (joins 0.75.0's): the Expedition Registrar of every capital now

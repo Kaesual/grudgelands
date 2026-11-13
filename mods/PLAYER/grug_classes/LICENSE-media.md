@@ -190,7 +190,7 @@ candidate; provenance: `tools/r67_art/LICENSE-media.md`.
 
 ## Character creation backdrops — rendered composites
 
-The six 1540 × 1400 PNGs below were rendered on 2026-11-09 from the game's
+The six 1540 × 1400 PNGs below were refreshed on 2026-11-11 from the game's
 existing blocks, plant textures, meshes and building templates. No external
 scene image or generated raster artwork was used. The authored arrangement
 and additional project contribution are CC BY-SA 3.0; this does not relicense
@@ -212,20 +212,22 @@ the assets; the rendered composite is not offered as wholly CC0 or solely
 under the license of the new arrangement. Upstream source provenance is also
 recorded in `VENDOR.md`.
 
-Build receipts: `tools/character_creation_preview/scene-build.json` and
-`native/scene-build.json`; per-image camera, input digest, dimensions and output
-hash: `native/renders/<race>.json` under the same directory. The self-contained
-`native/scenes.html` preserves the exact rendered geometry and texture inputs.
-The installed files are byte-identical to those native renders.
+Build receipts: `tools/character_creation_preview/architecture-refresh/browser/scene-build.json`
+and `architecture-refresh/native/scene-build.json`; per-image camera, input
+digest, dimensions and output hash: `architecture-refresh/native/renders/<race>.json`
+under `tools/character_creation_preview/`. Its `native/scenes.html` preserves
+the exact rendered geometry and textures. Installed images are byte-identical
+to these approved refreshed renders. The older `tools/character_creation_preview/native/`
+remains the archived before-comparison, not the current installed-art source.
 
 | Local file | SHA-256 |
 |---|---|
-| `textures/grug_creation_dwarf.png` | `303c04ef26fcff4b171b34204da751f16cb382be0504f1ae861bf267a340fb31` |
-| `textures/grug_creation_elf.png` | `e19461658ba7a9b9e26cc40aac19736d5987cccb378bc1726538384b7bc8a7ef` |
-| `textures/grug_creation_human.png` | `179e99152d5a1ed2ee52434588536ebdf1278724261785d082595be82d4d0271` |
-| `textures/grug_creation_orc.png` | `3f302e85621cae8ab3f4592c3b1801e8ae42a4eecd378fce0173c86d3dc39411` |
-| `textures/grug_creation_troll.png` | `ae251804d0652f67e11e82e46d7bd6756abf7bfdb78c8aebfc0d69c0d417da37` |
-| `textures/grug_creation_undead.png` | `85dd0607cfd3e9183a0125819955eef8de047daaf6a772e36e7609b2b30384da` |
+| `textures/grug_creation_dwarf.png` | `c70da9eb0161df7909964ec1f460bbc8fdf09520ff0aa989ff399e4aefdad52c` |
+| `textures/grug_creation_elf.png` | `cb878bbf434cfe8a8b505c5f5265d45e927a900a86ee4ebc302b8e6ce1d0a672` |
+| `textures/grug_creation_human.png` | `34c39452ea44c55b380b0486a10b954b88a411bb3d8f1ec0eca770d3f97a875f` |
+| `textures/grug_creation_orc.png` | `09ad3364bd1bcd15208f1ffcc693f6b1199ec97cf3b9a1c22102c3730777ae85` |
+| `textures/grug_creation_troll.png` | `783cac0d25114b27881b0c6aeecd2cc5471bf99fb5e90499431fcfbeed58931d` |
+| `textures/grug_creation_undead.png` | `ff4886b6e32372721380de922dbf5d40d2e1063f720d63437745a762cc0e27a6` |
 
 
 ## Character creation opening — rendered composite
@@ -253,3 +255,14 @@ sources remain in those mods. Smoke/fire texture notices remain in
 `VENDOR.md`. This composite is not represented as wholly CC0 or solely under
 the arrangement's license. Full source/rebuild record:
 `tools/character_creation_preview/intro/README.md`.
+
+## Character creation crest — CC0 1.0
+
+`textures/grug_creation_crest.png` is a byte-identical copy of the approved
+`tools/branding/exports/plain_512.png`, displayed as a separate UI image only
+on the opening screen. Art direction and rights holder: Jan Hangebrauck;
+generated/polished with OpenAI's built-in image generation tool, with prompts
+prepared by Codex. The exact image model was not exposed. Source, licence,
+master, prompts and derivation are recorded in
+[the branding media ledger](../../../menu/LICENSE-media.md#iconpng--cc0-10).
+SHA-256: `08cad78a882779a6dbddc8c5301881dd729e9053bdc09d0addb0cfc996a759da`.

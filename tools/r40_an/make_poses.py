@@ -22,7 +22,10 @@ delta on a bone (the legs stay upright while the torso leans).
 
 Every pose is baked twice: over `stand` (unposed bones from stand frame 0)
 and over `walk` (unposed bones from walk frames 168-187, a one-shot running
-on to the end of the walk cycle). The output `poses.json` holds, per pose and
+on to the end of the walk cycle). An emote (Round 78, after the poses) names
+its own `bases`: Wave over `stand` and over `sit` (unposed bones from sit
+frame 81, the seated rider's upper body), Dance over `stand` only; walking
+ends an emote, so it has no walking twin. The output `poses.json` holds, per pose and
 base, one key per engine frame and bone in the B3D's own frame -- position
 (x, y, z) and rotation (w, x, y, z) in the parent's space, exactly what
 `tools/r33_c3/gen_cloak_model.py` writes into a KEYS chunk (engine frame
@@ -56,13 +59,41 @@ import gen_cloak_model as b3d  # noqa: E402  (the B3D chunk reader)
 TARGET = Path(__file__).resolve().parent / "poses.json"
 FPS = 30
 STAND_FRAME = 0
+SIT_FRAME = 81
 WALK = (168, 187)
+BASES = ("stand", "walk")
 
 # --- the proposals ----------------------------------------------------------
-# kind: "held" loops while the action runs (LENGTH frames, the spec wraps);
-# "oneshot" plays once (its last key returns to the base pose).
+# kind: "held" loops while the action runs (HELD_LENGTH frames or the pose's
+# own `length`, the spec wraps); "oneshot" plays once (its last key returns
+# to the base pose). `bases` (default BASES) are the clips it is baked over.
 # bone spec: {"mode": "hold"|"add", "counter": bool, "keys": [[frame, pitch, yaw, roll], ...]}
 HELD_LENGTH = 20
+
+
+def dance_bones(arm, leg, loop):
+    """The Dance's bones (Round 78): the arms pump in turn once per `arm` frames,
+    and per `leg` frames the hips sway, twist and bob, the head tilts, each knee
+    lifts once and the other leg steps out (roll 12); `loop` is a multiple of
+    both, so the held clip wraps seamlessly."""
+    assert loop % arm == 0 and loop % leg == 0
+    ar, al, body, head, lr, ll = [], [], [], [], [], []
+    for k in range(loop // arm):
+        t = k * arm
+        ar += [[t, 150, 0, -22], [t + arm / 2, 55, 0, -12]]
+        al += [[t, 55, 0, 12], [t + arm / 2, 150, 0, 22]]
+    for k in range(loop // leg):
+        t = k * leg
+        body += [[t, 0, 8, 6], [t + leg / 2, -4, -8, -6]]
+        head += [[t, 6, 0, -7], [t + leg / 2, 6, 0, 7]]
+        lr += [[t, 0, 0, 0], [t + leg / 4, 24, 0, 0], [t + leg / 2, 0, 0, 0], [t + 3 * leg / 4, 0, 0, -12]]
+        ll += [[t, 0, 0, 0], [t + leg / 4, 0, 0, 12], [t + leg / 2, 0, 0, 0], [t + 3 * leg / 4, 24, 0, 0]]
+    return {"Body": {"mode": "add", "keys": body},
+            "Leg_Right": {"mode": "add", "counter": True, "keys": lr},
+            "Leg_Left": {"mode": "add", "counter": True, "keys": ll},
+            "Head": {"mode": "add", "keys": head},
+            "Arm_Right": {"mode": "hold", "keys": ar},
+            "Arm_Left": {"mode": "hold", "keys": al}}
 
 
 def held(*keys):
@@ -176,6 +207,37 @@ POSES = [
          "Arm_Left": {"mode": "add", "keys": [[0, 0, 0, 0], [2, 12, 0, 18], [9, 0, 0, 0]]},
          "Arm_Right": {"mode": "add", "keys": [[0, 0, 0, 0], [2, 12, 0, -18], [9, 0, 0, 0]]},
      }},
+    # Round 78 (lane EMOTE, round78-plan.md ruling 10): the quickbar's emotes.
+    # Wave raises the right arm out to the side and waves it three and a half
+    # times, 2 s; seated (over `sit`) the legs stay on the saddle.
+    {"pose": "wave", "variant": "A", "label": "Emote: wave",
+     "use": "the quickbar's Wave, standing and seated", "kind": "oneshot", "length": 60,
+     "bases": ("stand", "sit"),
+     "bones": {
+         # The arm rises forward (pitch alone, frames 0-3) and on up and out to
+         # the side, turned about its own length so a held item points
+         # backward, as a raised palm faces forward (the user, 2026-11-12).
+         # From frame 4 the same turn is written as yaw -180 with the pitch
+         # and roll mirrored: yaw 0, pitch p is yaw -180, pitch 180 - p,
+         # roll 180, so frames 3 and 4 (and 54 and 55) differ only by the
+         # rise; the wave is the roll swinging 128-158 out to the side.
+         "Arm_Right": {"mode": "hold", "keys": [[0, 0, 0, 0], [3, 60, 0, 0], [4, 105, -180, 180],
+                                                [9, 12, -180, 150], [15, 12, -180, 128],
+                                                [21, 12, -180, 158], [27, 12, -180, 128], [33, 12, -180, 158],
+                                                [39, 12, -180, 128], [45, 12, -180, 158], [50, 12, -180, 145],
+                                                [54, 100, -180, 180], [55, 70, 0, 0], [59, 0, 0, 0]]},
+         "Arm_Left": {"mode": "hold", "keys": [[0, 0, 0, 0], [9, 4, 0, 5], [50, 4, 0, 5], [59, 0, 0, 0]]},
+         "Head": {"mode": "add", "keys": [[0, 0, 0, 0], [9, 6, 0, -5], [50, 6, 0, -5], [59, 0, 0, 0]]},
+     }},
+    # Dance: the arms pump in turn (one arm cycle of 32 frames), the hips sway,
+    # twist and bob, the head follows, and each knee lifts while the other leg
+    # steps out to the side (one body/leg cycle of 24 frames); a 96-frame loop
+    # holds three arm and four leg cycles (the user's pick of 2026-11-12,
+    # "Gleichmäßiger": arms a little faster, legs and body a little slower than
+    # the first 40/20). Played once, 3.2 s (poses.lua).
+    {"pose": "dance", "variant": "A", "label": "Emote: dance",
+     "use": "the quickbar's Dance", "kind": "held", "length": 97, "bases": ("stand",),
+     "bones": dance_bones(32, 24, 96)},
 ]
 
 
@@ -289,11 +351,11 @@ def bake(pose, base, rig):
     names, keys, parent_world, parents = rig
     oneshot = pose["kind"] == "oneshot"
     walk_len = WALK[1] - WALK[0] + 1
-    length = pose["length"] if oneshot else HELD_LENGTH
+    length = pose["length"] if oneshot else pose.get("length", HELD_LENGTH)
     # Luanti loops a range over max - min frames (irr/src/AnimSpec.cpp), so
-    # the last of HELD_LENGTH keys must equal the first: the spec wraps one
+    # the last of a held clip's keys must equal the first: the spec wraps one
     # frame early.
-    period = None if oneshot else HELD_LENGTH - 1
+    period = None if oneshot else length - 1
     # A walking one-shot runs on to the end of the walk cycle (frame 187), so
     # the walk it hands back to resumes at 168 like its own loop; `hold`
     # bones fade from stand frame 0 back to the walk after the last key.
@@ -306,11 +368,15 @@ def bake(pose, base, rig):
         spec = pose["bones"].get(name)
         rows, prev = [], None
         for i in range(length):
-            clip_frame = STAND_FRAME if base == "stand" else WALK[0] + i % walk_len
+            if base == "walk":
+                clip_frame = WALK[0] + i % walk_len
+            else:
+                clip_frame = SIT_FRAME if base == "sit" else STAND_FRAME
             pos, _, rot = keys[b][clip_frame]
             q = tuple(bg.gl_quat(rot))
             if spec and spec.get("mode") == "hold":
-                q0 = tuple(bg.gl_quat(keys[b][STAND_FRAME][2]))
+                # A held bone takes the standing rest; seated, the seat's own.
+                q0 = tuple(bg.gl_quat(keys[b][SIT_FRAME if base == "sit" else STAND_FRAME][2]))
                 if fade_from is not None and i > fade_from:
                     q = slerp(q0, q, (i - fade_from) / (length - 1 - fade_from))
                 else:
@@ -341,7 +407,7 @@ def build():
         entry = {"id": "%s_%s" % (pose["pose"], pose["variant"].lower())}
         entry.update({k: pose[k] for k in ("pose", "variant", "label", "use", "kind")})
         entry["spec"] = pose["bones"]
-        entry["clips"] = {base: bake(pose, base, rig) for base in ("stand", "walk")}
+        entry["clips"] = {base: bake(pose, base, rig) for base in pose.get("bases", BASES)}
         poses.append(entry)
     doc = {
         "about": "Round 40 pose proposals, baked by tools/r40_an/make_poses.py; "
@@ -349,7 +415,8 @@ def build():
                  "rotation w, x, y, z in the parent bone's space.",
         "fps": FPS,
         "bones": rig[0],
-        "base_frames": {"stand": [STAND_FRAME, STAND_FRAME], "walk": list(WALK)},
+        "base_frames": {"stand": [STAND_FRAME, STAND_FRAME], "walk": list(WALK),
+                        "sit": [SIT_FRAME, SIT_FRAME]},
         "poses": poses,
     }
     text = json.dumps(doc, indent=1)

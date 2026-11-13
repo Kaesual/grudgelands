@@ -1,0 +1,180 @@
+{
+  "checks": [
+    {
+      "pass": true,
+      "label": "no horizontal overflow 1600"
+    },
+    {
+      "pass": true,
+      "label": "logo mode original 1600"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text original 1600"
+    },
+    {
+      "pass": true,
+      "label": "logo mode subtle 1600"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text subtle 1600"
+    },
+    {
+      "pass": true,
+      "label": "logo mode present 1600"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text present 1600"
+    },
+    {
+      "pass": true,
+      "label": "full native resolution human"
+    },
+    {
+      "pass": true,
+      "label": "full native resolution dwarf"
+    },
+    {
+      "pass": true,
+      "label": "full native resolution elf"
+    },
+    {
+      "pass": true,
+      "label": "full native resolution orc"
+    },
+    {
+      "pass": true,
+      "label": "full native resolution troll"
+    },
+    {
+      "pass": true,
+      "label": "full native resolution undead"
+    },
+    {
+      "pass": true,
+      "label": "no horizontal overflow 1366"
+    },
+    {
+      "pass": true,
+      "label": "logo mode original 1366"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text original 1366"
+    },
+    {
+      "pass": true,
+      "label": "logo mode subtle 1366"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text subtle 1366"
+    },
+    {
+      "pass": true,
+      "label": "logo mode present 1366"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text present 1366"
+    },
+    {
+      "pass": true,
+      "label": "no horizontal overflow 390"
+    },
+    {
+      "pass": true,
+      "label": "logo mode original 390"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text original 390"
+    },
+    {
+      "pass": true,
+      "label": "logo mode subtle 390"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text subtle 390"
+    },
+    {
+      "pass": true,
+      "label": "logo mode present 390"
+    },
+    {
+      "pass": true,
+      "label": "logo centered, inside stage, clear of text present 390"
+    },
+    {
+      "pass": true,
+      "label": "no JavaScript errors"
+    }
+  ],
+  "errors": [],
+  "captures": [
+    {
+      "name": "opening-original-1600",
+      "sha256": "134b53e5c819228b9b2765267e9da545027899a54c19aeba3f1bf89b32854520"
+    },
+    {
+      "name": "opening-subtle-1600",
+      "sha256": "5ac9e605169e68f8f1af57dd01ff974962f331ac5fd74f90b0d6fed1b112f50f"
+    },
+    {
+      "name": "opening-present-1600",
+      "sha256": "11695a523691eb05f5a3ddcce3205101ef1fce6913cf663b8da261a62ea6c975"
+    },
+    {
+      "name": "compare-human",
+      "sha256": "5e9de146e192536031dd24d8fee9495134757f9c8ffb473a57599b55e10a9eb9"
+    },
+    {
+      "name": "compare-dwarf",
+      "sha256": "694fabcd3e6ea6906f3793f562c1c54087b2c2a695badf613c583217f9f26508"
+    },
+    {
+      "name": "compare-elf",
+      "sha256": "a3e68f55e11efd57a963cc4c5f22e3e702816bf54857d0609a3d4dc2020fa3c3"
+    },
+    {
+      "name": "compare-orc",
+      "sha256": "9b0ba05d8f4eaba9a6fde5a355f1222d06bc7c0790cfc7d4b34b2dbcae4ea2e4"
+    },
+    {
+      "name": "compare-troll",
+      "sha256": "6a7280621fd30eeee2c9a0ea952665c3db832c66e2beb792c9defe2394c16512"
+    },
+    {
+      "name": "compare-undead",
+      "sha256": "432236192cb1e622590b1cc502a544f23d5ce00580219085843b33277b189387"
+    },
+    {
+      "name": "opening-original-1366",
+      "sha256": "48a6b277dbc9f92280f10d51ebeda62be57f01b4698141caca7e342fadcfb3c4"
+    },
+    {
+      "name": "opening-subtle-1366",
+      "sha256": "9bc32c911bf0c0dffdf12006a5adde57c1aad48b5fa2d2d4a48483a9f7b62add"
+    },
+    {
+      "name": "opening-present-1366",
+      "sha256": "793d06ce084d6b2a9408aef47ab3d28352f4e9a941ebbcc5a3f9edcf1384c3c6"
+    },
+    {
+      "name": "opening-original-390",
+      "sha256": "d554955233c038a6f990b833e45fbebf56f304c8b4ae76352bfac1f73062509e"
+    },
+    {
+      "name": "opening-subtle-390",
+      "sha256": "e8922121403c73affc78a63394f307634e3f2221b926bf44888fa261145e3e3f"
+    },
+    {
+      "name": "opening-present-390",
+      "sha256": "8263e93b07e90d5cf1ab8e04ca0b7544d10ed191b3d73247a9a44f979100f98a"
+    }
+  ],
+  "page_sha256": "785207ffb8dfef3b0682d0cd4f86c4c2fce8093264dcf7e9dfb769e49fb45979"
+}

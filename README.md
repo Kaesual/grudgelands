@@ -98,6 +98,35 @@ Warmaster's main line carries it across the front to the finale at 60.
 
 ## Current state
 
+**0.78.0** fixes what a game night found: bosses and every mob with both attacks keep about
+a node of distance and choose ranged or melee by distance, heals reach the tank past the
+boss, a 10 s respawn wait while the Expedition group still fights, Expedition lights that
+cannot be knocked down, nametags that come back, a 30 s potion cooldown in the status row,
+half-price repairs, armor numbers ×10, the emotes Wave and Dance, and towering again.
+Compatible; pushed 2026-11-12; desktop and web acceptance is pending
+([checklist](docs/planning/round78-plan.md#6-verification-and-gui-checklist)).
+
+**0.76.2** adds the chat command **/home**: the same Return home as the button on the
+Character page and the quickbar, with the same 30-minute cooldown. Compatible.
+
+**0.76.1** adds a **Party** button to each online row of the clan list, so clan mates
+can be invited to a party from there. Compatible.
+
+**0.76.0** adds clans: a long-lived, purely social group of up to 100 players of your
+faction beside your party, with a Leader, Captains and Members and no effect on play.
+`/p` writes to your party and `/c` to your clan. The Social tab now holds four cards
+(party, clan, online players with Party and Clan buttons, PvP) in one row style.
+Compatible; not pushed; desktop and web acceptance is pending
+([checklist](docs/planning/round76-plan.md#6-verification-and-gui-checklist)).
+
+**0.75.5** gives town homes, guilds, services and special city buildings coherent
+structural frames and cultural materials, while retaining monumental forms,
+open grounds and ruined silhouettes. Character creation shows the updated
+buildings and the new opening crest. **Map reset**;
+merged locally into main and synced to local Luanti, not pushed. Browser
+comparisons accepted; native
+desktop/web acceptance remains open. [Checklist](docs/planning/round75.5-plan.md).
+
 **0.75.2** fixes decoration surfaces and fills out larger houses and profession
 workshops. Royal halls gain wall art without new combat obstacles. **Map reset**;
 merged into main and synced locally, not pushed; GUI acceptance pending.
@@ -499,12 +528,12 @@ investigations and delivery records.
 
 | Area | Design documents |
 |------|------------------|
-| World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns, capitals and fortified mining camps; [story](docs/design/story.md): factions and the campaign. |
+| World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns, cultural building frames, capitals and fortified mining camps; [story](docs/design/story.md): factions and the campaign. |
 | Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [targeting](docs/design/ability_targeting.md): how skills pick their targets and areas; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses, combat state, boss resets and friend and foe nametags; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit; [Miner's Guild](docs/design/miners_guild.md): mining camps, lifts, reputation and the guild's goods. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades, station recipes and production; [enchanting](docs/design/items_crafting.md#6b-enchantments): enchantments and their inputs; [equipment](docs/design/inventory_equipment.md): slots, bags, crafting stations and the approved UI presentation rules; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes; [decorations](docs/design/decorations.md): household details, functional displays and original wall art. |
-| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [Expeditions](docs/design/expeditions.md): repeatable group content beyond the map, its levels, owners, packs, traps, ambushes and lava falls, and rewards, and the Expeditions tab on waystones; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers, including the shared Round 64 icons and bounded placement. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): playing in a party; [clans](docs/design/clans.md): a long-lived social group of up to 100 with its own chat; [Expeditions](docs/design/expeditions.md): repeatable group content beyond the map, its levels, owners, packs, traps, ambushes and lava falls, and rewards, and the Expeditions tab on waystones; [mail](docs/design/mail.md): mailboxes, letters and messages to the admin; [atlas](docs/design/world_map.md): maps, minimap and markers, including the shared Round 64 icons and bounded placement. |
 | Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 

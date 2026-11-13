@@ -1,5 +1,75 @@
 # Settlements
 
+## Ordinary town facades (0.75.5)
+
+The 145 approved template/palette scenes cover 136 ordinary residential,
+profession and civic building templates in the six starts and six capitals.
+Their construction follows continuous, generally one-node-wide corner and
+intermediate supports, connected ties and infill between them. Openings and
+chimneys interrupt the wall without becoming false supports. Roof heights
+belong to each facade: a tall side wall remains a wall up to its roof, while
+only an actual gable receives the gable treatment.
+
+| Culture | Structure and infill | Roof and base |
+| --- | --- | --- |
+| Human | Dark timber frame, quiet loam fields; the original small reference home keeps its approved simplified bays | Original wood roofs on homes and tile roofs where previously selected; red brick home base, dressed stone civic base |
+| Dwarf | Dressed stone frame and masonry fields; warm wood only in actual gables | Dark slate; dressed stone base |
+| Elf | Marble frame, pale silverwood fields, one continuous serpentine accent course | Existing pale roof families; the lore hall keeps its original marble roof; pale sandstone base |
+| Orc | Old red sandstone supports, adobe fields, red stone ties and edges | Earthy sandstone inside flat roofs; existing red tile on pitched roofs; red stone base |
+| Troll | Junglewood frame and umber clay fields; the two original approved reference scenes retain their rustic bark infill | Brown reed shapes; raised wood platforms or basalt masonry at ground level |
+| Undead | Dark basalt frame, dungeon-stone fields and gravewood home gables | Obsidian-brick roof, mossy stone base |
+
+The twelve original reference designs remain exact. These choices supersede
+older material descriptions for the covered buildings only. The explicit
+[scope audit](../../tools/city_architecture_rollout/audit.json) records all
+154 originally deferred city placement contexts. The user subsequently included
+Silverleaf's moon shrine: marble piers, silverwood infill, one serpentine course
+at y=7 and marble roof-lantern supports, with its pale roof unchanged. This
+extension adds one template/context. The subsequent authorized guild/service
+pass adds 50 contexts across 45 templates, recorded in
+[services.json](../../tools/r75_5_architecture/services.json). The final approved
+special-building pass adds 87 contexts across 72 templates, recorded in
+[specials.json](../../tools/r75_5_architecture/specials.json). Totals are 283
+implemented contexts / 254 templates; 16 green grounds and monuments retain
+their original appearance. Camps remain outside the city audit and unchanged.
+
+Royal halls retain monumental masonry, their combat floors, arcades, throne,
+furniture and wall art. Existing piers and cornices define the material order;
+Kezamba keeps its basalt hall and dark junglewood roof. Towers have separately
+framed lower walls and open upper stages, with their intervening floors intact.
+Open markets, shelters, wells and colonnades preserve all open cells. Slim
+pillars use twelve city-only material variants (marble, ORS, basalt and
+junglewood; bottom/middle/top) of the existing fixed pillar geometry, using
+existing textures. These are hidden construction nodes without merchant stock
+or recipes. Open elf shrine roofs remain marble above a single green beam
+course. Bough huts keep their tree supports, platforms, stairs, planting and
+late-cell ordering. Ruins retain all missing cells, moss and surviving timber;
+no intact house is reconstructed from them.
+An ordinary workshop can still have a military use; the audited scope is the
+boundary rather than a keyword rule.
+
+Guild facades are bounded to the hall (x=0..10, z=3..16); the adjoining ore yard,
+headframe, machines, fixed tier-stone frieze and service points are preserved.
+Human service roofs use red brick tiles, dwarf roofs dark slate, and undead
+pitched roofs obsidian brick; elf roofs retain their existing pale family.
+The orc guild retains its flat deck and red parapet with an earthy roof field;
+the troll guild keeps its dark wooden deck. Open work sheds retain their open
+sides and use single-width wall piers plus continuous detached supports.
+Two-level toll/drill houses have a separate lower frame and upper gallery;
+the full gallery floor and open gallery cells remain unchanged. This is
+explicit offline authoring, with no inferred remodelling at runtime.
+
+The game stores the construction as `facade_*` roles and existing race switches
+in the shared template format. Culture palettes resolve those roles; no facade
+inference runs during world generation. Existing roof palette channels remain.
+The integration preserves silhouettes, occupied cells, collisions, openings,
+points, services, placements and all 770 authored decorations. Decoration
+support-name pins follow changed walls or roof surfaces without moving the
+objects. Newly exposed full cubes use their real support properties. Four
+reed stair/slab shapes complete the existing reed material with its existing
+texture. This is a **map reset**, with no migration step.
+
+
 ## Hearthpine Vale: first start settlement
 
 Decided 2026-09-13. The first WP13 structure increment is the **dwarf start

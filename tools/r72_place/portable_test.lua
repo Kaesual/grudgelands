@@ -405,8 +405,10 @@ do
 	local before = #feed
 	placer.pos = P(0, 0.5, -1.5) -- its box reaches z -1.8..-1.2
 	core.item_place(ItemStack(BLOCK), placer, pointed(0, -1))
-	eq(at(P(0, 1, -1)), "air", "B a block into the placer's own partial cell is refused")
-	eq(feed[before + 1] and feed[before + 1].text, LINES.BODY_LINE, "B the placer's own body line")
+	-- Round 78 ruling 8 reverses this case: the placer's own body is exempt.
+	eq(at(P(0, 1, -1)), BLOCK, "B a block into the placer's own partial cell places (Round 78)")
+	eq(#feed, before, "B ...without a body line")
+	world[key(P(0, 1, -1))] = nil
 end
 place(BLOCK, 32, 0)
 eq(at(P(32, 1, 0)), BLOCK, "B a box that only touches the face does not refuse")

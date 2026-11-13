@@ -449,6 +449,28 @@ core.register_globalstep(function(dtime)
 	emit(changed, "invitation")
 end)
 
+-- /p <text>: the party chat (Round 76 ruling 9), in blue to the online
+-- members; the sender sees its own line. Needs shout like public chat (and
+-- Luanti's /msg, builtin/game/chat.lua); logged like /msg.
+grug_parties.CHAT_COLOR = "#6fb6ff"
+core.register_chatcommand("p", {
+	params = "<message>",
+	description = "Send a message to your party",
+	privs = {shout = true},
+	func = function(name, param)
+		local group, id = group_of(name)
+		if not group then return false, "You are not in a party." end
+		local text = param:match("^%s*(.-)%s*$")
+		if text == "" then return false, "Write a message after /p." end
+		core.log("action", "Party chat from " .. name .. " to party " .. id .. ": " .. text)
+		local line = core.colorize(grug_parties.CHAT_COLOR, "[Party] " .. name .. ": " .. text)
+		for _, member in ipairs(group.members) do
+			if connected[member] then core.chat_send_player(member, line) end
+		end
+		return true
+	end,
+})
+
 local path = core.get_modpath(core.get_current_modname())
 dofile(path .. "/ui.lua")
 dofile(path .. "/hud.lua")

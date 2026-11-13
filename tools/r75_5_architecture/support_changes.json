@@ -1,0 +1,428 @@
+[
+  {
+    "id": "dawnmere/building/meeting_hall",
+    "position": "-20:2:13",
+    "before": "default:wood",
+    "after": "grug_decor:cottages_loam"
+  },
+  {
+    "id": "dawnmere/building/smithy",
+    "position": "25:2:-5",
+    "before": "default:wood",
+    "after": "grug_decor:cottages_loam"
+  },
+  {
+    "id": "dur_brannoc/core/market_house",
+    "position": "-45:3:-19",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/core/masons_guild",
+    "position": "33:2:-31",
+    "before": "default:pine_wood",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "dur_brannoc/district/deep_carvers",
+    "position": "-6:3:-6",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/deep_carvers",
+    "position": "6:7:-4",
+    "before": "default:pine_wood",
+    "after": "default:wood"
+  },
+  {
+    "id": "dur_brannoc/district/forge_guild_house",
+    "position": "2:5:-9",
+    "before": "default:pine_wood",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "dur_brannoc/district/forge_smithy",
+    "position": "5:7:-4",
+    "before": "default:pine_wood",
+    "after": "default:wood"
+  },
+  {
+    "id": "dur_brannoc/district/forge_store",
+    "position": "-3:5:-8",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/forge_store",
+    "position": "-4:2:-8",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/garrison_armoury",
+    "position": "-6:2:-8",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_brewhouse",
+    "position": "-6:3:-6",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_brewhouse",
+    "position": "6:7:-4",
+    "before": "default:pine_wood",
+    "after": "default:wood"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_cottage_east",
+    "position": "-3:2:-6",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_cottage_east",
+    "position": "0:5:-6",
+    "before": "default:pine_wood",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_cottage_west",
+    "position": "-3:2:-5",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_cottage_west",
+    "position": "4:3:-5",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_long_house",
+    "position": "-3:5:-7",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "dur_brannoc/district/terrace_long_house",
+    "position": "2:5:-9",
+    "before": "default:pine_wood",
+    "after": "default:stone_block"
+  },
+  {
+    "id": "gor_drazhak/core/council_house",
+    "position": "33:2:-31",
+    "before": "grug_decor:darkage_adobe",
+    "after": "grug_decor:darkage_ors_block"
+  },
+  {
+    "id": "gor_drazhak/district/bazaar_carver",
+    "position": "-3:2:-6",
+    "before": "grug_decor:darkage_ors_block",
+    "after": "grug_decor:darkage_adobe"
+  },
+  {
+    "id": "gor_drazhak/district/bazaar_house",
+    "position": "-3:2:-5",
+    "before": "grug_decor:darkage_ors_block",
+    "after": "grug_decor:darkage_adobe"
+  },
+  {
+    "id": "gor_drazhak/district/bone_herb_house",
+    "position": "-3:2:-6",
+    "before": "grug_decor:darkage_ors_block",
+    "after": "grug_decor:darkage_adobe"
+  },
+  {
+    "id": "gor_drazhak/district/war_chief_house",
+    "position": "-3:2:-5",
+    "before": "grug_decor:darkage_ors_block",
+    "after": "grug_decor:darkage_adobe"
+  },
+  {
+    "id": "gor_drazhak/district/warren_clan_house",
+    "position": "2:5:-9",
+    "before": "grug_decor:darkage_adobe",
+    "after": "grug_decor:darkage_ors_block"
+  },
+  {
+    "id": "gor_drazhak/district/warren_house_bone",
+    "position": "-3:2:-6",
+    "before": "grug_decor:darkage_ors_block",
+    "after": "grug_decor:darkage_adobe"
+  },
+  {
+    "id": "gor_drazhak/district/warren_house_spear",
+    "position": "-3:2:-5",
+    "before": "grug_decor:darkage_ors_block",
+    "after": "grug_decor:darkage_adobe"
+  },
+  {
+    "id": "hearthpine/building/community_hall",
+    "position": "-29:2:27",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "hearthpine/building/east_gable_home",
+    "position": "40:2:-13",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "hearthpine/building/forge_hall",
+    "position": "4:2:-29",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "hearthpine/building/southwest_home",
+    "position": "-37:4:-18",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "hearthpine/building/west_home",
+    "position": "-24:2:1",
+    "before": "default:pine_wood",
+    "after": "grug_decor:darkage_stone_brick"
+  },
+  {
+    "id": "highcourt/district/homes_tenement",
+    "position": "-3:5:-9",
+    "before": "grug_decor:cottages_loam",
+    "after": "grug_trees:gravewood_wood"
+  },
+  {
+    "id": "highcourt/district/lore_archive",
+    "position": "2:5:-8",
+    "before": "grug_decor:cottages_loam",
+    "after": "grug_trees:gravewood_wood"
+  },
+  {
+    "id": "highcourt/district/market_counting_house",
+    "position": "2:5:-9",
+    "before": "grug_decor:cottages_loam",
+    "after": "grug_trees:gravewood_wood"
+  },
+  {
+    "id": "highcourt/district/market_store",
+    "position": "-3:5:-8",
+    "before": "grug_decor:cottages_loam",
+    "after": "grug_trees:gravewood_wood"
+  },
+  {
+    "id": "kapok/building/fish_smoker",
+    "position": "25:4:24",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kapok/building/reed_stilt",
+    "position": "32:6:6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/canopy_armoury",
+    "position": "5:7:-4",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/canopy_house_a",
+    "position": "4:3:-6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/canopy_house_b",
+    "position": "4:3:-6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/shore_butcher",
+    "position": "5:7:-4",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/shore_house",
+    "position": "-4:2:-8",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/shore_store",
+    "position": "-4:2:-8",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/totem_house_a",
+    "position": "4:3:-6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/vine_house_a",
+    "position": "4:3:-6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/vine_house_b",
+    "position": "4:3:-6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/vine_house_c",
+    "position": "4:3:-6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/vine_house_d",
+    "position": "4:3:-6",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "kezamba/district/vine_longhouse",
+    "position": "-4:2:-8",
+    "before": "default:junglewood",
+    "after": "grug_nodes:clay_band_umber"
+  },
+  {
+    "id": "lethariel/district/homes_carver",
+    "position": "2:5:-9",
+    "before": "grug_trees:silverwood_wood",
+    "after": "grug_decor:darkage_marble"
+  },
+  {
+    "id": "lethariel/district/homes_feast_hall",
+    "position": "2:5:-9",
+    "before": "grug_trees:silverwood_wood",
+    "after": "grug_decor:darkage_marble"
+  },
+  {
+    "id": "lethariel/district/market_weaver",
+    "position": "2:5:-9",
+    "before": "grug_trees:silverwood_wood",
+    "after": "grug_decor:darkage_marble"
+  },
+  {
+    "id": "lethariel/district/martial_store",
+    "position": "-3:5:-8",
+    "before": "grug_trees:silverwood_wood",
+    "after": "grug_decor:darkage_serpentine"
+  },
+  {
+    "id": "lethariel/district/mere_lore_hall",
+    "position": "2:5:-9",
+    "before": "grug_trees:silverwood_wood",
+    "after": "grug_decor:darkage_marble"
+  },
+  {
+    "id": "nhal_veyr/core/bonesmith_guild",
+    "position": "33:2:-31",
+    "before": "grug_decor:castle_dungeon_stone",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "nhal_veyr/core/market_house",
+    "position": "-45:3:-19",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/homes_corner_house",
+    "position": "-3:2:-6",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/homes_lane_house",
+    "position": "-3:2:-5",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/homes_terrace_house",
+    "position": "-3:2:-5",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/homes_terrace_house",
+    "position": "4:3:-5",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/market_bonesmith",
+    "position": "5:7:-4",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "nhal_veyr/district/market_physic",
+    "position": "2:5:-9",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "nhal_veyr/district/market_shroud_house",
+    "position": "2:5:-9",
+    "before": "grug_decor:castle_dungeon_stone",
+    "after": "grug_decor:darkage_basalt_block"
+  },
+  {
+    "id": "nhal_veyr/district/vigil_candle_works",
+    "position": "5:7:-4",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "stillgrave/building/bone_works",
+    "position": "31:2:-5",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "stillgrave/building/keepers_house",
+    "position": "-33:2:39",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "stillgrave/building/warden_house",
+    "position": "-17:2:39",
+    "before": "grug_trees:gravewood_wood",
+    "after": "grug_decor:castle_dungeon_stone"
+  },
+  {
+    "id": "sunscar/building/armoury",
+    "position": "31:7:-6",
+    "before": "default:desert_stonebrick",
+    "after": "default:desert_sandstone"
+  },
+  {
+    "id": "sunscar/building/armoury",
+    "position": "32:7:-6",
+    "before": "default:desert_stonebrick",
+    "after": "default:desert_sandstone"
+  },
+  {
+    "id": "sunscar/building/chief_lodge",
+    "position": "-33:2:15",
+    "before": "grug_decor:darkage_ors_block",
+    "after": "grug_decor:darkage_adobe"
+  }
+]

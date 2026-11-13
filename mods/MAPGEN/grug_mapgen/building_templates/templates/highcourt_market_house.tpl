@@ -16,14 +16,12 @@ D role chimney_cap
 E role door variant=_a
 F role door_hidden
 G role floor
-H role foundation
 I role hearth o=facedir:1
 J role light_post o=wallmounted:1
 K role light_wall o=wallmounted:2
 L role light_wall o=wallmounted:3
 M role light_wall o=wallmounted:4
 N role path
-O role post
 P role roof_slab
 Q role roof_stair o=facedir:1
 R role roof_stair o=facedir:3
@@ -41,7 +39,9 @@ h role wall_accent
 i role wall_infill else=air
 j role window
 k role window o=facedir:3
-l role window_frame
+H role facade_home_base
+O role facade_frame
+a role facade_infill
 end
 
 layer 0
@@ -58,67 +58,67 @@ layer 0
 |NNNNNNNNNNN|
 layer 1
 |...........|
-|.OhEhhlhhl.|
-|.lA.....IC.|
+|.HhEhhHhhH.|
+|.HA.....IC.|
 |.hB....W.h.|
 |.he..V...h.|
-|.lY..ff..l.|
-|.l...U...l.|
+|.HY..ff..H.|
+|.H...U...H.|
 |.h......Xh.|
 |.h......Zh.|
-|.llhhllhhl.|
+|.HHhhHHhhH.|
 |...........|
 layer 2
 |...........|
-|.OiFOiljjl.|
-|.l......JC.|
+|.OiFaOajjO.|
+|.a......JC.|
 |.k.......k.|
 |.k.......k.|
-|.lY......l.|
-|.l.......l.|
+|.OY......O.|
+|.a.......a.|
 |.k......Zk.|
 |.k.......k.|
-|.lljjlljjl.|
+|.OajjOajjO.|
 |...........|
 layer 3
 |.M...M.....|
-|.OiiOiljjl.|
-|.l......CC.|
+|.OiiaOajjO.|
+|.a......CC.|
 |.k.......k.|
 |.k.......k.|
-|.lL.....Kl.|
-|.l.......l.|
+|.OL.....KO.|
+|.a.......a.|
 |.k.......k.|
 |.k.......k.|
-|.lljjlljjl.|
+|.OajjOajjO.|
 |...........|
 layer 4
 |...........|
-|.OiiOilOil.|
-|.l......CC.|
+|.OiiaOaaiO.|
+|.a......CC.|
 |.i.......i.|
+|.a.......a.|
 |.O.......O.|
-|.l.......l.|
-|.l.......l.|
-|.O.......O.|
+|.a.......a.|
+|.a.......a.|
 |.i.......i.|
-|.lliOllOil.|
+|.OaiaOaaiO.|
 |...........|
 layer 5
 |Q.........R|
-|QOiiOilOilR|
-|Ql......CCR|
-|Qi.......iR|
+|QOOOOOOOOOR|
+|QO......CCR|
 |QO.......OR|
-|Ql.......lR|
-|Ql.......lR|
 |QO.......OR|
-|Qi.......iR|
-|QlliOllOilR|
+|QO.......OR|
+|QO.......OR|
+|QO.......OR|
+|QO.......OR|
+|QOOOOOOOOOR|
 |Q.........R|
 layer 6
 |.Q.......R.|
-|.QiiOiiOiR.|
+|.QiiaOiaiR.|
 |.Q.......C.|
 |.Q.......R.|
 |.Q.......R.|
@@ -126,11 +126,11 @@ layer 6
 |.Q.......R.|
 |.Q.......R.|
 |.Q.......R.|
-|.QiiOiiOiR.|
+|.QiiaOiaiR.|
 |.Q.......R.|
 layer 7
 |..Q.....R..|
-|..QiOiiOR..|
+|..QiaOiaR..|
 |..Q.....RC.|
 |..Q.....R..|
 |..Q.....R..|
@@ -138,11 +138,11 @@ layer 7
 |..Q.....R..|
 |..Q.....R..|
 |..Q.....R..|
-|..QiOiiOR..|
+|..QiaOiaR..|
 |..Q.....R..|
 layer 8
 |...Q...R...|
-|...QOiiR...|
+|...QaOiR...|
 |...Q...R.C.|
 |...Q...R...|
 |...Q...R...|
@@ -150,7 +150,7 @@ layer 8
 |...Q...R...|
 |...Q...R...|
 |...Q...R...|
-|...QOiiR...|
+|...QaOiR...|
 |...Q...R...|
 layer 9
 |....PPP....|

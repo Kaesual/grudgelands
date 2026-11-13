@@ -9,12 +9,9 @@ meta extent=[-1,-1,13,9] peak=7 top=9
 races dwarf human undead orc
 
 legend
-A role beam
 B role floor
-C role foundation
 D role light_wall o=wallmounted:3
 E role path
-F role post
 G role roof_slab
 H role roof_stair
 I role roof_stair o=facedir:2
@@ -24,106 +21,119 @@ L role storage
 M node grug_decor:xdecor_table
 O role tree_log
 P role wall
-Q role wall_accent
 R role window
 S role window o=facedir:3
-T role window_frame
 U role workbench
+A role facade_roof_stair o=facedir:0
+C role facade_service_roof_stair o=facedir:0
+F race *=H dwarf=A human=C
+N role facade_roof_stair o=facedir:2
+Q role facade_service_roof_stair o=facedir:2
+T race *=I dwarf=N human=Q
+V role facade_roof_slab o=facedir:0
+W role facade_service_roof_slab o=facedir:0
+X race *=G dwarf=V human=W
+Y role facade_base
+Z role facade_frame
+a role facade_infill
+b role facade_band
+c role facade_gable
+d race *=P dwarf=c human=a undead=a
 end
 
 layer 0
 |EEEEEEEEEEEEEEE|
-|ECCCCCCCCCCCCCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECBBBBBBBBBBBCE|
-|ECCCCCCCCCCCCCE|
+|EYYYYYYYYYYYYYE|
+|EYBBBBBBBBBBBYE|
+|EYBBBBBBBBBBBYE|
+|EYBBBBBBBBBBBYE|
+|EYBBBBBBBBBBBYE|
+|EYBBBBBBBBBBBYE|
+|EYBBBBBBBBBBBYE|
+|EYBBBBBBBBBBBYE|
+|EYYYYYYYYYYYYYE|
 |EEEEEEEEEEEEEEE|
 layer 1
 |...............|
-|.F...F...F...F.|
-|.TOO.......OO..|
-|.Q.............|
-|.Q.....K.......|
-|.T....MMM....F.|
-|.T.....J.......|
-|.Q.............|
-|.QLL...U.......|
-|.TTQQTTQQTTQQT.|
+|.Y...Z...Z...Z.|
+|.YOO.......OO..|
+|.Y.............|
+|.Y.....K.......|
+|.Y....MMM....Z.|
+|.Y.....J.......|
+|.Y.............|
+|.YLL...U.......|
+|.YYYYYYYYYYYYY.|
 |...............|
 layer 2
 |...............|
-|.F...F...F...F.|
-|.TOO.......OO..|
+|.Z...Z...Z...Z.|
+|.aOO.......OO..|
 |.S.............|
 |.S.............|
-|.T...........F.|
-|.T.............|
+|.Z...........Z.|
+|.a.............|
 |.S.............|
 |.S.............|
-|.TTRRTTRRTTRRT.|
+|.ZaRRZaRRZaRRZ.|
 |...............|
 layer 3
 |...............|
-|.F...F...F...F.|
-|.TGG.......GG..|
+|.Z...Z...Z...Z.|
+|.aGG.......GG..|
 |.S.............|
 |.S.............|
-|.TD..........F.|
-|.TD............|
+|.ZD..........Z.|
+|.aD............|
 |.S.............|
 |.S.............|
-|.TTRRTTRRTTRRT.|
+|.ZaRRZaRRZaRRZ.|
 |...............|
 layer 4
-|HHHHHHHHHHHHHHH|
-|.FAAAAAAAAAAAF.|
-|.T.............|
-|.P.............|
-|.P.............|
-|.T...........F.|
-|.T.............|
-|.P.............|
-|.P.............|
-|.TTPPTTPPTTPPT.|
-|IIIIIIIIIIIIIII|
+|FFFFFFFFFFFFFFF|
+|.ZZZZZZZZZZZZZ.|
+|.b.............|
+|.b.............|
+|.b.............|
+|.Z...........Z.|
+|.b.............|
+|.b.............|
+|.b.............|
+|.ZbbbZbbbZbbbZ.|
+|TTTTTTTTTTTTTTT|
 layer 5
 |...............|
-|HHHHHHHHHHHHHHH|
-|.P...........A.|
-|.P.............|
-|.P.............|
-|.P...........F.|
-|.P.............|
-|.P.............|
-|.P...........A.|
-|IIIIIIIIIIIIIII|
+|FFFFFFFFFFFFFFF|
+|.d...........Z.|
+|.d.............|
+|.d.............|
+|.Z...........Z.|
+|.d.............|
+|.d.............|
+|.d...........Z.|
+|TTTTTTTTTTTTTTT|
 |...............|
 layer 6
 |...............|
 |...............|
-|HHHHHHHHHHHHHHH|
-|.P...........A.|
-|.P...........A.|
-|.P...........A.|
-|.P...........A.|
-|.P...........A.|
-|IIIIIIIIIIIIIII|
+|FFFFFFFFFFFFFFF|
+|.d...........Z.|
+|.d...........Z.|
+|.Z...........Z.|
+|.d...........Z.|
+|.d...........Z.|
+|TTTTTTTTTTTTTTT|
 |...............|
 |...............|
 layer 7
 |...............|
 |...............|
 |...............|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
-|GGGGGGGGGGGGGGG|
+|XXXXXXXXXXXXXXX|
+|XXXXXXXXXXXXXXX|
+|XXXXXXXXXXXXXXX|
+|XXXXXXXXXXXXXXX|
+|XXXXXXXXXXXXXXX|
 |...............|
 |...............|
 |...............|

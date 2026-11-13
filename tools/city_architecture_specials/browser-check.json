@@ -1,0 +1,2945 @@
+{
+  "page_sha256": "37ded8eb1f380cd9d6a65a53c4d9c3f34eea30f4728f403d7f8c209941463382",
+  "checks": [
+    "Every context has a viewer scene",
+    "dawnmere__dawnmere_tollhouse__16: visible geometry",
+    "dawnmere__dawnmere_tollhouse__16: full building fits",
+    "dawnmere__dawnmere_tollhouse__16: materials load",
+    "dawnmere__dawnmere_tollhouse__16: honest view mode",
+    "dawnmere__dawnmere_tollhouse__16: actual material changes",
+    "hearthpine__hearthpine_workyard__15: visible geometry",
+    "hearthpine__hearthpine_workyard__15: full building fits",
+    "hearthpine__hearthpine_workyard__15: materials load",
+    "hearthpine__hearthpine_workyard__15: honest view mode",
+    "hearthpine__hearthpine_workyard__15: actual material changes",
+    "hearthpine__hearthpine_gatewatch__16: visible geometry",
+    "hearthpine__hearthpine_gatewatch__16: full building fits",
+    "hearthpine__hearthpine_gatewatch__16: materials load",
+    "hearthpine__hearthpine_gatewatch__16: honest view mode",
+    "hearthpine__hearthpine_gatewatch__16: actual material changes",
+    "kapok__kapok_drying_shed__11: visible geometry",
+    "kapok__kapok_drying_shed__11: full building fits",
+    "kapok__kapok_drying_shed__11: materials load",
+    "kapok__kapok_drying_shed__11: honest view mode",
+    "kapok__kapok_drying_shed__11: actual material changes",
+    "kapok__kapok_watchpost__16: visible geometry",
+    "kapok__kapok_watchpost__16: full building fits",
+    "kapok__kapok_watchpost__16: materials load",
+    "kapok__kapok_watchpost__16: honest view mode",
+    "kapok__kapok_watchpost__16: actual material changes",
+    "silverleaf__silverleaf_moon_shrine__8: visible geometry",
+    "silverleaf__silverleaf_moon_shrine__8: full building fits",
+    "silverleaf__silverleaf_moon_shrine__8: materials load",
+    "silverleaf__silverleaf_moon_shrine__8: honest view mode",
+    "silverleaf__silverleaf_moon_shrine__8: actual material changes",
+    "Shrine cameras stay coupled",
+    "silverleaf__silverleaf_covered_market__15: visible geometry",
+    "silverleaf__silverleaf_covered_market__15: full building fits",
+    "silverleaf__silverleaf_covered_market__15: materials load",
+    "silverleaf__silverleaf_covered_market__15: honest view mode",
+    "silverleaf__silverleaf_covered_market__15: actual material changes",
+    "silverleaf__dawnmere_tollhouse__16: visible geometry",
+    "silverleaf__dawnmere_tollhouse__16: full building fits",
+    "silverleaf__dawnmere_tollhouse__16: materials load",
+    "silverleaf__dawnmere_tollhouse__16: honest view mode",
+    "silverleaf__dawnmere_tollhouse__16: actual material changes",
+    "stillgrave__stillgrave_crypt_chapel__9: visible geometry",
+    "stillgrave__stillgrave_crypt_chapel__9: full building fits",
+    "stillgrave__stillgrave_crypt_chapel__9: materials load",
+    "stillgrave__stillgrave_crypt_chapel__9: honest view mode",
+    "stillgrave__stillgrave_crypt_chapel__9: actual material changes",
+    "stillgrave__stillgrave_hollow_ruin__13: visible geometry",
+    "stillgrave__stillgrave_hollow_ruin__13: full building fits",
+    "stillgrave__stillgrave_hollow_ruin__13: materials load",
+    "stillgrave__stillgrave_hollow_ruin__13: honest view mode",
+    "stillgrave__stillgrave_hollow_ruin__13: actual material changes",
+    "stillgrave__stillgrave_sunken_ruin__14: visible geometry",
+    "stillgrave__stillgrave_sunken_ruin__14: full building fits",
+    "stillgrave__stillgrave_sunken_ruin__14: materials load",
+    "stillgrave__stillgrave_sunken_ruin__14: honest view mode",
+    "stillgrave__stillgrave_sunken_ruin__14: actual material changes",
+    "stillgrave__stillgrave_watchtower__15: visible geometry",
+    "stillgrave__stillgrave_watchtower__15: full building fits",
+    "stillgrave__stillgrave_watchtower__15: materials load",
+    "stillgrave__stillgrave_watchtower__15: honest view mode",
+    "stillgrave__stillgrave_watchtower__15: actual material changes",
+    "sunscar__sunscar_warlord_hall__6: visible geometry",
+    "sunscar__sunscar_warlord_hall__6: full building fits",
+    "sunscar__sunscar_warlord_hall__6: materials load",
+    "sunscar__sunscar_warlord_hall__6: honest view mode",
+    "sunscar__sunscar_warlord_hall__6: actual material changes",
+    "sunscar__sunscar_beast_pen__8: visible geometry",
+    "sunscar__sunscar_beast_pen__8: full building fits",
+    "sunscar__sunscar_beast_pen__8: materials load",
+    "sunscar__sunscar_beast_pen__8: honest view mode",
+    "sunscar__sunscar_beast_pen__8: actual material changes",
+    "sunscar__sunscar_west_tower__13: visible geometry",
+    "sunscar__sunscar_west_tower__13: full building fits",
+    "sunscar__sunscar_west_tower__13: materials load",
+    "sunscar__sunscar_west_tower__13: honest view mode",
+    "sunscar__sunscar_west_tower__13: actual material changes",
+    "sunscar__sunscar_east_tower__14: visible geometry",
+    "sunscar__sunscar_east_tower__14: full building fits",
+    "sunscar__sunscar_east_tower__14: materials load",
+    "sunscar__sunscar_east_tower__14: honest view mode",
+    "sunscar__sunscar_east_tower__14: actual material changes",
+    "dur_brannoc__dur_brannoc_kings_hall__10: visible geometry",
+    "dur_brannoc__dur_brannoc_kings_hall__10: full building fits",
+    "dur_brannoc__dur_brannoc_kings_hall__10: materials load",
+    "dur_brannoc__dur_brannoc_kings_hall__10: honest view mode",
+    "dur_brannoc__dur_brannoc_kings_hall__10: actual material changes",
+    "dur_brannoc__dur_brannoc_gate_south__11: visible geometry",
+    "dur_brannoc__dur_brannoc_gate_south__11: full building fits",
+    "dur_brannoc__dur_brannoc_gate_south__11: materials load",
+    "dur_brannoc__dur_brannoc_gate_south__11: honest view mode",
+    "dur_brannoc__dur_brannoc_gate_south__11: actual material changes",
+    "dur_brannoc__highcourt_market__12: visible geometry",
+    "dur_brannoc__highcourt_market__12: full building fits",
+    "dur_brannoc__highcourt_market__12: materials load",
+    "dur_brannoc__highcourt_market__12: honest view mode",
+    "dur_brannoc__highcourt_market__12: actual material changes",
+    "dur_brannoc__dur_brannoc_colonnade_west__13: visible geometry",
+    "dur_brannoc__dur_brannoc_colonnade_west__13: full building fits",
+    "dur_brannoc__dur_brannoc_colonnade_west__13: materials load",
+    "dur_brannoc__dur_brannoc_colonnade_west__13: honest view mode",
+    "dur_brannoc__dur_brannoc_colonnade_west__13: actual material changes",
+    "dur_brannoc__dur_brannoc_colonnade_east__14: visible geometry",
+    "dur_brannoc__dur_brannoc_colonnade_east__14: full building fits",
+    "dur_brannoc__dur_brannoc_colonnade_east__14: materials load",
+    "dur_brannoc__dur_brannoc_colonnade_east__14: honest view mode",
+    "dur_brannoc__dur_brannoc_colonnade_east__14: actual material changes",
+    "dur_brannoc__highcourt_well_court__16: visible geometry",
+    "dur_brannoc__highcourt_well_court__16: full building fits",
+    "dur_brannoc__highcourt_well_court__16: materials load",
+    "dur_brannoc__highcourt_well_court__16: honest view mode",
+    "dur_brannoc__highcourt_well_court__16: actual material changes",
+    "dur_brannoc__dur_brannoc_ancestor_hall__17: visible geometry",
+    "dur_brannoc__dur_brannoc_ancestor_hall__17: full building fits",
+    "dur_brannoc__dur_brannoc_ancestor_hall__17: materials load",
+    "dur_brannoc__dur_brannoc_ancestor_hall__17: honest view mode",
+    "dur_brannoc__dur_brannoc_ancestor_hall__17: actual material changes",
+    "dur_brannoc__highcourt_service_yard__19: visible geometry",
+    "dur_brannoc__highcourt_service_yard__19: full building fits",
+    "dur_brannoc__highcourt_service_yard__19: materials load",
+    "dur_brannoc__highcourt_service_yard__19: honest view mode",
+    "dur_brannoc__highcourt_service_yard__19: actual material changes",
+    "dur_brannoc__highcourt_market_stable__26: visible geometry",
+    "dur_brannoc__highcourt_market_stable__26: full building fits",
+    "dur_brannoc__highcourt_market_stable__26: materials load",
+    "dur_brannoc__highcourt_market_stable__26: honest view mode",
+    "dur_brannoc__highcourt_market_stable__26: actual material changes",
+    "dur_brannoc__dur_brannoc_forge_watch__29: visible geometry",
+    "dur_brannoc__dur_brannoc_forge_watch__29: full building fits",
+    "dur_brannoc__dur_brannoc_forge_watch__29: materials load",
+    "dur_brannoc__dur_brannoc_forge_watch__29: honest view mode",
+    "dur_brannoc__dur_brannoc_forge_watch__29: actual material changes",
+    "dur_brannoc__dur_brannoc_miners_guild__33: visible geometry",
+    "dur_brannoc__dur_brannoc_miners_guild__33: full building fits",
+    "dur_brannoc__dur_brannoc_miners_guild__33: materials load",
+    "dur_brannoc__dur_brannoc_miners_guild__33: honest view mode",
+    "dur_brannoc__dur_brannoc_miners_guild__33: actual material changes",
+    "dur_brannoc__dur_brannoc_garrison_barracks__34: visible geometry",
+    "dur_brannoc__dur_brannoc_garrison_barracks__34: full building fits",
+    "dur_brannoc__dur_brannoc_garrison_barracks__34: materials load",
+    "dur_brannoc__dur_brannoc_garrison_barracks__34: honest view mode",
+    "dur_brannoc__dur_brannoc_garrison_barracks__34: actual material changes",
+    "dur_brannoc__dur_brannoc_garrison_muster_hall__35: visible geometry",
+    "dur_brannoc__dur_brannoc_garrison_muster_hall__35: full building fits",
+    "dur_brannoc__dur_brannoc_garrison_muster_hall__35: materials load",
+    "dur_brannoc__dur_brannoc_garrison_muster_hall__35: honest view mode",
+    "dur_brannoc__dur_brannoc_garrison_muster_hall__35: actual material changes",
+    "dur_brannoc__dur_brannoc_garrison_drill_yard__37: visible geometry",
+    "dur_brannoc__dur_brannoc_garrison_drill_yard__37: full building fits",
+    "dur_brannoc__dur_brannoc_garrison_drill_yard__37: materials load",
+    "dur_brannoc__dur_brannoc_garrison_drill_yard__37: honest view mode",
+    "dur_brannoc__dur_brannoc_garrison_drill_yard__37: actual material changes",
+    "dur_brannoc__dur_brannoc_garrison_quartermaster__39: visible geometry",
+    "dur_brannoc__dur_brannoc_garrison_quartermaster__39: full building fits",
+    "dur_brannoc__dur_brannoc_garrison_quartermaster__39: materials load",
+    "dur_brannoc__dur_brannoc_garrison_quartermaster__39: honest view mode",
+    "dur_brannoc__dur_brannoc_garrison_quartermaster__39: actual material changes",
+    "dur_brannoc__dur_brannoc_garrison_serjeant__40: visible geometry",
+    "dur_brannoc__dur_brannoc_garrison_serjeant__40: full building fits",
+    "dur_brannoc__dur_brannoc_garrison_serjeant__40: materials load",
+    "dur_brannoc__dur_brannoc_garrison_serjeant__40: honest view mode",
+    "dur_brannoc__dur_brannoc_garrison_serjeant__40: actual material changes",
+    "dur_brannoc__dur_brannoc_garrison_watch_tower__41: visible geometry",
+    "dur_brannoc__dur_brannoc_garrison_watch_tower__41: full building fits",
+    "dur_brannoc__dur_brannoc_garrison_watch_tower__41: materials load",
+    "dur_brannoc__dur_brannoc_garrison_watch_tower__41: honest view mode",
+    "dur_brannoc__dur_brannoc_garrison_watch_tower__41: actual material changes",
+    "dur_brannoc__dur_brannoc_terrace_market__45: visible geometry",
+    "dur_brannoc__dur_brannoc_terrace_market__45: full building fits",
+    "dur_brannoc__dur_brannoc_terrace_market__45: materials load",
+    "dur_brannoc__dur_brannoc_terrace_market__45: honest view mode",
+    "dur_brannoc__dur_brannoc_terrace_market__45: actual material changes",
+    "gor_drazhak__gor_drazhak_warlord_hall__10: visible geometry",
+    "gor_drazhak__gor_drazhak_warlord_hall__10: full building fits",
+    "gor_drazhak__gor_drazhak_warlord_hall__10: materials load",
+    "gor_drazhak__gor_drazhak_warlord_hall__10: honest view mode",
+    "gor_drazhak__gor_drazhak_warlord_hall__10: actual material changes",
+    "gor_drazhak__gor_drazhak_gate_south__11: visible geometry",
+    "gor_drazhak__gor_drazhak_gate_south__11: full building fits",
+    "gor_drazhak__gor_drazhak_gate_south__11: materials load",
+    "gor_drazhak__gor_drazhak_gate_south__11: honest view mode",
+    "gor_drazhak__gor_drazhak_gate_south__11: actual material changes",
+    "gor_drazhak__highcourt_market__12: visible geometry",
+    "gor_drazhak__highcourt_market__12: full building fits",
+    "gor_drazhak__highcourt_market__12: materials load",
+    "gor_drazhak__highcourt_market__12: honest view mode",
+    "gor_drazhak__highcourt_market__12: actual material changes",
+    "gor_drazhak__gor_drazhak_colonnade_west__13: visible geometry",
+    "gor_drazhak__gor_drazhak_colonnade_west__13: full building fits",
+    "gor_drazhak__gor_drazhak_colonnade_west__13: materials load",
+    "gor_drazhak__gor_drazhak_colonnade_west__13: honest view mode",
+    "gor_drazhak__gor_drazhak_colonnade_west__13: actual material changes",
+    "gor_drazhak__gor_drazhak_colonnade_east__14: visible geometry",
+    "gor_drazhak__gor_drazhak_colonnade_east__14: full building fits",
+    "gor_drazhak__gor_drazhak_colonnade_east__14: materials load",
+    "gor_drazhak__gor_drazhak_colonnade_east__14: honest view mode",
+    "gor_drazhak__gor_drazhak_colonnade_east__14: actual material changes",
+    "gor_drazhak__highcourt_well_court__16: visible geometry",
+    "gor_drazhak__highcourt_well_court__16: full building fits",
+    "gor_drazhak__highcourt_well_court__16: materials load",
+    "gor_drazhak__highcourt_well_court__16: honest view mode",
+    "gor_drazhak__highcourt_well_court__16: actual material changes",
+    "gor_drazhak__gor_drazhak_skull_hall__17: visible geometry",
+    "gor_drazhak__gor_drazhak_skull_hall__17: full building fits",
+    "gor_drazhak__gor_drazhak_skull_hall__17: materials load",
+    "gor_drazhak__gor_drazhak_skull_hall__17: honest view mode",
+    "gor_drazhak__gor_drazhak_skull_hall__17: actual material changes",
+    "gor_drazhak__highcourt_service_yard__19: visible geometry",
+    "gor_drazhak__highcourt_service_yard__19: full building fits",
+    "gor_drazhak__highcourt_service_yard__19: materials load",
+    "gor_drazhak__highcourt_service_yard__19: honest view mode",
+    "gor_drazhak__highcourt_service_yard__19: actual material changes",
+    "gor_drazhak__gor_drazhak_bazaar_tannery__25: visible geometry",
+    "gor_drazhak__gor_drazhak_bazaar_tannery__25: full building fits",
+    "gor_drazhak__gor_drazhak_bazaar_tannery__25: materials load",
+    "gor_drazhak__gor_drazhak_bazaar_tannery__25: honest view mode",
+    "gor_drazhak__gor_drazhak_bazaar_tannery__25: actual material changes",
+    "gor_drazhak__gor_drazhak_miners_guild__31: visible geometry",
+    "gor_drazhak__gor_drazhak_miners_guild__31: full building fits",
+    "gor_drazhak__gor_drazhak_miners_guild__31: materials load",
+    "gor_drazhak__gor_drazhak_miners_guild__31: honest view mode",
+    "gor_drazhak__gor_drazhak_miners_guild__31: actual material changes",
+    "gor_drazhak__gor_drazhak_war_barracks__32: visible geometry",
+    "gor_drazhak__gor_drazhak_war_barracks__32: full building fits",
+    "gor_drazhak__gor_drazhak_war_barracks__32: materials load",
+    "gor_drazhak__gor_drazhak_war_barracks__32: honest view mode",
+    "gor_drazhak__gor_drazhak_war_barracks__32: actual material changes",
+    "gor_drazhak__highcourt_market_stable__34: visible geometry",
+    "gor_drazhak__highcourt_market_stable__34: full building fits",
+    "gor_drazhak__highcourt_market_stable__34: materials load",
+    "gor_drazhak__highcourt_market_stable__34: honest view mode",
+    "gor_drazhak__highcourt_market_stable__34: actual material changes",
+    "gor_drazhak__gor_drazhak_war_drill_yard__35: visible geometry",
+    "gor_drazhak__gor_drazhak_war_drill_yard__35: full building fits",
+    "gor_drazhak__gor_drazhak_war_drill_yard__35: materials load",
+    "gor_drazhak__gor_drazhak_war_drill_yard__35: honest view mode",
+    "gor_drazhak__gor_drazhak_war_drill_yard__35: actual material changes",
+    "gor_drazhak__gor_drazhak_war_quartermaster__36: visible geometry",
+    "gor_drazhak__gor_drazhak_war_quartermaster__36: full building fits",
+    "gor_drazhak__gor_drazhak_war_quartermaster__36: materials load",
+    "gor_drazhak__gor_drazhak_war_quartermaster__36: honest view mode",
+    "gor_drazhak__gor_drazhak_war_quartermaster__36: actual material changes",
+    "gor_drazhak__gor_drazhak_war_watch_tower__37: visible geometry",
+    "gor_drazhak__gor_drazhak_war_watch_tower__37: full building fits",
+    "gor_drazhak__gor_drazhak_war_watch_tower__37: materials load",
+    "gor_drazhak__gor_drazhak_war_watch_tower__37: honest view mode",
+    "gor_drazhak__gor_drazhak_war_watch_tower__37: actual material changes",
+    "gor_drazhak__gor_drazhak_bone_spirit_hall__38: visible geometry",
+    "gor_drazhak__gor_drazhak_bone_spirit_hall__38: full building fits",
+    "gor_drazhak__gor_drazhak_bone_spirit_hall__38: materials load",
+    "gor_drazhak__gor_drazhak_bone_spirit_hall__38: honest view mode",
+    "gor_drazhak__gor_drazhak_bone_spirit_hall__38: actual material changes",
+    "highcourt__highcourt_kings_hall__12: visible geometry",
+    "highcourt__highcourt_kings_hall__12: full building fits",
+    "highcourt__highcourt_kings_hall__12: materials load",
+    "highcourt__highcourt_kings_hall__12: honest view mode",
+    "highcourt__highcourt_kings_hall__12: actual material changes",
+    "highcourt__highcourt_gate_south__13: visible geometry",
+    "highcourt__highcourt_gate_south__13: full building fits",
+    "highcourt__highcourt_gate_south__13: materials load",
+    "highcourt__highcourt_gate_south__13: honest view mode",
+    "highcourt__highcourt_gate_south__13: actual material changes",
+    "highcourt__highcourt_market__14: visible geometry",
+    "highcourt__highcourt_market__14: full building fits",
+    "highcourt__highcourt_market__14: materials load",
+    "highcourt__highcourt_market__14: honest view mode",
+    "highcourt__highcourt_market__14: actual material changes",
+    "highcourt__highcourt_colonnade_west__15: visible geometry",
+    "highcourt__highcourt_colonnade_west__15: full building fits",
+    "highcourt__highcourt_colonnade_west__15: materials load",
+    "highcourt__highcourt_colonnade_west__15: honest view mode",
+    "highcourt__highcourt_colonnade_west__15: actual material changes",
+    "highcourt__highcourt_colonnade_east__16: visible geometry",
+    "highcourt__highcourt_colonnade_east__16: full building fits",
+    "highcourt__highcourt_colonnade_east__16: materials load",
+    "highcourt__highcourt_colonnade_east__16: honest view mode",
+    "highcourt__highcourt_colonnade_east__16: actual material changes",
+    "highcourt__highcourt_well_court__18: visible geometry",
+    "highcourt__highcourt_well_court__18: full building fits",
+    "highcourt__highcourt_well_court__18: materials load",
+    "highcourt__highcourt_well_court__18: honest view mode",
+    "highcourt__highcourt_well_court__18: actual material changes",
+    "highcourt__highcourt_chapel__21: visible geometry",
+    "highcourt__highcourt_chapel__21: full building fits",
+    "highcourt__highcourt_chapel__21: materials load",
+    "highcourt__highcourt_chapel__21: honest view mode",
+    "highcourt__highcourt_chapel__21: actual material changes",
+    "highcourt__highcourt_service_yard__22: visible geometry",
+    "highcourt__highcourt_service_yard__22: full building fits",
+    "highcourt__highcourt_service_yard__22: materials load",
+    "highcourt__highcourt_service_yard__22: honest view mode",
+    "highcourt__highcourt_service_yard__22: actual material changes",
+    "highcourt__highcourt_chapel_house__28: visible geometry",
+    "highcourt__highcourt_chapel_house__28: full building fits",
+    "highcourt__highcourt_chapel_house__28: materials load",
+    "highcourt__highcourt_chapel_house__28: honest view mode",
+    "highcourt__highcourt_chapel_house__28: actual material changes",
+    "highcourt__highcourt_market_stable__31: visible geometry",
+    "highcourt__highcourt_market_stable__31: full building fits",
+    "highcourt__highcourt_market_stable__31: materials load",
+    "highcourt__highcourt_market_stable__31: honest view mode",
+    "highcourt__highcourt_market_stable__31: actual material changes",
+    "highcourt__highcourt_well_court__34: visible geometry",
+    "highcourt__highcourt_well_court__34: full building fits",
+    "highcourt__highcourt_well_court__34: materials load",
+    "highcourt__highcourt_well_court__34: honest view mode",
+    "highcourt__highcourt_well_court__34: actual material changes",
+    "highcourt__highcourt_market_watch__35: visible geometry",
+    "highcourt__highcourt_market_watch__35: full building fits",
+    "highcourt__highcourt_market_watch__35: materials load",
+    "highcourt__highcourt_market_watch__35: honest view mode",
+    "highcourt__highcourt_market_watch__35: actual material changes",
+    "highcourt__highcourt_miners_guild__39: visible geometry",
+    "highcourt__highcourt_miners_guild__39: full building fits",
+    "highcourt__highcourt_miners_guild__39: materials load",
+    "highcourt__highcourt_miners_guild__39: honest view mode",
+    "highcourt__highcourt_miners_guild__39: actual material changes",
+    "highcourt__highcourt_martial_barracks__40: visible geometry",
+    "highcourt__highcourt_martial_barracks__40: full building fits",
+    "highcourt__highcourt_martial_barracks__40: materials load",
+    "highcourt__highcourt_martial_barracks__40: honest view mode",
+    "highcourt__highcourt_martial_barracks__40: actual material changes",
+    "highcourt__highcourt_martial_muster_hall__41: visible geometry",
+    "highcourt__highcourt_martial_muster_hall__41: full building fits",
+    "highcourt__highcourt_martial_muster_hall__41: materials load",
+    "highcourt__highcourt_martial_muster_hall__41: honest view mode",
+    "highcourt__highcourt_martial_muster_hall__41: actual material changes",
+    "highcourt__highcourt_martial_drill_yard__44: visible geometry",
+    "highcourt__highcourt_martial_drill_yard__44: full building fits",
+    "highcourt__highcourt_martial_drill_yard__44: materials load",
+    "highcourt__highcourt_martial_drill_yard__44: honest view mode",
+    "highcourt__highcourt_martial_drill_yard__44: actual material changes",
+    "highcourt__highcourt_martial_quartermaster__45: visible geometry",
+    "highcourt__highcourt_martial_quartermaster__45: full building fits",
+    "highcourt__highcourt_martial_quartermaster__45: materials load",
+    "highcourt__highcourt_martial_quartermaster__45: honest view mode",
+    "highcourt__highcourt_martial_quartermaster__45: actual material changes",
+    "highcourt__highcourt_martial_guard_house__46: visible geometry",
+    "highcourt__highcourt_martial_guard_house__46: full building fits",
+    "highcourt__highcourt_martial_guard_house__46: materials load",
+    "highcourt__highcourt_martial_guard_house__46: honest view mode",
+    "highcourt__highcourt_martial_guard_house__46: actual material changes",
+    "highcourt__highcourt_martial_watch_tower__47: visible geometry",
+    "highcourt__highcourt_martial_watch_tower__47: full building fits",
+    "highcourt__highcourt_martial_watch_tower__47: materials load",
+    "highcourt__highcourt_martial_watch_tower__47: honest view mode",
+    "highcourt__highcourt_martial_watch_tower__47: actual material changes",
+    "highcourt__highcourt_lore_shrine__48: visible geometry",
+    "highcourt__highcourt_lore_shrine__48: full building fits",
+    "highcourt__highcourt_lore_shrine__48: materials load",
+    "highcourt__highcourt_lore_shrine__48: honest view mode",
+    "highcourt__highcourt_lore_shrine__48: actual material changes",
+    "highcourt__highcourt_lore_cloister_walk__54: visible geometry",
+    "highcourt__highcourt_lore_cloister_walk__54: full building fits",
+    "highcourt__highcourt_lore_cloister_walk__54: materials load",
+    "highcourt__highcourt_lore_cloister_walk__54: honest view mode",
+    "highcourt__highcourt_lore_cloister_walk__54: actual material changes",
+    "highcourt__highcourt_lore_chapel_yard__56: visible geometry",
+    "highcourt__highcourt_lore_chapel_yard__56: full building fits",
+    "highcourt__highcourt_lore_chapel_yard__56: materials load",
+    "highcourt__highcourt_lore_chapel_yard__56: honest view mode",
+    "highcourt__highcourt_lore_chapel_yard__56: actual material changes",
+    "kezamba__kezamba_kings_hall__14: visible geometry",
+    "kezamba__kezamba_kings_hall__14: full building fits",
+    "kezamba__kezamba_kings_hall__14: materials load",
+    "kezamba__kezamba_kings_hall__14: honest view mode",
+    "kezamba__kezamba_kings_hall__14: actual material changes",
+    "kezamba__kezamba_moot_house__15: visible geometry",
+    "kezamba__kezamba_moot_house__15: full building fits",
+    "kezamba__kezamba_moot_house__15: materials load",
+    "kezamba__kezamba_moot_house__15: honest view mode",
+    "kezamba__kezamba_moot_house__15: actual material changes",
+    "kezamba__kezamba_cauldron_court__16: visible geometry",
+    "kezamba__kezamba_cauldron_court__16: full building fits",
+    "kezamba__kezamba_cauldron_court__16: materials load",
+    "kezamba__kezamba_cauldron_court__16: honest view mode",
+    "kezamba__kezamba_cauldron_court__16: actual material changes",
+    "kezamba__kezamba_shrine__17: visible geometry",
+    "kezamba__kezamba_shrine__17: full building fits",
+    "kezamba__kezamba_shrine__17: materials load",
+    "kezamba__kezamba_shrine__17: honest view mode",
+    "kezamba__kezamba_shrine__17: actual material changes",
+    "kezamba__kezamba_carver_yard__18: visible geometry",
+    "kezamba__kezamba_carver_yard__18: full building fits",
+    "kezamba__kezamba_carver_yard__18: materials load",
+    "kezamba__kezamba_carver_yard__18: honest view mode",
+    "kezamba__kezamba_carver_yard__18: actual material changes",
+    "kezamba__kezamba_gate_house_south__21: visible geometry",
+    "kezamba__kezamba_gate_house_south__21: full building fits",
+    "kezamba__kezamba_gate_house_south__21: materials load",
+    "kezamba__kezamba_gate_house_south__21: honest view mode",
+    "kezamba__kezamba_gate_house_south__21: actual material changes",
+    "kezamba__kezamba_trade_shed__25: visible geometry",
+    "kezamba__kezamba_trade_shed__25: full building fits",
+    "kezamba__kezamba_trade_shed__25: materials load",
+    "kezamba__kezamba_trade_shed__25: honest view mode",
+    "kezamba__kezamba_trade_shed__25: actual material changes",
+    "kezamba__kezamba_shore_market__26: visible geometry",
+    "kezamba__kezamba_shore_market__26: full building fits",
+    "kezamba__kezamba_shore_market__26: materials load",
+    "kezamba__kezamba_shore_market__26: honest view mode",
+    "kezamba__kezamba_shore_market__26: actual material changes",
+    "kezamba__kezamba_shore_carvers__30: visible geometry",
+    "kezamba__kezamba_shore_carvers__30: full building fits",
+    "kezamba__kezamba_shore_carvers__30: materials load",
+    "kezamba__kezamba_shore_carvers__30: honest view mode",
+    "kezamba__kezamba_shore_carvers__30: actual material changes",
+    "kezamba__highcourt_well_court__31: visible geometry",
+    "kezamba__highcourt_well_court__31: full building fits",
+    "kezamba__highcourt_well_court__31: materials load",
+    "kezamba__highcourt_well_court__31: honest view mode",
+    "kezamba__highcourt_well_court__31: actual material changes",
+    "kezamba__kezamba_shore_watch__32: visible geometry",
+    "kezamba__kezamba_shore_watch__32: full building fits",
+    "kezamba__kezamba_shore_watch__32: materials load",
+    "kezamba__kezamba_shore_watch__32: honest view mode",
+    "kezamba__kezamba_shore_watch__32: actual material changes",
+    "kezamba__kezamba_miners_guild__34: visible geometry",
+    "kezamba__kezamba_miners_guild__34: full building fits",
+    "kezamba__kezamba_miners_guild__34: materials load",
+    "kezamba__kezamba_miners_guild__34: honest view mode",
+    "kezamba__kezamba_miners_guild__34: actual material changes",
+    "kezamba__kezamba_vine_moot__40: visible geometry",
+    "kezamba__kezamba_vine_moot__40: full building fits",
+    "kezamba__kezamba_vine_moot__40: materials load",
+    "kezamba__kezamba_vine_moot__40: honest view mode",
+    "kezamba__kezamba_vine_moot__40: actual material changes",
+    "kezamba__kezamba_canopy_barracks_a__41: visible geometry",
+    "kezamba__kezamba_canopy_barracks_a__41: full building fits",
+    "kezamba__kezamba_canopy_barracks_a__41: materials load",
+    "kezamba__kezamba_canopy_barracks_a__41: honest view mode",
+    "kezamba__kezamba_canopy_barracks_a__41: actual material changes",
+    "kezamba__kezamba_canopy_barracks_b__42: visible geometry",
+    "kezamba__kezamba_canopy_barracks_b__42: full building fits",
+    "kezamba__kezamba_canopy_barracks_b__42: materials load",
+    "kezamba__kezamba_canopy_barracks_b__42: honest view mode",
+    "kezamba__kezamba_canopy_barracks_b__42: actual material changes",
+    "kezamba__kezamba_canopy_watchpost__43: visible geometry",
+    "kezamba__kezamba_canopy_watchpost__43: full building fits",
+    "kezamba__kezamba_canopy_watchpost__43: materials load",
+    "kezamba__kezamba_canopy_watchpost__43: honest view mode",
+    "kezamba__kezamba_canopy_watchpost__43: actual material changes",
+    "kezamba__highcourt_market_stable__44: visible geometry",
+    "kezamba__highcourt_market_stable__44: full building fits",
+    "kezamba__highcourt_market_stable__44: materials load",
+    "kezamba__highcourt_market_stable__44: honest view mode",
+    "kezamba__highcourt_market_stable__44: actual material changes",
+    "kezamba__kezamba_totem_shrine__46: visible geometry",
+    "kezamba__kezamba_totem_shrine__46: full building fits",
+    "kezamba__kezamba_totem_shrine__46: materials load",
+    "kezamba__kezamba_totem_shrine__46: honest view mode",
+    "kezamba__kezamba_totem_shrine__46: actual material changes",
+    "lethariel__lethariel_kings_hall__10: visible geometry",
+    "lethariel__lethariel_kings_hall__10: full building fits",
+    "lethariel__lethariel_kings_hall__10: materials load",
+    "lethariel__lethariel_kings_hall__10: honest view mode",
+    "lethariel__lethariel_kings_hall__10: actual material changes",
+    "lethariel__lethariel_gate_south__11: visible geometry",
+    "lethariel__lethariel_gate_south__11: full building fits",
+    "lethariel__lethariel_gate_south__11: materials load",
+    "lethariel__lethariel_gate_south__11: honest view mode",
+    "lethariel__lethariel_gate_south__11: actual material changes",
+    "lethariel__lethariel_market__12: visible geometry",
+    "lethariel__lethariel_market__12: full building fits",
+    "lethariel__lethariel_market__12: materials load",
+    "lethariel__lethariel_market__12: honest view mode",
+    "lethariel__lethariel_market__12: actual material changes",
+    "lethariel__lethariel_colonnade_west__13: visible geometry",
+    "lethariel__lethariel_colonnade_west__13: full building fits",
+    "lethariel__lethariel_colonnade_west__13: materials load",
+    "lethariel__lethariel_colonnade_west__13: honest view mode",
+    "lethariel__lethariel_colonnade_west__13: actual material changes",
+    "lethariel__lethariel_colonnade_east__14: visible geometry",
+    "lethariel__lethariel_colonnade_east__14: full building fits",
+    "lethariel__lethariel_colonnade_east__14: materials load",
+    "lethariel__lethariel_colonnade_east__14: honest view mode",
+    "lethariel__lethariel_colonnade_east__14: actual material changes",
+    "lethariel__highcourt_well_court__16: visible geometry",
+    "lethariel__highcourt_well_court__16: full building fits",
+    "lethariel__highcourt_well_court__16: materials load",
+    "lethariel__highcourt_well_court__16: honest view mode",
+    "lethariel__highcourt_well_court__16: actual material changes",
+    "lethariel__lethariel_star_hall__17: visible geometry",
+    "lethariel__lethariel_star_hall__17: full building fits",
+    "lethariel__lethariel_star_hall__17: materials load",
+    "lethariel__lethariel_star_hall__17: honest view mode",
+    "lethariel__lethariel_star_hall__17: actual material changes",
+    "lethariel__lethariel_mere_shrine__19: visible geometry",
+    "lethariel__lethariel_mere_shrine__19: full building fits",
+    "lethariel__lethariel_mere_shrine__19: materials load",
+    "lethariel__lethariel_mere_shrine__19: honest view mode",
+    "lethariel__lethariel_mere_shrine__19: actual material changes",
+    "lethariel__lethariel_bough_west__20: visible geometry",
+    "lethariel__lethariel_bough_west__20: full building fits",
+    "lethariel__lethariel_bough_west__20: materials load",
+    "lethariel__lethariel_bough_west__20: honest view mode",
+    "lethariel__lethariel_bough_west__20: actual material changes",
+    "lethariel__lethariel_bough_east__21: visible geometry",
+    "lethariel__lethariel_bough_east__21: full building fits",
+    "lethariel__lethariel_bough_east__21: materials load",
+    "lethariel__lethariel_bough_east__21: honest view mode",
+    "lethariel__lethariel_bough_east__21: actual material changes",
+    "lethariel__highcourt_market_stable__27: visible geometry",
+    "lethariel__highcourt_market_stable__27: full building fits",
+    "lethariel__highcourt_market_stable__27: materials load",
+    "lethariel__highcourt_market_stable__27: honest view mode",
+    "lethariel__highcourt_market_stable__27: actual material changes",
+    "lethariel__highcourt_well_court__30: visible geometry",
+    "lethariel__highcourt_well_court__30: full building fits",
+    "lethariel__highcourt_well_court__30: materials load",
+    "lethariel__highcourt_well_court__30: honest view mode",
+    "lethariel__highcourt_well_court__30: actual material changes",
+    "lethariel__lethariel_market_watch__31: visible geometry",
+    "lethariel__lethariel_market_watch__31: full building fits",
+    "lethariel__lethariel_market_watch__31: materials load",
+    "lethariel__lethariel_market_watch__31: honest view mode",
+    "lethariel__lethariel_market_watch__31: actual material changes",
+    "lethariel__lethariel_miners_guild__35: visible geometry",
+    "lethariel__lethariel_miners_guild__35: full building fits",
+    "lethariel__lethariel_miners_guild__35: materials load",
+    "lethariel__lethariel_miners_guild__35: honest view mode",
+    "lethariel__lethariel_miners_guild__35: actual material changes",
+    "lethariel__lethariel_martial_barracks__36: visible geometry",
+    "lethariel__lethariel_martial_barracks__36: full building fits",
+    "lethariel__lethariel_martial_barracks__36: materials load",
+    "lethariel__lethariel_martial_barracks__36: honest view mode",
+    "lethariel__lethariel_martial_barracks__36: actual material changes",
+    "lethariel__highcourt_martial_drill_yard__37: visible geometry",
+    "lethariel__highcourt_martial_drill_yard__37: full building fits",
+    "lethariel__highcourt_martial_drill_yard__37: materials load",
+    "lethariel__highcourt_martial_drill_yard__37: honest view mode",
+    "lethariel__highcourt_martial_drill_yard__37: actual material changes",
+    "lethariel__lethariel_plot_mere_shrine__42: visible geometry",
+    "lethariel__lethariel_plot_mere_shrine__42: full building fits",
+    "lethariel__lethariel_plot_mere_shrine__42: materials load",
+    "lethariel__lethariel_plot_mere_shrine__42: honest view mode",
+    "lethariel__lethariel_plot_mere_shrine__42: actual material changes",
+    "nhal_veyr__nhal_veyr_mausoleum__12: visible geometry",
+    "nhal_veyr__nhal_veyr_mausoleum__12: full building fits",
+    "nhal_veyr__nhal_veyr_mausoleum__12: materials load",
+    "nhal_veyr__nhal_veyr_mausoleum__12: honest view mode",
+    "nhal_veyr__nhal_veyr_mausoleum__12: actual material changes",
+    "nhal_veyr__nhal_veyr_gate_south__13: visible geometry",
+    "nhal_veyr__nhal_veyr_gate_south__13: full building fits",
+    "nhal_veyr__nhal_veyr_gate_south__13: materials load",
+    "nhal_veyr__nhal_veyr_gate_south__13: honest view mode",
+    "nhal_veyr__nhal_veyr_gate_south__13: actual material changes",
+    "nhal_veyr__highcourt_market__14: visible geometry",
+    "nhal_veyr__highcourt_market__14: full building fits",
+    "nhal_veyr__highcourt_market__14: materials load",
+    "nhal_veyr__highcourt_market__14: honest view mode",
+    "nhal_veyr__highcourt_market__14: actual material changes",
+    "nhal_veyr__nhal_veyr_colonnade_west__15: visible geometry",
+    "nhal_veyr__nhal_veyr_colonnade_west__15: full building fits",
+    "nhal_veyr__nhal_veyr_colonnade_west__15: materials load",
+    "nhal_veyr__nhal_veyr_colonnade_west__15: honest view mode",
+    "nhal_veyr__nhal_veyr_colonnade_west__15: actual material changes",
+    "nhal_veyr__nhal_veyr_colonnade_east__16: visible geometry",
+    "nhal_veyr__nhal_veyr_colonnade_east__16: full building fits",
+    "nhal_veyr__nhal_veyr_colonnade_east__16: materials load",
+    "nhal_veyr__nhal_veyr_colonnade_east__16: honest view mode",
+    "nhal_veyr__nhal_veyr_colonnade_east__16: actual material changes",
+    "nhal_veyr__highcourt_well_court__18: visible geometry",
+    "nhal_veyr__highcourt_well_court__18: full building fits",
+    "nhal_veyr__highcourt_well_court__18: materials load",
+    "nhal_veyr__highcourt_well_court__18: honest view mode",
+    "nhal_veyr__highcourt_well_court__18: actual material changes",
+    "nhal_veyr__nhal_veyr_vigil_hall__19: visible geometry",
+    "nhal_veyr__nhal_veyr_vigil_hall__19: full building fits",
+    "nhal_veyr__nhal_veyr_vigil_hall__19: materials load",
+    "nhal_veyr__nhal_veyr_vigil_hall__19: honest view mode",
+    "nhal_veyr__nhal_veyr_vigil_hall__19: actual material changes",
+    "nhal_veyr__highcourt_service_yard__21: visible geometry",
+    "nhal_veyr__highcourt_service_yard__21: full building fits",
+    "nhal_veyr__highcourt_service_yard__21: materials load",
+    "nhal_veyr__highcourt_service_yard__21: honest view mode",
+    "nhal_veyr__highcourt_service_yard__21: actual material changes",
+    "nhal_veyr__nhal_veyr_fallen_house__27: visible geometry",
+    "nhal_veyr__nhal_veyr_fallen_house__27: full building fits",
+    "nhal_veyr__nhal_veyr_fallen_house__27: materials load",
+    "nhal_veyr__nhal_veyr_fallen_house__27: honest view mode",
+    "nhal_veyr__nhal_veyr_fallen_house__27: actual material changes",
+    "nhal_veyr__highcourt_market_stable__29: visible geometry",
+    "nhal_veyr__highcourt_market_stable__29: full building fits",
+    "nhal_veyr__highcourt_market_stable__29: materials load",
+    "nhal_veyr__highcourt_market_stable__29: honest view mode",
+    "nhal_veyr__highcourt_market_stable__29: actual material changes",
+    "nhal_veyr__nhal_veyr_market_watch__32: visible geometry",
+    "nhal_veyr__nhal_veyr_market_watch__32: full building fits",
+    "nhal_veyr__nhal_veyr_market_watch__32: materials load",
+    "nhal_veyr__nhal_veyr_market_watch__32: honest view mode",
+    "nhal_veyr__nhal_veyr_market_watch__32: actual material changes",
+    "nhal_veyr__nhal_veyr_market_charnel__35: visible geometry",
+    "nhal_veyr__nhal_veyr_market_charnel__35: full building fits",
+    "nhal_veyr__nhal_veyr_market_charnel__35: materials load",
+    "nhal_veyr__nhal_veyr_market_charnel__35: honest view mode",
+    "nhal_veyr__nhal_veyr_market_charnel__35: actual material changes",
+    "nhal_veyr__nhal_veyr_miners_guild__36: visible geometry",
+    "nhal_veyr__nhal_veyr_miners_guild__36: full building fits",
+    "nhal_veyr__nhal_veyr_miners_guild__36: materials load",
+    "nhal_veyr__nhal_veyr_miners_guild__36: honest view mode",
+    "nhal_veyr__nhal_veyr_miners_guild__36: actual material changes",
+    "nhal_veyr__nhal_veyr_market_candle_court__37: visible geometry",
+    "nhal_veyr__nhal_veyr_market_candle_court__37: full building fits",
+    "nhal_veyr__nhal_veyr_market_candle_court__37: materials load",
+    "nhal_veyr__nhal_veyr_market_candle_court__37: honest view mode",
+    "nhal_veyr__nhal_veyr_market_candle_court__37: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_barracks__38: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_barracks__38: full building fits",
+    "nhal_veyr__nhal_veyr_watch_barracks__38: materials load",
+    "nhal_veyr__nhal_veyr_watch_barracks__38: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_barracks__38: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_captain_hall__39: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_captain_hall__39: full building fits",
+    "nhal_veyr__nhal_veyr_watch_captain_hall__39: materials load",
+    "nhal_veyr__nhal_veyr_watch_captain_hall__39: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_captain_hall__39: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_armoury__40: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_armoury__40: full building fits",
+    "nhal_veyr__nhal_veyr_watch_armoury__40: materials load",
+    "nhal_veyr__nhal_veyr_watch_armoury__40: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_armoury__40: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_stables__41: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_stables__41: full building fits",
+    "nhal_veyr__nhal_veyr_watch_stables__41: materials load",
+    "nhal_veyr__nhal_veyr_watch_stables__41: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_stables__41: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_drill_yard__42: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_drill_yard__42: full building fits",
+    "nhal_veyr__nhal_veyr_watch_drill_yard__42: materials load",
+    "nhal_veyr__nhal_veyr_watch_drill_yard__42: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_drill_yard__42: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_quartermaster__43: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_quartermaster__43: full building fits",
+    "nhal_veyr__nhal_veyr_watch_quartermaster__43: materials load",
+    "nhal_veyr__nhal_veyr_watch_quartermaster__43: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_quartermaster__43: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_serjeant_house__44: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_serjeant_house__44: full building fits",
+    "nhal_veyr__nhal_veyr_watch_serjeant_house__44: materials load",
+    "nhal_veyr__nhal_veyr_watch_serjeant_house__44: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_serjeant_house__44: actual material changes",
+    "nhal_veyr__nhal_veyr_watch_tower__45: visible geometry",
+    "nhal_veyr__nhal_veyr_watch_tower__45: full building fits",
+    "nhal_veyr__nhal_veyr_watch_tower__45: materials load",
+    "nhal_veyr__nhal_veyr_watch_tower__45: honest view mode",
+    "nhal_veyr__nhal_veyr_watch_tower__45: actual material changes",
+    "nhal_veyr__nhal_veyr_vigil_ossuary__46: visible geometry",
+    "nhal_veyr__nhal_veyr_vigil_ossuary__46: full building fits",
+    "nhal_veyr__nhal_veyr_vigil_ossuary__46: materials load",
+    "nhal_veyr__nhal_veyr_vigil_ossuary__46: honest view mode",
+    "nhal_veyr__nhal_veyr_vigil_ossuary__46: actual material changes",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48: visible geometry",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48: full building fits",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48: materials load",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48: honest view mode",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48: actual material changes",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49: visible geometry",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49: full building fits",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49: materials load",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49: honest view mode",
+    "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49: actual material changes",
+    "nhal_veyr__nhal_veyr_vigil_watch__50: visible geometry",
+    "nhal_veyr__nhal_veyr_vigil_watch__50: full building fits",
+    "nhal_veyr__nhal_veyr_vigil_watch__50: materials load",
+    "nhal_veyr__nhal_veyr_vigil_watch__50: honest view mode",
+    "nhal_veyr__nhal_veyr_vigil_watch__50: actual material changes",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51: visible geometry",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51: full building fits",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51: materials load",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51: honest view mode",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51: actual material changes",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52: visible geometry",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52: full building fits",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52: materials load",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52: honest view mode",
+    "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52: actual material changes",
+    "nhal_veyr__nhal_veyr_homes_gate_house__53: visible geometry",
+    "nhal_veyr__nhal_veyr_homes_gate_house__53: full building fits",
+    "nhal_veyr__nhal_veyr_homes_gate_house__53: materials load",
+    "nhal_veyr__nhal_veyr_homes_gate_house__53: honest view mode",
+    "nhal_veyr__nhal_veyr_homes_gate_house__53: actual material changes",
+    "nhal_veyr__nhal_veyr_homes_fallen_west__57: visible geometry",
+    "nhal_veyr__nhal_veyr_homes_fallen_west__57: full building fits",
+    "nhal_veyr__nhal_veyr_homes_fallen_west__57: materials load",
+    "nhal_veyr__nhal_veyr_homes_fallen_west__57: honest view mode",
+    "nhal_veyr__nhal_veyr_homes_fallen_west__57: actual material changes",
+    "nhal_veyr__nhal_veyr_homes_fallen_east__58: visible geometry",
+    "nhal_veyr__nhal_veyr_homes_fallen_east__58: full building fits",
+    "nhal_veyr__nhal_veyr_homes_fallen_east__58: materials load",
+    "nhal_veyr__nhal_veyr_homes_fallen_east__58: honest view mode",
+    "nhal_veyr__nhal_veyr_homes_fallen_east__58: actual material changes",
+    "dur_brannoc__highcourt_statue__15: visible geometry",
+    "dur_brannoc__highcourt_statue__15: full building fits",
+    "dur_brannoc__highcourt_statue__15: materials load",
+    "dur_brannoc__highcourt_statue__15: honest view mode",
+    "dur_brannoc__dur_brannoc_forge_copse__30: visible geometry",
+    "dur_brannoc__dur_brannoc_forge_copse__30: full building fits",
+    "dur_brannoc__dur_brannoc_forge_copse__30: materials load",
+    "dur_brannoc__dur_brannoc_forge_copse__30: honest view mode",
+    "gor_drazhak__highcourt_statue__15: visible geometry",
+    "gor_drazhak__highcourt_statue__15: full building fits",
+    "gor_drazhak__highcourt_statue__15: materials load",
+    "gor_drazhak__highcourt_statue__15: honest view mode",
+    "highcourt__highcourt_statue__17: visible geometry",
+    "highcourt__highcourt_statue__17: full building fits",
+    "highcourt__highcourt_statue__17: materials load",
+    "highcourt__highcourt_statue__17: honest view mode",
+    "highcourt__highcourt_orchard_east__19: visible geometry",
+    "highcourt__highcourt_orchard_east__19: full building fits",
+    "highcourt__highcourt_orchard_east__19: materials load",
+    "highcourt__highcourt_orchard_east__19: honest view mode",
+    "highcourt__highcourt_orchard_west__20: visible geometry",
+    "highcourt__highcourt_orchard_west__20: full building fits",
+    "highcourt__highcourt_orchard_west__20: materials load",
+    "highcourt__highcourt_orchard_west__20: honest view mode",
+    "highcourt__highcourt_market_grove__36: visible geometry",
+    "highcourt__highcourt_market_grove__36: full building fits",
+    "highcourt__highcourt_market_grove__36: materials load",
+    "highcourt__highcourt_market_grove__36: honest view mode",
+    "highcourt__highcourt_market_orchard__37: visible geometry",
+    "highcourt__highcourt_market_orchard__37: full building fits",
+    "highcourt__highcourt_market_orchard__37: materials load",
+    "highcourt__highcourt_market_orchard__37: honest view mode",
+    "highcourt__highcourt_lore_quiet_grove__55: visible geometry",
+    "highcourt__highcourt_lore_quiet_grove__55: full building fits",
+    "highcourt__highcourt_lore_quiet_grove__55: materials load",
+    "highcourt__highcourt_lore_quiet_grove__55: honest view mode",
+    "highcourt__highcourt_homes_orchard__63: visible geometry",
+    "highcourt__highcourt_homes_orchard__63: full building fits",
+    "highcourt__highcourt_homes_orchard__63: materials load",
+    "highcourt__highcourt_homes_orchard__63: honest view mode",
+    "lethariel__highcourt_statue__15: visible geometry",
+    "lethariel__highcourt_statue__15: full building fits",
+    "lethariel__highcourt_statue__15: materials load",
+    "lethariel__highcourt_statue__15: honest view mode",
+    "lethariel__lethariel_sacred_grove__18: visible geometry",
+    "lethariel__lethariel_sacred_grove__18: full building fits",
+    "lethariel__lethariel_sacred_grove__18: materials load",
+    "lethariel__lethariel_sacred_grove__18: honest view mode",
+    "lethariel__lethariel_market_grove__32: visible geometry",
+    "lethariel__lethariel_market_grove__32: full building fits",
+    "lethariel__lethariel_market_grove__32: materials load",
+    "lethariel__lethariel_market_grove__32: honest view mode",
+    "lethariel__lethariel_market_orchard__33: visible geometry",
+    "lethariel__lethariel_market_orchard__33: full building fits",
+    "lethariel__lethariel_market_orchard__33: materials load",
+    "lethariel__lethariel_market_orchard__33: honest view mode",
+    "nhal_veyr__highcourt_statue__17: visible geometry",
+    "nhal_veyr__highcourt_statue__17: full building fits",
+    "nhal_veyr__highcourt_statue__17: materials load",
+    "nhal_veyr__highcourt_statue__17: honest view mode",
+    "nhal_veyr__nhal_veyr_market_copse__33: visible geometry",
+    "nhal_veyr__nhal_veyr_market_copse__33: full building fits",
+    "nhal_veyr__nhal_veyr_market_copse__33: materials load",
+    "nhal_veyr__nhal_veyr_market_copse__33: honest view mode",
+    "Phone width has no overflow",
+    "Phone displays shrine proposal",
+    "Phone displays single existing building",
+    "Phone width with single building",
+    "Direct shrine link restores selection",
+    "No browser JavaScript exceptions"
+  ],
+  "captures": [
+    {
+      "file": "captures/dawnmere__dawnmere_tollhouse__16.png",
+      "sha256": "0d4fdb691a9791a5edda8628bf28c413933361c92d85c30b05144af7cdf8c1b7",
+      "building": "dawnmere__dawnmere_tollhouse__16"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_tollhouse__16-before.png",
+      "sha256": "eeb7552a8328cca637fcf11de696ddbc409a96c2d5d2405917a1e70a814be45e",
+      "building": "dawnmere__dawnmere_tollhouse__16"
+    },
+    {
+      "file": "captures/dawnmere__dawnmere_tollhouse__16-pair.png",
+      "sha256": "1fc77f2fc8ac771cea43d0c123c32cbcfa85282ccf707e3602b9f1e2dc3ac60a",
+      "building": "dawnmere__dawnmere_tollhouse__16"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_workyard__15.png",
+      "sha256": "4fe14a33f6bb8c8ebe86e016ec0d953f23afe8cafc9e486e40eb8eaa5037e5bd",
+      "building": "hearthpine__hearthpine_workyard__15"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_workyard__15-before.png",
+      "sha256": "d62292f94e180b95e6527e5d0b11e121c5506c30d7f01d03b722bbf667c71e9e",
+      "building": "hearthpine__hearthpine_workyard__15"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_workyard__15-pair.png",
+      "sha256": "edf29bb169ec97014811f7cc64689b2a5b77d2f26de1c984cf3468605a6a96e9",
+      "building": "hearthpine__hearthpine_workyard__15"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_gatewatch__16.png",
+      "sha256": "ec28edf59ed6c7e0c8a9f32986858cd2117018ade9e853b97b5eedcd85a21aec",
+      "building": "hearthpine__hearthpine_gatewatch__16"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_gatewatch__16-before.png",
+      "sha256": "8cfdb3b5bce3a4e075bfe80902831f01dd23f15604d8736efee00ee93bc4b3a4",
+      "building": "hearthpine__hearthpine_gatewatch__16"
+    },
+    {
+      "file": "captures/hearthpine__hearthpine_gatewatch__16-pair.png",
+      "sha256": "87dde6e3e75b2ac25ae24e2c111b1a2d111c016dd7827a5b17da670046a3f406",
+      "building": "hearthpine__hearthpine_gatewatch__16"
+    },
+    {
+      "file": "captures/kapok__kapok_drying_shed__11.png",
+      "sha256": "7f0035ae42dc21e1bed11cf8871e40da8e1bf32db32ba2e005269b2cb9ea3723",
+      "building": "kapok__kapok_drying_shed__11"
+    },
+    {
+      "file": "captures/kapok__kapok_drying_shed__11-before.png",
+      "sha256": "6950a6dea0063d49f54d2abfce88b0f18bac544991a2be86c3ea287339e3379c",
+      "building": "kapok__kapok_drying_shed__11"
+    },
+    {
+      "file": "captures/kapok__kapok_drying_shed__11-pair.png",
+      "sha256": "f91eb4de3b4ad9a6c795ee0effe91573d5ee00ff28e07af5a0009a130914241f",
+      "building": "kapok__kapok_drying_shed__11"
+    },
+    {
+      "file": "captures/kapok__kapok_watchpost__16.png",
+      "sha256": "09e26397c27b50196275f345a7ef5d4ce27ab5868ba8d4ccd3058a394b8235f3",
+      "building": "kapok__kapok_watchpost__16"
+    },
+    {
+      "file": "captures/kapok__kapok_watchpost__16-before.png",
+      "sha256": "7334b3796cd7b4c74cfb44e6a89216fd6a3e7e2d7406e5b7c89ad916df545a7d",
+      "building": "kapok__kapok_watchpost__16"
+    },
+    {
+      "file": "captures/kapok__kapok_watchpost__16-pair.png",
+      "sha256": "4d48134a2643edc9872e0e591542938b9bcbd4894ab0c885dbc4e5dfefd9edf0",
+      "building": "kapok__kapok_watchpost__16"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_moon_shrine__8.png",
+      "sha256": "46e79cde6ddf973081f077b82b3506ccd8b8fe7e9e39b05892797c64dcd9017b",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_moon_shrine__8-before.png",
+      "sha256": "5f6fa9af46b97898c6b0f9923b4f62f9174fa16010c4970f4007efc8c38bffd9",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_moon_shrine__8-pair.png",
+      "sha256": "2839f3e372081e4e61cc34b0a8d5118f6a53da5df1cf403bfc8b99d5d490ae51",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    },
+    {
+      "file": "captures/shrine-pair.png",
+      "sha256": "2839f3e372081e4e61cc34b0a8d5118f6a53da5df1cf403bfc8b99d5d490ae51",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    },
+    {
+      "file": "captures/shrine-front.png",
+      "sha256": "9160983c3925862d5d58ddfd7535088e309f8798c90f5dacbf91dfe6bb735f40",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    },
+    {
+      "file": "captures/shrine-back.png",
+      "sha256": "5b1b67f8736e0d1bee523a95cfeae280a66af4a878be51a663ae20b17b59ecc3",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    },
+    {
+      "file": "captures/shrine-inside.png",
+      "sha256": "8b773d2b169cd4e98e04f45e674a58a5c917d6d9987fa9233061fe775128a177",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_covered_market__15.png",
+      "sha256": "1744250d99dbfc03d0492e4c7727edcff17829643cc3cb58cf1cba692392a893",
+      "building": "silverleaf__silverleaf_covered_market__15"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_covered_market__15-before.png",
+      "sha256": "e9c29f4d37c9abbe8aeed4810ecab7d719a7865ae5d6e34a638d123397d31baf",
+      "building": "silverleaf__silverleaf_covered_market__15"
+    },
+    {
+      "file": "captures/silverleaf__silverleaf_covered_market__15-pair.png",
+      "sha256": "3dea91916595d2c7ec622eed195b1768563cbfd11def1c6cf20acc1bd7fb5681",
+      "building": "silverleaf__silverleaf_covered_market__15"
+    },
+    {
+      "file": "captures/silverleaf__dawnmere_tollhouse__16.png",
+      "sha256": "b212a7d0cf99e92cd5d0f0c71eec818aedbd9bd8783747af25123137ebd7f5d5",
+      "building": "silverleaf__dawnmere_tollhouse__16"
+    },
+    {
+      "file": "captures/silverleaf__dawnmere_tollhouse__16-before.png",
+      "sha256": "9f0befa3904aece4eca81ddd0ecd4e961b6549dccc389994e97a19713f2fdd9f",
+      "building": "silverleaf__dawnmere_tollhouse__16"
+    },
+    {
+      "file": "captures/silverleaf__dawnmere_tollhouse__16-pair.png",
+      "sha256": "4a4d813c19f4b39356a2ac191f001542b9fd3123290efb3ed66ed3ec648aee3b",
+      "building": "silverleaf__dawnmere_tollhouse__16"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_crypt_chapel__9.png",
+      "sha256": "52f37789ad6150941900db9bd80e949b5a6f43d42b7389239072e1a5890f3789",
+      "building": "stillgrave__stillgrave_crypt_chapel__9"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_crypt_chapel__9-before.png",
+      "sha256": "4b8bb3d36e6406dfe921b20a36c7bced45bd8cc4ef27081097a9ee61d04d8972",
+      "building": "stillgrave__stillgrave_crypt_chapel__9"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_crypt_chapel__9-pair.png",
+      "sha256": "3010bb1ecb2c13af7fa31a2b341469de81a3b978b845a862fc1860a8db95158c",
+      "building": "stillgrave__stillgrave_crypt_chapel__9"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_hollow_ruin__13.png",
+      "sha256": "37c435c73f5cdc746a335658e6777438037e7449457f6d09d2545a1b5df569f3",
+      "building": "stillgrave__stillgrave_hollow_ruin__13"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_hollow_ruin__13-before.png",
+      "sha256": "d2a498f0ac6b0a7e86ba7d01dac84b7397d4b9274f9fc50fccbc40fd85ba47df",
+      "building": "stillgrave__stillgrave_hollow_ruin__13"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_hollow_ruin__13-pair.png",
+      "sha256": "2099f958cb784d6a657901abb55066e15a31e6353b04204824ade0e5257bb2bd",
+      "building": "stillgrave__stillgrave_hollow_ruin__13"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_sunken_ruin__14.png",
+      "sha256": "7e7c9af674688510585d374d2fcd9d5c683d93b2a473d1db85298076fb23d7dd",
+      "building": "stillgrave__stillgrave_sunken_ruin__14"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_sunken_ruin__14-before.png",
+      "sha256": "ee7d430d2e67004b4799d1e4864ef5e5af90ae611c88816d52f432ef36f52ada",
+      "building": "stillgrave__stillgrave_sunken_ruin__14"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_sunken_ruin__14-pair.png",
+      "sha256": "22443f4a4175f2d0af3f62453dcbc8b08d8f9feb61d8648403c1b1d6182d4354",
+      "building": "stillgrave__stillgrave_sunken_ruin__14"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_watchtower__15.png",
+      "sha256": "671b0c55f9ec42b4332d615367a1bfff1bb77ca3139d2f98ef48bc2de8d19663",
+      "building": "stillgrave__stillgrave_watchtower__15"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_watchtower__15-before.png",
+      "sha256": "73ef3740cf249f16f035498ac07f75462400d0e4272e3d7bedad2a637ec76754",
+      "building": "stillgrave__stillgrave_watchtower__15"
+    },
+    {
+      "file": "captures/stillgrave__stillgrave_watchtower__15-pair.png",
+      "sha256": "4e4db939a440c4115c9f17d99dd0020ab6b5e188ee818406db040c8377b8afd5",
+      "building": "stillgrave__stillgrave_watchtower__15"
+    },
+    {
+      "file": "captures/sunscar__sunscar_warlord_hall__6.png",
+      "sha256": "68a932c8e19ee648c137461c69c1b811876ce24354b0697ff9ba8bfd5ae42167",
+      "building": "sunscar__sunscar_warlord_hall__6"
+    },
+    {
+      "file": "captures/sunscar__sunscar_warlord_hall__6-before.png",
+      "sha256": "0670c806ae9430f6bfc62e265c54139e759ca4d7ea69a17f6c5d2e4a4dedb023",
+      "building": "sunscar__sunscar_warlord_hall__6"
+    },
+    {
+      "file": "captures/sunscar__sunscar_warlord_hall__6-pair.png",
+      "sha256": "99712651912ba14bdfb1c4869f56b3c8bac7de00cc161871c1e3667c75b6c2cf",
+      "building": "sunscar__sunscar_warlord_hall__6"
+    },
+    {
+      "file": "captures/sunscar__sunscar_beast_pen__8.png",
+      "sha256": "4a8af6f1b699b8fff493b155e43bd28648f12f7606b07d91f5595fd58c06e34b",
+      "building": "sunscar__sunscar_beast_pen__8"
+    },
+    {
+      "file": "captures/sunscar__sunscar_beast_pen__8-before.png",
+      "sha256": "d5f9bbdd5274c21acc43317c705eaf287375a0b0ca33204ff52f3684cd83b5fc",
+      "building": "sunscar__sunscar_beast_pen__8"
+    },
+    {
+      "file": "captures/sunscar__sunscar_beast_pen__8-pair.png",
+      "sha256": "6703a35f28ee1a282545159705eb5aa3d210c3429c73d4fb813db68f598166d6",
+      "building": "sunscar__sunscar_beast_pen__8"
+    },
+    {
+      "file": "captures/sunscar__sunscar_west_tower__13.png",
+      "sha256": "32870102d8f56c378aeabe85bc612762b4606e67672177846265b31b1c9ba56a",
+      "building": "sunscar__sunscar_west_tower__13"
+    },
+    {
+      "file": "captures/sunscar__sunscar_west_tower__13-before.png",
+      "sha256": "9f0b1c3000167d29c5bb04646bd0e91169993fcd729e557ff7a9afa984081d9f",
+      "building": "sunscar__sunscar_west_tower__13"
+    },
+    {
+      "file": "captures/sunscar__sunscar_west_tower__13-pair.png",
+      "sha256": "b324175aed2128b5c50a317a078ccb5b59aee52fb7cae0e1127dc69dcf9c0103",
+      "building": "sunscar__sunscar_west_tower__13"
+    },
+    {
+      "file": "captures/sunscar__sunscar_east_tower__14.png",
+      "sha256": "0c789b7602bc552d25c8fcded7b0295e55cc8bfa085bb7da5a24df7949a7ec5c",
+      "building": "sunscar__sunscar_east_tower__14"
+    },
+    {
+      "file": "captures/sunscar__sunscar_east_tower__14-before.png",
+      "sha256": "e2f2ea34f96410ed2dff21e497bc5c84df44ecc277c5f39dd953ba8fa99851d1",
+      "building": "sunscar__sunscar_east_tower__14"
+    },
+    {
+      "file": "captures/sunscar__sunscar_east_tower__14-pair.png",
+      "sha256": "583a3d799208c43e4737726b41b183c704af5b3b7d33504dda24a543ce251085",
+      "building": "sunscar__sunscar_east_tower__14"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_kings_hall__10.png",
+      "sha256": "5fad9937fecd1f1cbe9aafa81a53c642e5da604e47b14ab3ede36469d2319008",
+      "building": "dur_brannoc__dur_brannoc_kings_hall__10"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_kings_hall__10-before.png",
+      "sha256": "9aeac8fe2c20b9c8c7511555ccaf0602ae8330efab411ac0b9c52948ccb6425f",
+      "building": "dur_brannoc__dur_brannoc_kings_hall__10"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_kings_hall__10-pair.png",
+      "sha256": "378da84141f350043a7bf8f162c30f727d9b69d8798ab7a2c25d40cc403970e5",
+      "building": "dur_brannoc__dur_brannoc_kings_hall__10"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_gate_south__11.png",
+      "sha256": "6a4805f1317ad2f31b0487940999dc6ed4d58ab6cf54536966d1d25bc3141141",
+      "building": "dur_brannoc__dur_brannoc_gate_south__11"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_gate_south__11-before.png",
+      "sha256": "70e34e944c2101a0e0642ec516f81683c0e7e8706455ca1d3b853afc2f2af727",
+      "building": "dur_brannoc__dur_brannoc_gate_south__11"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_gate_south__11-pair.png",
+      "sha256": "8ac8e7951c6c6795ae636d048e2731ee6b50a8cdee275ec47c56eab8302d9d9e",
+      "building": "dur_brannoc__dur_brannoc_gate_south__11"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_market__12.png",
+      "sha256": "d5dd897f8bf487f6564e6703dce8b514c0eb9bff0e9f9b7da4a1bf54fa31186c",
+      "building": "dur_brannoc__highcourt_market__12"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_market__12-before.png",
+      "sha256": "b3f179b84403f123c8cb27bb63b1baa3142800c44b32d7bb82624af618c4ecdf",
+      "building": "dur_brannoc__highcourt_market__12"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_market__12-pair.png",
+      "sha256": "d380c951d0c4f608c25eed38d2d703173ef5081e4a4468063595c612e2d34710",
+      "building": "dur_brannoc__highcourt_market__12"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_colonnade_west__13.png",
+      "sha256": "fd96e56ff67322b6e5ad42901e5b68638bc700c4fd7370a0487cb65b34570a46",
+      "building": "dur_brannoc__dur_brannoc_colonnade_west__13"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_colonnade_west__13-before.png",
+      "sha256": "e15ecf87c14038d3bf197dc1342424aa369e37613e78289b9058eb6829ef1f03",
+      "building": "dur_brannoc__dur_brannoc_colonnade_west__13"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_colonnade_west__13-pair.png",
+      "sha256": "fecfab3b90400ccb1015b43aa633e666a1d17fcd4a5cbeff164d27fbf5f1fa9c",
+      "building": "dur_brannoc__dur_brannoc_colonnade_west__13"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_colonnade_east__14.png",
+      "sha256": "fd96e56ff67322b6e5ad42901e5b68638bc700c4fd7370a0487cb65b34570a46",
+      "building": "dur_brannoc__dur_brannoc_colonnade_east__14"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_colonnade_east__14-before.png",
+      "sha256": "e15ecf87c14038d3bf197dc1342424aa369e37613e78289b9058eb6829ef1f03",
+      "building": "dur_brannoc__dur_brannoc_colonnade_east__14"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_colonnade_east__14-pair.png",
+      "sha256": "f2705715500f6b38e599f692312bc7858afc6cd989c81a9f430fc187a097feab",
+      "building": "dur_brannoc__dur_brannoc_colonnade_east__14"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_well_court__16.png",
+      "sha256": "0dfb387c296a2ae02a367f3a39c6a4cc115a4773a0ab4723288f42b237b0b5c2",
+      "building": "dur_brannoc__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_well_court__16-before.png",
+      "sha256": "616fc538282e6302f1926136649c91ef7215e0c59cb91bb332161fe14df1a670",
+      "building": "dur_brannoc__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_well_court__16-pair.png",
+      "sha256": "a5c9ebe0e5c80854d2dc49d535271adcf2859ccb1bf7606630e02f88810550a1",
+      "building": "dur_brannoc__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_ancestor_hall__17.png",
+      "sha256": "2a1af6e360e188aa70a6eb6b6159e899c4408bc1f820b561c902b06e773f1566",
+      "building": "dur_brannoc__dur_brannoc_ancestor_hall__17"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_ancestor_hall__17-before.png",
+      "sha256": "3bfa995e402b2edae291810248d54687bee40425b4157533a926e9ac68db2afc",
+      "building": "dur_brannoc__dur_brannoc_ancestor_hall__17"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_ancestor_hall__17-pair.png",
+      "sha256": "b5f7ee0b638b643f90520c167f1aa6314ec953bf2a8ec3b8feebdf25a6cf0b18",
+      "building": "dur_brannoc__dur_brannoc_ancestor_hall__17"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_service_yard__19.png",
+      "sha256": "4fe14a33f6bb8c8ebe86e016ec0d953f23afe8cafc9e486e40eb8eaa5037e5bd",
+      "building": "dur_brannoc__highcourt_service_yard__19"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_service_yard__19-before.png",
+      "sha256": "d62292f94e180b95e6527e5d0b11e121c5506c30d7f01d03b722bbf667c71e9e",
+      "building": "dur_brannoc__highcourt_service_yard__19"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_service_yard__19-pair.png",
+      "sha256": "f5427d17d2ad797cb88a56fd99f8bc28f99b2479bd9972e4e6bba3e48a217a6a",
+      "building": "dur_brannoc__highcourt_service_yard__19"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_market_stable__26.png",
+      "sha256": "00dd3b10a28771be0364b6fd9a45fb23c1a62e24c21828f3798946ee91c63bce",
+      "building": "dur_brannoc__highcourt_market_stable__26"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_market_stable__26-before.png",
+      "sha256": "896f3ca449db733170dcd93054e705bbfc8d8c9f19e9454c3bbe34b643d4938d",
+      "building": "dur_brannoc__highcourt_market_stable__26"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_market_stable__26-pair.png",
+      "sha256": "8ae49d2433ec466fea1a7090361b0644c58c8a6f763b5d96f8f2ab56e0b155a9",
+      "building": "dur_brannoc__highcourt_market_stable__26"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_watch__29.png",
+      "sha256": "d37d3736daa222f8c42e92fc6306a5d07f35c6471f4cef9c84878d9830acc3e9",
+      "building": "dur_brannoc__dur_brannoc_forge_watch__29"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_watch__29-before.png",
+      "sha256": "a4d3506b25de5380014196476aea978aa0028a363834755915363d5da4d29f23",
+      "building": "dur_brannoc__dur_brannoc_forge_watch__29"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_watch__29-pair.png",
+      "sha256": "6b7976a303873457d1e3702f7ea789fa8413fdf8a993bedf03eb011ce2b4d562",
+      "building": "dur_brannoc__dur_brannoc_forge_watch__29"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_miners_guild__33.png",
+      "sha256": "ecdaa872acb4b30fd2361d37ba41f9caf1df74ad00a72eb548503f4cd7bf03c2",
+      "building": "dur_brannoc__dur_brannoc_miners_guild__33"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_miners_guild__33-before.png",
+      "sha256": "5674a6a18873c5e6e1e33844790628ce4316b400c8357318bc1e27f9b6084abf",
+      "building": "dur_brannoc__dur_brannoc_miners_guild__33"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_miners_guild__33-pair.png",
+      "sha256": "f350138559a5e1d2a28596421124495b3e3693d794a0f07c59cc389240ab6f12",
+      "building": "dur_brannoc__dur_brannoc_miners_guild__33"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_barracks__34.png",
+      "sha256": "b16aada64918c8b1f5f33e9b871adc580a97898970a5ef6fedd6bc484bfdb2e5",
+      "building": "dur_brannoc__dur_brannoc_garrison_barracks__34"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_barracks__34-before.png",
+      "sha256": "b3d70ef0495e37f117eee4f24d0cbf8ef357ce1036f360f7212c67ef6946a9bb",
+      "building": "dur_brannoc__dur_brannoc_garrison_barracks__34"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_barracks__34-pair.png",
+      "sha256": "6c54b9d42df0d8a72d548ebc8bd2213d221505c9a0497bfcc45cdfe88483f2e9",
+      "building": "dur_brannoc__dur_brannoc_garrison_barracks__34"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_muster_hall__35.png",
+      "sha256": "3a66d53b8d3a6ac515fd59bbf08cad8f0ae78071bc39f9642a6a1429e0db47a7",
+      "building": "dur_brannoc__dur_brannoc_garrison_muster_hall__35"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_muster_hall__35-before.png",
+      "sha256": "b6abc7f04f953dda63e598275d114c8a59a4934b6736b0b3bcc918ab5b6cfc91",
+      "building": "dur_brannoc__dur_brannoc_garrison_muster_hall__35"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_muster_hall__35-pair.png",
+      "sha256": "06538b042e5a916f150dd6c70dde466f271b44c7bf82e20e4300bb330c702a2e",
+      "building": "dur_brannoc__dur_brannoc_garrison_muster_hall__35"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_drill_yard__37.png",
+      "sha256": "bf271a1ef81a85fd0baf5cece53cccb7d81e2d175d8ceae918ae6d3cc22dd816",
+      "building": "dur_brannoc__dur_brannoc_garrison_drill_yard__37"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_drill_yard__37-before.png",
+      "sha256": "eed339d34375b546d7650bb44286dbb2c37bc9d023a69954f3612c782aad032b",
+      "building": "dur_brannoc__dur_brannoc_garrison_drill_yard__37"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_drill_yard__37-pair.png",
+      "sha256": "d6dd5e3233115387b56c6a2e805c7da2acdc74222c8c7b6d1bdeb80f251ada8c",
+      "building": "dur_brannoc__dur_brannoc_garrison_drill_yard__37"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_quartermaster__39.png",
+      "sha256": "d583acdaa3d16fea3f8153dfe8902645aacb35d11378165aec81c7cfbedefe42",
+      "building": "dur_brannoc__dur_brannoc_garrison_quartermaster__39"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_quartermaster__39-before.png",
+      "sha256": "dc19e2c242f986a204d7a142d8d92ec32c7fc3310ef3af5cf07c4c681ee41fda",
+      "building": "dur_brannoc__dur_brannoc_garrison_quartermaster__39"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_quartermaster__39-pair.png",
+      "sha256": "cbcb7251034eff16bfc4bd577ba174b7ec11508cb1736f13463a45465b4e24b7",
+      "building": "dur_brannoc__dur_brannoc_garrison_quartermaster__39"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_serjeant__40.png",
+      "sha256": "c648b61345802e4f659338bc39918246b18ece34e1791df8e06299e462af5972",
+      "building": "dur_brannoc__dur_brannoc_garrison_serjeant__40"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_serjeant__40-before.png",
+      "sha256": "758674aae764473fd489ddc2ab856f93b79f32415a220b8dd0923c9657b187d5",
+      "building": "dur_brannoc__dur_brannoc_garrison_serjeant__40"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_serjeant__40-pair.png",
+      "sha256": "1346aa24d9c884f1d23e2fc8c69a9e6063d3efa381e22c883f3b2d1428896e0b",
+      "building": "dur_brannoc__dur_brannoc_garrison_serjeant__40"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_watch_tower__41.png",
+      "sha256": "df94be0c32667ad1f8d62daa12b8c4684c998af1af8baf04e7ba59314679ab0a",
+      "building": "dur_brannoc__dur_brannoc_garrison_watch_tower__41"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_watch_tower__41-before.png",
+      "sha256": "80c27b193ad25eb9cd7d822204490b0c53e30853dde686d40cf0dfb07dc5f1fa",
+      "building": "dur_brannoc__dur_brannoc_garrison_watch_tower__41"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_garrison_watch_tower__41-pair.png",
+      "sha256": "c6e1eceb7b90f4e368d4ff8ae2f30acd5c8a36c206fd18ea89faefd194bd448e",
+      "building": "dur_brannoc__dur_brannoc_garrison_watch_tower__41"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_market__45.png",
+      "sha256": "fd96e56ff67322b6e5ad42901e5b68638bc700c4fd7370a0487cb65b34570a46",
+      "building": "dur_brannoc__dur_brannoc_terrace_market__45"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_market__45-before.png",
+      "sha256": "e15ecf87c14038d3bf197dc1342424aa369e37613e78289b9058eb6829ef1f03",
+      "building": "dur_brannoc__dur_brannoc_terrace_market__45"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_terrace_market__45-pair.png",
+      "sha256": "5ac9b2f623e238dc2f4ab5450ef853df15aba0ca391f25f5ac171901fd22bc9c",
+      "building": "dur_brannoc__dur_brannoc_terrace_market__45"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warlord_hall__10.png",
+      "sha256": "bb1df090ff090f50c7241dacdeb809cb998bc31dcff959e342a5a94806d9695c",
+      "building": "gor_drazhak__gor_drazhak_warlord_hall__10"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warlord_hall__10-before.png",
+      "sha256": "76817047bb6ddcd3a12f4cfc21877816452620b4bb500181abf663f9a6b77de8",
+      "building": "gor_drazhak__gor_drazhak_warlord_hall__10"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_warlord_hall__10-pair.png",
+      "sha256": "3ed20782c4e079bf4dbe12e6a24298f58e7378ed428c3fb82e124cf3c7410b4c",
+      "building": "gor_drazhak__gor_drazhak_warlord_hall__10"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_gate_south__11.png",
+      "sha256": "7d363fa770ac76f1e89d3dd8c76d6c08f476697f822d4078bc38dfa50e4df6a4",
+      "building": "gor_drazhak__gor_drazhak_gate_south__11"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_gate_south__11-before.png",
+      "sha256": "cd569c99d50c03160f2ec0577f67c57f542caec3a0e8cdb3355fa20b24a44d3b",
+      "building": "gor_drazhak__gor_drazhak_gate_south__11"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_gate_south__11-pair.png",
+      "sha256": "14f5cdb4c9cd785e40a91e50f091e59f36e564786f7e710843db30497a796fae",
+      "building": "gor_drazhak__gor_drazhak_gate_south__11"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_market__12.png",
+      "sha256": "a1cacf561c0b823d887f5bbc014b7f8e8bfec4bad499af0517bf06469a5ef304",
+      "building": "gor_drazhak__highcourt_market__12"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_market__12-before.png",
+      "sha256": "aa26bbeaafb75caaf089d7127e05c0feca00b47faeb571f9b61b589d62b4581d",
+      "building": "gor_drazhak__highcourt_market__12"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_market__12-pair.png",
+      "sha256": "8053121f59378d02db2224d48a4339f585e3071ba387cb0e97a0f31f45353e6b",
+      "building": "gor_drazhak__highcourt_market__12"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_colonnade_west__13.png",
+      "sha256": "e2713582412d572aa9fb9a50b8df5cda7f319365e710640252a78feddab9ae33",
+      "building": "gor_drazhak__gor_drazhak_colonnade_west__13"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_colonnade_west__13-before.png",
+      "sha256": "2c0c81a6819970aa4becf0ff8e5fcabfac9257a516b751bfab800da7962828a4",
+      "building": "gor_drazhak__gor_drazhak_colonnade_west__13"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_colonnade_west__13-pair.png",
+      "sha256": "b7fa94816649e37c9353d83933b42e4227884b66f59b475ec21a6ae746f91ca9",
+      "building": "gor_drazhak__gor_drazhak_colonnade_west__13"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_colonnade_east__14.png",
+      "sha256": "e2713582412d572aa9fb9a50b8df5cda7f319365e710640252a78feddab9ae33",
+      "building": "gor_drazhak__gor_drazhak_colonnade_east__14"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_colonnade_east__14-before.png",
+      "sha256": "2c0c81a6819970aa4becf0ff8e5fcabfac9257a516b751bfab800da7962828a4",
+      "building": "gor_drazhak__gor_drazhak_colonnade_east__14"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_colonnade_east__14-pair.png",
+      "sha256": "0537e5dd14fd4a7072463fe46dc288db0ec8eab88b64c1cb5e4c9fe3f17d93b1",
+      "building": "gor_drazhak__gor_drazhak_colonnade_east__14"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_well_court__16.png",
+      "sha256": "f68d4a9603f5ba5bbfde8938f5f83e0a334d36d9787a3e2191ad4bcd3465fa18",
+      "building": "gor_drazhak__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_well_court__16-before.png",
+      "sha256": "091fb6dcad4a90bf57cf88e746384c98626f203476af1ea61d5da095c96bcacf",
+      "building": "gor_drazhak__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_well_court__16-pair.png",
+      "sha256": "f169a16064276cd8a8dc1cdaac12c22e44b9b23f9a9a0901fbbb933f5ada7929",
+      "building": "gor_drazhak__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_skull_hall__17.png",
+      "sha256": "d949186150f0a0694dc36db31eb52fe0f5629f5b12a357bd191ec8d0f6ad6e08",
+      "building": "gor_drazhak__gor_drazhak_skull_hall__17"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_skull_hall__17-before.png",
+      "sha256": "de74274d49c6dca9292d96108f4e85ef307e12717576589c6f5511e6c98655a6",
+      "building": "gor_drazhak__gor_drazhak_skull_hall__17"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_skull_hall__17-pair.png",
+      "sha256": "e8d99e284fc5013d6cfa92c57397033fbee833dc109ff0636363d555275cb98c",
+      "building": "gor_drazhak__gor_drazhak_skull_hall__17"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_service_yard__19.png",
+      "sha256": "f790a734ec889b8222c559bed5d72ca36a89ba8dfe3fd09da71406524a2e3fbb",
+      "building": "gor_drazhak__highcourt_service_yard__19"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_service_yard__19-before.png",
+      "sha256": "612c682442abd258d5cff4be1afcf4ebc73ff55865cae2573aefff52a022f729",
+      "building": "gor_drazhak__highcourt_service_yard__19"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_service_yard__19-pair.png",
+      "sha256": "2e8c6430d6621dcf7d287182e40ccf0a40534023e257b8664dd2c3b2f8880c8a",
+      "building": "gor_drazhak__highcourt_service_yard__19"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_tannery__25.png",
+      "sha256": "5a3da07d9a2848f600428df429beff7bbc0afa99a19f845331e0954f8c289cf4",
+      "building": "gor_drazhak__gor_drazhak_bazaar_tannery__25"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_tannery__25-before.png",
+      "sha256": "3dc7519fff5dd8451867fc18b66b17c5ddc91b953226056bf0b659e5433ddc00",
+      "building": "gor_drazhak__gor_drazhak_bazaar_tannery__25"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bazaar_tannery__25-pair.png",
+      "sha256": "14a4ce9b6d3f9d0cefc26fd7533eee1c9b876dfc0b303f3064e083052053346e",
+      "building": "gor_drazhak__gor_drazhak_bazaar_tannery__25"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_miners_guild__31.png",
+      "sha256": "c262d0dbfb7de62156c8fa362e1681f5b687f02b653cdd2f3ca6d21afdd831f9",
+      "building": "gor_drazhak__gor_drazhak_miners_guild__31"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_miners_guild__31-before.png",
+      "sha256": "1795099042f0ac8316d533144676b010907273422d28179709d6330dd4a01530",
+      "building": "gor_drazhak__gor_drazhak_miners_guild__31"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_miners_guild__31-pair.png",
+      "sha256": "94c63092fbfdefc21c5ba62438a31ef60c6f061c8ef59735f4620a1015ba97dd",
+      "building": "gor_drazhak__gor_drazhak_miners_guild__31"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_barracks__32.png",
+      "sha256": "8b813fb576f5e64bde63c24a54fdd3f1c95878c0b78fa5f847f5757f32778a0c",
+      "building": "gor_drazhak__gor_drazhak_war_barracks__32"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_barracks__32-before.png",
+      "sha256": "35ce9b85de8eba24ee7d7279aeae04964db7b3f13399fe78d3af271b1cb54797",
+      "building": "gor_drazhak__gor_drazhak_war_barracks__32"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_barracks__32-pair.png",
+      "sha256": "0a0980b6df45cafb2f2dca3d8bc8b199813bb78c411995a640bb1e2dcb54e390",
+      "building": "gor_drazhak__gor_drazhak_war_barracks__32"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_market_stable__34.png",
+      "sha256": "82e77767425e16386f31d16e68a261e98655d10a75902d9d9906336e1a992b1a",
+      "building": "gor_drazhak__highcourt_market_stable__34"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_market_stable__34-before.png",
+      "sha256": "01a6d983e6bc8433176763b9c32a00550e31e21175935961390d363ca5d25301",
+      "building": "gor_drazhak__highcourt_market_stable__34"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_market_stable__34-pair.png",
+      "sha256": "4296a4ba8e966324e8e53c721238e7779bf2a9b0684a7fd48638bfc159053452",
+      "building": "gor_drazhak__highcourt_market_stable__34"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_drill_yard__35.png",
+      "sha256": "7b5e1f3884e3614acb4bbce0892cf7760539deb5f44097b4cf5ba827abe85ad3",
+      "building": "gor_drazhak__gor_drazhak_war_drill_yard__35"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_drill_yard__35-before.png",
+      "sha256": "46b09a4022a73e5b6b8e3313e71f6d3d3e736401d24102b1ee37b95bc196855c",
+      "building": "gor_drazhak__gor_drazhak_war_drill_yard__35"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_drill_yard__35-pair.png",
+      "sha256": "1fe74c5f6b6e51d435909d8865ab3328d9147da0d0b1ba752df066f65ed83139",
+      "building": "gor_drazhak__gor_drazhak_war_drill_yard__35"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_quartermaster__36.png",
+      "sha256": "f8966c8e42733b68027f2b4301aca4cfca45698bdd38d0a1812ed3921455b560",
+      "building": "gor_drazhak__gor_drazhak_war_quartermaster__36"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_quartermaster__36-before.png",
+      "sha256": "514ed6c6a72368ccb8f54c8a304eb79b3c08cbdd4d01e39738079b9155254dcd",
+      "building": "gor_drazhak__gor_drazhak_war_quartermaster__36"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_quartermaster__36-pair.png",
+      "sha256": "b42589d7ff1a0234885be117facaf2b1ed9417958b3b288734d4c9d455a03af3",
+      "building": "gor_drazhak__gor_drazhak_war_quartermaster__36"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_watch_tower__37.png",
+      "sha256": "4c92808823e6b3a9f2e90c93cc87f0fad6d2bcbb91e92323eb50bca3ced08c8d",
+      "building": "gor_drazhak__gor_drazhak_war_watch_tower__37"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_watch_tower__37-before.png",
+      "sha256": "4331098a281c692588f11fd8b53a7b78d2192c1e1bfc7d7a8a3661938ce1fd0d",
+      "building": "gor_drazhak__gor_drazhak_war_watch_tower__37"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_war_watch_tower__37-pair.png",
+      "sha256": "27ecb34893aff86f997f79fdfe6fbac44ddd84f1eac8ed036e93264fd522a1a7",
+      "building": "gor_drazhak__gor_drazhak_war_watch_tower__37"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bone_spirit_hall__38.png",
+      "sha256": "0d948885257c558b9af4db46a188525c4f94a2b750cccaf98476f9d8cd84d410",
+      "building": "gor_drazhak__gor_drazhak_bone_spirit_hall__38"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bone_spirit_hall__38-before.png",
+      "sha256": "2d2f9a8b6f5dcdaff1b2cf53d2832540e81f5379573303fb50ec5c2a12da46eb",
+      "building": "gor_drazhak__gor_drazhak_bone_spirit_hall__38"
+    },
+    {
+      "file": "captures/gor_drazhak__gor_drazhak_bone_spirit_hall__38-pair.png",
+      "sha256": "ac7491fe919a451291919f31d23c93d034a8802550ad5cdcc3ae714b4c65ca9b",
+      "building": "gor_drazhak__gor_drazhak_bone_spirit_hall__38"
+    },
+    {
+      "file": "captures/highcourt__highcourt_kings_hall__12.png",
+      "sha256": "c6dca9b2241ba80d2fa1f36f1ab2050fdac4f288537a105b41c725a0d87256db",
+      "building": "highcourt__highcourt_kings_hall__12"
+    },
+    {
+      "file": "captures/highcourt__highcourt_kings_hall__12-before.png",
+      "sha256": "70073a470eb56f6c2c870c1b82358ded3da557f1c21a35e3ca086536eaf242b4",
+      "building": "highcourt__highcourt_kings_hall__12"
+    },
+    {
+      "file": "captures/highcourt__highcourt_kings_hall__12-pair.png",
+      "sha256": "ae00a52e8ed4cabe25c1546f00bf31fb2d17e550f834ab434bf2d3a99bf62fe5",
+      "building": "highcourt__highcourt_kings_hall__12"
+    },
+    {
+      "file": "captures/highcourt__highcourt_gate_south__13.png",
+      "sha256": "2b275e58454780f3177c0d84c1f8db3b3e311694b81db34cc449f4cca8ca3eb3",
+      "building": "highcourt__highcourt_gate_south__13"
+    },
+    {
+      "file": "captures/highcourt__highcourt_gate_south__13-before.png",
+      "sha256": "eda973ae006a5422770ce1dc34a1ebd235db7530a3ca97caf2e9d900df9c09f6",
+      "building": "highcourt__highcourt_gate_south__13"
+    },
+    {
+      "file": "captures/highcourt__highcourt_gate_south__13-pair.png",
+      "sha256": "ffe6c9859e3bcde698e7338bff77b25a6ae14ca042b18639442338b3f4aed758",
+      "building": "highcourt__highcourt_gate_south__13"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market__14.png",
+      "sha256": "c0fda833c2fb047240fb1ba8f01a0f86e80d3aa21da0738ddab376823e627836",
+      "building": "highcourt__highcourt_market__14"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market__14-before.png",
+      "sha256": "4674b77346b9ca7e0681941100777837a59ddfc1f41eaa7feb107ec06254f2e8",
+      "building": "highcourt__highcourt_market__14"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market__14-pair.png",
+      "sha256": "4db3c339a5b1a342974893de842f9b1de82bee88f98b21425a37955728cb4954",
+      "building": "highcourt__highcourt_market__14"
+    },
+    {
+      "file": "captures/highcourt__highcourt_colonnade_west__15.png",
+      "sha256": "47d9bc1466602846ba2b2f10f9715b46c0ce5c98f68b00df23e5dd642660ef2c",
+      "building": "highcourt__highcourt_colonnade_west__15"
+    },
+    {
+      "file": "captures/highcourt__highcourt_colonnade_west__15-before.png",
+      "sha256": "3347a60e7f11fba5ab7c573036d7eb5816e078f86095b5bf5cf6ec185085a8f8",
+      "building": "highcourt__highcourt_colonnade_west__15"
+    },
+    {
+      "file": "captures/highcourt__highcourt_colonnade_west__15-pair.png",
+      "sha256": "42151e4eca954efd5057fa73af1937db8311de1b96533bb2fa866410cd74cfac",
+      "building": "highcourt__highcourt_colonnade_west__15"
+    },
+    {
+      "file": "captures/highcourt__highcourt_colonnade_east__16.png",
+      "sha256": "47d9bc1466602846ba2b2f10f9715b46c0ce5c98f68b00df23e5dd642660ef2c",
+      "building": "highcourt__highcourt_colonnade_east__16"
+    },
+    {
+      "file": "captures/highcourt__highcourt_colonnade_east__16-before.png",
+      "sha256": "3347a60e7f11fba5ab7c573036d7eb5816e078f86095b5bf5cf6ec185085a8f8",
+      "building": "highcourt__highcourt_colonnade_east__16"
+    },
+    {
+      "file": "captures/highcourt__highcourt_colonnade_east__16-pair.png",
+      "sha256": "2812b50627b0f7c63139fdeb18ad8c7e7a6181320e1db00c953e277445a4dd2c",
+      "building": "highcourt__highcourt_colonnade_east__16"
+    },
+    {
+      "file": "captures/highcourt__highcourt_well_court__18.png",
+      "sha256": "0b608c4ce1d795ffb28cbc1c2c69b02dd98c79de0ee068154cfcb756ad0ec9e6",
+      "building": "highcourt__highcourt_well_court__18"
+    },
+    {
+      "file": "captures/highcourt__highcourt_well_court__18-before.png",
+      "sha256": "783924fdddcf0c35a5ebb38a680c5b07a5856d80268dd3c3f918c947b6455091",
+      "building": "highcourt__highcourt_well_court__18"
+    },
+    {
+      "file": "captures/highcourt__highcourt_well_court__18-pair.png",
+      "sha256": "b360d2d7aab88af963acea4bcd1ff6c91794ec233bf6f7a3bc3430b766043939",
+      "building": "highcourt__highcourt_well_court__18"
+    },
+    {
+      "file": "captures/highcourt__highcourt_chapel__21.png",
+      "sha256": "31214026991855ddd858e5899b18f7ecc791129aa0e200b69fdfc4cfd87def45",
+      "building": "highcourt__highcourt_chapel__21"
+    },
+    {
+      "file": "captures/highcourt__highcourt_chapel__21-before.png",
+      "sha256": "c2380850f80532952891ca6c946050233235e5f4137fb8e68f67c3d06aa2978e",
+      "building": "highcourt__highcourt_chapel__21"
+    },
+    {
+      "file": "captures/highcourt__highcourt_chapel__21-pair.png",
+      "sha256": "d46022aca40a1696d6f04e30e1a9476d9e4af54bf137ca3c0527ccbc5bf3a120",
+      "building": "highcourt__highcourt_chapel__21"
+    },
+    {
+      "file": "captures/highcourt__highcourt_service_yard__22.png",
+      "sha256": "39842a1beb38ec547de5b8f803f335fb5f7f38daf790fb26aec6542e705bf8ca",
+      "building": "highcourt__highcourt_service_yard__22"
+    },
+    {
+      "file": "captures/highcourt__highcourt_service_yard__22-before.png",
+      "sha256": "0e3c4c1f8eeec8a829a05bf5050391ee154a6c4d2c81ce49ce2613bd46239d2d",
+      "building": "highcourt__highcourt_service_yard__22"
+    },
+    {
+      "file": "captures/highcourt__highcourt_service_yard__22-pair.png",
+      "sha256": "aa317dd62e9fc8d5aa8c24bbe591f145d7f7d1c47175959a14e2d37f687aaa4f",
+      "building": "highcourt__highcourt_service_yard__22"
+    },
+    {
+      "file": "captures/highcourt__highcourt_chapel_house__28.png",
+      "sha256": "77f751c1719cfcb994f8a6923309afe216d1e20ca03b85906b6f489ebd78aac2",
+      "building": "highcourt__highcourt_chapel_house__28"
+    },
+    {
+      "file": "captures/highcourt__highcourt_chapel_house__28-before.png",
+      "sha256": "8c1577b473d9f690b5c66dcd33c832b440f64a2fc49e3c5e3bdabb7538e4d694",
+      "building": "highcourt__highcourt_chapel_house__28"
+    },
+    {
+      "file": "captures/highcourt__highcourt_chapel_house__28-pair.png",
+      "sha256": "8ab508b64614eb50bbc69030abe3bd55d8e43a5d19c60535e30789275fe60a15",
+      "building": "highcourt__highcourt_chapel_house__28"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_stable__31.png",
+      "sha256": "2e39825f453390d8864cb0a994493d69647ceed632070a242e139609eb2385c8",
+      "building": "highcourt__highcourt_market_stable__31"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_stable__31-before.png",
+      "sha256": "2651609fe046117d86a09c31bd8deada59e24d1944a38730281c3ead9f84a72e",
+      "building": "highcourt__highcourt_market_stable__31"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_stable__31-pair.png",
+      "sha256": "e3b505e56aa9b11d3bd5a5db43af485a5dcacf751491aeeb22ad3ad9d424299c",
+      "building": "highcourt__highcourt_market_stable__31"
+    },
+    {
+      "file": "captures/highcourt__highcourt_well_court__34.png",
+      "sha256": "0b608c4ce1d795ffb28cbc1c2c69b02dd98c79de0ee068154cfcb756ad0ec9e6",
+      "building": "highcourt__highcourt_well_court__34"
+    },
+    {
+      "file": "captures/highcourt__highcourt_well_court__34-before.png",
+      "sha256": "783924fdddcf0c35a5ebb38a680c5b07a5856d80268dd3c3f918c947b6455091",
+      "building": "highcourt__highcourt_well_court__34"
+    },
+    {
+      "file": "captures/highcourt__highcourt_well_court__34-pair.png",
+      "sha256": "27c30e61bf5b5063d221496a5c076dfa09ec1fb7e9640168cd4ee651076d9e62",
+      "building": "highcourt__highcourt_well_court__34"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_watch__35.png",
+      "sha256": "400be771d0283ad26861cb10d57b808ffef4b9556e0407198f7d6caabba8c22d",
+      "building": "highcourt__highcourt_market_watch__35"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_watch__35-before.png",
+      "sha256": "cc0d2e793e02e7b83fd95f0aa60b4f43ea832797cd192c2f0ac148f8ff325012",
+      "building": "highcourt__highcourt_market_watch__35"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_watch__35-pair.png",
+      "sha256": "fa3f2bdfef34f77b400f916f68ce1ae35244d70542b96941a9fbfc487dcd5017",
+      "building": "highcourt__highcourt_market_watch__35"
+    },
+    {
+      "file": "captures/highcourt__highcourt_miners_guild__39.png",
+      "sha256": "838b5cec0ed15222b9a6a41af819a878aa60ad1333cccf79a02abf69b7c02b34",
+      "building": "highcourt__highcourt_miners_guild__39"
+    },
+    {
+      "file": "captures/highcourt__highcourt_miners_guild__39-before.png",
+      "sha256": "56bf9dba7b2ad222d58044dfa44fbfadf94bf81a54c53ff778439abdcb3af447",
+      "building": "highcourt__highcourt_miners_guild__39"
+    },
+    {
+      "file": "captures/highcourt__highcourt_miners_guild__39-pair.png",
+      "sha256": "000d0fcdafc6a66742fb4c07517e7fd6088601f3823bd00369b0cab864e03260",
+      "building": "highcourt__highcourt_miners_guild__39"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_barracks__40.png",
+      "sha256": "09c809e1b900089c5981292b62afe86b0413e2ad39d4b42ad155db4446c38aae",
+      "building": "highcourt__highcourt_martial_barracks__40"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_barracks__40-before.png",
+      "sha256": "c40588cb54052d08e7cf6f150ce35c883a44744b1f7ae8e950e85c1ccdf0b2a5",
+      "building": "highcourt__highcourt_martial_barracks__40"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_barracks__40-pair.png",
+      "sha256": "9ff9e0bc7dd5e4a15e95138f569eb9bbe7a64ba81e73bc3d7a2b6501ac8099eb",
+      "building": "highcourt__highcourt_martial_barracks__40"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_muster_hall__41.png",
+      "sha256": "2465183e28df1a870bf8f3b85ce26ea3d47212cec9289cd34eb369d5ad511cad",
+      "building": "highcourt__highcourt_martial_muster_hall__41"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_muster_hall__41-before.png",
+      "sha256": "c08bdd6158c765e9825b0fb4ca1cd844870e9410bd14b563bb5202b8ae771b52",
+      "building": "highcourt__highcourt_martial_muster_hall__41"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_muster_hall__41-pair.png",
+      "sha256": "c9fd7447b55f3a4297cd7ed84374317abf46704272f2e6d9ebdd7da3bb31a854",
+      "building": "highcourt__highcourt_martial_muster_hall__41"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_drill_yard__44.png",
+      "sha256": "0d4fdb691a9791a5edda8628bf28c413933361c92d85c30b05144af7cdf8c1b7",
+      "building": "highcourt__highcourt_martial_drill_yard__44"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_drill_yard__44-before.png",
+      "sha256": "1318f1095e1c54467a10a0ad205fcf44a38e6e2be35b02c4510238d59f358462",
+      "building": "highcourt__highcourt_martial_drill_yard__44"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_drill_yard__44-pair.png",
+      "sha256": "b73ac76f4c8588e16dab4d71796c4ea2f2f3de1dddb363f85e5f48f867471b22",
+      "building": "highcourt__highcourt_martial_drill_yard__44"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_quartermaster__45.png",
+      "sha256": "fc2e5aef600f679dc01efd7cccf2629e68241c270a8f3955d504ee15cebb4493",
+      "building": "highcourt__highcourt_martial_quartermaster__45"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_quartermaster__45-before.png",
+      "sha256": "d3c473ad73c638cb066a3c2f3d5eae2025cbc951a5cf625eeecfacd9267287f0",
+      "building": "highcourt__highcourt_martial_quartermaster__45"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_quartermaster__45-pair.png",
+      "sha256": "709274c08c4bc84b0328c5f7e73d0ef2099fcbefe600227091458ae0423c51ac",
+      "building": "highcourt__highcourt_martial_quartermaster__45"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_guard_house__46.png",
+      "sha256": "118f332100561137b9635f4cf1d4de447ff099991ce9308832fa08977a4d8b2f",
+      "building": "highcourt__highcourt_martial_guard_house__46"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_guard_house__46-before.png",
+      "sha256": "794fde4a61e9e85ab04fdf96a240eb75b90be103c4d84e2ff596a5e3278ca2a0",
+      "building": "highcourt__highcourt_martial_guard_house__46"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_guard_house__46-pair.png",
+      "sha256": "77929155c5079e894a7234e5716add0eb3e6aef25ac851704766f76aee39aa1a",
+      "building": "highcourt__highcourt_martial_guard_house__46"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_watch_tower__47.png",
+      "sha256": "c695f9365481122e0d896966f97d7e90f53c1dc966b54a6310429ca57ca31e0b",
+      "building": "highcourt__highcourt_martial_watch_tower__47"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_watch_tower__47-before.png",
+      "sha256": "8f2a629c727db825b004e7bea9fe6681f86c7c44f2128015a76e89bf0fc7c4bd",
+      "building": "highcourt__highcourt_martial_watch_tower__47"
+    },
+    {
+      "file": "captures/highcourt__highcourt_martial_watch_tower__47-pair.png",
+      "sha256": "82bd360ada5fa5c17b7b88b5b3ca26d79e844d3fe8373ad5a82636bc5063d2f4",
+      "building": "highcourt__highcourt_martial_watch_tower__47"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_shrine__48.png",
+      "sha256": "6d1422a3612123b534f34e46dc51d7df3a1b367d44d643c5be1f470c97b6c9bc",
+      "building": "highcourt__highcourt_lore_shrine__48"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_shrine__48-before.png",
+      "sha256": "430071af611ddf99138a58d9ce7d81bd6e3062d5a378ccdc05f8c5e84fd8bfc4",
+      "building": "highcourt__highcourt_lore_shrine__48"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_shrine__48-pair.png",
+      "sha256": "530239b86aa73690e33cf91e05b9a1c0de5c998afa3ffd9da1410980629bf2ec",
+      "building": "highcourt__highcourt_lore_shrine__48"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_cloister_walk__54.png",
+      "sha256": "47d9bc1466602846ba2b2f10f9715b46c0ce5c98f68b00df23e5dd642660ef2c",
+      "building": "highcourt__highcourt_lore_cloister_walk__54"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_cloister_walk__54-before.png",
+      "sha256": "3347a60e7f11fba5ab7c573036d7eb5816e078f86095b5bf5cf6ec185085a8f8",
+      "building": "highcourt__highcourt_lore_cloister_walk__54"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_cloister_walk__54-pair.png",
+      "sha256": "df62d5e5d2f5e3be5f7ecacb7630b689a73565746d1e4a3f880146733541f120",
+      "building": "highcourt__highcourt_lore_cloister_walk__54"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_chapel_yard__56.png",
+      "sha256": "154201172dd4aca700e167c2eb07af2b7a815b349933a1757f23bf18b9c2fe62",
+      "building": "highcourt__highcourt_lore_chapel_yard__56"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_chapel_yard__56-before.png",
+      "sha256": "ea5e4bde14723f78de315c31b09cd71552ff5dcb8bfa5b205149e76294126448",
+      "building": "highcourt__highcourt_lore_chapel_yard__56"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_chapel_yard__56-pair.png",
+      "sha256": "b1a0803ed1c668722fe5a3a21263d711d4a9f034a4ebf0807095bca7fb7c4b82",
+      "building": "highcourt__highcourt_lore_chapel_yard__56"
+    },
+    {
+      "file": "captures/kezamba__kezamba_kings_hall__14.png",
+      "sha256": "d658e44078d8760247abce3d3dca658405f30174d7d4520716f488838282f828",
+      "building": "kezamba__kezamba_kings_hall__14"
+    },
+    {
+      "file": "captures/kezamba__kezamba_kings_hall__14-before.png",
+      "sha256": "200de43053c5cb1dde25a99f2ae88fb69d749e90963afaff7a0689a0633094fa",
+      "building": "kezamba__kezamba_kings_hall__14"
+    },
+    {
+      "file": "captures/kezamba__kezamba_kings_hall__14-pair.png",
+      "sha256": "160370d5c2fd44ee72236669f8ecd6090819d43447f7ef90315dc6963d2322fd",
+      "building": "kezamba__kezamba_kings_hall__14"
+    },
+    {
+      "file": "captures/kezamba__kezamba_moot_house__15.png",
+      "sha256": "cd352ffcd1b1b3b83ec1659213b3200774980500b554e7a214e9badad4f757c8",
+      "building": "kezamba__kezamba_moot_house__15"
+    },
+    {
+      "file": "captures/kezamba__kezamba_moot_house__15-before.png",
+      "sha256": "b63040f7853dfb53427d4b66f0c86ba880f92502a341f8e47f42881f35a937e4",
+      "building": "kezamba__kezamba_moot_house__15"
+    },
+    {
+      "file": "captures/kezamba__kezamba_moot_house__15-pair.png",
+      "sha256": "6e558c883f55b4977a685b799ec09af6b2b4cb3960076b60faf0b77f87931e64",
+      "building": "kezamba__kezamba_moot_house__15"
+    },
+    {
+      "file": "captures/kezamba__kezamba_cauldron_court__16.png",
+      "sha256": "f4abe4a2dddab9b7f1fdd8a7d44019399e166a8482b0a0636327e2b1e1c4ed10",
+      "building": "kezamba__kezamba_cauldron_court__16"
+    },
+    {
+      "file": "captures/kezamba__kezamba_cauldron_court__16-before.png",
+      "sha256": "dce2d583c3ecc1bef0b1783468cbd1f87c51f3d65bed81f4cdcdc182191242a0",
+      "building": "kezamba__kezamba_cauldron_court__16"
+    },
+    {
+      "file": "captures/kezamba__kezamba_cauldron_court__16-pair.png",
+      "sha256": "c6281098b32344c15bd5150b1990dc6838033d97dbd883eeb0cb8f91d4869492",
+      "building": "kezamba__kezamba_cauldron_court__16"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shrine__17.png",
+      "sha256": "83f7194820b6f54e16a369f5c54cb81174eaf57c0e7ace44f947cf5fc8336f15",
+      "building": "kezamba__kezamba_shrine__17"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shrine__17-before.png",
+      "sha256": "ca0c3d8643304bebe44e203ed03a88fce54b2810c5afab2ab42981a173070b44",
+      "building": "kezamba__kezamba_shrine__17"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shrine__17-pair.png",
+      "sha256": "7734f0264e5c45050d988578bef3cb31519832877c80a587bd0609e6627f3f37",
+      "building": "kezamba__kezamba_shrine__17"
+    },
+    {
+      "file": "captures/kezamba__kezamba_carver_yard__18.png",
+      "sha256": "f5a4ea82f08dc561819006eca2307a7eae72d72eb8b11bad68613dbc7a66bd95",
+      "building": "kezamba__kezamba_carver_yard__18"
+    },
+    {
+      "file": "captures/kezamba__kezamba_carver_yard__18-before.png",
+      "sha256": "12abab36e868968ae008453b3ef3f89bce7ff692d67591826a5a2aecbe52975f",
+      "building": "kezamba__kezamba_carver_yard__18"
+    },
+    {
+      "file": "captures/kezamba__kezamba_carver_yard__18-pair.png",
+      "sha256": "65c5b4e7c4e928ff55e11a8de71ec35ec9f2e4e926a746d9f0c627a0c791c684",
+      "building": "kezamba__kezamba_carver_yard__18"
+    },
+    {
+      "file": "captures/kezamba__kezamba_gate_house_south__21.png",
+      "sha256": "b417b62e7a636c3916c238631593d19f27ce2f739457d1912389544bb8beb809",
+      "building": "kezamba__kezamba_gate_house_south__21"
+    },
+    {
+      "file": "captures/kezamba__kezamba_gate_house_south__21-before.png",
+      "sha256": "fb136a2f26d8dd47ad8b027f4377da41ebd79cec884b3589f6094a48320674dc",
+      "building": "kezamba__kezamba_gate_house_south__21"
+    },
+    {
+      "file": "captures/kezamba__kezamba_gate_house_south__21-pair.png",
+      "sha256": "7a7615014f7d22f2023bdd19ceb4e2f9b6fe2f9e9bfb9cc774a6dd478b9e3bba",
+      "building": "kezamba__kezamba_gate_house_south__21"
+    },
+    {
+      "file": "captures/kezamba__kezamba_trade_shed__25.png",
+      "sha256": "7f0035ae42dc21e1bed11cf8871e40da8e1bf32db32ba2e005269b2cb9ea3723",
+      "building": "kezamba__kezamba_trade_shed__25"
+    },
+    {
+      "file": "captures/kezamba__kezamba_trade_shed__25-before.png",
+      "sha256": "6950a6dea0063d49f54d2abfce88b0f18bac544991a2be86c3ea287339e3379c",
+      "building": "kezamba__kezamba_trade_shed__25"
+    },
+    {
+      "file": "captures/kezamba__kezamba_trade_shed__25-pair.png",
+      "sha256": "e1d94fd0628b60d48d1c2fd5229a33dede95c284dbeac39f28125bfbe104d30b",
+      "building": "kezamba__kezamba_trade_shed__25"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_market__26.png",
+      "sha256": "f4abe4a2dddab9b7f1fdd8a7d44019399e166a8482b0a0636327e2b1e1c4ed10",
+      "building": "kezamba__kezamba_shore_market__26"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_market__26-before.png",
+      "sha256": "dce2d583c3ecc1bef0b1783468cbd1f87c51f3d65bed81f4cdcdc182191242a0",
+      "building": "kezamba__kezamba_shore_market__26"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_market__26-pair.png",
+      "sha256": "9a5f158f132bd6542035e4f4d6dee3a27e8b0b21845ed3d23d4529ea15f4a55b",
+      "building": "kezamba__kezamba_shore_market__26"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_carvers__30.png",
+      "sha256": "550591e612dc5d97cbd8d575ab7bbda0a2ecfefc0e3ef40ba67d5b365a634bba",
+      "building": "kezamba__kezamba_shore_carvers__30"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_carvers__30-before.png",
+      "sha256": "aa582b81b210c4e975e635f0531dbbd35a5e55eef0b6fd704ab57d587252e422",
+      "building": "kezamba__kezamba_shore_carvers__30"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_carvers__30-pair.png",
+      "sha256": "3b9665d14237b28b3e3c4a1fd4ad845debc28a0415c0abfc9de39dbd7c6ed0c6",
+      "building": "kezamba__kezamba_shore_carvers__30"
+    },
+    {
+      "file": "captures/kezamba__highcourt_well_court__31.png",
+      "sha256": "5aa099ca6f4914270372793b7f1e545f032457d6c38ff616f563acf37323db67",
+      "building": "kezamba__highcourt_well_court__31"
+    },
+    {
+      "file": "captures/kezamba__highcourt_well_court__31-before.png",
+      "sha256": "03820da98a811ab20cd109771e8eb0cdc7f7e4cf342a79f3d938e00bcaa84817",
+      "building": "kezamba__highcourt_well_court__31"
+    },
+    {
+      "file": "captures/kezamba__highcourt_well_court__31-pair.png",
+      "sha256": "4b8c691320fa552692e14690b854244618171fb3856f492438a32ec96c8abf44",
+      "building": "kezamba__highcourt_well_court__31"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_watch__32.png",
+      "sha256": "aa47df01acd57960bc9dbd3f2c804ea32dce50c16cb05cf28dd34b99e0e29bf5",
+      "building": "kezamba__kezamba_shore_watch__32"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_watch__32-before.png",
+      "sha256": "e5a4798e20ed649a8423ecefe669028542ac10b9bf8c3cb64bce25e78a06104a",
+      "building": "kezamba__kezamba_shore_watch__32"
+    },
+    {
+      "file": "captures/kezamba__kezamba_shore_watch__32-pair.png",
+      "sha256": "dc8952b529924e3206db017dcd7ff800e3b87fe4e911a1dcf5cf6a93207b3401",
+      "building": "kezamba__kezamba_shore_watch__32"
+    },
+    {
+      "file": "captures/kezamba__kezamba_miners_guild__34.png",
+      "sha256": "4903abf9682d21a67c1e147b6845cf5ecf1ee12332bd884c3da67f3810ca5d66",
+      "building": "kezamba__kezamba_miners_guild__34"
+    },
+    {
+      "file": "captures/kezamba__kezamba_miners_guild__34-before.png",
+      "sha256": "848812ebfb0e2ae5f74fa72b8e531913e98af9ca4b65a27da872a6f95a7462c5",
+      "building": "kezamba__kezamba_miners_guild__34"
+    },
+    {
+      "file": "captures/kezamba__kezamba_miners_guild__34-pair.png",
+      "sha256": "4443eb60d0941aa33c017b40d97e53c53c4c4ade56a7eddc0c458db289c1f8f9",
+      "building": "kezamba__kezamba_miners_guild__34"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_moot__40.png",
+      "sha256": "cfc5d4d611aac8c571f1a9a0f8bc8488c6012db9c416db22aa85cc052faf5551",
+      "building": "kezamba__kezamba_vine_moot__40"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_moot__40-before.png",
+      "sha256": "3149c49bfc12d4ef73a4a2f8664b1dbfe6114a0169886886ce26cbfe23300d3c",
+      "building": "kezamba__kezamba_vine_moot__40"
+    },
+    {
+      "file": "captures/kezamba__kezamba_vine_moot__40-pair.png",
+      "sha256": "30ef8f0394704515133a4fbef6cecc323a81ec17c603acab754c7e53fe50b1c3",
+      "building": "kezamba__kezamba_vine_moot__40"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_barracks_a__41.png",
+      "sha256": "aa47df01acd57960bc9dbd3f2c804ea32dce50c16cb05cf28dd34b99e0e29bf5",
+      "building": "kezamba__kezamba_canopy_barracks_a__41"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_barracks_a__41-before.png",
+      "sha256": "e5a4798e20ed649a8423ecefe669028542ac10b9bf8c3cb64bce25e78a06104a",
+      "building": "kezamba__kezamba_canopy_barracks_a__41"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_barracks_a__41-pair.png",
+      "sha256": "602527bdd00292bd4e70c72b2b1d1046256f02e45e50935044a9b70ad126dac4",
+      "building": "kezamba__kezamba_canopy_barracks_a__41"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_barracks_b__42.png",
+      "sha256": "aa47df01acd57960bc9dbd3f2c804ea32dce50c16cb05cf28dd34b99e0e29bf5",
+      "building": "kezamba__kezamba_canopy_barracks_b__42"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_barracks_b__42-before.png",
+      "sha256": "e5a4798e20ed649a8423ecefe669028542ac10b9bf8c3cb64bce25e78a06104a",
+      "building": "kezamba__kezamba_canopy_barracks_b__42"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_barracks_b__42-pair.png",
+      "sha256": "b5dfbaeefc63a012b752538143377d0bd0d64234d4bb40c31737d79fb1857fd9",
+      "building": "kezamba__kezamba_canopy_barracks_b__42"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_watchpost__43.png",
+      "sha256": "dab93e99b1106a2b7b00c3e281946b00cd8a76355f54924c1dac279475e92b9a",
+      "building": "kezamba__kezamba_canopy_watchpost__43"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_watchpost__43-before.png",
+      "sha256": "281891701a5179d32e62388afcb2076c71c9b12590a698a87a8fd9a48a23c968",
+      "building": "kezamba__kezamba_canopy_watchpost__43"
+    },
+    {
+      "file": "captures/kezamba__kezamba_canopy_watchpost__43-pair.png",
+      "sha256": "e55ccd3c3de8835d2b15e4600f3d9b34d92e0d67c7ae54143fe0b2342cdfb1d1",
+      "building": "kezamba__kezamba_canopy_watchpost__43"
+    },
+    {
+      "file": "captures/kezamba__highcourt_market_stable__44.png",
+      "sha256": "57880ebb75c648faeb9d92e69fd7c8d429e25147cf667ec509c44e91893fe514",
+      "building": "kezamba__highcourt_market_stable__44"
+    },
+    {
+      "file": "captures/kezamba__highcourt_market_stable__44-before.png",
+      "sha256": "d8c938ff64a6ff43cc3ac4ee7aac23ea1e360eb290ed97731eabb9d6eeec9738",
+      "building": "kezamba__highcourt_market_stable__44"
+    },
+    {
+      "file": "captures/kezamba__highcourt_market_stable__44-pair.png",
+      "sha256": "6c86bffa2339d63fa34126c6eea20560ea0f2c60178aa0d5c57c71dad5845c02",
+      "building": "kezamba__highcourt_market_stable__44"
+    },
+    {
+      "file": "captures/kezamba__kezamba_totem_shrine__46.png",
+      "sha256": "2304481363e03d45572b24440d6c4c1e19bc0bf584caf0717a76d4a856ad2f5b",
+      "building": "kezamba__kezamba_totem_shrine__46"
+    },
+    {
+      "file": "captures/kezamba__kezamba_totem_shrine__46-before.png",
+      "sha256": "ee1d90dfebbe7abc064e5f14f7b923297d03c34b7aa276e3d71c91d5a487faa8",
+      "building": "kezamba__kezamba_totem_shrine__46"
+    },
+    {
+      "file": "captures/kezamba__kezamba_totem_shrine__46-pair.png",
+      "sha256": "fdc4543f7293be053d90c1e029e9fb1457d2ceb633b4f20ed8dcbccc45de78e7",
+      "building": "kezamba__kezamba_totem_shrine__46"
+    },
+    {
+      "file": "captures/lethariel__lethariel_kings_hall__10.png",
+      "sha256": "4ea2f82b172df0875b9b528259e1be24fb3182e59fd5e5c6edf0be89f6f8bb91",
+      "building": "lethariel__lethariel_kings_hall__10"
+    },
+    {
+      "file": "captures/lethariel__lethariel_kings_hall__10-before.png",
+      "sha256": "2225332f68ae5cd0eeb8f8761fd671850af4f4622d1959e4035f060a6a3059f5",
+      "building": "lethariel__lethariel_kings_hall__10"
+    },
+    {
+      "file": "captures/lethariel__lethariel_kings_hall__10-pair.png",
+      "sha256": "c739a70a9c70b8330f47ef1dd25ce20221f3637771d6c6eabc55b69a84c9e1cc",
+      "building": "lethariel__lethariel_kings_hall__10"
+    },
+    {
+      "file": "captures/lethariel__lethariel_gate_south__11.png",
+      "sha256": "b8adb76f43377e0ed4b80096541a307b28cb86eb714bbbcec84efc757e83dc99",
+      "building": "lethariel__lethariel_gate_south__11"
+    },
+    {
+      "file": "captures/lethariel__lethariel_gate_south__11-before.png",
+      "sha256": "c80b75d58dfed76402591fc55f0b175728798323fce70d11f66b5d58d68b144a",
+      "building": "lethariel__lethariel_gate_south__11"
+    },
+    {
+      "file": "captures/lethariel__lethariel_gate_south__11-pair.png",
+      "sha256": "75f22b02177db8fda47790e2d5129908cd69a2bcef9c816aa2fcf2224cd52275",
+      "building": "lethariel__lethariel_gate_south__11"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market__12.png",
+      "sha256": "895bbdd0cca5525a4294808ba9d5505153c2f6d01e9d962c89ee057d652ea2d2",
+      "building": "lethariel__lethariel_market__12"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market__12-before.png",
+      "sha256": "4b535e9b8f0612493d772998a10440ba62e7d7fb3e65bcec05b41cf1072caca4",
+      "building": "lethariel__lethariel_market__12"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market__12-pair.png",
+      "sha256": "de9518d96c9facafe635b86d64cc3d88c9052d91b3558399400751fb6512e1a8",
+      "building": "lethariel__lethariel_market__12"
+    },
+    {
+      "file": "captures/lethariel__lethariel_colonnade_west__13.png",
+      "sha256": "0062add0bb04f246fa92ce8f9c295d3fc9774a4bb47b64de260762960c934da8",
+      "building": "lethariel__lethariel_colonnade_west__13"
+    },
+    {
+      "file": "captures/lethariel__lethariel_colonnade_west__13-before.png",
+      "sha256": "a4797d714630f0a4636991fb4b66464687502125de68bb6c1a109eb9dbf42dd7",
+      "building": "lethariel__lethariel_colonnade_west__13"
+    },
+    {
+      "file": "captures/lethariel__lethariel_colonnade_west__13-pair.png",
+      "sha256": "853f542b95e8fc33ab771d5112ab80b813a9b904d85248024f6474a5fa305f3e",
+      "building": "lethariel__lethariel_colonnade_west__13"
+    },
+    {
+      "file": "captures/lethariel__lethariel_colonnade_east__14.png",
+      "sha256": "0062add0bb04f246fa92ce8f9c295d3fc9774a4bb47b64de260762960c934da8",
+      "building": "lethariel__lethariel_colonnade_east__14"
+    },
+    {
+      "file": "captures/lethariel__lethariel_colonnade_east__14-before.png",
+      "sha256": "a4797d714630f0a4636991fb4b66464687502125de68bb6c1a109eb9dbf42dd7",
+      "building": "lethariel__lethariel_colonnade_east__14"
+    },
+    {
+      "file": "captures/lethariel__lethariel_colonnade_east__14-pair.png",
+      "sha256": "9f8aa45a4ffe6c0b8a2d186a4253fab6fbb089d9525f8cdc5a52445efb3748b8",
+      "building": "lethariel__lethariel_colonnade_east__14"
+    },
+    {
+      "file": "captures/lethariel__highcourt_well_court__16.png",
+      "sha256": "c15d1c02eb53ba3a88484b17c23ad8c7639900c9f99286a5562275dd39e2c3e7",
+      "building": "lethariel__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/lethariel__highcourt_well_court__16-before.png",
+      "sha256": "75be4ed042bf227a5ad689e48657ffb39456c00c3afd317085c38aaf9951cf40",
+      "building": "lethariel__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/lethariel__highcourt_well_court__16-pair.png",
+      "sha256": "df21ef3a6c90551955d54d8524f91919fdb108dfe3618dd2f6f9a97b3b3cf3b6",
+      "building": "lethariel__highcourt_well_court__16"
+    },
+    {
+      "file": "captures/lethariel__lethariel_star_hall__17.png",
+      "sha256": "1c36924f7e27e87608bc741f2c7e916a20cf0211561496d0bf390bf55fe9b3e1",
+      "building": "lethariel__lethariel_star_hall__17"
+    },
+    {
+      "file": "captures/lethariel__lethariel_star_hall__17-before.png",
+      "sha256": "3838c331599fe3878e6b088a32208f7228122c9287f06451632a6ae1a7ac7604",
+      "building": "lethariel__lethariel_star_hall__17"
+    },
+    {
+      "file": "captures/lethariel__lethariel_star_hall__17-pair.png",
+      "sha256": "e6fa7cbeb029134d0ce51380f20fa35711b3f759d7bb31094fdeaa13dfc88a6c",
+      "building": "lethariel__lethariel_star_hall__17"
+    },
+    {
+      "file": "captures/lethariel__lethariel_mere_shrine__19.png",
+      "sha256": "7c2a91afb1e14549df4f2d9356db9aa2abd2523b63435d934b5d4416c2584561",
+      "building": "lethariel__lethariel_mere_shrine__19"
+    },
+    {
+      "file": "captures/lethariel__lethariel_mere_shrine__19-before.png",
+      "sha256": "caa7521148d759a5a6afc521dd995bb2714f088151069dd9d8f463bb077af902",
+      "building": "lethariel__lethariel_mere_shrine__19"
+    },
+    {
+      "file": "captures/lethariel__lethariel_mere_shrine__19-pair.png",
+      "sha256": "b06af586d25c68d12d4b0904ab75a82babb86d5665ecbf0364ebd39eb037a329",
+      "building": "lethariel__lethariel_mere_shrine__19"
+    },
+    {
+      "file": "captures/lethariel__lethariel_bough_west__20.png",
+      "sha256": "5427f40271f28f4457c8c57d729beec8ed03f89e3f0c2d29bb486a4f23cc0788",
+      "building": "lethariel__lethariel_bough_west__20"
+    },
+    {
+      "file": "captures/lethariel__lethariel_bough_west__20-before.png",
+      "sha256": "a2bb742b3857a81e33352b52b44f0014233456ee8db49fb0468556c9966e9854",
+      "building": "lethariel__lethariel_bough_west__20"
+    },
+    {
+      "file": "captures/lethariel__lethariel_bough_west__20-pair.png",
+      "sha256": "cc459bfb32e239798faf9ed8cf9602de07617e9227b9dee07c3667607b1bdd4f",
+      "building": "lethariel__lethariel_bough_west__20"
+    },
+    {
+      "file": "captures/lethariel__lethariel_bough_east__21.png",
+      "sha256": "d1198dab072454a1f9a20e9e9e2e832fc9dd6c960ac071e5a02ac98aaabe2302",
+      "building": "lethariel__lethariel_bough_east__21"
+    },
+    {
+      "file": "captures/lethariel__lethariel_bough_east__21-before.png",
+      "sha256": "7b1f29dbdad47ebe5bdaba905310aebdbcdc7392d382c45a3ef2776b6a787106",
+      "building": "lethariel__lethariel_bough_east__21"
+    },
+    {
+      "file": "captures/lethariel__lethariel_bough_east__21-pair.png",
+      "sha256": "04941166e67ef60727fbe219f3a37e04ff8b3c9f395cdfd37c8f31bf0f834727",
+      "building": "lethariel__lethariel_bough_east__21"
+    },
+    {
+      "file": "captures/lethariel__highcourt_market_stable__27.png",
+      "sha256": "fd5d723a2c4929fbe496eabdec55bc3d312a3705a1d9567bf91391aa5e03791c",
+      "building": "lethariel__highcourt_market_stable__27"
+    },
+    {
+      "file": "captures/lethariel__highcourt_market_stable__27-before.png",
+      "sha256": "74dc518fefdb5fb02ee377b8823369774b5f46dab5dd52713db466e1fbe1fce8",
+      "building": "lethariel__highcourt_market_stable__27"
+    },
+    {
+      "file": "captures/lethariel__highcourt_market_stable__27-pair.png",
+      "sha256": "8b71d2622228adca703fbb280d1625d8416310fff17bd66afa13bc3f814e302f",
+      "building": "lethariel__highcourt_market_stable__27"
+    },
+    {
+      "file": "captures/lethariel__highcourt_well_court__30.png",
+      "sha256": "bbb8c9f235b39f24a2eb6cb657ca04f15abac0b5d5f6c8afd0e61c182a43a1d8",
+      "building": "lethariel__highcourt_well_court__30"
+    },
+    {
+      "file": "captures/lethariel__highcourt_well_court__30-before.png",
+      "sha256": "80aeb78a72849cf71deb6e4805d611bd85190e7be52280c3acd01905ee261bda",
+      "building": "lethariel__highcourt_well_court__30"
+    },
+    {
+      "file": "captures/lethariel__highcourt_well_court__30-pair.png",
+      "sha256": "4cf21c8329d878691a6c31db5b1c8b600c2d305610ff12460f1faf2535ca0aad",
+      "building": "lethariel__highcourt_well_court__30"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_watch__31.png",
+      "sha256": "12d01721054e21e5e73be7cd29cecdcb5fc10f0d6721b30c4382b054a7f8484c",
+      "building": "lethariel__lethariel_market_watch__31"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_watch__31-before.png",
+      "sha256": "14a36e2797953b216586fa5e8c09162f899f9ea38700a8e5f5301972722baea4",
+      "building": "lethariel__lethariel_market_watch__31"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_watch__31-pair.png",
+      "sha256": "4a12ba52d1596fbf3b6dfc42a6033c7e27b2f08e2a4921b38434e00c32d943cc",
+      "building": "lethariel__lethariel_market_watch__31"
+    },
+    {
+      "file": "captures/lethariel__lethariel_miners_guild__35.png",
+      "sha256": "a8720dbd72abe8ab39ac92806e9078d74b974d6abd588051a2f8f1eb610b58bc",
+      "building": "lethariel__lethariel_miners_guild__35"
+    },
+    {
+      "file": "captures/lethariel__lethariel_miners_guild__35-before.png",
+      "sha256": "0922504b664328a7cf581c0e957e8c0d89f27dd8d45e81f242a317e49a6ac814",
+      "building": "lethariel__lethariel_miners_guild__35"
+    },
+    {
+      "file": "captures/lethariel__lethariel_miners_guild__35-pair.png",
+      "sha256": "03057b58e7e56a2b49d510da614321a0aaa03c39cce170f35534c03b4c0e34c1",
+      "building": "lethariel__lethariel_miners_guild__35"
+    },
+    {
+      "file": "captures/lethariel__lethariel_martial_barracks__36.png",
+      "sha256": "303f18604cf4fa08902b88c0c7fe8fe0c050ee9ead8e7d7d2fbc662c6a0a5be1",
+      "building": "lethariel__lethariel_martial_barracks__36"
+    },
+    {
+      "file": "captures/lethariel__lethariel_martial_barracks__36-before.png",
+      "sha256": "800b2a232905a2e71ff73f91acd7738e1c5ea2cd711e5e55fcf180f7b169357f",
+      "building": "lethariel__lethariel_martial_barracks__36"
+    },
+    {
+      "file": "captures/lethariel__lethariel_martial_barracks__36-pair.png",
+      "sha256": "d85b8dbbcfa425971226140ea87e13c1d111a706bf28b9d64706cff4641962fd",
+      "building": "lethariel__lethariel_martial_barracks__36"
+    },
+    {
+      "file": "captures/lethariel__highcourt_martial_drill_yard__37.png",
+      "sha256": "5fc9296a6932fd1deea0d5d21c220aed85c6e22a0b91e0146c002d001616758a",
+      "building": "lethariel__highcourt_martial_drill_yard__37"
+    },
+    {
+      "file": "captures/lethariel__highcourt_martial_drill_yard__37-before.png",
+      "sha256": "10f83cfe89f5b3954a0c9961429ac10066427f9afbd9266986461b8e0c91c89b",
+      "building": "lethariel__highcourt_martial_drill_yard__37"
+    },
+    {
+      "file": "captures/lethariel__highcourt_martial_drill_yard__37-pair.png",
+      "sha256": "f675743afedfee8780065f8bcdf6f7ac4409fec01fa2e3d6f121a7eab541cac0",
+      "building": "lethariel__highcourt_martial_drill_yard__37"
+    },
+    {
+      "file": "captures/lethariel__lethariel_plot_mere_shrine__42.png",
+      "sha256": "7c2a91afb1e14549df4f2d9356db9aa2abd2523b63435d934b5d4416c2584561",
+      "building": "lethariel__lethariel_plot_mere_shrine__42"
+    },
+    {
+      "file": "captures/lethariel__lethariel_plot_mere_shrine__42-before.png",
+      "sha256": "caa7521148d759a5a6afc521dd995bb2714f088151069dd9d8f463bb077af902",
+      "building": "lethariel__lethariel_plot_mere_shrine__42"
+    },
+    {
+      "file": "captures/lethariel__lethariel_plot_mere_shrine__42-pair.png",
+      "sha256": "003274232df310518d56aa539e10849837da1096a80c20b5696960c61f4756fa",
+      "building": "lethariel__lethariel_plot_mere_shrine__42"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_mausoleum__12.png",
+      "sha256": "5436f2d21a1a34b95192308acff33e78cbcbfdc244d977c16b1e387e8eeb6bd2",
+      "building": "nhal_veyr__nhal_veyr_mausoleum__12"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_mausoleum__12-before.png",
+      "sha256": "c2f7c97ed85cce85b5b6dbe406c04ea3851c85d8ff60ba8b982fff4d5d489625",
+      "building": "nhal_veyr__nhal_veyr_mausoleum__12"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_mausoleum__12-pair.png",
+      "sha256": "5328cc121da9e9ba0a86034a39a92d31946d29b9451f38571bcf71585d54ab96",
+      "building": "nhal_veyr__nhal_veyr_mausoleum__12"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_gate_south__13.png",
+      "sha256": "8864552fba782d2e1313dbcc4abd5756bce3beb74070edb9fb8631706a9994bc",
+      "building": "nhal_veyr__nhal_veyr_gate_south__13"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_gate_south__13-before.png",
+      "sha256": "4b82d05ecba0b403719e2812a6a30aa5a4b06f419144290a924cf8cb1dabc7f6",
+      "building": "nhal_veyr__nhal_veyr_gate_south__13"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_gate_south__13-pair.png",
+      "sha256": "c16280762b7c4c8733102133e3c2b05b6c3aa0b2fa93b53dc05c1767fe066f47",
+      "building": "nhal_veyr__nhal_veyr_gate_south__13"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_market__14.png",
+      "sha256": "9c10a130efb99a36d0aae291ab0f0c2226af84ac493d5cdb97f11ed272d82e96",
+      "building": "nhal_veyr__highcourt_market__14"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_market__14-before.png",
+      "sha256": "48fd7e3bf46b708940acbc18aabb859373b3a68c135324368d459fde830464e4",
+      "building": "nhal_veyr__highcourt_market__14"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_market__14-pair.png",
+      "sha256": "abc9d34423f2c5dbd8f196739be539a3fa8e719174f95e653ecfeb0837e6d3ac",
+      "building": "nhal_veyr__highcourt_market__14"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_colonnade_west__15.png",
+      "sha256": "ef1182c2934f70178a9949f0cd298642e6aeda18f80c65329079feb07d2940f6",
+      "building": "nhal_veyr__nhal_veyr_colonnade_west__15"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_colonnade_west__15-before.png",
+      "sha256": "2fb5d16dea397ee171aa2a100b7166de7f880f797767da3bbd1321498b12cba1",
+      "building": "nhal_veyr__nhal_veyr_colonnade_west__15"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_colonnade_west__15-pair.png",
+      "sha256": "27d97f807de9b1d74b66ab9abdf73455428ab902498c9536ed4357e315907d81",
+      "building": "nhal_veyr__nhal_veyr_colonnade_west__15"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_colonnade_east__16.png",
+      "sha256": "ef1182c2934f70178a9949f0cd298642e6aeda18f80c65329079feb07d2940f6",
+      "building": "nhal_veyr__nhal_veyr_colonnade_east__16"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_colonnade_east__16-before.png",
+      "sha256": "2fb5d16dea397ee171aa2a100b7166de7f880f797767da3bbd1321498b12cba1",
+      "building": "nhal_veyr__nhal_veyr_colonnade_east__16"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_colonnade_east__16-pair.png",
+      "sha256": "c6c4fd8c2f025e609bcd4cbd21d4b466319d21d8e4903365f99a8314a48c509d",
+      "building": "nhal_veyr__nhal_veyr_colonnade_east__16"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_well_court__18.png",
+      "sha256": "021f453dd30bfde8eb8718d3986db10c8b802265565a46f7c52966c7074caab9",
+      "building": "nhal_veyr__highcourt_well_court__18"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_well_court__18-before.png",
+      "sha256": "10d7e39ab23c96398d45d16889f4ecad91d77214ac68183f6e51d6b98ae73da6",
+      "building": "nhal_veyr__highcourt_well_court__18"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_well_court__18-pair.png",
+      "sha256": "25f9a4bb7768b64ca2f7579da36d25d40c81d78f8a6a4957b5be7edf8fb212da",
+      "building": "nhal_veyr__highcourt_well_court__18"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_hall__19.png",
+      "sha256": "e521f0018d78971efc29364843a44d768a4a4921029a86fdcffa359ae49bf568",
+      "building": "nhal_veyr__nhal_veyr_vigil_hall__19"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_hall__19-before.png",
+      "sha256": "82315bd2ab9717dd4dc886d11c8e0b79e458dbac0f50efacdbb6d1f84412475b",
+      "building": "nhal_veyr__nhal_veyr_vigil_hall__19"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_hall__19-pair.png",
+      "sha256": "033b274199bb3540e8a865782e173d7232f9e59ad286a66479ec32216f9b5f59",
+      "building": "nhal_veyr__nhal_veyr_vigil_hall__19"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_service_yard__21.png",
+      "sha256": "342c44e4ee7120d92181402451054efbc4e6a7e28f71ad54212c6bdc130c9daa",
+      "building": "nhal_veyr__highcourt_service_yard__21"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_service_yard__21-before.png",
+      "sha256": "9f328db88f8d1b600de217fef49089e159edcdb37b1b2b26fb1dd3921b67af29",
+      "building": "nhal_veyr__highcourt_service_yard__21"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_service_yard__21-pair.png",
+      "sha256": "e360928faf6e7af351a812810b6c2e02500e4bcd474b936078e8662427e67c81",
+      "building": "nhal_veyr__highcourt_service_yard__21"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_fallen_house__27.png",
+      "sha256": "110a8dcdc6efcd0a41843f0de8b4edee0258ddf2f783a401d9c9a3453fadca30",
+      "building": "nhal_veyr__nhal_veyr_fallen_house__27"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_fallen_house__27-before.png",
+      "sha256": "9cb5f24be7d07202b5e87b619fdd0b005de14a04f52d40ebf8fb560688797a91",
+      "building": "nhal_veyr__nhal_veyr_fallen_house__27"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_fallen_house__27-pair.png",
+      "sha256": "42e30ce963351c009b7494909b04c0d73bbabbaf44763e21e15d0fd7785a0076",
+      "building": "nhal_veyr__nhal_veyr_fallen_house__27"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_market_stable__29.png",
+      "sha256": "0a3d9b29dfa5579c7e0e8a6836aea4d714fbbe5136d8a881ebebabf5aef3daae",
+      "building": "nhal_veyr__highcourt_market_stable__29"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_market_stable__29-before.png",
+      "sha256": "669d352f71211081fcbbde72ef5b99079c4e198c56c023b7a0bf534702f15e5d",
+      "building": "nhal_veyr__highcourt_market_stable__29"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_market_stable__29-pair.png",
+      "sha256": "701075ed4c0b19cdca5a3e735205ef0c52eb25658734c933d3f122b32e165b77",
+      "building": "nhal_veyr__highcourt_market_stable__29"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_watch__32.png",
+      "sha256": "1f5099889903c374463b9b84231980bc3fbcf2605abdbc988822194a69b5e9b8",
+      "building": "nhal_veyr__nhal_veyr_market_watch__32"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_watch__32-before.png",
+      "sha256": "b8fddf2410e77795f008763e29002a274c22681c889a5ec0a8665cba8afd7657",
+      "building": "nhal_veyr__nhal_veyr_market_watch__32"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_watch__32-pair.png",
+      "sha256": "38728448a6b82da036d09dbba3d22618ed66cb8ab4d89c50bfd8d2ca321aa1c5",
+      "building": "nhal_veyr__nhal_veyr_market_watch__32"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_charnel__35.png",
+      "sha256": "a1b1ff43adb74dd448ca6e7aea2c1034bf21f724e97745e3558a118fe28937d9",
+      "building": "nhal_veyr__nhal_veyr_market_charnel__35"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_charnel__35-before.png",
+      "sha256": "51dd3faf387a4b56cc174f64bf49639ddddf1c5f08fda2bc81fde504ac97d1a5",
+      "building": "nhal_veyr__nhal_veyr_market_charnel__35"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_charnel__35-pair.png",
+      "sha256": "875cb64f538d46be0476ba3f91de3e9251a8b9f9275a3393a1696b913dbfe98a",
+      "building": "nhal_veyr__nhal_veyr_market_charnel__35"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_miners_guild__36.png",
+      "sha256": "5ebcf7dc499de8f7f98a11b6870848b7acd0d625153a6202b50a7c04ddbb96d5",
+      "building": "nhal_veyr__nhal_veyr_miners_guild__36"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_miners_guild__36-before.png",
+      "sha256": "595c342eeeadc989e5350019c14b7b031cb615467490c7d263dbe82881949e50",
+      "building": "nhal_veyr__nhal_veyr_miners_guild__36"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_miners_guild__36-pair.png",
+      "sha256": "d14ffbee0d6931215bb4e98caccc8640cb4010bc067d2c2ffe1e45bd77e5591a",
+      "building": "nhal_veyr__nhal_veyr_miners_guild__36"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_candle_court__37.png",
+      "sha256": "7c104a068d9e7c50b5bc0794375bf8dfa0d22d557aab72f0a6cfc98310ff5fdc",
+      "building": "nhal_veyr__nhal_veyr_market_candle_court__37"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_candle_court__37-before.png",
+      "sha256": "4ed29b2bf5281383b7573febcbbf35473e99d7c311614bccedc08fd0e0c1d1ca",
+      "building": "nhal_veyr__nhal_veyr_market_candle_court__37"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_candle_court__37-pair.png",
+      "sha256": "c7066de020c8525d179dc3ea70d11f88c13e6aaff409d163915d780c7c163960",
+      "building": "nhal_veyr__nhal_veyr_market_candle_court__37"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_barracks__38.png",
+      "sha256": "63347f06f50d08d984107f52d7078f19c352d1b1a6ce1528401e9084be3d540c",
+      "building": "nhal_veyr__nhal_veyr_watch_barracks__38"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_barracks__38-before.png",
+      "sha256": "125aca453dcb0642208e1fffea50ef005d2071c4d1452b78d6f13e3ec4c9a409",
+      "building": "nhal_veyr__nhal_veyr_watch_barracks__38"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_barracks__38-pair.png",
+      "sha256": "1a5d734a3e00ea03059c2967fe2e3d607f8b7a5e9b12beb8399bbcaff2d33920",
+      "building": "nhal_veyr__nhal_veyr_watch_barracks__38"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_captain_hall__39.png",
+      "sha256": "5b685362661a4dd3972dc6f9aa091ad82756275a2f8284b38de18b57e5f65300",
+      "building": "nhal_veyr__nhal_veyr_watch_captain_hall__39"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_captain_hall__39-before.png",
+      "sha256": "b64b32ee0b2d4bdd20de4a2feb41de5a5811e8868481020729ff903ea829cf4c",
+      "building": "nhal_veyr__nhal_veyr_watch_captain_hall__39"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_captain_hall__39-pair.png",
+      "sha256": "c2743e653244407876e17e28bcdfc516e8ebe5aa41bf120cffbcebcfd9fad49d",
+      "building": "nhal_veyr__nhal_veyr_watch_captain_hall__39"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_armoury__40.png",
+      "sha256": "44baa8bdd319e153a5bd702e3fd769e0378d7d19179a13625d015ca045dee0bf",
+      "building": "nhal_veyr__nhal_veyr_watch_armoury__40"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_armoury__40-before.png",
+      "sha256": "83c20cf1d2f3ae4a411fff3bb7bde6492cb331ca172b8be519ac0506e19b38d2",
+      "building": "nhal_veyr__nhal_veyr_watch_armoury__40"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_armoury__40-pair.png",
+      "sha256": "38bbaf5ee8d45fd5bc2576b5fd00a921507410ab509aef05a922cddfd479ac45",
+      "building": "nhal_veyr__nhal_veyr_watch_armoury__40"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_stables__41.png",
+      "sha256": "10b8e67115859c1f7e40dd21592267c9769f9382687f777c5f382d86b9ebc877",
+      "building": "nhal_veyr__nhal_veyr_watch_stables__41"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_stables__41-before.png",
+      "sha256": "182518bb8b2ba7a82fc33d34d39d701844beb4c9d4c3c9e83f35e592349aac59",
+      "building": "nhal_veyr__nhal_veyr_watch_stables__41"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_stables__41-pair.png",
+      "sha256": "7aca1312cd073ee5345e8ebace181c8d014e020745a0307ff09e01d0b56c0d3e",
+      "building": "nhal_veyr__nhal_veyr_watch_stables__41"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_drill_yard__42.png",
+      "sha256": "3ef3a37e9e9874eaaf4127ca8fca8db61753692aa11e894a25c3b02e11445f89",
+      "building": "nhal_veyr__nhal_veyr_watch_drill_yard__42"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_drill_yard__42-before.png",
+      "sha256": "d1ffcd5d4fe4705e794cbde8583a6f535873cd276d0e9728b9634c5cb2d56fa7",
+      "building": "nhal_veyr__nhal_veyr_watch_drill_yard__42"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_drill_yard__42-pair.png",
+      "sha256": "a2f5e94a414772d9cd9df3f206514fd201c86993a8412a8d03151b19a6442fcb",
+      "building": "nhal_veyr__nhal_veyr_watch_drill_yard__42"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_quartermaster__43.png",
+      "sha256": "9f178eac5c952aaf6c78730c3a7d22356b7396e3a7972a74a614058e931bde42",
+      "building": "nhal_veyr__nhal_veyr_watch_quartermaster__43"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_quartermaster__43-before.png",
+      "sha256": "b240a019a200c51726d95d1f61cab8fe9035325282a3b9701000f27db547fd2f",
+      "building": "nhal_veyr__nhal_veyr_watch_quartermaster__43"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_quartermaster__43-pair.png",
+      "sha256": "f16d18e4c7846daee5163b7277b72e614d7f3e4adfdc70e9dce369ef839d3882",
+      "building": "nhal_veyr__nhal_veyr_watch_quartermaster__43"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_serjeant_house__44.png",
+      "sha256": "36ec1ef7507ec46ff2783802d71230499088d4508cb2cebc8b59297bf79c418d",
+      "building": "nhal_veyr__nhal_veyr_watch_serjeant_house__44"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_serjeant_house__44-before.png",
+      "sha256": "617139142923f8330bf0eeb9c7ada3d365c6790c51d1721ddfecb5e3b42c201c",
+      "building": "nhal_veyr__nhal_veyr_watch_serjeant_house__44"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_serjeant_house__44-pair.png",
+      "sha256": "8d9d28c3eb4ad8d39062037ecc89317bae19740eb63ef58849605ac575154df1",
+      "building": "nhal_veyr__nhal_veyr_watch_serjeant_house__44"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_tower__45.png",
+      "sha256": "03d4a3f9af8d66c4ad30b9dfaae52e9f47eb2f0d8e35d7063250e4f1036067fb",
+      "building": "nhal_veyr__nhal_veyr_watch_tower__45"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_tower__45-before.png",
+      "sha256": "7aa4b46837d7d833d46f555e65c5e06bd7ddacd10cb888e3fea333aaae84aa14",
+      "building": "nhal_veyr__nhal_veyr_watch_tower__45"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_watch_tower__45-pair.png",
+      "sha256": "3f3ae8e08628a92c297fb5ca92cc1c37e7f8e9ad5afeecb6734aee9d2a1db2c5",
+      "building": "nhal_veyr__nhal_veyr_watch_tower__45"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ossuary__46.png",
+      "sha256": "cd1aa29e95852436f9565a5b54adac827735e202625279ba87c3005c77be135e",
+      "building": "nhal_veyr__nhal_veyr_vigil_ossuary__46"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ossuary__46-before.png",
+      "sha256": "616f497068513bbbfd2f0f98fbe17e3462362d6571c5bd34ff6136e19af82bec",
+      "building": "nhal_veyr__nhal_veyr_vigil_ossuary__46"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ossuary__46-pair.png",
+      "sha256": "9df0c65ec7b2fb30197ae97037830ffd69d1eb7de99043560ce7a6d3978df18a",
+      "building": "nhal_veyr__nhal_veyr_vigil_ossuary__46"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_mausoleum_west__48.png",
+      "sha256": "00193f973129f2b64f6a823df19da48bb83f12d35a8c74eda145e44b9bfefc45",
+      "building": "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_mausoleum_west__48-before.png",
+      "sha256": "e6a51e000060aaf92ecb9380bcb6f7ec6cfc0b6aa4deab424704760a5cdb874d",
+      "building": "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_mausoleum_west__48-pair.png",
+      "sha256": "398e9c8909ddf47c8f4014a25143afd12383d90c356df1421b7a60d30a1cf079",
+      "building": "nhal_veyr__nhal_veyr_vigil_mausoleum_west__48"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_mausoleum_east__49.png",
+      "sha256": "9fc8ec07f95e268321a2bc8a56ff7c1806b6588a20f3519c7249e1fdc24ae961",
+      "building": "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_mausoleum_east__49-before.png",
+      "sha256": "63c34d37b1f953d45c2f2d5529316fdf87aa30b1562f9de9635cb448ef552ad2",
+      "building": "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_mausoleum_east__49-pair.png",
+      "sha256": "a04d0b32f02656ed44d20a140873dfe8c9b34d885d5900c3b21eab7c8be7fed2",
+      "building": "nhal_veyr__nhal_veyr_vigil_mausoleum_east__49"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_watch__50.png",
+      "sha256": "1f5099889903c374463b9b84231980bc3fbcf2605abdbc988822194a69b5e9b8",
+      "building": "nhal_veyr__nhal_veyr_vigil_watch__50"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_watch__50-before.png",
+      "sha256": "b8fddf2410e77795f008763e29002a274c22681c889a5ec0a8665cba8afd7657",
+      "building": "nhal_veyr__nhal_veyr_vigil_watch__50"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_watch__50-pair.png",
+      "sha256": "f2a50da7e269bf9569aee9f5a9726ec9e11ca3f7f8d5dbcdbc0036b1720beac0",
+      "building": "nhal_veyr__nhal_veyr_vigil_watch__50"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51.png",
+      "sha256": "85e1b460b55d835ebbfe749c7fe7c4251a954605b73849764915326b6ce309ff",
+      "building": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51-before.png",
+      "sha256": "b4af65e8e8d7106ad807e898a12cb76e564361580156756f05adf352dea9077b",
+      "building": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51-pair.png",
+      "sha256": "0d762f08ca431154b40842533b2d64061a5995e968be4e44843666b074ec0485",
+      "building": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_1__51"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52.png",
+      "sha256": "0d529c8b6bf7ab8f71a39edb16ed5bf9ef7c3d8ac092a7d623a1458424f86cea",
+      "building": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52-before.png",
+      "sha256": "bc5257af8d30154269833238d3e3b378d95b81f035415560168643ed34e5d2c8",
+      "building": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52-pair.png",
+      "sha256": "0e5ca1b37bb56bdebd738affc321bf73c251337a83130719dab6c096d25e4daa",
+      "building": "nhal_veyr__nhal_veyr_vigil_ruin_close_ruin_2__52"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_gate_house__53.png",
+      "sha256": "e5234c3492f69b207299637a602ba883cf5da6ac7db3b548353713024a501374",
+      "building": "nhal_veyr__nhal_veyr_homes_gate_house__53"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_gate_house__53-before.png",
+      "sha256": "c977798597bde860faf2da213fc86d7979107b5416459446876812a506bce3cf",
+      "building": "nhal_veyr__nhal_veyr_homes_gate_house__53"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_gate_house__53-pair.png",
+      "sha256": "d0589237f98c1dc47b8642225babade365622c328c18465791aef132aa954fbb",
+      "building": "nhal_veyr__nhal_veyr_homes_gate_house__53"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_fallen_west__57.png",
+      "sha256": "85e1b460b55d835ebbfe749c7fe7c4251a954605b73849764915326b6ce309ff",
+      "building": "nhal_veyr__nhal_veyr_homes_fallen_west__57"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_fallen_west__57-before.png",
+      "sha256": "b4af65e8e8d7106ad807e898a12cb76e564361580156756f05adf352dea9077b",
+      "building": "nhal_veyr__nhal_veyr_homes_fallen_west__57"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_fallen_west__57-pair.png",
+      "sha256": "562a2bd30fbf7481568b4403536a80aa7443012c858c5bcf46a10f58960214c7",
+      "building": "nhal_veyr__nhal_veyr_homes_fallen_west__57"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_fallen_east__58.png",
+      "sha256": "0fc700b8137e4ec10a4e1af5fe14645a5ecbfe271ed7f48c2c8b6a3192e2f31e",
+      "building": "nhal_veyr__nhal_veyr_homes_fallen_east__58"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_fallen_east__58-before.png",
+      "sha256": "93b13c3e49ec5ba34ceaf32a908775a18b90c1ec18019493a0290f9cad058f22",
+      "building": "nhal_veyr__nhal_veyr_homes_fallen_east__58"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_homes_fallen_east__58-pair.png",
+      "sha256": "602e38869a3d3b30e7cb2c053cd5d838961a4a4d8bdc086a7c8a2fee595e4cfa",
+      "building": "nhal_veyr__nhal_veyr_homes_fallen_east__58"
+    },
+    {
+      "file": "captures/dur_brannoc__highcourt_statue__15.png",
+      "sha256": "d4c61ae19e4750c055cf2e29531724f5e7b962520243d092224f526fbd5e262a",
+      "building": "dur_brannoc__highcourt_statue__15"
+    },
+    {
+      "file": "captures/dur_brannoc__dur_brannoc_forge_copse__30.png",
+      "sha256": "90905784f0977470eee438596d0343f5a6d691ebcd556e4a705700c301fd6e1f",
+      "building": "dur_brannoc__dur_brannoc_forge_copse__30"
+    },
+    {
+      "file": "captures/gor_drazhak__highcourt_statue__15.png",
+      "sha256": "866f3d3642e5c349ef9339d75ebe2b179bbee6067d307d8bc508255299056975",
+      "building": "gor_drazhak__highcourt_statue__15"
+    },
+    {
+      "file": "captures/highcourt__highcourt_statue__17.png",
+      "sha256": "2a8812b224ab279449e25123cf6e30ba5f283cafbe4a258f24b4ab569624fed2",
+      "building": "highcourt__highcourt_statue__17"
+    },
+    {
+      "file": "captures/highcourt__highcourt_orchard_east__19.png",
+      "sha256": "182cab015efae8d6adec52c4b81dd91d79e653bdf9256502baf151379079706e",
+      "building": "highcourt__highcourt_orchard_east__19"
+    },
+    {
+      "file": "captures/highcourt__highcourt_orchard_west__20.png",
+      "sha256": "182cab015efae8d6adec52c4b81dd91d79e653bdf9256502baf151379079706e",
+      "building": "highcourt__highcourt_orchard_west__20"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_grove__36.png",
+      "sha256": "879e3c9c7747724a98782aa598e321f5d3975b8570499f26fdea490db521b1e7",
+      "building": "highcourt__highcourt_market_grove__36"
+    },
+    {
+      "file": "captures/highcourt__highcourt_market_orchard__37.png",
+      "sha256": "182cab015efae8d6adec52c4b81dd91d79e653bdf9256502baf151379079706e",
+      "building": "highcourt__highcourt_market_orchard__37"
+    },
+    {
+      "file": "captures/highcourt__highcourt_lore_quiet_grove__55.png",
+      "sha256": "ddbd0c033e3563c275a1566bbcc773cd2b72ae2a0f5e747cc6a4eae93a6c5ae7",
+      "building": "highcourt__highcourt_lore_quiet_grove__55"
+    },
+    {
+      "file": "captures/highcourt__highcourt_homes_orchard__63.png",
+      "sha256": "6e85b9609d1b5cd573cd4b1379fff8c77eb8813dca7c92144698c938c1ee5302",
+      "building": "highcourt__highcourt_homes_orchard__63"
+    },
+    {
+      "file": "captures/lethariel__highcourt_statue__15.png",
+      "sha256": "5e108a063e954d2ab7741ed874eb93ccbff58866216f0da06b87f6380e4246f1",
+      "building": "lethariel__highcourt_statue__15"
+    },
+    {
+      "file": "captures/lethariel__lethariel_sacred_grove__18.png",
+      "sha256": "2bb7f6c138e5dadfa138b244e50316341dc8ed98df1d6fb90aea156dec749ad0",
+      "building": "lethariel__lethariel_sacred_grove__18"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_grove__32.png",
+      "sha256": "315fdb07f748b1f1d4deef5686512fb93a09919122d7e0db08807d5e7e1e5b9f",
+      "building": "lethariel__lethariel_market_grove__32"
+    },
+    {
+      "file": "captures/lethariel__lethariel_market_orchard__33.png",
+      "sha256": "2ab2d0ecace75055cd596b3071c4099e1c7fd1c330da7a8af1e8a57f8abb2dc5",
+      "building": "lethariel__lethariel_market_orchard__33"
+    },
+    {
+      "file": "captures/nhal_veyr__highcourt_statue__17.png",
+      "sha256": "851be28eb9d06753aee9ee229a773f12cdf09b68a1c32fcf0825f9cb6cb10180",
+      "building": "nhal_veyr__highcourt_statue__17"
+    },
+    {
+      "file": "captures/nhal_veyr__nhal_veyr_market_copse__33.png",
+      "sha256": "d87acb9a639f4d07cb6019efae509d25a819f4793b634091679467782adccee8",
+      "building": "nhal_veyr__nhal_veyr_market_copse__33"
+    },
+    {
+      "file": "captures/mobile.png",
+      "sha256": "c231ee75b102799cb966761f44cd781dc1e4ab24ce4c31a0a33789d2d0e63998",
+      "building": "silverleaf__silverleaf_moon_shrine__8"
+    }
+  ],
+  "errors": []
+}

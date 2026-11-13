@@ -435,6 +435,22 @@ def main(argv):
     stale = []
     for spec in SPECS:
         name, text = model(spec)
+        # Apply the current offline facade authoring to this geometry. Keeping
+        # this in the original generator prevents an accidental style rollback.
+        sys.path.insert(0, os.path.join(REPO, "tools", "r75_5_architecture"))
+        import services
+        I = services.I
+        nodes = json.load(open(os.path.join(REPO, "tools/building_templates/nodes.json")))["nodes"]
+        pal = I.T.Palettes(I.G.load_palettes("luajit", set(nodes)))
+        tpl = I.T.parse_template(name + ".tpl", text=text)
+        _, layouts = I.G.read_sources(os.path.join(REPO, I.BASE))
+        layout = next(l for l in layouts if l.town == spec["capital"])
+        placement = next(p for p in layout.places + layout.uses if p["template"] == name)
+        binding = I.G.placement_binding(pal, layout, placement)
+        before, errors = I.T.resolved_cells(tpl, I.T.resolve(tpl, pal, binding), pal)
+        assert not errors, errors
+        after, _ = services.transform(tpl, before, nodes, spec["race"])
+        text = I.bake(tpl, [dict(race=spec["race"], before=before, after=after)], pal, source_text=text)
         path = os.path.join(OUT, name + ".tpl")
         if check:
             old = open(path, encoding="utf-8").read() if os.path.exists(path) else None

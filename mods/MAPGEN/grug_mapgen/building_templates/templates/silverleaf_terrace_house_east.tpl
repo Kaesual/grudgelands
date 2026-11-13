@@ -16,7 +16,6 @@ D role chimney_cap
 E role door variant=_a
 F role door_hidden
 G role floor
-H role foundation
 I role hearth o=facedir:1
 J role light_beacon else=e
 K role light_post o=wallmounted:1
@@ -24,7 +23,6 @@ L role light_wall o=wallmounted:2
 M role light_wall o=wallmounted:3
 N role light_wall o=wallmounted:4
 O role path
-P role post
 Q role roof_slab
 R role roof_stair o=facedir:1
 S role roof_stair o=facedir:3
@@ -39,10 +37,12 @@ a role shelf_vessels o=facedir:1
 b role storage o=facedir:3
 c node grug_decor:xdecor_table
 e role wall
-f role wall_accent
 g role window
 h role window o=facedir:3
-i role window_frame
+H role facade_base
+P role facade_frame
+d role facade_infill
+f role facade_band
 end
 
 layer 0
@@ -61,87 +61,87 @@ layer 0
 |OOOOOOOOO|
 layer 1
 |.........|
-|.PffEffP.|
-|.iA...IC.|
-|.fB..X.f.|
-|.fb....f.|
-|.iZ.W..i.|
-|.i..cc.i.|
-|.f..V..f.|
-|.f.....f.|
-|.i....Yi.|
-|.f....af.|
-|.PiffifP.|
+|.HHHEHHH.|
+|.HA...IC.|
+|.HB..X.H.|
+|.Hb....H.|
+|.HZ.W..H.|
+|.H..cc.H.|
+|.H..V..H.|
+|.H.....H.|
+|.H....YH.|
+|.H....aH.|
+|.HHHHHHH.|
 |.........|
 layer 2
 |.........|
 |.PeeFeeP.|
-|.i....KC.|
+|.d....KC.|
 |.h.....h.|
 |.h.....h.|
-|.iZ....i.|
-|.i.....i.|
+|.dZ....d.|
+|.P.....P.|
 |.h.....h.|
 |.h.....h.|
-|.i....ai.|
+|.d....ad.|
 |.e.....e.|
-|.PiggieP.|
+|.PdggdeP.|
 |.........|
 layer 3
 |..N...N..|
 |.PeeeeeP.|
-|.i....CC.|
+|.d....CC.|
 |.h.....h.|
 |.h.....h.|
-|.i.....i.|
-|.iM...Li.|
+|.d.....d.|
+|.PM...LP.|
 |.h.....h.|
 |.h.....h.|
-|.i.....i.|
+|.d.....d.|
 |.e.....e.|
-|.PiggieP.|
+|.PdggdeP.|
 |.........|
 layer 4
 |.........|
 |.PeeeeeP.|
-|.i....CC.|
+|.d....CC.|
 |.e.....e.|
 |.e.....e.|
-|.i.....i.|
-|.i.....i.|
+|.d.....d.|
+|.P.....P.|
 |.e.....e.|
 |.e.....e.|
-|.i.....i.|
+|.d.....d.|
 |.e.....e.|
-|.PieeieP.|
+|.PdeedeP.|
 |.........|
 layer 5
 |.........|
 |.PeeeeeP.|
-|.i....CC.|
+|.d....CC.|
 |.e.....e.|
 |.e.....e.|
-|.i.....i.|
-|.i.....i.|
+|.d.....d.|
+|.P.....P.|
 |.e.....e.|
 |.e.....e.|
-|.i.....i.|
+|.d.....d.|
 |.e.....e.|
-|.PieeieP.|
+|.PdeedeP.|
 |.........|
 layer 6
 |R.......S|
-|RPeeeeePS|
-|Ri....CCS|
-|Re.....eS|
-|Re.....eS|
-|Ri.....iS|
-|Ri.....iS|
-|Re.....eS|
-|Re.....eS|
-|Ri.....iS|
-|Re.....eS|
-|RPieeiePS|
+|RfffffffS|
+|Rf....CCS|
+|Rf.....fS|
+|Rf.....fS|
+|Rf.....fS|
+|Rf.....fS|
+|Rf.....fS|
+|Rf.....fS|
+|Rf.....fS|
+|Rf.....fS|
+|RfffffffS|
 |R.......S|
 layer 7
 |.R.....S.|

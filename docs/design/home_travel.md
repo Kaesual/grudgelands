@@ -20,7 +20,11 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   and once when it becomes Ready (Round 30 ruling; it was on the Map tab
   before). The quickbar (E, Round 44, `inventory_equipment.md`) carries the
   same line and button with the same gates; it is sent once per opening and
-  closes on the click. The
+  closes on the click. The chat command `/home` (Round 76.2,
+  `home_command.lua`) starts the same return with the same gates and the
+  shared cooldown; it refuses character creation and its waiting point (where
+  the inventory and both buttons are suspended) and answers in one line where
+  `return_home` stays silent (a trip already being prepared, dead). The
   minimap's innkeeper markers (the own faction's six only, Round 31) show the
   locations and the current home; the map window shows only the home
   (Round 44); a claim home has its own marker (below).
@@ -43,6 +47,13 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   arrival validated, then released. A Claim Stone's cube is read before the
   teleport (its blocks are loaded, `core.load_area`), so nobody lands in a
   blocked cube.
+- **An innkeeper's arrival** (0.75.4) is its authored side of the socket first,
+  then the first other free side of the same socket (+x, −x, +z, −z), the rule a
+  waystone already follows. A town's dressing may block one side: Lethariel's and
+  Kezamba's longhouse barrel stacks stood on it, and every return there failed
+  ("Home arrival is unavailable"). A respawn reads the socket's blocks before its
+  teleport and waits on the side it will land on; only with all four sides blocked
+  does the arrival fail.
 - A death inside a running Expedition respawns at its start waystone, held like any
   respawn (`grug_home.register_respawn_home`, filled by `grug_expeditions/guard.lua`).
   A run that ended meanwhile hands the respawn on. In a box whose run is gone the same

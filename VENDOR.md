@@ -272,7 +272,8 @@ only through `grug_mobs`, so in practice that is every Grudgelands mob.
   `do_states()`): `grug_mobs.separation_step` runs for ground melee mobs right
   after the cadence update (acts at most once per second), and the in-reach
   contact run also stops when `grug_mobs.holds_column` reports a visible
-  target's column within the hold distance.
+  target's column within the hold distance (replaced in Round 78 by the stop
+  gap of `grug_obstacle.melee_measure`; see "Round 78 BOSS").
 
 At this integration point `mobs/api.lua` has **82 markers**.
 
@@ -1030,6 +1031,31 @@ grid body's line to its goal at each decision and searches at once when blocked,
 grid search's lockout is `LOCKOUT.combat` (1 s) in both modes. With `nav.grid` unset, or a
 mob outside an Expedition, every rule is as before. Fixtures
 `tools/r74_nav/portable_test.lua` and `tools/r42_nv1/portable_test.lua`.
+
+## Round 78 BOSS — stand-off and ranged or melee by distance (2026-11-12)
+
+round78-plan.md ruling 6 and §3.1. `mobs/grug_obstacle.lua` (one marker
+`GRUG PATCH (Round 78 BOSS)`): `edge_distance`, `edge_reach`, `melee_measure` and
+the changed `should_close_contact(gap, stop, visible)` measure a ground mob's melee
+edge to edge (collision radii subtracted, a height difference up to 1.1 free and
+a larger one counted whole), its reach as
+`reach` minus its registered radius and a player's 0.3, and the contact run's stop
+at a 1 node gap (at most 60 % of that reach); a flier keeps the origin distance and
+60 % of `reach`. `mobs/api.lua` (eight markers `GRUG PATCH (Round 78 BOSS)`):
+`do_states` takes `melee_measure` once per attack step and its chase, contact run,
+strike and navigation `striking` tests read it; `grug_dogshoot_mode` replaces the
+call to upstream's `dogswitch` (left in place, no longer called): a `dogshoot` mob
+with a switch melees below 4 nodes, shoots above 6 and keeps its mode between,
+approaches a hidden target in melee and re-checks once a second, and shoots a
+visible target whose way failed a search until it is in reach or, checked once a
+second, can be walked to straight again (`mobs/grug_nav.lua` `nav.line_to_target`,
+one marker); the dogfight
+branch's condition keeps upstream's "in reach forces melee" only for a mob without
+a switch; `separation_step` runs for every ground mob in that branch; `stop_attack`
+clears the mode's runtime state. `grug_mobs/separation.lua`'s column push now goes
+out to a 0.5 gap and its contact-run hold (`holds_column`) is gone. Fixtures
+`tools/r78_boss`, `tools/r72_ranged`, `tools/r56_mobai`, `tools/r42_nv1` and
+`tools/r28_a2_mobphys`.
 
 ## Fresh-server cleanup — 2026-09-13
 

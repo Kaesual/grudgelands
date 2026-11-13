@@ -174,6 +174,8 @@ do
  dofile(repo .. "/mods/CORE/grug_core/ui_rows.lua")
  core.register_on_joinplayer = join
 end
+-- Round 76.2: grug_home registers /home (home_command.lua).
+core.register_chatcommand = core.register_chatcommand or function() end
 dofile(repo .. "/mods/PLAYER/grug_home/init.lua")
 local home = grug_home
 
