@@ -100,6 +100,10 @@ model may push them towards the website or the web client.
     password link is offered.
 28. **No "password changed" event:** the website notices an in-game password change
     at its own check before a web start.
+29. **Setting a password from the website comes in phase 1** (0.79.0): the command
+    `account.set_password` with a finished SRP entry, for linked characters only,
+    online or offline. It serves the auto mode's "new, secure random password"
+    (contract §6b).
 
 ## 3. The foundation (phase 1)
 
@@ -193,10 +197,10 @@ the website, exact shapes and the website's duties:
 
 | Phase | Content | When |
 |---|---|---|
-| 1 | Foundation (§3), the Account page, linking by code and by password on the website, the Supporter Cloak as the first account reward, account id in the online rows | [Round 79](round79-plan.md) |
+| 1 | Foundation (§3), the Account page, linking by code and by password on the website, setting a linked character's password from the website, the Supporter Cloak as the first account reward, account id in the online rows | [Round 79](round79-plan.md) |
 | 2 | A cloak and an emote for every website user (granted by the website to every account); reward emotes and a quickbar layout that grows with them; the art | after phase 1 works on the live realm |
 | 3 | More Supporter emotes and cloaks: content only | later |
-| — | Account ban, password reset on the website, characters created through a bridge command, character deletion | each as its own phase, order open |
+| — | Account ban, characters created through a bridge command, character deletion | each as its own phase, order open |
 | — | Shared Claim Stone per account and faction, account-bound locked chests and doors | with a later map reset (ruling 25) |
 
 ## 5. Later phases — direction
@@ -207,14 +211,14 @@ The list (§3.2) carries a ban per account (until, or permanent); the existing
 prejoin check refuses every character of a banned account, also while the bridge is
 down. Name bans stay as they are.
 
-### 5.2 Passwords
+### 5.2 Passwords (phase 1 since ruling 29)
 
 - `core.set_player_password` stores the given string as the password entry unchanged
-  (`builtin/game/auth.lua` `set_password`), so the website can send a finished SRP
-  verifier (`#1#<salt>#<verifier>`, both base64: SRP-6a, SHA-256, the 2048-bit
-  group, the name in lower case). That is the preferred form; a plain password would end as the weaker
-  legacy SHA1 entry (`core.get_password_hash`). Neither is ever logged; the bridge
-  logs no command arguments today and must keep it so.
+  (`builtin/game/auth.lua` `set_password`), so the website sends a finished SRP
+  entry (`#1#<salt>#<verifier>`, base64 without padding: SRP-6a, SHA-256, the
+  2048-bit group, the name in lower case) with `account.set_password` (contract
+  §6b). A plain password would end as the weaker legacy SHA1 entry, so the game
+  accepts only the SRP form. The entry is never logged.
 - The website offers "new random password" and "set manually"; for a native-client
   player this is the first way back from a forgotten password.
 - The in-game password change (the client's own "Change Password" dialog) stays
@@ -280,8 +284,9 @@ Direction from the user (2026-11-15), to be planned with that reset:
 
 None at the moment.
 
-Decided on 2026-11-15 (§2, rulings 17–28): account deletion unlinks, only an
+Decided on 2026-11-15 (§2, rulings 17–29): account deletion unlinks, only an
 administrator unlinks, the in-game password change stays, no grace period, a code
 lives 10 minutes, no address setting, bindings per realm with rewards on every realm,
-the Round 77 map reset discarded, direct binding by password. Phase 1 handles a removed
+the Round 77 map reset discarded, direct binding by password, setting a password
+from the website in phase 1. Phase 1 handles a removed
 binding already (§3.2), so unlinking and account deletion need no game change.

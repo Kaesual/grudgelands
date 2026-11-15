@@ -25,9 +25,12 @@ website must do, what it sends, what it receives and how the game behaves.
 - Accounts are **optional**. A character without an account plays exactly as before,
   and linking never takes anything away.
 
-Not part of phase 1, and never to be assumed by the website: account bans, password
-changes through the website, characters created through a bridge command, character
-deletion, shared Claim Stones. Each comes later as its own amendment (§10). Names the
+- The website can **set a linked character's password** in the game (§6b), for the
+  "new random password" of the auto mode.
+
+Not part of phase 1, and never to be assumed by the website: account bans,
+characters created through a bridge command, character deletion, shared Claim
+Stones. Each comes later as its own amendment (§10). Names the
 website reserves and the web client then creates at its first login are ordinary
 characters for the game.
 
@@ -391,6 +394,73 @@ stores, and for a character whose password the player types once on the website:
    arrived during character creation, is reported at the next join or after
    "Create character". The account name always comes from the list.
 
+## 6b. Setting a password: `account.set_password`
+
+Agreed with the user on 2026-11-15. It is for the auto mode's recommended option, "a
+new, secure random password": the website generates the password, sets it in the
+game, and stores it on `ok`.
+
+**Capability:** `accounts.password`, its own, beside `accounts`. Offer the command
+only to a realm that reports it.
+
+**Args:**
+
+| Arg | Value |
+|---|---|
+| `name` | the character's name, as in the binding (§5.2) |
+| `account_id` | the account the website acts for |
+| `entry` | the complete entry `#1#<salt>#<verifier>` |
+
+**The entry:**
+
+- SRP-6a, SHA-256, the 2048-bit group, the name in lower case (ASCII letters).
+- Salt and verifier are base64 **without** `=` padding, as the engine writes
+  entries.
+- The game accepts only that form:
+  - `#1#`, then the salt, `#`, and the verifier
+  - each part non-empty, **canonical** base64 without padding: decoding and
+    re-encoding gives exactly the text sent. The engine refuses anything else at
+    login (`base64_is_valid`: no length of 1 mod 4, a canonical last character), so
+    a malformed entry would lock the character out.
+  - the verifier 1 to 256 bytes
+  - nothing else
+- A legacy entry, a plain password or anything malformed is `invalid_args`. The
+  reference `valid_entry(entry)` in `tools/web_accounts/luanti_password.py` applies
+  exactly this rule.
+- **Make the entry** with a fresh 16-byte salt from a cryptographically secure
+  source, and never reuse a salt. The reference is `make_entry(name, password)` in
+  `tools/web_accounts/luanti_password.py`.
+
+**The game's checks:** the command runs only when the character has an auth entry
+(the game never writes one that is missing: that would create a new login) and a
+binding that counts by the game's own rules (§2) and names `account_id`. The game writes the entry
+with `core.set_player_password` and logs one `action` line without the entry.
+
+**Online or offline:** both are allowed.
+
+- **Offline:** the entry holds from the next login.
+- **Online:** the session stays, and the player reads one feed line: "Your password
+  was changed on the website. It applies from your next login."
+- **One engine quirk until that next login:** the client's own "Change Password"
+  dialog authenticates against the entry the server cached at login, so it still
+  asks for the old password. A change made there replaces the website's. The
+  website's own check before a start in auto mode (§6a item 3) finds that and
+  switches to manual mode.
+
+**Results:**
+
+| Code | When | What the website does |
+|---|---|---|
+| `ok` | the entry is written | make the pending password current |
+| `unknown_target` | no auth entry for `name` | drop the pending password |
+| `refused` | no counting binding for this account; message "not linked to this account" | drop it |
+| `invalid_args` | malformed arguments or entry | drop it; fix the website |
+| `expired`, `error`, `unknown` | the general codes of the bridge protocol | drop it; the §6a check settles the real state |
+
+- **Delivery** is at most once, as for every command.
+- **`expires_at`** is at most 60 s.
+- A character still in character creation counts like any bound one.
+
 ## 7. Unlinking and account deletion
 
 Both are list changes only: remove the binding (or the account with all its
@@ -422,8 +492,10 @@ back to none. There is no command for either.
   3. Link a second character to the same account.
   4. Bind a character by its stored password and one by a typed password; check the
      notice in the game, and one bound during character creation.
-  5. Unlink one character, then delete a test account.
-  6. Restart the server. Bindings and rewards stay, the catalogue arrives again, and
+  5. Set a new password with `account.set_password` for an offline and an online
+     character, and log in with it.
+  6. Unlink one character, then delete a test account.
+  7. Restart the server. Bindings and rewards stay, the catalogue arrives again, and
      the list is re-sent after a version mismatch.
 
 ## 10. Outlook: later amendments
@@ -433,10 +505,6 @@ Each comes with its own capability:
 
 - **Account ban:** a ban field per account in the list. The game refuses every
   character of a banned account at login.
-- **Passwords:** the website sets a character's password by sending a finished SRP
-  verifier (`#1#<salt>#<verifier>`, both base64 without padding: SRP-6a, SHA-256,
-  the 2048-bit group, the name in lower case) through a command. A password changed
-  in the game needs no event: the website notices it at its own check (§6a item 3).
 - **Characters created through a bridge command:** a command creates the login and
   the binding at once, and fails atomically when the name is taken. It clears a
   tombstone for the name (§2); the character adopts the binding's id at its first

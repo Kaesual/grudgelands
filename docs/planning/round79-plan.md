@@ -66,8 +66,8 @@ From [accounts-concept.md](accounts-concept.md) §2, the ones this round builds:
 6. **At most 10 characters per account** (2026-11-14), a rule of the website.
 7. **The online rows carry the account id** (2026-11-14).
 8. **The account name is never shown to other players** (2026-11-14).
-9. **Claim Stones, deletion, bans and passwords do not change in this round**
-   (2026-11-15). The in-game password change stays allowed for linked characters.
+9. **Claim Stones, deletion and bans do not change in this round** (2026-11-15).
+   The in-game password change stays allowed for linked characters.
 10. **A code is valid for 10 minutes** (2026-11-15).
 11. **Only an administrator unlinks**, on the website; deleting an account unlinks its
     characters, which stay (2026-11-15). Both are list changes, so the game only has
@@ -84,6 +84,9 @@ From [accounts-concept.md](accounts-concept.md) §2, the ones this round builds:
     auth entry (contract §6a); the game only receives the list. The code path stays.
 17. **grudgelands.com** (2026-11-15) is live no later than 0.79.0 in production;
     the page names `grudgelands.com/play`.
+18. **The website sets a linked character's password** (2026-11-15, concept ruling
+    29): the command `account.set_password` with a finished SRP entry, capability
+    `accounts.password`, online or offline (contract §6b).
 
 ## 3. Shared conventions
 
@@ -253,8 +256,20 @@ keeps its stored list and sends nothing.
   per boot until acknowledged, like the online list's flight bookkeeping) and
   `accounts_version`. It applies `accounts` before the commands, pushes the three
   events and runs `account.link_answer`, and answers `resync: ["reward_catalog"]` by
-  sending the catalogue again (today `resync` handles only `"mail"`). The online rows get `character_id` and
-  `account_id`.
+  sending the catalogue again (today `resync` handles only `"mail"`). The online
+  rows get `character_id` and `account_id`.
+- **`account.set_password`** (contract §6b), capability `accounts.password`:
+  - it checks the entry's form by decoding and re-encoding both base64 parts (the
+    text must come back unchanged; the verifier 1 to 256 bytes), as `valid_entry`
+    in `tools/web_accounts/luanti_password.py` does
+  - it checks the auth entry with `core.get_auth_handler().get_auth(name)` before
+    writing and never writes when it is missing (`set_player_password` would create
+    a login; `core.player_exists` looks at the player database, not the auth table)
+  - it checks the counting binding for `account_id`
+  - it writes the entry with `core.set_player_password`
+  - an online character gets the feed line
+  - the log line never holds the entry
+  - its results are those of the contract
 - **The contract docs:** the game side follows
   [web-accounts.md](../technical/web-accounts.md) exactly; `web-bridge.md` gets a dated
   amendment pointing to it and the new rows in its tables (capability, request and
@@ -269,7 +284,9 @@ keeps its stored list and sends nothing.
   commands: `code <account>`, `grant <account> <reward>`, `revoke …`,
   `unlink <name>`, `rename <account> <name>`, `delete <account>`, and
   `bind <name> <account>` for a direct binding as the website makes it after a
-  password check (contract §6a). Usage goes in its docstring.
+  password check (contract §6a), and `setpw <name> <password>`, which sends
+  `account.set_password` with an entry from `tools/web_accounts/luanti_password.py`
+  `make_entry`. Usage goes in its docstring.
 - **Fixtures:**
   - A focused portable fixture covers: list validation and versions, the
     character-id rule with all three index states and the adoption, an unlink, unknown reward ids, persistence across a reload,
@@ -278,7 +295,8 @@ keeps its stored list and sends nothing.
     and the change callbacks.
   - The bridge's portable test covers the request fields, the catalogue's
     resend-until-200 and its resync, the order list-then-commands, the command's
-    argument checks and the per-state answer table, and the events.
+    argument checks and the per-state answer table, `account.set_password` (form,
+    binding, results), and the events.
   - The engine scenario (`run.sh`) runs one link end to end against the fake
     bridge, and a restart that keeps the binding.
 
@@ -388,15 +406,19 @@ accounts and at least three characters:
     `unlink` gives "… no longer linked …". With an open code request, the request
     ends. A character still in character creation is bound without disturbing it;
     its notices come after "Create character".
-15. The fake bridge's online rows show `character_id` for every character and
+15. `setpw <name> <password>` for an offline character: the next login takes only
+    the new password. For an online character: the feed line "Your password was
+    changed on the website …", the session goes on, and the next login takes only
+    the new password. For an unlinked character the fake bridge reports `refused`.
+16. The fake bridge's online rows show `character_id` for every character and
     `account_id` for linked ones only.
-16. The Account tab fits the navigation bar beside every other tab at the smallest and
+17. The Account tab fits the navigation bar beside every other tab at the smallest and
     largest text size, desktop and web. A 64-character account name does not overflow
     the page.
-17. No other player can see the account name anywhere: nametag, Social tab, clan and
+18. No other player can see the account name anywhere: nametag, Social tab, clan and
     party lists, mail.
-18. The server log shows link requests and bindings with name and account id, never a
-    code.
+19. The server log shows link requests, bindings and password changes with name and
+    account id, never a code or an entry.
 
 ## 7. Orchestration notes
 

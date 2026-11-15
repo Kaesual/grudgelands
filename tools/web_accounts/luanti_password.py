@@ -18,13 +18,16 @@ and accepts non-canonical trailing base64 bits, which the engine refuses:
 `name` must be the name as the auth table stores it, not as a player typed it:
 the legacy format depends on its case.
 
-    python3 -I luanti_password.py --test     runs test_vectors.json
+    python3 -I luanti_password.py --test     runs test_vectors.json and the
+                                             make_entry checks
 """
 import base64
 import hashlib
 import hmac
 import json
 import os
+import re
+import secrets
 import sys
 
 N = int(
@@ -55,11 +58,46 @@ def legacy_entry(name, password):
 
 def srp_verifier(name, password, salt):
     """The SRP verifier bytes for name, password and salt (util/srp.cpp)."""
-    inner = hashlib.sha256(name.lower().encode("utf-8") + b":" +
+    # ASCII-only lowering, as util/string.h lowercase(); Luanti names are
+    # [A-Za-z0-9_-] anyway.
+    lowered = "".join(c.lower() if "A" <= c <= "Z" else c for c in name)
+    inner = hashlib.sha256(lowered.encode("utf-8") + b":" +
                            password.encode("utf-8")).digest()
     x = int.from_bytes(hashlib.sha256(salt + inner).digest(), "big")
     v = pow(G, x, N)
     return v.to_bytes((v.bit_length() + 7) // 8, "big")
+
+
+ENTRY_FORM = re.compile(r"^#1#[A-Za-z0-9+/]+#[A-Za-z0-9+/]+$")
+
+
+def valid_entry(entry):
+    """True when `account.set_password` takes the entry (web-accounts.md §6b):
+    "#1#<salt>#<verifier>", each part non-empty canonical base64 without padding
+    (decoding and re-encoding gives the same text, which is what the engine's
+    base64_is_valid needs: no length of 1 mod 4, a canonical last character), and a
+    verifier of 1 to 256 bytes. An entry that passes can be used for a login."""
+    if not ENTRY_FORM.match(entry):
+        return False
+    decoded = []
+    for text in entry.split("#")[2:]:
+        try:
+            data = _b64decode(text)
+        except ValueError:
+            return False
+        if base64.b64encode(data).decode("ascii").rstrip("=") != text:
+            return False
+        decoded.append(data)
+    return len(decoded[0]) > 0 and 1 <= len(decoded[1]) <= 256
+
+
+def make_entry(name, password, salt=None):
+    """A new SRP entry for name and password, as `account.set_password` takes it
+    (web-accounts.md §6b): a fresh 16-byte salt from a secure source, base64
+    without padding; valid_entry is true for it. `salt` is for tests only."""
+    salt = secrets.token_bytes(16) if salt is None else salt
+    b64 = lambda data: base64.b64encode(data).decode("ascii").rstrip("=")
+    return "#1#%s#%s" % (b64(salt), b64(srp_verifier(name, password, salt)))
 
 
 def check(name, entry, password):
@@ -86,7 +124,49 @@ def _test():
         if got != vector["match"]:
             failed += 1
             print("FAIL", vector["note"])
-    print("%d vectors, %d failed" % (len(vectors), failed))
+    # make_entry: the vectors' own salts reproduce their SRP entries, and fresh
+    # entries pass check and the form the game accepts.
+    made = 0
+    for vector in vectors:
+        entry = vector["entry"]
+        if vector["match"] and entry.startswith("#1#") and ENTRY_FORM.match(entry):
+            salt = _b64decode(entry.split("#")[2])
+            if make_entry(vector["name"], vector["password"], salt) != entry:
+                failed += 1
+                print("FAIL make_entry", vector["note"])
+            made += 1
+    for name, password in (("Rowan", "correct horse"), ("Elara", "Pässwörd-✓ дракон"),
+                           ("BrightAxe", "")):
+        entry = make_entry(name, password)
+        if not (valid_entry(entry) and check(name, entry, password)
+                and not check(name, entry, password + "x")):
+            failed += 1
+            print("FAIL fresh make_entry for", name)
+        made += 1
+    # valid_entry refuses what the engine could not decode at a login.
+    good = make_entry("Rowan", "correct horse", bytes(range(16)))
+    salt, verifier = good.split("#")[2:]
+    over = base64.b64encode(b"\x01" * 258).decode("ascii").rstrip("=")
+    bad = {
+        "a verifier cut by one character": "#1#%s#%s" % (salt, verifier[:-1]),
+        "a length of 1 mod 4": "#1#%s#%s" % (salt, verifier + "AAAAA"),
+        "a non-canonical last character": "#1#%s#%s" % (salt[:-1] + "R", verifier),
+        "padding": "#1#%s==#%s" % (salt, verifier),
+        "a legacy entry": legacy_entry("Rowan", "correct horse"),
+        "a plain password": "correct horse",
+        "an empty salt": "#1##%s" % verifier,
+        "a verifier over 256 bytes": "#1#%s#%s" % (salt, over),
+    }
+    if not valid_entry(good):
+        failed += 1
+        print("FAIL valid_entry refuses a good entry")
+    for note, entry in bad.items():
+        made += 1
+        if valid_entry(entry):
+            failed += 1
+            print("FAIL valid_entry accepts", note)
+    print("%d vectors, %d make_entry and valid_entry cases, %d failed" % (
+        len(vectors), made, failed))
     return 1 if failed else 0
 
 
