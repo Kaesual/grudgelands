@@ -2,8 +2,8 @@
 
 Updated 2026-11-15. This is the delivery pointer, not another game specification.
 
-**0.79.0 / Round 79 (website accounts, phase 1) is complete on the integration branch
-`round79`; not on main, not pushed; the GUI test is open, and the end-to-end test on the
+**0.79.0 / Round 79 (website accounts, phase 1) is on main (`b1b035c3`, tag
+`round-79`) and pushed 2026-11-15; the GUI test is open, and the end-to-end test on the
 rehearsal realm waits for the platform side.** Its planning (the
 [concept](planning/accounts-concept.md), the [plan](planning/round79-plan.md) and the
 contract [web-accounts.md](technical/web-accounts.md)) was pushed on 2026-11-15

@@ -13,8 +13,8 @@ map](docs/technical/mod-map.md); Lua and engine rules in
 [docs/README.md](docs/README.md).
 
 **Current state:** 0.79.0, Round 79 (website accounts, phase 1: `grug_accounts`, the Account page, linking by code
-and by password on the website, the Supporter Cloak as an account reward, `account.set_password`; compatible; on the
-integration branch `round79`, not on main, not pushed, GUI test open:
+and by password on the website, the Supporter Cloak as an account reward, `account.set_password`; compatible; on
+main `b1b035c3`, tag `round-79`, pushed, GUI test open:
 [completion](docs/planning/round79-plan.md#completion-2026-11-15)), on 0.78.0, Round 78 (game-night fixes: mob stand-off and ranged/melee by distance,
 friendly casts past bodies, the Expedition respawn lock and static nodes, nametags rebuilt, potion cooldown 30 s
 in the status row, repair ½, armor ×10, emotes; compatible; on main `895a5d16`, tag `round-78`, pushed, GUI test open:

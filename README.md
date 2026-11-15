@@ -104,7 +104,7 @@ character's password on the website, and the rewards an administrator grants the
 (first: the Supporter Cloak) reach every linked character. Accounts are optional; the tab
 shows only on realms with the website
 ([rules](docs/design/accounts.md), [contract](docs/technical/web-accounts.md)). Compatible;
-not pushed yet; desktop and web acceptance is pending
+pushed 2026-11-15; desktop and web acceptance is pending
 ([checklist](docs/planning/round79-plan.md#6-verification-and-gui-checklist)).
 
 **0.78.0** fixes what a game night found: bosses and every mob with both attacks keep about
